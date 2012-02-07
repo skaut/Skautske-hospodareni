@@ -1,0 +1,14 @@
+*.zip
+*.rar
+*.log
+*.db
+.DS_Store*
+
+nbproject/*
+TODO/*
+DATA/*
+libs/*
+app/temp/*
+app/log/*
+source/*
+adminer.php
