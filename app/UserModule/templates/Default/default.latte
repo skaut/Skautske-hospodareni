@@ -1,0 +1,24 @@
+{block #content}
+
+<h2>{block title}Správa uživatelů{/block}</h2>
+
+<a href="{link access}">Přehled</a>
+
+{snippet usersView}
+<table border="1" n:if="!empty($users)">
+    <tr>
+        {*}<th n:if="$presenter->user->isAllowed('user', 'delete')">&nbsp;</th>{*}
+        <th n:foreach="$usersColumns as $item">{$item}</th>
+    </tr>
+    {assign delete => $presenter->user->isAllowed('user', 'delete')}
+    <tr n:foreach="$users as $record">
+        {*}<td n:if="$delete"><a href="{plink delete! $record->username}" class="ajax"><img src="{? echo $baseUri.'images/layout/delete.gif'}" alt="Del"></a></td>{*}
+        <td n:foreach="$record as $key=>$item">{$item}</td>
+    </tr>
+</table>
+{widget vp}
+{/snippet}
+
+
+
+

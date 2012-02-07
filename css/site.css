@@ -1,0 +1,157 @@
+body {
+
+}
+
+.fail {
+    background-color: #ff0000;
+}
+
+#content{
+    float:left;
+    width: 880px;
+}
+
+#news-column{
+    border: 1px red solid;
+
+
+    padding-left:5px;
+}
+
+#news-column h3{
+    margin-bottom:1px;
+}
+
+#news-column li {
+    list-style-type:none;
+    list-style-position: inside;
+}
+
+#rightColumn {
+    float:right;
+    width: 210px;
+}
+
+#menu {
+    float:left;
+    margin-right:20px;
+}
+
+#footer {
+    border-top:2px #ccc solid;
+    padding:3px;
+}
+
+#footer p{
+    margin:0;
+}
+
+.hidden{
+    visibility: hidden;
+    clear: both;
+}
+
+a[href^="error:"] {
+    background: red;
+    color: white;
+}
+
+.loginForm{
+    width:200px;
+}
+
+#newsletter {
+
+}
+
+#spinner {
+    display: none;
+    position: absolute;
+    border: none;
+    z-index: 1000;
+}
+
+.popup {
+    position: absolute;
+    z-index: 100;
+    border: 2px solid #000000;
+    padding: 20px;
+    background: #ffffff;
+    width: 30%;
+    left: 35%;
+    top: 20%;
+    display: none;
+}
+
+.popup .close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+}
+
+div.ui-datepicker {
+    font-size: 60%;
+    z-index: 200;
+}
+
+input.datepicker {
+    background: transparent url('../images/layout/calendar.png') no-repeat right;
+    border: 1px solid #CCCCCC;
+    padding-right: 20px;
+    padding: 0.2em
+}
+
+a img {
+    border: 0;
+}
+/* --------*/
+.calendar tr td ul {
+    padding: 0;
+    margin: 0;
+}
+
+.calendar tr td ul li {
+    list-style-type: none;
+    list-style: none inside;
+}
+
+/* --------*/
+td.selected{
+    /*background-color: #00ff00;*/
+}
+
+/* --- PARAGONY --- */
+.paragony {
+    border: 1px #999 solid;
+}
+.paragony td, .paragony tr tr, .paragony tr th{
+    border: 1px #ccc solid;
+}
+
+.tabs {
+    height: 320px;
+}
+
+.tabs div#paragonsOut, .tabs div#paragonsIn{
+    float: left;
+}
+
+.tabs > ul li {
+    display: inline;
+    color: #1924ba;
+}
+
+
+/* JQuery UI */
+.ui-widget {
+    font-size: 0.9em;
+}
+
+
+/* --- TRACKER --- */
+
+.icon {
+    height: 22px;
+}
+

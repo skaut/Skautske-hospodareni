@@ -1,0 +1,140 @@
+{block #content}
+<style type="text/css">
+#js {
+    display: none;
+}
+</style>
+
+<script type="text/javascript">
+
+window.onload = ready;
+
+//Posílání zpráv
+function send(){
+  var t = document.getElementById({$form['text']->htmlId});
+  var date = document.getElementById({$form['date']->htmlId});
+  var msg = { text: t.value, date: date.value};
+  if (navigator.onLine) {
+    sendMessage(msg);
+  } else {
+    queueMessage(msg);
+  }
+  return false;
+}
+
+
+//simulujeme AJAX
+function sendMessage(msg) {
+    $.ajax({
+    url: {link this},
+    data: msg
+    });
+    //alert('AJAX: '+JSON.stringify(msg));
+}
+
+function queueMessage(msg) {
+  var queue = load();
+  queue.push(msg);
+  save(queue);
+  msgcntUpdate();
+  alert('Ulozeno...');
+}
+
+function dequeue() {
+  var queue = load();
+  while(queue.length) {
+    sendMessage(queue.shift());
+    save(queue);
+    msgcntUpdate();
+  }
+}
+
+function save(queue) {
+  localStorage['queue'] = JSON.stringify(queue);
+}
+function load() {
+  return JSON.parse(localStorage['queue']) || [];
+}
+
+function msgcntUpdate() {
+  var q = load();
+  var e = document.getElementById('msgcnt');
+  e.innerHTML = q.length;
+}
+
+//zobrazení stavu
+function lineStatus() {
+  var e = document.getElementById('line');
+  if (navigator.onLine) {
+    e.innerHTML='Online';
+    e.style.backgroundColor='#FFFFFF';
+  } else {
+    e.innerHTML='Offline';
+    e.style.backgroundColor='#CCCCCC';    
+  }
+}
+
+function online() {
+  lineStatus();
+  alert('presli jsme do online');
+  dequeue();
+}  
+function offline() {
+  var e = document.getElementById('line');
+  lineStatus();
+  alert('presli jsme do offline');
+}  
+
+function ready() {
+  //test prohlizece
+  if (!(('localStorage' in window) && window['localStorage'] !== null) || !window.applicationCache || !window.JSON) {
+    var e = document.getElementById('js');
+    e.style.display='none';
+  } else {
+    var e = document.getElementById('js');
+    e.style.display='block';
+    e = document.getElementById('nojs');
+    e.style.display='none';
+
+    //prohlizec je OK, takze pripojime obsluhu udalosti online a offline
+    document.body.addEventListener('online', online, false);
+    document.body.addEventListener('offline', offline, false);
+    document.body.ononline = online;
+    document.body.onoffline = offline;
+  
+    lineStatus();
+  }
+
+} 
+    
+</script>
+
+
+
+<section>
+    <header>
+        <h1>Offline data</h1>
+    </header>
+
+
+    <article id="js">
+
+        <p>Stav: <span id="line">Online</span></p>
+        <p>Zpráv k odeslání: <span id="msgcnt">0</span></p>
+        
+        {*}
+        <input type="text" id="msg">
+        <button onclick="send()">Poslat</button>
+        {*}        
+        
+        {control formOffline}
+        {link formOffline-submitted!}
+        
+    </article>
+
+
+    <article id="nojs">
+        <p>Váš prohlížeč má vypnutý JavaScript nebo nepodporuje některou z potřebných technologií.</p>
+    </article>
+
+</section>

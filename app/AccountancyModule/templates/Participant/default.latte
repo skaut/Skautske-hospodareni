@@ -1,0 +1,112 @@
+{block #content}
+
+<a n:href="Default:akce">Aktuální akce</a> &rarr; Seznam učastníků
+
+<h2>Seznam účastníků na akci: {$akceName|truncate:30}</h2>
+
+{ifset $roles}
+    {foreach $roles as $roleId => $roleLabel}
+        <input type="radio" id="{$roleId}" name="groups" value="{$roleId}" class="selectGroup" {if $sg == $roleId}checked="checked"{/if} /><label for="{$roleId}">{$roleLabel}</label>
+    {/foreach}
+{/ifset}
+
+
+{*}
+        <br/><br/>
+<input type="radio" id="vlce" name="groups" value="vlce" class="selectGroup" {if $sg == "vlce"}checked="checked"{/if} /><label for="vlce">Vlčata</label>
+<input type="radio" id="skaut" name="groups" value="skaut" class="selectGroup" {if $sg == "skaut"}checked="checked"{/if} /><label for="skaut">Skauti</label>
+<input type="radio" id="rover" name="groups" value="rover" class="selectGroup" {if $sg == "rover"}checked="checked"{/if} /><label for="rover">Roveři</label>
+<input type="radio" id="ranger" name="groups" value="rover" class="selectGroup" {if $sg == "rover"}checked="checked"{/if} /><label for="rover">Roveři</label>
+<input type="radio" id="skautka" name="groups" value="skautka" class="selectGroup" {if $sg == "skautka"}checked="checked"{/if} /><label for="skautka">Skautky</label>
+<input type="radio" id="svetluska" name="groups" value="svetluska" class="selectGroup" {if $sg == "svetluska"}checked="checked"{/if} /><label for="svetluska">Světlušky</label>
+{*}
+<style type="text/css">
+    .ucastniciTable, .ucastniciTable th, .ucastniciTable td, .selectedTable, .selectedTable th, .selectedTable td{
+        border: 1px #333 solid;
+    }
+    .ucastniciTable th, .selectedTable th{
+        text-align: center;
+    }
+
+    .ucastniciTable tr td a, .selectedTable tr td a {
+        display: block;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .selectedTable {
+        float:left;
+        margin-right: 20px;
+    }
+    .seznamList {
+        cursor: pointer;
+        cursor: hand;
+    }
+
+</style>
+
+{snippet seznam}
+
+<h2>Vyber účastníky akce</h2>
+<a href="{link clearList!}">Vymazat seznam</a>
+<a href="{link Ucastnik:castka}">Přidej částky</a>
+<p><i>Účastníky vyberete kliknutím na jméno učastníka.</i></p>
+
+<hr class="hidden" />
+
+<table class="selectedTable">
+    <tr>
+        <th>Vybraní (celkem {= count($selectedList)})</th>
+    </tr>
+
+    <tr n:foreach="$selectedList as $key => $ucastnik">
+        <td id="{$ucastnik->u}" class="seznamList selected" ><a n:href="remove! $ucastnik->u" class="ajax">{$ucastnik->n} ({$ucastnik->r})</a></td>
+    </tr>
+</table>
+
+<table class="ucastniciTable">
+    <tr>
+        <th>Zvolené skupina</th>
+    </tr>
+    {foreach $list as $key => $ucastnik}
+        <tr>
+            <td id="{$ucastnik->userID}" class="seznamList"><a n:href="add! $ucastnik->userID" class="ajax">{$ucastnik->nick} ({$ucastnik->firstname} {$ucastnik->lastname})</a></td>
+        </tr>
+    {/foreach}
+</table>
+<hr class="hidden" />
+
+
+
+<script type="text/javascript">
+    $(function(){
+        //vybira konkretni skupinu pro zobrazeni
+        $(".selectGroup").live('change', function (data) {
+            data.preventDefault();
+            if ($.active) return;
+            $.get({link groups!} + "&group="+ data.target.defaultValue );
+            
+        });
+{*}
+        //presunuje polozky z jednoho pole do druheho
+        $(".seznamList").click(function () {
+            $(".seznamList").live('click', function(e){
+                event.preventDefault();
+                if ($.active) return;
+                var nick = $(this).attr('id');
+                if ($(this).hasClass('selected')){
+                    $.get({link remove!}, {'key': nick});
+                    $(this).removeClass("selected");
+                } else {
+                    $.get({link add!}, {'key' : nick});
+                    $(this).addClass("selected");
+                }
+                return false;
+            })
+
+        });
+{*}
+
+    })
+</script>
+{/snippet}
