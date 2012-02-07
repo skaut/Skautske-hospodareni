@@ -1,0 +1,65 @@
+common:
+  php:
+    date.timezone: Europe/Prague
+  
+  nette:
+    session:
+      autoStart: smart
+      save_path: "%tempDir%/sessions"
+      expiration: "+ 7 days"
+  
+  services:
+    authenticator: Users
+    authorizator: Acl
+
+  parameters:
+    ucas_schvalil = "Marek Baxa"
+    #hpd.export
+    ucet_organizace = "Organizace: Junák- svaz skautů a skautek ČR, středisko „Kruh“ Praha 6, Bubenečská 4, <br />160 00 Praha 6 IČO: 45251827"
+    ##is posible undefined paragons
+    ucet_undef = false
+    ucet_shortName = "18. skautské středisko KRUH,"
+    ucet_numOJ = "116.18"
+    ###Paragony
+    par_organizace =  "Organizace: Junák- svaz skautů a skautek ČR, středisko „Kruh“ Praha 6, Bubenečská 4, <br />160 00 Praha 6 IČO: 45251827"
+
+
+
+development < common:
+    parameters:
+        database:
+            driver: mysql
+            host: localhost
+            username: root
+            password: root
+            database: bakalarka
+            charset: utf8
+            profiler: true
+
+        ###SkautIS
+        skautisid = 590db6c9-e46b-43bb-b3b7-701cb556b91c #localhost - test
+
+
+production < common:
+    parameters:
+        database:
+            driver:   mysql
+            host:     localhost
+            database: vyvoj_osmnactka_net
+            username: vyvoj_osmnactka
+            password: GYpQh#zvW
+            profiler: false
+            charset:  utf8
+            lazy:     true
+
+
+        ###SkautIS
+        skautisid = 48104fe2-b447-47f5-9a26-051c710da74e #vyvoj.osmnactka.net - test
+
+
+;database: hana_ucet_osmnactka_net
+;username: ucet
+;password: usv2*dkatR6e
+
+
+

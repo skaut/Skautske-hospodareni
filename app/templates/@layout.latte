@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="cs">
+    <head>
+        <meta charset=utf-8 />
+        <title>{block #title|striptags|trim}Muj web{/block}</title>
+        <meta name="keywords" content="skaut, dejvice, praha, skauting, junák" />
+        <meta name="author" content="www.sinacek.cz" />
+        <meta name="robots" content="{$robots}" n:ifset="$robots">
+        <script type="text/javascript" src="{$baseUri}/js/jquery-1.6.min.js"></script>
+        <script type="text/javascript" src="{$baseUri}/js/jquery.ui.min.js"></script>
+        <script type="text/javascript" src="{$baseUri}/js/my-datepicker.js"></script>
+        <script type="text/javascript" src="{$baseUri}/js/jquery.nette.js"></script>
+
+        <link rel="stylesheet" href="{$baseUri}/css/jquery-ui-1.8.css" type="text/css" />
+
+            <script type="text/javascript" src="{$baseUri}/js/jquery.nette.js"></script>
+            <script type="text/javascript" src="{$baseUri}/js/jquery.ajaxform.js"></script>
+
+        {* DatePicker *}
+        {*}
+
+        <script type="text/javascript" src="{$baseUri}/js/jquery.ui.datepicker-cs.js"></script>
+{*}
+
+        {* AC *}
+        {*}
+        <link rel="stylesheet" href="{$baseUri}/js/ac/jquery.autocomplete.css" type="text/css" />
+        <script type="text/javascript" src="{$baseUri}/js/ac/jquery.autocomplete.js"></script>
+        
+        <script type="text/javascript">
+            $(function(){
+                    $.datepicker.setDefaults($.extend($.datepicker.regional['cs'], {
+                        dateFormat: 'dd.mm.yy',
+                        showOtherMonths: true,
+                        selectOtherMonths: true
+                    }));
+                    $('input.datepicker').datepicker({ duration: 'fast' });
+                    {block #js} {/block}
+             })
+
+        </script>
+{*}
+            <link rel="stylesheet" type="text/css" media="screen" href="{$baseUri}/css/site.css" />
+    </head>
+
+    <body>
+        <div id="menu" n:inner-if="$user->isLoggedIn()">
+            <a n:href=":Accountancy:Default:">Ucetnictvi</a><br />
+            <a n:href=":Skautis:Test:">SkautIS TEST</a><br />
+            <a n:href=":User:Default:">User</a><br />
+        </div>
+
+        <div id="content">
+        {snippet flashmesages}{foreach $flashes as $flash}<div class="flash {$flash->type}">{$flash->message}</div>{/foreach}{/snippet}
+        {include #content}
+        </div>
+
+        <div id="rightColumn">
+            {if ($user->isLoggedIn ())}
+            <p>
+                Jsi přihlášen jako {$user->getIdentity()->username} <br /><a href="{link logOut!}">Odhlasit se</a><br />
+                {*}<a href="{plink :User:changePassword }">Zmenit heslo</a>{*}
+            </p>
+            {else}
+                {control auth}
+            <a n:href=":Auth:logOnSkautIs">Přihlásit se</a>
+            {/if}
+        </div>
+        
+    </body>
+</html>

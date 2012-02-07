@@ -1,0 +1,37 @@
+{block #content}
+
+<h2>Vyberte jednotku</h2>
+
+{form selectUnitForm}
+
+<ul class="errors" n:if="$form->hasErrors()">
+    <li n:foreach="$form->errors as $error">{$error}</li>
+</ul>
+<div>
+    {label evnum /} {input evnum }
+    {label startWith /} {input startWith }
+    {input ok }
+</div>
+{/form}
+{dump $units}
+<br />
+{if isset($units)}
+    
+    <table border="1" >
+        <tr>
+            <th>Ev. číslo</th>
+            <th>Název</th>
+            <th>Typ</th>
+            <th>Místo působení</th>
+        </tr> 
+        <tr n:foreach="$units as $u">
+            <td>{$u->RegistrationNumber}</td>
+            <td>{$u->DisplayName}</td>
+            <td>{$u->UnitType}</td>
+            <td>{$u->Location}</td>
+        </tr> 
+    </table>
+
+   
+{/if}
+

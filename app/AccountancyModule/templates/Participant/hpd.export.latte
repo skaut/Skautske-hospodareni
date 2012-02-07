@@ -1,0 +1,62 @@
+<h2>Hromadný příjmový pokladní doklad</h2>
+<table class="prijmovyDoklad" border="1">
+    <tr>
+        <th>Datum</th>
+        <td>{$date|date:"j.n.Y"}</td>
+        <th>Číslo dokladu</th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Částka celkem</th>
+        <td>{$totalPrice} Kč</td>
+        <th>Slovy</th>
+        <td>=={$totalPrice|priceToString}korun==</td>
+    </tr>
+    <tr>
+        <th>Pokladník</th>
+        <td>{$pokladnik}</td>
+        <th>Podpis</th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Přijal</th>
+        <td>{$prijal}</td>
+        <th>Podpis</th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Schválil</th>
+        <td>{$schvalil}</td>
+        <th>Podpis</th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Zaúčtoval dne</th>
+        <td>&nbsp;</td>
+        <th>Podpis</th>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <th>Účtovací předpis</th>
+        <td colspan="3">&nbsp;</td>
+    </tr>
+
+    <tr>
+        <th>Účel</th>
+        <td colspan="3">Účastnické poplatky</td>
+    </tr>
+    <tr>
+        <th colspan="4">{!$organizace}</th>
+    </tr>
+    <tr>
+        <td>P.č.</td>
+        <th colspan="2">Přijato od</th>
+        <td>částka (Kč)</td>
+    </tr>
+    <tr n:foreach="$list as $key => $ucastnik">
+        <td>{$iterator->getCounter()})</td>
+        <td colspan="2">{$ucastnik->r}</td>
+        <td>{$ucastnik->m}</td>
+    </tr>
+
+</table>
