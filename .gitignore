@@ -5,10 +5,11 @@
 .DS_Store*
 
 nbproject/*
-TODO/*
-DATA/*
-libs/*
-app/temp/*
-app/log/*
-source/*
+/TODO/*
+/DATA/*
+/libs/mpdf/*
+/libs/Nette/*
+/app/temp/*
+/app/log/*
+/source/*
 adminer.php
