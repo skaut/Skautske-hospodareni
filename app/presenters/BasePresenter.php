@@ -4,9 +4,13 @@ abstract class BasePresenter extends Presenter {
 
     public $oldLayoutMode = FALSE;
     public $oldModuleMode = FALSE;
-    public $user;
-    protected $model;
+    //public $user;
     protected $service;
+    
+    /**
+     * backlink
+     */
+    protected $backlink;
 
     protected function startup() {
         parent::startup();
@@ -16,8 +20,8 @@ abstract class BasePresenter extends Presenter {
         }
         RequestsPanel::register();
         
-        SkautIS_Mapper::getInstance($this->context->parameters['skautisid']);
-        
+        SkautIS::getInstance($this->context->parameters['skautisid']);
+        //$this->user = Environment::getUser();
 
         //model
 //        $model = $this->getName() . "Model";
@@ -26,9 +30,7 @@ abstract class BasePresenter extends Presenter {
 //            $this->model = new $model;
 //        else
 //            $this->model = new BaseModel();
-
-
-        $this->user = Environment::getUser();
+        
 
         if (!function_exists("FormContainer_addDatePicker")) {
             function FormContainer_addDatePicker(FormContainer $container, $name, $label = NULL) {
@@ -36,6 +38,12 @@ abstract class BasePresenter extends Presenter {
             }
             FormContainer::extensionMethod('Form::addDatePicker', 'FormContainer_addDatePicker');
         }
+        
+    }
+    
+    protected function beforeRender() {
+        parent::beforeRender();
+        $this->template->backlink = $this->context->httpRequest->getQuery("backlink");
         
     }
 
@@ -46,6 +54,8 @@ abstract class BasePresenter extends Presenter {
 
     public function handleLogOut() {
             $this->user->logout();
+            $this->redirect(":Default:");
+            
 //$skautisService = new SkautisService();
         //$this->redirectUrl("http://test-is.skaut.cz/Login/Logout.aspx?AppID=" . $skautisService->getAppId() . "&token=" . $skautisService->getToken());
     }
@@ -58,13 +68,13 @@ abstract class BasePresenter extends Presenter {
         return new LoginFormControl();
     }
 
-    protected function createComponent($name) {
-        $newName = ucfirst($name) . "Control";
-        if (class_exists($newName)) {
-            $this[$name] = new $newName;
-        } else {
-            return parent::createComponent($name);
-        }
-    }
+//    protected function createComponent($name) {
+//        $newName = ucfirst($name) . "Control";
+//        if (class_exists($newName)) {
+//            $this[$name] = new $newName;
+//        } else {
+//            return parent::createComponent($name);
+//        }
+//    }
 
 }

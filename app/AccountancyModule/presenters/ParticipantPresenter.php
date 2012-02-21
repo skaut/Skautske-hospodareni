@@ -21,8 +21,8 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
 
     function startup() {
         parent::startup();
-        $this->Uservice = new Ucetnictvi_UserService();
-        $this->service = new Ucetnictvi_AkceService();
+        $this->Uservice = new UserService();
+        $this->service = new ActionService();
         $this->ucastnici = $this->service->getUcastnici();
 
         $ns = Environment::getSession(__CLASS__);
@@ -35,7 +35,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
      * @param string $role - která role je aktuálně vybraná
      */
     function renderDefault($role = array()) {
-        $roles = $this->Uservice->getRoles();
+        //$roles = $this->Uservice->getRoles();
         if($this->sesNS->sg) {
             $selectedGroup = $this->sesNS->sg;
         } elseif(!empty ($roles)) {

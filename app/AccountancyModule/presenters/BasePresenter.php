@@ -10,10 +10,16 @@ class Accountancy_BasePresenter extends BasePresenter {
 
     protected function startup() {
         parent::startup();
-
-        if (!$this->user->isAllowed("ucetnictvi", "view")) {
-            $this->accessFail();
+        
+        if(!$this->user->isLoggedIn()){
+            $this->backlink = $this->storeRequest();
+            //http://localhost/bakalarka/?presenter=Accountancy%3ADefault
+            $this->redirect (":Default:", array("backlink"=>$this->backlink));
         }
+        
+        $sis = SkautIS::getInstance();
+        if($sis->isLoggedIn())
+            $sis->updateLogoutTime();
 
 //        $dataStorage = new Ucetnictvi_BaseStorage();
 //        $this->categoriesIn = $dataStorage->getParagonCategoriesIn();
@@ -25,9 +31,9 @@ class Accountancy_BasePresenter extends BasePresenter {
 
     function beforeRender() {
         parent::beforeRender();
-        $this->template->registerHelper('priceToString', 'UcetnictviHelpers::priceToString');
-        $this->template->registerHelper('datNar', 'UcetnictviHelpers::datNar');
-        //$this->template->registerHelper('pCat', 'UcetnictviHelpers::pCat');
+        $this->template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
+//        $this->template->registerHelper('datNar', 'UcetnictviHelpers::datNar');
+//        $this->template->registerHelper('pCat', 'UcetnictviHelpers::pCat');
         //dump($this->model->vyprava->getId());
     }
 

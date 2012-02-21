@@ -58,12 +58,12 @@
         <div id="rightColumn">
             {if ($user->isLoggedIn ())}
             <p>
-                Jsi přihlášen jako {$user->getIdentity()->username} <br /><a href="{link logOut!}">Odhlasit se</a><br />
+                Jsi přihlášen jako {$user->getIdentity()->DisplayName} <br /><a href="{link logOut!}">Odhlasit se</a><br />
                 {*}<a href="{plink :User:changePassword }">Zmenit heslo</a>{*}
             </p>
             {else}
-                {control auth}
-            <a n:href=":Auth:logOnSkautIs">Přihlásit se</a>
+                {*control auth*}<br />
+            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ?$backlink : NULL">Přihlásit se</a>
             {/if}
         </div>
         

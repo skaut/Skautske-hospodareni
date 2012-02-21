@@ -5,7 +5,7 @@ class AuthPresenter extends BasePresenter {
     
     protected function startup() {
         parent::startup();
-        $this->service = SkautIS_Mapper::getInstance();
+        $this->service = SkautIS::getInstance();
     }
 
     /**
@@ -28,7 +28,7 @@ class AuthPresenter extends BasePresenter {
 //        }
     }
 
-    function actionLogOnSkautIs() {
+    function actionLogOnSkautIs($backlink = NULL) {
         $this->redirectUrl($this->service->getLoginUrl($backlink));
         //$this->redirectUrl("http://test-is.skaut.cz/Login/?appid=" . $sservice->getAppId() . (isset($backlink) ? "&ReturnUrl=" . $backlink : ""));
     }
@@ -54,13 +54,13 @@ class AuthPresenter extends BasePresenter {
                 throw new SkautIS_AuthenticationException("Nemáte platné přihlášení do skautISu");
             }
             $me = $this->service->getMyDetail();
-
-            $this->user->setExpiration('+ 30 minutes'); // nastavíme expiraci
+            
+            $this->user->setExpiration('+ 29 minutes'); // nastavíme expiraci
             $this->user->setAuthenticator(new SkautISAuthenticator());
-            $this->user->login($me->ID);
+            $this->user->login($me);
 
             if (isset($ReturnUrl)) {
-                Environment::getApplication()->restoreRequest($ReturnUrl);
+                $this->context->application->restoreRequest($ReturnUrl);
             }
 
             $this->presenter->redirect(':Default:');
@@ -68,7 +68,9 @@ class AuthPresenter extends BasePresenter {
             $this->flashMessage($e->getMessage(), "fail");
             $this->redirect(":Auth:");
         } catch (AuthenticationException $e) {
-            $this->redirect(":SkautIS:Registration:");
+            //není registrace
+            //$this->redirect(":SkautIS:Registration:");
+            throw new NotImplementedException("");
         }
     }
 

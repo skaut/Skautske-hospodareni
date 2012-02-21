@@ -6,20 +6,25 @@
  */
 class Accountancy_UnitPresenter extends Accountancy_BasePresenter {
 
-    function startup() {
+    public function startup() {
         parent::startup();
-        $this->service = new SkautIS_Mapper();
+        /**
+         * @var Accountancy_UnitService
+         */
+        $this->service = new UnitService();
         
         //dump($this->service->getUnitId());
     }
 
     public function renderSelect() {
         $ses = $this->session->getSection(__CLASS__);
-        $this->template->units = $ses->units;
-    }
-    
-    public function renderCreate() {
+        $ses->setExpiration("120");
+        $units = $ses->units;
         
+        if(!isset ($units) || !is_array($units)){ //na zacatku nabizi vlastni jednotku
+            $units = array($this->service->getDetail());
+        }
+        $this->template->units = $units;
     }
     
     public function createComponentSelectUnitForm($name) {
@@ -31,28 +36,53 @@ class Accountancy_UnitPresenter extends Accountancy_BasePresenter {
         $form->onSuccess[] = array($this, $name . 'Submitted');
     }
 
-    function selectUnitFormSubmitted(AppForm $form) {
+    public function selectUnitFormSubmitted(AppForm $form) {
         $values = $form->values;
         $ses = $this->session->getSection(__CLASS__);
-        $ses->units = $this->service->callFunction("org", "UnitAll", array(
+        $ses->units = $this->service->org->UnitAll(array(
                 "RegistrationNumber" => $values['evnum'],
                 "RegistrationNumberStartWith" => $values['startWith']));
         $this->redirect("this");
     }
-
-    public function createComponentCreateUnitForm($name) {
-        $form = new AppForm($this, $name);
-
-        $form->addSubmit("ok", "Poslat");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+    
+    public function handleCreate($id){
+        if($this->service->isCreated($id)){
+            $this->flashMessage("Jednotka již má aktivované účetnictví", "fail");
+            $this->redirect("this");
+        }
+        if($this->service->create($id)){
+            $this->flashMessage("Účetnictví bylo aktivováno.");
+        } 
         
+        $this->redirect("this");
     }
 
-    function createUnitFormSubmitted(AppForm $form) {
-        $values = $form->values;
-        dump($values);
-        die();
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //
 //    /**

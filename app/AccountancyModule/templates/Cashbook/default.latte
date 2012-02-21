@@ -1,0 +1,158 @@
+{block #content}
+
+<a n:href="Default:akce">Akce</a>
+
+<h2>Účetní doklady</h2>
+<a n:href="clearList!">Vymazat vše</a>
+<a n:href="Default:akce">Hotovo</a>
+<hr class="hidden">
+
+{snippet tabs}
+
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-vydej">Výdajový</a></li>
+        <li><a href="#tabs-prijem">Příjmový</a></li>
+    </ul>
+    <div id="tabs-vydej">
+		{$formOut}
+    </div>
+    <div id="tabs-prijem">
+		{$formIn}
+    </div>
+</div>
+<br />
+
+<script type="text/javascript" >
+    $(function(){
+
+        $( "#tabs" ).tabs({
+            show: function(event, ui) {
+                    //$('.calc').html('');
+                }
+        });
+
+        //Autocompleter
+        var text = {$autoCompleter};
+        var optionsAC = {
+            source: text,
+            delay: 0,
+            minLength: 2
+        };
+        $('#'+{$formIn['komu']->htmlId}).autocomplete(optionsAC);
+        $('#'+{$formOut['komu']->htmlId}).autocomplete(optionsAC);
+
+        //CALC
+        var priceInputIn = $('#' + {$formIn['price']->htmlId});
+        var priceInputOut = $('#' + {$formOut['price']->htmlId});
+        priceInputIn.after('<span> </span>');
+        priceInputOut.after('<span> </span>');
+
+        //reurn bool
+        function isNumber(val) {
+            return /^-?((\d+\.?\d?)|(\.\d+))$/.test(val);
+        }
+        //method onchange on form
+        function priceControl(obj){
+            obj.change(
+                function () {
+                    var val = this.value.trim(), endIndex, isError = false;
+
+                    while(1) {
+                        endIndex = val.length-1;
+                        if(isNumber(val.charAt(endIndex)) || val.length < 1){
+                            if(isError)
+                                alert("Cena byla upravena, aby končila číslem");
+                            break;
+                        }
+                        else {
+                            val = val.substr(0, endIndex);
+                            obj.val(val);
+                            isError = true;
+                        }
+                    }
+                    if(val.length < 1)
+                        obj.next().html('');
+                    else
+                        obj.next().html(' = '+eval(val));
+                }
+            )
+        }
+
+        priceControl(priceInputIn);
+        priceControl(priceInputOut);
+
+    })
+</script>
+{/snippet}
+
+{snippet paragony}
+{if $list}
+{if $isInMinus}
+<p style="background-color: #ff5500;color:#000000;padding: 5px 10px;text-align: center;font-weight: bold;font-size: 20px;">Upozornění:  vaše pokladní kniha je v záporných číslech a to není možné !</p>
+{/if}
+
+<table class="paragony">
+    <tr>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        {*}
+        <th n:if="count($list) > 1">&nbsp;</th>
+        <th n:if="count($list) > 1">&nbsp;</th>
+        {*}
+        <th>Datum</th>
+        <th>Účel výlpaty</th>
+        <th>Typ</th>
+        <th>Komu</th>
+        <th>Příjem</th>
+        <th>Výdej</th>
+        <th>Zůstatek</th>
+    </tr>
+    {assign zustatek => 0}
+    <tr n:foreach="$list as $key => $item">
+        <td><a href="{link remove! $key}" onclick="return confirm('Opravdu chcete smazat paragon?')"><img src="{$baseUri}/images/layout/delete.gif" alt="Smazat" /></a></td>
+        <td><a href="{link edit $key}{if $item->type =="pp"}#tabs-prijem{/if}"><img src="{$baseUri}/images/layout/edit.gif" alt="Upravit" /></a></td>
+        {*}
+        <td n:if="count($list) > 1"><a href="{link up! $key}" n:if="!$iterator->first" class="ajax">Up</a></td>
+        <td n:if="count($list) > 1"><a href="{link down! $key}" n:if="!$iterator->last" class="ajax">Down</a></td>
+        {*}
+        <td>{$item->date|date:"j.n.Y"}</td>
+        <td>{$item->ucel|truncate:"35"}</td>
+        <td title="{$item->type|pCat}">{$item->type}</td>
+        <td>{$item->komu}</td>
+        <td>{!$item->type == 'pp' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
+        <td>{!$item->type != 'pp' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
+        {?
+            $zustatek += $item->type == 'pp' ? $item->price : (-$item->price);
+            if(preg_match("/^-?[0-9]*\.[0-9]$/", $zustatek))//doplneni na 2 desetina mista
+                $zustatek .= "0";
+            if($zustatek < 0)
+                $errors[0] = "";
+        }
+        <td {if $zustatek < 0}style="background-color:#ff5500;"{/if}>{$zustatek}</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        {*}
+        <td n:if="count($list) > 1">&nbsp;</td>
+        <td n:if="count($list) > 1">&nbsp;</td>
+        {*}
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><b>Konečný stav</b></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><b>{$zustatek}</b></td>
+    </tr>
+</table><br /><br />
+{else}
+<p>Nemáte zde žádný doklad.</p>
+{/if}
+
+{/snippet}
+
+
+
+

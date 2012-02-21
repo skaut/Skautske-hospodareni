@@ -3,7 +3,6 @@
 <h2>Vyberte jednotku</h2>
 
 {form selectUnitForm}
-
 <ul class="errors" n:if="$form->hasErrors()">
     <li n:foreach="$form->errors as $error">{$error}</li>
 </ul>
@@ -14,24 +13,24 @@
 </div>
 {/form}
 {dump $units}
+
 <br />
 {if isset($units)}
-    
     <table border="1" >
         <tr>
+            <th>&nbsp;</th>
             <th>Ev. číslo</th>
             <th>Název</th>
             <th>Typ</th>
             <th>Místo působení</th>
-        </tr> 
+        </tr>
         <tr n:foreach="$units as $u">
+            <td><a n:href="create! $u->ID">Založit účetnictví</a></td>
             <td>{$u->RegistrationNumber}</td>
             <td>{$u->DisplayName}</td>
             <td>{$u->UnitType}</td>
             <td>{$u->Location}</td>
         </tr> 
     </table>
-
-   
 {/if}
 

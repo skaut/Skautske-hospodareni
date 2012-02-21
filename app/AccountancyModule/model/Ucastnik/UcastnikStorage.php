@@ -1,6 +1,6 @@
 <?php
 
-class UcastnikStorage extends Accountancy_BaseStorage {
+class UcastnikStorage extends BaseStorage {
 
     /**
      * Jméno kdo přijal peníze
