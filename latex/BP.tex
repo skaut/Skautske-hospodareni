@@ -49,6 +49,33 @@
 \section{Analýza jiných systémů}
 Nenašel jsem žádný skautský online systém, který by byl používán více středisky. Většina středisek buď žádný online systém nepoužívá nebo mají systém, který si sami naprogramovali.
 \subsection{Systém střediska Hiawatha Praha}
+Systém je zakomponovaný do webových stránek střediska(\url{https://www.hiawatha.cz/}). Přihlášeným uživatelům umožnuje  Zakládat, upravovat a mazat akce. U každé akce můžeme přidat předběžný rozpočet. Po realizaci akce můžeme přidat i čerpané částky z jednotlivých kategorií a vyplnit seznam účastníků. Vedoucí může akci odevzdat, čímž umožní editaci pouze hospodáři střediska.
+\subsection{Systém střediska Blaník}
+Středisko Blaník využívá vlastní systém naprogramovaný v php skládající se ze dvou základních částí. První část LTIO (\url{http://lab.blanik.info/ltoi/}) slouží pro vyúčtování táborů. Zadávají zde odděleně informace o táboře, příjmy, výdaje, účastníci a cestovní příkazy. Věškeré informace si můžeme nechat vyexportovat do formátu csv nebo rtf.
+Druhá část nazvaná INV  (\url{http://lab.blanik.info/inv/}) slouží k inventarizaci majetku jednotlivých oddílů. Pokud jsme v části LTIO nastavili výdaj s příznakem \uv{inv}, tak ho nyní můžeme jednoduše importovat do inventarizace. Získáme zde také přehled zda na majetek byla čerpána dotace, jeho pořizovací a aktuální hodnotu a případně jestli již byl vyřazen.
+
+Výhody systému:
+\begin{itemize}
+	\item možnost nastavit počet dnů účasti u jednotlivých účastníků tábora
+	\item automatická kontrola vnitřních vztahů mezi účastníky a příjmy
+	\item propojení části na účetnictví s inventarizací
+	\item dobrý přehled o majetku oddílu
+	\item možnost exportovat do dále upravitelné podoby (csv)
+	\item možnost vyplnit cestovní příkaz
+\end{list}
+
+
+Nevýhody systému:
+\begin{itemize}
+	\item malý počet účetních kategorií
+	\item není propojen se systémem SkautIS
+	\item veškeré věci jsou napevno zadané v kódu - včetně ceny benzínu apod.
+	\item možnost upravovat i údaje, které jsou stálé - IČO střediska
+	\item nulová podpora napovídání jmen účastníků
+	\item uživatelsky nepřívětivé přidávání řádků
+	\item nutnost zadávat vše textově místo použití standartních html značek (radio button pro označení řádku ke smazání)
+\end{list}
+
 
 
 
@@ -73,8 +100,8 @@ navigační diagram v webML
 \chapter{Seznam použitých zkratek}
 % \printglossaries
 \begin{description}
-	\item[GUI] Graphical user interface
-	\item[XML] Extensible markup language
+%	\item[GUI] Graphical user interface
+%	\item[XML] Extensible markup language
 \end{description}
 
 
@@ -124,64 +151,64 @@ navigační diagram v webML
 % 
 % Pro získání tisknutelného výstupu z~takto vytvořeného souboru použijte příkaz \verb|pdflatex|, kterému předáte cestu k~souboru jako parametr. Vhodný editor pro \LaTeX{} toto udělá za Vás. \verb|pdfcslatex| ani \verb|cslatex| \emph{nebudou} s~těmito šablonami fungovat.
 % 
-% Více informací o~použití systému \LaTeX{} najdete např. v~\cite{wikilatex}.
-% 
-% \subsection{Typografie}
-% 
-% Při psaní dodržujte typografické konvence zvoleného jazyka. České \uv{uvozovky} zapisujte použitím příkazu \verb|\uv|, kterému v~parametru předáte text, jenž má být v~uvozovkách. Anglické otevírací uvozovky se v~\LaTeX{}u zadávají jako dva zpětné apostrofy, uzavírací uvozovky jako dva apostrofy. Často chybně uváděný symbol "{} (palce) nemá s~uvozovkami nic společného.
-% 
-% Dále je třeba zabránit zalomení řádky mezi některými slovy, v~češtině např. za jednopísmennými předložkami a spojkami (vyjma \uv{a}). To docílíte vložením pružné nezalomitelné mezery -- znakem \texttt{\textasciitilde}. V~tomto případě to není třeba dělat ručně, lze použít program \verb|vlna|.
-% 
-% Více o~typografii viz \cite{kobltypo}.
-% 
-% \subsection{Obrázky}
-% 
-% Pro umožnění vkládání obrázků je vhodné použít balíček \verb|graphicx|, samotné vložení se provede příkazem \verb|\includegraphics|. Takto je možné vkládat obrázky ve formátu PDF, PNG a JPEG jestliže používáte pdf\LaTeX{} nebo ve formátu EPS jestliže používáte \LaTeX{}. Doporučujeme preferovat vektorové obrázky před rastrovými (vyjma fotografií).
-% 
-% \subsubsection{Získání vhodného formátu}
-% 
-% Pro získání vektorových formátů PDF nebo EPS z~jiných lze použít některý z~vektorových grafických editorů. Pro převod rastrového obrázku na vektorový lze použít rasterizaci, kterou mnohé editory zvládají (např. Inkscape). Pro konverze lze použít též nástroje pro dávkové zpracování běžně dodávané s~\LaTeX{}em, např. \verb|epstopdf|.
-% 
-% \subsubsection{Plovoucí prostředí}
-% 
-% Příkazem \verb|\includegraphics| lze obrázky vkládat přímo, doporučujeme však použít plovoucí prostředí, konkrétně \verb|figure|. Například obrázek \ref{fig:float} byl vložen tímto způsobem. Vůbec přitom nevadí, když je obrázek umístěn jinde, než bylo původně zamýšleno -- je tomu tak hlavně kvůli dodržení typografických konvencí. Namísto vynucování konkrétní pozice obrázku doporučujeme používat odkazování z~textu (dvojice příkazů \verb|\label| a \verb|\ref|).
-% 
-% \begin{figure}\centering
-% 	\includegraphics[width=0.5\textwidth, angle=30]{cvut-logo-bw}
-% 	\caption[Příklad obrázku]{Ukázkový obrázek v~plovoucím prostředí}\label{fig:float}
-% \end{figure}
-% 
-% \subsubsection{Verze obrázků}
-% 
-% % Gnuplot BW i barevně
-% Může se hodit mít více verzí stejného obrázku, např. pro barevný či černobílý tisk a nebo pro prezentaci. S~pomocí některých nástrojů na generování grafiky je to snadné.
-% 
-% Máte-li například graf vytvořený v programu Gnuplot, můžete jeho černobílou variantu (viz obr. \ref{fig:gnuplot-bw}) vytvořit parametrem \verb|monochrome dashed| příkazu \verb|set term|. Barevnou variantu (viz obr. \ref{fig:gnuplot-col}) vhodnou na prezentace lze vytvořit parametrem \verb|colour solid|.
-% 
-% \begin{figure}\centering
-% 	\includegraphics{gnuplot-bw}
-% 	\caption{Černobílá varianta obrázku generovaného programem Gnuplot}\label{fig:gnuplot-bw}
-% \end{figure}
-% 
-% \begin{figure}\centering
-% 	\includegraphics{gnuplot-col}
-% 	\caption{Barevná varianta obrázku generovaného programem Gnuplot}\label{fig:gnuplot-col}
-% \end{figure}
-% 
-% 
-% \subsection{Tabulky}
-% 
-% Tabulky lze zadávat různě, např. v~prostředí \verb|tabular|, avšak pro jejich vkládání platí to samé, co pro obrázky -- použijte plovoucí prostředí, v~tomto případě \verb|table|. Například tabulka \ref{tab:matematika} byla vložena tímto způsobem.
-% 
-% \begin{table}\centering
-% 	\caption[Příklad tabulky]{Zadávání matematiky}\label{tab:matematika}
-% 	\begin{tabular}{|l|l|c|c|}\hline
-% 		Typ		& Prostředí		& \LaTeX{}ovská zkratka	& \TeX{}ovská zkratka	\tabularnewline \hline \hline
-% 		Text		& \verb|math|		& \verb|\(...\)|	& \verb|$...$|		\tabularnewline \hline
-% 		Displayed	& \verb|displaymath|	& \verb|\[...\]|	& \verb|$$...$$|	\tabularnewline \hline
-% 	\end{tabular}
-% \end{table}
-% 
+ Více informací o~použití systému \LaTeX{} najdete např. v~\cite{wikilatex}.
+ 
+ \subsection{Typografie}
+ 
+ Při psaní dodržujte typografické konvence zvoleného jazyka. České \uv{uvozovky} zapisujte použitím příkazu \verb|\uv|, kterému v~parametru předáte text, jenž má být v~uvozovkách. Anglické otevírací uvozovky se v~\LaTeX{}u zadávají jako dva zpětné apostrofy, uzavírací uvozovky jako dva apostrofy. Často chybně uváděný symbol "{} (palce) nemá s~uvozovkami nic společného.
+ 
+ Dále je třeba zabránit zalomení řádky mezi některými slovy, v~češtině např. za jednopísmennými předložkami a spojkami (vyjma \uv{a}). To docílíte vložením pružné nezalomitelné mezery -- znakem \texttt{\textasciitilde}. V~tomto případě to není třeba dělat ručně, lze použít program \verb|vlna|.
+ 
+ Více o~typografii viz \cite{kobltypo}.
+ 
+ \subsection{Obrázky}
+ 
+ Pro umožnění vkládání obrázků je vhodné použít balíček \verb|graphicx|, samotné vložení se provede příkazem \verb|\includegraphics|. Takto je možné vkládat obrázky ve formátu PDF, PNG a JPEG jestliže používáte pdf\LaTeX{} nebo ve formátu EPS jestliže používáte \LaTeX{}. Doporučujeme preferovat vektorové obrázky před rastrovými (vyjma fotografií).
+ 
+ \subsubsection{Získání vhodného formátu}
+ 
+ Pro získání vektorových formátů PDF nebo EPS z~jiných lze použít některý z~vektorových grafických editorů. Pro převod rastrového obrázku na vektorový lze použít rasterizaci, kterou mnohé editory zvládají (např. Inkscape). Pro konverze lze použít též nástroje pro dávkové zpracování běžně dodávané s~\LaTeX{}em, např. \verb|epstopdf|.
+ 
+ \subsubsection{Plovoucí prostředí}
+ 
+ Příkazem \verb|\includegraphics| lze obrázky vkládat přímo, doporučujeme však použít plovoucí prostředí, konkrétně \verb|figure|. Například obrázek \ref{fig:float} byl vložen tímto způsobem. Vůbec přitom nevadí, když je obrázek umístěn jinde, než bylo původně zamýšleno -- je tomu tak hlavně kvůli dodržení typografických konvencí. Namísto vynucování konkrétní pozice obrázku doporučujeme používat odkazování z~textu (dvojice příkazů \verb|\label| a \verb|\ref|).
+ 
+ \begin{figure}\centering
+ 	\includegraphics[width=0.5\textwidth, angle=30]{cvut-logo-bw}
+ 	\caption[Příklad obrázku]{Ukázkový obrázek v~plovoucím prostředí}\label{fig:float}
+ \end{figure}
+ 
+ \subsubsection{Verze obrázků}
+ 
+ % Gnuplot BW i barevně
+ Může se hodit mít více verzí stejného obrázku, např. pro barevný či černobílý tisk a nebo pro prezentaci. S~pomocí některých nástrojů na generování grafiky je to snadné.
+ 
+ Máte-li například graf vytvořený v programu Gnuplot, můžete jeho černobílou variantu (viz obr. \ref{fig:gnuplot-bw}) vytvořit parametrem \verb|monochrome dashed| příkazu \verb|set term|. Barevnou variantu (viz obr. \ref{fig:gnuplot-col}) vhodnou na prezentace lze vytvořit parametrem \verb|colour solid|.
+ 
+ \begin{figure}\centering
+ 	\includegraphics{gnuplot-bw}
+ 	\caption{Černobílá varianta obrázku generovaného programem Gnuplot}\label{fig:gnuplot-bw}
+ \end{figure}
+ 
+ \begin{figure}\centering
+ 	\includegraphics{gnuplot-col}
+ 	\caption{Barevná varianta obrázku generovaného programem Gnuplot}\label{fig:gnuplot-col}
+ \end{figure}
+ 
+ 
+ \subsection{Tabulky}
+ 
+ Tabulky lze zadávat různě, např. v~prostředí \verb|tabular|, avšak pro jejich vkládání platí to samé, co pro obrázky -- použijte plovoucí prostředí, v~tomto případě \verb|table|. Například tabulka \ref{tab:matematika} byla vložena tímto způsobem.
+ 
+ \begin{table}\centering
+ 	\caption[Příklad tabulky]{Zadávání matematiky}\label{tab:matematika}
+ 	\begin{tabular}{|l|l|c|c|}\hline
+ 		Typ		& Prostředí		& \LaTeX{}ovská zkratka	& \TeX{}ovská zkratka	\tabularnewline \hline \hline
+ 		Text		& \verb|math|		& \verb|\(...\)|	& \verb|$...$|		\tabularnewline \hline
+ 		Displayed	& \verb|displaymath|	& \verb|\[...\]|	& \verb|$$...$$|	\tabularnewline \hline
+ 	\end{tabular}
+ \end{table}
+ 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 \chapter{Obsah přiloženého CD}
