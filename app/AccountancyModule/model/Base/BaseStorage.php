@@ -1,6 +1,6 @@
 <?php
 
-class Accountancy_BaseStorage extends Object {
+class BaseStorage extends Object {
 
     public $paragonCategoriesIn;
     public $paragonCategoriesOut;

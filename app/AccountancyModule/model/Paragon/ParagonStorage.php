@@ -1,6 +1,6 @@
 <?php
 
-class ParagonStorage extends Ucetnictvi_BaseStorage {
+class ParagonStorage extends BaseStorage {
 
     private $list;
 

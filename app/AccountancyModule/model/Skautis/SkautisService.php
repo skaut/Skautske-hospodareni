@@ -4,8 +4,8 @@
  * ARCHIV funkcí
  * @author sinacek
  */
-class SkautisService {
-    
+//class SkautisService {
+//    
 //    function importOrgFunctions() {
 //        $ret = $this->organization->__getFunctions();
 //        foreach ($ret as $key => $value){
@@ -72,5 +72,5 @@ class SkautisService {
 //        return $this->organization->UnitTreeAll(array("ID_UnitParent" => $unitId));
 //    }
 
-}
+//}
 

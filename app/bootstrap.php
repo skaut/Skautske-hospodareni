@@ -1,6 +1,5 @@
 <?php
 
-
 require dirname(__FILE__) . '/../libs/Nette/loader.php';
 
 // Configure application
@@ -19,21 +18,8 @@ $configurator->createRobotLoader()
 
 $container = $configurator->createContainer();
 
-//Debugger::enable(Debugger::DETECT);
-//Debugger::$maxDepth = 4;
-//Debugger::$productionMode = false;
+dibi::connect($container->params['database']);
 
-// Load configuration from config.neon file
-//$configurator = new Configurator;
-//$configurator->container->params += $params;
-//$configurator->container->params['tempDir'] = dirname(__FILE__) . '/temp';
-//$container = $configurator->loadConfig(dirname(__FILE__) . '/config.neon');
-
-dibi::connect( $container->params['database'] );
-//dibi::connect(Environment::getConfig('database'));
-//dibi::connect($configurator->getContainer()->params['database']);
-
-Stopwatch::register();
 
 // Setup router
 $router = $container->router;

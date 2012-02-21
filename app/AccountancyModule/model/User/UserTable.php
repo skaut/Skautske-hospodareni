@@ -4,7 +4,7 @@
  * @author sinacek
  */
 
-class Ucetnictvi_UserTable extends /* Nette\Application\ */Ucetnictvi_BaseTable {
+class UserTable extends BaseTable {
 
     /**
      * vraci uzivatele podle userID

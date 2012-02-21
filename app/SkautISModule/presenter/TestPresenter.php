@@ -9,22 +9,26 @@ class SkautIS_TestPresenter extends SkautIS_BasePresenter {
 
     protected function startup() {
         parent::startup();
-        
+
         /**
          * @var SkautisService
          */
-        $this->service = new SkautIS_Mapper();
+        $this->service = SkautIS::getInstance();
 
         $post = $this->request->post;
         if (isset($post['skautIS_Token'])) {
             $this->service->init($post);
         }
         $this->template->skautIsAppId = $this->service->getAppId();
-        if (!$this->service->isLogged() && $this->action != "default") {
+        if (!$this->service->isLoggedIn() && $this->action != "default") {
             $this->accessFail();
             $this->flashMessage("Chybí aktivní přihlášení do skautISu", "fail");
             $this->redirect("default");
         }
+        
+        $ret = $this->service->user->UserDetail("ID");
+        //dump($ret);
+        //die();
 
         //$this->wsdl = array("organization" => "Organization", "user" => "User", "event" => "Event");
         $this->wsdl = $this->service->getWsdlList();
@@ -64,31 +68,39 @@ class SkautIS_TestPresenter extends SkautIS_BasePresenter {
     }
 
     public function testFormSubmitted(AppForm $form) {
-        $sess = $this->session->getSection("sisTest");
+        $sess = &$this->session->getSection("sisTest");
 
         $values = $form->getValues();
         $uservice = new UserService();
-        if (!$this->service->isLogged()) {
+        if (!$this->service->isLoggedIn()) {
             $this->flashMessage("Nemáte platné přihlášení do skautISu.", "fail");
             $this->redirect(":Auth:");
         }
         $sess->defaults = $values;
 
         $args = Neon::decode($values['args']);
-        
+
         //dump($args);
         //die();
         $cover = trim($values['cover']);
-        if($cover == "") $cover = NULL;
+        if ($cover == "")
+            $cover = NULL;
+
+        try {
+            $ret = $this->service->{$values['wsdl']}->{$values["service"]}($args, $cover);
+        } catch (SoapFault $e) {
+            dump($e);die();
+            $this->flashMessage($e->getMessage(), "fail");
+            $sess->response = $e->getMessage();
+            $this->redirect("this");
+        }
+
         
-        $wsdl = $values['wsdl'];
-        $ret = $this->service->$wsdl->{$values["service"]}($args, $cover);
         //$ret = $this->service->callFunction($wsdl, $values["service"], $args, $cover);
-        
+
         $sess->response = $ret;
 
         $this->flashMessage("Odesláno: " . $values["service"] . " (" . str_replace(array("\n"), "", $values['args']) . ")");
-
 
 
         if (!$this->isAjax())

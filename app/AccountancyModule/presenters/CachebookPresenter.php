@@ -6,21 +6,23 @@
 
 class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 
-    /**
-     * @var Ucetnictvi_UserService
-     */
-    protected $Uservice;
+    /** @var UserService */
+    protected $userService;
+    
+    /** @var UnitService */
+    protected $unitService;
 
     function startup() {
         parent::startup();
-        $this->service = new Ucetnictvi_AkceService();
-        $this->Uservice = new Ucetnictvi_UserService();
-        $this->paragony = $this->service->getParagony();
+        $this->service      = new ActionService();
+        $this->userService  = new UserService();
+        $this->unitService  = new UnitService();
+        //$this->paragony = $this->service->getParagony();
     }
 
     function beforeRender() {
         parent::beforeRender();
-        $this->template->isInMinus = $this->paragony->isInMinus(); // musi byt v before render aby se vyhodnotila az po handleru
+        //$this->template->isInMinus = $this->paragony->isInMinus(); // musi byt v before render aby se vyhodnotila az po handleru
     }
     
 //    function renderOffline(){
@@ -82,34 +84,34 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 // </editor-fold>
 
     function renderDefault() {
-        $this->template->list = $this->paragony->getAll();
+//        $this->template->list = $this->paragony->getAll();
         $this->template->formIn = $this['formInAdd'];
         $this->template->formOut = $this['formOutAdd'];
-        
-        $this->template->autoCompleter = $this->Uservice->getUsersToAC();
+//        
+//        $this->template->autoCompleter = $this->Uservice->getUsersToAC();
     }
 
-    function renderEdit($id) {
-        $this->setView("default");
-        $formIn = $this['formInEdit'];
-        $formOut = $this['formOutEdit'];
-
-        $defaults = (array) $this->paragony->get($id);
-
-        if (isset($defaults['date']))
-            $defaults['date'] = date("j.n.Y", $defaults['date']->getTimestamp());
-        $defaults['id'] = $id;
-        $defaults['price'] = $defaults['priceText'];
-        
-        $formIn->setDefaults($defaults);
-        $formOut->setDefaults($defaults);
-        $this->template->list = $this->paragony->getAll();
-        $this->template->formIn = $formIn;
-        $this->template->formOut = $formOut;
-
-        $this->template->autoCompleter = $this->Uservice->getUsersToAC();
-        $this->template->hideButtons = true;
-    }
+//    function renderEdit($id) {
+//        $this->setView("default");
+//        $formIn = $this['formInEdit'];
+//        $formOut = $this['formOutEdit'];
+//
+//        $defaults = (array) $this->paragony->get($id);
+//
+//        if (isset($defaults['date']))
+//            $defaults['date'] = date("j.n.Y", $defaults['date']->getTimestamp());
+//        $defaults['id'] = $id;
+//        $defaults['price'] = $defaults['priceText'];
+//        
+//        $formIn->setDefaults($defaults);
+//        $formOut->setDefaults($defaults);
+//        $this->template->list = $this->paragony->getAll();
+//        $this->template->formIn = $formIn;
+//        $this->template->formOut = $formOut;
+//
+//        $this->template->autoCompleter = $this->Uservice->getUsersToAC();
+//        $this->template->hideButtons = true;
+//    }
 
     //FORM OUT
 
@@ -165,11 +167,9 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form->addText("price", "Cena celkem: ", 20, 100)
                 ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("vzorce např.20+15*3");
-        $types = $thisP->categoriesOut;
+        $categories = $thisP->unitService->getCaterories();
 
-        if (!$thisP->service->getAction()->dotace)
-            unset($types['do']);
-        $form->addRadioList("type", "Typ: ", $types)
+        $form->addRadioList("type", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
     }
@@ -218,47 +218,42 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form->addText("price", "Částka: ", 20, 100)
                 ->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("vzorce 20+15*3");
-        $types = $thisP->categoriesIn;
-        if (!$thisP->service->getAction()->dotace)
-            unset($types['di']);
+        $categories = $thisP->unitService->getCaterories();
 
-        $form->addRadioList("type", "Typ: ", $types)
+        $form->addRadioList("type", "Typ: ", $categories[0])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
     }
 
-    function handleClearList() {
-        $this->paragony->clearList();
-
-        if ($this->isAjax()) {
-            $this->terminate();
-        } else {
-            $this->redirect('this');
-        }
-    }
+//    function handleClearList() {
+//        $this->paragony->clearList();
+//
+//        if ($this->isAjax()) {
+//            $this->terminate();
+//        } else {
+//            $this->redirect('this');
+//        }
+//    }
  
-    function handleRemove($id) {
-        if($this->paragony->remove($id)){
-            $this->flashMessage("Paragon byl smazán");
-        } else {
-            $this->flashMessage("Paragon se nepodařilo smazat");
-        }
-
-        if ($this->isAjax()) {
-            $this->invalidateControl("paragony");
-            $this->invalidateControl("flashmesages");
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-    function handleSort(){
-        $this->paragony->sortParagons();
-        $this->redirect("this");
-    }
-
-
-    
+//    function handleRemove($id) {
+//        if($this->paragony->remove($id)){
+//            $this->flashMessage("Paragon byl smazán");
+//        } else {
+//            $this->flashMessage("Paragon se nepodařilo smazat");
+//        }
+//
+//        if ($this->isAjax()) {
+//            $this->invalidateControl("paragony");
+//            $this->invalidateControl("flashmesages");
+//        } else {
+//            $this->redirect('this');
+//        }
+//    }
+//
+//    function handleSort(){
+//        $this->paragony->sortParagons();
+//        $this->redirect("this");
+//    }
 
 }
 

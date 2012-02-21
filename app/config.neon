@@ -37,7 +37,8 @@ development < common:
             profiler: true
 
         ###SkautIS
-        skautisid = 590db6c9-e46b-43bb-b3b7-701cb556b91c #localhost - test
+        skautisid = f2197deb-32c8-4192-92d6-f23427757a07 #localhost - bakalarka
+        #skautisid = 590db6c9-e46b-43bb-b3b7-701cb556b91c #localhost - appOsmnactka
 
 
 production < common:

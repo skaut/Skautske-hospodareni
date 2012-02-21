@@ -3,7 +3,7 @@
 /**
  * @author sinacek
  */
-class Accountancy_BaseService {
+class BaseService {
 
     protected $user;
     protected $table;
