@@ -13,3 +13,6 @@ nbproject/*
 /app/log/*
 /source/*
 adminer.php
+BP.tex
+/latex/BP*
+!/latex/BP.tex
