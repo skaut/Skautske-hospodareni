@@ -1,0 +1,220 @@
+% options:
+% thesis=B bachelor's thesis
+% thesis=M master's thesis
+% czech thesis in Czech language
+% english thesis in English language
+
+\documentclass[thesis=M,english]{FITthesis}[2011/07/15]
+
+\usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
+
+\usepackage{graphicx} %graphics files inclusion
+% \usepackage{subfig} %subfigures
+% \usepackage{amsmath} %advanced maths
+% \usepackage{amssymb} %additional math symbols
+
+% list of acronyms
+\usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
+\iflanguage{czech}{\renewcommand*{\acronymname}{Seznam pou{\v z}it{\' y}ch zkratek}}{}
+\makeglossaries
+
+\newcommand{\tg}{\mathop{\mathrm{tg}}} %cesky tangens
+\newcommand{\cotg}{\mathop{\mathrm{cotg}}} %cesky cotangens
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+\department{Department of theoretical computer science}
+\title{Example Thesis}
+\author{Jan Novák} %author's name without academic degrees
+\authorWithDegrees{Bc. Jan Novák} %author's name with academic degrees
+\supervisor{doc. Ing. Marek Navrátil, Ph.D.}
+\acknowledgements{I would like to thank my family and friends for support during writing this thesis.}
+\abstractCS{Tato práce se zabývá slovními slovníkovými metodami komprese dat, specifickou částí bezztrátových metod komprese dat. Součástí publikace jsou rovněž některé znakově orientované slovníkové metody, především z~rodiny LZ algoritmů, potřebné k~pochopení složitějších slovních metod. Stěžejní dílem práce je popis implementovaných algoritmů pro slovní slovníkovou kompresi dat, jejich modifikací a především výsledky provedených testů, stejně jako jejich vyhodnocení. V~publikaci jsou zároveň uvedeny detaily implementace aplikace a její uživatelská příručka.}
+\abstractEN{This thesis is concerned with word-based dictionary methods of data compression. The word-based dictionary methods are part of lossless data compression methods. The character-based dictionary compression methods, especially from LZ-algorithms family, are a part of this issue. These compression methods are very important to understand more difficult word-based ones. The main sight of this publication is description of implemented word-based dictionary compression algorithms. Modifications of these methods and results of experiments are included too. There are also details contextual with implementation of the application and its user manual. The objective of this thesis
+is examination of word-based dictionary data compression methods, possibilities of their improvement and their implementation linked with experiments on well-known data compression corpuses.}
+\placeForDeclarationOfAuthenticity{Ecovany} %where you have signed the declaration
+\keywordsCS{Komprese dat, entropie, slovní algoritmy komprese.}
+\keywordsEN{Data compression, entropy, word-based algorithms.}
+
+\begin{document}
+
+\newacronym{LZW}{LZW}{Lempel Ziv Welch}
+\newacronym{RLE}{RLE}{Run-Length Encoding}
+
+\begin{introduction}
+	\section{Motivation and objectives}
+
+	The amount of information is rapidly growing up. The main technique of reducing loads of space needed to store data or reducing time needed to transmit data is data compression. The size of data reduction is achieved by removing the excessive information.
+	The efficiency of data compression algorithms can be compared by compression ratio, time of compression and/or decompression and size of used memory. Each of these consequences unfortunately mutually interacts.
+	The data compression algorithms can be divided by many factors, for example by the information loss: lossless compression algorithms and lossy ones. Lossless means that the compression processes is fully reversible and decompressed data is identical to the original data. These algorithms are best suited for documents, programs and other data where loss is unacceptable. Lossy algorithms irreversibly remove some parts of data and only an approximation of the original data can be reconstructed. These algorithms achieve better compression efficiency than lossless algorithms, but compression is limited to branches where some loss is acceptable (audio, video, images etc.).
+	This thesis focuses on lossless algorithms especially the dictionary ones, which are established on likenesses of compressed, mostly textual, data, and their properties.
+
+	\section{Problem statements}
+
+	The main sight of the thesis is a part of textual algorithms named word-based which deals with texts in languages (natural, formal etc.). All of texts in natural languages (and also in other languages) have a specific structure. They can be divided into sentences, which can finish by a period, a question mark, or an exclamation mark. Each sentence consists of words that are separated from each other by space and/or punctuation marks.
+	Word-based compression algorithms, where alphabet consists of words, take advantage of these strictly defined structures, repetitions of sequences of words and spaces, repetitions of whole sentences.
+	\section{State of the Art}
+
+	There are two basic ways in the world of dictionary word-based algorithms. The both of them are based on dictionary method \gls{LZW}. The method Word-Based \gls{LZW}, independently presented by Horspool and Cormack \cite{HC92}, and Jiang and Jones \cite{JJ92} in 1992 as first, is adaptive version of mentioned algorithm. The main sight is recently concentred to word-based context methods of data compression and related word-based \textit{preprocessing} transformations, which reversibly transform a data into another form. The reverse process is called \textit{postprocessing} transformation. Affected data could be compressed with most of existing lossless data compression algorithms with better compression efficiency than it can be achieved using an unaltered data. 
+\end{introduction}
+
+\chapter{Data compression}\label{textcompr}
+
+	This thesis was submitted at Czech Technical University in Prague (see Figure~\ref{fig:logo}).
+	
+	\begin{figure}\centering
+		\includegraphics{cvut-logo-bw}
+		\caption{CTU logo}\label{fig:logo}
+	\end{figure}
+
+\section{Notions and definitions}
+
+The source \textit{message} consists of \textit{source units}, which can be defined as \textit{alphabet symbols} or sequence of alphabet symbols \textit{(word, string, phrase)}, where alphabet $S$ is a finite and non-empty set of symbols. The \textit{code unit} is defined as a sequence of bits. The empty sequence of symbols is called \textit{empty string} and it is represented by $\varepsilon$. The set of all symbols from alphabet $S$, free of empty string, is represented by $S^+$. The \textit{concatenation} of two phrases $x,y \in S$ is represented by $x.y$.
+
+Code is a triple $K=(S,C,f)$, where
+
+\begin{itemize}
+	\item $S$ is a finite set of source units,
+	\item $C$ is a finite set of codewords (code units),
+	\item $f$ is an injective mapping from $S$ to $C^+$.
+\end{itemize}
+The mapping $f$ does not map two different source units from $S$ to the same codeword from $C$, as shown Formula \ref{eq:injectionf}.
+\begin{equation} \label{eq:injectionf}
+\forall a_1,a_2 \in S,a_1 \neq a_2 \Rightarrow f(a_1) \neq f(a_2)
+\end{equation}
+The string $x \in C^+$ is \textit{uniquely decodable} with $f$, when Formula \ref{eq:unadec} is true.
+\begin{equation} \label{eq:unadec}
+\forall y_1,y_2 \in S^+,f(y_1)=f(y_2)=x \Rightarrow y_1=y_2
+\end{equation}
+
+The code $K=(S,C,f)$ is \textit{uniquely decodable}, when all strings $x \in C^+$ are uniquely decodable  in $f$. The code $K$ is called \textit{prefix code}, when none of codewords is a prefix of another codeword. If all codewords are exactly $n$ symbols length in code $K$, the code $K$ is called \textit{block code}. The prefix codes and block codes are often used by compression algorithms because of their unique decode-ability during the left-to-right reading (decoding).
+
+\begin{equation} \label{eq:comrat}
+\textrm{\textit{Compression ratio}} = \frac{\textrm{\textit{Length of compressed data}}}{\textrm{\textit{Length of original data}}}
+\end{equation}
+
+The compression efficiency can be expressed by many units of measure. The amount of data reduction gained by the compression process is \textit{compression ratio}. This compression ratio is a ratio of the length of compressed data to the original size of data (Formula \ref{eq:comrat}).
+For example, the compression ratio is measured in $bpb$ (bits per bit), $bpc$ (bits per character) or $bpp$ (bits per pixel). 
+
+The compression algorithms use specific \textit{compression models} to encode the data. For example, these models could follows:
+\begin{itemize}
+	\item The algorithm assigns code to each source unit irrespective to its position (statistical compression methods).
+	\item The Markov's model of $n$-th order look at previous $n$ source units to assign code. The simplist of this codes, 0th order, are mentioned above.
+	\item The models based on finite automata.
+\end{itemize}
+
+	\subsection{Entropy}
+The entropy is only theoretical minimal length but it is possible to reach this border in some special cases. It is very difficult to measure real entropy of source message in common usage, because not only statistical model of 0th order (context of source units with length 1) exists. For example, the probabilities of appearances of source units pairs (context of source units with length 2) are considered in 1st order statistical model. 
+
+	\subsection{Classification}
+
+Data compression/decompression is classified by many factors. The first classification depends on information loss during the compression process. The data compression, as data compression algorithms, is divided into two main parts:
+\begin{itemize}
+	\item \textit{Lossy}---some information loss is possible. These compression methods achieve higher compression (better compression ratio) but they are useful only in special cases (images, video, voice...).
+	\item \textit{Lossless}---information is acquired in original form. These compression methods are best suited for data where loss is unacceptable (documents, programs, scripts...).
+\end{itemize}
+
+\section{Elementary methods}
+
+Many elementary compression methods are currently known, but only the \gls{RLE} is mentioned on as very simple compression method, to show how compression methods work.
+
+	\subsection{RLE}
+The \gls{RLE} technique was created especially for data with strings of repeated symbols (the length of string of repeated symbols is called \textit{run}). The main idea of \gls{RLE} compression is to encode repeated symbols as a pair---the length of string and the symbol.
+
+\begin{table}\centering
+	\caption{RLE example}\label{tab:RLE-example}
+	\begin{tabular}{|c|r|r|}
+	\hline \textbf{Method} & \textbf{Data to encode} & \textbf{Encoded data} \\\hline
+	RLE 1 & \textit{babaaaaabbbaabbbba11aaa} & \textit{$1$b$1$a$1$b$5$a $3$b$2$a$4$b$1$a $2$1$3$a} \\\hline
+	RLE 2 & \textit{babaaaaabbbaabbbba11aaa} & \textit{bab$@5$a$@3$ baa$@4$ba1 1$@3$a} \\\hline
+	\end{tabular}
+\end{table}
+
+There are shown some ways of \gls{RLE} compression of 23-characters-long string \textit{``babaaaaabbbaabbbba11aaa''} in Table \ref{tab:RLE-example}. The first method (RLE 1) is the simplest way to encode string (20 characters) which exactly follows idea of \gls{RLE}. The problem is that in worst case the size of output data can be two times longer than size of input data. This problem is solved by second method (20 characters), for simplicity called RLE 2, where only three or more characters long strings are encoded, but we pay for it by another character (\textit{$@$} in example), which precede all of encoded pairs, to differentiate between the length of string and the number as a character. The third method (RLE 3) solves this problem by map of bits (18~characters). \gls{RLE} compression method is very useful for graphic files coding but it is practically useless in text compressions without using it cooperatively with other methods.
+
+%\section{Statistical methods}
+
+
+\section{Dictionary methods}
+
+	\subsection{LZ77}
+It is obvious that the value of offset and the match length have to be limited to some constant. The usually chosen value for the match length is 255 (8~bits) and the offset is commonly encoded on 12--16 bits, so the search buffer is limited to 4~095--65~535. In so far that there is no need to remember more than 65 535 already encoded symbols during compression process.
+
+\chapter{Implementation and testing}\label{impltest}
+
+\section{Details of realised tests}
+
+The scaliness of implemented algorithms were tested on chosen files from Calgary and Canterbury corpus too. The framework to scale the files is different of the testing one. Each file is equally split to 1~000 parts (files with number of lines less than 1~000 are split to 100 parts) by number of lines---the $n$ th part consists of $\frac{n}{1000}$ ($\frac{n}{100}$) lines. Each test runs only 100--10 times (depending up the $n$---the size of compressed data) because of time complexity. This cycle runs 10--100 times (10 was chosen for this tests) and the minimum time is taken. The file splitting by the number of lines was chosen because of the character of algorithms (word-based)---the splitting by the block of the same size is not so predicative.
+
+There are parameters of the computer used for tests shown in Table \ref{tab:PCparam}.
+\begin{table}\centering
+	\caption{Testing computer parameters}
+	\label{tab:PCparam}
+	\begin{tabular}{|l|r|}
+	\hline \multicolumn{1}{|c|}{\textbf{Part}} & \multicolumn{1}{|c|}{\textbf{Description}} \\\hline
+	CPU & 2.2 GHz AMD Athlon(tm) 64 Processor 3200+\\
+	MEM & 2.5 GB\\
+	OS & x86\_64 GNU/Linux Fedora release 7 (Moonshine)\\\hline
+	\end{tabular}
+\end{table}
+
+\section{Integers distribution and encoding}\label{sec:distr}
+
+The integers encoding of indexes of phrases from the word (non-word) dictionary is possible cause of the only average results of compression ratio of implemented algorithms. The decision is to get the distribution of indexes during the encoding process (and decoding process too). The length of indexes located in shown graphs is only hypothetical---the binary code with minimal length.
+
+The graphs of index distribution also shows the differencies between the algorithms with sorted dictionaries (\textit{WLZWS} and \textit{WLZWES}) and the algorithms with unsorted dictionaries (\textit{WLZW} and \textit{WLZWE}). The most frequently used phrases are moved to the front of dictionary in algorithms with sorted dictionary so they get lower indexes. This feature is demonstrated by the growth of number of indexes at the beginning of the distribution. The compression process of algorithms with sorted dictionaries becomes more efficient when the code with variable length of code words (Fibonacci code) is used but the compression efficiency is supposed to be the same at the transition from the \textit{WLZWE2} algorithm to the \textit{WLZWES2} algorithm---the encoding by block code. 
+
+\begin{conclusion}
+	The word-based dictionary data compression algorithms (a part of lossless data compression) are the subject of this thesis. The lossless data compression is a very important field of research because the data compression allows to reduce the amount of space needed to store data.
+
+	The background of a data compression field was presented in Chapter~\ref{textcompr}. There are basic notions and definitions followed by the description of character-based dictionary algorithms. The word-based dictionary compression methods were investigated and discussed at the end of this chapter too.
+
+	There is the investigation of index distribution of tested files in Section \ref{sec:distr}. It led to the new modification of semi-adaptive word-based \gls{LZW} algorithm---\textit{WLZWE2}. The compression efficiency of this algorithm applied to the large files is better than the other implemented algorithms. However, the compression efficiency of \textit{WLZWE2} algorithm is much worse when it is applied to the small files. The experiments with \textit{WLZWE2} and \textit{WLZWES2} algorithms confirm the assumption from Section \ref{sec:distr}---the compression efficiency of version with unsorted dictionaries (\textit{WLZWE2}) is analogous to version with sorted ones (\textit{WLZWES2}).
+
+	The testing of memory used during compression and/or decompression process is one of the possibilities of further research. The experiments with files of greater size or multilingual files could be also good opportunity to gain new improvements of algorithms. The static part of dictionaries could improve the compression efficiency too.
+
+	The implemented methods achieve fairly good compression ratio (25--30$\%$ at large files) with acceptable compression and decompression time. There are possibilities of further improvements especially at semi-adaptive methods. However, the gain of these improvements is not good enough to top the compression efficiency of other lossless data compression methods (context methods from PPM family). The results of implemented algorithms were not as good as it was expected but the work on this thesis showed new ways of possible further research---word-based version of grammar-based compression algorithms and another possibilities in the field of word-based context methods of data compression.
+
+	The Gnuplot 4.2 utility was very useful for generation of graphs in this thesis. There was the drawing editor Ipe 6.0 used for figures creation.
+	\nocite{Po01}
+\end{conclusion}
+
+\bibliographystyle{iso690.bst}
+\bibliography{ref}
+
+\appendix
+
+\printglossaries
+
+\chapter{Content of CD}\label{app:CDcontent}
+
+\begin{tabular}{llllll}
+\multicolumn{5}{l}{readme.txt} & - the file with CD content description\\
+&&&&&\\
+\multicolumn{5}{l}{data/} & - the data files directory\\
+& \multicolumn{4}{l}{graphs/} & - the directory of graphs of experiments\\
+& & \multicolumn{3}{l}{*.eps} & - the B/W graphs in PS format\\
+& & \multicolumn{3}{l}{*.png} & - the color graphs in PNG format\\
+& & \multicolumn{3}{l}{*.dat} & - the graphs data files\\
+&&&&&\\
+\multicolumn{5}{l}{exe/} & - the directory with executable WBDCM program\\
+& \multicolumn{4}{l}{wbdcm} & - the WBDCM program executable (UNIX)\\
+& \multicolumn{4}{l}{wbdcm.exe} & - the WBDCM program executable (MS Windows)\\
+&&&&&\\
+\multicolumn{5}{l}{src/} & - the directory of source codes\\
+& \multicolumn{4}{l}{wbdcm/}& - the directory of WBDCM program\\
+& & \multicolumn{3}{l}{Makefile}& - the makefile of WBDCM program (UNIX)\\
+& \multicolumn{4}{l}{thesis/} & - the directory of \LaTeX{} source codes of the thesis\\
+& & \multicolumn{3}{l}{figures/} & - the thesis figures directory\\
+& & & \multicolumn{2}{l}{*.eps} & - the figures in PS format\\
+& & & \multicolumn{2}{l}{*.pdf} & - the figures in PDF format\\
+& & \multicolumn{3}{l}{*.tex} & - the \LaTeX{} source code files of the thesis\\
+&&&&&\\
+\multicolumn{5}{l}{text/} & - the thesis directory\\
+& \multicolumn{4}{l}{thesis.pdf} & - the Diploma thesis in PDF format\\
+& \multicolumn{4}{l}{thesis.ps} & - the Diploma thesis in PS format\\
+\end{tabular}
+
+
+\end{document}
