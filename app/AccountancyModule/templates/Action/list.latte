@@ -1,0 +1,17 @@
+{block #content}
+<h2>Seznam akcí</h2>
+
+<a n:href="Action:create">Založit novou akci</a>
+
+{dump $list}
+<table border="1">
+    <tr n:foreach="$list as $i">
+        <td></td>
+        <td><a n:href="view $i->ID">{$i->DisplayName}</a></td>
+        <td>{$i->StartDate|date:"d.m.Y"}</td>
+        <td>{$i->EndDate|date:"d.m.Y"}</td>
+        <td>{$i->EventGeneralState}</td>
+    </tr>
+</table>
+
+
