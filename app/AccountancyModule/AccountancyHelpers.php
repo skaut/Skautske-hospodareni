@@ -69,6 +69,9 @@ abstract class AccountancyHelpers extends Object {
 
     //return category of paragon
     public static function pCat($string = "") {
+        //@todo dodělat
+        return $string;
+        
         switch ($string){
         case "pp":
             $r = "příjem";

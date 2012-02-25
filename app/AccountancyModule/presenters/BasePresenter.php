@@ -7,6 +7,11 @@
 class Accountancy_BasePresenter extends BasePresenter {
     
     protected $service;
+    /**
+     * id volane v url, vetsinou id akce
+     * @var int
+     */
+    protected $request_id;
 
     protected function startup() {
         parent::startup();
@@ -20,6 +25,11 @@ class Accountancy_BasePresenter extends BasePresenter {
         $sis = SkautIS::getInstance();
         if($sis->isLoggedIn())
             $sis->updateLogoutTime();
+        
+        if(($id = $this->context->httpRequest->getQuery("id"))) {
+            $this->template->request_id = $id;
+            $this->request_id = $id;
+        }
 
 //        $dataStorage = new Ucetnictvi_BaseStorage();
 //        $this->categoriesIn = $dataStorage->getParagonCategoriesIn();
@@ -32,8 +42,8 @@ class Accountancy_BasePresenter extends BasePresenter {
     function beforeRender() {
         parent::beforeRender();
         $this->template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
-//        $this->template->registerHelper('datNar', 'UcetnictviHelpers::datNar');
-//        $this->template->registerHelper('pCat', 'UcetnictviHelpers::pCat');
+//        $this->template->registerHelper('datNar', 'AccountancyHelpers::datNar');
+        //$this->template->registerHelper('pCat', 'AccountancyHelpers::pCat');
         //dump($this->model->vyprava->getId());
     }
 
@@ -107,12 +117,12 @@ class Accountancy_BasePresenter extends BasePresenter {
 
     //vrati routy pro modull
     static function createRoutes($router, $prefix ="") {
-//
-//        $router[] = new Route($prefix . 'Ucetnictvi/<presenter>/<action>', array(
-//                    'module' => "Ucetnictvi",
+
+        $router[] = new Route($prefix . 'Ucetnictvi/p-<presenter>/a-<action>/[id-<id>]', array(
+                    'module' => "Accountancy",
 //                    'presenter' => 'Default',
 //                    'action' => 'default',
-//                ));
+                ));
     }
 
 }

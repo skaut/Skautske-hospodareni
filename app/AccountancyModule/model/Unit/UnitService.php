@@ -2,10 +2,7 @@
 
 class UnitService extends BaseService {
 
-    private $skautIS;
-
     public function __construct() {
-        $this->skautIS = SkautIS::getInstance();
         $this->table = new UnitTable();
     }
 

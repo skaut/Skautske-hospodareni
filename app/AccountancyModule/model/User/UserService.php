@@ -10,6 +10,11 @@ class UserService extends BaseService {
         return 1;
     }
     
+    public function findUser($name){
+        return $this->skautIS->org->PersonAll(array("DisplayName"=>$name));
+    }
+
+
 //    private $SES_EXPIRATION = "+ 3 days";
 //    /**
 //     * @var Session

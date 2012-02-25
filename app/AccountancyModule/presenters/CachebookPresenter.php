@@ -11,56 +11,23 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     
     /** @var UnitService */
     protected $unitService;
+    
+    /** @var ChitService */
+    protected $chitService;
 
     function startup() {
         parent::startup();
-        $this->service      = new ActionService();
-        $this->userService  = new UserService();
-        $this->unitService  = new UnitService();
-        //$this->paragony = $this->service->getParagony();
+        //$this->service      = new ActionService();
+        //$this->userService  = new UserService();
+        //$this->unitService  = new UnitService();
+        $this->chitService  = new ChitService();
+        
     }
 
     function beforeRender() {
         parent::beforeRender();
-        //$this->template->isInMinus = $this->paragony->isInMinus(); // musi byt v before render aby se vyhodnotila az po handleru
+        $this->template->isInMinus = $this->chitService->isInMinus($this->request_id); // musi byt v before render aby se vyhodnotila az po handleru
     }
-    
-//    function renderOffline(){
-//        $this->template->form = $this['formOffline'];
-//    }
-//    
-//    function createComponentFormOffline($name) {
-//        $form = new AppForm($this, $name);
-//        $form->getElementPrototype()->class('ajax');
-//        $form->addText("text", "Text:");
-//        $form->addText("date", "Datum:");
-//        $form->addSubmit("ok", "Poslat")->getControlPrototype()->onclick("send();");
-//        $form->onSuccess[] = array($this, $name . 'Submitted');
-//    }
-//    
-//    function formOfflineSubmitted(AppForm $form){
-//        $values = $form->values;
-//        dump($values);
-//        die();
-//    }
-
-    
-
-    //compare 2 paragons by date and type
-    // <editor-fold defaultstate="collapsed" desc="cmp">
-    function cmp(Paragon $a, Paragon $b) {
-        $adate = strtotime($a->date);
-        $bdate = strtotime($b->date);
-        if ($adate == $bdate) {
-            if (in_array($a->type, $this->categoriesIn))
-                return -1;
-            if (in_array($b->type, $this->categoriesIn))
-                return 1;
-            return 0;
-        }
-        return ($adate < $bdate) ? -1 : 1;
-    }
-    // </editor-fold>
 
     /**
      * vyhodnotí řetězec
@@ -83,8 +50,8 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     }
 // </editor-fold>
 
-    function renderDefault() {
-//        $this->template->list = $this->paragony->getAll();
+    function renderDefault($id) {
+        $this->template->list = $this->chitService->getAll($id);
         $this->template->formIn = $this['formInAdd'];
         $this->template->formOut = $this['formOutAdd'];
 //        
@@ -127,10 +94,13 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $values = $form->getValues();
         $values['priceText'] = $values['price'];
         $values['price'] = $this->solveString($values['price']);
-        $add = $this->paragony->add(new Paragon($values));
+        $add = $this->chitService->add($this->request_id, $values);
+                
         $this->flashMessage($add ? "Paragon byl úspěšně přidán do seznamu." : "Paragon se nepodařilo přidat do seznamu.", "fail");
-        if ($this->paragony->isInMinus())
+        
+        if ($this->chitService->isInMinus($this->request_id))
             $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
+        
         if ($this->isAjax()) {
             $this->invalidateControl("tabs");
             $this->invalidateControl("paragony");
@@ -159,16 +129,15 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum');
         //@TODO kontrola platneho data, problem s componentou
-        $form->addText("komu", "Vyplaceno komu:", 20, 30)
+        $form->addText("recipient", "Vyplaceno komu:", 20, 30)
                 ->addRule(Form::FILLED, 'Zadejte komu to bylo vyplaceno');
-        $form->addText("ucel", "Účel výplaty:", 20, 50)
+        $form->addText("purpose", "Účel výplaty:", 20, 50)
                 ->addRule(Form::FILLED, 'Zadejte účel výplaty')
                 ->getControlPrototype()->placeholder("3 první položky");
         $form->addText("price", "Cena celkem: ", 20, 100)
                 ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("vzorce např.20+15*3");
-        $categories = $thisP->unitService->getCaterories();
-
+        $categories = $thisP->chitService->getCategoriesOut();
         $form->addRadioList("type", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
@@ -193,67 +162,52 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         return $form;
     }
 
-    function formEditSubmitted(AppForm $form) {
-        $values = $form->getValues();
-        $id = $values['id'];
-        unset($values['id']);
-        $values['priceText'] = $values['price'];
-        $values['price'] = $this->solveString($values['price']);
-
-        $add = $this->paragony->set($id, new Paragon($values));
-        $this->flashMessage($add ? "Paragon byl úspěšně upraven." : "Paragon se nepodařilo upravit.", $add ? "" :"fail");
-        if ($this->paragony->isInMinus())
-            $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
-        $this->redirect("default");
-    }
+//    function formEditSubmitted(AppForm $form) {
+//        $values = $form->getValues();
+//        $id = $values['id'];
+//        unset($values['id']);
+//        $values['priceText'] = $values['price'];
+//        $values['price'] = $this->solveString($values['price']);
+//
+//        $add = $this->paragony->set($id, new Paragon($values));
+//        $this->flashMessage($add ? "Paragon byl úspěšně upraven." : "Paragon se nepodařilo upravit.", $add ? "" :"fail");
+//        if ($this->paragony->isInMinus())
+//            $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
+//        $this->redirect("default");
+//    }
 
     protected static function makeFormIn($thisP, $name) {
         $form = new AppForm($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum');
-        $form->addText("komu", "Prijato od:", 20, 30)
+        $form->addText("recipient", "Prijato od:", 20, 30)
                 ->addRule(Form::FILLED, 'Zadejte komu to bylo vyplaceno');
-        $form->addText("ucel", "Účel příjmu:", 20, 50)
+        $form->addText("purpose", "Účel příjmu:", 20, 50)
                 ->addRule(Form::FILLED, 'Zadejte účel přijmu');
         $form->addText("price", "Částka: ", 20, 100)
                 ->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("vzorce 20+15*3");
-        $categories = $thisP->unitService->getCaterories();
-
-        $form->addRadioList("type", "Typ: ", $categories[0])
+        $categories = $thisP->chitService->getCategoriesIn();
+        $form->addRadioList("type", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
     }
-
-//    function handleClearList() {
-//        $this->paragony->clearList();
-//
-//        if ($this->isAjax()) {
-//            $this->terminate();
-//        } else {
-//            $this->redirect('this');
-//        }
-//    }
  
-//    function handleRemove($id) {
-//        if($this->paragony->remove($id)){
-//            $this->flashMessage("Paragon byl smazán");
-//        } else {
-//            $this->flashMessage("Paragon se nepodařilo smazat");
-//        }
-//
-//        if ($this->isAjax()) {
-//            $this->invalidateControl("paragony");
-//            $this->invalidateControl("flashmesages");
-//        } else {
-//            $this->redirect('this');
-//        }
-//    }
-//
-//    function handleSort(){
-//        $this->paragony->sortParagons();
-//        $this->redirect("this");
-//    }
+    function handleRemove($id, $actionId) {
+        
+        if($this->chitService->delete($id, $actionId)){
+            $this->flashMessage("Paragon byl smazán");
+        } else {
+            $this->flashMessage("Paragon se nepodařilo smazat");
+        }
+
+        if ($this->isAjax()) {
+            $this->invalidateControl("paragony");
+            $this->invalidateControl("flashmesages");
+        } else {
+            $this->redirect('this', $actionId);
+        }
+    }
 
 }
 

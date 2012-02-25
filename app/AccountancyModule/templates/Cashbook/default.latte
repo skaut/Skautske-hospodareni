@@ -1,13 +1,13 @@
 {block #content}
 
-<a n:href="Default:akce">Akce</a>
+<h2>Pokladní kniha</h2>
 
-<h2>Účetní doklady</h2>
-<a n:href="clearList!">Vymazat vše</a>
-<a n:href="Default:akce">Hotovo</a>
+{include ../ActionMenu.latte}
+
 <hr class="hidden">
 
 {snippet tabs}
+{dump $list}
 
 <div id="tabs">
     <ul>
@@ -39,8 +39,8 @@
             delay: 0,
             minLength: 2
         };
-        $('#'+{$formIn['komu']->htmlId}).autocomplete(optionsAC);
-        $('#'+{$formOut['komu']->htmlId}).autocomplete(optionsAC);
+        $('#'+{$formIn['recipient']->htmlId}).autocomplete(optionsAC);
+        $('#'+{$formOut['recipient']->htmlId}).autocomplete(optionsAC);
 
         //CALC
         var priceInputIn = $('#' + {$formIn['price']->htmlId});
@@ -110,20 +110,20 @@
     </tr>
     {assign zustatek => 0}
     <tr n:foreach="$list as $key => $item">
-        <td><a href="{link remove! $key}" onclick="return confirm('Opravdu chcete smazat paragon?')"><img src="{$baseUri}/images/layout/delete.gif" alt="Smazat" /></a></td>
-        <td><a href="{link edit $key}{if $item->type =="pp"}#tabs-prijem{/if}"><img src="{$baseUri}/images/layout/edit.gif" alt="Upravit" /></a></td>
+        <td><a href="{link remove! $item->id, $request_id}" onclick="return confirm('Opravdu chcete smazat paragon?')"><img src="{$baseUri}/images/layout/delete.gif" alt="Smazat" /></a></td>
+        <td><a href="{link edit $key}{if $item->ctype =="in"}#tabs-prijem{/if}"><img src="{$baseUri}/images/layout/edit.gif" alt="Upravit" /></a></td>
         {*}
         <td n:if="count($list) > 1"><a href="{link up! $key}" n:if="!$iterator->first" class="ajax">Up</a></td>
         <td n:if="count($list) > 1"><a href="{link down! $key}" n:if="!$iterator->last" class="ajax">Down</a></td>
         {*}
         <td>{$item->date|date:"j.n.Y"}</td>
-        <td>{$item->ucel|truncate:"35"}</td>
-        <td title="{$item->type|pCat}">{$item->type}</td>
-        <td>{$item->komu}</td>
-        <td>{!$item->type == 'pp' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
-        <td>{!$item->type != 'pp' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
+        <td>{$item->purpose|truncate:"35"}</td>
+        <td title="{$item->cshort}">{$item->cshort}</td>
+        <td>{$item->recipient}</td>
+        <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
+        <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
         {?
-            $zustatek += $item->type == 'pp' ? $item->price : (-$item->price);
+            $zustatek += $item->ctype == 'in' ? $item->price : (-$item->price);
             if(preg_match("/^-?[0-9]*\.[0-9]$/", $zustatek))//doplneni na 2 desetina mista
                 $zustatek .= "0";
             if($zustatek < 0)
