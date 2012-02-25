@@ -7,6 +7,7 @@ class BaseService {
 
     protected $user;
     protected $table;
+    protected $skautIS;
     /**
      * pole promenych, ktere se mají persistentne uchovávat
      * @var array
@@ -15,12 +16,14 @@ class BaseService {
 
     public function __construct() {
         $this->user = Environment::getUser();
+        $this->skautIS = SkautIS::getInstance();
     }
 
     /**
      * ulozi promenne z persistenceVars do Session namespace
      * @param Session $ns
      * @return null
+     * @deprecated
      */
     protected function saveVars(&$ns) {
         if (is_null($this->persistenceVars))
@@ -36,6 +39,7 @@ class BaseService {
      * nacte promenne z Session namespace do persistenceVars
      * @param Session $ns
      * @return null
+     * @deprecated
      */
     protected function loadVars(&$ns) {
         if (is_null($this->persistenceVars))

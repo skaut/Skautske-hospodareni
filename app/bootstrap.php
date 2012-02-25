@@ -38,8 +38,9 @@ $router[] = new Route('sign/<action>[/back-<backlink>]', array(
 //        'action' => 'default',
 //));
 
-//Accountancy_BasePresenter::createRoutes($router);
+Accountancy_BasePresenter::createRoutes($router);
 //SkautIS_BasePresenter::createRoutes($router);
+
 
 $router[] = new SimpleRouter('Default:default');
 

@@ -39,6 +39,13 @@ abstract class BasePresenter extends Presenter {
             FormContainer::extensionMethod('Form::addDatePicker', 'FormContainer_addDatePicker');
         }
         
+        if (!function_exists("FormContainer_addUserFinder")) {
+            function FormContainer_addUserFinder(FormContainer $container, $name, $label = NULL) {
+                return $container[$name] = new UserFinder($label);
+            }
+            FormContainer::extensionMethod('Form::addUserFinder', 'FormContainer_addUserFinder');
+        }
+        
     }
     
     protected function beforeRender() {

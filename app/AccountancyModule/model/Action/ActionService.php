@@ -13,6 +13,46 @@ class ActionService extends BaseService {
         $p = new Paragon(array("price"=>20));
         return array($p);
     }
+    
+    public function getMyActions(){
+        return $this->skautIS->event->EventGeneralAll();
+    }
+    
+    public function getDetail($id){
+        return $this->skautIS->event->EventGeneralDetail(array("ID"=>$id));
+    }
+
+        /**
+     * založí akci ve SkautIS
+     * @param type $name nazev
+     * @param type $start datum zacatku
+     * @param type $end datum konce
+     * @param type $unit ID jednotky
+     * @param type $scope  rozsah zaměření akce
+     * @param type $type typ akce
+     * @return int ID akce 
+     */
+    public function create($name, $start, $end, $unit = NULL, $scope = NULL, $type=NULL){
+        $scope  = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
+        $type   = $type  !== NULL ? $type : 2; //2-vyprava
+        $unit   = $unit  !== NULL ? $unit : $this->skautIS->getUnitId(); 
+        
+        
+        $ret = $this->skautIS->event->EventGeneralInsert(
+                array(
+                    "ID" => 1,
+                    "Location" => " ",
+                    "Note" => " ",
+                    "ID_EventGeneralScope" => $scope,
+                    "ID_EventGeneralType" => $type,
+                    "ID_Unit" => $unit,
+                    "DisplayName" => $name,
+                    "StartDate" => $start,
+                    "EndDate" => $end,
+                    "IsStatisticAutoComputed" => false,
+                ), "eventGeneral");
+        return $ret;
+    }
 
 //    protected $SES_EXPIRATION = "+ 7 days";
 //

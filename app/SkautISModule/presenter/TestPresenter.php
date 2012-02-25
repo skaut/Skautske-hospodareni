@@ -85,11 +85,10 @@ class SkautIS_TestPresenter extends SkautIS_BasePresenter {
         $cover = trim($values['cover']);
         if ($cover == "")
             $cover = NULL;
-
         try {
             $ret = $this->service->{$values['wsdl']}->{$values["service"]}($args, $cover);
         } catch (SoapFault $e) {
-            dump($e);die();
+            //dump($e);die();
             $this->flashMessage($e->getMessage(), "fail");
             $sess->response = $e->getMessage();
             $this->redirect("this");
