@@ -80,8 +80,7 @@ class SkautIS_TestPresenter extends SkautIS_BasePresenter {
 
         $args = Neon::decode($values['args']);
 
-        //dump($args);
-        //die();
+        //dump($args);die();
         $cover = trim($values['cover']);
         if ($cover == "")
             $cover = NULL;

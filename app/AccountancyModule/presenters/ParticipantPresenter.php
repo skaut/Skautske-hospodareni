@@ -4,119 +4,183 @@
  * @author sinacek
  * účastníci
  */
-
 class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
 
-    private $SES_EXPIRATION = "+ 3 days";
+//    private $SES_EXPIRATION = "+ 3 days";
     protected $sesNS;
-    /**
-     * @var UcastnikStorage
-     */
-    private $ucastnici;
-    /**
-     *
-     * @var Ucetnictvi_UserService
-     */
-    private $Uservice;
+
+//
+//    /**
+//     * @var UcastnikStorage
+//     */
+//    private $ucastnici;
+//    /**
+//     *
+//     * @var Ucetnictvi_UserService
+//     */
+//    private $Uservice;
 
     function startup() {
         parent::startup();
-        $this->Uservice = new UserService();
-        $this->service = new ActionService();
-        $this->ucastnici = $this->service->getUcastnici();
-
-        $ns = Environment::getSession(__CLASS__);
-        $ns->setExpiration($this->SES_EXPIRATION);
-        $this->sesNS = $ns;
+        $this->service = new ParticipantService();
+//        $this->Uservice = new UserService();
+//        $this->service = new ActionService();
+//        $this->ucastnici = $this->service->getUcastnici();
+//
+//        $ns = $this->session->getSection(__CLASS__);
+//        $ns->setExpiration($this->SES_EXPIRATION);
+//        $this->sesNS = $ns;
     }
 
     /**
      *
      * @param string $role - která role je aktuálně vybraná
      */
-    function renderDefault($role = array()) {
-        //$roles = $this->Uservice->getRoles();
-        if($this->sesNS->sg) {
-            $selectedGroup = $this->sesNS->sg;
-        } elseif(!empty ($roles)) {
-            $rolesKeys = array_keys($roles);
-            $this->sesNS->sg = $rolesKeys [0];
-            $selectedGroup = $rolesKeys [0];
+    function renderDefault($aid) {
+        $this->template->participants = $this->service->getAllParticipants($this->aid);
+        $data = $this->service->getAll();
+
+
+
+        $this->template->list = $data;
+
+//        //$roles = $this->Uservice->getRoles();
+//        if($this->sesNS->sg) {
+//            $selectedGroup = $this->sesNS->sg;
+//        } elseif(!empty ($roles)) {
+//            $rolesKeys = array_keys($roles);
+//            $this->sesNS->sg = $rolesKeys [0];
+//            $selectedGroup = $rolesKeys [0];
+//        }
+//        
+//        $selectedList = $this->ucastnici->getAll();
+//        $list = array();
+//
+//        $selectedListKeys = array_keys($selectedList);
+//        foreach ($this->Uservice->getList($selectedGroup) as $value) {
+//            if(!in_array($value->userID, $selectedListKeys)){
+//                $list[] = $value;
+//            }
+//        }
+//        $this->template->sg = $selectedGroup;
+//        $this->template->list = $list;
+//        $this->template->selectedList = $selectedList;
+//        $this->template->akceName = $this->service->getAction()->name;
+//        $this->template->roles = $roles;
+    }
+
+    function createComponentFormParticipants($name) {
+        $form = new AppForm($this, $name);
+        $actionId = $this->presenter->aid;
+        $form->addHidden("actionId", $actionId);
+
+        //generuje pole s ID účastníků
+        $participants = $this->service->getAllParticipants($actionId);
+        foreach ($participants as $p) {
+            $check[$p->ID_Person] = true;
         }
         
-        $selectedList = $this->ucastnici->getAll();
-        $list = array();
-
-        $selectedListKeys = array_keys($selectedList);
-        foreach ($this->Uservice->getList($selectedGroup) as $value) {
-            if(!in_array($value->userID, $selectedListKeys)){
-                $list[] = $value;
+        //checkboxy pro jednotlivé osoby
+        $group = $form->addContainer("participants");
+        foreach ($this->service->getAll() as $i) {
+            $ch = $group->addCheckbox($i->ID, $i->DisplayName);
+            if(array_key_exists($i->ID, $check)){
+                $ch->setDisabled()->defaultValue = 1;
             }
         }
-        $this->template->sg = $selectedGroup;
-        $this->template->list = $list;
-        $this->template->selectedList = $selectedList;
-        $this->template->akceName = $this->service->getAction()->name;
-        $this->template->roles = $roles;
+        
+        $form->addSubmit('send', 'Uložit');
+        $form->onSuccess[] = array($this, $name . 'Submitted');
+        return $form;
     }
 
-    /**
-     * (ajaxovy) pozadavek pro zmenu aktualne zobrazovane skupiny
-     * @param string $group
-     */
-    function handleGroups($group) {
-        $this->sesNS->sg = $group;
-        if ($this->isAjax()) {
-            $this->invalidateControl("seznam");
-            $this->invalidateControl("flashmesages");
-        } else {
-            $this->redirect('this');
+    function formParticipantsSubmitted(AppForm $form) {
+        $val = $form->getValues();
+        //dump($val);die();
+        $cnt = 0;
+        foreach ($val['participants'] as $id => $bool) {
+            if ($bool) {
+                $cnt++;
+                $this->service->addParticipant($val['actionId'], $id);
+            }
         }
+
+        $this->flashMessage("Přidali jste $cnt účastníků.");
+        $this->redirect("this", $this->aid);
     }
 
-    /**
-     * přidá účastníka mezi vybrané
-     * @param int $key
-     */
-    function handleAdd($key) {
-        $add = $this->ucastnici->add(new MU((array)$this->Uservice->get($key)));
-
+    public function handleRemoveParticipant($pid) {
         if ($this->isAjax()) {
-            $this->invalidateControl("seznam");
-            //$this->payload->payload = $this->ucastnici->get($ucastnik->username);
-           //$this->terminate();
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-    /**
-     * vyjme účastníka z vybraných
-     * @param int $key
-     */
-    function handleRemove($key) {
-        $this->ucastnici->removeUcastnik($key);
-
-        if ($this->isAjax()) {
-            $this->invalidateControl("seznam");
+            $this->service->removeParticipant($pid);
+            //$this->invalidateControl("seznam");
             //$this->terminate();
         } else {
             $this->redirect('this');
         }
     }
+    
+    
+    
+    
+    
 
-    /**
-     * smaze vsechny účastníky
-     */
-    function handleClearList() {
-        $this->ucastnici->clear();
-
-        if ($this->isAjax()) {
-            $this->terminate();
-        } else {
-            $this->redirect('default');
-        }
-    }
+//    /**
+//     * (ajaxovy) pozadavek pro zmenu aktualne zobrazovane skupiny
+//     * @param string $group
+//     */
+//    function handleGroups($group) {
+//        $this->sesNS->sg = $group;
+//        if ($this->isAjax()) {
+//            $this->invalidateControl("seznam");
+//            $this->invalidateControl("flashmesages");
+//        } else {
+//            $this->redirect('this');
+//        }
+//    }
+//
+//    /**
+//     * přidá účastníka mezi vybrané
+//     * @param int $key
+//     */
+//    function handleAdd($key) {
+//        $add = $this->ucastnici->add(new MU((array) $this->Uservice->get($key)));
+//
+//        if ($this->isAjax()) {
+//            $this->invalidateControl("seznam");
+//            //$this->payload->payload = $this->ucastnici->get($ucastnik->username);
+//            //$this->terminate();
+//        } else {
+//            $this->redirect('this');
+//        }
+//    }
+//
+//    /**
+//     * vyjme účastníka z vybraných
+//     * @param int $key
+//     */
+//    function handleRemove($key) {
+//        $this->ucastnici->removeUcastnik($key);
+//
+//        if ($this->isAjax()) {
+//            $this->invalidateControl("seznam");
+//            //$this->terminate();
+//        } else {
+//            $this->redirect('this');
+//        }
+//    }
+//
+//    /**
+//     * smaze vsechny účastníky
+//     */
+//    function handleClearList() {
+//        $this->ucastnici->clear();
+//
+//        if ($this->isAjax()) {
+//            $this->terminate();
+//        } else {
+//            $this->redirect('default');
+//        }
+//    }
 
     /**
      * přidá příjmový doklad do paragonů
@@ -124,10 +188,10 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     function actionAddToParagon() {
         $p = $this->service->getParagony();
         $date = $this->ucastnici->getDate();
-        if(!($date instanceof DateTime53)){
+        if (!($date instanceof DateTime53)) {
             $date = DateTime53::from($this->ucastnici->getDate());
         }
-        $p->add(new Paragon(array('komu' => $this->ucastnici->getPrijal(), 'date' => $date , 'ucel' => 'Účastnické příspěvky', 'price' => $this->totalIn(), 'type' => 'pp')));
+        $p->add(new Paragon(array('komu' => $this->ucastnici->getPrijal(), 'date' => $date, 'ucel' => 'Účastnické příspěvky', 'price' => $this->totalIn(), 'type' => 'pp')));
         $this->redirect('Paragon:');
     }
 
@@ -156,20 +220,20 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $form->addText("pokladnik", "Pokladník", 14)
                 ->addRule(Form::FILLED, "Není vyplněn pokladník");
         $form->addText("prijal", "Přijal", 14);
-        if($selectedList) {
+        if ($selectedList) {
             $group = $form->addContainer('ucastnici');
             foreach ($selectedList as $key => $item) {
                 $input = $group->addText($key, $item, 3)->controlPrototype->class("ucastnik");
                 $money = $this->ucastnici->get($key)->m;
-                if($money){
+                if ($money) {
                     $defaults['ucastnici'][$key] = $money;
                 }
             }
         }
         $date = $this->ucastnici->getDate();
-        
-            $defaults['date'] = $date ? $date->format('j. n. Y') : "";
-        
+
+        $defaults['date'] = $date ? $date->format('j. n. Y') : "";
+
         //$defaults['date'] = date("j.n.Y", ($date = $this->ucastnici->getDate()) ? strtotime($date) : time());
 
         $defaults['prijal'] = $this->ucastnici->getPrijal();
@@ -197,14 +261,13 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $this->redirect("Default:akce");
     }
 
-    
     /**
      * spočítá celkový příjem
      * @param seznam účastníků pro počítání $list
      * @return int
      */
     public function totalIn($list = NULL) {
-        if($list === NULL)
+        if ($list === NULL)
             $list = $this->ucastnici->getAll();
 
         $totalPrice = 0;
@@ -214,5 +277,4 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     }
 
 }
-
 

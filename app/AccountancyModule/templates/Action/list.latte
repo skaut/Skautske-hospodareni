@@ -5,8 +5,15 @@
 
 {dump $list}
 <table border="1">
+    <tr>
+        <th>&nbsp;</th>
+        <th>Název</th>
+        <th>Od</th>
+        <th>Do</th>
+        <th>Stav</th>
+    </tr>
     <tr n:foreach="$list as $i">
-        <td></td>
+        <td><a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')">Zrušit</a></td>
         <td><a n:href="view $i->ID">{$i->DisplayName}</a></td>
         <td>{$i->StartDate|date:"d.m.Y"}</td>
         <td>{$i->EndDate|date:"d.m.Y"}</td>

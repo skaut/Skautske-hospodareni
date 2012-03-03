@@ -1,15 +1,29 @@
 {block #content}
 
-<a n:href="Default:akce">Aktuální akce</a> &rarr; Seznam učastníků
+<h2>Seznam účastníků</h2>
 
-<h2>Seznam účastníků na akci: {$akceName|truncate:30}</h2>
+{dump $participants}
 
+<div style="float:left" n:ifset="$participants">
+<h3>Již zadaní účastníci</h3>
+<table border="1">
+    <tr n:foreach="$participants as $p">
+        <td><a n:href="removeParticipant! $p->ID_Participant">Smazat</a></td>
+        <td>{$p->Person}</td>
+    </tr>
+</table>
+</div>
+
+{control formParticipants}
+
+<hr style="clear: both;">
+{*}
 {ifset $roles}
     {foreach $roles as $roleId => $roleLabel}
         <input type="radio" id="{$roleId}" name="groups" value="{$roleId}" class="selectGroup" {if $sg == $roleId}checked="checked"{/if} /><label for="{$roleId}">{$roleLabel}</label>
     {/foreach}
 {/ifset}
-
+{*}
 
 {*}
         <br/><br/>
@@ -19,6 +33,8 @@
 <input type="radio" id="ranger" name="groups" value="rover" class="selectGroup" {if $sg == "rover"}checked="checked"{/if} /><label for="rover">Roveři</label>
 <input type="radio" id="skautka" name="groups" value="skautka" class="selectGroup" {if $sg == "skautka"}checked="checked"{/if} /><label for="skautka">Skautky</label>
 <input type="radio" id="svetluska" name="groups" value="svetluska" class="selectGroup" {if $sg == "svetluska"}checked="checked"{/if} /><label for="svetluska">Světlušky</label>
+{*}
+
 {*}
 <style type="text/css">
     .ucastniciTable, .ucastniciTable th, .ucastniciTable td, .selectedTable, .selectedTable th, .selectedTable td{
@@ -87,6 +103,8 @@
             $.get({link groups!} + "&group="+ data.target.defaultValue );
             
         });
+
+{*}
 {*}
         //presunuje polozky z jednoho pole do druheho
         $(".seznamList").click(function () {
@@ -106,7 +124,8 @@
 
         });
 {*}
-
+{*}
     })
 </script>
 {/snippet}
+{*}
