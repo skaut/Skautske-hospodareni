@@ -26,7 +26,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 
     function beforeRender() {
         parent::beforeRender();
-        $this->template->isInMinus = $this->chitService->isInMinus($this->request_id); // musi byt v before render aby se vyhodnotila az po handleru
+        $this->template->isInMinus = $this->chitService->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
     }
 
     /**
@@ -50,8 +50,8 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     }
 // </editor-fold>
 
-    function renderDefault($id) {
-        $this->template->list = $this->chitService->getAll($id);
+    function renderDefault($aid) {
+        $this->template->list = $this->chitService->getAll($aid);
         $this->template->formIn = $this['formInAdd'];
         $this->template->formOut = $this['formOutAdd'];
 //        
@@ -94,12 +94,16 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $values = $form->getValues();
         $values['priceText'] = $values['price'];
         $values['price'] = $this->solveString($values['price']);
-        $add = $this->chitService->add($this->request_id, $values);
-                
-        $this->flashMessage($add ? "Paragon byl úspěšně přidán do seznamu." : "Paragon se nepodařilo přidat do seznamu.", "fail");
+        //dump($this->aid, $values);die();
         
-        if ($this->chitService->isInMinus($this->request_id))
-            $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
+        if($this->chitService->add($this->aid, $values)){
+            $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
+            if ($this->chitService->isInMinus($this->aid))
+                $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
+        } else {
+            $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "fail");
+        }
+        
         
         if ($this->isAjax()) {
             $this->invalidateControl("tabs");

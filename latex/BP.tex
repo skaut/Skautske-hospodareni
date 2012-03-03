@@ -58,7 +58,6 @@ Výhody systému:
 	\item možnost přidat seznam účastníků
 	\item počítá počet účastníků v jednotlivých kategoriích
 \end{itemize}
-
 Nevýhody systému:
 \begin{itemize}
 	\item minimální možnost nastavení uživatelských práv
@@ -70,26 +69,24 @@ Nevýhody systému:
 
 
 \subsection{Systém střediska Blaník}
-Středisko Blaník využívá vlastní systém naprogramovaný v php skládající se ze tří základních částí. První část LTIO (\url{http://lab.blanik.info/ltoi/}) - Letní tábor a obnova inventáře - slouží pro vyúčtování táborů. Zadávají se zde odděleně informace o táboře, příjmy, výdaje, účastníci a cestovní příkazy. Veškeré informace je možné nechat vyexportovat do formátu csv nebo rtf.
-Druhá část nazvaná INV  (\url{http://lab.blanik.info/inv/}) slouží k inventarizaci majetku jednotlivých oddílů. Pokud jsme v části LTIO nastavili výdaj s příznakem \uv{inv}, tak ho nyní můžeme jednoduše importovat do této části. Získáme zde také přehled zda na majetek byla čerpána dotace, jeho pořizovací a aktuální hodnotu a informaci o jeho vyřazení.
+Středisko Blaník využívá vlastní systém naprogramovaný v php skládající se ze tří základních částí. První část LTOI (\url{http://lab.blanik.info/ltoi/}) - Letní tábor a obnova inventáře - slouží pro vyúčtování táborů. Zadávají se zde odděleně informace o táboře, příjmy, výdaje, účastníci a cestovní příkazy. Veškeré informace je možné nechat vyexportovat do formátu csv nebo rtf.
+Druhá část nazvaná INV  (\url{http://lab.blanik.info/inv/}) slouží k inventarizaci majetku jednotlivých oddílů. Pokud jsme v části LTOI nastavili výdaj s příznakem \uv{inv}, tak ho nyní můžeme jednoduše importovat do této části. Získáme zde také přehled zda na majetek byla čerpána dotace, jeho pořizovací a aktuální hodnotu a informaci o jeho vyřazení.
 
 !(Třetí a zároveň nejnovější (leden 2012) částí sytému je ROP (Roční oddílová pokladna). Zde se účtují)
 
 Výhody systému:
 \begin{itemize}
-	\item možnost nastavit počet dnů účasti u jednotlivých účastníků táborav (LTIO)
-	\item automatická kontrola vnitřních vztahů mezi účastníky a příjmy (LTIO)
+	\item možnost nastavit počet dnů účasti u jednotlivých účastníků táborav (LTOI)
+	\item automatická kontrola vnitřních vztahů mezi účastníky a příjmy (LTOI)
 	\item propojení části LTOI s částí INV 
 	\item dobrý přehled o majetku oddílu (INV)
 	\item možnost exportovat do dále upravitelné podoby (csv, rtf)
-	\item možnost vyplnit cestovní příkaz (LTIO)
-	\item možnost předat vyučtování akce hospodáři (LTIO)
+	\item možnost vyplnit cestovní příkaz (LTOI)
+	\item možnost předat vyučtování akce hospodáři (LTOI)
 \end{itemize}
-
-
 Nevýhody systému:
 \begin{itemize}
-	\item malý počet účetních kategorií (LTIO)
+	\item malý počet účetních kategorií (LTOI)
 	\item není propojen se systémem SkautIS
 	\item veškeré věci jsou napevno zadané v kódu - včetně ceny benzínu apod.
 	\item možnost upravovat i údaje, které jsou stálé - IČO střediska
@@ -106,7 +103,7 @@ Nevýhody systému:
 	\item umí založit novou akci
 	\item umí uzavřít akci
 	\item umí evidovat akce minulé
-	\item umí příjmout údaje z paragonu a ty pak spravovat
+	\item umí přijmout údaje z paragonu a ty pak spravovat
 	\item umí rozdělit paragony do kategorií a spočítat jejich sumu
 	\item umí udělat seznam účastníků
 	\item umí udělat hromadný příjmový doklad
@@ -120,10 +117,37 @@ Nevýhody systému:
 	\item webová aplikace v jazyce PHP
 	\item aplikace komunikuje se systémem SkautIS přes web services
 	\item aplikace má české uživatelské rozhraní
-	\item aplikace funguje na PHP 5 >= 5.2.0, Mysql 5
+	\item aplikace funguje na PHP 5 $\geq$ 5.2.0, Mysql 5
 \end{itemize}
 
-    
+\section{Uživatelské role}
+Uživatelské role vycházejí z uživatelských rolí ze systému SkautIS. V systému rozlišuji, jestli je přihlášen jako "člen" v dané jednotce či jako její "vedoucí/administrátor".
+
+\section{Výběr technologií}
+\subsection{PHP}
+Na poli PHP frameworků je v současné době hned několik velkých hráčů. Mezi nejznámější patří Symfony, Zend Framework a Nette Framework.
+
+Symfony obsahuje velmi silný databázový framework Doctrine, ale nemá českou komunitu.
+
+Zend Framework vyvíjí firma Zend Technologies Ltd., která stojí za jádrem PHP od verze 4. Mezi hlavní výhody Zend Frameworku patří velké množství již napsaných komponent, silné zázemí komunity a Zend Technologies Ltd. Naopak mu je často vytýkána špatná práce s formuláři a příliš dlouhé názvy, které snižují přehlednost kódu. 
+
+Nette Framework, vyvíjený Nette Foundation, se v posledních letech prosazuje na české scéně čím dál tím více. Jeho hlavními přednostmi jsou jednoduchá práce s formuláři, šablonovací systém Latte a početná komunita. Často však bývá kritizován za to, že jeho vývoj je řízen jeho zakladatelem Davidem Grudlem a nikoli komunitou.
+
+Já jsem si zvolil Nette Framework, protože mi nejvíce vyhovuje, několik let ho používám a souhlasím s jeho směřováním. Konkrétně jsem si vybral verzi pro PHP 5.2 bez prefixů.
+
+\subsection{Databáze}
+Databázi jsem vybral MySQL, protože je dostupná na většině hostingů a pro rozsah projektu postačuje. Pro práci přístup k databázi jsem měl na výběr mezi využitím základní MySQL funkcí zabudovaných v PHP a použitím některé PHP knihovny pro práci s databází. Použití základních funkcí PHP jsem zavrhl, protože je velmi těžké udržet v kódu přehlednost a práce s připojením je velmi nekomfortní.  
+
+Doctrine 2 je jedna z nejznámějších knihoven pro práci s databází využívajících ORM, avšak na některá volání potřebuje příliš SQL dotazů.
+
+NotORM, od Jakuba Vrány, se prezentuje jako plnohodnotná alternativa k běžným ORM a prezentuje se svojí rychlostí oproti ostatním (http://php.vrana.cz/notorm-je-rychlejsi-nez-doctrine-2-i-dibi.php). NotORM jsem již v minulosti vyzkoušel, ale práce s ním mi nevyhovovala. 
+
+Nette Framework přímo nabízí vlastní vrstvu pro práci s databází (http://doc.nette.org/cs/database). Vychází z NotORM, ale má trochu odlišnou syntaxi. Mě nevyhovuje ze stejných důvodů jako NotORM.
+
+David Grudl kromě Nette Frameworku vytvořil také databázovou vrstvu dibi(http://dibiphp.com/). Já jsem si ji velmi oblíbil pro její jednoduchost a předem neurčený způsob užití. Zvolil jsem si ji pro tento projekt, protože podle mého názoru plnohodnotně pokryje databázové potřeby tohoto projektu.
+
+
+
 
 
 
@@ -131,6 +155,14 @@ uživatelské role + nette + ...
 db + use case
 životní cyklus akce
 navigační diagram v webML
+
+ 
+Obecný postup
+=========
+Nadpis
+obrázek
+popis kapitoly
+
 
 \chapter{Realizace}
 

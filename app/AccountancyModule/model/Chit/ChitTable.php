@@ -35,7 +35,7 @@ class ChitTable extends BaseTable {
             WHERE ch.actionId = %i AND ch.deleted =0
             GROUP BY cat.type", $actionId);
         
-        return @($data["in"] - $data["out"]) < 0 ? true : false; // @ aby neházelo chybu kdyz chybí jedna z polozek
+        return ($data["in"] - $data["out"]) < 0 ? true : false; 
     }
     
 }

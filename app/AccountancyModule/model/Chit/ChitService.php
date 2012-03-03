@@ -4,6 +4,7 @@ class ChitService extends BaseService {
     
     public function __construct() {
         parent::__construct();
+        /** @var ChitTable */
         $this->table = new ChitTable();
     }
     

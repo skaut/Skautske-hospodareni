@@ -11,7 +11,7 @@ class Accountancy_BasePresenter extends BasePresenter {
      * id volane v url, vetsinou id akce
      * @var int
      */
-    protected $request_id;
+    protected $aid;
 
     protected function startup() {
         parent::startup();
@@ -26,9 +26,9 @@ class Accountancy_BasePresenter extends BasePresenter {
         if($sis->isLoggedIn())
             $sis->updateLogoutTime();
         
-        if(($id = $this->context->httpRequest->getQuery("id"))) {
-            $this->template->request_id = $id;
-            $this->request_id = $id;
+        if(($aid = $this->context->httpRequest->getQuery("aid"))) {
+            $this->template->aid = $aid;
+            $this->aid = $aid;
         }
 
 //        $dataStorage = new Ucetnictvi_BaseStorage();
@@ -118,7 +118,7 @@ class Accountancy_BasePresenter extends BasePresenter {
     //vrati routy pro modull
     static function createRoutes($router, $prefix ="") {
 
-        $router[] = new Route($prefix . 'Ucetnictvi/p-<presenter>/a-<action>/[id-<id>]', array(
+        $router[] = new Route($prefix . 'Ucetnictvi/p-<presenter>/a-<action>/', array(
                     'module' => "Accountancy",
 //                    'presenter' => 'Default',
 //                    'action' => 'default',

@@ -110,7 +110,7 @@
     </tr>
     {assign zustatek => 0}
     <tr n:foreach="$list as $key => $item">
-        <td><a href="{link remove! $item->id, $request_id}" onclick="return confirm('Opravdu chcete smazat paragon?')"><img src="{$baseUri}/images/layout/delete.gif" alt="Smazat" /></a></td>
+        <td><a href="{link remove! $item->id, $aid}" onclick="return confirm('Opravdu chcete smazat paragon?')"><img src="{$baseUri}/images/layout/delete.gif" alt="Smazat" /></a></td>
         <td><a href="{link edit $key}{if $item->ctype =="in"}#tabs-prijem{/if}"><img src="{$baseUri}/images/layout/edit.gif" alt="Upravit" /></a></td>
         {*}
         <td n:if="count($list) > 1"><a href="{link up! $key}" n:if="!$iterator->first" class="ajax">Up</a></td>

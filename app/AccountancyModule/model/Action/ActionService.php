@@ -53,6 +53,15 @@ class ActionService extends BaseService {
                 ), "eventGeneral");
         return $ret;
     }
+    
+    public function cancel($id, $msg = NULL) {
+        $msg = $msg ? $msg : " ";
+        return $this->skautIS->event->EventGeneralUpdateCancel(
+                array(
+                    "ID"=>$id,
+                    "CancelDecision"=>$msg
+                ), "eventGeneral");
+    }
 
 //    protected $SES_EXPIRATION = "+ 7 days";
 //
