@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author sinacek
+ * @author Hána František
  */
 
 class ActionTable extends BaseTable {

@@ -20,16 +20,7 @@ abstract class BasePresenter extends Presenter {
         }
         RequestsPanel::register();
         
-        SkautIS::getInstance($this->context->parameters['skautisid']);
-        //$this->user = Environment::getUser();
-
-        //model
-//        $model = $this->getName() . "Model";
-//        $model = str_replace(":", "_", $model);
-//        if (class_exists($model))
-//            $this->model = new $model;
-//        else
-//            $this->model = new BaseModel();
+        $skautis = SkautIS::getInstance($this->context->parameters['skautisid']);
         
 
         if (!function_exists("FormContainer_addDatePicker")) {
@@ -47,11 +38,10 @@ abstract class BasePresenter extends Presenter {
         }
         
     }
-    
+
     protected function beforeRender() {
         parent::beforeRender();
-        $this->template->backlink = $this->context->httpRequest->getQuery("backlink");
-        
+        $this->template->backlink = $this->context->httpRequest->getQuery("backlink");   
     }
 
     public function accessFail() {

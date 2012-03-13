@@ -70,7 +70,7 @@ class AuthPresenter extends BasePresenter {
         } catch (AuthenticationException $e) {
             //není registrace
             //$this->redirect(":SkautIS:Registration:");
-            throw new NotImplementedException("");
+            throw new NotImplementedException();
         }
     }
 
@@ -78,7 +78,7 @@ class AuthPresenter extends BasePresenter {
      * zajistuje odhlaseni ze skautISu
      */
     function actionSkautISLogOut() {
-        $this->service->logout();
+        
         Environment::getUser()->logout(TRUE);
         if ($this->request->post['skautIS_Logout']) {
             $this->presenter->flashMessage("Byl jsi úspěšně odhlášen.");
@@ -86,7 +86,7 @@ class AuthPresenter extends BasePresenter {
             $this->presenter->flashMessage("Odhlášení ze skautISu se nezdařilo", "fail");
         }
         //$this->redirectUrl("https://is.skaut.cz/Login/LogOut.aspx?appid=" . $this->service->getAppId() . "&token=". $this->service->getToken());
-        $this->redirect(":Default:");
+        $this->redirectUrl($this->service->getLogoutUrl());
     }
 
 }

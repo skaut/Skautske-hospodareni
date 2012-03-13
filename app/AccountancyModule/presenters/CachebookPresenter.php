@@ -18,7 +18,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     function startup() {
         parent::startup();
         //$this->service      = new ActionService();
-        //$this->userService  = new UserService();
+        $this->userService  = new UserService();
         //$this->unitService  = new UnitService();
         $this->chitService  = new ChitService();
         
@@ -51,6 +51,8 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 // </editor-fold>
 
     function renderDefault($aid) {
+        
+        $this->template->autoCompleter = $this->userService->getAC();
         $this->template->list = $this->chitService->getAll($aid);
         $this->template->formIn = $this['formInAdd'];
         $this->template->formOut = $this['formOutAdd'];

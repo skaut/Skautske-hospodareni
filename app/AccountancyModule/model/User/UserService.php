@@ -6,12 +6,31 @@
 
 class UserService extends BaseService {
     
-    public function __call($name, $arguments) {
-        return 1;
-    }
+//    public function __call($name, $arguments) {
+//        return 1;
+//    }
     
-    public function findUser($name){
-        return $this->skautIS->org->PersonAll(array("DisplayName"=>$name));
+    /**
+     * nalezne uživatele podle jména
+     * @param string $name - jméno
+     * @return type 
+     */
+//    public function findUser($name){
+//        return $this->skautIS->org->PersonAll(array("DisplayName"=>$name));
+//    }
+    
+    /**
+     * vytvoří pole jmen pro automatické doplňování
+     * @param type $OnlyDirectMember - vybrat pouze z aktuální jednotky?
+     * @return array
+     */
+    public function getAC($OnlyDirectMember = false){
+        $data = $this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember));
+        $ac = array();
+        foreach ($data as $p){
+            $ac[] = $p->LastName . " " . $p->FirstName;
+        }
+        return $ac;
     }
 
 

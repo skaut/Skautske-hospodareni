@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author sinacek
+ * @author Hána František
  */
 class ActionService extends BaseService {
     
@@ -37,12 +37,11 @@ class ActionService extends BaseService {
         $type   = $type  !== NULL ? $type : 2; //2-vyprava
         $unit   = $unit  !== NULL ? $unit : $this->skautIS->getUnitId(); 
         
-        
         $ret = $this->skautIS->event->EventGeneralInsert(
                 array(
-                    "ID" => 1,
-                    "Location" => " ",
-                    "Note" => " ",
+                    "ID" => 1, //musi byt neco nastavene
+                    "Location" => " ", //musi byt neco nastavene
+                    "Note" => " ", //musi byt neco nastavene
                     "ID_EventGeneralScope" => $scope,
                     "ID_EventGeneralType" => $type,
                     "ID_Unit" => $unit,

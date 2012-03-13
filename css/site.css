@@ -29,7 +29,7 @@ body {
 
 #rightColumn {
     float:right;
-    width: 210px;
+    width: 300px;
 }
 
 #menu {
@@ -124,6 +124,7 @@ td.selected{
 /* --- PARAGONY --- */
 .paragony {
     border: 1px #999 solid;
+    margin-left: 370px;
 }
 .paragony td, .paragony tr tr, .paragony tr th{
     border: 1px #ccc solid;
@@ -140,6 +141,12 @@ td.selected{
 .tabs > ul li {
     display: inline;
     color: #1924ba;
+}
+
+#cashbook-tabs {
+    width: 350px;
+    min-height: 350px;
+    float: left;
 }
 
 

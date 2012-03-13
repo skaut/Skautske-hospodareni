@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * @deprecated
+ */
 class Paragon extends Object {
 
     public $date; //datum 

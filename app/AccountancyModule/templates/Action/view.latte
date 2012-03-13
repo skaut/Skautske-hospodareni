@@ -1,5 +1,12 @@
 {block #content}
-<h2>View</h2>
+<h2>{$a->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
-{? Debugger::dump($detail)}
+
+Jednotka : {$a->Unit}<br />
+Od : {$a->StartDate|date:"j. n. Y"}<br />
+Do : {$a->EndDate|date:"j. n. Y"}<br />
+Stav : {$a->EventGeneralState}<br /><br />
+
+
+{dump $a}
