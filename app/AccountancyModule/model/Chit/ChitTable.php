@@ -1,4 +1,8 @@
 <?php
+/**
+ * @author Hána František
+ */
+
 class ChitTable extends BaseTable {
     public function getAll($actionId){
         return dibi::fetchAll("SELECT ch.*, cat.label as clabel, cat.short as cshort, cat.type as ctype FROM [".self::TABLE_CHIT."] as ch
@@ -35,7 +39,7 @@ class ChitTable extends BaseTable {
             WHERE ch.actionId = %i AND ch.deleted =0
             GROUP BY cat.type", $actionId);
         
-        return ($data["in"] - $data["out"]) < 0 ? true : false; 
+        return (($data["in"] - $data["out"]) < 0) ? true : false;
     }
     
 }

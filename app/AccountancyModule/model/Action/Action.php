@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author sinacek
+ * @author Hána František
  *
  * předek všech akcí s kterými lze pracovat, nelze vytvořit její instanci
  */

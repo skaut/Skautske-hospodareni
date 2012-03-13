@@ -1,9 +1,10 @@
 <?php
 
-require dirname(__FILE__) . '/../libs/Nette/loader.php';
+require LIBS_DIR . '/Nette/loader.php';
 
 // Configure application
 $configurator = new Configurator;
+
 $configurator->setTempDirectory(dirname(__FILE__) . '/temp');
 $configurator->enableDebugger(dirname(__FILE__) . '/log', "sinacek@gmail.com");
 Debugger::$strictMode = FALSE;

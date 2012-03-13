@@ -12,13 +12,13 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
         $this->service = new ActionService();
     }
     
-    protected function createComponentUFinder() {
-		$ufc = new UserFinderControl();
-		return $ufc;
-	}
-    
-    public function renderList() {
-        $this->template->list = $this->service->getMyActions();
+    public function actionList(){
+        $list = $this->service->getMyActions();
+        //dump($list);
+        if(empty($list)){
+            $this->redirect("create");
+        }
+        $this->template->list = $list;
     }
     
     public function renderCreate() {
@@ -48,7 +48,7 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
     }
     
     public function renderView($aid) {
-        $this->template->detail = $this->service->getDetail($aid);
+        $this->template->a = $this->service->getDetail($aid);
     }
     
     public function handleCancel($id){

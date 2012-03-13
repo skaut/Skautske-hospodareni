@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @deprecated
+ */
 class ParagonStorage extends BaseStorage {
 
     private $list;
