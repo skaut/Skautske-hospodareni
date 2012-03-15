@@ -46,7 +46,7 @@
 \end{introduction}
 
 \chapter{Analýza a návrh}
-\section{Analýza jiných systémů}
+\section{Srovnání jiných systémů}
 Nenašel jsem žádný skautský online systém, který by byl používán více středisky. Většina středisek buď žádný online systém nepoužívá nebo mají systém, který si sami naprogramovali.
 \subsection{Systém střediska Hiawatha Praha}
 Systém je zakomponovaný do webových stránek střediska(\url{https://www.hiawatha.cz/}). Přihlášeným uživatelům umožnuje zakládat, upravovat a mazat akce. U každé akce můžeme přidat předběžný rozpočet. Po realizaci akce můžeme přidat i čerpané částky z jednotlivých kategorií a vyplnit seznam účastníků. Vedoucí může akci odevzdat, čímž umožní editaci pouze hospodáři střediska.
@@ -121,7 +121,14 @@ Nevýhody systému:
 \end{itemize}
 
 \section{Uživatelské role}
-Uživatelské role vycházejí z uživatelských rolí ze systému SkautIS. V systému rozlišuji, jestli je přihlášen jako "člen" v dané jednotce či jako její "vedoucí/administrátor".
+Uživatelské role vycházejí z uživatelských rolí ze systému SkautIS. V systému rozlišuji, jestli je přihlášen jako "člen" v dané jednotce či jako její \uv{vedoucí/administrátor}.
+
+\section{Případy užití}
+ \begin{figure}\centering
+ 	\includegraphics[width=1\textwidth]{use-case.jpg}
+ 	\caption[Use case]{Use case diagramy pro vedoucího akce a hospodáře}\label{fig:float}
+ \end{figure}
+
 
 \section{Výběr technologií}
 \subsection{PHP}
@@ -146,21 +153,17 @@ Nette Framework přímo nabízí vlastní vrstvu pro práci s databází (http:/
 
 David Grudl kromě Nette Frameworku vytvořil také databázovou vrstvu dibi(http://dibiphp.com/). Já jsem si ji velmi oblíbil pro její jednoduchost a předem neurčený způsob užití. Vybral jsem si ji pro tento projekt, protože podle mého názoru plnohodnotně pokryje databázové potřeby tohoto projektu a práci s ním již dobře znám.
 
-\subsection{Případy užití}
- \begin{figure}\centering
- 	\includegraphics[width=1\textwidth]{use-case.jpg}
- 	\caption[Use case]{Use case diagramy pro vedoucího akce a hospodáře}\label{fig:float}
- \end{figure}
- 
- 
+
+\section{Datový model}
 
 
-\subsection{Životní cyklus akce}
+\section{Životní cyklus akce}
 
 
-\subsection{Navigace}
+\section{Navigace}
 
 
+\section{Komunikace se systémem SkautIS}
 
  
 Obecný postup

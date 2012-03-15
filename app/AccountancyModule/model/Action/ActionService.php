@@ -4,62 +4,118 @@
  * @author Hána František
  */
 class ActionService extends BaseService {
-    
-    
+
     /**
      * vrací seznam paragonů k dané akci
      */
-    public function getReceipts($actionId){
-        $p = new Paragon(array("price"=>20));
+    public function getReceipts($actionId) {
+        $p = new Paragon(array("price" => 20));
         return array($p);
     }
-    
-    public function getMyActions(){
+
+    public function getMyActions() {
         return $this->skautIS->event->EventGeneralAll();
     }
-    
-    public function getDetail($id){
-        return $this->skautIS->event->EventGeneralDetail(array("ID"=>$id));
+
+    public function get($id) {
+        return $this->skautIS->event->EventGeneralDetail(array("ID" => $id));
     }
 
-        /**
+    public function getFunctions($id) {
+        return $this->skautIS->event->EventFunctionAllGeneral(array("ID_EventGeneral" => $id));
+    }
+
+    /**
      * založí akci ve SkautIS
-     * @param type $name nazev
-     * @param type $start datum zacatku
-     * @param type $end datum konce
-     * @param type $unit ID jednotky
-     * @param type $scope  rozsah zaměření akce
-     * @param type $type typ akce
-     * @return int ID akce 
+     * @param string $name nazev
+     * @param date $start datum zacatku
+     * @param date $end datum konce
+     * @param ID_Person $leader
+     * @param ID_Person $assistant
+     * @param ID_Person $economist
+     * @param ID_Unit $unit ID jednotky
+     * @param int $scope  rozsah zaměření akce
+     * @param int $type typ akce
+     * @return int|stdClass ID akce 
      */
-    public function create($name, $start, $end, $unit = NULL, $scope = NULL, $type=NULL){
-        $scope  = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
-        $type   = $type  !== NULL ? $type : 2; //2-vyprava
-        $unit   = $unit  !== NULL ? $unit : $this->skautIS->getUnitId(); 
-        
+    public function create($name, $start, $end, $leader = NULL, $assistant = NULL, $economist = NULL, $unit = NULL, $scope = NULL, $type=NULL) {
+        $scope = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
+        $type = $type !== NULL ? $type : 2; //2-vyprava
+        $unit = $unit !== NULL ? $unit : $this->skautIS->getUnitId();
+
         $ret = $this->skautIS->event->EventGeneralInsert(
                 array(
-                    "ID" => 1, //musi byt neco nastavene
-                    "Location" => " ", //musi byt neco nastavene
-                    "Note" => " ", //musi byt neco nastavene
-                    "ID_EventGeneralScope" => $scope,
-                    "ID_EventGeneralType" => $type,
-                    "ID_Unit" => $unit,
-                    "DisplayName" => $name,
-                    "StartDate" => $start,
-                    "EndDate" => $end,
-                    "IsStatisticAutoComputed" => false,
+            "ID" => 1, //musi byt neco nastavene
+            "Location" => " ", //musi byt neco nastavene
+            "Note" => " ", //musi byt neco nastavene
+            "ID_EventGeneralScope" => $scope,
+            "ID_EventGeneralType" => $type,
+            "ID_Unit" => $unit,
+            "DisplayName" => $name,
+            "StartDate" => $start,
+            "EndDate" => $end,
+            "IsStatisticAutoComputed" => false,
                 ), "eventGeneral");
+
+
+        $this->skautIS->event->EventGeneralUpdateFunction(array(
+            "ID" => $ret->ID,
+            "ID_PersonLeader" => $leader,
+            "ID_PersonAssistant" => $assistant,
+            "ID_PersonEconomist" => $economist
+        ));
+
+        if (isset($ret->ID))
+            return $ret->ID;
         return $ret;
     }
-    
+
+    /**
+     * aktualizuje informace o akci
+     * @param array $data
+     * @return int
+     */
+    public function update($data) {
+        $id = $data['aid'];
+        $old = $this->get($id);
+
+        $ret = $this->skautIS->event->EventGeneralUpdate(array(
+            "ID"        => $id,
+            "Location"  => $old->Location,
+            "Note"      => $old->Note,
+            "ID_EventGeneralScope"  => $old->ID_EventGeneralScope,
+            "ID_EventGeneralType"   => $old->ID_EventGeneralType,
+            "ID_Unit"               => $old->ID_Unit,
+            "DisplayName"   => $data['name'],
+            "StartDate"     => $data['start'],
+            "EndDate"       => $data['end'],
+                ), "eventGeneral");
+
+        $this->skautIS->event->EventGeneralUpdateFunction(array(
+            "ID" => $id,
+            "ID_PersonLeader" => $data['leader'],
+            "ID_PersonAssistant" => $data['assistant'],
+            "ID_PersonEconomist" => $data['economist'],
+        ));
+
+        if (isset($ret->ID))
+            return $ret->ID;
+        return $ret;
+    }
+
+    /**
+     * zrusit akci
+     * @param int $id
+     * @param string $msg
+     * @return type 
+     */
     public function cancel($id, $msg = NULL) {
         $msg = $msg ? $msg : " ";
         return $this->skautIS->event->EventGeneralUpdateCancel(
-                array(
-                    "ID"=>$id,
-                    "CancelDecision"=>$msg
-                ), "eventGeneral");
+                        array(
+                    "ID" => $id,
+                    "CancelDecision" => $msg
+                        ), "eventGeneral");
     }
 
 //    protected $SES_EXPIRATION = "+ 7 days";
@@ -250,6 +306,5 @@ class ActionService extends BaseService {
 //        $ns = Environment::getSession(__CLASS__);
 //        $this->saveVars($ns);
 //    }
-
 }
 

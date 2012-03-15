@@ -32,6 +32,20 @@ class UserService extends BaseService {
         }
         return $ac;
     }
+     
+    /**
+     * vytvoří pole jmen s ID pro combobox
+     * @param type $OnlyDirectMember - vybrat pouze z aktuální jednotky?
+     * @return array
+     */
+    public function getCombobox($OnlyDirectMember = false){
+        $data = $this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember));
+        $ac = array();
+        foreach ($data as $p){
+            $ac[$p->ID] = $p->LastName . " " . $p->FirstName;
+        }
+        return $ac;
+    }
 
 
 //    private $SES_EXPIRATION = "+ 3 days";

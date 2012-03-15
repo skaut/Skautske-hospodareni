@@ -6,9 +6,14 @@ body {
     background-color: #ff0000;
 }
 
+#page {
+    margin: 0 auto;
+    width: 960px;
+}
+
 #content{
     float:left;
-    width: 880px;
+    width: 960px;
 }
 
 #news-column{
@@ -27,9 +32,9 @@ body {
     list-style-position: inside;
 }
 
-#rightColumn {
+#authBox {
     float:right;
-    width: 300px;
+    width: 320px;
 }
 
 #menu {
@@ -105,6 +110,15 @@ input.datepicker {
 a img {
     border: 0;
 }
+
+
+/* ---- Combobox ----*/
+.ui-autocomplete-input { 
+/*    margin: 0; 
+    padding: 0.48em 0 0.47em 0.45em;*/
+}
+	
+
 /* --------*/
 .calendar tr td ul {
     padding: 0;
