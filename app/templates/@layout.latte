@@ -9,7 +9,13 @@
         <script type="text/javascript" src="{$baseUri}/js/jquery-1.7.1.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.ui.min.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/my-datepicker.js"></script>
+        <script type="text/javascript" src="{$baseUri}/js/combobox.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.nette.js"></script>
+        <script type="text/javascript" src="{$baseUri}/js/my.js"></script>
+        <script type="text/javascript" src="{$baseUri}/js/jquery.mousewheel-3.0.6.pack.js"></script>
+        <script type="text/javascript" src="{$baseUri}/js/jquery.fancybox.pack.js"></script>
+    	<link rel="stylesheet" type="text/css" href="{$baseUri}/css/fancybox/fancybox.css" media="screen" />
+
 
         <link rel="stylesheet" href="{$baseUri}/css/jquery-ui-1.8.css" type="text/css" />
 
@@ -18,42 +24,42 @@
 
         <link rel="stylesheet" type="text/css" media="screen" href="{$baseUri}/css/site.css" />
         <script type="text/javascript">
-            function changeRole(id){
-                location.href = {link changeRole!}+"&id=" + id; //směrování na handler
-            }
+            
+                function changeRole(id){
+                    location.href = {link changeRole!}+"&id=" + id; //směrování na handler
+                }
+                $('.fancybox').fancybox();
+            
+            
         </script>
     </head>
 
     <body>
-        <div id="menu" n:inner-if="$user->isLoggedIn()">
-            <a n:href=":Accountancy:Default:">Ucetnictvi</a> |
-            <a n:href=":Accountancy:Test:">TEST</a> |
-            <a n:href=":User:Default:">User</a><br />
-        </div>
+        <div id="page">
+            <div id="menu" n:inner-if="$user->isLoggedIn()">
+                <a n:href=":Accountancy:Default:">Ucetnictvi</a> |
+                <a n:href=":Accountancy:Test:">TEST</a> |
+                <a n:href=":User:Default:">User</a><br />
+            </div>
 
-        <div id="rightColumn">
-            {if ($user->isLoggedIn ())}
-            <p>
-                Jsi přihlášen jako {$user->getIdentity()->DisplayName}  <a href="{link logOut!}">Odhlásit se</a><br />
-                {*}
-                Pracovat jako: 
-                <select onchange="changeRole(this.value)">
-                    <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->DisplayName}</option>
-                </select>
-                {*}
-            </p>
-            {else}
-                {*control auth*}<br />
-            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL">Přihlásit se</a>
-            {/if}
-        </div>
+            <div id="content">
+                <div id="authBox">
+                {if ($user->isLoggedIn ())}
+                <p>
+                    Jsi přihlášen jako {$user->getIdentity()->DisplayName} <a href="{link logOut!}">Odhlásit se</a><br />
+                    Pracovat jako: <select onchange="changeRole(this.value)">
+                        <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->DisplayName}</option>
+                    </select>
+                </p>
+                {else}
+                    <br /><a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL">Přihlásit se</a>
+                {/if}
+            </div><!-- /rightColumn -->
+                
+            {snippet flashmesages}{foreach $flashes as $flash}<div class="flash {$flash->type}">{$flash->message}</div>{/foreach}{/snippet}
+            {include #content}
+            </div><!-- /content -->
 
-        <div id="content">
-        {snippet flashmesages}{foreach $flashes as $flash}<div class="flash {$flash->type}">{$flash->message}</div>{/foreach}{/snippet}
-        {include #content}
-        </div>
-
-
-
+        </div> <!-- /page -->
     </body>
 </html>

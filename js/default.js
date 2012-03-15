@@ -1,6 +1,5 @@
 $(function(){
-
-
+	
 
         //Autocompleter
         var text = {$autoCompleter};
