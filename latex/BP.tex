@@ -124,11 +124,11 @@ Nevýhody systému:
 Uživatelské role vycházejí z uživatelských rolí ze systému SkautIS. V systému rozlišuji, jestli je přihlášen jako "člen" v dané jednotce či jako její \uv{vedoucí/administrátor}.
 
 \section{Případy užití}
- \begin{figure}\centering
- 	\includegraphics[width=1\textwidth]{use-case.jpg}
- 	\caption[Use case]{Use case diagramy pro vedoucího akce a hospodáře}\label{fig:float}
+ \begin{figure}[h]\centering
+ 	\includegraphics[width=0.7\textwidth]{img/use-case.jpg}
+ 	\caption[Případy užití]{Use case diagramy pro vedoucího akce a hospodáře}\label{fig:use-case}
  \end{figure}
-
+Vedoucí může založit akci u které, pak může spravovat její základní údaje. K akci může přidat výdajové a příjmové paragony. Přiřazuje účastníky a nastavuje účastnický poplatek. Akci může uzavřít, aby bylo vidět, že je účetnictví hotové. V případě potřeby změn, lze výpravu znovu otevřít.
 
 \section{Výběr technologií}
 \subsection{PHP}
@@ -158,19 +158,63 @@ David Grudl kromě Nette Frameworku vytvořil také databázovou vrstvu dibi(htt
 
 
 \section{Životní cyklus akce}
-
+ \begin{figure}[h] \centering
+ 	\includegraphics[width=0.7\textwidth]{img/state-diagram.jpg}
+ 	\caption[Životní cyklus akce]{Životní cyklus akce}\label{fig:state-diagram}
+ \end{figure}
+ Životní cyklus akce vychází z možností entity Event ve SkautISu. Ta může nabývat tyto stavy:
+ 
+ \begin{itemize}
+ 	\item rozpracována
+	\item uzavřena
+	\item zurušena
+ \end{itemize} 
+ 
+ Akce je ve stavu \uv{rozpracována} hned po jejím vytvoření a to dokud akci neuzavřeme nebo ji nezrušíme. U \uv{uzavřené} akce je evidováno kdy a kdo ji uzavřel a v případě potřeby ji lze znovu otevřít do stavu \uv{rozpracována} a dále upravovat. Změna stavu akce na \uv{zrušená} je nevratný krok a po té už akce bude přístupná pouze pro čtení nebo úplné vymazání ze systému.  
 
 \section{Navigace}
+ \begin{figure}[h] \centering
+ 	\includegraphics[width=0.7\textwidth]{img/navigation.png}
+ 	\caption[Navigační model]{Navigační model vytvořený ve Web Ratio}\label{fig:navigation-diagram}
+ \end{figure}
 
+Celý web je přístupný pouze po přihlášení přes SkautIS, protože na tomto přihlášení je závislá většina funkcí systému. Na všech stránkách je možnost vybrat používanou roli ze seznamu dostupných rolí SkautISu. Na úvodní stránce je seznam všech akcí, ke kterým máme přístup a pokud máme právo založit akci, tak i odkaz na založení.
+
+Pokud máme vybranou akci, můžeme upravovat její základní údaje, spravovat seznam účetních dokladů a seznam účastníků i exportovat výstupy ze systému. Základními údaji výpravy jsou:
+\begin{itemize}
+	\item Název akce
+	\item Termín akce
+	\item Vedení akce
+	\begin{itemize}
+		\item Vedoucí akce
+		\item Zástupce vedoucího akce
+		\item Hospodář akce
+	\end{itemize}
+\end{itemize}
+
+Pokladní kniha spravuje příjmové i výdajové druhotné účetní doklady. 
+
+Do seznamu účastníků můžeme přidávat osoby jejich označením v seznamu. Pokud potřebujeme přidat osobu, která v seznamu není, musíme jí vyplnit základní údaje. V sekci exportů najdeme všechny výstupy, které systém nabízí.
+    
 
 \section{Komunikace se systémem SkautIS}
+Veškerá komunikace se systémem SkautIS probíhá přes webové služby (Web Services). SkautIS v současné době (23.3.2012) nabízí 12 webových služeb rozdělených podle jejich zaměření. Zde uvádím jejich seznam, kde tučně označené jsou ty, s kterými systém pracuje. (přebráno z \url{https://is.skaut.cz/JunakWebservice/})
+\begin{itemize}
+	\item ApplicationManagement.asmx - Webová služba pro správu přístupů externích aplikací
+	\item Evaluation.asmx - Webová služba pro práci s hodnocením kvality
+	\item \textbf{Events.asmx} - Webová služba pro práci s akcemi (sněmy apod.)
+	\item Exports.asmx - Webová služba pro export dat do jiných systémů
+	\item Journal.asmx - Webová služba pro práci s časopisy a fakturami
+	\item Message.asmx - Interní zpravodajský systém
+	\item \textbf{OrganizationUnit.asmx} - Webová služba pro práci s organizačními jednotkami a osobami
+	\item Reports.asmx - Generování tiskových sestav
+	\item Summary.asmx - Exporty/přehledy
+	\item Telephony.asmx - Skautská telefonní síť
+	\item \textbf{UserManagement.asmx} - Webová služba pro práci s uživateli (zakládání, přidělování rolí, přihlašování apod.).
+	\item Welcome.asmx - Webová služba pro práci s uvítacími balíčky
+\end{itemize}
 
- 
-Obecný postup
-=========
-Nadpis
-obrázek
-popis kapitoly
+Pro jednoduší práci s webovými službami SkautISu vytvořím obecnou knihovnu, která umožní snadnější přístup a do budoucna zjednoduší přístup dalším vývojářům na platformě PHP.
 
 
 \chapter{Realizace}
@@ -261,7 +305,7 @@ popis kapitoly
  
  Příkazem \verb|\includegraphics| lze obrázky vkládat přímo, doporučujeme však použít plovoucí prostředí, konkrétně \verb|figure|. Například obrázek \ref{fig:float} byl vložen tímto způsobem. Vůbec přitom nevadí, když je obrázek umístěn jinde, než bylo původně zamýšleno -- je tomu tak hlavně kvůli dodržení typografických konvencí. Namísto vynucování konkrétní pozice obrázku doporučujeme používat odkazování z~textu (dvojice příkazů \verb|\label| a \verb|\ref|).
  
- \begin{figure}\centering
+ \begin{figure}[h]\centering
  	\includegraphics[width=0.5\textwidth, angle=30]{cvut-logo-bw}
  	\caption[Příklad obrázku]{Ukázkový obrázek v~plovoucím prostředí}\label{fig:float}
  \end{figure}
