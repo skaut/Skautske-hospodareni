@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author sinacek
+ * @author Hána František
  * akce
  */
 class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
@@ -11,10 +11,14 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
         /** @var ActionService */
         $this->service = new ActionService();
     }
+    
+    public function beforeRender() {
+        parent::beforeRender();
+    }
 
     public function actionList() {
         $list = $this->service->getMyActions();
-        //dump($list);
+        //dump($unit);
         if (empty($list)) {
             $this->redirect("create");
         }
@@ -24,6 +28,12 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
     public function renderCreate() {
         
     }
+    
+    public function actionOpen($aid) {
+        $res = $this->service->open($aid);
+        $this->flashMessage("Akce byla znovu otevřena.");
+        $this->redirect("view", array("aid"=> $this->aid));
+    }
 
     public function renderEdit($aid) {
         $action = $this->service->get($aid);
@@ -31,13 +41,13 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
 
         $form = $this['formEdit'];
         $form->setDefaults(array(
-            "aid" => $aid,
-            "name" => $action->DisplayName,
+            "aid"   => $aid,
+            "name"  => $action->DisplayName,
             "start" => $action->StartDate,
-            "end" => $action->EndDate,
-            "leader" => $func[0]->ID_Person,
-            "assistant" => $func[1]->ID_Person,
-            "economist" => $func[2]->ID_Person,
+            "end"   => $action->EndDate,
+            "leader"    =>  $func[0]->ID_Person,
+            "assistant" =>  $func[1]->ID_Person,
+            "economist" =>  $func[2]->ID_Person,
         ));
     }
 
@@ -133,7 +143,7 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
     }
 
     public function renderView($aid) {
-        $this->template->a = $this->service->get($aid);
+        $this->template->data = $this->service->get($aid);
     }
 
     public function handleCancel($id) {

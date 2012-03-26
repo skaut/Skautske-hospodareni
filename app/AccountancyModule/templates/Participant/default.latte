@@ -2,22 +2,93 @@
 
 <h2>Seznam účastníků</h2>
 
+{include ../ActionMenu.latte}
+
 {dump $participants}
 
-<div style="float:left" n:ifset="$participants">
-<h3>Již zadaní účastníci</h3>
-<table border="1">
-    <tr n:foreach="$participants as $p">
-        <td><a n:href="removeParticipant! $p->ID_Participant">Smazat</a></td>
-        <td>{$p->Person}</td>
-    </tr>
-</table>
+
+
+<div style="float:left">
+    <h3>Přidat novou osobu</h3>
+    {control formAddParticipantNew}
+
+    <div n:ifset="$participants">
+        <h3>Vybraní účastníci</h3>
+        <a class="paymentMass fancybox.ajax" n:href="paymentMass $aid">Vyplnit částky hromadně</a>
+        <table border="1" id="participants-list">
+            <tr>
+                <th>&nbsp;</th>
+                <th>Příjmení a jméno</th>
+                <th>Dnů</th>
+                <th>Částka</th>
+            </tr>
+            <tr n:foreach="$participants as $p">
+                <td><a n:href="removeParticipant! $p->ID_Participant">Smazat</a></td>
+                <td>{$p->Person}</td>
+                <td id="par-days-{$p->ID}">{$p->Days}</td>
+                <td id="par-payment-{$p->ID}">{ifset $p->Note}{$p->Note}{else}0{/ifset}</td>
+            </tr>
+        </table>
+    </div>
 </div>
 
-{control formParticipants}
+<div style="float:left;margin-left:15px;">
+    <div>
+        <a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a> &rarr;
+        <a n:href="this $aid, $unit->ID">{$unit->DisplayName}</a>
+        
+        <ul n:ifset="$uchildrens" style="margin-top:0;padding-left:5px;float: right;list-style-type: none;">
+            <li n:foreach="$uchildrens as $ch">&rarr; <a n:href="this $aid, $ch->ID">{$ch->DisplayName}</a></li>
+        </ul>
+        <hr class="hidden"/>
+    </div>
 
-<hr style="clear: both;">
+    <a n:href="changeDirectMemberOnly!" class="ajax">Zobrazit i z podřízených jednotek?</a> {if !$directMemberOnly}Ano{else}Ne{/if}
+
+    {snippet potencialParticipants}
+        {control formParticipants}
+    {/snippet}
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#[id^="par-days-"]').editable({link editDays!},  { 
+         type      : 'text',
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         id   : 'id',
+         name : 'days',
+         placeholder : ' ',
+     });
+});
+
+$(document).ready(function() {
+    $('#[id^="par-payment-"]').editable({link editPayment!},  { 
+         type      : 'text',
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         id   : 'id',
+         name : 'payment',
+         placeholder : ' ',
+     });
+
+    $(".paymentMass").fancybox({
+		maxWidth	: 800,
+		maxHeight	: 600,
+		fitToView	: false,
+		autoSize	: true,
+		closeClick	: false,
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+    
+
+});
+</script>
+
+
 {*}
+<hr style="clear: both;">
 {ifset $roles}
     {foreach $roles as $roleId => $roleLabel}
         <input type="radio" id="{$roleId}" name="groups" value="{$roleId}" class="selectGroup" {if $sg == $roleId}checked="checked"{/if} /><label for="{$roleId}">{$roleLabel}</label>

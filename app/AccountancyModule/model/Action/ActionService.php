@@ -5,22 +5,29 @@
  */
 class ActionService extends BaseService {
 
-    /**
-     * vrací seznam paragonů k dané akci
-     */
-    public function getReceipts($actionId) {
-        $p = new Paragon(array("price" => 20));
-        return array($p);
-    }
+//    public function getReceipts($actionId) {
+//        $p = new Paragon(array("price" => 20));
+//        return array($p);
+//    }
 
     public function getMyActions() {
         return $this->skautIS->event->EventGeneralAll();
     }
 
+    /**
+     * vrací detail vybraé akce
+     * @param ID_Event $id
+     * @return stdClass 
+     */
     public function get($id) {
         return $this->skautIS->event->EventGeneralDetail(array("ID" => $id));
     }
-
+    
+    /**
+     * vrací obsazení funkcí na zadané akci
+     * @param ID_Unit $id
+     * @return type 
+     */
     public function getFunctions($id) {
         return $this->skautIS->event->EventFunctionAllGeneral(array("ID_EventGeneral" => $id));
     }
@@ -104,7 +111,7 @@ class ActionService extends BaseService {
     }
 
     /**
-     * zrusit akci
+     * zrušit akci
      * @param int $id
      * @param string $msg
      * @return type 
@@ -115,6 +122,18 @@ class ActionService extends BaseService {
                         array(
                     "ID" => $id,
                     "CancelDecision" => $msg
+                        ), "eventGeneral");
+    }
+    
+    /**
+     * znovu otevřít akci
+     * @param ID_Event $id
+     * @return type 
+     */
+    public function open($id) {
+        return $this->skautIS->event->EventGeneralUpdateOpen (
+                        array(
+                    "ID" => $id,
                         ), "eventGeneral");
     }
 

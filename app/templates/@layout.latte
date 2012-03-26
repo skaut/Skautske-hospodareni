@@ -14,6 +14,7 @@
         <script type="text/javascript" src="{$baseUri}/js/my.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.mousewheel-3.0.6.pack.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.fancybox.pack.js"></script>
+        <script type="text/javascript" src="{$baseUri}/js/jquery.jeditable.mini.js"></script>
     	<link rel="stylesheet" type="text/css" href="{$baseUri}/css/fancybox/fancybox.css" media="screen" />
 
 
@@ -25,12 +26,6 @@
         <link rel="stylesheet" type="text/css" media="screen" href="{$baseUri}/css/site.css" />
         <script type="text/javascript">
             
-                function changeRole(id){
-                    location.href = {link changeRole!}+"&id=" + id; //směrování na handler
-                }
-                $('.fancybox').fancybox();
-            
-            
         </script>
     </head>
 
@@ -38,6 +33,7 @@
         <div id="page">
             <div id="menu" n:inner-if="$user->isLoggedIn()">
                 <a n:href=":Accountancy:Default:">Ucetnictvi</a> |
+                <a n:href=":Accountancy:Action:list">Akce</a> |
                 <a n:href=":Accountancy:Test:">TEST</a> |
                 <a n:href=":User:Default:">User</a><br />
             </div>
@@ -59,7 +55,10 @@
             {snippet flashmesages}{foreach $flashes as $flash}<div class="flash {$flash->type}">{$flash->message}</div>{/foreach}{/snippet}
             {include #content}
             </div><!-- /content -->
-
+            
+            <div id="footer">
+                Layout &rarr; Footer
+            </div>
         </div> <!-- /page -->
     </body>
 </html>

@@ -124,10 +124,10 @@ Nevýhody systému:
 Uživatelské role vycházejí z uživatelských rolí ze systému SkautIS. V systému rozlišuji, jestli je přihlášen jako "člen" v dané jednotce či jako její \uv{vedoucí/administrátor}.
 
 \section{Případy užití}
- \begin{figure}[h]\centering
+\begin{figure}[h]\centering
  	\includegraphics[width=0.7\textwidth]{img/use-case.jpg}
  	\caption[Případy užití]{Use case diagramy pro vedoucího akce a hospodáře}\label{fig:use-case}
- \end{figure}
+\end{figure}
 Vedoucí může založit akci u které, pak může spravovat její základní údaje. K akci může přidat výdajové a příjmové paragony. Přiřazuje účastníky a nastavuje účastnický poplatek. Akci může uzavřít, aby bylo vidět, že je účetnictví hotové. V případě potřeby změn, lze výpravu znovu otevřít.
 
 \section{Výběr technologií}
@@ -152,7 +152,6 @@ NotORM, od Jakuba Vrány, se prezentuje jako plnohodnotná alternativa k běžn�
 Nette Framework přímo nabízí vlastní vrstvu pro práci s databází (http://doc.nette.org/cs/database). Vychází z NotORM, ale má trochu odlišnou syntaxi. Mě nevyhovuje ze stejných důvodů jako NotORM.
 
 David Grudl kromě Nette Frameworku vytvořil také databázovou vrstvu dibi(http://dibiphp.com/). Já jsem si ji velmi oblíbil pro její jednoduchost a předem neurčený způsob užití. Vybral jsem si ji pro tento projekt, protože podle mého názoru plnohodnotně pokryje databázové potřeby tohoto projektu a práci s ním již dobře znám.
-
 
 \section{Datový model}
 
@@ -215,6 +214,21 @@ Veškerá komunikace se systémem SkautIS probíhá přes webové služby (Web S
 \end{itemize}
 
 Pro jednoduší práci s webovými službami SkautISu vytvořím obecnou knihovnu, která umožní snadnější přístup a do budoucna zjednoduší přístup dalším vývojářům na platformě PHP.
+
+\begin{figure}[h] \centering
+ 	\includegraphics[width=1\textwidth]{img/comunication.png}
+ 	\caption[SkautIS]{Příklad komunikace se SkautISem}\label{fig:comunication-diagram}
+\end{figure}
+
+Pro komunikce se musíme přihlásit na stránkách SkautISu se zadaným Application ID, které jednoznačně určuje naši aplikaci. Po úspěšném přihlášení budeme přesměrováni na předem zadanou stránku, která metodou POST obdrží skautIS\_Token, skautIS\_IDRole, skautIS\_IDUnit a obslouží přihlášení na naší straně.   
+
+\begin{itemize}
+	\item skautIS\_Token - unikátní token pro užiatele a každé přihlášení. Je předáván jako parametr při každém volání webové služby. Jeho platnost je 30 min a s každým použitím se jeho platnost opět nastaví na 30 min. 
+	\item skautIS\_IDRole - ID přihlášené role - výchozí je naposledy použitá role 
+	\item skautIS\_IDUnit - ID jednotky, ke které je navázána přihlášená role 
+\end{itemize}
+
+Nyní můžeme volat funkce jednotlivých webových služeb se zadáním parametru skautIS\_Token. Pro volání budeme používat mnou naprogramovanou knihovnu. 
 
 
 \chapter{Realizace}

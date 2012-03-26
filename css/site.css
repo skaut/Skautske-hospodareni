@@ -6,6 +6,15 @@ body {
     background-color: #ff0000;
 }
 
+/*#ajax-spinner {
+	margin: 15px 0 0 15px;
+	padding: 13px;
+	background: white url('../images/layout/spinner.gif') no-repeat 50% 50%;
+	font-size: 0;
+	z-index: 123456;
+	display: none;
+}*/
+
 #page {
     margin: 0 auto;
     width: 960px;
@@ -45,6 +54,7 @@ body {
 #footer {
     border-top:2px #ccc solid;
     padding:3px;
+    text-align: center;
 }
 
 #footer p{

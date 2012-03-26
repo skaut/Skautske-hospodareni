@@ -1,14 +1,16 @@
 {block #content}
-<h2>{$a->DisplayName}</h2>
+<h2>{$data->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
 
-Jednotka : {$a->Unit}<br />
-Od : {$a->StartDate|date:"j. n. Y"}<br />
-Do : {$a->EndDate|date:"j. n. Y"}<br />
-Stav : {$a->EventGeneralState}<br /><br />
+Jednotka : {$data->Unit}<br />
+Od : {$data->StartDate|date:"j. n. Y"}<br />
+Do : {$data->EndDate|date:"j. n. Y"}<br />
+Stav : {$data->EventGeneralState}<br /><br />
 
-
-<a n:href="edit $aid">Upravit</a>
-
-{dump $a}
+{if $actionState == "draft"}
+    <a n:href="edit $aid">Upravit</a>
+{elseif $actionState == "closed"}
+    <a n:href="open $aid">Znovu otevřít</a>
+{/if}
+{dump $data}
