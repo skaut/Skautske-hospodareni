@@ -12,6 +12,13 @@ class Accountancy_BasePresenter extends BasePresenter {
      * @var int
      */
     protected $aid;
+    
+    /**
+     * stav akce
+     * nastavená pouze pokud je nastaveno $this->aid
+     * @var string (closed, draft, ...)
+     */
+    protected $actionState;
 
     protected function startup() {
         parent::startup();
@@ -27,8 +34,12 @@ class Accountancy_BasePresenter extends BasePresenter {
             $sis->updateLogoutTime();
 
         if (($aid = $this->context->httpRequest->getQuery("aid"))) {
-            $this->template->aid = $aid;
-            $this->aid = $aid;
+            $this->template->aid = $this->aid = $aid;
+        }
+        
+        if(isset($this->aid) && !is_null($this->aid)){
+            $aservice = new ActionService();
+            $this->template->actionState = $this->actionState = $aservice->get($this->aid)->ID_EventGeneralState;
         }
 
         

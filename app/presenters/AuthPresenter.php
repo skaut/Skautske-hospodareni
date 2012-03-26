@@ -63,14 +63,10 @@ class AuthPresenter extends BasePresenter {
                 $this->context->application->restoreRequest($ReturnUrl);
             }
 
-            $this->presenter->redirect(':Default:');
+            $this->presenter->redirect(':Accountancy:Default:');
         } catch (SkautIS_AuthenticationException $e) {
             $this->flashMessage($e->getMessage(), "fail");
             $this->redirect(":Auth:");
-        } catch (AuthenticationException $e) {
-            //není registrace
-            //$this->redirect(":SkautIS:Registration:");
-            throw new NotImplementedException();
         }
     }
 

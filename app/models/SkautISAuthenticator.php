@@ -21,7 +21,6 @@ class SkautISAuthenticator extends Object implements IAuthenticator {
         $data = $credentials[0];
         $skautis = SkautIS::getInstance();
         $person = $skautis->org->personDetail(array("ID"=>$data->ID_Person));
-        
         $data->DisplayName = $person->DisplayName;
         return new Identity($data->ID, NULL, $data);
     }
