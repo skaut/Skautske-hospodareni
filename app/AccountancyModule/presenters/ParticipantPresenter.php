@@ -183,7 +183,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
                 ->addRule(Form::FILLED, "Zadejte částku")
                 ->setType('number')
                 ->getControlPrototype()->placeholder("bez Kč");
-        $form->addCheckbox("rewrite", "Přemazat dosavadní údaje?");
+        $form->addCheckbox("rewrite", "Přemazat stávající údaje?");
         
         $form->addHidden("aid", $aid);
         $form->addSubmit('send', 'Vyplňit');

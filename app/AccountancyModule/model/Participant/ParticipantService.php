@@ -4,6 +4,7 @@ class ParticipantService extends BaseService {
 
     public function __construct() {
         parent::__construct();
+        /** @var ParticipantTable */
         $this->table = new ParticipantTable();
     }
 
@@ -89,6 +90,12 @@ class ParticipantService extends BaseService {
         return $this->skautIS->event->ParticipantGeneralDelete(array("ID" => $pid));
     }
     
+    /**
+     * hromadné nastavení účastnické částky
+     * @param int $actionId - ID ake
+     * @param int $newPayment - nově nastavený poplatek
+     * @param bool $rewrite - přepisovat staré údaje?
+     */
     public function setPaymentMass($actionId, $newPayment, $rewrite = false) {
         if($newPayment < 0)
             $newPayment = 0;

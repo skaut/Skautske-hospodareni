@@ -1,16 +1,54 @@
 {block #content}
-<h2>{$data->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
+<h2>{$data->DisplayName}</h2>
 
-Jednotka : {$data->Unit}<br />
-Od : {$data->StartDate|date:"j. n. Y"}<br />
-Do : {$data->EndDate|date:"j. n. Y"}<br />
-Stav : {$data->EventGeneralState}<br /><br />
 
-{if $actionState == "draft"}
-    <a n:href="edit $aid">Upravit</a>
-{elseif $actionState == "closed"}
-    <a n:href="open $aid">Znovu otevřít</a>
-{/if}
+<table class="myTable table table-bordered table-condensed">
+    <tr>
+        <th>Jednotka</th>
+        <td>{$data->Unit}</td>
+    </tr>
+    <tr>
+        <th>Od</th>
+        <td>{$data->StartDate|date:"j. n. Y"}</td>
+    </tr>
+    <tr>
+        <th>Do</th>
+        <td>{$data->EndDate|date:"j. n. Y"}</td>
+    </tr>
+    <tr>
+        <th>Typ</th>
+        <td>{$data->EventGeneralType}</td>
+    </tr>
+    <tr>
+        <th>Rozsah</th>
+        <td>{$data->EventGeneralScope}</td>
+    </tr>
+    <tr>
+        <th>Stav</th>
+        <td>{!$data->ID_EventGeneralState|eventLabel} {if $actionState == "closed"} <a n:href="open $aid">Znovu otevřít</a>{/if}</td>
+    </tr>
+</table>
+
+<div n:if="$actionState == 'draft'">
+    <a class="btn btn-primary" href="#myModal" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
+
+    <div class="modal myModal fade" id="myModal">
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>Upravit akci</h3>
+        </div>
+        <div class="modal-body">
+            {control formEdit}
+        </div>
+        <div class="modal-footer">
+            <a data-dismiss="modal" class="close btn">Zavřít</a>
+        </div>
+    </div>
+</div>
+
+
+
+
 {dump $data}

@@ -1,8 +1,7 @@
 {block #content}
+{include ../ActionMenu.latte}
 
 <h2>Pokladní kniha</h2>
-
-{include ../ActionMenu.latte}
 
 {snippet tabs}
 <div id="cashbook-tabs">
@@ -11,21 +10,86 @@
         <li><a href="#cashbook-tabs-prijem">Příjmový</a></li>
     </ul>
     <div id="cashbook-tabs-vydej">
-		{$formOut}
+		{control formOutAdd}
     </div>
     <div id="cashbook-tabs-prijem">
-		{$formIn}
+		{control formInAdd}
     </div>
 </div>
+{/snippet}
+
+<div n:snippet="paragony" style="float: left;">
+{if $list}
+    {if $isInMinus}
+    <p class="alert alert-error">
+        Pokladní kniha je v záporných číslech a to nesmí nastat!
+    </p>
+    {/if}
+
+    <table class="table myTable table-striped table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                {*}
+                <th n:if="count($list) > 1">&nbsp;</th>
+                <th n:if="count($list) > 1">&nbsp;</th>
+                {*}
+                <th>Datum</th>
+                <th>Účel výplaty</th>
+                <th>Typ</th>
+                <th>Komu/Od</th>
+                <th>Příjem</th>
+                <th>Výdej</th>
+                <th>Zůstatek</th>
+            </tr>
+        </thead>
+        <tbody>
+        {assign zustatek => 0}
+            <tr n:foreach="$list as $key => $item">
+                <td>
+                    <a href="{link remove! $item->id, $aid}" onclick="return confirm('Opravdu chcete smazat paragon?')"><img src="{$baseUri}/images/layout/delete.gif" alt="Smazat" /></a>
+                    <a n:href="edit $item->id, $aid" class="fancybox fancybox.ajax"><img src="{$baseUri}/images/layout/edit.gif" alt="Upravit" /></a>
+                </td>
+            {*}
+            <td n:if="count($list) > 1"><a href="{link up! $key}" n:if="!$iterator->first" class="ajax">Up</a></td>
+            <td n:if="count($list) > 1"><a href="{link down! $key}" n:if="!$iterator->last" class="ajax">Down</a></td>
+            {*}
+                <td>{$item->date|date:"j.n.Y"}</td>
+                <td>{$item->purpose|truncate:"35"}</td>
+                <td title="{$item->cshort}">{$item->cshort}</td>
+                <td>{$item->recipient}</td>
+                <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
+                <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
+            {?
+                $zustatek += $item->ctype == 'in' ? $item->price : (-$item->price);
+                if(preg_match("/^-?[0-9]*\.[0-9]$/", $zustatek))//doplneni na 2 desetina mista
+                    $zustatek .= "0";
+                if($zustatek < 0)
+                    $errors[0] = "";
+            }
+                <td {if $zustatek < 0}style="background-color:#ff5500;"{/if}>{$zustatek}</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><b>Konečný stav</b></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><b>{$zustatek}</b></td>
+            </tr>
+        <tbody>
+    </table>
+    {else}
+    <p>Nemáte zde žádný doklad.</p>
+{/if}
+</div>
+
 
 <script type="text/javascript" >
     $(function(){
 
-//        $( "#cashbook-tabs" ).tabs({
-//            show: function(event, ui) {
-//                    //$('.calc').html('');
-//                }
-//        });
         $( "#cashbook-tabs" ).tabs();
 
         //Autocompleter
@@ -35,12 +99,13 @@
             delay: 0,
             minLength: 2
         };
-        $('#'+{$formIn['recipient']->htmlId}).autocomplete(optionsAC);
-        $('#'+{$formOut['recipient']->htmlId}).autocomplete(optionsAC);
+        $('#form-in-recipient').autocomplete(optionsAC);
+        $('#form-out-recipient').autocomplete(optionsAC);
 
         //CALC
-        var priceInputIn = $('#' + {$formIn['price']->htmlId});
-        var priceInputOut = $('#' + {$formOut['price']->htmlId});
+        var priceInputIn = $('#form-in-price');
+        var priceInputOut = $('#form-out-price');
+        
         priceInputIn.after('<span> </span>');
         priceInputOut.after('<span> </span>');
 
@@ -70,84 +135,11 @@
                     if(val.length < 1)
                         obj.next().html('');
                     else
-                        obj.next().html(' = '+eval(val));
+                        obj.next().html('='+eval(val));
                 }
             )
         }
-
         priceControl(priceInputIn);
         priceControl(priceInputOut);
-
     })
 </script>
-{/snippet}
-
-{snippet paragony}
-{if $list}
-    {if $isInMinus}
-        <p style="background-color: #ff5500;color:#000000;padding: 5px 10px;text-align: center;font-weight: bold;font-size: 20px;">Upozornění:  vaše pokladní kniha je v záporných číslech a to není možné !</p>
-    {/if}
-
-    <table class="paragony">
-        <tr>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            {*}
-            <th n:if="count($list) > 1">&nbsp;</th>
-            <th n:if="count($list) > 1">&nbsp;</th>
-            {*}
-            <th>Datum</th>
-            <th>Účel výlpaty</th>
-            <th>Typ</th>
-            <th>Komu</th>
-            <th>Příjem</th>
-            <th>Výdej</th>
-            <th>Zůstatek</th>
-        </tr>
-        {assign zustatek => 0}
-        <tr n:foreach="$list as $key => $item">
-            <td><a href="{link remove! $item->id, $aid}" onclick="return confirm('Opravdu chcete smazat paragon?')"><img src="{$baseUri}/images/layout/delete.gif" alt="Smazat" /></a></td>
-            <td><a n:href="edit $item->id, $aid" class="fancybox fancybox.ajax"><img src="{$baseUri}/images/layout/edit.gif" alt="Upravit" /></a></td>
-            {*}
-            <td n:if="count($list) > 1"><a href="{link up! $key}" n:if="!$iterator->first" class="ajax">Up</a></td>
-            <td n:if="count($list) > 1"><a href="{link down! $key}" n:if="!$iterator->last" class="ajax">Down</a></td>
-            {*}
-            <td>{$item->date|date:"j.n.Y"}</td>
-            <td>{$item->purpose|truncate:"35"}</td>
-            <td title="{$item->cshort}">{$item->cshort}</td>
-            <td>{$item->recipient}</td>
-            <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
-            <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
-            {?
-                $zustatek += $item->ctype == 'in' ? $item->price : (-$item->price);
-                if(preg_match("/^-?[0-9]*\.[0-9]$/", $zustatek))//doplneni na 2 desetina mista
-                    $zustatek .= "0";
-                if($zustatek < 0)
-                    $errors[0] = "";
-            }
-            <td {if $zustatek < 0}style="background-color:#ff5500;"{/if}>{$zustatek}</td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            {*}
-            <td n:if="count($list) > 1">&nbsp;</td>
-            <td n:if="count($list) > 1">&nbsp;</td>
-            {*}
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td><b>Konečný stav</b></td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td><b>{$zustatek}</b></td>
-        </tr>
-    </table><br /><br />
-    {else}
-    <p>Nemáte zde žádný doklad.</p>
-{/if}
-
-{/snippet}
-
-
-<hr class="hidden" />

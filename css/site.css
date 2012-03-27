@@ -1,19 +1,82 @@
 body {
-
+    padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
 
 .fail {
     background-color: #ff0000;
 }
 
-/*#ajax-spinner {
+.required {
+    color: maroon;
+}
+
+.myTable {
+    margin: 8px 0 18px;
+    width: auto;
+}
+
+.myModal {
+    display: none;
+}
+
+#cashbook-tabs {
+    width: 350px;
+    float: left;
+    margin-right: 8px;
+}
+
+#cashbook-tabs input[type="text"], #cashbook-tabs input.date, #cashbook-tabs input[type="number"] {
+    width: 170px;
+}
+
+/*JQuery UI */
+.ui-widget {
+    font-size: 0.9em;
+    line-height: 1em;
+}
+
+#cashbook-tabs .ui-tabs-panel {
+    padding: 0.5em 0 1em 0.5em;
+}
+.ui-datepicker {
+    width: 15em;
+}
+
+form input + label {
+    display: inline;
+}
+
+input[type="checkbox"], input[type="radio"] {
+    margin: 3px;
+}
+
+#cashbook-tabs table th {
+    width: 120px;
+}
+
+
+
+/*
+	
+.calendar tr td ul {
+    padding: 0;
+    margin: 0;
+}
+
+.calendar tr td ul li {
+    list-style-type: none;
+    list-style: none inside;
+}*/
+
+/*
+#ajax-spinner {
 	margin: 15px 0 0 15px;
 	padding: 13px;
 	background: white url('../images/layout/spinner.gif') no-repeat 50% 50%;
 	font-size: 0;
 	z-index: 123456;
 	display: none;
-}*/
+}
 
 #page {
     margin: 0 auto;
@@ -55,6 +118,7 @@ body {
     border-top:2px #ccc solid;
     padding:3px;
     text-align: center;
+    clear: both;
 }
 
 #footer p{
@@ -77,13 +141,6 @@ a[href^="error:"] {
 
 #newsletter {
 
-}
-
-#spinner {
-    display: none;
-    position: absolute;
-    border: none;
-    z-index: 1000;
 }
 
 .popup {
@@ -122,14 +179,14 @@ a img {
 }
 
 
-/* ---- Combobox ----*/
+ ---- Combobox ----
 .ui-autocomplete-input { 
-/*    margin: 0; 
-    padding: 0.48em 0 0.47em 0.45em;*/
+    margin: 0; 
+    padding: 0.48em 0 0.47em 0.45em;
 }
 	
 
-/* --------*/
+ --------
 .calendar tr td ul {
     padding: 0;
     margin: 0;
@@ -140,12 +197,12 @@ a img {
     list-style: none inside;
 }
 
-/* --------*/
+ --------
 td.selected{
-    /*background-color: #00ff00;*/
+    background-color: #00ff00;
 }
 
-/* --- PARAGONY --- */
+ --- PARAGONY --- 
 .paragony {
     border: 1px #999 solid;
     margin-left: 370px;
@@ -174,15 +231,9 @@ td.selected{
 }
 
 
-/* JQuery UI */
+ JQuery UI 
 .ui-widget {
     font-size: 0.9em;
 }
 
-
-/* --- TRACKER --- */
-
-.icon {
-    height: 22px;
-}
-
+*/
