@@ -18,27 +18,15 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
 
     public function actionList() {
         $list = $this->service->getMyActions();
-        //dump($unit);
-        if (empty($list)) {
-            $this->redirect("create");
-        }
         $this->template->list = $list;
     }
-
-    public function renderCreate() {
-        
-    }
     
-    public function actionOpen($aid) {
-        $res = $this->service->open($aid);
-        $this->flashMessage("Akce byla znovu otevřena.");
-        $this->redirect("view", array("aid"=> $this->aid));
-    }
-
-    public function renderEdit($aid) {
+    public function renderView($aid) {
+        $this->template->data = $this->service->get($aid);
+        
+        //nastavení dat do formuláře pro editaci
         $action = $this->service->get($aid);
         $func = $this->service->getFunctions($aid);
-
         $form = $this['formEdit'];
         $form->setDefaults(array(
             "aid"   => $aid,
@@ -49,6 +37,22 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
             "assistant" =>  $func[1]->ID_Person,
             "economist" =>  $func[2]->ID_Person,
         ));
+        
+    }
+    
+    public function actionOpen($aid) {
+        $res = $this->service->open($aid);
+        $this->flashMessage("Akce byla znovu otevřena.");
+        $this->redirect("view", array("aid"=> $this->aid));
+    }
+
+    public function handleCancel($id) {
+        if ($this->service->cancel($id)) {
+            $this->flashMessage("Akce byla zrušena");
+        } else {
+            $this->flashMessage("Akci se nepodařilo zrušit", "fail");
+        }
+        $this->redirect("this");
     }
 
     function createComponentFormCreate($name) {
@@ -68,7 +72,8 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
         $form->addSelect("economist", "Hospodář", $combo)
                 ->setPrompt("Vyber")
                 ->getControlPrototype()->setClass("combobox");
-        $form->addSubmit('send', 'Založit akci');
+        $form->addSubmit('send', 'Založit akci')
+                ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -142,18 +147,21 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
         $this->redirect("this");
     }
 
-    public function renderView($aid) {
-        $this->template->data = $this->service->get($aid);
-    }
-
-    public function handleCancel($id) {
-        if ($this->service->cancel($id)) {
-            $this->flashMessage("Akce byla zrušena");
-        } else {
-            $this->flashMessage("Akci se nepodařilo zrušit", "fail");
-        }
-        $this->redirect("this");
-    }
+    //    public function renderEdit($aid) {
+//        $action = $this->service->get($aid);
+//        $func = $this->service->getFunctions($aid);
+//
+//        $form = $this['formEdit'];
+//        $form->setDefaults(array(
+//            "aid"   => $aid,
+//            "name"  => $action->DisplayName,
+//            "start" => $action->StartDate,
+//            "end"   => $action->EndDate,
+//            "leader"    =>  $func[0]->ID_Person,
+//            "assistant" =>  $func[1]->ID_Person,
+//            "economist" =>  $func[2]->ID_Person,
+//        ));
+//    }
 
 }
 

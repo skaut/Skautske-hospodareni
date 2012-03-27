@@ -1,24 +1,40 @@
 {block #content}
 <h2>Seznam akcí</h2>
-
-<a n:href="Action:create">Založit novou akci</a>
-
+<p>
+    <a href="#createNew" data-toggle="modal" class="btn btn-mini"><i class="icon-plus-sign"></i> Založit novou akci</a>
+</p>
 {dump $list}
-<table border="1">
-    <tr>
-        <th>&nbsp;</th>
-        <th>Název</th>
-        <th>Od</th>
-        <th>Do</th>
-        <th>Stav</th>
-    </tr>
-    <tr n:foreach="$list as $i">
-        <td><a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')">Zrušit</a></td>
-        <td><a n:href="view $i->ID">{$i->DisplayName}</a></td>
-        <td>{$i->StartDate|date:"d.m.Y"}</td>
-        <td>{$i->EndDate|date:"d.m.Y"}</td>
-        <td>{$i->EventGeneralState}</td>
-    </tr>
+<table class="myTable table-striped table-bordered table-condensed">
+    <thead>
+        <tr>
+            <th>&nbsp;</th>
+            <th>Název</th>
+            <th>Od</th>
+            <th>Do</th>
+            <th>Stav</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr n:foreach="$list as $i">
+            <td><a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-mini" title="Zrušit akci"><i class="icon-remove icon-white"></i></a></td>
+            <td><a n:href="view $i->ID">{$i->DisplayName}</a></td>
+            <td>{$i->StartDate|date:"d.m.Y"}</td>
+            <td>{$i->EndDate|date:"d.m.Y"}</td>
+            <td>{!$i->ID_EventGeneralState|eventLabel}</td>
+        </tr>
+    </tbody>
 </table>
 
 
+<div class="modal myModal fade" id="createNew">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Založit novou akci</h3>
+    </div>
+    <div class="modal-body">
+            {control formCreate}
+    </div>
+    <div class="modal-footer">
+        <a data-dismiss="modal" class="close btn">Zavřít</a>
+    </div>
+</div>

@@ -34,8 +34,6 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     function renderDefault($aid) {
         $this->template->autoCompleter = $this->userService->getAC();
         $this->template->list = $this->chitService->getAll($aid);
-        $this->template->formIn = $this['formInAdd'];
-        $this->template->formOut = $this['formOutAdd'];
     }
 
     function renderEdit($id, $aid) {
@@ -53,15 +51,34 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
             $form = $this['formInEdit'];
             $form->setDefaults($defaults);
         }
+        $form['recipient']->setHtmlId("form-edit-recipient");
+        $form['price']->setHtmlId("form-edit-price");
         $this->template->form = $form;
         $this->template->autoCompleter = $this->userService->getAC();
+    }
+    
+    function handleRemove($id, $actionId) {
+
+        if ($this->chitService->delete($id, $actionId)) {
+            $this->flashMessage("Paragon byl smazán");
+        } else {
+            $this->flashMessage("Paragon se nepodařilo smazat");
+        }
+
+        if ($this->isAjax()) {
+            $this->invalidateControl("paragony");
+            $this->invalidateControl("flashmesages");
+        } else {
+            $this->redirect('this', $actionId);
+        }
     }
 
     //FORM OUT
 
     function createComponentFormOutAdd($name) {
         $form = self::makeFormOUT($this, $name);
-        $form->addSubmit('send', 'Uložit');
+        $form->addSubmit('send', 'Uložit')
+                ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, 'formAddSubmitted');
         $form->setDefaults(array('type' => 'un'));
         return $form;
@@ -92,13 +109,15 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
                 ->addRule(Form::FILLED, 'Zadejte datum');
         //@TODO kontrola platneho data, problem s componentou
         $form->addText("recipient", "Vyplaceno komu:", 20, 30)
+                ->setHtmlId("form-out-recipient")
                 ->addRule(Form::FILLED, 'Zadejte komu to bylo vyplaceno');
         $form->addText("purpose", "Účel výplaty:", 20, 50)
                 ->addRule(Form::FILLED, 'Zadejte účel výplaty')
                 ->getControlPrototype()->placeholder("3 první položky");
         $form->addText("price", "Cena celkem: ", 20, 100)
-                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
+                ->setHtmlId("form-out-price")
                 ->setType('number')
+                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("vzorce např.20+15*3");
         $categories = $thisP->chitService->getCategoriesOut();
         $form->addRadioList("type", "Typ: ", $categories)
@@ -127,13 +146,15 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form = new AppForm($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum');
-        $form->addText("recipient", "Prijato od:", 20, 30)
+        $form->addText("recipient", "Přijato od:", 20, 30)
+                ->setHtmlId("form-in-recipient")
                 ->addRule(Form::FILLED, 'Zadejte komu to bylo vyplaceno');
         $form->addText("purpose", "Účel příjmu:", 20, 50)
                 ->addRule(Form::FILLED, 'Zadejte účel přijmu');
         $form->addText("price", "Částka: ", 20, 100)
-                ->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+[\+\*])*[0-9]+$/")
+                ->setHtmlId("form-in-price")
                 ->setType('number')
+                ->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("vzorce 20+15*3");
         $categories = $thisP->chitService->getCategoriesIn();
         $form->addRadioList("type", "Typ: ", $categories)
@@ -187,26 +208,12 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $this->redirect("default", array("aid"=>$this->aid));
     }
 
-    function handleRemove($id, $actionId) {
-
-        if ($this->chitService->delete($id, $actionId)) {
-            $this->flashMessage("Paragon byl smazán");
-        } else {
-            $this->flashMessage("Paragon se nepodařilo smazat");
-        }
-
-        if ($this->isAjax()) {
-            $this->invalidateControl("paragony");
-            $this->invalidateControl("flashmesages");
-        } else {
-            $this->redirect('this', $actionId);
-        }
-    }
-
-    /**
-     * vyhodnotí řetězec
-     */
     // <editor-fold defaultstate="collapsed" desc="solveString">
+    /**
+     * vyhodnotí řetězec obsahující čísla, +, *
+     * @param string $str - výraz k výpčtu
+     * @return int 
+     */
     function solveString($str) {
         preg_match_all('/(?P<cislo>[0-9]+)(?P<operace>[\+\*]+)?/', $str, $matches);
         $maxIndex = count($matches['cislo']);

@@ -59,6 +59,7 @@ class Accountancy_BasePresenter extends BasePresenter {
         $sis = SkautIS::getInstance();
         $this->template->myRoles = $sis->user->UserRoleAll(array("ID_User" => $sis->getMyDetail()->ID));
         $this->template->myRole = $sis->getRoleId();
+        $this->template->registerHelper('eventLabel', 'AccountancyHelpers::eventLabel');
 //        $this->template->registerHelper('datNar', 'AccountancyHelpers::datNar');
         //$this->template->registerHelper('pCat', 'AccountancyHelpers::pCat');
         //dump($this->model->vyprava->getId());

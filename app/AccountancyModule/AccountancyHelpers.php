@@ -3,6 +3,18 @@
  * @author sinacek
  */
 abstract class AccountancyHelpers extends Object {
+    
+    public static function eventLabel($s){
+        if($s == "draft")
+            return '<span class="label label-success">Rozpracováno</span>';
+        elseif($s == "closed"){
+            return '<span class="label label-info">Uzavřeno</span>';
+        } else {
+            return '<span class="label label-inverse">Zrušeno</span>';
+        }
+        //draft, closed, cancelled
+        
+    }
 
 //    public static function datNar($s) {
 //        $y = substr($s, 0, 2);

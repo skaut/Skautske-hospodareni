@@ -13,52 +13,79 @@
         <script type="text/javascript" src="{$baseUri}/js/jquery.nette.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/my.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.mousewheel-3.0.6.pack.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/jquery.fancybox.pack.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.jeditable.mini.js"></script>
-    	<link rel="stylesheet" type="text/css" href="{$baseUri}/css/fancybox/fancybox.css" media="screen" />
-
-
-        <link rel="stylesheet" href="{$baseUri}/css/jquery-ui-1.8.css" type="text/css" />
-
+        <script type="text/javascript" src="{$baseUri}/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="{$baseUri}/js/jquery.fancybox.pack.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.nette.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.ajaxform.js"></script>
-
+        
+        <link rel="stylesheet" type="text/css" href="{$baseUri}/css/fancybox/fancybox.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="{$baseUri}/css/bootstrap.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="{$baseUri}/css/bootstrap-responsive.css" media="screen" />
+        <link rel="stylesheet" href="{$baseUri}/css/jquery-ui-1.8.css" type="text/css" />
         <link rel="stylesheet" type="text/css" media="screen" href="{$baseUri}/css/site.css" />
+        
         <script type="text/javascript">
             
         </script>
     </head>
 
     <body>
-        <div id="page">
-            <div id="menu" n:inner-if="$user->isLoggedIn()">
-                <a n:href=":Accountancy:Default:">Ucetnictvi</a> |
-                <a n:href=":Accountancy:Action:list">Akce</a> |
-                <a n:href=":Accountancy:Test:">TEST</a> |
-                <a n:href=":User:Default:">User</a><br />
+        
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="#">Účetnictví</a>
+                    <div class="nav-collapse" n:inner-if="$user->isLoggedIn()">
+                        <ul class="nav">
+                            <li {ifCurrent :Accountancy:Default:}class='active'{/ifCurrent}><a n:href=":Accountancy:Default:">Účetnictví</a></li>
+                            <li {ifCurrent :Accountancy:Action:list}class='active'{/ifCurrent}><a n:href=":Accountancy:Action:list">Seznam akcí</a></li>
+                            <li {ifCurrent :Accountancy:Test:}class='active'{/ifCurrent}><a n:href=":Accountancy:Test:">TEST</a></li>
+                        </ul>
+                        <p class="navbar-text pull-right">
+                        Jsi přihlášen jako {$user->getIdentity()->DisplayName} <a href="{link logOut!}">Odhlásit se</a>
+                                    Pracovat jako: <select onchange="changeRole(this.value)">
+                                        <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->DisplayName}</option>
+                                    </select>
+                        </p>
+                        {else }
+                        <ul class="nav">
+                            <li><a href="#">O projektu</a></li>
+
+                        </ul>
+                        <p class="navbar-text pull-right">
+                            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL">Přihlásit se</a>
+                        </p>
+                      </div><!--/.nav-collapse -->
+                </div>
             </div>
+        </div>
+
+        <div class="container">
 
             <div id="content">
                 <div id="authBox">
-                {if ($user->isLoggedIn ())}
-                <p>
-                    Jsi přihlášen jako {$user->getIdentity()->DisplayName} <a href="{link logOut!}">Odhlásit se</a><br />
-                    Pracovat jako: <select onchange="changeRole(this.value)">
-                        <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->DisplayName}</option>
-                    </select>
-                </p>
-                {else}
-                    <br /><a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL">Přihlásit se</a>
-                {/if}
+                            {if ($user->isLoggedIn ())}
+                                <p>
+                                    
+                                </p>
+                            {else}
+                                <br />
+                            {/if}
             </div><!-- /rightColumn -->
-                
+
             {snippet flashmesages}{foreach $flashes as $flash}<div class="flash {$flash->type}">{$flash->message}</div>{/foreach}{/snippet}
             {include #content}
             </div><!-- /content -->
-            
-            <div id="footer">
-                Layout &rarr; Footer
-            </div>
-        </div> <!-- /page -->
+            <hr style="clear: both" />
+            <footer>
+                Footer
+            </footer>
+        </div> <!-- /container -->
     </body>
 </html>
