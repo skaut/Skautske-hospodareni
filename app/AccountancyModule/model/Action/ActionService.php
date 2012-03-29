@@ -22,7 +22,7 @@ class ActionService extends BaseService {
     public function get($id) {
         return $this->skautIS->event->EventGeneralDetail(array("ID" => $id));
     }
-    
+
     /**
      * vrací obsazení funkcí na zadané akci
      * @param ID_Unit $id
@@ -87,15 +87,15 @@ class ActionService extends BaseService {
         $old = $this->get($id);
 
         $ret = $this->skautIS->event->EventGeneralUpdate(array(
-            "ID"        => $id,
-            "Location"  => $old->Location,
-            "Note"      => $old->Note,
-            "ID_EventGeneralScope"  => $old->ID_EventGeneralScope,
-            "ID_EventGeneralType"   => $old->ID_EventGeneralType,
-            "ID_Unit"               => $old->ID_Unit,
-            "DisplayName"   => $data['name'],
-            "StartDate"     => $data['start'],
-            "EndDate"       => $data['end'],
+            "ID" => $id,
+            "Location" => $old->Location,
+            "Note" => $old->Note,
+            "ID_EventGeneralScope" => $old->ID_EventGeneralScope,
+            "ID_EventGeneralType" => $old->ID_EventGeneralType,
+            "ID_Unit" => $old->ID_Unit,
+            "DisplayName" => $data['name'],
+            "StartDate" => $data['start'],
+            "EndDate" => $data['end'],
                 ), "eventGeneral");
 
         $this->skautIS->event->EventGeneralUpdateFunction(array(
@@ -124,17 +124,53 @@ class ActionService extends BaseService {
                     "CancelDecision" => $msg
                         ), "eventGeneral");
     }
-    
+
     /**
      * znovu otevřít akci
      * @param ID_Event $id
      * @return type 
      */
     public function open($id) {
-        return $this->skautIS->event->EventGeneralUpdateOpen (
+        return $this->skautIS->event->EventGeneralUpdateOpen(
                         array(
                     "ID" => $id,
                         ), "eventGeneral");
+    }
+
+    /**
+     * uzavře akci
+     * @param int $id - ID akce
+     */
+    public function close($id) {
+        $this->skautIS->event->EventGeneralUpdateClose(
+                array(
+            "ID" => $id,
+                ), "eventGeneral");
+    }
+
+    /**
+     * kontrolu jestli jsou funkce nastavené
+     * @param type $func pole funcí nebo ID_akce
+     * @return bool
+     */
+    public function isFunctionSets($func) {
+        if (!is_array($func))
+            $func = $this->getFunctions($func);
+        foreach ($func as $f)
+            if ($f->ID_Person == NULL)
+                return FALSE;
+        return TRUE;
+    }
+
+    /**
+     * kontroluje jestli lze akci upravovat
+     * @param ID_Event|stdClass $arg - příjmá bud ID akce nebo jiz akci samotnou
+     * @return bool
+     */
+    public function isEditable($arg) {
+        if (!$arg instanceof stdClass)
+            $arg = $this->get($arg);
+        return $arg->ID_EventGeneralState == "draft" ? TRUE : FALSE;
     }
 
 //    protected $SES_EXPIRATION = "+ 7 days";

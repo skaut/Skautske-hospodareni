@@ -22,7 +22,7 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
     }
     
     public function renderView($aid) {
-        $this->template->data = $this->service->get($aid);
+        $data = $this->service->get($aid);
         
         //nastavení dat do formuláře pro editaci
         $action = $this->service->get($aid);
@@ -38,12 +38,27 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
             "economist" =>  $func[2]->ID_Person,
         ));
         
+        $this->template->data = $data;
+        $this->template->funkce = $func;
+        $this->template->isEditable = $this->service->isEditable($data);
+        $this->template->isEditable = $this->service->isEditable($data);
     }
     
     public function actionOpen($aid) {
         $res = $this->service->open($aid);
         $this->flashMessage("Akce byla znovu otevřena.");
         $this->redirect("view", array("aid"=> $this->aid));
+    }
+    
+    public function actionClose($aid) {
+        if($this->service->isFunctionSets($aid)){
+            $res = $this->service->close($aid);
+            $this->flashMessage("Akce byla uzavřena.");
+        } else {
+            $this->flashMessage("Před uzavřením akce musíte vyplnit vedení akce", "danger");
+        }
+        
+        $this->redirect("view", array("aid"=>$aid));
     }
 
     public function handleCancel($id) {
@@ -96,7 +111,7 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
 
     function createComponentFormEdit($name) {
         $us = new UserService();
-        $combo = $us->getCombobox();
+        $combo = $us->getCombobox(NULL, TRUE);
 
         $form = new AppForm($this, $name);
         $form->addText("name", "Název akce");
@@ -112,7 +127,8 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
                 ->setPrompt("Vyber")
                 ->getControlPrototype()->setClass("combobox");
         $form->addHidden("aid");
-        $form->addSubmit('send', 'Upravit akci');
+        $form->addSubmit('send', 'Upravit akci')
+                ->getControlPrototype()->setClass("btn btn-primary");
 
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
@@ -137,9 +153,8 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
             $this->redirect("this");
         }
 
-
         if ($id) {
-            $this->flashMessage("Akce byla upravena");
+            $this->flashMessage("Upravili jste základní údajeAkce byla upravena");
             $this->redirect("view", array("aid" => $values['aid']));
         } else {
             $this->flashMessage("Akci se nepodařilo upravit", "fail");

@@ -75,7 +75,7 @@ class Accountancy_BasePresenter extends BasePresenter {
         }
         
         if($this->isAjax()){
-            $this->terminate();
+            
         }
         $this->redirect("this");
     }

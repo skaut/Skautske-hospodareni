@@ -6,9 +6,9 @@ abstract class AccountancyHelpers extends Object {
     
     public static function eventLabel($s){
         if($s == "draft")
-            return '<span class="label label-success">Rozpracováno</span>';
+            return '<span class="label label-warning">Rozpracováno</span>';
         elseif($s == "closed"){
-            return '<span class="label label-info">Uzavřeno</span>';
+            return '<span class="label label-success">Uzavřeno</span>';
         } else {
             return '<span class="label label-inverse">Zrušeno</span>';
         }

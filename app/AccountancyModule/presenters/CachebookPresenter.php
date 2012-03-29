@@ -16,10 +16,10 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 
     function startup() {
         parent::startup();
-//        if($this->aid <= 0){ //@todo nepůsobí problem s handlery?
-//            $this->flashMessage("Nebyla vybráná žádná akce", "warning");
-//            $this->redirect("Action:list");
-//        }
+        if($this->aid <= 0){ //@todo nepůsobí problem s handlery?
+            $this->flashMessage("Musíš vybrat akci", "error");
+            $this->redirect("Action:list");
+        }
         //@todo má právo na danou akci?
 
         $this->userService = new UserService();
@@ -32,9 +32,13 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     }
 
     function renderDefault($aid) {
+        $as = new ActionService();
+        
+        $this->template->isEditable = $as->isEditable($this->aid);
         $this->template->autoCompleter = $this->userService->getAC();
         $this->template->list = $this->chitService->getAll($aid);
     }
+    
 
     function renderEdit($id, $aid) {
         $defaults = $this->chitService->get($id);
@@ -58,7 +62,6 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     }
     
     function handleRemove($id, $actionId) {
-
         if ($this->chitService->delete($id, $actionId)) {
             $this->flashMessage("Paragon byl smazán");
         } else {
@@ -116,8 +119,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
                 ->getControlPrototype()->placeholder("3 první položky");
         $form->addText("price", "Cena celkem: ", 20, 100)
                 ->setHtmlId("form-out-price")
-                ->setType('number')
-                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
+//                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("vzorce např.20+15*3");
         $categories = $thisP->chitService->getCategoriesOut();
         $form->addRadioList("type", "Typ: ", $categories)
@@ -128,7 +130,8 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     //FORM IN    
     function createComponentFormInAdd($name) {
         $form = $this->makeFormIn($this, $name);
-        $form->addSubmit('send', 'Uložit');
+        $form->addSubmit('send', 'Uložit')
+                ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, 'formAddSubmitted');
         $form->setDefaults(array('type' => 'pp'));
         return $form;
@@ -153,8 +156,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
                 ->addRule(Form::FILLED, 'Zadejte účel přijmu');
         $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-in-price")
-                ->setType('number')
-                ->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+[\+\*])*[0-9]+$/")
+                //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
                 ->getControlPrototype()->placeholder("vzorce 20+15*3");
         $categories = $thisP->chitService->getCategoriesIn();
         $form->addRadioList("type", "Typ: ", $categories)
@@ -215,9 +217,10 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
      * @return int 
      */
     function solveString($str) {
-        preg_match_all('/(?P<cislo>[0-9]+)(?P<operace>[\+\*]+)?/', $str, $matches);
+        $str = str_replace(",", ".", $str); //prevede desetinou carku na tecku
+        preg_match_all('/(?P<cislo>[0-9]+[.]?[0-9]{0,2})(?P<operace>[\+\*]+)?/', $str, $matches);
         $maxIndex = count($matches['cislo']);
-        foreach ($matches['operace'] as $index => $op) {
+        foreach ($matches['operace'] as $index => $op) { //vyřeší operaci násobení
             if ($op == "*" && $index + 1 <= $maxIndex) {
                 $matches['cislo'][$index + 1] = $matches['cislo'][$index] * $matches['cislo'][$index + 1];
                 $matches['cislo'][$index] = 0;

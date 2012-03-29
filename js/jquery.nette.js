@@ -50,7 +50,7 @@ if (typeof jQuery != 'function') {
 		// create animated spinner
 		createSpinner: function(id)
 		{
-			return this.spinner = $('<div></div>').attr('id', id ? id : 'ajax-spinner').ajaxStart(function() {
+			return this.spinner = $('<div><div></div></div>').attr('id', id ? id : 'ajax-spinner').ajaxStart(function() {
 				$(this).show();
 
 			}).ajaxStop(function() {
@@ -95,13 +95,21 @@ jQuery(function($) {
 		event.preventDefault();
 		if ($.active) return;
 
-		$.post($.nette.href = this.href, $.nette.success);
+		$.post(this.href, $.nette.success);
 
-		$.nette.spinner.css({
-			position: 'absolute',
-			left: event.pageX,
-			top: event.pageY
-		});
+//      styl spinneru
+//		$.nette.spinner.css({
+//			position: 'absolute',
+//			left: event.pageX,
+//			top: event.pageY
+//		});
+	});
+	
+    //zobrazi pak i spravne adresu
+	$('a.ajaxA').live('click', function(event) {
+		event.preventDefault();
+		if ($.active) return;
+		$.post($.nette.href = this.href, $.nette.success);
 	});
 
 });
