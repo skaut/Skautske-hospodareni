@@ -1,3 +1,4 @@
+{*}
 {block #content}
 
 <a n:href="Default:akce">Aktuální akce</a> &rarr;
@@ -52,7 +53,7 @@
 
         $('#fillAll').click(function(){
             var val = $('#fillAllContent').val() * 1; // * 1 udela int
-            {assign reg = "/^[1-9]{1}[0-9]*$/"}{* nutbe pro zahovani relularniho vyrazy {1}*}
+            {assign reg = "/^[1-9]{1}[0-9]*$/"}//nutbe pro zahovani relularniho vyrazy {1}
             var reg = {!$reg};
             
             if (!reg.test(val)) {
@@ -67,3 +68,4 @@
 
     })
 </script>
+{*}

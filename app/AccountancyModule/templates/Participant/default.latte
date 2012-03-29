@@ -1,90 +1,152 @@
 {block #content}
-
-<h2>Seznam účastníků</h2>
-
 {include ../ActionMenu.latte}
-
+<h2>Účastníci</h2>
+{dump $list}
 {dump $participants}
 
+<div class="row">
+
+    <div class="span3" n:if="$isEditable">
+        {snippet potencialParticipants}
+        <div n:ifset="$participants">
+            <h3>Přidat účastníky z jednotky</h3>            
+            <div style="margin-bottom: 9px;">
+                <div class="btn-group" style="float:left;margin-right: 9px" >
+                    <a class="btn btn-info btn-small dropdown-toggle" data-toggle="dropdown" href="#">{$unit->DisplayName} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a></li>
+                        <li><a class="active" style="font-weight: bold" href="#">&minus;&gt;{$unit->DisplayName}</a></li>
+                        <li n:foreach="$uchildrens as $ch"><a n:href="this $aid, $ch->ID">&minus;&minus;&gt; {$ch->DisplayName}</a></li>      
+                    </ul>
+                </div>
+
+                <div>
+                    <a n:href="changeDirectMemberOnly!" class="ajax btn btn-info btn-small">Podřízené?
+                    {if !$directMemberOnly}
+                        <i class="icon icon-ok icon-white"></i>
+                    {else}
+                        <i class="icon icon-ban-circle icon-white"></i>
+                    {/if}
+                    </a>
+                </div>
+            </div>
+
+            <table class="table table-striped table-bordered table-condensed">
+                <tr>
+                    <th colspan="2" style="text-align: center;"><a class="btn btn-primary btn-mini" href="#addParticipant" data-toggle="modal"><i class="icon-plus icon-white"></i> Založit nového účastníka</a></th>
+                </tr>
+                {if $list->count() > 0}
+                <tr>
+                    <th>Příjmení a jméno</th>
+                    <th style="width: 28px;">&nbsp;</th>
+                </tr>
+                <tr n:foreach="$list as $id=>$name">
+                    <td>{$name}</td>
+                    <td><a n:href="add! $id" class="btn btn-primary btn-mini"><i class="icon-plus icon-white"></i></a></td>
+                </tr>
+                {else}
+                <tr>
+                    <th colspan="2" style="text-align: center;">Nejsou žádné nevybrané osoby.</th>
+                </tr>
+                {/if}
+            </table>
+        </div>
+        {/snippet}
+
+    </div>
 
 
-<div style="float:left">
-    <h3>Přidat novou osobu</h3>
-    {control formAddParticipantNew}
-
-    <div n:ifset="$participants">
-        <h3>Vybraní účastníci</h3>
-        <a class="paymentMass fancybox.ajax" n:href="paymentMass $aid">Vyplnit částky hromadně</a>
-        <table border="1" id="participants-list">
-            <tr>
-                <th>&nbsp;</th>
-                <th>Příjmení a jméno</th>
-                <th>Dnů</th>
-                <th>Částka</th>
-            </tr>
-            <tr n:foreach="$participants as $p">
-                <td><a n:href="removeParticipant! $p->ID_Participant">Smazat</a></td>
-                <td>{$p->Person}</td>
-                <td id="par-days-{$p->ID}">{$p->Days}</td>
-                <td id="par-payment-{$p->ID}">{ifset $p->Note}{$p->Note}{else}0{/ifset}</td>
-            </tr>
-        </table>
+    <div class="span4">
+        <div n:ifset="$participants">
+            <h3>Seznam účastníků</h3>
+            <p n:if="$isEditable">
+                <a class="paymentMass btn btn-info btn-small" href="#addPaymentMass" data-toggle="modal"><i class="icon-edit icon-white"></i>  Vyplnit částky hromadně</a>
+            </p>
+            <table id="participants-list" class="table table-striped table-bordered table-condensed">
+                <tr>
+                    <th style="width: 28px;" n:if="$isEditable">&nbsp;</th>
+                    <th>Příjmení a jméno ({= count($participants)})</th>
+                    <th>Dnů</th>
+                    <th>Částka</th>
+                </tr>
+                {assign $total = 0}
+                <tr n:foreach="$participants as $p">
+                    <td n:if="$isEditable"><a n:href="remove! $p->ID" class="btn btn-danger btn-mini"><i class="icon-remove icon-white"></i></a></td>
+                    <td>{$p->Person}</td>
+                    <td id="par-days-{$p->ID}" title="Pro úpravu klikněte">{$p->Days}</td>
+                    <td id="par-payment-{$p->ID}" title="Pro úpravu klikněte">{ifset $p->Note}{$p->Note}{? $total += $p->Note}{else}0{/ifset}</td>
+                </tr>
+                <tr>
+                    <td n:if="$isEditable"></td>
+                    <td></td>
+                    <td></td>
+                    <td><b>{$total}</b></td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 
-<div style="float:left;margin-left:15px;">
-    <div>
-        <a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a> &rarr;
-        <a n:href="this $aid, $unit->ID">{$unit->DisplayName}</a>
-        
-        <ul n:ifset="$uchildrens" style="margin-top:0;padding-left:5px;float: right;list-style-type: none;">
-            <li n:foreach="$uchildrens as $ch">&rarr; <a n:href="this $aid, $ch->ID">{$ch->DisplayName}</a></li>
+{* nový účastník *}
+<div class="modal myModal fade" id="addParticipant">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h2>Založit nového účastníka</h2>
+    </div>
+    <div class="modal-body">
+            {control formAddParticipantNew}
+    </div>
+    <div class="modal-footer">
+        <a data-dismiss="modal" class="btn ">Zavřít</a>
+    </div>
+</div>
+
+{* hromadné vyplnění částek *}
+<div class="modal myModal fade" id="addPaymentMass">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h2>Poplatek</h2>
+    </div>
+    <div class="modal-body">
+            {form formAddPaymentMass}
+        <ul class="errors" n:if="$form->hasErrors()">
+            <li n:foreach="$form->errors as $error">{$error}</li>
         </ul>
-        <hr class="hidden"/>
+                {label sum/}</b> {input sum style=>"width:40px;"} Kč <br />
+                {label rewrite/} {input rewrite}<br />
+                {input aid}{input send}
+            {/form}
     </div>
-
-    <a n:href="changeDirectMemberOnly!" class="ajax">Zobrazit i z podřízených jednotek?</a> {if !$directMemberOnly}Ano{else}Ne{/if}
-
-    {snippet potencialParticipants}
-        {control formParticipants}
-    {/snippet}
 </div>
 
+
+
+
+{if $isEditable}
 <script type="text/javascript">
+
 $(document).ready(function() {
     $('#[id^="par-days-"]').editable({link editDays!},  { 
-         type      : 'text',
-         cancel    : 'Cancel',
-         submit    : 'OK',
+         type : 'text',
          id   : 'id',
          name : 'days',
          placeholder : ' ',
+         width : '20px',
+         height: '15px'
      });
-});
 
-$(document).ready(function() {
     $('#[id^="par-payment-"]').editable({link editPayment!},  { 
-         type      : 'text',
-         cancel    : 'Cancel',
-         submit    : 'OK',
+         type : 'text',
          id   : 'id',
          name : 'payment',
          placeholder : ' ',
+         width : '35px',
+         height: '15px'
      });
-
-    $(".paymentMass").fancybox({
-		maxWidth	: 800,
-		maxHeight	: 600,
-		fitToView	: false,
-		autoSize	: true,
-		closeClick	: false,
-		openEffect	: 'none',
-		closeEffect	: 'none'
-	});
-    
 
 });
 </script>
+{/if}
 
 
 {*}

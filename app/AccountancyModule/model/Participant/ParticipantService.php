@@ -22,14 +22,31 @@ class ParticipantService extends BaseService {
      * @param bool $onlyDirectMember - pouze přímé členy?
      * @return array 
      */
-    public function getAll($unitId = NULL, $onlyDirectMember = true) {
+    public function getAll($unitId = NULL, $onlyDirectMember = true, $participants = NULL) {
         $unitId = $unitId === NULL ? $this->skautIS->getUnitId() : $unitId;
         $onlyDirectMember = (bool) $onlyDirectMember;
 
-        return $this->skautIS->org->PersonAll(array(
+        $all = $this->skautIS->org->PersonAll(array(
                     "ID_Unit" => $unitId,
                     "OnlyDirectMember" => $onlyDirectMember,
                 ));
+        
+        if(is_array($participants)){
+            foreach ($participants as $p) {
+                $check[$p->ID_Person] = true;
+            }
+            $ret = ArrayHash::from(array());
+            foreach ($all as $p) {
+                if (!array_key_exists($p->ID, $check)) {
+                    $ret[$p->ID] = $p->DisplayName;
+                    //$ch = $group->addCheckbox($p->ID, $p->DisplayName);
+                }
+            }
+        } else {
+            $ret = $all;
+        }
+        
+        return $ret;
     }
 
     /**
@@ -87,7 +104,7 @@ class ParticipantService extends BaseService {
      * @return type 
      */
     public function removeParticipant($pid) {
-        return $this->skautIS->event->ParticipantGeneralDelete(array("ID" => $pid));
+        return $this->skautIS->event->ParticipantGeneralDelete(array("ID" => $pid, "DeletePerson"=>false));
     }
     
     /**

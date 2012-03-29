@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Rymicka/!svn/ver/699/trunk/www/libs/WebLoader/Filter
+END
+LessFilter.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/Rymicka/!svn/ver/699/trunk/www/libs/WebLoader/Filter/LessFilter.php
+END
+VariablesFilter.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/Rymicka/!svn/ver/699/trunk/www/libs/WebLoader/Filter/VariablesFilter.php
+END
+CssUrlsFilter.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/Rymicka/!svn/ver/699/trunk/www/libs/WebLoader/Filter/CssUrlsFilter.php
+END

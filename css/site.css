@@ -1,5 +1,5 @@
 body {
-    padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+    padding-top: 50px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
 
 .fail {
@@ -11,7 +11,7 @@ body {
 }
 
 .myTable {
-    margin: 8px 0 18px;
+    margin: 0 0 18px;
     width: auto;
 }
 
@@ -28,6 +28,9 @@ body {
 #cashbook-tabs input[type="text"], #cashbook-tabs input.date, #cashbook-tabs input[type="number"] {
     width: 170px;
 }
+#cashbook-tabs .ui-tabs-panel {
+    padding: 0.5em 0 1em 0.5em;
+}
 
 /*JQuery UI */
 .ui-widget {
@@ -35,14 +38,12 @@ body {
     line-height: 1em;
 }
 
-#cashbook-tabs .ui-tabs-panel {
-    padding: 0.5em 0 1em 0.5em;
-}
+
 .ui-datepicker {
     width: 15em;
 }
 
-form input + label {
+form label {
     display: inline;
 }
 
@@ -54,7 +55,39 @@ input[type="checkbox"], input[type="radio"] {
     width: 120px;
 }
 
+#participants-list form{
+    margin: 0;
+}
 
+#participants-list input {
+    margin-bottom: 0;
+    padding: 2px 0 2px 4px;
+}
+
+.isMinus {
+    background-color:#ff5500;
+}
+/* zrušení spinneru pro fancybox*/
+#fancybox-loading {
+    display: none;
+}
+
+#ajax-spinner {
+    background: #000000 url('../images/layout/pacman-loader.gif') no-repeat 50% 50%;
+    height: 60px;
+    width: 60px;
+	margin: 0;
+    border-radius: 6px;
+    Opacity : 0.9;
+	z-index: 123456;
+	display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+.modal.fade.in {
+    top: 60%;
+}
 
 /*
 	

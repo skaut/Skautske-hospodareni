@@ -2,8 +2,8 @@
 <html lang="cs">
     <head>
         <meta charset=utf-8 />
-        <title>{block #title|striptags|trim}Muj web{/block}</title>
-        <meta name="keywords" content="skaut, dejvice, praha, skauting, junák" />
+        <title>{block #title|striptags|trim}SkaÚčto{/block}</title>
+        <meta name="keywords" content="" />
         <meta name="author" content="www.sinacek.cz" />
         <meta name="robots" content="{$robots}" n:ifset="$robots">
         <script type="text/javascript" src="{$baseUri}/js/jquery-1.7.1.js"></script>
@@ -11,27 +11,29 @@
         <script type="text/javascript" src="{$baseUri}/js/my-datepicker.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/combobox.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.nette.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/my.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.mousewheel-3.0.6.pack.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.jeditable.mini.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.fancybox.pack.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/jquery.nette.js"></script>
         <script type="text/javascript" src="{$baseUri}/js/jquery.ajaxform.js"></script>
-        
+        <script type="text/javascript" src="{$baseUri}/js/my.js"></script>
+
         <link rel="stylesheet" type="text/css" href="{$baseUri}/css/fancybox/fancybox.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="{$baseUri}/css/bootstrap.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="{$baseUri}/css/bootstrap-responsive.css" media="screen" />
         <link rel="stylesheet" href="{$baseUri}/css/jquery-ui-1.8.css" type="text/css" />
         <link rel="stylesheet" type="text/css" media="screen" href="{$baseUri}/css/site.css" />
-        
+
         <script type="text/javascript">
             
+            function changeRole(id){
+                 $.post({link changeRole!}, { id : id });
+            }
         </script>
     </head>
 
     <body>
-        
+
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -43,15 +45,15 @@
                     <a class="brand" href="#">Účetnictví</a>
                     <div class="nav-collapse" n:inner-if="$user->isLoggedIn()">
                         <ul class="nav">
-                            <li {ifCurrent :Accountancy:Default:}class='active'{/ifCurrent}><a n:href=":Accountancy:Default:">Účetnictví</a></li>
                             <li {ifCurrent :Accountancy:Action:list}class='active'{/ifCurrent}><a n:href=":Accountancy:Action:list">Seznam akcí</a></li>
+                            <li {ifCurrent :Accountancy:Default:}class='active'{/ifCurrent}><a n:href=":Accountancy:Default:">Účetnictví</a></li>
                             <li {ifCurrent :Accountancy:Test:}class='active'{/ifCurrent}><a n:href=":Accountancy:Test:">TEST</a></li>
                         </ul>
                         <p class="navbar-text pull-right">
-                        Jsi přihlášen jako {$user->getIdentity()->DisplayName} <a href="{link logOut!}">Odhlásit se</a>
-                                    Pracovat jako: <select onchange="changeRole(this.value)">
-                                        <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->DisplayName}</option>
-                                    </select>
+                            Jsi přihlášen jako {$user->getIdentity()->DisplayName} <a href="{link logOut!}">Odhlásit se</a>
+                            Pracovat jako: <select onchange="changeRole(this.value)">
+                                <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->DisplayName}</option>
+                            </select>
                         </p>
                         {else }
                         <ul class="nav">
@@ -69,19 +71,17 @@
         <div class="container">
 
             <div id="content">
-                <div id="authBox">
-                            {if ($user->isLoggedIn ())}
-                                <p>
-                                    
-                                </p>
-                            {else}
-                                <br />
-                            {/if}
-            </div><!-- /rightColumn -->
 
-            {snippet flashmesages}{foreach $flashes as $flash}<div class="flash {$flash->type}">{$flash->message}</div>{/foreach}{/snippet}
+            {snippet flashmesages}
+                {foreach $flashes as $flash}
+                <div class="alert alert-{$flash->type}">
+                    <a class="close" data-dismiss="alert">×</a>
+                         {$flash->message}
+                </div>
+                {/foreach}
+            {/snippet}
             {include #content}
-            </div><!-- /content -->
+        </div><!-- /content -->
             <hr style="clear: both" />
             <footer>
                 Footer

@@ -2,64 +2,57 @@
 {include ../ActionMenu.latte}
 
 <h2>Pokladní kniha</h2>
-
-{snippet tabs}
-<div id="cashbook-tabs">
-    <ul>
-        <li><a href="#cashbook-tabs-vydej">Výdajový</a></li>
-        <li><a href="#cashbook-tabs-prijem">Příjmový</a></li>
-    </ul>
-    <div id="cashbook-tabs-vydej">
+<div class="row">
+    <div class="span4" n:if="$isEditable">
+    {snippet tabs}
+        <div id="cashbook-tabs">
+            <ul>
+                <li><a href="#cashbook-tabs-vydej">Výdajový</a></li>
+                <li><a href="#cashbook-tabs-prijem">Příjmový</a></li>
+            </ul>
+            <div id="cashbook-tabs-vydej">
 		{control formOutAdd}
-    </div>
-    <div id="cashbook-tabs-prijem">
+            </div>
+            <div id="cashbook-tabs-prijem">
 		{control formInAdd}
+            </div>
+        </div>
+    {/snippet}    
     </div>
-</div>
-{/snippet}
+    
+    <div class="span6">
+        <div n:snippet="paragony" style="float: left;">
+        {if $list}
+            <p n:if="$isInMinus" class="alert alert-error">
+                Pokladní kniha je v záporných číslech a to nesmí nastat!
+            </p>
 
-<div n:snippet="paragony" style="float: left;">
-{if $list}
-    {if $isInMinus}
-    <p class="alert alert-error">
-        Pokladní kniha je v záporných číslech a to nesmí nastat!
-    </p>
-    {/if}
-
-    <table class="table myTable table-striped table-bordered table-condensed">
-        <thead>
-            <tr>
-                <th>&nbsp;</th>
-                {*}
-                <th n:if="count($list) > 1">&nbsp;</th>
-                <th n:if="count($list) > 1">&nbsp;</th>
-                {*}
-                <th>Datum</th>
-                <th>Účel výplaty</th>
-                <th>Typ</th>
-                <th>Komu/Od</th>
-                <th>Příjem</th>
-                <th>Výdej</th>
-                <th>Zůstatek</th>
-            </tr>
-        </thead>
-        <tbody>
+            <table class="table myTable table-striped table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th n:if="$isEditable">&nbsp;</th>
+                        <th>Datum</th>
+                        <th>Účel výplaty</th>
+                        <th>Typ</th>
+                        <th>Komu/Od</th>
+                        <th>Příjem</th>
+                        <th>Výdej</th>
+                        <th>Zůstatek</th>
+                    </tr>
+                </thead>
+                <tbody>
         {assign zustatek => 0}
-            <tr n:foreach="$list as $key => $item">
-                <td>
-                    <a href="{link remove! $item->id, $aid}" onclick="return confirm('Opravdu chcete smazat paragon?')"><img src="{$baseUri}/images/layout/delete.gif" alt="Smazat" /></a>
-                    <a n:href="edit $item->id, $aid" class="fancybox fancybox.ajax"><img src="{$baseUri}/images/layout/edit.gif" alt="Upravit" /></a>
-                </td>
-            {*}
-            <td n:if="count($list) > 1"><a href="{link up! $key}" n:if="!$iterator->first" class="ajax">Up</a></td>
-            <td n:if="count($list) > 1"><a href="{link down! $key}" n:if="!$iterator->last" class="ajax">Down</a></td>
-            {*}
-                <td>{$item->date|date:"j.n.Y"}</td>
-                <td>{$item->purpose|truncate:"35"}</td>
-                <td title="{$item->cshort}">{$item->cshort}</td>
-                <td>{$item->recipient}</td>
-                <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
-                <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
+                    <tr n:foreach="$list as $key => $item">
+                        <td n:if="$isEditable">
+                            <a href="{link remove! $item->id, $aid}" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
+                            <a n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-info"><i class="icon icon-edit icon-white"></i></a>
+                        </td>
+                        <td>{$item->date|date:"j.n.Y"}</td>
+                        <td>{$item->purpose|truncate:"35"}</td>
+                        <td title="{$item->cshort}">{$item->cshort}</td>
+                        <td>{$item->recipient}</td>
+                        <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
+                        <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
             {?
                 $zustatek += $item->ctype == 'in' ? $item->price : (-$item->price);
                 if(preg_match("/^-?[0-9]*\.[0-9]$/", $zustatek))//doplneni na 2 desetina mista
@@ -67,30 +60,34 @@
                 if($zustatek < 0)
                     $errors[0] = "";
             }
-                <td {if $zustatek < 0}style="background-color:#ff5500;"{/if}>{$zustatek}</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td><b>Konečný stav</b></td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td><b>{$zustatek}</b></td>
-            </tr>
-        <tbody>
-    </table>
+                        <td {if $zustatek < 0}class="isMinus"{/if}>{$zustatek}</td>
+                    </tr>
+                    <tr>
+                        <td n:if="$isEditable">&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td><b>Konečný stav</b></td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td><b>{$zustatek}</b></td>
+                    </tr>
+                <tbody>
+            </table>
     {else}
-    <p>Nemáte zde žádný doklad.</p>
+            <p>Nemáte zde žádný doklad.</p>
 {/if}
+
+        </div>
+    </div>
 </div>
 
 
 <script type="text/javascript" >
-    $(function(){
 
+    $(function(){
         $( "#cashbook-tabs" ).tabs();
+        
 
         //Autocompleter
         var text = {$autoCompleter};

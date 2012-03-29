@@ -30,6 +30,7 @@ class UserService extends BaseService {
         foreach ($data as $p){
             $ac[] = $p->LastName . " " . $p->FirstName;
         }
+        
         return $ac;
     }
      
@@ -39,10 +40,12 @@ class UserService extends BaseService {
      * @return array
      */
     public function getCombobox($OnlyDirectMember = false){
+        if($OnlyDirectMember == NULL)
+            $OnlyDirectMember = false;
         $data = $this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember));
         $ac = array();
         foreach ($data as $p){
-            $ac[$p->ID] = $p->LastName . " " . $p->FirstName;
+            $ac[$p->ID] = $p->LastName . " " . $p->FirstName ;
         }
         return $ac;
     }

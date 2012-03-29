@@ -1,54 +1,70 @@
 {block #content}
 {include ../ActionMenu.latte}
 
+{dump $data}
+
 <h2>{$data->DisplayName}</h2>
+<div class="row">
+    <div class="span3">
+        <h3>Základní údaje</h3>
+        <table class="myTable table table-bordered table-condensed">
+            <tr>
+                <th>Jednotka</th>
+                <td>{$data->Unit}</td>
+            </tr>
+            <tr>
+                <th>Od</th>
+                <td>{$data->StartDate|date:"j. n. Y"}</td>
+            </tr>
+            <tr>
+                <th>Do</th>
+                <td>{$data->EndDate|date:"j. n. Y"}</td>
+            </tr>
+            <tr>
+                <th>Typ</th>
+                <td>{$data->EventGeneralType}</td>
+            </tr>
+            <tr>
+                <th>Rozsah</th>
+                <td>{$data->EventGeneralScope}</td>
+            </tr>
+            <tr>
+                <th>Stav</th>
+                <td>{!$data->ID_EventGeneralState|eventLabel}</td>
+            </tr>
+        </table>
 
+        <div n:if="$isEditable">
+            <a class="btn btn-primary btn-small" href="#editBasicInfo" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
+            <a class="btn btn-success btn-small" n:href="close $aid"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
 
-<table class="myTable table table-bordered table-condensed">
-    <tr>
-        <th>Jednotka</th>
-        <td>{$data->Unit}</td>
-    </tr>
-    <tr>
-        <th>Od</th>
-        <td>{$data->StartDate|date:"j. n. Y"}</td>
-    </tr>
-    <tr>
-        <th>Do</th>
-        <td>{$data->EndDate|date:"j. n. Y"}</td>
-    </tr>
-    <tr>
-        <th>Typ</th>
-        <td>{$data->EventGeneralType}</td>
-    </tr>
-    <tr>
-        <th>Rozsah</th>
-        <td>{$data->EventGeneralScope}</td>
-    </tr>
-    <tr>
-        <th>Stav</th>
-        <td>{!$data->ID_EventGeneralState|eventLabel} {if $actionState == "closed"} <a n:href="open $aid">Znovu otevřít</a>{/if}</td>
-    </tr>
-</table>
-
-<div n:if="$actionState == 'draft'">
-    <a class="btn btn-primary" href="#myModal" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
-
-    <div class="modal myModal fade" id="myModal">
-        <div class="modal-header">
-            <a class="close" data-dismiss="modal">×</a>
-            <h3>Upravit akci</h3>
+            <div class="modal myModal fade" id="editBasicInfo">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>Upravit akci</h3>
+                </div>
+                <div class="modal-body">
+                {control formEdit}
+                </div>
+                <div class="modal-footer">
+                    <a data-dismiss="modal" class="close btn btn-primary">Zavřít</a>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-            {control formEdit}
+
+        <div n:if="$actionState == 'closed'">
+            <a n:href="open $aid" class="btn btn-small btn-warning"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
         </div>
-        <div class="modal-footer">
-            <a data-dismiss="modal" class="close btn">Zavřít</a>
-        </div>
+    </div>
+
+    <div class="span3">
+        <h3>Vedení akce</h3>
+        <table class="myTable table table-bordered table-condensed">
+            <tr n:foreach="$funkce as $f">
+                <th>{$f->EventFunctionType}</th>
+                <td>{ifset $f->ID_Person}{$f->Person}{/ifset}</td>
+            </tr>
+        </table>
     </div>
 </div>
 
-
-
-
-{dump $data}
