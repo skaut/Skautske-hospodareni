@@ -4,14 +4,117 @@
  * @author sinacek
  */
 class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
-    
+
     function startup() {
         parent::startup();
+    }
+
+    public function renderDefault($aid) {
         
     }
+
+    public function actionChits($aid) {
+        //@todo - má povolení?
+        $service = new ChitService();
+        $list = $service->getAllOut($aid);
+
+        $template = $this->template;
+        $template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
+        $template->setFile(dirname(__FILE__) . '/../templates/Export/ex.chits.latte');
+
+        $template->list = $list;
+        $as = new ActionService();
+        $us = new UnitService();
+        $info = $as->get($aid);
+        $template->oficialName = $us->getOficialName($info->ID_Unit);
+        $service->makePdf($template, Strings::webalize($info->DisplayName) . "_paragony.pdf");
+        $this->terminate();
+    }
+
+    public function actionCashbook($aid) {
+        //@todo - má povolení?
+        $service = new ChitService();
+        $list = $service->getAll($aid);
+
+        $as = new ActionService();
+        $info = $as->get($aid);
+
+        $template = $this->template;
+        $template->setFile(dirname(__FILE__) . '/../templates/Export/ex.cashbook.latte');
+        $template->registerHelper('price', 'AccountancyHelpers::price');
+        $template->list = $list;
+        $template->info = $info;
+        $service->makePdf($template, Strings::webalize($info->DisplayName) . "_pokladni-kniha.pdf");
+        $this->terminate();
+    }
+
+    public function actionMassIn($aid) {
+        //@todo - má povolení?
+        $service = new ParticipantService();
+        $list = $service->getAllParticipants($aid);
+
+        $as = new ActionService();
+        $us = new UnitService();
+        $info = $as->get($aid);
+
+        $template = $this->template;
+        $template->setFile(dirname(__FILE__) . '/../templates/Export/ex.massIn.latte');
+        $template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
+        $template->registerHelper('price', 'AccountancyHelpers::price');
+        $totalPrice = 0;
+        foreach ($list as $key => $p) {
+            if (isset($p->Note))
+                $totalPrice += $p->Note;
+            else
+                $list[$key]->Note = 0;
+        }
+
+        $template->list = $list;
+        $template->totalPrice = $totalPrice;
+        $template->oficialName = $us->getOficialName($info->ID_Unit);
+        
+        $service->makePdf($template, Strings::webalize($info->DisplayName) . "_hpd.pdf");
+        $this->terminate();
+    }
     
-    
-    
+    public function actionReport($aid) {
+        //@todo - má povolení?
+        $service = new ParticipantService();
+        $participants = $service->getAllParticipants($aid);
+
+        $as = new ActionService();
+        $chitService = new ChitService();
+        $info = $as->get($aid);
+        
+        $chitsAll = $chitService->getAll($aid);
+        
+        foreach (ArrayHash::from($chitService->getCategories(TRUE)) as $c) {
+            $categories[$c->type][$c->short] = $c;
+            $categories[$c->type][$c->short]->price = 0;
+        }
+        foreach ($chitsAll as $chit) {
+            $categories[$chit->ctype][$chit->cshort]->price += $chit->price;    
+        }
+        
+        $personsDays = 0;
+        foreach ($participants as $p){
+            $personsDays += $p->Days;
+        }
+
+        $template = $this->template;
+        $template->setFile(dirname(__FILE__) . '/../templates/Export/ex.report.latte');
+        $template->registerHelper('price', 'AccountancyHelpers::price');
+        $template->participants = $participants;
+        $template->personsDays = $personsDays;
+        $template->a = $info;
+        $template->chits = $categories;
+        $template->func = $as->getFunctions($aid);
+        
+        
+        $service->makePdf($template, Strings::webalize($info->DisplayName) . "_report.pdf");
+        $this->terminate();
+    }
+
 //    function actionVyuctovani() {
 //        if ($this->service->getParagony()->isInMinus()) {
 //            $this->flashMessage("Máte zápornou hodnotu v pokladní knize. Upravte ji a pak ji mužete exportovat.", "fail");
@@ -153,7 +256,4 @@ class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
 //            $this->redirect('this');
 //        }
 //    }
-
- 
-    
 }

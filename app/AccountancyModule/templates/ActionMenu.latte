@@ -2,5 +2,6 @@
 <ul class="nav nav-pills">
     <li {ifCurrent Action:view $aid}class='active'{/ifCurrent}><a n:href="Action:view $aid">Základní údaje</a></li>
     <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}><a n:href="Cashbook:default $aid">Pokladní kniha</a></li>
-    <li {ifCurrent Participant:default $aid}class='active'{/ifCurrent}><a n:href="Participant:default $aid">Účastníci</a></li>
+    <li {ifCurrent Participant:* $aid}class='active'{/ifCurrent}><a n:href="Participant:default $aid">Účastníci</a></li>
+    <li {ifCurrent Export:* $aid}class='active'{/ifCurrent}><a n:href="Export:default $aid">Export</a></li>
 </ul>

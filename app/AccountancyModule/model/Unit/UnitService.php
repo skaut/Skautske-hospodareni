@@ -7,10 +7,10 @@ class UnitService extends BaseService {
         $this->table = new UnitTable();
     }
 
-    public function create($id) {
-        $unit = $this->getDetail($id);
-        return $this->table->create($unit, $user);
-    }
+//    public function create($id) {
+//        $unit = $this->getDetail($id);
+//        return $this->table->create($unit, $user);
+//    }
 
     /**
      * vrací detail jednotky
@@ -48,28 +48,48 @@ class UnitService extends BaseService {
     public function getChild($ID_Unit) {
         return $this->skautIS->org->UnitAll(array("ID_UnitParent" => $ID_Unit));
     }
-
-    public function isCreated($id) {
-        return $this->table->get($id);
+    
+    /**
+     * vrací jednotku, která má právní subjektivitu
+     * @param int $unitId
+     * @return stdClass
+     */
+    public function getOficialUnit($unitId){
+        $allowedTypes = array("stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka");
+        $unit = $this->getDetail($unitId);
+        if(!in_array($unit->ID_UnitType, $allowedTypes)){
+            $parent = $unit->ID_UnitParent;
+            $unit = $this->getOficialUnit($parent->ID_Unit);
+        }
+        return $unit;
+    }
+    
+    public function getOficialName($unitId){
+        $unit = $this->getOficialUnit($unitId);
+        return "IČO ". $unit->IC . " Junák - svaz skautů a skautek ČR, " . $unit->DisplayName.", " . $unit->Street .", " . $unit->City . ", ". $unit->Postcode;
     }
 
-    public function getCaterories() {
-        //@todo předělat na db
-        $in = array(
-            "pp" => "Příjmový",
-            "di" => "Dotace", //Dotace In => di
-        );
-        $out = array(
-            "t" => "Potraviny",
-            "j" => "Jízdné",
-            "n" => "Nájemné",
-            "m" => "Materiál (Drobné vybavení)",
-            "s" => "Služby",
-            "pr" => "Převod do odd. pokladny",
-            "do" => "Dotace",
-            "un" => "Neurčeno",
-        );
-        return array("in" => $in, "out" => $out);
-    }
+//    public function isCreated($id) {
+//        return $this->table->get($id);
+//    }
+// 
+//    public function getCaterories() {
+//        //@todo předělat na db
+//        $in = array(
+//            "pp" => "Příjmový",
+//            "di" => "Dotace", //Dotace In => di
+//        );
+//        $out = array(
+//            "t" => "Potraviny",
+//            "j" => "Jízdné",
+//            "n" => "Nájemné",
+//            "m" => "Materiál (Drobné vybavení)",
+//            "s" => "Služby",
+//            "pr" => "Převod do odd. pokladny",
+//            "do" => "Dotace",
+//            "un" => "Neurčeno",
+//        );
+//        return array("in" => $in, "out" => $out);
+//    }
 
 }

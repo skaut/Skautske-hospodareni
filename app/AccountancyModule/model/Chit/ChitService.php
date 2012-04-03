@@ -24,6 +24,16 @@ class ChitService extends BaseService {
         return $this->table->getAll($actionId);
     }
     
+    public function getAllOut($actionId){
+        $data = $this->table->getAll($actionId);
+        $res = array();
+        foreach ($data as $i){
+            if($i->ctype == "out")
+                $res[] = $i;
+        }
+        return $res;
+    }
+    
     
     public function add($actionId, $v){
         if(!is_array($v) && !($v instanceof ArrayAccess))
@@ -65,10 +75,22 @@ class ChitService extends BaseService {
     }
     
     /**
+     * vrací všechny kategorie
+     * @return array
+     */
+    public function getCategories($all= false){
+        if($all)
+            return $this->table->getCategoriesAll();
+        return $this->table->getCategories();
+    }
+    
+    /**
      * vrací prijmové kategorie
      * @return array 
      */
-    public function getCategoriesIn(){
+    public function getCategoriesIn($all= false){
+        if($all)
+            return $this->table->getCategoriesAll("in");
         return $this->table->getCategories("in");
     }
     
@@ -76,7 +98,9 @@ class ChitService extends BaseService {
      * vrací výdajové kategorie
      * @return array 
      */
-    public function getCategoriesOut(){
+    public function getCategoriesOut($all = false){
+        if($all)
+            return $this->table->getCategoriesAll("out");
         return $this->table->getCategories("out");
     }
     

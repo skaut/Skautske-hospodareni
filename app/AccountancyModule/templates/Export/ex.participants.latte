@@ -1,16 +1,16 @@
 
 <style>
-.pkniha{
+.all{
     width: 800px;
 }
 
 </style>
-<h2>Seznam účastníků</h2>
+<h2>Seznam účastníků - {$info->DisplayName}</h2>
 
-<table class="seznmaUcastniku" border="1">
+<table class="all" border="1">
     <tr>
         <th colspan="2">Název akce:</th>
-        <td colspan="3">{$nazevAkce}</td>
+        <td colspan="3">{$info->DisplayName}</td>
     </tr>
     <tr>
         <th style="width: 5%">P.č.</th>
