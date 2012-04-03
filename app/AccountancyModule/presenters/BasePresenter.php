@@ -55,6 +55,7 @@ class Accountancy_BasePresenter extends BasePresenter {
     function beforeRender() {
         parent::beforeRender();
         $this->template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
+        $this->template->registerHelper('price', 'AccountancyHelpers::price');
         
         $sis = SkautIS::getInstance();
         $this->template->myRoles = $sis->user->UserRoleAll(array("ID_User" => $sis->getMyDetail()->ID));

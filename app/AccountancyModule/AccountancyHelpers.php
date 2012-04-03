@@ -117,6 +117,13 @@ abstract class AccountancyHelpers extends Object {
      * @param int $price
      * @return string 
      */
+    public static function price($price) {
+        if(stripos($price, "."))
+            return number_format($price, 2, ",", "");
+        if($price == NULL)
+            return 0;
+        return $price;
+    }
     public static function priceToString($price) {
         //@todo ošetření správného tvaru
         
@@ -181,7 +188,7 @@ abstract class AccountancyHelpers extends Object {
         if(isset($parts[1])) {
             if(strlen($parts[1]) < 2)
                 $parts[1] .= "0";
-            $string .= ".".$parts[1];
+            $string .= ",".$parts[1];
         }
         return ucfirst($string);
         //return mb_convert_case(mb_substr($string,0,1),MB_CASE_UPPER,"UTF-8").mb_substr($string,1);

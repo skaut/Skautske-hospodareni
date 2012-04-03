@@ -53,6 +53,22 @@ class BaseService {
             $this->{$var} = $ns->{$var} ? unserialize($ns->{$var}) : NULL;
         }
     }
+    
+    /**
+     * vrátí pdf do prohlizece
+     * @param type $template
+     * @param type $filename
+     * @return type 
+     */
+    function makePdf($template = NULL, $filename = NULL){
+        if($template === NULL)
+            return FALSE;
+        define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
+        require_once(_MPDF_PATH . 'mpdf.php');
+        $mpdf = new mPDF('utf-8');
+        $mpdf->WriteHTML((string)$template, NULL);
+        $mpdf->Output($filename, 'I');
+    }
 
 }
 

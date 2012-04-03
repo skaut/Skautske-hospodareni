@@ -31,7 +31,7 @@
                 <thead>
                     <tr>
                         <th n:if="$isEditable">&nbsp;</th>
-                        <th>Datum</th>
+                        <th>Ze dne</th>
                         <th>Účel výplaty</th>
                         <th>Typ</th>
                         <th>Komu/Od</th>
@@ -41,26 +41,20 @@
                     </tr>
                 </thead>
                 <tbody>
-        {assign zustatek => 0}
+        {assign $balance => 0}
                     <tr n:foreach="$list as $key => $item">
                         <td n:if="$isEditable">
                             <a href="{link remove! $item->id, $aid}" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
                             <a n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-info"><i class="icon icon-edit icon-white"></i></a>
                         </td>
-                        <td>{$item->date|date:"j.n.Y"}</td>
+                        <td>{$item->date|date:"d.m.Y"}</td>
                         <td>{$item->purpose|truncate:"35"}</td>
                         <td title="{$item->cshort}">{$item->cshort}</td>
                         <td>{$item->recipient}</td>
-                        <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
-                        <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'}</td>{* ! je tady kvuli &nbsp;*}
-            {?
-                $zustatek += $item->ctype == 'in' ? $item->price : (-$item->price);
-                if(preg_match("/^-?[0-9]*\.[0-9]$/", $zustatek))//doplneni na 2 desetina mista
-                    $zustatek .= "0";
-                if($zustatek < 0)
-                    $errors[0] = "";
-            }
-                        <td {if $zustatek < 0}class="isMinus"{/if}>{$zustatek}</td>
+                        <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
+                        <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
+            {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
+                        <td {if $balance < 0}class="isMinus"{/if}>{$balance|price}</td>
                     </tr>
                     <tr>
                         <td n:if="$isEditable">&nbsp;</td>
@@ -70,7 +64,7 @@
                         <td><b>Konečný stav</b></td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
-                        <td><b>{$zustatek}</b></td>
+                        <td><b>{$balance|price}</b></td>
                     </tr>
                 <tbody>
             </table>

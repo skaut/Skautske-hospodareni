@@ -42,7 +42,7 @@
                 </tr>
                 <tr n:foreach="$list as $id=>$name">
                     <td>{$name}</td>
-                    <td><a n:href="add! $id" class="btn btn-primary btn-mini"><i class="icon-plus icon-white"></i></a></td>
+                    <td><a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a></td>
                 </tr>
                 {else}
                 <tr>
@@ -57,6 +57,7 @@
 
 
     <div class="span4">
+        {snippet participants}
         <div n:ifset="$participants">
             <h3>Seznam účastníků</h3>
             <p n:if="$isEditable">
@@ -68,25 +69,30 @@
                     <th>Příjmení a jméno ({= count($participants)})</th>
                     <th>Dnů</th>
                     <th>Částka</th>
+                    <th>Try</th>
                 </tr>
                 {assign $total = 0}
                 <tr n:foreach="$participants as $p">
-                    <td n:if="$isEditable"><a n:href="remove! $p->ID" class="btn btn-danger btn-mini"><i class="icon-remove icon-white"></i></a></td>
+                    <td n:if="$isEditable"><a n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a></td>
                     <td>{$p->Person}</td>
-                    <td id="par-days-{$p->ID}" title="Pro úpravu klikněte">{$p->Days}</td>
-                    <td id="par-payment-{$p->ID}" title="Pro úpravu klikněte">{ifset $p->Note}{$p->Note}{? $total += $p->Note}{else}0{/ifset}</td>
+                    <td id="par-days-{$p->ID}" {if $isEditable}title="Pro úpravu klikněte"{/if}>{$p->Days}</td>
+                    <td id="par-payment-{$p->ID}" {if $isEditable}title="Pro úpravu klikněte"{/if}>{ifset $p->Note}{$p->Note}{? $total += $p->Note}{else}0{/ifset}</td>
+                    <td id="try-{$p->ID}">3</td>
                 </tr>
                 <tr>
                     <td n:if="$isEditable"></td>
                     <td></td>
                     <td></td>
                     <td><b>{$total}</b></td>
+                    <td></td>
                 </tr>
             </table>
         </div>
+        {/snippet}
     </div>
 </div>
 
+{if $isEditable}
 {* nový účastník *}
 <div class="modal myModal fade" id="addParticipant">
     <div class="modal-header">
@@ -119,20 +125,22 @@
     </div>
 </div>
 
-
-
-
-{if $isEditable}
 <script type="text/javascript">
 
 $(document).ready(function() {
+    
+    $('#[id^="try-"]');
+    
     $('#[id^="par-days-"]').editable({link editDays!},  { 
          type : 'text',
          id   : 'id',
          name : 'days',
          placeholder : ' ',
          width : '20px',
-         height: '15px'
+         height: '15px',
+         submitdata : function(value, settings) {
+             return { id: this.id.substr(9) }; //odstrani prefix
+         }
      });
 
     $('#[id^="par-payment-"]').editable({link editPayment!},  { 
@@ -141,124 +149,15 @@ $(document).ready(function() {
          name : 'payment',
          placeholder : ' ',
          width : '35px',
-         height: '15px'
+         height: '15px',
+         submitdata : function(value, settings) {
+             return { id: this.id.substr(12) }; //odstrani prefix
+         }
      });
 
 });
+
+
 </script>
 {/if}
 
-
-{*}
-<hr style="clear: both;">
-{ifset $roles}
-    {foreach $roles as $roleId => $roleLabel}
-        <input type="radio" id="{$roleId}" name="groups" value="{$roleId}" class="selectGroup" {if $sg == $roleId}checked="checked"{/if} /><label for="{$roleId}">{$roleLabel}</label>
-    {/foreach}
-{/ifset}
-{*}
-
-{*}
-        <br/><br/>
-<input type="radio" id="vlce" name="groups" value="vlce" class="selectGroup" {if $sg == "vlce"}checked="checked"{/if} /><label for="vlce">Vlčata</label>
-<input type="radio" id="skaut" name="groups" value="skaut" class="selectGroup" {if $sg == "skaut"}checked="checked"{/if} /><label for="skaut">Skauti</label>
-<input type="radio" id="rover" name="groups" value="rover" class="selectGroup" {if $sg == "rover"}checked="checked"{/if} /><label for="rover">Roveři</label>
-<input type="radio" id="ranger" name="groups" value="rover" class="selectGroup" {if $sg == "rover"}checked="checked"{/if} /><label for="rover">Roveři</label>
-<input type="radio" id="skautka" name="groups" value="skautka" class="selectGroup" {if $sg == "skautka"}checked="checked"{/if} /><label for="skautka">Skautky</label>
-<input type="radio" id="svetluska" name="groups" value="svetluska" class="selectGroup" {if $sg == "svetluska"}checked="checked"{/if} /><label for="svetluska">Světlušky</label>
-{*}
-
-{*}
-<style type="text/css">
-    .ucastniciTable, .ucastniciTable th, .ucastniciTable td, .selectedTable, .selectedTable th, .selectedTable td{
-        border: 1px #333 solid;
-    }
-    .ucastniciTable th, .selectedTable th{
-        text-align: center;
-    }
-
-    .ucastniciTable tr td a, .selectedTable tr td a {
-        display: block;
-        text-decoration: none;
-        color: #333;
-    }
-
-    .selectedTable {
-        float:left;
-        margin-right: 20px;
-    }
-    .seznamList {
-        cursor: pointer;
-        cursor: hand;
-    }
-
-</style>
-
-{snippet seznam}
-
-<h2>Vyber účastníky akce</h2>
-<a href="{link clearList!}">Vymazat seznam</a>
-<a href="{link Ucastnik:castka}">Přidej částky</a>
-<p><i>Účastníky vyberete kliknutím na jméno učastníka.</i></p>
-
-<hr class="hidden" />
-
-<table class="selectedTable">
-    <tr>
-        <th>Vybraní (celkem {= count($selectedList)})</th>
-    </tr>
-
-    <tr n:foreach="$selectedList as $key => $ucastnik">
-        <td id="{$ucastnik->u}" class="seznamList selected" ><a n:href="remove! $ucastnik->u" class="ajax">{$ucastnik->n} ({$ucastnik->r})</a></td>
-    </tr>
-</table>
-
-<table class="ucastniciTable">
-    <tr>
-        <th>Zvolené skupina</th>
-    </tr>
-    {foreach $list as $key => $ucastnik}
-        <tr>
-            <td id="{$ucastnik->userID}" class="seznamList"><a n:href="add! $ucastnik->userID" class="ajax">{$ucastnik->nick} ({$ucastnik->firstname} {$ucastnik->lastname})</a></td>
-        </tr>
-    {/foreach}
-</table>
-<hr class="hidden" />
-
-
-
-<script type="text/javascript">
-    $(function(){
-        //vybira konkretni skupinu pro zobrazeni
-        $(".selectGroup").live('change', function (data) {
-            data.preventDefault();
-            if ($.active) return;
-            $.get({link groups!} + "&group="+ data.target.defaultValue );
-            
-        });
-
-{*}
-{*}
-        //presunuje polozky z jednoho pole do druheho
-        $(".seznamList").click(function () {
-            $(".seznamList").live('click', function(e){
-                event.preventDefault();
-                if ($.active) return;
-                var nick = $(this).attr('id');
-                if ($(this).hasClass('selected')){
-                    $.get({link remove!}, {'key': nick});
-                    $(this).removeClass("selected");
-                } else {
-                    $.get({link add!}, {'key' : nick});
-                    $(this).addClass("selected");
-                }
-                return false;
-            })
-
-        });
-{*}
-{*}
-    })
-</script>
-{/snippet}
-{*}

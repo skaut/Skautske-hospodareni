@@ -104,28 +104,23 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
 //    }
 
     public function handleRemove($pid) {
-        if(!$this->isEditable){
-            $this->flashMessage("Akci je uzavřena a nelze ji upravovat.", "danger");
-            $this->redirect("this");
-        }
+        $this->onlyEditable();
             
         $this->service->removeParticipant($pid);
         if ($this->isAjax()) {
-            //$this->invalidateControl("seznam");
+            $this->invalidateControl("potencialParticipants");
+            $this->invalidateControl("participants");
         } else {
             $this->redirect('this');
         }
     }
     
     public function handleAdd($pid) {
-        if(!$this->isEditable){
-            $this->flashMessage("Akci je uzavřena a nelze ji upravovat.", "danger");
-            $this->redirect("this");
-        }
+        $this->onlyEditable();
         $this->service->addParticipant($this->aid, $pid);
         if ($this->isAjax()) {
-            
-            //$this->invalidateControl("seznam");
+            $this->invalidateControl("potencialParticipants");
+            $this->invalidateControl("participants");
         } else {
             $this->redirect('this');
         }
@@ -147,30 +142,26 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
      * nastavuje počet dní
      */
     public function handleEditDays() {
-        if(!$this->isEditable){
-            $this->flashMessage("Akci je uzavřena a nelze ji upravovat.", "danger");
-            $this->redirect("this");
-        }
+        $this->onlyEditable();
         $post = $this->context->httpRequest->getPost();
-        $id = (int) str_replace("par-days-", "", $post['id']);
         $days = (int) $post['days'];
+        $id = (int) $post['id'];
         $this->service->setDays($id, $days);
-        echo $days;
-        $this->terminate();
+        if($this->isAjax()){
+            $this->invalidateControl("potencialParticipants");
+            $this->invalidateControl("participants");
+        }
+        //echo $days;
+        //$this->terminate();
     }
 
     /**
      * nastavuje částku
      */
     public function handleEditPayment() {
-        if(!$this->isEditable){
-            $this->flashMessage("Akci je uzavřena a nelze ji upravovat.", "danger");
-            $this->redirect("this");
-        }
+        $this->onlyEditable();
         $post = $this->context->httpRequest->getPost();
-        //dump($post);$this->terminate();
-
-        $id = (int) str_replace("par-payment-", "", $post['id']);
+        $id = (int)$post['id'];
         $payment = (int) $post['payment'];
         $this->service->setPayment($id, $payment);
         echo $payment;
@@ -193,10 +184,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     }
     
     public function formAddPaymentMassSubmitted(AppForm $form) {
-        if(!$this->isEditable){
-            $this->flashMessage("Akci je uzavřena a nelze ji upravovat.", "danger");
-            $this->redirect("this");
-        }
+        $this->onlyEditable();
         $values = $form->getValues();
         //dump($values);die();
         $aid = $values['aid'];
@@ -229,10 +217,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     }
 
     public function formAddParticipantNewSubmitted(AppForm $form) {
-        if(!$this->isEditable){
-            $this->flashMessage("Akci je uzavřena a nelze ji upravovat.", "danger");
-            $this->redirect("this");
-        }
+        $this->onlyEditable();
         $values = $form->getValues();
         $aid = $values['aid'];
         $person = array(
@@ -244,156 +229,14 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $this->service->addParticipantNew($aid, $person);
         $this->redirect("this");
     }
+    
+    protected function onlyEditable(){
+        if(!$this->isEditable){
+            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
+            $this->redirect("this");
+        }
+    }
 
-//    /**
-//     * (ajaxovy) pozadavek pro zmenu aktualne zobrazovane skupiny
-//     * @param string $group
-//     */
-//    function handleGroups($group) {
-//        $this->sesNS->sg = $group;
-//        if ($this->isAjax()) {
-//            $this->invalidateControl("seznam");
-//            $this->invalidateControl("flashmesages");
-//        } else {
-//            $this->redirect('this');
-//        }
-//    }
-//
-//    /**
-//     * přidá účastníka mezi vybrané
-//     * @param int $key
-//     */
-//    function handleAdd($key) {
-//        $add = $this->ucastnici->add(new MU((array) $this->Uservice->get($key)));
-//
-//        if ($this->isAjax()) {
-//            $this->invalidateControl("seznam");
-//            //$this->payload->payload = $this->ucastnici->get($ucastnik->username);
-//            //$this->terminate();
-//        } else {
-//            $this->redirect('this');
-//        }
-//    }
-//
-//    /**
-//     * vyjme účastníka z vybraných
-//     * @param int $key
-//     */
-//    function handleRemove($key) {
-//        $this->ucastnici->removeUcastnik($key);
-//
-//        if ($this->isAjax()) {
-//            $this->invalidateControl("seznam");
-//            //$this->terminate();
-//        } else {
-//            $this->redirect('this');
-//        }
-//    }
-//
-//    /**
-//     * smaze vsechny účastníky
-//     */
-//    function handleClearList() {
-//        $this->ucastnici->clear();
-//
-//        if ($this->isAjax()) {
-//            $this->terminate();
-//        } else {
-//            $this->redirect('default');
-//        }
-//    }
-//
-//    /**
-//     * přidá příjmový doklad do paragonů
-//     */
-//    function actionAddToParagon() {
-//        $p = $this->service->getParagony();
-//        $date = $this->ucastnici->getDate();
-//        if (!($date instanceof DateTime53)) {
-//            $date = DateTime53::from($this->ucastnici->getDate());
-//        }
-//        $p->add(new Paragon(array('komu' => $this->ucastnici->getPrijal(), 'date' => $date, 'ucel' => 'Účastnické příspěvky', 'price' => $this->totalIn(), 'type' => 'pp')));
-//        $this->redirect('Paragon:');
-//    }
-//
-//    /**
-//     * stránka s formulářem pro vyplnění částek a jmen pokladníka a přijal
-//     */
-//    function renderCastka() {
-//        $form = $this['castkaForm'];
-//        $this->template->form = $form;
-//        $this->template->selectedList = $this->ucastnici->getAll();
-//        $ac = $this->Uservice->getUsersToAC();
-//        $this->template->autoCompleter = $ac;
-//    }
-//
-//    /**
-//     * vygeneruje formulář pro zadání částek k jednotlivým účastníkům
-//     * @param <type> $name
-//     * @return AppForm
-//     */
-//    function createComponentCastkaForm($name) {
-//        $form = new AppForm($this, $name);
-//        $defaults = array();
-//        $selectedList = $this->ucastnici->getList();
-//        $form->addDatePicker('date', 'Datum', 10)
-//                ->addRule(Form::FILLED, "Není vyplněno datum");
-//        $form->addText("pokladnik", "Pokladník", 14)
-//                ->addRule(Form::FILLED, "Není vyplněn pokladník");
-//        $form->addText("prijal", "Přijal", 14);
-//        if ($selectedList) {
-//            $group = $form->addContainer('ucastnici');
-//            foreach ($selectedList as $key => $item) {
-//                $input = $group->addText($key, $item, 3)->controlPrototype->class("ucastnik");
-//                $money = $this->ucastnici->get($key)->m;
-//                if ($money) {
-//                    $defaults['ucastnici'][$key] = $money;
-//                }
-//            }
-//        }
-//        $date = $this->ucastnici->getDate();
-//
-//        $defaults['date'] = $date ? $date->format('j. n. Y') : "";
-//
-//        //$defaults['date'] = date("j.n.Y", ($date = $this->ucastnici->getDate()) ? strtotime($date) : time());
-//
-//        $defaults['prijal'] = $this->ucastnici->getPrijal();
-//        $defaults['pokladnik'] = $this->ucastnici->getPokladnik();
-//        $form->setDefaults($defaults);
-//        $form->addSubmit('send', 'Uložit');
-//        $form->onSuccess[] = array($this, 'castkaFormSubmitted');
-//        return $form;
-//    }
-//
-//    /**
-//     * zpracuje odeslaný formulář s částkami
-//     * @param AppForm $form
-//     */
-//    function castkaFormSubmitted(AppForm $form) {
-//        $values = $form->getValues();
-//        $this->ucastnici->setDate($values['date']);
-//        $this->ucastnici->setPokladnik($values['pokladnik']);
-//        $this->ucastnici->setPrijal($values['prijal']);
-//        foreach ($values['ucastnici'] as $key => $money) {
-//            $this->ucastnici->updateUcastnik($key, 'm', $money);
-//        }
-//
-//        $this->flashMessage("Seznam účastníků je hotov");
-//        $this->redirect("Default:akce");
-//    }
-//    /**
-//     * spočítá celkový příjem
-//     * @param seznam účastníků pro počítání $list
-//     * @return int
-//     */
-//    public function totalIn($list = NULL) {
-//        if ($list === NULL)
-//            $list = $this->ucastnici->getAll();
-//
-//        $totalPrice = 0;
-//        foreach ($list as $ucastnik)
-//            $totalPrice += $ucastnik->m;
-//        return $totalPrice;
-//    }
+
 }
 

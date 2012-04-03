@@ -57,7 +57,16 @@ class ChitTable extends BaseTable {
      * @return array 
      */
     public function getCategories($type = NULL){
-        return dibi::fetchPairs("SELECT id, label FROM [".self::TABLE_CATEGORY."] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
+        return dibi::fetchPairs("SELECT short, label FROM [".self::TABLE_CATEGORY."] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
+    }
+    
+    /**
+     * vrací všechny informace o kategoriích
+     * @param string $type in|out
+     * @return type 
+     */
+    public function getCategoriesAll($type = NULL){
+        return dibi::fetchAll("SELECT * FROM [".self::TABLE_CATEGORY."] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
     }
     
     /**
