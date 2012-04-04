@@ -11,7 +11,7 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
         /** @var ActionService */
         $this->service = new ActionService();
     }
-    
+
     public function beforeRender() {
         parent::beforeRender();
     }
@@ -20,45 +20,45 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
         $list = $this->service->getMyActions();
         $this->template->list = $list;
     }
-    
+
     public function renderView($aid) {
         $data = $this->service->get($aid);
-        
+
         //nastavení dat do formuláře pro editaci
         $action = $this->service->get($aid);
         $func = $this->service->getFunctions($aid);
         $form = $this['formEdit'];
         $form->setDefaults(array(
-            "aid"   => $aid,
-            "name"  => $action->DisplayName,
+            "aid" => $aid,
+            "name" => $action->DisplayName,
             "start" => $action->StartDate,
-            "end"   => $action->EndDate,
-            "leader"    =>  $func[0]->ID_Person,
-            "assistant" =>  $func[1]->ID_Person,
-            "economist" =>  $func[2]->ID_Person,
+            "end" => $action->EndDate,
+            "leader" => $func[0]->ID_Person,
+            "assistant" => $func[1]->ID_Person,
+            "economist" => $func[2]->ID_Person,
         ));
-        
+
         $this->template->data = $data;
         $this->template->funkce = $func;
         $this->template->isEditable = $this->service->isEditable($data);
         $this->template->isEditable = $this->service->isEditable($data);
     }
-    
+
     public function actionOpen($aid) {
         $res = $this->service->open($aid);
         $this->flashMessage("Akce byla znovu otevřena.");
-        $this->redirect("view", array("aid"=> $this->aid));
+        $this->redirect("view", array("aid" => $this->aid));
     }
-    
+
     public function actionClose($aid) {
-        if($this->service->isFunctionSets($aid)){
+        if ($this->service->isFunctionSets($aid)) {
             $res = $this->service->close($aid);
             $this->flashMessage("Akce byla uzavřena.");
         } else {
             $this->flashMessage("Před uzavřením akce musíte vyplnit vedení akce", "danger");
         }
-        
-        $this->redirect("view", array("aid"=>$aid));
+
+        $this->redirect("view", array("aid" => $aid));
     }
 
     public function handleCancel($id) {
@@ -94,17 +94,23 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
     }
 
     function formCreateSubmitted(AppForm $form) {
-        $values = $form->getValues();
-
-        $id = $this->service->create(
-                $values['name'], $values['start']->format("Y-m-d"), $values['end']->format("Y-m-d"), $values['leader'], $values['assistant'], $values['economist']
-        );
+        $v = $form->getValues();
+        
+        try {
+            $id = $this->service->create(
+                    $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['leader'], $v['assistant'], $v['economist']
+            );
+        } catch (SoapFault $e) {
+            if(preg_match("/UnitPermissionDenied/", $e->getMessage())){
+                $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
+                $this->redirect("this");
+            }
+            throw $e;
+        }
 
         if ($id) {
             $this->flashMessage("Akce byla založena");
             $this->redirect("list");
-        } else {
-            $this->flashMessage("Akci se nepodařilo založit", "fail");
         }
         $this->redirect("this");
     }
@@ -177,6 +183,5 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
 //            "economist" =>  $func[2]->ID_Person,
 //        ));
 //    }
-
 }
 
