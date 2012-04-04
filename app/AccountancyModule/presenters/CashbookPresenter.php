@@ -95,7 +95,8 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     function createComponentFormOutEdit($name) {
         $form = self::makeFormOUT($this, $name);
         $form->addHidden('id');
-        $form->addSubmit('send', 'Uložit');
+        $form->addSubmit('send', 'Uložit')
+                ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, 'formEditSubmitted');
         return $form;
     }
@@ -140,7 +141,8 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     function createComponentFormInEdit($name) {
         $form = self::makeFormIn($this, $name);
         $form->addHidden('id');
-        $form->addSubmit('send', 'Uložit');
+        $form->addSubmit('send', 'Uložit')
+                ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, 'formEditSubmitted');
         return $form;
     }
