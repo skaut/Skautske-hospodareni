@@ -1,6 +1,14 @@
 <?php
 
+/**
+ * slouží pro obsluhu účastníků
+ * @author Hána František
+ */
 class ParticipantService extends BaseService {
+    /**
+     * název pod kterým je uložena čáska ve skautISu
+     */
+    const PAYMENT = "Note";
 
     public function __construct() {
         parent::__construct();
@@ -27,11 +35,11 @@ class ParticipantService extends BaseService {
         $onlyDirectMember = (bool) $onlyDirectMember;
 
         $all = $this->skautIS->org->PersonAll(array(
-                    "ID_Unit" => $unitId,
-                    "OnlyDirectMember" => $onlyDirectMember,
+            "ID_Unit" => $unitId,
+            "OnlyDirectMember" => $onlyDirectMember,
                 ));
-        
-        if(is_array($participants)){
+
+        if (is_array($participants)) {
             foreach ($participants as $p) {
                 $check[$p->ID_Person] = true;
             }
@@ -45,14 +53,13 @@ class ParticipantService extends BaseService {
         } else {
             $ret = $all;
         }
-        
         return $ret;
     }
 
     /**
      * přidat účastníka k akci
-     * @param type $actionId
-     * @param type $participantId
+     * @param int $actionId
+     * @param int $participantId
      * @return type
      */
     public function addParticipant($actionId, $participantId) {
@@ -63,9 +70,9 @@ class ParticipantService extends BaseService {
     }
 
     /**
-     *
-     * @param type $actionId
-     * @param type $participantId
+     * vytvoří nového účastníka
+     * @param int $actionId
+     * @param int $participantId
      * @return type
      */
     public function addParticipantNew($actionId, $person) {
@@ -75,7 +82,7 @@ class ParticipantService extends BaseService {
                         "FirstName" => $person['firstName'],
                         "LastName" => $person['lastName'],
                         "NickName" => $person['nick'],
-                        "Note" => $person['note'],
+                        PAYMENT => $person['note'],
                     ),
                 ));
     }
@@ -95,7 +102,7 @@ class ParticipantService extends BaseService {
      * @param int $payment - částka
      */
     public function setPayment($ID, $payment) {
-        $this->skautIS->event->ParticipantGeneralUpdate(array("ID" => $ID, "Note" => $payment));
+        $this->skautIS->event->ParticipantGeneralUpdate(array("ID" => $ID, self::PAYMENT => $payment));
     }
 
     /**
@@ -104,9 +111,9 @@ class ParticipantService extends BaseService {
      * @return type 
      */
     public function removeParticipant($pid) {
-        return $this->skautIS->event->ParticipantGeneralDelete(array("ID" => $pid, "DeletePerson"=>false));
+        return $this->skautIS->event->ParticipantGeneralDelete(array("ID" => $pid, "DeletePerson" => false));
     }
-    
+
     /**
      * hromadné nastavení účastnické částky
      * @param int $actionId - ID ake
@@ -114,14 +121,54 @@ class ParticipantService extends BaseService {
      * @param bool $rewrite - přepisovat staré údaje?
      */
     public function setPaymentMass($actionId, $newPayment, $rewrite = false) {
-        if($newPayment < 0)
+        if ($newPayment < 0)
             $newPayment = 0;
         $par = $this->getAllParticipants($actionId);
-        foreach ($par as $p){
-            $paid = $p->Note;
-            if(($paid == $newPayment) || (($paid != 0 && $paid != NULL) && !$rewrite)) //není změna nebo není povolen přepis
+        foreach ($par as $p) {
+            $paid = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
+            if (($paid == $newPayment) || (($paid != 0 && $paid != NULL) && !$rewrite)) //není změna nebo není povolen přepis
                 continue;
             $this->setPayment($p->ID, $newPayment);
+        }
+    }
+
+    /**
+     * celkově vybraná částka
+     * @param int $actionId
+     * @return int - vybraná částka 
+     */
+    public function getTotalPayment($actionId) {
+        $participants = $this->getAllParticipants($actionId);
+        $res = 0;
+        foreach ($participants as $p) {
+            $res += $p->{self::PAYMENT};
+        }
+        return $res;
+    }
+
+    /**
+     * přidá příjmový paragon za všechny účastníky
+     * @param int $actionId
+     */
+    public function addPaymentsToCashbook($actionId) {
+        $cs = new ChitService();
+        $as = new ActionService();
+
+        $func = $as->getFunctions($actionId);
+        $total = $this->getTotalPayment($actionId);
+
+        $chit = array(
+            "date" => $as->get($actionId)->StartDate,
+            "recipient" => isset($func[ActionService::ECONOMIST]->Person) ? $func[ActionService::ECONOMIST]->Person : NULL,
+            "purpose" => "Účastnické poplatky",
+            "price" => $total,
+            "priceText" => $total,
+            "type" => "pp",
+        );
+        try {
+            $cs->add($actionId, $chit);
+        } catch (InvalidArgumentException $exc) {
+            return false;
         }
     }
 

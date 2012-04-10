@@ -12,7 +12,7 @@ class ChitTable extends BaseTable {
      */
     public function get($id){
         return dibi::fetch("SELECT ch.*, cat.type as ctype FROM [".self::TABLE_CHIT."] as ch
-            LEFT JOIN [".self::TABLE_CATEGORY."] as cat ON (ch.category = cat.id) 
+            LEFT JOIN [".self::TABLE_CATEGORY."] as cat ON (ch.category = cat.short) 
                 WHERE ch.id=%i AND ch.deleted = 0", $id);
     }
     
@@ -52,12 +52,24 @@ class ChitTable extends BaseTable {
     }
     
     /**
+     * označí paragony z dané akce za smazané
+     * @param type $actionId
+     * @return type 
+     */
+    public function deleteAll($actionId){
+        return dibi::query("UPDATE [".self::TABLE_CHIT."] SET deleted=1 WHERE actionID = %i", $actionId);
+    }
+    
+    /**
      * vrací seznam kategorií
      * @param string $type
      * @return array 
      */
     public function getCategories($type = NULL){
-        return dibi::fetchPairs("SELECT short, label FROM [".self::TABLE_CATEGORY."] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
+        return dibi::fetchPairs("SELECT short, label FROM [".self::TABLE_CATEGORY."]
+            WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type,
+                "ORDER BY orderby DESC"
+                );
     }
     
     /**
@@ -75,8 +87,8 @@ class ChitTable extends BaseTable {
      * @return bool 
      */
     public function isInMinus($actionId) {
-        $data = dibi::fetchPairs("SELECT cat.type, SUM(ch.price) as sum FROM ac_chits as ch
-            LEFT JOIN ac_category as cat ON (ch.category = cat.short) 
+        $data = dibi::fetchPairs("SELECT cat.type, SUM(ch.price) as sum FROM [".self::TABLE_CHIT."] as ch
+            LEFT JOIN [".self::TABLE_CATEGORY."] as cat ON (ch.category = cat.short) 
             WHERE ch.actionId = %i AND ch.deleted = 0
             GROUP BY cat.type", $actionId);
         

@@ -7,6 +7,16 @@ class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
 
     function startup() {
         parent::startup();
+        
+        if ($this->aid > 0) {
+            if (!$this->service->isAccessable($this->aid)) {
+                $this->flashMessage("Nepovolený přístup", "error");
+                $this->redirect("Action:list");
+            }
+        } else {
+            $this->redirect("Action:list");
+        }
+        
     }
 
     public function renderDefault($aid) {
@@ -14,30 +24,39 @@ class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
     }
 
     public function actionChits($aid) {
-        //@todo - má povolení?
         $service = new ChitService();
-        $list = $service->getAllOut($aid);
+        $as = new ActionService();
+        $us = new UnitService();
+
+        try {
+            $info = $as->get($aid);
+        } catch (SkautIS_PermissionException $exc) {
+            $this->flashMessage($exc->getMessage(), "danger");
+            $this->redirect("Action:list");
+        }
 
         $template = $this->template;
         $template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
         $template->setFile(dirname(__FILE__) . '/../templates/Export/ex.chits.latte');
+        $template->list = $service->getAllOut($aid);
 
-        $template->list = $list;
-        $as = new ActionService();
-        $us = new UnitService();
-        $info = $as->get($aid);
+
         $template->oficialName = $us->getOficialName($info->ID_Unit);
         $service->makePdf($template, Strings::webalize($info->DisplayName) . "_paragony.pdf");
         $this->terminate();
     }
 
     public function actionCashbook($aid) {
-        //@todo - má povolení?
         $service = new ChitService();
+        $as = new ActionService();
         $list = $service->getAll($aid);
 
-        $as = new ActionService();
-        $info = $as->get($aid);
+        try {
+            $info = $as->get($aid);
+        } catch (SkautIS_PermissionException $exc) {
+            $this->flashMessage($exc->getMessage(), "danger");
+            $this->redirect("Action:list");
+        }
 
         $template = $this->template;
         $template->setFile(dirname(__FILE__) . '/../templates/Export/ex.cashbook.latte');
@@ -49,55 +68,58 @@ class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
     }
 
     public function actionMassIn($aid) {
-        //@todo - má povolení?
         $service = new ParticipantService();
         $list = $service->getAllParticipants($aid);
 
         $as = new ActionService();
         $us = new UnitService();
-        $info = $as->get($aid);
+        
+        try {
+            $info = $as->get($aid);
+        } catch (SkautIS_PermissionException $exc) {
+            $this->flashMessage($exc->getMessage(), "danger");
+            $this->redirect("Action:list");
+        }
 
         $template = $this->template;
         $template->setFile(dirname(__FILE__) . '/../templates/Export/ex.massIn.latte');
         $template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
         $template->registerHelper('price', 'AccountancyHelpers::price');
-        $totalPrice = 0;
-        foreach ($list as $key => $p) {
-            if (isset($p->Note))
-                $totalPrice += $p->Note;
-            else
-                $list[$key]->Note = 0;
-        }
 
         $template->list = $list;
-        $template->totalPrice = $totalPrice;
+        $template->totalPrice = $service->getTotalPayment($aid);
         $template->oficialName = $us->getOficialName($info->ID_Unit);
-        
+
         $service->makePdf($template, Strings::webalize($info->DisplayName) . "_hpd.pdf");
         $this->terminate();
     }
-    
-    public function actionReport($aid) {
-        //@todo - má povolení?
-        $service = new ParticipantService();
-        $participants = $service->getAllParticipants($aid);
 
+    public function actionReport($aid) {
+        $service = new ParticipantService();
         $as = new ActionService();
         $chitService = new ChitService();
-        $info = $as->get($aid);
         
+        $participants = $service->getAllParticipants($aid);
+
+        try {
+            $info = $as->get($aid);
+        } catch (SkautIS_PermissionException $exc) {
+            $this->flashMessage($exc->getMessage(), "danger");
+            $this->redirect("Action:list");
+        }
+
         $chitsAll = $chitService->getAll($aid);
-        
+
         foreach (ArrayHash::from($chitService->getCategories(TRUE)) as $c) {
             $categories[$c->type][$c->short] = $c;
             $categories[$c->type][$c->short]->price = 0;
         }
         foreach ($chitsAll as $chit) {
-            $categories[$chit->ctype][$chit->cshort]->price += $chit->price;    
+            $categories[$chit->ctype][$chit->cshort]->price += $chit->price;
         }
-        
+
         $personsDays = 0;
-        foreach ($participants as $p){
+        foreach ($participants as $p) {
             $personsDays += $p->Days;
         }
 
@@ -109,8 +131,8 @@ class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
         $template->a = $info;
         $template->chits = $categories;
         $template->func = $as->getFunctions($aid);
-        
-        
+        echo $template;
+        die();
         $service->makePdf($template, Strings::webalize($info->DisplayName) . "_report.pdf");
         $this->terminate();
     }
@@ -251,7 +273,7 @@ class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
 //        $files->makePdf($template, $filename);
 //
 //        if ($this->isAjax()) {
-//            $this->invalidateControl("flashmesages");
+//            $this->invalidateControl("flash");
 //        } else {
 //            $this->redirect('this');
 //        }

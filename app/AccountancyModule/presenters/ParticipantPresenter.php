@@ -24,6 +24,15 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $this->uid = $this->context->httpRequest->getQuery("uid", NULL);
         $as = new ActionService();
         $this->template->isEditable = $this->isEditable = $as->isEditable($this->aid);
+        
+        if ($this->aid > 0) { //@todo nepůsobí problem s handlery?
+            if (!$this->service->isAccessable($this->aid)) {
+                $this->flashMessage("Nepovolený přístup", "error");
+                $this->redirect("Action:list");
+            }
+        } else {
+            $this->redirect("Action:list");
+        }        
     }
 
     public function beforeRender() {
@@ -166,6 +175,16 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $this->service->setPayment($id, $payment);
         echo $payment;
         $this->terminate();
+    }
+    
+    function handleAddPaymentToChit(){
+        $this->service->addPaymentsToCashbook($this->aid);
+        $this->flashMessage("Přijmy byly přidány do pokladní knihy");
+        if($this->isAjax()){
+            $this->invalidateControl("flash");
+        } else {
+            $this->redirect("this");
+        }
     }
 
     function createComponentFormAddPaymentMass($name) {

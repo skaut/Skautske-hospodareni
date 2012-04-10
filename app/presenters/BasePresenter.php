@@ -4,7 +4,6 @@ abstract class BasePresenter extends Presenter {
 
     public $oldLayoutMode = FALSE;
     public $oldModuleMode = FALSE;
-    //public $user;
     protected $service;
     
     /**
@@ -44,18 +43,10 @@ abstract class BasePresenter extends Presenter {
         $this->template->backlink = $this->context->httpRequest->getQuery("backlink");   
     }
 
-    public function accessFail() {
-        $this->flashMessage("Nemáte oprávnění pro tuto akci", "fail");
-        $this->redirect(":Auth:", $this->getApplication()->storeRequest());
-    }
-
-    public function handleLogOut() {
-            $this->user->logout();
-            $this->redirect(":Default:");
-            
-//$skautisService = new SkautisService();
-        //$this->redirectUrl("http://test-is.skaut.cz/Login/Logout.aspx?AppID=" . $skautisService->getAppId() . "&token=" . $skautisService->getToken());
-    }
+//    public function accessFail() {
+//        $this->flashMessage("Nemáte oprávnění pro tuto akci", "fail");
+//        $this->redirect(":Auth:", $this->getApplication()->storeRequest());
+//    }
 
     protected function createComponentVp() {
         return new VisualPaginator();

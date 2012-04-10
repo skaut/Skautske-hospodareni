@@ -20,7 +20,7 @@
     {/snippet}    
     </div>
     
-    <div class="span6">
+    <div class="span7">
         <div n:snippet="paragony" style="float: left;">
         {if $list}
             <p n:if="$isInMinus" class="alert alert-error">
@@ -44,8 +44,10 @@
         {assign $balance => 0}
                     <tr n:foreach="$list as $key => $item">
                         <td n:if="$isEditable">
+                            {if !isset($item->noneditable)}
                             <a href="{link remove! $item->id, $aid}" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
                             <a n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-info"><i class="icon icon-edit icon-white"></i></a>
+                            {/if}
                         </td>
                         <td>{$item->date|date:"d.m.Y"}</td>
                         <td>{$item->purpose|truncate:"35"}</td>

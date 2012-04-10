@@ -7,11 +7,6 @@ class UnitService extends BaseService {
         $this->table = new UnitTable();
     }
 
-//    public function create($id) {
-//        $unit = $this->getDetail($id);
-//        return $this->table->create($unit, $user);
-//    }
-
     /**
      * vrací detail jednotky
      * @param ID_Unit $id
