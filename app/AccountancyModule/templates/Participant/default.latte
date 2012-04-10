@@ -61,7 +61,8 @@
         <div n:ifset="$participants">
             <h3>Seznam účastníků</h3>
             <p n:if="$isEditable">
-                <a class="paymentMass btn btn-info btn-small" href="#addPaymentMass" data-toggle="modal"><i class="icon-edit icon-white"></i>  Vyplnit částky hromadně</a>
+                <a class="paymentMass btn btn-info btn-small" href="#addPaymentMass" data-toggle="modal"><i class="icon-edit icon-white"></i> Vyplnit částky hromadně</a>
+                <a class="paymentMass btn btn-info btn-small ajax" n:href="addPaymentToChit!"><i class="icon-plus icon-white"></i> Přidat příjmy do pokl. knihy</a>
             </p>
             <table id="participants-list" class="table table-striped table-bordered table-condensed">
                 <tr>

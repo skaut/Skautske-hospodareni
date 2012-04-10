@@ -10,10 +10,21 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
         parent::startup();
         /** @var ActionService */
         $this->service = new ActionService();
+
+        if ($this->aid > 0) { //@todo nepůsobí problem s handlery?
+            if (!$this->service->isAccessable($this->aid)) {
+                $this->flashMessage("Nepovolený přístup k akci", "error");
+                $this->redirect("Action:list");
+            }
+        }
     }
 
     public function beforeRender() {
         parent::beforeRender();
+    }
+
+    public function actionDefault() {
+        $this->redirect("list");
     }
 
     public function actionList() {
@@ -22,17 +33,21 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
     }
 
     public function renderView($aid) {
-        $data = $this->service->get($aid);
+        try {
+            $data = $this->service->get($aid);
+        } catch (SkautIS_PermissionException $exc) {
+            $this->flashMessage($exc->getMessage(), "danger");
+            $this->redirect("Action:list");
+        }
 
         //nastavení dat do formuláře pro editaci
-        $action = $this->service->get($aid);
         $func = $this->service->getFunctions($aid);
         $form = $this['formEdit'];
         $form->setDefaults(array(
             "aid" => $aid,
-            "name" => $action->DisplayName,
-            "start" => $action->StartDate,
-            "end" => $action->EndDate,
+            "name" => $data->DisplayName,
+            "start" => $data->StartDate,
+            "end" => $data->EndDate,
             "leader" => $func[0]->ID_Person,
             "assistant" => $func[1]->ID_Person,
             "economist" => $func[2]->ID_Person,
@@ -40,7 +55,6 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
 
         $this->template->data = $data;
         $this->template->funkce = $func;
-        $this->template->isEditable = $this->service->isEditable($data);
         $this->template->isEditable = $this->service->isEditable($data);
     }
 
@@ -95,13 +109,13 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
 
     function formCreateSubmitted(AppForm $form) {
         $v = $form->getValues();
-        
+
         try {
             $id = $this->service->create(
                     $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['leader'], $v['assistant'], $v['economist']
             );
         } catch (SoapFault $e) {
-            if(preg_match("/UnitPermissionDenied/", $e->getMessage())){
+            if (preg_match("/UnitPermissionDenied/", $e->getMessage())) {
                 $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
                 $this->redirect("this");
             }
@@ -168,20 +182,5 @@ class Accountancy_ActionPresenter extends Accountancy_BasePresenter {
         $this->redirect("this");
     }
 
-    //    public function renderEdit($aid) {
-//        $action = $this->service->get($aid);
-//        $func = $this->service->getFunctions($aid);
-//
-//        $form = $this['formEdit'];
-//        $form->setDefaults(array(
-//            "aid"   => $aid,
-//            "name"  => $action->DisplayName,
-//            "start" => $action->StartDate,
-//            "end"   => $action->EndDate,
-//            "leader"    =>  $func[0]->ID_Person,
-//            "assistant" =>  $func[1]->ID_Person,
-//            "economist" =>  $func[2]->ID_Person,
-//        ));
-//    }
 }
 

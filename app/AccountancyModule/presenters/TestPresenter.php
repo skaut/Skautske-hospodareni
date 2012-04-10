@@ -14,6 +14,7 @@ class Accountancy_TestPresenter extends Accountancy_BasePresenter {
          * @var SkautisService
          */
         $this->service = SkautIS::getInstance();
+        $this->service->nette = true;
 
         $post = $this->request->post;
         if (isset($post['skautIS_Token'])) {
@@ -104,7 +105,7 @@ class Accountancy_TestPresenter extends Accountancy_BasePresenter {
         if (!$this->isAjax())
             $this->redirect('this');
         else {
-            $this->invalidateControl('flashmesages');
+            $this->invalidateControl('flash');
             $this->invalidateControl('form');
             $this->invalidateControl('testResponse');
         }

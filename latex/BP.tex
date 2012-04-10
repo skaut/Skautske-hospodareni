@@ -140,7 +140,12 @@ Zend Framework vyvíjí firma Zend Technologies Ltd., která stojí za jádrem P
 
 Nette Framework, vyvíjený Nette Foundation, se v posledních letech prosazuje na české scéně čím dál tím více. Jeho hlavními přednostmi jsou jednoduchá práce s formuláři, šablonovací systém Latte a početná komunita. Často však bývá kritizován za to, že jeho vývoj je řízen jeho zakladatelem Davidem Grudlem a nikoli komunitou.
 
-Já jsem si zvolil Nette Framework, protože mi nejvíce vyhovuje, několik let ho používám a souhlasím s jeho směřováním. Konkrétně jsem si vybral verzi pro PHP 5.2 bez prefixů.
+Já jsem si zvolil Nette Framework pro jeho dobré zpracování v oblasti formulářů a protože s ním již několik let pracuji. Důležitým faktorem při rozhodování byl i směr dalšího vývoje frameworku. Protože s jeho směřováním souhlasím, bude v budoucnu možné aplikaci dále rozšiřovat. Konkrétně jsem si vybral verzi pro PHP 5.2 bez prefixů.
+
+Pro tvorbu aplikací v Nette Framework se používá softwarová architektura Model-View-Controller (MVC). MVC slouží k oddělení kódu zajištujícího aplikační logiku (model) od kódu zajištujícího obsluhu (controller) a od kódu, který výsledná data zobrazí.
+Model se zde bude skládat ze "Services" jednotlivých částí, \uv{Tables} jednotlivých částí a mojí knihovny pro komunikaci se systémem SkautIS. Jednotlivé services pro přístup do databáze budou používat třídy \uv{Table} a pro přístup do systému SkautIS využijí moji knihovnu.
+V Nette Frameworku byl pojem controller nahrazen pojmem \uv{presenter}. Presentery obsluhují požadavky, získávají data od modelu a předávají je v potřebné podobě do daného view, které zajistí jejich zobrazení.
+View jsou zde řešeny šablonovacím systémem Latte (\url{http://doc.nette.org/cs/templating#toc-latte}), který zajištuje ochranu proti XSS (http://zdrojak.root.cz/clanky/co-je-xss-jak-mu-predchazet/), možnost použit makra a mnoho dalšího.  
 
 \subsection{Databáze}
 Databázi jsem vybral MySQL, protože je dostupná na většině hostingů a pro rozsah projektu postačuje. Pro práci přístup k databázi jsem měl na výběr mezi využitím základní MySQL funkcí zabudovaných v PHP a použitím některé PHP knihovny pro práci s databází. Použití základních funkcí PHP jsem zavrhl, protože je velmi těžké udržet v kódu přehlednost a práce s připojením je velmi nekomfortní.  
@@ -151,10 +156,56 @@ NotORM, od Jakuba Vrány, se prezentuje jako plnohodnotná alternativa k běžn�
 
 Nette Framework přímo nabízí vlastní vrstvu pro práci s databází (http://doc.nette.org/cs/database). Vychází z NotORM, ale má trochu odlišnou syntaxi. Mě nevyhovuje ze stejných důvodů jako NotORM.
 
-David Grudl kromě Nette Frameworku vytvořil také databázovou vrstvu dibi(http://dibiphp.com/). Já jsem si ji velmi oblíbil pro její jednoduchost a předem neurčený způsob užití. Vybral jsem si ji pro tento projekt, protože podle mého názoru plnohodnotně pokryje databázové potřeby tohoto projektu a práci s ním již dobře znám.
+David Grudl kromě Nette Frameworku vytvořil také databázovou vrstvu dibi(http://dibiphp.com/). Já jsem si ji velmi oblíbil pro její jednoduchost a protože mi nediktuje přesný způsob použití. Vybral jsem si ji pro tento projekt, protože podle mého názoru plnohodnotně pokryje databázové potřeby tohoto projektu a práci s ní již dobře znám a vyhovuje mi.
+
+Pro přístup do databáze přes Dibi máme dvě možnosti. Buď přes objekt DibiConnection, kterému v konstruktoru předáme parametry spojení a pak na něm budeme volat jednotlivé dotazy. Nebo přes statický objekt dibi, který je po prvním nastavení dostupný kdekoliv a stačí volat dotazy bez dalšího nastavování.
+
+\begin{verbatim}
+
+$params = array(
+    'driver'   => 'mysql',
+    'host'     => 'localhost',
+    'username' => 'uzivatelske_jmeno',
+    'password' => 'heslo',
+    'database' => 'nazev_databaze',
+);
+
+//1. možnost - přístup skrz objekt
+$db = new DibiConnection($params);
+$db->query('SQL dotaz');
+
+//2. možnost - statický přístup
+dibi::connect($params); //stačí pouze jednou
+dibi::query('SQL dotaz');
+
+\end{verbatim}
 
 \section{Datový model}
+\begin{figure}[h] \centering
+ 	\includegraphics[width=1\textwidth]{img/domain-model.png}
+ 	\caption[SkautIS]{Doménový model}\label{fig:domain-model}
+\end{figure}
+Datový model se v průběhu psaní aplikace velice zmenšil, díky několika novým verzím SkautISu, během kterých přibyl typ akce \uv{obecná akce} s možností přiřazení účastníků. V mojí databázi tedy budu uchovávat paragony a jejich kategorie. 
+Tabulka \uv{chits} uchovává všechny paragony a je navázána přes \uv{actionId} na konkretní akci ve SkautISu a přes category na tabulku \uv{chitsCategory}. Dále obsahuje 
+ \begin{itemize}
+ 	\item datum přijetí paragonu do pokladní knihy
+ 	\item jméno příjemce
+ 	\item účel výplaty  
+ 	\item částku 
+	\item způsob výpočtu částky
+	\item příznak jestli byl paragon smazán
+\end{itemize} 
 
+Tabulka \uv{chitsCategory} 
+ \begin{itemize}
+ 	\item id
+ 	\item název kategorie
+ 	\item zkratku kategorie
+ 	\item jestli je doklad příjmový nebo výdajový
+ 	\item parametr pro řazení kategorií
+ 	\item příznak jestli byla kategorie smazána 
+\end{itemize}
+Každá akce i s účastníky je v systému SkautIS navázána na konkretní jednotku. A paragony jsou k dané akci navázány podle \uv{ID\_Event} dané akce. 
 
 \section{Životní cyklus akce}
  \begin{figure}[h] \centering
@@ -169,7 +220,7 @@ David Grudl kromě Nette Frameworku vytvořil také databázovou vrstvu dibi(htt
 	\item zurušena
  \end{itemize} 
  
- Akce je ve stavu \uv{rozpracována} hned po jejím vytvoření a to dokud akci neuzavřeme nebo ji nezrušíme. U \uv{uzavřené} akce je evidováno kdy a kdo ji uzavřel a v případě potřeby ji lze znovu otevřít do stavu \uv{rozpracována} a dále upravovat. Změna stavu akce na \uv{zrušená} je nevratný krok a po té už akce bude přístupná pouze pro čtení nebo úplné vymazání ze systému.  
+Akce je ve stavu \uv{rozpracována} hned po jejím vytvoření a to dokud akci neuzavřeme nebo nezrušíme. U \uv{uzavřené} akce je evidováno kdy a kdo ji uzavřel a v případě potřeby ji lze znovu otevřít do stavu \uv{rozpracována} a dále upravovat. Změna stavu akce na \uv{zrušená} je nevratný krok a po té už akce bude přístupná pouze pro čtení nebo úplné vymazání ze systému.  
 
 \section{Navigace}
  \begin{figure}[h] \centering
@@ -194,7 +245,6 @@ Pokud máme vybranou akci, můžeme upravovat její základní údaje, spravovat
 Pokladní kniha spravuje příjmové i výdajové druhotné účetní doklady. 
 
 Do seznamu účastníků můžeme přidávat osoby jejich označením v seznamu. Pokud potřebujeme přidat osobu, která v seznamu není, musíme jí vyplnit základní údaje. V sekci exportů najdeme všechny výstupy, které systém nabízí.
-    
 
 \section{Komunikace se systémem SkautIS}
 Veškerá komunikace se systémem SkautIS probíhá přes webové služby (Web Services). SkautIS v současné době (23.3.2012) nabízí 12 webových služeb rozdělených podle jejich zaměření. Zde uvádím jejich seznam, kde tučně označené jsou ty, s kterými systém pracuje. (přebráno z \url{https://is.skaut.cz/JunakWebservice/})
@@ -217,10 +267,10 @@ Pro jednoduší práci s webovými službami SkautISu vytvořím obecnou knihovn
 
 \begin{figure}[h] \centering
  	\includegraphics[width=1\textwidth]{img/comunication.png}
- 	\caption[SkautIS]{Příklad komunikace se SkautISem}\label{fig:comunication-diagram}
+ 	\caption[SkautIS]{Příklad komunikace se systémem SkautIS}\label{fig:comunication-diagram}
 \end{figure}
 
-Pro komunikce se musíme přihlásit na stránkách SkautISu se zadaným Application ID, které jednoznačně určuje naši aplikaci. Po úspěšném přihlášení budeme přesměrováni na předem zadanou stránku, která metodou POST obdrží skautIS\_Token, skautIS\_IDRole, skautIS\_IDUnit a obslouží přihlášení na naší straně.   
+Pro komunikce se musíme nejdříve přihlásit na stránkách SkautISu se zadaným parametrem Application ID, které jednoznačně určuje aplikaci. Po úspěšném přihlášení budeme přesměrováni na předem zadanou stránku, která metodou POST obdrží skautIS\_Token, skautIS\_IDRole, skautIS\_IDUnit a obslouží přihlášení na naší straně.   
 
 \begin{itemize}
 	\item skautIS\_Token - unikátní token pro užiatele a každé přihlášení. Je předáván jako parametr při každém volání webové služby. Jeho platnost je 30 min a s každým použitím se jeho platnost opět nastaví na 30 min. 
@@ -230,8 +280,55 @@ Pro komunikce se musíme přihlásit na stránkách SkautISu se zadaným Applica
 
 Nyní můžeme volat funkce jednotlivých webových služeb se zadáním parametru skautIS\_Token. Pro volání budeme používat mnou naprogramovanou knihovnu. 
 
-
 \chapter{Realizace}
+
+\section{Knihovna pro komunikaci se systémem SkautIS}
+Knihovna má za cíl usnadnit přístup k Web Services nabízených systémem SkautIS. S jejím využitím počítám nejen pro tento projekt, ale i pro mé další budoucí projekty a pro zveřejnění dalším skautským programátorům. Proto jsem se snažil, aby práce s ní byla rychle pochopitelná a co možná nejvíce intuitivní.
+Celá knihovna je složena ze třech částí.
+\begin{itemize}
+	\item SkautIS
+	\item SkautIS\_WS
+	\item Vyjímky (Exceptions)
+\end{itemize}
+
+\subsection{SkautIS}
+Třída postavená na návrhovém vzoru Singleton sloužící jako obalující vrstva celé knihovny. Získat instanci a nastavit jí ID\_Application můžeme hned třemi způsoby. Jako argument metody \uv{getInstance}, přes setter \uv{setAppId(\$appId)} nebo pomocí předem definované konstanty \uv{SkautIS\_ID\_Application}.  
+
+\begin{verbatim}
+
+//1. způsob přes argument metody
+$skautIs = SkautIS::getInstance("moje-application-id");
+
+//2. způsob přes setter
+$skautIs = SkautIS::getInstance();
+$skautIs->setAppId("moje-application-id"); 
+
+//3.způsob přes předem definovanou konstantu
+define("SkautIS_ID_Application", "moje-application-id"); 
+...
+$skautIs = SkautIS::getInstance(); 
+\end{verbatim}
+
+Dále nabízí základní settery a gettery pro nastavení a uchování údajů získaných po přihlášení do skautISu (viz \ref{fig:comunication-diagram}), URL pro přihlášení a odhlášení přes SkautIS. Také se stará o \uv{lazy loading} tříd SkautIS\_WS pro jednotlivé služby s možností využít jejich kratších aliasů. 
+
+\subsection{SkautIS\_WS}
+SkautIS\_WS je potomkem PHP třídy \uv{SoapClient} a zajištuje komunikaci přes protokol SOAP vždy s jednou webovou službou. Pokud je u volání funkce nastaven i druhý argument, tak je použit jako obal namísto základního obalu, který má tvar \uv{nazevFunkceInput}. Pokud potřebuje složitější strukturu obalu, zadáme ji jako druhý argument volání v podobě řetězce, kde jednotlivé vrstvy jsou odděleny znakem \uv{/}. Návratová hodnota je co nejvíce zbavena obalových vrstev podle jejich názvu a typu instance.
+
+\subsection{Vyjímky}
+Soubor vyjímek, které mohou být vyhozeny při volání služeb.  
+
+\section{Obecná struktura}
+-layout
+
+-base...
+
+\section{Jednotlivé sekce}
+view+presentery+service
+\subsection{}
+
+\subsection{}
+
+
 
 \begin{conclusion}
 	%sem napište závěr Vaší práce

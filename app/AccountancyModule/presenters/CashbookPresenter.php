@@ -16,14 +16,18 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 
     function startup() {
         parent::startup();
-        if($this->aid <= 0){ //@todo nepůsobí problem s handlery?
+        if ($this->aid <= 0) {
             $this->flashMessage("Musíš vybrat akci", "error");
             $this->redirect("Action:list");
         }
-        //@todo má právo na danou akci?
 
         $this->userService = new UserService();
         $this->chitService = new ChitService();
+        
+        if(!$this->chitService->isAccessable($this->aid)){
+            $this->flashMessage("Nepovolený přístup k pokladní knize", "error");
+            $this->redirect("Action:list");
+        }
     }
 
     function beforeRender() {
@@ -33,12 +37,12 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 
     function renderDefault($aid) {
         $as = new ActionService();
-        
+        $chits = $this->chitService->getAll($aid);
+
         $this->template->isEditable = $as->isEditable($this->aid);
         $this->template->autoCompleter = $this->userService->getAC();
-        $this->template->list = $this->chitService->getAll($aid);
+        $this->template->list = $chits;
     }
-    
 
     function renderEdit($id, $aid) {
         $defaults = $this->chitService->get($id);
@@ -60,7 +64,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $this->template->form = $form;
         $this->template->autoCompleter = $this->userService->getAC();
     }
-    
+
     function handleRemove($id, $actionId) {
         if ($this->chitService->delete($id, $actionId)) {
             $this->flashMessage("Paragon byl smazán");
@@ -70,7 +74,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 
         if ($this->isAjax()) {
             $this->invalidateControl("paragony");
-            $this->invalidateControl("flashmesages");
+            $this->invalidateControl("flash");
         } else {
             $this->redirect('this', $actionId);
         }
@@ -176,18 +180,19 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $values['price'] = $this->solveString($values['price']);
         //dump($this->aid, $values);die();
 
-        if ($this->chitService->add($this->aid, $values)) {
+        try {
+            $add = $this->chitService->add($this->aid, $values);
             $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
             if ($this->chitService->isInMinus($this->aid))
                 $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
-        } else {
+        } catch (InvalidArgumentException $exc) {
             $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "fail");
         }
 
         if ($this->isAjax()) {
             $this->invalidateControl("tabs");
             $this->invalidateControl("paragony");
-            $this->invalidateControl("flashmesages");
+            $this->invalidateControl("flash");
         } else {
             $this->redirect("this");
         }
@@ -209,7 +214,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 
         if ($this->chitService->isInMinus($this->aid))
             $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
-        $this->redirect("default", array("aid"=>$this->aid));
+        $this->redirect("default", array("aid" => $this->aid));
     }
 
     // <editor-fold defaultstate="collapsed" desc="solveString">

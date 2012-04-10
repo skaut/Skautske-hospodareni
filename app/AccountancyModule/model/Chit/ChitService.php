@@ -20,7 +20,7 @@ class ChitService extends BaseService {
      * @param type $actionId
      * @return type 
      */
-    public function getAll($actionId){
+    public function getAll($actionId){;
         return $this->table->getAll($actionId);
     }
     
@@ -35,19 +35,21 @@ class ChitService extends BaseService {
     }
     
     
-    public function add($actionId, $v){
-        if(!is_array($v) && !($v instanceof ArrayAccess))
+    public function add($actionId, $val){
+        $aservice = new ActionService();
+        
+        if(!is_array($val) && !($val instanceof ArrayAccess))
             throw new InvalidArgumentException("Values nejsou ve správném formátu");
         //@todo kontrola jestli ma pravo přidávat k $actionId
         
         $values = array(
             "actionId" => $actionId,
-            "date" => $v['date'],
-            "recipient" => $v['recipient'],
-            "purpose" => $v['purpose'],
-            "price" => $v['price'],
-            "priceText" => $v['priceText'],
-            "category" => $v['type'],
+            "date" => $val['date'],
+            "recipient" => $val['recipient'],
+            "purpose" => $val['purpose'],
+            "price" => $val['price'],
+            "priceText" => $val['priceText'],
+            "category" => $val['type'],
         );
         
         return $this->table->add($values);
@@ -74,11 +76,17 @@ class ChitService extends BaseService {
         return $this->table->delete($id, $actionId);
     }
     
+    public function deleteAll($actionId){
+        return $this->table->deleteAll($actionId);
+    }
+
+        
     /**
      * vrací všechny kategorie
+     * @param bool $all - vracet vsechny informace o kategoriích?
      * @return array
      */
-    public function getCategories($all= false){
+    public function getCategories($all=FALSE){
         if($all)
             return $this->table->getCategoriesAll();
         return $this->table->getCategories();
@@ -88,9 +96,7 @@ class ChitService extends BaseService {
      * vrací prijmové kategorie
      * @return array 
      */
-    public function getCategoriesIn($all= false){
-        if($all)
-            return $this->table->getCategoriesAll("in");
+    public function getCategoriesIn(){
         return $this->table->getCategories("in");
     }
     
@@ -98,9 +104,7 @@ class ChitService extends BaseService {
      * vrací výdajové kategorie
      * @return array 
      */
-    public function getCategoriesOut($all = false){
-        if($all)
-            return $this->table->getCategoriesAll("out");
+    public function getCategoriesOut(){
         return $this->table->getCategories("out");
     }
     
