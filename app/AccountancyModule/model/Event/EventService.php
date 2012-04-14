@@ -158,16 +158,14 @@ class EventService extends BaseService {
     }
 
     /**
-     * kontrolu jestli jsou funkce nastavené
-     * @param type $func pole funcí nebo ID_akce
+     * kontrolu jestli je možné akci uzavřít
+     * @param int $actionId
      * @return bool
      */
-    public function isFunctionSets($func) {
-        if (!is_array($func))
-            $func = $this->getFunctions($func);
-        foreach ($func as $f)
-            if ($f->ID_Person == NULL)
-                return FALSE;
+    public function isCloseable($actionId) {
+        $func = $this->getFunctions($actionId);
+        if($func[0]->ID_Person == NULL) // musí být nastaven vedoucí akce
+            return FALSE;
         return TRUE;
     }
 
