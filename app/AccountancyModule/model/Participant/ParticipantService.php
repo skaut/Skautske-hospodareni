@@ -12,16 +12,18 @@ class ParticipantService extends BaseService {
 
     public function __construct() {
         parent::__construct();
-        /** @var ParticipantTable */
-        $this->table = new ParticipantTable();
     }
 
     /**
      * vrací seznam účastníků
+     * používá lokální úložiště
      * @return array 
      */
-    public function getAllParticipants($actionId, $cache = TRUE) {
-        $res = $this->skautIS->event->ParticipantGeneralAll(array("ID_EventGeneral" => $actionId));
+    public function getAllParticipant($actionId) {
+        $id = __FUNCTION__ . $actionId;
+        if (!($res = $this->load($id))) {
+            $res = $this->save($id, $this->skautIS->event->ParticipantGeneralAll(array("ID_EventGeneral" => $actionId)));
+        }
         return $res;
     }
 
@@ -40,7 +42,9 @@ class ParticipantService extends BaseService {
             "OnlyDirectMember" => $onlyDirectMember,
                 ));
 
-        if (is_array($participants)) {
+        if (!is_array($participants)) {
+            $ret = $all;
+        } else {
             foreach ($participants as $p) {
                 $check[$p->ID_Person] = true;
             }
@@ -48,11 +52,8 @@ class ParticipantService extends BaseService {
             foreach ($all as $p) {
                 if (!array_key_exists($p->ID, $check)) {
                     $ret[$p->ID] = $p->DisplayName;
-                    //$ch = $group->addCheckbox($p->ID, $p->DisplayName);
                 }
             }
-        } else {
-            $ret = $all;
         }
         return $ret;
     }
@@ -90,16 +91,16 @@ class ParticipantService extends BaseService {
 
     /**
      * nastaví účastníkovi počet dní účasti
-     * @param int $ID - ID účastníka
+     * @param int $participantId
      * @param int $days 
      */
-    public function setDays($ID, $days) {
-        $this->skautIS->event->ParticipantGeneralUpdate(array("ID" => $ID, "Days" => $days));
+    public function setDays($participantId, $days) {
+        $this->skautIS->event->ParticipantGeneralUpdate(array("ID" => $participantId, "Days" => $days));
     }
 
     /**
      * nastaví částku co účastník zaplatil
-     * @param int $participantId - ID účastníka
+     * @param int $participantId
      * @param int $payment - částka
      */
     public function setPayment($participantId, $payment) {
@@ -111,8 +112,8 @@ class ParticipantService extends BaseService {
      * @param type $person_ID
      * @return type 
      */
-    public function removeParticipant($pid) {
-        return $this->skautIS->event->ParticipantGeneralDelete(array("ID" => $pid, "DeletePerson" => false));
+    public function removeParticipant($participantId) {
+        return $this->skautIS->event->ParticipantGeneralDelete(array("ID" => $participantId, "DeletePerson" => false));
     }
 
     /**
@@ -124,8 +125,8 @@ class ParticipantService extends BaseService {
     public function setPaymentMass($actionId, $newPayment, $rewrite = false) {
         if ($newPayment < 0)
             $newPayment = 0;
-        $par = $this->getAllParticipants($actionId);
-        foreach ($par as $p) {
+        $participants = $this->getAllParticipant($actionId);
+        foreach ($participants as $p) {
             $paid = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
             if (($paid == $newPayment) || (($paid != 0 && $paid != NULL) && !$rewrite)) //není změna nebo není povolen přepis
                 continue;
@@ -139,46 +140,43 @@ class ParticipantService extends BaseService {
      * @return int - vybraná částka 
      */
     public function getTotalPayment($actionId) {
-        $participants = $this->getAllParticipants($actionId);
-        $res = 0;
-        foreach ($participants as $p) {
-            $res += $p->{self::PAYMENT};
+        function paymentSum($res, $v){
+            return $res += $v->{self::PAYMENT};
         }
-        return $res;
+        return array_reduce($this->getAllParticipant($actionId), "paymentSum");
     }
-    
+
     /**
      * vrací počet osobodní na dané akci
      * @param int $actionId
      * @return int 
      */
-    public function getPersonsDays($actionId){
-        $participants = $this->getAllParticipants($actionId);
-        $personsDays = 0;
-        foreach ($participants as $p) {
-            $personsDays += $p->Days;
+    public function getPersonsDays($actionId) {
+        function daySum($res, $v){
+            return $res += $v->Days;
         }
-        return $personsDays;
+        return array_reduce($this->getAllParticipant($actionId), "daySum");
     }
-    
-    public function getCount($actionId){
-        $participants = $this->getAllParticipants($actionId);
-        return count($participants);
+
+    /**
+     * počet účastníků
+     * @param type $actionId
+     * @return type 
+     */
+    public function getCount($actionId) {
+        return count($this->getAllParticipant($actionId));
     }
 
     /**
      * přidá příjmový paragon za všechny účastníky
      * @param int $actionId
      */
-    public function addPaymentsToCashbook($actionId) {
-        $cs = new ChitService();
-        $as = new ActionService();
-
-        $func = $as->getFunctions($actionId);
+    public function addPaymentsToCashbook($actionId, EventService $eventService, ChitService $chitService) {
+        $func = $eventService->getFunctions($actionId);
         $total = $this->getTotalPayment($actionId);
 
         $chit = array(
-            "date" => $as->get($actionId)->StartDate,
+            "date" => $date,
             "recipient" => isset($func[ActionService::ECONOMIST]->Person) ? $func[ActionService::ECONOMIST]->Person : NULL,
             "purpose" => "Účastnické poplatky",
             "price" => $total,
@@ -186,7 +184,7 @@ class ParticipantService extends BaseService {
             "type" => "pp",
         );
         try {
-            $cs->add($actionId, $chit);
+            $chitService->add($actionId, $chit);
         } catch (InvalidArgumentException $exc) {
             return false;
         }

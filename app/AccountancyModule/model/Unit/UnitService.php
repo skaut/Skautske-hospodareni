@@ -1,23 +1,23 @@
 <?php
 
 class UnitService extends BaseService {
+    
+    protected $oficialUnits = array("stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka");
 
     public function __construct() {
         parent::__construct();
-        $this->table = new UnitTable();
     }
 
     /**
      * vrací detail jednotky
-     * @param ID_Unit $id
+     * @param int $unitId
      * @return stdClass 
      */
-    public function getDetail($id = NULL) {
-        if ($id == NULL)
-            $id = $this->skautIS->getUnitId();
-
+    public function getDetail($unitId = NULL) {
+        if ($unitId === NULL)
+            $unitId = $this->skautIS->getUnitId();
         try {
-            return $this->skautIS->org->UnitDetail(array("ID" => $id));
+            return $this->skautIS->org->UnitDetail(array("ID" => $unitId));
         } catch (SoapFault $exc) {
             throw new BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
         }
@@ -50,41 +50,22 @@ class UnitService extends BaseService {
      * @return stdClass
      */
     public function getOficialUnit($unitId){
-        $allowedTypes = array("stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka");
         $unit = $this->getDetail($unitId);
-        if(!in_array($unit->ID_UnitType, $allowedTypes)){
+        if(!in_array($unit->ID_UnitType, $this->oficialUnits)){
             $parent = $unit->ID_UnitParent;
             $unit = $this->getOficialUnit($parent->ID_Unit);
         }
         return $unit;
     }
     
+    /**
+     * vrací oficiální název na paragony
+     * @param int $unitId
+     * @return string
+     */
     public function getOficialName($unitId){
         $unit = $this->getOficialUnit($unitId);
         return "IČO ". $unit->IC . " Junák - svaz skautů a skautek ČR, " . $unit->DisplayName.", " . $unit->Street .", " . $unit->City . ", ". $unit->Postcode;
     }
-
-//    public function isCreated($id) {
-//        return $this->table->get($id);
-//    }
-// 
-//    public function getCaterories() {
-//        //@todo předělat na db
-//        $in = array(
-//            "pp" => "Příjmový",
-//            "di" => "Dotace", //Dotace In => di
-//        );
-//        $out = array(
-//            "t" => "Potraviny",
-//            "j" => "Jízdné",
-//            "n" => "Nájemné",
-//            "m" => "Materiál (Drobné vybavení)",
-//            "s" => "Služby",
-//            "pr" => "Převod do odd. pokladny",
-//            "do" => "Dotace",
-//            "un" => "Neurčeno",
-//        );
-//        return array("in" => $in, "out" => $out);
-//    }
 
 }

@@ -49,7 +49,7 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
             $res = $this->context->eventService->close($aid);
             $this->flashMessage("Akce byla uzavřena.");
         } else {
-            $this->flashMessage("Před uzavřením akce musíte vyplnit vedení akce", "danger");
+            $this->flashMessage("Před uzavřením akce musíte vyplnit vedoucího akce", "danger");
         }
 
         $this->redirect("info", array("aid" => $aid));

@@ -8,8 +8,8 @@ class AuthService extends BaseService {
     
     /**
      * vrací přihlašovací url
-     * @param type $backlink
-     * @return type 
+     * @param string $backlink
+     * @return string 
      */
     public function getLoginUrl($backlink){
         return $this->skautIS->getLoginUrl($backlink);
@@ -27,12 +27,15 @@ class AuthService extends BaseService {
     
     /**
      * vrací url pro odhlášení
-     * @return type 
+     * @return string 
      */
     public function getLogoutUrl(){
         return $this->skautIS->getLogoutUrl();
     }
     
+    /**
+     * prodlouží dobu přihlášení do skautISu
+     */
     public function updateLogoutTime(){
         $this->skautIS->updateLogoutTime();
     }

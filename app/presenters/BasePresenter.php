@@ -13,8 +13,6 @@ abstract class BasePresenter extends Presenter {
         }
         RequestsPanel::register();
 
-        $skautis = SkautIS::getInstance($this->context->parameters['skautisid']);
-
         $this->template->backlink = $this->getParameter("backlink");
 
         if (!function_exists("FormContainer_addDatePicker")) {

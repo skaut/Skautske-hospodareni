@@ -24,7 +24,7 @@
                     <td><a n:href="info $i->ID">{$i->DisplayName}</a></td>
                     <td>{$i->StartDate|date:"d.m.Y"}</td>
                     <td>{$i->EndDate|date:"d.m.Y"}</td>
-                    <td>{!$i->ID_EventGeneralState|eventLabel}</td>
+                    <td{if $data->ID_EventGeneralState == closed}title="Uzavřel: {$data->PersonClosed} dne: {$data->DateClosed|date:"j.n.Y"}" {/if}>{!$i->ID_EventGeneralState|eventLabel}</td>
                 </tr>
             </tbody>
         </table>

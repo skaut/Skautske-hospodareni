@@ -4,7 +4,7 @@
  * @author Hána František
  */
 class EventService extends BaseService {
-    const ECONOMIST = 2;//ID v poli funkcí
+    const ECONOMIST = 2; //ID v poli funkcí
 
     public function getAll() {
         return $this->skautIS->event->EventGeneralAll();
@@ -17,7 +17,10 @@ class EventService extends BaseService {
      */
     public function get($actionId) {
         try {
-            return $this->skautIS->event->EventGeneralDetail(array("ID" => $actionId));
+            $id = __FUNCTION__ . $actionId;
+            if (!($res = $this->load($id)))
+                $res = $this->save($id, $this->skautIS->event->EventGeneralDetail(array("ID" => $actionId)));
+            return $res;
         } catch (SkautIS_Exception $e) {
             throw new SkautIS_PermissionException("Nemáte oprávnění pro získání informací o akci.", $e->getCode(), $e);
         }
@@ -45,11 +48,11 @@ class EventService extends BaseService {
      * @param int $type typ akce
      * @return int|stdClass ID akce 
      */
-    public function create($name, $start, $end, $location = " ",  $leader = NULL, $assistant = NULL, $economist = NULL, $unit = NULL, $scope = NULL, $type=NULL) {
+    public function create($name, $start, $end, $location = " ", $leader = NULL, $assistant = NULL, $economist = NULL, $unit = NULL, $scope = NULL, $type=NULL) {
         $scope = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
         $type = $type !== NULL ? $type : 2; //2-vyprava
         $unit = $unit !== NULL ? $unit : $this->skautIS->getUnitId();
-        
+
         $location = !empty($location) && $location != NULL ? $location : " ";
 
         $ret = $this->skautIS->event->EventGeneralInsert(
@@ -85,7 +88,7 @@ class EventService extends BaseService {
      * @return int
      */
     public function update($data) {
-        
+
         $id = $data['aid'];
         $old = $this->get($id);
 
@@ -127,7 +130,7 @@ class EventService extends BaseService {
             "ID" => $id,
             "CancelDecision" => $msg
                 ), "eventGeneral");
-        if($ret){//smaže paragony dané akce
+        if ($ret) {//smaže paragony dané akce
             $cservice = new ChitService();
             $cservice->deleteAll($id);
         }
@@ -164,7 +167,7 @@ class EventService extends BaseService {
      */
     public function isCloseable($actionId) {
         $func = $this->getFunctions($actionId);
-        if($func[0]->ID_Person == NULL) // musí být nastaven vedoucí akce
+        if ($func[0]->ID_Person == NULL) // musí být nastaven vedoucí akce
             return FALSE;
         return TRUE;
     }
