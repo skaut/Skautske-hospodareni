@@ -21,6 +21,10 @@
                 <td>{$data->EndDate|date:"j. n. Y"}</td>
             </tr>
             <tr>
+                <th>Místo</th>
+                <td>{$data->Location}</td>
+            </tr>
+            <tr>
                 <th>Typ</th>
                 <td>{$data->EventGeneralType}</td>
             </tr>
@@ -57,8 +61,12 @@
     <div class="span3">
         <h3>Vedení akce</h3>
         <table class="myTable table table-bordered table-condensed">
+            <tr>
+                <th>Funkce</th>
+                <th>Příjmení a jméno</th>
+            </tr>
             <tr n:foreach="$funkce as $f">
-                <th>{$f->EventFunctionType}</th>
+                <td><i>{$f->EventFunctionType}</i></td>
                 <td>{ifset $f->ID_Person}{$f->Person}{/ifset}</td>
             </tr>
         </table>

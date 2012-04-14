@@ -45,7 +45,7 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
     }
 
     public function actionClose($aid) {
-        if ($this->context->eventService->isFunctionSets($aid)) {
+        if ($this->context->eventService->isCloseable($aid)) {
             $res = $this->context->eventService->close($aid);
             $this->flashMessage("Akce byla uzavřena.");
         } else {
@@ -128,7 +128,7 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
                 ->setPrompt("Vyber")
                 ->getControlPrototype()->setClass("combobox");
         $form->addHidden("aid");
-        $form->addSubmit('send', 'Upravit akci')
+        $form->addSubmit('send', 'Upravit')
                 ->getControlPrototype()->setClass("btn btn-primary");
 
         $form->onSuccess[] = array($this, $name . 'Submitted');
