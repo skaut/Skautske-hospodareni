@@ -4,7 +4,6 @@ class AuthPresenter extends BasePresenter {
 
     protected function startup() {
         parent::startup();
-        $this->service = new AuthService();
     }
 
     /**
@@ -21,9 +20,12 @@ class AuthPresenter extends BasePresenter {
         $this->redirect(':Default:');
     }
 
+    /**
+     * přesměruje na stránku s přihlášením
+     * @param type $backlink 
+     */
     function actionLogOnSkautIs($backlink = NULL) {
-
-        $this->redirectUrl($this->service->getLoginUrl($backlink));
+        $this->redirectUrl($this->context->authService->getLoginUrl($backlink));
     }
 
     /**
@@ -37,19 +39,16 @@ class AuthPresenter extends BasePresenter {
             $this->redirect(":Default:");
         }
         try {
-//            $this->service->setToken($post['skautIS_Token'])
-//                    ->setRoleId($post['skautIS_IDRole'])
-//                    ->setUnitId($post['skautIS_IDUnit']);
-            $this->service->setInit(array(
+            $this->context->authService->setInit(array(
                 "token" => $post['skautIS_Token'],
                 "roleId" => $post['skautIS_IDRole'],
                 "unitId" => $post['skautIS_IDUnit']
             ));
 
-            if (!$uservice->isLoggedIn()) {
+            if (!$this->context->userService->isLoggedIn()) {
                 throw new SkautIS_AuthenticationException("Nemáte platné přihlášení do skautISu");
             }
-            $me = $uservice->getUserData();
+            $me = $this->context->userService->getUserData();
 
             $this->user->setExpiration('+ 29 minutes'); // nastavíme expiraci
             $this->user->setAuthenticator(new SkautISAuthenticator());
@@ -67,8 +66,9 @@ class AuthPresenter extends BasePresenter {
 
     /**
      * zajištuje odhlašení ze skautISu
+     * SkautIS sem přesměruje po svém odhlášení
      */
-    function actionSkautISLogOut() {
+    function actionSkautisLogout() {
         $this->user->logout(TRUE);
         if ($this->request->post['skautIS_Logout']) {
             $this->presenter->flashMessage("Byl jsi úspěšně odhlášen.");

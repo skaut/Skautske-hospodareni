@@ -3,10 +3,10 @@
 /**
  * @author Hána František
  */
-class ActionService extends BaseService {
-    const ECONOMIST = 2;
+class EventService extends BaseService {
+    const ECONOMIST = 2;//ID v poli funkcí
 
-    public function getMyActions() {
+    public function getAll() {
         return $this->skautIS->event->EventGeneralAll();
     }
 
@@ -18,7 +18,7 @@ class ActionService extends BaseService {
     public function get($actionId) {
         try {
             return $this->skautIS->event->EventGeneralDetail(array("ID" => $actionId));
-        } catch (SoapFault $e) {
+        } catch (SkautIS_Exception $e) {
             throw new SkautIS_PermissionException("Nemáte oprávnění pro získání informací o akci.", $e->getCode(), $e);
         }
     }
@@ -45,15 +45,17 @@ class ActionService extends BaseService {
      * @param int $type typ akce
      * @return int|stdClass ID akce 
      */
-    public function create($name, $start, $end, $leader = NULL, $assistant = NULL, $economist = NULL, $unit = NULL, $scope = NULL, $type=NULL) {
+    public function create($name, $start, $end, $location = " ",  $leader = NULL, $assistant = NULL, $economist = NULL, $unit = NULL, $scope = NULL, $type=NULL) {
         $scope = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
         $type = $type !== NULL ? $type : 2; //2-vyprava
         $unit = $unit !== NULL ? $unit : $this->skautIS->getUnitId();
+        
+        $location = !empty($location) && $location != NULL ? $location : " ";
 
         $ret = $this->skautIS->event->EventGeneralInsert(
                 array(
             "ID" => 1, //musi byt neco nastavene
-            "Location" => " ", //musi byt neco nastavene
+            "Location" => $location, //musi byt neco nastavene
             "Note" => " ", //musi byt neco nastavene
             "ID_EventGeneralScope" => $scope,
             "ID_EventGeneralType" => $type,
@@ -85,16 +87,11 @@ class ActionService extends BaseService {
     public function update($data) {
         
         $id = $data['aid'];
-        try {
-            $old = $this->get($id);
-        } catch (SkautIS_PermissionException $exc) {
-            $this->flashMessage($exc->getMessage(), "danger");
-            $this->redirect("Action:list");
-        }
+        $old = $this->get($id);
 
         $ret = $this->skautIS->event->EventGeneralUpdate(array(
             "ID" => $id,
-            "Location" => $old->Location,
+            "Location" => $data['location'],
             "Note" => $old->Note,
             "ID_EventGeneralScope" => $old->ID_EventGeneralScope,
             "ID_EventGeneralType" => $old->ID_EventGeneralType,
@@ -184,8 +181,7 @@ class ActionService extends BaseService {
             try {
                 $arg = $this->get($arg);
             } catch (SkautIS_PermissionException $exc) {
-                $this->flashMessage($exc->getMessage(), "danger");
-                $this->redirect("Action:list");
+                return FALSE;
             }
         }
         return $arg->ID_EventGeneralState == "draft" ? TRUE : FALSE;

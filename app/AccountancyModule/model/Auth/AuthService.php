@@ -33,5 +33,8 @@ class AuthService extends BaseService {
         return $this->skautIS->getLogoutUrl();
     }
     
+    public function updateLogoutTime(){
+        $this->skautIS->updateLogoutTime();
+    }
     
 }

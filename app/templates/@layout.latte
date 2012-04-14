@@ -34,7 +34,6 @@
     </head>
 
     <body>
-
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -43,10 +42,10 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" n:href=":Accountancy:Action:list">Účetnictví</a>
+                    <a class="brand" n:href=":Default:">Účetnictví</a>
                     <div class="nav-collapse" n:inner-if="$user->isLoggedIn()">
                         <ul class="nav">
-                            <li {ifCurrent :Accountancy:Action:list}class='active'{/ifCurrent}><a n:href=":Accountancy:Action:list">Seznam akcí</a></li>
+                            <li {ifCurrent :Accountancy:Action:}class='active'{/ifCurrent}><a n:href=":Accountancy:Action:">Seznam akcí</a></li>
                             <li {ifCurrent :Accountancy:Test:}class='active'{/ifCurrent}><a n:href=":Accountancy:Test:">TEST</a></li>
                         </ul>
                         <p class="navbar-text pull-right">

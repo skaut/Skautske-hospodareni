@@ -5,7 +5,10 @@
  */
 class Accountancy_BasePresenter extends BasePresenter {
 
-    protected $service;
+    /**
+     * backlink
+     */
+    protected $backlink;
 
     /**
      * id volane v url, vetsinou id akce
@@ -27,43 +30,41 @@ class Accountancy_BasePresenter extends BasePresenter {
             $this->backlink = $this->storeRequest();
             $this->redirect(":Default:", array("backlink" => $this->backlink));
         }
-
-        $sis = new SkautisService();
-        if ($sis->isLoggedIn()) //prodluzuje přihlášení při každém načtení stránky
-            $sis->updateLogoutTime();
-
-        if (($aid = $this->context->httpRequest->getQuery("aid"))) {
-            $this->template->aid = $this->aid = $aid;
-        }
         
-        if(isset($this->aid) && !is_null($this->aid)){//pokud je nastavene ID akce tak zjištuje stav dané akce
-            $aservice = new ActionService();
+        if ($this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku
+            $this->context->authService->updateLogoutTime();
+        
+        $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
+        
+        if(isset($this->aid) && !is_null($this->aid)){//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
-                $this->template->actionState = $this->actionState = $aservice->get($this->aid)->ID_EventGeneralState;
+                $this->template->actionState = $this->actionState = $this->context->eventService->get($this->aid)->ID_EventGeneralState;
             } catch (SkautIS_PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
-                $this->redirect("Action:list");
+                $this->redirect("Event:");
             }   
         }
     }
 
     function beforeRender() {
         parent::beforeRender();
-        $this->template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
-        $this->template->registerHelper('price', 'AccountancyHelpers::price');
-        
-        $uservice = new UserService();
-        $this->template->myRoles = $uservice->getAllSkautISRoles();
-        $this->template->myRole = $uservice->getRoleId();
-        $this->template->registerHelper('eventLabel', 'AccountancyHelpers::eventLabel');
-//        $this->template->registerHelper('datNar', 'AccountancyHelpers::datNar');
+        $this->template->registerHelperLoader("AccountancyHelpers::loader");
+        $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
+        $this->template->myRole = $this->context->userService->getRoleId();
     }
 
     public function handleChangeRole($id) {
-        $uservice = new UserService();
-        $uservice->updateSkautISRole($id);
+        $this->context->userService->updateSkautISRole($id);
         $this->redirect("this");
     }
+    
+    protected function createComponentVp() {
+        return new VisualPaginator();
+    }
+//    
+//    protected function createComponentAuth() {
+//        return new LoginFormControl();
+//    }
 
     /**
      * tvoří routy pro modul
@@ -71,12 +72,20 @@ class Accountancy_BasePresenter extends BasePresenter {
      * @param string $prefix 
      */
     static function createRoutes($router, $prefix ="") {
-
-        $router[] = new Route($prefix . 'Ucetnictvi/p-<presenter>/a-<action>/', array(
+        
+        $prefix .= "ucto/";
+        
+        $router[] = new Route($prefix . '<aid [0-9]+>[/<presenter>][/<action>]', array(
                     'module' => "Accountancy",
-//                    'presenter' => 'Default',
-//                    'action' => 'default',
+                    'action' => "default",
                 ));
+        
+        $router[] = new Route($prefix . '<presenter>/<action>', array(
+                    'module' => "Accountancy",
+                    'presenter' => 'Action',
+                    'action' => 'default',
+                ));
+        
     }
 
 }

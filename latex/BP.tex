@@ -70,9 +70,10 @@ Nevýhody systému:
 
 \subsection{Systém střediska Blaník}
 Středisko Blaník využívá vlastní systém naprogramovaný v php skládající se ze tří základních částí. První část LTOI (\url{http://lab.blanik.info/ltoi/}) - Letní tábor a obnova inventáře - slouží pro vyúčtování táborů. Zadávají se zde odděleně informace o táboře, příjmy, výdaje, účastníci a cestovní příkazy. Veškeré informace je možné nechat vyexportovat do formátu csv nebo rtf.
-Druhá část nazvaná INV  (\url{http://lab.blanik.info/inv/}) slouží k inventarizaci majetku jednotlivých oddílů. Pokud jsme v části LTOI nastavili výdaj s příznakem \uv{inv}, tak ho nyní můžeme jednoduše importovat do této části. Získáme zde také přehled zda na majetek byla čerpána dotace, jeho pořizovací a aktuální hodnotu a informaci o jeho vyřazení.
 
-!(Třetí a zároveň nejnovější (leden 2012) částí sytému je ROP (Roční oddílová pokladna). Zde se účtují)
+Druhá část nazvaná INV (\url{http://lab.blanik.info/inv/}) slouží k inventarizaci majetku jednotlivých oddílů. Pokud jsme v části LTOI nastavili výdaj s příznakem \uv{inv}, tak ho nyní můžeme jednoduše importovat do této části. Získáme zde také přehled zda na majetek byla čerpána dotace, jeho pořizovací a aktuální hodnotu a informaci o jeho vyřazení.
+
+Třetí a zároveň nejnovější (leden 2012) částí sytému je ROP (Roční oddílová pokladna). Zde se účtují pokladny jednotlivých oddílů za celý rok. 
 
 Výhody systému:
 \begin{itemize}
@@ -142,13 +143,17 @@ Nette Framework, vyvíjený Nette Foundation, se v posledních letech prosazuje 
 
 Já jsem si zvolil Nette Framework pro jeho dobré zpracování v oblasti formulářů a protože s ním již několik let pracuji. Důležitým faktorem při rozhodování byl i směr dalšího vývoje frameworku. Protože s jeho směřováním souhlasím, bude v budoucnu možné aplikaci dále rozšiřovat. Konkrétně jsem si vybral verzi pro PHP 5.2 bez prefixů.
 
+\subsubsection*{Nette Framework}
 Pro tvorbu aplikací v Nette Framework se používá softwarová architektura Model-View-Controller (MVC). MVC slouží k oddělení kódu zajištujícího aplikační logiku (model) od kódu zajištujícího obsluhu (controller) a od kódu, který výsledná data zobrazí.
-Model se zde bude skládat ze "Services" jednotlivých částí, \uv{Tables} jednotlivých částí a mojí knihovny pro komunikaci se systémem SkautIS. Jednotlivé services pro přístup do databáze budou používat třídy \uv{Table} a pro přístup do systému SkautIS využijí moji knihovnu.
+
+Model se zde bude skládat ze \uv{Services} jednotlivých částí, \uv{Tables} jednotlivých částí a mojí knihovny pro komunikaci se systémem SkautIS. Jednotlivé services pro přístup do databáze budou používat třídy \uv{Table} a pro přístup do systému SkautIS využijí moji knihovnu.
+
 V Nette Frameworku byl pojem controller nahrazen pojmem \uv{presenter}. Presentery obsluhují požadavky, získávají data od modelu a předávají je v potřebné podobě do daného view, které zajistí jejich zobrazení.
-View jsou zde řešeny šablonovacím systémem Latte (\url{http://doc.nette.org/cs/templating#toc-latte}), který zajištuje ochranu proti XSS (http://zdrojak.root.cz/clanky/co-je-xss-jak-mu-predchazet/), možnost použit makra a mnoho dalšího.  
+
+View jsou zde řešeny šablonovacím systémem Latte (\url{http://doc.nette.org/cs/templating#toc-latte}), který zajištuje ochranu proti XSS (http://zdrojak.root.cz/clanky/co-je-xss-jak-mu-predchazet/), možnost použit makra a mnoho dalšího.
 
 \subsection{Databáze}
-Databázi jsem vybral MySQL, protože je dostupná na většině hostingů a pro rozsah projektu postačuje. Pro práci přístup k databázi jsem měl na výběr mezi využitím základní MySQL funkcí zabudovaných v PHP a použitím některé PHP knihovny pro práci s databází. Použití základních funkcí PHP jsem zavrhl, protože je velmi těžké udržet v kódu přehlednost a práce s připojením je velmi nekomfortní.  
+Databázi jsem vybral MySQL, protože je dostupná na většině hostingů a pro rozsah projektu postačuje. Pro práci přístup k databázi jsem měl na výběr mezi využitím základní MySQL funkcí zabudovaných v PHP a použitím některé PHP knihovny pro práci s databází. Použití základních funkcí PHP jsem zavrhl, protože je velmi těžké udržet v kódu přehlednost a práce s připojením je velmi nekomfortní.
 
 Doctrine 2 je jedna z nejznámějších knihoven pro práci s databází využívajících ORM, avšak na některá volání potřebuje příliš SQL dotazů.
 
@@ -180,19 +185,47 @@ dibi::query('SQL dotaz');
 
 \end{verbatim}
 
+\subsection{Frontend}
+HTML kód na výstupu bude generován ze šablonovacího systému Nette Frameworku s využitím maker Latte, které jsou také součástí. Hlavními výhodami Latte maker jsou automatické escapování a přehlednost napsaného kódu. Zde je ukázka z dokumentace \url{http://doc.nette.org/cs/templating#toc-latte} pro ilustraci čitelnosti kódu s Latte makry. 
+
+\begin{verbatim}
+//vypsání seznamu položek
+
+//bez použití Latte
+<?php if ($items): ?>
+    <?php $counter = 1 ?>
+    <ul>
+    <?php foreach ($items as $item): ?>
+        <li id="item-<?php echo $counter++ ?>"><?php
+        echo htmlSpecialChars(mb_convert_case($item, MB_CASE_TITLE)) ?>
+        </li>
+    <?php endforeach ?>
+    </ul>
+<?php endif?>
+
+//zapsané pomocí Latte
+<ul n:if="$items">
+{foreach $items as $item}
+    <li id="item-{$iterator->counter}">{$item|capitalize}</li>
+{/foreach}
+</ul>
+\end{verbatim}
+
+Pro formátování HTML výstupu a některé Java Scriptové komponenty použiji \uv{Twitter Bootstrap}, což je mladý projekt od vývojářů z firmy Twitter. Více informací najdeme na \url{http://twitter.github.com/bootstrap/}. Ostatní Java Scriptové komponenty a události budou využívat populární knihovnu \uv{JQuery}, o které najdeme informace na \url{http://jquery.com/}.
+
 \section{Datový model}
 \begin{figure}[h] \centering
  	\includegraphics[width=1\textwidth]{img/domain-model.png}
  	\caption[SkautIS]{Doménový model}\label{fig:domain-model}
 \end{figure}
 Datový model se v průběhu psaní aplikace velice zmenšil, díky několika novým verzím SkautISu, během kterých přibyl typ akce \uv{obecná akce} s možností přiřazení účastníků. V mojí databázi tedy budu uchovávat paragony a jejich kategorie. 
-Tabulka \uv{chits} uchovává všechny paragony a je navázána přes \uv{actionId} na konkretní akci ve SkautISu a přes category na tabulku \uv{chitsCategory}. Dále obsahuje 
+Tabulka \uv{chits} uchovává všechny paragony a je navázána přes \uv{actionId} na konkretní akci ve SkautISu a přes \uv{category} na tabulku \uv{chitsCategory}. Dále obsahuje 
  \begin{itemize}
  	\item datum přijetí paragonu do pokladní knihy
  	\item jméno příjemce
- 	\item účel výplaty  
- 	\item částku 
-	\item způsob výpočtu částky
+ 	\item účel výplaty
+ 	\item částku
+	\item způsob výpočtu částky - např. 10*17+13
 	\item příznak jestli byl paragon smazán
 \end{itemize} 
 
@@ -220,7 +253,7 @@ Každá akce i s účastníky je v systému SkautIS navázána na konkretní jed
 	\item zurušena
  \end{itemize} 
  
-Akce je ve stavu \uv{rozpracována} hned po jejím vytvoření a to dokud akci neuzavřeme nebo nezrušíme. U \uv{uzavřené} akce je evidováno kdy a kdo ji uzavřel a v případě potřeby ji lze znovu otevřít do stavu \uv{rozpracována} a dále upravovat. Změna stavu akce na \uv{zrušená} je nevratný krok a po té už akce bude přístupná pouze pro čtení nebo úplné vymazání ze systému.  
+Akce je ve stavu \uv{rozpracována} hned po jejím vytvoření a to dokud akci neuzavřeme nebo nezrušíme. U \uv{uzavřené} akce je evidováno kdy a kdo ji uzavřel a v případě potřeby ji lze znovu otevřít do stavu \uv{rozpracována} a dále upravovat. Změna stavu akce na \uv{zrušená} je nevratný krok a po té už akce bude přístupná pouze pro čtení nebo úplné vymazání ze systému.
 
 \section{Navigace}
  \begin{figure}[h] \centering
@@ -263,6 +296,8 @@ Veškerá komunikace se systémem SkautIS probíhá přes webové služby (Web S
 	\item Welcome.asmx - Webová služba pro práci s uvítacími balíčky
 \end{itemize}
 
+Služba \uv{UserManagement.asmx} zajištuje přihlašování, odhlašování a správu dostupných rolí. Přes službu \uv{OrganizationUnit.asmx} budeme pracovat s organizačními jednotkami a jejich členy. Skrz \uv{Events.asmx} budeme spravovat jednotlivé akce s účastníky a obsazením funkcí.
+
 Pro jednoduší práci s webovými službami SkautISu vytvořím obecnou knihovnu, která umožní snadnější přístup a do budoucna zjednoduší přístup dalším vývojářům na platformě PHP.
 
 \begin{figure}[h] \centering
@@ -270,7 +305,7 @@ Pro jednoduší práci s webovými službami SkautISu vytvořím obecnou knihovn
  	\caption[SkautIS]{Příklad komunikace se systémem SkautIS}\label{fig:comunication-diagram}
 \end{figure}
 
-Pro komunikce se musíme nejdříve přihlásit na stránkách SkautISu se zadaným parametrem Application ID, které jednoznačně určuje aplikaci. Po úspěšném přihlášení budeme přesměrováni na předem zadanou stránku, která metodou POST obdrží skautIS\_Token, skautIS\_IDRole, skautIS\_IDUnit a obslouží přihlášení na naší straně.   
+Pro komunikce se musíme nejdříve přihlásit na stránkách SkautISu se zadaným parametrem Application ID, které jednoznačně určuje aplikaci. Po úspěšném přihlášení budeme přesměrováni na předem zadanou stránku, která metodou POST obdrží skautIS\_Token, skautIS\_IDRole, skautIS\_IDUnit a obslouží přihlášení na naší straně.
 
 \begin{itemize}
 	\item skautIS\_Token - unikátní token pro užiatele a každé přihlášení. Je předáván jako parametr při každém volání webové služby. Jeho platnost je 30 min a s každým použitím se jeho platnost opět nastaví na 30 min. 
@@ -282,8 +317,17 @@ Nyní můžeme volat funkce jednotlivých webových služeb se zadáním paramet
 
 \chapter{Realizace}
 
+\section{Prostředí}
+Abych měl zálohovanou tuto bakalářskou práci a měl pod kontrolou vývoj aplikace i z pohledu historie verzí, musel jsem si zvolit verzovací systém. Na výběr jsem měl mezi centralizovaným a distribuovaným systémem.
+
+Centralizované verzovací systémy mají jeden centrální repositář a pak každý klient má svoji lokální kopii. Pro odeslání změn do centrálního repositáře musíme mít u sebe mít nejaktuálnější verzi, v opačném případě musíme nejdříve aktualizovat lokální kopii. Nejznámějším zástupcem je Apache Subversion znám pod zkratko \uv{SVN}.
+
+Oproti tomu u distribuovaného verzovacího systému má každý svůj lokální repositář a nemusí existovat žádné centrální úložiště. Šíření změn probíhá ve dvou fázích. Nejdříve změny stáhneme, což zatím neovlivnilo náš repositář. Změny se projeví až ve chvíli, kdy změny aplikujeme. Distribuované systémy jsou oblíbenější u komunitního vývoje, kde si jednoduše může každý vyvíjet u sebe a ostatním pak nabídnout své úpravy. Mezi nejznámější zástupce zajisté patří Git a Mercurial.
+
+Git byl původně vytvořen Linusem Torvaldsem, pro správu verzí jádra linuxu. V současnosti je využíván jak velkými firmami tak i vývojáři na volné noze. I já jsem se rozhodl pro Git pro jeho jednoduchou správu a široké rozšíření. Kopii Git repositáře jsem si umístil i na stránky \url{https://github.com/sinacek}, kde jsem si pro tento účel zažádal o privátní repositář a po krátké emailové komunikaci my byl přidělen.
+
 \section{Knihovna pro komunikaci se systémem SkautIS}
-Knihovna má za cíl usnadnit přístup k Web Services nabízených systémem SkautIS. S jejím využitím počítám nejen pro tento projekt, ale i pro mé další budoucí projekty a pro zveřejnění dalším skautským programátorům. Proto jsem se snažil, aby práce s ní byla rychle pochopitelná a co možná nejvíce intuitivní.
+Knihovna má za cíl usnadnit přístup k Web Services nabízených systémem SkautIS. S jejím využitím počítám nejen pro tento projekt, ale i pro mé další budoucí projekty a pro zveřejnění dalším skautským programátorům. Proto jsem se snažil, aby práce s ní byla rychle pochopitelná a co možná nejvíce intuitivní. Pro správu verzí knihovny jsem zvolil git
 Celá knihovna je složena ze třech částí.
 \begin{itemize}
 	\item SkautIS
@@ -292,7 +336,7 @@ Celá knihovna je složena ze třech částí.
 \end{itemize}
 
 \subsection{SkautIS}
-Třída postavená na návrhovém vzoru Singleton sloužící jako obalující vrstva celé knihovny. Získat instanci a nastavit jí ID\_Application můžeme hned třemi způsoby. Jako argument metody \uv{getInstance}, přes setter \uv{setAppId(\$appId)} nebo pomocí předem definované konstanty \uv{SkautIS\_ID\_Application}.  
+Třída postavená na návrhovém vzoru Singleton sloužící jako obalující vrstva celé knihovny. Získat instanci a nastavit jí ID\_Application můžeme hned třemi způsoby. Jako argument metody \uv{getInstance}, přes setter \uv{setAppId(\$appId)} nebo pomocí předem definované konstanty \uv{SkautIS\_ID\_Application}.
 
 \begin{verbatim}
 
@@ -315,9 +359,21 @@ Dále nabízí základní settery a gettery pro nastavení a uchování údajů 
 SkautIS\_WS je potomkem PHP třídy \uv{SoapClient} a zajištuje komunikaci přes protokol SOAP vždy s jednou webovou službou. Pokud je u volání funkce nastaven i druhý argument, tak je použit jako obal namísto základního obalu, který má tvar \uv{nazevFunkceInput}. Pokud potřebuje složitější strukturu obalu, zadáme ji jako druhý argument volání v podobě řetězce, kde jednotlivé vrstvy jsou odděleny znakem \uv{/}. Návratová hodnota je co nejvíce zbavena obalových vrstev podle jejich názvu a typu instance.
 
 \subsection{Vyjímky}
-Soubor vyjímek, které mohou být vyhozeny při volání služeb.  
+Soubor výjímek, které mohou být vyhozeny při volání služeb.
 
-\section{Obecná struktura}
+\section{Struktura aplikace}
+Celou aplikaci můžeme rozdělit do těchto částí:
+\begin{itemize}
+	\item Volně přístupná sekce
+	\item Přihlašování
+	\item Správa akcí
+	\item Správa účastníků
+	\item Správa paragonů
+	\item Výstupy
+	\item Zpracování neplatných požadavků
+\end{itemize}
+Jak jsem psal již výše, celá aplikace je rozdělena do třech částí (Model-View-Controller). 
+
 -layout
 
 -base...

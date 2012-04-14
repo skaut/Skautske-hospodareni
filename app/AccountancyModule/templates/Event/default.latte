@@ -21,7 +21,7 @@
             <tbody>
                 <tr n:foreach="$list as $i">
                     <td><a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-mini" title="Zrušit akci"><i class="icon-remove icon-white"></i></a></td>
-                    <td><a n:href="view $i->ID">{$i->DisplayName}</a></td>
+                    <td><a n:href="info $i->ID">{$i->DisplayName}</a></td>
                     <td>{$i->StartDate|date:"d.m.Y"}</td>
                     <td>{$i->EndDate|date:"d.m.Y"}</td>
                     <td>{!$i->ID_EventGeneralState|eventLabel}</td>
@@ -41,8 +41,5 @@
     </div>
     <div class="modal-body">
             {control formCreate}
-    </div>
-    <div class="modal-footer">
-        <a data-dismiss="modal" class="close btn">Zavřít</a>
     </div>
 </div>

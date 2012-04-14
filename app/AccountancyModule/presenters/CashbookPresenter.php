@@ -5,48 +5,32 @@
  */
 class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 
-    /** @var UserService */
-    protected $userService;
-
-    /** @var UnitService */
-    protected $unitService;
-
-    /** @var ChitService */
-    protected $chitService;
-
     function startup() {
         parent::startup();
         if ($this->aid <= 0) {
             $this->flashMessage("Musíš vybrat akci", "error");
-            $this->redirect("Action:list");
+            $this->redirect("Event:");
         }
-
-        $this->userService = new UserService();
-        $this->chitService = new ChitService();
         
-        if(!$this->chitService->isAccessable($this->aid)){
+        if(!$this->context->chitService->isAccessable($this->aid)){
             $this->flashMessage("Nepovolený přístup k pokladní knize", "error");
-            $this->redirect("Action:list");
+            $this->redirect("Event:");
         }
     }
 
     function beforeRender() {
         parent::beforeRender();
-        $this->template->isInMinus = $this->chitService->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
+        $this->template->isInMinus = $this->context->chitService->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
     }
 
     function renderDefault($aid) {
-        $as = new ActionService();
-        $chits = $this->chitService->getAll($aid);
-
-        $this->template->isEditable = $as->isEditable($this->aid);
-        $this->template->autoCompleter = $this->userService->getAC();
-        $this->template->list = $chits;
+        $this->template->isEditable = $this->context->eventService->isEditable($this->aid);
+        $this->template->autoCompleter = $this->context->userService->getAC();
+        $this->template->list = $this->context->chitService->getAll($aid);
     }
 
     function renderEdit($id, $aid) {
-        $defaults = $this->chitService->get($id);
-        //dump($defaults);
+        $defaults = $this->context->chitService->get($id);
         $defaults['id'] = $id;
         $defaults['price'] = $defaults['priceText'];
         $defaults['type'] = $defaults['category'];
@@ -54,7 +38,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         if ($defaults['ctype'] == "out") {
             $form = $this['formOutEdit'];
             $form->setDefaults($defaults);
-            $this->template->ctype = "out";
+            $this->template->ctype = $defaults['ctype'];
         } else {
             $form = $this['formInEdit'];
             $form->setDefaults($defaults);
@@ -62,11 +46,11 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form['recipient']->setHtmlId("form-edit-recipient");
         $form['price']->setHtmlId("form-edit-price");
         $this->template->form = $form;
-        $this->template->autoCompleter = $this->userService->getAC();
+        $this->template->autoCompleter = $this->context->userService->getAC();
     }
 
     function handleRemove($id, $actionId) {
-        if ($this->chitService->delete($id, $actionId)) {
+        if ($this->context->chitService->delete($id, $actionId)) {
             $this->flashMessage("Paragon byl smazán");
         } else {
             $this->flashMessage("Paragon se nepodařilo smazat");
@@ -81,7 +65,6 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     }
 
     //FORM OUT
-
     function createComponentFormOutAdd($name) {
         $form = self::makeFormOUT($this, $name);
         $form->addSubmit('send', 'Uložit')
@@ -126,7 +109,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
                 ->setHtmlId("form-out-price")
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("vzorce např.20+15*3");
-        $categories = $thisP->chitService->getCategoriesOut();
+        $categories = $thisP->context->chitService->getCategoriesOut();
         $form->addRadioList("type", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
@@ -164,26 +147,27 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
                 ->setHtmlId("form-in-price")
                 //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
                 ->getControlPrototype()->placeholder("vzorce 20+15*3");
-        $categories = $thisP->chitService->getCategoriesIn();
+        $categories = $thisP->context->chitService->getCategoriesIn();
         $form->addRadioList("type", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
     }
 
     /**
-     * přidává paragony ze všech kategorií
+     * přidává paragony všech kategorií
      * @param AppForm $form 
      */
     function formAddSubmitted(AppForm $form) {
         $values = $form->getValues();
+        dump($values);die();
+        
         $values['priceText'] = $values['price'];
         $values['price'] = $this->solveString($values['price']);
-        //dump($this->aid, $values);die();
 
         try {
-            $add = $this->chitService->add($this->aid, $values);
+            $add = $this->context->chitService->add($this->aid, $values);
             $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
-            if ($this->chitService->isInMinus($this->aid))
+            if ($this->context->chitService->isInMinus($this->aid))
                 $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "fail");
