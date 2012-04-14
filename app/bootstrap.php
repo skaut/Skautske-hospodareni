@@ -53,6 +53,6 @@ $router[] = new SimpleRouter('Default:default');
 
 // Configure and run the application!
 $application = $container->application;
-//$application->catchExceptions = TRUE;
+$application->catchExceptions = $configurator->isProductionMode();
 $application->errorPresenter = 'Error';
 $application->run();

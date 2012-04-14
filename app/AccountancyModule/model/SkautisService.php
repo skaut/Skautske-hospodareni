@@ -19,6 +19,7 @@ class SkautisService {
             return $this->skautIS->$name($arguments);
         } catch (SkautIS_AuthenticationException $exc) {
             Environment::getUser()->logout(TRUE);
+            $presenter = Environment::getApplication()->getPresenter();
             $presenter->flashMessage("Vypršelo přihlášení do skautISu", "fail");
             $presenter->redirect(":Default:");
         }

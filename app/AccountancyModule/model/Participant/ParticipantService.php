@@ -20,8 +20,9 @@ class ParticipantService extends BaseService {
      * vrací seznam účastníků
      * @return array 
      */
-    public function getAllParticipants($actionId) {
-        return $this->skautIS->event->ParticipantGeneralAll(array("ID_EventGeneral" => $actionId));
+    public function getAllParticipants($actionId, $cache = TRUE) {
+        $res = $this->skautIS->event->ParticipantGeneralAll(array("ID_EventGeneral" => $actionId));
+        return $res;
     }
 
     /**
@@ -62,7 +63,7 @@ class ParticipantService extends BaseService {
      * @param int $participantId
      * @return type
      */
-    public function addParticipant($actionId, $participantId) {
+    public function add($actionId, $participantId) {
         return $this->skautIS->event->ParticipantGeneralInsert(array(
                     "ID_EventGeneral" => $actionId,
                     "ID_Person" => $participantId,
@@ -75,7 +76,7 @@ class ParticipantService extends BaseService {
      * @param int $participantId
      * @return type
      */
-    public function addParticipantNew($actionId, $person) {
+    public function addNew($actionId, $person) {
         return $this->skautIS->event->ParticipantGeneralInsert(array(
                     "ID_EventGeneral" => $actionId,
                     "Person" => array(
@@ -98,11 +99,11 @@ class ParticipantService extends BaseService {
 
     /**
      * nastaví částku co účastník zaplatil
-     * @param int $ID - ID účastníka
+     * @param int $participantId - ID účastníka
      * @param int $payment - částka
      */
-    public function setPayment($ID, $payment) {
-        $this->skautIS->event->ParticipantGeneralUpdate(array("ID" => $ID, self::PAYMENT => $payment));
+    public function setPayment($participantId, $payment) {
+        $this->skautIS->event->ParticipantGeneralUpdate(array("ID" => $participantId, self::PAYMENT => $payment));
     }
 
     /**
@@ -144,6 +145,25 @@ class ParticipantService extends BaseService {
             $res += $p->{self::PAYMENT};
         }
         return $res;
+    }
+    
+    /**
+     * vrací počet osobodní na dané akci
+     * @param int $actionId
+     * @return int 
+     */
+    public function getPersonsDays($actionId){
+        $participants = $this->getAllParticipants($actionId);
+        $personsDays = 0;
+        foreach ($participants as $p) {
+            $personsDays += $p->Days;
+        }
+        return $personsDays;
+    }
+    
+    public function getCount($actionId){
+        $participants = $this->getAllParticipants($actionId);
+        return count($participants);
     }
 
     /**

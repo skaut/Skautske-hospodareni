@@ -5,13 +5,13 @@
  * účastníci
  */
 class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
-    
+
     /**
      * číslo aktuální jendotky
      * @var int
      */
     protected $uid;
-    
+
     /**
      * je akce editovatelná?
      * @var bool
@@ -20,19 +20,13 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
 
     function startup() {
         parent::startup();
-        $this->service = new ParticipantService();
-        $this->uid = $this->context->httpRequest->getQuery("uid", NULL);
-        $as = new ActionService();
-        $this->template->isEditable = $this->isEditable = $as->isEditable($this->aid);
-        
-        if ($this->aid > 0) { //@todo nepůsobí problem s handlery?
-            if (!$this->service->isAccessable($this->aid)) {
-                $this->flashMessage("Nepovolený přístup", "error");
-                $this->redirect("Action:list");
-            }
-        } else {
-            $this->redirect("Action:list");
-        }        
+
+        if ($this->aid == NULL) {
+            $this->flashMessage("Nepovolený přístup", "error");
+            $this->redirect("Event:");
+        }
+        $this->uid = $this->getParameter("uid", NUll);
+        $this->template->isEditable = $this->isEditable = $this->context->eventService->isEditable($this->aid);
     }
 
     public function beforeRender() {
@@ -40,93 +34,37 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $this->template->directMemberOnly = $this->getDirectMemberOnly();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="setters and getters">
-    protected function getDirectMemberOnly() {
-        return (bool) $this->getSession(__CLASS__)->DirectMemberOnly;
-    }
-
-    protected function setDirectMemberOnly($direct) {
-        return $this->getSession(__CLASS__)->DirectMemberOnly = $direct;
-    }
-
-    // </editor-fold>
-    
     function renderDefault($aid, $uid = NULL) {
-        $participants = $this->service->getAllParticipants($this->aid);
-        $all = $this->service->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
-        
-        $as = new ActionService();
-        $uservice = new UnitService();
-        $unit = $uservice->getDetail($this->uid);
-        $uparrent = $uservice->getParrent($unit->ID);
-        $uchildrens = $uservice->getChild($unit->ID);
-        
-        $this->template->list = $all;
-        $this->template->participants = $participants;
-        
+        $participants = $this->context->participantService->getAllParticipants($this->aid);
+        $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+
+        $unit = $this->context->unitService->getDetail($this->uid);
+        $uparrent = $this->context->unitService->getParrent($unit->ID);
+        $uchildrens = $this->context->unitService->getChild($unit->ID);
+
         $this->template->uparrent = $uparrent;
         $this->template->unit = $unit;
         $this->template->uchildrens = $uchildrens;
+        $this->template->list = $all;
+        $this->template->participants = $participants;
     }
 
-//    function createComponentFormParticipants($name) {
-//        $actionId = $this->presenter->aid;
-//        $unitId = $this->presenter->uid;
-//
-//        $form = new AppForm($this, $name);
-//        $form->addHidden("actionId", $actionId);
-//
-//        //generuje pole s ID účastníků
-//        $participants = $this->service->getAllParticipants($actionId);
-//        foreach ($participants as $p) {
-//            $check[$p->ID_Person] = true;
-//        }
-//
-//        //checkboxy pro jednotlivé osoby
-//        $group = $form->addContainer("participants");
-//        $allInUnit = $this->service->getAll($unitId, $this->getDirectMemberOnly());
-//        foreach ($allInUnit as $i) {
-//            if (!array_key_exists($i->ID, $check)) {
-//                $ch = $group->addCheckbox($i->ID, $i->DisplayName);
-//                //$ch->setDisabled()->defaultValue = 1;
-//            }
-//        }
-//
-//        $form->addSubmit('send', 'Uložit')
-//                ->getControlPrototype()->setClass("btn btn-primary");
-//        $form->onSuccess[] = array($this, $name . 'Submitted');
-//        return $form;
-//    }
-//
-//    function formParticipantsSubmitted(AppForm $form) {
-//        $val = $form->getValues();
-//        //dump($val);die();
-//        $cnt = 0;
-//        foreach ($val['participants'] as $id => $isAdd) {
-//            if ($isAdd) {
-//                $cnt++;
-//                $this->service->addParticipant($val['actionId'], $id);
-//            }
-//        }
-//        $this->flashMessage("Přidali jste $cnt účastníků.");
-//        $this->redirect("this", $this->aid);
-//    }
-
     public function handleRemove($pid) {
-        $this->onlyEditable();
-            
-        $this->service->removeParticipant($pid);
+        $this->editableOnly();
+
+        $this->context->participantService->removeParticipant($pid);
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
+//            $this->invalidateControl("flash");
         } else {
             $this->redirect('this');
         }
     }
-    
+
     public function handleAdd($pid) {
-        $this->onlyEditable();
-        $this->service->addParticipant($this->aid, $pid);
+        $this->editableOnly();
+        $this->context->participantService->add($this->aid, $pid);
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
@@ -151,12 +89,12 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
      * nastavuje počet dní
      */
     public function handleEditDays() {
-        $this->onlyEditable();
+        $this->editableOnly();
         $post = $this->context->httpRequest->getPost();
         $days = (int) $post['days'];
         $id = (int) $post['id'];
-        $this->service->setDays($id, $days);
-        if($this->isAjax()){
+        $this->context->participantService->setDays($id, $days);
+        if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
         }
@@ -168,19 +106,19 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
      * nastavuje částku
      */
     public function handleEditPayment() {
-        $this->onlyEditable();
+        $this->editableOnly();
         $post = $this->context->httpRequest->getPost();
-        $id = (int)$post['id'];
+        $participantId = (int) $post['id'];
         $payment = (int) $post['payment'];
-        $this->service->setPayment($id, $payment);
+        $this->context->participantService->setPayment($participantId, $payment);
         echo $payment;
         $this->terminate();
     }
-    
-    function handleAddPaymentToChit(){
-        $this->service->addPaymentsToCashbook($this->aid);
+
+    function handleAddPaymentToChit() {
+        $this->context->participantService->addPaymentsToCashbook($this->aid);
         $this->flashMessage("Přijmy byly přidány do pokladní knihy");
-        if($this->isAjax()){
+        if ($this->isAjax()) {
             $this->invalidateControl("flash");
         } else {
             $this->redirect("this");
@@ -194,23 +132,22 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
                 ->addRule(Form::FILLED, "Zadejte částku")
                 ->setType('number');
         $form->addCheckbox("rewrite", "Přemazat stávající údaje?");
-        
+
         $form->addHidden("aid", $aid);
         $form->addSubmit('send', 'Vyplňit')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
-    
+
     public function formAddPaymentMassSubmitted(AppForm $form) {
-        $this->onlyEditable();
+        $this->editableOnly();
         $values = $form->getValues();
         //dump($values);die();
         $aid = $values['aid'];
-        $this->service->setPaymentMass($aid, $values['sum'], $values['rewrite']);
-        $this->redirect("default", array("aid"=>$aid));
+        $this->context->participantService->setPaymentMass($aid, $values['sum'], $values['rewrite']);
+        $this->redirect("default", array("aid" => $aid));
     }
-    
 
     /**
      * formulář na přidání nové osoby
@@ -236,7 +173,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     }
 
     public function formAddParticipantNewSubmitted(AppForm $form) {
-        $this->onlyEditable();
+        $this->editableOnly();
         $values = $form->getValues();
         $aid = $values['aid'];
         $person = array(
@@ -245,17 +182,27 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
             "nick" => $values['nick'],
             "note" => $values['address'],
         );
-        $this->service->addParticipantNew($aid, $person);
+        $this->context->participantService->addNew($aid, $person);
         $this->redirect("this");
     }
-    
-    protected function onlyEditable(){
-        if(!$this->isEditable){
+
+    protected function editableOnly() {
+        if (!$this->isEditable) {
             $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
             $this->redirect("this");
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="setters and getters">
+    protected function getDirectMemberOnly() {
+        return (bool) $this->getSession(__CLASS__)->DirectMemberOnly;
+    }
 
+    protected function setDirectMemberOnly($direct) {
+        return $this->getSession(__CLASS__)->DirectMemberOnly = $direct;
+    }
+    // </editor-fold>
+
+    
 }
 

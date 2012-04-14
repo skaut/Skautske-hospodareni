@@ -3,20 +3,27 @@
 /**
  * @author sinacek
  */
-class BaseService {
+class BaseService extends Object {
 
-//    protected $user;
     protected $table;
     protected $skautIS;
+    private $storage;
 
     public function __construct() {
-//        @deprecated
-//        $this->user = Environment::getUser();
         $this->skautIS = new SkautisService();
+        $this->storage = Environment::getSession(__CLASS__);
     }
+    
+    
 
-    public function isAccessable($actionId) {
-        $as = new ActionService();
+    /**
+     * je akce s $actionId editovatelná?
+     * @param ID_Event $actionId
+     * @return bool
+     */
+    public function isAccessable($actionId, $as = NULL) {
+        if($as == NULL || !($as instanceof BaseService) )
+            $as = new ActionService();
         try {
             $as->get($actionId);
         } catch (SkautIS_PermissionException $exc) {
