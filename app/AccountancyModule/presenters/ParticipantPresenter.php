@@ -21,7 +21,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     function startup() {
         parent::startup();
 
-        if ($this->aid == NULL) {
+        if (!$this->aid) {
             $this->flashMessage("Nepovolený přístup", "error");
             $this->redirect("Event:");
         }
@@ -35,7 +35,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     }
 
     function renderDefault($aid, $uid = NULL) {
-        $participants = $this->context->participantService->getAllParticipants($this->aid);
+        $participants = $this->context->participantService->getAllParticipant($this->aid);
         $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
         $unit = $this->context->unitService->getDetail($this->uid);
@@ -116,8 +116,12 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     }
 
     function handleAddPaymentToChit() {
-        $this->context->participantService->addPaymentsToCashbook($this->aid);
-        $this->flashMessage("Přijmy byly přidány do pokladní knihy");
+        if ($this->context->participantService->addPaymentsToCashbook($this->aid, $this->context->eventService, $this->context->chitService)) {
+            $this->flashMessage("Přijmy byly přidány do pokladní knihy");
+        } else {
+            $this->flashMessage("Nepodařilo se přidaj příjmy do pokladní knihy", "danger");
+        }
+        
         if ($this->isAjax()) {
             $this->invalidateControl("flash");
         } else {
@@ -143,7 +147,6 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     public function formAddPaymentMassSubmitted(AppForm $form) {
         $this->editableOnly();
         $values = $form->getValues();
-        //dump($values);die();
         $aid = $values['aid'];
         $this->context->participantService->setPaymentMass($aid, $values['sum'], $values['rewrite']);
         $this->redirect("default", array("aid" => $aid));
@@ -201,8 +204,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     protected function setDirectMemberOnly($direct) {
         return $this->getSession(__CLASS__)->DirectMemberOnly = $direct;
     }
-    // </editor-fold>
 
-    
+    // </editor-fold>
 }
 

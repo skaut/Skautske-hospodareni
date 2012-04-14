@@ -34,7 +34,7 @@
             </tr>
             <tr>
                 <th>Stav</th>
-                <td>{!$data->ID_EventGeneralState|eventLabel}</td>
+                <td {if $data->ID_EventGeneralState == closed}title="Uzavřel: {$data->PersonClosed} dne: {$data->DateClosed|date:"j.n.Y"}" {/if}>{!$data->ID_EventGeneralState|eventLabel}</td>
             </tr>
         </table>
 

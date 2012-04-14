@@ -40,7 +40,6 @@ class ChitService extends BaseService {
         
         if(!is_array($val) && !($val instanceof ArrayAccess))
             throw new InvalidArgumentException("Values nejsou ve správném formátu");
-        //@todo kontrola jestli ma pravo přidávat k $actionId
         
         $values = array(
             "actionId" => $actionId,
@@ -58,7 +57,6 @@ class ChitService extends BaseService {
     public function update($id, $v){
         if(!is_array($v) && !($v instanceof ArrayAccess))
             throw new InvalidArgumentException("Values nejsou ve správném formátu");
-        //@todo kontrola jestli ma pravo editovat k $id
         
         $values = array(
             "date" => $v['date'],
@@ -72,7 +70,6 @@ class ChitService extends BaseService {
     }
     
     public function delete($id, $actionId){
-        //@todo kontrola jestli ma pravo mazat $actionId
         return $this->table->delete($id, $actionId);
     }
     
@@ -109,7 +106,7 @@ class ChitService extends BaseService {
     }
     
     /**
-     * je akce v záporu?
+     * je akce celkově v záporu?
      * @param type $actionId
      * @return bool
      */

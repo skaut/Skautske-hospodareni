@@ -5,14 +5,27 @@
  */
 class SkautisService {
 
-    protected $skautIS = NULL;
+    protected $skautIS;
+    private static $instance;
 
-    public function __construct() {
-        $this->skautIS = SkautIS::getInstance();
-        $this->skautIS->nette = true;
+    /**
+     * Singleton
+     */
+    private function __construct() {
+        $this->skautIS = SkautIS::getInstance(Environment::getContext()->parameters['skautisid']);
+    }
+    
+    /**
+     * @return SkautisService
+     */
+    public static function getInstance() {
+        if (!(self::$instance instanceof self)) {
+            self::$instance = new self;
+        }
+        return self::$instance;
     }
 
-    public function __call($name, $arguments) {
+    public function __call($name, $arguments) { //vola zakladni funkce třídy SkautIS        
         try {
             if (count($arguments) == 1)
                 $arguments = $arguments[0];

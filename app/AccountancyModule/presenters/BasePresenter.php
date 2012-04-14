@@ -82,7 +82,7 @@ class Accountancy_BasePresenter extends BasePresenter {
         
         $router[] = new Route($prefix . '<presenter>/<action>', array(
                     'module' => "Accountancy",
-                    'presenter' => 'Action',
+                    'presenter' => 'Event',
                     'action' => 'default',
                 ));
         

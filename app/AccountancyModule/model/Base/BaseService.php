@@ -5,31 +5,54 @@
  */
 class BaseService extends Object {
 
+    /**
+     * reference na třídu typu Table
+     * @var instance of BaseTable
+     */
     protected $table;
+    
+    /**
+     * slouží pro komunikaci se skautISem
+     * @var SkautisService
+     */
     protected $skautIS;
-    private $storage;
+    /**
+     * používat lokální úložiště?
+     * @var bool
+     */
+    private $useCache = TRUE;
+    /**
+     * lokální úložiště pro daný požadavek
+     * @var type 
+     */
+    private static $storage;
 
     public function __construct() {
-        $this->skautIS = new SkautisService();
-        $this->storage = Environment::getSession(__CLASS__);
+        $this->skautIS = SkautisService::getInstance();
+        self::$storage = array();
     }
     
-    
-
     /**
-     * je akce s $actionId editovatelná?
-     * @param ID_Event $actionId
-     * @return bool
+     * ukládá $val do lokálního úložiště
+     * @param mixed $id
+     * @param mixed $val
+     * @return mixed 
      */
-    public function isAccessable($actionId, $as = NULL) {
-        if($as == NULL || !($as instanceof BaseService) )
-            $as = new ActionService();
-        try {
-            $as->get($actionId);
-        } catch (SkautIS_PermissionException $exc) {
-            return FALSE;
-        }
-        return TRUE;
+    protected function save($id, $val){
+        if($this->useCache)
+            self::$storage[$id] = $val;
+        return $val;
+    }
+    
+    /**
+     * vrací objekt z lokálního pole
+     * @param string|int $id
+     * @return mixed 
+     */
+    protected function load($id){
+        if( $this->useCache && array_key_exists($id, self::$storage) )
+            return self::$storage[$id];
+        return FALSE;
     }
     
     /**

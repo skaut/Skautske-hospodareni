@@ -41,7 +41,7 @@ class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
     }
 
     public function renderMassIn($aid) {
-        $list = $this->context->participantService->getAllParticipants($aid);
+        $list = $this->context->participantService->getAllParticipant($aid);
         $info = $this->context->eventService->get($this->aid);
         
         $template = $this->template;
@@ -56,7 +56,7 @@ class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
 
     public function renderReport($aid) {
         $info = $this->context->eventService->get($aid);
-        $participants = $this->context->participantService->getAllParticipants($aid);
+        $participants = $this->context->participantService->getAllParticipant($aid);
         $chitsAll = $this->context->chitService->getAll($aid);
 
         //inicializuje pole s kategorií s částkami na 0

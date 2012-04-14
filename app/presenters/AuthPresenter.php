@@ -33,7 +33,6 @@ class AuthPresenter extends BasePresenter {
      * @param string $ReturnUrl 
      */
     function actionSkautIS($ReturnUrl = NULL) {
-        $uservice = new UserService();
         $post = $this->request->post;
         if (!isset($post['skautIS_Token'])) { //pokud není nastavený token, tak zde nemá co dělat
             $this->redirect(":Default:");
@@ -68,6 +67,10 @@ class AuthPresenter extends BasePresenter {
      * zajištuje odhlašení ze skautISu
      * SkautIS sem přesměruje po svém odhlášení
      */
+    function actionLogoutSIS() {
+        $this->redirectUrl($this->context->authService->getLogoutUrl());
+    }
+    
     function actionSkautisLogout() {
         $this->user->logout(TRUE);
         if ($this->request->post['skautIS_Logout']) {

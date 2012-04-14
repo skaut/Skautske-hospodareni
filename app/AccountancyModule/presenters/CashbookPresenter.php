@@ -7,23 +7,14 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
 
     function startup() {
         parent::startup();
-        if ($this->aid <= 0) {
+        if (!$this->aid) {
             $this->flashMessage("Musíš vybrat akci", "error");
             $this->redirect("Event:");
         }
-        
-        if(!$this->context->chitService->isAccessable($this->aid)){
-            $this->flashMessage("Nepovolený přístup k pokladní knize", "error");
-            $this->redirect("Event:");
-        }
-    }
-
-    function beforeRender() {
-        parent::beforeRender();
-        $this->template->isInMinus = $this->context->chitService->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
     }
 
     function renderDefault($aid) {
+        $this->template->isInMinus = $this->context->chitService->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
         $this->template->isEditable = $this->context->eventService->isEditable($this->aid);
         $this->template->autoCompleter = $this->context->userService->getAC();
         $this->template->list = $this->context->chitService->getAll($aid);
@@ -159,7 +150,6 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
      */
     function formAddSubmitted(AppForm $form) {
         $values = $form->getValues();
-        dump($values);die();
         
         $values['priceText'] = $values['price'];
         $values['price'] = $this->solveString($values['price']);
@@ -217,11 +207,8 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
                 $matches['cislo'][$index] = 0;
             }
         }
-        $res = 0;
-        foreach ($matches['cislo'] as $num) {
-            $res += $num;
-        }
-        return $res;
+        
+        return array_sum($matches['cislo']);
     }
 
 // </editor-fold>
