@@ -12,6 +12,7 @@ nbproject/*
 /app/temp/*
 /app/log/*
 /source/*
+/webtemp/
 adminer.php
 BP.tex
 /latex/BP*

@@ -53,28 +53,20 @@ class Accountancy_BasePresenter extends BasePresenter {
         $this->template->myRole = $this->context->userService->getRoleId();
     }
 
-    public function handleChangeRole($id) {
-        $this->context->userService->updateSkautISRole($id);
-        $this->redirect("this");
-    }
-    
-    protected function createComponentVp() {
-        return new VisualPaginator();
-    }
-//    
-//    protected function createComponentAuth() {
-//        return new LoginFormControl();
-//    }
-
     /**
-     * tvoří routy pro modul
-     * @param array $router
+     * vytváří routy pro modul
+     * @param RouteList $router
      * @param string $prefix 
      */
-    static function createRoutes($router, $prefix ="") {
+    static function createRoutes(RouteList $router, $prefix = "") {
         
         $prefix .= "ucto/";
         
+//        $router[] = new Route($prefix . '<aid [0-9]+>/', array(
+//                    'module' => "Accountancy",
+//                    'presenter' => "event",
+//                    'action' => "info",
+//                ));
         $router[] = new Route($prefix . '<aid [0-9]+>[/<presenter>][/<action>]', array(
                     'module' => "Accountancy",
                     'action' => "default",

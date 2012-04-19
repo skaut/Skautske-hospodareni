@@ -6,7 +6,7 @@
 
 <div class="row">
 
-    <div class="span3" n:if="$isEditable">
+    <div class="span4" n:if="$isEditable">
         {snippet potencialParticipants}
         <div n:ifset="$participants">
             <h3>Přidat účastníky z jednotky</h3>            
@@ -35,7 +35,7 @@
                 <tr>
                     <th colspan="2" style="text-align: center;"><a class="btn btn-primary btn-mini" href="#addParticipant" data-toggle="modal"><i class="icon-plus icon-white"></i> Založit nového účastníka</a></th>
                 </tr>
-                {if $list->count() > 0}
+                {if count($list) > 0}
                 <tr>
                     <th>Příjmení a jméno</th>
                     <th style="width: 28px;">&nbsp;</th>
@@ -60,6 +60,7 @@
         {snippet participants}
         <div n:ifset="$participants">
             <h3>Seznam účastníků</h3>
+            {if !empty($participants)}
             <p n:if="$isEditable">
                 <a class="paymentMass btn btn-info btn-small" href="#addPaymentMass" data-toggle="modal"><i class="icon-edit icon-white"></i> Vyplnit částky hromadně</a>
                 <a class="paymentMass btn btn-info btn-small ajax" n:href="addPaymentToChit!"><i class="icon-plus icon-white"></i> Přidat příjmy do pokl. knihy</a>
@@ -70,24 +71,26 @@
                     <th>Příjmení a jméno ({= count($participants)})</th>
                     <th>Dnů</th>
                     <th>Částka</th>
-                    <th>Try</th>
                 </tr>
                 {assign $total = 0}
+                {if !empty($participants)}
                 <tr n:foreach="$participants as $p">
                     <td n:if="$isEditable"><a n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a></td>
                     <td>{$p->Person}</td>
                     <td id="par-days-{$p->ID}" {if $isEditable}title="Pro úpravu klikněte"{/if}>{$p->Days}</td>
                     <td id="par-payment-{$p->ID}" {if $isEditable}title="Pro úpravu klikněte"{/if}>{ifset $p->Note}{$p->Note}{? $total += $p->Note}{else}0{/ifset}</td>
-                    <td id="try-{$p->ID}">3</td>
                 </tr>
+                {/if}
                 <tr>
                     <td n:if="$isEditable"></td>
-                    <td></td>
-                    <td></td>
+                    <td colspan="2"><b>Celkem</b></td>
                     <td><b>{$total}</b></td>
-                    <td></td>
                 </tr>
+                
             </table>
+            {else}
+            <p class="alert info">Nejsou vybáni žádní účastníci.</p>
+            {/if}
         </div>
         {/snippet}
     </div>

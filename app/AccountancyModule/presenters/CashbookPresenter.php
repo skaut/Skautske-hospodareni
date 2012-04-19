@@ -91,8 +91,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
                 ->addRule(Form::FILLED, 'Zadejte datum');
         //@TODO kontrola platneho data, problem s componentou
         $form->addText("recipient", "Vyplaceno komu:", 20, 30)
-                ->setHtmlId("form-out-recipient")
-                ->addRule(Form::FILLED, 'Zadejte komu to bylo vyplaceno');
+                ->setHtmlId("form-out-recipient");
         $form->addText("purpose", "Účel výplaty:", 20, 50)
                 ->addRule(Form::FILLED, 'Zadejte účel výplaty')
                 ->getControlPrototype()->placeholder("3 první položky");
@@ -130,8 +129,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum');
         $form->addText("recipient", "Přijato od:", 20, 30)
-                ->setHtmlId("form-in-recipient")
-                ->addRule(Form::FILLED, 'Zadejte komu to bylo vyplaceno');
+                ->setHtmlId("form-in-recipient");
         $form->addText("purpose", "Účel příjmu:", 20, 50)
                 ->addRule(Form::FILLED, 'Zadejte účel přijmu');
         $form->addText("price", "Částka: ", 20, 100)
@@ -158,9 +156,9 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
             $add = $this->context->chitService->add($this->aid, $values);
             $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
             if ($this->context->chitService->isInMinus($this->aid))
-                $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
+                $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
         } catch (InvalidArgumentException $exc) {
-            $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "fail");
+            $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
         }
 
         if ($this->isAjax()) {
@@ -179,15 +177,14 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $values['priceText'] = $values['price'];
         $values['price'] = $this->solveString($values['price']);
 
-
-        if ($this->chitService->update($id, $values)) {
-            $this->flashMessage("Paragon byl úspěšně upraven.");
+        if ($this->context->chitService->update($id, $values)) {
+            $this->flashMessage("Paragon byl upraven.");
         } else {
-            $this->flashMessage("Paragon se nepodařilo upravit.", "fail");
+            $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
         }
 
-        if ($this->chitService->isInMinus($this->aid))
-            $this->flashMessage("Dostali jste se do záporné hodnoty.", "fail");
+        if ($this->context->chitService->isInMinus($this->aid))
+            $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
         $this->redirect("default", array("aid" => $this->aid));
     }
 

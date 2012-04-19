@@ -6,26 +6,25 @@
         <meta name="keywords" content="" />
         <meta name="author" content="www.sinacek.cz" />
         <meta name="robots" content="{$robots}" n:ifset="$robots">
-        <script type="text/javascript" src="{$baseUri}/js/jquery-1.7.1.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/jquery.ui.min.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/my-datepicker.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/combobox.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/jquery.nette.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/jquery.mousewheel-3.0.6.pack.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/jquery.jeditable.mini.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/jquery.fancybox.pack.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/jquery.ajaxform.js"></script>
-        <script type="text/javascript" src="{$baseUri}/js/my.js"></script>
-
-        <link rel="stylesheet" type="text/css" href="{$baseUri}/css/fancybox/fancybox.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="{$baseUri}/css/bootstrap.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="{$baseUri}/css/bootstrap-responsive.css" media="screen" />
-        <link rel="stylesheet" href="{$baseUri}/css/jquery-ui-1.8.css" type="text/css" />
-        <link rel="stylesheet" type="text/css" media="screen" href="{$baseUri}/css/site.css" />
-
+        
+        {control js 'jquery-1.7.2.js',
+        'jquery.ui.min.js',
+        'my-datepicker.js',
+        'combobox.js',
+        'jquery.nette.js',
+        'jquery.mousewheel-3.0.6.pack.js',
+        'jquery.jeditable.mini.js',
+        'bootstrap.min.js',
+        'jquery.fancybox.pack.js',
+        'jquery.ajaxform.js',
+        'my.js'}
+     
+           {control css 'fancybox/fancybox.css',
+           'bootstrap.min.css', 
+            'bootstrap-responsive.min.css',
+            'jquery-ui-1.8.css',
+            'site.css'}
         <script type="text/javascript">
-            
             function changeRole(id){
                  $.post({link changeRole!}, { id : id });
             }
@@ -46,7 +45,6 @@
                     <div class="nav-collapse" n:inner-if="$user->isLoggedIn()">
                         <ul class="nav">
                             <li {ifCurrent :Accountancy:Event:}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:">Seznam akcí</a></li>
-                            <li {ifCurrent :Accountancy:Test:}class='active'{/ifCurrent}><a n:href=":Accountancy:Test:">TEST</a></li>
                         </ul>
                         <p class="navbar-text pull-right">
                             Jsi přihlášen jako {$user->getIdentity()->DisplayName} <a n:href=":Auth:logoutSis">Odhlásit se</a>
@@ -68,9 +66,7 @@
         </div>
 
         <div class="container">
-
             <div id="content">
-
             {snippet flash}
                 {foreach $flashes as $flash}
                 <div class="alert alert-{$flash->type}">
@@ -83,7 +79,7 @@
         </div><!-- /content -->
             <hr style="clear: both" />
             <footer>
-                Footer
+                <!--Vytvořil <a href="http://sinacek.cz">Sináček.cz</a> z <a href="http://osmnactka.net">18. skautského střediska Kruh Praha 6</a>-->
             </footer>
         </div> <!-- /container -->
     </body>

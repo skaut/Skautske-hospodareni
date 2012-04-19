@@ -12,14 +12,14 @@ class EventService extends BaseService {
 
     /**
      * vrací detail vybraé akce
-     * @param ID_Event $actionId
+     * @param ID_Event $eventId
      * @return stdClass 
      */
-    public function get($actionId) {
+    public function get($eventId) {
         try {
-            $id = __FUNCTION__ . $actionId;
+            $id = __FUNCTION__ . $eventId;
             if (!($res = $this->load($id)))
-                $res = $this->save($id, $this->skautIS->event->EventGeneralDetail(array("ID" => $actionId)));
+                $res = $this->save($id, $this->skautIS->event->EventGeneralDetail(array("ID" => $eventId)));
             return $res;
         } catch (SkautIS_Exception $e) {
             throw new SkautIS_PermissionException("Nemáte oprávnění pro získání informací o akci.", $e->getCode(), $e);
@@ -28,11 +28,11 @@ class EventService extends BaseService {
 
     /**
      * vrací obsazení funkcí na zadané akci
-     * @param ID_Unit $actionId
+     * @param ID_Unit $eventId
      * @return type 
      */
-    public function getFunctions($actionId) {
-        return $this->skautIS->event->EventFunctionAllGeneral(array("ID_EventGeneral" => $actionId));
+    public function getFunctions($eventId) {
+        return $this->skautIS->event->EventFunctionAllGeneral(array("ID_EventGeneral" => $eventId));
     }
 
     /**
@@ -162,11 +162,11 @@ class EventService extends BaseService {
 
     /**
      * kontrolu jestli je možné akci uzavřít
-     * @param int $actionId
+     * @param int $eventId
      * @return bool
      */
-    public function isCloseable($actionId) {
-        $func = $this->getFunctions($actionId);
+    public function isCloseable($eventId) {
+        $func = $this->getFunctions($eventId);
         if ($func[0]->ID_Person == NULL) // musí být nastaven vedoucí akce
             return FALSE;
         return TRUE;

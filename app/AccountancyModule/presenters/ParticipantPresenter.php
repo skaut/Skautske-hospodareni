@@ -36,6 +36,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
 
     function renderDefault($aid, $uid = NULL) {
         $participants = $this->context->participantService->getAllParticipant($this->aid);
+        Debugger::barDump(array($participants));
         $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
         $unit = $this->context->unitService->getDetail($this->uid);
@@ -94,12 +95,12 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $days = (int) $post['days'];
         $id = (int) $post['id'];
         $this->context->participantService->setDays($id, $days);
-        if ($this->isAjax()) {
-            $this->invalidateControl("potencialParticipants");
-            $this->invalidateControl("participants");
-        }
-        //echo $days;
-        //$this->terminate();
+//        if ($this->isAjax()) {
+//            $this->invalidateControl("potencialParticipants");
+//            $this->invalidateControl("participants");
+//        }
+        echo $days;
+        $this->terminate();
     }
 
     /**
@@ -119,14 +120,15 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         if ($this->context->participantService->addPaymentsToCashbook($this->aid, $this->context->eventService, $this->context->chitService)) {
             $this->flashMessage("Přijmy byly přidány do pokladní knihy");
         } else {
-            $this->flashMessage("Nepodařilo se přidaj příjmy do pokladní knihy", "danger");
+            $this->flashMessage("Nepodařilo se přidat příjmy do pokladní knihy", "warning");
         }
         
         if ($this->isAjax()) {
             $this->invalidateControl("flash");
         } else {
-            $this->redirect("this");
+            $this->redirect('this', array("aid" => $this->aid, "uid" => $this->uid));
         }
+        
     }
 
     function createComponentFormAddPaymentMass($name) {

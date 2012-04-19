@@ -59,7 +59,7 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
         if ($this->context->eventService->cancel($aid)) {
             $this->flashMessage("Akce byla zrušena");
         } else {
-            $this->flashMessage("Akci se nepodařilo zrušit", "fail");
+            $this->flashMessage("Akci se nepodařilo zrušit", "danger");
         }
 
         $this->redirect("this");
@@ -93,9 +93,9 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
         try {
             $id = $this->context->eventService->create(
-                    $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['leader'], $v['assistant'], $v['economist']
+                    $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v['leader'], $v['assistant'], $v['economist']
             );
-        } catch (SoapFault $e) {
+        } catch (SkautIS_Exception $e) {
             if (preg_match("/UnitPermissionDenied/", $e->getMessage())) {
                 $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
                 $this->redirect("this");
@@ -148,9 +148,9 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
             $this->redirect("Action:");
         } catch (SkautIS_Exception $e) {
             if (preg_match("/EventFunction_LeaderMustBeAdult/", $e->getMessage())) {//dospělost vedoucího akce
-                $this->flashMessage("Vedoucí akce musí být dosplělá osoba.", "fail");
+                $this->flashMessage("Vedoucí akce musí být dosplělá osoba.", "danger");
             } elseif (preg_match("/EventFunction_AssistantMustBeAdult/", $e->getMessage())) { //dospělost zástupce
-                $this->flashMessage("Zástupce musí být dosplělá osoba.", "fail");
+                $this->flashMessage("Zástupce musí být dosplělá osoba.", "danger");
             } else {
                 throw $e;
             }
@@ -161,7 +161,7 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
             $this->flashMessage("Upravili jste základní údaje");
             $this->redirect("info", array("aid" => $values['aid']));
         } else {
-            $this->flashMessage("Akci se nepodařilo upravit", "fail");
+            $this->flashMessage("Akci se nepodařilo upravit", "danger");
         }
         $this->redirect("this");
     }

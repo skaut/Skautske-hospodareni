@@ -18,7 +18,7 @@ class UnitService extends BaseService {
             $unitId = $this->skautIS->getUnitId();
         try {
             return $this->skautIS->org->UnitDetail(array("ID" => $unitId));
-        } catch (SoapFault $exc) {
+        } catch (SkautIS_Exception $exc) {
             throw new BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
         }
     }
