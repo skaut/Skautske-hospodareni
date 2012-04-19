@@ -6,9 +6,12 @@
 class Accountancy_TestPresenter extends Accountancy_BasePresenter {
 
     public $wsdl;
+    protected $service;
 
     protected function startup() {
         parent::startup();
+        if(!$this->context->parameters['skautisTestMode'])//funguje pouze v testovacím režimu
+            $this->redirect (":Default:");
 
         /**
          * @var SkautisService
@@ -87,7 +90,7 @@ class Accountancy_TestPresenter extends Accountancy_BasePresenter {
             $cover = NULL;
         try {
             $ret = $this->service->{$values['wsdl']}->{$values["service"]}($args, $cover);
-        } catch (SoapFault $e) {
+        } catch (Exception $e) {
             //dump($e);die();
             $this->flashMessage($e->getMessage(), "fail");
             $sess->response = $e->getMessage();

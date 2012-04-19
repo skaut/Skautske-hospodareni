@@ -24,7 +24,7 @@ class UserService extends BaseService {
     public function getUserDetail() {
         $id = __FUNCTION__ ;
         if (!($res = $this->load($id))) {
-            $res = $this->save($id, $this->skautIS->user->userDetail());
+            $res = $this->save($id, $this->skautIS->user->UserDetail());
         }
         return $res;
     }
@@ -62,7 +62,8 @@ class UserService extends BaseService {
      * @return array
      */
     public function getAC($OnlyDirectMember = false) {
-        return $this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)));
+        return array_values($this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember))));
+        
     }
 
     /**

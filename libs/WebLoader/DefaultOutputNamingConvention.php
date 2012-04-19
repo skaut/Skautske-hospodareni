@@ -20,7 +20,7 @@ class DefaultOutputNamingConvention implements IOutputNamingConvention
 	 */
 	public static function createCssConvention()
 	{
-		$convention = new static();
+		$convention = new DefaultOutputNamingConvention();
 		$convention->setPrefix('cssloader-');
 		$convention->setSuffix('.css');
 
@@ -32,7 +32,7 @@ class DefaultOutputNamingConvention implements IOutputNamingConvention
 	 */
 	public static function createJsConvention()
 	{
-		$convention = new static();
+		$convention = new DefaultOutputNamingConvention();
 		$convention->setPrefix('jsloader-');
 		$convention->setSuffix('.js');
 

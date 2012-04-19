@@ -36,7 +36,6 @@ class ChitService extends BaseService {
     
     
     public function add($actionId, $val){
-        $aservice = new ActionService();
         
         if(!is_array($val) && !($val instanceof ArrayAccess))
             throw new InvalidArgumentException("Values nejsou ve správném formátu");

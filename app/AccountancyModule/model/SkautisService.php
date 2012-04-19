@@ -12,7 +12,9 @@ class SkautisService {
      * Singleton
      */
     private function __construct() {
-        $this->skautIS = SkautIS::getInstance(Environment::getContext()->parameters['skautisid']);
+        $context = Environment::getContext();
+        $this->skautIS = SkautIS::getInstance($context->parameters['skautisid']);
+        $this->skautIS->setTestMode($context->parameters['skautisTestMode']);
     }
     
     /**
@@ -33,7 +35,7 @@ class SkautisService {
         } catch (SkautIS_AuthenticationException $exc) {
             Environment::getUser()->logout(TRUE);
             $presenter = Environment::getApplication()->getPresenter();
-            $presenter->flashMessage("Vypršelo přihlášení do skautISu", "fail");
+            $presenter->flashMessage("Vypršelo přihlášení do skautISu", "danger");
             $presenter->redirect(":Default:");
         }
     }

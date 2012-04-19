@@ -7,6 +7,7 @@ $configurator = new Configurator;
 
 $configurator->setTempDirectory(dirname(__FILE__) . '/temp');
 $configurator->enableDebugger(dirname(__FILE__) . '/log', "sinacek@gmail.com");
+//Debugger::enable(FALSE);
 Debugger::$strictMode = FALSE;
 Debugger::$maxDepth = 6;
 

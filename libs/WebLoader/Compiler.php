@@ -41,7 +41,7 @@ class Compiler
 	 */
 	public static function createCssCompiler(IFileCollection $files, $outputDir)
 	{
-		return new static($files, DefaultOutputNamingConvention::createCssConvention(), $outputDir);
+		return new Compiler($files, DefaultOutputNamingConvention::createCssConvention(), $outputDir);
 	}
 
 	/**
@@ -52,7 +52,7 @@ class Compiler
 	 */
 	public static function createJsCompiler(IFileCollection $files, $outputDir)
 	{
-		return new static($files, DefaultOutputNamingConvention::createJsConvention(), $outputDir);
+		return new Compiler($files, DefaultOutputNamingConvention::createJsConvention(), $outputDir);
 	}
 
 	/**

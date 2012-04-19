@@ -9,7 +9,7 @@ class ErrorPresenter extends Presenter {
         } elseif ($exception instanceof BadRequestException) {
             $code = $exception->getCode();
             $this->setView(in_array($code, array(403, 404, 405, 410, 500)) ? $code : '4xx'); // load template 403.latte or 404.latte or ... 4xx.latte
-        } elseif ($exception instanceof SoapFault) {
+        } elseif ($exception instanceof SkautIS_Exception) {
             //$this->flashMessage("Chyba ve skautISu");
             //$this->redirect("this");
             $this->setView('SkautIS');
