@@ -1,12 +1,11 @@
 <?php
 
+/**
+ * @author Hána František
+ */
 class UnitService extends BaseService {
     
     protected $oficialUnits = array("stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka");
-
-    public function __construct() {
-        parent::__construct();
-    }
 
     /**
      * vrací detail jednotky

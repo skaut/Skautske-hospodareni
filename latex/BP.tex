@@ -362,21 +362,57 @@ SkautIS\_WS je potomkem PHP třídy \uv{SoapClient} a zajištuje komunikaci pře
 Soubor výjímek, které mohou být vyhozeny při volání služeb.
 
 \section{Struktura aplikace}
-Aplikace se skládá z obecného základu, podobného pro všechny aplikace, a modulu Accountancy, ve kterém je aplikace samotná.
+Aplikace se skládá ze zaváděcího souboru, konfiguračního souboru, obecného základu, podobného pro všechny aplikace a modulu Accountancy, ve kterém je aplikace samotná.
 
-V obecném základu najdeme základní presenter(\uv{BasePresenter}), od kterého jsou všechny ostatní poděděné, presenter zajištující přihlašování(\uv{AuthPresenter}) a presenter na spracování chybových hlášek (\uv{ErrorPresenter}).
+\subsection{Zaváděcí soubor}
+Veškeré požadavky jsou přesměrovány na stránku index.php, která nastaví nejzákladnější konstanty a spustí zaváděcí soubor \uv{bootstrap.php}. Ten dále načte celou knihovnu, nastaví konfiguraci podle konfiguračního souboru a vytvoří \uv{routy} pro základní část, což jsou pravidla pro tvorbu a zpětný překlad url adres. 
+
+\begin{verbatim}
+//ukázková routa pro přihlašovací presenter
+$router[] = new Route('sign/<action>[/back-<backlink>]', array(
+    "presenter" => "Auth",
+    "action" => "default",
+    "backlink" => NULL
+));
+\end{verbatim}
+
+\subsection{Konfigurační soubor}
+Konfigurace je zapsána v souboru \uv{config.neon} ve formátu \uv{NEON}, který je velmi podobný formátu YAML. Zde jsou nastaveny všechny služby, přístup do databáze a parametry pro připojení k systému SkautIS. 
+\begin{verbatim}
+#ukázka z konfiguračního souboru config.neon
+common:
+  services: #nastavení službeb
+    connection
+      class: DibiConnection
+      factory: dibi::connect(%database%)#odkaz na parametry database
+      run: TRUE        
+
+    parameters:
+        database: #nastavení databáze
+            driver: mysql
+            host: localhost
+            username: user
+            password: pass
+            database: db
+            charset: utf8
+
+        #SkautIS ID_Application
+        skautisid = f2197deb-32c8-4192-92d6-f23427757a07
+        skautisTestMode = true
+\end{verbatim}
+Podrobnější příklady naleznete na \url{http://ne-on.org/}. 
+
+
+\subsection{Obecný základ}
+V obecném základu najdeme základní presenter(\uv{BasePresenter}), od kterého jsou všechny ostatní poděděné, presenter zajištující přihlašování(\uv{AuthPresenter}), výchozí \uv{DefaultPresenter} pro zobrazení úvodní stránky, presenter na spracování chybových hlášek (\uv{ErrorPresenter}) a layout celého webu.
 
 BasePresenter rozšiřuje možnosti formulářů o políčko s kalendářem, zajištuje změnu role vůči systému SkautIS a vytváří souhrnné soubory pro kaskádové styly a JavaScript.
 
-AuthPresenter příjmá přihlašovací parametry od systému SkautIS, které nastavuje knihovně pro komunikaci a uživatele přihlásí. Obdobným způsobem zajistí i odhlášení ze systému SkautISu a z aplikace. Pokud přistupujeme k aplikaci, bez aktivního přihlášení, vygeneruje se do adresy řetezec \uv{backlink}, díky kterému budeme po přihlášení přesměrováni na původní stránku.  
+AuthPresenter přijímá přihlašovací parametry od systému SkautIS, které nastavuje knihovně pro komunikaci a uživatele přihlásí. Obdobným způsobem zajistí i odhlášení ze systému SkautISu a z aplikace. Pokud přistupujeme k aplikaci, bez aktivního přihlášení, vygeneruje se do adresy řetezec \uv{backlink}, díky kterému budeme po přihlášení přesměrováni na původní stránku.
 
+ErrorPresenter obsluhuje všechny vyhozené vyjímky aplikací pro upozornění na nečekanou událost. Sem spadá jak požadavek na neexistující stránku (chyba 404) tak i chyba serveru (chyba 500).
 
-
-
-
-O přihlášení a odhlášení do aplikace přes SkautIS stará Auth 
-
-
+\subsection{Modul Accountancy}
 
 Modul Accountancy můžeme rozdělit na tyto části:
 \begin{itemize}
@@ -386,15 +422,16 @@ Modul Accountancy můžeme rozdělit na tyto části:
 	\item Správa účastníků
 	\item Správa paragonů
 	\item Výstupy
-	\item Zpracování neplatných požadavků
 \end{itemize}
 
-Každá část má má vlastní \uv{presenter}, \uv{views} a pokud obstarává aplikační logiku tak i \uv{model}. Presentery jednotlivých částí jsou poděděné od základního BasePresenteru(resp. Accourancy\_BasePresenteru), Service od BaseService a Table od BaseTable.
+Každá část má má vlastní \uv{presenter}, \uv{views} a pokud obstarává aplikační logiku tak i \uv{model}. Presentery jednotlivých částí jsou poděděné od základního BasePresenteru (resp. Accourancy\_BasePresenteru), Service od BaseService a Table od BaseTable.
 
-BasePresenter 
+Protože je v celém modulu vyžadováno přihlášení, tak Accourancy\_BasePresenter jej kontrolu jako předek všech presenterů v modulu a pokud je přihlášení aktivní, tak prodlužuje jeho platnost o 29 min. Pokud je vybraná akce, tak kontroluje oprávnění přihlášeného uživatele k ní přistupovat. Zde se nastavují \uv{routy} pro modul.
+
+TODO 
 
 
-Jak jsem psal již výše, celá aplikace je rozdělena do třech částí (Model-View-Controller). 
+
 
 -layout
 

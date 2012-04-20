@@ -48,9 +48,9 @@ class Accountancy_BasePresenter extends BasePresenter {
 
     function beforeRender() {
         parent::beforeRender();
-        $this->template->registerHelperLoader("AccountancyHelpers::loader");
         $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
         $this->template->myRole = $this->context->userService->getRoleId();
+        $this->template->registerHelperLoader("AccountancyHelpers::loader");
     }
 
     /**
@@ -62,11 +62,12 @@ class Accountancy_BasePresenter extends BasePresenter {
         
         $prefix .= "ucto/";
         
-//        $router[] = new Route($prefix . '<aid [0-9]+>/', array(
-//                    'module' => "Accountancy",
-//                    'presenter' => "event",
-//                    'action' => "info",
-//                ));
+        $router[] = new Route($prefix . '<aid [0-9]+>/', array(
+                    'module' => "Accountancy",
+                    'presenter' => "Event",
+                    'action' => "info",
+                ));
+        
         $router[] = new Route($prefix . '<aid [0-9]+>[/<presenter>][/<action>]', array(
                     'module' => "Accountancy",
                     'action' => "default",

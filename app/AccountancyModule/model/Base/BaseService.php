@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @author sinacek
+ * @author Hána František
  */
-class BaseService extends Object {
+abstract class BaseService extends Object {
 
     /**
      * reference na třídu typu Table
@@ -13,7 +13,7 @@ class BaseService extends Object {
     
     /**
      * slouží pro komunikaci se skautISem
-     * @var SkautisService
+     * @var SkautIS
      */
     protected $skautIS;
     /**
@@ -22,17 +22,19 @@ class BaseService extends Object {
      */
     private $useCache = TRUE;
     /**
-     * lokální úložiště pro daný požadavek
+     * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
      * @var type 
      */
     private static $storage;
 
-    public function __construct() {
-        $this->skautIS = SkautisService::getInstance();
+    public function __construct($skautIS = NULL) {
+//        $this->skautIS = SkautisService::getInstance();
+        $this->skautIS = $skautIS;
         self::$storage = array();
     }
     
-    /**
+
+        /**
      * ukládá $val do lokálního úložiště
      * @param mixed $id
      * @param mixed $val
@@ -45,9 +47,9 @@ class BaseService extends Object {
     }
     
     /**
-     * vrací objekt z lokálního pole
+     * vrací objekt z lokálního úložiště
      * @param string|int $id
-     * @return mixed 
+     * @return mixed | FALSE
      */
     protected function load($id){
         if( $this->useCache && array_key_exists($id, self::$storage) )
