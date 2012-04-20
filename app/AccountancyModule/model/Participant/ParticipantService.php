@@ -10,9 +10,6 @@ class ParticipantService extends BaseService {
      */
     const PAYMENT = "Note";
 
-    public function __construct() {
-        parent::__construct();
-    }
 
     /**
      * vrací seznam účastníků

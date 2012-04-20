@@ -1,29 +1,48 @@
 common:
-  php:
-    date.timezone: Europe/Prague
+    php:
+      date.timezone: Europe/Prague
   
-  nette:
-    session:
-      autoStart: smart
-      save_path: "%tempDir%/sessions"
-      expiration: "+ 7 days"
-  
-  services:
-    authService:
-        class: AuthService
-    eventService:
-        class: EventService
-    chitService:
-        class: ChitService
-    participantService:
-        class: ParticipantService
-    unitService:
-        class: UnitService
-    userService:
-        class: UserService
-
+    nette:
+        session:
+            autoStart: smart
+            save_path: "%tempDir%/sessions"
+            expiration: "+ 7 days"
+        application:
+            catchExceptions: true
+            errorPresenter: Error
+        debugger:
+            email: %sinacek@gmail.com%
+            strictMode: TRUE
+            maxDepth: 6
+            bar: # panely do Debugger baru
+                #- Nette\DI\Diagnostics\ContainerPanel # alias DI Container baru
+    
+    services:
+        connection:
+            class: DibiConnection
+            factory: dibi::connect(%database%)
+            run: TRUE
+        authService:
+            class: AuthService( @skautIS )
+        eventService:
+            class: EventService( @skautIS )
+        chitService:
+            class: ChitService( @skautIS )
+        participantService:
+            class: ParticipantService( @skautIS )
+        unitService:
+            class: UnitService( @skautIS )
+        userService:
+            class: UserService( @skautIS )
+        skautIS:
+            class: SkautIS
+            factory: SkautIS::getInstance(%skautisid%)
 
 development < common:
+    nette:
+        application:
+            catchExceptions: false
+            debugger: true
     parameters:
         database:
             driver: mysql
@@ -41,6 +60,7 @@ development < common:
 
 
 production < common:
+        
     parameters:
         database:
             driver:   mysql

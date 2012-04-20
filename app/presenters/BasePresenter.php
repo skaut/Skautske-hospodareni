@@ -8,9 +8,9 @@ abstract class BasePresenter extends Presenter {
     protected function startup() {
         parent::startup();
         // Zapnutí session (pokud neběží)
-        if (!$this->context->session->isStarted()) {
-            $this->context->session->start();
-        }
+//        if (!$this->context->session->isStarted()) {
+//            $this->context->session->start();
+//        }
         
         RequestsPanel::register();
 

@@ -4,9 +4,8 @@
  */
 class ChitService extends BaseService {
     
-    public function __construct() {
-        parent::__construct();
-        
+    public function __construct($skautIS = NULL) {
+        parent::__construct($skautIS);
         /** @var ChitTable */
         $this->table = new ChitTable();
     }
