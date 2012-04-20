@@ -36,7 +36,7 @@ common:
             class: UserService( @skautIS )
         skautIS:
             class: SkautIS
-            factory: SkautIS::getInstance(%skautisid%)
+            factory: SkautIS::getInstance(%skautisid%, %skautisTestMode%)
 
 development < common:
     nette:
@@ -54,8 +54,8 @@ development < common:
             profiler: true
 
         ###SkautIS
-        skautisid = f2197deb-32c8-4192-92d6-f23427757a07 #localhost - bakalarka
-        skautisTestMode = true #isTestMode?
+        skautisid : f2197deb-32c8-4192-92d6-f23427757a07 #localhost - bakalarka
+        skautisTestMode : true #isTestMode?
         #skautisid = 590db6c9-e46b-43bb-b3b7-701cb556b91c #localhost - appOsmnactka
 
 
@@ -73,8 +73,8 @@ production < common:
             lazy:     true
 
         ###SkautIS
-        skautisid = 093a637d-fd52-4028-9545-bb9a92d18a0c #u.osmnactka.net - ostrý
-        skautisTestMode = false #isTestMode?
+        skautisid : 093a637d-fd52-4028-9545-bb9a92d18a0c #u.osmnactka.net - ostrý
+        skautisTestMode : false #isTestMode?
         #skautisid = 48104fe2-b447-47f5-9a26-051c710da74e #vyvoj.osmnactka.net - test
 
 
