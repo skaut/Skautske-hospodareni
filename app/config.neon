@@ -12,7 +12,7 @@ common:
             errorPresenter: Error
         debugger:
             email: %sinacek@gmail.com%
-            strictMode: TRUE
+            strictMode: FALSE
             maxDepth: 6
             bar: # panely do Debugger baru
                 #- Nette\DI\Diagnostics\ContainerPanel # alias DI Container baru
@@ -25,7 +25,7 @@ common:
         authService:
             class: AuthService( @skautIS )
         eventService:
-            class: EventService( @skautIS )
+            class: EventService( @skautIS, @cacheStorage )
         chitService:
             class: ChitService( @skautIS )
         participantService:

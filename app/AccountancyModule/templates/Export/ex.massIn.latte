@@ -64,7 +64,7 @@ th{
     <tr n:foreach="$list as $participants">
         <td>{$iterator->getCounter()})</td>
         <td colspan="2">{$participants->Person}</td>
-        <td>{$participants->Note|price}</td>
+        <td n:inner-ifset="$participants->Note">{$participants->Note|price}{else}0</td>
     </tr>
 
 </table>

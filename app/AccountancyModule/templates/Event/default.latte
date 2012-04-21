@@ -7,6 +7,14 @@
         </p>
 {dump $list}
 
+    {snippet events}
+        {form formFilter class=>"ajax filter"}
+        {label year /}{input year onchange=>"changeYear(this.value)"}
+        {label state /}{input state onchange=>"changeState(this.value)"}
+        {input send}
+        
+        {/form}
+        
         {if is_array($list)}
         <table class="myTable table-striped table-bordered table-condensed">
             <thead>
@@ -31,6 +39,7 @@
         {else}
         <p class="alert">Nemáte žádné akce.</p>
         {/if}
+    {/snippet}
     </div>
 </div>
 
@@ -43,3 +52,14 @@
             {control formCreate}
     </div>
 </div>
+
+
+<script type="text/javascript">
+    function changeYear(val){
+         $.post({link changeYear!}, { year : val });
+    }
+    function changeState(val){
+         $.post({link changeState!}, { state : val });
+    }
+            
+</script>

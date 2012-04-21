@@ -10,7 +10,6 @@ class ParticipantService extends BaseService {
      */
     const PAYMENT = "Note";
 
-
     /**
      * vrací seznam účastníků
      * používá lokální úložiště
@@ -21,7 +20,7 @@ class ParticipantService extends BaseService {
         if (!($res = $this->load($id))) {
             $res = $this->save($id, $this->skautIS->event->ParticipantGeneralAll(array("ID_EventGeneral" => $eventId)));
         }
-        if(!is_array($res))//pokud je prázdná třída stdClass
+        if (!is_array($res))//pokud je prázdná třída stdClass
             $res = array();
         return $res;
     }
@@ -41,7 +40,7 @@ class ParticipantService extends BaseService {
             "OnlyDirectMember" => $onlyDirectMember,
                 ));
         $ret = ArrayHash::from(array());
-        
+
         if (empty($participants)) {
             foreach ($all as $people) {
                 $ret[$people->ID] = $people->DisplayName;
@@ -118,6 +117,17 @@ class ParticipantService extends BaseService {
         return $this->skautIS->event->ParticipantGeneralDelete(array("ID" => $participantId, "DeletePerson" => false));
     }
 
+    public function getAllDetail($eventId, $participants = NULL) {
+        if ($participants == NULL) {
+            $participants = $this->getAllParticipant($eventId);
+        }
+        $res = array();
+        foreach ($participants as $par) {
+            $res[] = $this->skautIS->org->PersonDetail(array("ID" => $par->ID_Person));
+        }
+        return $res;
+    }
+
     /**
      * hromadné nastavení účastnické částky
      * @param int $eventId - ID ake
@@ -144,7 +154,9 @@ class ParticipantService extends BaseService {
     public function getTotalPayment($eventId) {
 
         function paymentSum($res, $v) {
-            return $res += $v->{ParticipantService::PAYMENT};
+            if (isset($v->{ParticipantService::PAYMENT}))
+                return $res += $v->{ParticipantService::PAYMENT};
+            return 0;
         }
 
         return array_reduce($this->getAllParticipant($eventId), "paymentSum");
