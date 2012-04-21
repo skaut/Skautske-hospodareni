@@ -402,7 +402,6 @@ common:
 \end{verbatim}
 Podrobnější příklady naleznete na \url{http://ne-on.org/}. 
 
-
 \subsection{Obecný základ}
 V obecném základu najdeme základní presenter(\uv{BasePresenter}), od kterého jsou všechny ostatní poděděné, presenter zajištující přihlašování(\uv{AuthPresenter}), výchozí \uv{DefaultPresenter} pro zobrazení úvodní stránky, presenter na spracování chybových hlášek (\uv{ErrorPresenter}) a layout celého webu.
 
@@ -416,8 +415,6 @@ ErrorPresenter obsluhuje všechny vyhozené vyjímky aplikací pro upozornění 
 
 Modul Accountancy můžeme rozdělit na tyto části:
 \begin{itemize}
-	\item Volně přístupná sekce
-	\item Přihlašování
 	\item Správa akcí
 	\item Správa účastníků
 	\item Správa paragonů
@@ -428,20 +425,15 @@ Každá část má má vlastní \uv{presenter}, \uv{views} a pokud obstarává a
 
 Protože je v celém modulu vyžadováno přihlášení, tak Accourancy\_BasePresenter jej kontrolu jako předek všech presenterů v modulu a pokud je přihlášení aktivní, tak prodlužuje jeho platnost o 29 min. Pokud je vybraná akce, tak kontroluje oprávnění přihlášeného uživatele k ní přistupovat. Zde se nastavují \uv{routy} pro modul.
 
-TODO 
+BaseService nastavuje společné proměnné, vytváří lokální úložiště pro výsledky volání služeb ze systému SkautIS a poskytuje všem service třídám možnost vytvářet PDF dokumenty.
 
+\subsubsection{Správa akcí}
 
+\subsubsection{Správa účastníků}
 
+\subsubsection{Správa paragonů}
 
--layout
-
--base...
-
-\section{Jednotlivé sekce}
-view+presentery+service
-\subsection{}
-
-\subsection{}
+\subsubsection{Výstupy}
 
 
 

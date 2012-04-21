@@ -6,14 +6,24 @@
  */
 class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
+    public $ses;
+
+
     function startup() {
         parent::startup();
+        $this->ses = $this->session->getSection(__CLASS__);
         //ochrana $this->aid se provádí již v BasePresenteru
     }
 
-    public function actionDefault() {
-        $list = $this->context->eventService->getAll();
+    public function renderDefault() {
+        $year = isset ($this->ses->year) ? $this->ses->year : NULL;
+        $state = isset ($this->ses->state) ? $this->ses->state : NULL;
+        $list = $this->context->eventService->getAll($year, $state);
         $this->template->list = $list;
+        if($year)
+            $this['formFilter']['year']->setDefaultValue($year);
+        if($state)
+            $this['formFilter']['state']->setDefaultValue($state);
     }
 
     public function renderInfo($aid) {
@@ -28,9 +38,9 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
             "start" => $data->StartDate,
             "end" => $data->EndDate,
             "location" => $data->Location,
-            "leader" => $func[0]->ID_Person,
-            "assistant" => $func[1]->ID_Person,
-            "economist" => $func[2]->ID_Person,
+            "leader" => $func[EventService::LEADER]->ID_Person,
+            "assistant" => $func[EventService::ASSISTANT]->ID_Person,
+            "economist" => $func[EventService::ECONOMIST]->ID_Person,
         ));
 
         $this->template->data = $data;
@@ -64,15 +74,68 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
         $this->redirect("this");
     }
+    
+    public function handleChangeYear($year) {
+        $this->ses->year = $year;
+        if($this->isAjax()){
+            $this->invalidateControl("events");
+        } else {
+            $this->redirect("this");
+        }
+    }
+    
+    public function handleChangeState($state) {
+        $this->ses->state = $state;
+        if($this->isAjax()){
+            $this->invalidateControl("events");
+        } else {
+            $this->redirect("this");
+        }
+    }
+    
+    function createComponentFormFilter($name) {
+        $states = $this->context->eventService->getStates();
+        $years = array();
+        foreach (array_reverse(range(2012, date("Y"))) as $y) {
+            $years[$y] = $y;
+        }
+        
+        $form = new AppForm($this, $name);
+        $form->addSelect("state", "Stav", $states);
+        $form->addSelect("year", "Rok", $years);
+        $form->addSubmit('send', 'Hledat')
+                ->getControlPrototype()->setClass("btn btn-primary");
+        $form->onSuccess[] = array($this, $name . 'Submitted');
+        
+        return $form;
+    }
+    
+    function formFilterSubmitted(AppForm $form) {
+        $v = $form->getValues();
+        $this->ses->year = $v['year'];
+        $this->ses->state = $v['state'];
+        $this->redirect("default", array("aid"=>$this->aid));
+    }
+
 
     function createComponentFormCreate($name) {
         $combo = $this->context->userService->getCombobox();
+        $scopes = $this->context->eventService->getScopes();
+        $types = $this->context->eventService->getTypes();
+        
 
         $form = new AppForm($this, $name);
-        $form->addText("name", "Název akce");
-        $form->addDatePicker("start", "Od");
-        $form->addDatePicker("end", "Do");
+        $form->addText("name", "Název akce")
+                ->addRule(Form::FILLED, "Musíte vyplnit název akce");
+        $form->addDatePicker("start", "Od")
+                ->addRule(Form::FILLED, "Musíte vyplnit začátek akce");
+        $form->addDatePicker("end", "Do")
+                ->addRule(Form::FILLED, "Musíte vyplnit konec akce");
         $form->addText("location", "Místo");
+        $form->addSelect("scope", "Rozsah", $scopes)
+                ->setDefaultValue("2");
+        $form->addSelect("type", "Rozsah", $types)
+                ->setDefaultValue("2");
         $form->addSelect("leader", "Vedoucí akce", $combo)
                 ->setPrompt("Vyber")
                 ->getControlPrototype()->setClass("combobox");
@@ -93,7 +156,15 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
         try {
             $id = $this->context->eventService->create(
-                    $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v['leader'], $v['assistant'], $v['economist']
+                    $v['name'],
+                    $v['start']->format("Y-m-d"),
+                    $v['end']->format("Y-m-d"),
+                    $v['location'],
+                    $v['leader'],
+                    $v['assistant'],
+                    $v['economist'],
+                    $v['scope'],
+                    $v['type']
             );
         } catch (SkautIS_Exception $e) {
             if (preg_match("/UnitPermissionDenied/", $e->getMessage())) {

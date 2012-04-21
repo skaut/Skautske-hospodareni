@@ -36,6 +36,18 @@ body {
     padding: 0.5em 0 1em 0.5em;
 }
 
+form.filter{
+    margin-bottom: 5px;
+}
+
+form.filter input{
+    margin-bottom: 5px;
+}
+form.filter select{
+    width: auto;
+    margin-left: 5px;
+}
+
 /*JQuery UI */
 .ui-widget {
     font-size: 0.9em;

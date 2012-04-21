@@ -4,10 +4,21 @@
  * @author Hána František
  */
 class EventService extends BaseService {
+    const LEADER = 0; //ID v poli funkcí
+    const ASSISTANT = 1; //ID v poli funkcí
     const ECONOMIST = 2; //ID v poli funkcí
 
-    public function getAll() {
-        return $this->skautIS->event->EventGeneralAll();
+    /** @var FileStorage */
+    protected $cache;
+
+    public function __construct($skautIS, $cacheStorage) {
+        parent::__construct($skautIS);
+        $cache = new Cache($cacheStorage, __CLASS__);
+        $this->cache = $cache;
+    }
+
+    public function getAll($year = NULL, $state = NULL) {
+        return $this->skautIS->event->EventGeneralAll(array("IsRelation" => TRUE, "ID_EventGeneralState" => $state, "Year" => $year));
     }
 
     /**
@@ -19,10 +30,10 @@ class EventService extends BaseService {
         try {
             $id = __FUNCTION__ . $eventId;
             if (!($res = $this->load($id)))
-                $res = $this->save($id, $this->skautIS->event->EventGeneralDetail(array("ID" => $eventId)));
+                $res = $this->save($id, $this->skautIS->event->EventGeneralDetail(array("ID" => $eventId)) );
             return $res;
         } catch (SkautIS_Exception $e) {
-            throw new SkautIS_PermissionException("Nemáte oprávnění pro získání informací o akci.", $e->getCode(), $e);
+            throw new SkautIS_PermissionException("Nemáte oprávnění pro získání informací o akci.", $e->getCode);
         }
     }
 
@@ -33,6 +44,57 @@ class EventService extends BaseService {
      */
     public function getFunctions($eventId) {
         return $this->skautIS->event->EventFunctionAllGeneral(array("ID_EventGeneral" => $eventId));
+    }
+
+    /**
+     * vrací seznam všech stavů akce
+     * používá Cache
+     * @return array
+     */
+    public function getStates() {
+        if (!($ret = $this->cache->load(__FUNCTION__))) {
+            $res = $this->skautIS->event->EventGeneralStateAll();
+            $ret = array();
+            foreach ($res as $value) {
+                $ret[$value->ID] = $value->DisplayName;
+            }
+            $this->cache->save(__FUNCTION__, $ret, array(Cache::EXPIRE => '+ 1 days'));
+        }
+        return $ret;
+    }
+
+    /**
+     * vrací seznam všech rozsahů akce
+     * používá Cache
+     * @return array
+     */
+    public function getScopes() {
+        if (!($ret = $this->cache->load(__FUNCTION__))) {
+            $res = $this->skautIS->event->EventGeneralScopeAll();
+            $ret = array();
+            foreach ($res as $value) {
+                $ret[$value->ID] = $value->DisplayName;
+            }
+            $this->cache->save(__FUNCTION__, $ret, array(Cache::EXPIRE => '+ 1 days') );
+        }
+        return $ret;
+    }
+
+    /**
+     * vrací seznam všech typů akce
+     * používá Cache
+     * @return array
+     */
+    public function getTypes() {
+        if (!($ret = $this->cache->load(__FUNCTION__))) {
+            $res = $this->skautIS->event->EventGeneralTypeAll();
+            $ret = array();
+            foreach ($res as $value) {
+                $ret[$value->ID] = $value->DisplayName;
+            }
+            $this->cache->save(__FUNCTION__, $ret, array(Cache::EXPIRE => '+ 1 days'));
+        }
+        return $ret;
     }
 
     /**
