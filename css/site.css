@@ -48,6 +48,10 @@ form.filter select{
     margin-left: 5px;
 }
 
+form.nonMargin, form.nonMargin input {
+    margin: 0;
+}
+
 /*JQuery UI */
 .ui-widget {
     font-size: 0.9em;

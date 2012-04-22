@@ -36,18 +36,27 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
 
     function renderDefault($aid, $uid = NULL) {
         $participants = $this->context->participantService->getAllParticipant($this->aid);
-        Debugger::barDump(array($participants));
         $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
         $unit = $this->context->unitService->getDetail($this->uid);
         $uparrent = $this->context->unitService->getParrent($unit->ID);
         $uchildrens = $this->context->unitService->getChild($unit->ID);
-
+        
         $this->template->uparrent = $uparrent;
         $this->template->unit = $unit;
         $this->template->uchildrens = $uchildrens;
         $this->template->list = $all;
         $this->template->participants = $participants;
+    }
+    
+    public function actionEdit($aid, $pid, $days = 0, $payment = 0){
+        $detail = $this->context->participantService->getPersonsDays($aid);
+        $form = $this['formEditParticipant'];
+        $form->setDefaults(array(
+            "days"=> $days,
+            "payment"=> $payment,
+            "user"=> $pid,
+        ));
     }
 
     public function handleRemove($pid) {
@@ -129,6 +138,67 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
             $this->redirect('this', array("aid" => $this->aid, "uid" => $this->uid));
         }
         
+    }
+
+    public function createComponentFormEditParticipant($name) {
+        $form = new AppForm($this, $name);
+        $form->addText("days", "Dní" );
+        $form->addText("payment", "Částka");
+        $form->addHidden("user");
+        $form->addSubmit('send', 'Upravit')
+                ->getControlPrototype()->setClass("btn btn-primary");
+        $form->onSuccess[] = array($this, $name . 'Submitted');
+        return $form;
+    }
+
+    public function formEditParticipantSubmitted(AppForm $form) {
+        $this->editableOnly();
+        $values = $form->getValues();
+        $arr = array(
+            "Note" => $values['payment'],
+            "Days" => $values['days'],
+        );
+        
+        $this->context->participantService->update($values['user'], $arr);
+        
+        if ($this->isAjax()) {
+            $this->invalidateControl("potencialParticipants");
+            $this->invalidateControl("participants");
+        } else {
+            $this->redirect('default', $this->aid);
+        }
+        
+    }
+    
+    function createComponentFormFindByName($name) {
+        $aid = $this->presenter->aid;
+        $participants = $this->context->participantService->getAllParticipant($this->aid);
+        $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        
+        $form = new AppForm($this, $name);
+        $form->addSelect("user", "Jméno", (array)$all)
+                ->setPrompt("Vyber")
+                ->getControlPrototype()->setClass("combobox");
+        $form->addHidden("aid", $aid);
+        $form->addSubmit('send', 'Přidat')
+                ->getControlPrototype()->setClass("btn btn-primary");
+        $form->onSuccess[] = array($this, $name . 'Submitted');
+        return $form;
+    }
+
+    public function formFindByNameSubmitted(AppForm $form) {
+        $this->editableOnly();
+        $values = $form->getValues();
+        $aid = $values['aid'];
+        
+        $this->context->participantService->add($aid, $values['user']);
+        
+        if ($this->isAjax()) {
+            $this->invalidateControl("potencialParticipants");
+            $this->invalidateControl("participants");
+        } else {
+            $this->redirect('this');
+        }
     }
 
     function createComponentFormAddPaymentMass($name) {

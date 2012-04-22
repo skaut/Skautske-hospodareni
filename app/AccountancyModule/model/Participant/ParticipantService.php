@@ -39,7 +39,7 @@ class ParticipantService extends BaseService {
             "ID_Unit" => $unitId,
             "OnlyDirectMember" => $onlyDirectMember,
                 ));
-        $ret = ArrayHash::from(array());
+        $ret = array();
 
         if (empty($participants)) {
             foreach ($all as $people) {
@@ -96,7 +96,7 @@ class ParticipantService extends BaseService {
      * @param int $days 
      */
     public function setDays($participantId, $days) {
-        $this->skautIS->event->ParticipantGeneralUpdate(array("ID" => $participantId, "Days" => $days));
+        $this->update($participantId, array("Days" => $payment));
     }
 
     /**
@@ -105,7 +105,17 @@ class ParticipantService extends BaseService {
      * @param int $payment - částka
      */
     public function setPayment($participantId, $payment) {
-        $this->skautIS->event->ParticipantGeneralUpdate(array("ID" => $participantId, self::PAYMENT => $payment));
+        $this->update($participantId, array(self::PAYMENT => $payment));
+    }
+    
+    /**
+     * upraví všechny nastavené hodnoty
+     * @param int $participantId
+     * @param array $arr pole hodnot
+     */
+    public function update($participantId, array $arr){
+        $arr['ID'] = $participantId;
+        $this->skautIS->event->ParticipantGeneralUpdate($arr);
     }
 
     /**
