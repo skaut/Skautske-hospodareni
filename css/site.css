@@ -52,6 +52,10 @@ form.nonMargin, form.nonMargin input {
     margin: 0;
 }
 
+.findByName input.combobox-text {
+    width: 150px;
+}
+
 /*JQuery UI */
 .ui-widget {
     font-size: 0.9em;

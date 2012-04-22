@@ -35,7 +35,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     }
 
     function renderDefault($aid, $uid = NULL) {
-        $participants = $this->context->participantService->getAllParticipant($this->aid);
+        $participants = $this->context->participantService->getAllParticipant($this->aid, $cache = FALSE);
         $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
         $unit = $this->context->unitService->getDetail($this->uid);
@@ -172,16 +172,18 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     
     function createComponentFormFindByName($name) {
         $aid = $this->presenter->aid;
-        $participants = $this->context->participantService->getAllParticipant($this->aid);
+        $participants = $this->context->participantService->getAllParticipant($this->aid, TRUE);
         $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
         
         $form = new AppForm($this, $name);
         $form->addSelect("user", "Jméno", (array)$all)
-                ->setPrompt("Vyber")
-                ->getControlPrototype()->setClass("combobox");
+                ->setPrompt("Vyber");
         $form->addHidden("aid", $aid);
         $form->addSubmit('send', 'Přidat')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                ->getControlPrototype()
+                ->setName("button")
+                ->setHtml('<i class="icon-plus icon-white"></i>')
+                ->setClass("btn btn-primary btn-mini");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -221,7 +223,12 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $values = $form->getValues();
         $aid = $values['aid'];
         $this->context->participantService->setPaymentMass($aid, $values['sum'], $values['rewrite']);
-        $this->redirect("default", array("aid" => $aid));
+        if($this->isAjax()){
+            $this->invalidateControl("participants");
+//            $this->invalidateControl("potencialParticipants");
+        } else {
+            $this->redirect("default", array("aid" => $aid));
+        }
     }
 
     /**

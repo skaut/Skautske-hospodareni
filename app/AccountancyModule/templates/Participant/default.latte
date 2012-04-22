@@ -33,20 +33,35 @@
 
             <table class="table table-striped table-bordered table-condensed">
                 <tr>
-                    <th colspan="2" style="text-align: center;"><a class="btn btn-primary btn-mini" href="#addParticipant" data-toggle="modal"><i class="icon-plus icon-white"></i> Založit nového účastníka</a></th>
+                    <th colspan="2"><a class="btn btn-primary btn-mini" href="#addParticipant" data-toggle="modal">Založit nového účastníka</a></th>
                 </tr>
                 {if count($list) > 0}
                 <tr>
-                    <th colspan="2" style="text-align: center;">
-                        {form formFindByName class=>"nonMargin"}
-                        {input user}
-                        {input send }
+                    <th>
+                        <script type="text/javascript">
+                            $(document).ready(function() { 
+                                $( ".findUserBox" ).combobox();
+                                $('.combobox-text').val('').focus();
+                                
+                                // odeslání pomocí tlačítek
+                                $("form.findByName").submit(function () {
+                                        $(this).ajaxSubmit();
+                                        return false;
+                                });
+                                // odeslání pomocí tlačítek
+                                $("form.findByName :submit").click(function () {
+                                        $(this).ajaxSubmit();
+                                        return false;
+                                });
+                                
+                            });
+                        </script>
+                        {form formFindByName class=>"nonMargin findByName"}
+                        {input user class=>"findUserBox"}
+                    </th><th style="width: 28px;">
+                        {input send}
                         {/form}
                     </th>
-                </tr>
-                <tr>
-                    <th>Příjmení a jméno</th>
-                    <th style="width: 28px;">&nbsp;</th>
                 </tr>
                 <tr n:foreach="$list as $id=>$name">
                     <td>{$name}</td>
@@ -60,12 +75,11 @@
             </table>
         </div>
         {/snippet}
-
     </div>
-
 
     <div class="span4">
         {snippet participants}
+
         <div n:ifset="$participants">
             <h3>Seznam účastníků</h3>
             {if !empty($participants)}
@@ -97,7 +111,7 @@
                     <td colspan="2"><b>Celkem</b></td>
                     <td><b>{$total}</b></td>
                 </tr>
-                
+
             </table>
             {else}
             <p class="alert info">Nejsou vybáni žádní účastníci.</p>
@@ -129,13 +143,13 @@
         <h2>Poplatek</h2>
     </div>
     <div class="modal-body">
-            {form formAddPaymentMass}
+            {form formAddPaymentMass class=>"ajax"}
         <ul class="errors" n:if="$form->hasErrors()">
             <li n:foreach="$form->errors as $error">{$error}</li>
         </ul>
                 {label sum/} {input sum style=>"width:40px;"} Kč <br />
                 {label rewrite/} {input rewrite}<br />
-                {input aid}{input send}
+                {input aid}{input send onclick=>"$('#addPaymentMass').modal('hide')"}
             {/form}
     </div>
 </div>

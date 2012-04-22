@@ -27,7 +27,7 @@ class Accountancy_BasePresenter extends BasePresenter {
         parent::startup();
 
         if (!$this->user->isLoggedIn()) {
-            $this->backlink = $this->storeRequest();
+            $this->backlink = $this->storeRequest('+ 2 days');
             $this->redirect(":Default:", array("backlink" => $this->backlink));
         }
         

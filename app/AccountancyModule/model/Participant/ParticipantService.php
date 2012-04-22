@@ -13,15 +13,24 @@ class ParticipantService extends BaseService {
     /**
      * vrací seznam účastníků
      * používá lokální úložiště
+     * @param type $eventId
+     * @param bool $cache
      * @return array 
      */
-    public function getAllParticipant($eventId) {
+    public function getAllParticipant($eventId, $cache = TRUE) {
         $id = __FUNCTION__ . $eventId;
-        if (!($res = $this->load($id))) {
-            $res = $this->save($id, $this->skautIS->event->ParticipantGeneralAll(array("ID_EventGeneral" => $eventId)));
+        if (!$cache || !($res = $this->load($id))) {
+            $tmp = $this->skautIS->event->ParticipantGeneralAll(array("ID_EventGeneral" => $eventId));
+            $res = array();
+            foreach ($tmp as $p) {
+                if (!isset($p->Note))
+                    $p->Note = 0;
+                $res[] = $p;
+            }
+            $this->save($id, $res);
         }
         if (!is_array($res))//pokud je prázdná třída stdClass
-            $res = array();
+            return array();
         return $res;
     }
 
@@ -107,13 +116,13 @@ class ParticipantService extends BaseService {
     public function setPayment($participantId, $payment) {
         $this->update($participantId, array(self::PAYMENT => $payment));
     }
-    
+
     /**
      * upraví všechny nastavené hodnoty
      * @param int $participantId
      * @param array $arr pole hodnot
      */
-    public function update($participantId, array $arr){
+    public function update($participantId, array $arr) {
         $arr['ID'] = $participantId;
         $this->skautIS->event->ParticipantGeneralUpdate($arr);
     }
