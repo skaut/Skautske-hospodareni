@@ -8,7 +8,6 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
     public $ses;
 
-
     function startup() {
         parent::startup();
         $this->ses = $this->session->getSection(__CLASS__);
@@ -16,13 +15,15 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
     }
 
     public function renderDefault() {
-        $year = isset ($this->ses->year) ? $this->ses->year : NULL;
-        $state = isset ($this->ses->state) ? $this->ses->state : NULL;
+        $year = isset($this->ses->year) ? $this->ses->year : NULL;
+        $state = isset($this->ses->state) ? $this->ses->state : NULL;
+        if ($state == "all")
+            $state = NULL;
         $list = $this->context->eventService->getAll($year, $state);
         $this->template->list = $list;
-        if($year)
+        if ($year)
             $this['formFilter']['year']->setDefaultValue($year);
-        if($state)
+        if ($state)
             $this['formFilter']['state']->setDefaultValue($state);
     }
 
@@ -74,55 +75,54 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
         $this->redirect("this");
     }
-    
+
     public function handleChangeYear($year) {
         $this->ses->year = $year;
-        if($this->isAjax()){
+        if ($this->isAjax()) {
             $this->invalidateControl("events");
         } else {
             $this->redirect("this");
         }
     }
-    
+
     public function handleChangeState($state) {
         $this->ses->state = $state;
-        if($this->isAjax()){
+        if ($this->isAjax()) {
             $this->invalidateControl("events");
         } else {
             $this->redirect("this");
         }
     }
-    
+
     function createComponentFormFilter($name) {
-        $states = $this->context->eventService->getStates();
+        $states = array_merge(array("all" => "Nezrušené"), $this->context->eventService->getStates());
         $years = array();
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
         }
-        
+
         $form = new AppForm($this, $name);
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
-        
+
         return $form;
     }
-    
+
     function formFilterSubmitted(AppForm $form) {
         $v = $form->getValues();
         $this->ses->year = $v['year'];
         $this->ses->state = $v['state'];
-        $this->redirect("default", array("aid"=>$this->aid));
+        $this->redirect("default", array("aid" => $this->aid));
     }
-
 
     function createComponentFormCreate($name) {
         $combo = $this->context->userService->getCombobox();
         $scopes = $this->context->eventService->getScopes();
         $types = $this->context->eventService->getTypes();
-        
+
 
         $form = new AppForm($this, $name);
         $form->addText("name", "Název akce")
@@ -156,15 +156,7 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
         try {
             $id = $this->context->eventService->create(
-                    $v['name'],
-                    $v['start']->format("Y-m-d"),
-                    $v['end']->format("Y-m-d"),
-                    $v['location'],
-                    $v['leader'],
-                    $v['assistant'],
-                    $v['economist'],
-                    $v['scope'],
-                    $v['type']
+                    $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v['leader'], $v['assistant'], $v['economist'], $v['scope'], $v['type']
             );
         } catch (SkautIS_Exception $e) {
             if (preg_match("/UnitPermissionDenied/", $e->getMessage())) {

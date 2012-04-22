@@ -37,6 +37,14 @@
                 </tr>
                 {if count($list) > 0}
                 <tr>
+                    <th colspan="2" style="text-align: center;">
+                        {form formFindByName class=>"nonMargin"}
+                        {input user}
+                        {input send }
+                        {/form}
+                    </th>
+                </tr>
+                <tr>
                     <th>Příjmení a jméno</th>
                     <th style="width: 28px;">&nbsp;</th>
                 </tr>
@@ -67,7 +75,7 @@
             </p>
             <table id="participants-list" class="table table-striped table-bordered table-condensed">
                 <tr>
-                    <th style="width: 28px;" n:if="$isEditable">&nbsp;</th>
+                    <th style="width: 60px;" n:if="$isEditable">&nbsp;</th>
                     <th>Příjmení a jméno ({= count($participants)})</th>
                     <th>Dnů</th>
                     <th>Částka</th>
@@ -75,10 +83,13 @@
                 {assign $total = 0}
                 {if !empty($participants)}
                 <tr n:foreach="$participants as $p">
-                    <td n:if="$isEditable"><a n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a></td>
+                    <td n:if="$isEditable">
+                        <a n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a>
+                        <a class="fancybox fancybox.ajax btn btn-info btn-mini" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
+                    </td>
                     <td>{$p->Person}</td>
-                    <td id="par-days-{$p->ID}" {if $isEditable}title="Pro úpravu klikněte"{/if}>{$p->Days}</td>
-                    <td id="par-payment-{$p->ID}" {if $isEditable}title="Pro úpravu klikněte"{/if}>{ifset $p->Note}{$p->Note}{? $total += $p->Note}{else}0{/ifset}</td>
+                    <td id="par-days-{$p->ID}">{$p->Days}</td>
+                    <td id="par-payment-{$p->ID}" >{ifset $p->Note}{$p->Note}{? $total += $p->Note}{else}0{/ifset}</td>
                 </tr>
                 {/if}
                 <tr>
@@ -122,15 +133,16 @@
         <ul class="errors" n:if="$form->hasErrors()">
             <li n:foreach="$form->errors as $error">{$error}</li>
         </ul>
-                {label sum/}</b> {input sum style=>"width:40px;"} Kč <br />
+                {label sum/} {input sum style=>"width:40px;"} Kč <br />
                 {label rewrite/} {input rewrite}<br />
                 {input aid}{input send}
             {/form}
     </div>
 </div>
 
-<script type="text/javascript">
 
+{*}
+<script type="text/javascript">
 $(document).ready(function() {
     
     $('#[id^="try-"]');
@@ -161,7 +173,7 @@ $(document).ready(function() {
 
 });
 
-
 </script>
+{*}
 {/if}
 
