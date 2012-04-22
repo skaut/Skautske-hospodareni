@@ -53,7 +53,7 @@
 								}
 							}
 						}
-					});
+					}).addClass("combobox-text");
 					//.addClass( "ui-widget ui-widget-content ui-corner-left" );
 
 				input.data( "autocomplete" )._renderItem = function( ul, item ) {
@@ -93,7 +93,7 @@
 
 			destroy: function() {
 				this.input.remove();
-				this.button.remove();
+//				this.button.remove();
 				this.element.show();
 				$.Widget.prototype.destroy.call( this );
 			}

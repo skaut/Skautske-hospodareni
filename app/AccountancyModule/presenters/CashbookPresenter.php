@@ -88,7 +88,8 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     protected static function makeFormOUT($thisP, $name) {
         $form = new AppForm($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
-                ->addRule(Form::FILLED, 'Zadejte datum');
+                ->addRule(Form::FILLED, 'Zadejte datum')
+                ->setAttribute('autofocus');
         //@TODO kontrola platneho data, problem s componentou
         $form->addText("recipient", "Vyplaceno komu:", 20, 30)
                 ->setHtmlId("form-out-recipient");

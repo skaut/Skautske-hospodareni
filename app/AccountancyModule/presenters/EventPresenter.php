@@ -8,10 +8,14 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
     public $ses;
 
+    const DEFAULT_STATE = "draft";
+
     function startup() {
         parent::startup();
-        $this->ses = $this->session->getSection(__CLASS__);
         //ochrana $this->aid se provádí již v BasePresenteru
+        $this->ses = $this->session->getSection(__CLASS__);
+        if (!isset($this->ses->state))
+            $this->ses->state = self::DEFAULT_STATE;
     }
 
     public function renderDefault() {
@@ -165,10 +169,8 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
             }
             throw $e;
         }
-
         if ($id) {
-            $this->flashMessage("Akce byla založena");
-            $this->redirect("default");
+            $this->redirect("info", array("aid" => $id));
         }
         $this->redirect("this");
     }
