@@ -56,6 +56,10 @@ form.nonMargin, form.nonMargin input {
     width: 150px;
 }
 
+.inout input.combobox-text {
+    width: 150px;
+}
+
 /*JQuery UI */
 .ui-widget {
     font-size: 0.9em;

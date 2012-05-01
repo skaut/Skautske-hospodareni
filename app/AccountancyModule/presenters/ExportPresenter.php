@@ -19,13 +19,20 @@ class Accountancy_ExportPresenter extends Accountancy_BasePresenter {
     }
 
     public function renderChits($aid) {
+        $actionInfo = $this->context->eventService->get($this->aid);
+        $chits = $this->context->chitService->getAllOut($this->aid);
+        $this->context->chitService->printChits($actionInfo, $chits, Strings::webalize($actionInfo->DisplayName) . "_paragony");
+        $this->terminate();
+    }
+    
+    public function renderIncome($aid) {
         $info = $this->context->eventService->get($this->aid);
         $template = $this->template;
         $template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
-        $template->setFile(dirname(__FILE__) . '/../templates/Export/ex.chits.latte');
-        $template->list = $this->context->chitService->getAllOut($aid);
+        $template->setFile(dirname(__FILE__) . '/../templates/Export/ex.income.latte');
+        $template->list = $this->context->chitService->getAllIncome($aid);
         $template->oficialName = $this->context->unitService->getOficialName($info->ID_Unit);
-        $this->context->chitService->makePdf($template, Strings::webalize($info->DisplayName) . "_paragony.pdf");
+        $this->context->chitService->makePdf($template, Strings::webalize($info->DisplayName) . "_prijmaky.pdf");
         $this->terminate();
     }
 

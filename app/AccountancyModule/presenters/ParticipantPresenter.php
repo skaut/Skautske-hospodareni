@@ -41,21 +41,21 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $unit = $this->context->unitService->getDetail($this->uid);
         $uparrent = $this->context->unitService->getParrent($unit->ID);
         $uchildrens = $this->context->unitService->getChild($unit->ID);
-        
+
         $this->template->uparrent = $uparrent;
         $this->template->unit = $unit;
         $this->template->uchildrens = $uchildrens;
         $this->template->list = $all;
         $this->template->participants = $participants;
     }
-    
-    public function actionEdit($aid, $pid, $days = 0, $payment = 0){
+
+    public function actionEdit($aid, $pid, $days = 0, $payment = 0) {
         $detail = $this->context->participantService->getPersonsDays($aid);
         $form = $this['formEditParticipant'];
         $form->setDefaults(array(
-            "days"=> $days,
-            "payment"=> $payment,
-            "user"=> $pid,
+            "days" => $days,
+            "payment" => $payment,
+            "user" => $pid,
         ));
     }
 
@@ -95,35 +95,35 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         }
     }
 
-    /**
-     * nastavuje počet dní
-     */
-    public function handleEditDays() {
-        $this->editableOnly();
-        $post = $this->context->httpRequest->getPost();
-        $days = (int) $post['days'];
-        $id = (int) $post['id'];
-        $this->context->participantService->setDays($id, $days);
-//        if ($this->isAjax()) {
-//            $this->invalidateControl("potencialParticipants");
-//            $this->invalidateControl("participants");
-//        }
-        echo $days;
-        $this->terminate();
-    }
-
-    /**
-     * nastavuje částku
-     */
-    public function handleEditPayment() {
-        $this->editableOnly();
-        $post = $this->context->httpRequest->getPost();
-        $participantId = (int) $post['id'];
-        $payment = (int) $post['payment'];
-        $this->context->participantService->setPayment($participantId, $payment);
-        echo $payment;
-        $this->terminate();
-    }
+//    /**
+//     * nastavuje počet dní
+//     */
+//    public function handleEditDays() {
+//        $this->editableOnly();
+//        $post = $this->context->httpRequest->getPost();
+//        $days = (int) $post['days'];
+//        $id = (int) $post['id'];
+//        $this->context->participantService->setDays($id, $days);
+////        if ($this->isAjax()) {
+////            $this->invalidateControl("potencialParticipants");
+////            $this->invalidateControl("participants");
+////        }
+//        echo $days;
+//        $this->terminate();
+//    }
+//
+//    /**
+//     * nastavuje částku
+//     */
+//    public function handleEditPayment() {
+//        $this->editableOnly();
+//        $post = $this->context->httpRequest->getPost();
+//        $participantId = (int) $post['id'];
+//        $payment = (int) $post['payment'];
+//        $this->context->participantService->setPayment($participantId, $payment);
+//        echo $payment;
+//        $this->terminate();
+//    }
 
     function handleAddPaymentToChit() {
         if ($this->context->participantService->addPaymentsToCashbook($this->aid, $this->context->eventService, $this->context->chitService)) {
@@ -131,18 +131,17 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         } else {
             $this->flashMessage("Nepodařilo se přidat příjmy do pokladní knihy", "warning");
         }
-        
+
         if ($this->isAjax()) {
             $this->invalidateControl("flash");
         } else {
             $this->redirect('this', array("aid" => $this->aid, "uid" => $this->uid));
         }
-        
     }
 
     public function createComponentFormEditParticipant($name) {
         $form = new AppForm($this, $name);
-        $form->addText("days", "Dní" );
+        $form->addText("days", "Dní");
         $form->addText("payment", "Částka");
         $form->addHidden("user");
         $form->addSubmit('send', 'Upravit')
@@ -158,78 +157,154 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
             "Note" => $values['payment'],
             "Days" => $values['days'],
         );
-        
+
         $this->context->participantService->update($values['user'], $arr);
-        
+
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
         } else {
             $this->redirect('default', $this->aid);
         }
-        
+    }
+
+    public function createComponentFormMassAdd($name) {
+        $participants = $this->context->participantService->getAllParticipant($this->aid);
+        $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+
+        $form = new AppForm($this, $name);
+
+        $group = $form->addContainer('all');
+        foreach ($all as $id => $p) {
+            $input = $group->addCheckbox($id);
+        }
+
+        $form->addSubmit('massAddSend', 'Přidat vybrané')
+                ->getControlPrototype()->setClass("btn btn-info btn-mini");
+        $form->onSuccess[] = array($this, $name . 'Submitted');
+        return $form;
+    }
+
+    public function formMassAddSubmitted(AppForm $form) {
+        $this->editableOnly();
+        $values = $form->getValues();
+
+        foreach ($values['all'] as $id => $bool) {
+            if ($bool)
+                $this->context->participantService->add($this->aid, $id);
+        }
+        $this->redirect('default', array("aid"=>$this->aid, "uid"=>$this->uid));//TODO je to ok?
     }
     
-    function createComponentFormFindByName($name) {
-        $aid = $this->presenter->aid;
-        $participants = $this->context->participantService->getAllParticipant($this->aid, TRUE);
-        $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
-        
-        $form = new AppForm($this, $name);
-        $form->addSelect("user", "Jméno", (array)$all)
-                ->setPrompt("Vyber");
-        $form->addHidden("aid", $aid);
-        $form->addSubmit('send', 'Přidat')
-                ->getControlPrototype()
-                ->setName("button")
-                ->setHtml('<i class="icon-plus icon-white"></i>')
-                ->setClass("btn btn-primary btn-mini");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
-        return $form;
-    }
+    public function createComponentFormMassParticipants($name) {
+        $participants = $this->context->participantService->getAllParticipant($this->aid);
 
-    public function formFindByNameSubmitted(AppForm $form) {
-        $this->editableOnly();
-        $values = $form->getValues();
-        $aid = $values['aid'];
-        
-        $this->context->participantService->add($aid, $values['user']);
-        
-        if ($this->isAjax()) {
-            $this->invalidateControl("potencialParticipants");
-            $this->invalidateControl("participants");
-        } else {
-            $this->redirect('this');
+        $form = new AppForm($this, $name);
+
+        $group = $form->addContainer('ids');
+        foreach ($participants as $id => $p) {
+            $input = $group->addCheckbox($p->ID);
         }
-    }
+        
+        $form->addText("days", "dní");
+        $form->addText("payment", "částka");
 
-    function createComponentFormAddPaymentMass($name) {
-        $aid = $this->presenter->aid;
-        $form = new AppForm($this, $name);
-        $form->addText("sum", "Částka", NULL, 5)
-                ->addRule(Form::FILLED, "Zadejte částku")
-                ->setType('number');
-        $form->addCheckbox("rewrite", "Přemazat stávající údaje?");
-
-        $form->addHidden("aid", $aid);
-        $form->addSubmit('send', 'Vyplňit')
-                ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+        $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
+                ->getControlPrototype()->setClass("btn btn-danger btn-mini");
+        $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
+        
+        $form->addSubmit('massEditSend', 'Upravit')
+                ->getControlPrototype()->setClass("btn btn-info btn-mini");
+        $form['massEditSend']->onClick[] = callback($this, 'massEditSubmitted');
+        
+//        $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
 
-    public function formAddPaymentMassSubmitted(AppForm $form) {
+    public function massRemoveSubmitted(SubmitButton $button) {
         $this->editableOnly();
-        $values = $form->getValues();
-        $aid = $values['aid'];
-        $this->context->participantService->setPaymentMass($aid, $values['sum'], $values['rewrite']);
-        if($this->isAjax()){
-            $this->invalidateControl("participants");
+        $values = $button->getForm()->getValues();
+        foreach ($values['ids'] as $id => $bool) {
+            if ($bool)
+                $this->context->participantService->removeParticipant($id);
+        }
+        $this->redirect('default', array("aid"=>$this->aid, "uid"=>$this->uid));
+    }
+    
+    public function massEditSubmitted(SubmitButton $button) {
+        $this->editableOnly();
+        $values = $button->getForm()->getValues();
+        $data = array(
+            "Days" => $values['days'],
+            ParticipantService::PAYMENT => $values['payment']
+        );
+        foreach ($values['ids'] as $id => $bool) {
+            if ($bool)
+                $this->context->participantService->update($id, $data);
+        }
+        $this->redirect('default', array("aid"=>$this->aid, "uid"=>$this->uid));
+    }
+
+//    function createComponentFormFindByName($name) {
+//        $aid = $this->presenter->aid;
+//        $participants = $this->context->participantService->getAllParticipant($this->aid, TRUE);
+//        $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+//
+//        $form = new AppForm($this, $name);
+//        $form->addSelect("user", "Jméno", (array) $all)
+//                ->setPrompt("Vyber");
+//        $form->addHidden("aid", $aid);
+//        $form->addSubmit('send', 'Přidat')
+//                ->getControlPrototype()
+//                ->setName("button")
+//                ->setHtml('<i class="icon-plus icon-white"></i>')
+//                ->setClass("btn btn-primary btn-mini");
+//        $form->onSuccess[] = array($this, $name . 'Submitted');
+//        return $form;
+//    }
+//
+//    public function formFindByNameSubmitted(AppForm $form) {
+//        $this->editableOnly();
+//        $values = $form->getValues();
+//        $aid = $values['aid'];
+//
+//        $this->context->participantService->add($aid, $values['user']);
+//
+//        if ($this->isAjax()) {
 //            $this->invalidateControl("potencialParticipants");
-        } else {
-            $this->redirect("default", array("aid" => $aid));
-        }
-    }
+//            $this->invalidateControl("participants");
+//        } else {
+//            $this->redirect('this');
+//        }
+//    }
+
+//    function createComponentFormAddPaymentMass($name) {
+//        $aid = $this->presenter->aid;
+//        $form = new AppForm($this, $name);
+//        $form->addText("sum", "Částka", NULL, 5)
+//                ->addRule(Form::FILLED, "Zadejte částku")
+//                ->setType('number');
+//        $form->addCheckbox("rewrite", "Přemazat stávající údaje?");
+//
+//        $form->addHidden("aid", $aid);
+//        $form->addSubmit('send', 'Vyplňit')
+//                ->getControlPrototype()->setClass("btn btn-primary");
+//        $form->onSuccess[] = array($this, $name . 'Submitted');
+//        return $form;
+//    }
+//
+//    public function formAddPaymentMassSubmitted(AppForm $form) {
+//        $this->editableOnly();
+//        $values = $form->getValues();
+//        $aid = $values['aid'];
+//        $this->context->participantService->setPaymentMass($aid, $values['sum'], $values['rewrite']);
+//        if ($this->isAjax()) {
+//            $this->invalidateControl("participants");
+////            $this->invalidateControl("potencialParticipants");
+//        } else {
+//            $this->redirect("default", array("aid" => $aid));
+//        }
+//    }
 
     /**
      * formulář na přidání nové osoby

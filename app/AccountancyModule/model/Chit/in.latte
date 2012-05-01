@@ -1,37 +1,22 @@
 
-<style>
-.paragonTable{
-    width: 800px;
-}
-.paragonTable td{
-    width: 33%;
-    height: 27px;
-}
-
-
-</style>
-{dump $list}
-
-{foreach $list as $item}
 <table border="1" class="paragonTable">
     <tr>
         <td rowspan="2">{$oficialName}</td>
-        <td colspan="2"><b>Výdajový pokladní doklad</b></td>
+        <td colspan="2"><b>Příjmový pokladní doklad</b></td>
     </tr>
     <tr>
         <td><b>ze dne:</b> {$item->date|date:"j.n.Y"}</td>
         <td><b>č.</b>  </td>
     </tr>
     <tr>
-        <td colspan="3"><b>Vyplaceno komu:</b> {$item->recipient}</td>
+        <td colspan="3"><b>Přijato od:</b> {$item->recipient}</td>
     </tr>
     <tr>
-        <td colspan="2"><b>Účel výplaty:</b> {$item->purpose}</td>
-        <td><b>Kategorie v PK:</b> {$item->cshort}</td>
+        <td colspan="3"><b>Účel platby:</b> {$item->purpose}</td>
     </tr>
     <tr>
         <td><b>Pokladník:</b> </td>
-        <td><b>Příjemce:</b> </td>
+        <td> &nbsp; </td>
         <td><b>Schválil:</b> </td>
     </tr>
     <tr>
@@ -65,10 +50,3 @@
     </tr>
 </table>
 
-<div style="font-size:0.9em;color:#777;padding-top:10px;">
-    <i>{$item->priceText} = {$item->price}  </i>
-</div>
-
-{if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
-
-{/foreach}
