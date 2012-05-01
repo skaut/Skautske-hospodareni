@@ -10,6 +10,7 @@ class ErrorPresenter extends Presenter {
             $code = $exception->getCode();
             $this->setView(in_array($code, array(403, 404, 405, 410, 500)) ? $code : '4xx'); // load template 403.latte or 404.latte or ... 4xx.latte
         } elseif ($exception instanceof SkautIS_Exception) {
+            Debugger::log($exception, Debugger::WARNING); // and log exception
             $this->setView('SkautIS');
             $this->template->ex = $exception;
         } elseif ($exception instanceof SkautIS_AuthenticationException) {//vypršelo přihlášení do SkautISu

@@ -39,6 +39,13 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $this->template->form = $form;
         $this->template->autoCompleter = $this->context->userService->getAC();
     }
+    
+    function actionPrint($id, $aid){
+        $actionInfo = $this->context->eventService->get($this->aid);
+        $chit = $this->context->chitService->get($id);
+        $this->context->chitService->printChits($this->context, $this->template, $actionInfo, array($chit), "paragon_".Strings::webalize($chit->purpose));
+        $this->terminate();
+    }
 
     function handleRemove($id, $actionId) {
         if ($this->context->chitService->delete($id, $actionId)) {
@@ -53,6 +60,35 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         } else {
             $this->redirect('this', $actionId);
         }
+    }
+    
+    function createComponentFormMass($name) {
+        $form = new AppForm($this, $name);
+        $chits = $this->context->chitService->getAll($this->aid);
+        
+        $group = $form->addContainer('chits');
+        foreach ($chits as $c) {
+            $input = $group->addCheckbox($c->id);
+        }
+        
+        $form->addSubmit('printSend', 'Vytisknout vybrané')
+                ->getControlPrototype()->setClass("btn btn-info btn-mini");
+        $form['printSend']->onClick[] = callback($this, 'massPrintSubmitted');
+        $form->setDefaults(array('type' => 'un'));
+        return $form;
+    }
+    
+    function massPrintSubmitted(SubmitButton $btn){
+        $values = $btn->getForm()->getValues();
+        $selected = array();
+        foreach ($values['chits'] as $id =>$bool) {
+            if($bool)
+                $selected[] = $id;
+        }
+        $chits = $this->context->chitService->getIn($this->aid, $selected);
+        
+        $actionInfo = $this->context->eventService->get($this->aid);
+        $this->context->chitService->printChits($this->context, $this->template, $actionInfo, $chits, "paragony_".Strings::webalize($actionInfo->Event));
     }
 
     //FORM OUT
@@ -93,13 +129,13 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         //@TODO kontrola platneho data, problem s componentou
         $form->addText("recipient", "Vyplaceno komu:", 20, 30)
                 ->setHtmlId("form-out-recipient");
-        $form->addText("purpose", "Účel výplaty:", 20, 50)
+        $form->addText("purpose", "Účel výplaty:", 20, 40)
                 ->addRule(Form::FILLED, 'Zadejte účel výplaty')
                 ->getControlPrototype()->placeholder("3 první položky");
-        $form->addText("price", "Cena celkem: ", 20, 100)
+        $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-out-price")
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
-                ->getControlPrototype()->placeholder("vzorce např.20+15*3");
+                ->getControlPrototype()->placeholder("např.20+15*3");
         $categories = $thisP->context->chitService->getCategoriesOut();
         $form->addRadioList("type", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
@@ -131,7 +167,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
                 ->addRule(Form::FILLED, 'Zadejte datum');
         $form->addText("recipient", "Přijato od:", 20, 30)
                 ->setHtmlId("form-in-recipient");
-        $form->addText("purpose", "Účel příjmu:", 20, 50)
+        $form->addText("purpose", "Účel příjmu:", 20, 40)
                 ->addRule(Form::FILLED, 'Zadejte účel přijmu');
         $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-in-price")

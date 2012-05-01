@@ -28,7 +28,11 @@ class ChitTable extends BaseTable {
                 ORDER BY ch.date, ctype ", $actionId);
     }
     
-    /**
+    public function getIn($actionId, array $list){
+        return dibi::fetchAll("SELECT * FROM [".self::TABLE_CHIT_VIEW."] WHERE actionId=%i", $actionId, " AND id in %in", $list);
+    }
+
+        /**
      * přidá paragon do tabulky
      * @param array $values
      * @return int 

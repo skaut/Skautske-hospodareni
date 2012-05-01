@@ -28,7 +28,6 @@ abstract class BaseService extends Object {
     private static $storage;
 
     public function __construct($skautIS = NULL) {
-//        $this->skautIS = SkautisService::getInstance();
         $this->skautIS = $skautIS;
         self::$storage = array();
     }
@@ -68,7 +67,21 @@ abstract class BaseService extends Object {
             return FALSE;
         define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
         require_once(_MPDF_PATH . 'mpdf.php');
-        $mpdf = new mPDF('utf-8');
+        $mpdf = new mPDF(
+                'utf-8',
+                $format='A4',
+                $default_font_size=0,
+                $default_font='',
+                $mgl=10,
+                $mgr=10,
+                $mgt=10,
+                $mgb=10,
+                $mgh=9,
+                $mgf=9,
+                $orientation='P'
+                );
+        
+        
         $mpdf->WriteHTML((string) $template, NULL);
         $mpdf->Output($filename, 'I');
     }

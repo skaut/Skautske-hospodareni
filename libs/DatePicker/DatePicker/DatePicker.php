@@ -1,248 +1,211 @@
 <?php
-/**
- * Addons and code snippets for Nette Framework. (unofficial)
- *
- * @author   Jan Tvrdík
- * @license  MIT
- */
-
-
 
 /**
  * Form control for selecting date.
  *
- *  – compatible with jQuery UI DatePicker and HTML 5
- *  – works with DateTime
+ * – compatible with jQuery UI DatePicker and HTML 5
+ * – works with DateTime
  *
- * @author   Jan Tvrdík
- * @version  2.1
- * @link     http://nette.merxes.cz/date-picker/
+ * @author Jan Tvrdík
+ * @version 2.1
+ * @link http://nette.merxes.cz/date-picker/
  */
-class DatePicker extends FormControl
-{
-	/** @link    http://dev.w3.org/html5/spec/common-microsyntaxes.html#valid-date-string */
-	const W3C_DATE_FORMAT = 'Y-m-d';
+class DatePicker extends FormControl {
+    /** @link http://dev.w3.org/html5/spec/common-microsyntaxes.html#valid-date-string */
+    const W3C_DATE_FORMAT = 'Y-m-d';
 
-	/** @var     DateTime|NULL     internal date reprezentation */
-	protected $value;
+    /** @var DateTime|NULL internal date reprezentation */
+    protected $value;
 
-	/** @var     string            value entered by user (unfiltered) */
-	protected $rawValue;
+    /** @var string value entered by user (unfiltered) */
+    protected $rawValue;
 
-	/** @var     string            class name */
-	private $className = 'date';
+    /** @var string class name */
+    private $className = 'date';
 
+    /**
+     * Class constructor.
+     *
+     * @author Jan Tvrdík
+     * @param string label
+     */
+    public function __construct($label = NULL) {
+        parent::__construct($label);
+        $this->control->type = 'date';
+    }
 
+    /**
+     * Returns class name.
+     *
+     * @author Jan Tvrdík
+     * @return string
+     */
+    public function getClassName() {
+        return $this->className;
+    }
 
-	/**
-	 * Class constructor.
-	 *
-	 * @author   Jan Tvrdík
-	 * @param    string            label
-	 */
-	public function __construct($label = NULL)
-	{
-		parent::__construct($label);
-		$this->control->type = 'date';
-	}
+    /**
+     * Sets class name for input element.
+     *
+     * @author Jan Tvrdík
+     * @param string
+     * @return self
+     */
+    public function setClassName($className) {
+        $this->className = $className;
+        return $this;
+    }
 
+    /**
+     * Generates control's HTML element.
+     *
+     * @author Jan Tvrdík
+     * @return Nette\Web\Html
+     */
+    public function getControl() {
+        $control = parent::getControl();
+        $control->addClass($this->className);
+        list($min, $max) = $this->extractRangeRule($this->getRules());
+        if ($min !== NULL)
+            $control->min = $min->format(self::W3C_DATE_FORMAT);
+        if ($max !== NULL)
+            $control->max = $max->format(self::W3C_DATE_FORMAT);
+        if ($this->value)
+            $control->value = $this->value->format(self::W3C_DATE_FORMAT);
+        return $control;
+    }
 
+    /**
+     * Sets DatePicker value.
+     *
+     * @author Jan Tvrdík
+     * @param DateTime|int|string
+     * @return self
+     */
+    public function setValue($value) {
+        if ($value instanceof DateTime) {
+            
+        } elseif (is_int($value)) { // timestamp
+        } elseif (empty($value)) {
+            $rawValue = $value;
+            $value = NULL;
+        } elseif (is_string($value)) {
+            $rawValue = $value;
 
-	/**
-	 * Returns class name.
-	 *
-	 * @author   Jan Tvrdík
-	 * @return   string
-	 */
-	public function getClassName()
-	{
-		return $this->className;
-	}
+            if (preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})([. -] *(?P<yyyy>\d{4})?)?$#', $value, $matches)) {
+                $dd = $matches['dd'];
+                $mm = $matches['mm'];
+                $yyyy = isset($matches['yyyy']) ? $matches['yyyy'] : date('Y');
 
+                if (checkdate($mm, $dd, $yyyy)) {
+                    $value = "$yyyy-$mm-$dd";
+                } else {
+                    $value = NULL;
+                }
+            }
+        } else {
+            throw new InvalidArgumentException();
+        }
 
+        if ($value !== NULL) {
+// DateTime constructor throws Exception when invalid input given
+            try {
+                $value = DateTime53::from($value); // clone DateTime when given
+            } catch (Exception $e) {
+                $value = NULL;
+            }
+        }
 
-	/**
-	 * Sets class name for input element.
-	 *
-	 * @author   Jan Tvrdík
-	 * @param    string
-	 * @return   self
-	 */
-	public function setClassName($className)
-	{
-		$this->className = $className;
-		return $this;
-	}
+        if (!isset($rawValue) && isset($value)) {
+            $rawValue = $value->format(self::W3C_DATE_FORMAT);
+        }
 
+        $this->value = $value;
+        $this->rawValue = $rawValue;
 
+        return $this;
+    }
 
-	/**
-	 * Generates control's HTML element.
-	 *
-	 * @author   Jan Tvrdík
-	 * @return   Html
-	 */
-	public function getControl()
-	{
-		$control = parent::getControl();
-		$control->addClass($this->className);
-		list($min, $max) = $this->extractRangeRule($this->getRules());
-		if ($min !== NULL) $control->min = $min->format(self::W3C_DATE_FORMAT);
-		if ($max !== NULL) $control->max = $max->format(self::W3C_DATE_FORMAT);
-		if ($this->value) $control->value = $this->value->format(self::W3C_DATE_FORMAT);
-		return $control;
-	}
+    /**
+     * Returns unfiltered value.
+     *
+     * @author Jan Tvrdík
+     * @return string
+     */
+    public function getRawValue() {
+        return $this->rawValue;
+    }
 
+    /**
+     * Does user enter anything? (the value doesn't have to be valid)
+     *
+     * @author Jan Tvrdík
+     * @param DatePicker
+     * @return bool
+     */
+    public static function validateFilled(IFormControl $control) {
+        if (!$control instanceof self)
+            throw new InvalidStateException('Unable to validate ' . get_class($control) . ' instance.');
+        $rawValue = $control->rawValue;
+        return!empty($rawValue);
+    }
 
+    /**
+     * Is entered value valid? (empty value is also valid!)
+     *
+     * @author Jan Tvrdík
+     * @param DatePicker
+     * @return bool
+     */
+    public static function validateValid(IFormControl $control) {
+        if (!$control instanceof self)
+            throw new InvalidStateException('Unable to validate ' . get_class($control) . ' instance.');
+        $value = $control->value;
+        return (empty($control->rawValue) || $value instanceof DateTime);
+    }
 
-	/**
-	 * Sets DatePicker value.
-	 *
-	 * @author   Jan Tvrdík
-	 * @param    DateTime|int|string
-	 * @return   self
-	 */
-	public function setValue($value)
-	{
-		if ($value instanceof DateTime) {
+    /**
+     * Is entered values within allowed range?
+     *
+     * @author Jan Tvrdík
+     * @param DatePicker
+     * @param array 0 => minDate, 1 => maxDate
+     * @return bool
+     */
+    public static function validateRange(self $control, array $range) {
+        return ($range[0] === NULL || $control->getValue() >= $range[0]) && ($range[1] === NULL || $control->getValue() <= $range[1]);
+    }
 
-		} elseif (is_int($value)) { // timestamp
+    /**
+     * Finds minimum and maximum allowed dates.
+     *
+     * @author Jan Tvrdík
+     * @param Forms\Rules
+     * @return array 0 => DateTime|NULL $minDate, 1 => DateTime|NULL $maxDate
+     */
+    private function extractRangeRule(Rules $rules) {
+        $controlMin = $controlMax = NULL;
+        foreach ($rules as $rule) {
+            if ($rule->type === Rule::VALIDATOR) {
+                if ($rule->operation === Form::RANGE && !$rule->isNegative) {
+                    $ruleMinMax = $rule->arg;
+                }
+            } elseif ($rule->type === Rule::CONDITION) {
+                if ($rule->operation === Form::FILLED && !$rule->isNegative && $rule->control === $this) {
+                    $ruleMinMax = $this->extractRangeRule($rule->subRules);
+                }
+            }
 
-		} elseif (empty($value)) {
-			$rawValue = $value;
-			$value = NULL;
-
-		} elseif (is_string($value)) {
-			$rawValue = $value;
-
-			if (preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})([. -] *(?P<yyyy>\d{4})?)?$#', $value, $matches)) {
-				$dd = $matches['dd'];
-				$mm = $matches['mm'];
-				$yyyy = isset($matches['yyyy']) ? $matches['yyyy'] : date('Y');
-
-				if (checkdate($mm, $dd, $yyyy)) {
-					$value = "$yyyy-$mm-$dd";
-				} else {
-					$value = NULL;
-				}
-			}
-
-		} else {
-			throw new InvalidArgumentException();
-		}
-
-		if ($value !== NULL) {
-			// DateTime constructor throws Exception when invalid input given
-			try {
-                $value = DateTime53::from($value);
-				//$value = Tools::createDateTime($value); // clone DateTime when given
-			} catch (Exception $e) {
-				$value = NULL;
-			}
-		}
-
-		if (!isset($rawValue) && isset($value)) {
-			$rawValue = $value->format(self::W3C_DATE_FORMAT);
-		}
-
-		$this->value = $value;
-		$this->rawValue = $rawValue;
-
-		return $this;
-	}
-
-
-
-	/**
-	 * Returns unfiltered value.
-	 *
-	 * @author   Jan Tvrdík
-	 * @return   string
-	 */
-	public function getRawValue()
-	{
-		return $this->rawValue;
-	}
-
-
-
-	/**
-	 * Does user enter anything? (the value doesn't have to be valid)
-	 *
-	 * @author   Jan Tvrdík
-	 * @param    DatePicker
-	 * @return   bool
-	 */
-	public static function validateFilled(IFormControl $control)
-	{
-		if (!$control instanceof self) throw new InvalidStateException('Unable to validate ' . get_class($control) . ' instance.');
-		$rawValue = $control->rawValue;
-		return !empty($rawValue);
-	}
-
-
-
-	/**
-	 * Is entered value valid? (empty value is also valid!)
-	 *
-	 * @author   Jan Tvrdík
-	 * @param    DatePicker
-	 * @return   bool
-	 */
-	public static function validateValid(IFormControl $control)
-	{
-		if (!$control instanceof self) throw new InvalidStateException('Unable to validate ' . get_class($control) . ' instance.');
-		$value = $control->value;
-		return (empty($control->rawValue) || $value instanceof DateTime);
-	}
-
-
-
-	/**
-	 * Is entered values within allowed range?
-	 *
-	 * @author   Jan Tvrdík
-	 * @param    DatePicker
-	 * @param    array             0 => minDate, 1 => maxDate
-	 * @return   bool
-	 */
-	public static function validateRange(self $control, array $range)
-	{
-		return ($range[0] === NULL || $control->getValue() >= $range[0]) && ($range[1] === NULL || $control->getValue() <= $range[1]);
-	}
-
-
-
-	/**
-	 * Finds minimum and maximum allowed dates.
-	 *
-	 * @author   Jan Tvrdík
-	 * @param    Rules
-	 * @return   array             0 => DateTime|NULL $minDate, 1 => DateTime|NULL $maxDate
-	 */
-	private function extractRangeRule(Rules $rules)
-	{
-		$controlMin = $controlMax = NULL;
-		foreach ($rules as $rule) {
-			if ($rule->type === Rule::VALIDATOR) {
-				if ($rule->operation === Form::RANGE && !$rule->isNegative) {
-					$ruleMinMax = $rule->arg;
-				}
-
-			} elseif ($rule->type === Rule::CONDITION) {
-				if ($rule->operation === Form::FILLED && !$rule->isNegative && $rule->control === $this) {
-					$ruleMinMax = $this->extractRangeRule($rule->subRules);
-				}
-			}
-
-			if (isset($ruleMinMax)) {
-				list($ruleMin, $ruleMax) = $ruleMinMax;
-				if ($ruleMin !== NULL && ($controlMin === NULL || $ruleMin > $controlMin)) $controlMin = $ruleMin;
-				if ($ruleMax !== NULL && ($controlMax === NULL || $ruleMax < $controlMax)) $controlMax = $ruleMax;
-				$ruleMinMax = NULL;
-			}
-		}
-		return array($controlMin, $controlMax);
-	}
+            if (isset($ruleMinMax)) {
+                list($ruleMin, $ruleMax) = $ruleMinMax;
+                if ($ruleMin !== NULL && ($controlMin === NULL || $ruleMin > $controlMin))
+                    $controlMin = $ruleMin;
+                if ($ruleMax !== NULL && ($controlMax === NULL || $ruleMax < $controlMax))
+                    $controlMax = $ruleMax;
+                $ruleMinMax = NULL;
+            }
+        }
+        return array($controlMin, $controlMax);
+    }
 
 }
