@@ -25,8 +25,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
             $this->flashMessage("Nepovolený přístup", "error");
             $this->redirect("Event:");
         }
-        $this->uid = $this->getParameter("uid", NUll);
-        $this->template->isEditable = $this->isEditable = $this->context->eventService->isEditable($this->aid);
+        $this->uid = $this->getParameter("uid", NULL);
     }
 
     public function beforeRender() {
@@ -57,6 +56,19 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
             "payment" => $payment,
             "user" => $pid,
         ));
+    }
+    
+    public function renderExport($aid){
+        $actionInfo = $this->context->eventService->get($aid);
+        $participants = $this->context->participantService->getAllParticipant($aid);
+        $list = $this->context->participantService->getAllDetail($aid, $participants);
+
+        $template = $this->template;
+        $template->info = $actionInfo;
+        $template->list = $list;
+        $template->setFile(dirname(__FILE__) . '/../templates/Participant/export.latte');
+        $this->context->participantService->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf");
+        $this->terminate();
     }
 
     public function handleRemove($pid) {
@@ -341,13 +353,6 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         );
         $this->context->participantService->addNew($aid, $person);
         $this->redirect("this");
-    }
-
-    protected function editableOnly() {
-        if (!$this->isEditable) {
-            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
-            $this->redirect("this");
-        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="setters and getters">

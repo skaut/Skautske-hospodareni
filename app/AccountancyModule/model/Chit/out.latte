@@ -42,8 +42,8 @@
         <td>&nbsp;</td>
     </tr>
     <tr>
-        <td><b>Celkem Kč:</b> {= number_format($item->price, 2, ",", "")}==</td>
-        <td colspan="2"><b>Slovy:</b>=={$item->price|priceToString}korun==</td>
+        <td><b>Celkem Kč:</b>{if $item->price != 0} {= number_format($item->price, 2, ",", "")}=={/if}</td>
+        <td colspan="2"><b>Slovy:</b>{if $item->price != 0} =={$item->price|priceToString}korun=={/if}</td>
     </tr>
     <tr>
         <td><b>přezkoušel dne:</b> </td>

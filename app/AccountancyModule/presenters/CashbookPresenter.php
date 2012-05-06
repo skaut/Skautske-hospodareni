@@ -21,6 +21,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     }
 
     function renderEdit($id, $aid) {
+        $this->editableOnly();
         $defaults = $this->context->chitService->get($id);
         $defaults['id'] = $id;
         $defaults['price'] = $defaults['priceText'];
@@ -39,15 +40,28 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $this->template->form = $form;
         $this->template->autoCompleter = $this->context->userService->getAC();
     }
-    
-    function actionPrint($id, $aid){
+
+    public function actionExport($aid) {
+        $chits = $this->context->chitService->getAll($aid);
+        $actionInfo = $this->context->eventService->get($this->aid);
+        $template = $this->template;
+        $template->setFile(dirname(__FILE__) . '/../templates/Cashbook/export.latte');
+        $template->registerHelper('price', 'AccountancyHelpers::price');
+        $template->list = $chits;
+        $template->info = $actionInfo;
+        $this->context->chitService->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_pokladni-kniha.pdf");
+        $this->terminate();
+    }
+
+    function actionPrint($id, $aid) {
         $actionInfo = $this->context->eventService->get($this->aid);
         $chit = $this->context->chitService->get($id);
-        $this->context->chitService->printChits($this->context, $this->template, $actionInfo, array($chit), "paragon_".Strings::webalize($chit->purpose));
+        $this->context->chitService->printChits($this->context, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
         $this->terminate();
     }
 
     function handleRemove($id, $actionId) {
+        $this->editableOnly();
         if ($this->context->chitService->delete($id, $actionId)) {
             $this->flashMessage("Paragon byl smazán");
         } else {
@@ -61,34 +75,34 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
             $this->redirect('this', $actionId);
         }
     }
-    
+
     function createComponentFormMass($name) {
         $form = new AppForm($this, $name);
         $chits = $this->context->chitService->getAll($this->aid);
-        
+
         $group = $form->addContainer('chits');
         foreach ($chits as $c) {
             $input = $group->addCheckbox($c->id);
         }
-        
+
         $form->addSubmit('printSend', 'Vytisknout vybrané')
                 ->getControlPrototype()->setClass("btn btn-info btn-mini");
         $form['printSend']->onClick[] = callback($this, 'massPrintSubmitted');
         $form->setDefaults(array('type' => 'un'));
         return $form;
     }
-    
-    function massPrintSubmitted(SubmitButton $btn){
+
+    function massPrintSubmitted(SubmitButton $btn) {
         $values = $btn->getForm()->getValues();
         $selected = array();
-        foreach ($values['chits'] as $id =>$bool) {
-            if($bool)
+        foreach ($values['chits'] as $id => $bool) {
+            if ($bool)
                 $selected[] = $id;
         }
         $chits = $this->context->chitService->getIn($this->aid, $selected);
-        
+
         $actionInfo = $this->context->eventService->get($this->aid);
-        $this->context->chitService->printChits($this->context, $this->template, $actionInfo, $chits, "paragony_".Strings::webalize($actionInfo->Event));
+        $this->context->chitService->printChits($this->context, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
     }
 
     //FORM OUT
@@ -184,8 +198,9 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
      * @param AppForm $form 
      */
     function formAddSubmitted(AppForm $form) {
+        $this->editableOnly();
         $values = $form->getValues();
-        
+
         $values['priceText'] = $values['price'];
         $values['price'] = $this->solveString($values['price']);
 
@@ -208,6 +223,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     }
 
     function formEditSubmitted(AppForm $form) {
+        $this->editableOnly();
         $values = $form->getValues();
         $id = $values['id'];
         unset($values['id']);
@@ -241,7 +257,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
                 $matches['cislo'][$index] = 0;
             }
         }
-        
+
         return array_sum($matches['cislo']);
     }
 

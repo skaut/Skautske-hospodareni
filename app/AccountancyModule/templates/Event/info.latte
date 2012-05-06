@@ -37,25 +37,6 @@
                 <td {if $data->ID_EventGeneralState == closed}title="Uzavřel: {$data->PersonClosed} dne: {$data->DateClosed|date:"j.n.Y"}" {/if}>{!$data->ID_EventGeneralState|eventLabel}</td>
             </tr>
         </table>
-
-        <div n:if="$isEditable">
-            <a class="btn btn-primary btn-small" href="#editBasicInfo" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
-            <a class="btn btn-success btn-small" n:href="close $aid"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
-
-            <div class="modal myModal fade" id="editBasicInfo">
-                <div class="modal-header">
-                    <a class="close" data-dismiss="modal">×</a>
-                    <h3>Upravit akci</h3>
-                </div>
-                <div class="modal-body">
-                {control formEdit}
-                </div>
-            </div>
-        </div>
-
-        <div n:if="$actionState == 'closed'">
-            <a n:href="open $aid" class="btn btn-small btn-warning"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
-        </div>
     </div>
 
     <div class="span4">
@@ -70,6 +51,26 @@
                 <td>{ifset $f->ID_Person}{$f->Person}{/ifset}</td>
             </tr>
         </table>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="span5">
+        <a n:if="$isEditable" class="btn btn-primary btn-small" href="#editBasicInfo" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
+        <a n:if="$isEditable" class="btn btn-success btn-small" n:href="close $aid"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
+        <a n:if="$data->ID_EventGeneralState == closed" n:href="open $aid" class="btn btn-small btn-warning"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
+        <a class="btn btn-info btn-small" n:href="report $aid">Záverečná zpráva</a>
+
+        <div n:if="$isEditable" class="modal myModal fade" id="editBasicInfo">
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">×</a>
+                <h3>Upravit akci</h3>
+            </div>
+            <div class="modal-body">
+                {control formEdit}
+            </div>
+        </div>
     </div>
 </div>
 

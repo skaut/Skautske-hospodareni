@@ -16,12 +16,12 @@ class Accountancy_BasePresenter extends BasePresenter {
      */
     protected $aid;
     
+    
     /**
-     * stav akce
-     * nastavená pouze pokud je nastaveno $this->aid
-     * @var string (closed, draft, ...)
+     * je akci možné upravovat?
+     * @var bool
      */
-    protected $actionState;
+    protected $isEditable;
 
     protected function startup() {
         parent::startup();
@@ -38,12 +38,14 @@ class Accountancy_BasePresenter extends BasePresenter {
         
         if(isset($this->aid) && !is_null($this->aid)){//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
-                $this->template->actionState = $this->actionState = $this->context->eventService->get($this->aid)->ID_EventGeneralState;
+                $event = $this->context->eventService->get($this->aid);
+                $this->template->isEditable = $this->isEditable = $this->context->eventService->isEditable($event);
             } catch (SkautIS_PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Event:");
             }   
         }
+        
     }
 
     function beforeRender() {
@@ -51,6 +53,18 @@ class Accountancy_BasePresenter extends BasePresenter {
         $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
         $this->template->myRole = $this->context->userService->getRoleId();
         $this->template->registerHelperLoader("AccountancyHelpers::loader");
+    }
+    
+    protected function editableOnly() {
+        if (!$this->isEditable) {
+            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
+            if($this->isAjax()){
+                $this->sendPayload();
+            } else {
+                $this->redirect("Event:");
+            }
+            
+        }
     }
 
     /**
