@@ -88,44 +88,39 @@ abstract class AccountancyHelpers extends Object {
 //        }
 //        return $r;
 //    }
-    //return category of paragon
-    public static function pCat($string = "") {
-        //@todo dodělat
-        return $string;
+//    //return category of paragon
+//    public static function pCat($string = "") {
+//        //@todo dodělat
+//        return $string;
+//
+//        switch ($string) {
+//            case "pp":
+//                $r = "příjem";
+//                break;
+//            case "t":
+//                $r = "potraviny";
+//                break;
+//            case "j":
+//                $r = "jizdné";
+//                break;
+//            case "n":
+//                $r = "nájem";
+//                break;
+//            case "m":
+//                $r = "materiál";
+//                break;
+//            case "s":
+//                $r = "služby";
+//                break;
+//            case "pr":
+//                $r = "převod";
+//                break;
+//            default :
+//                $r = "un";
+//        }
+//        return $r;
+//    }
 
-        switch ($string) {
-            case "pp":
-                $r = "příjem";
-                break;
-            case "t":
-                $r = "potraviny";
-                break;
-            case "j":
-                $r = "jizdné";
-                break;
-            case "n":
-                $r = "nájem";
-                break;
-            case "m":
-                $r = "materiál";
-                break;
-            case "s":
-                $r = "služby";
-                break;
-            case "pr":
-                $r = "převod";
-                break;
-            default :
-                $r = "un";
-        }
-        return $r;
-    }
-
-    /**
-     * převádí zadané číslo na solvní řetězec
-     * @param int $price
-     * @return string 
-     */
     public static function price($price) {
         if (stripos($price, "."))
             return number_format($price, 2, ",", "");
@@ -134,9 +129,14 @@ abstract class AccountancyHelpers extends Object {
         return $price;
     }
 
+    /**
+     * převádí zadané číslo na slovní řetězec
+     * @param int $price
+     * @return string 
+     */
     public static function priceToString($price) {
         //@todo ošetření správného tvaru
-
+        
         $_jednotky = array(
             0 => "", 1 => "jedna", 2 => "dva", 3 => "tři", 4 => "čtyři", 5 => "pět", 6 => "šest", 7 => "sedm", 8 => "osm", 9 => "devět", 10 => "deset",
             11 => "jedenáct", 12 => "dvanáct", 13 => "třináct", 14 => "čtrnáct", 15 => "patnáct", 16 => "šestnáct", 17 => "sedmnáct", 18 => "osmnáct", 19 => "devatenáct",

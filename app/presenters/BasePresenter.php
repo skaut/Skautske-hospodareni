@@ -52,8 +52,4 @@ abstract class BasePresenter extends Presenter {
         return new JavaScriptLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
     }
 
-    protected function createComponentVp() {
-        return new VisualPaginator();
-    }
-
 }

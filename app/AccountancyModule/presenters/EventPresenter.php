@@ -69,6 +69,35 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
         $this->redirect("info", array("aid" => $aid));
     }
+    
+    public function renderReport($aid) {
+        $actionInfo = $this->context->eventService->get($aid);
+        $participants = $this->context->participantService->getAllParticipant($aid);
+        $chitsAll = $this->context->chitService->getAll($aid);
+
+        //inicializuje pole s kategorií s částkami na 0
+        foreach (ArrayHash::from($this->context->chitService->getCategories($all = TRUE)) as $c) {
+            $categories[$c->type][$c->short] = $c;
+            $categories[$c->type][$c->short]->price = 0;
+        }
+        
+        //rozpočítává paragony do jednotlivých skupin
+        foreach ($chitsAll as $chit) {
+            $categories[$chit->ctype][$chit->cshort]->price += $chit->price;
+        }
+
+        $template = $this->template;
+        $template->setFile(dirname(__FILE__) . '/../templates/Event/report.latte');
+        $template->registerHelper('price', 'AccountancyHelpers::price');
+        $template->participants = $participants;
+        $template->personsDays = $this->context->participantService->getPersonsDays($this->aid);
+        $template->a = $actionInfo;
+        $template->chits = $categories;
+        $template->func = $this->context->eventService->getFunctions($aid);
+        
+        $this->context->participantService->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_report.pdf");
+        $this->terminate();
+    }
 
     public function handleCancel($aid) {
         if ($this->context->eventService->cancel($aid)) {
@@ -157,10 +186,9 @@ class Accountancy_EventPresenter extends Accountancy_BasePresenter {
 
     function formCreateSubmitted(AppForm $form) {
         $v = $form->getValues();
-
         try {
             $id = $this->context->eventService->create(
-                    $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v['leader'], $v['assistant'], $v['economist'], $v['scope'], $v['type']
+                    $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v['leader'], $v['assistant'], $v['economist'], $unit = NULL, $v['scope'], $v['type']
             );
         } catch (SkautIS_Exception $e) {
             if (preg_match("/UnitPermissionDenied/", $e->getMessage())) {
