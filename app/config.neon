@@ -77,7 +77,6 @@ production < common:
         skautisTestMode : false #isTestMode?
         #skautisid = 48104fe2-b447-47f5-9a26-051c710da74e #vyvoj.osmnactka.net - test
 
-
 ;database: hana_ucet_osmnactka_net
 ;username: ucet
 ;password: usv2*dkatR6e

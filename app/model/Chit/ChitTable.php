@@ -41,7 +41,8 @@ class ChitTable extends BaseTable {
      * @return int 
      */
     public function add($values) {
-        return dibi::query("INSERT INTO [" . self::TABLE_CHIT . "] %v", $values);
+        dibi::query("INSERT INTO [" . self::TABLE_CHIT . "] %v", $values);
+        return dibi::getInsertId();
     }
 
     /**

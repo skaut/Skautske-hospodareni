@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="cs">
+    <head>
+        <meta charset=utf-8 />
+        <title>{block #title|striptags|trim}SkaÚčto{/block}</title>
+        <meta name="keywords" content="404" />
+        <meta name="author" content="www.sinacek.cz" />
+        <meta name="robots" content="{$robots}" n:ifset="$robots">
+        <link rel="stylesheet" type="text/css" href="{$baseUri}/css/error.css" media="screen" />
+        <script type="text/javascript">
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-2900685-25']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+        </script>
+    </head>
+
+    <body>
+        <a n:href=":Default:">&lBarr; Přejít na hlavní stránku</a>
+       {include #content}
+    </body>
+</html>
