@@ -70,6 +70,18 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $this->context->participantService->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf");
         $this->terminate();
     }
+    
+    public function renderHpd($aid){
+        $actionInfo = $this->context->eventService->get($aid);
+        $list = $this->context->participantService->getAllParticipant($aid);
+        $template = $this->template;
+        $template->oficialName = $this->context->unitService->getOficialName($actionInfo->ID_Unit);
+        $template->totalPayment = $this->context->participantService->getTotalPayment($aid);
+        $template->list = $list;
+        $template->setFile(dirname(__FILE__) . '/../templates/Participant/ex.hpd.latte');
+        $this->context->participantService->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_hpd.pdf");
+        $this->terminate();
+    }
 
     public function handleRemove($pid) {
         $this->editableOnly();
@@ -192,7 +204,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         }
 
         $form->addSubmit('massAddSend', 'Přidat vybrané')
-                ->getControlPrototype()->setClass("btn btn-info btn-mini");
+                ->getControlPrototype()->setClass("btn btn-info btn-small");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -222,11 +234,11 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $form->addText("payment", "částka");
 
         $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
-                ->getControlPrototype()->setClass("btn btn-danger btn-mini");
+                ->getControlPrototype()->setClass("btn btn-danger btn-small");
         $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
         
         $form->addSubmit('massEditSend', 'Upravit')
-                ->getControlPrototype()->setClass("btn btn-info btn-mini");
+                ->getControlPrototype()->setClass("btn btn-info btn-small");
         $form['massEditSend']->onClick[] = callback($this, 'massEditSubmitted');
         
 //        $form->onSuccess[] = array($this, $name . 'Submitted');

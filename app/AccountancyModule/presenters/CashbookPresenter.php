@@ -25,7 +25,6 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $defaults = $this->context->chitService->get($id);
         $defaults['id'] = $id;
         $defaults['price'] = $defaults['priceText'];
-        $defaults['type'] = $defaults['category'];
 
         if ($defaults['ctype'] == "out") {
             $form = $this['formOutEdit'];
@@ -88,7 +87,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form->addSubmit('printSend', 'Vytisknout vybrané')
                 ->getControlPrototype()->setClass("btn btn-info btn-mini");
         $form['printSend']->onClick[] = callback($this, 'massPrintSubmitted');
-        $form->setDefaults(array('type' => 'un'));
+        $form->setDefaults(array('category' => 'un'));
         return $form;
     }
 
@@ -111,7 +110,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form->addSubmit('send', 'Uložit')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, 'formAddSubmitted');
-        $form->setDefaults(array('type' => 'un'));
+        $form->setDefaults(array('category' => 'un'));
         return $form;
     }
 
@@ -149,9 +148,9 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-out-price")
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
-                ->getControlPrototype()->placeholder("např.20+15*3");
+                ->getControlPrototype()->placeholder("např. 20+15*3");
         $categories = $thisP->context->chitService->getCategoriesOut();
-        $form->addRadioList("type", "Typ: ", $categories)
+        $form->addRadioList("category", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
     }
@@ -162,7 +161,7 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form->addSubmit('send', 'Uložit')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, 'formAddSubmitted');
-        $form->setDefaults(array('type' => 'pp'));
+        $form->setDefaults(array('category' => 'pp'));
         return $form;
     }
 
@@ -186,9 +185,9 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-in-price")
                 //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
-                ->getControlPrototype()->placeholder("vzorce 20+15*3");
+                ->getControlPrototype()->placeholder("např. 20+15*3");
         $categories = $thisP->context->chitService->getCategoriesIn();
-        $form->addRadioList("type", "Typ: ", $categories)
+        $form->addRadioList("category", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
     }
@@ -200,9 +199,6 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
     function formAddSubmitted(AppForm $form) {
         $this->editableOnly();
         $values = $form->getValues();
-
-        $values['priceText'] = $values['price'];
-        $values['price'] = $this->solveString($values['price']);
 
         try {
             $add = $this->context->chitService->add($this->aid, $values);
@@ -227,8 +223,6 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $values = $form->getValues();
         $id = $values['id'];
         unset($values['id']);
-        $values['priceText'] = $values['price'];
-        $values['price'] = $this->solveString($values['price']);
 
         if ($this->context->chitService->update($id, $values)) {
             $this->flashMessage("Paragon byl upraven.");
@@ -241,26 +235,5 @@ class Accountancy_CashbookPresenter extends Accountancy_BasePresenter {
         $this->redirect("default", array("aid" => $this->aid));
     }
 
-    // <editor-fold defaultstate="collapsed" desc="solveString">
-    /**
-     * vyhodnotí řetězec obsahující čísla, +, *
-     * @param string $str - výraz k výpčtu
-     * @return int 
-     */
-    function solveString($str) {
-        $str = str_replace(",", ".", $str); //prevede desetinou carku na tecku
-        preg_match_all('/(?P<cislo>[0-9]+[.]?[0-9]{0,2})(?P<operace>[\+\*]+)?/', $str, $matches);
-        $maxIndex = count($matches['cislo']);
-        foreach ($matches['operace'] as $index => $op) { //vyřeší operaci násobení
-            if ($op == "*" && $index + 1 <= $maxIndex) {
-                $matches['cislo'][$index + 1] = $matches['cislo'][$index] * $matches['cislo'][$index + 1];
-                $matches['cislo'][$index] = 0;
-            }
-        }
-
-        return array_sum($matches['cislo']);
-    }
-
-// </editor-fold>
 }
 

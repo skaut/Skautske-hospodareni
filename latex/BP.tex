@@ -8,6 +8,13 @@
 
 \usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
 
+\usepackage{czech} % doplněno mnou
+
+\usepackage{listings}
+\lstloadlanguages{HTML, PHP, SQL, [LaTeX]TeX}
+\renewcommand\lstlistingname{Ukázka kódu} % předefinování nadpisu
+\renewcommand\lstlistlistingname{Ukázky zdrojových kódů}
+
 \usepackage{graphicx} %graphics files inclusion
 % \usepackage{amsmath} %advanced maths
 % \usepackage{amssymb} %additional math symbols
@@ -29,12 +36,13 @@
 \author{František Hána} %jméno autora bez akademických titulů
 \authorWithDegrees{František Hána} %jméno autora včetně akademických titulů
 \supervisor{Mgr. Petr Matyáš}
-\acknowledgements{Doplňte, máte-li komu a za co děkovat. V~opačném případě úplně odstraňte tento příkaz.}
-\abstractCS{V~několika větách shrňte obsah a přínos této práce v~češtině. Po přečtení abstraktu by se čtenář měl mít čtenář dost informací pro rozhodnutí, zda chce Vaši práci číst.}
+\acknowledgements{Cht{\v e}l bych na tomto m{\' i}st{\v e} pod{\v e}kovat p{\v r}edev{\v s}{\' i}m m{\' e}mu vedouc{\' i}mu bakal{\' a}{\v r}sk{\' e} pr{\' a}ce Mgr. Petru Maty{\' a}{\v s}ovi za podporu p{\v r}i psan{\' i}, za p{\v r}ipom{\' i}nky a za metodick{\' e} veden{\' i} pr{\' a}ce. Také bych cht{\v e}l pod{\v e}kovat Ing. Ondřeji Pe{\v r}inovi za rady p{\v r}i psan{\' i} knihovny na komunikaci se syst{\' e}mem SkautIS.}
+\abstractCS{
+Bakal{\' a}{\v r}sk{\' a} pr{\' a}ce p{\v r}edstavuje re{\v s}er{\v s}i dostupn{\' y}ch n{\'a}strojů pro vy{\' u}čtov{\' a}n{\' i} kr{\' a}tkodob{\' y}ch akc{\' i}, n{\' a}sledn{\v e} anal{\' y}zu a v{\' y}voj nov{\' e} aplikace. D{\' a}le je zde pops{\' a}n v{\' y}voj knihovny pro komunikaci se syst{\' e}mem SkautIS.}
 \abstractEN{Sem doplňte ekvivalent abstraktu Vaší práce v~angličtině.}
 \placeForDeclarationOfAuthenticity{V~Praze}
-\keywordsCS{Nahraďte seznamem klíčových slov v češtině oddělených čárkou.}
-\keywordsEN{Nahraďte seznamem klíčových slov v angličtině oddělených čárkou.}
+\keywordsCS{SkautIS, da{\v n}ov{\' a} evidence, Junák }
+\keywordsEN{SkautIS, tax records, Scout}
 
 \begin{document}
 
@@ -42,181 +50,202 @@
 % \newacronym{FIT}{FIT}{Fakulta informa{\v c}n{\' i}ch technologi{\' i}}
 
 \begin{introduction}
-	%sem napište úvod Vaší práce
+Téma pro moji bakalářskou práci jsem si vybral ze skautského prostředí, protože sám jsem členem organizace Junák - svaz skautů a skautek ČR a současná řešení vyúčtování akcí jsou nejednotná a často velmi zdlouhavá.
+
+Doposud daňová evidence, neboli vyúčtování, krátkodobých akcí v našem středisku -- základní jednotce -- byla prováděna zápisem informací do několika souborů XLS s~vysokou redundancí. Při ručním zpracování docházelo častěji k překlepům či omylům, každý vedoucí akce vyhotovil vyúčtování s odlišnostmi a odevzdal v papírové podobě, což velmi znesnadňovalo archivaci a další zpracování. 
+
+Krátkodobé akce jsou v trvání od dvou do šesti dnů a jejich vyúčtování se provádí, aby byla zajištěna správa finančních prostředků poskytnutých na akci. Na krátkodobé akce lze žádat dotace od Ministerstva školství, mládeže a tělovýchovy, kde podmínkou dotace je její následné vyúčtování se seznamem účastníků.
+
+Celá práce je rozdělena do tří kapitol. První kapitola je zaměřena na analýzu situace v době, kdy tato práce začala vznikat a na návrh nové aplikace. V druhé kapitole je rozebrána realizace aplikace a vznik nové knihovny pro komunikaci se systémem SkautIS. Třetí kapitola je zaměřena na průběh a výsledky testování aplikace. 
+
+
+
+TODO DOPSAT co je v závěru 
+
+
+
+
 \end{introduction}
 
 \chapter{Analýza a návrh}
 \section{Srovnání jiných systémů}
-Nenašel jsem žádný skautský online systém, který by byl používán více středisky. Většina středisek buď žádný online systém nepoužívá nebo mají systém, který si sami naprogramovali.
+Nenašel jsem žádný skautský online systém, který by byl používán více skautskými středisky. Většina středisek buď žádný online systém nepoužívá nebo mají systém, který si sami naprogramovali.
+
 \subsection{Systém střediska Hiawatha Praha}
-Systém je zakomponovaný do webových stránek střediska (\url{https://www.hiawatha.cz/}). Přihlášeným uživatelům umožnuje zakládat, upravovat a mazat akce. U každé akce můžeme přidat předběžný rozpočet. Po realizaci akce můžeme přidat i čerpané částky z jednotlivých kategorií a vyplnit seznam účastníků. Vedoucí může akci odevzdat, čímž umožní editaci pouze hospodáři střediska.
-Výhody systému:
+Systém je zakomponovaný do webových stránek střediska, která jsou na adrese \url{https://www.hiawatha.cz/}. Přihlášeným uživatelům umožňuje zakládat, upravovat a mazat akce. U každé akce lze přidat předběžný rozpočet. Po realizaci akce lze přidat i čerpané částky z jednotlivých kategorií a vyplnit seznam účastníků. Vedoucí akce může uzavřít hospodaření akce, a tím umožnit další úpravy pouze hospodáři střediska.
+
+Výhody systému jsou:
 \begin{itemize}
-	\item možnost sestavit rozpočet i výsledovku
-	\item možnost přidat k akci reportáž a fotoalbum
-	\item možnost předání akce hospodáři
-	\item možnost přidat seznam účastníků
-	\item počítá počet účastníků v jednotlivých kategoriích
-\end{itemize}
-Nevýhody systému:
-\begin{itemize}
-	\item minimální možnost nastavení uživatelských práv
-	\item není propojen se systémem SkautIS
-	\item částky v jednotlivých kategoriích, se musí spočítat mimo systém
-	\item není možné evidovat paragony
-	\item není možné zadat osobu mimo nabízený seznam
+	\item možnost sestavit rozpočet i výsledovku akce,
+	\item možnost přidat k akci reportáž a fotoalbum,
+	\item možnost předání akce hospodáři,
+	\item možnost přidat seznam účastníků,
+	\item počítá účastníky v~jednotlivých kategoriích.
 \end{itemize}
 
+Nevýhody systému jsou:
+\begin{itemize}
+	\item minimální možnost nastavení uživatelských práv,
+	\item není propojen se systémem SkautIS,
+	\item částky v~jednotlivých účetních kategoriích se musí spočítat mimo systém,
+	\item není možné evidovat paragony,
+	\item není možné zadat osobu mimo nabízený seznam.
+\end{itemize}
 
 \subsection{Systém střediska Blaník}
-Středisko Blaník využívá vlastní systém naprogramovaný v php skládající se ze tří základních částí. První část LTOI (\url{http://lab.blanik.info/ltoi/}) - Letní tábor a obnova inventáře - slouží pro vyúčtování táborů. Zadávají se zde odděleně informace o táboře, příjmy, výdaje, účastníci a cestovní příkazy. Veškeré informace je možné nechat vyexportovat do formátu csv nebo rtf.
+Středisko Blaník využívá vlastní systém naprogramovaný v~PHP skládající se ze tří základních částí. První část LTOI (\url{http://lab.blanik.info/ltoi/}) -- Letní tábor a obnova inventáře -- slouží pro vyúčtování táborů. Zadávají se zde odděleně informace o~táboře, příjmy, výdaje, účastníci a cestovní příkazy. Veškeré informace je možné nechat vyexportovat do formátu RTF nebo CSV.
 
-Druhá část nazvaná INV (\url{http://lab.blanik.info/inv/}) slouží k inventarizaci majetku jednotlivých oddílů. Pokud jsme v části LTOI nastavili výdaj s příznakem \uv{inv}, tak ho nyní můžeme jednoduše importovat do této části. Získáme zde také přehled zda na majetek byla čerpána dotace, jeho pořizovací a aktuální hodnotu a informaci o jeho vyřazení.
+Druhá část nazvaná INV (\url{http://lab.blanik.info/inv/}) slouží k inventarizaci majetku jednotlivých oddílů. Pokud je v~části LTOI nastaven výdaj s příznakem \uv{inv}, lze jej jednoduše importovat do této části. Je zde také přehled, zda na majetek byla čerpána dotace, jeho pořizovací a aktuální hodnotu a informaci o~jeho vyřazení.
 
-Třetí a zároveň nejnovější (leden 2012) částí sytému je ROP (Roční oddílová pokladna). Zde se účtují pokladny jednotlivých oddílů za celý rok. 
+Třetí a zároveň nejnovější (leden 2012) částí sytému je ROP (Roční od\-dílová pokladna). Zde se účtují pokladny jednotlivých oddílů za celý rok.
 
-Výhody systému:
+Výhody systému jsou:
 \begin{itemize}
-	\item možnost nastavit počet dnů účasti u jednotlivých účastníků táborav (LTOI)
-	\item automatická kontrola vnitřních vztahů mezi účastníky a příjmy (LTOI)
-	\item propojení části LTOI s částí INV 
-	\item dobrý přehled o majetku oddílu (INV)
-	\item možnost exportovat do dále upravitelné podoby (csv, rtf)
-	\item možnost vyplnit cestovní příkaz (LTOI)
-	\item možnost předat vyučtování akce hospodáři (LTOI)
-\end{itemize}
-Nevýhody systému:
-\begin{itemize}
-	\item malý počet účetních kategorií (LTOI)
-	\item není propojen se systémem SkautIS
-	\item veškeré věci jsou napevno zadané v kódu - včetně ceny benzínu apod.
-	\item možnost upravovat i údaje, které jsou stálé - IČO střediska
-	\item nulová podpora napovídání jmen účastníků
-	\item uživatelsky nepřívětivé přidávání řádků
-	\item nutnost zadávat vše textově místo použití standartních html značek (radio button pro označení řádku ke smazání)
-	\item nejednotnost ovládání v jednotlivých částech 
+	\item možnost nastavit počet dnů účasti u~jednotlivých účastníků tábora (LTOI),
+	\item automatická kontrola vnitřních vztahů mezi účastníky a příjmy (LTOI),
+	\item propojení části LTOI s částí INV ,
+	\item dobrý přehled o~majetku oddílu (INV),
+	\item možnost exportovat do dále upravitelné podoby (CSV, RTF),
+	\item možnost vyplnit cestovní příkaz (LTOI),
+	\item možnost předat vyúčtování akce hospodáři (LTOI).
 \end{itemize}
 
+Nevýhody systému jsou:
+\begin{itemize}
+	\item uživatelské rozhraní rozdělené do několika systémů,
+	\item není propojen se systémem SkautIS,
+	\item veškeré parametry jsou napevno zadané v~kódu -- včetně ceny benzínu apod.,
+	\item možnost upravovat i údaje, které jsou stálé -- IČO střediska,
+	\item nulová podpora napovídání jmen účastníků,
+	\item uživatelsky nepřívětivé přidávání řádků,
+	\item nutnost zadávat vše textově místo použití standardních HTML značek (radio button pro označení řádku ke smazání, apod.),
+	\item nejednotnost ovládání v~jednotlivých částech.
+\end{itemize}
+
+\subsection{Výsledek srovnání}
+Systém střediska Hiawata Praha nabízí dobré nástroje pro přípravu akce, ale postrádá několik důležitých služeb, pro následné vyúčtování.
+
+Systém střediska Blaník naopak nabízí více nástrojů na vyúčtování akce a následnou evidenci majetku, ale jeho uživatelské rozhraní je rozděleno mezi několik menších systémů, do kterých je vždy potřeba se znovu přihlásit.
+
+Ani jeden ze systémů není propojen se systémem SkautIS, kde by získával aktuální informace o~členech a ani neumožňuje použití systému více středisky najednou. Proto jsem se rozhodl vytvořit systémem, který bude připojen na SkautIS, bude k dispozici více střediskům najednou a nabídne základní nástroje na vyúčtování akce.
 
 \section{Specifikace požadavků}
 \subsection{Funkční požadavky}
+Aplikace umí
 \begin{itemize}
-	\item umí založit novou akci
-	\item umí uzavřít akci
-	\item umí evidovat akce minulé
-	\item umí přijmout údaje z paragonu a ty pak spravovat
-	\item umí rozdělit paragony do kategorií a spočítat jejich sumu
-	\item umí udělat seznam účastníků
-	\item umí udělat hromadný příjmový doklad
-	\item umí kontrolovat přístupová práva
-	\item umí spravovat účastníky na akcích
-	\item design stránky není předmětem závěrečné práce
+	\item založit novou akci,
+	\item uzavřít akci,
+	\item evidovat akce minulé,
+	\item přijmout údaje z paragonu a ty pak spravovat,
+	\item rozdělit paragony do kategorií a spočítat jejich sumu,
+	\item udělat seznam účastníků,
+	\item udělat hromadný příjmový doklad,
+	\item kontrolovat přístupová práva,
+	\item spravovat účastníky na akcích.
 \end{itemize}
 
 \subsection{Nefunkční požadavky}
+Aplikace 
 \begin{itemize}
-	\item webová aplikace v jazyce PHP
-	\item aplikace komunikuje se systémem SkautIS přes web services
-	\item aplikace má české uživatelské rozhraní
-	\item aplikace funguje na PHP 5 $\geq$ 5.2.0, Mysql 5
+	\item je napsána v~jazyce PHP,
+	\item komunikuje se systémem SkautIS přes webové služby,
+	\item má české uživatelské rozhraní,
+	\item funguje na PHP ve verzi alespoň 5.2.0 a Mysql 5.
 \end{itemize}
 
 \section{Uživatelské role}
-Uživatelské role vycházejí z uživatelských rolí ze systému SkautIS. V systému rozlišuji, jestli je přihlášen jako \uv{člen} v dané jednotce či jako její \uv{vedoucí/administrátor}.
+Uživatelské role vycházejí z uživatelských rolí v~systému SkautIS. V~systému se rozlišuje, zda-li je uživatel přihlášen jako člen v~dané jednotce či jako její vedoucí/administrátor.
+
 TODO
 
-\section{Akce}
+\section{Entita pro správu akce}
 \label{sec:eventDescription}
 Každá akce má parametry
 \begin{itemize}
-	\item ID\_Event
-	\item pořadatel (povinný)
-	\item název (povinný) 
-	\item začátek (povinný)
-	\item konec (povinný)
-	\item typ (výprava, seminář, ...)
-	\item rozsah (oddílová, středisková, ... )
-	\item místo konání
-	\item vedoucí akce (povinný)
-	\item zástupce vedoucího akce
-	\item hospodář akce
+	\item \texttt{ID\_Event},
+	\item pořadatel (povinný),
+	\item název (povinný),
+	\item začátek (povinný),
+	\item konec (povinný),
+	\item typ (výprava, seminář, ...),
+	\item rozsah (oddílová, středisková, ... ),
+	\item místo konání,
+	\item vedoucí akce (povinný),
+	\item zástupce vedoucího akce,
+	\item hospodář akce,
 \end{itemize}
-kde pořadatel, název, začátek, konec, typ a rozsah jsou povinné pro založení akce a před uzavřením akce musí být vyplněn i vedoucí akce. ID\_Event je identifikátor přidělený systémem SkautIS při založení akce.
+kde pořadatel, název, začátek, konec, typ a rozsah jsou povinné pro založení akce a před uzavřením akce musí být vyplněn i vedoucí akce. \texttt{ID\_Event} je identifikátor přidělený systémem SkautIS při založení akce.
 
 \subsection{Životní cyklus akce}
  \begin{figure}[h] \centering
  	\includegraphics[width=0.7\textwidth]{img/state-diagram.jpg}
  	\caption[Životní cyklus akce]{Životní cyklus akce}\label{fig:state-diagram}
  \end{figure}
- Životní cyklus akce vychází z možností entity Event ze systému SkautIS. Ta může nabývat tyto stavy:
+ Životní cyklus akce vychází z možností entity \texttt{eventGeneral} ze systému SkautIS. Ta může nabývat těchto stavů:
  
  \begin{itemize}
- 	\item rozpracována
-	\item uzavřena
-	\item zrušena
+ 	\item rozpracována,
+	\item uzavřena,
+	\item zrušena.
  \end{itemize} 
  
-Akce je ve stavu \uv{rozpracována} hned po jejím vytvoření a to dokud akci neuzavřeme nebo nezrušíme.
+Akce je ve stavu \uv{rozpracována} hned po jejím vytvoření, a to dokud akci neuzavřeme nebo nezrušíme.
 
-U \uv{uzavřené} akce je evidováno kdy a kdo ji uzavřel a v případě potřeby ji lze znovu otevřít do stavu \uv{rozpracována} a dále upravovat.
+U \uv{uzavřené} akce je evidováno, kdy a kdo ji uzavřel, a v~případě potřeby ji lze přepnout do stavu \uv{rozpracována} a dále upravovat.
 
-Změna stavu akce na \uv{zrušená} je nevratný krok a po té už akce bude přístupná pouze pro čtení nebo úplné vymazání ze systému.
+Změna stavu akce na \uv{zrušená} je nevratný krok a poté už akce bude přístupná pouze pro čtení nebo úplné vymazání ze systému.
 
 \section{Případy užití}
 \begin{figure}[h]\centering
  	\includegraphics[width=0.7\textwidth]{img/use-case.jpg}
  	\caption[Případy užití]{Use case diagramy}\label{fig:use-case}
 \end{figure}
-Vedoucí může založit akci, u které musí vyplnit povinné údaje (viz \ref{sec:eventDescription}) a pokud chce tak může i volitelné.
+Vedoucí může založit akci, u~které musí vyplnit povinné údaje (viz \ref{sec:eventDescription}), a pokud chce, tak může i volitelné.
 
-Může později změnit údaje, zadané při vytváření akce, pokud je akce rozpracována. 
+Může později změnit údaje zadané při vytváření akce, pokud je akce rozpracována. 
 
 Lze do seznamu účastníků přidávat osoby z vybrané jednotky, vytvořit nového účastníka i odebírat účastníky. U účastníků dále lze nastavit počet dní strávených na akci a výši účastnického poplatku. 
 
-V pokladní knize lze evidovat všechny příjmy a výdaje akce, roztříděné do jednotlivých kategorií. Jednotlivé položky lze upravovat, mazat nebo exportovat.
+V pokladní knize lze evidovat všechny příjmy a výdaje související s akcí, roztříděné do jednotlivých kategorií. Jednotlivé položky lze upravovat, mazat nebo exportovat.
 
-Pokud máme akci hotovou, můžeme ji označit jako uzavřená a tím zamezit její editaci bez toho, aby ji někdo znovu otevřel.
+V případě, že je vyúčtování hotové, lze akci uzavřít a tím zamezit možnost dalších úprav bez změny stavu akce.
 
 \section{Výběr technologií}
 \subsection{PHP}
-Na poli PHP frameworků je v současné době hned několik velkých hráčů. Mezi nejznámější patří Symfony, Zend Framework a Nette Framework.
+Na poli PHP frameworků je v~současné době hned několik velkých hráčů. Mezi nejznámější patří Symfony, Zend Framework a Nette Framework.
 
 Symfony obsahuje velmi silný databázový framework Doctrine, ale nemá českou komunitu.
 
 Zend Framework vyvíjí firma Zend Technologies Ltd., která stojí za jádrem PHP od verze 4. Mezi hlavní výhody Zend Frameworku patří velké množství již napsaných komponent, silné zázemí komunity a Zend Technologies Ltd. Naopak mu je často vytýkána špatná práce s formuláři a příliš dlouhé názvy, které snižují přehlednost kódu. 
 
-Nette Framework, vyvíjený Nette Foundation, se v posledních letech prosazuje na české scéně čím dál tím více. Jeho hlavními přednostmi jsou jednoduchá práce s formuláři, šablonovací systém Latte a početná komunita. Často však bývá kritizován za to, že jeho vývoj je řízen jeho zakladatelem Davidem Grudlem a nikoli komunitou.
+Nette Framework, vyvíjený skupinou Nette Foundation, se v~posledních letech prosazuje na české scéně čím dál tím více. Jeho hlavními přednostmi jsou jednoduchá práce s formuláři, šablonovací systém Latte a početná komunita. Často však bývá kritizován za to, že jeho vývoj je řízen jeho zakladatelem Davidem Grudlem a nikoli komunitou.
 
-Já jsem si zvolil Nette Framework pro jeho dobré zpracování v oblasti formulářů a protože s ním již několik let pracuji. Důležitým faktorem při rozhodování byl i směr dalšího vývoje frameworku. Protože s jeho směřováním souhlasím, bude v budoucnu možné aplikaci dále rozšiřovat. Konkrétně jsem si vybral verzi pro PHP 5.2 bez prefixů.
+Pro aplikaci byl vybrán Nette Framework pro jeho dobré zpracování práce s formuláři a pro jeho přístup k bezpečnosti aplikace. Důležitým faktorem výběru byl i směr dalšího vývoje frameworku, aby aplikace nepřišla a možnost dalšího rozšíření, kvůli ukončení vývoje frameworku. Z možných verzí byla vybrána verze pro PHP 5.2 bez prefixů.
 
 \subsubsection*{Nette Framework}\label{netteDescription}
-Pro tvorbu aplikací v Nette Framework se používá softwarová architektura Model-View-Controller (MVC). MVC slouží k oddělení kódu zajištujícího aplikační logiku (model) od kódu zajištujícího obsluhu (controller) a od způsobu výsledného zobrazení(view).
+Pro tvorbu aplikací v~Nette Framework se používá softwarová architektura Model-View-Controller (MVC). MVC slouží k oddělení kódu zajišťujícího aplikační logiku (model) od kódu zajišťujícího obsluhu (controller) a od způsobu výsledného zobrazení (view).
 
-\begin{quotation}
-Model je datový a zejména funkční základ celé aplikace. Je v něm obsažena aplikační logika. Jakákoliv akce uživatele (přihlášení, vložení zboží do košíku, změna hodnoty v databázi) představuje akci modelu. Model si spravuje svůj vnitřní stav a ven nabízí pevně dané rozhraní. Voláním funkcí tohoto rozhraní můžeme zjišťovat či měnit jeho stav.
-\cite{netteModel}
-\end{quotation}
+\uv{Model je datový a zejména funkční základ celé aplikace. Je v~něm obsažena aplikační logika. Jakákoliv akce uživatele (přihlášení, vložení zboží do košíku, změna hodnoty v~databázi) představuje akci modelu. Model si spravuje svůj vnitřní stav a ven nabízí pevně dané rozhraní. Voláním funkcí tohoto rozhraní můžeme zjišťovat či měnit jeho stav.} \cite{netteModel}
 
-V Nette Frameworku byl pojem controller nahrazen pojmem \uv{presenter}. Presentery obsluhují požadavky, získávají data od modelu a předávají je v potřebné podobě do daného view, které zajistí jejich zobrazení.
+V Nette byl pojem controller nahrazen pojmem \uv{presenter}. Presentery obsluhují požadavky, získávají data od modelu a předávají je v~potřebné podobě do daného view, které zajistí jejich zobrazení.
 
-View jsou zde řešeny šablonovacím systémem Latte (\url{http://doc.nette.org/cs/templating#toc-latte}), který zajištuje ochranu proti XSS \cite{xss}, možnost použít makra a mnoho dalšího.
+View jsou zde řešeny šablonovacím systémem Latte \cite{latte}, který zajištuje ochranu proti XSS \cite{xss}, možnost použít makra a mnoho dalšího.
 
 \subsection{Databáze}
-Databázi jsem vybral MySQL, protože je dostupná na většině hostingů a pro rozsah projektu postačuje. Pro práci přístup k databázi jsem měl na výběr mezi využitím základní MySQL funkcí zabudovaných v PHP a použitím některé PHP knihovny pro práci s databází. Použití základních funkcí PHP jsem zavrhl, protože je velmi těžké udržet v kódu přehlednost a práce s připojením je velmi nekomfortní.
+Aplikace bude vybudována s~použitím MySQL, protože je dostupná na většině webových hostingů a pro rozsah projektu postačuje. Pro přístup k databázi bylo možné volit mezi využitím základních MySQL funkcí zabudovaných v~PHP a použitím některé PHP knihovny pro práci s databází. Při použití základních funkcí PHP je velmi těžké udržet v~kódu přehlednost a práce s připojením je velmi nekomfortní, proto byla vybrána možnost s použitím knihovny.
 
-Doctrine 2 je jedna z nejznámějších knihoven pro práci s databází využívajících ORM, avšak na některá volání potřebuje příliš SQL dotazů.
+Doctrine 2 je jedna z nejznámějších knihoven pro práci s databází využívajících ORM, avšak na některá volání potřebuje příliš mnoho SQL dotazů.
 
-NotORM, od Jakuba Vrány, se prezentuje jako plnohodnotná alternativa k běžným ORM a prezentuje se svojí rychlostí oproti ostatním \cite{notorm}. NotORM jsem již v minulosti vyzkoušel, ale práce s ním mi nevyhovovala. 
+NotORM, od Jakuba Vrány, se prezentuje jako plnohodnotná alternativa k běžným ORM a prezentuje se svojí rychlostí oproti ostatním \cite{notorm}.
 
-Nette Framework přímo nabízí vlastní vrstvu pro práci s databází \url{http://doc.nette.org/cs/database}. Vychází z NotORM, ale má trochu odlišnou syntaxi. Mě nevyhovuje ze stejných důvodů jako NotORM.
+Nette Framework přímo nabízí vlastní vrstvu pro práci s databází \url{http://doc.nette.org/cs/database}. Vychází z NotORM, ale má trochu odlišnou syntaxi.
 
-David Grudl kromě Nette Frameworku vytvořil také databázovou vrstvu dibi \url{http://dibiphp.com/}. Já jsem si ji velmi oblíbil pro její jednoduchost a protože mi nediktuje přesný způsob použití. Vybral jsem si ji pro tento projekt, protože podle mého názoru plnohodnotně pokryje databázové potřeby projektu a práci s ní dobře znám a vyhovuje mi.
+David Grudl kromě Nette Frameworku vytvořil také databázovou vrstvu dibi \url{http://dibiphp.com/}. Mezi její hlavní přednosti patří dobré bezpečnostní zabezpečení a více možnost, aby si programátor zvolil, jakým způsobem ji zapracuje do projektu.
 
-Pro přístup do databáze přes Dibi máme dvě možnosti. Buď přes objekt DibiConnection, kterému v konstruktoru předáme parametry spojení a pak na něm budeme volat jednotlivé dotazy. Nebo přes statický objekt dibi, který je po prvním nastavení dostupný kdekoliv a stačí volat dotazy bez dalšího nastavování.
+Pro přístup do databáze přes Dibi jsou dvě základní možnosti. Buď přes objekt DibiConnection, kterému jsou v~konstruktoru předány parametry spojení a následně nad objektem volány jednotlivé dotazy. Nebo přes statický objekt dibi, který je po prvním nastavení dostupný kdekoliv a stačí nad ním volat dotazy bez dalších parametrů.
 
-\begin{figure}[h]\centering
-\begin{verbatim}
-
+\begin{figure}[h]
+\begin{lstlisting}[caption=použití Dibi s přístupem přes objekt, numbers=none]
 $params = array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
@@ -225,24 +254,23 @@ $params = array(
     'database' => 'nazev_databaze',
 );
 
-//1. možnost - přístup skrz objekt
 $db = new DibiConnection($params);
 $db->query('SQL dotaz');
+\end{lstlisting}
 
-//2. možnost - statický přístup
-dibi::connect($params); //stačí nastavit pouze jednou
+\begin{lstlisting}[caption=použití Dibi se statickým přístupem, numbers=none]
+dibi::connect($params);
 dibi::query('SQL dotaz');
-
-\end{verbatim}
-\caption{ukázka použití Dibi}
+\end{lstlisting}
 \end{figure}
 
+Přístup přes objekt je čitelnější z pohledu kódu, protože je na první pohled vidět, kde je daný objekt použit, a která volání jsou nad ním prováděna. Oproti tomu statický přístup umožňuje větší flexibilitu použití na úkor čitelnosti a jednoduché dohledatelnosti jeho použití. V aplikaci bude bude použit statický přístup, pro jeho jednoduché globální nastavení parametrů a tím i následně jednoduchý přístup.
+
 \subsection{Frontend}
-HTML kód na výstupu bude generován ze šablonovacího systému Nette Frameworku s využitím maker Latte, které jsou také součástí. Hlavními výhodami Latte maker jsou automatické escapování a přehlednost napsaného kódu. Zde je ukázka z dokumentace \url{http://doc.nette.org/cs/templating#toc-latte} pro ilustraci čitelnosti kódu s Latte makry. 
+HTML kód na výstupu bude generován ze šablonovacího systému Latte, který je součástí Nette Frameworku. Hlavní složkou šablonovacího systém Latte jsou jeho makra, která zajištují automatické escapování vypisovaného kódu a zvyšují jeho přehlednost. Zde jsou ukázky z dokumentace \cite{latte} pro porovnání čitelnosti kódu bez použití Latte maker a s jejich použitím.
+
 \begin{figure}[h]
-\caption{ukázka použití Latte - vypsání seznamu položek}
-\begin{verbatim}
-//bez použití Latte
+\begin{lstlisting}[caption=Vypsání seznamu položek bez použití Latte, numbers=left]
 <?php if ($items): ?>
     <?php $counter = 1 ?>
     <ul>
@@ -253,42 +281,45 @@ HTML kód na výstupu bude generován ze šablonovacího systému Nette Framewor
     <?php endforeach ?>
     </ul>
 <?php endif?>
+\end{lstlisting}
 
-//zapsané pomocí Latte
+\begin{lstlisting}[caption=Vypsání seznamu položek pomocí Latte, numbers=left]
 <ul n:if="$items">
     <li n:foreach="$items as $item" id="item-{$iterator->counter}">
     {$item|capitalize}</li>
 </ul>
-\end{verbatim}
+\end{lstlisting}
 \end{figure}
 
-Pro formátování HTML výstupu a některé Java Scriptové komponenty použiji \uv{Twitter Bootstrap}, což je mladý projekt od vývojářů z firmy Twitter. Více informací najdeme na \url{http://twitter.github.com/bootstrap/}. Ostatní Java Scriptové komponenty a události budou využívat populární knihovnu \uv{JQuery}, o které najdeme informace na \url{http://jquery.com/}.
+Pro formátování HTML výstupu a některé JavaScriptové komponenty použiji \uv{Twitter Bootstrap}\cite{twBootstrap}, což je mladý projekt od vývojářů z firmy Twitter. Ostatní JavaScriptové komponenty a události budou využívat populární knihovnu jQuery\cite{jquery}.
 
 \section{Datový model}
 \begin{figure}[h] \centering
  	\caption[Doménový model]{Doménový model}\label{fig:domain-model}
 	\includegraphics[width=1\textwidth]{img/domain-model.png}
 \end{figure}
-Datový model se v průběhu psaní aplikace velice zmenšil, díky několika novým verzím SkautISu, během kterých přibyl typ akce \uv{obecná akce} s možností přiřazení účastníků. V mojí databázi tedy budu uchovávat paragony a jejich kategorie. 
-Tabulka \uv{chits} uchovává všechny paragony a je navázána přes \uv{actionId} na konkretní akci ve SkautISu a přes \uv{category} na tabulku \uv{chitsCategory}. Dále obsahuje 
+Protože byl SkautIS rozšířen o~entitu \texttt{eventGeneral}, neboli obecná akce, může být datový model menší, než jaký byl původní plán. V~databázi se tedy budu uchovávat paragony s jejich kategorií a to v~tabulce tabulce \texttt{chits}, která uchovává všechny doklady. Tabulka \texttt{chits} je navázána přes \texttt{actionId} na konkretní obecnou akci(\texttt{eventGeneral}) ve SkautISu a přes \texttt{category} na tabulku \texttt{chitsCategory}.
+
+Tabulka \texttt{chits} dále obsahuje:
  \begin{itemize}
- 	\item datum přijetí paragonu do pokladní knihy
- 	\item jméno příjemce
- 	\item účel výplaty
- 	\item částku
-	\item způsob výpočtu částky - např. 10*17+13
-	\item příznak jestli byl paragon smazán
+ 	\item datum přijetí paragonu do pokladní knihy,
+ 	\item jméno příjemce,
+ 	\item účel výplaty,
+ 	\item částku,
+	\item způsob výpočtu částky - např. $10\cdot17+13$,
+	\item příznak jestli byl paragon smazán.
 \end{itemize} 
 
-Tabulka \uv{chitsCategory} 
+Tabulka \uv{chitsCategory} uchovává následující atributy:
  \begin{itemize}
- 	\item název kategorie
- 	\item zkratku kategorie
- 	\item jestli je doklad příjmový nebo výdajový
- 	\item parametr pro řazení kategorií
- 	\item příznak jestli byla kategorie smazána 
+ 	\item název kategorie,
+ 	\item zkratku kategorie,
+ 	\item příznak jestli je doklad příjmový nebo výdajový,
+ 	\item parametr pro řazení kategorií,
+ 	\item příznak jestli byla kategorie smazána.
 \end{itemize}
-Každá akce i s účastníky je v systému SkautIS navázána na konkretní jednotku. A paragony jsou k dané akci navázány podle \uv{ID\_Event} dané akce. 
+
+Každá akce i s účastníky je v~systému SkautIS navázána na konkretní jednotku. Paragony jsou k dané akci navázány přes \texttt{ID\_Event} dané akce. 
 
 \section{Navigace}
  \begin{figure}[h] \centering
@@ -296,149 +327,182 @@ Každá akce i s účastníky je v systému SkautIS navázána na konkretní jed
  	\caption[Navigační model]{Navigační model vytvořený ve Web Ratio}\label{fig:navigation-diagram}
  \end{figure}
 
-Celý web je přístupný pouze po přihlášení přes SkautIS, protože na tomto přihlášení je závislá většina funkcí systému. Na všech stránkách je možné vybrat používanou roli ze seznamu dostupných rolí systému SkautIS. Na úvodní stránce je seznam všech akcí, ke kterým máme přístup a pokud máme právo založit akci, tak i odkaz na založení.
+Celý web je přístupný pouze po přihlášení přes SkautIS, protože na tomto přihlášení je závislá většina funkcí systému. Na všech stránkách je možné vybrat používanou roli ze seznamu dostupných rolí systému SkautIS. Na úvodní stránce je seznam všech akcí, ke kterým má přihlášený uživatel přístup a pokud má právo založit akci, tak i odkaz na založení nové akce.
 
-Pokud máme vybranou akci, můžeme upravovat její základní údaje, evidovat seznam účetních dokladů a seznam účastníků i exportovat výstupy ze systému.
+Pokud přihlášený uživatel vybere akci ke které má oprávnění a je ve stavu \uv{rozpracovaná}, může upravovat její základní údaje, evidovat seznam účetních dokladů a seznam účastníků i exportovat výstupy ze systému.
 
 Pokladní kniha spravuje příjmové i výdajové druhotné účetní doklady. 
 
-Do seznamu účastníků můžeme přidávat osoby jejich označením v seznamu. Pokud potřebujeme přidat osobu, která v seznamu není, musíme jí vyplnit základní údaje.
+Do seznamu účastníků lze přidávat osoby jejich označením v~seznamu. Pokud uživatel chce přidat osobu, která v~seznamu není, musí vyplnit její základní údaje do formuláře a ten odeslat do systému.
 
 \section{Komunikace se systémem SkautIS}\label{sec:skautisComunication}
-Veškerá komunikace se systémem SkautIS probíhá přes webové služby (Web Services). SkautIS v současné době (23.3.2012) nabízí 12 webových služeb rozdělených podle jejich zaměření. Zde uvádím jejich seznam, kde tučně označené jsou ty, s kterými systém pracuje. (přebráno z \url{https://is.skaut.cz/JunakWebservice/})
+Veškerá komunikace se systémem SkautIS probíhá přes webové služby (Web Services). SkautIS v~současné době (23. 3. 2012) nabízí 12 webových služeb rozdělených podle jejich zaměření. Zde uvádím jejich seznam, kde tučně označené jsou ty, s kterými vyvíjená aplikace pracuje. (přebráno z \url{https://is.skaut.cz/JunakWebservice/})
 \begin{itemize}
-	\item ApplicationManagement.asmx - Webová služba pro správu přístupů externích aplikací
-	\item Evaluation.asmx - Webová služba pro práci s hodnocením kvality
-	\item \textbf{Events.asmx} - Webová služba pro práci s akcemi (sněmy apod.)
-	\item Exports.asmx - Webová služba pro export dat do jiných systémů
-	\item Journal.asmx - Webová služba pro práci s časopisy a fakturami
-	\item Message.asmx - Interní zpravodajský systém
-	\item \textbf{OrganizationUnit.asmx} - Webová služba pro práci s organizačními jednotkami a osobami
-	\item Reports.asmx - Generování tiskových sestav
-	\item Summary.asmx - Exporty/přehledy
-	\item Telephony.asmx - Skautská telefonní síť
-	\item \textbf{UserManagement.asmx} - Webová služba pro práci s uživateli (zakládání, přidělování rolí, přihlašování apod.).
-	\item Welcome.asmx - Webová služba pro práci s uvítacími balíčky
+	\item \texttt{ApplicationManagement.asmx} -- webová služba pro správu přístupů externích aplikací,
+	\item \texttt{Evaluation.asmx} -- webová služba pro práci s hodnocením kvality,
+	\item \texttt{\textbf{Events.asmx}} -- webová služba pro práci s akcemi (sněmy apod.),
+	\item \texttt{Exports.asmx} -- webová služba pro export dat do jiných systémů,
+	\item \texttt{Journal.asmx} -- webová služba pro práci s časopisy a fakturami,
+	\item \texttt{Message.asmx} -- interní zpravodajský systém,
+	\item \texttt{\textbf{OrganizationUnit.asmx}} -- webová služba pro práci s organizačními jednotkami a osobami,
+	\item \texttt{Reports.asmx} -- generování tiskových sestav,
+	\item \texttt{Summary.asmx} -- exporty/přehledy,
+	\item \texttt{Telephony.asmx} -- skautská telefonní síť,
+	\item \texttt{\textbf{UserManagement.asmx}} -- webová služba pro práci s uživateli (zakládání, přidělování rolí, přihlašování apod.),
+	\item \texttt{Welcome.asmx} -- webová služba pro práci s uvítacími balíčky.
 \end{itemize}
 
-Služba \uv{UserManagement.asmx} zajištuje přihlašování, odhlašování a správu dostupných rolí. Přes službu \uv{OrganizationUnit.asmx} budeme pracovat s organizačními jednotkami a jejich členy. Skrz \uv{Events.asmx} budeme spravovat jednotlivé akce s účastníky a obsazením funkcí vedoucí, zástupce vedoucího a hospodář akce.
+Služba \texttt{UserManagement.asmx} zajištuje přihlašování, odhlašování a správu dostupných rolí. Přes službu \texttt{OrganizationUnit.asmx} budeme pracovat s organizačními jednotkami a jejich členy. Skrz \texttt{Events.asmx} budeme spravovat jednotlivé akce s účastníky a obsazením funkcí vedoucí akce, zástupce vedoucího akce a hospodář akce.
 
-Pro jednoduší přístup k webovým službám systému SkautIS vytvořím obecnou knihovnu, která umožní snadnější přístup a do budoucna zjednoduší přístup dalším vývojářům na platformě PHP.
+Pro jednodušší přístup k webovým službám systému SkautIS bude použita mnou vytvořená knihovna SkautIS, umožnující snadný přístup z vyvíjené aplikace do systému SkautIS a do budoucna zjednodušující přístup dalším vývojářům na platformě PHP.
 
 \begin{figure}[h] \centering
  	\includegraphics[width=1\textwidth]{img/comunication.png}
  	\caption[SkautIS]{Příklad komunikace se systémem SkautIS}\label{fig:comunication-diagram}
 \end{figure}
 
-Pro komunikce se musíme nejdříve přihlásit na stránkách systému SkautIS se zadaným parametrem v url adrese Application ID, které jednoznačně určuje aplikaci. Po úspěšném přihlášení budeme přesměrováni na předem zadanou stránku, která metodou POST obdrží skautIS\_Token, skautIS\_IDRole, skautIS\_IDUnit a obslouží přihlášení na naší straně.
+Pro komunikaci je potřeba, aby se uživatel přihlásil na stránkách systému SkautIS se zadaným parametrem v~url adrese Application ID, které jednoznačně určuje aplikaci. Po úspěšném přihlášení bude přesměrován na předem zadanou stránku, která metodou POST obdrží \texttt{skautIS\_Token}, \texttt{skautIS\_IDRole}, \texttt{skautIS\_IDUnit} a obslouží přihlášení na straně aplikace.
 
 \begin{itemize}
-	\item skautIS\_Token - unikátní token pro uživatele a konkrétní přihlášení. Je předáván jako parametr při každém volání webové služby. Jeho platnost je 30 min a s každým použitím se jeho platnost opět nastaví na 30 min. 
-	\item skautIS\_IDRole - ID přihlášené role - výchozí je naposledy použitá role 
-	\item skautIS\_IDUnit - ID jednotky, ke které je navázána přihlášená role 
+	\item skautIS\_Token -- unikátní token pro uživatele a konkrétní přihlášení. Je předáván jako parametr při každém volání webové služby. Jeho platnost je 30 minut a s každým použitím se jeho platnost opět nastaví na 30 minut. 
+	\item skautIS\_IDRole -- ID přihlášené role - výchozí je naposledy použitá role 
+	\item skautIS\_IDUnit -- ID jednotky, ke které je navázána přihlášená role 
 \end{itemize}
 
-Nyní můžeme volat funkce jednotlivých webových služeb se zadáním parametru skautIS\_Token. Pro volání budeme používat mnou naprogramovanou knihovnu. 
+Po zpracování přihlášení i na straně aplikace, lze volat funkce jednotlivých webových služeb se zadáním parametru \texttt{skautIS\_Token}.
 
 \chapter{Realizace}
 
 \section{Použité nástroje}
-Abych měl zálohovanou tuto bakalářskou práci a měl pod kontrolou vývoj aplikace i z pohledu historie verzí, musel jsem si zvolit verzovací systém. Na výběr jsem měl mezi centralizovaným a distribuovaným systémem.
+Pro zálohování a verzování této bakalářské práce bylo potřeba vybrat verzovací systém. Základním rozhodnutím bylo zda centralizovaný nebo distribuovaný verzovací systém.
 
-Centralizované verzovací systémy mají jeden centrální repositář a pak každý klient má svoji lokální kopii. Pro odeslání změn do centrálního repositáře musíme mít u sebe mít nejaktuálnější verzi, v opačném případě musíme nejdříve aktualizovat lokální kopii. Nejznámějším zástupcem je Apache Subversion znám pod zkratko \uv{SVN}.
+Centralizované verzovací systémy mají jeden centrální repozitář a každý klient má svoji lokální kopii. Pro odeslání změn do centrálního repositáře je potřeba, aby lokální kopie obsahoval všechny dosavadní aktualizace. V~opačném je potřeba nejdříve aktualizovat lokální kopii. Nejznámějším zástupcem je Apache Subversion znám pod zkratkou SVN.
 
-Oproti tomu u distribuovaného verzovacího systému má každý svůj lokální repositář a nemusí existovat žádné centrální úložiště. Šíření změn probíhá ve dvou fázích. Nejdříve změny stáhneme, což zatím neovlivnilo náš repositář. Změny se projeví až ve chvíli, kdy změny aplikujeme. Distribuované systémy jsou oblíbenější u komunitního vývoje, kde si jednoduše může každý vyvíjet u sebe a ostatním pak nabídnout své úpravy. Mezi nejznámější zástupce zajisté patří Git a Mercurial.
+Oproti tomu u~distribuovaného verzovacího systému má každý svůj lokální repozitář a nemusí existovat žádné centrální úložiště. Šíření změn probíhá ve dvou fázích. Nejdříve jsou změny pouze staženy, ale nijak neovlivnili lokální repositář. Změny se projeví až po jejich aplikaci na repozitář. Mezi nejznámější zástupce patří Git a Mercurial.
 
-Git byl původně vytvořen Linusem Torvaldsem, pro správu verzí jádra linuxu. V současnosti je využíván jak velkými firmami tak i vývojáři na volné noze. I já jsem se rozhodl pro Git pro jeho jednoduchou správu a široké rozšíření. Kopii Git repositáře jsem si umístil i na stránky \url{https://github.com/sinacek}, kde jsem si pro tento účel zažádal o privátní repositář a po emailové komunikaci my byl přidělen.
+Git byl původně vytvořen Linusem Torvaldsem pro správu verzí jádra linuxu. V~současnosti je využíván jak velkými firmami, tak i vývojáři na volné noze. Git byl vybrán i pro tento projekt pro jeho jednoduchou správu a široké rozšíření. Záložní kopie Git repozitáře byla umístěna na \url{https://github.com/sinacek}, kde byl za tímto účelem vytvořen privátní prostor.
 
 \section{Knihovna pro komunikaci se systémem SkautIS}
-Knihovna má za cíl usnadnit přístup k webovým službám nabízených systémem SkautIS. S jejím využitím počítám nejen pro tento projekt, ale i pro mé další budoucí projekty a pro zveřejnění dalším skautským programátorům. Proto jsem se snažil, aby práce s ní byla rychle pochopitelná a co možná nejvíce intuitivní. Pro správu verzí knihovny jsem zvolil git.
-Celá knihovna se skládá ze tří částí.
+Knihovna má za cíl usnadnit přístup k webovým službám nabízených systémem SkautIS. S její využitím je do budoucna počítáno i na další projekty, které budou komunikovat se systémem SkautIS. Pro správu verzí knihovny byl vybrán také Git, kde veřejný repozitář je umístěn na \url{https://github.com/sinacek/SkautIS}.
+
+Celá knihovna se skládá ze tří částí:
 \begin{itemize}
-	\item SkautIS
-	\item SkautIS\_WS
-	\item Vyjímky (Exceptions)
+	\item SkautIS,
+	\item SkautIS\_WS,
+	\item Vyjímky (Exceptions).
 \end{itemize}
 
 \subsection{SkautIS}
-Třída postavená na návrhovém vzoru Singleton sloužící jako obalující vrstva celé knihovny. Získat instanci a nastavit jí ID\_Application můžeme hned třemi způsoby. Jako argument metody \uv{getInstance}, přes setter \uv{setAppId(\$appId)} nebo pomocí předem definované konstanty \uv{SkautIS\_ID\_Application}.
+Třída postavená na návrhovém vzoru Singleton sloužící jako obalující vrstva celé knihovny. Získat instanci a nastavit jí \texttt{ID\_Application} můžeme hned třemi způsoby. Jako argument metody \texttt{getInstance}, přes setter \texttt{setAppId(\$appId)} nebo pomocí předem definované konstanty \texttt{SkautIS\_ID\_Application}.
 
-\begin{figure}[h]\centering
-	\begin{verbatim}
+\begin{figure}
+\begin{lstlisting}[caption=Nastavení parametrů knihovny SkautIS -- přes argument]
+$skautIs = SkautIS::getInstance("moje-application-id");
+\end{lstlisting}
 
-	//1. způsob přes argument metody
-	$skautIs = SkautIS::getInstance("moje-application-id");
+\begin{lstlisting}[caption=Nastavení parametrů knihovny SkautIS -- přes setter]
+$skautIs = SkautIS::getInstance();
+$skautIs->setAppId("moje-application-id"); 
+\end{lstlisting}
 
-	//2. způsob přes setter
-	$skautIs = SkautIS::getInstance();
-	$skautIs->setAppId("moje-application-id"); 
-	
-	//3.způsob přes předem definovanou konstantu
-	define("SkautIS_ID_Application", "moje-application-id"); 
-	...
-	$skautIs = SkautIS::getInstance(); 
-	\end{verbatim}
-	\caption{ukázka nastavení přístupu ke knihovně SkautIS}
+\begin{lstlisting}[caption=Nastavení parametrů knihovny SkautIS -- přes konstantu]
+define ("SkautIS_ID_Application", "moje-application-id"); 
+...
+$skautIs = SkautIS::getInstance(); 
+\end{lstlisting}
 \end{figure}
 
-Dále nabízí základní settery a gettery pro nastavení a uchování údajů získaných po přihlášení do skautISu (viz \ref{fig:comunication-diagram}), URL pro přihlášení a odhlášení přes SkautIS. Také se stará o \uv{lazy loading} tříd SkautIS\_WS pro jednotlivé služby s možností využít jejich kratších aliasů. 
+Dále nabízí základní settery a gettery pro nastavení a uchování údajů získaných po přihlášení do skautISu (viz \ref{fig:comunication-diagram}), URL pro přihlášení a odhlášení přes SkautIS. Také se stará o~\texttt{lazy loading} tříd \texttt{SkautIS\_WS} pro jednotlivé služby s možností využít jejich kratších aliasů.
+
+\texttt{Lazy loading} je návrhový vzor, který zajišťuje nahrání entit až ve chvíli, kdy se k nim bude přistupovat. Tím se ušetří paměť, kterou by zabíraly nevyužité entity.     
 
 \subsection{SkautIS\_WS}
-SkautIS\_WS je potomkem PHP třídy \uv{SoapClient} a zajištuje komunikaci přes protokol SOAP vždy s jednou webovou službou. Pokud je u volání funkce nastaven i druhý argument, tak je použit jako obal namísto základního obalu, který má tvar \uv{nazevFunkceInput}. Pokud je potřeba složitější strukturu obalu, zadáme ji jako druhý argument volání v podobě řetězce, kde jednotlivé vrstvy jsou odděleny znakem \uv{/} viz obrázek \ref{SkautISAdvanceCover}. 
+\texttt{SkautIS\_WS} je potomkem PHP třídy \texttt{SoapClient} a zajištuje komunikaci přes protokol SOAP vždy s jednou webovou službou. Pokud je u~volání funkce nastaven i druhý argument, tak je použit jako obalující objekt namísto základního, který má tvar \texttt{nazevFunkceInput}. Pokud je potřeba složitější strukturu obalu, jsou jednotlivé vrstvy odděleny lomítkem.
 
-\begin{figure}[h]\centering
-	\begin{verbatim}
-	$skautis = SkautIS::getInstance();
-	$skautis->org->PersonInsert(array(
-		"FirstName"=> "a", "LastName" => "b", "IdentificationCode" => "910203/0405"),
-		"person");
-	\end{verbatim}
-	\caption{volání webové služby s nestandardním obalem}\label{SkautISAdvanceCover}
-\end{figure}
+\begin{lstlisting}[caption=volání webové služby s nestandardním obalem, label=SkautISAdvanceCover, numbers=left]
+$skautis = SkautIS::getInstance();
+$skautis->org->PersonInsert(
+	array(
+		"FirstName"=> "a",
+		"LastName" => "b",
+		"IdentificationCode" => "910203/0405"),
+	"person");
 
-Návratová hodnota webové služby je většinou obalena do dvou PHP tříd stdClass. Tyto třídy jsou pouze obalem, a proto hodnotu z těchto tříd vyjmeme a vrátíme buď obyčejné pole s jednou hodnotou nebo pole hodnot. Postupně testuji zda vrácený objekt obsahuje objekt s názvem \uv{názevFunkceResult} a pokud ano, tak jestli v uvnitř něj existuje ještě objekt \uv{názevFunkceOutput}.
+// volana sluzba
+//<?xml version="1.0" encoding="utf-8"?>
+//<soap:Envelope ...>
+//  <soap:Body>
+//    <PersonInsert xmlns="https://is.skaut.cz/">
+//      <person> // obal zadany jako druhy parametr
+//        <ID_Login>guid</ID_Login>
+//        <IdentificationCode>string</IdentificationCode>
+//        <FirstName>string</FirstName>
+//        <LastName>string</LastName>
+//        ...
+//      </person>
+//    </PersonInsert>
+//  </soap:Body>
+//</soap:Envelope>	
+\end{lstlisting}
 
-V případě, že objekt \uv{názevFunkceOutput} existuje a je to instance třídy stdClass, tak ho vložím do pole a vrátím. Pokud existuje a není instancí stdClass, tak ho pouze vrátím.
-Pokud v průběhu zjistím, že některý z hledaných objektů neexistuje, vracím naposledy nalezený objekt. (viz Obrázek \ref{skautisReturnValue})
-\begin{figure}[h]\centering
-	\begin{verbatim}
-$ret; //hodnota vrácená z webové služby
-$fname = "názevFunkce";
-if (isset($ret->{$fname . "Result"})) {
-  if (isset($ret->{$fname . "Result"}->{$fname . "Output"})) {
-    if($ret->{$fname . "Result"}->{$fname . "Output"} instanceof stdClass){
-      //vložení samostatné hodnoty do pole a její návracení
-      return array($ret->{$fname . "Result"}->{$fname . "Output"});
-    }
-    //vrácení pole hodnot
-    return $ret->{$fname . "Result"}->{$fname . "Output"};
+
+\begin{lstlisting}[caption=návratová hodnota webové služby, numbers=left]
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope ...>
+  <soap:Body>
+    <PersonInsertResponse xmlns="https://is.skaut.cz/">
+      <PersonInsertResult>
+        <ID>int</ID>
+      </PersonInsertResult>
+    </PersonInsertResponse>
+  </soap:Body>
+</soap:Envelope>
+\end{lstlisting}
+
+Návratová hodnota webové služby je většinou obalena do dvou PHP tříd \texttt{stdClass}. Tyto třídy tvoří pouze obal a nepřináší další informační hodnotu, a proto hodnotu z těchto tříd vyjmeme a vrátíme buď jako obyčejné pole s jednou hodnotou nebo jako pole hodnot. Postupně se testuje, zda vrácený objekt obsahuje objekt s názvem \texttt{názevFunkceResult} a pokud ano, tak jestli uvnitř něj existuje ještě objekt \texttt{názevFunkceOutput}.
+
+V případě, že objekt \texttt{názevFunkceOutput} existuje a je to instance třídy \texttt{stdClass}, tak je vložen do pole a vrácen. Pokud existuje a není instancí \texttt{stdClass}, tak je pouze vrácen.
+Pokud je v~průběhu zjištěno, že některý z hledaných objektů neexistuje, je vrácen naposledy nalezený objekt, viz \ref{skautisReturnValue}.
+
+\begin{lstlisting}[caption=zpracování návratové hodnoty od webové služby, label=skautisReturnValue, numbers=left]
+$ret; //hodnota vracena z webove sluzby
+$fname = "nazevFunkce";
+if(isset($ret->{$fname."Result"})){
+ if(isset($ret->{$fname."Result"}->{$fname."Output"})) {
+  if($ret->{$fname . "Result"}->{$fname."Output"}
+  	instanceof stdClass){
+    //vlozeni samostatne hodnoty do pole a jeji vraceni
+    return array($ret->{$fname."Result"}
+    			->{$fname."Output"});
   }
-  //návratová hodnota neobsahovala $fname."Output"
-  return $ret->{$fname . "Result"};
+  //vraceni pole hodnot
+  return $ret->{$fname . "Result"}->{$fname."Output"};
+ }
+ //navratova hodnota neobsahovala $fname."Output"
+ return $ret->{$fname."Result"};
 }
-//návratová hodnota neobsahovala $fname."Result"
-return $ret; 
-	\end{verbatim}
-	\caption{zpracování návratové hodnoty od webové služby}\label{skautisReturnValue}
-\end{figure}
+//navratova hodnota neobsahovala $fname."Result"
+return $ret;
+\end{lstlisting}
 
-\subsection{Vyjímky}
-Soubor výjímek, které mohou být vyhozeny při volání služeb.
+\subsection{Výjimky}
+Tato část je tvořena pouze souborem výjimek, které mohou být vyhozeny při volání služeb.
 
-\section{Architektura a struktura}
-Aplikace je postavená na architektuře MVC viz. \ref{netteDescription}.
+\section{Architektura a struktura aplikace}
+Aplikace je postavená na architektuře MVC, viz \ref{netteDescription}.
 
-Model je postaven ze dvou úrovní. První úrověň tvoří třídy typu \uv{Service} jednotlivých částí a jsou potomci třídy BaseService. Přistupuje se k nim z presenterů a zajišťují přístup do druhé úrovně modelu a k webovým službám systému SkautIS skrze moji knihovnu. Druhou úrovní tvoří třídy \uv{Tables}, potomci třídy BaseTable, které jsou vyhrazeny vždy pro konkrétní Service a přistupuje se k nim pouze skrz ně. Tables zajišťují volání sql dotazů nad tabulkami v databázi.
+Model se skládá ze dvou úrovní. První úroveň tvoří třídy typu \texttt{Service} jednotlivých částí a jsou potomci třídy \texttt{BaseService}, která . Přistupuje se k~nim z~presenterů a zajišťují přístup do druhé úrovně modelu a k webovým službám systému SkautIS skrze knihovnu. Druhou úroveň tvoří třídy \texttt{Tables}, potomci třídy \texttt{BaseTable}, které jsou vyhrazeny vždy pro konkrétní Service a přistupuje se k nim pouze skrz ně. Tables zajišťují volání SQL dotazů nad tabulkami v~databázi přes knihovnu \texttt{dibi}.
 
-View pro jednotlivé akce presenterů jsou uloženy v samostatných souborech, pojmenovaných stejně jako daná akce. Všechny soubory s view jsou pak uloženy ve složce s názvem presenteru. Všechny view, až na Error view, se vkládají do základního layoutu \uv{@layout.latte} skrz blok {block \#content}. Další informace o skládání a dědění šablon najdeme na \url{http://dev.nette.org/cs/dedicnost-sablon-bez-oop}.
+\texttt{BaseService} nastavuje společné proměnné, vytváří lokální úložiště pro výsledky volání služeb ze systému SkautIS a poskytuje všem service třídám možnost vytvářet PDF dokumenty.
 
-Jak jsem uvedl v kapitole \ref{netteDescription}, namísto pojmu controler, se v Nette Frameworku používá označení presenter. Každý presenter zajištujě jednu jasně vytyčenou část aplikace a k jednotlivým presenterům se dostanu v dalších odstavcích.
+View pro jednotlivé akce presenterů jsou uloženy v~samostatných souborech pojmenovaných stejně jako daná akce. Všechny soubory s view jsou pak uloženy ve složce s názvem presenteru. Všechny view, až na Error view, se vkládají do základního layoutu \texttt{@layout.latte} skrz blok \texttt{\{block \#content\}}. Další informace o~skládání a dědění šablon jsou na \url{http://dev.nette.org/cs/dedicnost-sablon-bez-oop}.
+
+Namísto pojmu controler, se v~Nette Frameworku používá označení presenter, viz \ref{netteDescription}. Každý presenter zajištujě jednu jasně vytyčenou část aplikace a jednotlivé presentery budou rozebrány v ~dalších odstavcích.
 
 \begin{figure}[h]\centering
 \begin{verbatim}
     app/                   // adresář s aplikací
         AccountancyModule/ //modul Accountancy
-            model/        // model modulu Accountancy
             presenters/   // presentery modulu Accountancy
             templates/    // view modulu Accountancy
         presenters/      // presentery bez modulu
@@ -447,6 +511,7 @@ Jak jsem uvedl v kapitole \ref{netteDescription}, namísto pojmu controler, se v
         temp/           // adresář dočasných souborů pro Nette
         bootstrap.php   // zaváděcí soubor aplikace
         config.neon    // hlavní konfigurační soubor
+    model/            // model
     css/              // kaskádové styly
     images/           // adresář pro obrázky
     js/               // soubory s javascriptem
@@ -457,85 +522,124 @@ Jak jsem uvedl v kapitole \ref{netteDescription}, namísto pojmu controler, se v
 \caption{struktura adresářů a základních souborů}\label{directoryStructure}
 \end{figure}
 
-Vnitřně jsem aplikaci rozdělil na dvě části. První část jsem nazval \uv{základní částí}, jelikož především obsahuje základ použitelný pro většinu aplikací spolupracující se systémem SkautIS.
-
-Oproti tomu druhá část je velmi úzce zaměřená na zpracování účetní části aplikace, a proto jsem ji umístil do vlastního modulu \uv{Accountancy}.
+Interně jsou presentery a jejich view rozděleny do dvou částí. První část se nazývá \uv{základní část}, jelikož obsahuje základ použitelný pro většinu aplikací spolupracující se systémem SkautIS. Druhá část se zaměřuje na zpracování účetní části aplikace, a proto je umístěna do vlastního modulu \texttt{Accountancy}.
 
 \subsection{Základní část}
-V základní části najdeme \uv{BasePresenter}, od kterého jsou všechny ostatní poděděné, presenter zajištující přihlašování \uv{AuthPresenter}, výchozí \uv{DefaultPresenter} pro zobrazení úvodní stránky, \uv{ErrorPresenter} na spracování chybových hlášek a layout celého webu.
+V základní části je:
+\begin{itemize}
+	\item \texttt{BasePresenter}, od kterého jsou všechny ostatní presentery poděděné,
+	\item \texttt{AuthPresenter} zajištující přihlašování,
+	\item výchozí presenter \texttt{DefaultPresenter} pro zobrazení úvodní stránky,
+	\item \texttt{ErrorPresenter} na zpracování chybových hlášek,
+	\item soubor \texttt{@layout.latte} s rozložením celé stránky.
+\end{itemize}
 
-BasePresenter rozšiřuje možnosti formulářů o políčko s kalendářem, zajištuje změnu role přihlášeného uživatele vůči systému SkautIS a vytváří souhrnné soubory pro kaskádové styly a JavaScript.
+BasePresenter rozšiřuje možnosti formulářů o~políčko s kalendářem, zajištuje změnu role přihlášeného uživatele vůči systému SkautIS a vytváří souhrnné soubory pro kaskádové styly a JavaScript.
 
-AuthPresenter přijímá přihlašovací parametry od systému SkautIS, které nastavuje knihovně pro komunikaci a uživatele přihlásí (viz \ref{sec:skautisComunication}). Obdobným způsobem zajistí i odhlášení ze systému SkautISu a z aplikace. Pokud přistupujeme k aplikaci, bez aktivního přihlášení, vygeneruje se do adresy řetezec \uv{backlink}, díky kterému budeme po přihlášení přesměrováni zpět do aplikace na stránku kam jsme přistupovali.
+AuthPresenter přijímá přihlašovací parametry od systému SkautIS, které nastavuje knihovně pro komunikaci a uživatele přihlásí (viz \ref{sec:skautisComunication}). Obdobným způsobem zajistí i odhlášení ze systému SkautISu a z aplikace. Pokud přistupuje k aplikaci, bez aktivního přihlášení, vygeneruje se do adresy řetězec \uv{backlink}, díky kterému budeme po přihlášení přesměrováni zpět do aplikace na stránku, kam jsme původně přistupovali.
 
-ErrorPresenter obsluhuje všechny vyhozené vyjímky aplikací pro upozornění na nečekanou událost. Spadá sem jak požadavek na neexistující stránku (chyba 404, 4xx, ...) tak i chyby serveru (chyba 500, 5xx, ...).
+ErrorPresenter obsluhuje všechny vyhozené výjimky aplikací pro upozornění na nečekanou událost. Spadá sem jak požadavek na neexistující stránku (chyba 404, 4xx, ...), tak i chyby serveru (chyba 500, 5xx, ...).
 
 \subsection{Modul Accountancy}
 
 Modul Accountancy můžeme rozdělit na tyto části:
 \begin{itemize}
-	\item Správa akcí
-	\item Správa účastníků
-	\item Pokladní kniha
+	\item správa akcí
+	\item správa účastníků
+	\item pokladní kniha
 \end{itemize}
 
-Modul má vlastní \uv{Accourancy\_BasePresenter}, poděděný od základního BasePresenteru, který kontroluje přihlášení k systému SkautIS. Při absenci přihlášení nás přesměruje na úvodní stránku, v opačném případě prodlouží přihlášení o 29 min. Pokud je zvolená akce, tak kontroluje oprávnění uživatele k ní přistupovat. Dále jsou zde také nastaveny \uv{routy} pro celý modul.
+Modul má vlastní \texttt{Accountancy\_BasePresenter}, poděděný od základního \texttt{BasePresenteru}, který kontroluje přihlášení k systému SkautIS. Při absenci přihlášení nás přesměruje na úvodní stránku, v~opačném případě prodlouží platnost přihlášení o~29 min. Přihlášení do aplikace je prodlouženo o 29 minut, protože přihlášení do SkautISu je platné 30 minut a v případě shodné hodnoty by mohlo docházet pouze k částečnému odhlášení. Pokud je zvolená akce, tak kontroluje oprávnění uživatele k ní přistupovat. Dále jsou zde nastaveny \uv{routy} pro celý modul. \uv{Routy} jsou jednotlivá pravidla pro \uv{routování}, což je obousměrný překlad jak z URL adresy na akci presenteru, tak i naopak.
 
 
-
-
-
-
-
-
-
-
-BaseService nastavuje společné proměnné, vytváří lokální úložiště pro výsledky volání služeb ze systému SkautIS a poskytuje všem service třídám možnost vytvářet PDF dokumenty.
+\begin{lstlisting}[caption=routa pro přihlašovací presenter, label=route]
+$router[] = new Route('sign/<action>[/back-<backlink>]',
+	array(
+    		"presenter" => "Auth",
+    		"action" => "default",
+    		"backlink" => NULL
+	)
+);
+\end{lstlisting}
 
 \subsubsection{Správa akcí}
-Na úvodní stránce po přihlášení najdeme tlačítko pro založení nové akce a seznam všech akcí, které můžeme filtrovat podle zadaných kritérií. Po výběru akce se nám zobrazí podrobnější informace o akci. Pokud je akce ve stavu \uv{rozpracovaná}, můžeme její základní údaje měnit. V případě, že je akce již \uv{uzavřena} musí ji pro editaci nejdříve otevřít.
+Na úvodní stránce po přihlášení uživatel najde tlačítko pro založení nové akce a seznam všech akcí, které může filtrovat podle roku konání a stavu akce. Akce ze seznamu lze smazat nebo je vybrat pro další práci s nimi. Po vybrání akce se zobrazí podrobnější informace o~akci a jejím vedení. Pokud je akce ve stavu rozpracovaná, lze její základní údaje měnit. V~případě, že je akce již ve stavu uzavřena, nejde měnit její údaje, lze pouze vygenerovat závěrečnou zprávu nebo akci převést do otevřeného stavu.
+
+Vygenerovaná závěrečná zpráva obsahuje:
+\begin{itemize}
+	\item základní informace o~akci a jejím pořadateli,
+	\item počet účastníků,
+	\item počet osobodnů,
+	\item jednotlivé účetní kategorie a sumu jejich dokladů.
+\end{itemize}
 
 \subsubsection{Správa účastníků}
-Vybírat účastníky můžeme ze seznam členů vybrané jednotky, ke které máme dostatečné oprávnění nebo založit úplně nového účastníka. Při výběru aktuální jednotky si můžeme vybrat, zda chceme zobrazit členy i z podřízených jednotek či nikoliv. Každý účastník má u sebe uvedený počet dnů strávených na akci a částku, kterou zaplatil jako účastnický poplatek. Pokud již máme vybrané všechny účastníky a máme u nastaveny správné částky, můžeme si nechat vygenerovat příjmový paragon do pokladní knihy.
+Pro správu účastníků je k dispozici seznam členů z vybrané jednotky, ke které máme dostatečné oprávnění, nebo lze založit úplně nového účastníka. Při výběru aktuální jednotky lze přepínat mezi stavem se zobrazením členů z podřízených jednotek či bez jejich zobrazení. Každý účastník má u~sebe uvedený počet dnů strávených na akci a částku, kterou zaplatil jako účastnický poplatek.
+Aplikace umožňuje s označenými účastníky provést:
+\begin{itemize}
+	\item hromadné přidání ze seznamu jednotky do seznamu účastníků,
+	\item hromadné nastavení počtu dní na akci,
+	\item hromadné nastavení zaplacení částky, 
+	\item hromadné odebrání ze seznamu účastníků.
+\end{itemize}
+  
+Pokud již uživatel má všechny částky vyplněné, může si nechat vygenerovat příjmový příjmový doklad do pokladní knihy. Dále zde může získat seznam účastníků s jejich adresami a daty narození.
 
 \subsubsection{Pokladní kniha}
-Do pokladní knihy přidáváme příjmové a výdajové pokladní doklady. U každého dokladu evidujeme jeho základní údaje a jeho kategorii. Pokud bychom se dostali do záporné částky, tak nás na to systém upozorní, protože takový stav není reálně možný.
+Do pokladní knihy lze přidávat příjmové a výdajové pokladní doklady. U každého dokladu evidujeme
+\begin{itemize}
+	\item datum zaúčtování do pokladní knihy,
+	\item příjemce nebo poplatníka peněz,
+	\item účel příjmu nebo výdaje,
+	\item částku,
+	\item kategorii dokladu.
+\end{itemize}
+Pokladní kniha kontroluje, jestli přidáním výdajového dokladu, se nedostane zůstatková částka do záporné hodnoty. Pokud tento stav nastane, je uživatel o~této zkutečnosti informován až do nápravy tohoto jevu, protože není reálně možné, aby v pokladní knize byla záporná částka.
 
-Dále zde můžeme exportovat do pdf doklady jednotlivě nebo jako vybranou skupinu. V případě exportu více dokladů najednou, jsou příjmové doklady řazeny zařazeny na začátek a vždy maximálně 3 na jedné stránce. Každý výdajový doklad má stránku vlastní, aby byl dostatečný prostor pro nalepení prvotního účetního dokladu.  TODO
+Částku dokladu lze zadat jak ve formátu čísla, tak i~jako matematický výraz obsahující číslice, operátor sčítání a operátor násobení. V~obou případech se finální částka vypočte jak v prohlížeči pomocí JavaScriptu pro informaci uživatele, tak i na straně serveru přes PHP pro případ vypnutého JavaScriptu v prohlížeči.
 
+Je zde možnost exportovat pokladní knihu a doklady do PDF. Doklady můžeme exportovat jednotlivě nebo jako vybranou skupinu. V~případě exportu více dokladů najednou, jsou příjmové doklady řazeny na začátek a vždy maximálně 3 na jedné stránce. Každý výdajový doklad má pak vlastní stránku, aby byl dostatečný prostor pro nalepení prvotního účetního dokladu.
 
+U každého dokladu jsou generovány fakturační údaje právnické osoby pořádající akci. Na doklad je generována částka vypsaná jak číslicemi, tak slovy. Převedení čísla na částku zajišťuje helper \texttt{priceToString}. 
 
+Helper je statická funkce volaná v šabloně, sloužící pro úpravu nebo přeformátování dat. Helper \texttt{priceToString} umí převést částku od 1 do 999 999 včetně na řetězec bez mezer a velkých písmen.
 
+\subsection{Základní soubory Nette Frameworku}
+Nette Framework obsahuje zaváděcí soubor a jeden nebo více konfiguračních souborů. 
+ 
+\subsubsection{Zaváděcí soubor}
+Veškeré požadavky na aplikaci jsou přesměrovány přes nastavení serveru Apache v soubotu .htaccess na stránku index.php. Ta nastaví základní konstanty a spustí zaváděcí soubor \texttt{bootstrap.php}.
+\texttt{Bootstrap} načte celou knihovnu, nastaví konfiguraci podle konfiguračního souboru a vytvoří \texttt{routy} (viz. ukázka \ref{route}) pro základní část.
 
+\subsubsection{Konfigurační soubor}
+Konfigurace je zapsána v~souboru \texttt{config.neon} ve formátu \texttt{NEON}\cite{neon}, který je velmi podobný formátu \texttt{YAML}. Zde jsou nastaveny všechny služby, přístup do databáze a parametry pro připojení k systému SkautIS.
 
-\subsection{Zaváděcí soubor}
-Veškeré požadavky jsou přesměrovány na stránku index.php, která nastaví nejzákladnější konstanty a spustí zaváděcí soubor \uv{bootstrap.php}. Ten dále načte celou knihovnu, nastaví konfiguraci podle konfiguračního souboru a vytvoří \uv{routy} pro základní část, což jsou pravidla pro tvorbu a zpětný překlad url adres. 
-
-\begin{figure}[h]\centering
-	\begin{verbatim}
-	$router[] = new Route('sign/<action>[/back-<backlink>]', array(
-	    "presenter" => "Auth",
-	    "action" => "default",
-	    "backlink" => NULL
-	));
-	\end{verbatim}
- 	\caption{ukázková routa pro přihlašovací presenter}
-\end{figure}
-
-\subsection{Konfigurační soubor}
-Konfigurace je zapsána v souboru \uv{config.neon} ve formátu \uv{NEON}, který je velmi podobný formátu YAML. Zde jsou nastaveny všechny služby, přístup do databáze a parametry pro připojení k systému SkautIS.
-\begin{figure}[h]\centering
-	\begin{verbatim}
-	#komentář
+\begin{lstlisting}[caption=ukázka z konfiguračního souboru config.neon]
+	#komentar
 	common:
-	  services: #nastavení službeb
+	  nette:
+            session:
+              autoStart: smart
+              save_path: "%tempDir%/sessions"
+              expiration: "+ 7 days"
+           
+	  services: #nastaveni sluzbeb
 	    connection
 	      class: DibiConnection
-	      factory: dibi::connect(%database%)#odkaz na parametry database
-	      run: TRUE        
+	      #odkaz na parametry database
+	      factory: dibi::connect(%database%)
+	      run: TRUE
+	    participantService:
+              class: ParticipantService( @skautIS )
+            skautIS:
+              class: SkautIS
+              factory: SkautIS::getInstance(
+              			%skautisid%,
+              			%skautisTestMode%)
+	    ...
 	
 	    parameters:
-	        database: #nastavení databáze
+	        database: #nastaveni databaze
 	            driver: mysql
 	            host: localhost
 	            username: user
@@ -544,19 +648,13 @@ Konfigurace je zapsána v souboru \uv{config.neon} ve formátu \uv{NEON}, který
 	            charset: utf8
 	
 	        #SkautIS ID_Application
-	        skautisid = f2197deb-32c8-4192-92d6-f23427757a07
+	        skautisid = f2197deb-...-f23427757a07
 	        skautisTestMode = true
-	\end{verbatim}
- 	\caption{ukázka z konfiguračního souboru config.neon}
-\end{figure}
-Podrobnější příklady naleznete na \url{http://ne-on.org/}. 
+\end{lstlisting}
 
+Všechny služby dostanou v konstruktoru službu \texttt{skautIS}, což je instance knihovny SkautIS a poté jsou předány do systémovému kontejneru. Systémový kontejner je statický Dependency Injection\cite{di} kontejner, který je dostupný ve všech presenterech přes volání \texttt{\$this->context}. Jednotlivé služby lze volat přes \texttt{\$this->context->nazevSluzby}.
 
-
-
-
-
-
+\chapter{Testování}
 
 
 
@@ -569,15 +667,23 @@ Podrobnější příklady naleznete na \url{http://ne-on.org/}.
 \bibliographystyle{csn690}
 \bibliography{mybibliographyfile}
 
-
 \appendix
 
 \chapter{Seznam použitých zkratek}
 % \printglossaries
 \begin{description}
+	\item[CSV] Comma-separated values
+	\item[ORM] Object-relational mapping
+	\item[PDF] Portable Document Format	
 	\item[PHP] PHP: Hypertext Preprocessor
-	\item[XSS] Cross-site scripting
+	\item[RTF] Rich Text Format
+	\item[SVN] Apache Subversion
 	\item[SQL] Structured Query Language
+	\item[YAML] YAML Ain't Markup Language 
+	\item[XSS] Cross-site scripting
+	\item[]
+	\item[]
+	\item[]	
 %	\item[GUI] Graphical user interface
 %	\item[XML] Extensible markup language
 \end{description}
@@ -661,7 +767,7 @@ Podrobnější příklady naleznete na \url{http://ne-on.org/}.
  % Gnuplot BW i barevně
  Může se hodit mít více verzí stejného obrázku, např. pro barevný či černobílý tisk a nebo pro prezentaci. S~pomocí některých nástrojů na generování grafiky je to snadné.
  
- Máte-li například graf vytvořený v programu Gnuplot, můžete jeho černobílou variantu (viz obr. \ref{fig:gnuplot-bw}) vytvořit parametrem \verb|monochrome dashed| příkazu \verb|set term|. Barevnou variantu (viz obr. \ref{fig:gnuplot-col}) vhodnou na prezentace lze vytvořit parametrem \verb|colour solid|.
+ Máte-li například graf vytvořený v~programu Gnuplot, můžete jeho černobílou variantu (viz obr. \ref{fig:gnuplot-bw}) vytvořit parametrem \verb|monochrome dashed| příkazu \verb|set term|. Barevnou variantu (viz obr. \ref{fig:gnuplot-col}) vhodnou na prezentace lze vytvořit parametrem \verb|colour solid|.
  
  \begin{figure}\centering
  	\includegraphics{gnuplot-bw}

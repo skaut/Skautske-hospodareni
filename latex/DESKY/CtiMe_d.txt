@@ -1,0 +1,82 @@
+
+
+
+Pokyny k pouziti sablony desek zaverecne prace
+
+
+
+   Kvuli jednotnemu vzhledu desek zaverecnych praci FIT CVUT v Praze je
+nutne zajistit dodrzeni navrzeneho vzhledu a uvedeni vsech informaci. Spravny
+vzhled je zarucen pri vyuziti vazarny/tiskarny Powerprint, Zikova 19. Desky
+si samozrejme muzete nechat vyrobit kdekoli, v tom pripade je vsak na Vas
+zajisteni spravneho vzhledu. Pri dohode s vazarnou venujte pozornost zejmena
+nasledujicim bodum:
+
+   - uvedeni vsech pozadovanych informaci v uvedenem poradi s dodrzenim
+     velikosti pismen:
+
+       1.NAZEV VYSOKE SKOLY A FAKULTY,
+
+       2.logo CVUT,
+
+       3.nazev prace,
+
+       4.TYP PRACE,
+
+       5.rok obhajoby a na stejnem radku jmeno a PRIJMENI studenta vcetne
+         titulu;
+
+   - dodrzeni navrzeneho pisma, zejmena metriky (velikosti i sirky),
+
+   - presne rozmisteni,
+
+   - informace na deskach budou vytlacene (nestaci pouhy potisk).
+
+   Na hrbet umistete informace v nasledujicim formatu:
+rok odevzdani (vlevo)   TYP PRACE (stred)   jmeno a PRIJMENI (vpravo)
+   Tato sablona desek je navrzena pro pouziti se systemem LATEX 2e, odladena
+s distribuci TeXLive 2010.
+
+
+
+Bakalarska prace
+
+
+Vyberte si soubor s prefixem deskyBP podle barevne varianty:
+
+   - invert-barvy slouzi hlavne pro predstavu o vyslednem vzhledu,
+
+   - pro tisk nahledu doporucujeme pouzit variantu cernobile.
+
+   Chcete-li vytvorit nahled s vlastnimi udaji, zvolte si zdrojovy soubor (.tex)
+podle kodovani textu ve Vami zvolenem editoru. Nevite-li, podle operacniho
+systemu zkuste:
+
+   - ve Windows soubor s nazvem zacinajicim deskyBP_Windows-1250, nebude-
+     li fungovat, pak deskyBP_UTF-8;
+
+   - v jinych operacnich systemech soubor s nazvem zacinajicim deskyBP_UTF-8,
+     pripadne deskyBP_ISO-8859-2.
+
+   Soubor zpracujte programem pdflatex (nikoli pdfcslatex).
+
+Magisterska prace
+
+
+Vyberte si soubor s prefixem deskyDP podle barevne varianty:
+
+   - invert-barvy slouzi hlavne pro predstavu o vyslednem vzhledu,
+
+   - pro tisk nahledu doporucujeme pouzit variantu cernobile.
+
+   Chcete-li vytvorit nahled s vlastnimi udaji, zvolte si zdrojovy soubor (.tex)
+podle kodovani textu ve Vami zvolenem editoru. Nevite-li, podle operacniho
+systemu zkuste:
+
+   - ve Windows soubor s nazvem zacinajicim deskyDP_Windows-1250, nebude-
+     li fungovat, pak deskyDP_UTF-8;
+
+   - v jinych operacnich systemech soubor s nazvem zacinajicim deskyDP_UTF-8,
+     pripadne deskyDP_ISO-8859-2.
+
+   Soubor zpracujte programem pdflatex (nikoli pdfcslatex).

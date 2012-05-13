@@ -348,6 +348,10 @@
 	\cleardoublepage
 	\listoffigures*
 
+	\cleardoublepage	
+	\lstlistoflistings
+
+
 	\cleardoublepage
 	\listoftables*
 

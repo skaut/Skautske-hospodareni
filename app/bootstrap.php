@@ -40,4 +40,5 @@ $router[] = new SimpleRouter('Default:default');
 $application = $container->application;
 $application->catchExceptions = $configurator->isProductionMode();
 $application->errorPresenter = 'Error';
-$application->run();
+ if (!Environment::isConsole())
+   $application->run();
