@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation
+END
+Null.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/Null.php
+END
+DeleteAll.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/DeleteAll.php
+END
+Replace.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/Replace.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/Exception.php
+END
+IDatabaseOperation.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/IDatabaseOperation.php
+END
+Composite.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/Composite.php
+END
+Delete.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/Delete.php
+END
+Update.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/Update.php
+END
+Insert.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/Insert.php
+END
+Truncate.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/Truncate.php
+END
+RowBased.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/RowBased.php
+END
+Factory.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/Operation/Factory.php
+END

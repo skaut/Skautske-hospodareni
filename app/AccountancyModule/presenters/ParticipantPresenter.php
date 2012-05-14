@@ -22,7 +22,7 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         parent::startup();
 
         if (!$this->aid) {
-            $this->flashMessage("Nepovolený přístup", "error");
+            $this->flashMessage("Nepovolený přístup", "danger");
             $this->redirect("Event:");
         }
         $this->uid = $this->getParameter("uid", NULL);
@@ -34,6 +34,11 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
     }
 
     function renderDefault($aid, $uid = NULL) {
+        if(!array_key_exists("EV_ParticipantGeneral_ALL_EventGeneral", $this->availableEventActions)){
+            $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");
+            $this->redirect("Event:");
+        }
+                
         $participants = $this->context->participantService->getAllParticipant($this->aid, $cache = FALSE);
         $all = $this->context->participantService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
@@ -46,6 +51,9 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $this->template->uchildrens = $uchildrens;
         $this->template->list = $all;
         $this->template->participants = $participants;
+        $this->template->accessDeleteParticipant =  array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableEventActions);
+        $this->template->accessUpdateParticipant =  array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableEventActions);
+        $this->template->accessInsertParticipant =  array_key_exists("EV_ParticipantGeneral_INSERT_EventGeneral", $this->availableEventActions);
     }
 
     public function actionEdit($aid, $pid, $days = 0, $payment = 0) {
@@ -367,7 +375,6 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         $this->redirect("this");
     }
 
-    // <editor-fold defaultstate="collapsed" desc="setters and getters">
     protected function getDirectMemberOnly() {
         return (bool) $this->getSession(__CLASS__)->DirectMemberOnly;
     }
@@ -376,6 +383,5 @@ class Accountancy_ParticipantPresenter extends Accountancy_BasePresenter {
         return $this->getSession(__CLASS__)->DirectMemberOnly = $direct;
     }
 
-    // </editor-fold>
 }
 

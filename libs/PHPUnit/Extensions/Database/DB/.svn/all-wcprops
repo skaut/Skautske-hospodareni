@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB
+END
+DefaultDatabaseConnection.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/DefaultDatabaseConnection.php
+END
+IMetaData.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/IMetaData.php
+END
+IDatabaseConnection.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/IDatabaseConnection.php
+END
+MetaData.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/MetaData.php
+END
+TableIterator.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/TableIterator.php
+END
+ResultSetTable.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/ResultSetTable.php
+END
+FilteredDataSet.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/FilteredDataSet.php
+END
+DataSet.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/DataSet.php
+END
+Table.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/Table.php
+END
+TableMetaData.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DB/TableMetaData.php
+END

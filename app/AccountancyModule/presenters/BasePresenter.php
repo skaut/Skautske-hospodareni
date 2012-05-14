@@ -22,6 +22,12 @@ class Accountancy_BasePresenter extends BasePresenter {
      * @var bool
      */
     protected $isEditable;
+    
+    /**
+     * pole dostupných událostí pro akce
+     * @var array
+     */
+    protected $availableEventActions;
 
     protected function startup() {
         parent::startup();
@@ -39,13 +45,15 @@ class Accountancy_BasePresenter extends BasePresenter {
         if(isset($this->aid) && !is_null($this->aid)){//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
                 $event = $this->context->eventService->get($this->aid);
-                $this->template->isEditable = $this->isEditable = $this->context->eventService->isEditable($event);
+                $this->availableEventActions = $this->context->userService->actionVerify($this->aid);
+                $this->template->isEditable = $this->isEditable = array_key_exists("EV_EventGeneral_UPDATE", $this->availableEventActions);
             } catch (SkautIS_PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Event:");
             }   
+        } else {
+            $this->availableEventActions = $this->context->userService->actionVerify(NULL, NULL, "EV_EventGeneral"); //zjistení událostí nevázaných na konretnní akci
         }
-        
     }
 
     function beforeRender() {
@@ -56,14 +64,13 @@ class Accountancy_BasePresenter extends BasePresenter {
     }
     
     protected function editableOnly() {
-        if (!$this->isEditable) {
+        if ($this->isEditable) {
             $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
             if($this->isAjax()){
                 $this->sendPayload();
             } else {
                 $this->redirect("Event:");
             }
-            
         }
     }
 

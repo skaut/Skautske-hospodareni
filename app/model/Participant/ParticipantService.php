@@ -124,7 +124,7 @@ class ParticipantService extends BaseService {
      */
     public function update($participantId, array $arr) {
         $arr['ID'] = $participantId;
-        $this->skautIS->event->ParticipantGeneralUpdate($arr);
+        $this->skautIS->event->ParticipantGeneralUpdate($arr, "participantGeneral");
     }
 
     /**

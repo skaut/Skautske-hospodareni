@@ -58,7 +58,6 @@ development < common:
         skautisTestMode : true #isTestMode?
         #skautisid = 590db6c9-e46b-43bb-b3b7-701cb556b91c #localhost - appOsmnactka
 
-
 production < common:
         
     parameters:
@@ -76,6 +75,13 @@ production < common:
         skautisid : 093a637d-fd52-4028-9545-bb9a92d18a0c #u.osmnactka.net - ostrý
         skautisTestMode : false #isTestMode?
         #skautisid = 48104fe2-b447-47f5-9a26-051c710da74e #vyvoj.osmnactka.net - test
+
+console < development:
+    services:
+        nette.userStorage:
+            class: TestUserStorage
+
+
 
 ;database: hana_ucet_osmnactka_net
 ;username: ucet

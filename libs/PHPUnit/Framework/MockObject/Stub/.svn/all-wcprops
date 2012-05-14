@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Stub
+END
+ReturnCallback.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Stub/ReturnCallback.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Stub/Exception.php
+END
+MatcherCollection.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Stub/MatcherCollection.php
+END
+Return.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Stub/Return.php
+END
+ReturnArgument.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Stub/ReturnArgument.php
+END
+ConsecutiveCalls.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Stub/ConsecutiveCalls.php
+END
