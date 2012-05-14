@@ -1,0 +1,42 @@
+
+
+
+   Pokyny k pouziti sablony zaverecnych praci
+   Tato sablona je navrzena pro pouziti se systemem LATEX 2e, odladena s dis-
+tribuci TeXLive 2010. Priklad, dalsi pokyny a inspiraci najdete v DP_Priklad.
+
+
+
+1    Bakalarska prace
+
+
+Zvolte si zdrojovy soubor (.tex) s prefixem Sablona_BP podle kodovani textu
+ve Vami zvolenem editoru. Nevite-li, podle operacniho systemu zkuste:
+
+   - ve Windows soubor Sablona_BP_Windows-1250.tex, nebude-li fungovat,
+     pak Sablona_BP_UTF-8.tex;
+
+   - v jinych operacnich systemech soubor Sablona_BP_UTF-8.tex, pripadne
+     Sablona_BP_ISO-8859-2.tex.
+
+   Vybranou sablonu vhodne prejmenujte dle vlastnich udaju v souladu s timto
+vzorem: BP_Prijmeni_Jmeno_Rok.tex. Sablonu upravte podle svych dat, do-
+plnte text sve prace a zpracujte programem pdflatex (nikoli pdfcslatex).
+
+
+
+2    Magisterska prace
+
+
+Zvolte si zdrojovy soubor (.tex) s prefixem Sablona_DP podle kodovani textu
+ve Vami zvolenem editoru. Nevite-li, podle operacniho systemu zkuste:
+
+   - ve Windows soubor Sablona_DP_Windows-1250.tex, nebude-li fungovat,
+     pak Sablona_DP_UTF-8.tex;
+
+   - v jinych operacnich systemech soubor Sablona_DP_UTF-8.tex, pripadne
+     Sablona_DP_ISO-8859-2.tex.
+
+   Vybranou sablonu vhodne prejmenujte dle vlastnich udaju v souladu s timto
+vzorem: DP_Prijmeni_Jmeno_Rok.tex. Sablonu upravte podle svych dat, do-
+plnte text sve prace a zpracujte programem pdflatex (nikoli pdfcslatex).
