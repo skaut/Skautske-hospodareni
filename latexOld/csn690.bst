@@ -225,108 +225,108 @@ FUNCTION {space.word}
  % Begin module:
  % \ProvidesFile{czech.mbs}[2011/07/09 1.0 (DM)]
 
- % The language selected here is ENGLISH
+ % The language selected here is CZECH
 FUNCTION {bbl.and}
-{ "and"}
+{ "a"}
 
 FUNCTION {bbl.etal}
-{ "etc." }
+{ "aj." }
 
 FUNCTION {bbl.editors}
-{ "editors" }
+{ "editoøi" }
 
 FUNCTION {bbl.editor}
 { "editor" }
 
 FUNCTION {bbl.edby}
-{ "edited by" }
+{ "editace" }
 
 FUNCTION {bbl.edition}
-{ "edition" }
+{ "vydání" }
 
 FUNCTION {bbl.volume}
-{ "volume" }
+{ "roèník" }
 
 FUNCTION {bbl.of}
-{ "of" }
+{ "" }
 
 FUNCTION {bbl.number}
-{ "number" }
+{ "èíslo" }
 
 FUNCTION {bbl.nr}
-{ "no." }
+{ "è." }
 
 FUNCTION {bbl.in}
 { "in" }
 
 FUNCTION {bbl.pages}
-{ "pp." }
+{ "s." }
 
 FUNCTION {bbl.page}
-{ "p." }
+{ "str." }
 
 FUNCTION {bbl.chapter}
-{ "chapter" }
+{ "kapitola" }
 
 FUNCTION {bbl.techrep}
-{ "Technical report" }
+{ "Technická Zpráva" }
 
 FUNCTION {bbl.mthesis}
-{ "Master's thesis" }
+{ "Diplomová práce" }
 
 FUNCTION {bbl.phdthesis}
-{ "Dissertation thesis" }
+{ "Dizertaèní práce" }
 
 FUNCTION {bbl.first}
-{ "First" }
+{ "První" }
 
 FUNCTION {bbl.second}
-{ "Second" }
+{ "Druhé" }
 
 FUNCTION {bbl.third}
-{ "Third" }
+{ "Tøetí" }
 
 FUNCTION {bbl.fourth}
-{ "Fourth" }
+{ "Ètvrté" }
 
 FUNCTION {bbl.fifth}
-{ "Fifth" }
+{ "Páté" }
 
 FUNCTION {bbl.st}
-{ "st" }
+{ "" }
 
 FUNCTION {bbl.nd}
-{ "nd" }
+{ "" }
 
 FUNCTION {bbl.rd}
-{ "rd" }
+{ "" }
 
 FUNCTION {bbl.th}
-{ "th" }
+{ "" }
 
-MACRO {jan} {"Jan."}
+MACRO {jan} {"Leden"}
 
-MACRO {feb} {"Feb."}
+MACRO {feb} {"Únor"}
 
-MACRO {mar} {"Mar."}
+MACRO {mar} {"Bøezen"}
 
-MACRO {apr} {"Apr."}
+MACRO {apr} {"Duben"}
 
-MACRO {may} {"May"}
+MACRO {may} {"Kvìten"}
 
-MACRO {jun} {"June"}
+MACRO {jun} {"Èerven"}
 
-MACRO {jul} {"July"}
+MACRO {jul} {"Èervenec"}
 
-MACRO {aug} {"Aug."}
+MACRO {aug} {"Srpen"}
 
-MACRO {sep} {"Sept."}
+MACRO {sep} {"Záøí"}
 
-MACRO {oct} {"Oct."}
+MACRO {oct} {"Øíjen"}
 
-MACRO {nov} {"Nov."}
+MACRO {nov} {"Listopad"}
 
-MACRO {dec} {"Dec."}
+MACRO {dec} {"Prosinec"}
 
  % End module: czech.mbs
 %% Copyright 1994-2004 Patrick W Daly
@@ -1575,10 +1575,10 @@ FUNCTION {begin.bib}
   if$
   "\begin{thebibliography}{"  longest.label  * "}" *
   write$ newline$
-  "\providecommand{\biburl}[1]{\textless\url{#1}\textgreater}"
+  "\providecommand{\biburl}[1]{\texttt{\textless#1\textgreater}}"
 %   "\providecommand{\biburl}[1]{#1}"
   write$ newline$
-  "\providecommand{\urlprefix}{Available at WWW: }"
+  "\providecommand{\urlprefix}{Dostupn{\' e} z WWW: }"
   write$ newline$
   "\expandafter\ifx\csname urlstyle\endcsname\relax"
   write$ newline$

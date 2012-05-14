@@ -4,7 +4,7 @@
 % czech thesis in Czech language
 % english thesis in English language
 
-\documentclass[thesis=M,english]{FITthesis}[2012/04/27]
+\documentclass[thesis=M,english]{FITthesis}[2011/07/15]
 
 \usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
 
@@ -13,11 +13,8 @@
 % \usepackage{amsmath} %advanced maths
 % \usepackage{amssymb} %additional math symbols
 
-\usepackage{dirtree} %directory tree visualisation
-
-
 % list of acronyms
-\usepackage[acronym,nonumberlist,toc,numberedsection=autolabel,nomain]{glossaries}
+\usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
 \iflanguage{czech}{\renewcommand*{\acronymname}{Seznam pou{\v z}it{\' y}ch zkratek}}{}
 \makeglossaries
 
@@ -36,10 +33,9 @@
 \abstractCS{Tato práce se zabývá slovními slovníkovými metodami komprese dat, specifickou částí bezztrátových metod komprese dat. Součástí publikace jsou rovněž některé znakově orientované slovníkové metody, především z~rodiny LZ algoritmů, potřebné k~pochopení složitějších slovních metod. Stěžejní dílem práce je popis implementovaných algoritmů pro slovní slovníkovou kompresi dat, jejich modifikací a především výsledky provedených testů, stejně jako jejich vyhodnocení. V~publikaci jsou zároveň uvedeny detaily implementace aplikace a její uživatelská příručka.}
 \abstractEN{This thesis is concerned with word-based dictionary methods of data compression. The word-based dictionary methods are part of lossless data compression methods. The character-based dictionary compression methods, especially from LZ-algorithms family, are a part of this issue. These compression methods are very important to understand more difficult word-based ones. The main sight of this publication is description of implemented word-based dictionary compression algorithms. Modifications of these methods and results of experiments are included too. There are also details contextual with implementation of the application and its user manual. The objective of this thesis
 is examination of word-based dictionary data compression methods, possibilities of their improvement and their implementation linked with experiments on well-known data compression corpuses.}
-\placeForDeclarationOfAuthenticity{Prague} %where you have signed the declaration
+\placeForDeclarationOfAuthenticity{Ecovany} %where you have signed the declaration
 \keywordsCS{Komprese dat, entropie, slovní algoritmy komprese.}
 \keywordsEN{Data compression, entropy, word-based algorithms.}
-\declarationOfAuthenticityOption{4} %select as appropriate, according to the desired license
 
 \begin{document}
 
@@ -47,7 +43,6 @@ is examination of word-based dictionary data compression methods, possibilities 
 \newacronym{RLE}{RLE}{Run-Length Encoding}
 
 \begin{introduction}
-	This text is based on diploma thesis of Jakub Jaro{\v s}.
 	\section{Motivation and objectives}
 
 	The amount of information is rapidly growing up. The main technique of reducing loads of space needed to store data or reducing time needed to transmit data is data compression. The size of data reduction is achieved by removing the excessive information.
@@ -60,7 +55,7 @@ is examination of word-based dictionary data compression methods, possibilities 
 	The main sight of the thesis is a part of textual algorithms named word-based which deals with texts in languages (natural, formal etc.). All of texts in natural languages (and also in other languages) have a specific structure. They can be divided into sentences, which can finish by a period, a question mark, or an exclamation mark. Each sentence consists of words that are separated from each other by space and/or punctuation marks.
 	Word-based compression algorithms, where alphabet consists of words, take advantage of these strictly defined structures, repetitions of sequences of words and spaces, repetitions of whole sentences.
 	\section{State of the Art}
-	
+
 	There are two basic ways in the world of dictionary word-based algorithms. The both of them are based on dictionary method \gls{LZW}. The method Word-Based \gls{LZW}, independently presented by Horspool and Cormack \cite{HC92}, and Jiang and Jones \cite{JJ92} in 1992 as first, is adaptive version of mentioned algorithm. The main sight is recently concentred to word-based context methods of data compression and related word-based \textit{preprocessing} transformations, which reversibly transform a data into another form. The reverse process is called \textit{postprocessing} transformation. Affected data could be compressed with most of existing lossless data compression algorithms with better compression efficiency than it can be achieved using an unaltered data. 
 \end{introduction}
 
@@ -173,7 +168,7 @@ The graphs of index distribution also shows the differencies between the algorit
 \begin{conclusion}
 	The word-based dictionary data compression algorithms (a part of lossless data compression) are the subject of this thesis. The lossless data compression is a very important field of research because the data compression allows to reduce the amount of space needed to store data.
 
-	The background of data compression field was presented in Chapter~\ref{textcompr}. There are basic notions and definitions followed by description of character-based dictionary algorithms. The word-based dictionary compression methods were investigated and discussed at the end of this chapter too.
+	The background of a data compression field was presented in Chapter~\ref{textcompr}. There are basic notions and definitions followed by the description of character-based dictionary algorithms. The word-based dictionary compression methods were investigated and discussed at the end of this chapter too.
 
 	There is the investigation of index distribution of tested files in Section \ref{sec:distr}. It led to the new modification of semi-adaptive word-based \gls{LZW} algorithm---\textit{WLZWE2}. The compression efficiency of this algorithm applied to the large files is better than the other implemented algorithms. However, the compression efficiency of \textit{WLZWE2} algorithm is much worse when it is applied to the small files. The experiments with \textit{WLZWE2} and \textit{WLZWES2} algorithms confirm the assumption from Section \ref{sec:distr}---the compression efficiency of version with unsorted dictionaries (\textit{WLZWE2}) is analogous to version with sorted ones (\textit{WLZWES2}).
 
@@ -194,31 +189,32 @@ The graphs of index distribution also shows the differencies between the algorit
 
 \chapter{Content of CD}\label{app:CDcontent}
 
-Visualise the content of enclosed media. Use of \verb|dirtree| is recommended. Note that directories src and text with appropriate content are mandatory.
-
-
-\begin{figure}
-	\dirtree{%
-		.1 readme.txt\DTcomment{the file with CD content description}.
-		.1 data\DTcomment{the data files directory}.
-		.2 graphs\DTcomment{the directory of graphs of experiments}.
-		.3 *.eps\DTcomment{the B/W graphs}.
-		.3 *.png\DTcomment{the color graphs}.
-		.3 *.dat\DTcomment{the graphs data files}.
-		.1 exe\DTcomment{the directory with executable WBDCM program}.
-		.2 wbdcm\DTcomment{the WBDCM program executable (UNIX)}.
-		.2 wbdcm.exe\DTcomment{the WBDCM program executable (Windows)}.
-		.1 src\DTcomment{the directory of source codes}.
-		.2 wbdcm\DTcomment{the directory of WBDCM program}.
-		.3 Makefile\DTcomment{the makefile of WBDCM program (UNIX)}.
-		.2 thesis\DTcomment{the directory of \LaTeX{} source codes of the thesis}.
-		.3 figures\DTcomment{the thesis figures directory}.
-		.3 *.tex\DTcomment{the \LaTeX{} source code files of the thesis}.
-		.1 text\DTcomment{the thesis text directory}.
-		.2 thesis.pdf\DTcomment{the Diploma thesis in PDF format}.
-		.2 thesis.ps\DTcomment{the Diploma thesis in PS format}.
-	}
-\end{figure}
+\begin{tabular}{llllll}
+\multicolumn{5}{l}{readme.txt} & - the file with CD content description\\
+&&&&&\\
+\multicolumn{5}{l}{data/} & - the data files directory\\
+& \multicolumn{4}{l}{graphs/} & - the directory of graphs of experiments\\
+& & \multicolumn{3}{l}{*.eps} & - the B/W graphs in PS format\\
+& & \multicolumn{3}{l}{*.png} & - the color graphs in PNG format\\
+& & \multicolumn{3}{l}{*.dat} & - the graphs data files\\
+&&&&&\\
+\multicolumn{5}{l}{exe/} & - the directory with executable WBDCM program\\
+& \multicolumn{4}{l}{wbdcm} & - the WBDCM program executable (UNIX)\\
+& \multicolumn{4}{l}{wbdcm.exe} & - the WBDCM program executable (MS Windows)\\
+&&&&&\\
+\multicolumn{5}{l}{src/} & - the directory of source codes\\
+& \multicolumn{4}{l}{wbdcm/}& - the directory of WBDCM program\\
+& & \multicolumn{3}{l}{Makefile}& - the makefile of WBDCM program (UNIX)\\
+& \multicolumn{4}{l}{thesis/} & - the directory of \LaTeX{} source codes of the thesis\\
+& & \multicolumn{3}{l}{figures/} & - the thesis figures directory\\
+& & & \multicolumn{2}{l}{*.eps} & - the figures in PS format\\
+& & & \multicolumn{2}{l}{*.pdf} & - the figures in PDF format\\
+& & \multicolumn{3}{l}{*.tex} & - the \LaTeX{} source code files of the thesis\\
+&&&&&\\
+\multicolumn{5}{l}{text/} & - the thesis directory\\
+& \multicolumn{4}{l}{thesis.pdf} & - the Diploma thesis in PDF format\\
+& \multicolumn{4}{l}{thesis.ps} & - the Diploma thesis in PS format\\
+\end{tabular}
 
 
 \end{document}

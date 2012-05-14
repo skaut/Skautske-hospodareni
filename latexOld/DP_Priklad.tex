@@ -4,15 +4,13 @@
 % czech thesis in Czech language
 % english thesis in English language
 
-\documentclass[thesis=B,czech]{FITthesis}[2012/04/27]
+\documentclass[thesis=B,czech]{FITthesis}[2011/07/15]
 
 \usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
 
 \usepackage{graphicx} %graphics files inclusion
 % \usepackage{amsmath} %advanced maths
 % \usepackage{amssymb} %additional math symbols
-
-\usepackage{dirtree}
 
 % % list of acronyms
 % \usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
@@ -28,14 +26,13 @@
 
 \department{Katedra teoretické informatiky}
 \title{Příklad vyplněné šablony}
-\author{Jan Nový} %jméno autora bez akademických titulů
-\authorWithDegrees{Jan Nový} %jméno autora včetně akademických titulů
+\author{Jan Novák} %jméno autora bez akademických titulů
+\authorWithDegrees{Jan Novák} %jméno autora včetně akademických titulů
 \supervisor{doc. Ing. Marek Navrátil}
 \acknowledgements{Děkuji všem a za vše.}
 \abstractCS{V~několika větách shrňte obsah a přínos této práce v~češtině. Po přečtení abstraktu by měl mít čtenář dost informací pro rozhodnutí, zda chce Vaši práci číst.}
 \abstractEN{Sem doplňte ekvivalent abstraktu Vaší práce v~angličtině.}
 \placeForDeclarationOfAuthenticity{V~Praze}
-\declarationOfAuthenticityOption{4} %volba Prohlášení
 \keywordsCS{Závěrečná práce, \LaTeX{}.}
 \keywordsEN{Thesis, \LaTeX{}.}
 
@@ -137,7 +134,7 @@ Pro umožnění vkládání obrázků je vhodné použít balíček \verb|graphi
 
 \subsubsection{Získání vhodného formátu}
 
-Pro získání vektorových formátů PDF nebo EPS z~jiných lze použít některý z~vektorových grafických editorů. Pro převod rastrového obrázku na vektorový lze použít rasterizaci, kterou mnohé editory zvládají (např. Inkscape). Pro konverze lze použít též nástroje pro dávkové zpracování běžně dodávané s~\LaTeX{}em, např. \verb|epstopdf|. Běžný formát SVG (specifikace viz \cite{svgspec}) sice není možné vkládat přímo (zatím), konverzi však zvládne řada vektorových grafických editorů.
+Pro získání vektorových formátů PDF nebo EPS z~jiných lze použít některý z~vektorových grafických editorů. Pro převod rastrového obrázku na vektorový lze použít rasterizaci, kterou mnohé editory zvládají (např. Inkscape). Pro konverze lze použít též nástroje pro dávkové zpracování běžně dodávané s~\LaTeX{}em, např. \verb|epstopdf|. Běžný formát SVG (specifikace viz \cite{svgspec}) sice není možné vkládat přímo, konverzi však zvládne řada vektorových grafických editorů.
 
 \subsubsection{Plovoucí prostředí}
 
@@ -187,20 +184,6 @@ Vše, čeho nejste autorem (myšlenky, nápady, text, obrázky, \ldots) by mělo
 
 \chapter{Obsah přiloženého CD}
 
-Vhodným způsobem vizualizujte obsah přiloženého média. Lze použít balíček \verb|dirtree| a vytvořit např. následující výstup (adresáře src a text s~příslušným obsahem jsou \emph{povinné}):
-
-\begin{figure}
-	\dirtree{%
-		.1 readme.txt\DTcomment{stručný popis obsahu CD}.
-		.1 exe\DTcomment{adresář se spustitelnou formou implementace}.
-		.1 src.
-		.2 impl\DTcomment{zdrojové kódy implementace}.
-		.2 thesis\DTcomment{zdrojová forma práce ve formátu \LaTeX{}}.
-		.1 text\DTcomment{text práce}.
-		.2 thesis.pdf\DTcomment{text práce ve formátu PDF}.
-		.2 thesis.ps\DTcomment{text práce ve formátu PS}.
-	}
-\end{figure}
-
+Vhodným způsobem vizualizujte obsah přiloženého média.
 
 \end{document}
