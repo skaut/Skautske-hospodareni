@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DataSet/Persistors
+END
+Xml.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DataSet/Persistors/Xml.php
+END
+Yaml.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DataSet/Persistors/Yaml.php
+END
+Abstract.php
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DataSet/Persistors/Abstract.php
+END
+Factory.php
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DataSet/Persistors/Factory.php
+END
+FlatXml.php
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DataSet/Persistors/FlatXml.php
+END

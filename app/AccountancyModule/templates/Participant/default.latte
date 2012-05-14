@@ -5,7 +5,7 @@
 {dump $participants}
 
 <div class="row">
-    <div class="span5" n:if="$isEditable">
+    <div class="span5" n:if="$accessInsertParticipant">
         {snippet potencialParticipants}
 
         <div n:ifset="$participants">
@@ -73,7 +73,7 @@
                 </tr>
                 {else}
                 <tr>
-                    <th colspan="2" style="text-align: center;">Nejsou žádné nevybrané osoby.</th>
+                    <th style="text-align: center;">Nejsou žádné nevybrané osoby.</th>
                 </tr>
                 {/if}
             </table>
@@ -95,14 +95,14 @@
                 <a n:if="$isEditable" class="paymentMass btn btn-info btn-small ajax" n:href="addPaymentToChit!">Přidat příjmy do pokl. knihy</a>
                 <a class="btn btn-info btn-small" n:href="export $aid">Seznam účastníků</a>
                 <a class="btn btn-info btn-small" n:href="hpd $aid" title="Exportovat hromadný příjmový doklad">HPD</a>
-                <br /><br />
-                <a class="paymentMass btn btn-info btn-small" href="#massEdit" data-toggle="modal">Upravit vybrané</a>
-                {input massRemoveSend}
+                {if $accessUpdateParticipant || $accessDeleteParticipant}<br /><br />{/if}
+                <a n:if="$accessUpdateParticipant" class="paymentMass btn btn-info btn-small" href="#massEdit" data-toggle="modal">Upravit vybrané</a>
+                {if $accessDeleteParticipant}{input massRemoveSend}{/if}
             </div>
 
             <table id="participants-list" class="table table-striped table-bordered table-condensed">
                 <tr>
-                    <th n:if="$isEditable" style="width:90px;">
+                    <th n:if="$accessUpdateParticipant || $accessDeleteParticipant" style="width:90px;">
                         <input type="checkbox" id="checkParticipants" onclick="jqCheckAll(this.id, 'ids')" />
                     </th>
                     <th>Příjmení a jméno ({= count($participants)})</th>
@@ -112,10 +112,10 @@
                 {assign $total = 0}
                 {if !empty($participants)}
                 <tr n:foreach="$participants as $p">
-                    <td n:if="$isEditable">
+                    <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
                         {input ids-$p->ID}
-                        <a class="fancybox fancybox.ajax btn btn-info btn-mini" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
-                        <a n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a>
+                        <a n:if="$accessUpdateParticipant" class="fancybox fancybox.ajax btn btn-info btn-mini" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
+                        <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a>
                     </td>
                     <td>{$p->Person}</td>
                     <td id="par-days-{$p->ID}">{$p->Days}</td>
@@ -123,7 +123,7 @@
                 </tr>
                 {/if}
                 <tr>
-                    <td n:if="$isEditable"></td>
+                    <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">&nbsp;</td>
                     <td colspan="2"><b>Celkem</b></td>
                     <td><b>{$total}</b></td>
                 </tr>

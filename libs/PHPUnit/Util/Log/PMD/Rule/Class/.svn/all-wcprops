@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Util/Log/PMD/Rule/Class
+END
+TooManyFields.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Util/Log/PMD/Rule/Class/TooManyFields.php
+END
+EfferentCoupling.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Util/Log/PMD/Rule/Class/EfferentCoupling.php
+END
+DepthOfInheritanceTree.php
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Util/Log/PMD/Rule/Class/DepthOfInheritanceTree.php
+END
+ExcessiveClassLength.php
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Util/Log/PMD/Rule/Class/ExcessiveClassLength.php
+END
+ExcessivePublicCount.php
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Util/Log/PMD/Rule/Class/ExcessivePublicCount.php
+END

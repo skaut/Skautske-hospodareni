@@ -12,7 +12,7 @@ abstract class BasePresenter extends Presenter {
 //            $this->context->session->start();
 //        }
         
-        RequestsPanel::register();
+//        RequestsPanel::register();
 
         $this->template->backlink = $this->getParameter("backlink");
 

@@ -41,8 +41,8 @@
 Bakal{\' a}{\v r}sk{\' a} pr{\' a}ce p{\v r}edstavuje re{\v s}er{\v s}i dostupn{\' y}ch n{\'a}strojů pro vy{\' u}čtov{\' a}n{\' i} kr{\' a}tkodob{\' y}ch akc{\' i}, n{\' a}sledn{\v e} anal{\' y}zu a v{\' y}voj nov{\' e} aplikace. D{\' a}le je zde pops{\' a}n v{\' y}voj knihovny pro komunikaci se syst{\' e}mem SkautIS.}
 \abstractEN{Sem doplňte ekvivalent abstraktu Vaší práce v~angličtině.}
 \placeForDeclarationOfAuthenticity{V~Praze}
-\keywordsCS{SkautIS, da{\v n}ov{\' a} evidence, Junák }
-\keywordsEN{SkautIS, tax records, Scout}
+\keywordsCS{SkautIS, da{\v n}ov{\' a} evidence, Junák, Nette Framework}
+\keywordsEN{SkautIS, tax records, Scout, Nette Framework}
 
 \begin{document}
 
@@ -154,9 +154,18 @@ Aplikace
 \end{itemize}
 
 \section{Uživatelské role}
-Uživatelské role vycházejí z uživatelských rolí v~systému SkautIS. V~systému se rozlišuje, zda-li je uživatel přihlášen jako člen v~dané jednotce či jako její vedoucí/administrátor.
+Uživatelské role vycházejí z uživatelských rolí v~systému SkautIS. U každé jednotky lze přiřadit uživatelům role:
 
-TODO
+\begin{itemize}
+	\item \texttt{Aktivní činovník},
+	\item \texttt{Člen},
+	\item \texttt{Hospodář} (pouze u středisek a nadřízených jednotek),
+	\item \texttt{Vedoucí/Administrátor}.
+\end{itemize}
+
+Uživatelé s rolí \texttt{Vedoucí/administrátor} nebo \texttt{Hospodář} mohou akce zakládat, měnit jejich základní údaje, spravovat jejich účastníky, spravovat paragony, případně akci i zrušit. Stejná práva vůči dané akci má i uživatel, zadaný jako \texttt{Vedoucí akce}.
+
+Uživatel v roli \texttt{Člen} nebo \texttt{Aktivní činovník} dané jednotky, může akce prohlížet, ale nemá právo ji upravovat.
 
 \section{Entita pro správu akce}
 \label{sec:eventDescription}
@@ -414,7 +423,7 @@ $skautIs = SkautIS::getInstance();
 
 Dále nabízí základní settery a gettery pro nastavení a uchování údajů získaných po přihlášení do skautISu (viz \ref{fig:comunication-diagram}), URL pro přihlášení a odhlášení přes SkautIS. Také se stará o~\texttt{lazy loading} tříd \texttt{SkautIS\_WS} pro jednotlivé služby s možností využít jejich kratších aliasů.
 
-\texttt{Lazy loading} je návrhový vzor, který zajišťuje nahrání entit až ve chvíli, kdy se k nim bude přistupovat. Tím se ušetří paměť, kterou by zabíraly nevyužité entity.     
+\texttt{Lazy loading} je návrhový vzor, který zajišťuje nahrání entit až ve chvíli, kdy se k nim bude přistupovat. Tím se ušetří paměť, kterou by zabíraly nevyužité entity.
 
 \subsection{SkautIS\_WS}
 \texttt{SkautIS\_WS} je potomkem PHP třídy \texttt{SoapClient} a zajištuje komunikaci přes protokol SOAP vždy s jednou webovou službou. Pokud je u~volání funkce nastaven i druhý argument, tak je použit jako obalující objekt namísto základního, který má tvar \texttt{nazevFunkceInput}. Pokud je potřeba složitější strukturu obalu, jsou jednotlivé vrstvy odděleny lomítkem.
@@ -614,7 +623,19 @@ Veškeré požadavky na aplikaci jsou přesměrovány přes nastavení serveru A
 \subsubsection{Konfigurační soubor}
 Konfigurace je zapsána v~souboru \texttt{config.neon} ve formátu \texttt{NEON}\cite{neon}, který je velmi podobný formátu \texttt{YAML}. Zde jsou nastaveny všechny služby, přístup do databáze a parametry pro připojení k systému SkautIS.
 
-\begin{lstlisting}[caption=ukázka z konfiguračního souboru config.neon]
+Soubor \texttt{config.neon} je členěn do tří sekcí:
+
+\begin{itemize}
+	\item \texttt{common},
+	\item \texttt{development},
+	\item \texttt{production},
+	\item \texttt{console}.
+\end{itemize}
+
+V sekci \texttt{common} jsou nastaveny parametry platné pro všechny prostředí. Parametry pro vývojové prostředí jsou nastaveny v sekci \texttt{development} a pro produkční prostředí v sekci \texttt{production}. Sekce \texttt{console} nastavuje parametry při spuštění aplikace z konzole, například při spuštění jednotkových testů.
+
+\begin{figure}
+\begin{lstlisting}[caption=ukázka z konfiguračního souboru config.neon, numbers=left, label=configneon]
 	#komentar
 	common:
 	  nette:
@@ -637,24 +658,112 @@ Konfigurace je zapsána v~souboru \texttt{config.neon} ve formátu \texttt{NEON}
               			%skautisid%,
               			%skautisTestMode%)
 	    ...
+	#nastaveni vyvojoveho prostredi
+        development < common:	
+	  parameters:
+	    database: #nastaveni databaze
+	      driver: mysql
+	      host: localhost
+	      username: user
+	      password: pass
+	      database: db
+	      charset: utf8
 	
-	    parameters:
-	        database: #nastaveni databaze
-	            driver: mysql
-	            host: localhost
-	            username: user
-	            password: pass
-	            database: db
-	            charset: utf8
-	
-	        #SkautIS ID_Application
-	        skautisid = f2197deb-...-f23427757a07
-	        skautisTestMode = true
+	      #SkautIS ID_Application
+	      skautisid = f2197deb-...-f23427757a07
+	      skautisTestMode = true
+	#nastaveni produkcniho prostredi
+	production < common:
+	  ...
 \end{lstlisting}
+\end{figure}
 
-Všechny služby dostanou v konstruktoru službu \texttt{skautIS}, což je instance knihovny SkautIS a poté jsou předány do systémovému kontejneru. Systémový kontejner je statický Dependency Injection\cite{di} kontejner, který je dostupný ve všech presenterech přes volání \texttt{\$this->context}. Jednotlivé služby lze volat přes \texttt{\$this->context->nazevSluzby}.
+Služba \texttt{skautIS}, instance knihovny SkautIS, dostává v konstruktoru (viz ukázka kódu \ref{configneon}, řádky 19--21) předány parametry \texttt{skautisid} a \texttt{skautisTestMode}, což jsou parametry pro připojení k systému SkautIS. 
+
+Všechny služby dostávají v konstruktoru službu \texttt{skautIS} (viz ukázka kódu \ref{configneon}, řádek 16) a poté jsou předány do systémovému kontejneru. Systémový kontejner je statický Dependency Injection\cite{di} kontejner, který je dostupný ve všech presenterech přes volání \texttt{\$this->context}. Jednotlivé služby lze volat přes \texttt{\$this->context->nazevSluzby}.
+
+
+\section{Kontrola oprávnění}
+Stejně jako uživatelské role vycházejí ze systému SkautIS, tak i kontrola oprávnění k provedení dané akce vychází z nastavení v systému SkautIS.
+
+Jednotlivá oprávnění se kontrolují v metodách presenterů, pomocí služby \texttt{UserService} a její metody \texttt{actionVerify}. U akcí jsou kontrolována oprávnění pro:
+
+\begin{itemize}
+	\item vytvoření akce,
+	\item úpravu základních údajů akce,
+	\item úpravu vedení akce,
+	\item zobrazení detailu akce,
+	\item zobrazení vedení akce,
+	\item smazání akce,
+	\item uzavření akce,
+	\item otevření akce,
+	\item zrušení akce.
+\end{itemize}
+
+Při práci s účastníky jsou kontrolována oprávnění pro:
+\begin{itemize}
+	\item výpis účastníků,
+	\item přidání účastníka,
+	\item změna údajů účastníka,
+	\item odebrání účastníka.
+	\end{itemize}
+
+Uživateli je oprávnění pro práci s paragony přiděleno, pokud má oprávnění pro úpravy celé akce. 	
+	
 
 \chapter{Testování}
+Pro ověření funkčnosti aplikace během vývoje a pro kontrolu vytyčených požadavků byla aplikace testována z několika aspektů.
+
+\section{Unit testy}
+Pro kontrolu funkčnosti kódu během jeho úprav, byly vybrány unit testy \texttt{phpunit}, jejichž autorem je Sebastian Bergmann\cite{phpunit}.
+
+Úkolem unit testů je otestovat jednotku kódu. V aplikaci touto jednotkou byla třída. Většina presenterů a tříd modelu vyžaduje ke své funkčnosti přihlášení uživatele do systému SkautIS pro získání dat nebo pro ověření přístupu. Protože přihlášení lze provést pouze na stránkách systému SkautIS, nebylo možné použít unit testy na tyto třídy. Proto byla testována část modelu spravující paragony a jejich kategorie, která pro svoji funkčnost přístup do systému SkautIS nepotřebuje.
+
+\section{Testování napříč prohlížeči}
+V současné době si uživatelé internetu mohou vybrat, který prohlížeč budou používat, ze široké nabídky. Jak prohlížeč vykreslí HTML kód přijatý z aplikace, závisí na tom, které renderovací jádro používá.
+Mezi nejvíce rozšířené renderovací jádra patří:
+\begin{itemize}
+	\item WebKit,
+	\item Gecko,
+	\item Presto,
+	\item Trident.
+\end{itemize}
+
+Renderovací jádro WebKit používají prohlížeče Safari a Chrome. Jádro Gecko využívá Mozilla Firefox, Presto prohlížec Opera a na jádru Trident běží všechny verze prohlížeče Internet Explorer od verze 4.0.
+
+Protože výsledné zobrazení se může lišit i podle operačního systému, byla aplikace testována na operačním systému Windows 7 Home Premium s rozlišením obrazovky 1920x1080 a dále na operačním systému OS X Lion s rozlišením obrazovky 1280x800. 
+
+ \begin{table}[h]\centering
+ 	\caption{Zobrazení v prohlížečích na OS Windows 7}\label{tab:browsersWin}
+ 	\begin{tabular}{| l | l | c | c  | }\hline
+ 		Test. oblast / Prohlížeč	& IE 8		& Chrome 18.0		& Mozilla Firefox 12.0	\tabularnewline \hline
+		Ajax 						& ano		& ano			& ano				\tabularnewline \hline
+		Filtrování akcí				& ano		& ano			& ano				\tabularnewline \hline
+		Editace účastníka 			& ano		& ano			& ano				\tabularnewline \hline
+		Zobrazení pokladní knihy 	& ne			& ano			& ano				\tabularnewline \hline
+		Editace paragonu 			& ano		& ano			& ano				\tabularnewline \hline
+		Změna už. role 			& ano		& ano			& ano				\tabularnewline \hline
+ 	\end{tabular}
+ \end{table}
+
+Na operačním systému Windows 7 se aplikace v prohlížečích Chrome 18.0 a Mozilla Firefox 12.0 zobrazila plně korektně. V prohlížeči Internet Explorer 8 byla pokladní kniha funkční, jen se sousední bloky zobrazili pod sebe a aplikace měla ostřejší hrany tlačítek, protože Internet Explorer 8 nepodporuje CSS 3, se kterým \texttt{Twitter Boostrap} pracuje.
+
+ \begin{table}[h]\centering
+ 	\caption{Zobrazení v prohlížečích na OS X Lion}\label{tab:browsersMac}
+ 	\begin{tabular}{| l | l | c | c | c  | }\hline
+ 		Test. oblast / Prohlížeč		& Safari 5		& Chrome 18.0		& M. Firefox 12.0	& Opera 11 	\tabularnewline \hline
+		Ajax						& ano		& ano			& ano			& ano		\tabularnewline \hline
+		Filtrování akcí				& ano		& ano			& ano			& ano 		\tabularnewline \hline
+		Editace účastníka 			& ano		& ano			& ano			& ano		\tabularnewline \hline
+		Zobrazení pokladní knihy 	& ano		& ano			& ano			& ne			\tabularnewline \hline
+		Editace paragonu 			& ano		& ano			& ano			& ano		\tabularnewline \hline
+		Změna už. role 			& ano		& ano			& ano		 	& ano		\tabularnewline \hline
+ 	\end{tabular}
+ \end{table}
+
+Na operačním systému OS X Lion se aplikace zobrazila ve všech prohlížečích korektně, jen v prohlížeči Opera se zobrazila jiná tlačítka \texttt{radio}, protože Opera je má pro ně vlastní styl.
+
+ 
 
 
 
@@ -674,18 +783,13 @@ Všechny služby dostanou v konstruktoru službu \texttt{skautIS}, což je insta
 \begin{description}
 	\item[CSV] Comma-separated values
 	\item[ORM] Object-relational mapping
-	\item[PDF] Portable Document Format	
+	\item[PDF] Portable Document Format
 	\item[PHP] PHP: Hypertext Preprocessor
 	\item[RTF] Rich Text Format
 	\item[SVN] Apache Subversion
 	\item[SQL] Structured Query Language
-	\item[YAML] YAML Ain't Markup Language 
+	\item[YAML] YAML Ain't Markup Language
 	\item[XSS] Cross-site scripting
-	\item[]
-	\item[]
-	\item[]	
-%	\item[GUI] Graphical user interface
-%	\item[XML] Extensible markup language
 \end{description}
 
 

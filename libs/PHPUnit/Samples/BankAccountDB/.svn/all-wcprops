@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Samples/BankAccountDB
+END
+BankAccountDBTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Samples/BankAccountDB/BankAccountDBTest.php
+END
+BankAccountDBTestMySQL.php
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Samples/BankAccountDB/BankAccountDBTestMySQL.php
+END
+BankAccount.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Samples/BankAccountDB/BankAccount.php
+END

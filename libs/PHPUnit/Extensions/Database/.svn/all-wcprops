@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database
+END
+AbstractTester.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/AbstractTester.php
+END
+DefaultTester.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/DefaultTester.php
+END
+TestCase.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/TestCase.php
+END
+ITester.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/ITester.php
+END
+IDatabaseListConsumer.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Extensions/Database/IDatabaseListConsumer.php
+END

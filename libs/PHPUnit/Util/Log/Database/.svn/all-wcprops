@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Util/Log/Database
+END
+SQLite3.sql
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Util/Log/Database/SQLite3.sql
+END
+MySQL.sql
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Util/Log/Database/MySQL.sql
+END

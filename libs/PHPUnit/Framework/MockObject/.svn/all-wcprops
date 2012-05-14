@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject
+END
+Invocation.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Invocation.php
+END
+InvocationMocker.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/InvocationMocker.php
+END
+Invokable.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Invokable.php
+END
+Stub.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Stub.php
+END
+MockObject.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/MockObject.php
+END
+Matcher.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Matcher.php
+END
+Generator.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Generator.php
+END
+Verifiable.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Framework/MockObject/Verifiable.php
+END

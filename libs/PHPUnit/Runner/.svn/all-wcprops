@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Runner
+END
+TestSuiteLoader.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Runner/TestSuiteLoader.php
+END
+StandardTestSuiteLoader.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Runner/StandardTestSuiteLoader.php
+END
+BaseTestRunner.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Runner/BaseTestRunner.php
+END
+Version.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Runner/Version.php
+END
+TestCollector.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Runner/TestCollector.php
+END
+IncludePathTestCollector.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/Rymicka/!svn/ver/644/libraries/PHPUnit/tags/3.0.0/Runner/IncludePathTestCollector.php
+END

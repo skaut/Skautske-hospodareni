@@ -5,7 +5,7 @@
 
 <h2>{$data->DisplayName}</h2>
 <div class="row">
-    <div class="span3">
+    <div class="span3" n:if="$accessDetailEvent">
         <h3>Základní údaje</h3>
         <table class="myTable table table-bordered table-condensed">
             <tr>
@@ -39,7 +39,7 @@
         </table>
     </div>
 
-    <div class="span4">
+    <div class="span4" n:if="is_array($funkce)">
         <h3>Vedení akce</h3>
         <table class="myTable table table-bordered table-condensed">
             <tr>
@@ -57,12 +57,12 @@
 <div class="row">
 
     <div class="span5">
-        <a n:if="$isEditable" class="btn btn-primary btn-small" href="#editBasicInfo" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
-        <a n:if="$isEditable" class="btn btn-success btn-small" n:href="close $aid"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
-        <a n:if="$data->ID_EventGeneralState == closed" n:href="open $aid" class="btn btn-small btn-warning"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
-        <a class="btn btn-info btn-small" n:href="report $aid">Záverečná zpráva</a>
+        <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-small" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
+        <a n:if="$accessCloseEvent" n:href="close! $aid" class="btn btn-success btn-small"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
+        <a n:if="$accessOpenEvent"  n:href="open! $aid"  class="btn btn-warning btn-small"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
+        <a n:href="report $aid" class="btn btn-info btn-small">Záverečná zpráva</a>
 
-        <div n:if="$isEditable" class="modal myModal fade" id="editBasicInfo">
+        <div n:if="$accessEditBase" class="modal myModal fade" id="editBasicInfo">
             <div class="modal-header">
                 <a class="close" data-dismiss="modal">×</a>
                 <h3>Upravit akci</h3>
