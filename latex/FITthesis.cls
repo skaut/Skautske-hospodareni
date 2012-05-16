@@ -396,8 +396,8 @@
 	\cleardoublepage
 	\listoffigures*
 
-    \cleardoublepage  
-    \lstlistoflistings
+	\cleardoublepage  
+	\lstlistoflistings
 
 	\cleardoublepage
 	\listoftables*
