@@ -64,7 +64,7 @@ class Accountancy_BasePresenter extends BasePresenter {
     }
     
     protected function editableOnly() {
-        if ($this->isEditable) {
+        if (!$this->isEditable) {
             $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
             if($this->isAjax()){
                 $this->sendPayload();
