@@ -21,6 +21,7 @@ abstract class BaseService extends Object {
      * @var SkautIS
      */
     protected $skautIS;
+    
     /**
      * používat lokální úložiště?
      * @var bool

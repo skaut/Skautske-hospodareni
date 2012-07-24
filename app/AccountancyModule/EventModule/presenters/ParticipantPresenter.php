@@ -152,7 +152,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 //    }
 
 //    function handleAddPaymentToChit() {
-//        if ($this->context->eventService->participants->addPaymentsToCashbook($this->aid, $this->context->eventService, $this->context->chitService)) {
+//        if ($this->context->eventService->participants->addPaymentsToCashbook($this->aid, $this->context->eventService, $this->context->eventService->chits)) {
 //            $this->flashMessage("Přijmy byly přidány do pokladní knihy");
 //        } else {
 //            $this->flashMessage("Nepodařilo se přidat příjmy do pokladní knihy", "warning");

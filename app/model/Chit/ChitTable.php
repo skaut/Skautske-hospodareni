@@ -80,7 +80,7 @@ class ChitTable extends BaseTable {
      * @return array 
      */
     public function getCategories($type = NULL) {
-        return dibi::fetchPairs("SELECT short, label FROM [" . self::TABLE_CATEGORY . "]
+        return dibi::fetchPairs("SELECT id, label FROM [" . self::TABLE_CATEGORY . "]
             WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type, "ORDER BY orderby DESC"
         );
     }
@@ -101,7 +101,7 @@ class ChitTable extends BaseTable {
      */
     public function isInMinus($actionId) {
         $data = dibi::fetchPairs("SELECT cat.type, SUM(ch.price) as sum FROM [" . self::TABLE_CHIT . "] as ch
-            LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.short) 
+            LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.id) 
             WHERE ch.actionId = %i AND ch.deleted = 0
             GROUP BY cat.type", $actionId);
 

@@ -28,7 +28,9 @@ $router[] = new Route('sign/<action>[/back-<backlink>]', array(
     "action" => "default",
     "backlink" => NULL
 ));
-Accountancy_BasePresenter::createRoutes($router);
+//Accountancy_Camp_BasePresenter::createRoutes($router);
+//Accountancy_Event_BasePresenter::createRoutes($router);
+//Accountancy_BasePresenter::createRoutes($router);
 $router[] = new SimpleRouter('Default:default');
 
 //if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {

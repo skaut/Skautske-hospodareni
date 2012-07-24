@@ -21,6 +21,7 @@ class ParticipantService extends MutableBaseService {
      * @return array 
      */
     public function getAll($ID, $cache = TRUE) {
+        $this->enableDaysAutocount($ID);
         $cacheId = __FUNCTION__ . $ID;
         if (!$cache || !($res = $this->load($cacheId))) {
             $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "All"}(array("ID_Event" . self::$typeName => $ID));
@@ -63,7 +64,7 @@ class ParticipantService extends MutableBaseService {
                         "FirstName" => $person['firstName'],
                         "LastName" => $person['lastName'],
                         "NickName" => $person['nick'],
-                        PAYMENT => $person['note'],
+                        ParticipantService::PAYMENT => $person['note'],
                     ),
                 ));
     }

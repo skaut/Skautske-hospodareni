@@ -40,7 +40,7 @@ class EventService extends MutableBaseService {
      * @return array
      */
     public function getStates() {
-        $cacheId = __FUNCTION__;
+        $cacheId = __FUNCTION__ . self::$typeName;
         if (!($ret = $this->cache->load($cacheId))) {
             $res = $this->skautIS->event->{"Event" . self::$typeName . "StateAll"}();
             $ret = array();
@@ -59,7 +59,7 @@ class EventService extends MutableBaseService {
      * @return array
      */
     public function getScopes() {
-        $cacheId = __FUNCTION__;
+        $cacheId = __FUNCTION__ . self::$typeName;
         if (!($ret = $this->cache->load($cacheId))) {
             $res = $this->skautIS->event->EventGeneralScopeAll();
             $ret = array();
@@ -77,7 +77,7 @@ class EventService extends MutableBaseService {
      * @return array
      */
     public function getTypes() {
-        $cacheId = __FUNCTION__;
+        $cacheId = __FUNCTION__ . self::$typeName;
         if (!($ret = $this->cache->load($cacheId))) {
             $res = $this->skautIS->event->{self::$typeLongName . "TypeAll"}();
             $ret = array();

@@ -49,14 +49,15 @@ class Accountancy_BasePresenter extends BasePresenter {
     }
     
     protected function editableOnly() {
-        if (!$this->isEditable) {
-            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
-            if($this->isAjax()){
-                $this->sendPayload();
-            } else {
-                $this->redirect("Event:");
-            }
-        }
+        throw new NotImplementedException("Implementují jednotlivé moduly");
+//        if (!$this->isEditable) {
+//            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
+//            if($this->isAjax()){
+//                $this->sendPayload();
+//            } else {
+//                $this->redirect("Event:");
+//            }
+//        }
     }
 
     /**
@@ -66,7 +67,7 @@ class Accountancy_BasePresenter extends BasePresenter {
      */
     static function createRoutes(RouteList $router, $prefix = "") {
         
-        $prefix .= "ucto/";
+        //$prefix .= "ucto/";
         
         $router[] = new Route($prefix . '<aid [0-9]+>/', array(
                     'module' => "Accountancy",
@@ -79,7 +80,7 @@ class Accountancy_BasePresenter extends BasePresenter {
                     'action' => "default",
                 ));
         
-        $router[] = new Route($prefix . '<presenter>/<action>', array(
+        $router[] = new Route($prefix . '<module>/<presenter>/<action>', array(
                     'module' => "Accountancy",
                     'action' => 'default',
                 ));

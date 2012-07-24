@@ -55,8 +55,8 @@
                     <a class="brand" n:href=":Default:">Účetnictví</a>
                     <div class="nav-collapse" n:inner-if="$user->isLoggedIn()">
                         <ul class="nav">
-                            <li {ifCurrent :Accountancy:Event:Default:}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
-                            <li {ifCurrent :Accountancy:Camp:Default:}class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory</a></li>
+                            <li {ifCurrent :Accountancy:Event:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
+                            <li {ifCurrent :Accountancy:Camp:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory</a></li>
                             
                         </ul>
                         <p class="navbar-text pull-right">
