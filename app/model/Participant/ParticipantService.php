@@ -4,30 +4,33 @@
  * slouží pro obsluhu účastníků
  * @author Hána František
  */
-class ParticipantService extends BaseService {
+class ParticipantService extends MutableBaseService {
+    
+
     /**
      * název pod kterým je uložena čáska ve skautISu
      */
     const PAYMENT = "Note";
+    
 
     /**
      * vrací seznam účastníků
      * používá lokální úložiště
-     * @param type $eventId
+     * @param type $ID
      * @param bool $cache
      * @return array 
      */
-    public function getAllParticipant($eventId, $cache = TRUE) {
-        $id = __FUNCTION__ . $eventId;
-        if (!$cache || !($res = $this->load($id))) {
-            $tmp = $this->skautIS->event->ParticipantGeneralAll(array("ID_EventGeneral" => $eventId));
+    public function getAll($ID, $cache = TRUE) {
+        $cacheId = __FUNCTION__ . $ID;
+        if (!$cache || !($res = $this->load($cacheId))) {
+            $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "All"}(array("ID_Event" . self::$typeName => $ID));
             $res = array();
             foreach ($tmp as $p) {
                 if (!isset($p->Note))
                     $p->Note = 0;
                 $res[] = $p;
             }
-            $this->save($id, $res);
+            $this->save($cacheId, $res);
         }
         if (!is_array($res))//pokud je prázdná třída stdClass
             return array();
@@ -35,61 +38,27 @@ class ParticipantService extends BaseService {
     }
 
     /**
-     * vrací seznam všech osob
-     * @param ID_Unit $unitId - ID_Unit
-     * @param bool $onlyDirectMember - pouze přímé členy?
-     * @return array 
-     */
-    public function getAll($unitId = NULL, $onlyDirectMember = true, $participants = NULL) {
-        $unitId = $unitId === NULL ? $this->skautIS->getUnitId() : $unitId;
-        $onlyDirectMember = (bool) $onlyDirectMember;
-
-        $all = $this->skautIS->org->PersonAll(array(
-            "ID_Unit" => $unitId,
-            "OnlyDirectMember" => $onlyDirectMember,
-                ));
-        $ret = array();
-
-        if (empty($participants)) {
-            foreach ($all as $people) {
-                $ret[$people->ID] = $people->DisplayName;
-            }
-        } else {
-            $check = array();
-            foreach ($participants as $p) {
-                $check[$p->ID_Person] = true;
-            }
-            foreach ($all as $p) {
-                if (!array_key_exists($p->ID, $check)) {
-                    $ret[$p->ID] = $p->DisplayName;
-                }
-            }
-        }
-        return $ret;
-    }
-
-    /**
      * přidat účastníka k akci
-     * @param int $eventId
+     * @param int $ID
      * @param int $participantId
      * @return type
      */
-    public function add($eventId, $participantId) {
-        return $this->skautIS->event->ParticipantGeneralInsert(array(
-                    "ID_EventGeneral" => $eventId,
+    public function add($ID, $participantId) {
+        return $this->skautIS->event->{"Participant" . self::$typeName . "Insert"}(array(
+                    "ID_Event" . self::$typeName => $ID,
                     "ID_Person" => $participantId,
                 ));
     }
 
     /**
      * vytvoří nového účastníka
-     * @param int $eventId
+     * @param int $ID
      * @param int $participantId
      * @return type
      */
-    public function addNew($eventId, $person) {
-        return $this->skautIS->event->ParticipantGeneralInsert(array(
-                    "ID_EventGeneral" => $eventId,
+    public function addNew($ID, $person) {
+        return $this->skautIS->event->{"Participant" . self::$typeName . "Insert"}(array(
+                    "ID_Event" . self::$typeName => $ID,
                     "Person" => array(
                         "FirstName" => $person['firstName'],
                         "LastName" => $person['lastName'],
@@ -99,23 +68,23 @@ class ParticipantService extends BaseService {
                 ));
     }
 
-    /**
-     * nastaví účastníkovi počet dní účasti
-     * @param int $participantId
-     * @param int $days 
-     */
-    public function setDays($participantId, $days) {
-        $this->update($participantId, array("Days" => $payment));
-    }
-
-    /**
-     * nastaví částku co účastník zaplatil
-     * @param int $participantId
-     * @param int $payment - částka
-     */
-    public function setPayment($participantId, $payment) {
-        $this->update($participantId, array(self::PAYMENT => $payment));
-    }
+//    /**
+//     * nastaví účastníkovi počet dní účasti
+//     * @param int $participantId
+//     * @param int $days 
+//     */
+//    public function setDays($participantId, $days) {
+//        $this->update($participantId, array("Days" => $days));
+//    }
+//
+//    /**
+//     * nastaví částku co účastník zaplatil
+//     * @param int $participantId
+//     * @param int $payment - částka
+//     */
+//    public function setPayment($participantId, $payment) {
+//        $this->update($participantId, array(self::PAYMENT => $payment));
+//    }
 
     /**
      * upraví všechny nastavené hodnoty
@@ -124,7 +93,7 @@ class ParticipantService extends BaseService {
      */
     public function update($participantId, array $arr) {
         $arr['ID'] = $participantId;
-        $this->skautIS->event->ParticipantGeneralUpdate($arr, "participantGeneral");
+        $this->skautIS->event->{"Participant". self::$typeName . "Update"}($arr, "participant" . self::$typeName);
     }
 
     /**
@@ -133,12 +102,12 @@ class ParticipantService extends BaseService {
      * @return type 
      */
     public function removeParticipant($participantId) {
-        return $this->skautIS->event->ParticipantGeneralDelete(array("ID" => $participantId, "DeletePerson" => false));
+        return $this->skautIS->event->{"Participant". self::$typeName . "Delete"}(array("ID" => $participantId, "DeletePerson" => false));
     }
 
-    public function getAllDetail($eventId, $participants = NULL) {
+    public function getAllDetail($ID, $participants = NULL) {
         if ($participants == NULL) {
-            $participants = $this->getAllParticipant($eventId);
+            $participants = $this->getAll($ID);
         }
         $res = array();
         foreach ($participants as $par) {
@@ -147,23 +116,23 @@ class ParticipantService extends BaseService {
         return $res;
     }
 
-    /**
-     * hromadné nastavení účastnické částky
-     * @param int $eventId - ID ake
-     * @param int $newPayment - nově nastavený poplatek
-     * @param bool $rewrite - přepisovat staré údaje?
-     */
-    public function setPaymentMass($eventId, $newPayment, $rewrite = false) {
-        if ($newPayment < 0)
-            $newPayment = 0;
-        $participants = $this->getAllParticipant($eventId);
-        foreach ($participants as $p) {
-            $paid = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
-            if (($paid == $newPayment) || (($paid != 0 && $paid != NULL) && !$rewrite)) //není změna nebo není povolen přepis
-                continue;
-            $this->setPayment($p->ID, $newPayment);
-        }
-    }
+//    /**
+//     * hromadné nastavení účastnické částky
+//     * @param int $eventId - ID ake
+//     * @param int $newPayment - nově nastavený poplatek
+//     * @param bool $rewrite - přepisovat staré údaje?
+//     */
+//    public function setPaymentMass($eventId, $newPayment, $rewrite = false) {
+//        if ($newPayment < 0)
+//            $newPayment = 0;
+//        $participants = $this->getAll($eventId);
+//        foreach ($participants as $p) {
+//            $paid = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
+//            if (($paid == $newPayment) || (($paid != 0 && $paid != NULL) && !$rewrite)) //není změna nebo není povolen přepis
+//                continue;
+//            $this->setPayment($p->ID, $newPayment);
+//        }
+//    }
 
     /**
      * celkově vybraná částka
@@ -177,8 +146,7 @@ class ParticipantService extends BaseService {
                 return $res += $v->{ParticipantService::PAYMENT};
             return 0;
         }
-
-        return array_reduce($this->getAllParticipant($eventId), "paymentSum");
+        return array_reduce($this->getAll($eventId), "paymentSum");
     }
 
     /**
@@ -187,12 +155,10 @@ class ParticipantService extends BaseService {
      * @return int 
      */
     public function getPersonsDays($eventId) {
-
         function daySum($res, $v) {
             return $res += $v->Days;
         }
-
-        return array_reduce($this->getAllParticipant($eventId), "daySum");
+        return array_reduce($this->getAll($eventId), "daySum");
     }
 
     /**
@@ -201,32 +167,32 @@ class ParticipantService extends BaseService {
      * @return type 
      */
     public function getCount($eventId) {
-        return count($this->getAllParticipant($eventId));
+        return count($this->getAll($eventId));
     }
 
-    /**
-     * přidá příjmový paragon za všechny účastníky
-     * @param int $eventId
-     */
-    public function addPaymentsToCashbook($eventId, EventService $eventService, ChitService $chitService) {
-        $func = $eventService->getFunctions($eventId);
-        $total = $this->getTotalPayment($eventId);
-        $date = $eventService->get($eventId)->StartDate;
-
-        $chit = array(
-            "date" => $date,
-            "recipient" => isset($func[EventService::ECONOMIST]->Person) ? $func[EventService::ECONOMIST]->Person : NULL,
-            "purpose" => "Účastnické poplatky",
-            "price" => $total,
-            "priceText" => $total,
-            "type" => "pp",
-        );
-        try {
-            $chitService->add($eventId, $chit);
-        } catch (InvalidArgumentException $exc) {
-            return FALSE;
-        }
-        return TRUE;
-    }
+//    /**
+//     * přidá příjmový paragon za všechny účastníky
+//     * @param int $eventId
+//     */
+//    public function addPaymentsToCashbook($eventId, EventService $eventService, ChitService $chitService) {
+//        $func = $eventService->event->getFunctions($eventId);
+//        $total = $this->getTotalPayment($eventId);
+//        $date = $eventService->event->get($eventId)->StartDate;
+//
+//        $chit = array(
+//            "date" => $date,
+//            "recipient" => isset($func[EventService::ECONOMIST]->Person) ? $func[EventService::ECONOMIST]->Person : NULL,
+//            "purpose" => "Účastnické poplatky",
+//            "price" => $total,
+//            "priceText" => $total,
+//            "category"=> "pp",
+//        );
+//        try {
+//            $chitService->add($eventId, $chit);
+//        } catch (InvalidArgumentException $exc) {
+//            return FALSE;
+//        }
+//        return TRUE;
+//    }
 
 }

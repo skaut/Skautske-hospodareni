@@ -16,7 +16,7 @@ abstract class AccountancyHelpers extends Object {
         }
     }
 
-    public static function eventLabel($s) {
+    public static function eventStateLabel($s) {
         if ($s == "draft")
             return '<span class="label label-warning">Rozpracováno</span>';
         elseif ($s == "closed") {
@@ -25,6 +25,23 @@ abstract class AccountancyHelpers extends Object {
             return '<span class="label label-inverse">Zrušeno</span>';
         }
         //draft, closed, cancelled
+    }
+    
+    //zobrazuje popisky stavů u táborů
+    public static function campStateLabel($s) {
+        switch ($s) {
+            case "draft":
+                return '<span class="label label-warning">Rozpracováno</span>';
+            case "approvedParent":
+                return '<span class="label label-info">Schválený střediskem</span>';
+            case "approvedLeader":
+                return '<span class="label label-info">Schválený vedoucím</span>';
+            case "real":
+                return '<span class="label label-success">Skutečnost odevzdána</span>';
+            default:
+                return '<span class="label label-inverse">Zrušený</span>';
+                break;
+        }
     }
 
 

@@ -3,89 +3,25 @@
 /**
  * @author Hána František
  */
-abstract class BaseService extends Object {
+abstract class MutableBaseService extends BaseService {
 
-    /**
-     * reference na třídu typu Table
-     * @var instance of BaseTable
-     */
-    protected $table;
-    
-    /**
-     * slouží pro komunikaci se skautISem
-     * @var SkautIS
-     */
-    protected $skautIS;
-    /**
-     * používat lokální úložiště?
-     * @var bool
-     */
-    private $useCache = TRUE;
-    /**
-     * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
-     * @var type 
-     */
-    private static $storage;
+    static protected $typeName;
+    static protected $typeLongName;
+    static protected $expire;
 
-    public function __construct($skautIS = NULL) {
-        $this->skautIS = $skautIS;
-        self::$storage = array();
-    }
-    
+    /** @var FileStorage */
+    protected $cache;
 
-        /**
-     * ukládá $val do lokálního úložiště
-     * @param mixed $id
-     * @param mixed $val
-     * @return mixed 
-     */
-    protected function save($id, $val){
-        if($this->useCache)
-            self::$storage[$id] = $val;
-        return $val;
-    }
-    
-    /**
-     * vrací objekt z lokálního úložiště
-     * @param string|int $id
-     * @return mixed | FALSE
-     */
-    protected function load($id){
-        if( $this->useCache && array_key_exists($id, self::$storage) )
-            return self::$storage[$id];
-        return FALSE;
-    }
-    
-    /**
-     * vrátí pdf do prohlizece
-     * @param type $template
-     * @param string $filename
-     * @return pdf 
-     */
-    function makePdf($template = NULL, $filename = NULL) {
-        if ($template === NULL)
-            return FALSE;
-        define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
-        require_once(_MPDF_PATH . 'mpdf.php');
-        $mpdf = new mPDF(
-                'utf-8',
-                $format='A4',
-                $default_font_size=0,
-                $default_font='',
-                $mgl=10,
-                $mgr=10,
-                $mgt=10,
-                $mgb=10,
-                $mgh=9,
-                $mgf=9,
-                $orientation='P'
-                );
-        
-        
-        $mpdf->WriteHTML((string) $template, NULL);
-        $mpdf->Output($filename, 'I');
-    }
+    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {
+        self::$typeName = $name;
+        self::$typeLongName = $longName;
+        self::$expire = $expire;
 
+        parent::__construct($skautIS);
+        $cache = new Cache($cacheStorage, __CLASS__);
+        $this->cache = $cache;
+        $this->cache->clean();
+    }
 
 }
 

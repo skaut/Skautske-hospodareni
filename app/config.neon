@@ -25,11 +25,21 @@ common:
         authService:
             class: AuthService( @skautIS )
         eventService:
-            class: EventService( @skautIS, @cacheStorage )
+            class: Event(@skautIS, @cacheStorage )
+#        eventService:
+#            class: EventService( "General", "EventGeneral", "+ 2 days", @skautIS, @cacheStorage )
+        
+        campService:
+            class: EventService( "Camp", "Camp", "+ 2 days", @skautIS, @cacheStorage )
+        
         chitService:
             class: ChitService( @skautIS )
-        participantService:
-            class: ParticipantService( @skautIS )
+        memberService:
+            class: MemberService( @skautIS )
+#        participantEventService:
+#            class: ParticipantService( "General", "EventGeneral", "+ 2 days", @skautIS, @cacheStorage )
+#        participantCampService:
+#            class: ParticipantService( "General", "EventGeneral", "+ 2 days", @skautIS, @cacheStorage )
         unitService:
             class: UnitService( @skautIS )
         userService:

@@ -24,10 +24,10 @@ class Accountancy_BasePresenter extends BasePresenter {
     protected $isEditable;
     
     /**
-     * pole dostupných událostí pro akce
+     * pole dostupných událostí
      * @var array
      */
-    protected $availableEventActions;
+    protected $availableActions;
 
     protected function startup() {
         parent::startup();
@@ -39,21 +39,6 @@ class Accountancy_BasePresenter extends BasePresenter {
         
         if ($this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku
             $this->context->authService->updateLogoutTime();
-        
-        $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
-        
-        if(isset($this->aid) && !is_null($this->aid)){//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
-            try {
-                $event = $this->context->eventService->get($this->aid);
-                $this->availableEventActions = $this->context->userService->actionVerify($this->aid);
-                $this->template->isEditable = $this->isEditable = array_key_exists("EV_EventGeneral_UPDATE", $this->availableEventActions);
-            } catch (SkautIS_PermissionException $exc) {
-                $this->flashMessage($exc->getMessage(), "danger");
-                $this->redirect("Event:");
-            }   
-        } else {
-            $this->availableEventActions = $this->context->userService->actionVerify(NULL, NULL, "EV_EventGeneral"); //zjistení událostí nevázaných na konretnní akci
-        }
     }
 
     function beforeRender() {
@@ -96,7 +81,6 @@ class Accountancy_BasePresenter extends BasePresenter {
         
         $router[] = new Route($prefix . '<presenter>/<action>', array(
                     'module' => "Accountancy",
-                    'presenter' => 'Event',
                     'action' => 'default',
                 ));
         
