@@ -1,0 +1,245 @@
+{block #content}
+{include ../ActionMenu.latte}
+<h2>Účastníci</h2>
+{dump $list}
+{dump $participants}
+
+<div class="row">
+    <div class="span5" n:if="$accessInsertParticipant">
+        {snippet potencialParticipants}
+
+        <div n:ifset="$participants">
+            <h3>Přidat účastníky z jednotky</h3>
+
+            {form formMassAdd}
+            <div class="well well-small">
+                <div class="btn-group" style="float:left;margin-right: 9px" >
+                    <a class="btn btn-info btn-small dropdown-toggle" data-toggle="dropdown" href="#">{$unit->DisplayName} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a></li>
+                        <li><a class="active" style="font-weight: bold" href="#">&minus;&gt;{$unit->DisplayName}</a></li>
+                        <li n:foreach="$uchildrens as $ch"><a n:href="this $aid, $ch->ID">&minus;&minus;&gt; {$ch->DisplayName}</a></li>      
+                    </ul>
+                </div>
+
+                <a n:href="changeDirectMemberOnly!" class="ajax btn btn-info btn-small">Podřízené?
+                    <i class="icon icon-white {if !$directMemberOnly}icon-ok{else}icon-ban-circle{/if}"></i>
+                </a>
+                <br /><br />
+                {input massAddSend}
+                <a class="btn btn-primary btn-small" href="#addParticipant" data-toggle="modal">Založit nového účastníka</a>
+            </div>
+            <table class="table table-striped table-bordered table-condensed">
+                {if count($list) > 0}
+                <tr>
+                    <th><input type="checkbox" id="checkPotencials" onclick="jqCheckAll(this.id, 'all')" /></th>
+                    <th>Příjmění a jméno</th>
+                </tr>
+{*}
+                <tr>
+                    <th>
+                        <script type="text/javascript">
+                            $(document).ready(function() { 
+                                $( ".findUserBox" ).combobox();
+                                $('.combobox-text').val('').focus();
+                                
+                                // odeslání pomocí tlačítek
+                                $("form.findByName").submit(function () {
+                                        $(this).ajaxSubmit();
+                                        return false;
+                                });
+                                // odeslání pomocí tlačítek
+                                $("form.findByName :submit").click(function () {
+                                        $(this).ajaxSubmit();
+                                        return false;
+                                });
+                                
+                            });
+                        </script>
+                        {form formFindByName class=>"nonMargin findByName"}
+                        {input user class=>"findUserBox"}
+                    </th><th style="width: 28px;">
+                        {input send}
+                        {/form}
+                    </th>
+                </tr>
+{*}
+                <tr n:foreach="$list as $id=>$name">
+                    <td>
+                        {input all-$id}
+                        <a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a>
+                    </td>
+                    <td>{$name}</td>
+                </tr>
+                {else}
+                <tr>
+                    <th style="text-align: center;">Nejsou žádné nevybrané osoby.</th>
+                </tr>
+                {/if}
+            </table>
+            {/form}
+        </div>
+        {/snippet}
+    </div>
+
+
+
+        {snippet participants}
+    <div class="span6">
+{form formMassParticipants}
+        <div n:ifset="$participants">
+            <h3>Seznam účastníků</h3>
+            {if !empty($participants)}
+
+            <div class="well well-small">
+                {*}<a n:if="$isEditable" class="paymentMass btn btn-info btn-small" n:href="addPaymentToChit!">Přidat příjmy do pokl. knihy</a>{*}
+                <a class="btn btn-info btn-small" n:href="export $aid">Seznam účastníků</a>
+                <a class="btn btn-info btn-small" n:href="hpd $aid" title="Exportovat hromadný příjmový doklad">HPD</a>
+                {if $accessUpdateParticipant || $accessDeleteParticipant}<br /><br />{/if}
+                <a n:if="$accessUpdateParticipant" class="paymentMass btn btn-info btn-small" href="#massEdit" data-toggle="modal">Upravit vybrané</a>
+                {if $accessDeleteParticipant}{input massRemoveSend}{/if}
+            </div>
+
+            <table id="participants-list" class="table table-striped table-bordered table-condensed">
+                <tr>
+                    <th n:if="$accessUpdateParticipant || $accessDeleteParticipant" style="width:90px;">
+                        <input type="checkbox" id="checkParticipants" onclick="jqCheckAll(this.id, 'ids')" />
+                    </th>
+                    <th>Příjmení a jméno ({= count($participants)})</th>
+                    <th>Dnů</th>
+                    <th>Částka</th>
+                </tr>
+                {assign $total = 0}
+                {if !empty($participants)}
+                <tr n:foreach="$participants as $p">
+                    <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
+                        {input ids-$p->ID}
+                        <a n:if="$accessUpdateParticipant" class="fancybox fancybox.ajax btn btn-info btn-mini" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
+                        <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a>
+                    </td>
+                    <td>{$p->Person}</td>
+                    <td id="par-days-{$p->ID}">{$p->Days}</td>
+                    <td id="par-payment-{$p->ID}" >{ifset $p->Note}{$p->Note}{? $total += $p->Note}{else}0{/ifset}</td>
+                </tr>
+                {/if}
+                <tr>
+                    <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">&nbsp;</td>
+                    <td colspan="2"><b>Celkem</b></td>
+                    <td><b>{$total}</b></td>
+                </tr>
+
+            </table>
+
+            {else}
+            <p class="alert info">Nejsou vybáni žádní účastníci.</p>
+            {/if}
+        </div>
+
+    </div>
+    {if $isEditable}
+
+    {* hromadné úpravy účastníků*}
+    <div class="modal myModal fade" id="massEdit">
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h2>Hromadné nastavení</h2>
+        </div>
+        <div class="modal-body">
+            <table>
+                <tr>
+                    <td>Dní</td>
+                    <td>{input days style=>"width:40px"}</td>
+                </tr>
+                <tr>
+                    <td>Částka </td>
+                    <td>{input payment style=>"width:40px"}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">{input massEditSend}</td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+    {/if}
+
+
+            {/form}
+        {/snippet}
+
+</div>
+
+{if $isEditable}
+
+{* hromadné vyplnění částek *}
+{*}
+<div class="modal myModal fade" id="massEdit">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h2>Poplatek</h2>
+    </div>
+    <div class="modal-body">
+            {form formAddPaymentMass class=>"ajax"}
+        <ul class="errors" n:if="$form->hasErrors()">
+            <li n:foreach="$form->errors as $error">{$error}</li>
+        </ul>
+                {label sum/} {input sum style=>"width:40px;"} Kč <br />
+                {label rewrite/} {input rewrite}<br />
+                {input aid}{input send onclick=>"$('#addPaymentMass').modal('hide')"}
+            {/form}
+    </div>
+</div>
+{*}
+
+{* nový účastník *}
+<div class="modal myModal fade" id="addParticipant">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h2>Založit nového účastníka</h2>
+    </div>
+    <div class="modal-body">
+            {control formAddParticipantNew}
+    </div>
+    <div class="modal-footer">
+        <a data-dismiss="modal" class="btn ">Zavřít</a>
+    </div>
+</div>
+
+
+
+{*}
+<script type="text/javascript">
+$(document).ready(function() {
+    
+    $('#[id^="try-"]');
+    
+    $('#[id^="par-days-"]').editable({link editDays!},  { 
+         type : 'text',
+         id   : 'id',
+         name : 'days',
+         placeholder : ' ',
+         width : '20px',
+         height: '15px',
+         submitdata : function(value, settings) {
+             return { id: this.id.substr(9) }; //odstrani prefix
+         }
+     });
+
+    $('#[id^="par-payment-"]').editable({link editPayment!},  { 
+         type : 'text',
+         id   : 'id',
+         name : 'payment',
+         placeholder : ' ',
+         width : '35px',
+         height: '15px',
+         submitdata : function(value, settings) {
+             return { id: this.id.substr(12) }; //odstrani prefix
+         }
+     });
+
+});
+
+</script>
+{*}
+{/if}
+

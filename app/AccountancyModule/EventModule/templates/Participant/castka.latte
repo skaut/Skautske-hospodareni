@@ -1,0 +1,71 @@
+{*}
+{block #content}
+
+<a n:href="Default:akce">Aktuální akce</a> &rarr;
+<a n:href="Ucastnik:seznam">Seznam učastníků</a> &rarr; Částky
+
+<h2>Seznam přijatých částek od účastníků</h2>
+
+{if $selectedList}
+
+<?php $form->render('begin') ?>
+<?php $form->render('errors') ?>
+<table border="1">
+    <tr>
+        <th>{$form['date']->label}</th>
+        <td>{$form['date']->control}</td>
+    </tr>
+    <tr>
+        <th>{$form['pokladnik']->label}</th>
+        <td>{$form['pokladnik']->control}</td>
+    </tr>
+    <tr>
+        <th>{$form['prijal']->label}</th>
+        <td>{$form['prijal']->control}</td>
+    </tr>
+    <tr>
+        <th><input type="button" value="Vyplnit vše" id="fillAll" /></th>
+        <td><input type="text" id="fillAllContent" size="14" maxlength="10"/></td>
+    </tr>
+    <tr n:foreach="$selectedList as $key => $ucastnik">
+        <td id="{$key}">{$ucastnik->n} ({$ucastnik->r})</td>
+        <td>{$form['ucastnici'][$key]->control}</td>
+    </tr>
+</table>
+
+{$form['send']->control}
+<?php $form->render('end') ?>
+{else}
+<p>Nebyl vybrán žádný účastník akce.</p>
+{/if}
+
+<script type="text/javascript">
+    $(function(){
+        var text = {$autoCompleter};
+        var optionsAC = {
+            source: text,
+            delay: 0,
+            minLength: 2
+        };
+
+        $('#' + {$form['pokladnik']->htmlId}).autocomplete(optionsAC);
+        $('#' + {$form['prijal']->htmlId}).autocomplete(optionsAC);
+
+        $('#fillAll').click(function(){
+            var val = $('#fillAllContent').val() * 1; // * 1 udela int
+            {assign reg = "/^[1-9]{1}[0-9]*$/"}//nutbe pro zahovani relularniho vyrazy {1}
+            var reg = {!$reg};
+            
+            if (!reg.test(val)) {
+                alert("Zadaná hodnota byla neplatná.");
+                return false;
+            }
+            if(!confirm('Opravdu chcete přemazat všechny hodnoty novými ?'))
+                return false;
+            $('input.ucastnik').val(val);
+            return false;
+        });
+
+    })
+</script>
+{*}
