@@ -3,13 +3,13 @@
 /**
  * @author sinacek
  */
-class Accountancy_DefaultPresenter extends Accountancy_BasePresenter {
+class Accountancy_DefaultPresenter extends Accountancy_BasePresenter  {
 
     /**
      * pouze přesměrovává na jiný presenter
      */
     function startup() {
         parent::startup();
-        $this->redirect("Event:");
+        $this->redirect("Event:Default:");
     }
 }

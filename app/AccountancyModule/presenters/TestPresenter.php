@@ -30,7 +30,7 @@ class Accountancy_TestPresenter extends Accountancy_BasePresenter {
             $this->redirect("default");
         }
         
-        $ret = $this->service->user->UserDetail("ID");
+        //$ret = $this->service->user->UserDetail("ID");
         //dump($ret);
         //die();
 

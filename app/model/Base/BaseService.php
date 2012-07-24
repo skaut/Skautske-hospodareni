@@ -5,6 +5,11 @@
  */
 abstract class BaseService extends Object {
 
+    //konstanty pro Event a Camp
+    const LEADER = 0; //ID v poli funkcí
+    const ASSISTANT = 1; //ID v poli funkcí
+    const ECONOMIST = 2; //ID v poli funkcí
+    
     /**
      * reference na třídu typu Table
      * @var instance of BaseTable

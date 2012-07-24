@@ -57,44 +57,13 @@ class UserService extends BaseService {
     }
 
     /**
-     * vytvoří pole jmen pro automatické doplňování
-     * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
-     * @return array
-     */
-    public function getAC($OnlyDirectMember = false) {
-        return array_values($this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember))));
-    }
-
-    /**
-     * vytvoří pole jmen s ID pro combobox
-     * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
-     * @return array
-     */
-    public function getCombobox($OnlyDirectMember = false) {
-        return $this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)));
-    }
-
-    /**
-     * vrací pole osob ID => jméno
-     * @param array $data - vráceno z PersonAll
-     * @return array 
-     */
-    private function getPairs($data) {
-        $res = array();
-        foreach ($data as $p) {
-            $res[$p->ID] = $p->LastName . " " . $p->FirstName;
-        }
-        return $res;
-    }
-
-    /**
      *
      * @param type $id - např. ID_EventGeneral, NULL = oveření nad celou tabulkou
      * @param type $ID_Action - id ověřované akce - např EV_EventGeneral_UPDATE
      * @param type $table - tabulka v DB skautisu
      * @return BOOL|stdClass|array
      */
-    public function actionVerify($id = NULL, $ID_Action = NULL, $table = "EV_EventGeneral") {
+    public function actionVerify($table, $id = NULL, $ID_Action = NULL) {
         $res = $this->skautIS->user->ActionVerify(array(
             "ID" => $id,
             "ID_Table" => $table,
