@@ -1,0 +1,6 @@
+
+<ul class="nav nav-pills">
+    <li {ifCurrent Detail: $aid}class='active'{/ifCurrent}><a n:href="Detail: $aid">Základní údaje</a></li>
+    <li {ifCurrent Participant: $aid}class='active'{/ifCurrent}><a n:href="Participant: $aid">Účastníci</a></li>
+    <li {ifCurrent Cashbook: $aid}class='active'{/ifCurrent}><a n:href="Cashbook: $aid">Pokladní kniha</a></li>
+</ul>

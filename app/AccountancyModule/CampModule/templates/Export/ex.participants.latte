@@ -1,0 +1,29 @@
+
+<style>
+.all{
+    width: 800px;
+}
+
+</style>
+<h2>Seznam účastníků - {$info->DisplayName}</h2>
+
+<table class="all" border="1">
+    <tr>
+        <th style="width: 5%">P.č.</th>
+        <th style="width: 15%">Jméno</th>
+        <th style="width: 15%">Příjmění</th>
+        <th style="width: 53%">Adresa</th>
+        <th style="width: 12%;">Dat. nar.</th>
+    </tr>
+    {dump $list}
+    {if is_array($list) || $list instanceof Traversable}
+    <tr n:foreach="$list as $u">
+        <td>{$iterator->counter}</td>
+        <td>{$u->FirstName}</td>
+        <td>{$u->LastName}</td>
+        <td>{$u->Street}, {$u->City}, {$u->Postcode}</td>
+        <td style="text-align: right;">{$u->Birthday|date:"d.m.Y"}</td>
+    </tr>
+    {/if}
+</table>
+

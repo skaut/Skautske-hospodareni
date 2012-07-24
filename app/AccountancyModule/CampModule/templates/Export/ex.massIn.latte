@@ -1,0 +1,70 @@
+<style>
+th{
+   line-height: 20px;
+}
+
+</style>
+
+
+<h2>Hromadný příjmový pokladní doklad</h2>
+<table class="prijmovyDoklad" border="1">
+    <tr>
+        <th style="width: 150px;">Datum</th>
+        <td style="width: 210px;">&nbsp;</td>
+        <th style="width: 120px">Číslo dokladu</th>
+        <td style="width: 180px">&nbsp;</td>
+    </tr>
+    <tr>
+        <th>Částka celkem</th>
+        <td>{$totalPrice} Kč</td>
+        <th>Slovy</th>
+        <td>=={$totalPrice|priceToString}korun==</td>
+    </tr>
+    <tr>
+        <th>Pokladník</th>
+        <td>&nbsp;</td>
+        <th>Podpis</th>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <th>Přijal</th>
+        <td>&nbsp;</td>
+        <th>Podpis</th>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <th>Schválil</th>
+        <td>&nbsp;</td>
+        <th>Podpis</th>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <th>Zaúčtoval dne</th>
+        <td>&nbsp;</td>
+        <th>Podpis</th>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <th>Účtovací předpis</th>
+        <td colspan="3">&nbsp;</td>
+    </tr>
+
+    <tr>
+        <th>Účel</th>
+        <td colspan="3">Účastnické poplatky</td>
+    </tr>
+    <tr>
+        <th colspan="4">{$oficialName}</th>
+    </tr>
+    <tr>
+        <td>P.č.</td>
+        <th colspan="2">Přijato od</th>
+        <td>částka (Kč)</td>
+    </tr>
+    <tr n:foreach="$list as $participants">
+        <td>{$iterator->getCounter()})</td>
+        <td colspan="2">{$participants->Person}</td>
+        <td n:inner-ifset="$participants->Note">{$participants->Note|price}{else}0</td>
+    </tr>
+
+</table>

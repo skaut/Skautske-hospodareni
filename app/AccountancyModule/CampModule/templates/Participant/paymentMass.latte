@@ -1,0 +1,16 @@
+<div style="width: 260px;">
+<h2>Poplatek</h2>
+
+{form formAddPaymentMass}
+<ul class="errors" n:if="$form->hasErrors()">
+        <li n:foreach="$form->errors as $error">{$error}</li>
+</ul>
+    {label sum/}</b> {input sum style=>"width:40px;"} Kč<br />
+    {label rewrite/} {input rewrite}
+    {input aid}
+    <div style="text-align: right; margin-right: 20px;">
+        {input send}
+    </div>
+{/form}
+</div>
+    
