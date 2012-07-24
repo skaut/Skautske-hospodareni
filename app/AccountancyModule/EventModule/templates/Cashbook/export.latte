@@ -1,0 +1,40 @@
+
+<style>
+.pkniha{
+    width: 800px;
+}
+
+</style>
+<h2>Pokladní kniha - {$info->DisplayName}</h2>
+
+<table class="pkniha" border="1">
+    <tr>
+        <th style="width: 15%">Ze dne</th>
+        <th style="width: 15%">Č. dokladu</th>
+        <th style="width: 35%">Účel platby</th>
+        <th style="width: 5%;">Kat.</th>
+        <th style="width: 10%;">Příjem</th>
+        <th style="width: 10%;">Výdej</th>
+        <th style="width: 10%;">Zůstatek</th>
+    </tr>
+    {assign balance => 0}
+    <tr n:foreach="$list as $item">
+        <td>{$item->date|date:"d.m.Y"}</td>
+        <td>&nbsp;</td>
+        <td>{$item->purpose}</td>
+        <td>{$item->cshort}</td>
+        <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>
+        <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>
+        <td>{$balance += $item->ctype == 'in' ? $item->price : (-$item->price)|price}</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><b>Konečný stav</b></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><b>{$balance|price}</b></td>
+    </tr>
+</table>
+

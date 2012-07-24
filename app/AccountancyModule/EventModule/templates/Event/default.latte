@@ -1,0 +1,65 @@
+{block #content}
+<h2>Seznam akcí</h2>
+<div class="row">
+    <div class="span">
+        <p n:if="$accessCreate">
+            <a href="#createNew" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</a>
+        </p>
+{dump $list}
+
+    {snippet events}
+        {form formFilter class=>"ajax filter"}
+        {label year /}{input year onchange=>"changeYear(this.value)"}
+        {label state /}{input state onchange=>"changeState(this.value)"}
+        {input send}
+        
+        {/form}
+        
+        {if is_array($list)}
+        <table class="myTable table-striped table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>Název</th>
+                    <th>Od</th>
+                    <th>Do</th>
+                    <th>Stav</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$list as $i">
+                    <td>{if $i->accessDelete}<a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-mini" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
+                    <td><a n:tag-if="$i->accessDetail" n:href="info $i->ID">{$i->DisplayName}</a></td>
+                    <td>{$i->StartDate|date:"d.m.Y"}</td>
+                    <td>{$i->EndDate|date:"d.m.Y"}</td>
+                    <td>{!$i->ID_EventGeneralState|eventStateLabel}</td>
+                </tr>
+            </tbody>
+        </table>
+        {else}
+        <p class="alert">Nemáte žádné akce.</p>
+        {/if}
+    {/snippet}
+    </div>
+</div>
+
+<div class="modal myModal fade" id="createNew">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Založit novou akci</h3>
+    </div>
+    <div class="modal-body">
+            {control formCreate}
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function changeYear(val){
+         $.post({link changeYear!}, { year : val });
+    }
+    function changeState(val){
+         $.post({link changeState!}, { state : val });
+    }
+            
+</script>
