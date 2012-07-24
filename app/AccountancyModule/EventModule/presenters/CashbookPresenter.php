@@ -14,18 +14,18 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
     }
 
     function renderDefault($aid) {
-        $this->template->isInMinus = $this->context->chitService->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
+        $this->template->isInMinus = $this->context->eventService->chits->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
         $this->template->isEditable = $this->context->eventService->event->isEditable($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
-        $this->template->list = $this->context->chitService->getAll($aid);
+        $this->template->list = $this->context->eventService->chits->getAll($aid);
     }
 
     function renderEdit($id, $aid) {
         $this->editableOnly();
-        $defaults = $this->context->chitService->get($id);
+        $defaults = $this->context->eventService->chits->get($id);
         $defaults['id'] = $id;
         $defaults['price'] = $defaults['priceText'];
-
+        
         if ($defaults['ctype'] == "out") {
             $form = $this['formOutEdit'];
             $form->setDefaults($defaults);
@@ -41,27 +41,27 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
     }
 
     public function actionExport($aid) {
-        $chits = $this->context->chitService->getAll($aid);
+        $chits = $this->context->eventService->chits->getAll($aid);
         $actionInfo = $this->context->eventService->event->get($this->aid);
         $template = $this->template;
         $template->setFile(dirname(__FILE__) . '/../templates/Cashbook/export.latte');
         $template->registerHelper('price', 'AccountancyHelpers::price');
         $template->list = $chits;
         $template->info = $actionInfo;
-        $this->context->chitService->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_pokladni-kniha.pdf");
+        $this->context->eventService->chits->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_pokladni-kniha.pdf");
         $this->terminate();
     }
 
     function actionPrint($id, $aid) {
         $actionInfo = $this->context->eventService->event->get($this->aid);
-        $chit = $this->context->chitService->get($id);
-        $this->context->chitService->printChits($this->context, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
+        $chit = $this->context->eventService->chits->get($id);
+        $this->context->eventService->chits->printChits($this->context, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
         $this->terminate();
     }
 
     function handleRemove($id, $actionId) {
         $this->editableOnly();
-        if ($this->context->chitService->delete($id, $actionId)) {
+        if ($this->context->eventService->chits->delete($id, $actionId)) {
             $this->flashMessage("Paragon byl smazán");
         } else {
             $this->flashMessage("Paragon se nepodařilo smazat");
@@ -77,7 +77,7 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
 
     function createComponentFormMass($name) {
         $form = new AppForm($this, $name);
-        $chits = $this->context->chitService->getAll($this->aid);
+        $chits = $this->context->eventService->chits->getAll($this->aid);
 
         $group = $form->addContainer('chits');
         foreach ($chits as $c) {
@@ -98,10 +98,10 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
             if ($bool)
                 $selected[] = $id;
         }
-        $chits = $this->context->chitService->getIn($this->aid, $selected);
+        $chits = $this->context->eventService->chits->getIn($this->aid, $selected);
 
         $actionInfo = $this->context->eventService->event->get($this->aid);
-        $this->context->chitService->printChits($this->context, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
+        $this->context->eventService->chits->printChits($this->context, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
     }
 
     //FORM OUT
@@ -149,7 +149,7 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
                 ->setHtmlId("form-out-price")
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3");
-        $categories = $thisP->context->chitService->getCategoriesOut();
+        $categories = $thisP->context->eventService->chits->getCategoriesOut();
         $form->addRadioList("category", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
@@ -186,7 +186,7 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
                 ->setHtmlId("form-in-price")
                 //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3");
-        $categories = $thisP->context->chitService->getCategoriesIn();
+        $categories = $thisP->context->eventService->chits->getCategoriesIn();
         $form->addRadioList("category", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
@@ -201,9 +201,9 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
         $values = $form->getValues();
 
         try {
-            $add = $this->context->chitService->add($this->aid, $values);
+            $add = $this->context->eventService->chits->add($this->aid, $values);
             $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
-            if ($this->context->chitService->isInMinus($this->aid))
+            if ($this->context->eventService->chits->isInMinus($this->aid))
                 $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
@@ -224,13 +224,13 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
         $id = $values['id'];
         unset($values['id']);
 
-        if ($this->context->chitService->update($id, $values)) {
+        if ($this->context->eventService->chits->update($id, $values)) {
             $this->flashMessage("Paragon byl upraven.");
         } else {
             $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
         }
 
-        if ($this->context->chitService->isInMinus($this->aid))
+        if ($this->context->eventService->chits->isInMinus($this->aid))
             $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
         $this->redirect("default", array("aid" => $this->aid));
     }

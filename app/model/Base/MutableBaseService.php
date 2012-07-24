@@ -2,6 +2,7 @@
 
 /**
  * @author Hána František
+ * Třída pro odvozování tříd, které jsou přispůsobiltené parametry v konstruktoru
  */
 abstract class MutableBaseService extends BaseService {
 

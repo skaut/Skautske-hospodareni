@@ -11,8 +11,8 @@ class Accountancy_Event_BasePresenter extends Accountancy_BasePresenter {
         parent::startup();
 
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
-        
-        if(isset($this->aid) && !is_null($this->aid)){//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
+
+        if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
                 //$event = $this->context->eventService->event->get($this->aid);
                 $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
@@ -20,9 +20,20 @@ class Accountancy_Event_BasePresenter extends Accountancy_BasePresenter {
             } catch (SkautIS_PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Event:");
-            }   
+            }
         } else {
             $this->availableActions = $this->context->userService->actionVerify(self::STable); //zjistení událostí nevázaných na konretnní akci
+        }
+    }
+
+    protected function editableOnly() {
+        if (!$this->isEditable) {
+            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
+            if ($this->isAjax()) {
+                $this->sendPayload();
+            } else {
+                $this->redirect("Default:");
+            }
         }
     }
 
@@ -32,26 +43,25 @@ class Accountancy_Event_BasePresenter extends Accountancy_BasePresenter {
      * @param string $prefix 
      */
     static function createRoutes(RouteList $router, $prefix = "") {
-        
-        $prefix .= "ucto/akce/";
-        
+
+//        $prefix .= "ucto/akce/";
+
         $router[] = new Route($prefix . '<aid [0-9]+>/', array(
                     'module' => "Accountancy",
                     'presenter' => "Event",
                     'action' => "info",
                 ));
-        
+
         $router[] = new Route($prefix . '<aid [0-9]+>[/<presenter>][/<action>]', array(
                     'module' => "Accountancy",
                     'action' => "default",
                 ));
-        
+
         $router[] = new Route($prefix . '<presenter>/<action>', array(
                     'module' => "Accountancy",
                     'presenter' => 'Event',
                     'action' => 'default',
                 ));
-        
     }
 
 }

@@ -3,10 +3,10 @@
 /**
  * @author Hána František
  */
-class ChitService extends BaseService {
+class ChitService extends MutableBaseService {
 
-    public function __construct($skautIS = NULL) {
-        parent::__construct($skautIS);
+    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {
+        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage);
         /** @var ChitTable */
         $this->table = new ChitTable();
     }
@@ -21,7 +21,6 @@ class ChitService extends BaseService {
      * @return type 
      */
     public function getAll($actionId) {
-        ;
         return $this->table->getAll($actionId);
     }
 
@@ -72,6 +71,7 @@ class ChitService extends BaseService {
             "purpose" => $val['purpose'],
             "price" => $this->solveString($val['price']),
             "priceText" => $val['price'],
+            "type" => strtolower(self::$typeName),
             "category" => $val['category'],
         );
 
@@ -96,7 +96,7 @@ class ChitService extends BaseService {
         $toChange = array();
         foreach ($changeAbleData as $name) {
             if (isset($val[$name])) {
-                if ($name == 'price'){
+                if ($name == 'price') {
                     $toChange['priceText'] = $val[$name];
                     $toChange[$name] = $this->solveString($val[$name]);
                     continue;
@@ -119,7 +119,7 @@ class ChitService extends BaseService {
     }
 
     /**
-     * smazat všechny paragony
+     * smazat všechny paragony dané akce
      * @param type $actionId
      * @return type 
      */
@@ -132,14 +132,14 @@ class ChitService extends BaseService {
      * @param bool $all - vracet vsechny informace o kategoriích?
      * @return array
      */
-    public function getCategories($all=FALSE) {
+    public function getCategories($all = FALSE) {
         if ($all)
             return $this->table->getCategoriesAll();
         return $this->table->getCategories();
     }
 
     /**
-     * vrací prijmové kategorie
+     * vrací prijmové kategorie výprav
      * @return array 
      */
     public function getCategoriesIn() {
@@ -147,11 +147,34 @@ class ChitService extends BaseService {
     }
 
     /**
-     * vrací výdajové kategorie
+     * vrací výdajové kategorie výprav
      * @return array 
      */
     public function getCategoriesOut() {
         return $this->table->getCategories("out");
+    }
+
+    /**
+     * vrací seznam všech rozpočtových kategorií pro tábory
+     * @param type $actionId
+     * @return type 
+     */
+    public function getCategoriesCamp($actionId) {
+        $in = $out = array();
+
+        $cacheId = __FUNCTION__ . "_" . $actionId;
+        if (!($all = $this->load($cacheId))) {
+            $list = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => false));
+            foreach ($list as $i) {
+                if ($i->IsRevenue)
+                    $in[$i->ID] = $i->EventCampStatementType;
+                else
+                    $out[$i->ID] = $i->EventCampStatementType;
+            }
+            $all = array("in"=>$in, "out"=>$out);
+            $this->save($cacheId, $all);
+        }
+        return $all;
     }
 
     /**
@@ -181,6 +204,7 @@ class ChitService extends BaseService {
         $template->oficialName = $context->unitService->getOficialName($actionInfo->ID_Unit);
         $context->chitService->makePdf($template, $fileName . ".pdf");
     }
+
 
     /**
      * vyhodnotí řetězec obsahující čísla, +, *
