@@ -1,0 +1,54 @@
+{block #content}
+{include ../ActionMenu.latte}
+
+{dump $data}
+
+<h2>{$data->DisplayName}</h2>
+<div class="row">
+    <div class="span3" n:if="$accessDetail">
+        <h3>Základní údaje</h3>
+        <table class="myTable table table-bordered table-condensed">
+            <tr>
+                <th>Jednotka</th>
+                <td>{$data->Unit}</td>
+            </tr>
+            <tr>
+                <th>Od</th>
+                <td>{$data->StartDate|date:"j. n. Y"}</td>
+            </tr>
+            <tr>
+                <th>Do</th>
+                <td>{$data->EndDate|date:"j. n. Y"}</td>
+            </tr>
+            <tr>
+                <th>Místo</th>
+                <td>{$data->Location}</td>
+            </tr>
+            <tr>
+                <th>Stav</th>
+                <td {if $data->ID_EventCampState == closed}title="Uzavřel: {$data->PersonClosed} dne: {$data->DateClosed|date:"j.n.Y"}" {/if}>{!$data->ID_EventCampState|campStateLabel}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="span4" n:if="is_array($funkce)">
+        <h3>Vedení tábora</h3>
+        <table class="myTable table table-bordered table-condensed">
+            <tr>
+                <th>Funkce</th>
+                <th>Příjmení a jméno</th>
+            </tr>
+            <tr n:foreach="$funkce as $f">
+                <td><i>{$f->EventFunctionType}</i></td>
+                <td>{ifset $f->ID_Person}{$f->Person}{/ifset}</td>
+            </tr>
+        </table>
+    </div>
+    
+</div>
+<div class="row">
+    <div class="alert alert-info span4">
+        Pro úpravu údajů táborů použijte <a href="{$skautISUrl}Junak/Events/Camp/Detail.aspx?ID={$data->ID}"><u>SkautIS</u></a>.
+    </div>
+</div>
+
