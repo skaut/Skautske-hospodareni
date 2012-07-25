@@ -68,17 +68,17 @@ class Accountancy_BasePresenter extends BasePresenter {
     static function createRoutes(RouteList $router, $prefix = "") {
         
         //$prefix .= "ucto/";
-        
-        $router[] = new Route($prefix . '<aid [0-9]+>/', array(
-                    'module' => "Accountancy",
-                    'presenter' => "Event",
-                    'action' => "info",
-                ));
-        
-        $router[] = new Route($prefix . '<aid [0-9]+>[/<presenter>][/<action>]', array(
-                    'module' => "Accountancy",
-                    'action' => "default",
-                ));
+//        
+//        $router[] = new Route($prefix . '<aid [0-9]+>/', array(
+//                    'module' => "Accountancy",
+//                    'presenter' => "Event",
+//                    'action' => "info",
+//                ));
+//        
+//        $router[] = new Route($prefix . '<aid [0-9]+>[/<presenter>][/<action>]', array(
+//                    'module' => "Accountancy",
+//                    'action' => "default",
+//                ));
         
         $router[] = new Route($prefix . '<module>/<presenter>/<action>', array(
                     'module' => "Accountancy",

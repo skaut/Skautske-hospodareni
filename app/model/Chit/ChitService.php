@@ -12,7 +12,12 @@ class ChitService extends MutableBaseService {
     }
 
     public function get($id) {
-        return $this->table->get($id);
+        $ret = $this->table->get($id);
+        if ($ret instanceof DibiRow && $ret->type == "camp") {
+            $categories = $this->getCategoriesCampPairs($ret->actionId);
+            $ret->ctype = array_key_exists($ret->category, $categories['in']) ? "in" : "out";
+        }
+        return $ret;
     }
 
     /**
@@ -21,7 +26,19 @@ class ChitService extends MutableBaseService {
      * @return type 
      */
     public function getAll($actionId) {
-        return $this->table->getAll($actionId);
+        $list = $this->table->getAll($actionId);
+        if (!empty($list) && $list[0]->type == "camp") {
+            $categories = $this->getCategoriesCampPairs($actionId);
+            foreach ($list as $k => $i) {
+                $i->ctype = array_key_exists($i->category, $categories['in']) ? "in" : "out";
+                $i->clabel = array_key_exists($i->category, $categories['in']) ? $categories['in'][$i->category] : $categories['out'][$i->category];
+                $i->cshort = array_key_exists($i->category, $categories['in']) ? $categories['in'][$i->category] : $categories['out'][$i->category];
+                $i->cshort = substr($i->cshort, 0, 5);
+                $list[$k] = $i;
+            }
+        }
+
+        return $list;
     }
 
     public function getAllOut($actionId) {
@@ -75,11 +92,13 @@ class ChitService extends MutableBaseService {
             "category" => $val['category'],
         );
 
-        return $this->table->add($values);
+        $ret = $this->table->add($values);
+        $this->updateCategory($actionId, $val['category']);
+        return $ret;
     }
 
     /**
-     * upravit patagon
+     * upravit paragon
      * @param type $chitId
      * @param ArrayAccess $val
      * @return type 
@@ -89,6 +108,7 @@ class ChitService extends MutableBaseService {
 
         if (!is_array($val) && !($val instanceof ArrayAccess))
             throw new InvalidArgumentException("Values nejsou ve správném formátu");
+        $chit = $this->get($chitId);
 
         if (isset($val['id']))
             $val['id'] = $chitId;
@@ -104,8 +124,15 @@ class ChitService extends MutableBaseService {
                 $toChange[$name] = $val[$name];
             }
         }
+        $ret = $this->table->update($chitId, $toChange);
+        //category update
+        if ($chit->type == "camp") {
+            $this->updateCategory($chit->actionId, $chit->category);
+            if (isset($val["category"]))
+                $this->updateCategory($chit->actionId, $val["category"]);
+        }
 
-        return $this->table->update($chitId, $toChange);
+        return $ret;
     }
 
     /**
@@ -115,11 +142,15 @@ class ChitService extends MutableBaseService {
      * @return type 
      */
     public function delete($chitId, $actionId) {
+        $chit = $this->get($chitId);
+        if ($chit->type != "general") //category update
+            $this->updateCategory($actionId, $chit->category);
         return $this->table->delete($chitId, $actionId);
     }
 
     /**
      * smazat všechny paragony dané akce
+     * použití při rušení celé akce
      * @param type $actionId
      * @return type 
      */
@@ -154,27 +185,66 @@ class ChitService extends MutableBaseService {
         return $this->table->getCategories("out");
     }
 
+    public function getCategoriesCamp($actionId) {
+        $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => false));
+        $res = array();
+        foreach ($tmp as $i) {
+            $res[$i->ID] = $i;
+        }
+        return $res;
+    }
+
     /**
      * vrací seznam všech rozpočtových kategorií pro tábory
      * @param type $actionId
-     * @return type 
+     * @return array(in=>(id, ...), out=>(...))
      */
-    public function getCategoriesCamp($actionId) {
+    public function getCategoriesCampPairs($actionId) {
         $in = $out = array();
 
         $cacheId = __FUNCTION__ . "_" . $actionId;
         if (!($all = $this->load($cacheId))) {
-            $list = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => false));
-            foreach ($list as $i) {
-                if ($i->IsRevenue)
+            foreach ($this->getCategoriesCamp($actionId) as $i) {
+                if ($i->IsRevenue) {//výnosy?
                     $in[$i->ID] = $i->EventCampStatementType;
-                else
+                } else {
                     $out[$i->ID] = $i->EventCampStatementType;
+                }
             }
-            $all = array("in"=>$in, "out"=>$out);
+            $all = array("in" => $in, "out" => $out);
             $this->save($cacheId, $all);
         }
         return $all;
+    }
+
+    /**
+     * vrací soucet v kazdé kategorii
+     * @param type $actionId
+     * @return (ID=>SUM)
+     */
+    public function getTotalInCategories($actionId) {
+        $db = $this->table->getTotalInCategories($actionId);
+        $all = $this->getCategoriesCamp($actionId);
+        foreach ($all as $key=> $item) {
+            $all[$key] = array_key_exists($key, $db) ? $db[$key] : 0;
+        }
+        return $all;
+    }
+
+    /**
+     * upraví celkový součet dané kategorie ve skautISu podle zadaných paragonů
+     * @param type $aid
+     * @param type $categoryId 
+     */
+    public function updateCategory($aid, $categoryId, $ammout = NULL) {
+        if ($ammout === NULL)
+            $ammout = (int) $this->table->getTotalInCategory($categoryId);
+        $this->skautIS->event->EventCampStatementUpdate(array(
+            "ID" => $categoryId,
+            "ID_EventCamp" => $aid,
+            "Ammount" => $ammout,
+            "IsEstimate" => false
+                ), "eventCampStatement");
     }
 
     /**
@@ -204,7 +274,6 @@ class ChitService extends MutableBaseService {
         $template->oficialName = $context->unitService->getOficialName($actionInfo->ID_Unit);
         $context->chitService->makePdf($template, $fileName . ".pdf");
     }
-
 
     /**
      * vyhodnotí řetězec obsahující čísla, +, *
