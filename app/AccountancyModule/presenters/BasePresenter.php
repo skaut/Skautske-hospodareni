@@ -33,8 +33,12 @@ class Accountancy_BasePresenter extends BasePresenter {
         parent::startup();
 
         if (!$this->user->isLoggedIn()) {
-            $this->backlink = $this->storeRequest('+ 2 days');
-            $this->redirect(":Default:", array("backlink" => $this->backlink));
+            $this->backlink = $this->storeRequest('+ 3 days');
+            if($this->isAjax()){
+                $this->forward(":Auth:ajax", array("backlink" => $this->backlink));
+            }  else {
+                $this->redirect(":Default:", array("backlink" => $this->backlink));
+            }
         }
         
         if ($this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku

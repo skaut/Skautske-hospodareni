@@ -55,7 +55,7 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
     function actionPrint($id, $aid) {
         $actionInfo = $this->context->eventService->event->get($this->aid);
         $chit = $this->context->eventService->chits->get($id);
-        $this->context->eventService->chits->printChits($this->context, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
+        $this->context->eventService->chits->printChits($this->context->unitService, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
         $this->terminate();
     }
 
@@ -101,7 +101,7 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
         $chits = $this->context->eventService->chits->getIn($this->aid, $selected);
 
         $actionInfo = $this->context->eventService->event->get($this->aid);
-        $this->context->eventService->chits->printChits($this->context, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
+        $this->context->eventService->chits->printChits($this->context->unitService, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
     }
 
     //FORM OUT

@@ -114,8 +114,7 @@ class ChitTable extends BaseTable {
             LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.id) 
             WHERE ch.actionId = %i AND ch.deleted = 0
             GROUP BY cat.type", $actionId);
-
-        return @(($data["in"] - $data["out"]) < 0) ? true : false; //@ potlačuje chyby u neexistujicich indexů "in" a "out"
+        return $data;
     }
     
     /**

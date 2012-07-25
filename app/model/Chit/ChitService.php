@@ -41,31 +41,44 @@ class ChitService extends MutableBaseService {
         return $list;
     }
 
-    public function getAllOut($actionId) {
-        $data = $this->table->getAll($actionId);
-        $res = array();
-        foreach ($data as $i) {
-            if ($i->ctype == "out")
-                $res[] = $i;
-        }
-        return $res;
-    }
+    /**
+     * 
+     * @param type $actionId
+     * @return type 
+     * @deprecated
+     */
+//    public function getAllOut($actionId) {
+//        $data = $this->table->getAll($actionId);
+//        $res = array();
+//        foreach ($data as $i) {
+//            if ($i->ctype == "out")
+//                $res[] = $i;
+//        }
+//        return $res;
+//    }
+//
+//    /**
+//     * vrací seznam příjmových dokladů
+//     * @param type $actionId
+//     * @return array 
+//     */
+//    public function getAllIncome($actionId) {
+//        $data = $this->table->getAll($actionId);
+//        $res = array();
+//        foreach ($data as $i) {
+//            if ($i->ctype == "in")
+//                $res[] = $i;
+//        }
+//        return $res;
+//    }
 
     /**
-     * vrací seznam příjmových dokladů
+     * vrací pole paragonů s ID zadanými v $list
+     * použití - hromadný tisk
      * @param type $actionId
-     * @return array 
+     * @param type $list - pole id
+     * @return array
      */
-    public function getAllIncome($actionId) {
-        $data = $this->table->getAll($actionId);
-        $res = array();
-        foreach ($data as $i) {
-            if ($i->ctype == "in")
-                $res[] = $i;
-        }
-        return $res;
-    }
-
     public function getIn($actionId, $list) {
         return $this->table->getIn($actionId, (array) $list);
     }
@@ -159,7 +172,7 @@ class ChitService extends MutableBaseService {
     }
 
     /**
-     * vrací všechny kategorie
+     * vrací všechny kategorie akcí
      * @param bool $all - vracet vsechny informace o kategoriích?
      * @return array
      */
@@ -185,17 +198,27 @@ class ChitService extends MutableBaseService {
         return $this->table->getCategories("out");
     }
 
-    public function getCategoriesCamp($actionId) {
-        $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => false));
+    /*     * ******** CAMP CATEGORIES *********** */
+
+    /**
+     * seznam všech kategorií ze skautISu
+     * @param type $actionId
+     * @param bool $isEstimate
+     * @return array(ID=>category, ...)
+     */
+    public function getCategoriesCamp($actionId, $isEstimate = false) {
+        $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => $isEstimate));
         $res = array();
-        foreach ($tmp as $i) {
+        foreach ($tmp as $i) { //prepisuje na tvar s klíčem jako ID
+            if ($isEstimate == false && $i->ID_EventCampStatementType == 15)
+                continue;
             $res[$i->ID] = $i;
         }
         return $res;
     }
 
     /**
-     * vrací seznam všech rozpočtových kategorií pro tábory
+     * vrací rozpočtové kategorie rozdělené na příjmy a výdaje (camp)
      * @param type $actionId
      * @return array(in=>(id, ...), out=>(...))
      */
@@ -222,19 +245,20 @@ class ChitService extends MutableBaseService {
      * @param type $actionId
      * @return (ID=>SUM)
      */
-    public function getTotalInCategories($actionId) {
+    public function getCategoriesCampSum($actionId) {
         $db = $this->table->getTotalInCategories($actionId);
         $all = $this->getCategoriesCamp($actionId);
-        foreach ($all as $key=> $item) {
+        foreach ($all as $key => $item) {
             $all[$key] = array_key_exists($key, $db) ? $db[$key] : 0;
         }
         return $all;
     }
 
     /**
-     * upraví celkový součet dané kategorie ve skautISu podle zadaných paragonů
-     * @param type $aid
-     * @param type $categoryId 
+     * upraví celkový součet dané kategorie ve skautISu podle zadaných paragonů nebo podle parametru $ammout
+     * @param int $aid
+     * @param int $categoryId 
+     * @param float $ammout 
      */
     public function updateCategory($aid, $categoryId, $ammout = NULL) {
         if ($ammout === NULL)
@@ -248,15 +272,45 @@ class ChitService extends MutableBaseService {
     }
 
     /**
+     * ověřuje konzistentnost dat mezi paragony a SkautISem
+     * @param type $actionId
+     * @return boolean 
+     */
+    public function isConsistent($actionId, $repair = false, &$toRepair = NULL) {
+        $sumSkautIS = $this->getCategoriesCamp($actionId);
+        //$toRepair = array();
+        foreach ($this->getCategoriesCampSum($actionId) as $catId => $ammount) {
+            if ($ammount != $sumSkautIS[$catId]->Ammount) {
+                if ($repair) //má se kategorie oprazvit?
+                    $this->updateCategory($actionId, $catId, $ammount);
+                else
+                    $toRepair[$catId] = $ammount; //seznam ID vadných kategorií a jejich částek
+            }
+        }
+        return empty($toRepair) ? true : false;
+    }
+
+    /*     * ******** END CAMP CATEGORIES *********** */
+
+    /**
      * je akce celkově v záporu?
      * @param type $actionId
      * @return bool
      */
     public function isInMinus($actionId) {
-        return $this->table->isInMinus($actionId);
+        $data = $this->table->isInMinus($actionId);
+        return @(($data["in"] - $data["out"]) < 0) ? true : false; //@ potlačuje chyby u neexistujicich indexů "in" a "out"
     }
 
-    public function printChits($context, $template, $actionInfo, $chits, $fileName) {
+    /**
+     * vrací PDF s vybranými paragony
+     * @param type $unitService
+     * @param type $template
+     * @param type $actionInfo
+     * @param type $chits
+     * @param type $fileName 
+     */
+    public function printChits($unitService, $template, $actionInfo, $chits, $fileName) {
         $income = array();
         $outcome = array();
         foreach ($chits as $c) {
@@ -271,8 +325,8 @@ class ChitService extends MutableBaseService {
         $template->setFile(dirname(__FILE__) . '/ex.chits.latte');
         $template->income = $income;
         $template->outcome = $outcome;
-        $template->oficialName = $context->unitService->getOficialName($actionInfo->ID_Unit);
-        $context->chitService->makePdf($template, $fileName . ".pdf");
+        $template->oficialName = $unitService->getOficialName($actionInfo->ID_Unit);
+        $this->makePdf($template, $fileName . ".pdf");
     }
 
     /**

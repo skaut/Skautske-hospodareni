@@ -1,0 +1,58 @@
+{block #bughetTable $data, $toRepair, $isIn}
+<table n:ifset="$data" class="table myTable table-bordered table-condensed">
+    <thead>
+        <tr>
+            <th>Položka</th>
+            <th>Částka</th>
+        </tr>
+    </thead>
+    {foreach $data as $ID=>$item}
+    <tr n:if="$item->IsRevenue == $isIn">
+        <td>{$item->EventCampStatementType}</td>
+        <td style="text-align: right;">
+        {if array_key_exists($ID, $toRepair)} <span class="btn btn-mini btn-danger" title="Součet paragonů je {$toRepair[$ID]}"><i class="icon icon-white icon-ban-circle"></i></span>{/if}
+        {$data[$ID]->Ammount|price}
+        </td>
+    </tr>
+    {/foreach}
+</table>
+{/block}
+
+
+{block #content}
+{include ../ActionMenu.latte}
+<h2>Rozpočet</h2>
+
+<div class="alert alert-danger" n:if="!$isConsistent">
+    <h4 class="alert-heading">Nekonzistentní data!</h4>
+Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu. Chcete sjednotit částky podle paragonů? 
+<a n:href="convert! $aid" class="btn btn-mini btn-primary">Ano</a>
+</div>
+
+<div class="row">
+
+    <div class="span3">
+        <h3>Skutečné náklady</h3>
+        {include #bughetTable data=>$dataReal, toRepair=>$toRepair, isIn=>false}
+    </div>
+    <div class="span3">
+        <h3>Skutečné výnosy</h3>
+        {include #bughetTable data=>$dataReal, toRepair=>$toRepair, isIn=>true}
+    </div>
+
+<!--</div>
+<hr />
+<div class="row">-->
+
+    <div class="span3">
+        <h3>Předpokládané náklady</h3>
+        {include #bughetTable data=>$dataEstimate, toRepair=>$toRepair, isIn=>false}
+    </div>
+    <div class="span3">
+        <h3>Předpokládané výnosy</h3>
+        {include #bughetTable data=>$dataEstimate, toRepair=>$toRepair, isIn=>true}
+    </div>
+
+</div>
+
+
