@@ -93,6 +93,16 @@ class ChitTable extends BaseTable {
     public function getCategoriesAll($type = NULL) {
         return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
     }
+    
+    /**
+     * celková cena v dané kategorii
+     * @param int $categoryId
+     * @param string $type - camp/general
+     * @return int 
+     */
+    public function getTotalInCategory($categoryId, $type="camp"){
+        return dibi::fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND type=%s", $type);
+    }
 
     /**
      * spočítá příjmy a výdaje a ty pak odečte
@@ -106,6 +116,15 @@ class ChitTable extends BaseTable {
             GROUP BY cat.type", $actionId);
 
         return @(($data["in"] - $data["out"]) < 0) ? true : false; //@ potlačuje chyby u neexistujicich indexů "in" a "out"
+    }
+    
+    /**
+     * spočte součet částek v jednotlivých kategoriích
+     * @param type $actionId
+     * @return (categoryId=>SUM)
+     */
+    public function getTotalInCategories($actionId) {
+        return dibi::fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE actionId=%i", $actionId ," AND deleted=0 GROUP BY category");
     }
 
 }

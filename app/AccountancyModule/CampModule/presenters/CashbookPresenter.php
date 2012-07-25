@@ -9,13 +9,13 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
         parent::startup();
         if (!$this->aid) {
             $this->flashMessage("Musíš vybrat akci", "error");
-            $this->redirect("Event:");
+            $this->redirect("Default:");
         }
         $this->template->isEditable = array_key_exists("EV_EventCamp_UPDATE_RealTotalCost", $this->availableActions);
     }
 
     function renderDefault($aid) {
-        $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
+        $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
     }
@@ -60,10 +60,35 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
         $this->context->campService->chits->printChits($this->context, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
         $this->terminate();
     }
+    
+    /**
+     * přepočte hodnoty v jednotlivých kategorich
+     * @param type $aid 
+     */
+    public function handleConvert($aid) {
+        $this->editableOnly();
+        $totalSkautIS = $this->context->campService->chits->getCategoriesCamp($aid);
+        $total = $this->context->campService->chits->getTotalInCategories($aid);
+        foreach ($total as $catId => $ammount) {
+            if($ammount != $totalSkautIS[$catId]->Ammount){//update pouze kdyz je rozpor mezi parazgony a SkautISem
+                $this->context->campService->chits->updateCategory($aid, $catId, $ammount);
+            }
+        }
+        $this->flashMessage("Kategorie byly přepočítány.");
+        
+        if ($this->isAjax()) {
+//            $this->invalidateControl("paragony");
+            $this->invalidateControl("flash");
+        } else {
+            $this->redirect('this', $aid);
+        }
+        
+    }
 
     function handleRemove($id, $aid) {
         $this->editableOnly();
-        if ($this->context->campService->chits->delete($id, $actionId)) {
+        
+        if ($this->context->campService->chits->delete($id, $aid)) {
             $this->flashMessage("Paragon byl smazán");
         } else {
             $this->flashMessage("Paragon se nepodařilo smazat");
@@ -73,7 +98,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
             $this->invalidateControl("paragony");
             $this->invalidateControl("flash");
         } else {
-            $this->redirect('this', $actionId);
+            $this->redirect('this', $aid);
         }
     }
 
@@ -151,7 +176,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
                 ->setHtmlId("form-out-price")
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3");
-        $categories = $thisP->context->campService->chits->getCategoriesCamp($thisP->aid);
+        $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
         
         $form->addRadioList("category", "Typ: ", $categories['out'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
@@ -189,7 +214,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
                 ->setHtmlId("form-in-price")
                 //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3");
-        $categories = $thisP->context->campService->chits->getCategoriesCamp($thisP->aid);
+        $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
         
         $form->addRadioList("category", "Typ: ", $categories['in'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');

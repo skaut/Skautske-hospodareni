@@ -45,6 +45,11 @@ abstract class AccountancyHelpers extends Object {
     }
 
 
+    /**
+     * formátuje číslo na částku
+     * @param type $price
+     * @return int 
+     */
     public static function price($price) {
         if (stripos($price, "."))
             return number_format($price, 2, ",", "");

@@ -3,7 +3,8 @@
 
 <h2>Pokladní kniha</h2>
 <div class="row">
-    {dump $isEditable}
+    {dump $list}
+    {* sekce přidávání paragonů *}
     <div class="span4" n:if="$isEditable" style="width:360px;">
     {snippet tabs}
         <div id="cashbook-tabs">
@@ -21,6 +22,7 @@
     {/snippet}    
     </div>
     
+    {* sekce seznam paragonů *}
     <div class="span8">
         <div n:snippet="paragony" style="float: left;">
         {if $list}
@@ -28,10 +30,12 @@
                 Pokladní kniha je v záporných číslech a to nesmí nastat!
             </p>
             {form formMass}
-            <div class="well well-small">
+            <div class="well well-small"> {* sekce horních tlačítek *}
                 {input printSend}
                 <a n:href="export $aid" class="btn btn-mini btn-info">Exportovat pokladní knihu</a>
+                <a n:href="convert! $aid" class="btn btn-mini btn-info">Přepočítat kategorie</a>
             </div>
+            
             <table class="table myTable table-bordered table-condensed">
                 <thead>
                     <tr>
@@ -47,7 +51,9 @@
                 </thead>
                 <tbody>
         {assign $balance => 0}
-                    <tr n:foreach="$list as $key => $item">
+                {foreach $list as $key => $item}
+                    {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
+                    <tr{if $balance < 0} class="alert alert-error"{/if}>
                         <td>
                             {input chits-$item->id}
                             <a n:if="$isEditable" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-info"><i class="icon icon-edit icon-white"></i></a>
@@ -56,14 +62,14 @@
                         </td>
                         <td>{$item->date|date:"d.m.Y"}</td>
                         <td>{$item->purpose|truncate:"35"}</td>
-                        <td title="{$item->cshort}">{$item->cshort}</td>
+                        <td title="{$item->clabel}">{$item->cshort}</td>
                         <td>{$item->recipient}</td>
                         <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
                         <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
-            {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
-                        <td {if $balance < 0}class="isMinus"{/if}>{$balance|price}</td>
+                        <td >{$balance|price}</td>
                     </tr>
-                    <tr>
+                    {/foreach}
+                    <tr {if $balance < 0}class="alert alert-error"{/if}>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
@@ -71,14 +77,14 @@
                         <td><b>Konečný stav</b></td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
-                        <td {if $balance < 0}class="isMinus"{/if}><b>{$balance|price}</b></td>
+                        <td><b>{$balance|price}</b></td>
                     </tr>
                 <tbody>
             </table>
             {/form}
-    {else}
+        {else}
             <p>Nemáte zde žádný doklad.</p>
-{/if}
+        {/if}
 
         </div>
     </div>
