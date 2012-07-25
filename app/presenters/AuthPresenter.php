@@ -63,6 +63,10 @@ class AuthPresenter extends BasePresenter {
         }
         $this->presenter->redirect(':Accountancy:Default:');
     }
+    
+    function actionAjax($backlink = NULL) {
+        $this->template->backlink = $backlink;
+    }
 
     /**
      * zajištuje odhlašení ze skautISu
@@ -71,6 +75,8 @@ class AuthPresenter extends BasePresenter {
     function actionLogoutSIS() {
         $this->redirectUrl($this->context->authService->getLogoutUrl());
     }
+    
+    
     
     function actionSkautisLogout() {
         $this->user->logout(TRUE);
