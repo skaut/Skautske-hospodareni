@@ -15,7 +15,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
     }
 
     function renderDefault($aid) {
-        $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
+//        $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
     }
@@ -57,32 +57,8 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
     function actionPrint($id, $aid) {
         $actionInfo = $this->context->campService->event->get($this->aid);
         $chit = $this->context->campService->chits->get($id);
-        $this->context->campService->chits->printChits($this->context, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
+        $this->context->campService->chits->printChits($this->context->unitService, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
         $this->terminate();
-    }
-    
-    /**
-     * přepočte hodnoty v jednotlivých kategorich
-     * @param type $aid 
-     */
-    public function handleConvert($aid) {
-        $this->editableOnly();
-        $totalSkautIS = $this->context->campService->chits->getCategoriesCamp($aid);
-        $total = $this->context->campService->chits->getTotalInCategories($aid);
-        foreach ($total as $catId => $ammount) {
-            if($ammount != $totalSkautIS[$catId]->Ammount){//update pouze kdyz je rozpor mezi parazgony a SkautISem
-                $this->context->campService->chits->updateCategory($aid, $catId, $ammount);
-            }
-        }
-        $this->flashMessage("Kategorie byly přepočítány.");
-        
-        if ($this->isAjax()) {
-//            $this->invalidateControl("paragony");
-            $this->invalidateControl("flash");
-        } else {
-            $this->redirect('this', $aid);
-        }
-        
     }
 
     function handleRemove($id, $aid) {
@@ -128,7 +104,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
         $chits = $this->context->campService->chits->getIn($this->aid, $selected);
 
         $actionInfo = $this->context->campService->event->get($this->aid);
-        $this->context->campService->chits->printChits($this->context, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
+        $this->context->campService->chits->printChits($this->context->unitService, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
     }
 
     //FORM OUT
