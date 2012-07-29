@@ -14,7 +14,7 @@ td {
 
 <h3>Základní údaje</h3>
 {foreach $func as $p}
-    <b>{$p->EventFunctionType}: </b> {$p->Person} {ifset $p->Email} (email: {$p->Email}){/ifset}<br />
+    <b>{$p->EventFunctionType}: </b>{ifset $p->Person} {$p->Person} {ifset $p->Email} (email: {$p->Email}){/ifset}{/ifset}<br />
 {/foreach}
     
 <br />

@@ -11,8 +11,8 @@ class Accountancy_Camp_BasePresenter extends Accountancy_BasePresenter {
         parent::startup();
 
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
-        
-        if(isset($this->aid) && !is_null($this->aid)){//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
+
+        if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
                 $this->context->campService->event->get($this->aid);
                 $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
@@ -20,16 +20,16 @@ class Accountancy_Camp_BasePresenter extends Accountancy_BasePresenter {
             } catch (SkautIS_PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Default:");
-            }   
+            }
         } else {
             $this->availableActions = $this->context->userService->actionVerify(self::STable); //zjistení událostí nevázaných na konretnní
         }
     }
-    
+
     protected function editableOnly() {
         if (!$this->isEditable) {
             $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
-            if($this->isAjax()){
+            if ($this->isAjax()) {
                 $this->sendPayload();
             } else {
                 $this->redirect("Default:");
@@ -42,27 +42,28 @@ class Accountancy_Camp_BasePresenter extends Accountancy_BasePresenter {
      * @param RouteList $router
      * @param string $prefix 
      */
-    static function createRoutes(RouteList $router, $prefix = "") {
-        
-        $prefix .= "tabory/";
-        
-//        $router[] = new Route($prefix . '<aid [0-9]+>/', array(
-//                    'module' => "Accountancy",
-//                    'presenter' => "Event",
-//                    'action' => "info",
-//                ));
-//        
-//        $router[] = new Route($prefix . '<aid [0-9]+>[/<presenter>][/<action>]', array(
-//                    'module' => "Accountancy",
-//                    'action' => "default",
-//                ));
-//        
-//        $router[] = new Route($prefix . '<presenter>/<action>', array(
-//                    'module' => "Accountancy",
-//                    'presenter' => 'camp.default',
-//                    'action' => 'default',
-//                ));
-        
+    static function createRoutes($prefix = "") {
+        $router = new RouteList("Camp");
+
+        $prefix .= "tabory";
+
+        $router[] = new Route($prefix . '<aid [0-9]+>/ż[<presenter>/][<action>/]', array(
+                    'presenter' => array(
+                        Route::VALUE => 'Detail',
+                        Route::FILTER_TABLE => array(
+                            'ucastnici' => 'Participant',
+                            'kniha' => 'Cashbook',
+                            'rozpocet' => 'Budget',
+                    )),
+                    'action' => "default",
+                ));
+
+        $router[] = new Route($prefix . '[<presenter>/][<action>/]', array(
+                    'presenter' => 'Default',
+                    'action' => 'default',
+                ));
+
+        return $router;
     }
 
 }
