@@ -1,6 +1,6 @@
 
 <ul class="nav nav-pills">
-    <li {ifCurrent Event:info $aid}class='active'{/ifCurrent}><a n:href="Event:info $aid">Základní údaje</a></li>
+    <li {ifCurrent Event: $aid}class='active'{/ifCurrent}><a n:href="Event: $aid">Základní údaje</a></li>
     <li {ifCurrent Participant:default $aid}class='active'{/ifCurrent}><a n:href="Participant:default $aid">Účastníci</a></li>
     <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}><a n:href="Cashbook:default $aid">Pokladní kniha</a></li>
 </ul>

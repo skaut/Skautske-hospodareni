@@ -21,17 +21,20 @@ $configurator->createRobotLoader()
 $container = $configurator->createContainer();
 
 // Setup router
-$router = $container->router;
+$router = new RouteList;
 $router[] = new Route('index.php', ':Default:default', Route::ONE_WAY);
 $router[] = new Route('sign/<action>[/back-<backlink>]', array(
     "presenter" => "Auth",
     "action" => "default",
     "backlink" => NULL
 ));
-//Accountancy_Camp_BasePresenter::createRoutes($router);
-//Accountancy_Event_BasePresenter::createRoutes($router);
-Accountancy_BasePresenter::createRoutes($router);
+
+$router[] = Accountancy_BasePresenter::createRoutes();
 $router[] = new SimpleRouter('Default:default');
+
+$container->router = $router;
+
+
 
 //if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
 //} else {

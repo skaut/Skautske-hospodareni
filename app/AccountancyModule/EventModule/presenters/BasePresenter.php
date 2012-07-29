@@ -42,26 +42,26 @@ class Accountancy_Event_BasePresenter extends Accountancy_BasePresenter {
      * @param RouteList $router
      * @param string $prefix 
      */
-    static function createRoutes(RouteList $router, $prefix = "") {
+    static function createRoutes($prefix = "") {
+        $router = new RouteList("Event");
+        
+        $prefix .= "vypravy/";
 
-//        $prefix .= "ucto/akce/";
-
-        $router[] = new Route($prefix . '<aid [0-9]+>/', array(
-                    'module' => "Accountancy",
-                    'presenter' => "Event",
-                    'action' => "info",
-                ));
-
-        $router[] = new Route($prefix . '<aid [0-9]+>[/<presenter>][/<action>]', array(
-                    'module' => "Accountancy",
+        $router[] = new Route($prefix . '<aid [0-9]+>/<presenter>/[<action>/]', array(
+                    'presenter' => array(
+                        Route::VALUE => 'Event',
+                        Route::FILTER_TABLE => array(
+                            'ucastnici' => 'Participant',
+                            'kniha' => 'Cashbook',
+                    )),
                     'action' => "default",
                 ));
 
-        $router[] = new Route($prefix . '<presenter>/<action>', array(
-                    'module' => "Accountancy",
-                    'presenter' => 'Event',
+        $router[] = new Route($prefix . '[<presenter>/][<action>/]', array(
+                    'presenter' => 'Default',
                     'action' => 'default',
                 ));
+        return $router;
     }
 
 }

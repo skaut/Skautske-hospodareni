@@ -69,10 +69,13 @@ class Accountancy_BasePresenter extends BasePresenter {
      * @param RouteList $router
      * @param string $prefix 
      */
-    static function createRoutes(RouteList $router, $prefix = "") {
+    static function createRoutes($prefix = "") {
+        $router = new RouteList("Accountancy");
+//        $prefix .= "ucto/";
+        $router[] = Accountancy_Camp_BasePresenter::createRoutes();
+        $router[] = Accountancy_Event_BasePresenter::createRoutes();
+
         
-        //$prefix .= "ucto/";
-//        
 //        $router[] = new Route($prefix . '<aid [0-9]+>/', array(
 //                    'module' => "Accountancy",
 //                    'presenter' => "Event",
@@ -84,10 +87,12 @@ class Accountancy_BasePresenter extends BasePresenter {
 //                    'action' => "default",
 //                ));
         
-        $router[] = new Route($prefix . '<module>/<presenter>/<action>', array(
+        $router[] = new Route($prefix . '<module>/<presenter>[/<action>]', array(
                     'module' => "Accountancy",
                     'action' => 'default',
                 ));
+
+        return $router;
         
     }
 
