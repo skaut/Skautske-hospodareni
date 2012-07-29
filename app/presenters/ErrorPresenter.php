@@ -19,6 +19,18 @@ class ErrorPresenter extends Presenter {
             $this->redirect(":Default:");
         } else {
             $this->setView('500'); // load template 500.latte
+            if($exception instanceof SkautIS_Exception && $exception->getMessage() == "SOAP-ERROR: Encoding: object hasn't 'ID_Login' property"){
+                //@TODO: předělat
+                $m = new Mail();
+                $m->setSubject("Login fail");
+                $m->setHtmlBody(
+                        "ID_Login: ". $this->context->authService->getLoginId() . 
+                        "<br />Role ID: ". $this->context->authService->setRoleId() .
+                        "<br />Unit ID:" . $this->context->authService->getUnitId() . "<hr />"
+                        );
+                $m->addTo("sinacek@gmail.com");
+                $m->send();
+            }
             Debugger::log($exception, Debugger::ERROR); // and log exception
         }
     }
