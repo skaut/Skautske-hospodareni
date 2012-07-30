@@ -186,8 +186,7 @@ class EventService extends MutableBaseService {
             "CancelDecision" => $msg
                 ), "event" . self::$typeName);
         if ($ret) {//smaže paragony
-            $cservice = new ChitService();
-            $cservice->deleteAll($ID);
+            Environment::getContext()->eventService->chits->deleteAll($ID);
         }
         return $ret;
     }
