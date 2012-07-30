@@ -45,9 +45,9 @@ class Accountancy_Camp_BasePresenter extends Accountancy_BasePresenter {
     static function createRoutes($prefix = "") {
         $router = new RouteList("Camp");
 
-        $prefix .= "tabory";
+        $prefix .= "tabory/";
 
-        $router[] = new Route($prefix . '<aid [0-9]+>/ż[<presenter>/][<action>/]', array(
+        $router[] = new Route($prefix . '<aid [0-9]+>/[<presenter>/][<action>/]', array(
                     'presenter' => array(
                         Route::VALUE => 'Detail',
                         Route::FILTER_TABLE => array(
