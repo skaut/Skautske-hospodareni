@@ -210,7 +210,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
 
         $group = $form->addContainer('all');
         foreach ($all as $id => $p) {
-            $input = $group->addCheckbox($id);
+            $group->addCheckbox($id, $p);
         }
 
         $form->addSubmit('massAddSend', 'Přidat vybrané')
@@ -241,7 +241,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
 
         $group = $form->addContainer('ids');
         foreach ($participants as $id => $p) {
-            $input = $group->addCheckbox($p->ID);
+            $group->addCheckbox($p->ID, $p->Person);
         }
 
         $form->addText("days", "dní");
