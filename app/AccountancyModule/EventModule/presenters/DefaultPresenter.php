@@ -15,7 +15,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
     public $ses;
 
     const DEFAULT_STATE = "draft"; //filtrovani zobrazených položek
-    
+
     function startup() {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
@@ -45,7 +45,11 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
 
         $this->template->accessCreate = array_key_exists("EV_EventGeneral_INSERT", $this->availableActions);
     }
-    
+
+    /**
+     * mění podmínky filtrování akcí podle roku
+     * @param type $year 
+     */
     public function handleChangeYear($year) {
         $this->ses->year = $year;
         if ($this->isAjax()) {
@@ -55,6 +59,10 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         }
     }
 
+    /**
+     * změní podmínky filtrování akcí podle stavu akce
+     * @param type $state 
+     */
     public function handleChangeState($state) {
         $this->ses->state = $state;
         if ($this->isAjax()) {
@@ -62,6 +70,25 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         } else {
             $this->redirect("this");
         }
+    }
+
+    /**
+     * zruší akci
+     * @param type $aid 
+     */
+    public function handleCancel($aid) {
+        if (!array_key_exists("EV_EventGeneral_UPDATE_Cancel", $this->availableActions)) {
+            $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
+            $this->redirect("this");
+        }
+
+        if ($this->context->eventService->event->cancel($aid)) {
+            $this->flashMessage("Akce byla zrušena");
+        } else {
+            $this->flashMessage("Akci se nepodařilo zrušit", "danger");
+        }
+
+        $this->redirect("this");
     }
 
     function createComponentFormFilter($name) {
