@@ -25,7 +25,6 @@ class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter  
             $state = NULL;
         $list = $this->context->campService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $value->accessDelete = $this->context->userService->actionVerify(self::STable, $value->ID, self::STable . "_DELETE");
             $value->accessDetail = $this->context->userService->actionVerify(self::STable, $value->ID, self::STable . "_DETAIL");
             $list[$key] = $value;
         }
