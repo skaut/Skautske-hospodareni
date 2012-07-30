@@ -130,23 +130,6 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
         $this->terminate();
     }
 
-    public function handleCancel($aid) {
-        if (!array_key_exists("EV_EventGeneral_UPDATE_Cancel", $this->availableActions)) {
-            $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
-            $this->redirect("this");
-        }
-
-        if ($this->context->eventService->event->cancel($aid)) {
-            $this->flashMessage("Akce byla zrušena");
-        } else {
-            $this->flashMessage("Akci se nepodařilo zrušit", "danger");
-        }
-
-        $this->redirect("this");
-    }
-
-    
-
     function createComponentFormEdit($name) {
         $combo = $this->context->memberService->getCombobox(NULL, TRUE);
 
