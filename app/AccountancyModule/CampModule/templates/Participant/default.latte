@@ -69,7 +69,7 @@
                         {input all-$id}
                         <a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a>
                     </td>
-                    <td>{$name}</td>
+                    <td>{label all-$id /}</td>
                 </tr>
                 {else}
                 <tr>
@@ -117,7 +117,7 @@
                         <a n:if="$accessUpdateParticipant" class="fancybox fancybox.ajax btn btn-info btn-mini" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
                         <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a>
                     </td>
-                    <td>{$p->Person}</td>
+                    <td>{label ids-$p->ID /}</td>
                     <td id="par-days-{$p->ID}">{$p->Days}</td>
                     <td id="par-payment-{$p->ID}" >{ifset $p->Note}{$p->Note}{? $total += $p->Note}{else}0{/ifset}</td>
                 </tr>

@@ -4,7 +4,7 @@
  * @author Hána František
  * účastníci
  */
-class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePresenter  {
+class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePresenter {
 
     /**
      * číslo aktuální jendotky
@@ -28,11 +28,11 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
     }
 
     function renderDefault($aid, $uid = NULL) {
-        if(!array_key_exists("EV_ParticipantGeneral_ALL_EventGeneral", $this->availableActions)){
+        if (!array_key_exists("EV_ParticipantGeneral_ALL_EventGeneral", $this->availableActions)) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");
             $this->redirect("Event:");
         }
-                
+
         $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
         $all = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
@@ -45,9 +45,9 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         $this->template->uchildrens = $uchildrens;
         $this->template->list = $all;
         $this->template->participants = $participants;
-        $this->template->accessDeleteParticipant =  array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
-        $this->template->accessUpdateParticipant =  array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
-        $this->template->accessInsertParticipant =  array_key_exists("EV_ParticipantGeneral_INSERT_EventGeneral", $this->availableActions);
+        $this->template->accessDeleteParticipant = array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
+        $this->template->accessUpdateParticipant = array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
+        $this->template->accessInsertParticipant = array_key_exists("EV_ParticipantGeneral_INSERT_EventGeneral", $this->availableActions);
     }
 
     public function actionEdit($aid, $pid, $days = 0, $payment = 0) {
@@ -60,8 +60,8 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
             "user" => $pid,
         ));
     }
-    
-    public function renderExport($aid){
+
+    public function renderExport($aid) {
         $actionInfo = $this->context->eventService->event->get($aid);
         $participants = $this->context->eventService->participants->getAll($aid);
         $list = $this->context->eventService->participants->getAllDetail($aid, $participants);
@@ -73,8 +73,8 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         $this->context->eventService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf");
         $this->terminate();
     }
-    
-    public function renderHpd($aid){
+
+    public function renderHpd($aid) {
         $actionInfo = $this->context->eventService->event->get($aid);
         $list = $this->context->eventService->participants->getAll($aid);
         $template = $this->template;
@@ -150,7 +150,6 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 //        echo $payment;
 //        $this->terminate();
 //    }
-
 //    function handleAddPaymentToChit() {
 //        if ($this->context->eventService->participants->addPaymentsToCashbook($this->aid, $this->context->eventService, $this->context->eventService->chits)) {
 //            $this->flashMessage("Přijmy byly přidány do pokladní knihy");
@@ -183,7 +182,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
             "Note" => $values['payment'],
             "Days" => $values['days'],
         );
-        
+
 
         $this->context->eventService->participants->update($values['user'], $arr);
 
@@ -203,7 +202,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 
         $group = $form->addContainer('all');
         foreach ($all as $id => $p) {
-            $input = $group->addCheckbox($id);
+            $group->addCheckbox($id, $p);
         }
 
         $form->addSubmit('massAddSend', 'Přidat vybrané')
@@ -220,9 +219,9 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
             if ($bool)
                 $this->context->eventService->participants->add($this->aid, $id);
         }
-        $this->redirect('default', array("aid"=>$this->aid, "uid"=>$this->uid));//TODO je to ok?
+        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid)); //TODO je to ok?
     }
-    
+
     public function createComponentFormMassParticipants($name) {
         $participants = $this->context->eventService->participants->getAll($this->aid);
 
@@ -230,20 +229,20 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 
         $group = $form->addContainer('ids');
         foreach ($participants as $id => $p) {
-            $input = $group->addCheckbox($p->ID);
+            $group->addCheckbox($p->ID, $p->Person);
         }
-        
+
         $form->addText("days", "dní");
         $form->addText("payment", "částka");
 
         $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
                 ->getControlPrototype()->setClass("btn btn-danger btn-small");
         $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
-        
+
         $form->addSubmit('massEditSend', 'Upravit')
                 ->getControlPrototype()->setClass("btn btn-info btn-small");
         $form['massEditSend']->onClick[] = callback($this, 'massEditSubmitted');
-        
+
 //        $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -255,9 +254,9 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
             if ($bool)
                 $this->context->eventService->participants->removeParticipant($id);
         }
-        $this->redirect('default', array("aid"=>$this->aid, "uid"=>$this->uid));
+        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }
-    
+
     public function massEditSubmitted(SubmitButton $button) {
         $this->editableOnly();
         $values = $button->getForm()->getValues();
@@ -269,7 +268,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
             if ($bool)
                 $this->context->eventService->participants->update($id, $data);
         }
-        $this->redirect('default', array("aid"=>$this->aid, "uid"=>$this->uid));
+        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }
 
 //    function createComponentFormFindByName($name) {
@@ -304,7 +303,6 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 //            $this->redirect('this');
 //        }
 //    }
-
 //    function createComponentFormAddPaymentMass($name) {
 //        $aid = $this->presenter->aid;
 //        $form = new AppForm($this, $name);
