@@ -87,6 +87,31 @@
         {snippet participants}
     <div class="span6">
 {form formMassParticipants}
+        {* hromadné úpravy účastníků*}
+        {* musí být dříve než mazací tlacítko, aby při stisknutí entru se vše nemazalo*}
+        <div n:if="$accessUpdateParticipant" class="modal myModal fade" id="massEdit"> 
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">×</a>
+                <h2>Hromadné nastavení</h2>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <tr>
+                        <td>Dní</td>
+                        <td>{input days style=>"width:40px"}</td>
+                    </tr>
+                    <tr>
+                        <td>Částka </td>
+                        <td>{input payment style=>"width:40px"}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">{input massEditSend}</td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+        
         <div n:ifset="$participants">
             <h3>Seznam účastníků</h3>
             {if !empty($participants)}
@@ -136,33 +161,6 @@
         </div>
 
     </div>
-    {if $accessUpdateParticipant}
-
-    {* hromadné úpravy účastníků*}
-    <div class="modal myModal fade" id="massEdit">
-        <div class="modal-header">
-            <a class="close" data-dismiss="modal">×</a>
-            <h2>Hromadné nastavení</h2>
-        </div>
-        <div class="modal-body">
-            <table>
-                <tr>
-                    <td>Dní</td>
-                    <td>{input days style=>"width:40px"}</td>
-                </tr>
-                <tr>
-                    <td>Částka </td>
-                    <td>{input payment style=>"width:40px"}</td>
-                </tr>
-                <tr>
-                    <td colspan="2">{input massEditSend}</td>
-                </tr>
-            </table>
-
-        </div>
-    </div>
-    {/if}
-
 
             {/form}
         {/snippet}
