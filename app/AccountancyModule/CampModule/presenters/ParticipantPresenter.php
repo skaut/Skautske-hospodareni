@@ -49,7 +49,6 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
     }
 
     public function actionEdit($aid, $pid, $days = 0, $payment = 0) {
-        $detail = $this->context->campService->participants->getPersonsDays($aid);
         $form = $this['formEditParticipant'];
         $form->setDefaults(array(
             "days" => $days,
@@ -124,49 +123,6 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         }
     }
 
-//    /**
-//     * nastavuje počet dní
-//     */
-//    public function handleEditDays() {
-//        $this->editableOnly();
-//        $post = $this->context->httpRequest->getPost();
-//        $days = (int) $post['days'];
-//        $id = (int) $post['id'];
-//        $this->context->campService->participants->setDays($id, $days);
-////        if ($this->isAjax()) {
-////            $this->invalidateControl("potencialParticipants");
-////            $this->invalidateControl("participants");
-////        }
-//        echo $days;
-//        $this->terminate();
-//    }
-//
-//    /**
-//     * nastavuje částku
-//     */
-//    public function handleEditPayment() {
-//        $this->editableOnly();
-//        $post = $this->context->httpRequest->getPost();
-//        $participantId = (int) $post['id'];
-//        $payment = (int) $post['payment'];
-//        $this->context->campService->participants->setPayment($participantId, $payment);
-//        echo $payment;
-//        $this->terminate();
-//    }
-//    function handleAddPaymentToChit() {
-//        if ($this->context->campService->participants->addPaymentsToCashbook($this->aid, $this->context->campService, $this->context->eventService->chits)) {
-//            $this->flashMessage("Přijmy byly přidány do pokladní knihy");
-//        } else {
-//            $this->flashMessage("Nepodařilo se přidat příjmy do pokladní knihy", "warning");
-//        }
-//
-//        if ($this->isAjax()) {
-//            $this->invalidateControl("flash");
-//        } else {
-//            $this->redirect('Cashbook:', array("aid" => $this->aid));
-//        }
-//    }
-
     public function createComponentFormEditParticipant($name) {
         $form = new AppForm($this, $name);
         $form->addText("days", "Dní");
@@ -188,13 +144,14 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         $arr = array(
             "Note" => $values['payment'],
             "Days" => $values['days'],
-            "Real" => FALSE,
+            "Real" => TRUE,
         );
 
-
         $this->context->campService->participants->update($values['user'], $arr);
-
+        
         if ($this->isAjax()) {
+            $this->flashMessage("Účastník byl upraven.");
+            $this->invalidateControl("flash");
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
         } else {
@@ -246,33 +203,22 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
 
         $form->addText("days", "dní");
         $form->addText("payment", "částka");
-
-        $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
-                ->getControlPrototype()->setClass("btn btn-danger btn-small");
-        $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
-
+ 
+        //tlačitko upravit vybrané
         $form->addSubmit('massEditSend', 'Upravit')
                 ->getControlPrototype()->setClass("btn btn-info btn-small");
         $form['massEditSend']->onClick[] = callback($this, 'massEditSubmitted');
 
+        //tlačitko smazat vybrané
+        $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
+                ->getControlPrototype()->setClass("btn btn-danger btn-small")
+                ->setOnclick("return confirm('Opravdu chcete odebrat vybrané účastníky?')");
+        $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
+        
 //        $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
-
-    public function massRemoveSubmitted(SubmitButton $button) {
-        if (!array_key_exists("EV_ParticipantCamp_DELETE", $this->availableActions)) {
-            $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
-            $this->redirect("Default:");
-        }
-        
-        $values = $button->getForm()->getValues();
-        foreach ($values['ids'] as $id => $bool) {
-            if ($bool)
-                $this->context->campService->participants->removeParticipant($id);
-        }
-        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
-    }
-
+    
     public function massEditSubmitted(SubmitButton $button) {
         if (!array_key_exists("EV_ParticipantCamp_UPDATE_EventCamp", $this->availableActions)) {
             $this->flashMessage("Nemáte právo upravovat účastníky.", "danger");
@@ -281,7 +227,8 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         $values = $button->getForm()->getValues();
         $data = array(
             "Days" => $values['days'],
-            ParticipantService::PAYMENT => $values['payment']
+            ParticipantService::PAYMENT => $values['payment'],
+            "Real" => TRUE,
         );
         foreach ($values['ids'] as $id => $bool) {
             if ($bool)
@@ -290,65 +237,18 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }
 
-//    function createComponentFormFindByName($name) {
-//        $aid = $this->presenter->aid;
-//        $participants = $this->context->campService->participants->getAllParticipant($this->aid, TRUE);
-//        $all = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
-//
-//        $form = new AppForm($this, $name);
-//        $form->addSelect("user", "Jméno", (array) $all)
-//                ->setPrompt("Vyber");
-//        $form->addHidden("aid", $aid);
-//        $form->addSubmit('send', 'Přidat')
-//                ->getControlPrototype()
-//                ->setName("button")
-//                ->setHtml('<i class="icon-plus icon-white"></i>')
-//                ->setClass("btn btn-primary btn-mini");
-//        $form->onSuccess[] = array($this, $name . 'Submitted');
-//        return $form;
-//    }
-//
-//    public function formFindByNameSubmitted(AppForm $form) {
-//        $this->editableOnly();
-//        $values = $form->getValues();
-//        $aid = $values['aid'];
-//
-//        $this->context->campService->participants->add($aid, $values['user']);
-//
-//        if ($this->isAjax()) {
-//            $this->invalidateControl("potencialParticipants");
-//            $this->invalidateControl("participants");
-//        } else {
-//            $this->redirect('this');
-//        }
-//    }
-//    function createComponentFormAddPaymentMass($name) {
-//        $aid = $this->presenter->aid;
-//        $form = new AppForm($this, $name);
-//        $form->addText("sum", "Částka", NULL, 5)
-//                ->addRule(Form::FILLED, "Zadejte částku")
-//                ->setType('number');
-//        $form->addCheckbox("rewrite", "Přemazat stávající údaje?");
-//
-//        $form->addHidden("aid", $aid);
-//        $form->addSubmit('send', 'Vyplňit')
-//                ->getControlPrototype()->setClass("btn btn-primary");
-//        $form->onSuccess[] = array($this, $name . 'Submitted');
-//        return $form;
-//    }
-//
-//    public function formAddPaymentMassSubmitted(AppForm $form) {
-//        $this->editableOnly();
-//        $values = $form->getValues();
-//        $aid = $values['aid'];
-//        $this->context->campService->participants->setPaymentMass($aid, $values['sum'], $values['rewrite']);
-//        if ($this->isAjax()) {
-//            $this->invalidateControl("participants");
-////            $this->invalidateControl("potencialParticipants");
-//        } else {
-//            $this->redirect("default", array("aid" => $aid));
-//        }
-//    }
+    public function massRemoveSubmitted(SubmitButton $button) {
+        if (!array_key_exists("EV_ParticipantCamp_DELETE", $this->availableActions)) {
+            $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
+            $this->redirect("Default:");
+        }
+        $values = $button->getForm()->getValues();
+        foreach ($values['ids'] as $id => $bool) {
+            if ($bool)
+                $this->context->campService->participants->removeParticipant($id);
+        }
+        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
+    }
 
     /**
      * formulář na přidání nové osoby
