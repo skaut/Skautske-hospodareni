@@ -74,6 +74,7 @@ class Accountancy_BasePresenter extends BasePresenter {
 //        $prefix .= "ucto/";
         $router[] = Accountancy_Camp_BasePresenter::createRoutes();
         $router[] = Accountancy_Event_BasePresenter::createRoutes();
+        $router[] = Accountancy_Travel_BasePresenter::createRoutes();
         
         $router[] = new Route($prefix . '<module>/<presenter>[/<action>]', array(
                     'module' => "Accountancy",

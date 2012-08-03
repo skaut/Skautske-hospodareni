@@ -1,0 +1,153 @@
+<style>
+    body { font-family: Tahoma, 'Lucida Grande CE', lucida, sans-serif; font-size: 13px;line-height: 1.5em;}
+    table.bigTable tr td { padding: 5px 2px 2px 5px}
+    .box45 { width: 45%;font-size: 11px;float:left; }
+    .box24 { width: 24%;font-size: 11px;float:left; }
+    .c { text-align: center;} 
+    .bigTable { width: 100%; }
+    .smallTable { width: 400px;float: right;}
+    table.smallTable tr td { width: 20%;padding: 0;}
+    table.travels { width: 100%; }
+    table.travels tr td, table.travels tr th { text-align: center;}
+    table.travels tr th { width: 12.5%;}
+    table.bordered { border: 1px solid #000000;border-collapse: collapse;}
+    table.bordered tr, table.bordered tr td, table.bordered tr th { border: 1px solid #000000;}
+    .sekce { border-bottom: 2px solid #000000;padding: 5px 0 0 5px;}
+    .fl { float: left;}
+</style>
+
+<body>
+    
+    <div style="border: 1px solid #000000;">
+        <div class="sekce">
+            <div style="float:left; width: 140px;">
+                <img src="{$baseUri}/images/layout/lilie.gif" style="" />
+            </div>
+            <div style="float: left;width: 430px;height: 76px;">
+                <div style="text-align: center;font: 23px bold;padding: 5px 0 10px;">Cestovní příkaz</div>
+                <b>1.</b> Příjmení, jméno: <span style="font-size: 15px;font-weight: bold;">{$contract->driver_name}</span><br />
+                <b>2.</b> Bydliště: <b>{$contract->driver_address}</b><br />
+            </div>
+            <div style="float: left;width: 140px;line-height: 2em;padding-top: 5px;">
+                Útvar: <br />
+                Telefon: {$contract->driver_contact}
+            </div>
+        </div>
+        <div style="border-bottom: 2px solid #000000;"><!--    SEKCE 2    -->
+            <table style="width: 100%;" class="bordered">
+                <tr>
+                    <td class="c">Počátek cesty</td>
+                    <td class="c">Místo jednání</td>
+                    <td class="c">Účel cesty</td>
+                    <td class="c">Konec cesty</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>{$command->purpose}</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <div class="sekce"><!--    SEKCE 3    -->
+            <b>3.</b> Spolucestující: {$command->passengers} <br />
+            <b>4.</b> Určený dopr. prostředek: AUV {$command->vehicle} <br />
+            <b>5.</b> Předpokládaná část výdajů Kč: ----- <br />
+            <b>6.</b> Povolená záloha Kč: ----- <br /><br />
+            <div style="width: 50%;font-size: 11px;float:left;text-align: center;">.................................................................................................<br />podpis pokladníka</div>
+            <div class="box45 c">.................................................................................................<br />Datum a podpis pracovníka oprávněného k povolení cesty</div>
+        </div>
+        <div class="sekce"><!--    SEKCE 4    -->
+            <div style="font: 16px bold; text-align: center;">Vyúčtování pracovní cesty</div>
+            <div style="width: 300px;font-size: 11px;float:left;">
+                <b>7.</b> Zpráva o výsledku pracovní cesty byla poddána dne<br />
+                Se způsobem provedení souhlasí:
+            </div>
+            <div class="box45">
+                ............................<br />
+                .................................................................................................<br />Datum a podpis oprávněného pracovníka
+            </div>
+        </div>
+        <div class="sekce" style="padding-top: 0;"><!--    SEKCE 5    -->
+            <div style="float: left;width: 380px;">            
+                <b>8. Výdajový - příjmový doklad</b><br />
+                číslo <br />
+                Účtovaná náhrada byla přezkoušena a upravena na &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Kč<br />
+                Vyplacená záloha &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Kč<br />
+                Doplatek - přeplatek &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Kč<br />
+                Slovy ................................................................................
+            </div>
+            <div style="float: right;width: 330px;">
+                <table class="bordered" style="width: 100%;">
+                    <tr>
+                        <td colspan="5">Účtovací předpis</td>
+                    </tr>
+                    <tr><td style="width: 20%">Má dáti</td><td style="width: 20%">Dal</td><td style="width: 20%">Částka</td><td style="width: 20%">Středisko</td><td style="width: 20%">Zakázka</td></tr>
+                    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                    <tr><td colspan="5">Poznámka o zaúčtování</td></tr>
+                </table>
+            </div>
+            <div style="clear:both; padding-top: 10px;">
+                <div class="box24 c">............................................<br /> Datum a podpis účtovatele</div>
+                <div class="box24 c">............................................<br /> Datum a podpis příjemce</div>
+                <div class="box24 c">............................................<br /> Datum a podpis pokladníka</div>
+                <div class="box24 c">............................................<br /> Schválil - datum a podpis</div>
+            </div>
+        </div>
+        <div class="sekce" style=" padding: 0 auto 0 0;"><!--    SEKCE 6    -->
+                    <div style="font: 16px bold; text-align: center;">Vyúčtování pracovní cesty</div>
+                    <div class="fl" style="width: 100px; padding-left: 5px;">Cena Kč/l: <b>{$command->fuel_price}</b></div>
+                    <div class="fl" style="width: 160px;">Spotřeba dle t.p.: <b>{$command->consumption}</b></div>
+                    <div class="fl" style="width: 160px;">Cena PHM 1 km: {= $price1phm = ($command->fuel_price * $command->consumption) /100}</div>
+                    <div class="fl" style="width: 110px;">Opotřebení: {$command->amortization}</div>
+                    <div class="fl" style="width: 140px;">Sazba náhrady: <b>{= $sazba = $command->amortization + $price1phm}</b></div>
+                    <hr style="clear: both;"/>
+            <table class="bordered travels">
+                <tr>
+                    <th>Datum</th>
+                    <th>Z</th>
+                    <th>Do</th>
+                    <th>Prostředek</td>
+                    <th>Sazba nárh.</td>
+                    <th>Počet km</td>
+                    <th>Celkem</td>
+                    <th>Upraveno</td>
+                </tr>
+            {if !empty($travels)}
+                {var $sum = 0}
+                <tr n:foreach="$travels as $t">
+                    <td>{$t->start_date|date:"j. n. Y"}</td>
+                    <td>{$t->start_place}</td>
+                    <td>{$t->end_place}</td>
+                    <td>AUV</td>
+                    <td>{$sazba}</td>
+                    <td>{$t->distance}</td>
+                    <td>{$sazba * $t->distance|price}{? $sum += $sazba * $t->distance}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3" rowspan="3">K vyúčtování připojuji ....... dokladů.</td>
+                    <td colspan="3">Celkem</td>
+                    <td>{$sum|price}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Záloha</td>
+                    <td>0,00</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Doplatek - přeplatek</td>
+                    <td>{$sum|price}</td>
+                    <td></td>
+                </tr>
+                {/if}
+            </table>
+        </div> <!--   KONEC SEKCE 6     -->
+    </div>
+</table>
+
+
+</body>

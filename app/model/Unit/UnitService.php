@@ -48,11 +48,11 @@ class UnitService extends BaseService {
      * @param int $unitId
      * @return stdClass
      */
-    public function getOficialUnit($unitId){
+    public function getOficialUnit($unitId = NULL){
         $unit = $this->getDetail($unitId);
         if(!in_array($unit->ID_UnitType, $this->oficialUnits)){
             $parent = $unit->ID_UnitParent;
-            $unit = $this->getOficialUnit($parent->ID_Unit);
+            $unit = $this->getOficialUnit($parent);
         }
         return $unit;
     }

@@ -43,6 +43,17 @@ abstract class AccountancyHelpers extends Object {
                 break;
         }
     }
+    
+    
+    public static function commandState($s) {
+        switch ($s) {
+            case "open":
+                return '<span class="label label-warning">Rozpracováný</span>';
+            case "closed":
+                return '<span class="label label-success">Uzavřený</span>';
+                break;
+        }
+    }
 
 
     /**

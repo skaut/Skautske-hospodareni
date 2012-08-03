@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="cs">
+    <head>
+        <meta charset=utf-8 />
+        <style type="text/css">
+            html { text-align: center;}
+            body { font-family: Tahoma, 'Lucida Grande CE', lucida, sans-serif; font-size: 11px;line-height: 1.5em;}
+            h1 { text-align: center;}
+            .osoby { line-height: 1.8em; }
+            .bc { text-align: center;font-weight: bold; line-height: 2em;}
+        </style>
+    </head>
+    <body>
+    <h1>Smlouva o proplácení cestovních náhrad</h1>
+<div class="osoby">
+    <b>Název:</b> Junák - svaz skautů a skautek ČR, {$unit->DisplayName}<br />
+    <b>Sídlo:</b> {$unit->Street}, {$unit->City}, {$unit->Postcode}<br />
+    <b>IČO:</b> {$unit->IC}<br />
+    <b>Statutární orgán /vedoucí akce:</b> {$contract->unit_person}<br />
+    (dále jen Junák)
+</div>
+<div class="bc">a</div>
+<div class="osoby">
+    <b>Jméno a příjmení:</b> {$contract->driver_name}<br />
+    <b>Bydliště:</b> {$contract->driver_address}<br />
+    <b>Datum narození:</b> {$contract->driver_birthday|date:"j. n. Y"}
+</div><br />
+se dohodli na této smlouvě dle § 51 Občanského zákoníku takto:<br />
+<div class="bc">I.</div>
+Junák se zavazuje poskytnout druhé smluvní straně cestovní náhrady za uskutečněné služební cesty v souvislosti s činností konanou ve prospěch Junáka.<br />
+<div class="bc">II.</div>
+Cestovné bude poskytováno na základě řádně vyplněného cestovního příkazu dle Směrnice k proplácení cestovních náhrad. <br />
+<div class="bc">III.</div>
+Junák je oprávněn od této smlouvy odstoupit zjistí-li hrubé porušení smluvních podmínek ze strany výše uvedeného činovníka, zejména zjistí-li, že výše uvedený činovník provádí vyúčtování neoprávněně.<br />
+<div class="bc">IV.</div>
+Smlouva vstupuje v platnost dnem podpisu obou smluvních stran a uzavírá se na dobu nejdéle tří let.
+<br /><br /><br /><br />
+
+
+<div style="width: 52%;float: left;">
+    V .................................. dne {$contract->start|date:"j. n. Y"} <br /><br /><br /><br />
+    ..................................................................<br />
+    Junák
+</div>
+<div style="width: 48%;float: left;">
+    V .................................. dne ...................<br /><br /><br /><br />
+    ..................................................................
+</div>
+
+
+
+</body>
+</html>
+

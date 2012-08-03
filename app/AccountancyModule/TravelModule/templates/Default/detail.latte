@@ -1,0 +1,54 @@
+{block #content}
+{include ../menu.latte}
+
+<h2>Cestovní příkaz jednotky {$unit->DisplayName}</h2>
+<div class="row">
+    <div class="span8">
+        <div class="well well-small">
+            <a n:href="Contract:detail $contract->id" class="btn btn-small btn-primary"><i class="icon icon-white icon-zoom-in"></i> Smlouva</a>
+            <a n:href="print $command->id" class="btn btn-small btn-primary"><i class="icon icon-white icon-print"></i> Vytisknout cestovní příkaz</a>
+        </div>
+        <h3>Řidič</h3>
+        Jméno: {$contract->driver_name}<br />
+        Bydliště: {$contract->driver_address}
+        <h3>Vozidlo</h3>
+        Typ a SPZ: {$command->vehicle}<br />
+        Průměrná spotřeba dle TP: {$command->consumption} l/100 km<br />
+        Cena paliva: {$command->fuel_price|price} l/Kč<br />
+        Opotřebení: {$command->amortization} Kč/km<br />
+        Sazba náhrady: <b>{= $sazba = $command->amortization + ($command->fuel_price * $command->consumption /100)}</b><br />
+        {var $sum = 0}
+        <h3>Provedené cesty</h3>
+        {if !empty($travels)}
+        <table class="table table-bordered table-striped table-condensed">
+            <tr>
+                <th n:if="$isEditable" style="width: 32px;">&nbsp;</th>
+                <th>Datum</th>
+                <th>Z</th>
+                <th>Do</th>
+                <th>km</th>
+                <th>Kč</th>
+            </tr>
+            <tr n:foreach="$travels as $t">
+                <td n:if="$isEditable"><a n:href="removeTravel! $t->id" class="btn btn-mini btn-danger" onclick="return confirm('Oprazvdu chcete smazat cestu?')"><i class="icon icon-white icon-remove"></i></a></td>
+                <td>{$t->start_date|date:"j. n. Y"}</td>
+                <td>{$t->start_place}</td>
+                <td>{$t->end_place}</td>
+                <td>{$t->distance}</td>
+                <td>{$sazba * $t->distance|price} {? $sum += $sazba * $t->distance}</td>
+            </tr>
+            <tr>
+                <th n:if="$isEditable">&nbsp;</th>
+                <th colspan="4" style="text-align: right;">Celkem: </th>
+                <th colspan="1">{$sum|price} Kč</th>
+            </tr>
+
+        </table>
+        {else}
+        <div class="alert">
+            <strong>Cestovní příkaz nemá přiřazenu žádnou cestu.</strong>
+        </div>
+        {/if}
+
+    </div>
+</div>

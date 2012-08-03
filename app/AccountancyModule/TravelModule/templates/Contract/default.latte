@@ -1,0 +1,41 @@
+{block #content}
+{include ../menu.latte}
+
+<div class="row">
+    <div class="span6">
+        <h2>Smlouvy o proplácení cestovních náhrad</h2>
+        <div class="well well-small">
+            <a href="#createContract" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou smlouvu</a>
+        </div>
+        <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
+            <tr>
+                <th style="width: 100px;">&nbsp;</th>
+                <th>Zástupce jednotky</th>
+                <th>Řidič</th>
+                <th>Platná od:</th>
+                <th>Platná do:</th>
+            </tr>
+            <tr n:foreach="$list as $c">
+                <td>
+                    <a n:href="print $c->id" class="btn btn-primary btn-mini"><i class="icon icon-print icon-white"></i></a>
+                    <a n:href="detail $c->id" class="btn btn-primary btn-mini"><i class="icon icon-zoom-in icon-white"></i> Detail</a>
+                </td>
+                <td>{$c->unit_person}</td>
+                <td>{$c->driver_name}</td>
+                <td>{$c->start|date:"j. n. Y"}</td>
+                <td>{$c->end|date:"j. n. Y"}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<div class="modal myModal fade" id="createContract">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Nová smlouva o proplácení cestovních náhrad</h3>
+    </div>
+    <div class="modal-body">
+            {control formCreateContract}
+    </div>
+</div>
