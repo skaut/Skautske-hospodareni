@@ -153,7 +153,6 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3");
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
-        
         $form->addRadioList("category", "Typ: ", $categories['out'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;

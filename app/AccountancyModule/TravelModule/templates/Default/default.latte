@@ -1,0 +1,43 @@
+{block #content}
+{include ../menu.latte}
+
+<h2>Cestovní příkazy jednotky {$unit->DisplayName}</h2>
+<div class="row">
+    <div class="span8">
+        <div class="well well-small">
+        <a href="#createCommand" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit cestovní příkaz</a>
+        </div>
+        
+        <table n:if="!empty($list)" class="table table-bordered table-striped table-condensed">
+            <tr>
+                <th style="width: 190px;">&nbsp;</th>
+                <th>Řidič</th>
+                <th>Účel cesty</th>
+                <th>Vozidlo</th>
+                <th>Stav</th>
+            </tr>
+            <tr n:foreach="$list as $item">
+                <td>
+                    <a n:href="removeCommand! $item->id" class="btn btn-mini btn-danger" onclick="return confirm('Oprazvdu chcete smazat cestu?')"><i class="icon icon-white icon-remove"></i></a>
+                    <a n:href="editCommand $item->id" class="fancybox fancybox.ajax btn btn-mini btn-info"><i class="icon icon-white icon-edit"></i></a>
+                    <a n:href="Contract:detail $item->contract_id" class="btn btn-mini btn-info">Smlouva</a>
+                    <a n:href="detail $item->id" class="btn btn-mini btn-info"><i class="icon icon-white icon-zoom-in"></i> Detail</a>
+                </td>
+                <td>{$item->driver_name}</td>
+                <td>{$item->purpose}</td>
+                <td>{$item->vehicle}</td>
+                <td>{!$item->state|commandState}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="modal myModal fade" id="createCommand">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Nový cestovní příkaz</h3>
+    </div>
+    <div class="modal-body">
+            {control formCreateCommand}
+    </div>
+</div>

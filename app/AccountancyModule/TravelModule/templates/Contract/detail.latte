@@ -1,0 +1,57 @@
+{block #content}
+{include ../menu.latte}
+
+<h2>Smlouva o proplácení cestovních náhrad</h2>
+<div class="row">
+    <div class="span6">
+        <a n:href="print $contract->id" class="btn btn-primary btn-small"><i class="icon-print icon-white"></i> Vytisknout</a>
+        <br /><br />
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th>Zástupce jednotky</th>
+                <td>{$contract->unit_person}</td>
+            </tr>
+            <tr>
+                <th>Vykonavatel</th>
+                <td>{$contract->driver_name}</td>
+            </tr>
+            <tr>
+                <th>Začátek platnosti:</th>
+                <td>{$contract->start|date:"j. n. Y"}</td>
+            </tr>
+            <tr>
+                <th>Konec platnosti</th>
+                <td>{$contract->end|date:"j. n. Y"}</td>
+            </tr>
+        </table>
+        
+        
+        <h2>Seznam navázaných cestovních příkazů</h2>
+        {if !empty($commands)}
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th>&nbsp;</th>
+                <th>Řidič</th>
+                <th>Účel cesty</th>
+                <th>Vozidlo</th>
+                <th>Stav příkazu</th>
+            </tr>
+            <tr n:foreach="$commands as $c">
+                <td><a n:href="Default:detail $c->id" class="btn btn-mini btn-primary"><i class="icon icon-white icon-zoom-in"></i>Detail</a></td>
+                <td>{$c->driver_name}</td>
+                <td>{$c->purpose}</td>
+                <td>{$c->vehicle}</td>
+                <td>{!$c->state|commandState}</td>
+            </tr>
+            
+        </table>
+        {else}
+        <div class="alert">
+            <strong>Nejsou navázány žádné cestovní příkazy.</strong>
+        </div>
+        {/if}
+        
+    </div>
+    
+    
+</div>

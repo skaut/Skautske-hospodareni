@@ -34,6 +34,8 @@ common:
             class: UnitService( @skautIS )
         userService:
             class: UserService( @skautIS )
+        travelService:
+            class: TravelService( @skautIS )
         skautIS:
             class: SkautIS
             factory: SkautIS::getInstance(%skautisid%, %skautisTestMode%)

@@ -106,7 +106,10 @@ class ChitService extends MutableBaseService {
         );
 
         $ret = $this->table->add($values);
-        $this->updateCategory($actionId, $val['category']);
+        if ($values['type'] == "camp") {
+            $this->updateCategory($actionId, $val['category']);
+        }
+
         return $ret;
     }
 
@@ -206,8 +209,10 @@ class ChitService extends MutableBaseService {
      * @param bool $isEstimate
      * @return array(ID=>category, ...)
      */
-    public function getCategoriesCamp($actionId, $isEstimate = false) {
+    public function getCategoriesCamp($actionId, $isEstimate) {
         $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => $isEstimate));
+        $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => true));
+        dump($tmp);
         $res = array();
         foreach ($tmp as $i) { //prepisuje na tvar s klíčem jako ID
             if ($isEstimate == false && $i->ID_EventCampStatementType == 15)
@@ -227,7 +232,7 @@ class ChitService extends MutableBaseService {
 
         $cacheId = __FUNCTION__ . "_" . $actionId;
         if (!($all = $this->load($cacheId))) {
-            foreach ($this->getCategoriesCamp($actionId) as $i) {
+            foreach ($this->getCategoriesCamp($actionId, true) as $i) {
                 if ($i->IsRevenue) {//výnosy?
                     $in[$i->ID] = $i->EventCampStatementType;
                 } else {
@@ -247,7 +252,7 @@ class ChitService extends MutableBaseService {
      */
     public function getCategoriesCampSum($actionId) {
         $db = $this->table->getTotalInCategories($actionId);
-        $all = $this->getCategoriesCamp($actionId);
+        $all = $this->getCategoriesCamp($actionId, false);
         foreach ($all as $key => $item) {
             $all[$key] = array_key_exists($key, $db) ? $db[$key] : 0;
         }
@@ -277,7 +282,7 @@ class ChitService extends MutableBaseService {
      * @return boolean 
      */
     public function isConsistent($actionId, $repair = false, &$toRepair = NULL) {
-        $sumSkautIS = $this->getCategoriesCamp($actionId);
+        $sumSkautIS = $this->getCategoriesCamp($actionId, false);
         //$toRepair = array();
         foreach ($this->getCategoriesCampSum($actionId) as $catId => $ammount) {
             if ($ammount != $sumSkautIS[$catId]->Ammount) {

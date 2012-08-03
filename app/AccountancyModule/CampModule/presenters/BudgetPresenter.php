@@ -18,7 +18,7 @@ class Accountancy_Camp_BudgetPresenter extends Accountancy_Camp_BasePresenter {
         $this->template->isConsistent   = $this->context->campService->chits->isConsistent($aid, false, $toRepair);
         $this->template->toRepair       = $toRepair;
         $this->template->dataEstimate   = $this->context->campService->chits->getCategoriesCamp($aid, true);
-        $this->template->dataReal       = $this->context->campService->chits->getCategoriesCamp($aid);
+        $this->template->dataReal       = $this->context->campService->chits->getCategoriesCamp($aid, false);
     }
 
     /**

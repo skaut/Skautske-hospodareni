@@ -41,11 +41,14 @@ class UserService extends BaseService {
         }
     }
 
-    public function getUserData() {
-        $detail = $this->getUserDetail();
-        $person = $this->skautIS->org->personDetail((array("ID" => $detail->ID_Person)));
-        $detail->DisplayName = $person->DisplayName;
-        return $detail;
+    /**
+     * vrací kompletní seznam informací o přihlášené osobě
+     * @return type 
+     */
+    public function getPersonalDetail() {
+        $user = $this->getUserDetail();
+        $person = $this->skautIS->org->personDetail((array("ID" => $user->ID_Person)));
+        return $person;
     }
 
     /**
