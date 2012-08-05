@@ -26,7 +26,7 @@ abstract class AccountancyHelpers extends Object {
         }
         //draft, closed, cancelled
     }
-    
+
     //zobrazuje popisky stavů u táborů
     public static function campStateLabel($s) {
         switch ($s) {
@@ -43,30 +43,34 @@ abstract class AccountancyHelpers extends Object {
                 break;
         }
     }
-    
-    
+
+    /**
+     * 
+     * @param type $s - NULL|DibiDateTime
+     * @return string 
+     */
     public static function commandState($s) {
         switch ($s) {
-            case "open":
+            case NULL:
                 return '<span class="label label-warning">Rozpracováný</span>';
-            case "closed":
-                return '<span class="label label-success">Uzavřený</span>';
+            default :
+                return '<span class="label label-success" title="Uzavřeno dne: '. $s->format("j.n.Y H:i:s").'">Uzavřený</span>';
                 break;
         }
     }
 
-
     /**
      * formátuje číslo na částku
      * @param type $price
+     * http://prirucka.ujc.cas.cz/?id=786
      * @return int 
      */
     public static function price($price) {
-        if (stripos($price, "."))
-            return number_format($price, 2, ",", "");
         if ($price == NULL)
             return 0;
-        return $price;
+        //if (stripos($price, "."))
+            return number_format($price, 2, ",", " ");
+        //return $price;
     }
 
     /**
@@ -76,7 +80,7 @@ abstract class AccountancyHelpers extends Object {
      */
     public static function priceToString($price) {
         //@todo ošetření správného tvaru
-        
+
         $_jednotky = array(
             0 => "", 1 => "jedna", 2 => "dva", 3 => "tři", 4 => "čtyři", 5 => "pět", 6 => "šest", 7 => "sedm", 8 => "osm", 9 => "devět", 10 => "deset",
             11 => "jedenáct", 12 => "dvanáct", 13 => "třináct", 14 => "čtrnáct", 15 => "patnáct", 16 => "šestnáct", 17 => "sedmnáct", 18 => "osmnáct", 19 => "devatenáct",

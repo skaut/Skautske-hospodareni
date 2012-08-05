@@ -1,0 +1,38 @@
+{block #content}
+{include ../menu.latte}
+
+<div class="row">
+    <div class="span6">
+        <h2>Vozidla jednotky {$unit->DisplayName}</h2>
+        <div class="well well-small">
+            <a href="#createVehicle" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit nové vozidlo</a>
+        </div>
+        <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
+            <tr>
+                <th style="width: 100px;">&nbsp;</th>
+                <th>Typ</th>
+                <th>SPZ</th>
+                <th>&#0216; spotřeba (l/100 km)</th>
+            </tr>
+            <tr n:foreach="$list as $i">
+                <td>
+                    <a n:href="detail $i->id" class="btn btn-primary btn-mini"><i class="icon icon-zoom-in icon-white"></i> Detail</a>
+                </td>
+                <td><a n:href="Vehicle:detail $i->id">{$i->type}</a></td>
+                <td>{$i->spz}</td>
+                <td>{$i->consumption}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<div class="modal myModal fade" id="createVehicle">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Nové vozidlo</h3>
+    </div>
+    <div class="modal-body">
+            {control formCreateVehicle}
+    </div>
+</div>

@@ -22,7 +22,7 @@ class Accountancy_Travel_ContractPresenter extends Accountancy_Travel_BasePresen
     }
     public function renderDetail($contractId) {
         $this->template->contract = $contract = $this->context->travelService->getContract($contractId);
-        $this->template->commands = $this->context->travelService->getAllCommands($this->unit->ID, $contract->id);
+        $this->template->commands = $this->context->travelService->getAllCommandsByContract($this->unit->ID, $contract->id);
     }
 
     public function actionPrint($contractId) {
