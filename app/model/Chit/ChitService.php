@@ -209,10 +209,9 @@ class ChitService extends MutableBaseService {
      * @param bool $isEstimate
      * @return array(ID=>category, ...)
      */
-    public function getCategoriesCamp($actionId, $isEstimate) {
+    public function getCategoriesCamp($actionId, $isEstimate = false) {
         $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => $isEstimate));
-        $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => true));
-        dump($tmp);
+        $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => false));
         $res = array();
         foreach ($tmp as $i) { //prepisuje na tvar s klíčem jako ID
             if ($isEstimate == false && $i->ID_EventCampStatementType == 15)
@@ -232,7 +231,7 @@ class ChitService extends MutableBaseService {
 
         $cacheId = __FUNCTION__ . "_" . $actionId;
         if (!($all = $this->load($cacheId))) {
-            foreach ($this->getCategoriesCamp($actionId, true) as $i) {
+            foreach ($this->getCategoriesCamp($actionId, false) as $i) {
                 if ($i->IsRevenue) {//výnosy?
                     $in[$i->ID] = $i->EventCampStatementType;
                 } else {

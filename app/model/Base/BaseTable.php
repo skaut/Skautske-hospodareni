@@ -8,5 +8,6 @@ class BaseTable {
     const TABLE_CHIT_VIEW = 'ac_chitsView';
     const TABLE_TC_CONTRACTS = 'tc_contracts';
     const TABLE_TC_COMMANDS = 'tc_commands';
-    const TABLE_TC_TRAVELS = 'tc_travels';
+    const TABLE_TC_TRAVELS = 'tc_travels'; 
+    const TABLE_TC_VEHICLE = 'tc_vehicle'; 
 }

@@ -1,34 +1,30 @@
 {block #content}
 {include ../menu.latte}
-
-<h2>Smlouva o proplácení cestovních náhrad</h2>
+{dump $vehicle}
+<h2>{$vehicle->label}</h2>
 <div class="row">
     <div class="span6">
-        <a n:href="print $contract->id" class="btn btn-primary btn-small"><i class="icon-print icon-white"></i> Vytisknout</a>
+<!--        <a n:href="print " class="btn btn-primary btn-small"><i class="icon-print icon-white"></i> Vytisknout</a>-->
         <br /><br />
         <table class="table table-bordered table-striped">
             <tr>
-                <th>Zástupce jednotky</th>
-                <td>{$contract->unit_person}</td>
+                <th>Typ</th>
+                <td>{$vehicle->type}</td>
             </tr>
             <tr>
-                <th>Vykonavatel</th>
-                <td>{$contract->driver_name}</td>
+                <th>SPZ</th>
+                <td>{$vehicle->spz}</td>
             </tr>
             <tr>
-                <th>Začátek platnosti:</th>
-                <td>{$contract->start|date:"j. n. Y"}</td>
-            </tr>
-            <tr>
-                <th>Konec platnosti</th>
-                <td>{$contract->end|date:"j. n. Y"}</td>
+                <th>Průměrná spotřeba</th>
+                <td>{$vehicle->consumption} l/100 km</td>
             </tr>
         </table>
         
         
-        <h2>Seznam navázaných cestovních příkazů</h2>
+        <h2>Přidružené cestovní příkazy</h2>
         {if !empty($commands)}
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped table-condensed">
             <tr>
                 <th>&nbsp;</th>
                 <th>Řidič</th>
