@@ -24,7 +24,7 @@ body {
 }
 
 #cashbook-tabs {
-    width: 350px;
+    width: 295px;
     float: left;
     margin-right: 8px;
 }
@@ -80,7 +80,7 @@ input[type="checkbox"], input[type="radio"] {
 }
 
 #cashbook-tabs table th {
-    width: 120px;
+    width: 100px;
 }
 
 #participants-list form{

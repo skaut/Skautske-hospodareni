@@ -18,6 +18,11 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
 //        $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
+        if(!$this->camp->IsRealTotalCostAutoComputed){
+            $this->template->missingCategories = "Nemáte aktivní automatické dopočítání z kategorií. 
+                Aktivujte si ho ve SkautIS u tábora na položce rozpočet.
+                <a href=\" " . $this->context->skautIS->getHttpPrefix() . ".skaut.cz/Junak/Events/Camp/Camp/Statement.aspx?ID=".$this->camp->ID."\">Odkaz</a>";
+        }
     }
 
     

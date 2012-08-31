@@ -1,7 +1,11 @@
 {block #content}
+<h2>{$camp->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
-<h2>Pokladní kniha</h2>
+
+{ifset $missingCategories}
+    <div class="alert alert-error">{!$missingCategories}</div>
+{/ifset}
 <div class="row">
     {dump $list}
     {* sekce přidávání paragonů *}
@@ -60,7 +64,7 @@
                             <a n:href="print $item->id, $aid" class="btn btn-mini btn-info"><i class="icon icon-print icon-white"></i></a>
                         </td>
                         <td>{$item->date|date:"d.m.Y"}</td>
-                        <td>{$item->purpose|truncate:"35"}</td>
+                        <td>{$item->purpose|truncate:"30"}</td>
                         <td title="{$item->clabel}">{$item->cshort}</td>
                         <td>{$item->recipient}</td>
                         <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
@@ -110,15 +114,13 @@
         var priceInputIn = $('#form-in-price');
         var priceInputOut = $('#form-out-price');
         
-        priceInputIn.after('<span> </span>');
-        priceInputOut.after('<span> </span>');
-
         //reurn bool
         function isNumber(val) {
             return /^-?((\d+\.?\d?)|(\.\d+))$/.test(val);
         }
         //method onchange on form
         function priceControl(obj){
+            textPlace = obj.parent().prev().children().after('<span> </span>').next();
             obj.change(
                 function () {
                     var val = this.value.trim(), endIndex, isError = false;
@@ -136,10 +138,11 @@
                             isError = true;
                         }
                     }
+                    //var textPlace = obj.parent().prev().children().next();
                     if(val.length < 1)
-                        obj.next().html('');
+                        textPlace.html('');
                     else
-                        obj.next().html('='+eval(val));
+                        textPlace.html(eval(val)+' =');
                 }
             )
         }

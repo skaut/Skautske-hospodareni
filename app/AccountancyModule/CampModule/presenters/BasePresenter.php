@@ -6,6 +6,8 @@
 class Accountancy_Camp_BasePresenter extends Accountancy_BasePresenter {
 
     const STable = "EV_EventCamp";
+    
+    protected $camp;
 
     protected function startup() {
         parent::startup();
@@ -14,7 +16,7 @@ class Accountancy_Camp_BasePresenter extends Accountancy_BasePresenter {
 
         if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
-                $this->context->campService->event->get($this->aid);
+                $this->template->camp = $this->camp = $this->context->campService->event->get($this->aid);
                 $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
                 $this->template->isEditable = $this->isEditable = array_key_exists(self::STable . "_UPDATE_Real", $this->availableActions);
             } catch (SkautIS_PermissionException $exc) {

@@ -104,15 +104,13 @@
         var priceInputIn = $('#form-in-price');
         var priceInputOut = $('#form-out-price');
         
-        priceInputIn.after('<span> </span>');
-        priceInputOut.after('<span> </span>');
-
         //reurn bool
         function isNumber(val) {
             return /^-?((\d+\.?\d?)|(\.\d+))$/.test(val);
         }
         //method onchange on form
-        function priceControl(obj){
+         function priceControl(obj){
+            textPlace = obj.parent().prev().children().after('<span> </span>').next();
             obj.change(
                 function () {
                     var val = this.value.trim(), endIndex, isError = false;
@@ -130,10 +128,11 @@
                             isError = true;
                         }
                     }
+                    //var textPlace = obj.parent().prev().children().next();
                     if(val.length < 1)
-                        obj.next().html('');
+                        textPlace.html('');
                     else
-                        obj.next().html('='+eval(val));
+                        textPlace.html(eval(val)+' =');
                 }
             )
         }
