@@ -20,8 +20,8 @@
 
 
 {block #content}
+<h2>{$camp->DisplayName}</h2>
 {include ../ActionMenu.latte}
-<h2>Rozpočet</h2>
 
 <div class="alert alert-danger" n:if="!$isConsistent">
     <h4 class="alert-heading">Nekonzistentní data!</h4>
