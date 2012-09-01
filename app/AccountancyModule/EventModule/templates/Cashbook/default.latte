@@ -1,9 +1,9 @@
 {block #content}
+<h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
-<h2>Pokladní kniha</h2>
 <div class="row">
-    <div class="span4" n:if="$isEditable" style="width:360px;">
+    <div class="span3" n:if="$isEditable">
     {snippet tabs}
         <div id="cashbook-tabs">
             <ul>
@@ -20,7 +20,7 @@
     {/snippet}    
     </div>
     
-    <div class="span8">
+    <div class="span9">
         <div n:snippet="paragony" style="float: left;">
         {if $list}
             <p n:if="$isInMinus" class="alert alert-error">

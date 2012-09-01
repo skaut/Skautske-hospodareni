@@ -67,6 +67,7 @@ class UserService extends BaseService {
      * @return BOOL|stdClass|array
      */
     public function actionVerify($table, $id = NULL, $ID_Action = NULL) {
+        
         $res = $this->skautIS->user->ActionVerify(array(
             "ID" => $id,
             "ID_Table" => $table,

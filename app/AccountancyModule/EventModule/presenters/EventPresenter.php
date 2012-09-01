@@ -41,8 +41,6 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
 //    }
 
     public function renderDefault($aid) {
-        $data = $this->context->eventService->event->get($aid);
-
         //nastavení dat do formuláře pro editaci
         $func = false;
         if (array_key_exists("EV_EventFunction_ALL_EventGeneral", $this->availableActions))
@@ -55,18 +53,17 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
             $form = $this['formEdit'];
             $form->setDefaults(array(
                 "aid" => $aid,
-                "name" => $data->DisplayName,
-                "start" => $data->StartDate,
-                "end" => $data->EndDate,
-                "location" => $data->Location,
+                "name" => $this->event->DisplayName,
+                "start" => $this->event->StartDate,
+                "end" => $this->event->EndDate,
+                "location" => $this->event->Location,
                 "leader" => isset($func) && is_array($func) ? $func[EventService::LEADER]->ID_Person : "",
                 "assistant" => isset($func) && is_array($func) ? $func[EventService::ASSISTANT]->ID_Person : "",
                 "economist" => isset($func) && is_array($func) ? $func[EventService::ECONOMIST]->ID_Person : "",
             ));
         }
-        $this->template->data = $data;
         $this->template->funkce = $func;
-        $this->template->isEditable = $this->context->eventService->event->isEditable($data);
+        $this->template->isEditable = $this->context->eventService->event->isEditable($this->event);
         $this->template->accessEditBase = $accessEditBase;
         $this->template->accessCloseEvent = array_key_exists("EV_EventGeneral_UPDATE_Close", $this->availableActions);
         $this->template->accessOpenEvent = array_key_exists("EV_EventGeneral_UPDATE_Open", $this->availableActions);

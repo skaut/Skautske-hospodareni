@@ -33,7 +33,7 @@ class ChitService extends MutableBaseService {
                 $i->ctype = array_key_exists($i->category, $categories['in']) ? "in" : "out";
                 $i->clabel = array_key_exists($i->category, $categories['in']) ? $categories['in'][$i->category] : $categories['out'][$i->category];
                 $i->cshort = array_key_exists($i->category, $categories['in']) ? $categories['in'][$i->category] : $categories['out'][$i->category];
-                $i->cshort = substr($i->cshort, 0, 5);
+                $i->cshort = mb_substr($i->cshort, 0, 5);
                 $list[$k] = $i;
             }
         }
@@ -159,8 +159,8 @@ class ChitService extends MutableBaseService {
      */
     public function delete($chitId, $actionId) {
         $chit = $this->get($chitId);
-        if ($chit->type != "general") //category update
-            $this->updateCategory($actionId, $chit->category);
+//        if ($chit->type != "general") //category update
+//            $this->updateCategory($actionId, $chit->category);
         return $this->table->delete($chitId, $actionId);
     }
 
@@ -211,7 +211,7 @@ class ChitService extends MutableBaseService {
      */
     public function getCategoriesCamp($actionId, $isEstimate = false) {
         $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => $isEstimate));
-        $tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => false));
+        //$tmp = $this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $actionId, "IsEstimate" => false));
         $res = array();
         foreach ($tmp as $i) { //prepisuje na tvar s klíčem jako ID
             if ($isEstimate == false && $i->ID_EventCampStatementType == 15)

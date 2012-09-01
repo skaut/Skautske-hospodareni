@@ -68,6 +68,8 @@ abstract class AccountancyHelpers extends Object {
     public static function price($price) {
         if ($price == NULL)
             return 0;
+        if ($price == "&nbsp;")
+            return $price;
         //if (stripos($price, "."))
             return number_format($price, 2, ",", " ");
         //return $price;
