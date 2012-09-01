@@ -2,14 +2,13 @@
 <h2>{$camp->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
+{dump $list}
 
-{ifset $missingCategories}
-    <div class="alert alert-error">{!$missingCategories}</div>
-{/ifset}
+<div n:ifset="$missingCategories" class="alert alert-error">{!$missingCategories}</div>
+
 <div class="row">
-    {dump $list}
     {* sekce přidávání paragonů *}
-    <div class="span4" n:if="$isEditable" style="width:360px;">
+    <div class="span3" n:if="$isEditable">
     {snippet tabs}
         <div id="cashbook-tabs">
             <ul>
@@ -27,7 +26,7 @@
     </div>
     
     {* sekce seznam paragonů *}
-    <div class="span8">
+    <div class="span9">
         <div n:snippet="paragony" style="float: left;">
         {if $list}
 <!--            <p n:if="$isInMinus" class="alert alert-error">

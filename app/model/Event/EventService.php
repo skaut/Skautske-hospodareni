@@ -171,6 +171,33 @@ class EventService extends MutableBaseService {
             return $ret->ID;
         return $ret;
     }
+    
+    /**
+     * aktivuje dopocitavani kategorii a tim jsou i kategorie pristupne
+     * @param type $camp
+     * @throws NotImplementedException 
+     */
+    public function openCampCategories($camp){
+        throw new NotImplementedException("zatím nefunguje, čeká na odpoved Jerryho");
+        $this->skautIS->event->EventCampUpdate(array(
+            "ID"=> $camp->ID,
+            "DisplayName"=> $camp->DisplayName,
+            "StartDate"=> $camp->StartDate,
+            "EndDate"=> $camp->EndDate,
+            "GpsLatitude"=> $camp->GpsLatitude,
+            "GpsLatitudeText"=> $camp->GpsLatitudeText,
+            "GpsLongitude"=> $camp->GpsLongitude,
+            "GpsLongitudeText"=> $camp->GpsLongitudeText,
+            "IsFloodArea"=> $camp->IsFloodArea,
+            "Location"=> $camp->Location,
+            "MobileContact"=> $camp->MobileContact,
+            "Postcode"=> $camp->Postcode,
+            "Region"=> $camp->Region,
+            
+            "IsRealTotalCostAutoComputed" => TRUE,
+            
+        ), "eventCamp");
+    }
 
     /**
      * zrušit akci

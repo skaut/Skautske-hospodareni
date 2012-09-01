@@ -24,16 +24,20 @@ body {
 }
 
 #cashbook-tabs {
-    width: 295px;
+    width: 280px;
     float: left;
     margin-right: 8px;
 }
 
 #cashbook-tabs input[type="text"], #cashbook-tabs input.date, #cashbook-tabs input[type="number"] {
-    width: 170px;
+    width: 160px;
 }
 #cashbook-tabs .ui-tabs-panel {
-    padding: 0.5em 0 1em 0.5em;
+    padding: 0.3em 0 0.5em 0.3em;
+}
+
+#cashbook-tabs form {
+    margin: 0;
 }
 
 form.filter{
