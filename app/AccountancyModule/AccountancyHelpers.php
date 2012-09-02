@@ -15,7 +15,7 @@ abstract class AccountancyHelpers extends Object {
             return callback(__CLASS__, $helper);
         }
     }
-
+    
     public static function eventStateLabel($s) {
         if ($s == "draft")
             return '<span class="label label-warning">Rozpracováno</span>';

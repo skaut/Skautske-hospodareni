@@ -5,13 +5,18 @@
  * @author Hána František
  */
 class ParticipantService extends MutableBaseService {
-    
+
+    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {
+        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage);
+        /** @var ParticipantTable */
+        $this->table = new ParticipantTable();
+    }
 
     /**
      * název pod kterým je uložena čáska ve skautISu
      */
+
     const PAYMENT = "Note";
-    
 
     /**
      * vrací seznam účastníků
@@ -27,15 +32,41 @@ class ParticipantService extends MutableBaseService {
             $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "All"}(array("ID_Event" . self::$typeName => $ID));
             $res = array();
             foreach ($tmp as $p) {
-                if (!isset($p->Note))
-                    $p->Note = 0;
-                $res[] = $p;
+                $res[$p->ID] = $p;
             }
             $this->save($cacheId, $res);
         }
         if (!is_array($res))//pokud je prázdná třída stdClass
             return array();
         return $res;
+    }
+
+    public function get($participantId) {
+        $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "Detail"}(array("ID" => $participantId));
+        $data = $this->table->get($participantId);
+        $data['days'] = (int)$tmp->Days;
+        return $data;
+    }
+
+    /**
+     * vrací další informace o účastníkovi
+     * @param type $ID
+     * @return type
+     */
+    public function getAllWithDetails($ID) {
+        $participants = $this->getAll($ID);
+        $details = $this->table->getAll($ID);
+
+        foreach ($details as $d) {
+            if (array_key_exists($d->participantId, $participants)) {
+                $participants[$d->participantId]->payment = $d->payment;
+                $participants[$d->participantId]->repayment = $d->repayment;
+                $participants[$d->participantId]->isAccount = $d->isAccount;
+            } else {
+                $this->table->deleteDetail($d->participantId); //delete zaznam, protoze neexistuje k nemu ucastnik
+            }
+        }
+        return $participants;
     }
 
     /**
@@ -93,8 +124,19 @@ class ParticipantService extends MutableBaseService {
      * @param array $arr pole hodnot
      */
     public function update($participantId, array $arr) {
-        $arr['ID'] = $participantId;
-        $this->skautIS->event->{"Participant". self::$typeName . "Update"}($arr, "participant" . self::$typeName);
+        $sis = array(
+            'ID' => $participantId,
+            'Real' => TRUE,
+            'Days' => $arr['days'],
+        );
+        $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
+        $data = array(
+            "actionId" => $arr['actionId'],
+            "payment" => $arr['payment'],
+            "repayment" => $arr['repayment'],
+            "isAccount" => $arr['isAccount'],
+        );
+        $this->table->update($participantId, $data);
     }
 
     /**
@@ -103,7 +145,8 @@ class ParticipantService extends MutableBaseService {
      * @return type 
      */
     public function removeParticipant($participantId) {
-        return $this->skautIS->event->{"Participant". self::$typeName . "Delete"}(array("ID" => $participantId, "DeletePerson" => false));
+        $this->table->deleteDetail($participantId);
+        return $this->skautIS->event->{"Participant" . self::$typeName . "Delete"}(array("ID" => $participantId, "DeletePerson" => false));
     }
 
     public function getAllDetail($ID, $participants = NULL) {
@@ -147,6 +190,7 @@ class ParticipantService extends MutableBaseService {
                 return $res += $v->{ParticipantService::PAYMENT};
             return 0;
         }
+
         return array_reduce($this->getAll($eventId), "paymentSum");
     }
 
@@ -156,9 +200,11 @@ class ParticipantService extends MutableBaseService {
      * @return int 
      */
     public function getPersonsDays($eventId) {
+
         function daySum($res, $v) {
             return $res += $v->Days;
         }
+
         return array_reduce($this->getAll($eventId), "daySum");
     }
 
@@ -195,5 +241,4 @@ class ParticipantService extends MutableBaseService {
 //        }
 //        return TRUE;
 //    }
-
 }

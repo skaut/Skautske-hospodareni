@@ -121,6 +121,11 @@ input[type="checkbox"], input[type="radio"] {
     top: 60%;
 }
 
+.ct { /* ct = center, top*/
+   text-align: center;
+   vertical-align: text-top;
+}
+
 /*
 	
 .calendar tr td ul {

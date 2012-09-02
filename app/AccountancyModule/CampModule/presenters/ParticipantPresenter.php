@@ -32,27 +32,34 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
             $this->redirect("Default:");
         }
 
-        $participants   = $this->context->campService->participants->getAll($this->aid, $cache = FALSE);
-        $all            = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
-        $unit           = $this->context->unitService->getDetail($this->uid);
-        $uparrent       = $this->context->unitService->getParrent($unit->ID);
-        $uchildrens     = $this->context->unitService->getChild($unit->ID);
+        $participants = $this->context->campService->participants->getAllWithDetails($this->aid);
+        $unit = $this->context->unitService->getDetail($this->uid);
 
-        $this->template->uparrent = $uparrent;
+        $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
         $this->template->unit = $unit;
-        $this->template->uchildrens = $uchildrens;
-        $this->template->list = $all;
+        $this->template->uchildrens = $this->context->unitService->getChild($unit->ID);
+        $this->template->list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
         $this->template->participants = $participants;
         $this->template->accessDeleteParticipant = array_key_exists("EV_ParticipantCamp_DELETE", $this->availableActions);
         $this->template->accessUpdateParticipant = array_key_exists("EV_ParticipantCamp_UPDATE_EventCamp", $this->availableActions);
         $this->template->accessInsertParticipant = array_key_exists("EV_ParticipantCamp_INSERT_EventCamp", $this->availableActions);
     }
 
-    public function actionEdit($aid, $pid, $days = 0, $payment = 0) {
+    /**
+     * 
+     * @param type $aid - actionId
+     * @param type $pid - participantId
+     * @param type $dd - default days
+     */
+    public function actionEdit($aid, $pid, $dd = NULL) {
         $form = $this['formEditParticipant'];
+        $data = $this->context->campService->participants->get($pid);
+
         $form->setDefaults(array(
-            "days" => $days,
-            "payment" => $payment,
+            "days" => isset($dd) ? $dd : $data['days'],
+            "payment" => isset($data['payment']) ?$data['payment'] : "",
+            "repayment" => isset($data['repayment']) ? $data['repayment'] : "",
+            "isAccount" => isset($data['isAccount']) ? $data['isAccount'] : "N",
             "user" => $pid,
         ));
     }
@@ -127,6 +134,8 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         $form = new AppForm($this, $name);
         $form->addText("days", "Dní");
         $form->addText("payment", "Částka");
+        $form->addText("repayment", "Vratka");
+        $form->addRadioList("isAccount", "Na účet?", array("N" => "Ne", "Y" => "Ano"));
         $form->addHidden("user");
         $form->addSubmit('send', 'Upravit')
                 ->getControlPrototype()->setClass("btn btn-primary");
@@ -139,16 +148,11 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
         }
-        
-        $values = $form->getValues();
-        $arr = array(
-            "Note" => $values['payment'],
-            "Days" => $values['days'],
-            "Real" => TRUE,
-        );
 
-        $this->context->campService->participants->update($values['user'], $arr);
-        
+        $values = (array) $form->getValues();
+        $values['actionId'] = $this->aid;
+        $this->context->campService->participants->update($values['user'], $values);
+
         if ($this->isAjax()) {
             $this->flashMessage("Účastník byl upraven.");
             $this->invalidateControl("flash");
@@ -170,8 +174,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
             $group->addCheckbox($id, $p);
         }
 
-        $form->addSubmit('massAddSend', 'Přidat vybrané')
-                ->getControlPrototype()->setClass("btn btn-info btn-small");
+        $form->addSubmit('massAddSend', 'Přidat vybrané');
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -181,7 +184,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
         }
-        
+
         $values = $form->getValues();
 
         foreach ($values['all'] as $id => $bool) {
@@ -201,9 +204,17 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
             $group->addCheckbox($p->ID, $p->Person);
         }
 
-        $form->addText("days", "dní");
-        $form->addText("payment", "částka");
- 
+        $isChange = $form->addContainer('isChange');
+        $isChange->addText("days", "Dní");
+        $isChange->addText("payment", "Částka");
+        $isChange->addText("repayment", "Vratka");
+        $isChange->addRadioList("isAccount", "Na účet?", array("N" => "Ne", "Y" => "Ano"));
+        $isChange->addCheckbox("daysc");
+        $isChange->addCheckbox("paymentc");
+        $isChange->addCheckbox("repaymentc");
+        $isChange->addCheckbox("isAccountc");//->setDefaultValue(TRUE);
+        
+        
         //tlačitko upravit vybrané
         $form->addSubmit('massEditSend', 'Upravit')
                 ->getControlPrototype()->setClass("btn btn-info btn-small");
@@ -211,14 +222,14 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
 
         //tlačitko smazat vybrané
         $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
-                ->getControlPrototype()->setClass("btn btn-danger btn-small")
+                ->getControlPrototype()
                 ->setOnclick("return confirm('Opravdu chcete odebrat vybrané účastníky?')");
         $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
-        
+
 //        $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
-    
+
     public function massEditSubmitted(SubmitButton $button) {
         if (!array_key_exists("EV_ParticipantCamp_UPDATE_EventCamp", $this->availableActions)) {
             $this->flashMessage("Nemáte právo upravovat účastníky.", "danger");
@@ -226,9 +237,11 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         }
         $values = $button->getForm()->getValues();
         $data = array(
+            "actionId" => $this->aid,
             "Days" => $values['days'],
-            ParticipantService::PAYMENT => $values['payment'],
-            "Real" => TRUE,
+            "payment" => $values['payment'],
+            "repayment" => $values['repayment'],
+            "isAccount" => $values['isAccount'],
         );
         foreach ($values['ids'] as $id => $bool) {
             if ($bool)
@@ -278,7 +291,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
             $this->flashMessage("Nemáte právo přidávat nové účastníky.", "danger");
             $this->redirect("Default:");
         }
-        
+
         $values = $form->getValues();
         $aid = $values['aid'];
         $person = array(

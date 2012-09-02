@@ -24,3 +24,23 @@ $(document).ready(function() {
 function jqCheckAll( id, name ) {
     $("input[name^=" + name + "][type='checkbox']").attr('checked', $('#' + id).is(':checked'));
 }
+
+/**
+ * checkboxIds - ID vsech zavyslich ceckboxů
+ * elemClass - zavislé prvky mají třídu
+ */
+function onlyWithCheckbox(checkboxIds, elemClass) { 
+    $("input[id^=" + checkboxIds + "]").change(function (){
+        var isChecked = false;
+        $("input[id^=" + checkboxIds + "]").each(function(){
+            if(this.checked){
+                isChecked = true;
+                return false;//konec cyklu
+            }
+        });
+        if(isChecked)
+            $("." + elemClass).removeClass("disabled").removeAttr("disabled");
+        else
+            $("." + elemClass).addClass("disabled").attr("disabled", "disabled");
+    });
+}
