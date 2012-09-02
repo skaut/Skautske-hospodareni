@@ -1,5 +1,5 @@
 
-
+<div style="width: 150px">
 {form formEditParticipant class=>"nonMargin"}
     <ul class="errors" n:if="$form->hasErrors()">
         <li n:foreach="$form->errors as $error">{$error}</li>
@@ -14,8 +14,18 @@
             <td>{input payment style=>"width:50px;"}</td>
         </tr>
         <tr>
+            <th>{label repayment /}</th>
+            <td>{input repayment style=>"width:50px;"}</td>
+        </tr>
+        <tr>
+            <th>{label isAccount /}</th>
+            <td>{input isAccount style=>"width:50px;"}</td>
+        </tr>
+        <tr>
             <th>{input user}</th>
             <td>{input send}</td>
         </tr>
     </table>
 {/form}
+
+</div>
