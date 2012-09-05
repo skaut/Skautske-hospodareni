@@ -38,7 +38,7 @@
                 <a n:href="export $aid" class="btn btn-mini btn-info">Exportovat pokladní knihu</a>
             </div>
             
-            <table class="table myTable table-bordered table-condensed">
+            <table class="table myTable table-bordered table-condensed" id="cashbookTable">
                 <thead>
                     <tr>
                         <th style="width:{if $isEditable}120{else}60{/if}px"><input type="checkbox" id="checkChits" onclick="jqCheckAll(this.id, 'chits')" /></th>
@@ -66,9 +66,9 @@
                         <td>{$item->purpose|truncate:"30"}</td>
                         <td title="{$item->clabel}">{$item->cshort}</td>
                         <td>{$item->recipient}</td>
-                        <td>{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
-                        <td>{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
-                        <td >{$balance|price}</td>
+                        <td class="r">{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
+                        <td class="r">{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
+                        <td class="r">{$balance|price}</td>
                     </tr>
                     {/foreach}
                     <tr {if $balance < 0}class="alert alert-error"{/if}>
