@@ -32,26 +32,21 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
             $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");
             $this->redirect("Event:");
         }
-
-        $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
-        $all = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
-
-        $unit = $this->context->unitService->getDetail($this->uid);
-        $uparrent = $this->context->unitService->getParrent($unit->ID);
-        $uchildrens = $this->context->unitService->getChild($unit->ID);
-
-        $this->template->uparrent = $uparrent;
-        $this->template->unit = $unit;
-        $this->template->uchildrens = $uchildrens;
-        $this->template->list = $all;
-        $this->template->participants = $participants;
+        
+        $this->template->participants = $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
+        $this->template->list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        
+        $this->template->unit = $unit = $this->context->unitService->getDetail($this->uid);
+        $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
+        $this->template->uchildrens = $this->context->unitService->getChild($unit->ID);
+        
         $this->template->accessDeleteParticipant = array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
         $this->template->accessUpdateParticipant = array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
         $this->template->accessInsertParticipant = array_key_exists("EV_ParticipantGeneral_INSERT_EventGeneral", $this->availableActions);
     }
 
     public function actionEdit($aid, $pid, $days = 0, $payment = 0) {
-        //TODO: kontrola záklazdních udajů
+        //TODO: kontrola základních udajů
         $days = $this->context->eventService->participants->getPersonsDays($aid);
         $form = $this['formEditParticipant'];
         $form->setDefaults(array(
@@ -179,8 +174,8 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         $this->editableOnly();
         $values = $form->getValues();
         $arr = array(
-            "Note" => $values['payment'],
-            "Days" => $values['days'],
+            "payment" => $values['payment'],
+            "days" => $values['days'],
         );
 
 
@@ -261,8 +256,8 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         $this->editableOnly();
         $values = $button->getForm()->getValues();
         $data = array(
-            "Days" => $values['days'],
-            ParticipantService::PAYMENT => $values['payment']
+            "days" => $values['days'],
+            "payment" => $values['payment']
         );
         foreach ($values['ids'] as $id => $bool) {
             if ($bool)

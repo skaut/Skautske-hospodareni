@@ -36,35 +36,6 @@
                     <th style="width: 60px;"><input type="checkbox" id="frmformMassAdd-all-all" onclick="jqCheckAll(this.id, 'all')" /></th>
                     <th>Příjmění a jméno</th>
                 </tr>
-{*}
-                <tr>
-                    <th>
-                        <script type="text/javascript">
-                            $(document).ready(function() { 
-                                $( ".findUserBox" ).combobox();
-                                $('.combobox-text').val('').focus();
-                                
-                                // odeslání pomocí tlačítek
-                                $("form.findByName").submit(function () {
-                                        $(this).ajaxSubmit();
-                                        return false;
-                                });
-                                // odeslání pomocí tlačítek
-                                $("form.findByName :submit").click(function () {
-                                        $(this).ajaxSubmit();
-                                        return false;
-                                });
-                                
-                            });
-                        </script>
-                        {form formFindByName class=>"nonMargin findByName"}
-                        {input user class=>"findUserBox"}
-                    </th><th style="width: 28px;">
-                        {input send}
-                        {/form}
-                    </th>
-                </tr>
-{*}
                 <tr n:foreach="$list as $id=>$name">
                     <td>
                         {input all-$id}
