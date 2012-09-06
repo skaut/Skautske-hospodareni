@@ -31,7 +31,8 @@ class ParticipantService extends MutableBaseService {
         if (!$cache || !($res = $this->load($cacheId))) {
             $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "All"}(array("ID_Event" . self::$typeName => $ID));
             $res = array();
-            foreach ($tmp as $p) {
+            foreach ($tmp as $p) {//objekt má vzdy Note a je pod associativnium klicem
+                $p->Note = isset($p->Note) ? $p->Note : 0;
                 $res[$p->ID] = $p;
             }
             $this->save($cacheId, $res);
@@ -95,7 +96,7 @@ class ParticipantService extends MutableBaseService {
                         "FirstName" => $person['firstName'],
                         "LastName" => $person['lastName'],
                         "NickName" => $person['nick'],
-                        ParticipantService::PAYMENT => $person['note'],
+                        "Note" => $person['note'], //poznámka osoby, ne účastníka
                     ),
                 ));
     }
@@ -121,22 +122,33 @@ class ParticipantService extends MutableBaseService {
     /**
      * upraví všechny nastavené hodnoty
      * @param int $participantId
-     * @param array $arr pole hodnot
+     * @param array $arr pole hodnot (payment, days, [repayment], [isAccount])
      */
     public function update($participantId, array $arr) {
-        $sis = array(
-            'ID' => $participantId,
-            'Real' => TRUE,
-            'Days' => $arr['days'],
-        );
-        $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
-        $data = array(
-            "actionId" => $arr['actionId'],
-            "payment" => $arr['payment'],
-            "repayment" => $arr['repayment'],
-            "isAccount" => $arr['isAccount'],
-        );
-        $this->table->update($participantId, $data);
+        if(self::$typeName == "Camp"){
+            $sis = array(
+                'ID' => $participantId,
+                'Real' => TRUE,
+                'Days' => $arr['days'],
+            );
+            $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
+            $data = array(
+                "actionId" => $arr['actionId'],
+                "payment" => $arr['payment'],
+                "repayment" => $arr['repayment'],
+                "isAccount" => $arr['isAccount'],
+            );
+            $this->table->update($participantId, $data);
+        } else {
+            $sis = array(
+                'ID' => $participantId,
+                'Real' => TRUE,
+                'Days' => $arr['days'],
+                self::PAYMENT => $arr['payment'],
+            );
+            
+            $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
+        }
     }
 
     /**
