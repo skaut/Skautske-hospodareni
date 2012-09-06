@@ -5,13 +5,6 @@
  */
 class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter {
 
-    /**
-     * pouze přesměrovává na jiný presenter
-     */
-//    function startup() {
-//        parent::startup();
-////        $this->redirect("Event:");
-//    }
     public $ses;
 
     const DEFAULT_STATE = "draft"; //filtrovani zobrazených položek
@@ -22,14 +15,15 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         $this->ses = $this->session->getSection(__CLASS__);
         if (!isset($this->ses->state))
             $this->ses->state = self::DEFAULT_STATE;
+        if (!isset($this->ses->year))
+            $this->ses->year = date("Y");
     }
 
     public function renderDefault() {
         //filtrovani zobrazených položek
-        $year = isset($this->ses->year) ? $this->ses->year : NULL;
+        $year = isset($this->ses->year) ? $this->ses->year : date("Y");
         $state = isset($this->ses->state) ? $this->ses->state : NULL;
-        if ($state == "all")
-            $state = NULL;
+        
         $list = $this->context->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
             $localAvaibleActions = $this->context->userService->actionVerify(self::STable, $value->ID);
@@ -93,7 +87,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
 
     function createComponentFormFilter($name) {
         $states = array_merge(array("all" => "Nezrušené"), $this->context->eventService->event->getStates());
-        $years = array();
+        $years = array("all"=>"Všechny");
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
         }

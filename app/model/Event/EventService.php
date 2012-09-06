@@ -6,6 +6,9 @@
 class EventService extends MutableBaseService {
 
     public function getAll($year = NULL, $state = NULL) {
+        $year  = ($year  == "all") ? NULL : $year;
+        $state = ($state == "all") ? NULL : $state;
+        
         return $this->skautIS->event->{"Event" . self::$typeName . "All"}(array("IsRelation" => TRUE, "ID_Event" . self::$typeName . "State" => $state, "Year" => $year));
     }
 

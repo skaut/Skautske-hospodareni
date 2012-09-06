@@ -3,8 +3,8 @@
 /**
  * @author sinacek
  */
-class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter  {
-    
+class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter {
+
     public $ses;
 
     const DEFAULT_STATE = "approvedParent"; //filtrovani zobrazených položek
@@ -15,14 +15,15 @@ class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter  
         $this->ses = $this->session->getSection(__CLASS__);
         if (!isset($this->ses->state))
             $this->ses->state = self::DEFAULT_STATE;
+        if (!isset($this->ses->year))
+            $this->ses->year = date("Y");
     }
 
     public function renderDefault() {
         //filtrovani zobrazených položek
-        $year = isset($this->ses->year) ? $this->ses->year : NULL;
+        $year = isset($this->ses->year) ? $this->ses->year : date("Y");
         $state = isset($this->ses->state) ? $this->ses->state : NULL;
-        if ($state == "all")
-            $state = NULL;
+
         $list = $this->context->campService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
             $value->accessDetail = $this->context->userService->actionVerify(self::STable, $value->ID, self::STable . "_DETAIL");
@@ -36,7 +37,7 @@ class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter  
 
         //$this->template->accessCreate = array_key_exists("EV_EventGeneral_INSERT", $this->availableActions);
     }
-    
+
     public function handleChangeYear($year) {
         $this->ses->year = $year;
         if ($this->isAjax()) {
@@ -54,9 +55,10 @@ class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter  
             $this->redirect("this");
         }
     }
+
     function createComponentFormFilter($name) {
         $states = array_merge(array("all" => "Nezrušené"), $this->context->campService->event->getStates());
-        $years = array();
+        $years = array("all"=>"Všechny");
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
         }
@@ -77,5 +79,5 @@ class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter  
         $this->ses->state = $v['state'];
         $this->redirect("default", array("aid" => $this->aid));
     }
-    
+
 }
