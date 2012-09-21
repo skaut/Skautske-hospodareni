@@ -73,9 +73,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         $template->info = $actionInfo;
         $template->list = $list;
         $template->setFile(dirname(__FILE__) . '/../templates/Participant/export.latte');
-        
-        
-        echo $template;die();
+//        echo $template;die();
         $this->context->campService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf", true);
         $this->terminate();
     }
