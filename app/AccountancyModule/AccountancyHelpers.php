@@ -65,13 +65,14 @@ abstract class AccountancyHelpers extends Object {
      * http://prirucka.ujc.cas.cz/?id=786
      * @return int 
      */
-    public static function price($price) {
+    public static function price($price, $full = true) {
         if ($price == NULL)
             return 0;
         if ($price == "&nbsp;")
             return $price;
+        $decimals = $full ? 2 : 0;
         //if (stripos($price, "."))
-            return number_format($price, 2, ",", " ");
+            return number_format($price, $decimals, ",", " ");
         //return $price;
     }
 

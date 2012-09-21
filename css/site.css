@@ -125,7 +125,5 @@ input[type="checkbox"], input[type="radio"] {
    text-align: center;
    vertical-align: text-top;
 }
-
-#cashbookTable tr td.r {
-    text-align: right;
-}
+td.r {text-align: right;}
+.b {font-weight: bold;}

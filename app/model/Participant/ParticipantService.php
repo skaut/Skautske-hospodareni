@@ -146,7 +146,7 @@ class ParticipantService extends MutableBaseService {
                 'Days' => $arr['days'],
                 self::PAYMENT => $arr['payment'],
             );
-            
+
             $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
         }
     }
