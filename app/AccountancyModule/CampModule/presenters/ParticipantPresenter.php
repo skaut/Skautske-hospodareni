@@ -57,7 +57,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
 
         $form->setDefaults(array(
             "days" => isset($dd) ? $dd : $data['days'],
-            "payment" => isset($data['payment']) ?$data['payment'] : "",
+            "payment" => isset($data['payment']) ? $data['payment'] : "",
             "repayment" => isset($data['repayment']) ? $data['repayment'] : "",
             "isAccount" => isset($data['isAccount']) ? $data['isAccount'] : "N",
             "user" => $pid,
@@ -66,14 +66,17 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
 
     public function renderExport($aid) {
         $actionInfo = $this->context->campService->event->get($aid);
-        $participants = $this->context->campService->participants->getAll($aid);
-        $list = $this->context->campService->participants->getAllDetail($aid, $participants);
+        $list = $this->context->campService->participants->getAllWithDetails($aid);
+//        $list = $this->context->campService->participants->getAllDetail($aid, $participants);
 
         $template = $this->template;
         $template->info = $actionInfo;
         $template->list = $list;
         $template->setFile(dirname(__FILE__) . '/../templates/Participant/export.latte');
-        $this->context->campService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf");
+        
+        
+        echo $template;die();
+        $this->context->campService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf", true);
         $this->terminate();
     }
 
@@ -212,9 +215,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         $isChange->addCheckbox("daysc");
         $isChange->addCheckbox("paymentc");
         $isChange->addCheckbox("repaymentc");
-        $isChange->addCheckbox("isAccountc");//->setDefaultValue(TRUE);
-        
-        
+        $isChange->addCheckbox("isAccountc"); //->setDefaultValue(TRUE);
         //tlačitko upravit vybrané
         $form->addSubmit('massEditSend', 'Upravit')
                 ->getControlPrototype()->setClass("btn btn-info btn-small");

@@ -68,14 +68,15 @@ abstract class BaseService extends Object {
      * @param string $filename
      * @return pdf 
      */
-    function makePdf($template = NULL, $filename = NULL) {
+    function makePdf($template = NULL, $filename = NULL, $landscape = false) {
+        $format = $landscape ? "A4-L" : "A4";
         if ($template === NULL)
             return FALSE;
         define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
         require_once(_MPDF_PATH . 'mpdf.php');
         $mpdf = new mPDF(
                 'utf-8',
-                $format='A4',
+                $format,
                 $default_font_size=0,
                 $default_font='',
                 $mgl=10,
@@ -84,9 +85,8 @@ abstract class BaseService extends Object {
                 $mgb=10,
                 $mgh=9,
                 $mgf=9,
-                $orientation='P'
+                $orientation = 'P'
                 );
-        
         
         $mpdf->WriteHTML((string) $template, NULL);
         $mpdf->Output($filename, 'I');

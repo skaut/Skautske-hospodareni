@@ -135,9 +135,9 @@
                         <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a>
                     </td>
                     <td>{label ids-$p->ID /}</td>
-                    <td>{$p->Days}</td>
-                    <td>{ifset $p->payment}{$p->payment|price}{? $totalPayment += $p->payment}{else}0{/ifset}</td>
-                    <td>{ifset $p->repayment}{$p->repayment|price}{? $totalRepayment += $p->repayment}{else}0{/ifset}</td>
+                    <td class="r">{$p->Days}</td>
+                    <td class="r">{ifset $p->payment}{$p->payment|price:false}{? $totalPayment += $p->payment}{else}0{/ifset}</td>
+                    <td class="r">{ifset $p->repayment}{$p->repayment|price:false}{? $totalRepayment += $p->repayment}{else}0{/ifset}</td>
                     <td>{ifset $p->isAccount}{$p->isAccount == 'Y' ? 'Ano'}{/ifset}</td>
                 </tr>
                 {/if}
@@ -145,9 +145,9 @@
                     <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">&nbsp;</td>
                     <td></td>
                     <td></td>
-                    <td>{$totalPayment}</td>
-                    <td>{$totalRepayment}</td>
-                    <td><b>{= $totalPayment - $totalRepayment}</b></td>
+                    <td class="r">{$totalPayment}</td>
+                    <td class="r">{$totalRepayment}</td>
+                    <td class="r b">{$totalPayment - $totalRepayment|price}</td>
                 </tr>
 
             </table>
