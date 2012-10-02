@@ -6,7 +6,7 @@ common:
         session:
             autoStart: smart
             save_path: "%tempDir%/sessions"
-            expiration: "+ 7 days"
+            expiration: "+ 3 days"
         application:
             catchExceptions: true
             errorPresenter: Error
@@ -82,12 +82,3 @@ console < development:
     services:
         nette.userStorage:
             class: TestUserStorage
-
-
-
-;database: hana_ucet_osmnactka_net
-;username: ucet
-;password: usv2*dkatR6e
-
-
-

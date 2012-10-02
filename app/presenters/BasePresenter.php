@@ -25,8 +25,8 @@ abstract class BasePresenter extends Presenter {
     }
 
     //upravuje roli ve skautISu
-    public function handleChangeRole($id) {
-        $this->context->userService->updateSkautISRole($id);
+    public function handleChangeRole($roleId) {
+        $this->context->userService->updateSkautISRole($roleId);
         $this->redirect("this");
     }
 
