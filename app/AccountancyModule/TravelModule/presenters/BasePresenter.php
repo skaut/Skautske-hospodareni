@@ -61,8 +61,9 @@ class Accountancy_Travel_BasePresenter extends Accountancy_BasePresenter {
 //                    'action' => "default",
 //                ));
 
-        $router[] = new Route($prefix . '<presenter>/[<action>/]', array(
+        $router[] = new Route($prefix . '<presenter>/[<action>/][<id>/]', array(
                     'presenter' => 'Default',
+                    'action' => 'default',
                     'action' => 'default',
                 ));
         return $router;
