@@ -13,12 +13,15 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         $this->template->list = $this->context->travelService->getAllCommands($this->unit->ID);
     }
 
-    public function renderDetail($commandId) {
-        $this->template->command = $command = $this->context->travelService->getCommand($commandId);
+    public function renderDetail($id) {
+        if ($id == NULL) {
+            $this->redirect("default");
+        }
+        $this->template->command = $command = $this->context->travelService->getCommand($id);
         $this->template->contract = $contract = $this->context->travelService->getContract($command->contract_id);
         $this->template->travels = $this->context->travelService->getTravels($command->id);
         $this->template->isEditable = ($this->unit->ID == $contract->unit_id && $command->closed == NULL) ? true : false;
-        $this['formAddTravel']->setDefaults(array("command_id"=>$command->id));
+        $this['formAddTravel']->setDefaults(array("command_id" => $command->id));
     }
 
     function renderEditCommand($commandId) {
@@ -157,20 +160,20 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         $form->getElementPrototype()->class("form-inline");
         $form->addHidden("command_id");
         $form->addDatePicker("start_date", "Datum cesty")
-                ->getControlPrototype()->class("input-small")
-                ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.");
+                ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.")
+                ->getControlPrototype()->class("input-small");
         $form->addText("start_place", "Z*")
-                ->getControlPrototype()->class("input-medium")
-                ->addRule(Form::FILLED, "Musíte vyplnit místo počátku cesty.");
+                ->addRule(Form::FILLED, "Musíte vyplnit místo počátku cesty.")
+                ->getControlPrototype()->class("input-medium");
         $form->addText("end_place", "Do*")
-                ->getControlPrototype()->class("input-medium")
-                ->addRule(Form::FILLED, "Musíte vyplnit místo konce cesty.");
+                ->addRule(Form::FILLED, "Musíte vyplnit místo konce cesty.")
+                ->getControlPrototype()->class("input-medium");
         $form->addText("distance", "Vzdálenost*")
-                ->getControlPrototype()->class("input-mini")
-                ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.");
+                ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.")
+                ->getControlPrototype()->class("input-mini");
         $form->addSubmit('send', 'Přidat')
                 ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+        $form->onSuccess[] = array($this, $name . 'Submitted');        
         return $form;
     }
 
@@ -186,5 +189,5 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         $this->flashMessage("Cesta byla přidána.");
         $this->redirect("this");
     }
-
+    
 }

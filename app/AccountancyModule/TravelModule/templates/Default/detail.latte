@@ -23,7 +23,9 @@
         {var $sum = 0}
         {if $command->note != ""}<h3>Poznámka</h3>{$command->note}{/if}
         <h3>Provedené cesty</h3>
-        
+
+
+        {form formAddTravel}
         <table class="table table-bordered table-striped table-condensed">
             <tr>
                 <th n:if="$isEditable" style="width: 32px;">&nbsp;</th>
@@ -33,14 +35,21 @@
                 <th>km</th>
                 <th>Kč</th>
             </tr>
-            <tr>{form formAddTravel}
+            <tr n:if="$form->hasErrors()">
+                <th colspan="6">
+                    <ul>
+                        <li n:foreach="$form->errors as $error">{$error}</li>
+                    </ul>
+                </th>
+            </tr>
+            <tr>
                 <th n:if="$isEditable">&nbsp;</th>
                 <th>{input start_date}</th>
                 <th>{input start_place}</th>
                 <th>{input end_place}</th>
                 <th>{input distance}</th>
                 <th>{input send}</th>
-                {/form}
+
             </tr>
             {if !empty($travels)}
             <tr n:foreach="$travels as $t">
@@ -58,9 +67,10 @@
             </tr>
             {/if}
         </table>
+        {/form}
 
-        
-            
-            
+
+
+
     </div>
 </div>
