@@ -45,7 +45,7 @@ class ParticipantService extends MutableBaseService {
     public function get($participantId) {
         $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "Detail"}(array("ID" => $participantId));
         $data = $this->table->get($participantId);
-        $data['days'] = (int)$tmp->Days;
+        $data['days'] = (int) $tmp->Days;
         return $data;
     }
 
@@ -67,6 +67,16 @@ class ParticipantService extends MutableBaseService {
                 $this->table->deleteDetail($d->participantId); //delete zaznam, protoze neexistuje k nemu ucastnik
             }
         }
+
+        foreach ($participants as $pid => $p) {
+            if (!isset($participants[$pid]->isAccount))
+                $participants[$pid]->isAccount = null;
+            if (!isset($participants[$pid]->payment))
+                $participants[$pid]->payment = null;
+            if (!isset($participants[$pid]->repayment))
+                $participants[$pid]->repayment = null;
+        }
+
         return $participants;
     }
 
@@ -125,7 +135,7 @@ class ParticipantService extends MutableBaseService {
      * @param array $arr pole hodnot (payment, days, [repayment], [isAccount])
      */
     public function update($participantId, array $arr) {
-        if(self::$typeName == "Camp"){
+        if (self::$typeName == "Camp") {
             $sis = array(
                 'ID' => $participantId,
                 'Real' => TRUE,
