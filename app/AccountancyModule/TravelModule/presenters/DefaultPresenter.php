@@ -8,6 +8,12 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     function startup() {
         parent::startup();
     }
+    
+    protected function isEditable($id){
+        $this->template->command = $command = $this->context->travelService->getCommand($id);
+        $this->template->contract = $contract = $this->context->travelService->getContract($command->contract_id);
+        return ($this->unit->ID == $contract->unit_id && $command->closed == NULL) ? true : false;
+    }
 
     public function renderDefault() {
         $this->template->list = $this->context->travelService->getAllCommands($this->unit->ID);
@@ -19,8 +25,8 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         }
         $this->template->command = $command = $this->context->travelService->getCommand($id);
         $this->template->contract = $contract = $this->context->travelService->getContract($command->contract_id);
+        $this->template->isEditable = $this->isEditable = ($this->unit->ID == $contract->unit_id && $command->closed == NULL) ? true : false;
         $this->template->travels = $this->context->travelService->getTravels($command->id);
-        $this->template->isEditable = ($this->unit->ID == $contract->unit_id && $command->closed == NULL) ? true : false;
         $this['formAddTravel']->setDefaults(array("command_id" => $command->id));
     }
 
@@ -111,9 +117,11 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
                 ->setPrompt("Vyberte vozidlo")
                 ->addRule(Form::FILLED, "Musíte vyplnit typ vozidla.");
         $form->addText("fuel_price", "Cena paliva za 1l*")
-                ->addRule(Form::FILLED, "Musíte vyplnit cenu paliva.");
+                ->addRule(Form::FILLED, "Musíte vyplnit cenu paliva.")
+                ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
         $form->addText("amortization", "Opotřebení*")
-                ->addRule(Form::FILLED, "Musíte vyplnit opotřebení.");
+                ->addRule(Form::FILLED, "Musíte vyplnit opotřebení.")
+                ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
         $form->addText("note", "Poznámka", NULL, 64);
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
@@ -152,7 +160,7 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
             $this->flashMessage("Cestovní příkaz byl upraven.");
         else
             $this->flashMessage("Cestovní příkaz se nepodařilo upravit.", "danger");
-        $this->redirect("detail", array("commandId" => $id));
+        $this->redirect("detail", array("id" => $id));
     }
 
     public function createComponentFormAddTravel($name) {
@@ -173,11 +181,16 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
                 ->getControlPrototype()->class("input-mini");
         $form->addSubmit('send', 'Přidat')
                 ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');        
+        $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
 
     function formAddTravelSubmitted(AppForm $form) {
+        if(!$this->isEditable($v->command_id)){
+            $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
+            $this->redirect("this");
+        }
+            
         $v = $form->getValues();
         $commandId = $v['command_id'];
         $command = $this->context->travelService->getCommand($commandId);
@@ -189,5 +202,5 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         $this->flashMessage("Cesta byla přidána.");
         $this->redirect("this");
     }
-    
+
 }
