@@ -5,7 +5,10 @@ $(document).ready(function() {
     //fancybox2
     $(".fancybox").fancybox();
     
-    
+    //bootstrap tooltip
+    if ($("[rel=tooltip]").length) {
+     $("[rel=tooltip]").tooltip();
+     }
     
     // odeslání na formulářích
     $("form.ajax").submit(function () {
