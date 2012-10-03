@@ -82,8 +82,8 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
     }
     
     public function handleRemoveFunction($aid, $fid) {
-        if($this->context->eventService->event->setFunction($this->aid, NULL, $fid))
-            $this->flashMessage("Funkce byla odebrána");
+        if(!$this->context->eventService->event->setFunction($this->aid, NULL, $fid))
+            $this->flashMessage("Funkci se nepodařilo odebrat", "danger");
         $this->redirect("this");
     }
 
