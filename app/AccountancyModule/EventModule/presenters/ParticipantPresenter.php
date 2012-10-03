@@ -56,7 +56,6 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 
     public function actionEdit($aid, $pid, $days = 0, $payment = 0) {
         //TODO: kontrola základních udajů
-        $days = $this->context->eventService->participants->getPersonsDays($aid);
         $form = $this['formEditParticipant'];
         $form->setDefaults(array(
             "days" => $days,
