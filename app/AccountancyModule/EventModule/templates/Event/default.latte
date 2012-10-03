@@ -52,13 +52,13 @@
         <h3>Vedení akce</h3>
         <table class="myTable table table-bordered table-condensed">
             <tr>
-                <th>&nbsp;</th>
+                <th n:if="$isEditable">&nbsp;</th>
                 <th>Funkce</th>
                 <th>Příjmení a jméno</th>
             </tr>
             <tr>
                 {? $index = 0}
-                <td>{include #functionButtons $funkce, "index"=>$index}</td>
+                <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td class="required">{$funkce[$index]->EventFunctionType}*
                     <i class="icon icon-info-sign" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
@@ -66,7 +66,7 @@
             </tr>
             <tr>
                 {? $index = 1}
-                <td>{include #functionButtons $funkce, "index"=>$index}</td>
+                <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
                     <i class="icon icon-info-sign" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
@@ -74,7 +74,7 @@
             </tr>
             <tr>
                 {? $index = 2}
-                <td>{include #functionButtons $funkce, "index"=>$index}</td>
+                <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
                     <i class="icon icon-info-sign" rel="tooltip" title="Osoba registrovaná ve SkautISu"/>
                 </td>

@@ -82,6 +82,11 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
     }
     
     public function handleRemoveFunction($aid, $fid) {
+        if (!array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions)) {
+            $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
+            $this->redirect("this");
+        }
+        
         if(!$this->context->eventService->event->setFunction($this->aid, NULL, $fid))
             $this->flashMessage("Funkci se nepodařilo odebrat", "danger");
         $this->redirect("this");
