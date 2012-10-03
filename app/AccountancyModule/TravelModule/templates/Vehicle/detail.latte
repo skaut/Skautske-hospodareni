@@ -29,14 +29,12 @@
                 <th>&nbsp;</th>
                 <th>Řidič</th>
                 <th>Účel cesty</th>
-                <th>Vozidlo</th>
                 <th>Stav příkazu</th>
             </tr>
             <tr n:foreach="$commands as $c">
                 <td><a n:href="Default:detail $c->id" class="btn btn-mini btn-primary"><i class="icon icon-white icon-zoom-in"></i>Detail</a></td>
                 <td>{$c->driver_name}</td>
                 <td>{$c->purpose}</td>
-                <td>{$c->vehicle_type} ({$c->vehicle_spz})</td>
                 <td>{!$c->closed|commandState}</td>
             </tr>
             
