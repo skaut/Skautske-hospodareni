@@ -110,10 +110,8 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
     }
 
     function createComponentFormCreate($name) {
-        $combo = $this->context->memberService->getCombobox();
         $scopes = $this->context->eventService->event->getScopes();
         $types = $this->context->eventService->event->getTypes();
-
 
         $form = new AppForm($this, $name);
         $form->addText("name", "Název akce")
@@ -123,19 +121,10 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         $form->addDatePicker("end", "Do")
                 ->addRule(Form::FILLED, "Musíte vyplnit konec akce");
         $form->addText("location", "Místo");
-        $form->addSelect("scope", "Rozsah", $scopes)
+        $form->addSelect("scope", "Rozsah (+)", $scopes)
                 ->setDefaultValue("2");
-        $form->addSelect("type", "Rozsah", $types)
+        $form->addSelect("type", "Typ (+)", $types)
                 ->setDefaultValue("2");
-        $form->addSelect("leader", "Vedoucí akce", $combo)
-                ->setPrompt("Vyber")
-                ->getControlPrototype()->setClass("combobox");
-        $form->addSelect("assistant", "Zástupce ved. akce", $combo)
-                ->setPrompt("Vyber")
-                ->getControlPrototype()->setClass("combobox");
-        $form->addSelect("economist", "Hospodář", $combo)
-                ->setPrompt("Vyber")
-                ->getControlPrototype()->setClass("combobox");
         $form->addSubmit('send', 'Založit akci')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
@@ -149,11 +138,11 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         }
         $v = $form->getValues();
         $id = $this->context->eventService->event->create(
-                $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v['leader'], $v['assistant'], $v['economist'], $unit = NULL, $v['scope'], $v['type']
+                $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $unit = NULL, $v['scope'], $v['type']
         );
 
         if ($id) {
-            $this->redirect("info", array("aid" => $id));
+            $this->redirect("Event:", array("aid" => $id));
         }
         $this->redirect("this");
     }

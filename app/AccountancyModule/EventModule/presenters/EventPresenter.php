@@ -4,41 +4,7 @@
  * @author Hána František
  * akce
  */
-class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  {
-
-//    public $ses;
-//
-//    const DEFAULT_STATE = "draft"; //filtrovani zobrazených položek
-
-//    function startup() {
-//        parent::startup();
-//        //ochrana $this->aid se provádí již v BasePresenteru
-//        $this->ses = $this->session->getSection(__CLASS__);
-//        if (!isset($this->ses->state))
-//            $this->ses->state = self::DEFAULT_STATE;
-//    }
-
-//    public function renderDefault() {
-//        //filtrovani zobrazených položek
-//        $year = isset($this->ses->year) ? $this->ses->year : NULL;
-//        $state = isset($this->ses->state) ? $this->ses->state : NULL;
-//        if ($state == "all")
-//            $state = NULL;
-//        $list = $this->context->eventService->event->getAll($year, $state);
-//        foreach ($list as $key => $value) {//přidání dodatečných atributů
-//            $localAvaibleActions = $this->context->userService->actionVerify(self::STable, $value->ID);
-//            $value->accessDelete = array_key_exists("EV_EventGeneral_DELETE", $localAvaibleActions);
-//            $value->accessDetail = array_key_exists("EV_EventGeneral_DETAIL", $localAvaibleActions);
-//            $list[$key] = $value;
-//        }
-//        $this->template->list = $list;
-//        if ($year)
-//            $this['formFilter']['year']->setDefaultValue($year);
-//        if ($state)
-//            $this['formFilter']['state']->setDefaultValue($state);
-//
-//        $this->template->accessCreate = array_key_exists("EV_EventGeneral_INSERT", $this->availableActions);
-//    }
+class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
 
     public function renderDefault($aid) {
         //nastavení dat do formuláře pro editaci
@@ -46,9 +12,8 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
         if (array_key_exists("EV_EventFunction_ALL_EventGeneral", $this->availableActions))
             $func = $this->context->eventService->event->getFunctions($aid);
 
-        $accessEditBase =
-                array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions) &&
-                array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions);
+        $accessEditBase = array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions);
+//        && array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions);
         if ($accessEditBase) {
             $form = $this['formEdit'];
             $form->setDefaults(array(
@@ -57,9 +22,11 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
                 "start" => $this->event->StartDate,
                 "end" => $this->event->EndDate,
                 "location" => $this->event->Location,
-                "leader" => isset($func) && is_array($func) ? $func[EventService::LEADER]->ID_Person : "",
-                "assistant" => isset($func) && is_array($func) ? $func[EventService::ASSISTANT]->ID_Person : "",
-                "economist" => isset($func) && is_array($func) ? $func[EventService::ECONOMIST]->ID_Person : "",
+                "type" => $this->event->ID_EventGeneralType,
+                "scope" => $this->event->ID_EventGeneralScope,
+//                "leader" => isset($func) && is_array($func) ? $func[EventService::LEADER]->ID_Person : "",
+//                "assistant" => isset($func) && is_array($func) ? $func[EventService::ASSISTANT]->ID_Person : "",
+//                "economist" => isset($func) && is_array($func) ? $func[EventService::ECONOMIST]->ID_Person : "",
             ));
         }
         $this->template->funkce = $func;
@@ -91,6 +58,32 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
         } else {
             $this->flashMessage("Před uzavřením akce musí být vyplněn vedoucí akce", "danger");
         }
+        $this->redirect("this");
+    }
+
+    public function actionAddFunction($aid, $fid) {
+        $form = $this['formAddFunction'];
+        $form->setDefaults(array(
+            "aid" => $aid,
+            "fid" => $fid,
+        ));
+    }
+    
+    public function actionEditFunction($aid, $fid) {
+        $this->template->setFile(dirname(__FILE__)."/../templates/Event/addFunction.latte");
+        $func = $this->context->eventService->event->getFunctions($aid);
+//        dump($func);die();
+        $form = $this['formAddFunction'];
+        $form->setDefaults(array(
+            "aid" => $aid,
+            "person" => $func[$fid]->ID_Person,
+            "fid" => $fid,
+        ));
+    }
+    
+    public function handleRemoveFunction($aid, $fid) {
+        if($this->context->eventService->event->setFunction($this->aid, NULL, $fid))
+            $this->flashMessage("Funkce byla odebrána");
         $this->redirect("this");
     }
 
@@ -129,21 +122,16 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
 
     function createComponentFormEdit($name) {
         $combo = $this->context->memberService->getCombobox(NULL, TRUE);
+        $scopes = $this->context->eventService->event->getScopes();
+        $types = $this->context->eventService->event->getTypes();
 
         $form = new AppForm($this, $name);
         $form->addText("name", "Název akce");
         $form->addDatePicker("start", "Od");
         $form->addDatePicker("end", "Do");
         $form->addText("location", "Místo");
-        $form->addSelect("leader", "Vedoucí akce", $combo)
-                ->setPrompt("Vyber")
-                ->getControlPrototype()->setClass("combobox");
-        $form->addSelect("assistant", "Zástupce ved. akce", $combo)
-                ->setPrompt("Vyber")
-                ->getControlPrototype()->setClass("combobox");
-        $form->addSelect("economist", "Hospodář", $combo)
-                ->setPrompt("Vyber")
-                ->getControlPrototype()->setClass("combobox");
+        $form->addSelect("type", "Typ (+)", $types);
+        $form->addSelect("scope", "Rozsah (+)", $scopes);
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
                 ->getControlPrototype()->setClass("btn btn-primary");
@@ -153,7 +141,7 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
     }
 
     function formEditSubmitted(AppForm $form) {
-        
+
         if (!array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions)) {
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
             $this->redirect("this");
@@ -163,21 +151,21 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
         $values['start'] = $values['start']->format("Y-m-d");
         $values['end'] = $values['end']->format("Y-m-d");
 
-        try {
-            $id = $this->context->eventService->event->update($values);
-        } catch (SkautIS_PermissionException $exc) {
-            $this->flashMessage($exc->getMessage(), "danger");
-            $this->redirect("Action:");
-        } catch (SkautIS_Exception $e) {
-            if (preg_match("/EventFunction_LeaderMustBeAdult/", $e->getMessage())) {//dospělost vedoucího akce
-                $this->flashMessage("Vedoucí akce musí být dosplělá osoba.", "danger");
-            } elseif (preg_match("/EventFunction_AssistantMustBeAdult/", $e->getMessage())) { //dospělost zástupce
-                $this->flashMessage("Zástupce musí být dosplělá osoba.", "danger");
-            } else {
-                throw $e;
-            }
-            $this->redirect("this");
-        }
+//        try {
+        $id = $this->context->eventService->event->update($values);
+//        } catch (SkautIS_PermissionException $exc) {
+//            $this->flashMessage($exc->getMessage(), "danger");
+//            $this->redirect("Action:");
+//        } catch (SkautIS_Exception $e) {
+//            if (preg_match("/EventFunction_LeaderMustBeAdult/", $e->getMessage())) {//dospělost vedoucího akce
+//                $this->flashMessage("Vedoucí akce musí být dosplělá osoba.", "danger");
+//            } elseif (preg_match("/EventFunction_AssistantMustBeAdult/", $e->getMessage())) { //dospělost zástupce
+//                $this->flashMessage("Zástupce musí být dosplělá osoba.", "danger");
+//            } else {
+//                throw $e;
+//            }
+//            $this->redirect("this");
+//        }
 
         if ($id) {
             $this->flashMessage("Základní údaje byly upraveny.");
@@ -187,6 +175,53 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter  
         }
         $this->redirect("this");
     }
+    function createComponentFormAddFunction($name) {
+        $combo = $this->context->memberService->getCombobox(NULL, TRUE);
+        
+        $form = new AppForm($this, $name);
+          $form->addSelect("person", NULL, $combo)
+                ->setPrompt("Vyber")
+                ->getControlPrototype()->setClass("combobox");
+        $form->addHidden("fid");
+        $form->addHidden("aid");
+        $form->addSubmit('send', 'Přidat')
+                ->getControlPrototype()->setClass("btn btn-primary");
+
+        $form->onSuccess[] = array($this, $name . 'Submitted');
+        return $form;
+    }
+
+    function formAddFunctionSubmitted(AppForm $form) {
+        if (!array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions)) {
+            $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
+            $this->redirect("this");
+        }
+        $values = $form->getValues();
+
+        try {
+        $id = $this->context->eventService->event->setFunction($values['aid'], $values['person'], $values['fid']);
+        } catch (SkautIS_PermissionException $exc) {
+            $this->flashMessage($exc->getMessage(), "danger");
+            $this->redirect("default", array("aid"=>$this->aid));
+        } catch (SkautIS_Exception $e) {
+            if (preg_match("/EventFunction_LeaderMustBeAdult/", $e->getMessage())) {//dospělost vedoucího akce
+                $this->flashMessage("Vedoucí akce musí být dosplělá osoba.", "danger");
+            } elseif (preg_match("/EventFunction_AssistantMustBeAdult/", $e->getMessage())) { //dospělost zástupce
+                $this->flashMessage("Zástupce musí být dosplělá osoba.", "danger");
+            } else {
+                throw $e;
+            }
+            $this->redirect("Default", array("aid"=>$this->aid));
+        }
+
+        if (!$id) {
+            $this->flashMessage("Nepodařilo se upravit funkci", "danger");
+        }
+        $this->redirect("default", array("aid"=>$this->aid));
+    }
+    
+    
+    
 
 }
 

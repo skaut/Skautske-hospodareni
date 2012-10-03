@@ -4,6 +4,8 @@
  * @author Hána František
  */
 class EventService extends MutableBaseService {
+    
+    protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist");
 
     public function getAll($year = NULL, $state = NULL) {
         $year  = ($year  == "all") ? NULL : $year;
@@ -35,6 +37,33 @@ class EventService extends MutableBaseService {
      */
     public function getFunctions($ID) {
         return $this->skautIS->event->{"EventFunctionAll" . self::$typeName}(array("ID_Event" . self::$typeName => $ID));
+    }
+    
+    /**
+     * vrátí data funkcí připravená pro update
+     * @param type $ID_Event
+     * @return type
+     */
+    protected function getPreparedFunctions($ID_Event){
+        $data = $this->getFunctions($ID_Event);
+        $query = array("ID" => $ID_Event);
+        for($i=0;$i<3;$i++){
+            $query[self::$ID_Functions[$i]] = $data[$i]->ID_Person;
+        }
+        return $query;
+    }
+    
+    /**
+     * nastaví danou funkci
+     * @param type $ID_Event
+     * @param type $ID_Person
+     * @param type $ID_Function
+     * @return type
+     */
+    public function setFunction($ID_Event, $ID_Person, $ID_Function) {
+        $query = $this->getPreparedFunctions($ID_Event);
+        $query[self::$ID_Functions[$ID_Function]] = $ID_Person;//nova změna
+        return $this->skautIS->event->{self::$typeLongName."UpdateFunction"}($query);
     }
 
     /**
@@ -98,15 +127,12 @@ class EventService extends MutableBaseService {
      * @param string $name nazev
      * @param date $start datum zacatku
      * @param date $end datum konce
-     * @param ID_Person $leader
-     * @param ID_Person $assistant
-     * @param ID_Person $economist
      * @param ID_Unit $unit ID jednotky
      * @param int $scope  rozsah zaměření akce
      * @param int $type typ akce
      * @return int|stdClass ID akce 
      */
-    public function create($name, $start, $end, $location = " ", $leader = NULL, $assistant = NULL, $economist = NULL, $unit = NULL, $scope = NULL, $type=NULL) {
+        public function create($name, $start, $end, $location = " ", $unit = NULL, $scope = NULL, $type=NULL) {
         $scope = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
         $type = $type !== NULL ? $type : 2; //2-vyprava
         $unit = $unit !== NULL ? $unit : $this->skautIS->getUnitId();
@@ -126,14 +152,14 @@ class EventService extends MutableBaseService {
             "EndDate" => $end,
             "IsStatisticAutoComputed" => false,
                 ), "eventGeneral");
-
-
-        $this->skautIS->event->EventGeneralUpdateFunction(array(
-            "ID" => $ret->ID,
-            "ID_PersonLeader" => $leader,
-            "ID_PersonAssistant" => $assistant,
-            "ID_PersonEconomist" => $economist
-        ));
+//
+//
+//        $this->skautIS->event->EventGeneralUpdateFunction(array(
+//            "ID" => $ret->ID,
+//            "ID_PersonLeader" => $leader,
+//            "ID_PersonAssistant" => $assistant,
+//            "ID_PersonEconomist" => $economist
+//        ));
 
         if (isset($ret->ID))
             return $ret->ID;
