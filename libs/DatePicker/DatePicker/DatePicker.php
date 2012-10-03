@@ -31,7 +31,7 @@ class DatePicker extends FormControl {
      */
     public function __construct($label = NULL) {
         parent::__construct($label);
-        $this->control->type = 'date';
+        $this->control->type = "datetime"; //upraveno z date na datetime, kvuli zobrazeni v prohlizeci
     }
 
     /**
