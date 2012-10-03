@@ -32,14 +32,23 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
             $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");
             $this->redirect("Event:");
         }
-        
-        $this->template->participants = $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
-        $this->template->list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
-        
+
+        $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
+        $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+
+        function cmpParticipants($a, $b) {/* setrizeni podle abecedy */
+            return strcasecmp($a->Person, $b->Person);
+        }
+
+        usort($participants, "cmpParticipants");
+        natcasesort($list);
+
+        $this->template->participants = $participants;
+        $this->template->list = $list;
         $this->template->unit = $unit = $this->context->unitService->getDetail($this->uid);
         $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
         $this->template->uchildrens = $this->context->unitService->getChild($unit->ID);
-        
+
         $this->template->accessDeleteParticipant = array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
         $this->template->accessUpdateParticipant = array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
         $this->template->accessInsertParticipant = array_key_exists("EV_ParticipantGeneral_INSERT_EventGeneral", $this->availableActions);

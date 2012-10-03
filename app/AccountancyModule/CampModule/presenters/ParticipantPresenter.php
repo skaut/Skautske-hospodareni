@@ -34,11 +34,19 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
 
         $participants = $this->context->campService->participants->getAllWithDetails($this->aid);
         $unit = $this->context->unitService->getDetail($this->uid);
-
+        $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        
+        //setrizeni podle abecedy
+        function cmpParticipants($a, $b) {
+            return strcasecmp($a->Person, $b->Person);
+        }
+        usort($participants, "cmpParticipants");
+        natcasesort($list);
+        
         $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
         $this->template->unit = $unit;
         $this->template->uchildrens = $this->context->unitService->getChild($unit->ID);
-        $this->template->list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        $this->template->list = $list;
         $this->template->participants = $participants;
         $this->template->accessDeleteParticipant = array_key_exists("EV_ParticipantCamp_DELETE", $this->availableActions);
         $this->template->accessUpdateParticipant = array_key_exists("EV_ParticipantCamp_UPDATE_EventCamp", $this->availableActions);
