@@ -17,6 +17,7 @@
             <tr n:foreach="$list as $i">
                 <td>
                     <a n:href="detail $i->id" class="btn btn-primary btn-mini"><i class="icon icon-zoom-in icon-white"></i> Detail</a>
+                    <a n:href="remove! $i->id" class="btn btn-danger btn-mini" onclick="return confirm('Opravdu chcete odstranit vozidlo?')"><i class="icon icon-remove icon-white"></i></a>
                 </td>
                 <td><a n:href="Vehicle:detail $i->id">{$i->type}</a></td>
                 <td>{$i->spz}</td>

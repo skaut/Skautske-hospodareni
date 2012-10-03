@@ -21,17 +21,15 @@ class Accountancy_Travel_VehiclePresenter extends Accountancy_Travel_BasePresent
     }
 
     public function renderDetail($vehicleId) {
-        $this->template->vehicle = $contract = $this->context->travelService->getVehicle($vehicleId);
+        $this->template->vehicle = $contract = $this->context->travelService->getVehicle($vehicleId, true);
         $this->template->commands = $this->context->travelService->getAllCommandsByVehicle($this->unit->ID, $vehicleId);
     }
 
-//    public function actionPrint($contractId) {
-//        $template = $this->template;
-//        $template->setFile(dirname(__FILE__) . '/../templates/Contract/ex.contract.latte');
-//        $template->contract = $contract = $this->context->travelService->getContract($contractId);
-//        $template->unit = $this->context->unitService->getDetail($contract->unit_id);
-//        $this->context->unitService->makePdf($template, "Smlouva-o-proplaceni-cestovnich-nazhrad.pdf");
-//    }
+    public function handleRemove($vehicleId) {
+        $this->context->travelService->removeVehicle($vehicleId);
+        $this->flashMessage("Vozidlo bylo odebráno.");
+        $this->redirect("this");
+    }
 
     protected function makeVehicleForm($name) {
         $form = new AppForm($this, $name);
@@ -61,24 +59,5 @@ class Accountancy_Travel_VehiclePresenter extends Accountancy_Travel_BasePresent
             $this->flashMessage("Záznam o vozidle se nepodařilo založit.", "danger");
         $this->redirect("this");
     }
-
-//    function createComponentFormEditVehicle($name) {
-//        $form = $this->makeVehicleForm($name);
-//        $form->addSubmit('send', 'Upravit')
-//                ->getControlPrototype()->setClass("btn btn-primary");
-//        $form->addHidden("id");
-//        return $form;
-//    }
-//
-//    function formEditVehicleSubmitted(AppForm $form) {
-//        $v = $form->getValues();
-//        $id = $v['id'];
-//        unset($v['id']);
-//        if ($this->context->travelService->updateCommand($v, $this->unit, $id))
-//            $this->flashMessage("Cestovní příkaz byl upraven.");
-//        else
-//            $this->flashMessage("Cestovní příkaz se nepodařilo upravit.", "danger");
-//        $this->redirect("detail", array("commandId" => $id));
-//    }
 
 }
