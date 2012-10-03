@@ -6,9 +6,9 @@
     <div class="span8">
         <div class="well well-small">
             <a n:href="editCommand $command->id" n:if="$isEditable" class="fancybox fancybox.ajax btn btn-small btn-info"><i class="icon icon-white icon-edit"></i> Upravit</a>
+            <a n:href="closeCommand! $command->id" n:if="$isEditable" class="btn btn-small btn-success" onclick="return confirm('Opravdu chcete nenávratně uzavřít cestovní příaz?')"><i class="icon icon-white icon-folder-close"></i> Uzavřít</a>
             <a n:href="Contract:detail $contract->id" class="btn btn-small btn-info"><i class="icon icon-white icon-zoom-in"></i> Smlouva</a>
             <a n:href="print $command->id" class="btn btn-small btn-info"><i class="icon icon-white icon-print"></i> Vytisknout cestovní příkaz</a>
-            <a n:href="closeCommand! $command->id" n:if="$isEditable" class="btn btn-small btn-info"><i class="icon icon-white icon-print"></i> Uzavřít</a>
         </div>
         <h3>Řidič</h3>
         Jméno: {$contract->driver_name}<br />
@@ -35,14 +35,12 @@
                 <th>km</th>
                 <th>Kč</th>
             </tr>
-            <tr n:if="$form->hasErrors()">
-                <th colspan="6">
-                    <ul>
-                        <li n:foreach="$form->errors as $error">{$error}</li>
-                    </ul>
-                </th>
+            <tr n:if="$form->hasErrors()" colspan="6">
+                <ul>
+                    <li n:foreach="$form->errors as $error">{$error}</li>
+                </ul>
             </tr>
-            <tr>
+            <tr n:if="$isEditable">
                 <th n:if="$isEditable">&nbsp;</th>
                 <th>{input start_date}</th>
                 <th>{input start_place}</th>
