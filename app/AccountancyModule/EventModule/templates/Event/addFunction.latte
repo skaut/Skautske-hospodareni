@@ -1,20 +1,16 @@
+{* ajax response pro pridani funkce*}
 
-
-{form formEditParticipant class=>"nonMargin"}
+{form formAddFunction class=>"nonMargin"}
     <ul class="errors" n:if="$form->hasErrors()">
         <li n:foreach="$form->errors as $error">{$error}</li>
     </ul>
     <table>
         <tr>
-            <th>{label days/}</th>
-            <td>{input days style=>"width:50px;"}</td>
+            <th>{label person/}</th>
+            <td>{input person}</td>
         </tr>
         <tr>
-            <th>{label payment /}</th>
-            <td>{input payment style=>"width:50px;"}</td>
-        </tr>
-        <tr>
-            <th>{input user}</th>
+            <th>{input aid}{input fid}</th>
             <td>{input send}</td>
         </tr>
     </table>

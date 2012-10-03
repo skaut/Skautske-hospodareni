@@ -4,7 +4,7 @@
 
 {dump $event}
 
-<div class="row">
+<div class="row-fluid">
     <div class="span3" n:if="$accessDetailEvent">
         <h3>Základní údaje</h3>
         <table class="myTable table table-bordered table-condensed">
@@ -43,12 +43,21 @@
         <h3>Vedení akce</h3>
         <table class="myTable table table-bordered table-condensed">
             <tr>
+                <th>&nbsp;</th>
                 <th>Funkce</th>
                 <th>Příjmení a jméno</th>
             </tr>
             <tr n:foreach="$funkce as $f">
-                <td><i>{$f->EventFunctionType}</i></td>
+                <td>{ifset $f->ID_Person}
+                    <a n:href="editFunction $aid, $iterator->counter-1"  class="btn btn-info btn-mini fancybox fancybox.ajax" title="Změnit osobu ve funci"><i class="icon-edit icon-white"></i></a>
+                        <a n:href="removeFunction! $aid, $iterator->counter-1" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce" class="btn btn-danger btn-mini"><i class="icon-remove icon-white"></i></a>
+                    {else}
+                        <a n:href="addFunction $aid, $iterator->counter-1" title="Přiřadit osobu k funkci" class="fancybox fancybox.ajax btn btn-primary btn-mini"><i class="icon icon-plus icon-white"></i></a>{/ifset}</td>
+                <td n:class="$iterator->isFirst() ? required">{$f->EventFunctionType}{if $iterator->isFirst()}*{/if}</td>
                 <td>{ifset $f->ID_Person}{$f->Person}{/ifset}</td>
+            </tr>
+            <tr>
+                <td colspan="3"><i>Funkce označené <span class="required">*</span> jsou povinné</i></td>
             </tr>
         </table>
     </div>
@@ -60,7 +69,7 @@
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-small" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
         <a n:if="$accessCloseEvent" n:href="close! $aid" class="btn btn-success btn-small"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
         <a n:if="$accessOpenEvent"  n:href="open! $aid"  class="btn btn-warning btn-small"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
-        <a href="{$presenter->link("Event:report", array("aid"=>$aid))}" class="btn btn-info btn-small">Záverečná zpráva</a>
+        <a n:href="Event:report $aid" class="btn btn-info btn-small">Záverečná zpráva</a>
 
         <div n:if="$accessEditBase" class="modal myModal fade" id="editBasicInfo">
             <div class="modal-header">

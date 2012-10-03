@@ -1,6 +1,6 @@
 {block #content}
 <h2>Seznam akcí</h2>
-<div class="row">
+<div class="row-fluid">
     <div class="span">
         <p n:if="$accessCreate">
             <a href="#createNew" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</a>
@@ -9,10 +9,9 @@
 
     {snippet events}
         {form formFilter class=>"ajax filter"}
-        {label year /}{input year onchange=>"changeYear(this.value)"}
-        {label state /}{input state onchange=>"changeState(this.value)"}
-        {input send}
-        
+            {label year /}{input year onchange=>"changeYear(this.value)"}
+            {label state /}{input state onchange=>"changeState(this.value)"}
+            {input send}
         {/form}
         
         {if is_array($list)}
@@ -49,10 +48,10 @@
         <h3>Založit novou akci</h3>
     </div>
     <div class="modal-body">
-            {control formCreate}
+        {control formCreate}
+        (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
     </div>
 </div>
-
 
 <script type="text/javascript">
     function changeYear(val){
@@ -61,5 +60,4 @@
     function changeState(val){
          $.post({link changeState!}, { state : val });
     }
-            
 </script>
