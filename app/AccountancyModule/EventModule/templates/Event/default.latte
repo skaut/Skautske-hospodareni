@@ -1,8 +1,17 @@
+{block #functionButtons $funkce, $index}
+{ifset $funkce[$index]->ID_Person}
+<a n:href="editFunction $aid, $index"  class="btn btn-info btn-mini fancybox fancybox.ajax" title="Změnit osobu ve funci"><i class="icon-edit icon-white"></i></a>
+<a n:href="removeFunction! $aid, $index" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce" class="btn btn-danger btn-mini"><i class="icon-remove icon-white"></i></a>
+            {else}
+<a n:href="addFunction $aid, $index" title="Přiřadit osobu k funkci" class="fancybox fancybox.ajax btn btn-primary btn-mini"><i class="icon icon-plus icon-white"></i></a>{/ifset}
+{/block}
+
 {block #content}
 <h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
 {dump $event}
+{dump $funkce}
 
 <div class="row-fluid">
     <div class="span3" n:if="$accessDetailEvent">
@@ -47,14 +56,29 @@
                 <th>Funkce</th>
                 <th>Příjmení a jméno</th>
             </tr>
-            <tr n:foreach="$funkce as $f">
-                <td>{ifset $f->ID_Person}
-                    <a n:href="editFunction $aid, $iterator->counter-1"  class="btn btn-info btn-mini fancybox fancybox.ajax" title="Změnit osobu ve funci"><i class="icon-edit icon-white"></i></a>
-                        <a n:href="removeFunction! $aid, $iterator->counter-1" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce" class="btn btn-danger btn-mini"><i class="icon-remove icon-white"></i></a>
-                    {else}
-                        <a n:href="addFunction $aid, $iterator->counter-1" title="Přiřadit osobu k funkci" class="fancybox fancybox.ajax btn btn-primary btn-mini"><i class="icon icon-plus icon-white"></i></a>{/ifset}</td>
-                <td n:class="$iterator->isFirst() ? required">{$f->EventFunctionType}{if $iterator->isFirst()}*{/if}</td>
-                <td>{ifset $f->ID_Person}{$f->Person}{/ifset}</td>
+            <tr>
+                {? $index = 0}
+                <td>{include #functionButtons $funkce, "index"=>$index}</td>
+                <td class="required">{$funkce[$index]->EventFunctionType}*
+                    <i class="icon icon-info-sign" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
+                </td>
+                <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
+            </tr>
+            <tr>
+                {? $index = 1}
+                <td>{include #functionButtons $funkce, "index"=>$index}</td>
+                <td>{$funkce[$index]->EventFunctionType}
+                    <i class="icon icon-info-sign" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
+                </td>
+                <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
+            </tr>
+            <tr>
+                {? $index = 2}
+                <td>{include #functionButtons $funkce, "index"=>$index}</td>
+                <td>{$funkce[$index]->EventFunctionType}
+                    <i class="icon icon-info-sign" rel="tooltip" title="Osoba registrovaná ve SkautISu"/>
+                </td>
+                <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
             <tr>
                 <td colspan="3"><i>Funkce označené <span class="required">*</span> jsou povinné</i></td>

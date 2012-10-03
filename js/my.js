@@ -7,8 +7,8 @@ $(document).ready(function() {
     
     //bootstrap tooltip
     if ($("[rel=tooltip]").length) {
-     $("[rel=tooltip]").tooltip();
-     }
+        $("[rel=tooltip]").tooltip();
+    }
     
     // odeslání na formulářích
     $("form.ajax").submit(function () {
