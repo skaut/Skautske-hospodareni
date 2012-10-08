@@ -99,6 +99,18 @@ input[type="checkbox"], input[type="radio"] {
 .isMinus {
     background-color:#ff5500;
 }
+
+
+#chitType {
+    margin-bottom: 0;
+}
+
+#chitTypeContent {
+    border-right:1px solid #DDDDDD;
+    padding-top:20px;
+}
+
+
 /* zrušení spinneru pro fancybox*/
 #fancybox-loading {
     display: none;
@@ -108,11 +120,11 @@ input[type="checkbox"], input[type="radio"] {
     background: #000000 url('../images/layout/pacman-loader.gif') no-repeat 50% 50%;
     height: 60px;
     width: 60px;
-	margin: 0;
+    margin: 0;
     border-radius: 6px;
     Opacity : 0.9;
-	z-index: 123456;
-	display: none;
+    z-index: 123456;
+    display: none;
     position: absolute;
     left: 50%;
     top: 50%;
@@ -122,8 +134,8 @@ input[type="checkbox"], input[type="radio"] {
 }
 
 .ct { /* ct = center, top*/
-   text-align: center;
-   vertical-align: text-top;
+    text-align: center;
+    vertical-align: text-top;
 }
 td.r {text-align: right;}
 .b {font-weight: bold;}

@@ -19,9 +19,8 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
         if(!$this->camp->IsRealTotalCostAutoComputed){
-            $this->template->missingCategories = "Nemáte aktivní automatické dopočítání z kategorií, bez kterého nelze přidávat záznamy. 
-                Aktivujte si ho ve SkautIS u tábora na položce rozpočet.
-                <a href=\" " . $this->context->skautIS->getHttpPrefix() . ".skaut.cz/Junak/Events/Camp/Camp/Statement.aspx?ID=".$this->camp->ID."\">Odkaz</a>";
+            $this->template->missingCategories = true;
+            $this->template->skautISHttpPrefix = $this->context->skautIS->getHttpPrefix();
             $this->template->isEditable = false;//zamezení zobrazení formulářů, protoze nemají kategorie
         }
     }
@@ -147,17 +146,20 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
         $form = new AppForm($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
-                ->setAttribute('autofocus');
+//                ->setAttribute('autofocus')
+                ->getControlPrototype()->class("input-medium");
         //@TODO kontrola platneho data, problem s componentou
         $form->addText("recipient", "Vyplaceno komu:", 20, 30)
-                ->setHtmlId("form-out-recipient");
+                ->setHtmlId("form-out-recipient")
+                ->getControlPrototype()->class("input-medium");
         $form->addText("purpose", "Účel výplaty:", 20, 40)
                 ->addRule(Form::FILLED, 'Zadejte účel výplaty')
-                ->getControlPrototype()->placeholder("3 první položky");
+                ->getControlPrototype()->placeholder("3 první položky")->class("input-medium");
         $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-out-price")
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
-                ->getControlPrototype()->placeholder("např. 20+15*3");
+                ->getControlPrototype()->placeholder("např. 20+15*3")
+                ->class("input-medium");
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
         $form->addRadioList("category", "Typ: ", $categories['out'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
@@ -186,15 +188,19 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
     protected static function makeFormIn($thisP, $name) {
         $form = new AppForm($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
-                ->addRule(Form::FILLED, 'Zadejte datum');
+                ->addRule(Form::FILLED, 'Zadejte datum')
+                ->getControlPrototype()->class("input-medium");
         $form->addText("recipient", "Přijato od:", 20, 30)
-                ->setHtmlId("form-in-recipient");
+                ->setHtmlId("form-in-recipient")
+                ->getControlPrototype()->class("input-medium");
         $form->addText("purpose", "Účel příjmu:", 20, 40)
-                ->addRule(Form::FILLED, 'Zadejte účel přijmu');
+                ->addRule(Form::FILLED, 'Zadejte účel přijmu')
+                ->getControlPrototype()->class("input-medium");
         $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-in-price")
                 //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
-                ->getControlPrototype()->placeholder("např. 20+15*3");
+                ->getControlPrototype()->placeholder("např. 20+15*3")
+                ->class("input-medium");
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
         
         $form->addRadioList("category", "Typ: ", $categories['in'])

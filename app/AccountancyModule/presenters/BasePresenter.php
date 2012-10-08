@@ -24,7 +24,7 @@ class Accountancy_BasePresenter extends BasePresenter {
     protected $isEditable;
     
     /**
-     * pole dostupných událostí
+     * pole dostupných událostí s indexi podle SkautISu
      * @var array
      */
     protected $availableActions;
