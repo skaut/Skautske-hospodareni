@@ -14,8 +14,4 @@ nbproject/*
 /source/*
 /webtemp/
 adminer.php
-BP.tex
-/latex/BP*
-/latexOld/BP*
-!/latex/BP.tex
-!/latexOld/BP.tex
+htaccess

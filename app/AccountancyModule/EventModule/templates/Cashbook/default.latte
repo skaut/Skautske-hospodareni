@@ -5,21 +5,22 @@
 <div class="row-fluid">
     <div class="span3" n:if="$isEditable">
     {snippet tabs}
-        <div id="cashbook-tabs">
-            <ul>
-                <li><a href="#cashbook-tabs-vydej">Výdajový</a></li>
-                <li><a href="#cashbook-tabs-prijem">Příjmový</a></li>
-            </ul>
-            <div id="cashbook-tabs-vydej">
-		{control formOutAdd}
+        <ul class="nav nav-tabs" id="chitType">
+            <li class="active"><a data-toggle="tab" href="#vydajovy">Výdajový</a></li>
+            <li><a data-toggle="tab" href="#prijmovy">Příjmový</a></li>
+        </ul>
+
+        <div class="tab-content" id="chitTypeContent">
+            <div id="vydajovy" class="tab-pane fade active in">
+                {control formOutAdd}
             </div>
-            <div id="cashbook-tabs-prijem">
-		{control formInAdd}
+            <div id="prijmovy" class="tab-pane fade">
+                {control formInAdd}
             </div>
         </div>
     {/snippet}    
     </div>
-    
+
     <div class="span9">
         <div n:snippet="paragony" style="float: left;">
         {if $list}
