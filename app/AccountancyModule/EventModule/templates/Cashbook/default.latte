@@ -96,10 +96,11 @@
         var optionsAC = {
             source: text,
             delay: 0,
-            minLength: 2
+            minLength: 2,
+            items: 7
         };
-        $('#form-in-recipient').autocomplete(optionsAC);
-        $('#form-out-recipient').autocomplete(optionsAC);
+//        $('#form-in-recipient').typeahead(optionsAC);
+        $('#form-out-recipient').typeahead(optionsAC);
 
         //CALC
         var priceInputIn = $('#form-in-price');
