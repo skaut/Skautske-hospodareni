@@ -35,14 +35,15 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         $participants = $this->context->campService->participants->getAllWithDetails($this->aid);
         $unit = $this->context->unitService->getDetail($this->uid);
         $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
-        
+
         //setrizeni podle abecedy
         function cmpParticipants($a, $b) {
             return strcasecmp($a->Person, $b->Person);
         }
+
         usort($participants, "cmpParticipants");
         natcasesort($list);
-        
+
         $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
         $this->template->unit = $unit;
         $this->template->uchildrens = $this->context->unitService->getChild($unit->ID);
@@ -243,13 +244,15 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
             $this->redirect("Default:");
         }
         $values = $button->getForm()->getValues();
-        $data = array(
-            "actionId" => $this->aid,
-            "Days" => $values['days'],
-            "payment" => $values['payment'],
-            "repayment" => $values['repayment'],
-            "isAccount" => $values['isAccount'],
-        );
+        $data = array("actionId"=>$this->aid);
+        if ($values['isChange']['daysc'])
+            $data['days'] = $values['isChange']['days'];
+        if ($values['isChange']['paymentc'])
+            $data['payment'] = $values['isChange']['payment'];
+        if ($values['isChange']['repaymentc'])
+            $data['repayment'] = $values['isChange']['repayment'];
+        if ($values['isChange']['isAccountc'])
+            $data['isAccount'] = $values['isChange']['isAccount'];
         foreach ($values['ids'] as $id => $bool) {
             if ($bool)
                 $this->context->campService->participants->update($id, $data);

@@ -56,8 +56,8 @@
 
 
 
-        {snippet participants}
     <div class="span6">
+        {snippet participants}
 {form formMassParticipants}
         {* hromadné úpravy účastníků*}
         {* musí být dříve než mazací tlacítko, aby při stisknutí entru se vše nemazalo*}
@@ -156,10 +156,28 @@
             <p class="alert info">Nejsou vybáni žádní účastníci.</p>
             {/if}
         </div>
+            {/form}
+    <script type="text/javascript">
+$(document).ready(function() {
+
+    $("input[type=text][id^=frmformMassParticipants-isChange-]").change(function (){
+        $("#"+this.id+"c").attr('checked', true);
+    });
+    
+    //potencials
+    $(".allDependend").addClass("disabled").attr("disabled", "disabled");
+    onlyWithCheckbox("frmformMassAdd-all-", "allDependend");
+    
+    //participants
+    $(".massDependend").addClass("disabled").attr("disabled", "disabled");
+    onlyWithCheckbox("frmformMassParticipants-ids-", "massDependend");
+    
+});
+</script>
+    
+        {/snippet}
     </div>
 
-            {/form}
-        {/snippet}
 
 </div>
 
@@ -180,23 +198,3 @@
 </div>
 
 {/if}
-
-<script type="text/javascript">
-$(document).ready(function() {
-
-    $("input[type=text][id^=frmformMassParticipants-isChange-]").change(function (){
-        $("#"+this.id+"c").attr('checked', true);
-    });
-    
-    //potencials
-    $(".allDependend").addClass("disabled").attr("disabled", "disabled");
-    onlyWithCheckbox("frmformMassAdd-all-", "allDependend");
-    
-    //participants
-    $(".massDependend").addClass("disabled").attr("disabled", "disabled");
-    onlyWithCheckbox("frmformMassParticipants-ids-", "massDependend");
-    
-});
-
-</script>
-
