@@ -85,7 +85,7 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
         }
 
         $form->addSubmit('printSend', 'Vytisknout vybrané')
-                ->getControlPrototype()->setClass("btn btn-info btn-mini");
+                ->getControlPrototype()->setClass("btn btn-info btn-small");
         $form['printSend']->onClick[] = callback($this, 'massPrintSubmitted');
         $form->setDefaults(array('category' => 'un'));
         return $form;

@@ -112,7 +112,7 @@
         }
         //method onchange on form
          function priceControl(obj){
-            textPlace = obj.parent().prev().children().after('<span> </span>').next();
+            var textPlace = obj.parent().prev().children().after('<span> </span>').next();
             obj.change(
                 function () {
                     var val = this.value.trim(), endIndex, isError = false;
