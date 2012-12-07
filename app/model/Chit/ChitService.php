@@ -80,7 +80,13 @@ class ChitService extends MutableBaseService {
      * @return array
      */
     public function getIn($actionId, $list) {
-        return $this->table->getIn($actionId, (array) $list);
+        $ret = $this->table->getIn($actionId, (array) $list);
+        if ($ret[0] instanceof DibiRow && $ret[0]->type == "camp") {
+            $categories = $this->getCategoriesCampPairs($actionId);
+            foreach ($ret as $k=>$v)
+                $ret[$k]->ctype = array_key_exists($ret[$k]->category, $categories['in']) ? "in" : "out";
+        }
+        return $ret;
     }
 
     /**
