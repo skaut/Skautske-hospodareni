@@ -142,7 +142,7 @@ class EventService extends MutableBaseService {
         $ret = $this->skautIS->event->EventGeneralInsert(
                 array(
             "ID" => 1, //musi byt neco nastavene
-            "Location" => $location, //musi byt neco nastavene
+            "Location" => $location,
             "Note" => " ", //musi byt neco nastavene
             "ID_EventGeneralScope" => $scope,
             "ID_EventGeneralType" => $type,
