@@ -68,9 +68,9 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
             "fid" => $fid,
         ));
     }
-    
+
     public function actionEditFunction($aid, $fid) {
-        $this->template->setFile(dirname(__FILE__)."/../templates/Event/addFunction.latte");
+        $this->template->setFile(dirname(__FILE__) . "/../templates/Event/addFunction.latte");
         $func = $this->context->eventService->event->getFunctions($aid);
 //        dump($func);die();
         $form = $this['formAddFunction'];
@@ -80,14 +80,14 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
             "fid" => $fid,
         ));
     }
-    
+
     public function handleRemoveFunction($aid, $fid) {
         if (!array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions)) {
             $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
             $this->redirect("this");
         }
-        
-        if(!$this->context->eventService->event->setFunction($this->aid, NULL, $fid))
+
+        if (!$this->context->eventService->event->setFunction($this->aid, NULL, $fid))
             $this->flashMessage("Funkci se nepodařilo odebrat", "danger");
         $this->redirect("this");
     }
@@ -180,11 +180,12 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
         }
         $this->redirect("this");
     }
+
     function createComponentFormAddFunction($name) {
         $combo = $this->context->memberService->getCombobox(NULL, TRUE);
-        
+
         $form = new AppForm($this, $name);
-          $form->addSelect("person", NULL, $combo)
+        $form->addSelect("person", NULL, $combo)
                 ->setPrompt("Vyber")
                 ->getControlPrototype()->setClass("combobox");
         $form->addHidden("fid");
@@ -204,10 +205,10 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
         $values = $form->getValues();
 
         try {
-        $id = $this->context->eventService->event->setFunction($values['aid'], $values['person'], $values['fid']);
+            $id = $this->context->eventService->event->setFunction($values['aid'], $values['person'], $values['fid']);
         } catch (SkautIS_PermissionException $exc) {
             $this->flashMessage($exc->getMessage(), "danger");
-            $this->redirect("default", array("aid"=>$this->aid));
+            $this->redirect("default", array("aid" => $this->aid));
         } catch (SkautIS_Exception $e) {
             if (preg_match("/EventFunction_LeaderMustBeAdult/", $e->getMessage())) {//dospělost vedoucího akce
                 $this->flashMessage("Vedoucí akce musí být dosplělá osoba.", "danger");
@@ -216,17 +217,14 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
             } else {
                 throw $e;
             }
-            $this->redirect("Default", array("aid"=>$this->aid));
+            $this->redirect("Default", array("aid" => $this->aid));
         }
 
         if (!$id) {
             $this->flashMessage("Nepodařilo se upravit funkci", "danger");
         }
-        $this->redirect("default", array("aid"=>$this->aid));
+        $this->redirect("default", array("aid" => $this->aid));
     }
-    
-    
-    
 
 }
 

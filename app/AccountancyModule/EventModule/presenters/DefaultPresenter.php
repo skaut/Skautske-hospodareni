@@ -23,7 +23,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         //filtrovani zobrazených položek
         $year = isset($this->ses->year) ? $this->ses->year : date("Y");
         $state = isset($this->ses->state) ? $this->ses->state : NULL;
-        
+
         $list = $this->context->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
             $localAvaibleActions = $this->context->userService->actionVerify(self::STable, $value->ID);
@@ -87,7 +87,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
 
     function createComponentFormFilter($name) {
         $states = array_merge(array("all" => "Nezrušené"), $this->context->eventService->event->getStates());
-        $years = array("all"=>"Všechny");
+        $years = array("all" => "Všechny");
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
         }
@@ -112,6 +112,10 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
     function createComponentFormCreate($name) {
         $scopes = $this->context->eventService->event->getScopes();
         $types = $this->context->eventService->event->getTypes();
+        $tmpId = $this->context->skautIS->getUnitId();
+        $units = array($tmpId => $this->context->unitService->getDetail($tmpId)->SortName);
+        foreach ($this->context->unitService->getChild($tmpId) as $u)
+            $units[$u->ID] = "» ".$u->SortName;
 
         $form = new AppForm($this, $name);
         $form->addText("name", "Název akce")
@@ -121,6 +125,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         $form->addDatePicker("end", "Do")
                 ->addRule(Form::FILLED, "Musíte vyplnit konec akce");
         $form->addText("location", "Místo");
+        $form->addSelect("orgNum", "Pořádající jednotka", $units);
         $form->addSelect("scope", "Rozsah (+)", $scopes)
                 ->setDefaultValue("2");
         $form->addSelect("type", "Typ (+)", $types)
