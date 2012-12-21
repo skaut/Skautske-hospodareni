@@ -78,10 +78,10 @@ if (typeof jQuery != 'function') {
 
 jQuery(function($) {
 	// HTML 5 popstate event
-	$(window).bind('popstate', function(event) {
-		$.nette.href = null;
-		$.post(event.originalEvent.state.href, $.nette.success);
-	});
+//	$(window).bind('popstate', function(event) {
+//		$.nette.href = null;
+//		$.post(event.originalEvent.state.href, $.nette.success);
+//	});
 
 	$.ajaxSetup({
 		success: $.nette.success,
