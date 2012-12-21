@@ -10,8 +10,8 @@ class Accountancy_TestPresenter extends Accountancy_BasePresenter {
 
     protected function startup() {
         parent::startup();
-        if(!$this->context->parameters['skautisTestMode'])//funguje pouze v testovacím režimu
-            $this->redirect (":Default:");
+//        if(!$this->context->parameters['skautisTestMode'])//funguje pouze v testovacím režimu
+//            $this->redirect (":Default:");
 
         /**
          * @var SkautisService
