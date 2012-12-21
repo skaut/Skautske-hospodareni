@@ -125,7 +125,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         $form->addDatePicker("end", "Do")
                 ->addRule(Form::FILLED, "Musíte vyplnit konec akce");
         $form->addText("location", "Místo");
-        $form->addSelect("orgNum", "Pořádající jednotka", $units);
+        $form->addSelect("orgID", "Pořádající jednotka", $units);
         $form->addSelect("scope", "Rozsah (+)", $scopes)
                 ->setDefaultValue("2");
         $form->addSelect("type", "Typ (+)", $types)
@@ -143,7 +143,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         }
         $v = $form->getValues();
         $id = $this->context->eventService->event->create(
-                $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $unit = NULL, $v['scope'], $v['type']
+                $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $unit = $v->orgID, $v['scope'], $v['type']
         );
 
         if ($id) {
