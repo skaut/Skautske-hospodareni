@@ -13,7 +13,6 @@ abstract class BasePresenter extends Presenter {
 //        }
         
         RequestsPanel::register();
-
         $this->template->backlink = $this->getParameter("backlink");
 
         if (!function_exists("FormContainer_addDatePicker")) {
@@ -22,7 +21,7 @@ abstract class BasePresenter extends Presenter {
             }
             FormContainer::extensionMethod('Form::addDatePicker', 'FormContainer_addDatePicker');
         }
-        if ($this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku
+        if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku
             $this->context->authService->updateLogoutTime();
     }
     
