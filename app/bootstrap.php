@@ -29,6 +29,18 @@ $router[] = new Route('sign/<action>[/back-<backlink>]', array(
     "backlink" => NULL
 ));
 
+$router[] = new Route('prirucka/<action>', array(
+    "presenter" => "Tutorial",
+    "action" => array(
+        Route::VALUE => 'default',
+        Route::FILTER_TABLE => array(
+            // řetězec v URL => presenter
+            'vyprava' => 'event',
+            'tabor' => 'Camp',
+            'cestovni-prikaz' => 'Travel',
+        )),
+));
+
 $router[] = Accountancy_BasePresenter::createRoutes();
 $router[] = new SimpleRouter('Default:default');
 
