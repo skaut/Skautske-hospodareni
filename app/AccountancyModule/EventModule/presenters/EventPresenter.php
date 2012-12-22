@@ -101,6 +101,7 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
         $participants = $this->context->eventService->participants->getAll($aid);
         $chitsAll = $this->context->eventService->chits->getAll($aid);
 
+        $categories = array();
         //inicializuje pole s kategorií s částkami na 0
         foreach (ArrayHash::from($this->context->eventService->chits->getCategories($all = TRUE)) as $c) {
             $categories[$c->type][$c->short] = $c;
@@ -126,7 +127,7 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
     }
 
     function createComponentFormEdit($name) {
-        $combo = $this->context->memberService->getCombobox(NULL, TRUE);
+//        $combo = $this->context->memberService->getCombobox(NULL, TRUE);
         $scopes = $this->context->eventService->event->getScopes();
         $types = $this->context->eventService->event->getTypes();
 
