@@ -189,12 +189,14 @@ class EventService extends MutableBaseService {
             "EndDate" => $data['end'],
                 ), "eventGeneral");
 
-        $this->skautIS->event->EventGeneralUpdateFunction(array(
-            "ID" => $ID,
-            "ID_PersonLeader" => $data['leader'],
-            "ID_PersonAssistant" => $data['assistant'],
-            "ID_PersonEconomist" => $data['economist'],
-        ));
+
+//            $this->skautIS->event->EventGeneralUpdateFunction(array(
+//                "ID" => $ID,
+//                "ID_PersonLeader" => $data['leader'],
+//                "ID_PersonAssistant" => $data['assistant'],
+//                "ID_PersonEconomist" => $data['economist'],
+//            ));
+
 
         if (isset($ret->ID))
             return $ret->ID;

@@ -12,7 +12,7 @@ abstract class BasePresenter extends Presenter {
 //            $this->context->session->start();
 //        }
         
-//        RequestsPanel::register();
+        RequestsPanel::register();
 
         $this->template->backlink = $this->getParameter("backlink");
 
@@ -21,6 +21,16 @@ abstract class BasePresenter extends Presenter {
                 return $container[$name] = new DatePicker($label);
             }
             FormContainer::extensionMethod('Form::addDatePicker', 'FormContainer_addDatePicker');
+        }
+        if ($this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku
+            $this->context->authService->updateLogoutTime();
+    }
+    
+    protected function beforeRender() {
+        parent::beforeRender();
+        if($this->user->isLoggedIn()){
+            $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
+            $this->template->myRole = $this->context->userService->getRoleId();
         }
     }
 
