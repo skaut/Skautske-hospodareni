@@ -1,0 +1,124 @@
+{block title}Výprava - základní příručka vyúčtování{/block}
+
+{block #content}
+<div class="row-fluid tutorial">
+    <h1>Výprava</h1>
+    <p>
+        Po přečtení této příručky, budete schopni vytvořit akci, vyúčtovat ji a nakonec ji i uzavřít a vytisknout všechny potřebné dokumenty.
+    </p>
+    
+    <ul>
+        <li><a href="#senzam-akcí">1. Seznam akcí</a>
+        <ul>
+            <li><a href="#nova-akce">1.1. Založení nové akce</a></li>
+        </ul>
+        </li>
+        <li><a href="#zakladni-udaje">2. Základní údaje</a></li>
+        <li><a href="#seznam-ucastniku">3. Seznam účastníků</a></li>
+        <li><a href="#pokladni-kniha">4. Pokladní kniha</a></li>
+        <li><a href="#zaver">5. Závěr</a></li>
+    </ul>
+    
+    <h2 id="senzam-akcí">1. Seznam akcí</h2>
+    <div class="figure">
+        <img src="{$baseUri}/images/tutorial/event/seznam-akci.png" alt="seznam skautkých akcí"/><br />
+        <i>Obr. 1 - Seznam akcí</i>
+    </div>
+    <ol>
+        <li><a href="#nova-akce">Tlačítko pro založení nové akce</a></li>
+        <li>Možnosti filtrování zobrazených akcí podle stavu a roku.</li>
+        <li>Tlačítko pro smazání akce</li>
+        <li>Odkaz na editaci akce</li>
+        <li>Stav akce - vychází ze SkautISu a většinou je akce buď ve stavu <i>Rozpacováno</i> (lze upravovat) nebo <i>Uzavřeno</i> (nelze upravovat)</li>
+    </ol>
+    
+    <h3 id="nova-akce">1.1. Nová akce</h3>
+    <div class="figure">
+        <img src="{$baseUri}/images/tutorial/event/nova-akce.png" alt="založení nové skautksé akce"/><br />
+        <i>Obr. 1.1 - Nová akce</i>
+    </div>
+    <ol>
+        <li>Název akce</li>
+        <li>Od - datum začátku akce</li>
+        <li>Do - datum konce akce</li>
+        <li>Místo - místo konání akce</li>
+        <li>Pořádající jednotka danou akci</li>
+        <li>Rozsah akce (družinová, oddílová, krajská, ...)</li>
+        <li>Typ akce (schůzka, výprava, ...)</li>
+    </ol>
+    
+    <h2 id="zakladni-udaje">2. Základní údaje</h2>
+    <div class="figure">
+        <img src="{$baseUri}/images/tutorial/event/zakladni-udaje.png" alt="základní údaje skautské akce"/><br />
+        <i>Obr. 2. - Základní údaje</i>
+    </div>
+    <ol>
+        <li>Název akce</li>
+        <li>Menu vybrané akce</li>
+        <li>Tlačítka pro editaci a odstranění dané funkce</li>
+        <li>Vedoucí akce (povinný atribut) - dospělá osoba, registrovaná ve SkautIsu</li>
+        <li>Zástupce vedoucího akce - dospělá osoba, registrovaná ve SkautIsu</li>
+        <li>Hospodář akce - osoba registrovaná ve SkautISu</li>
+        <li>Tlačítko pro změnu základních údajů</li>
+        <li>Tlačítko pro uzavření hotové akce a tím zamezení její editaci, bez znovu otevření akce</li>
+        <li>Tlačítko generující záveřečnou zprávu, shrnující celou akci z pohledu hospodaření</li>
+    </ol>
+    
+    <h2 id="seznam-ucastniku">3. Seznam účastníků</h2>
+    <div class="figure">
+        <img src="{$baseUri}/images/tutorial/event/seznam-ucastniku.png" alt="seznam účastníků akce"/><br />
+        <i>Obr. 3. - Seznam účastníků</i>
+    </div>
+    <ol>
+        <li>Jednotka, ze které se zobrazují členové k přidání do seznamu účastníků</li>
+        <li>Zobrazovat i členy z podřízených jednotek?</li>
+        <li>Přidané níže zaškrnuté účastníky do seznamu napravo</li>
+        <li>Tlačítko pro založení nové osoby jako účastníka</li>
+        <li>Tlačítko, generující seznam účastníků</li>
+        <li>Generuje HPD <i>(Hromadný Příjmový Doklad)</i></li>
+        <li>Tlačítka pro hromadné úpravy a smazání níže zaškrtnutých účastníků</li>
+        <li>Přidá konkrétního účastníka do seznamu</li>
+        <li>Úpravy a smazání konkrétního účastníka</li>
+        <li>V závorce je uveden celkový počet účastníků</li>
+    </ol>
+    
+    <h2 id="pokladni-kniha">4. Pokladní kniha</h2>
+    <div class="figure">
+        <img src="{$baseUri}/images/tutorial/event/pokladni-kniha.png" alt="pokladni kniha"/><br />
+        <i>Obr. 4. - Pokladní kniha</i>
+    </div>
+    <ol>
+        <li>Přepínání formuláře mezi příjmovými a výdajovými doklady</li>
+        <li>Datum, kdy byl(y) paragon(y) zanesen(y) do pokladní knihy. Nemůže být dřívější než nejpozdější datum na paragonu.</li>
+        <li>Kdo peníze přijal - komu byl(y) paragon(y) proplacen(y).</li>
+        <li>Za co byly peníze utraceny? - liší se podle zvyklostí středisek. Např.: tři nejdražší položky</li>
+        <li>Celková částka - lze zadávat i ve tvaru vzorce s operacemi plus(+) a krát(*). Např.: 12 lístků za 34 Kč a jeden za 42, lze zadat jako: <i>12*34+42</i>. Odečítání a dělení není povoleno.</li>
+        <li>Kategorie výdaje/příjmu</li>
+        <li>Generuje pdf soubor s níže zaškrtnutými položkami</li>
+        <li>Generuje pokladní knihu</li>
+        <li>Tlačítka pro správu jednotlivých položek pokladní knihy</li>
+    </ol>
+    <p>
+        Ve výsledném vyúčtování nesmí nastat stav, kdy by se dostala pokladní kniha do záporných čísel, protože to není reálně možné a účetnictví je věrným a reálným obrazem skutečného stavu.
+        Pokud takový stav nastane, budete o něm informováni následujícím způsobem a nezapomeňte ho do konce vyúčtování odstranit.
+        <img src="{$baseUri}/images/tutorial/event/zaporny-stav.png" alt="ukázka záporného stavu" class="figure" /><br />
+        
+    </p>
+    
+    <h2 id="záver">5. Závěr</h2>
+    <p>
+        Pro vyučtování akce si vytiskněte následující dokumenty:
+    </p>
+    <ul>
+        <li><a href="#seznam-ucastniku">Účastníci</a> - Seznam účastníků</li>
+        <li><a href="#seznam-ucastniku">Účastníci</a> - HPD</li>
+        <li><a href="#pokladni-kniha">Pokladní kniha</a> - všechny položky</li>
+        <li><a href="#pokladni-kniha">Pokladní kniha</a> - Exportovat pokladní knihu</li>
+        <li><a href="#zakladni-udaje">Základní údaje</a> - Závěrečná zpráva</li>
+    </ul> 
+    <p>
+        Po té doporučuji akci uzavřít na stráce <a href="#zakladni-udaje">základní údaje</a>, aby akci již nikdo nemohl měnit bez jejího opštovného otevření.
+    </p>
+    
+    
+</div>

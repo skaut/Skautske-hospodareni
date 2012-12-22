@@ -139,3 +139,19 @@ input[type="checkbox"], input[type="radio"] {
 }
 td.r {text-align: right;}
 .b {font-weight: bold;}
+
+.tutorial .figure {
+    padding: 5px 0;
+    border: 2px dotted #ccc;
+    float: left;
+    text-align: center;
+    margin-bottom: 10px; 
+}
+.tutorial ol, .tutorial h2 {
+    clear: left;
+}
+
+.tutorial h2, .tutorial h3 {
+    padding-top: 45px;
+}
+

@@ -51,25 +51,24 @@
                         <span class="icon-bar"></span>
                     </a>
                     <a class="brand" n:href=":Default:">Účetnictví</a>
-                    <div class="nav-collapse" n:inner-if="$user->isLoggedIn()">
+                    <div class="nav-collapse">
                         <ul class="nav">
+                            <li {ifCurrent :Tutorial:}class='active'{/ifCurrent}><a n:href=":Tutorial:">Příručka</a></li>
+                            {if $user->isLoggedIn()}
                             <li {ifCurrent :Accountancy:Event:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
                             <li {ifCurrent :Accountancy:Camp:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory</a></li>
                             <li {ifCurrent :Accountancy:Travel:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Travel:Default:">Cestovní příkazy</a></li>
+                            {/if}
                         </ul>
-                        <p class="navbar-text pull-right">
+                        <p class="navbar-text pull-right" n:inner-if="$user->isLoggedIn()">
                             Přihlášen jako {$user->getIdentity()->DisplayName} <a n:href=":Auth:logoutSis">Odhlásit se</a>
                             Role: <select onchange="changeRole(this.value)" class="roleSelect">
                                 <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->DisplayName}</option>
                             </select>
-                        </p>
-                        {else }
-<!--                        <ul class="nav">
-                            <li><a href="#">O projektu</a></li>
-                        </ul>-->
-                        <p class="navbar-text pull-right">
+                        {else}
                             <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL">Přihlásit se</a>
                         </p>
+
                       </div><!--/.nav-collapse -->
                 </div>
             </div>
