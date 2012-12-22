@@ -6,5 +6,9 @@ class DefaultPresenter extends BasePresenter {
 //        if($this->user->isLoggedIn())
 //            $this->redirect(":Accountancy:Default:");
     }
+    
+    public function renderDefault(){
+        
+    }
 
 }

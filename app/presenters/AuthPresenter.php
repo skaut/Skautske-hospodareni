@@ -76,8 +76,6 @@ class AuthPresenter extends BasePresenter {
         $this->redirectUrl($this->context->authService->getLogoutUrl());
     }
     
-    
-    
     function actionSkautisLogout() {
         $this->user->logout(TRUE);
         if ($this->request->post['skautIS_Logout']) {
