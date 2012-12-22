@@ -40,15 +40,10 @@ class Accountancy_BasePresenter extends BasePresenter {
                 $this->redirect(":Default:", array("backlink" => $this->backlink));
             }
         }
-        
-        if ($this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku
-            $this->context->authService->updateLogoutTime();
     }
 
     function beforeRender() {
         parent::beforeRender();
-        $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
-        $this->template->myRole = $this->context->userService->getRoleId();
         $this->template->registerHelperLoader("AccountancyHelpers::loader");
     }
     
