@@ -55,8 +55,8 @@ $container->router = $router;
 
 // Configure and run the application!
 $application = $container->application;
-//$application->catchExceptions = $configurator->isProductionMode();
-$application->catchExceptions = TRUE;
+$application->catchExceptions = $configurator->isProductionMode();
+//$application->catchExceptions = TRUE;
 $application->errorPresenter = 'Error';
  if (!Environment::isConsole())
    $application->run();
