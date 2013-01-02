@@ -186,12 +186,12 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     }
 
     function formAddTravelSubmitted(AppForm $form) {
+        $v = $form->getValues();
         if(!$this->isEditable($v->command_id)){
             $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
             $this->redirect("this");
         }
             
-        $v = $form->getValues();
         $commandId = $v['command_id'];
         $command = $this->context->travelService->getCommand($commandId);
         if (!$this->context->travelService->isMyContract($command->contract_id, $this->unit)) {
