@@ -124,7 +124,7 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
 
         $this->context->travelService->deleteCommand($commandId);
         $this->flashMessage("Cestovní příkaz byl smazán.");
-        $this->redirect("this");
+        $this->redirect("default");
     }
 
     protected function makeCommandForm($name) {

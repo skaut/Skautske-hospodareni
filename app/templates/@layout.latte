@@ -57,7 +57,7 @@
                             {if $user->isLoggedIn()}
                             <li {ifCurrent :Accountancy:Event:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
                             <li {ifCurrent :Accountancy:Camp:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory</a></li>
-                            <li {ifCurrent :Accountancy:Travel:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Travel:Default:">Cestovní příkazy</a></li>
+                            <li><a n:href=":Accountancy:Travel:Default:">Cestovní příkazy</a></li>
                             {/if}
                         </ul>
                         <p class="navbar-text pull-right" n:inner-if="$user->isLoggedIn()">

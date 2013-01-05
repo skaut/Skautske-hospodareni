@@ -1,9 +1,10 @@
 {block #content}
+
+<h2>Smlouvy o proplácení cestovních náhrad</h2>
 {include ../menu.latte}
 
 <div class="row-fluid">
     <div class="span7">
-        <h2>Smlouvy o proplácení cestovních náhrad</h2>
         <div class="well well-small">
             <a href="#createContract" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou smlouvu</a>
         </div>
@@ -17,7 +18,7 @@
             </tr>
             <tr n:foreach="$list as $c">
                 <td>
-                    <a n:href="print $c->id" class="btn btn-primary btn-mini"><i class="icon icon-print icon-white"></i></a>
+                    <a n:href="print $c->id" class="btn btn-info btn-mini"><i class="icon icon-print icon-white"></i></a>
                     <a n:href="detail $c->id" class="btn btn-primary btn-mini"><i class="icon icon-zoom-in icon-white"></i> Detail</a>
                 </td>
                 <td>{$c->unit_person}</td>
