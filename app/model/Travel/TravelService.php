@@ -25,6 +25,12 @@ class TravelService extends BaseService {
     public function isCommandAccessible($commandId, $unit) {
         return ($this->isContractAccessible($this->getCommand($commandId)->contract_id, $unit)) ? TRUE : FALSE;
     }
+    
+    public function isVehicleAccessible($vehicleId, $unit) {
+        return $this->getVehicle($vehicleId, true)->unit_id == $unit->ID ? TRUE : FALSE;
+    }
+    
+    
 
     /**     VEHICLES    */
 
@@ -35,7 +41,12 @@ class TravelService extends BaseService {
      * @return type
      */
     public function getVehicle($vehicleId, $withDeleted = false) {
-        return $this->tableVehicle->get($vehicleId, $withDeleted);
+        $cacheId = __FUNCTION__ . "_" . $vehicleId."_" . (int)$withDeleted;
+        if (!($res = $this->load($cacheId))) {
+            $res = $this->tableVehicle->get($vehicleId, $withDeleted);
+            $this->save($cacheId, $res);
+        }
+        return $res;
     }
 
     public function getVehiclesPairs($unitId) {
@@ -88,8 +99,9 @@ class TravelService extends BaseService {
     public function getAllContractsPairs($unitId) {
         $data = $this->getAllContracts($unitId);
         $res = array();
+        
         foreach ($data as $i) {
-            $res[$i->id] = $i->unit_person . " <=> " . $i->driver_name;
+            $res[$i->id] = $i->unit_person . " <=> " . $i->driver_name ." (platná do " . $i->end->format("j.n.Y").")";
         }
         return $res;
     }

@@ -16,16 +16,29 @@ class Accountancy_Travel_VehiclePresenter extends Accountancy_Travel_BasePresent
 //        }
     }
 
+    protected function isVehicleAccessible($vehicleId) {
+        return $this->context->travelService->isVehicleAccessible($vehicleId, $this->unit);
+    }
+
     public function renderDefault() {
         $this->template->list = $this->context->travelService->getAllVehicles($this->unit->ID);
     }
 
-    public function renderDetail($vehicleId) {
-        $this->template->vehicle = $contract = $this->context->travelService->getVehicle($vehicleId, true);
-        $this->template->commands = $this->context->travelService->getAllCommandsByVehicle($this->unit->ID, $vehicleId);
+    public function renderDetail($id) {
+        if (!$this->isVehicleAccessible($id)) {
+            $this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
+            $this->redirect("default");
+        }
+
+        $this->template->vehicle = $contract = $this->context->travelService->getVehicle($id, true);
+        $this->template->commands = $this->context->travelService->getAllCommandsByVehicle($this->unit->ID, $id);
     }
 
     public function handleRemove($vehicleId) {
+        if (!$this->isVehicleAccessible($vehicleId)) {
+            $this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
+            $this->redirect("default");
+        }
         $this->context->travelService->removeVehicle($vehicleId);
         $this->flashMessage("Vozidlo bylo odebráno.");
         $this->redirect("this");
@@ -53,10 +66,8 @@ class Accountancy_Travel_VehiclePresenter extends Accountancy_Travel_BasePresent
     function formCreateVehicleSubmitted(AppForm $form) {
         $v = $form->getValues();
         $v['unit_id'] = $this->unit->ID;
-        if ($this->context->travelService->addVehicle($v, $this->unit))
-            $this->flashMessage("Záznam o vozidle byl založen.");
-        else
-            $this->flashMessage("Záznam o vozidle se nepodařilo založit.", "danger");
+        $this->context->travelService->addVehicle($v);
+        $this->flashMessage("Záznam o vozidle byl založen.");
         $this->redirect("this");
     }
 

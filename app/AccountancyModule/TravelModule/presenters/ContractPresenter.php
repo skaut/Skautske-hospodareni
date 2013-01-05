@@ -8,20 +8,28 @@ class Accountancy_Travel_ContractPresenter extends Accountancy_Travel_BasePresen
     
     function startup() {
         parent::startup();
-        $contractId = $this->getParameter("contractId", NULL);
-        $this->template->contract = $contract = $this->context->travelService->getContract($contractId);
-        $this->template->isEditable = $this->isEditable = ($contractId === NULL || $this->unit->ID == $contract->unit_id) ? true : false;
-        if (!$this->isEditable) {
-            $this->flashMessage("Neoprávněný přístup k cestovní smlouvě.", "danger");
-            $this->redirect("Default:");
-        }
+//        $contractId = $this->getParameter("contractId", NULL);
+//        $this->template->contract = $contract = $this->context->travelService->getContract($contractId);
+//        $this->template->isEditable = $this->isEditable = ($contractId === NULL || $this->unit->ID == $contract->unit_id) ? true : false;
+//        if (!$this->isEditable) {
+//            $this->flashMessage("Neoprávněný přístup k cestovní smlouvě.", "danger");
+//            $this->redirect("Default:");
+//        }
+    }
+    
+    protected function isContractAccessible($contractId) {
+        return $this->context->travelService->isContractAccessible($contractId, $this->unit);
     }
 
     public function renderDefault() {
         $this->template->list = $this->context->travelService->getAllContracts($this->unit->ID);
     }
-    public function renderDetail($contractId) {
-        $this->template->contract = $contract = $this->context->travelService->getContract($contractId);
+    public function renderDetail($id) {
+        if(!$this->isContractAccessible($id)){
+            $this->flashMessage("Nemáte oprávnění k cestovnímu příkazu.", "danger");
+            $this->redirect("default");
+        }
+        $this->template->contract = $contract = $this->context->travelService->getContract($id);
         $this->template->commands = $this->context->travelService->getAllCommandsByContract($this->unit->ID, $contract->id);
     }
 
@@ -30,7 +38,7 @@ class Accountancy_Travel_ContractPresenter extends Accountancy_Travel_BasePresen
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/ex.contract.latte');
         $template->contract = $contract = $this->context->travelService->getContract($contractId);
         $template->unit = $this->context->unitService->getDetail($contract->unit_id);
-        $this->context->unitService->makePdf($template, "Smlouva-o-proplaceni-cestovnich-nazhrad.pdf");
+        $this->context->unitService->makePdf($template, "Smlouva-o-proplaceni-cestovnich-nahrad.pdf");
     }
 
     /**
