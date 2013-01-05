@@ -289,7 +289,7 @@ class EventService extends MutableBaseService {
      * @param ID_|stdClass $arg - příjmá bud ID nebo jiz akci samotnou
      * @return bool
      */
-    public function isEditable($arg) {
+    public function isCommandEditable($arg) {
         if (!$arg instanceof stdClass) {
             try {
                 $arg = $this->get($arg);

@@ -6,8 +6,8 @@
 class CommandTable extends BaseTable {
 
     /**
-     * vrací konkretní paragon
-     * @param type $commandId
+     * vrací konkretní příkaz
+     * @param type $commandId - id příkazu
      * @return DibiRow 
      */
     public function get($commandId) {
