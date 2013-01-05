@@ -18,12 +18,16 @@ class TravelService extends BaseService {
         $this->tableVehicle = new VehicleTable();
     }
 
-    public function isMyContract($contractId, $unit) {
+    public function isContractAccessible($contractId, $unit) {
         return $this->getContract($contractId)->unit_id == $unit->ID ? TRUE : FALSE;
+    }
+    
+    public function isCommandAccessible($commandId, $unit) {
+        return ($this->isContractAccessible($this->getCommand($commandId)->contract_id, $unit)) ? TRUE : FALSE;
     }
 
     /**     VEHICLES    */
-    
+
     /**
      * vraci detail daného vozidla
      * @param type $vehicleId - ID vozidla
@@ -69,7 +73,12 @@ class TravelService extends BaseService {
 
     /**     CONTRACTS    */
     public function getContract($contractId) {
-        return $this->tableContract->get($contractId);
+        $cacheId = __FUNCTION__ . "_" . $contractId;
+        if (!($res = $this->load($cacheId))) {
+            $res = $this->tableContract->get($contractId);
+            $this->save($cacheId, $res);
+        }
+        return $res;
     }
 
     public function getAllContracts($unitId) {
@@ -93,17 +102,20 @@ class TravelService extends BaseService {
 
     /**     COMMANDS    */
     public function getCommand($commandId) {
-        return $this->table->get($commandId);
+        $cacheId = __FUNCTION__ . "_" . $commandId;
+        if (!($res = $this->load($cacheId))) {
+            $res = $this->table->get($commandId);
+            $this->save($cacheId, $res);
+        }
+        return $res;
     }
 
-    public function addCommand($v, $unit) {
-        if (!$this->isMyContract($v['contract_id'], $unit))
-            return false; //neoprávěný přístup
-        return $this->table->add($v);
+    public function addCommand($cmd) {
+        return $this->table->add($cmd);
     }
 
     public function updateCommand($v, $unit, $id) {
-        if (!$this->isMyContract($v['contract_id'], $unit))
+        if (!$this->isContractAccessible($v['contract_id'], $unit))
             return false; //neoprávěný přístup
         return $this->table->update($v, $id);
     }

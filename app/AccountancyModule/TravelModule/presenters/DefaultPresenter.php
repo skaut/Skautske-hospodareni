@@ -8,11 +8,18 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     function startup() {
         parent::startup();
     }
-    
-    protected function isEditable($id){
+
+    protected function isCommandAccessible($commandId) {
+        return $this->context->travelService->isCommandAccessible($commandId, $this->unit);
+    }
+
+    protected function isContractAccessible($contractId) {
+        return $this->context->travelService->isContractAccessible($contractId, $this->unit);
+    }
+
+    protected function isCommandEditable($id) {
         $this->template->command = $command = $this->context->travelService->getCommand($id);
-        $this->template->contract = $contract = $this->context->travelService->getContract($command->contract_id);
-        return ($this->unit->ID == $contract->unit_id && $command->closed == NULL) ? true : false;
+        return ($this->isCommandAccessible($id) && $command->closed == NULL) ? true : false;
     }
 
     public function renderDefault() {
@@ -23,6 +30,10 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         if ($id == NULL) {
             $this->redirect("default");
         }
+        if (!$this->isCommandAccessible($id)) {
+            $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
+            $this->redirect("default");
+        }
         $this->template->command = $command = $this->context->travelService->getCommand($id);
         $this->template->contract = $contract = $this->context->travelService->getContract($command->contract_id);
         $this->template->isEditable = $this->isEditable = ($this->unit->ID == $contract->unit_id && $command->closed == NULL) ? true : false;
@@ -31,6 +42,14 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     }
 
     function renderEditCommand($commandId) {
+        if (!$this->isCommandAccessible($commandId)) {
+            $this->flashMessage("Nemáte oprávnění upravovat záznam!", "danger");
+            $this->redirect("default");
+        }
+        if (!$this->isCommandEditable($commandId)) {
+            $this->flashMessage("Záznam nelze upravovat", "warning");
+            $this->redirect("default");
+        }
         $defaults = $this->context->travelService->getCommand($commandId);
         $defaults['id'] = $commandId;
         $form = $this['formEditCommand'];
@@ -39,6 +58,10 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     }
 
     public function actionPrint($commandId) {
+        if (!$this->isCommandAccessible($commandId)) {
+            $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
+            $this->redirect("default");
+        }
         $template = $this->template;
         $template->registerHelperLoader("AccountancyHelpers::loader");
         $template->setFile(dirname(__FILE__) . '/../templates/Default/ex.command.latte');
@@ -55,8 +78,7 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     }
 
     public function handleCloseCommand($commandId) {
-        $command = $this->context->travelService->getCommand($commandId);
-        if (!$this->context->travelService->isMyContract($command->contract_id, $this->unit)) {
+        if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo uzavřít cestovní příkaz.", "danger");
             $this->redirect("default");
         }
@@ -67,8 +89,7 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     }
 
     public function handleOpenCommand($commandId) {
-        $command = $this->context->travelService->getCommand($commandId);
-        if (!$this->context->travelService->isMyContract($command->contract_id, $this->unit)) {
+        if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo otevřít cestovní příkaz.", "danger");
             $this->redirect("default");
         }
@@ -81,6 +102,10 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     public function handleRemoveTravel($travelId) {
         $travel = $this->context->travelService->getTravel($travelId);
         $command = $this->context->travelService->getCommand($travel->command_id);
+        if (!$this->isCommandEditable($command->id)) {
+            $this->flashMessage("Nemáte právo upravovat záznam.", "danger");
+            $this->redirect("default");
+        }
         $contract = $this->context->travelService->getContract($command->contract_id);
         if ($this->unit->ID == $contract->unit_id && $command->closed == NULL) {
             $this->context->travelService->deleteTravel($travelId);
@@ -92,15 +117,13 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     }
 
     public function handleRemoveCommand($commandId) {
-        $command = $this->context->travelService->getCommand($commandId);
-        $contract = $this->context->travelService->getContract($command->contract_id);
-
-        if ($this->unit->ID == $contract->unit_id) {
-            $this->context->travelService->deleteCommand($commandId);
-            $this->flashMessage("Cestovní příkaz byl smazán.");
-        } else {
-            $this->flashMessage("Nemáte oprávnění smazat cestovní příkaz.", "danger");
+        if (!$this->isCommandAccessible($commandId)) {
+            $this->flashMessage("Nemáte právo upravovat záznam.", "danger");
+            $this->redirect("default");
         }
+
+        $this->context->travelService->deleteCommand($commandId);
+        $this->flashMessage("Cestovní příkaz byl smazán.");
         $this->redirect("this");
     }
 
@@ -138,11 +161,13 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
 
     function formCreateCommandSubmitted(AppForm $form) {
         $v = $form->getValues();
+        if (!$this->isContractAccessible($v['contract_id'])) {
+            $this->flashMessage("Nemáte právo založit cestovní příkaz.", "danger");
+            $this->redirect("default");
+        }
 //        $v['state'] = "open";
-        if ($this->context->travelService->addCommand($v, $this->unit))
-            $this->flashMessage("Cestovní příkaz byl založen.");
-        else
-            $this->flashMessage("Cestovní příkaz se nepodařilo založit.", "danger");
+        $this->context->travelService->addCommand($v);
+        $this->flashMessage("Cestovní příkaz byl založen.");
         $this->redirect("this");
     }
 
@@ -158,6 +183,12 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         $v = $form->getValues();
         $id = $v['id'];
         unset($v['id']);
+        
+        if (!$this->isCommandEditable($id)) {
+            $this->flashMessage("Nemáte právo upravovat cestovní příkaz.", "danger");
+            $this->redirect("default");
+        }
+
         if ($this->context->travelService->updateCommand($v, $this->unit, $id))
             $this->flashMessage("Cestovní příkaz byl upraven.");
         else
@@ -189,17 +220,12 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
 
     function formAddTravelSubmitted(AppForm $form) {
         $v = $form->getValues();
-        if(!$this->isEditable($v->command_id)){
-            $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
-            $this->redirect("this");
-        }
-            
         $commandId = $v['command_id'];
-        $command = $this->context->travelService->getCommand($commandId);
-        if (!$this->context->travelService->isMyContract($command->contract_id, $this->unit)) {
-            $this->flashMessage("Nemáte právo přidat cestu k cestovnímu příkazu.", "danger");
-            $this->redirect("this");
+        if (!$this->isCommandEditable($commandId)) {
+            $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
+            $this->redirect("default");
         }
+
         $this->context->travelService->addTravel($v);
         $this->flashMessage("Cesta byla přidána.");
         $this->redirect("this");

@@ -15,7 +15,7 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
 
     function renderDefault($aid) {
         $this->template->isInMinus = $this->context->eventService->chits->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->isEditable = $this->context->eventService->event->isEditable($this->aid);
+        $this->template->isEditable = $this->context->eventService->event->isCommandEditable($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->eventService->chits->getAll($aid);
     }

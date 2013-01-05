@@ -30,7 +30,7 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
             ));
         }
         $this->template->funkce = $func;
-        $this->template->isEditable = $this->context->eventService->event->isEditable($this->event);
+        $this->template->isEditable = $this->context->eventService->event->isCommandEditable($this->event);
         $this->template->accessEditBase = $accessEditBase;
         $this->template->accessCloseEvent = array_key_exists("EV_EventGeneral_UPDATE_Close", $this->availableActions);
         $this->template->accessOpenEvent = array_key_exists("EV_EventGeneral_UPDATE_Open", $this->availableActions);
