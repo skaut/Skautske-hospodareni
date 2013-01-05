@@ -11,5 +11,7 @@ define('LIBS_DIR', WWW_DIR . '/libs');
 
 define('TEMP_DIR', APP_DIR . '/temp');
 
+ini_set('memory_limit', '64M');
+
 // load bootstrap file
 require APP_DIR . '/bootstrap.php';
