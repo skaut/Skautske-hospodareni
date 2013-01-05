@@ -6,7 +6,7 @@
             <a href="#createNew" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</a>
         </p>
 {dump $list}
-
+        
     {snippet events}
         {form formFilter class=>"ajax filter"}
             {label year /}{input year onchange=>"changeYear(this.value)"}

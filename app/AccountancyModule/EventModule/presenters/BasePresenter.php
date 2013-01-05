@@ -47,7 +47,7 @@ class Accountancy_Event_BasePresenter extends Accountancy_BasePresenter {
     static function createRoutes($prefix = "") {
         $router = new RouteList("Event");
         
-        $prefix .= "vypravy/";
+        $prefix .= "akce/";
 
         $router[] = new Route($prefix . '<aid [0-9]+>/<presenter>/[<action>/]', array(
                     'presenter' => array(

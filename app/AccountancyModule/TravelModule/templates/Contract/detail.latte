@@ -1,10 +1,10 @@
 {block #content}
+<h2>Smlouva o proplácení cestovních náhrad</h2>
 {include ../menu.latte}
 
-<h2>Smlouva o proplácení cestovních náhrad</h2>
 <div class="row-fluid">
     <div class="span6">
-        <a n:href="print $contract->id" class="btn btn-primary btn-small"><i class="icon-print icon-white"></i> Vytisknout</a>
+        <a n:href="print $contract->id" class="btn btn-info btn-small"><i class="icon-print icon-white"></i> Vytisknout</a>
         <br /><br />
         <table class="table table-bordered table-striped">
             <tr>
@@ -16,7 +16,7 @@
                 <td>{$contract->driver_name}</td>
             </tr>
             <tr>
-                <th>Začátek platnosti:</th>
+                <th>Začátek platnosti</th>
                 <td>{$contract->start|date:"j. n. Y"}</td>
             </tr>
             <tr>
@@ -26,7 +26,7 @@
         </table>
         
         
-        <h2>Seznam navázaných cestovních příkazů</h2>
+        <h2>Přidružené cestovní příkazy</h2>
         {if !empty($commands)}
         <table class="table table-bordered table-striped">
             <tr>

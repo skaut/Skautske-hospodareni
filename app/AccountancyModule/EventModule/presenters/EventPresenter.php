@@ -7,8 +7,12 @@
 class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
 
     public function renderDefault($aid) {
+        if($aid == NULL){
+            $this->redirect("Default:");
+        }
         //nastavení dat do formuláře pro editaci
         $func = false;
+        
         if (array_key_exists("EV_EventFunction_ALL_EventGeneral", $this->availableActions))
             $func = $this->context->eventService->event->getFunctions($aid);
 

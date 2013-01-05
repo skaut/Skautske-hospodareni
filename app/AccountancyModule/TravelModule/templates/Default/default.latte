@@ -1,16 +1,16 @@
 {block #content}
+    <h2>Cestovní příkazy jednotky {$unit->DisplayName}</h2>
 {include ../menu.latte}
 
-<h2>Cestovní příkazy jednotky {$unit->DisplayName}</h2>
 <div class="row-fluid">
     <div class="span9">
         <div class="well well-small">
             <a href="#createCommand" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit cestovní příkaz</a>
         </div>
-        
+
         <table n:if="!empty($list)" class="table table-bordered table-striped table-condensed">
             <tr>
-                <th style="width: 190px;">&nbsp;</th>
+                <th style="width: 60px;">&nbsp;</th>
                 <th>Řidič</th>
                 <th>Účel cesty</th>
                 <th>Vozidlo</th>
@@ -19,10 +19,10 @@
             </tr>
             <tr n:foreach="$list as $item">
                 <td style="text-align: right">
+                    {*}<a n:href="editCommand $item->id"  n:if="$item->closed == NULL" title="Upravit" class="fancybox fancybox.ajax btn btn-mini btn-info"><i class="icon icon-white icon-edit"></i></a>
                     <a n:href="removeCommand! $item->id" n:if="$item->closed == NULL" title="Smazat" class="btn btn-mini btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="icon icon-white icon-remove"></i></a>
-                    <a n:href="editCommand $item->id"  n:if="$item->closed == NULL" title="Upravit" class="fancybox fancybox.ajax btn btn-mini btn-info"><i class="icon icon-white icon-edit"></i></a>
-                    <a n:href="Contract:detail $item->contract_id" class="btn btn-mini btn-info">Smlouva</a>
-                    <a n:href="detail $item->id" class="btn btn-mini btn-info"><i class="icon icon-white icon-zoom-in"></i> Detail</a>
+                    <a n:href="Contract:detail $item->contract_id" class="btn btn-mini btn-info">Smlouva</a>{*}
+                    <a n:href="detail $item->id" class="btn btn-mini btn-primary"><i class="icon icon-white icon-zoom-in"></i> Detail</a>
                 </td>
                 <td>{$item->driver_name}</td>
                 <td>{$item->purpose}</td>

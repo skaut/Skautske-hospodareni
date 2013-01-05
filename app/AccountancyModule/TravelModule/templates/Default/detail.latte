@@ -1,74 +1,80 @@
 {block #content}
+<h2>Cestovní příkaz</h2>
 {include ../menu.latte}
 
-<h2>Cestovní příkaz</h2>
 <div class="row-fluid">
     <div class="span8">
         <div class="well well-small">
             <a n:href="editCommand $command->id" n:if="$isEditable" class="fancybox fancybox.ajax btn btn-small btn-info"><i class="icon icon-white icon-edit"></i> Upravit</a>
+            <a n:href="removeCommand! $command->id" n:if="$command->closed == NULL" title="Smazat" class="btn btn-small btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="icon icon-white icon-remove"></i> Smazat</a>
             <a n:href="closeCommand! $command->id" n:if="$isEditable" class="btn btn-small btn-success" onclick="return confirm('Opravdu chcete nenávratně uzavřít cestovní příaz?')"><i class="icon icon-white icon-folder-close"></i> Uzavřít</a>
             <a n:href="Contract:detail $contract->id" class="btn btn-small btn-info"><i class="icon icon-white icon-zoom-in"></i> Smlouva</a>
             <a n:href="print $command->id" class="btn btn-small btn-info"><i class="icon icon-white icon-print"></i> Vytisknout cestovní příkaz</a>
         </div>
-        <h3>Řidič</h3>
-        Jméno: {$contract->driver_name}<br />
-        Bydliště: {$contract->driver_address}
-        <h3>Vozidlo</h3>
+        <div class="span3">
+            <h3>Vozidlo</h3>
         {dump $command}
-        Typ a SPZ: <a n:href="Vehicle:detail $command->vehicle_id">{$command->vehicle_type} ({$command->vehicle_spz})</a><br />
-        &#0216; spotřeba dle t.p.: {$command->vehicle_consumption} l/100 km<br />
-        Cena paliva: {$command->fuel_price|price} l/Kč<br />
-        Opotřebení: {$command->amortization} Kč/km<br />
-        Sazba náhrady: <b>{= $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}</b> Kč/km<br />
+            Typ a SPZ: <a n:href="Vehicle:detail $command->vehicle_id">{$command->vehicle_type} ({$command->vehicle_spz})</a><br />
+            &#0216; spotřeba dle t.p.: {$command->vehicle_consumption} l/100 km<br />
+            Cena paliva: {$command->fuel_price|price} l/Kč<br />
+            Opotřebení: {$command->amortization} Kč/km<br />
+            Sazba náhrady: <b>{= $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}</b> Kč/km<br />
         {var $sum = 0}
         {if $command->note != ""}<h3>Poznámka</h3>{$command->note}{/if}
-        <h3>Provedené cesty</h3>
-
+        </div>
+        <div class="span3">
+            <h3>Řidič</h3>
+            Jméno: {$contract->driver_name}<br />
+            Bydliště: {$contract->driver_address}
+        </div>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span8">
+    
+    <h3>Provedené cesty</h3>
 
         {form formAddTravel}
-        <table class="table table-bordered table-striped table-condensed">
-            <tr>
-                <th n:if="$isEditable" style="width: 32px;">&nbsp;</th>
-                <th>Datum</th>
-                <th>Z</th>
-                <th>Do</th>
-                <th>km</th>
-                <th>Kč</th>
-            </tr>
-            <tr n:if="$form->hasErrors()" colspan="6">
-                <ul>
-                    <li n:foreach="$form->errors as $error">{$error}</li>
-                </ul>
-            </tr>
-            <tr n:if="$isEditable">
-                <th n:if="$isEditable">&nbsp;</th>
-                <th>{input start_date}</th>
-                <th>{input start_place}</th>
-                <th>{input end_place}</th>
-                <th>{input distance}</th>
-                <th>{input send}</th>
+<table class="table table-bordered table-striped table-condensed">
+    <tr>
+        <th n:if="$isEditable" style="width: 32px;">&nbsp;</th>
+        <th>Datum</th>
+        <th>Z</th>
+        <th>Do</th>
+        <th>km</th>
+        <th>Kč</th>
+    </tr>
+    <tr n:if="$form->hasErrors()" colspan="6">
+    <ul>
+        <li n:foreach="$form->errors as $error">{$error}</li>
+    </ul>
+    </tr>
+    <tr n:if="$isEditable">
+        <th n:if="$isEditable">&nbsp;</th>
+        <th>{input start_date}</th>
+        <th>{input start_place}</th>
+        <th>{input end_place}</th>
+        <th>{input distance}</th>
+        <th>{input send}</th>
 
-            </tr>
+    </tr>
             {if !empty($travels)}
-            <tr n:foreach="$travels as $t">
-                <td n:if="$isEditable"><a n:href="removeTravel! $t->id" class="btn btn-mini btn-danger" onclick="return confirm('Oprazvdu chcete smazat cestu?')"><i class="icon icon-white icon-remove"></i></a></td>
-                <td>{$t->start_date|date:"j. n. Y"}</td>
-                <td>{$t->start_place}</td>
-                <td>{$t->end_place}</td>
-                <td>{$t->distance}</td>
-                <td>{$sazba * $t->distance|price} {? $sum += $sazba * $t->distance}</td>
-            </tr>
-            <tr>
-                <th n:if="$isEditable">&nbsp;</th>
-                <th colspan="4" style="text-align: right;">Celkem: </th>
-                <th colspan="1">{$sum|price} Kč</th>
-            </tr>
+    <tr n:foreach="$travels as $t">
+        <td n:if="$isEditable"><a n:href="removeTravel! $t->id" class="btn btn-mini btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="icon icon-white icon-remove"></i></a></td>
+        <td>{$t->start_date|date:"j. n. Y"}</td>
+        <td>{$t->start_place}</td>
+        <td>{$t->end_place}</td>
+        <td>{$t->distance}</td>
+        <td>{$sazba * $t->distance|price} {? $sum += $sazba * $t->distance}</td>
+    </tr>
+    <tr>
+        <th n:if="$isEditable">&nbsp;</th>
+        <th colspan="4" style="text-align: right;">Celkem: </th>
+        <th colspan="1">{$sum|price}&nbsp;Kč</th>
+    </tr>
             {/if}
-        </table>
+</table>
         {/form}
-
-
-
 
     </div>
 </div>

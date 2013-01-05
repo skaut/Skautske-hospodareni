@@ -29,8 +29,8 @@
             </p>
             {form formMass}
             <div class="well well-small">
-                {input printSend}
-                <a n:href="export $aid" class="btn btn-mini btn-info">Exportovat pokladní knihu</a>
+                {input printSend} 
+                <a n:href="export $aid" class="btn btn-mini btn-info"><i class="icon icon-print icon-white"></i> Exportovat pokladní knihu</a>
             </div>
             <table class="table myTable table-bordered table-condensed" id="cashbookTable">
                 <thead>
@@ -50,7 +50,7 @@
                     <tr n:foreach="$list as $key => $item">
                         <td>
                             {input chits-$item->id}
-                            <a n:if="$isEditable" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-info"><i class="icon icon-edit icon-white"></i></a>
+                            <a n:if="$isEditable" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-primary"><i class="icon icon-edit icon-white"></i></a>
                             <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
                             <a n:href="print $item->id, $aid" class="btn btn-mini btn-info"><i class="icon icon-print icon-white"></i></a>
                         </td>
@@ -77,7 +77,7 @@
             </table>
             {/form}
     {else}
-            <p>Nemáte zde žádný doklad.</p>
+            <p class="alert">Nemáte zde žádný doklad</p>
 {/if}
 
         </div>
