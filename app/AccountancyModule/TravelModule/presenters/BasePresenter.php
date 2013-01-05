@@ -13,6 +13,7 @@ class Accountancy_Travel_BasePresenter extends Accountancy_BasePresenter {
         
         $this->template->unit = $this->unit = $this->context->unitService->getOficialUnit();
 
+
 //        $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
 //
 //        if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění

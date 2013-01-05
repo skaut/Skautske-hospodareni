@@ -15,7 +15,7 @@
     .sekce { border-bottom: 2px solid #000000;padding: 5px 0 0 5px;}
     .fl { float: left;}
 </style>
-
+      
 <body>
     
     <div style="border: 1px solid #000000;">
@@ -41,9 +41,9 @@
                     <td class="c">Konec cesty</td>
                 </tr>
                 <tr>
-                    <td>{$start->start_place} {$start->start_date|date:"j. n. Y"}</td>
+                    <td>{ifset $start}{$start->start_place} {$start->start_date|date:"j. n. Y"}{/ifset}</td>
                     <td>{$command->purpose}</td>
-                    <td>{$end->end_place} {$end->start_date|date:"j. n. Y"}</td>
+                    <td>{ifset $end}{$end->end_place} {$end->start_date|date:"j. n. Y"}{/ifset}</td>
                 </tr>
             </table>
         </div>
@@ -148,5 +148,5 @@
     </div>
 </table>
 
-
 </body>
+

@@ -44,12 +44,14 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         $template->setFile(dirname(__FILE__) . '/../templates/Default/ex.command.latte');
         $template->command = $command = $this->context->travelService->getCommand($commandId);
         $template->contract = $this->context->travelService->getContract($command->contract_id);
-        $template->travels = $travels = $this->context->travelService->getTravels($command->contract_id);
+        $template->travels = $travels = $this->context->travelService->getTravels($command->id);
         if (!empty($travels)) {
-            $this->template->end = end($travels);
-            $this->template->start = reset($travels);
+            $template->end = end($travels);
+            $template->start = reset($travels);
         }
+        //        echo $template;die();
         $this->context->travelService->makePdf($template, "cestovni-prikaz.pdf");
+        $this->terminate();
     }
 
     public function handleCloseCommand($commandId) {
