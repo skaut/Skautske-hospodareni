@@ -55,10 +55,10 @@ class CommandTable extends BaseTable {
                 ->fetchAll();
     }
 
-    public function getAllContracts($unitId) {
-        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_TC_CONTRACTS . "]
-                WHERE unit_id=%i AND deleted=0 ", $unitId, "ORDER BY id DESC ");
-    }
+//    public function getAllContracts($unitId) {
+//        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_TC_CONTRACTS . "]
+//                WHERE unit_id=%i AND deleted=0 ", $unitId, "ORDER BY id DESC ");
+//    }
     
     public function changeState($commandId, $state){
         return dibi::update(self::TABLE_TC_COMMANDS, array("id"=>$commandId, "closed"=>$state))

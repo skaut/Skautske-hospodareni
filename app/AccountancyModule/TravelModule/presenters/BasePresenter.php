@@ -7,10 +7,9 @@ class Accountancy_Travel_BasePresenter extends Accountancy_BasePresenter {
 
     protected $unit;
 
-
     protected function startup() {
         parent::startup();
-        
+
         $this->template->unit = $this->unit = $this->context->unitService->getOficialUnit();
 
 
@@ -49,7 +48,7 @@ class Accountancy_Travel_BasePresenter extends Accountancy_BasePresenter {
      */
     static function createRoutes($prefix = "") {
         $router = new RouteList("Travel");
-        
+
         $prefix .= "cestaky/";
 
 //        $router[] = new Route($prefix . '<aid [0-9]+>/<presenter>/[<action>/]', array(
@@ -63,7 +62,13 @@ class Accountancy_Travel_BasePresenter extends Accountancy_BasePresenter {
 //                ));
 
         $router[] = new Route($prefix . '<presenter>/[<action>/][<id>/]', array(
-                    'presenter' => 'Default',
+                    'presenter' => array(
+                        Route::VALUE => 'Default',
+                        Route::FILTER_TABLE => array(
+                            // řetězec v URL => presenter
+                            'vozidla' => 'Vehicle',
+                            'smlouvy' => 'Contract',
+                    )),
                     'action' => 'default',
                 ));
         return $router;
