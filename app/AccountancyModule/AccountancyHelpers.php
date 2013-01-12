@@ -147,8 +147,8 @@ abstract class AccountancyHelpers extends Object {
                 $parts[1] .= "0";
             $string .= "," . $parts[1];
         }
-        return ucfirst($string);
-        //return mb_convert_case(mb_substr($string,0,1),MB_CASE_UPPER,"UTF-8").mb_substr($string,1);
+//        return ucfirst($string);
+        return mb_convert_case(mb_substr($string,0,1),MB_CASE_UPPER,"UTF-8").mb_substr($string,1);
     }
 
 }
