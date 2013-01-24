@@ -41,21 +41,15 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
     }
 
     public function actionExport($aid) {
-        $chits = $this->context->eventService->chits->getAll($aid);
-        $actionInfo = $this->context->eventService->event->get($this->aid);
-        $template = $this->template;
-        $template->setFile(dirname(__FILE__) . '/../templates/Cashbook/export.latte');
-        $template->registerHelper('price', 'AccountancyHelpers::price');
-        $template->list = $chits;
-        $template->info = $actionInfo;
-        $this->context->eventService->chits->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_pokladni-kniha.pdf");
+        $template = $this->context->exportService->getCashbook($aid, $this->context->eventService);
+        $this->context->eventService->chits->makePdf($template, "pokladni-kniha.pdf");
         $this->terminate();
     }
 
     function actionPrint($id, $aid) {
-        $actionInfo = $this->context->eventService->event->get($this->aid);
-        $chit = $this->context->eventService->chits->get($id);
-        $this->context->eventService->chits->printChits($this->context->unitService, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
+        $chits = array($this->context->eventService->chits->get($id));
+        $template = $this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
+        $this->context->eventService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
 
@@ -99,9 +93,9 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
                 $selected[] = $id;
         }
         $chits = $this->context->eventService->chits->getIn($this->aid, $selected);
-
-        $actionInfo = $this->context->eventService->event->get($this->aid);
-        $this->context->eventService->chits->printChits($this->context->unitService, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
+        $template = $this->context->exportService->getChits($this->aid, $this->context->eventService, $this->context->unitService, $chits);
+        $this->context->eventService->chits->makePdf($template, "paragony.pdf");
+        $this->terminate();
     }
 
     //FORM OUT

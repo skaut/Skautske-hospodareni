@@ -65,27 +65,14 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
     }
 
     public function renderExport($aid) {
-        $actionInfo = $this->context->eventService->event->get($aid);
-        $participants = $this->context->eventService->participants->getAll($aid);
-        $list = $this->context->eventService->participants->getAllDetail($aid, $participants);
-
-        $template = $this->template;
-        $template->info = $actionInfo;
-        $template->list = $list;
-        $template->setFile(dirname(__FILE__) . '/../templates/Participant/export.latte');
-        $this->context->eventService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf");
+        $template = $this->context->exportService->getEventReport($aid, $this->context->eventService);
+        $this->context->eventService->participants->makePdf($template, "seznam-ucastniku.pdf");
         $this->terminate();
     }
 
     public function renderHpd($aid) {
-        $actionInfo = $this->context->eventService->event->get($aid);
-        $list = $this->context->eventService->participants->getAll($aid);
-        $template = $this->template;
-        $template->oficialName = $this->context->unitService->getOficialName($actionInfo->ID_Unit);
-        $template->totalPayment = $this->context->eventService->participants->getTotalPayment($aid);
-        $template->list = $list;
-        $template->setFile(dirname(__FILE__) . '/../templates/Participant/ex.hpd.latte');
-        $this->context->eventService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_hpd.pdf");
+        $template = $this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService);
+        $this->context->eventService->participants->makePdf($template, "hpd.pdf");
         $this->terminate();
     }
 

@@ -1,0 +1,24 @@
+
+<style>
+.paragonTable{
+    width: 800px;
+}
+.paragonTable td{
+    width: 33%;
+    height: 27px;
+}
+</style>
+
+{foreach $income as $item}
+
+    {include chits.in.latte "item"=>$item}
+    {if !$iterator->isLast()}<br />{/if}
+{/foreach}
+
+    
+{if count($outcome) > 0 && count($income) > 0}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
+
+{foreach $outcome as $item}
+    {include chits.out.latte "item"=>$item}
+    {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
+{/foreach}

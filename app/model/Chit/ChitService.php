@@ -313,33 +313,6 @@ class ChitService extends MutableBaseService {
     }
 
     /**
-     * vrací PDF s vybranými paragony
-     * @param type $unitService
-     * @param type $template
-     * @param type $actionInfo
-     * @param type $chits
-     * @param type $fileName 
-     */
-    public function printChits($unitService, $template, $actionInfo, $chits, $fileName) {
-        $income = array();
-        $outcome = array();
-        foreach ($chits as $c) {
-            if ($c->ctype == "in") {
-                $income[] = $c;
-                continue;
-            }
-            $outcome[] = $c;
-        }
-
-        $template->registerHelper('priceToString', 'AccountancyHelpers::priceToString');
-        $template->setFile(dirname(__FILE__) . '/ex.chits.latte');
-        $template->income = $income;
-        $template->outcome = $outcome;
-        $template->oficialName = $unitService->getOficialName($actionInfo->ID_Unit);
-        $this->makePdf($template, $fileName . ".pdf");
-    }
-
-    /**
      * vyhodnotí řetězec obsahující čísla, +, *
      * @param string $str - výraz k výpčtu
      * @return int 

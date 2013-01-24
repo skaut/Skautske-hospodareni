@@ -36,8 +36,8 @@ $router[] = new Route('prirucka/<action>', array(
         Route::FILTER_TABLE => array(
             // řetězec v URL => presenter
             'vyprava' => 'event',
-            'tabor' => 'Camp',
-            'cestovni-prikaz' => 'Travel',
+            'tabor' => 'camp',
+            'cestovni-prikaz' => 'travelCommand',
         )),
 ));
 

@@ -56,7 +56,7 @@
                             <li {ifCurrent :Tutorial:*}class='active'{/ifCurrent}><a n:href=":Tutorial:">Příručka</a></li>
                             {if $user->isLoggedIn()}
                             <li {ifCurrent :Accountancy:Event:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
-                            <li {ifCurrent :Accountancy:Camp:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory</a></li>
+                            <li {ifCurrent :Accountancy:Camp:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory <sup style="color:red;font-weight: bold;">BETA</sup></a></li>
                             <li><a n:href=":Accountancy:Travel:Default:">Cestovní příkazy</a></li>
                             {/if}
                         </ul>

@@ -1,0 +1,52 @@
+
+<table border="1" class="paragonTable">
+    <tr>
+        <td rowspan="2">{$oficialName}</td>
+        <td colspan="2"><b>Příjmový pokladní doklad</b></td>
+    </tr>
+    <tr>
+        <td><b>ze dne:</b> {$item->date|date:"j.n.Y"}</td>
+        <td><b>č.</b>  </td>
+    </tr>
+    <tr>
+        <td colspan="3"><b>Přijato od:</b> {$item->recipient}</td>
+    </tr>
+    <tr>
+        <td colspan="3"><b>Účel platby:</b> {$item->purpose}</td>
+    </tr>
+    <tr>
+        <td><b>Pokladník:</b> </td>
+        <td> &nbsp; </td>
+        <td><b>Schválil:</b> </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <b>Učetní doklad ze dne:</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            <b>Číslo uč. dokladu:</b>
+        </td>
+    </tr>
+    <tr>
+        <td><b>Text:</b> </td>
+        <td><b>Účtovací předpis:</b> </td>
+        <td><b>Kč:</b> </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><b>Celkem Kč:</b>{if $item->price != 0} {= number_format($item->price, 2, ",", "")}=={/if}</td>
+        <td colspan="2"><b>Slovy:</b>{if $item->price != 0} =={$item->price|priceToString}korun=={/if}</td>
+    </tr>
+    <tr>
+        <td><b>přezkoušel dne:</b> </td>
+        <td colspan="2"><b>zaúčtoval dne:</b> </td>
+    </tr>
+</table>
+

@@ -1,0 +1,53 @@
+{block title}Výprava - základní příručka vyúčtování{/block}
+
+{block #content}
+<div class="row-fluid tutorial">
+    <h1>Jak na cestovní příkaz?</h1>
+    <p>Zde se naučíme udělat jednoduše svůj první cestovní příkaz. Program nabízí základní funkce pro vytvoření a vyúčtování cestovního příkazu včetně amortizace. Program <b>neumožnuje</b> spracovávat diety a cestovní náhrady.</p>
+    <p>Celá sekce <em>cestovní příkazy</em> obsahuje tři základní podsekce <a href="#smlouvy">smlouvy</a>, <a href="#vozidla">vozidla</a> a <a href="#prikazy">cestovní příkazy</a>.</p>
+    <h2 id="smlouvy">Smlouvy</h2>
+    <p>V podsekci <em>smlouvy</em> se uvidují smlouvy mezi jednotkou a jednotlivými vykonavateli cestovních příkazů. Smlouva má maximálně platnost tři roky.</p>
+    <div class="figure">
+        <img src="{$baseUri}/images/tutorial/tc/smlouva.png" alt="Založení smlouvy o proplácení cestovních náhrad"/><br />
+        <i>Obr. 1 - Založení smlouvy o proplácení cestovních náhrad</i>
+    </div>
+    <ol>
+        <li>Jméno statutárního orgánu nebo zástupce jednotky, který za jednotku smlouvu uzavírá</li>
+        <li>Údaje vykonavatele cestovního příkazu</li>
+        <li>Datum začátku platnosti smlouvy</li>
+    </ol>
+    
+    <h2 id="vozidla">Vozidla</h2>
+    <p>Zde se evidují všechna vozidla dané jednotky.</p>
+    <div class="figure">
+        <img src="{$baseUri}/images/tutorial/tc/vozidlo.png" alt="Založení smlouvy o proplácení cestovních náhrad"/><br />
+        <i>Obr. 2 - Založení vozidla</i>
+    </div>
+    <h2 id="prikazy">Cestovní příkazy</h2>
+    <p>Pokud máme již založenou <a href="#smlouvy">cestovní smlouvu</a> i <a href="#vozidla">vozidlo</a>, můžeme založit konkrétní cestovní příkaz mezi jednotkou a konkrétní osobou uvedenou ve <a href="#smlouvy">smlouvě</a>.</p>
+    <div class="figure">
+        <img src="{$baseUri}/images/tutorial/tc/prikaz.png" alt="Založení smlouvy o proplácení cestovních náhrad"/><br />
+        <i>Obr. 3 - Založení cestovního příkazu</i>
+    </div>
+    <ol>
+        <li><a href="#smlouvy">Smlouva</a>, ze které cestovní příkaz vychází</li>
+        <li>Co bylo účelem cesty</li>
+        <li>Další cestující ve vozidle</li>
+        <li><a href="#vozidla">Vozidlo</a> vybrané ze seznamu evidovaných</li>
+        <li>Cena za 1 litr paliva z doby cesty - prokazuje se přiloženou účtenkou</li>
+        <li>Opotřebení, neboli amortizace vozidla</li>
+        <li>Volitelná poznámka</li>
+    </ol>
+    <p>A pak přidávat jednotlivé cesty k cestovnímu příkazu.</p>
+    <div class="figure">
+        <img src="{$baseUri}/images/tutorial/tc/cesta.png" alt="Založení smlouvy o proplácení cestovních náhrad"/><br />
+        <i>Obr. 4 - Přidání uskutečněné cesty k cestovnímu příkazu</i>
+    </div>
+    <ol>
+        <li>Datum cesty</li>
+        <li>Počátek cesty</li>
+        <li>Konec cesty</li>
+        <li>Počet km cesty</li>
+    </ol>
+    
+</div>
