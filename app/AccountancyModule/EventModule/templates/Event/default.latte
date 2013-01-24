@@ -89,11 +89,12 @@
 
 <div class="row">
 
-    <div class="span5">
+    <div class="span6">
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-small" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
         <a n:if="$accessCloseEvent" n:href="close! $aid" class="btn btn-success btn-small"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
         <a n:if="$accessOpenEvent"  n:href="open! $aid"  class="btn btn-warning btn-small"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
         <a n:href="Event:report $aid" class="btn btn-info btn-small"><i class="icon icon-print icon-white"></i> Záverečná zpráva</a>
+        <a n:href="Event:printAll $aid" class="btn btn-info btn-small"><i class="icon icon-print icon-white"></i> Vytisknout vše</a>
 
         <div n:if="$accessEditBase" class="modal myModal fade" id="editBasicInfo">
             <div class="modal-header">

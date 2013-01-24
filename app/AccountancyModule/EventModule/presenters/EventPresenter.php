@@ -7,12 +7,12 @@
 class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
 
     public function renderDefault($aid) {
-        if($aid == NULL){
+        if ($aid == NULL) {
             $this->redirect("Default:");
         }
         //nastavení dat do formuláře pro editaci
         $func = false;
-        
+
         if (array_key_exists("EV_EventFunction_ALL_EventGeneral", $this->availableActions))
             $func = $this->context->eventService->event->getFunctions($aid);
 
@@ -84,6 +84,19 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
             "fid" => $fid,
         ));
     }
+    
+    public function actionPrintAll($aid){
+        $chits = (array)$this->context->eventService->chits->getAll($this->aid);
+        
+        $template = (string)$this->context->exportService->getEventReport($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
+        $template .= (string)$this->context->exportService->getParticipants($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
+        $template .= (string)$this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService) . $this->context->exportService->getNewPage();
+        $template .= (string)$this->context->exportService->getCashbook($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
+        $template .= (string)$this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
+        
+        $this->context->eventService->participants->makePdf($template, "all.pdf");
+        $this->terminate();
+    }
 
     public function handleRemoveFunction($aid, $fid) {
         if (!array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions)) {
@@ -101,32 +114,9 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
             $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
             $this->redirect("default", array("aid" => $aid));
         }
-        $actionInfo = $this->context->eventService->event->get($aid);
-        $participants = $this->context->eventService->participants->getAll($aid);
-        $chitsAll = $this->context->eventService->chits->getAll($aid);
-
-        $categories = array();
-        //inicializuje pole s kategorií s částkami na 0
-        foreach (ArrayHash::from($this->context->eventService->chits->getCategories($all = TRUE)) as $c) {
-            $categories[$c->type][$c->short] = $c;
-            $categories[$c->type][$c->short]->price = 0;
-        }
-
-        //rozpočítává paragony do jednotlivých skupin
-        foreach ($chitsAll as $chit) {
-            $categories[$chit->ctype][$chit->cshort]->price += $chit->price;
-        }
-
-        $template = $this->template;
-        $template->setFile(dirname(__FILE__) . '/../templates/Event/report.latte');
-        $template->registerHelper('price', 'AccountancyHelpers::price');
-        $template->participants = $participants;
-        $template->personsDays = $this->context->eventService->participants->getPersonsDays($this->aid);
-        $template->a = $actionInfo;
-        $template->chits = $categories;
-        $template->func = $this->context->eventService->event->getFunctions($aid);
-
-        $this->context->eventService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_report.pdf");
+        $template = $this->context->exportService->getEventReport($aid, $this->context->eventService);
+        
+        $this->context->eventService->participants->makePdf($template, "report.pdf");
         $this->terminate();
     }
 
