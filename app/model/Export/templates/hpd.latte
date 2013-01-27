@@ -1,8 +1,7 @@
 <style>
-th{
-   line-height: 20px;
-}
-
+    th{
+        line-height: 20px;
+    }
 </style>
 
 {dump $list}
@@ -10,7 +9,7 @@ th{
 <table class="prijmovyDoklad" border="1">
     <tr>
         <th style="width: 150px;">Datum</th>
-        <td style="width: 210px;">&nbsp;</td>
+        <td style="width: 210px;">{$event->StartDate|date:"j.n.Y"}</td>
         <th style="width: 120px">Číslo dokladu</th>
         <td style="width: 180px">&nbsp;</td>
     </tr>
@@ -22,13 +21,13 @@ th{
     </tr>
     <tr>
         <th>Pokladník</th>
-        <td>&nbsp;</td>
+        <td>{$hospodar}</td>
         <th>Podpis</th>
         <td>&nbsp;</td>
     </tr>
     <tr>
         <th>Přijal</th>
-        <td>&nbsp;</td>
+        <td>{$hospodar}</td>
         <th>Podpis</th>
         <td>&nbsp;</td>
     </tr>
