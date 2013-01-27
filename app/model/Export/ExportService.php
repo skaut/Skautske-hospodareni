@@ -85,8 +85,13 @@ class ExportService extends BaseService {
      */
     public function getHpd($aid, EventEntity $service, BaseService $unitService) {
         $template = $this->getTemplate(dirname(__FILE__) . "/templates/hpd.latte");
-        $template->oficialName = $unitService->getOficialName($service->event->get($aid)->ID_Unit);
+        $event = $template->event = $service->event->get($aid);
+        $template->oficialName = $unitService->getOficialName($event->ID_Unit);
         $template->totalPayment = $service->participants->getTotalPayment($aid);
+        $func = $service->event->getFunctions($aid);
+        $template->hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
+        
+
         $template->list = $service->participants->getAll($aid);
         return $template;
     }
@@ -100,7 +105,7 @@ class ExportService extends BaseService {
      * @param type $fileName 
      */
     public function getChits($aid, EventEntity $eventService, BaseService $unitService, array $chits) {
-        
+
         $income = array();
         $outcome = array();
         foreach ($chits as $c) {
@@ -111,7 +116,7 @@ class ExportService extends BaseService {
             $outcome[] = $c;
         }
         $template = $this->getTemplate(dirname(__FILE__) . "/templates/chits.latte");
-        
+
         $template->income = $income;
         $template->outcome = $outcome;
         $template->oficialName = $unitService->getOficialName($eventService->event->get($aid)->ID_Unit);
