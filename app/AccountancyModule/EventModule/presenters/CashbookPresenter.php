@@ -25,7 +25,7 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
         $defaults = $this->context->eventService->chits->get($id);
         $defaults['id'] = $id;
         $defaults['price'] = $defaults['priceText'];
-        
+
         if ($defaults['ctype'] == "out") {
             $form = $this['formOutEdit'];
             $form->setDefaults($defaults);
@@ -40,6 +40,24 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
         $this->template->autoCompleter = $this->context->memberService->getAC();
     }
 
+    public function actionImportHpd($aid) {
+        $this->editableOnly();
+        $totalPayment = $this->context->eventService->participants->getTotalPayment($this->aid);
+        $func = $this->context->eventService->event->getFunctions($this->aid);
+        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
+        $date = $this->context->eventService->event->get($aid)->StartDate;
+        $category = $this->context->eventService->chits->getCategoryParticipant();
+        
+        $values = array("date"=>$date, "recipient"=>$hospodar, "purpose"=>"účastnické příspěvky", "price"=>$totalPayment, "category"=>$category);
+        $add = $this->context->eventService->chits->add($this->aid, $values);
+        if($add){
+            $this->flashMessage("HPD byl importován");
+        } else {
+            $this->flashMessage("HPD se nepodařilo importovat", "fail");    
+        }
+        $this->redirect("default", array("aid"=>$aid));
+    }
+
     public function actionExport($aid) {
         $template = $this->context->exportService->getCashbook($aid, $this->context->eventService);
         $this->context->eventService->chits->makePdf($template, "pokladni-kniha.pdf");
@@ -49,7 +67,8 @@ class Accountancy_Event_CashbookPresenter extends Accountancy_Event_BasePresente
     function actionPrint($id, $aid) {
         $chits = array($this->context->eventService->chits->get($id));
         $template = $this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
-        $this->context->eventService->chits->makePdf($template, "paragony.pdf");
+        echo $template->render();
+//        $this->context->eventService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
 
