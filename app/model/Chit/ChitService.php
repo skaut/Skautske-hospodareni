@@ -216,7 +216,7 @@ class ChitService extends MutableBaseService {
         $cacheId = __FUNCTION__;
         if (!($res = $this->load($cacheId))) {
             foreach ($this->table->getCategoriesAll("in") as $c) {
-                if ($c->short == "pp") {
+                if ($c->short == "hpd") {
                     $res = $c->id;
                     break;
                 }
