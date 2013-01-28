@@ -90,7 +90,7 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
         
         $template = (string)$this->context->exportService->getEventReport($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
         $template .= (string)$this->context->exportService->getParticipants($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
-        $template .= (string)$this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService) . $this->context->exportService->getNewPage();
+//        $template .= (string)$this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService) . $this->context->exportService->getNewPage();
         $template .= (string)$this->context->exportService->getCashbook($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
         $template .= (string)$this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
         
