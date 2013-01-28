@@ -25,13 +25,13 @@
         <div n:snippet="paragony" style="float: left;">
         {if $list}
             <p n:if="$isInMinus" class="alert alert-error">
-                Pokladní kniha je v záporných číslech a to nesmí nastat!
+                Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
             </p>
             {form formMass}
             <div class="well well-small">
-                {input printSend} 
-                <a n:href="export $aid" class="btn btn-mini btn-info"><i class="icon icon-print icon-white"></i> Exportovat pokladní knihu</a>
                 <a n:href="importHpd $aid" class="btn btn-mini btn-primary">Importovat HPD</a>
+                {input printSend} 
+                <a n:href="export $aid" class="btn btn-mini btn-info">Exportovat pokladní knihu</a>
             </div>
             <table class="table myTable table-bordered table-condensed" id="cashbookTable">
                 <thead>
