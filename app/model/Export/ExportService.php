@@ -90,7 +90,6 @@ class ExportService extends BaseService {
         $template->totalPayment = $service->participants->getTotalPayment($aid);
         $func = $service->event->getFunctions($aid);
         $template->hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
-        
 
         $template->list = $service->participants->getAll($aid);
         return $template;
@@ -109,13 +108,25 @@ class ExportService extends BaseService {
         $income = array();
         $outcome = array();
         foreach ($chits as $c) {
-            if ($c->ctype == "in") {
-                $income[] = $c;
-                continue;
+            switch ($c->ctype) {
+                case "out":
+                    $outcome[] = $c;
+                    break;
+                case "in":
+                    $income[] = $c;
+                    break;
+                default:
+                    throw new InvalidStateException("Neznámý typ paragou");
+                    break;
             }
-            $outcome[] = $c;
         }
         $template = $this->getTemplate(dirname(__FILE__) . "/templates/chits.latte");
+
+        //HPD alias ctype == pp
+        $template->totalPayment = $eventService->participants->getTotalPayment($aid);
+        $func = $eventService->event->getFunctions($aid);
+        $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
+        $template->list = $eventService->participants->getAll($aid);
 
         $template->income = $income;
         $template->outcome = $outcome;

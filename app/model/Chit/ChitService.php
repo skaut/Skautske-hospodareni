@@ -83,7 +83,7 @@ class ChitService extends MutableBaseService {
         $ret = $this->table->getIn($actionId, (array) $list);
         if ($ret[0] instanceof DibiRow && $ret[0]->type == "camp") {
             $categories = $this->getCategoriesCampPairs($actionId);
-            foreach ($ret as $k=>$v)
+            foreach ($ret as $k => $v)
                 $ret[$k]->ctype = array_key_exists($ret[$k]->category, $categories['in']) ? "in" : "out";
         }
         return $ret;
@@ -205,6 +205,27 @@ class ChitService extends MutableBaseService {
      */
     public function getCategoriesOut() {
         return $this->table->getCategories("out");
+    }
+
+    /**
+     * vrací ID kategorie pro příjmy od účastníků
+     * @return type
+     * @throws InvalidStateException
+     */
+    public function getCategoryParticipant() {
+        $cacheId = __FUNCTION__;
+        if (!($res = $this->load($cacheId))) {
+            foreach ($this->table->getCategoriesAll("in") as $c) {
+                if ($c->short == "pp") {
+                    $res = $c->id;
+                    break;
+                }
+            }
+            $this->save($cacheId, $res);
+        }
+        if(!$res)
+            throw new InvalidStateException("Chybí typ pro příjem od účastníků", 500);
+        return $res;
     }
 
     /*     * ******** CAMP CATEGORIES *********** */
