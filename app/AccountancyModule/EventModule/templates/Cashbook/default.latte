@@ -29,7 +29,7 @@
             </p>
             {form formMass}
             <div class="well well-small">
-                <a n:href="importHpd $aid" class="btn btn-mini btn-primary">Importovat HPD</a>
+                <a n:if="$isEditable" n:href="importHpd $aid" class="btn btn-mini btn-primary">Importovat HPD</a>
                 {input printSend} 
                 <a n:href="export $aid" class="btn btn-mini btn-info">Exportovat pokladní knihu</a>
             </div>
