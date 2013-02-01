@@ -65,7 +65,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
     }
 
     public function renderExport($aid) {
-        $template = $this->context->exportService->getEventReport($aid, $this->context->eventService);
+        $template = $this->context->exportService->getParticipants($aid, $this->context->eventService);
         $this->context->eventService->participants->makePdf($template, "seznam-ucastniku.pdf");
         $this->terminate();
     }
@@ -194,9 +194,8 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         foreach ($all as $id => $p) {
             $group->addCheckbox($id, $p);
         }
-
-        $form->addSubmit('massAddSend', 'Přidat vybrané')
-                ->getControlPrototype()->setClass("btn btn-info btn-small");
+        $form->addSubmit('massAddSend', ' ')
+                ->getControlPrototype()->setName("button")->create('i class="icon-plus icon-white"');
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -214,9 +213,8 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 
     public function createComponentFormMassParticipants($name) {
         $participants = $this->context->eventService->participants->getAll($this->aid);
-
+        
         $form = new AppForm($this, $name);
-
         $group = $form->addContainer('ids');
         foreach ($participants as $id => $p) {
             $group->addCheckbox($p->ID, $p->Person);
@@ -224,15 +222,14 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 
         $form->addText("days", "dní");
         $form->addText("payment", "částka");
-
         $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
-                ->getControlPrototype()->setClass("btn btn-danger btn-small");
+                ->getControlPrototype()
+                ->setName("button")
+                ->create('i class="icon-remove icon-white"');
         $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
-
         $form->addSubmit('massEditSend', 'Upravit')
                 ->getControlPrototype()->setClass("btn btn-info btn-small");
         $form['massEditSend']->onClick[] = callback($this, 'massEditSubmitted');
-
 //        $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -334,11 +331,12 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         $form->addText("lastName", "Příjmení")
                 ->addRule(Form::FILLED, "Musíš vyplnit příjmení.");
         $form->addText("nick", "Přezdívka");
-        $form->addText("address", "Adresa")
-                ->addRule(Form::FILLED, "Musíš vyplnit adresu.")
-                ->getControlPrototype()->placeholder("Ulice č., Město");
+        $form->addText("birthday", "Dat. nar.");
+        $form->addText("street", "Ulice");
+        $form->addText("city", "Město");
+        $form->addText("postcode", "PSČ");
         $form->addHidden("aid", $aid);
-        $form->addSubmit('send', 'Přidat')
+        $form->addSubmit('send', 'Založit účastníka')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
@@ -352,7 +350,10 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
             "firstName" => $values['firstName'],
             "lastName" => $values['lastName'],
             "nick" => $values['nick'],
-            "note" => $values['address'],
+            "Birthday" => date("c", strtotime($values['birthday'])),
+            "street" => $values['street'],
+            "city" => $values['city'],
+            "postcode" => $values['postcode'],
         );
         $this->context->eventService->participants->addNew($aid, $person);
         $this->redirect("this");

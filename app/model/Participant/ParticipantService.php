@@ -100,15 +100,38 @@ class ParticipantService extends MutableBaseService {
      * @return type
      */
     public function addNew($ID, $person) {
-        return $this->skautIS->event->{"Participant" . self::$typeName . "Insert"}(array(
-                    "ID_Event" . self::$typeName => $ID,
-                    "Person" => array(
-                        "FirstName" => $person['firstName'],
-                        "LastName" => $person['lastName'],
-                        "NickName" => $person['nick'],
-                        "Note" => $person['note'], //poznámka osoby, ne účastníka
-                    ),
+        $newPaerticipantArr = $this->skautIS->event->{"Participant" . self::$typeName . "Insert"}(array(
+            "ID_Event" . self::$typeName => $ID,
+            "Person" => array(
+                "FirstName" => $person['firstName'],
+                "LastName" => $person['lastName'],
+                "NickName" => $person['nick'],
+                "Note"=> "",
+//                        "Note" => $person['note'], //poznámka osoby, ne účastníka
+            ),
                 ));
+
+        $this->personUpdate($newPaerticipantArr->ID_Person, $person);
+    }
+
+    /**
+     * upravuje údaje zadané osoby
+     * @param type $pid
+     * @param type $data
+     */
+    public function personUpdate($pid, $data) {
+        $data = array(
+            "ID" => $pid,
+            "FirstName" => isset($data['firstName']) ? $data['firstName'] : null,
+            "LastName" => isset($data['lastName']) ? $data['lastName'] : null,
+            "IdentificationCode" => null,
+            "Birthday" => isset($data['Birthday']) ? $data['Birthday'] : null,
+            "Street" => isset($data['street']) ? $data['street'] : null,
+            "City" => isset($data['city']) ? $data['city'] : null,
+            "Postcode" => isset($data['postcode']) ? $data['postcode'] : null,
+            
+        );
+        $this->skautIS->org->PersonUpdate($data, "person");
     }
 
 //    /**
