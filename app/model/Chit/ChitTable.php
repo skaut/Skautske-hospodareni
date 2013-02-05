@@ -32,7 +32,7 @@ class ChitTable extends BaseTable {
      * @return array
      */
     public function getIn($actionId, array $list) {
-        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE actionId=%i", $actionId, " AND id in %in", $list);
+        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE actionId=%i", $actionId, " AND id in %in", $list, "ORDER BY date");
     }
 
     /**
