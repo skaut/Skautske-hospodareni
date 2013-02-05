@@ -12,6 +12,7 @@
 {foreach $income as $item}
 
 {if $item->cshort == "hpd"}
+    {if !$iterator->isFirst()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
     {include chits.hpd.latte "item"=>$item, "list"=>$list, "pokladnik"=>$pokladnik, "totalPayment"=>$totalPayment}
     {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
 {else}
