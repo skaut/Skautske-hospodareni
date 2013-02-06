@@ -29,7 +29,7 @@ $router[] = new Route('sign/<action>[/back-<backlink>]', array(
     "backlink" => NULL
 ));
 
-$router[] = new Route('prirucka/<action>', array(
+$router[] = new Route('prirucka/<action>[#<anchor>]', array(
     "presenter" => "Tutorial",
     "action" => array(
         Route::VALUE => 'default',
