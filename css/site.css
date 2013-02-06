@@ -155,3 +155,7 @@ td.r {text-align: right;}
     padding-top: 45px;
 }
 
+h2[id], h3[id] { /* nadpisy na ktere je odkaz a musi byt vice odsazeny */
+    padding-top: 45px;
+}
+
