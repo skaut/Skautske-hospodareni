@@ -2,11 +2,28 @@
 
 {block #content}
 <div class="row-fluid tutorial">
+    <div class="span3">    
+        <ul class="nav nav-list affix well">
+            <li><a href="#smlouvy"><i class="icon-chevron-right"></i> 1. Smlouvy </a></li>
+            <li><a href="#vozidla"><i class="icon-chevron-right"></i> 2. Vozidla</a></li>
+            <li><a href="#prikazy"><i class="icon-chevron-right"></i> 3. Cestovní příkazy</a></li>
+        </ul>
+    </div>
+
+    <div class="span9">
     <h1>Jak na cestovní příkaz?</h1>
     <p>Zde se naučíme udělat jednoduše svůj první cestovní příkaz. Program nabízí základní funkce pro vytvoření a vyúčtování cestovního příkazu včetně amortizace. Program <b>neumožnuje</b> spracovávat diety a cestovní náhrady.</p>
-    <p>Celá sekce <em>cestovní příkazy</em> obsahuje tři základní podsekce <a href="#smlouvy">smlouvy</a>, <a href="#vozidla">vozidla</a> a <a href="#prikazy">cestovní příkazy</a>.</p>
-    <h2 id="smlouvy">Smlouvy</h2>
-    <p>V podsekci <em>smlouvy</em> se uvidují smlouvy mezi jednotkou a jednotlivými vykonavateli cestovních příkazů. Smlouva má maximálně platnost tři roky.</p>
+    <div class="well">
+        <h2>Příklad</h2>
+        <p>Je potřeba, aby Honza odvezl materiál na tábořiště.</p>
+        <p>Aby mu mohly být proplaceny náklady s tím spojené, musí nejdříve uzavřít <a href="#smlouvy"><i>smlouvu o proplácení cestovních náhrad</i></a> s jednotkou. Za jednotku ji může uzavřit buď vedoucí jednotky nebo vedoucí akce, ke které se cesta vztahuje. Smlouva je uzavřena maximálně na 3 roky.</p>
+        <p>Na danou cestu musí hospodář vytvořit <a href="#prikazy"><i>cestovní příkaz</i></a>, který je vázán na konkrétního řidiče (Honzu), s nímž má jednotka podepsanou smlouvu a konkrétní <a href="#vozidla"><i>vozidlo</i></a>.</p>
+        <p>Po úskutečnění cesty, jen doplníme cenu benzínu a jednotlivé části cesty s počtem ujetých km. A to je vše.</p>
+    </div>
+    
+    
+    <h2 id="smlouvy"><a href="#smlouvy">1. Smlouvy</a></h2>
+    <p>V podsekci <em>smlouvy</em> se evidují smlouvy mezi jednotkou a jednotlivými vykonavateli cestovních příkazů. Smlouva je platná maximálně tři roky.</p>
     <div class="figure">
         <img src="{$baseUri}/images/tutorial/tc/smlouva.png" alt="Založení smlouvy o proplácení cestovních náhrad"/><br />
         <i>Obr. 1 - Založení smlouvy o proplácení cestovních náhrad</i>
@@ -17,14 +34,18 @@
         <li>Datum začátku platnosti smlouvy</li>
     </ol>
     
-    <h2 id="vozidla">Vozidla</h2>
+    <h2 id="vozidla"><a href="#vozidla">2. Vozidla</a></h2>
     <p>Zde se evidují všechna vozidla dané jednotky.</p>
     <div class="figure">
         <img src="{$baseUri}/images/tutorial/tc/vozidlo.png" alt="Založení smlouvy o proplácení cestovních náhrad"/><br />
         <i>Obr. 2 - Založení vozidla</i>
     </div>
-    <h2 id="prikazy">Cestovní příkazy</h2>
-    <p>Pokud máme již založenou <a href="#smlouvy">cestovní smlouvu</a> i <a href="#vozidla">vozidlo</a>, můžeme založit konkrétní cestovní příkaz mezi jednotkou a konkrétní osobou uvedenou ve <a href="#smlouvy">smlouvě</a>.</p>
+    <ul>
+        <li>Průměrná spotřeba je uvedena ve velkém technickém průkazu vozidla</li>
+    </ul>
+    
+    <h2 id="prikazy"><a href="#prikazy">3. Cestovní příkazy</a></h2>
+    <p>Pokud máme již založenou <a href="#smlouvy">cestovní smlouvu</a> a <a href="#vozidla">vozidlo</a>, můžeme založit konkrétní cestovní příkaz mezi jednotkou a konkrétní osobou uvedenou ve <a href="#smlouvy">smlouvě</a>.</p>
     <div class="figure">
         <img src="{$baseUri}/images/tutorial/tc/prikaz.png" alt="Založení smlouvy o proplácení cestovních náhrad"/><br />
         <i>Obr. 3 - Založení cestovního příkazu</i>
@@ -50,4 +71,5 @@
         <li>Počet km cesty</li>
     </ol>
     
+    </div>
 </div>

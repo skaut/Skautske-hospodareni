@@ -147,7 +147,7 @@ td.r {text-align: right;}
     text-align: center;
     margin-bottom: 10px; 
 }
-.tutorial ol, .tutorial h2 {
+.tutorial ol, .tutorial ul, .tutorial h2 {
     clear: left;
 }
 
