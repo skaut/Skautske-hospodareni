@@ -151,11 +151,10 @@ td.r {text-align: right;}
     clear: left;
 }
 
-.tutorial h2, .tutorial h3 {
-    padding-top: 45px;
-}
-
 h2[id], h3[id] { /* nadpisy na ktere je odkaz a musi byt vice odsazeny */
     padding-top: 45px;
 }
 
+footer {
+    text-align: center;
+}
