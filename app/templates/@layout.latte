@@ -53,7 +53,7 @@
                     <a class="brand" n:href=":Default:">Hospodaření</a>
                     <div class="nav-collapse">
                         <ul class="nav">
-                            <li {ifCurrent :Default:about}class='active'{/ifCurrent}><a n:href=":Default:about">O projektu</a></li>
+                            <li n:if="!$user->isLoggedIn()" {ifCurrent :Default:about}class='active'{/ifCurrent}><a n:href=":Default:about">O projektu</a></li>
                             <li {ifCurrent :Tutorial:*}class='active'{/ifCurrent}><a n:href=":Tutorial:">Příručka</a></li>
                             {if $user->isLoggedIn()}
                             <li {ifCurrent :Accountancy:Event:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
@@ -89,7 +89,8 @@
         </div><!-- /content -->
             <hr style="clear: both" />
             <footer>
-                <!--Vytvořil <a href="http://sinacek.cz">Sináček.cz</a> z <a href="http://osmnactka.net">18. skautského střediska Kruh Praha 6</a>-->
+                <a n:href=":Default:about">O projektu</a> / 
+                Vytvořil <a href="http://sinacek.cz">Sináček.cz</a> z <a href="http://osmnactka.net">18. skautského střediska Kruh Praha 6</a>
             </footer>
         </div> <!-- /container -->
     </body>
