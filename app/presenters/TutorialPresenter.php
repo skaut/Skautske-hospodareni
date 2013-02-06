@@ -5,5 +5,8 @@
  */
 class TutorialPresenter extends BasePresenter {
 
+    public function renderEvent($anchor = null) {
         
+    }
+
 }
