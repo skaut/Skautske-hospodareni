@@ -68,17 +68,33 @@ production < common:
         database:
             driver:   mysql
             host:     localhost
-            database: u_osmnactka_net
-            username: u_osmnactka
-            password: L8W4BNtpFBZ
+            database: h
+            username: h
+            password: mvGofQAPZzQ9r9tA
             profiler: false
             charset:  utf8
             lazy:     true
 
         ###SkautIS
-        skautisid : 093a637d-fd52-4028-9545-bb9a92d18a0c #u.osmnactka.net - ostrý
+        skautisid :  #h.skauting.net
         skautisTestMode : false #isTestMode?
-        #skautisid = 48104fe2-b447-47f5-9a26-051c710da74e #vyvoj.osmnactka.net - test
+        
+#production < common:        
+#    parameters:
+#        database:
+#            driver:   mysql
+#            host:     localhost
+#            database: u_osmnactka_net
+#            username: u_osmnactka
+#            password: L8W4BNtpFBZ
+#            profiler: false
+#            charset:  utf8
+#            lazy:     true
+#
+#        ###SkautIS
+#        skautisid : 093a637d-fd52-4028-9545-bb9a92d18a0c #u.osmnactka.net - ostrý
+#        skautisTestMode : false #isTestMode?
+#FTP ucto bGMbKeZ9j2j
 
 console < development:
     services:
