@@ -63,10 +63,10 @@
                             {/if}
                         </ul>
                         <p class="navbar-text pull-right" n:inner-if="$user->isLoggedIn()">
-                            Přihlášen jako {$user->getIdentity()->DisplayName} <a n:href=":Auth:logoutSis">Odhlásit se</a>
                             Role: <select onchange="changeRole(this.value)" class="roleSelect">
                                 <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->DisplayName}</option>
                             </select>
+                            <a n:href=":Auth:logoutSis">Odhlásit se</a>
                         {else}
                             <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL">Přihlásit se</a>
                         </p>
