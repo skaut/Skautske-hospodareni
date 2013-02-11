@@ -71,10 +71,10 @@ class Accountancy_BasePresenter extends BasePresenter {
         $router[] = Accountancy_Event_BasePresenter::createRoutes();
         $router[] = Accountancy_Travel_BasePresenter::createRoutes();
         
-        $router[] = new Route($prefix . '<module>/<presenter>[/<action>]', array(
+        $router[] = new MyRoute($prefix . '<module>/<presenter>[/<action>]', array(
                     'module' => "Accountancy",
                     'action' => 'default',
-                ));
+                ), Route::SECURED);
 
         return $router;
         

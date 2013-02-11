@@ -22,14 +22,14 @@ $container = $configurator->createContainer();
 
 // Setup router
 $router = new RouteList;
-$router[] = new Route('index.php', ':Default:default', Route::ONE_WAY);
-$router[] = new Route('sign/<action>[/back-<backlink>]', array(
+$router[] = new MyRoute('index.php', ':Default:default', Route::ONE_WAY & Route::SECURED);
+$router[] = new MyRoute('sign/<action>[/back-<backlink>]', array(
     "presenter" => "Auth",
     "action" => "default",
     "backlink" => NULL
-));
+), Route::SECURED);
 
-$router[] = new Route('prirucka/<action>[#<anchor>]', array(
+$router[] = new MyRoute('prirucka/<action>[#<anchor>]', array(
     "presenter" => "Tutorial",
     "action" => array(
         Route::VALUE => 'default',
@@ -42,10 +42,11 @@ $router[] = new Route('prirucka/<action>[#<anchor>]', array(
 ));
 
 $router[] = Accountancy_BasePresenter::createRoutes();
-$router[] = new SimpleRouter('Default:default');
+$router[] = new MySimpleRouter('Default:default', Route::SECURED);
 
 $container->router = $router;
 
+//Route::$defaultFlags |= Route::SECURED;
 
 
 //if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
