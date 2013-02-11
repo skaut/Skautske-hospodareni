@@ -49,7 +49,7 @@ class Accountancy_Event_BasePresenter extends Accountancy_BasePresenter {
         
         $prefix .= "akce/";
 
-        $router[] = new Route($prefix . '<aid [0-9]+>/<presenter>/[<action>/]', array(
+        $router[] = new MyRoute($prefix . '<aid [0-9]+>/<presenter>/[<action>/]', array(
                     'presenter' => array(
                         Route::VALUE => 'Event',
                         Route::FILTER_TABLE => array(
@@ -57,12 +57,12 @@ class Accountancy_Event_BasePresenter extends Accountancy_BasePresenter {
                             'kniha' => 'Cashbook',
                     )),
                     'action' => "default",
-                ));
+                ), Route::SECURED);
 
-        $router[] = new Route($prefix . '[<presenter>/][<action>/]', array(
+        $router[] = new MyRoute($prefix . '[<presenter>/][<action>/]', array(
                     'presenter' => 'Default',
                     'action' => 'default',
-                ));
+                ), Route::SECURED);
         return $router;
     }
 

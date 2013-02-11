@@ -60,6 +60,7 @@ development < common:
         ###SkautIS
         skautisid : f2197deb-32c8-4192-92d6-f23427757a07 #localhost - bakalarka
         skautisTestMode : true #isTestMode?
+        ssl : false
         #skautisid = 590db6c9-e46b-43bb-b3b7-701cb556b91c #localhost - appOsmnactka
 
 production < common:
@@ -78,6 +79,7 @@ production < common:
         ###SkautIS
         skautisid :  #h.skauting.net
         skautisTestMode : false #isTestMode?
+        ssl : true
         
 #production < common:        
 #    parameters:
