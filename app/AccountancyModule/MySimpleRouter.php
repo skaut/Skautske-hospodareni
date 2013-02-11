@@ -11,6 +11,7 @@
  */
 class MySimpleRouter extends SimpleRouter {
 
+    //upravuje nastavení SSL
     public function constructUrl(PresenterRequest $appRequest, Url $refUrl) {
         $url = parent::constructUrl($appRequest, $refUrl);
         if (!Environment::getVariable("ssl", false) && preg_match("/^https(.*)/", $url, $matches)) {

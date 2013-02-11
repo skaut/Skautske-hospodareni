@@ -23,6 +23,8 @@ $container = $configurator->createContainer();
 // Setup router
 $router = new RouteList;
 $router[] = new MyRoute('index.php', ':Default:default', Route::ONE_WAY & Route::SECURED);
+$router[] = new MyRoute("o-projektu", "Default:about");
+
 $router[] = new MyRoute('sign/<action>[/back-<backlink>]', array(
     "presenter" => "Auth",
     "action" => "default",
