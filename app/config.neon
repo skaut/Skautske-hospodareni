@@ -77,7 +77,7 @@ production < common:
             lazy:     true
 
         ###SkautIS
-        skautisid :  #h.skauting.net
+        skautisid : 08a5328c-4127-4bcb-a9c5-b6945391a6dd #h.skauting.net
         skautisTestMode : false #isTestMode?
         ssl : true
         
