@@ -42,37 +42,6 @@ class ChitService extends MutableBaseService {
     }
 
     /**
-     * 
-     * @param type $actionId
-     * @return type 
-     * @deprecated
-     */
-//    public function getAllOut($actionId) {
-//        $data = $this->table->getAll($actionId);
-//        $res = array();
-//        foreach ($data as $i) {
-//            if ($i->ctype == "out")
-//                $res[] = $i;
-//        }
-//        return $res;
-//    }
-//
-//    /**
-//     * vrací seznam příjmových dokladů
-//     * @param type $actionId
-//     * @return array 
-//     */
-//    public function getAllIncome($actionId) {
-//        $data = $this->table->getAll($actionId);
-//        $res = array();
-//        foreach ($data as $i) {
-//            if ($i->ctype == "in")
-//                $res[] = $i;
-//        }
-//        return $res;
-//    }
-
-    /**
      * vrací pole paragonů s ID zadanými v $list
      * použití - hromadný tisk
      * @param type $actionId
