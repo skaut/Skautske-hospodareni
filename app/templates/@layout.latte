@@ -63,12 +63,12 @@
                             {/if}
                         </ul>
                         <p class="navbar-text pull-right" n:inner-if="$user->isLoggedIn()">
-                            Role: <select onchange="changeRole(this.value)" class="roleSelect">
-                                <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->DisplayName}</option>
+                            <select onchange="changeRole(this.value)" class="roleSelect input-large">
+                                <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->RegistrationNumber} - {$r->Role}</option>
                             </select>
-                            <a n:href=":Auth:logoutSis">Odhlásit se</a>
+                            <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small">Odhlásit se</a>
                         {else}
-                            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL">Přihlásit se</a>
+                            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-small">Přihlásit se</a>
                         </p>
 
                       </div><!--/.nav-collapse -->
@@ -91,7 +91,7 @@
             <hr style="clear: both" />
             <footer>
                 <a n:href=":Default:about">O projektu</a> / 
-                Vytvořil <a href="http://sinacek.cz">Sináček.cz</a> z <a href="http://osmnactka.net">18. skautského střediska Kruh Praha 6</a>
+                Vytvořil <a href="http://sinacek.cz">Sináček.cz</a> z <a href="http://osmnactka.net">18. střediska Kruh Praha 6</a>
             </footer>
         </div> <!-- /container -->
     </body>
