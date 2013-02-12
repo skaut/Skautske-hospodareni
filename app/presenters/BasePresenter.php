@@ -2,9 +2,6 @@
 
 abstract class BasePresenter extends Presenter {
 
-//    public $oldLayoutMode = FALSE;
-//    public $oldModuleMode = FALSE;
-
     protected function startup() {
         parent::startup();
         // Zapnutí session (pokud neběží)
@@ -31,6 +28,7 @@ abstract class BasePresenter extends Presenter {
             $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
             $this->template->myRole = $this->context->userService->getRoleId();
         }
+//        $this->template->cntActiveEvents = $this->context->eventService->event->getCountOfActiveEvents();
     }
 
     //upravuje roli ve skautISu
