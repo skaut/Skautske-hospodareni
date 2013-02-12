@@ -299,6 +299,14 @@ class EventService extends MutableBaseService {
         }
         return $arg->{"ID_Event" . self::$typeName . "State"} == "draft" ? TRUE : FALSE;
     }
+    
+    /**
+     * vrací počet událostí s vyplněným záznamem v pokladní kníze, který nebyl smazán
+     * @return int počet událostí se záznamem
+     */
+    public function getCountOfActiveEvents(){
+        return dibi::query("SELECT COUNT(DISTINCT actionId) FROM [".BaseTable::TABLE_CHIT."] WHERE deleted = 0")->fetchSingle();
+    }
 
 }
 
