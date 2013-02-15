@@ -1,10 +1,14 @@
 <?php
 
+namespace AccountancyModule\CampModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author Hána František
  * účastníci
  */
-class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresenter {
+class ParticipantPresenter extends BasePresenter {
 
     /**
      * číslo aktuální jendotky
@@ -141,7 +145,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
     }
 
     public function createComponentFormEditParticipant($name) {
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addText("days", "Dní");
         $form->addText("payment", "Částka");
         $form->addText("repayment", "Vratka");
@@ -153,7 +157,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         return $form;
     }
 
-    public function formEditParticipantSubmitted(AppForm $form) {
+    public function formEditParticipantSubmitted(Form $form) {
         if (!array_key_exists("EV_ParticipantCamp_UPDATE_EventCamp", $this->availableActions)) {
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
@@ -177,7 +181,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         $participants = $this->context->campService->participants->getAll($this->aid);
         $all = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
 
         $group = $form->addContainer('all');
         foreach ($all as $id => $p) {
@@ -189,7 +193,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         return $form;
     }
 
-    public function formMassAddSubmitted(AppForm $form) {
+    public function formMassAddSubmitted(Form $form) {
         if (!array_key_exists("EV_ParticipantCamp_INSERT_EventCamp", $this->availableActions)) {
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
@@ -207,7 +211,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
     public function createComponentFormMassParticipants($name) {
         $participants = $this->context->campService->participants->getAll($this->aid);
 
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
 
         $group = $form->addContainer('ids');
         foreach ($participants as $id => $p) {
@@ -276,11 +280,11 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
     /**
      * formulář na přidání nové osoby
      * @param string $name
-     * @return AppForm
+     * @return Form
      */
     function createComponentFormAddParticipantNew($name) {
         $aid = $this->presenter->aid;
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addText("firstName", "Jméno")
                 ->addRule(Form::FILLED, "Musíš vyplnit křestní jméno.");
         $form->addText("lastName", "Příjmení")
@@ -296,7 +300,7 @@ class Accountancy_Camp_ParticipantPresenter extends Accountancy_Camp_BasePresent
         return $form;
     }
 
-    public function formAddParticipantNewSubmitted(AppForm $form) {
+    public function formAddParticipantNewSubmitted(Form $form) {
         if (!array_key_exists("EV_ParticipantCamp_INSERT_EventCamp", $this->availableActions)) {
             $this->flashMessage("Nemáte právo přidávat nové účastníky.", "danger");
             $this->redirect("Default:");

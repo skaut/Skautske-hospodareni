@@ -1,5 +1,9 @@
 <?php
 
+namespace WebLoader\Nette;
+
+use WebLoader\Compiler;
+use WebLoader\FileCollection;
 
 /**
  * Web loader
@@ -7,7 +11,7 @@
  * @author Jan Marek
  * @license MIT
  */
-abstract class WebLoader extends Control
+abstract class WebLoader extends \Nette\Application\UI\Control
 {
 
 	/** @var \WebLoader\Compiler */
@@ -78,16 +82,21 @@ abstract class WebLoader extends Control
 
 		// remote files
 		foreach ($this->compiler->getFileCollection()->getRemoteFiles() as $file) {
-			echo $this->getElement($file);
+			echo $this->getElement($file), PHP_EOL;
 		}
 
 		foreach ($this->compiler->generate() as $file) {
-			echo $this->getElement($this->tempPath . '/' . $file->file . '?' . $file->lastModified);
+			echo $this->getElement($this->getGeneratedFilePath($file)), PHP_EOL;
 		}
 
 		if ($hasArgs) {
 			$this->compiler->setFileCollection($backup);
 		}
+	}
+
+	protected function getGeneratedFilePath($file)
+	{
+		return $this->tempPath . '/' . $file->file . '?' . $file->lastModified;
 	}
 
 }

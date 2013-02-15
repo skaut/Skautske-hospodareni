@@ -1,9 +1,13 @@
 <?php
 
+namespace AccountancyModule\EventModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author sinacek
  */
-class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter {
+class DefaultPresenter extends BasePresenter {
 
     public $ses;
 
@@ -92,7 +96,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
             $years[$y] = $y;
         }
 
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
@@ -102,7 +106,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         return $form;
     }
 
-    function formFilterSubmitted(AppForm $form) {
+    function formFilterSubmitted(Form $form) {
         $v = $form->getValues();
         $this->ses->year = $v['year'];
         $this->ses->state = $v['state'];
@@ -117,7 +121,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         foreach ($this->context->unitService->getChild($tmpId) as $u)
             $units[$u->ID] = "» ".$u->SortName;
 
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addText("name", "Název akce")
                 ->addRule(Form::FILLED, "Musíte vyplnit název akce");
         $form->addDatePicker("start", "Od")
@@ -136,7 +140,7 @@ class Accountancy_Event_DefaultPresenter extends Accountancy_Event_BasePresenter
         return $form;
     }
 
-    function formCreateSubmitted(AppForm $form) {
+    function formCreateSubmitted(Form $form) {
         if (!array_key_exists("EV_EventGeneral_INSERT", $this->availableActions)) {
             $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
             $this->redirect("this");

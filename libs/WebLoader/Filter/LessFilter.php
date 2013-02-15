@@ -20,7 +20,7 @@ class LessFilter
 	{
 		// lazy loading
 		if (empty($this->lc)) {
-			$this->lc = new lessc();
+			$this->lc = new \lessc();
 		}
 
 		return $this->lc;

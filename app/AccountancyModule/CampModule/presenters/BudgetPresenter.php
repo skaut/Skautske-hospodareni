@@ -1,9 +1,11 @@
 <?php
 
+namespace AccountancyModule\CampModule;
+
 /**
  * @author sinacek
  */
-class Accountancy_Camp_BudgetPresenter extends Accountancy_Camp_BasePresenter {
+class BudgetPresenter extends BasePresenter {
 
     function startup() {
         parent::startup();

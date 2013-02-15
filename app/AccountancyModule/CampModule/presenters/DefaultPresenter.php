@@ -1,9 +1,13 @@
 <?php
 
+namespace AccountancyModule\CampModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author sinacek
  */
-class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter {
+class DefaultPresenter extends BasePresenter {
 
     public $ses;
 
@@ -63,7 +67,7 @@ class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter {
             $years[$y] = $y;
         }
 
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
@@ -73,7 +77,7 @@ class Accountancy_Camp_DefaultPresenter extends Accountancy_Camp_BasePresenter {
         return $form;
     }
 
-    function formFilterSubmitted(AppForm $form) {
+    function formFilterSubmitted(Form $form) {
         $v = $form->getValues();
         $this->ses->year = $v['year'];
         $this->ses->state = $v['state'];

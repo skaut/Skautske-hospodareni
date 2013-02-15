@@ -1,5 +1,8 @@
 <?php
 
+use Nette\ArrayHash,
+    Nette\Templating\FileTemplate;
+
 /**
  * @author Hána František
  */
@@ -13,9 +16,9 @@ class ExportService extends BaseService {
     protected function getTemplate($fileName) {
         $template = new FileTemplate();
         $template->setFile($fileName);
-        $template->registerHelperLoader('TemplateHelpers::loader');
+        $template->registerHelperLoader('Nette\Templating\Helpers::loader');
         $template->registerHelperLoader('AccountancyHelpers::loader');
-        $template->registerFilter(new LatteFilter());
+        $template->registerFilter(new Nette\Latte\Engine);
         return $template;
     }
 

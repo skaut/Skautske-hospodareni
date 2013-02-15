@@ -1,9 +1,13 @@
 <?php
 
+namespace AccountancyModule\TravelModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author sinacek
  */
-class Accountancy_Travel_ContractPresenter extends Accountancy_Travel_BasePresenter {
+class ContractPresenter extends \BasePresenter {
 
     
     function startup() {
@@ -44,10 +48,10 @@ class Accountancy_Travel_ContractPresenter extends Accountancy_Travel_BasePresen
     /**
      * formular na zalozeni nove smlouvy
      * @param type $name
-     * @return \AppForm 
+     * @return \Form 
      */
     function createComponentFormCreateContract($name) {
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addText("unit_person", "Zástupce jednotky*")
                 ->addRule(Form::FILLED, "Musíte vyplnit zátupce jednotky.");
         $form->addText("driver_name", "Jméno a příjmení řidiče*")
@@ -69,7 +73,7 @@ class Accountancy_Travel_ContractPresenter extends Accountancy_Travel_BasePresen
         return $form;
     }
 
-    function formCreateContractSubmitted(AppForm $form) {
+    function formCreateContractSubmitted(Form $form) {
         $v = $form->getValues();
         $v->unit_id = $this->unit->ID;
         if($this->context->travelService->addContract($v))

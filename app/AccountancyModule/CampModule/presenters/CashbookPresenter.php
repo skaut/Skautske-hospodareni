@@ -1,9 +1,13 @@
 <?php
 
+namespace AccountancyModule\CampModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author sinacek
  */
-class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter {
+class CashbookPresenter extends BasePresenter {
 
     function startup() {
         parent::startup();
@@ -84,7 +88,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
     }
 
     function createComponentFormMass($name) {
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $chits = $this->context->campService->chits->getAll($this->aid);
 
         $group = $form->addContainer('chits');
@@ -99,7 +103,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
         return $form;
     }
 
-    function massPrintSubmitted(SubmitButton $btn) {
+    function massPrintSubmitted(\Nette\Forms\Controls\SubmitButton $btn) {
         $values = $btn->getForm()->getValues();
         $selected = array();
         foreach ($values['chits'] as $id => $bool) {
@@ -125,7 +129,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
     /**
      * formular na úpravu výdajových dokladů
      * @param string $name
-     * @return AppForm 
+     * @return Form 
      */
     function createComponentFormOutEdit($name) {
         $form = self::makeFormOUT($this, $name);
@@ -137,13 +141,13 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
     }
 
     /**
-     * generuje základní AppForm pro ostatní formuláře
+     * generuje základní Form pro ostatní formuláře
      * @param Presenter $thisP
      * @param <type> $name
-     * @return AppForm
+     * @return Form
      */
     protected static function makeFormOUT($thisP, $name) {
-        $form = new AppForm($thisP, $name);
+        $form = new Form($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
 //                ->setAttribute('autofocus')
@@ -186,7 +190,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
     }
 
     protected static function makeFormIn($thisP, $name) {
-        $form = new AppForm($thisP, $name);
+        $form = new Form($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("input-medium");
@@ -210,9 +214,9 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
 
     /**
      * přidává paragony všech kategorií
-     * @param AppForm $form 
+     * @param Form $form 
      */
-    function formAddSubmitted(AppForm $form) {
+    function formAddSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
 
@@ -234,7 +238,7 @@ class Accountancy_Camp_CashbookPresenter extends Accountancy_Camp_BasePresenter 
         }
     }
 
-    function formEditSubmitted(AppForm $form) {
+    function formEditSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
         $id = $values['id'];

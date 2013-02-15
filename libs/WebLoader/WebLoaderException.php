@@ -7,7 +7,7 @@ namespace WebLoader;
  *
  * @author Jan Marek
  */
-class WebLoaderException extends Exception
+class WebLoaderException extends \Exception
 {
 
 }

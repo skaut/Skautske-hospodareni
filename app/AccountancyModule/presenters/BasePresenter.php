@@ -1,9 +1,15 @@
 <?php
 
+namespace AccountancyModule;
+
+use Nette\Application\Routers\Route,
+    Nette\Application\Routers\RouteList,
+    Extras\Sinacek\MyRoute;
+
 /**
  * @author sinacek
  */
-class Accountancy_BasePresenter extends BasePresenter {
+class BasePresenter extends \BasePresenter {
 
     /**
      * backlink
@@ -15,14 +21,13 @@ class Accountancy_BasePresenter extends BasePresenter {
      * @var int
      */
     protected $aid;
-    
-    
+
     /**
      * je akci možné upravovat?
      * @var bool
      */
     protected $isEditable;
-    
+
     /**
      * pole dostupných událostí s indexi podle SkautISu
      * @var array
@@ -34,9 +39,9 @@ class Accountancy_BasePresenter extends BasePresenter {
 
         if (!$this->user->isLoggedIn()) {
             $this->backlink = $this->storeRequest('+ 3 days');
-            if($this->isAjax()){
+            if ($this->isAjax()) {
                 $this->forward(":Auth:ajax", array("backlink" => $this->backlink));
-            }  else {
+            } else {
                 $this->redirect(":Default:", array("backlink" => $this->backlink));
             }
         }
@@ -46,7 +51,7 @@ class Accountancy_BasePresenter extends BasePresenter {
         parent::beforeRender();
         $this->template->registerHelperLoader("AccountancyHelpers::loader");
     }
-    
+
     protected function editableOnly() {
         throw new NotImplementedException("Implementují jednotlivé moduly");
 //        if (!$this->isEditable) {
@@ -67,17 +72,16 @@ class Accountancy_BasePresenter extends BasePresenter {
     static function createRoutes($prefix = "") {
         $router = new RouteList("Accountancy");
 //        $prefix .= "ucto/";
-        $router[] = Accountancy_Camp_BasePresenter::createRoutes();
-        $router[] = Accountancy_Event_BasePresenter::createRoutes();
-        $router[] = Accountancy_Travel_BasePresenter::createRoutes();
-        
+        $router[] = CampModule\BasePresenter::createRoutes();
+        $router[] = EventModule\BasePresenter::createRoutes();
+        $router[] = TravelModule\BasePresenter::createRoutes();
+
         $router[] = new MyRoute($prefix . '<module>/<presenter>[/<action>]', array(
                     'module' => "Accountancy",
                     'action' => 'default',
-                ), Route::SECURED);
+                        ), Route::SECURED);
 
         return $router;
-        
     }
 
 }

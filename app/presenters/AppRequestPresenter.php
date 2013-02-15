@@ -4,6 +4,8 @@
  * @author sinacek
  */
 class AppRequestPresenter extends BasePresenter {
+
+use Nette\Application\UI\Form;
     
     const REQUEST_EMAIL = "ondrej.perina@junak.cz";
     const _EMAIL = "ondrej.perina@junak.cz";
@@ -46,7 +48,7 @@ class AppRequestPresenter extends BasePresenter {
     }
 
     public function createComponentAddForm($name) {
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addText("name", "Název aplikace")
                 ->addRule(Form::FILLED, "Zadej název aplikace");
         $form->addCheckbox("isTest", "Testovací režim?")
@@ -79,7 +81,7 @@ class AppRequestPresenter extends BasePresenter {
         return $form;
     }
 
-    public function addFormSubmitted(AppForm $form) {
+    public function addFormSubmitted(Form $form) {
         $values = $form->values;
         
         foreach ($this->wsdl as $key => $value) {//ziska zakrtnute pole

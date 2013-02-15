@@ -1,5 +1,9 @@
 <?php
 
+namespace WebLoader\Nette;
+
+use Nette\Utils\Html;
+
 /**
  * JavaScript loader
  *

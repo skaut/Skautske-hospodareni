@@ -1,4 +1,5 @@
 <?php
+use Nette\Object;
 
 /**
  * @author Hána František

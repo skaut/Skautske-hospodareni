@@ -1,9 +1,13 @@
 <?php
 
+namespace AccountancyModule\TravelModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author Hána František
  */
-class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresenter {
+class DefaultPresenter extends \BasePresenter {
 
     function startup() {
         parent::startup();
@@ -131,7 +135,7 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         $contracts = $this->context->travelService->getAllContractsPairs($this->unit->ID);
         $vehicles = $this->context->travelService->getVehiclesPairs($this->unit->ID);
 
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addSelect("contract_id", "Smlouva", $contracts)
                 ->setPrompt("Vyberte smlouvu")
                 ->addRule(Form::FILLED, "Musíte vybrat smlouvu");
@@ -159,7 +163,7 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         return $form;
     }
 
-    function formCreateCommandSubmitted(AppForm $form) {
+    function formCreateCommandSubmitted(Form $form) {
         $v = $form->getValues();
         if (!$this->isContractAccessible($v['contract_id'])) {
             $this->flashMessage("Nemáte právo založit cestovní příkaz.", "danger");
@@ -179,7 +183,7 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         return $form;
     }
 
-    function formEditCommandSubmitted(AppForm $form) {
+    function formEditCommandSubmitted(Form $form) {
         $v = $form->getValues();
         $id = $v['id'];
         unset($v['id']);
@@ -197,7 +201,7 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
     }
 
     public function createComponentFormAddTravel($name) {
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->getElementPrototype()->class("form-inline");
         $form->addHidden("command_id");
         $form->addDatePicker("start_date", "Datum cesty")
@@ -218,7 +222,7 @@ class Accountancy_Travel_DefaultPresenter extends Accountancy_Travel_BasePresent
         return $form;
     }
 
-    function formAddTravelSubmitted(AppForm $form) {
+    function formAddTravelSubmitted(Form $form) {
         $v = $form->getValues();
         $commandId = $v['command_id'];
         if (!$this->isCommandEditable($commandId)) {

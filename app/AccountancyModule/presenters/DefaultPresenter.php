@@ -1,9 +1,11 @@
 <?php
 
+namespace AccountancyModule;
+
 /**
  * @author sinacek
  */
-class Accountancy_DefaultPresenter extends Accountancy_BasePresenter  {
+class DefaultPresenter extends \BasePresenter  {
 
     /**
      * pouze přesměrovává na jiný presenter

@@ -1,10 +1,14 @@
 <?php
 
+namespace AccountancyModule\EventModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author Hána František
  * akce
  */
-class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
+class EventPresenter extends BasePresenter {
 
     public function renderDefault($aid) {
         if ($aid == NULL) {
@@ -130,7 +134,7 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
         $scopes = $this->context->eventService->event->getScopes();
         $types = $this->context->eventService->event->getTypes();
 
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addText("name", "Název akce");
         $form->addDatePicker("start", "Od");
         $form->addDatePicker("end", "Do");
@@ -145,7 +149,7 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
         return $form;
     }
 
-    function formEditSubmitted(AppForm $form) {
+    function formEditSubmitted(Form $form) {
 
         if (!array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions)) {
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
@@ -184,7 +188,7 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
     function createComponentFormAddFunction($name) {
         $combo = $this->context->memberService->getCombobox(NULL, TRUE);
 
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addSelect("person", NULL, $combo)
                 ->setPrompt("Vyber")
                 ->getControlPrototype()->setClass("combobox");
@@ -197,7 +201,7 @@ class Accountancy_Event_EventPresenter extends Accountancy_Event_BasePresenter {
         return $form;
     }
 
-    function formAddFunctionSubmitted(AppForm $form) {
+    function formAddFunctionSubmitted(Form $form) {
         if (!array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions)) {
             $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
             $this->redirect("this");

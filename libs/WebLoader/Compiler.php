@@ -1,5 +1,7 @@
 <?php
 
+namespace WebLoader;
+
 /**
  * Compiler
  *
@@ -26,6 +28,9 @@ class Compiler
 	/** @var IOutputNamingConvention */
 	private $namingConvention;
 
+	/** @var bool */
+	private $checkLastModified = true;
+
 	public function __construct(IFileCollection $files, IOutputNamingConvention $convention, $outputDir)
 	{
 		$this->collection = $files;
@@ -41,7 +46,7 @@ class Compiler
 	 */
 	public static function createCssCompiler(IFileCollection $files, $outputDir)
 	{
-		return new Compiler($files, DefaultOutputNamingConvention::createCssConvention(), $outputDir);
+		return new static($files, DefaultOutputNamingConvention::createCssConvention(), $outputDir);
 	}
 
 	/**
@@ -52,7 +57,7 @@ class Compiler
 	 */
 	public static function createJsCompiler(IFileCollection $files, $outputDir)
 	{
-		return new Compiler($files, DefaultOutputNamingConvention::createJsConvention(), $outputDir);
+		return new static($files, DefaultOutputNamingConvention::createJsConvention(), $outputDir);
 	}
 
 	/**
@@ -102,6 +107,15 @@ class Compiler
 	}
 
 	/**
+	 * Set check last modified
+	 * @param bool $checkLastModified
+	 */
+	public function setCheckLastModified($checkLastModified)
+	{
+		$this->checkLastModified = (bool) $checkLastModified;
+	}
+
+	/**
 	 * Get last modified timestamp of newest file
 	 * @param array $files
 	 * @return int
@@ -135,7 +149,7 @@ class Compiler
 		// load content
 		$content = '';
 		foreach ($files as $file) {
-			$content .= $this->loadFile($file);
+			$content .= PHP_EOL . $this->loadFile($file);
 		}
 
 		// apply filters
@@ -172,7 +186,7 @@ class Compiler
 	{
 		$name = $this->namingConvention->getFilename($files, $this);
 		$path = $this->outputDir . '/' . $name;
-		$lastModified = $this->getLastModified($files);
+		$lastModified = $this->checkLastModified ? $this->getLastModified($files) : 0;
 
 		if (!$ifModified || !file_exists($path) || $lastModified > filemtime($path)) {
 			$outPath = in_array('safe', stream_get_wrappers()) ? 'safe://' . $path : $path;
@@ -181,7 +195,8 @@ class Compiler
 
 		return (object) array(
 			'file' => $name,
-			'lastModified' => $lastModified
+			'lastModified' => $lastModified,
+			'sourceFiles' => $files,
 		);
 	}
 
