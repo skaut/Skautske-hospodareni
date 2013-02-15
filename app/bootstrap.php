@@ -5,14 +5,13 @@ use Nette\Application\Routers\RouteList,
     Extras\Sinacek\MyRoute,
     Extras\Sinacek\MySimpleRouter;
 
-function shutdown_error() {
-    $error = error_get_last();
-    if ($error['type'] & (E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_PARSE)) {
-        echo $error['type'];
-    }
-}
-
-register_shutdown_function('shutdown_error');
+//function shutdown_error() {
+//    $error = error_get_last();
+//    if ($error['type'] & (E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_PARSE)) {
+//        echo $error['type'];
+//    }
+//}
+//register_shutdown_function('shutdown_error');
 
 require LIBS_DIR . '/Nette/loader.php';
 
