@@ -1,10 +1,12 @@
 <?php
 
+namespace AccountancyModule\CampModule;
+
 /**
  * @author Hána František
  * akce
  */
-class Accountancy_Camp_DetailPresenter extends Accountancy_Camp_BasePresenter  {
+class DetailPresenter extends BasePresenter  {
     
     public function renderDefault($aid) {
         //nastavení dat do formuláře pro editaci

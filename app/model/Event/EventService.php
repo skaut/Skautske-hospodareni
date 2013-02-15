@@ -1,5 +1,7 @@
 <?php
 
+use Nette\Caching\Cache;
+
 /**
  * @author Hána František
  */

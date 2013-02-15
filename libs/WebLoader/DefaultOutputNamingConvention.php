@@ -1,5 +1,6 @@
 <?php
 
+namespace WebLoader;
 
 /**
  * DefaultNamingConvention
@@ -20,7 +21,7 @@ class DefaultOutputNamingConvention implements IOutputNamingConvention
 	 */
 	public static function createCssConvention()
 	{
-		$convention = new DefaultOutputNamingConvention();
+		$convention = new static();
 		$convention->setPrefix('cssloader-');
 		$convention->setSuffix('.css');
 
@@ -32,7 +33,7 @@ class DefaultOutputNamingConvention implements IOutputNamingConvention
 	 */
 	public static function createJsConvention()
 	{
-		$convention = new DefaultOutputNamingConvention();
+		$convention = new static();
 		$convention->setPrefix('jsloader-');
 		$convention->setSuffix('.js');
 

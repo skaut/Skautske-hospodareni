@@ -1,9 +1,13 @@
 <?php
 
+namespace AccountancyModule\TravelModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author sinacek
  */
-class Accountancy_Travel_VehiclePresenter extends Accountancy_Travel_BasePresenter {
+class VehiclePresenter extends \BasePresenter {
 
     function startup() {
         parent::startup();
@@ -45,7 +49,7 @@ class Accountancy_Travel_VehiclePresenter extends Accountancy_Travel_BasePresent
     }
 
     protected function makeVehicleForm($name) {
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addText("type", "Typ*")
                 ->addRule(Form::FILLED, "Musíte vyplnit typ.");
         $form->addText("spz", "SPZ*")
@@ -63,7 +67,7 @@ class Accountancy_Travel_VehiclePresenter extends Accountancy_Travel_BasePresent
         return $form;
     }
 
-    function formCreateVehicleSubmitted(AppForm $form) {
+    function formCreateVehicleSubmitted(Form $form) {
         $v = $form->getValues();
         $v['unit_id'] = $this->unit->ID;
         $this->context->travelService->addVehicle($v);

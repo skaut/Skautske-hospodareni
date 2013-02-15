@@ -1,9 +1,13 @@
 <?php
 
+namespace AccountancyModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author sinacek
  */
-class Accountancy_TestPresenter extends Accountancy_BasePresenter {
+class TestPresenter extends \AccountancyModule\BasePresenter {
 
     public $wsdl;
     protected $service;
@@ -48,7 +52,7 @@ class Accountancy_TestPresenter extends Accountancy_BasePresenter {
     }
 
     public function createComponentTestForm($name) {
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->getElementPrototype()->class("aja");
         $form->addSelect("wsdl", "WSDL", $this->wsdl)
                 ->addRule(Form::FILLED, "Musís vybrat WSDL");
@@ -71,7 +75,7 @@ class Accountancy_TestPresenter extends Accountancy_BasePresenter {
         return $form;
     }
 
-    public function testFormSubmitted(AppForm $form) {
+    public function testFormSubmitted(Form $form) {
         $sess = &$this->session->getSection("sisTest");
 
         $values = $form->getValues();

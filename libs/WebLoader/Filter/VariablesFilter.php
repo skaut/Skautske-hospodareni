@@ -1,5 +1,6 @@
 <?php
 
+namespace WebLoader\Filter;
 
 /**
  * Variables filter for WebLoader
@@ -83,7 +84,7 @@ class VariablesFilter
 		if (array_key_exists($name, $this->variables)) {
 			return $this->variables[$name];
 		} else {
-			throw new InvalidArgumentException("Variable '$name' is not set.");
+			throw new \WebLoader\InvalidArgumentException("Variable '$name' is not set.");
 		}
 	}
 

@@ -1,5 +1,6 @@
 <?php
 
+namespace WebLoader\Filter;
 
 /**
  * Absolutize urls in CSS
@@ -25,7 +26,7 @@ class CssUrlsFilter
 		$this->docRoot = realpath($docRoot);
 
 		if (!is_dir($this->docRoot)) {
-			throw new InvalidArgumentException('Given document root is not directory.');
+			throw new \WebLoader\InvalidArgumentException('Given document root is not directory.');
 		}
 
 		$this->basePath = $basePath;

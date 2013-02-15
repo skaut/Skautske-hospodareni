@@ -1,10 +1,14 @@
 <?php
 
+namespace AccountancyModule\EventModule;
+
+use Nette\Application\UI\Form;
+
 /**
  * @author Hána František
  * účastníci
  */
-class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePresenter {
+class ParticipantPresenter extends BasePresenter {
 
     /**
      * číslo aktuální jendotky
@@ -36,11 +40,11 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
         $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
-        function cmpParticipants($a, $b) {/* setrizeni podle abecedy */
-            return strcasecmp($a->Person, $b->Person);
-        }
+        
 
-        usort($participants, "cmpParticipants");
+        usort($participants, function($a, $b) {/* setrizeni podle abecedy */
+            return strcasecmp($a->Person, $b->Person);
+        });
         natcasesort($list);
 
         $this->template->participants = $participants;
@@ -155,7 +159,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 //    }
 
     public function createComponentFormEditParticipant($name) {
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addText("days", "Dní");
         $form->addText("payment", "Částka");
         $form->addHidden("user");
@@ -165,7 +169,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         return $form;
     }
 
-    public function formEditParticipantSubmitted(AppForm $form) {
+    public function formEditParticipantSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
         $arr = array(
@@ -188,7 +192,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         $participants = $this->context->eventService->participants->getAll($this->aid);
         $all = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
 
         $group = $form->addContainer('all');
         foreach ($all as $id => $p) {
@@ -200,7 +204,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         return $form;
     }
 
-    public function formMassAddSubmitted(AppForm $form) {
+    public function formMassAddSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
 
@@ -214,7 +218,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
     public function createComponentFormMassParticipants($name) {
         $participants = $this->context->eventService->participants->getAll($this->aid);
         
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $group = $form->addContainer('ids');
         foreach ($participants as $id => $p) {
             $group->addCheckbox($p->ID, $p->Person);
@@ -263,7 +267,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 //        $participants = $this->context->eventService->participants->getAllParticipant($this->aid, TRUE);
 //        $all = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 //
-//        $form = new AppForm($this, $name);
+//        $form = new Form($this, $name);
 //        $form->addSelect("user", "Jméno", (array) $all)
 //                ->setPrompt("Vyber");
 //        $form->addHidden("aid", $aid);
@@ -276,7 +280,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 //        return $form;
 //    }
 //
-//    public function formFindByNameSubmitted(AppForm $form) {
+//    public function formFindByNameSubmitted(Form $form) {
 //        $this->editableOnly();
 //        $values = $form->getValues();
 //        $aid = $values['aid'];
@@ -292,7 +296,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 //    }
 //    function createComponentFormAddPaymentMass($name) {
 //        $aid = $this->presenter->aid;
-//        $form = new AppForm($this, $name);
+//        $form = new Form($this, $name);
 //        $form->addText("sum", "Částka", NULL, 5)
 //                ->addRule(Form::FILLED, "Zadejte částku")
 //                ->setType('number');
@@ -305,7 +309,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
 //        return $form;
 //    }
 //
-//    public function formAddPaymentMassSubmitted(AppForm $form) {
+//    public function formAddPaymentMassSubmitted(Form $form) {
 //        $this->editableOnly();
 //        $values = $form->getValues();
 //        $aid = $values['aid'];
@@ -321,11 +325,11 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
     /**
      * formulář na přidání nové osoby
      * @param string $name
-     * @return AppForm
+     * @return Form
      */
     function createComponentFormAddParticipantNew($name) {
         $aid = $this->presenter->aid;
-        $form = new AppForm($this, $name);
+        $form = new Form($this, $name);
         $form->addText("firstName", "Jméno")
                 ->addRule(Form::FILLED, "Musíš vyplnit křestní jméno.");
         $form->addText("lastName", "Příjmení")
@@ -342,7 +346,7 @@ class Accountancy_Event_ParticipantPresenter extends Accountancy_Event_BasePrese
         return $form;
     }
 
-    public function formAddParticipantNewSubmitted(AppForm $form) {
+    public function formAddParticipantNewSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
         $aid = $values['aid'];

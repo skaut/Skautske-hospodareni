@@ -3,7 +3,15 @@
  * @author jasir
  * @license WTFPL (http://en.wikipedia.org/wiki/WTFPL)
  */
+namespace Extras\Debug;
 
+use Nette\Object;
+use Nette\Diagnostics\IBarPanel;
+use Nette\Environment;
+use Nette\Diagnostics\Debugger;
+use Nette\Diagnostics\Helpers;
+use Nette\Utils\Html;
+use Nette\Application\Responses\TextResponse;
 
 class RequestsPanel extends Object implements IBarPanel {
 
@@ -23,13 +31,13 @@ class RequestsPanel extends Object implements IBarPanel {
 
 		$presenter = Environment::getApplication()->getPresenter();
 		if ($presenter === NULL) {
-			throw new Exception('You must instantiate RequestsPanel when presenter is available, i.e. in presenter\'s startup method.', E_WARNING);
+			throw new \Exception('You must instantiate RequestsPanel when presenter is available, i.e. in presenter\'s startup method.', E_WARNING);
 		}
 
 		//register panel only once
 		if (!self::$instance) {
 			self::$instance = new RequestsPanel();
-			Debugger::addPanel(self::$instance);
+			Debugger::$bar->addPanel(self::$instance);
 		}
 
 		//but callback for each new presenter
@@ -132,11 +140,10 @@ class RequestsPanel extends Object implements IBarPanel {
 		$entry['info']['signal']    = $signal;
 		$entry['info']['time']      = number_format((microtime(TRUE) - Debugger::$time) * 1000, 1, '.', ' ');
 
-        
-		$entry['dumps']['HttpRequest']       = DebugHelpers::clickableDump($httpRequest);
-		$entry['dumps']['PresenterRequest']  = DebugHelpers::clickableDump($request);
-		$entry['dumps']['Presenter']         = DebugHelpers::clickableDump($presenter);
-		$entry['dumps']['PresenterResponse'] = DebugHelpers::clickableDump($response);
+		$entry['dumps']['HttpRequest']       = Helpers::clickableDump($httpRequest);
+		$entry['dumps']['PresenterRequest']  = Helpers::clickableDump($request);
+		$entry['dumps']['Presenter']         = Helpers::clickableDump($presenter);
+		$entry['dumps']['PresenterResponse'] = Helpers::clickableDump($response);
 
 
 		foreach(self::$dumps as $key => $dump) {

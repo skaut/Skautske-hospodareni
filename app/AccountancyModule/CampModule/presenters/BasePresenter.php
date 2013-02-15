@@ -1,9 +1,15 @@
 <?php
 
+namespace AccountancyModule\CampModule;
+
+use  Nette\Application\Routers\Route,
+    Nette\Application\Routers\RouteList,
+    Extras\Sinacek\MyRoute;
+
 /**
  * @author sinacek
  */
-class Accountancy_Camp_BasePresenter extends Accountancy_BasePresenter {
+class BasePresenter extends \AccountancyModule\BasePresenter {
 
     const STable = "EV_EventCamp";
     
