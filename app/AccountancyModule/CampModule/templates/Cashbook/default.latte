@@ -14,83 +14,97 @@
     {* sekce přidávání paragonů *}
     <div class="span3" n:if="$isEditable">
     {snippet tabs}
-            <ul class="nav nav-tabs" id="chitType">
-              <li class="active"><a data-toggle="tab" href="#vydajovy">Výdajový</a></li>
-              <li><a data-toggle="tab" href="#prijmovy">Příjmový</a></li>
-            </ul>
-        
-            <div class="tab-content" id="chitTypeContent">
-              <div id="vydajovy" class="tab-pane fade active in">
+        <ul class="nav nav-tabs" id="chitType">
+            <li class="active"><a data-toggle="tab" href="#vydajovy">Výdaje</a></li>
+            <li><a data-toggle="tab" href="#prijmovy">Příjmy</a></li>
+        </ul>
+
+        <div class="tab-content" id="chitTypeContent">
+            <div id="vydajovy" class="tab-pane fade active in">
                 {control formOutAdd}
-              </div>
-              <div id="prijmovy" class="tab-pane fade">
-                {control formInAdd}
-              </div>
             </div>
+            <div id="prijmovy" class="tab-pane fade">
+                {control formInAdd}
+            </div>
+        </div>
     {/snippet}    
     </div>
-    
+
     {* sekce seznam paragonů *}
     <div class="span9">
-        <div n:snippet="paragony" style="float: left;">
+        
+        
+        <div n:snippet="paragony">
         {if $list}
-<!--            <p n:if="$isInMinus" class="alert alert-error">
-                Pokladní kniha je v záporných číslech a to nesmí nastat!
-            </p>-->
-            {form formMass}
-            <div class="well well-small"> {* sekce horních tlačítek *}
-                {input printSend}
-                <a n:href="export $aid" class="btn btn-mini btn-info"><i class="icon icon-white icon-print"></i> Exportovat pokladní knihu</a>
+            <div class="row-fluid">
+                <p n:if="$isInMinus" class="alert alert-error">
+                    Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+                </p>
+                {form formMass}
+                <div class="well well-small span6">
+                    <a n:if="$isEditable" n:href="importHpd $aid" class="btn btn-mini btn-primary">Importovat HPD</a>
+                    {input printSend}
+                    <a n:href="export $aid" class="btn btn-mini btn-info">Exportovat pokladní knihu</a>
+                </div>
             </div>
             
-            <table class="table myTable table-bordered table-condensed" id="cashbookTable">
-                <thead>
-                    <tr>
-                        <th style="width:{if $isEditable}120{else}60{/if}px"><input type="checkbox" id="checkChits" onclick="jqCheckAll(this.id, 'chits')" /></th>
-                        <th>Ze dne</th>
-                        <th>Účel výplaty</th>
-                        <th>Typ</th>
-                        <th>Komu/Od</th>
-                        <th>Příjem</th>
-                        <th>Výdej</th>
-                        <th>Zůstatek</th>
-                    </tr>
-                </thead>
-                <tbody>
-        {assign $balance => 0}
-                {foreach $list as $key => $item}
-                    {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
-                    <tr{if $balance < 0} class="alert alert-error"{/if}>
-                        <td>
-                            {input chits-$item->id}
-                            <a n:if="$isEditable" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-primaty"><i class="icon icon-edit icon-white"></i></a>
-                            <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
-                            <a n:href="print $item->id, $aid" class="btn btn-mini btn-info"><i class="icon icon-print icon-white"></i></a>
-                        </td>
-                        <td>{$item->date|date:"d.m.Y"}</td>
-                        <td>{$item->purpose|truncate:"30"}</td>
-                        <td title="{$item->clabel}">{$item->cshort}</td>
-                        <td>{$item->recipient}</td>
-                        <td class="r">{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
-                        <td class="r">{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
-                        <td class="r">{$balance|price}</td>
-                    </tr>
-                    {/foreach}
-                    <tr {if $balance < 0}class="alert alert-error"{/if}>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td><b>Konečný stav</b></td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td><b>{$balance|price}</b></td>
-                    </tr>
-                <tbody>
-            </table>
+            <div class="row-fluid">
+                <table class="table myTable table-bordered table-condensed" id="cashbookTable">
+                    <thead>
+                        <tr>
+                            <th style="width:{if $isEditable}120{else}60{/if}px"><input type="checkbox" id="checkChits" onclick="jqCheckAll(this.id, 'chits')" /></th>
+                            <th>Ze dne</th>
+                            <th>Účel výplaty</th>
+                            <th>Typ</th>
+                            <th>Komu/Od</th>
+                            <th>Příjem</th>
+                            <th>Výdej</th>
+                            <th>Zůstatek</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            {assign $balance => 0}
+                    {foreach $list as $key => $item}
+                        {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
+                        <tr{if $balance < 0} class="alert alert-error"{/if}>
+                            <td>
+                                {input chits-$item->id}
+                                <a n:href="print $item->id, $aid" class="btn btn-mini btn-info"><i class="icon icon-print icon-white"></i></a>
+                                <a n:if="$isEditable" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-primary"><i class="icon icon-edit icon-white"></i></a>
+                                <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
+                            </td>
+                            <td>{$item->date|date:"d.m.Y"}</td>
+                            <td>{$item->purpose|truncate:"30"}</td>
+                            <td title="{$item->clabel}">{$item->cshort}</td>
+                            <td>{$item->recipient}</td>
+                            <td class="r">{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
+                            <td class="r">{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
+                            <td class="r">{$balance|price}</td>
+                        </tr>
+                        {/foreach}
+                        <tr {if $balance < 0}class="alert alert-error"{/if}>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td><b>Konečný stav</b></td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td {if $balance < 0}class="isMinus"{/if}><b>{$balance|price}</b></td>
+                        </tr>
+                    <tbody>
+                </table>
+            </div>
             {/form}
         {else}
-            <p class="alert">Nemáte zde žádný doklad</p>
+            <div class="row-fluid">
+                <div class="well well-small span4">
+                    <a n:if="$isEditable" n:href="importHpd $aid" class="btn btn-mini btn-primary">Importovat HPD</a>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <p class="alert span4">Nemáte zde žádný doklad</p>
+            </div>
         {/if}
 
         </div>
@@ -106,17 +120,17 @@
 
         //Autocompleter
         var text = {$autoCompleter};
-        
         var optionsAC = {
             source: text,
-            items: 5,
-            minLength: 2
+            delay: 0,
+            minLength: 2,
+            items: 7
         };
         $('#form-in-recipient').typeahead(optionsAC);
         $('#form-out-recipient').typeahead(optionsAC);
 
         //CALC
-        var priceInputIn  = $('#form-in-price');
+        var priceInputIn = $('#form-in-price');
         var priceInputOut = $('#form-out-price');
         
         //reurn bool
@@ -147,7 +161,7 @@
                     if(val.length < 1)
                         textPlace.html('');
                     else
-                        textPlace.html(eval(val)+'&nbsp;=');
+                        textPlace.html(eval(val)+' =');
                 }
             )
         }

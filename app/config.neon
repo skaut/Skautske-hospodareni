@@ -5,7 +5,7 @@ common:
     nette:
         session:
             autoStart: smart
-            save_path: "%tempDir%/sessions"
+#            save_path: "%tempDir%/sessions"
             expiration: "+ 1 days"
         application:
             catchExceptions: true

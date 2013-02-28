@@ -7,7 +7,7 @@ use Nette\Application\UI\Form;
 /**
  * @author Hána František
  */
-class DefaultPresenter extends \BasePresenter {
+class DefaultPresenter extends BasePresenter {
 
     function startup() {
         parent::startup();

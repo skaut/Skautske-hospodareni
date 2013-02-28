@@ -2,7 +2,8 @@
 
 namespace AccountancyModule\EventModule;
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+    Nette\Forms\Controls\SubmitButton;
 
 /**
  * @author Hána František

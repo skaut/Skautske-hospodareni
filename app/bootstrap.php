@@ -8,7 +8,7 @@ use Nette\Application\Routers\RouteList,
 //function shutdown_error() {
 //    $error = error_get_last();
 //    if ($error['type'] & (E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_PARSE)) {
-//        echo $error['type'];
+//        var_dump($error);
 //    }
 //}
 //register_shutdown_function('shutdown_error');

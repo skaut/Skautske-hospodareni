@@ -2,7 +2,8 @@
 
 namespace AccountancyModule\CampModule;
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+    Nette\Utils\Strings;
 
 /**
  * @author sinacek
@@ -22,17 +23,16 @@ class CashbookPresenter extends BasePresenter {
 //        $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
-        if(!$this->camp->IsRealTotalCostAutoComputed){
+        if (!$this->camp->IsRealTotalCostAutoComputed) {
             $this->template->missingCategories = true;
             $this->template->skautISHttpPrefix = $this->context->skautIS->getHttpPrefix();
-            $this->template->isEditable = false;//zamezení zobrazení formulářů, protoze nemají kategorie
+            $this->template->isEditable = false; //zamezení zobrazení formulářů, protoze nemají kategorie
         }
     }
 
-    
     function renderEdit($id, $aid) {
         $this->editableOnly();
-        
+
         $defaults = $this->context->campService->chits->get($id);
         $defaults['id'] = $id;
         $defaults['price'] = $defaults['priceText'];
@@ -51,6 +51,24 @@ class CashbookPresenter extends BasePresenter {
         $this->template->autoCompleter = $this->context->memberService->getAC();
     }
 
+    public function actionImportHpd($aid) {
+        $this->editableOnly();
+        $totalPayment = $this->context->campService->participants->getTotalPayment($this->aid);
+        $func = $this->context->campService->event->getFunctions($this->aid);
+        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
+        $date = $this->context->campService->event->get($aid)->StartDate;
+        $category = $this->context->campService->chits->getCampCategoryParticipant($aid);
+
+        $values = array("date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category);
+        $add = $this->context->campService->chits->add($this->aid, $values);
+        if ($add) {
+            $this->flashMessage("HPD byl importován");
+        } else {
+            $this->flashMessage("HPD se nepodařilo importovat", "fail");
+        }
+        $this->redirect("default", array("aid" => $aid));
+    }
+
     public function actionExport($aid) {
         $chits = $this->context->campService->chits->getAll($aid);
         $actionInfo = $this->context->campService->event->get($this->aid);
@@ -64,15 +82,15 @@ class CashbookPresenter extends BasePresenter {
     }
 
     function actionPrint($id, $aid) {
-        $actionInfo = $this->context->campService->event->get($this->aid);
-        $chit = $this->context->campService->chits->get($id);
-        $this->context->campService->chits->printChits($this->context->unitService, $this->template, $actionInfo, array($chit), "paragon_" . Strings::webalize($chit->purpose));
+        $chits = array($this->context->campService->chits->get($id));
+        $template = $this->context->exportService->getChits($aid, $this->context->campService, $this->context->unitService, $chits);
+        $this->context->eventService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
 
     function handleRemove($id, $aid) {
         $this->editableOnly();
-        
+
         if ($this->context->campService->chits->delete($id, $aid)) {
             $this->flashMessage("Paragon byl smazán");
         } else {
@@ -206,7 +224,7 @@ class CashbookPresenter extends BasePresenter {
                 ->getControlPrototype()->placeholder("např. 20+15*3")
                 ->class("input-medium");
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
-        
+
         $form->addRadioList("category", "Typ: ", $categories['in'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;

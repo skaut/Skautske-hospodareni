@@ -69,10 +69,7 @@
             {if !empty($participants)}
 
             <div class="well well-small">
-                {*}<a n:if="$isEditable" class="paymentMass btn btn-info btn-small" n:href="addPaymentToChit!">Přidat příjmy do pokl. knihy</a>{*}
-<!--                <a class="btn btn-info btn-small" n:href="hpd $aid" title="Exportovat hromadný příjmový doklad">HPD</a>-->
-                <!--{if $accessUpdateParticipant || $accessDeleteParticipant}<br /><br />{/if}-->
-                <a class="btn btn-info btn-mini" n:href="export $aid"><i class="icon icon-white icon-print"></i> Seznam účastníků</a>
+                <a class="btn btn-info btn-small" n:href="export $aid"><i class="icon icon-white icon-print"></i> Seznam účastníků</a>
             </div>
 
             <table id="participants-list" class="table table-striped table-bordered table-condensed">
