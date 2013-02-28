@@ -7,7 +7,7 @@ use Nette\Application\UI\Form;
 /**
  * @author sinacek
  */
-class ContractPresenter extends \BasePresenter {
+class ContractPresenter extends BasePresenter {
 
     
     function startup() {

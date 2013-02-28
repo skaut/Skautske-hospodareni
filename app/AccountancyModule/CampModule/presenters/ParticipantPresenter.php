@@ -2,7 +2,8 @@
 
 namespace AccountancyModule\CampModule;
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+    Nette\Forms\Controls\SubmitButton;
 
 /**
  * @author Hána František
@@ -40,12 +41,9 @@ class ParticipantPresenter extends BasePresenter {
         $unit = $this->context->unitService->getDetail($this->uid);
         $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
-        //setrizeni podle abecedy
-        function cmpParticipants($a, $b) {
-            return strcasecmp($a->Person, $b->Person);
-        }
-
-        usort($participants, "cmpParticipants");
+        usort($participants, function ($a, $b) {
+                    return strcasecmp($a->Person, $b->Person);
+                });
         natcasesort($list);
 
         $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
@@ -188,7 +186,8 @@ class ParticipantPresenter extends BasePresenter {
             $group->addCheckbox($id, $p);
         }
 
-        $form->addSubmit('massAddSend', 'Přidat vybrané');
+        $form->addSubmit('massAddSend', ' ')
+                ->getControlPrototype()->setName("button")->create('i class="icon-plus icon-white"');
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -235,7 +234,8 @@ class ParticipantPresenter extends BasePresenter {
         //tlačitko smazat vybrané
         $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
                 ->getControlPrototype()
-                ->setOnclick("return confirm('Opravdu chcete odebrat vybrané účastníky?')");
+                ->setName("button")
+                ->create('i class="icon-remove icon-white"');
         $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
 
 //        $form->onSuccess[] = array($this, $name . 'Submitted');
@@ -248,7 +248,7 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
         $values = $button->getForm()->getValues();
-        $data = array("actionId"=>$this->aid);
+        $data = array("actionId" => $this->aid);
         if ($values['isChange']['daysc'])
             $data['days'] = $values['isChange']['days'];
         if ($values['isChange']['paymentc'])

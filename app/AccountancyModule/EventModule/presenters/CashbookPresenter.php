@@ -50,7 +50,7 @@ class CashbookPresenter extends BasePresenter {
         $func = $this->context->eventService->event->getFunctions($this->aid);
         $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
         $date = $this->context->eventService->event->get($aid)->StartDate;
-        $category = $this->context->eventService->chits->getCategoryParticipant();
+        $category = $this->context->eventService->chits->getEventCategoryParticipant();
         
         $values = array("date"=>$date, "recipient"=>$hospodar, "purpose"=>"účastnické příspěvky", "price"=>$totalPayment, "category"=>$category);
         $add = $this->context->eventService->chits->add($this->aid, $values);
@@ -71,8 +71,8 @@ class CashbookPresenter extends BasePresenter {
     function actionPrint($id, $aid) {
         $chits = array($this->context->eventService->chits->get($id));
         $template = $this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
-        echo $template->render();
-//        $this->context->eventService->chits->makePdf($template, "paragony.pdf");
+//        echo $template->render();
+        $this->context->eventService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
 

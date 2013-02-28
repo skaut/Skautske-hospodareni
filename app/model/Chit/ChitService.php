@@ -31,6 +31,7 @@ class ChitService extends MutableBaseService {
             $categories = $this->getCategoriesCampPairs($actionId);
             foreach ($list as $k => $i) {
                 $i->ctype = array_key_exists($i->category, $categories['in']) ? "in" : "out";
+                dump($categories);
                 $i->clabel = array_key_exists($i->category, $categories['in']) ? $categories['in'][$i->category] : $categories['out'][$i->category];
                 $i->cshort = array_key_exists($i->category, $categories['in']) ? $categories['in'][$i->category] : $categories['out'][$i->category];
                 $i->cshort = mb_substr($i->cshort, 0, 5);
@@ -181,7 +182,7 @@ class ChitService extends MutableBaseService {
      * @return type
      * @throws InvalidStateException
      */
-    public function getCategoryParticipant() {
+    public function getEventCategoryParticipant() {
         $cacheId = __FUNCTION__;
         if (!($res = $this->load($cacheId))) {
             foreach ($this->table->getCategoriesAll("in") as $c) {
@@ -192,7 +193,7 @@ class ChitService extends MutableBaseService {
             }
             $this->save($cacheId, $res);
         }
-        if(!$res)
+        if (!$res)
             throw new InvalidStateException("Chybí typ pro příjem od účastníků", 500);
         return $res;
     }
@@ -202,7 +203,7 @@ class ChitService extends MutableBaseService {
     /**
      * seznam všech kategorií ze skautISu
      * @param type $actionId
-     * @param bool $isEstimate
+     * @param bool $isEstimate - odhadovaný?
      * @return array(ID=>category, ...)
      */
     public function getCategoriesCamp($actionId, $isEstimate = false) {
@@ -288,6 +289,20 @@ class ChitService extends MutableBaseService {
             }
         }
         return empty($toRepair) ? true : false;
+    }
+
+    /**
+     * vrací číslo kategirie účastníka
+     * @return int
+     * @throws InvalidStateException
+     */
+    public function getCampCategoryParticipant($actionId) {
+        foreach ($this->getCategoriesCamp($actionId) as $k => $val) {
+            if ($val->ID_EventCampStatementType == 1) {
+                return $k;
+            }
+        }
+        throw new InvalidStateException("Chybí typ pro příjem od účastníků", 500);
     }
 
     /*     * ******** END CAMP CATEGORIES *********** */

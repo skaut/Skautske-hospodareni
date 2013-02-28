@@ -7,7 +7,7 @@ use Nette\Application\UI\Form;
 /**
  * @author sinacek
  */
-class VehiclePresenter extends \BasePresenter {
+class VehiclePresenter extends BasePresenter {
 
     function startup() {
         parent::startup();
