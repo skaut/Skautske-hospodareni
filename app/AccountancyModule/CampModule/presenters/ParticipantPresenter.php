@@ -75,31 +75,31 @@ class ParticipantPresenter extends BasePresenter {
         ));
     }
 
-    public function renderExport($aid) {
-        $actionInfo = $this->context->campService->event->get($aid);
-        $list = $this->context->campService->participants->getAllWithDetails($aid);
-//        $list = $this->context->campService->participants->getAllDetail($aid, $participants);
-
-        $template = $this->template;
-        $template->info = $actionInfo;
-        $template->list = $list;
-        $template->setFile(dirname(__FILE__) . '/../templates/Participant/export.latte');
-//        echo $template;die();
-        $this->context->campService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf", true);
-        $this->terminate();
-    }
-
-    public function renderHpd($aid) {
-        $actionInfo = $this->context->campService->event->get($aid);
-        $list = $this->context->campService->participants->getAll($aid);
-        $template = $this->template;
-        $template->oficialName = $this->context->unitService->getOficialName($actionInfo->ID_Unit);
-        $template->totalPayment = $this->context->campService->participants->getTotalPayment($aid);
-        $template->list = $list;
-        $template->setFile(dirname(__FILE__) . '/../templates/Participant/ex.hpd.latte');
-        $this->context->campService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_hpd.pdf");
-        $this->terminate();
-    }
+//    public function renderExport($aid) {
+//        $actionInfo = $this->context->campService->event->get($aid);
+//        $list = $this->context->campService->participants->getAllWithDetails($aid);
+////        $list = $this->context->campService->participants->getAllDetail($aid, $participants);
+//
+//        $template = $this->template;
+//        $template->info = $actionInfo;
+//        $template->list = $list;
+//        $template->setFile(dirname(__FILE__) . '/../templates/Participant/export.latte');
+////        echo $template;die();
+//        $this->context->campService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf", true);
+//        $this->terminate();
+//    }
+//
+//    public function renderHpd($aid) {
+//        $actionInfo = $this->context->campService->event->get($aid);
+//        $list = $this->context->campService->participants->getAll($aid);
+//        $template = $this->template;
+//        $template->oficialName = $this->context->unitService->getOficialName($actionInfo->ID_Unit);
+//        $template->totalPayment = $this->context->campService->participants->getTotalPayment($aid);
+//        $template->list = $list;
+//        $template->setFile(dirname(__FILE__) . '/../templates/Participant/ex.hpd.latte');
+//        $this->context->campService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_hpd.pdf");
+//        $this->terminate();
+//    }
 
     public function handleRemove($pid) {
         if (!array_key_exists("EV_ParticipantCamp_DELETE", $this->availableActions)) {

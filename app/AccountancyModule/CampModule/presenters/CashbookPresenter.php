@@ -19,8 +19,13 @@ class CashbookPresenter extends BasePresenter {
         $this->template->isEditable = array_key_exists("EV_EventCamp_UPDATE_RealTotalCost", $this->availableActions);
     }
 
+    public function beforeRender() {
+        parent::beforeRender();
+        $this['formImportHpd']['aid']->setValue($this->aid);
+    }
+
     function renderDefault($aid) {
-//        $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
+        $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
         if (!$this->camp->IsRealTotalCostAutoComputed) {
@@ -51,23 +56,24 @@ class CashbookPresenter extends BasePresenter {
         $this->template->autoCompleter = $this->context->memberService->getAC();
     }
 
-    public function actionImportHpd($aid) {
-        $this->editableOnly();
-        $totalPayment = $this->context->campService->participants->getTotalPayment($this->aid);
-        $func = $this->context->campService->event->getFunctions($this->aid);
-        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
-        $date = $this->context->campService->event->get($aid)->StartDate;
-        $category = $this->context->campService->chits->getCampCategoryParticipant($aid);
-
-        $values = array("date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category);
-        $add = $this->context->campService->chits->add($this->aid, $values);
-        if ($add) {
-            $this->flashMessage("HPD byl importován");
-        } else {
-            $this->flashMessage("HPD se nepodařilo importovat", "fail");
-        }
-        $this->redirect("default", array("aid" => $aid));
-    }
+//    public function actionImportHpd($aid) {
+//        $this->editableOnly();
+//        
+//        $totalPayment = $this->context->campService->participants->getTotalPayment($this->aid, "camp");
+//        $func = $this->context->campService->event->getFunctions($this->aid);
+//        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
+//        $date = $this->context->campService->event->get($aid)->StartDate;
+//        $category = $this->context->campService->chits->getCampCategoryParticipant($aid);
+//
+//        $values = array("date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category);
+//        $add = $this->context->campService->chits->add($this->aid, $values);
+//        if ($add) {
+//            $this->flashMessage("HPD byl importován");
+//        } else {
+//            $this->flashMessage("HPD se nepodařilo importovat", "fail");
+//        }
+//        $this->redirect("default", array("aid" => $aid));
+//    }
 
     public function actionExport($aid) {
         $chits = $this->context->campService->chits->getAll($aid);
@@ -132,6 +138,43 @@ class CashbookPresenter extends BasePresenter {
 
         $actionInfo = $this->context->campService->event->get($this->aid);
         $this->context->campService->chits->printChits($this->context->unitService, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
+    }
+
+    function createComponentFormImportHpd($name) {
+        $form = new Form($this, $name);
+        $form->addRadioList("cat", "Kategorie:", array("child" => "Od dětí a roverů", "adult" => "Od dospělých"))
+                ->addRule(Form::FILLED, "Musíte vyplnit kategorii.")
+                ->setDefaultValue("child");
+        $form->addRadioList("isAccount", "Placeno:", array("N" => "Hotově", "Y" => "Přes účet"))
+                ->addRule(Form::FILLED, "Musíte vyplnit způsob platby.")
+                ->setDefaultValue("N");
+        $form->addHidden("aid");
+
+        $form->addSubmit('send', 'Importovat')
+                ->getControlPrototype()->setClass("btn btn-primary");
+        $form['send']->onClick[] = callback($this, $name . 'Submitted');
+        $form->setDefaults(array('category' => 'un'));
+        return $form;
+    }
+
+    function formImportHpdSubmitted(\Nette\Forms\Controls\SubmitButton $btn) {
+        $this->editableOnly();
+        
+        $values = $btn->getForm()->getValues();
+        $func = $this->context->campService->event->getFunctions($values->aid);
+
+        $data = array("date" => $this->context->campService->event->get($values->aid)->StartDate,
+            "recipient" => $func[2]->Person,
+            "purpose" => "úč. příspěvky " . ($values->isAccount == "Y" ? "- účet" : "- hotovost"),
+            "price" => $this->context->campService->participants->getCampTotalPayment($values->aid, $values->cat, $values->isAccount),
+            "category" => $this->context->campService->chits->getCampCategoryParticipant($values->aid, $values->cat));
+
+        if ($this->context->campService->chits->add($values->aid, $data)) {
+            $this->flashMessage("HPD byl importován");
+        } else {
+            $this->flashMessage("HPD se nepodařilo importovat", "fail");
+        }
+        $this->redirect("default", array("aid" => $values->aid));
     }
 
     //FORM OUT

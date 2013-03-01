@@ -106,7 +106,7 @@ class ParticipantService extends MutableBaseService {
                 "FirstName" => $person['firstName'],
                 "LastName" => $person['lastName'],
                 "NickName" => $person['nick'],
-                "Note"=> "",
+                "Note" => "",
 //                        "Note" => $person['note'], //poznámka osoby, ne účastníka
             ),
                 ));
@@ -129,7 +129,6 @@ class ParticipantService extends MutableBaseService {
             "Street" => isset($data['street']) ? $data['street'] : null,
             "City" => isset($data['city']) ? $data['city'] : null,
             "Postcode" => isset($data['postcode']) ? $data['postcode'] : null,
-            
         );
         $this->skautIS->org->PersonUpdate($data, "person");
     }
@@ -228,15 +227,25 @@ class ParticipantService extends MutableBaseService {
      * @param int $eventId
      * @return int - vybraná částka 
      */
-    public function getTotalPayment($eventId) {
+    public function getTotalPayment($eventId, $type = "general") {
+        return array_reduce($this->getAll($eventId), function ($res, $v) {
+                            if (isset($v->{ParticipantService::PAYMENT}))
+                                return $res += $v->{ParticipantService::PAYMENT};
+                            return 0;
+                        });
+    }
 
-        function paymentSum($res, $v) {
-            if (isset($v->{ParticipantService::PAYMENT}))
-                return $res += $v->{ParticipantService::PAYMENT};
-            return 0;
+    public function getCampTotalPayment($campId, $category, $isAccount) {
+        $res = 0;
+        foreach ($this->getAllWithDetails($campId) as $p) {
+            //pokud se alespon v jednom neshodují, tak pokracujte
+            if (($category == "adult" xor preg_match("/^Dospěl/", $p->Category)) ||
+                    ($isAccount == "Y" xor $p->isAccount == "Y")) {
+                continue;
+            }
+            $res += ($p->payment - $p->repayment);
         }
-
-        return array_reduce($this->getAll($eventId), "paymentSum");
+        return $res;
     }
 
     /**

@@ -31,7 +31,6 @@ class ChitService extends MutableBaseService {
             $categories = $this->getCategoriesCampPairs($actionId);
             foreach ($list as $k => $i) {
                 $i->ctype = array_key_exists($i->category, $categories['in']) ? "in" : "out";
-                dump($categories);
                 $i->clabel = array_key_exists($i->category, $categories['in']) ? $categories['in'][$i->category] : $categories['out'][$i->category];
                 $i->cshort = array_key_exists($i->category, $categories['in']) ? $categories['in'][$i->category] : $categories['out'][$i->category];
                 $i->cshort = mb_substr($i->cshort, 0, 5);
@@ -296,13 +295,15 @@ class ChitService extends MutableBaseService {
      * @return int
      * @throws InvalidStateException
      */
-    public function getCampCategoryParticipant($actionId) {
+    public function getCampCategoryParticipant($actionId, $category) {
+        $catId = ($category == "adult") ? 3 : 1;
+
         foreach ($this->getCategoriesCamp($actionId) as $k => $val) {
-            if ($val->ID_EventCampStatementType == 1) {
+            if ($val->ID_EventCampStatementType == $catId) {
                 return $k;
             }
         }
-        throw new InvalidStateException("Chybí typ pro příjem od účastníků", 500);
+        throw new InvalidStateException("Chybí typ pro příjem od účastníků pro skupinu " . $category, 500);
     }
 
     /*     * ******** END CAMP CATEGORIES *********** */

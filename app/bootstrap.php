@@ -2,6 +2,7 @@
 
 use Nette\Application\Routers\RouteList,
     Nette\Application\Routers\Route,
+    \Nette\Diagnostics\Debugger,
     Extras\Sinacek\MyRoute,
     Extras\Sinacek\MySimpleRouter;
 
@@ -20,10 +21,11 @@ $configurator = new Nette\Config\Configurator;
 
 $configurator->setTempDirectory(dirname(__FILE__) . '/temp');
 $configurator->enableDebugger(dirname(__FILE__) . '/log', "sinacek@gmail.com");
+if($configurator->isProductionMode())
+    Debugger::$strictMode = FALSE;
 //Debugger::enable(FALSE);
-//Debugger::$strictMode = FALSE;
 //Debugger::$maxDepth = 6;
-
+//dump(Debugger::$strictMode);
 $configurator->addConfig(dirname(__FILE__) . '/config.neon');
 
 $configurator->createRobotLoader()
