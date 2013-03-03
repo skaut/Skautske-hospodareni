@@ -75,20 +75,13 @@ class ParticipantPresenter extends BasePresenter {
         ));
     }
 
-//    public function renderExport($aid) {
-//        $actionInfo = $this->context->campService->event->get($aid);
-//        $list = $this->context->campService->participants->getAllWithDetails($aid);
-////        $list = $this->context->campService->participants->getAllDetail($aid, $participants);
-//
-//        $template = $this->template;
-//        $template->info = $actionInfo;
-//        $template->list = $list;
-//        $template->setFile(dirname(__FILE__) . '/../templates/Participant/export.latte');
-////        echo $template;die();
-//        $this->context->campService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_ucastnici.pdf", true);
-//        $this->terminate();
-//    }
-//
+    public function renderExport($aid) {
+        $template = $this->context->exportService->getParticipants($aid, $this->context->campService, "camp");
+//        echo $template;die();
+        $this->context->campService->participants->makePdf($template, "seznam-ucastniku.pdf", true);
+        $this->terminate();
+    }
+
 //    public function renderHpd($aid) {
 //        $actionInfo = $this->context->campService->event->get($aid);
 //        $list = $this->context->campService->participants->getAll($aid);
@@ -290,29 +283,29 @@ class ParticipantPresenter extends BasePresenter {
         $form->addText("lastName", "Příjmení")
                 ->addRule(Form::FILLED, "Musíš vyplnit příjmení.");
         $form->addText("nick", "Přezdívka");
-        $form->addText("address", "Adresa")
-                ->addRule(Form::FILLED, "Musíš vyplnit adresu.")
-                ->getControlPrototype()->placeholder("Ulice č., Město");
+        $form->addText("birthday", "Dat. nar.");
+        $form->addText("street", "Ulice");
+        $form->addText("city", "Město");
+        $form->addText("postcode", "PSČ");
         $form->addHidden("aid", $aid);
-        $form->addSubmit('send', 'Přidat')
+        $form->addSubmit('send', 'Založit účastníka')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
 
     public function formAddParticipantNewSubmitted(Form $form) {
-        if (!array_key_exists("EV_ParticipantCamp_INSERT_EventCamp", $this->availableActions)) {
-            $this->flashMessage("Nemáte právo přidávat nové účastníky.", "danger");
-            $this->redirect("Default:");
-        }
-
+        $this->editableOnly();
         $values = $form->getValues();
         $aid = $values['aid'];
         $person = array(
             "firstName" => $values['firstName'],
             "lastName" => $values['lastName'],
             "nick" => $values['nick'],
-            "note" => $values['address'],
+            "Birthday" => date("c", strtotime($values['birthday'])),
+            "street" => $values['street'],
+            "city" => $values['city'],
+            "postcode" => $values['postcode'],
         );
         $this->context->campService->participants->addNew($aid, $person);
         $this->redirect("this");

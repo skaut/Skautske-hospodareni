@@ -75,11 +75,11 @@ class ParticipantPresenter extends BasePresenter {
         $this->terminate();
     }
 
-    public function renderHpd($aid) {
-        $template = $this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService);
-        $this->context->eventService->participants->makePdf($template, "hpd.pdf");
-        $this->terminate();
-    }
+//    public function renderHpd($aid) {
+//        $template = $this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService);
+//        $this->context->eventService->participants->makePdf($template, "hpd.pdf");
+//        $this->terminate();
+//    }
 
     public function handleRemove($pid) {
         $this->editableOnly();

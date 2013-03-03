@@ -51,7 +51,7 @@ class ParticipantService extends MutableBaseService {
 
     /**
      * vrací další informace o účastníkovi
-     * @param type $ID
+     * @param type $ID tábora
      * @return type
      */
     public function getAllWithDetails($ID) {
@@ -76,7 +76,6 @@ class ParticipantService extends MutableBaseService {
             if (!isset($participants[$pid]->repayment))
                 $participants[$pid]->repayment = null;
         }
-
         return $participants;
     }
 
@@ -193,15 +192,15 @@ class ParticipantService extends MutableBaseService {
         return $this->skautIS->event->{"Participant" . self::$typeName . "Delete"}(array("ID" => $participantId, "DeletePerson" => false));
     }
 
-    public function getAllDetail($ID, $participants = NULL) {
+    public function getAllPersonDetail($ID, $participants = NULL) {
         if ($participants == NULL) {
             $participants = $this->getAll($ID);
         }
         $res = array();
-        foreach ($participants as $par) {
-            $res[] = $this->skautIS->org->PersonDetail(array("ID" => $par->ID_Person));
+        foreach ($participants as $k=> $par) {
+            $res[$k] = array_merge((array)$par, (array)$this->skautIS->org->PersonDetail(array("ID" => $par->ID_Person)));
         }
-        return $res;
+        return \Nette\ArrayHash::from($res);
     }
 
 //    /**

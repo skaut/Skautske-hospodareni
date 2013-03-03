@@ -1,0 +1,42 @@
+
+<style>
+.all{
+    width: 800px;
+}
+</style>
+<h2>Seznam účastníků - {$info->DisplayName}</h2>
+<table class="all" border="1">
+    <tr>
+        <th>P.č.</th>
+        <th>Jméno</th>
+        <th>Příjmění</th>
+        <th>Adresa</th>
+        <th>Město</th>
+        <th>PSČ</th>
+        <th>Dat. nar.</th>
+        <th>Osobodny</th>
+        <th>Dětodny</th>
+        <th>Zaplaceno</th>
+        <th>Vratka</th>
+        <th>Celkem</th>
+        <th>Na účet?</th>
+    </tr>
+    {if is_array($list) || $list instanceof Traversable}
+    <tr n:foreach="$list as $u">
+        <td>{$iterator->counter}</td>
+        <td>{$u->FirstName}</td>
+        <td>{$u->LastName}</td>
+        <td>{$u->Street}</td>
+        <td>{$u->City}</td>
+        <td>{$u->Postcode}</td>
+        <td style="text-align: right;">{$u->Birthday|date:"d.m.Y"}</td>
+        <td style="text-align: right;">{$u->Days}</td>
+        <td style="text-align: right;">{if $u->Age < 18}{$u->Days}{else}0{/if}</td>
+        <td style="text-align: right;">{$u->payment|price:0}</td>
+        <td style="text-align: right;">{$u->repayment|price:0}</td>
+        <td style="text-align: right;">{= $u->payment - $u->repayment|price}</td>
+        <td>{if $u->isAccount == "Y"}Ano{else}&nbsp;{/if}</td>
+    </tr>
+    {/if}
+</table>
+
