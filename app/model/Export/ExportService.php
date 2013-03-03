@@ -31,10 +31,15 @@ class ExportService extends BaseService {
      * @param type $aid - ID akce
      * @param EventEntity $service
      */
-    public function getParticipants($aid, EventEntity $service) {
-        $template = $this->getTemplate(dirname(__FILE__) . '/templates/participant.latte');
+    public function getParticipants($aid, EventEntity $service, $type = "generalEvent") {
+        if($type == "camp"){
+            $template = $this->getTemplate(dirname(__FILE__) . '/templates/participantCamp.latte');
+            $template->list = $service->participants->getAllPersonDetail($aid, $service->participants->getAllWithDetails($aid));
+        } else {
+            $template = $this->getTemplate(dirname(__FILE__) . '/templates/participant.latte');
+            $template->list = $service->participants->getAllPersonDetail($aid, $service->participants->getAll($aid));
+        }
         $template->info = $service->event->get($aid);
-        $template->list = $service->participants->getAllDetail($aid, $service->participants->getAll($aid));
         return $template;
     }
 
