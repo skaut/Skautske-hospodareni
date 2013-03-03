@@ -98,7 +98,7 @@ class CashbookPresenter extends BasePresenter {
 
         $group = $form->addContainer('chits');
         foreach ($chits as $c) {
-            $input = $group->addCheckbox($c->id);
+            $group->addCheckbox($c->id);
         }
 
         $form->addSubmit('printSend', 'Vytisknout vybrané')
@@ -225,7 +225,7 @@ class CashbookPresenter extends BasePresenter {
         $values = $form->getValues();
 
         try {
-            $add = $this->context->eventService->chits->add($this->aid, $values);
+            $this->context->eventService->chits->add($this->aid, $values);
             $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
             if ($this->context->eventService->chits->isInMinus($this->aid))
                 $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
@@ -242,7 +242,7 @@ class CashbookPresenter extends BasePresenter {
         }
     }
 
-    function formEditSubmitted(\Nette\Application\UI\Form $form) {
+    function formEditSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
         $id = $values['id'];

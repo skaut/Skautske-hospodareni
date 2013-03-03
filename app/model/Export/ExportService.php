@@ -32,7 +32,7 @@ class ExportService extends BaseService {
      * @param EventEntity $service
      */
     public function getParticipants($aid, EventEntity $service, $type = "generalEvent") {
-        if($type == "camp"){
+        if ($type == "camp") {
             $template = $this->getTemplate(dirname(__FILE__) . '/templates/participantCamp.latte');
             $template->list = $service->participants->getAllPersonDetail($aid, $service->participants->getAllWithDetails($aid));
         } else {
@@ -84,24 +84,24 @@ class ExportService extends BaseService {
         return $template;
     }
 
-    /**
-     * vrací hromadný příjmový doklad
-     * @param type $aid
-     * @param EventEntity $service
-     * @param BaseService $unitService
-     * @return type
-     */
-    public function getHpd($aid, EventEntity $service, BaseService $unitService) {
-        $template = $this->getTemplate(dirname(__FILE__) . "/templates/hpd.latte");
-        $event = $template->event = $service->event->get($aid);
-        $template->oficialName = $unitService->getOficialName($event->ID_Unit);
-        $template->totalPayment = $service->participants->getTotalPayment($aid);
-        $func = $service->event->getFunctions($aid);
-        $template->hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
-
-        $template->list = $service->participants->getAll($aid);
-        return $template;
-    }
+//    /**
+//     * vrací hromadný příjmový doklad
+//     * @param type $aid
+//     * @param EventEntity $service
+//     * @param BaseService $unitService
+//     * @return type
+//     */
+//    public function getHpd($aid, EventEntity $service, BaseService $unitService) {
+//        $template = $this->getTemplate(dirname(__FILE__) . "/templates/hpd.latte");
+//        $event = $template->event = $service->event->get($aid);
+//        $template->oficialName = $unitService->getOficialName($event->ID_Unit);
+//        $template->totalPayment = $service->participants->getTotalPayment($aid);
+//        $func = $service->event->getFunctions($aid);
+//        $template->hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
+//
+//        $template->list = $service->participants->getAll($aid);
+//        return $template;
+//    }
 
     /**
      * vrací PDF s vybranými paragony
@@ -111,7 +111,7 @@ class ExportService extends BaseService {
      * @param type $chits
      * @param type $fileName 
      */
-    public function getChits($aid, EventEntity $eventService, BaseService $unitService, array $chits) {
+    public function getChits($aid, EventEntity $eventService, BaseService $unitService, array $chits, $type = "eventGeneral") {
 
         $income = array();
         $outcome = array();
@@ -130,11 +130,13 @@ class ExportService extends BaseService {
         }
         $template = $this->getTemplate(dirname(__FILE__) . "/templates/chits.latte");
 
-        //HPD alias ctype == pp
-        $template->totalPayment = $eventService->participants->getTotalPayment($aid);
-        $func = $eventService->event->getFunctions($aid);
-        $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
-        $template->list = $eventService->participants->getAll($aid);
+        if($type != "camp"){
+            //HPD alias ctype == pp
+            $template->totalPayment = $eventService->participants->getTotalPayment($aid);
+            $func = $eventService->event->getFunctions($aid);
+            $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
+            $template->list = $eventService->participants->getAll($aid);
+        }
 
         $template->income = $income;
         $template->outcome = $outcome;
