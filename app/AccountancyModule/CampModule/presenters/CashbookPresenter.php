@@ -2,8 +2,7 @@
 
 namespace AccountancyModule\CampModule;
 
-use Nette\Application\UI\Form,
-    Nette\Utils\Strings;
+use Nette\Application\UI\Form;
 
 /**
  * @author sinacek
@@ -37,7 +36,6 @@ class CashbookPresenter extends BasePresenter {
 
     function renderEdit($id, $aid) {
         $this->editableOnly();
-
         $defaults = $this->context->campService->chits->get($id);
         $defaults['id'] = $id;
         $defaults['price'] = $defaults['priceText'];
@@ -76,14 +74,8 @@ class CashbookPresenter extends BasePresenter {
 //    }
 
     public function actionExport($aid) {
-        $chits = $this->context->campService->chits->getAll($aid);
-        $actionInfo = $this->context->campService->event->get($this->aid);
-        $template = $this->template;
-        $template->setFile(dirname(__FILE__) . '/../templates/Cashbook/export.latte');
-        $template->registerHelper('price', 'AccountancyHelpers::price');
-        $template->list = $chits;
-        $template->info = $actionInfo;
-        $this->context->campService->chits->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_pokladni-kniha.pdf");
+        $template = $this->context->exportService->getCashbook($aid, $this->context->campService);
+        $this->context->campService->chits->makePdf($template, "pokladni-kniha.pdf");
         $this->terminate();
     }
 
@@ -135,9 +127,9 @@ class CashbookPresenter extends BasePresenter {
                 $selected[] = $id;
         }
         $chits = $this->context->campService->chits->getIn($this->aid, $selected);
-
-        $actionInfo = $this->context->campService->event->get($this->aid);
-        $this->context->campService->chits->printChits($this->context->unitService, $this->template, $actionInfo, $chits, "paragony_" . Strings::webalize($actionInfo->Event));
+        $template = $this->context->exportService->getChits($this->aid, $this->context->campService, $this->context->unitService, $chits, "camp");
+        $this->context->campService->chits->makePdf($template, "paragony.pdf");
+        $this->terminate();
     }
 
     function createComponentFormImportHpd($name) {
@@ -211,7 +203,6 @@ class CashbookPresenter extends BasePresenter {
         $form = new Form($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
-//                ->setAttribute('autofocus')
                 ->getControlPrototype()->class("input-medium");
         //@TODO kontrola platneho data, problem s componentou
         $form->addText("recipient", "Vyplaceno komu:", 20, 30)
@@ -267,7 +258,6 @@ class CashbookPresenter extends BasePresenter {
                 ->getControlPrototype()->placeholder("např. 20+15*3")
                 ->class("input-medium");
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
-
         $form->addRadioList("category", "Typ: ", $categories['in'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         return $form;
