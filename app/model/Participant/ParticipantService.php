@@ -167,7 +167,7 @@ class ParticipantService extends MutableBaseService {
                 "actionId" => $arr['actionId'],
                 "payment" => $arr['payment'],
                 "repayment" => $arr['repayment'],
-                "isAccount" => $arr['isAccount'],
+                "isAccount" => @$arr['isAccount'],
             );
             $this->table->update($participantId, $data);
         } else {
