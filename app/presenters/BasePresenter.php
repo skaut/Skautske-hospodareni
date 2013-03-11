@@ -13,13 +13,18 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $this->template->backlink = $this->getParameter("backlink");
 
 //        if (!function_exists("FormContainer_addDatePicker")) {
-            \Nette\Forms\Container::extensionMethod('addDatePicker', function (\Nette\Forms\Container $container, $name, $label = NULL) {
-                        return $container[$name] = new JanTvrdik\Components\DatePicker($label);
-                    });
+        \Nette\Forms\Container::extensionMethod('addDatePicker', function (\Nette\Forms\Container $container, $name, $label = NULL) {
+                    return $container[$name] = new JanTvrdik\Components\DatePicker($label);
+                });
 //            FormContainer::extensionMethod('Form::addDatePicker', 'FormContainer_addDatePicker');
 //        }
-        if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku
-            $this->context->authService->updateLogoutTime();
+        try {
+            if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku
+                $this->context->authService->updateLogoutTime();
+        } catch (SkautIS_AuthenticationException $e) {
+            if($this->name != "Auth" || $this->params['action'] != "skautisLogout") //pokud jde o odhlaseni, tak to nevadi
+                throw $e;
+        }
     }
 
     protected function beforeRender() {
