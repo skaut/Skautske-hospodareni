@@ -6,7 +6,7 @@
         <meta name="keywords" content="" />
         <meta name="author" content="www.sinacek.cz" />
         <meta name="robots" content="{$robots}" n:ifset="$robots">
-        
+
         {control js 'jquery-1.8.2.min.js',
         'jquery.ui.min.js',
         'my-datepicker.js',
@@ -18,7 +18,7 @@
         'jquery.fancybox.pack.js',
         'jquery.ajaxform.js',
         'my.js'}
-     
+
            {control css 'fancybox/fancybox.css',
            'bootstrap.min.css', 
             'bootstrap-responsive.min.css',
@@ -28,8 +28,10 @@
             function changeRole(id){
                  $.post({link changeRole!}, { roleId : id });
             }
-{if !$presenter->context->params['productionMode']}
+{if $presenter->context->params['productionMode']}
           var _gaq = _gaq || [];
+          var pluginUrl = '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+          _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
           _gaq.push(['_setAccount', 'UA-2900685-26']);
           _gaq.push(['_trackPageview']);
 
