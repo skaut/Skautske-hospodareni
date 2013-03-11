@@ -102,6 +102,12 @@ class CashbookPresenter extends BasePresenter {
             $this->redirect('this', $aid);
         }
     }
+    
+    public function handleActivateAutocomputed($aid){
+        $this->context->campService->event->activateAutocomputed($aid);
+        $this->flashMessage("Byl aktivován automatický výpočet nákladů a počtu dnů účastníků.");
+        $this->redirect("this");
+    }
 
     function createComponentFormMass($name) {
         $form = new Form($this, $name);

@@ -6,13 +6,13 @@ use Nette\Caching\Cache;
  * @author Hána František
  */
 class EventService extends MutableBaseService {
-    
+
     protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist");
 
     public function getAll($year = NULL, $state = NULL) {
-        $year  = ($year  == "all") ? NULL : $year;
+        $year = ($year == "all") ? NULL : $year;
         $state = ($state == "all") ? NULL : $state;
-        
+
         return $this->skautIS->event->{"Event" . self::$typeName . "All"}(array("IsRelation" => TRUE, "ID_Event" . self::$typeName . "State" => $state, "Year" => $year));
     }
 
@@ -22,7 +22,7 @@ class EventService extends MutableBaseService {
      * @return stdClass 
      */
     public function get($ID) {
-        try {            
+        try {
             $cacheId = __FUNCTION__ . $ID;
             if (!($res = $this->load($cacheId)))
                 $res = $this->save($cacheId, $this->skautIS->event->{"Event" . self::$typeName . "Detail"}(array("ID" => $ID)));
@@ -40,21 +40,21 @@ class EventService extends MutableBaseService {
     public function getFunctions($ID) {
         return $this->skautIS->event->{"EventFunctionAll" . self::$typeName}(array("ID_Event" . self::$typeName => $ID));
     }
-    
+
     /**
      * vrátí data funkcí připravená pro update
      * @param type $ID_Event
      * @return type
      */
-    protected function getPreparedFunctions($ID_Event){
+    protected function getPreparedFunctions($ID_Event) {
         $data = $this->getFunctions($ID_Event);
         $query = array("ID" => $ID_Event);
-        for($i=0;$i<3;$i++){
+        for ($i = 0; $i < 3; $i++) {
             $query[self::$ID_Functions[$i]] = $data[$i]->ID_Person;
         }
         return $query;
     }
-    
+
     /**
      * nastaví danou funkci
      * @param type $ID_Event
@@ -64,8 +64,8 @@ class EventService extends MutableBaseService {
      */
     public function setFunction($ID_Event, $ID_Person, $ID_Function) {
         $query = $this->getPreparedFunctions($ID_Event);
-        $query[self::$ID_Functions[$ID_Function]] = $ID_Person;//nova změna
-        return $this->skautIS->event->{self::$typeLongName."UpdateFunction"}($query);
+        $query[self::$ID_Functions[$ID_Function]] = $ID_Person; //nova změna
+        return $this->skautIS->event->{self::$typeLongName . "UpdateFunction"}($query);
     }
 
     /**
@@ -134,7 +134,7 @@ class EventService extends MutableBaseService {
      * @param int $type typ akce
      * @return int|stdClass ID akce 
      */
-        public function create($name, $start, $end, $location = " ", $unit = NULL, $scope = NULL, $type=NULL) {
+    public function create($name, $start, $end, $location = " ", $unit = NULL, $scope = NULL, $type = NULL) {
         $scope = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
         $type = $type !== NULL ? $type : 2; //2-vyprava
         $unit = $unit !== NULL ? $unit : $this->skautIS->getUnitId();
@@ -204,32 +204,30 @@ class EventService extends MutableBaseService {
             return $ret->ID;
         return $ret;
     }
-    
+
     /**
      * aktivuje dopocitavani kategorii a tim jsou i kategorie pristupne
      * @param type $camp
      * @throws NotImplementedException 
      */
-    public function openCampCategories($camp){
+    public function openCampCategories($camp) {
         throw new NotImplementedException("zatím nefunguje, čeká na odpoved Jerryho");
         $this->skautIS->event->EventCampUpdate(array(
-            "ID"=> $camp->ID,
-            "DisplayName"=> $camp->DisplayName,
-            "StartDate"=> $camp->StartDate,
-            "EndDate"=> $camp->EndDate,
-            "GpsLatitude"=> $camp->GpsLatitude,
-            "GpsLatitudeText"=> $camp->GpsLatitudeText,
-            "GpsLongitude"=> $camp->GpsLongitude,
-            "GpsLongitudeText"=> $camp->GpsLongitudeText,
-            "IsFloodArea"=> $camp->IsFloodArea,
-            "Location"=> $camp->Location,
-            "MobileContact"=> $camp->MobileContact,
-            "Postcode"=> $camp->Postcode,
-            "Region"=> $camp->Region,
-            
+            "ID" => $camp->ID,
+            "DisplayName" => $camp->DisplayName,
+            "StartDate" => $camp->StartDate,
+            "EndDate" => $camp->EndDate,
+            "GpsLatitude" => $camp->GpsLatitude,
+            "GpsLatitudeText" => $camp->GpsLatitudeText,
+            "GpsLongitude" => $camp->GpsLongitude,
+            "GpsLongitudeText" => $camp->GpsLongitudeText,
+            "IsFloodArea" => $camp->IsFloodArea,
+            "Location" => $camp->Location,
+            "MobileContact" => $camp->MobileContact,
+            "Postcode" => $camp->Postcode,
+            "Region" => $camp->Region,
             "IsRealTotalCostAutoComputed" => TRUE,
-            
-        ), "eventCamp");
+                ), "eventCamp");
     }
 
     /**
@@ -301,13 +299,27 @@ class EventService extends MutableBaseService {
         }
         return $arg->{"ID_Event" . self::$typeName . "State"} == "draft" ? TRUE : FALSE;
     }
-    
+
+    public function activateAutocomputed($ID, $state = 1) {
+        $this->skautIS->event->{"EventCampUpdateRealTotalCost"}(
+                array(
+            "ID" => $ID,
+            "IsRealTotalCostAutoComputed" => $state
+                ), "event" . self::$typeName);
+        
+        $this->skautIS->event->{"EventCampUpdateDays"}(
+                array(
+            "ID" => $ID,
+            "IsAutoComputedDays" => $state
+                ), "event" . self::$typeName);
+    }
+
     /**
      * vrací počet událostí s vyplněným záznamem v pokladní kníze, který nebyl smazán
      * @return int počet událostí se záznamem
      */
-    public function getCountOfActiveEvents(){
-        return dibi::query("SELECT COUNT(DISTINCT actionId) FROM [".BaseTable::TABLE_CHIT."] WHERE deleted = 0")->fetchSingle();
+    public function getCountOfActiveEvents() {
+        return dibi::query("SELECT COUNT(DISTINCT actionId) FROM [" . BaseTable::TABLE_CHIT . "] WHERE deleted = 0")->fetchSingle();
     }
 
 }
