@@ -6,8 +6,7 @@
 
 <div n:ifset="$missingCategories" class="alert alert-error">
     Nemáte aktivní automatické dopočítání z kategorií, bez kterého nelze přidávat záznamy. 
-    Aktivujte si ho ve SkautIS u tábora na položce rozpočet.
-    <a href="{$skautISHttpPrefix}.skaut.cz/Junak/Events/Camp/Camp/Statement.aspx?ID={$camp->ID}">Odkaz</a>
+    <a n:href="activateAutocomputed! $aid" class="btn btn-primary btn-small">Aktivovat dopočítávání</a>
 </div>
 
 <div class="row-fluid">
@@ -32,7 +31,6 @@
 
     {* sekce seznam paragonů *}
     <div class="span9">
-
 
         <div n:snippet="paragony">
         {if $list}
