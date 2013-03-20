@@ -91,7 +91,8 @@ jQuery(function($) {
 	$.nette.createSpinner();
 
 	// apply AJAX unobtrusive way
-	$('a.ajax').live('click', function(event) {
+    $(document).on('click', 'a.ajax', function(event) {//for jQuery 1.9.0
+//	$('a.ajax').live('click', function(event) {
 		event.preventDefault();
 		if ($.active) return;
 
@@ -106,7 +107,8 @@ jQuery(function($) {
 	});
 	
     //zobrazi pak i spravne adresu
-	$('a.ajaxA').live('click', function(event) {
+    $(document).on('click', 'a.ajaxA', function(event) {
+//	$('a.ajaxA').live('click', function(event) {
 		event.preventDefault();
 		if ($.active) return;
 		$.post($.nette.href = this.href, $.nette.success);
