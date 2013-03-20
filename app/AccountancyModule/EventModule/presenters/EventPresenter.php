@@ -186,7 +186,7 @@ class EventPresenter extends BasePresenter {
     }
 
     function createComponentFormAddFunction($name) {
-        $combo = $this->context->memberService->getCombobox(NULL, TRUE);
+        $combo = $this->context->memberService->getCombobox(FALSE, TRUE);
 
         $form = new Form($this, $name);
         $form->addSelect("person", NULL, $combo)

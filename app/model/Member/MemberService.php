@@ -15,7 +15,7 @@ class MemberService extends BaseService {
         $unitId = $unitId === NULL ? $this->skautIS->getUnitId() : $unitId;
         $onlyDirectMember = (bool) $onlyDirectMember;
 
-        $all = $this->skautIS->org->PersonAll(array("ID_Unit" => $unitId, "OnlyDirectMember" => $onlyDirectMember ));
+        $all = $this->skautIS->org->PersonAll(array("ID_Unit" => $unitId, "OnlyDirectMember" => $onlyDirectMember));
         $ret = array();
 
         if (empty($participants)) {
@@ -35,15 +35,14 @@ class MemberService extends BaseService {
         }
         return $ret;
     }
-    
-    
+
     /**
      * vytvoří pole jmen pro automatické doplňování
      * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
      * @return array
      */
-    public function getAC($OnlyDirectMember = false) {
-        return array_values($this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember))));
+    public function getAC($OnlyDirectMember = false, $adultOnly = false) {
+        return array_values($this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $adultOnly));
     }
 
     /**
@@ -51,8 +50,8 @@ class MemberService extends BaseService {
      * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
      * @return array
      */
-    public function getCombobox($OnlyDirectMember = false) {
-        return $this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)));
+    public function getCombobox($OnlyDirectMember = false, $adultOnly = false) {
+        return $this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $adultOnly);
     }
 
     /**
@@ -60,13 +59,20 @@ class MemberService extends BaseService {
      * @param array $data - vráceno z PersonAll
      * @return array 
      */
-    private function getPairs($data) {
+    private function getPairs($data, $adultOnly = false) {
         $res = array();
+        $now = new DateTime();
         foreach ($data as $p) {
-            $res[$p->ID] = $p->LastName . " " . $p->FirstName;
+            $birth = new DateTime($p->Birthday);
+            $interval = $now->diff($birth);
+            $diff = $interval->format("%y");
+            if ($adultOnly && $diff < 18) {
+                continue;
+            }
+            $res[$p->ID] = $p->LastName . " " . $p->FirstName . ($adultOnly ? " (" . $diff . ")" : "");
         }
+        asort($res);
         return $res;
     }
-    
-    
+
 }
