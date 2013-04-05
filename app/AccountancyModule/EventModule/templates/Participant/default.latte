@@ -14,9 +14,9 @@
 
             {form formMassAdd}
             <div class="well well-small">
-                
-                <!--<a class="btn btn-primary btn-mini" href="#addParticipant" data-toggle="modal">Založit nového účastníka</a>-->
-                
+
+<!--<a class="btn btn-primary btn-mini" href="#addParticipant" data-toggle="modal">Založit nového účastníka</a>-->
+
                 <div class="btn-group">
                     <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#" rel="tooltip" data-original-title="Jednotka, ze které se zobrazí seznam členů ">{$unit->DisplayName} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -29,7 +29,7 @@
                 <a n:href="changeDirectMemberOnly!" class="ajax btn btn-primary btn-small" rel="tooltip" data-original-title="Zobrazit členy i z podřízených jednotek?">
                     Podřízené?<i class="icon icon-white {if !$directMemberOnly}icon-ok{else}icon-ban-circle{/if}"></i>
                 </a>
-                        
+
                 <a class="btn btn-primary btn-small" href="#addParticipant" data-toggle="modal">Nový účastník</a>
             </div>
             <table class="table table-striped table-bordered table-condensed">
@@ -69,7 +69,7 @@
             {if !empty($participants)}
 
             <div class="well well-small">
-                <a class="btn btn-info btn-small" n:href="export $aid"><i class="icon icon-white icon-print"></i> Seznam účastníků</a>
+                <a n:href="export $aid" target="_blank" class="btn btn-info btn-small"><i class="icon icon-white icon-print"></i> Seznam účastníků</a>
             </div>
 
             <table id="participants-list" class="table table-striped table-bordered table-condensed">
@@ -110,48 +110,48 @@
         </div>
     {if $isEditable}
     {* hromadné úpravy účastníků*}
-    <div class="modal myModal fade" id="massEdit">
-        <div class="modal-header">
-            <a class="close" data-dismiss="modal">×</a>
-            <h2>Hromadné nastavení</h2>
-        </div>
-        <div class="modal-body">
-            <table>
-                <tr>
-                    <td>Dní</td>
-                    <td>{input days style=>"width:40px"}</td>
-                </tr>
-                <tr>
-                    <td>Částka </td>
-                    <td>{input payment style=>"width:40px"}</td>
-                </tr>
-                <tr>
-                    <td colspan="2">{input massEditSend}</td>
-                </tr>
-            </table>
+        <div class="modal myModal fade" id="massEdit">
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">×</a>
+                <h2>Hromadné nastavení</h2>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <tr>
+                        <td>Dní</td>
+                        <td>{input days style=>"width:40px"}</td>
+                    </tr>
+                    <tr>
+                        <td>Částka </td>
+                        <td>{input payment style=>"width:40px"}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">{input massEditSend}</td>
+                    </tr>
+                </table>
 
+            </div>
         </div>
-    </div>
     {/if}        
         {/form}
-<script type="text/javascript">
-$(document).ready(function() {
+        <script type="text/javascript">
+        $(document).ready(function() {
 
-    $("input[type=text][id^=frmformMassParticipants-isChange-]").change(function (){
-        $("#"+this.id+"c").attr('checked', true);
-    });
+            $("input[type=text][id^=frmformMassParticipants-isChange-]").change(function (){
+                $("#"+this.id+"c").attr('checked', true);
+            });
     
-    //potencials
-    $(".allDependend").addClass("disabled").attr("disabled", "disabled");
-    onlyWithCheckbox("frmformMassAdd-all-", "allDependend");
+            //potencials
+            $(".allDependend").addClass("disabled").attr("disabled", "disabled");
+            onlyWithCheckbox("frmformMassAdd-all-", "allDependend");
     
-    //participants
-    $(".massDependend").addClass("disabled").attr("disabled", "disabled");
-    onlyWithCheckbox("frmformMassParticipants-ids-", "massDependend");
+            //participants
+            $(".massDependend").addClass("disabled").attr("disabled", "disabled");
+            onlyWithCheckbox("frmformMassParticipants-ids-", "massDependend");
     
-});
+        });
 
-</script>   
+        </script>   
         {/snippet}
     </div>
 
@@ -173,7 +173,18 @@ $(document).ready(function() {
     </div>-->
 </div>
 {/if}
+<script type="text/javascript">
+$(document).ready(function() {
 
+    $(document).keypress(
+        function(event){
+         if (event.which == '13') {
+            event.preventDefault();
+          }
+    });
+});
+
+</script>
 {*}
 <!--hromadné vyplnění částek-->
 <div class="modal myModal fade" id="massEdit">

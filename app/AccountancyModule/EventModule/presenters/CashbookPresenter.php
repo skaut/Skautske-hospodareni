@@ -51,15 +51,15 @@ class CashbookPresenter extends BasePresenter {
         $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
         $date = $this->context->eventService->event->get($aid)->StartDate;
         $category = $this->context->eventService->chits->getEventCategoryParticipant();
-        
-        $values = array("date"=>$date, "recipient"=>$hospodar, "purpose"=>"účastnické příspěvky", "price"=>$totalPayment, "category"=>$category);
+
+        $values = array("date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category);
         $add = $this->context->eventService->chits->add($this->aid, $values);
-        if($add){
-            $this->flashMessage("HPD byl importován");
+        if ($add) {
+            $this->flashMessage("Účastníci byli importováni");
         } else {
-            $this->flashMessage("HPD se nepodařilo importovat", "fail");    
+            $this->flashMessage("Účastníky se nepodařilo importovat", "fail");
         }
-        $this->redirect("default", array("aid"=>$aid));
+        $this->redirect("default", array("aid" => $aid));
     }
 
     public function actionExport($aid) {
@@ -101,9 +101,12 @@ class CashbookPresenter extends BasePresenter {
             $group->addCheckbox($c->id);
         }
 
-        $form->addSubmit('printSend', 'Vytisknout vybrané')
-                ->getControlPrototype()->setClass("btn btn-info btn-small");
-        $form['printSend']->onClick[] = callback($this, 'massPrintSubmitted');
+        $form->addSubmit('massPrintSend', '')
+                ->getControlPrototype()
+                ->setName("button")
+                ->setHtml('<i class="icon-print icon-white"></i>');
+
+        $form['massPrintSend']->onClick[] = callback($this, 'massPrintSubmitted');
         $form->setDefaults(array('category' => 'un'));
         return $form;
     }
