@@ -40,9 +40,8 @@
                 </p>
                 {form formMass}
                 <div class="well well-small span6">
-                    <a n:if="$isEditable"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Importovat HPD</a>
-                    {input printSend}
-                    <a n:href="export $aid" class="btn btn-mini btn-info">Exportovat pokladní knihu</a>
+                    <a n:if="$isEditable"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
+                    <a n:href="export $aid" target="_blank" class="btn btn-mini btn-info"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
                 </div>
             </div>
 
@@ -50,7 +49,10 @@
                 <table class="table myTable table-bordered table-condensed" id="cashbookTable">
                     <thead>
                         <tr>
-                            <th style="width:{if $isEditable}120{else}60{/if}px"><input type="checkbox" id="checkChits" onclick="jqCheckAll(this.id, 'chits')" /></th>
+                            <th style="width:{if $isEditable}120{else}60{/if}px">
+                                <input type="checkbox" id="frmformMass-chits-all" onclick="jqCheckAll(this.id, 'chits')" />
+                                {input massPrintSend class=>"btn btn-info btn-mini allDependend"} 
+                            </th>
                             <th>Ze dne</th>
                             <th>Účel výplaty</th>
                             <th>Typ</th>
@@ -67,7 +69,7 @@
                         <tr{if $balance < 0} class="alert alert-error"{/if}>
                             <td>
                                 {input chits-$item->id}
-                                <a n:href="print $item->id, $aid" class="btn btn-mini btn-info"><i class="icon icon-print icon-white"></i></a>
+                                <a n:href="print $item->id, $aid" target="_blank" class="btn btn-mini btn-info"><i class="icon icon-print icon-white"></i></a>
                                 <a n:if="$isEditable" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-primary"><i class="icon icon-edit icon-white"></i></a>
                                 <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
                             </td>
@@ -97,7 +99,7 @@
         {else}
             <div class="row-fluid" n:if="$isEditable">
                 <div class="well well-small span4">
-                    <a href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Importovat HPD</a>
+                    <a href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
                 </div>
             </div>
             <div class="row-fluid">
@@ -123,6 +125,9 @@
 <script type="text/javascript" >
 
     $(function(){
+        $(".allDependend").addClass("disabled").attr("disabled", "disabled");
+        onlyWithCheckbox("frmformMass-chits-", "allDependend");
+            
         $( "#cashbook-tabs" ).tabs();
         
 

@@ -102,8 +102,8 @@ class CashbookPresenter extends BasePresenter {
             $this->redirect('this', $aid);
         }
     }
-    
-    public function handleActivateAutocomputed($aid){
+
+    public function handleActivateAutocomputed($aid) {
         $this->context->campService->event->activateAutocomputed($aid);
         $this->flashMessage("Byl aktivován automatický výpočet nákladů a počtu dnů účastníků.");
         $this->redirect("this");
@@ -118,9 +118,15 @@ class CashbookPresenter extends BasePresenter {
             $group->addCheckbox($c->id);
         }
 
-        $form->addSubmit('printSend', 'Vytisknout vybrané')
-                ->getControlPrototype()->setClass("btn btn-info btn-small");
-        $form['printSend']->onClick[] = callback($this, 'massPrintSubmitted');
+//        $form->addSubmit('printSend', 'Vytisknout vybrané')
+//                ->getControlPrototype()->setClass("btn btn-info btn-small");
+
+        $form->addSubmit('massPrintSend', '')
+                ->getControlPrototype()
+                ->setName("button")
+                ->setHtml('<i class="icon-print icon-white"></i>');
+
+        $form['massPrintSend']->onClick[] = callback($this, 'massPrintSubmitted');
         $form->setDefaults(array('category' => 'un'));
         return $form;
     }
@@ -157,7 +163,7 @@ class CashbookPresenter extends BasePresenter {
 
     function formImportHpdSubmitted(\Nette\Forms\Controls\SubmitButton $btn) {
         $this->editableOnly();
-        
+
         $values = $btn->getForm()->getValues();
         $func = $this->context->campService->event->getFunctions($values->aid);
 
