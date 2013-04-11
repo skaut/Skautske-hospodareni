@@ -12,7 +12,7 @@ class AuthPresenter extends BasePresenter {
      * @param bool $final - je to konečné přesměrování? použít při problémem se zacyklením
      */
     public function actionDefault($backlink, $final = FALSE) {
-        if (Environment::getUser()->isLoggedIn()) {
+        if (\Nette\Environment::getUser()->isLoggedIn()) {
             if ($backlink) {
                 $this->restoreRequest($backlink);
             }

@@ -244,7 +244,7 @@ class EventService extends MutableBaseService {
             "CancelDecision" => $msg
                 ), "event" . self::$typeName);
         if ($ret) {//smaže paragony
-            Environment::getContext()->eventService->chits->deleteAll($ID);
+            \Nette\Environment::getContext()->eventService->chits->deleteAll($ID);
         }
         return $ret;
     }
@@ -306,7 +306,7 @@ class EventService extends MutableBaseService {
             "ID" => $ID,
             "IsRealTotalCostAutoComputed" => $state
                 ), "event" . self::$typeName);
-        
+
         $this->skautIS->event->{"EventCampUpdateDays"}(
                 array(
             "ID" => $ID,
