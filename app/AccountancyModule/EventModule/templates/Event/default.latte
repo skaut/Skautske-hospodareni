@@ -1,7 +1,7 @@
 {block #functionButtons $funkce, $index}
 {ifset $funkce[$index]->ID_Person}
 <a n:href="editFunction $aid, $index"  class="btn btn-info btn-mini fancybox fancybox.ajax" title="Změnit osobu ve funci"><i class="icon-edit icon-white"></i></a>
-<a n:href="removeFunction! $aid, $index" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce" class="btn btn-danger btn-mini"><i class="icon-remove icon-white"></i></a>
+<a n:href="removeFunction! $aid, $index"  class="btn btn-danger btn-mini" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="icon-remove icon-white"></i></a>
             {else}
 <a n:href="addFunction $aid, $index" title="Přiřadit osobu k funkci" class="fancybox fancybox.ajax btn btn-primary btn-mini"><i class="icon icon-plus icon-white"></i></a>{/ifset}
 {/block}
@@ -33,11 +33,11 @@
                 <th>Místo</th>
                 <td>{$event->Location}</td>
             </tr>
-            <tr>
+            <tr class="hidden-phone">
                 <th>Typ</th>
                 <td>{$event->EventGeneralType}</td>
             </tr>
-            <tr>
+            <tr class="hidden-phone">
                 <th>Rozsah</th>
                 <td>{$event->EventGeneralScope}</td>
             </tr>
@@ -52,7 +52,7 @@
         <h3>Vedení akce</h3>
         <table class="myTable table table-bordered table-condensed">
             <tr>
-                <th n:if="$isEditable">&nbsp;</th>
+                <th style="width: 60px" n:if="$isEditable">&nbsp;</th>
                 <th>Funkce</th>
                 <th>Příjmení a jméno</th>
             </tr>
@@ -60,7 +60,7 @@
                 {? $index = 0}
                 <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td class="required">{$funkce[$index]->EventFunctionType}*
-                    <i class="icon icon-info-sign" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
+                    <i class="icon icon-info-sign visible-desktop" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
                 <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
@@ -68,7 +68,7 @@
                 {? $index = 1}
                 <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
-                    <i class="icon icon-info-sign" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
+                    <i class="icon icon-info-sign visible-desktop" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
                 <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
@@ -76,7 +76,7 @@
                 {? $index = 2}
                 <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
-                    <i class="icon icon-info-sign" rel="tooltip" title="Osoba registrovaná ve SkautISu"/>
+                    <i class="icon icon-info-sign visible-desktop" rel="tooltip" title="Osoba registrovaná ve SkautISu"/>
                 </td>
                 <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
@@ -89,7 +89,7 @@
 
 <div class="row">
 
-    <div class="span12">
+    <div class="span12 hidden-phone">
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-small" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
         <a n:if="$accessCloseEvent" n:href="close! $aid" class="btn btn-success btn-small"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
         <a n:if="$accessOpenEvent"  n:href="open! $aid"  class="btn btn-warning btn-small"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>

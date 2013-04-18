@@ -1,17 +1,26 @@
 {block title}Skautské hospodaření online{/block}
 
+{block heroUnit}
+    <h1>Skautské<br />hospodaření online</h1>
+    <p>Systém pro vyúčtování skautských akcí a cestovních příkazů</p>
+{/block}
+
 {block #content}
 
 <div class="row-fluid">
     <div class="span8">
         <div class="row-fluid">
-            <div class="hero-unit">
-                <h1>Skautské<br />hospodaření online</h1>
-                <p>Systém pro vyúčtování skautských akcí a cestovních příkazů</p>
+            <div class="hero-unit hidden-phone">
+                {include #heroUnit}
             </div>
+            <div class="well visible-phone">
+                {include #heroUnit}
+            </div>
+            <div class="fb-like visible-phone" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-send="false" data-width="240" data-show-faces="true"></div>
         </div>
+        
         <div class="row-fluid">
-            <div class="span4">
+            <div class="span4 hidden-phone">
                 <h2>O projektu</h2>
                 <p>Chceš se dozvědět více o projektu Skautské hospodaření online? Poznat jeho historii nebo pomoci vytvářet jeho budoucnoust? <a n:href=":Default:about">Více ...</a></p>
             </div>
@@ -28,19 +37,18 @@
     <div class="span4">
 
 
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/cs_CZ/all.js#xfbml=1&appId=262542393777882";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+        <div id="fb-root"></div>
+        <script>(function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/cs_CZ/all.js#xfbml=1&appId=262542393777882";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));</script>
 
 
-<div class="fb-like-box" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-width="360" data-height="540" data-show-faces="true" data-stream="true" data-border-color="#EEEEEE" data-header="false"></div>
-        
-        
+        <div class="fb-like-box hidden-phone" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-width="360" data-height="540" data-show-faces="true" data-stream="true" data-border-color="#EEEEEE" data-header="false"></div>
+
     </div>
 </div>
 

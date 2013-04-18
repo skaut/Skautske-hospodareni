@@ -1,0 +1,14 @@
+
+table .twoButtons {
+    width: 60px;
+}
+
+.well.threeButtons {
+    /*width: 300px;*/
+}
+
+@media (max-width: 767px) {
+    table .twoButtons {
+        width: 30px;
+    }    
+}
