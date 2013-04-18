@@ -21,7 +21,9 @@
            'bootstrap.min.css', 
             'bootstrap-responsive.min.css',
             'jquery-ui-1.10.0.custom.css',
+            'my-responsive.css',
             'site.css'}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript">
             function changeRole(id){
                  $.post({link changeRole!}, { roleId : id });
@@ -66,12 +68,14 @@
                             <select onchange="changeRole(this.value)" class="roleSelect input-large">
                                 <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->RegistrationNumber} - {$r->Role}</option>
                             </select>
-                            <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small">Odhlásit se</a>
+                            <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small hidden-phone">Odhlásit se</a>
+                            <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small visible-phone btn-block">Odhlásit se</a>
                         {else}
-                            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-small">Přihlásit se</a>
+                            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-small hidden-phone">Přihlásit se</a>
                         </p>
 
                       </div><!--/.nav-collapse -->
+                    <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-small hidden-desktop btn-block" n:if="!$user->isLoggedIn()">Přihlásit se</a>
                 </div>
             </div>
         </div>

@@ -6,14 +6,14 @@
 {dump $participants}
 
 <div class="row-fluid">
-    <div class="span5" n:if="$accessInsertParticipant">
+    <div class="span6" n:if="$accessInsertParticipant">
         {snippet potencialParticipants}
 
         <div n:ifset="$participants">
-            <h3>Přidat účastníky z jednotky</h3>
+            <h3>Účastníci jednotky</h3>
 
             {form formMassAdd}
-            <div class="well well-small">
+            <div class="well well-small threeButtons">
 
 <!--<a class="btn btn-primary btn-mini" href="#addParticipant" data-toggle="modal">Založit nového účastníka</a>-->
 
@@ -30,20 +30,20 @@
                     Podřízené?<i class="icon icon-white {if !$directMemberOnly}icon-ok{else}icon-ban-circle{/if}"></i>
                 </a>
 
-                <a class="btn btn-primary btn-small" href="#addParticipant" data-toggle="modal">Nový účastník</a>
+                <a class="btn btn-primary btn-small hidden-phone" href="#addParticipant" data-toggle="modal">Nový účastník</a>
             </div>
             <table class="table table-striped table-bordered table-condensed">
                 {if count($list) > 0}
                 <tr>
-                    <th style="width: 60px;">
-                        <input type="checkbox" id="frmformMassAdd-all-all" onclick="jqCheckAll(this.id, 'all')" />
-                        {input massAddSend class=>"btn btn-primary btn-mini allDependend", title=>"Přidat vybrané"}
+                    <th class="twoButtons">
+                        <input type="checkbox" class="hidden-phone" id="frmformMassAdd-all-all" onclick="jqCheckAll(this.id, 'all')" />
+                        {input massAddSend class=>"btn btn-primary btn-mini allDependend hidden-phone", title=>"Přidat vybrané"}
                     </th>
                     <th>Příjmění a jméno</th>
                 </tr>
                 <tr n:foreach="$list as $id=>$name">
                     <td>
-                        {input all-$id}
+                        {input all-$id class=>"hidden-phone"}
                         <a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a>
                     </td>
                     <td>{label all-$id /}</td>
@@ -68,17 +68,18 @@
             <h3>Seznam účastníků</h3>
             {if !empty($participants)}
 
-            <div class="well well-small">
+            <div class="well well-small hidden-phone">
                 <a n:href="export $aid" target="_blank" class="btn btn-info btn-small"><i class="icon icon-white icon-print"></i> Seznam účastníků</a>
             </div>
 
             <table id="participants-list" class="table table-striped table-bordered table-condensed">
                 <tr>
-                    <th n:if="$accessUpdateParticipant || $accessDeleteParticipant" style="width:90px;">
+                    <th class="hidden-phone" n:if="$accessUpdateParticipant || $accessDeleteParticipant" style="width:90px;">
                         <input type="checkbox" id="frmformMassParticipants-ids-all" onclick="jqCheckAll(this.id, 'ids')" />
                         <a n:if="$accessUpdateParticipant" href="#massEdit" data-toggle="modal" class="btn btn-primary btn-mini massDependend" title="Upravit vybrané"><i class="icon-edit icon-white"></i></a>
                         {if $accessDeleteParticipant}{input massRemoveSend class=>"btn btn-danger btn-mini massDependend", title=>"Odebrat vybrané"}{/if}
                     </th>
+                    <th class="visible-phone">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </th>
                     <th>Příjmení a jméno ({= count($participants)})</th>
                     <th>Dnů</th>
                     <th>Částka</th>
@@ -87,7 +88,7 @@
                 {if !empty($participants)}
                 <tr n:foreach="$participants as $p">
                     <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
-                        {input ids-$p->ID}
+                        {input ids-$p->ID class=>"hidden-phone"}
                         <a n:if="$accessUpdateParticipant" class="fancybox fancybox.ajax btn btn-primary btn-mini" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
                         <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a>
                     </td>

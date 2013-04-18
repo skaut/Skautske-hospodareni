@@ -20,7 +20,8 @@ abstract class AccountancyHelpers extends Object {
     
     public static function eventStateLabel($s) {
         if ($s == "draft")
-            return '<span class="label label-warning">Rozpracováno</span>';
+            return '<span class="label label-warning hidden-phone">Rozpracováno</span>'
+            .'<span class="label label-warning visible-phone">Rozprac.</span>';
         elseif ($s == "closed") {
             return '<span class="label label-success">Uzavřeno</span>';
         } else {

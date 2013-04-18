@@ -8,17 +8,21 @@
 {dump $list}
         
     {snippet events}
+        <div class="well well-small">
         {form formFilter class=>"ajax filter"}
             {label year /}{input year onchange=>"changeYear(this.value)"}
+            <br class="visible-phone"/>
             {label state /}{input state onchange=>"changeState(this.value)"}
+            <br class="visible-phone"/>
             {input send}
         {/form}
+            </div>
         
         {if is_array($list)}
         <table class="myTable table table-striped table-bordered table-condensed">
             <thead>
                 <tr>
-                    <th>&nbsp;</th>
+                    <th class="hidden-phone">&nbsp;</th>
                     <th>Název</th>
                     <th>Od</th>
                     <th>Do</th>
@@ -27,10 +31,10 @@
             </thead>
             <tbody>
                 <tr n:foreach="$list as $i">
-                    <td>{if $i->accessDelete}<a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-mini" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
+                    <td class="hidden-phone">{if $i->accessDelete}<a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-mini" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
                     <td><a n:tag-if="$i->accessDetail" n:href="Event: $i->ID">{$i->DisplayName}</a></td>
-                    <td>{$i->StartDate|date:"d.m.Y"}</td>
-                    <td>{$i->EndDate|date:"d.m.Y"}</td>
+                    <td>{$i->StartDate|date:"j.n.Y"}</td>
+                    <td>{$i->EndDate|date:"j.n.Y"}</td>
                     <td>{!$i->ID_EventGeneralState|eventStateLabel}</td>
                 </tr>
             </tbody>
