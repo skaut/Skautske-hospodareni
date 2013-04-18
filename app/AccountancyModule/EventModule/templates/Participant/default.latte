@@ -18,7 +18,7 @@
 <!--<a class="btn btn-primary btn-mini" href="#addParticipant" data-toggle="modal">Založit nového účastníka</a>-->
 
                 <div class="btn-group">
-                    <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#" rel="tooltip" data-original-title="Jednotka, ze které se zobrazí seznam členů ">{$unit->DisplayName} <span class="caret"></span></a>
+                    <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#" rel="tooltip" data-original-title="Jednotka, ze které se zobrazí seznam členů ">{$unit->DisplayName|truncate:20, ""} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a></li>
                         <li><a class="active" style="font-weight: bold" href="#">&minus;&gt;{$unit->DisplayName}</a></li>
@@ -30,7 +30,7 @@
                     Podřízené?<i class="icon icon-white {if !$directMemberOnly}icon-ok{else}icon-ban-circle{/if}"></i>
                 </a>
 
-                <a class="btn btn-primary btn-small hidden-phone" href="#addParticipant" data-toggle="modal">Nový účastník</a>
+                <a class="btn btn-primary btn-small" href="#addParticipant" data-toggle="modal">Nový účastník</a>
             </div>
             <table class="table table-striped table-bordered table-condensed">
                 {if count($list) > 0}
@@ -89,8 +89,10 @@
                 <tr n:foreach="$participants as $p">
                     <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
                         {input ids-$p->ID class=>"hidden-phone"}
-                        <a n:if="$accessUpdateParticipant" class="fancybox fancybox.ajax btn btn-primary btn-mini" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
-                        <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a>
+                        <a n:if="$accessUpdateParticipant" class="fancybox fancybox.ajax btn btn-primary btn-mini hidden-phone" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
+                        <a n:if="$accessUpdateParticipant" class="fancybox fancybox.ajax btn btn-primary btn-small visible-phone" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
+                        <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax hidden-phone"><i class="icon-remove icon-white"></i></a>
+                        <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-small ajax visible-phone"><i class="icon-remove icon-white"></i></a>
                     </td>
                     <td>{label ids-$p->ID /}</td>
                     <td id="par-days-{$p->ID}">{$p->Days}</td>
