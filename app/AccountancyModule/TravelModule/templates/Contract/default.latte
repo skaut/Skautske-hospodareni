@@ -10,7 +10,7 @@
         </div>
         <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
             <tr>
-                <th style="width: 100px;">&nbsp;</th>
+                <th class="span2">&nbsp;</th>
                 <th>Zástupce jednotky</th>
                 <th>Řidič</th>
                 <th>Platná od:</th>
@@ -18,8 +18,9 @@
             </tr>
             <tr n:foreach="$list as $c">
                 <td>
-                    <a n:href="print $c->id" class="btn btn-info btn-mini"><i class="icon icon-print icon-white"></i></a>
-                    <a n:href="detail $c->id" class="btn btn-primary btn-mini"><i class="icon icon-zoom-in icon-white"></i> Detail</a>
+                    <a n:href="print $c->id" class="btn btn-info btn-mini hidden-phone"><i class="icon icon-print icon-white"></i></a>
+                    <a n:href="detail $c->id" class="btn btn-primary btn-mini hidden-phone"><i class="icon icon-zoom-in icon-white"></i> Detail</a>
+                    <a n:href="detail $c->id" class="btn btn-primary btn-small visible-phone"><i class="icon icon-zoom-in icon-white"></i> Detail</a>
                 </td>
                 <td>{$c->unit_person}</td>
                 <td>{$c->driver_name}</td>

@@ -50,13 +50,12 @@
     </ul>
     </tr>
     <tr n:if="$isEditable">
-        <th n:if="$isEditable">&nbsp;</th>
+        <th>&nbsp;</th>
         <th>{input start_date class=>"input-small"}</th>
         <th>{input start_place class=>"input-medium"}</th>
         <th>{input end_place class=>"input-medium"}</th>
         <th>{input distance class=>"input-mini"}</th>
         <th>{input send}</th>
-
     </tr>
             {if !empty($travels)}
     <tr n:foreach="$travels as $t">
