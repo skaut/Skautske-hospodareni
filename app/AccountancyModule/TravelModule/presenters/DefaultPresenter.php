@@ -205,17 +205,13 @@ class DefaultPresenter extends BasePresenter {
         $form->getElementPrototype()->class("form-inline");
         $form->addHidden("command_id");
         $form->addDatePicker("start_date", "Datum cesty")
-                ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.")
-                ->getControlPrototype()->class("input-small");
+                ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.");
         $form->addText("start_place", "Z*")
-                ->addRule(Form::FILLED, "Musíte vyplnit místo počátku cesty.")
-                ->getControlPrototype()->class("input-medium");
+                ->addRule(Form::FILLED, "Musíte vyplnit místo počátku cesty.");
         $form->addText("end_place", "Do*")
-                ->addRule(Form::FILLED, "Musíte vyplnit místo konce cesty.")
-                ->getControlPrototype()->class("input-medium");
+                ->addRule(Form::FILLED, "Musíte vyplnit místo konce cesty.");
         $form->addText("distance", "Vzdálenost*")
-                ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.")
-                ->getControlPrototype()->class("input-mini");
+                ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.");
         $form->addSubmit('send', 'Přidat')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');

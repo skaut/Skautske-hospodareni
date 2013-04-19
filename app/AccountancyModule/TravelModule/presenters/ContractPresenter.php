@@ -75,6 +75,7 @@ class ContractPresenter extends BasePresenter {
 
     function formCreateContractSubmitted(Form $form) {
         $v = @$form->getValues();
+        $v['end'] =  isset($v['end']) ? $v['end'] : NULL;
         $v->unit_id = $this->unit->ID;
         if($this->context->travelService->addContract($v))
             $this->flashMessage("Smlouva byla založena.");
