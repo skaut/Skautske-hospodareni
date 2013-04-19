@@ -70,6 +70,7 @@ class VehiclePresenter extends BasePresenter {
     function formCreateVehicleSubmitted(Form $form) {
         $v = $form->getValues();
         $v['unit_id'] = $this->unit->ID;
+        $v['consumption'] = str_replace(",", ".", $v['consumption']);
         $this->context->travelService->addVehicle($v);
         $this->flashMessage("Záznam o vozidle byl založen.");
         $this->redirect("this");
