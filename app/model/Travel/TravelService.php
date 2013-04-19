@@ -54,14 +54,24 @@ class TravelService extends BaseService {
     }
 
     public function getAllVehicles($unitId) {
-        return $this->tableVehicle->getAll($unitId);
+        $all = $this->tableVehicle->getAll($unitId);
+        //TODO predelat na databazi
+        foreach ($all as $key => $value) {
+            $command = $this->getAllCommandsByVehicle($unitId, $value->id);
+            $all[$key]['commands'] = count($command);
+        }
+        return $all;
     }
 
     public function addVehicle($data) {
         return $this->tableVehicle->add($data);
     }
 
-    public function removeVehicle($vehicleId) {
+    public function removeVehicle($vehicleId, $unitId) {
+        $commands = $this->getAllCommandsByVehicle($unitId, $vehicleId);
+        if(count($commands) > 0 ){ //nelze mazat vozidlo s navazanými příkazy
+            return false;
+        }
         return $this->tableVehicle->remove($vehicleId);
     }
 
