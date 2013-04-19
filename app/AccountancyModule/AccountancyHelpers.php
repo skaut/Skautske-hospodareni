@@ -55,7 +55,8 @@ abstract class AccountancyHelpers extends Object {
     public static function commandState($s) {
         switch ($s) {
             case NULL:
-                return '<span class="label label-warning">Rozpracováný</span>';
+                return '<span class="label label-warning hidden-phone">Rozpracovaný</span>'
+            .'<span class="label label-warning visible-phone">Rozpr.</span>';
             default :
                 return '<span class="label label-success" title="Uzavřeno dne: '. $s->format("j.n.Y H:i:s").'">Uzavřený</span>';
                 break;

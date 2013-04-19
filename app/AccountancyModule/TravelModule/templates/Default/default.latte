@@ -14,7 +14,7 @@
                 <th>Řidič</th>
                 <th>Účel cesty</th>
                 <th>Vozidlo</th>
-                <th>Poznámka</th>
+                <th class="hidden-phone">Poznámka</th>
                 <th>Stav</th>
             </tr>
             <tr n:foreach="$list as $item">
@@ -22,12 +22,13 @@
                     {*}<a n:href="editCommand $item->id"  n:if="$item->closed == NULL" title="Upravit" class="fancybox fancybox.ajax btn btn-mini btn-info"><i class="icon icon-white icon-edit"></i></a>
                     <a n:href="removeCommand! $item->id" n:if="$item->closed == NULL" title="Smazat" class="btn btn-mini btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="icon icon-white icon-remove"></i></a>
                     <a n:href="Contract:detail $item->contract_id" class="btn btn-mini btn-info">Smlouva</a>{*}
-                    <a n:href="detail $item->id" class="btn btn-mini btn-primary"><i class="icon icon-white icon-zoom-in"></i> Detail</a>
+                    <a n:href="detail $item->id" class="btn btn-mini btn-primary hidden-phone"><i class="icon icon-white icon-zoom-in"></i> Detail</a>
+                    <a n:href="detail $item->id" class="btn btn-small btn-primary visible-phone">Detail</a>
                 </td>
                 <td>{$item->driver_name}</td>
                 <td>{$item->purpose}</td>
                 <td><a n:href="Vehicle:detail $item->vehicle_id">{$item->vehicle_type} ({$item->vehicle_spz})</a></td>
-                <td>{!$item->note}</td>
+                <td class="hidden-phone">{!$item->note}</td>
                 <td>{!$item->closed|commandState}</td>
             </tr>
         </table>

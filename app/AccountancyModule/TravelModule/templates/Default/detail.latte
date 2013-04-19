@@ -8,8 +8,8 @@
             <a n:href="editCommand $command->id" n:if="$isEditable" class="fancybox fancybox.ajax btn btn-small btn-info"><i class="icon icon-white icon-edit"></i> Upravit</a>
             <a n:href="removeCommand! $command->id" n:if="$command->closed == NULL" title="Smazat" class="btn btn-small btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="icon icon-white icon-remove"></i> Smazat</a>
             <a n:href="closeCommand! $command->id" n:if="$isEditable" class="btn btn-small btn-success" onclick="return confirm('Opravdu chcete nenávratně uzavřít cestovní příaz?')"><i class="icon icon-white icon-folder-close"></i> Uzavřít</a>
-            <a n:href="Contract:detail $contract->id" class="btn btn-small btn-info"><i class="icon icon-white icon-zoom-in"></i> Smlouva</a>
-            <a n:href="print $command->id" class="btn btn-small btn-info"><i class="icon icon-white icon-print"></i> Vytisknout cestovní příkaz</a>
+            <a n:href="Contract:detail $contract->id" class="btn btn-small btn-info hidden-phone"><i class="icon icon-white icon-zoom-in"></i> Smlouva</a>
+            <a n:href="print $command->id" class="btn btn-small btn-info hidden-phone"><i class="icon icon-white icon-print"></i> Vytisknout cestovní příkaz</a>
         </div>
         <div class="span3">
             <h3>Vozidlo</h3>
@@ -51,10 +51,10 @@
     </tr>
     <tr n:if="$isEditable">
         <th n:if="$isEditable">&nbsp;</th>
-        <th>{input start_date}</th>
-        <th>{input start_place}</th>
-        <th>{input end_place}</th>
-        <th>{input distance}</th>
+        <th>{input start_date class=>"input-small"}</th>
+        <th>{input start_place class=>"input-medium"}</th>
+        <th>{input end_place class=>"input-medium"}</th>
+        <th>{input distance class=>"input-mini"}</th>
         <th>{input send}</th>
 
     </tr>
