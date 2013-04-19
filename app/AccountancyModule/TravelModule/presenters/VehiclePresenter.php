@@ -43,8 +43,11 @@ class VehiclePresenter extends BasePresenter {
             $this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
             $this->redirect("default");
         }
-        $this->context->travelService->removeVehicle($vehicleId);
-        $this->flashMessage("Vozidlo bylo odebráno.");
+        if($this->context->travelService->removeVehicle($vehicleId, $this->unit->ID)){
+            $this->flashMessage("Vozidlo bylo odebráno.");
+        }  else {
+            $this->flashMessage("Nelze smazat vozidlo s cestovními příkazy.", "warning");
+        }
         $this->redirect("this");
     }
 
