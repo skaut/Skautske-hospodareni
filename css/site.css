@@ -133,9 +133,6 @@ input[type="checkbox"], input[type="radio"] {
     left: 50%;
     top: 50%;
 }
-.modal.fade.in {
-    top: 60%;
-}
 
 .ct { /* ct = center, top*/
     text-align: center;
