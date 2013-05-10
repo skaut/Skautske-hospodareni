@@ -1,3 +1,5 @@
+{block #title}{$event->DisplayName} - základní informace{/block}
+
 {block #functionButtons $funkce, $index}
 {ifset $funkce[$index]->ID_Person}
 <a n:href="editFunction $aid, $index"  class="btn btn-info btn-mini fancybox fancybox.ajax" title="Změnit osobu ve funci"><i class="icon-edit icon-white"></i></a>
