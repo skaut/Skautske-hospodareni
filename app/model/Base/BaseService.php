@@ -92,7 +92,7 @@ abstract class BaseService extends Object {
         $mpdf->WriteHTML((string) $template, NULL);
         $mpdf->Output($filename, 'I');
     }
-
-
+    
+     
 }
 
