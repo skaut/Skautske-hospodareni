@@ -1,7 +1,5 @@
 <?php
 
-use Nette\Caching\Cache;
-
 /**
  * @author Hána František
  */
@@ -24,8 +22,9 @@ class EventService extends MutableBaseService {
     public function get($ID) {
         try {
             $cacheId = __FUNCTION__ . $ID;
-            if (!($res = $this->load($cacheId)))
-                $res = $this->save($cacheId, $this->skautIS->event->{"Event" . self::$typeName . "Detail"}(array("ID" => $ID)));
+            if (!($res = $this->loadSes($cacheId))) {
+                $res = $this->saveSes($cacheId, $this->skautIS->event->{"Event" . self::$typeName . "Detail"}(array("ID" => $ID)));
+            }
             return $res;
         } catch (SkautIS_Exception $e) {
             throw new SkautIS_PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e->getCode);
@@ -81,7 +80,7 @@ class EventService extends MutableBaseService {
             foreach ($res as $value) {
                 $ret[$value->ID] = $value->DisplayName;
             }
-            $this->cache->save($cacheId, $ret, array(Cache::EXPIRE => self::$expire));
+            $this->cache->save($cacheId, $ret);
         }
         return $ret;
     }
@@ -100,7 +99,7 @@ class EventService extends MutableBaseService {
             foreach ($res as $value) {
                 $ret[$value->ID] = $value->DisplayName;
             }
-            $this->cache->save($cacheId, $ret, array(Cache::EXPIRE => self::$expire));
+            $this->cache->save($cacheId, $ret);
         }
         return $ret;
     }
@@ -118,7 +117,7 @@ class EventService extends MutableBaseService {
             foreach ($res as $value) {
                 $ret[$value->ID] = $value->DisplayName;
             }
-            $this->cache->save($cacheId, $ret, array(Cache::EXPIRE => self::$expire));
+            $this->cache->save($cacheId, $ret);
         }
         return $ret;
     }

@@ -33,7 +33,7 @@ abstract class BaseService extends Object {
      * @var type 
      */
     private static $storage;
-
+    
     public function __construct($skautIS = NULL) {
         $this->skautIS = $skautIS;
         self::$storage = array();
@@ -46,7 +46,7 @@ abstract class BaseService extends Object {
      * @param mixed $val
      * @return mixed 
      */
-    protected function save($id, $val){
+    protected function saveSes($id, $val){
         if($this->useCache)
             self::$storage[$id] = $val;
         return $val;
@@ -57,7 +57,7 @@ abstract class BaseService extends Object {
      * @param string|int $id
      * @return mixed | FALSE
      */
-    protected function load($id){
+    protected function loadSes($id){
         if( $this->useCache && array_key_exists($id, self::$storage) )
             return self::$storage[$id];
         return FALSE;

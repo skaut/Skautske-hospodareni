@@ -183,14 +183,14 @@ class ChitService extends MutableBaseService {
      */
     public function getEventCategoryParticipant() {
         $cacheId = __FUNCTION__;
-        if (!($res = $this->load($cacheId))) {
+        if (!($res = $this->loadSes($cacheId))) {
             foreach ($this->table->getCategoriesAll("in") as $c) {
                 if ($c->short == "hpd") {
                     $res = $c->id;
                     break;
                 }
             }
-            $this->save($cacheId, $res);
+            $this->saveSes($cacheId, $res);
         }
         if (!$res)
             throw new InvalidStateException("Chybí typ pro příjem od účastníků", 500);
@@ -226,7 +226,7 @@ class ChitService extends MutableBaseService {
         $in = $out = array();
 
         $cacheId = __FUNCTION__ . "_" . $actionId;
-        if (!($all = $this->load($cacheId))) {
+        if (!($all = $this->loadSes($cacheId))) {
             foreach ($this->getCategoriesCamp($actionId, false) as $i) {
                 if ($i->IsRevenue) {//výnosy?
                     $in[$i->ID] = $i->EventCampStatementType;
@@ -235,7 +235,7 @@ class ChitService extends MutableBaseService {
                 }
             }
             $all = array("in" => $in, "out" => $out);
-            $this->save($cacheId, $all);
+            $this->saveSes($cacheId, $all);
         }
         return $all;
     }
