@@ -62,7 +62,7 @@
                                 <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
                             </td>
                             <td><span class="hidden-desktop">{$item->date|date:"j.n."}</span><span class="visible-desktop">{$item->date|date:"d.m.Y"}</span></td>
-                            <td>{$item->purpose|truncate:"35"}</td>
+                            <td {if strlen($item->purpose) > 30} title="{$item->purpose}"{/if}>{$item->purpose|truncate:"30"}</td>
                             <td title="{$item->clabel}" class="hidden-phone">{$item->cshort}</td>
                             <td class="hidden-phone">{$item->recipient}</td>
                             <td class="r"><span class="visible-desktop">{! in_array($item->ctype, array("in", "hpd")) ? $item->price: '&nbsp;'|price}</span><span class="hidden-desktop">{! in_array($item->ctype, array("in", "hpd")) ? $item->price: '&nbsp;'|price:false}</span></td>{* ! je tady kvuli &nbsp;*}
