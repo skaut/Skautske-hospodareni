@@ -88,21 +88,21 @@ class EventPresenter extends BasePresenter {
             "fid" => $fid,
         ));
     }
-    
+
     public function actionPrintAll($aid){
         $chits = (array)$this->context->eventService->chits->getAll($this->aid);
-        
+
         $template = (string)$this->context->exportService->getEventReport($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
         $template .= (string)$this->context->exportService->getParticipants($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
 //        $template .= (string)$this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService) . $this->context->exportService->getNewPage();
         $template .= (string)$this->context->exportService->getCashbook($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
         $template .= (string)$this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
-        
+
 //        echo $template;
 //        $size = memory_get_usage();
 //        $unit=array('b','kb','mb','gb','tb','pb');
 //        echo @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
-        
+
         $this->context->eventService->participants->makePdf($template, "all.pdf");
         $this->terminate();
     }
