@@ -42,9 +42,9 @@ class TravelService extends BaseService {
      */
     public function getVehicle($vehicleId, $withDeleted = false) {
         $cacheId = __FUNCTION__ . "_" . $vehicleId."_" . (int)$withDeleted;
-        if (!($res = $this->load($cacheId))) {
+        if (!($res = $this->loadSes($cacheId))) {
             $res = $this->tableVehicle->get($vehicleId, $withDeleted);
-            $this->save($cacheId, $res);
+            $this->saveSes($cacheId, $res);
         }
         return $res;
     }
@@ -95,9 +95,9 @@ class TravelService extends BaseService {
     /**     CONTRACTS    */
     public function getContract($contractId) {
         $cacheId = __FUNCTION__ . "_" . $contractId;
-        if (!($res = $this->load($cacheId))) {
+        if (!($res = $this->loadSes($cacheId))) {
             $res = $this->tableContract->get($contractId);
-            $this->save($cacheId, $res);
+            $this->saveSes($cacheId, $res);
         }
         return $res;
     }
@@ -125,9 +125,9 @@ class TravelService extends BaseService {
     /**     COMMANDS    */
     public function getCommand($commandId) {
         $cacheId = __FUNCTION__ . "_" . $commandId;
-        if (!($res = $this->load($cacheId))) {
+        if (!($res = $this->loadSes($cacheId))) {
             $res = $this->table->get($commandId);
-            $this->save($cacheId, $res);
+            $this->saveSes($cacheId, $res);
         }
         return $res;
     }

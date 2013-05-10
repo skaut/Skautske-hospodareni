@@ -4,6 +4,7 @@
  * @author Hána František
  */
 class UserService extends BaseService {
+//    use Nette\Caching\Cache;
 
     /**
      * varcí ID role aktuálně přihlášeného uživatele
@@ -23,8 +24,8 @@ class UserService extends BaseService {
 
     public function getUserDetail() {
         $id = __FUNCTION__;
-        if (!($res = $this->load($id))) {
-            $res = $this->save($id, $this->skautIS->user->UserDetail());
+        if (!($res = $this->loadSes($id))) {
+            $res = $this->saveSes($id, $this->skautIS->user->UserDetail());
         }
         return $res;
     }
@@ -67,7 +68,7 @@ class UserService extends BaseService {
      * @return BOOL|stdClass|array
      */
     public function actionVerify($table, $id = NULL, $ID_Action = NULL) {
-        
+
         $res = $this->skautIS->user->ActionVerify(array(
             "ID" => $id,
             "ID_Table" => $table,
@@ -79,7 +80,7 @@ class UserService extends BaseService {
             if (is_array($res))
                 return true;
         }
-        if(is_array($res)){
+        if (is_array($res)) {
             $tmp = array();
             foreach ($res as $v) {
                 $tmp[$v->ID] = $v;

@@ -28,14 +28,14 @@ class ParticipantService extends MutableBaseService {
     public function getAll($ID, $cache = TRUE) {
         //$this->enableDaysAutocount($ID);
         $cacheId = __FUNCTION__ . $ID;
-        if (!$cache || !($res = $this->load($cacheId))) {
+        if (!($res = $this->loadSes($cacheId))) {
             $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "All"}(array("ID_Event" . self::$typeName => $ID));
             $res = array();
             foreach ($tmp as $p) {//objekt má vzdy Note a je pod associativnium klicem
                 $p->Note = isset($p->Note) ? $p->Note : 0;
                 $res[$p->ID] = $p;
             }
-            $this->save($cacheId, $res);
+            $this->saveSes($cacheId, $res);
         }
         if (!is_array($res))//pokud je prázdná třída stdClass
             return array();
