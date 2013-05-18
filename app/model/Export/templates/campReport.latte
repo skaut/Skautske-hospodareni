@@ -1,0 +1,106 @@
+
+<style type="text/css">
+    .totalReport {
+        width: 800px;
+    }
+
+    .totalReport td {
+        text-align: center;
+    }
+</style>
+<div class="totalReport">
+
+    <h1>{$a->DisplayName}</h1>
+<h3>Pořadatel tábora</h3>
+{$a->Unit} - Ev. číslo: {$a->RegistrationNumber}
+
+<br />
+
+<h3>Základní údaje</h3>
+{foreach $func as $p}
+<b>{$p->EventFunctionType}: </b>{ifset $p->Person} {$p->Person} {ifset $p->Email} (email: {$p->Email}){/ifset}{/ifset}<br />
+{/foreach}
+
+<br />
+<table border="1" style="width:800px">
+    <tr>
+        <th style="width: 20%;">Od</th>
+        <th style="width: 20%;">Do</th>
+        <th style="width: 15%;">Počet dnů</th>
+        <th>Místo konání</th>
+    </tr>
+    <tr>
+        <th>{$a->StartDate|date:"j.n.Y"}</th>
+        <th>{$a->EndDate|date:"j.n.Y"}</th>
+        <th>{= date("j", strtotime($a->EndDate) - strtotime($a->StartDate) ) }</th>
+        <th>{!= trim($a->Location) ? $a->Location : "&nbsp;"|stripTags}</th>
+    </tr>
+</table>
+
+<h3>Účastníci</h3>
+<table border="1" style="width:500px">
+    <tr>
+        <th style="width: 30%;">Účastníků</th>
+        <td style="width: 20%;">{= count($participants)}</td>
+        <th style="width: 30%;">Osobodnů</th>
+        <td style="width: 20%;">{$personsDays}</td>
+    </tr>
+</table>
+
+<h3>Příjmy a výdaje akce</h3>
+<table border="1" style="width:800px">
+    <tr>
+        <th style="width: 30%;">Příjmy</th>
+        <th style="width: 20%;text-align: right;">Kč</th>
+        <th style="width: 30%;">Výdaje</th>
+        <th style="width: 20%;text-align: right;">Kč</th>
+    </tr>
+
+{?
+$cntIn = count($chits['in']);
+$cntOut = count($chits['out']);
+$iter = max($cntIn, $cntOut);
+$totalIn = 0;
+$totalOut = 0;
+}
+
+    {for $i = 0; $i < $iter; $i++}
+    <tr>
+        {if $i < $cntIn}
+            {? $in = current($chits['in'])}
+        <td>{$in->EventCampStatementType}</td>
+        <td>{$in->Ammount|price}</td>
+            {? $totalIn += $in->Ammount}
+            {? next($chits['in'])}
+        {else}
+            <td>&nbsp;</td><td>&nbsp;</td>
+        {/if}
+        {if $i < $cntOut}
+            {? $out = current($chits['out'])}
+            <td>{$out->EventCampStatementType}</td>
+            <td>{$out->Ammount|price}</td>
+            {? $totalOut += $out->Ammount}
+            {? next($chits['out'])}
+        {else}
+            <td>&nbsp;</td><td>&nbsp;</td>
+        {/if}
+    </tr>
+    {/for}
+
+    <tr>
+        <td>Celkem</td>
+        <td><b>{$totalIn|price}</b></td>
+        <td>Celkem</td>
+        <td><b>{$totalOut|price}</b></td>
+    </tr>
+</table>
+
+
+<h3>Hlášení předkládá</h3>
+
+V _________________ dne _____________
+&nbsp; &nbsp;Zpracoval: <br /><br />
+
+
+</div>
+
