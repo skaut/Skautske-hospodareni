@@ -83,5 +83,10 @@ class BasePresenter extends \BasePresenter {
 
         return $router;
     }
-
+    
+    public function isAllowed($action, $avaibleActions = NULL){
+        $avaibleActions = $avaibleActions == NULL ? $this->availableActions : $avaibleActions;
+        return array_key_exists($action, $avaibleActions);
+    }
+   
 }

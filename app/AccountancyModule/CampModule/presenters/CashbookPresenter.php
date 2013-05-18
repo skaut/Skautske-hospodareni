@@ -15,7 +15,7 @@ class CashbookPresenter extends BasePresenter {
             $this->flashMessage("Musíš vybrat akci", "error");
             $this->redirect("Default:");
         }
-        $this->template->isEditable = array_key_exists("EV_EventCamp_UPDATE_RealTotalCost", $this->availableActions);
+        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
     }
 
     public function beforeRender() {

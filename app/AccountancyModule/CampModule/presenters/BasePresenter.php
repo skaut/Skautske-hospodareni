@@ -24,7 +24,7 @@ class BasePresenter extends \AccountancyModule\BasePresenter {
             try {
                 $this->template->camp = $this->camp = $this->context->campService->event->get($this->aid);
                 $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
-                $this->template->isEditable = $this->isEditable = array_key_exists(self::STable . "_UPDATE_Real", $this->availableActions);
+                $this->template->isEditable = $this->isEditable = $this->isAllowed(self::STable . "_UPDATE_Real");
             } catch (SkautIS_PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Default:");

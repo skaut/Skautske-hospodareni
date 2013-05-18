@@ -31,8 +31,8 @@ class DefaultPresenter extends BasePresenter {
         $list = $this->context->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
             $localAvaibleActions = $this->context->userService->actionVerify(self::STable, $value->ID);
-            $value->accessDelete = array_key_exists("EV_EventGeneral_DELETE", $localAvaibleActions);
-            $value->accessDetail = array_key_exists("EV_EventGeneral_DETAIL", $localAvaibleActions);
+            $value->accessDelete = $this->isAllowed("EV_EventGeneral_DELETE", $localAvaibleActions);
+            $value->accessDetail = $this->isAllowed("EV_EventGeneral_DETAIL", $localAvaibleActions);
             $list[$key] = $value;
         }
         $this->template->list = $list;
@@ -41,7 +41,7 @@ class DefaultPresenter extends BasePresenter {
         if ($state)
             $this['formFilter']['state']->setDefaultValue($state);
 
-        $this->template->accessCreate = array_key_exists("EV_EventGeneral_INSERT", $this->availableActions);
+        $this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
     }
 
     /**
@@ -75,7 +75,7 @@ class DefaultPresenter extends BasePresenter {
      * @param type $aid 
      */
     public function handleCancel($aid) {
-        if (!array_key_exists("EV_EventGeneral_UPDATE_Cancel", $this->availableActions)) {
+        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Cancel")) {
             $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
             $this->redirect("this");
         }
@@ -141,7 +141,7 @@ class DefaultPresenter extends BasePresenter {
     }
 
     function formCreateSubmitted(Form $form) {
-        if (!array_key_exists("EV_EventGeneral_INSERT", $this->availableActions)) {
+        if (!$this->isAllowed("EV_EventGeneral_INSERT")) {
             $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
             $this->redirect("this");
         }
