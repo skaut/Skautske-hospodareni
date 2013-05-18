@@ -13,7 +13,7 @@
             <a n:href="Contract:detail $contract->id" class="btn btn-small btn-info hidden-phone"><i class="icon icon-white icon-zoom-in"></i> Smlouva</a>
             <a n:href="print $command->id" class="btn btn-small btn-info hidden-phone"><i class="icon icon-white icon-print"></i> Vytisknout cestovní příkaz</a>
         </div>
-        <div class="span3">
+        <div class="span4">
             <h3>Vozidlo</h3>
         {dump $command}
             Typ a SPZ: <a n:href="Vehicle:detail $command->vehicle_id">{$command->vehicle_type} ({$command->vehicle_spz})</a><br />
@@ -24,7 +24,7 @@
         {var $sum = 0}
         {if $command->note != ""}<h3>Poznámka</h3>{$command->note}{/if}
         </div>
-        <div class="span3">
+        <div class="span4">
             <h3>Řidič</h3>
             Jméno: {$contract->driver_name}<br />
             Bydliště: {$contract->driver_address}

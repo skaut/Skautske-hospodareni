@@ -160,7 +160,7 @@ class CashbookPresenter extends BasePresenter {
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("input-medium");
         //@TODO kontrola platneho data, problem s componentou
-        $form->addText("recipient", "Vyplaceno komu:", 20, 30)
+        $form->addText("recipient", "Vyplaceno komu:", 20, 50)
                 ->setHtmlId("form-out-recipient")
                 ->getControlPrototype()->class("input-medium");
         $form->addText("purpose", "Účel výplaty:", 20, 40)
