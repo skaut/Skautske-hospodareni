@@ -39,7 +39,7 @@ class DefaultPresenter extends BasePresenter {
         if ($state)
             $this['formFilter']['state']->setDefaultValue($state);
 
-        //$this->template->accessCreate = array_key_exists("EV_EventGeneral_INSERT", $this->availableActions);
+        //$this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
     }
 
     public function handleChangeYear($year) {

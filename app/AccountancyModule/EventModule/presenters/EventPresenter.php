@@ -17,11 +17,11 @@ class EventPresenter extends BasePresenter {
         //nastavení dat do formuláře pro editaci
         $func = false;
 
-        if (array_key_exists("EV_EventFunction_ALL_EventGeneral", $this->availableActions))
+        if ($this->isAllowed("EV_EventFunction_ALL_EventGeneral"))
             $func = $this->context->eventService->event->getFunctions($aid);
 
-        $accessEditBase = array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions);
-//        && array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions);
+        $accessEditBase = $this->isAllowed("EV_EventGeneral_UPDATE");
+//        && $this->isAllowed("EV_EventGeneral_UPDATE_Function");
         if ($accessEditBase) {
             $form = $this['formEdit'];
             $form->setDefaults(array(
@@ -40,13 +40,13 @@ class EventPresenter extends BasePresenter {
         $this->template->funkce = $func;
         $this->template->isEditable = $this->context->eventService->event->isCommandEditable($this->event);
         $this->template->accessEditBase = $accessEditBase;
-        $this->template->accessCloseEvent = array_key_exists("EV_EventGeneral_UPDATE_Close", $this->availableActions);
-        $this->template->accessOpenEvent = array_key_exists("EV_EventGeneral_UPDATE_Open", $this->availableActions);
-        $this->template->accessDetailEvent = array_key_exists("EV_EventGeneral_DETAIL", $this->availableActions);
+        $this->template->accessCloseEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Close");
+        $this->template->accessOpenEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Open");
+        $this->template->accessDetailEvent = $this->isAllowed("EV_EventGeneral_DETAIL");
     }
 
     public function handleOpen($aid) {
-        if (!array_key_exists("EV_EventGeneral_UPDATE_Open", $this->availableActions)) {
+        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Open")) {
             $this->flashMessage("Nemáte právo otevřít akci", "warning");
             $this->redirect("this");
         }
@@ -56,7 +56,7 @@ class EventPresenter extends BasePresenter {
     }
 
     public function handleClose($aid) {
-        if (!array_key_exists("EV_EventGeneral_UPDATE_Close", $this->availableActions)) {
+        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Close")) {
             $this->flashMessage("Nemáte právo akci uzavřít", "warning");
             $this->redirect("this");
         }
@@ -108,7 +108,7 @@ class EventPresenter extends BasePresenter {
     }
 
     public function handleRemoveFunction($aid, $fid) {
-        if (!array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions)) {
+        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Function")) {
             $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
             $this->redirect("this");
         }
@@ -119,7 +119,7 @@ class EventPresenter extends BasePresenter {
     }
 
     public function renderReport($aid) {
-        if (!array_key_exists("EV_EventGeneral_DETAIL", $this->availableActions)) {
+        if (!$this->isAllowed("EV_EventGeneral_DETAIL")) {
             $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
             $this->redirect("default", array("aid" => $aid));
         }
@@ -151,7 +151,7 @@ class EventPresenter extends BasePresenter {
 
     function formEditSubmitted(Form $form) {
 
-        if (!array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions)) {
+        if (!$this->isAllowed("EV_EventGeneral_UPDATE")) {
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
             $this->redirect("this");
         }
@@ -202,7 +202,7 @@ class EventPresenter extends BasePresenter {
     }
 
     function formAddFunctionSubmitted(Form $form) {
-        if (!array_key_exists("EV_EventGeneral_UPDATE_Function", $this->availableActions)) {
+        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Function")) {
             $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
             $this->redirect("this");
         }

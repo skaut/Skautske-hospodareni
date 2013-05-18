@@ -32,7 +32,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     function renderDefault($aid, $uid = NULL) {
-        if (!array_key_exists("EV_ParticipantCamp_ALL_EventCamp", $this->availableActions)) {
+        if (!$this->isAllowed("EV_ParticipantCamp_ALL_EventCamp")) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky", "danger");
             $this->redirect("Default:");
         }
@@ -51,9 +51,9 @@ class ParticipantPresenter extends BasePresenter {
         $this->template->uchildrens = $this->context->unitService->getChild($unit->ID);
         $this->template->list = $list;
         $this->template->participants = $participants;
-        $this->template->accessDeleteParticipant = array_key_exists("EV_ParticipantCamp_DELETE", $this->availableActions);
-        $this->template->accessUpdateParticipant = array_key_exists("EV_ParticipantCamp_UPDATE_EventCamp", $this->availableActions);
-        $this->template->accessInsertParticipant = array_key_exists("EV_ParticipantCamp_INSERT_EventCamp", $this->availableActions);
+        $this->template->accessDeleteParticipant = $this->isAllowed("EV_ParticipantCamp_DELETE");
+        $this->template->accessUpdateParticipant = $this->isAllowed("EV_ParticipantCamp_UPDATE_EventCamp");
+        $this->template->accessInsertParticipant = $this->isAllowed("EV_ParticipantCamp_INSERT_EventCamp");
     }
 
     /**
@@ -95,7 +95,7 @@ class ParticipantPresenter extends BasePresenter {
 //    }
 
     public function handleRemove($pid) {
-        if (!array_key_exists("EV_ParticipantCamp_DELETE", $this->availableActions)) {
+        if (!$this->isAllowed("EV_ParticipantCamp_DELETE")) {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
             $this->redirect("Default:");
         }
@@ -110,7 +110,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function handleAdd($pid) {
-        if (!array_key_exists("EV_ParticipantCamp_INSERT_EventCamp", $this->availableActions)) {
+        if (!$this->isAllowed("EV_ParticipantCamp_INSERT_EventCamp")) {
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
         }
@@ -149,7 +149,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function formEditParticipantSubmitted(Form $form) {
-        if (!array_key_exists("EV_ParticipantCamp_UPDATE_EventCamp", $this->availableActions)) {
+        if (!$this->isAllowed("EV_ParticipantCamp_UPDATE_EventCamp")) {
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
         }
@@ -186,7 +186,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function formMassAddSubmitted(Form $form) {
-        if (!array_key_exists("EV_ParticipantCamp_INSERT_EventCamp", $this->availableActions)) {
+        if (!$this->isAllowed("EV_ParticipantCamp_INSERT_EventCamp")) {
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
         }
@@ -236,7 +236,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function massEditSubmitted(SubmitButton $button) {
-        if (!array_key_exists("EV_ParticipantCamp_UPDATE_EventCamp", $this->availableActions)) {
+        if (!$this->isAllowed("EV_ParticipantCamp_UPDATE_EventCamp")) {
             $this->flashMessage("Nemáte právo upravovat účastníky.", "danger");
             $this->redirect("Default:");
         }
@@ -258,7 +258,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function massRemoveSubmitted(SubmitButton $button) {
-        if (!array_key_exists("EV_ParticipantCamp_DELETE", $this->availableActions)) {
+        if (!$this->isAllowed("EV_ParticipantCamp_DELETE")) {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
             $this->redirect("Default:");
         }
