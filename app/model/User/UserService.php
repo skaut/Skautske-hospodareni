@@ -18,8 +18,8 @@ class UserService extends BaseService {
      * vrací pole 
      * @return array všech dostupných rolí přihlášeného uživatele
      */
-    public function getAllSkautISRoles() {
-        return $this->skautIS->user->UserRoleAll(array("ID_User" => $this->getUserDetail()->ID));
+    public function getAllSkautISRoles($activeOnly = true) {
+        return $this->skautIS->user->UserRoleAll(array("ID_User" => $this->getUserDetail()->ID, "IsActive"=>$activeOnly));
     }
 
     public function getUserDetail() {
