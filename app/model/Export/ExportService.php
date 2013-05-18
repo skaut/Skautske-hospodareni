@@ -130,7 +130,7 @@ class ExportService extends BaseService {
         }
         $template = $this->getTemplate(dirname(__FILE__) . "/templates/chits.latte");
 
-        if($type != "camp"){
+        if ($type != "camp") {
             //HPD alias ctype == pp
             $template->totalPayment = $eventService->participants->getTotalPayment($aid);
             $func = $eventService->event->getFunctions($aid);
@@ -141,6 +141,21 @@ class ExportService extends BaseService {
         $template->income = $income;
         $template->outcome = $outcome;
         $template->oficialName = $unitService->getOficialName($eventService->event->get($aid)->ID_Unit);
+        return $template;
+    }
+
+    public function getCampReport($aid, EventEntity $campSerice) {
+        $categories = array();
+        foreach ($campSerice->chits->getCategoriesCamp($aid) as $c) {
+            $categories[$c->IsRevenue ? "in" : "out"][$c->ID] = $c;
+        }
+
+        $template = $this->getTemplate(dirname(__FILE__) . '/templates/campReport.latte');
+        $template->participants = $campSerice->participants->getAll($aid);
+        $template->personsDays = $campSerice->participants->getPersonsDays($aid);
+        $template->a = $campSerice->event->get($aid);
+        $template->chits = $categories;
+        $template->func = $campSerice->event->getFunctions($aid);
         return $template;
     }
 

@@ -15,13 +15,17 @@ class DetailPresenter extends BasePresenter {
     }
 
     public function renderReport($aid) {
-        if (!$this->isAllowed("EV_EventGeneral_DETAIL")) {
-            $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
+        if (!$this->isAllowed("EV_EventFunction_ALL_EventCamp")) {
+            $this->flashMessage("Nemáte právo přistupovat k táboru", "warning");
             $this->redirect("default", array("aid" => $aid));
         }
-        $template = $this->context->exportService->getEventReport($aid, $this->context->eventService);
-
-        $this->context->eventService->participants->makePdf($template, "report.pdf");
+        if(!$this->context->campService->chits->isConsistent($aid)){
+            $this->flashMessage("Data v účtech a ve skautisu jsou nekonzistentní!", "warning");
+            $this->redirect("default", array("aid" => $aid));
+        }
+        
+        $template = $this->context->exportService->getCampReport($aid, $this->context->campService);
+        $this->context->eventService->participants->makePdf($template, "reportCamp.pdf");
         $this->terminate();
     }
 

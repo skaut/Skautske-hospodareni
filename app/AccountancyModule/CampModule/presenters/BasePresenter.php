@@ -57,7 +57,7 @@ class BasePresenter extends \AccountancyModule\BasePresenter {
 
         $router[] = new MyRoute($prefix . '<aid [0-9]+>/[<presenter>/][<action>/]', array(
                     'presenter' => array(
-                        Route::VALUE => 'Detail',
+//                        Route::VALUE => 'Detail', //nefunguje pak report
                         Route::FILTER_TABLE => array(
                             'ucastnici' => 'Participant',
                             'kniha' => 'Cashbook',
