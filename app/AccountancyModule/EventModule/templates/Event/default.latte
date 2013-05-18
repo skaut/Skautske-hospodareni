@@ -2,7 +2,7 @@
 
 {block #functionButtons $funkce, $index}
 {ifset $funkce[$index]->ID_Person}
-<a n:href="editFunction $aid, $index"  class="btn btn-info btn-mini fancybox fancybox.ajax" title="Změnit osobu ve funci"><i class="icon-edit icon-white"></i></a>
+<a n:href="editFunction $aid, $index"  class="btn btn-primary btn-mini fancybox fancybox.ajax" title="Změnit osobu ve funci"><i class="icon-edit icon-white"></i></a>
 <a n:href="removeFunction! $aid, $index"  class="btn btn-danger btn-mini" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="icon-remove icon-white"></i></a>
             {else}
 <a n:href="addFunction $aid, $index" title="Přiřadit osobu k funkci" class="fancybox fancybox.ajax btn btn-primary btn-mini"><i class="icon icon-plus icon-white"></i></a>{/ifset}
@@ -62,7 +62,7 @@
                 {? $index = 0}
                 <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td class="required">{$funkce[$index]->EventFunctionType}*
-                    <i class="icon icon-info-sign visible-desktop" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
+                    <i class="icon icon-info-sign" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
                 <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
@@ -70,7 +70,7 @@
                 {? $index = 1}
                 <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
-                    <i class="icon icon-info-sign visible-desktop" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
+                    <i class="icon icon-info-sign" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
                 <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
@@ -78,7 +78,7 @@
                 {? $index = 2}
                 <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
-                    <i class="icon icon-info-sign visible-desktop" rel="tooltip" title="Osoba registrovaná ve SkautISu"/>
+                    <i class="icon icon-info-sign" rel="tooltip" title="Osoba registrovaná ve SkautISu"/>
                 </td>
                 <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
