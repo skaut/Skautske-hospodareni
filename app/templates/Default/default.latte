@@ -8,21 +8,14 @@
 {block #content}
 
 <div class="row-fluid">
-    <div class="span8"> <!--- LEFT PART OF PAGE -->
-        <div class="row-fluid visible-phone">
-            <div class="well">
-                {include #heroUnit}
-            </div>
-            <div class="fb-like" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-send="false" data-width="240" data-show-faces="true"></div>
+    <div id="front-panel-left" class="span8"> <!--- LEFT PART OF PAGE -->
+        <div class="well visible-phone">
+            {include #heroUnit}
         </div>
 
         <div id="front-carousel" class="carousel slide  hidden-phone">
             <ol class="carousel-indicators">
-                <li data-target="#front-carousel" data-slide-to="0" class="active"></li>
-                <li data-target="#front-carousel" data-slide-to="1"></li>
-                <li data-target="#front-carousel" data-slide-to="2"></li>
-                <li data-target="#front-carousel" data-slide-to="3"></li>
-                <li data-target="#front-carousel" data-slide-to="4"></li>
+                <li data-target="#front-carousel" data-slide-to="0" class="active"></li><li data-target="#front-carousel" data-slide-to="1"></li><li data-target="#front-carousel" data-slide-to="2"></li><li data-target="#front-carousel" data-slide-to="3"></li><li data-target="#front-carousel" data-slide-to="4"></li>
             </ol>
             <!-- Carousel items -->
             <div class="carousel-inner" style="height: 340px;">
@@ -83,9 +76,11 @@
             </div>
         </div>
     </div>
-    <div class="span4">
+    <div id="front-panel-fb" class="span4">
         <div id="fb-root"></div>
-        <script>
+        <div class="fb-like-box visible-desktop" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-width="330" data-height="540" data-show-faces="true" data-stream="true" data-border-color="#EEEEEE" data-header="false"></div>
+    </div>
+            <script>
         $(document).ready(function () { $('.carousel').carousel('cycle'); });
           (function(d, s, id) {
           var js, fjs = d.getElementsByTagName(s)[0];
@@ -96,8 +91,6 @@
         }(document, 'script', 'facebook-jssdk'));
         
         </script>
-        <div class="fb-like-box hidden-phone" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-width="360" data-height="540" data-show-faces="true" data-stream="true" data-border-color="#EEEEEE" data-header="false"></div>
-    </div>
 </div>
 
 
