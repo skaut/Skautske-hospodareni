@@ -13,5 +13,6 @@ nbproject/*
 /app/log/*
 /source/*
 /webtemp/
+/images/front/*
 adminer.php
 htaccess

@@ -1,54 +1,102 @@
 {block title}Skautské hospodaření online{/block}
 
 {block heroUnit}
-    <h1>Skautské<br />hospodaření online</h1>
-    <p>Systém pro vyúčtování skautských akcí a cestovních příkazů</p>
+<h1>Skautské<br />hospodaření online</h1>
+<p>Systém pro vyúčtování skautských akcí a cestovních příkazů</p>
 {/block}
 
 {block #content}
 
 <div class="row-fluid">
-    <div class="span8">
-        <div class="row-fluid">
-            <div class="hero-unit hidden-phone">
+    <div class="span8"> <!--- LEFT PART OF PAGE -->
+        <div class="row-fluid visible-phone">
+            <div class="well">
                 {include #heroUnit}
             </div>
-            <div class="well visible-phone">
-                {include #heroUnit}
-            </div>
-            <div class="fb-like visible-phone" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-send="false" data-width="240" data-show-faces="true"></div>
+            <div class="fb-like" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-send="false" data-width="240" data-show-faces="true"></div>
         </div>
-        
+
+        <div id="front-carousel" class="carousel slide  hidden-phone">
+            <ol class="carousel-indicators">
+                <li data-target="#front-carousel" data-slide-to="0" class="active"></li>
+                <li data-target="#front-carousel" data-slide-to="1"></li>
+                <li data-target="#front-carousel" data-slide-to="2"></li>
+                <li data-target="#front-carousel" data-slide-to="3"></li>
+                <li data-target="#front-carousel" data-slide-to="4"></li>
+            </ol>
+            <!-- Carousel items -->
+            <div class="carousel-inner" style="height: 340px;">
+                <div class="active item">
+                    <div style="margin: 0 63px;" class="hero-unit">
+                        {include #heroUnit}
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="carousel-caption my-caption">
+                        <h4>Seznam výprav</h4>
+                        <p>Přehled akcí zobrazený podle aktuální role. Výpravy můžete fitrovat podle stavu zpracování a roku konání. <a href="{link :Tutorial:event}#seznam-akci">(info)</a></p>
+                    </div>
+                    <img src="{$baseUri}/images/front/prehled-akci.png" alt="Seznamu skautských výprav" />
+                </div>
+                <div class="item">
+                    <div class="carousel-caption">
+                        <h4>Základní údaje</h4>
+                        <p>Základní informace o akci a jejím vedení. Akci zde můžete upravit nebo ji uzavřít a získat výstupy pro tisk. <a href="{link :Tutorial:event}#zakladni-udaje">(info)</a></p>
+                    </div>
+                    <img src="{$baseUri}/images/front/zakladni-udaje-akce.png" a lt="Základní údaje účtované skautské výpravy" />
+                </div>
+                <div class="item">
+                    <div class="carousel-caption">
+                        <h4>Seznam účastníků</h4>
+                        <p>Jedním kliknutím přidáte účastníka. Pak jen nastavíte poplatek a máte seznam účastníků se všemi údaji hotový. <a href="{link :Tutorial:event}#seznam-ucastniku">(info)</a></p>
+                    </div>
+                    <img src="{$baseUri}/images/front/seznam-ucastniku-akce.png" alt="Seznam účastníků skautské akce" />
+                </div>
+                <div class="item">
+                    <div class="carousel-caption">
+                        <h4>Pokladní kniha</h4>
+                        <p>Příjmy a výdaje s kontrolou nezáporného stavu. Částky lze zadávat i jako výraz (např.: 7*52 + 5). <a href="{link :Tutorial:event}#pokladni-kniha">(info)</a></p>
+                    </div>
+                    <img src="{$baseUri}/images/front/pokladni-kniha.png" alt="Pokladní kniha pro hospodaření výpravy" />
+                </div>
+            </div>
+            <!-- Carousel nav -->
+            <a class="carousel-control left" href="#front-carousel" data-slide="prev">&lsaquo;</a>
+            <a class="carousel-control right" href="#front-carousel" data-slide="next">&rsaquo;</a>
+        </div> <!-- Carousel END -->
+
         <div class="row-fluid">
             <div class="span4 hidden-phone">
                 <h2>O projektu</h2>
-                <p>Chceš se dozvědět více o projektu Skautské hospodaření online? Poznat jeho historii nebo pomoci vytvářet jeho budoucnoust? <a n:href=":Default:about">Více ...</a></p>
+                <p>Chceš se dozvědět více o projektu Skautské hospodaření online? Poznat jeho historii nebo vytvářet jeho budoucnoust?
+                    <a n:href=":Default:about" class="btn btn-info">Chci vědět víc</a></p>
             </div>
             <div class="span4">
                 <h2>Jak poprvé?</h2>
-                <p>Chceš vyúčtovat svoji první výpravu a nevíš jak na to? Příručka tě provede jednotlivými kroky a vysvětlí co a jak. <a n:href=":Tutorial:event">Více&nbsp;...</a></p>
+                <p>Chceš vyúčtovat svoji první výpravu a nevíš jak na to? Příručka tě provede jednotlivými kroky a vysvětlí ti co a jak udělat.
+                    <a n:href=":Tutorial:event" class="btn btn-info">Průvodce výpravou</a></p>
             </div>
             <div class="span4">
                 <h2>Cestovní příkaz</h2>
-                <p>Chceš jednoduše vytvořit cestovní příkaz za pár minut a neudělat v něm spostu chyb? Projdi si návod a bude to hračka! <a n:href=":Tutorial:travelCommand">Více ...</a></p>
+                <p>Chceš jednoduše vytvořit cestovní příkaz za pár minut a neudělat v něm spostu chyb? Projdi si návod a bude to hračka!
+                    <a n:href=":Tutorial:travelCommand" class="btn btn-info">Jak na snadné cesťáky</a></p>
             </div>
         </div>
     </div>
     <div class="span4">
-
-
         <div id="fb-root"></div>
-        <script>(function(d, s, id) {
+        <script>
+        $(document).ready(function () { $('.carousel').carousel('cycle'); });
+          (function(d, s, id) {
           var js, fjs = d.getElementsByTagName(s)[0];
           if (d.getElementById(id)) return;
           js = d.createElement(s); js.id = id;
           js.src = "//connect.facebook.net/cs_CZ/all.js#xfbml=1&appId=262542393777882";
           fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));</script>
-
-
+        }(document, 'script', 'facebook-jssdk'));
+        
+        </script>
         <div class="fb-like-box hidden-phone" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-width="360" data-height="540" data-show-faces="true" data-stream="true" data-border-color="#EEEEEE" data-header="false"></div>
-
     </div>
 </div>
 
