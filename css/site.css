@@ -2,6 +2,21 @@
     body {
         padding-top: 50px; /* 60px to make the container go all the way to the bottom of the topbar */
     }
+    #front-panel-left {
+        width: 65.812%;
+    }
+    #front-panel-fb {
+        width: 31.6239%;
+    }
+}
+@media (max-width: 978px) { 
+   
+    #front-panel-left {
+        width: 100%;
+    }
+    #front-panel-fb {
+        display: none;
+    }
 }
 
 .fail {
