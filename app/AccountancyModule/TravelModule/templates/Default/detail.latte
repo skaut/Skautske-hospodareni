@@ -39,7 +39,7 @@
         {form formAddTravel}
 <table class="table table-bordered table-striped table-condensed">
     <tr>
-        <th n:if="$isEditable" style="width: 32px;">&nbsp;</th>
+        <th n:if="$isEditable" style="width: 64px;">&nbsp;</th>
         <th>Datum</th>
         <th>Z</th>
         <th>Do</th>
@@ -61,7 +61,10 @@
     </tr>
             {if !empty($travels)}
     <tr n:foreach="$travels as $t">
-        <td n:if="$isEditable"><a n:href="removeTravel! $t->id" class="btn btn-mini btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="icon icon-white icon-remove"></i></a></td>
+        <td n:if="$isEditable">
+            <a n:href="editTravel $t->id" class="fancybox fancybox.ajax btn btn-mini btn-primary"><i class="icon icon-white icon-edit"></i></a>
+            <a n:href="removeTravel! $t->id" class="btn btn-mini btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="icon icon-white icon-remove"></i></a>
+        </td>
         <td>{$t->start_date|date:"j. n. Y"}</td>
         <td>{$t->start_place}</td>
         <td>{$t->end_place}</td>

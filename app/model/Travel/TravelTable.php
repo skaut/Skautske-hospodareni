@@ -17,9 +17,14 @@ class TravelTable extends BaseTable {
         return dibi::insert(self::TABLE_TC_TRAVELS, $data)->execute();
     }
     
+    public function update($data, $tId) {
+        return dibi::update(self::TABLE_TC_TRAVELS, $data)->where("id=%i", $tId)->limit(1)->execute();
+    }
+    
     public function delete($travelId) {
         return dibi::query("DELETE FROM [" . self::TABLE_TC_TRAVELS . "] WHERE id = %i", $travelId, "LIMIT 1");
     }
+    
     public function deleteAll($commandId) {
         return dibi::query("DELETE FROM [" . self::TABLE_TC_TRAVELS . "] WHERE command_id = %i", $commandId);
     }
