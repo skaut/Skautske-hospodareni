@@ -88,6 +88,10 @@ class TravelService extends BaseService {
         return $this->tableTravel->add($data);
     }
 
+    public function updateTravel($data, $tId) {
+        return $this->tableTravel->update($data, $tId);
+    }
+
     public function deleteTravel($travelId) {
         return $this->tableTravel->delete($travelId);
     }

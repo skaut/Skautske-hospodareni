@@ -187,7 +187,7 @@ class DefaultPresenter extends BasePresenter {
         $v = $form->getValues();
         $id = $v['id'];
         unset($v['id']);
-        
+
         if (!$this->isCommandEditable($id)) {
             $this->flashMessage("Nemáte právo upravovat cestovní příkaz.", "danger");
             $this->redirect("default");
@@ -220,8 +220,7 @@ class DefaultPresenter extends BasePresenter {
 
     function formAddTravelSubmitted(Form $form) {
         $v = $form->getValues();
-        $commandId = $v['command_id'];
-        if (!$this->isCommandEditable($commandId)) {
+        if (!$this->isCommandEditable($v['command_id'])) {
             $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
             $this->redirect("default");
         }
@@ -229,6 +228,65 @@ class DefaultPresenter extends BasePresenter {
         $this->context->travelService->addTravel($v);
         $this->flashMessage("Cesta byla přidána.");
         $this->redirect("this");
+    }
+
+    /*
+     * EDIT TRAVEL
+     */
+
+    function renderEditTravel($travelId) {
+        $travel = $this->context->travelService->getTravel($travelId);
+        
+        if (!$this->isCommandAccessible($travel->command_id)) {
+            $this->flashMessage("Nemáte oprávnění upravovat záznam!", "danger");
+            $this->redirect("default");
+        }
+        if (!$this->isCommandEditable($travel->command_id)) {
+            $this->flashMessage("Záznam nelze upravovat", "warning");
+            $this->redirect("default");
+        }
+        $defaults = $travel;
+//        $defaults['start_date'] = $travel->start_date->format('j. n. Y');
+        $form = $this['formEditTravel'];
+        $form->setDefaults($defaults);
+        $this->template->form = $form;
+    }
+
+    public function createComponentFormEditTravel($name) {
+        $form = new Form($this, $name);
+//        $form->getElementPrototype()->class("form-inline");
+        $form->addHidden("command_id");
+        $form->addHidden("id");
+        $form->addDatePicker("start_date", "Datum cesty")
+                ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.");
+        $form->addText("start_place", "Z*")
+                ->addRule(Form::FILLED, "Musíte vyplnit místo počátku cesty.");
+        $form->addText("end_place", "Do*")
+                ->addRule(Form::FILLED, "Musíte vyplnit místo konce cesty.");
+        $form->addText("distance", "Vzdálenost*")
+                ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.");
+        $form->addSubmit('send', 'Upravit')
+                ->getControlPrototype()->setClass("btn btn-primary");
+        $form->onSuccess[] = array($this, $name . 'Submitted');
+        return $form;
+    }
+
+    function formEditTravelSubmitted(Form $form) {
+        $v = $form->getValues();
+        $tid = $v->id;
+        $oldTravel = $this->context->travelService->getTravel($tid);
+        if (!$this->isCommandEditable($oldTravel['command_id'])) {
+            $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
+            $this->redirect("default");
+        }
+        $data = array();
+        $kyes = array("start_date", "start_place", "end_place", "distance");
+        foreach ($kyes as $k) {
+            $data[$k] = $v[$k];
+        }
+        $this->context->travelService->updateTravel($data, $tid);
+        $this->flashMessage("Cesta byla upravena.");
+        $this->redirect("detail", array("id" => $oldTravel['command_id']));
     }
 
 }
