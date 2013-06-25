@@ -57,6 +57,9 @@ class ParticipantPresenter extends BasePresenter {
         $this->template->accessDeleteParticipant = $this->isAllowed("EV_ParticipantGeneral_DELETE_EventGeneral");
         $this->template->accessUpdateParticipant = $this->isAllowed("EV_ParticipantGeneral_UPDATE_EventGeneral");
         $this->template->accessInsertParticipant = $this->isAllowed("EV_ParticipantGeneral_INSERT_EventGeneral");
+        if($this->isAjax()){
+            $this->invalidateControl("contentSnip");
+        }
     }
 
     public function actionEdit($aid, $pid, $days = 0, $payment = 0) {

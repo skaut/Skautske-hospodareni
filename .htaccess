@@ -1,5 +1,6 @@
 # disable directory listing
 Options -Indexes
+AddType text/cache-manifest .manifest
 
 # mod_rewrite
 <IfModule mod_rewrite.c>

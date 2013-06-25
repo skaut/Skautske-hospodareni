@@ -12,6 +12,9 @@ class DetailPresenter extends BasePresenter {
         $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->context->campService->event->getFunctions($aid) : false;
         $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
         $this->template->skautISUrl = $this->context->skautIS->getHttpPrefix() . ".skaut.cz/";
+        if ($this->isAjax()) {
+            $this->invalidateControl("contentSnip");
+        }
     }
 
     public function renderReport($aid) {

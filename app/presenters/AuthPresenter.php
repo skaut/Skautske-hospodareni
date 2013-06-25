@@ -66,6 +66,8 @@ class AuthPresenter extends BasePresenter {
     
     function actionAjax($backlink = NULL) {
         $this->template->backlink = $backlink;
+        $this->flashMessage("Vypršel čas přihlášení. Přihlaste se prosím znovu.", "warning");
+        $this->invalidateControl();
     }
 
     /**

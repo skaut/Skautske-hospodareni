@@ -43,6 +43,9 @@ class EventPresenter extends BasePresenter {
         $this->template->accessCloseEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Close");
         $this->template->accessOpenEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Open");
         $this->template->accessDetailEvent = $this->isAllowed("EV_EventGeneral_DETAIL");
+        if($this->isAjax()){
+            $this->invalidateControl("contentSnip");
+        }
     }
 
     public function handleOpen($aid) {
@@ -97,12 +100,7 @@ class EventPresenter extends BasePresenter {
 //        $template .= (string)$this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService) . $this->context->exportService->getNewPage();
         $template .= (string)$this->context->exportService->getCashbook($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
         $template .= (string)$this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
-
-//        echo $template;
-//        $size = memory_get_usage();
-//        $unit=array('b','kb','mb','gb','tb','pb');
-//        echo @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
-
+        
         $this->context->eventService->participants->makePdf($template, "all.pdf");
         $this->terminate();
     }
@@ -160,21 +158,7 @@ class EventPresenter extends BasePresenter {
         $values['start'] = $values['start']->format("Y-m-d");
         $values['end'] = $values['end']->format("Y-m-d");
 
-//        try {
         $id = $this->context->eventService->event->update($values);
-//        } catch (SkautIS_PermissionException $exc) {
-//            $this->flashMessage($exc->getMessage(), "danger");
-//            $this->redirect("Action:");
-//        } catch (SkautIS_Exception $e) {
-//            if (preg_match("/EventFunction_LeaderMustBeAdult/", $e->getMessage())) {//dospělost vedoucího akce
-//                $this->flashMessage("Vedoucí akce musí být dosplělá osoba.", "danger");
-//            } elseif (preg_match("/EventFunction_AssistantMustBeAdult/", $e->getMessage())) { //dospělost zástupce
-//                $this->flashMessage("Zástupce musí být dosplělá osoba.", "danger");
-//            } else {
-//                throw $e;
-//            }
-//            $this->redirect("this");
-//        }
 
         if ($id) {
             $this->flashMessage("Základní údaje byly upraveny.");
