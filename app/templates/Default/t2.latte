@@ -1,0 +1,19 @@
+
+{block content}
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#imagegallery').cycle({
+        fx: 'scrollHorz'
+    });
+
+    $("#imagegallery").touchwipe({
+        wipeLeft: function() {
+            $("#imagegallery").cycle("next");
+        },
+        wipeRight: function() {
+            $("#imagegallery").cycle("prev");
+        }
+    });
+});
+</script>
