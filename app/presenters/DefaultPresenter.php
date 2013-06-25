@@ -7,7 +7,7 @@ class DefaultPresenter extends BasePresenter {
 //            $this->redirect(":Accountancy:Default:");
     }
     
-    public function renderDefault(){
+    public function renderDefault($backlink = NULL){
         
     }
 

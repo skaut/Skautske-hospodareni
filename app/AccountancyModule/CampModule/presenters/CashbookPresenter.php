@@ -32,6 +32,9 @@ class CashbookPresenter extends BasePresenter {
             $this->template->skautISHttpPrefix = $this->context->skautIS->getHttpPrefix();
             $this->template->isEditable = false; //zamezení zobrazení formulářů, protoze nemají kategorie
         }
+        if ($this->isAjax()) {
+            $this->invalidateControl("contentSnip");
+        }
     }
 
     function renderEdit($id, $aid) {

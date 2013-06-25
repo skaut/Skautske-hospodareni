@@ -22,6 +22,9 @@ class CashbookPresenter extends BasePresenter {
         $this->template->isEditable = $this->context->eventService->event->isCommandEditable($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->eventService->chits->getAll($aid);
+        if($this->isAjax()){
+            $this->invalidateControl("contentSnip");
+        }
     }
 
     function renderEdit($id, $aid) {

@@ -15,7 +15,7 @@
 {dump $event}
 {dump $funkce}
 
-<div class="row-fluid">
+<div class="row-fluid wipeBox">
     <div class="span3" n:if="$accessDetailEvent">
         <h3>Základní údaje</h3>
         <table class="myTable table table-bordered table-condensed">
@@ -89,9 +89,9 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row hidden-phone">
 
-    <div class="span12 hidden-phone">
+    <div class="span12">
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-small" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
         <a n:if="$accessCloseEvent" n:href="close! $aid" class="btn btn-success btn-small"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
         <a n:if="$accessOpenEvent"  n:href="open! $aid"  class="btn btn-warning btn-small"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
