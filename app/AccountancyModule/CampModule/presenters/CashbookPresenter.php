@@ -147,6 +147,11 @@ class CashbookPresenter extends BasePresenter {
         $this->terminate();
     }
 
+    /**
+     * formulář na výběr příjmů k importu
+     * @param type $name
+     * @return \Nette\Application\UI\Form
+     */
     function createComponentFormImportHpd($name) {
         $form = new Form($this, $name);
         $form->addRadioList("cat", "Kategorie:", array("child" => "Od dětí a roverů", "adult" => "Od dospělých"))
@@ -171,7 +176,8 @@ class CashbookPresenter extends BasePresenter {
         $func = $this->context->campService->event->getFunctions($values->aid);
 
         $data = array("date" => $this->context->campService->event->get($values->aid)->StartDate,
-            "recipient" => $func[2]->Person,
+//            "recipient" => $func[2]->Person,
+            "recipient" => "",
             "purpose" => "úč. příspěvky " . ($values->isAccount == "Y" ? "- účet" : "- hotovost"),
             "price" => $this->context->campService->participants->getCampTotalPayment($values->aid, $values->cat, $values->isAccount),
             "category" => $this->context->campService->chits->getCampCategoryParticipant($values->aid, $values->cat));

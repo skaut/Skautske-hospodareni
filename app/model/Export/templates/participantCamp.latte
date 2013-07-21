@@ -30,7 +30,7 @@
         <td>{$u->LastName}</td>
         <td>{$u->Street}</td>
         <td>{$u->City}</td>
-        <td>{$u->Postcode}</td>
+        <td>{$u->Postcode|postCode}</td>
         <td style="text-align: right;">{$u->Birthday|date:"d.m.Y"}</td>
         <td style="text-align: right;">{$u->Days}</td>
         <td style="text-align: right;">{if $u->Age < 18}{$u->Days}{? $totDDays += $u->Days}{else}0{/if}</td>
