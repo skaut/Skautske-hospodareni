@@ -10,7 +10,7 @@ class TravelTable extends BaseTable {
     }
     
     public function getAll($commandId) {
-        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_TC_TRAVELS . "] WHERE command_id=%i", $commandId, " ORDER BY start_date");
+        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_TC_TRAVELS . "] WHERE command_id=%i", $commandId, " ORDER BY start_date, id asc");
     }
     
     public function add($data) {

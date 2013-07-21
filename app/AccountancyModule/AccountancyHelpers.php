@@ -79,6 +79,14 @@ abstract class AccountancyHelpers extends Object {
             return number_format($price, $decimals, ",", " ");
         //return $price;
     }
+    
+    public static function postCode($oldPsc) {
+        $psc = preg_replace("[^0-9]", "", $oldPsc);
+        if(strlen($psc) == 5)
+            return substr($psc, 0, 3) . " ". substr($psc, -2);
+        return $oldPsc;
+//        number_format($psc, 0, "", " ");
+    }
 
     /**
      * převádí zadané číslo na slovní řetězec
