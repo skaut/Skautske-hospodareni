@@ -157,7 +157,8 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
 
-        $values = (array) $form->getValues();
+        $values = $form->getValues(TRUE);
+        $values['repayment'] = $values['repayment'] != "" ? $values['repayment'] : 0;
         $values['actionId'] = $this->aid;
         $this->context->campService->participants->update($values['user'], $values);
 
