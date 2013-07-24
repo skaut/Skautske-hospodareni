@@ -54,6 +54,7 @@ class ParticipantPresenter extends BasePresenter {
         $this->template->accessDeleteParticipant = $this->isAllowed("EV_ParticipantCamp_DELETE");
         $this->template->accessUpdateParticipant = $this->isAllowed("EV_ParticipantCamp_UPDATE_EventCamp");
         $this->template->accessInsertParticipant = $this->isAllowed("EV_ParticipantCamp_INSERT_EventCamp");
+        $this->template->missingAvailableAutoComputed = !$this->camp->IsRealAutoComputed && $this->isAllowed("EV_EventCamp_UPDATE_Adult");
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
@@ -85,17 +86,11 @@ class ParticipantPresenter extends BasePresenter {
         $this->terminate();
     }
 
-//    public function renderHpd($aid) {
-//        $actionInfo = $this->context->campService->event->get($aid);
-//        $list = $this->context->campService->participants->getAll($aid);
-//        $template = $this->template;
-//        $template->oficialName = $this->context->unitService->getOficialName($actionInfo->ID_Unit);
-//        $template->totalPayment = $this->context->campService->participants->getTotalPayment($aid);
-//        $template->list = $list;
-//        $template->setFile(dirname(__FILE__) . '/../templates/Participant/ex.hpd.latte');
-//        $this->context->campService->participants->makePdf($template, Strings::webalize($actionInfo->DisplayName) . "_hpd.pdf");
-//        $this->terminate();
-//    }
+    public function handleActivateAutocomputedParticipants($aid) {
+        $this->context->campService->event->activateAutocomputedParticipants($aid);
+        $this->flashMessage("Byl aktivován automatický výpočet seznamu osobodnů.");
+        $this->redirect("this");
+    }
 
     public function handleRemove($pid) {
         if (!$this->isAllowed("EV_ParticipantCamp_DELETE")) {
