@@ -15,7 +15,7 @@ class CashbookPresenter extends BasePresenter {
             $this->flashMessage("Musíš vybrat akci", "error");
             $this->redirect("Default:");
         }
-        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
+//        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
     }
 
     public function beforeRender() {
@@ -27,10 +27,10 @@ class CashbookPresenter extends BasePresenter {
         $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
-        if (!$this->camp->IsRealTotalCostAutoComputed) {
-            $this->template->missingCategories = true;
+//        dump($this->camp);
+        if (!$this->camp->IsRealTotalCostAutoComputed && $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost")) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
+            $this->template->missingCategories = true;//boolean - nastavuje upozornění na chybějící dopočítávání kategorií
             $this->template->skautISHttpPrefix = $this->context->skautIS->getHttpPrefix();
-            $this->template->isEditable = false; //zamezení zobrazení formulářů, protoze nemají kategorie
         }
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
@@ -106,9 +106,9 @@ class CashbookPresenter extends BasePresenter {
         }
     }
 
-    public function handleActivateAutocomputed($aid) {
-        $this->context->campService->event->activateAutocomputed($aid);
-        $this->flashMessage("Byl aktivován automatický výpočet nákladů a počtu dnů účastníků.");
+    public function handleActivateAutocomputedCashbook($aid) {
+        $this->context->campService->event->activateAutocomputedCashbook($aid);
+        $this->flashMessage("Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.");
         $this->redirect("this");
     }
 
@@ -299,7 +299,10 @@ class CashbookPresenter extends BasePresenter {
                 $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
+        } catch (\SkautIS_Exception $se) {
+//            $this->flashMessage("Nepodařilo se synchronizovat kategorie.");
         }
+
 
         if ($this->isAjax()) {
             $this->invalidateControl("tabs");

@@ -7,10 +7,17 @@
 {dump $list}
 {dump $participants}
 
+<div class="row-fluid" n:if="$missingAvailableAutoComputed">
+    <div class="span6  alert">
+        Není aktivní dopočítávání osob!
+        <a n:href="activateAutocomputedParticipants! $aid" class="btn btn-primary btn-small">Aktivovat</a>
+    </div>
+</div>
+
 <div class="row-fluid">
     <div class="span5" n:if="$accessInsertParticipant">
         {snippet potencialParticipants}
-
+        
         <div n:ifset="$participants">
             <h3>Přidat účastníky z jednotky</h3>
 

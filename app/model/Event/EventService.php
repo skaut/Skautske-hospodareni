@@ -205,31 +205,6 @@ class EventService extends MutableBaseService {
     }
 
     /**
-     * aktivuje dopocitavani kategorii a tim jsou i kategorie pristupne
-     * @param type $camp
-     * @throws NotImplementedException 
-     */
-    public function openCampCategories($camp) {
-        throw new NotImplementedException("zatím nefunguje, čeká na odpoved Jerryho");
-        $this->skautIS->event->EventCampUpdate(array(
-            "ID" => $camp->ID,
-            "DisplayName" => $camp->DisplayName,
-            "StartDate" => $camp->StartDate,
-            "EndDate" => $camp->EndDate,
-            "GpsLatitude" => $camp->GpsLatitude,
-            "GpsLatitudeText" => $camp->GpsLatitudeText,
-            "GpsLongitude" => $camp->GpsLongitude,
-            "GpsLongitudeText" => $camp->GpsLongitudeText,
-            "IsFloodArea" => $camp->IsFloodArea,
-            "Location" => $camp->Location,
-            "MobileContact" => $camp->MobileContact,
-            "Postcode" => $camp->Postcode,
-            "Region" => $camp->Region,
-            "IsRealTotalCostAutoComputed" => TRUE,
-                ), "eventCamp");
-    }
-
-    /**
      * zrušit akci
      * @param int $ID
      * @param string $msg
@@ -299,18 +274,27 @@ class EventService extends MutableBaseService {
         return $arg->{"ID_Event" . self::$typeName . "State"} == "draft" ? TRUE : FALSE;
     }
 
-    public function activateAutocomputed($ID, $state = 1) {
+    /**
+     * 
+     * @param type $ID
+     * @param type $state
+     */
+    public function activateAutocomputedCashbook($ID, $state = 1) {
         $this->skautIS->event->{"EventCampUpdateRealTotalCost"}(
                 array(
             "ID" => $ID,
             "IsRealTotalCostAutoComputed" => $state
-                ), "event" . self::$typeName);
+                ), "event" . self::$typeName
+        );
+    }
 
-        $this->skautIS->event->{"EventCampUpdateDays"}(
-                array(
-            "ID" => $ID,
-            "IsAutoComputedDays" => $state
-                ), "event" . self::$typeName);
+    /**
+     * aktivuje automatické dopočítávání pro seznam osobodnů z tabulky účastníků
+     * @param type $ID
+     * @param type $state
+     */
+    public function activateAutocomputedParticipants($ID, $state = 1) {
+        $this->skautIS->event->{"EventCampUpdateAdult"}(array("ID" => $ID, "IsRealAutoComputed" => $state), "event" . self::$typeName);
     }
 
     /**
