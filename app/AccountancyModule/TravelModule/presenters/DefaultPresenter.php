@@ -224,6 +224,7 @@ class DefaultPresenter extends BasePresenter {
             $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
             $this->redirect("default");
         }
+        $v['distance'] = str_replace(",", ".", $v['distance']);
 
         $this->context->travelService->addTravel($v);
         $this->flashMessage("Cesta byla přidána.");
