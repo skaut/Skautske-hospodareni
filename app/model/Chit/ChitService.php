@@ -75,7 +75,7 @@ class ChitService extends MutableBaseService {
             "recipient" => $val['recipient'],
             "purpose" => $val['purpose'],
             "price" => $this->solveString($val['price']),
-            "priceText" => $val['price'],
+            "priceText" => str_replace(",", ".", $val['price']),
             "type" => strtolower(self::$typeName),
             "category" => $val['category'],
         );
@@ -108,7 +108,7 @@ class ChitService extends MutableBaseService {
         foreach ($changeAbleData as $name) {
             if (isset($val[$name])) {
                 if ($name == 'price') {
-                    $toChange['priceText'] = $val[$name];
+                    $toChange['priceText'] = str_replace(",", ".", $val[$name]);
                     $toChange[$name] = $this->solveString($val[$name]);
                     continue;
                 }
@@ -325,7 +325,7 @@ class ChitService extends MutableBaseService {
      */
     function solveString($str) {
         $str = str_replace(",", ".", $str); //prevede desetinou carku na tecku
-        preg_match_all('/(?P<cislo>[0-9]+[.]?[0-9]{0,2})(?P<operace>[\+\*]+)?/', $str, $matches);
+        preg_match_all('/(?P<cislo>[0-9]+([.][0-9]{1,})?)(?P<operace>[\+\*]+)?/', $str, $matches);
         $maxIndex = count($matches['cislo']);
         foreach ($matches['operace'] as $index => $op) { //vyřeší operaci násobení
             if ($op == "*" && $index + 1 <= $maxIndex) {
