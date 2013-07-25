@@ -44,10 +44,12 @@
                             isError = true;
                         }
                     }
-                    if(val.length < 1)
+                    if(val.length < 1) {
                         obj.next().html('');
-                    else
-                        obj.next().html(' = '+eval(val));
+                    } else {
+                        val = val.replace(",", ".");
+                        obj.next().html(eval(val).toFixed(2) +' =');
+                    }
                 }
             )
         }
