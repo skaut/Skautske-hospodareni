@@ -160,8 +160,10 @@ class ParticipantService extends MutableBaseService {
             $sis = array(
                 'ID' => $participantId,
                 'Real' => TRUE,
-                'Days' => $arr['days'],
             );
+            if(isset($arr['days'])){
+                $sis['Days'] = $arr['days'];
+            }
             $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
             $data = array(
                 "actionId" => $arr['actionId'],
