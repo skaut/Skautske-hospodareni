@@ -5,7 +5,7 @@
 {include ../ActionMenu.latte}
 
 <div class="row-fluid wipeBox">
-    <div class="span3" n:if="$isEditable">
+    <div class="span3" n:if="$isEditable" style="width: 240px;">
     {snippet tabs}
         <ul class="nav nav-tabs" id="chitType">
             <li class="active"><a data-toggle="tab" href="#vydajovy">Výdaje</a></li>
@@ -23,8 +23,7 @@
     {/snippet}    
     </div>
 
-    <div class="span9">
-
+    <div class="span8">
         <div n:snippet="paragony">
         {if $list}
                 {form formMass}
@@ -32,7 +31,7 @@
                 <p n:if="$isInMinus" class="alert alert-error">
                     Pokladní kniha je v záporných číslech a to nesmí nastat! Jsou importované příjmy od účastníků?
                 </p>
-                <div class="well well-small span6">
+                <div class="well well-small span12">
                     <a n:if="$isEditable" n:href="importHpd $aid" class="btn btn-mini btn-primary" title="Načíst příjmy od účastníků z aktuálního seznamu účastníků">Načíst příjmy od účastníků</a>
                     <a n:href="export $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
                 </div>
@@ -55,7 +54,7 @@
                         </tr>
                     </thead>
                     <tbody>
-            {assign $balance => 0}
+                    {assign $balance => 0}
                         <tr n:foreach="$list as $key => $item">
                             <td>
                                 {input chits-$item->id class=>"hidden-phone"}
@@ -87,29 +86,23 @@
             {/form}
     {else}
             <div class="row-fluid">
-                <div class="well well-small span4">
+                <div class="well well-small span12">
                     <a n:if="$isEditable" n:href="importHpd $aid" class="btn btn-mini btn-primary" title="Načíst příjmy od účastníků z aktuálního seznamu účastníků">Načíst příjmy od účastníků</a>
                 </div>
             </div>
-            <div class="row-fluid">
-                <p class="alert span4">Nemáte zde žádný doklad</p>
-            </div>
+            <div class="row-fluid"><p class="alert span4">Nemáte zde žádný doklad</p></div>
 {/if}
-
         </div>
     </div>
 </div>
 
-
 <script type="text/javascript" >
-
     $(function(){
         $(".allDependend").addClass("disabled").attr("disabled", "disabled");
             onlyWithCheckbox("frmformMass-chits-", "allDependend");
         
         $( "#cashbook-tabs" ).tabs();
         
-
         //Autocompleter
         var text = {$autoCompleter};
         var optionsAC = {

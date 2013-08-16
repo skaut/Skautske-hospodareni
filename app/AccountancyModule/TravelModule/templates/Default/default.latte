@@ -1,10 +1,10 @@
 {block #title}Cestovní příkazy jednotky {$unit->DisplayName}{/block}
 {block #content}
-    <h2>Cestovní příkazy jednotky {$unit->DisplayName}</h2>
+    <h2>Cestovní příkazy <span class="hidden-phone">jednotky {$unit->DisplayName}</span></h2>
 {include ../menu.latte}
 
 <div class="row-fluid">
-    <div class="span9">
+    <div class="span12">
         <div class="well well-small">
             <a href="#createCommand" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit cestovní příkaz</a>
         </div>

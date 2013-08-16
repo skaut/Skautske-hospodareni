@@ -5,7 +5,7 @@
 {include ../menu.latte}
 
 <div class="row-fluid">
-    <div class="span8">
+    <div class="span12">
         <div class="well well-small">
             <a n:href="editCommand $command->id" n:if="$isEditable" class="fancybox fancybox.ajax btn btn-small btn-primary"><i class="icon icon-white icon-edit"></i> Upravit</a>
             <a n:href="removeCommand! $command->id" n:if="$command->closed == NULL" title="Smazat" class="btn btn-small btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="icon icon-white icon-remove"></i> Smazat</a>
@@ -15,16 +15,15 @@
         </div>
         <div class="span4">
             <h3>Vozidlo</h3>
-        {dump $command}
             Typ a SPZ: <a n:href="Vehicle:detail $command->vehicle_id">{$command->vehicle_type} ({$command->vehicle_spz})</a><br />
-            &#0216; spotřeba dle t.p.: {$command->vehicle_consumption} l/100 km<br />
+            &#0216; spotřeba dle t.p.: {$command->vehicle_consumption|number:2} l/100 km<br />
             Cena paliva: {$command->fuel_price|price} l/Kč<br />
-            Opotřebení: {$command->amortization} Kč/km<br />
+            Opotřebení: {$command->amortization|number:2} Kč/km<br />
             Sazba náhrady: <b>{= $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}</b> Kč/km<br />
         {var $sum = 0}
         {if $command->note != ""}<h3>Poznámka</h3>{$command->note}{/if}
         </div>
-        <div class="span4">
+        <div class="span4 hidden-phone">
             <h3>Řidič</h3>
             Jméno: {$contract->driver_name}<br />
             Bydliště: {$contract->driver_address}
@@ -35,7 +34,6 @@
     <div class="span8">
     
     <h3>Provedené cesty</h3>
-
         {form formAddTravel}
 <table class="table table-bordered table-striped table-condensed">
     <tr>
