@@ -4,7 +4,7 @@
 <h2>{$vehicle->label}</h2>
 {include ../menu.latte}
 <div class="row-fluid">
-    <div class="span6">
+    <div class="span7">
 <!--        <a n:href="print " class="btn btn-primary btn-small"><i class="icon-print icon-white"></i> Vytisknout</a>-->
         
         <table class="table table-bordered table-striped">
@@ -18,7 +18,7 @@
             </tr>
             <tr>
                 <th>Průměrná spotřeba</th>
-                <td>{$vehicle->consumption} l/100 km</td>
+                <td>{$vehicle->consumption|number:2} l/100 km</td>
             </tr>
         </table>
         

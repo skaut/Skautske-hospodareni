@@ -13,7 +13,7 @@
 
 <div class="row-fluid">
     {* sekce přidávání paragonů *}
-    <div class="span3" n:if="$isEditable">
+    <div class="span3" n:if="$isEditable" style="width: 240px;">
     {snippet tabs}
         <ul class="nav nav-tabs" id="chitType">
             <li class="active"><a data-toggle="tab" href="#vydajovy">Výdaje</a></li>
@@ -32,7 +32,7 @@
     </div>
 
     {* sekce seznam paragonů *}
-    <div class="span9">
+    <div class="span8">
 
         <div n:snippet="paragony">
         {if $list}
@@ -41,9 +41,9 @@
                     Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
                 </p>
                 {form formMass}
-                <div class="well well-small span6">
+                <div class="well well-small span12">
                     <a n:if="$isEditable"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
-                    <a n:href="export $aid" target="_blank" class="btn btn-mini btn-info"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
+                    <a n:href="export $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
                 </div>
             </div>
 
@@ -52,13 +52,13 @@
                     <thead>
                         <tr>
                             <th style="width:{if $isEditable}120{else}60{/if}px">
-                                <input type="checkbox" id="frmformMass-chits-all" onclick="jqCheckAll(this.id, 'chits')" />
-                                {input massPrintSend class=>"btn btn-info btn-mini allDependend"} 
+                                <input type="checkbox" id="frmformMass-chits-all" onclick="jqCheckAll(this.id, 'chits')" class="hidden-phone" />
+                                {input massPrintSend class=>"btn btn-info btn-mini allDependend hidden-phone"} 
                             </th>
                             <th>Ze dne</th>
                             <th>Účel výplaty</th>
-                            <th>Typ</th>
-                            <th>Komu/Od</th>
+                            <th class="hidden-phone">Typ</th>
+                            <th class="hidden-phone">Komu/Od</th>
                             <th>Příjem</th>
                             <th>Výdej</th>
                             <th>Zůstatek</th>
@@ -70,15 +70,15 @@
                         {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
                         <tr{if $balance < 0} class="alert alert-error"{/if}>
                             <td>
-                                {input chits-$item->id}
-                                <a n:href="print $item->id, $aid" target="_blank" class="btn btn-mini btn-info"><i class="icon icon-print icon-white"></i></a>
+                                {input chits-$item->id class=>"hidden-phone"}
+                                <a n:href="print $item->id, $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon icon-print icon-white"></i></a>
                                 <a n:if="$isEditable" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-primary"><i class="icon icon-edit icon-white"></i></a>
                                 <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
                             </td>
-                            <td>{$item->date|date:"d.m.Y"}</td>
+                            <td><span class="hidden-desktop">{$item->date|date:"j.n."}</span><span class="visible-desktop">{$item->date|date:"d.m.Y"}</span></td>
                             <td>{$item->purpose|truncate:"30"}</td>
-                            <td title="{$item->clabel}">{$item->cshort}</td>
-                            <td>{$item->recipient}</td>
+                            <td class="hidden-phone" title="{$item->clabel}">{$item->cshort}</td>
+                            <td class="hidden-phone">{$item->recipient}</td>
                             <td class="r">{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
                             <td class="r">{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
                             <td class="r">{$balance|price}</td>
@@ -87,8 +87,8 @@
                         <tr {if $balance < 0}class="alert alert-error"{/if}>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
+                            <td class="hidden-phone">&nbsp;</td>
+                            <td class="hidden-phone">&nbsp;</td>
                             <td><b>Konečný stav</b></td>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>

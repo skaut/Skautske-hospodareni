@@ -20,7 +20,7 @@
 <!--<a class="btn btn-primary btn-mini" href="#addParticipant" data-toggle="modal">Založit nového účastníka</a>-->
 
                 <div class="btn-group">
-                    <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#" rel="tooltip" data-original-title="Jednotka, ze které se zobrazí seznam členů ">{$unit->DisplayName|truncate:20, ""} <span class="caret"></span></a>
+                    <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#" rel="tooltip" data-original-title="Jednotka, ze které se zobrazí seznam členů">{$unit->DisplayName|truncate:20, ""} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a></li>
                         <li><a class="active" style="font-weight: bold" href="#">&minus;&gt;{$unit->DisplayName}</a></li>
@@ -46,7 +46,8 @@
                 <tr n:foreach="$list as $id=>$name">
                     <td>
                         {input all-$id class=>"hidden-phone"}
-                        <a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a>
+                        <a n:href="add! $id" class="btn btn-primary btn-mini hidden-phone ajax"><i class="icon-plus icon-white"></i></a>
+                        <a n:href="add! $id" class="btn btn-primary btn-small visible-phone ajax"><i class="icon-plus icon-white"></i></a>
                     </td>
                     <td>{label all-$id /}</td>
                 </tr>
@@ -81,7 +82,7 @@
                         <a n:if="$accessUpdateParticipant" href="#massEdit" data-toggle="modal" class="btn btn-primary btn-mini massDependend" title="Upravit vybrané"><i class="icon-edit icon-white"></i></a>
                         {if $accessDeleteParticipant}{input massRemoveSend class=>"btn btn-danger btn-mini massDependend", title=>"Odebrat vybrané"}{/if}
                     </th>
-                    <th class="visible-phone">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </th>
+                    <th class="visible-phone"> &nbsp; </th>
                     <th>Příjmení a jméno ({= count($participants)})</th>
                     <th>Dnů</th>
                     <th>Částka</th>
