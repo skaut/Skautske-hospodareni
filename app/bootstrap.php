@@ -37,7 +37,13 @@ $container = $configurator->createContainer();
 
 // Setup router
 $router = new RouteList;
+//$router[] = new MyRoute('app.manifest', array(
+//            "Module" => "Default",
+//            "presenter" => "Offline",
+//            "action" => "manifest",
+//        ));
 $router[] = new MyRoute('index.php', ':Default:default', Route::ONE_WAY & Route::SECURED);
+$router[] = new MyRoute('appa.manifest', 'Offline:manifest');
 $router[] = new MyRoute("o-projektu", "Default:about");
 
 $router[] = new MyRoute('sign/<action>[/back-<backlink>]', array(
@@ -58,6 +64,14 @@ $router[] = new MyRoute('prirucka/<action>[#<anchor>]', array(
             )),
         ));
 
+$router[] = new MyRoute('offline/<action>.html', array(
+            "presenter" => "Offline",
+            "action" => array(
+                Route::VALUE => 'list',
+                ),
+        ));
+
+
 $router[] = AccountancyModule\BasePresenter::createRoutes();
 $router[] = new MySimpleRouter('Default:default', Route::SECURED);
 
@@ -70,7 +84,7 @@ $container->router = $router;
 //}
 // Configure and run the application!
 $application = $container->application;
-$application->catchExceptions = $configurator->isProductionMode();
+//$application->catchExceptions = $configurator->isProductionMode();
 //$application->catchExceptions = TRUE;
 $application->errorPresenter = 'Error';
 if (!Nette\Environment::isConsole())

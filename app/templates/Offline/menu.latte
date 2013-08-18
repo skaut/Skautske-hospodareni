@@ -1,0 +1,22 @@
+<link rel="stylesheet" type="text/css" media="screen" href="{$baseUri}/css/offline.css" />
+
+<div class="navbar navbar-fixed-top navbar-inverse">
+    <div class="navbar-inner">
+        <div class="container" style="padding: 0 10px;" >
+            <ul class="nav">
+                <li {ifCurrent list}class='active'{/ifCurrent}><a n:href="list"><i class="icon icon-list icon-white"></i> Seznam</a></li>
+                <li {ifCurrent out}class='active'{/ifCurrent}><a n:href="out"><i class="icon icon-arrow-down icon-white"></i> Výdaj</a></li>
+                <li {ifCurrent in}class='active'{/ifCurrent}><a n:href="in"><i class="icon icon-arrow-up icon-white"></i> Příjem</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{*}
+<ul class="nav nav-pills">
+    <li {ifCurrent Event: $aid}class='active'{/ifCurrent}><a n:href="Event: $aid" class="ajaxA">Základní údaje</a></li>
+    <li {ifCurrent Participant:default $aid}class='active'{/ifCurrent}><a n:href="Participant:default $aid" class="ajaxA">Účastníci</a></li>
+    <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}><a n:href="Cashbook:default $aid" class="ajaxA">Pokladní kniha</a></li>
+</ul>
+{*}
+

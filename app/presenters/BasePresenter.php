@@ -22,7 +22,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) //prodluzuje přihlášení při každém požadavku
                 $this->context->authService->updateLogoutTime();
         } catch (SkautIS_AuthenticationException $e) {
-            if($this->name != "Auth" || $this->params['action'] != "skautisLogout") //pokud jde o odhlaseni, tak to nevadi
+            if ($this->name != "Auth" || $this->params['action'] != "skautisLogout") //pokud jde o odhlaseni, tak to nevadi
                 throw $e;
         }
     }
@@ -33,6 +33,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
             $this->template->myRole = $this->context->userService->getRoleId();
         }
+        $this->template->registerHelperLoader("AccountancyHelpers::loader");
 //        $this->template->cntActiveEvents = $this->context->eventService->event->getCountOfActiveEvents();
     }
 
@@ -62,13 +63,36 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 //        $compiler->addFilter("mini");
         $control = new WebLoader\Nette\CssLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
         $control->setMedia('screen');
-
+        $files->addFiles(array(
+            'fancybox/fancybox.css',
+            'bootstrap.min.css',
+            'bootstrap-responsive.min.css',
+            'jquery-ui-1.10.0.custom.css',
+            'my-responsive.css',
+//            'offline.css',
+            'site.css'
+        ));
         return $control;
     }
 
     public function createComponentJs() {
         $files = new WebLoader\FileCollection(WWW_DIR . '/js');
         $compiler = WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/webtemp');
+        $files->addFiles(array(
+            'jquery-1.8.2.min.js',
+            'jquery-ui-1.10.0.custom.min.js',
+            'jquery.touchwipe.min.js',
+            'mobile.js',
+            'my-datepicker.js',
+            'combobox.js',
+            'jquery.nette.js',
+            'bootstrap.js',
+            'jquery.fancybox.pack.js',
+            'jquery.ajaxform.js',
+            'offline.js',
+            'html5.js',
+            'my.js'
+        ));
         return new WebLoader\Nette\JavaScriptLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
     }
 
