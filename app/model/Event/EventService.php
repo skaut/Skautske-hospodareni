@@ -27,7 +27,7 @@ class EventService extends MutableBaseService {
             }
             return $res;
         } catch (SkautIS_Exception $e) {
-            throw new SkautIS_PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e->getCode);
+            throw new SkautIS_PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e->getCode());
         }
     }
 
