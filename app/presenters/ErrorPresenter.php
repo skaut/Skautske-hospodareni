@@ -15,10 +15,13 @@ class ErrorPresenter extends Nette\Application\UI\Presenter {
             Debugger::log($exception, Debugger::WARNING); // and log exception
             $this->setView('SkautIS');
             $this->template->ex = $exception;
+        } elseif ($exception instanceof SkautIS_PermissionException) {
+            $this->flashMessage($exception->getMessage(), "danger");
+            $this->redirect(":Default:");
         } elseif ($exception instanceof SkautIS_AuthenticationException) {//vypršelo přihlášení do SkautISu
             $this->user->logout(TRUE);
             $this->flashMessage("Vypršelo přihlášení do skautISu", "danger");
-            $this->redirect(":Default:default");
+            $this->redirect(":Default:");
         } else {
             $this->setView('500'); // load template 500.latte
             Debugger::log($exception, Debugger::ERROR); // and log exception

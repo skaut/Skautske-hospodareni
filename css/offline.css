@@ -1,0 +1,13 @@
+@media (min-width: 979px) { 
+    body {
+        padding-top: 50px;
+    }
+}
+
+.offlineMsg {
+    display: none;
+}
+#js {
+    display: none;
+}
+
