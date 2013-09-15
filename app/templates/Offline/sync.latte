@@ -1,0 +1,57 @@
+{block #title}pokladní kniha{/block}
+
+{block #content}
+{include menu.latte}
+
+<div class="row-fluid wipeBox" id="js">
+    <div class="span12">
+        <table class="table myTable table-bordered table-condensed" id="cashbookTable">
+            <thead>
+                <tr>
+                    <th>Ze dne</th>
+                    <th>Účel výplaty</th>
+                    <th>Typ</th>
+                    <th>Komu/Od</th>
+                    <th>Příjem</th>
+<!--                    <th>Výdej</th>
+                    <th>Zůstatek</th>-->
+                </tr>
+            </thead>
+            <tbody id="tbody">
+<!--                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td colspan="2"><b>Konečný stav</b></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td><b>111</b></td>
+                </tr>-->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="alert alert-danger" id="nojs">
+    <b>Nemáte aktivní JS a potřebné funkce!</b>
+</div>
+
+<script type="text/javascript" >
+    $(function(){ 
+        offlineReady();
+//        localStorage.clear();
+//localStorage['queue']=JSON.stringify([]);
+//        var arr = JSON.parse(localStorage['queue']);
+//        var msg = { date: "1.3.2013", purpose:"testoviny", category:"12", recipient:"Jan Vomáčka", type:"out", price:"22.50" };
+//        arr.push(msg);
+//        localStorage['queue'] = JSON.stringify(arr);
+
+        var data = queueLoad();
+        var length = data.length;
+//        var tr, td;
+        var tbody = $("#tbody");
+        for(var i =0;i<length;i++){
+            tbody.append('<tr><td>'+data[i].date+"</td><td>"+data[i].purpose+"</td><td>"+data[i].type+"</td><td>"+data[i].recipient+"</td><td>"+ (typeof data[i].price != 'undefined' ? data[i].price : '') +"</td></tr>");
+        }
+
+    })
+</script>

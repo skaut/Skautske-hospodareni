@@ -36,6 +36,12 @@ class ChitService extends MutableBaseService {
                 $i->cshort = mb_substr($i->cshort, 0, 5);
                 $list[$k] = $i;
             }
+            uasort($list, function ($a, $b) {
+                if ($a->date == $b->date) {
+                    return strlen($a->ctype) - strlen($b->ctype); //pokud je název kratší, je dříve
+                }
+                return ($a->date < $b->date) ? -1 : 1;
+            });
         }
 
         return $list;
