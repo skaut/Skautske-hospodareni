@@ -2,12 +2,28 @@
 
 <div class="navbar navbar-fixed-top navbar-inverse">
     <div class="navbar-inner">
-        <div class="container" style="padding: 0 10px;" >
+        <div class="container">
             <ul class="nav">
-                <li {ifCurrent list}class='active'{/ifCurrent}><a n:href="list"><i class="icon icon-list icon-white"></i> Seznam</a></li>
-                <li {ifCurrent out}class='active'{/ifCurrent}><a n:href="out"><i class="icon icon-arrow-down icon-white"></i> Výdaj</a></li>
-                <li {ifCurrent in}class='active'{/ifCurrent}><a n:href="in"><i class="icon icon-arrow-up icon-white"></i> Příjem</a></li>
+                <li {ifCurrent list}class='active'{/ifCurrent}><a n:href="list"><i class="icon icon-list icon-white"></i> <span class="hidden-phone">Seznam</span></a></li>
+                <li {ifCurrent out}class='active'{/ifCurrent}><a n:href="out"><i class="icon icon-arrow-down icon-white"></i> <span class="hidden-phone">Výdaj</span></a></li>
+                <li {ifCurrent in}class='active'{/ifCurrent}><a n:href="in"><i class="icon icon-arrow-up icon-white"></i> <span class="hidden-phone">Příjem</span></a></li>
+                <li {ifCurrent sync}class='active'{/ifCurrent} n:if="$user->isLoggedIn()"><a n:href="sync"><i class="icon icon-random icon-white"></i> <span class="hidden-phone">Synchronizovat</span></a></li>
             </ul>
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <div class="nav-collapse">
+                <p class="navbar-text pull-right" n:inner-if="$user->isLoggedIn()">
+                    <select onchange="changeRole(this.value)" class="roleSelect input-medium">
+                        <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->RegistrationNumber} - {$r->Role}</option>
+                    </select>
+                    <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small">Odhlásit se</a>
+                {else}
+                    <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL">Přihlásit</a>
+                </p>
+            </div>
         </div>
     </div>
 </div>
