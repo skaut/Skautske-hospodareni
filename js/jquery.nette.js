@@ -14,7 +14,6 @@ if (typeof jQuery != 'function') {
 */
 
 (function($) {
-
 	$.nette = {
 		success: function(payload)
 		{
@@ -88,7 +87,7 @@ jQuery(function($) {
 		dataType: 'json'
 	});
 
-	$.nette.createSpinner();
+//	$.nette.createSpinner();
 
 	// apply AJAX unobtrusive way
     $(document).on('click', 'a.ajax', function(event) {//for jQuery 1.9.0

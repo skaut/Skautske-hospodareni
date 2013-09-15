@@ -1,6 +1,7 @@
 <?php
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+    Nette\Caching\Cache;
 
 /**
  * @author sinacek
@@ -11,16 +12,50 @@ class OfflinePresenter extends BasePresenter {
         parent::startup();
     }
 
+    function actionSync() {
+        if (!$this->user->isLoggedIn()) {
+            $this->redirect(":Default:", array("backlink" => $this->storeRequest('+ 3 days')));
+        }
+        $this->template->list = $this->context->eventService->event->getAll(date("Y"), "draft");
+    }
+
+    function handleSynchronize($aid) {
+        $this->invalidateControl();
+//        $post = $this->context->httpRequest->getPost();
+//        dump($post);
+//        die();
+//        $id = $post['id'];
+//        $data = json_decode($post['data']);
+//        $this->template->isEditable = $isEditable = $this->context->eventService->event->isCommandEditable($aid);
+//        if (!$this->user->isLoggedIn() || !$isEditable) {
+//            $this->flashMessage("Nemáte oprávnění pro tuto akci.");
+//            $this->redirect(":Default:");
+//        }
+//        $this->context->eventService->chits->add($this->aid, $values);
+    }
+
     function renderList() {
+        
+    }
+
+    function beforeRender() {
+        parent::beforeRender();
+        $cache = new Cache(new Nette\Caching\Storages\FileStorage(TEMP_DIR));
+        if (!$this->user->isLoggedIn()) {
+            if (!($backlink = $cache->load("loginBacklink"))) {
+                $backlink = $cache->save("loginBacklink", $this->storeRequest('+ 3 days'), array(Cache::EXPIRE => '+2 days'));
+            }
+            $this->template->backlink = $backlink;
+        }
     }
 
     function actionManifest() {
         $this->context->httpResponse->setContentType('Context-Type:', 'text/cache-manifest');
-        
+
         @$cssFile = reset($this['css']->getCompiler()->generate());
-        $this->template->css = "webtemp/" . $cssFile->file ."?" . $cssFile->lastModified;//name
+        $this->template->css = "webtemp/" . $cssFile->file . "?" . $cssFile->lastModified; //name
         @$jsFile = reset($this['js']->getCompiler()->generate());
-        $this->template->js = "webtemp/" . $jsFile->file ."?" . $jsFile->lastModified;//name
+        $this->template->js = "webtemp/" . $jsFile->file . "?" . $jsFile->lastModified; //name
     }
 
     function actionOut() {
@@ -100,5 +135,6 @@ class OfflinePresenter extends BasePresenter {
         $form->setDefaults(array('category' => 1));
         return $form;
     }
+
 }
 
