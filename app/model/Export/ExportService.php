@@ -124,7 +124,7 @@ class ExportService extends BaseService {
                     $income[] = $c;
                     break;
                 default:
-                    throw new InvalidStateException("Neznámý typ paragou");
+                    throw new \Nette\InvalidStateException("Neznámý typ paragou");
                     break;
             }
         }

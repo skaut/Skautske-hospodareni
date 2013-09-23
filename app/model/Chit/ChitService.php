@@ -185,7 +185,7 @@ class ChitService extends MutableBaseService {
     /**
      * vrací ID kategorie pro příjmy od účastníků
      * @return type
-     * @throws InvalidStateException
+     * @throws \Nette\InvalidStateException
      */
     public function getEventCategoryParticipant() {
         $cacheId = __FUNCTION__;
@@ -199,7 +199,7 @@ class ChitService extends MutableBaseService {
             $this->saveSes($cacheId, $res);
         }
         if (!$res)
-            throw new InvalidStateException("Chybí typ pro příjem od účastníků", 500);
+            throw new \Nette\InvalidStateException("Chybí typ pro příjem od účastníků", 500);
         return $res;
     }
 
@@ -299,7 +299,7 @@ class ChitService extends MutableBaseService {
     /**
      * vrací číslo kategirie účastníka
      * @return int
-     * @throws InvalidStateException
+     * @throws \Nette\InvalidStateException
      */
     public function getCampCategoryParticipant($actionId, $category) {
         $catId = ($category == "adult") ? 3 : 1;
@@ -309,7 +309,7 @@ class ChitService extends MutableBaseService {
                 return $k;
             }
         }
-        throw new InvalidStateException("Chybí typ pro příjem od účastníků pro skupinu " . $category, 500);
+        throw new \Nette\InvalidStateException("Chybí typ pro příjem od účastníků pro skupinu " . $category, 500);
     }
 
     /*     * ******** END CAMP CATEGORIES *********** */
