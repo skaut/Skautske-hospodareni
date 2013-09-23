@@ -27,6 +27,7 @@ class CashbookPresenter extends BasePresenter {
         $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
+//        $this->template->missingCategories = false;
 //        dump($this->camp);
         if (!$this->camp->IsRealTotalCostAutoComputed && $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost")) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
             $this->template->missingCategories = true;//boolean - nastavuje upozornění na chybějící dopočítávání kategorií

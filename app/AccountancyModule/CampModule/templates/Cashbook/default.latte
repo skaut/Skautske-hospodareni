@@ -13,7 +13,7 @@
 
 <div class="row-fluid">
     {* sekce přidávání paragonů *}
-    <div class="span3" n:if="$isEditable" style="width: 240px;">
+    <div class="span3" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)" style="width: 240px;">
     {snippet tabs}
         <ul class="nav nav-tabs" id="chitType">
             <li class="active"><a data-toggle="tab" href="#vydajovy">Výdaje</a></li>
@@ -42,7 +42,7 @@
                 </p>
                 {form formMass}
                 <div class="well well-small span12">
-                    <a n:if="$isEditable"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
+                    <a n:if="$isEditable && isset($missingCategories) && !$missingCategories"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
                     <a n:href="export $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
                 </div>
             </div>
@@ -99,13 +99,13 @@
             </div>
             {/form}
         {else}
-            <div class="row-fluid" n:if="$isEditable">
+            <div class="row-fluid" n:if="$isEditable && isset($missingCategories) && !$missingCategories">
                 <div class="well well-small span4">
                     <a href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
                 </div>
             </div>
             <div class="row-fluid">
-                <p class="alert span4">Nemáte zde žádný doklad</p>
+                <p class="alert span8">Zatím zde nemáte žádné doklady. Pro přidání dokladů je potřeba mít aktivované automatické dopočítávání kategorií ve skautisu.</p>
             </div>
         {/if}
 
