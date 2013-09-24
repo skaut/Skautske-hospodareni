@@ -14,7 +14,7 @@ common:
             email: %sinacek@gmail.com%
             strictMode: FALSE
             maxDepth: 6
-            bar: # panely do Debugger baru
+            #bar: # panely do Debugger baru
                 #- Nette\DI\Diagnostics\ContainerPanel # alias DI Container baru
     
     services:
