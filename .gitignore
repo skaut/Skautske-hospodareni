@@ -14,5 +14,6 @@ nbproject/*
 /source/*
 /webtemp/
 /images/front/*
+/app/config.neon
 adminer.php
 htaccess
