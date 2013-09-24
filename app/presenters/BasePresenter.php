@@ -8,7 +8,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 //        if (!$this->context->session->isStarted()) {
 //            $this->context->session->start();
 //        }
-        \Extras\Debug\RequestsPanel::register();
+//        if(Nette\Diagnostics\Debugger::isEnabled()){ 
+//            \Extras\Debug\RequestsPanel::register();//mozny problem s pretecenim pameti, viz http://forum.nette.org/cs/12212-padani-pri-prihlaseni-a-odhlaseni-regenerateid#p88026
+//        }
 
         $this->template->backlink = $this->getParameter("backlink");
 
