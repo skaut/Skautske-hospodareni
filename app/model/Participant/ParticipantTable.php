@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Hána František
+ * @author sinacek
  */
 class ParticipantTable extends BaseTable {
 
@@ -34,10 +34,5 @@ class ParticipantTable extends BaseTable {
             ON DUPLICATE KEY 
             UPDATE %a", $updateData);
     }
-
-//    public function add($values) {
-//        dibi::query("INSERT INTO [" . self::TABLE_CHIT . "] %v", $values);
-//        return dibi::getInsertId();
-//    }
 
 }

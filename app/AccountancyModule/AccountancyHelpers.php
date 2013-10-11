@@ -18,6 +18,9 @@ abstract class AccountancyHelpers extends Object {
         }
     }
     
+    /*
+     * zobrazení stavu ve formě ikony
+     */
     public static function eventStateLabel($s) {
         if ($s == "draft")
             return '<span class="label label-warning hidden-phone">Rozpracováno</span>'
@@ -30,7 +33,9 @@ abstract class AccountancyHelpers extends Object {
         //draft, closed, cancelled
     }
 
-    //zobrazuje popisky stavů u táborů
+    /*
+     * zobrazuje popisky stavů u táborů
+     */
     public static function campStateLabel($s) {
         switch ($s) {
             case "draft":

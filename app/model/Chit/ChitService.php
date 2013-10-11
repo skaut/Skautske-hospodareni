@@ -11,9 +11,14 @@ class ChitService extends MutableBaseService {
         $this->table = new ChitTable();
     }
 
+    /**
+     * vrací jeden paragon
+     * @param type $id
+     * @return \DibiRow
+     */
     public function get($id) {
         $ret = $this->table->get($id);
-        if ($ret instanceof DibiRow && $ret->type == "camp") {
+        if ($ret instanceof DibiRow && $ret->type == "camp") {//doplnění kategorie u paragonu z tábora
             $categories = $this->getCategoriesCampPairs($ret->actionId);
             $ret->ctype = array_key_exists($ret->category, $categories['in']) ? "in" : "out";
         }
@@ -37,11 +42,11 @@ class ChitService extends MutableBaseService {
                 $list[$k] = $i;
             }
             uasort($list, function ($a, $b) {
-                if ($a->date == $b->date) {
-                    return strlen($a->ctype) - strlen($b->ctype); //pokud je název kratší, je dříve
-                }
-                return ($a->date < $b->date) ? -1 : 1;
-            });
+                        if ($a->date == $b->date) {
+                            return strlen($a->ctype) - strlen($b->ctype); //pokud je název kratší, je dříve
+                        }
+                        return ($a->date < $b->date) ? -1 : 1;
+                    });
         }
 
         return $list;
@@ -139,9 +144,6 @@ class ChitService extends MutableBaseService {
      * @return type 
      */
     public function delete($chitId, $actionId) {
-        $chit = $this->get($chitId);
-//        if ($chit->type != "general") //category update
-//            $this->updateCategory($actionId, $chit->category);
         return $this->table->delete($chitId, $actionId);
     }
 
@@ -171,7 +173,14 @@ class ChitService extends MutableBaseService {
      * @return array 
      */
     public function getCategoriesIn() {
-        return $this->table->getCategories("in");
+        $cacheId = __CLASS__ . "/" . __FUNCTION__;
+        if (($res = $this->cache->load($cacheId)) == NULL) {
+            $res = $this->table->getCategories("in");
+            $this->cache->save($cacheId, $res, array(
+                \Nette\Caching\Cache::EXPIRE => '+ 2 days',
+            ));
+        }
+        return $res;
     }
 
     /**
@@ -179,7 +188,14 @@ class ChitService extends MutableBaseService {
      * @return array 
      */
     public function getCategoriesOut() {
-        return $this->table->getCategories("out");
+        $cacheId = __CLASS__ . "/" . __FUNCTION__;
+        if (($res = $this->cache->load($cacheId)) == NULL) {
+            $res = $this->table->getCategories("out");
+            $this->cache->save($cacheId, $res, array(
+                \Nette\Caching\Cache::EXPIRE => '+ 2 days',
+            ));
+        }
+        return $res;
     }
 
     /**
