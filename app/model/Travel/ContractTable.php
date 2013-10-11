@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Hána František
+ * @author Sinacek
+ * správa smluv o proplácení cestovních náhrad u cestovních příkazů
  */
 class ContractTable extends BaseTable {
 

@@ -21,11 +21,8 @@ $configurator = new Nette\Config\Configurator;
 
 $configurator->setTempDirectory(dirname(__FILE__) . '/temp');
 $configurator->enableDebugger(dirname(__FILE__) . '/log', "sinacek@gmail.com");
-if($configurator->isProductionMode())
+if ($configurator->isProductionMode())
     Debugger::$strictMode = FALSE;
-//Debugger::enable(FALSE);
-//Debugger::$maxDepth = 6;
-//dump(Debugger::$strictMode);
 $configurator->addConfig(dirname(__FILE__) . '/config.neon');
 
 $configurator->createRobotLoader()
@@ -47,28 +44,28 @@ $router[] = new MyRoute('appa.manifest', 'Offline:manifest');
 $router[] = new MyRoute("o-projektu", "Default:about");
 
 $router[] = new MyRoute('sign/<action>[/back-<backlink>]', array(
-            "presenter" => "Auth",
-            "action" => "default",
-            "backlink" => NULL
-                ), Route::SECURED);
+    "presenter" => "Auth",
+    "action" => "default",
+    "backlink" => NULL
+        ), Route::SECURED);
 
 $router[] = new MyRoute('prirucka/<action>[#<anchor>]', array(
-            "presenter" => "Tutorial",
-            "action" => array(
-                Route::VALUE => 'default',
-                Route::FILTER_TABLE => array(
-                    // řetězec v URL => presenter
-                    'vyprava' => 'event',
-                    'tabor' => 'camp',
-                    'cestovni-prikaz' => 'travelCommand',
-            )),
+    "presenter" => "Tutorial",
+    "action" => array(
+        Route::VALUE => 'default',
+        Route::FILTER_TABLE => array(
+            // řetězec v URL => presenter
+            'vyprava' => 'event',
+            'tabor' => 'camp',
+            'cestovni-prikaz' => 'travelCommand',
+        )),
         ));
 
 $router[] = new MyRoute('offline/<action>.html', array(
-            "presenter" => "Offline",
-            "action" => array(
-                Route::VALUE => 'list',
-                ),
+    "presenter" => "Offline",
+    "action" => array(
+        Route::VALUE => 'list',
+    ),
         ));
 
 

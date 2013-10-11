@@ -1,4 +1,3 @@
-kategorie paragonu
 nastaveni od administratora pro jeddnotku
 filtrování podle parametrů napříč výpravama/apod...
 offline nahrani dat z excelu

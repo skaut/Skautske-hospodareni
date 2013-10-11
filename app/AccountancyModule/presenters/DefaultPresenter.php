@@ -5,7 +5,7 @@ namespace AccountancyModule;
 /**
  * @author sinacek
  */
-class DefaultPresenter extends \BasePresenter  {
+class DefaultPresenter extends \BasePresenter {
 
     /**
      * pouze přesměrovává na jiný presenter
@@ -14,4 +14,5 @@ class DefaultPresenter extends \BasePresenter  {
         parent::startup();
         $this->redirect("Event:Default:");
     }
+
 }

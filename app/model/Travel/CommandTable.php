@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Hána František
+ * @author Sinacek
+ * správa cestovních příkazů
  */
 class CommandTable extends BaseTable {
 
@@ -39,32 +40,28 @@ class CommandTable extends BaseTable {
     }
 
     public function getAllByContract($unitId, $contractId) {
-//        return dibi::fetchAll("SELECT com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.spz as vehicle_spz
-//            FROM [" . self::TABLE_TC_COMMANDS . "] as com 
-//            LEFT JOIN [" . self::TABLE_TC_CONTRACTS . "] as con ON (com.contract_id = con.id)
-//                LEFT JOIN [" . self::TABLE_TC_VEHICLE . "] AS c ON (com.vehicle_id = c.id)", "WHERE con.unit_id=%i AND com.deleted=0 AND con.deleted=0 ", $unitId, 
-//                "%if", $contractId != NULL, " AND com.contract_id=", $contractId, "%end");
         return $this->getAll($unitId, TRUE)
-                ->where("com.contract_id=", $contractId)
-                ->fetchAll();
-        }
+                        ->where("com.contract_id=", $contractId)
+                        ->fetchAll();
+    }
 
     public function getAllByVehicle($unitId, $vehicleId) {
         return $this->getAll($unitId, TRUE)
-                ->where("com.vehicle_id=", $vehicleId)
-                ->fetchAll();
+                        ->where("com.vehicle_id=", $vehicleId)
+                        ->fetchAll();
     }
 
-//    public function getAllContracts($unitId) {
-//        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_TC_CONTRACTS . "]
-//                WHERE unit_id=%i AND deleted=0 ", $unitId, "ORDER BY id DESC ");
-//    }
-    
-    public function changeState($commandId, $state){
-        return dibi::update(self::TABLE_TC_COMMANDS, array("id"=>$commandId, "closed"=>$state))
-            ->where("id=%i", $commandId)
-            ->where("deleted = 0")
-                ->execute();
+    /**
+     * uzavírání/otevírání cestovních příkazů
+     * @param type $commandId
+     * @param type $state
+     * @return type
+     */
+    public function changeState($commandId, $state) {
+        return dibi::update(self::TABLE_TC_COMMANDS, array("id" => $commandId, "closed" => $state))
+                        ->where("id=%i", $commandId)
+                        ->where("deleted = 0")
+                        ->execute();
     }
 
     public function delete($commandId) {

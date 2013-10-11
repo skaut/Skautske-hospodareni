@@ -1,10 +1,9 @@
 <?php
-use Nette\Object;
 
 /**
- * @author Hána František
+ * @author sinacek
  */
-abstract class BaseService extends Object {
+abstract class BaseService extends Nette\Object {
 
     //konstanty pro Event a Camp
     const LEADER = 0; //ID v poli funkcí
