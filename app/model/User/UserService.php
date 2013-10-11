@@ -1,10 +1,9 @@
 <?php
 
 /**
- * @author Hána František
+ * @author sinacek
  */
 class UserService extends BaseService {
-//    use Nette\Caching\Cache;
 
     /**
      * varcí ID role aktuálně přihlášeného uživatele
@@ -19,7 +18,7 @@ class UserService extends BaseService {
      * @return array všech dostupných rolí přihlášeného uživatele
      */
     public function getAllSkautISRoles($activeOnly = true) {
-        return $this->skautIS->user->UserRoleAll(array("ID_User" => $this->getUserDetail()->ID, "IsActive"=>$activeOnly));
+        return $this->skautIS->user->UserRoleAll(array("ID_User" => $this->getUserDetail()->ID, "IsActive" => $activeOnly));
     }
 
     public function getUserDetail() {
@@ -73,7 +72,7 @@ class UserService extends BaseService {
             "ID" => $id,
             "ID_Table" => $table,
             "ID_Action" => $ID_Action,
-                ));
+        ));
         if ($ID_Action !== NULL) { //pokud je zadána konrétní funkce pro ověřování, tak se vrací BOOL
             if ($res instanceof stdClass)
                 return false;

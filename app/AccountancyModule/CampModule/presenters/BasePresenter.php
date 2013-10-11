@@ -4,7 +4,8 @@ namespace AccountancyModule\CampModule;
 
 use  Nette\Application\Routers\Route,
     Nette\Application\Routers\RouteList,
-    Extras\Sinacek\MyRoute;
+    Extras\Sinacek\MyRoute,
+    SkautIS\Exception\PermissionException;
 
 /**
  * @author sinacek
@@ -25,7 +26,7 @@ class BasePresenter extends \AccountancyModule\BasePresenter {
                 $this->template->camp = $this->camp = $this->context->campService->event->get($this->aid);
                 $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
                 $this->template->isEditable = $this->isEditable = $this->isAllowed(self::STable . "_UPDATE_Real");
-            } catch (SkautIS_PermissionException $exc) {
+            } catch (PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Default:");
             }

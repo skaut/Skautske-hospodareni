@@ -2,7 +2,7 @@
 
 /**
  * slouží pro obsluhu účastníků
- * @author Hána František
+ * @author sinacek
  */
 class ParticipantService extends MutableBaseService {
 
@@ -132,24 +132,6 @@ class ParticipantService extends MutableBaseService {
         $this->skautIS->org->PersonUpdate($data, "person");
     }
 
-//    /**
-//     * nastaví účastníkovi počet dní účasti
-//     * @param int $participantId
-//     * @param int $days 
-//     */
-//    public function setDays($participantId, $days) {
-//        $this->update($participantId, array("Days" => $days));
-//    }
-//
-//    /**
-//     * nastaví částku co účastník zaplatil
-//     * @param int $participantId
-//     * @param int $payment - částka
-//     */
-//    public function setPayment($participantId, $payment) {
-//        $this->update($participantId, array(self::PAYMENT => $payment));
-//    }
-
     /**
      * upraví všechny nastavené hodnoty
      * @param int $participantId
@@ -205,24 +187,6 @@ class ParticipantService extends MutableBaseService {
         return \Nette\ArrayHash::from($res);
     }
 
-//    /**
-//     * hromadné nastavení účastnické částky
-//     * @param int $eventId - ID ake
-//     * @param int $newPayment - nově nastavený poplatek
-//     * @param bool $rewrite - přepisovat staré údaje?
-//     */
-//    public function setPaymentMass($eventId, $newPayment, $rewrite = false) {
-//        if ($newPayment < 0)
-//            $newPayment = 0;
-//        $participants = $this->getAll($eventId);
-//        foreach ($participants as $p) {
-//            $paid = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
-//            if (($paid == $newPayment) || (($paid != 0 && $paid != NULL) && !$rewrite)) //není změna nebo není povolen přepis
-//                continue;
-//            $this->setPayment($p->ID, $newPayment);
-//        }
-//    }
-
     /**
      * celkově vybraná částka
      * @param int $eventId
@@ -272,28 +236,4 @@ class ParticipantService extends MutableBaseService {
         return count($this->getAll($eventId));
     }
 
-//    /**
-//     * přidá příjmový paragon za všechny účastníky
-//     * @param int $eventId
-//     */
-//    public function addPaymentsToCashbook($eventId, EventService $eventService, ChitService $chitService) {
-//        $func = $eventService->event->getFunctions($eventId);
-//        $total = $this->getTotalPayment($eventId);
-//        $date = $eventService->event->get($eventId)->StartDate;
-//
-//        $chit = array(
-//            "date" => $date,
-//            "recipient" => isset($func[EventService::ECONOMIST]->Person) ? $func[EventService::ECONOMIST]->Person : NULL,
-//            "purpose" => "Účastnické poplatky",
-//            "price" => $total,
-//            "priceText" => $total,
-//            "category"=> "pp",
-//        );
-//        try {
-//            $chitService->add($eventId, $chit);
-//        } catch (InvalidArgumentException $exc) {
-//            return FALSE;
-//        }
-//        return TRUE;
-//    }
 }

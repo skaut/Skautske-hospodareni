@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Hána František
+ * @author sinacek
  */
 class BaseTable {
     const TABLE_CHIT = 'ac_chits';

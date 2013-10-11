@@ -1,5 +1,7 @@
 <?php
 
+use SkautIS\Exception\AuthenticationException;
+
 class AuthPresenter extends BasePresenter {
 
     protected function startup() {
@@ -9,9 +11,8 @@ class AuthPresenter extends BasePresenter {
     /**
      * pokud je uziatel uz prihlasen, staci udelat referesh
      * @param string $backlink 
-     * @param bool $final - je to konečné přesměrování? použít při problémem se zacyklením
      */
-    public function actionDefault($backlink, $final = FALSE) {
+    public function actionDefault($backlink) {
         if (\Nette\Environment::getUser()->isLoggedIn()) {
             if ($backlink) {
                 $this->restoreRequest($backlink);
@@ -46,7 +47,7 @@ class AuthPresenter extends BasePresenter {
             ));
 
             if (!$this->context->userService->isLoggedIn()) {
-                throw new SkautIS_AuthenticationException("Nemáte platné přihlášení do skautISu");
+                throw new AuthenticationException("Nemáte platné přihlášení do skautISu");
             }
             $me = $this->context->userService->getPersonalDetail();
 
@@ -57,7 +58,7 @@ class AuthPresenter extends BasePresenter {
             if (isset($ReturnUrl)) {
                 $this->context->application->restoreRequest($ReturnUrl);
             }
-        } catch (SkautIS_AuthenticationException $e) {
+        } catch (AuthenticationException $e) {
             $this->flashMessage($e->getMessage(), "danger");
             $this->redirect(":Auth:");
         }

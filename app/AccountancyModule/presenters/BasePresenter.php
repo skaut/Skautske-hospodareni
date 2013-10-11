@@ -77,16 +77,16 @@ class BasePresenter extends \BasePresenter {
         $router[] = TravelModule\BasePresenter::createRoutes();
 
         $router[] = new MyRoute($prefix . '<module>/<presenter>[/<action>]', array(
-                    'module' => "Accountancy",
-                    'action' => 'default',
-                        ), Route::SECURED);
+            'module' => "Accountancy",
+            'action' => 'default',
+                ), Route::SECURED);
 
         return $router;
     }
-    
-    public function isAllowed($action, $avaibleActions = NULL){
+
+    public function isAllowed($action, $avaibleActions = NULL) {
         $avaibleActions = $avaibleActions == NULL ? $this->availableActions : $avaibleActions;
         return array_key_exists($action, $avaibleActions);
     }
-   
+
 }

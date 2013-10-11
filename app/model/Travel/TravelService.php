@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Hána František
+ * @author Sinacek
  * správa cestovních příkazů
  */
 class TravelService extends BaseService {

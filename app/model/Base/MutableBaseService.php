@@ -5,6 +5,7 @@ use Nette\Caching\Cache;
 /**
  * @author Hána František
  * Třída pro odvozování tříd, které jsou přispůsobiltené parametry v konstruktoru
+ * $longName a $name chci sjednotit - prověřit, jestli to ma stale skautis ruzně
  */
 abstract class MutableBaseService extends BaseService {
 
@@ -12,7 +13,7 @@ abstract class MutableBaseService extends BaseService {
     static protected $typeLongName;
     static protected $expire;
 
-    /** @var FileStorage */
+    /** @var Nette\Caching\Cache */
     protected $cache;
 
     public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {

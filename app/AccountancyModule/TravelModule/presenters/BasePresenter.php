@@ -2,8 +2,8 @@
 
 namespace AccountancyModule\TravelModule;
 
-use  Nette\Application\Routers\Route,
- Nette\Application\Routers\RouteList,
+use Nette\Application\Routers\Route,
+    Nette\Application\Routers\RouteList,
     Extras\Sinacek\MyRoute;
 
 /**
@@ -26,7 +26,7 @@ class BasePresenter extends \AccountancyModule\BasePresenter {
 //                //$event = $this->context->eventService->event->get($this->aid);
 //                $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
 //                $this->template->isEditable = $this->isEditable = $this->isAllowed("EV_EventGeneral_UPDATE");
-//            } catch (SkautIS_PermissionException $exc) {
+//            } catch (\SkautIS\Exception\PermissionException $exc) {
 //                $this->flashMessage($exc->getMessage(), "danger");
 //                $this->redirect("Event:");
 //            }
@@ -68,14 +68,14 @@ class BasePresenter extends \AccountancyModule\BasePresenter {
 //                ), Route::SECURED);
 
         $router[] = new MyRoute($prefix . '<presenter>/[<action>/][<id>/]', array(
-                    'presenter' => array(
-                        Route::VALUE => 'Default',
-                        Route::FILTER_TABLE => array(
-                            // řetězec v URL => presenter
-                            'vozidla' => 'Vehicle',
-                            'smlouvy' => 'Contract',
-                    )),
-                    'action' => 'default',
+            'presenter' => array(
+                Route::VALUE => 'Default',
+                Route::FILTER_TABLE => array(
+                    // řetězec v URL => presenter
+                    'vozidla' => 'Vehicle',
+                    'smlouvy' => 'Contract',
+                )),
+            'action' => 'default',
                 ), Route::SECURED);
         return $router;
     }

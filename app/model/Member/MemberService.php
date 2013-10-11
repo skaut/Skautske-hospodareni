@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Hána František
+ * @author sinacek
  */
 class MemberService extends BaseService {
 

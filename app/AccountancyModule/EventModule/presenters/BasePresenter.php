@@ -25,7 +25,7 @@ class BasePresenter extends \AccountancyModule\BasePresenter {
                 $this->template->event = $this->event = $this->context->eventService->event->get($this->aid);
                 $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
                 $this->template->isEditable = $this->isEditable = array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions);
-            } catch (SkautIS_PermissionException $exc) {
+            } catch (\SkautIS\Exception\PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Event:");
             }

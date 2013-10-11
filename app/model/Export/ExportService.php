@@ -84,25 +84,6 @@ class ExportService extends BaseService {
         return $template;
     }
 
-//    /**
-//     * vrací hromadný příjmový doklad
-//     * @param type $aid
-//     * @param EventEntity $service
-//     * @param BaseService $unitService
-//     * @return type
-//     */
-//    public function getHpd($aid, EventEntity $service, BaseService $unitService) {
-//        $template = $this->getTemplate(dirname(__FILE__) . "/templates/hpd.latte");
-//        $event = $template->event = $service->event->get($aid);
-//        $template->oficialName = $unitService->getOficialName($event->ID_Unit);
-//        $template->totalPayment = $service->participants->getTotalPayment($aid);
-//        $func = $service->event->getFunctions($aid);
-//        $template->hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
-//
-//        $template->list = $service->participants->getAll($aid);
-//        return $template;
-//    }
-
     /**
      * vrací PDF s vybranými paragony
      * @param type $unitService
