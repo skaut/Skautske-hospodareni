@@ -2,7 +2,7 @@
 
 namespace AccountancyModule\EventModule;
 
-use  Nette\Application\Routers\Route,
+use Nette\Application\Routers\Route,
     Nette\Application\Routers\RouteList,
     Extras\Sinacek\MyRoute;
 
@@ -12,7 +12,7 @@ use  Nette\Application\Routers\Route,
 class BasePresenter extends \AccountancyModule\BasePresenter {
 
     const STable = "EV_EventGeneral";
-    
+
     protected $event;
 
     protected function startup() {
@@ -25,7 +25,7 @@ class BasePresenter extends \AccountancyModule\BasePresenter {
                 $this->template->event = $this->event = $this->context->eventService->event->get($this->aid);
                 $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
                 $this->template->isEditable = $this->isEditable = array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions);
-            } catch (SkautIS_PermissionException $exc) {
+            } catch (\SkautIS\Exception\PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Event:");
             }
@@ -52,22 +52,22 @@ class BasePresenter extends \AccountancyModule\BasePresenter {
      */
     static function createRoutes($prefix = "") {
         $router = new RouteList("Event");
-        
+
         $prefix .= "akce/";
 
         $router[] = new MyRoute($prefix . '<aid [0-9]+>/<presenter>/[<action>/]', array(
-                    'presenter' => array(
-                        Route::VALUE => 'Event',
-                        Route::FILTER_TABLE => array(
-                            'ucastnici' => 'Participant',
-                            'kniha' => 'Cashbook',
-                    )),
-                    'action' => "default",
+            'presenter' => array(
+                Route::VALUE => 'Event',
+                Route::FILTER_TABLE => array(
+                    'ucastnici' => 'Participant',
+                    'kniha' => 'Cashbook',
+                )),
+            'action' => "default",
                 ), Route::SECURED);
 
         $router[] = new MyRoute($prefix . '[<presenter>/][<action>/]', array(
-                    'presenter' => 'Default',
-                    'action' => 'default',
+            'presenter' => 'Default',
+            'action' => 'default',
                 ), Route::SECURED);
         return $router;
     }

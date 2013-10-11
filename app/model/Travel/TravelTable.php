@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Hána František
+ * @author Sinacek
+ * správa cest na cestovních příkazech
  */
 class TravelTable extends BaseTable {
 

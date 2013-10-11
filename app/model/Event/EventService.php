@@ -26,8 +26,8 @@ class EventService extends MutableBaseService {
                 $res = $this->saveSes($cacheId, $this->skautIS->event->{"Event" . self::$typeName . "Detail"}(array("ID" => $ID)));
             }
             return $res;
-        } catch (SkautIS_Exception $e) {
-            throw new SkautIS_PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e->getCode());
+        } catch (\SkautIS\Exception\BaseException $e) {
+            throw new \SkautIS\Exception\PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e->getCode());
         }
     }
 
@@ -267,7 +267,7 @@ class EventService extends MutableBaseService {
         if (!$arg instanceof stdClass) {
             try {
                 $arg = $this->get($arg);
-            } catch (SkautIS_PermissionException $exc) {
+            } catch (\SkautIS\Exception\PermissionException $exc) {
                 return FALSE;
             }
         }

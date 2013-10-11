@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Hána František
+ * @author sinacek
  */
 class UnitService extends BaseService {
     
@@ -58,7 +58,7 @@ class UnitService extends BaseService {
     }
     
     /**
-     * vrací oficiální název na paragony
+     * vrací oficiální název organizační jednotky (využití na paragonech)
      * @param int $unitId
      * @return string
      */

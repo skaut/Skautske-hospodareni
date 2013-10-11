@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Hána František
+ * @author sinacek
+ * správa vozidel u cestovních dokladů
  */
 class VehicleTable extends BaseTable {
     
@@ -26,11 +27,4 @@ class VehicleTable extends BaseTable {
     public function remove($vehicleId) {
         return dibi::update(self::TABLE_TC_VEHICLE, array("deleted"=>1))->where("id=%i", $vehicleId)->execute();
     }
-    
-    
-//    
-//    public function delete($travelId) {
-//        return dibi::query("DELETE FROM [" . self::TABLE_TC_VEHICLE . "] WHERE id = %i", $travelId, "LIMIT 1");
-//    }
-
 }
