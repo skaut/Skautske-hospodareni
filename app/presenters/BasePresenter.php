@@ -9,7 +9,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 //        if(Nette\Diagnostics\Debugger::isEnabled()){ 
 //            \Extras\Debug\RequestsPanel::register();//mozny problem s pretecenim pameti, viz http://forum.nette.org/cs/12212-padani-pri-prihlaseni-a-odhlaseni-regenerateid#p88026
 //        }
-        $this->context->skautIS->setStorage(\Nette\Environment::getSession()->getSection("__" . __CLASS__), TRUE);
+        $storage = \Nette\Environment::getSession()->getSection("__" . __CLASS__);
+        $this->context->skautIS->setStorage($storage, TRUE);
         $this->template->backlink = $this->getParameter("backlink");
 
         \Nette\Forms\Container::extensionMethod('addDatePicker', function (\Nette\Forms\Container $container, $name, $label = NULL) {
