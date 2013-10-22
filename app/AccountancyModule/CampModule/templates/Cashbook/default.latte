@@ -42,7 +42,7 @@
                 </p>
                 {form formMass}
                 <div class="well well-small span12">
-                    <a n:if="$isEditable && isset($missingCategories) && !$missingCategories"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
+                    <a n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
                     <a n:href="export $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
                 </div>
             </div>
@@ -99,7 +99,7 @@
             </div>
             {/form}
         {else}
-            <div class="row-fluid" n:if="$isEditable && isset($missingCategories) && !$missingCategories">
+            <div class="row-fluid" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)">
                 <div class="well well-small span4">
                     <a href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
                 </div>
