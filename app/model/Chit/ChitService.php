@@ -43,7 +43,7 @@ class ChitService extends MutableBaseService {
             }
             uasort($list, function ($a, $b) {
                         if ($a->date == $b->date) {
-                            if(($tmpCat = strlen($a->ctype) - strlen($b->ctype))){
+                            if (($tmpCat = strlen($a->ctype) - strlen($b->ctype))) {
                                 return $tmpCat; //pokud je název kratší, je dříve
                             }
                             return ($a->id < $b->id) ? -1 : 1;
