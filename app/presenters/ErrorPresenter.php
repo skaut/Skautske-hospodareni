@@ -1,8 +1,6 @@
 <?php
 
-use Nette\Diagnostics\Debugger,
-    SkautIS\Exception\PermissionException,
-    SkautIS\Exception\AuthenticationException;
+use Nette\Diagnostics\Debugger;
 
 class ErrorPresenter extends Nette\Application\UI\Presenter {
 
@@ -17,10 +15,10 @@ class ErrorPresenter extends Nette\Application\UI\Presenter {
 //            Debugger::log($exception, Debugger::WARNING); // and log exception
 //            $this->setView('SkautIS');
 //            $this->template->ex = $exception;
-        } elseif ($exception instanceof PermissionException) {
+        } elseif ($exception instanceof \SkautIS\Exception\PermissionException) {
             $this->flashMessage($exception->getMessage(), "danger");
             $this->redirect(":Default:");
-        } elseif ($exception instanceof AuthenticationException) {//vypršelo přihlášení do SkautISu
+        } elseif ($exception instanceof \SkautIS\Exception\AuthenticationException) {//vypršelo přihlášení do SkautISu
             $this->user->logout(TRUE);
             $this->flashMessage("Vypršelo přihlášení do skautISu", "danger");
             $this->redirect(":Default:");
