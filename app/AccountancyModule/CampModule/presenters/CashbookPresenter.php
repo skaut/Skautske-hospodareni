@@ -30,7 +30,7 @@ class CashbookPresenter extends BasePresenter {
 //        $this->template->missingCategories = false;
 //        dump($this->camp);
         if (!$this->camp->IsRealTotalCostAutoComputed && $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost")) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
-            $this->template->missingCategories = true;//boolean - nastavuje upozornění na chybějící dopočítávání kategorií
+            $this->template->missingCategories = true; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
             $this->template->skautISHttpPrefix = $this->context->skautIS->getHttpPrefix();
         }
         if ($this->isAjax()) {
@@ -93,10 +93,14 @@ class CashbookPresenter extends BasePresenter {
     function handleRemove($id, $aid) {
         $this->editableOnly();
 
-        if ($this->context->campService->chits->delete($id, $aid)) {
-            $this->flashMessage("Paragon byl smazán");
-        } else {
-            $this->flashMessage("Paragon se nepodařilo smazat");
+        try {
+            if ($this->context->campService->chits->delete($id, $aid)) {
+                $this->flashMessage("Paragon byl smazán");
+            } else {
+                $this->flashMessage("Paragon se nepodařilo smazat");
+            }   
+        } catch (\SkautIS\Exception\WsdlException $exc) {
+            $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
         }
 
         if ($this->isAjax()) {
@@ -191,7 +195,7 @@ class CashbookPresenter extends BasePresenter {
         $this->redirect("default", array("aid" => $values->aid));
     }
 
-    //FORM OUT
+//FORM OUT
     function createComponentFormOutAdd($name) {
         $form = self::makeFormOUT($this, $name);
         $form->addSubmit('send', 'Uložit')
@@ -226,7 +230,7 @@ class CashbookPresenter extends BasePresenter {
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("input-medium");
-        //@TODO kontrola platneho data, problem s componentou
+//@TODO kontrola platneho data, problem s componentou
         $form->addText("recipient", "Vyplaceno komu:", 20, 30)
                 ->setHtmlId("form-out-recipient")
                 ->getControlPrototype()->class("input-medium");
@@ -244,7 +248,7 @@ class CashbookPresenter extends BasePresenter {
         return $form;
     }
 
-    //FORM IN    
+//FORM IN    
     function createComponentFormInAdd($name) {
         $form = $this->makeFormIn($this, $name);
         $form->addSubmit('send', 'Uložit')
@@ -276,7 +280,7 @@ class CashbookPresenter extends BasePresenter {
                 ->getControlPrototype()->class("input-medium");
         $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-in-price")
-                //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
+//->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3")
                 ->class("input-medium");
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
@@ -300,7 +304,8 @@ class CashbookPresenter extends BasePresenter {
                 $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
-        } catch (\SkautIS_Exception $se) {
+        } catch (\SkautIS\Exception\WsdlException $se) {
+            $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
 //            $this->flashMessage("Nepodařilo se synchronizovat kategorie.");
         }
 
@@ -320,11 +325,16 @@ class CashbookPresenter extends BasePresenter {
         $id = $values['id'];
         unset($values['id']);
 
-        if ($this->context->campService->chits->update($id, $values)) {
-            $this->flashMessage("Paragon byl upraven.");
-        } else {
-            $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
+        try {
+            if ($this->context->campService->chits->update($id, $values)) {
+                $this->flashMessage("Paragon byl upraven.");
+            } else {
+                $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
+            }
+        } catch (\SkautIS\Exception\WsdlException $exc) {
+            $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
         }
+
 
         if ($this->context->campService->chits->isInMinus($this->aid))
             $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
