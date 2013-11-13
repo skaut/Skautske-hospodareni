@@ -1,0 +1,89 @@
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+        //inline editace policek
+    var alertBoxTime = 6000;
+    $('.num-edit')
+        .each(function(){
+            $(this).attr('contenteditable', 'true');//.data('orig-value', $(this).text())                    
+        }).focus(function(){
+            $obj = $(this);
+            if($obj.text() == 0){
+                $obj.text("");
+            }
+            $obj.addClass("onEdit");
+            $obj.data('orig-value', $obj.text());
+            $obj.keypress(function( event ) {
+                if ( event.which == 13 ) { //press key enter                
+//                    $obj.blur();
+
+                    var tds = $obj.closest('table').find("td.num-edit[data-type='"+$obj.data("type")+"']");
+                    var nextIndex = (tds.index($obj)+1);
+                    if(nextIndex < tds.size()){
+                        tds.get(nextIndex).focus();
+                    }
+                    event.preventDefault();
+                }
+                });
+        }).blur(function(event){
+            var topAlertBoxText = $("#topAlertBox ul");
+            var $obj = $(this);
+            $obj.removeClass("onEdit");
+            var field = $obj.data('type');
+            var dataId = $obj.data('id');
+            var origValue = $obj.data('orig-value');
+            origValue != "" ? origValue : 0;
+            var newValue = parseFloat($obj.text().replace(",", "."));
+            if(isNaN(newValue)){
+                newValue = 0;
+            }
+            $obj.text(newValue);
+
+            // sending changed data
+            if(origValue != newValue){
+//              $obj.removeAttr('contenteditable').removeClass('num-edit');
+                topAlertBoxText.append('<li class="alertBox-saving-'+dataId+'"><span>Ukládám ...</span></li>');
+                calculateSum(field);
+                
+//                $.ajaxSetup({ cache: false });
+                $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: newValue }
+                , function(){
+//                    
+                    topAlertBoxText.find('li.alertBox-saving-'+dataId).fadeOut('slow').remove();
+                    topAlertBoxText.append('<li class="alertBox-saved-'+dataId+'"><span>Uloženo. <a href="#">Vrátit úpravu?</a></span></li>')
+                            .find('li.alertBox-saved-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                         // undo link
+                    topAlertBoxText.find('a').click(function(){
+                        topAlertBoxText.find('li.alertBox-saved-'+dataId).fadeOut('slow').remove();
+                        $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: origValue }, function(){
+                            topAlertBoxText.append('<li class="alertBox-back-'+dataId+'"><span>Úprava byla vrácena zpět</span></li>')
+                                .find('li.alertBox-back-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                            $obj.text(origValue);
+                            calculateSum(field);
+//                                  $obj.attr('contenteditable', 'true').addClass('num-edit');
+                        });
+//                
+                        return false;
+                    });
+                });
+                event.preventDefault();
+            }
+        });
+    //prepocte soucet a ulozi do ID=type+"-total"
+    function calculateSum(type) {
+        var sum = 0;
+//        alert(type);
+        $("td[data-type='"+type+"']").each(function() {
+            var val = $(this).text();
+            if(!isNaN(val) && val.length!=0) {
+                sum += parseFloat(val);
+            }
+        });
+        $('#'+type+'-total').text(sum);
+    };
+        
+        
+});
+
+</script>

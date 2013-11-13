@@ -46,6 +46,18 @@ class CashbookPresenter extends BasePresenter {
         $this->template->form = $form;
         $this->template->autoCompleter = $this->context->memberService->getAC();
     }
+    
+    //AJAX edit
+    public function actionEditField($aid, $id, $field, $value) {
+        $this->editableOnly();
+        
+        if ($field == "price") {
+            $this->context->eventService->chits->update($id, array("price" => $value));
+        } 
+        
+        $this->terminate();
+    }
+    
 
     public function actionImportHpd($aid) {
         $this->editableOnly();

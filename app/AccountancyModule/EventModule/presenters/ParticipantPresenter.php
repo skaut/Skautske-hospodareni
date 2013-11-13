@@ -41,11 +41,11 @@ class ParticipantPresenter extends BasePresenter {
         $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
         $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
-        
+
 
         usort($participants, function($a, $b) {/* setrizeni podle abecedy */
-            return strcasecmp($a->Person, $b->Person);
-        });
+                    return strcasecmp($a->Person, $b->Person);
+                });
         natcasesort($list);
 
         $this->template->participants = $participants;
@@ -57,20 +57,42 @@ class ParticipantPresenter extends BasePresenter {
         $this->template->accessDeleteParticipant = $this->isAllowed("EV_ParticipantGeneral_DELETE_EventGeneral");
         $this->template->accessUpdateParticipant = $this->isAllowed("EV_ParticipantGeneral_UPDATE_EventGeneral");
         $this->template->accessInsertParticipant = $this->isAllowed("EV_ParticipantGeneral_INSERT_EventGeneral");
-        if($this->isAjax()){
+        if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
     }
 
-    public function actionEdit($aid, $pid, $days = 0, $payment = 0) {
-        //TODO: kontrola základních udajů
-        $form = $this['formEditParticipant'];
-        $form->setDefaults(array(
-            "days" => $days,
-            "payment" => $payment,
-            "user" => $pid,
-        ));
+    public function actionEditField($aid, $id, $field, $value) {
+        $this->editableOnly();
+        $oldData = $this->context->eventService->participants->get($id);
+        
+        if ($field == "day") {
+            $arr = array(
+                "payment" => @$oldData['payment'],
+                "days" => $value,
+            );
+            $this->context->eventService->participants->update($id, $arr);
+        } else if ($field == "payment"){
+            $arr = array(
+                "payment" => $value,
+                "days" => @$oldData['days'],
+            );
+            $this->context->eventService->participants->update($id, $arr);
+        }
+        $this->payload->message = 'Success';
+//        $this->sendResponse(new \Nette\Http\Response());
+        $this->terminate();
     }
+
+//    public function actionEdit($aid, $pid, $days = 0, $payment = 0) {
+//        //TODO: kontrola základních udajů
+//        $form = $this['formEditParticipant'];
+//        $form->setDefaults(array(
+//            "days" => $days,
+//            "payment" => $payment,
+//            "user" => $pid,
+//        ));
+//    }
 
     public function renderExport($aid) {
         $template = $this->context->exportService->getParticipants($aid, $this->context->eventService);
@@ -161,36 +183,35 @@ class ParticipantPresenter extends BasePresenter {
 //            $this->redirect('Cashbook:', array("aid" => $this->aid));
 //        }
 //    }
-
-    public function createComponentFormEditParticipant($name) {
-        $form = new Form($this, $name);
-        $form->addText("days", "Dní");
-        $form->addText("payment", "Částka");
-        $form->addHidden("user");
-        $form->addSubmit('send', 'Upravit')
-                ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
-        return $form;
-    }
-
-    public function formEditParticipantSubmitted(Form $form) {
-        $this->editableOnly();
-        $values = $form->getValues();
-        $arr = array(
-            "payment" => $values['payment'],
-            "days" => $values['days'],
-        );
-
-
-        $this->context->eventService->participants->update($values['user'], $arr);
-
-        if ($this->isAjax()) {
-            $this->invalidateControl("potencialParticipants");
-            $this->invalidateControl("participants");
-        } else {
-            $this->redirect('default', $this->aid);
-        }
-    }
+//    public function createComponentFormEditParticipant($name) {
+//        $form = new Form($this, $name);
+//        $form->addText("days", "Dní");
+//        $form->addText("payment", "Částka");
+//        $form->addHidden("user");
+//        $form->addSubmit('send', 'Upravit')
+//                ->getControlPrototype()->setClass("btn btn-primary");
+//        $form->onSuccess[] = array($this, $name . 'Submitted');
+//        return $form;
+//    }
+// 
+//    public function formEditParticipantSubmitted(Form $form) {
+//        $this->editableOnly();
+//        $values = $form->getValues();
+//        $arr = array(
+//            "payment" => $values['payment'],
+//            "days" => $values['days'],
+//        );
+//
+//
+//        $this->context->eventService->participants->update($values['user'], $arr);
+//
+//        if ($this->isAjax()) {
+//            $this->invalidateControl("potencialParticipants");
+//            $this->invalidateControl("participants");
+//        } else {
+//            $this->redirect('default', $this->aid);
+//        }
+//    }
 
     public function createComponentFormMassAdd($name) {
         $participants = $this->context->eventService->participants->getAll($this->aid);
@@ -221,7 +242,7 @@ class ParticipantPresenter extends BasePresenter {
 
     public function createComponentFormMassParticipants($name) {
         $participants = $this->context->eventService->participants->getAll($this->aid);
-        
+
         $form = new Form($this, $name);
         $group = $form->addContainer('ids');
         foreach ($participants as $id => $p) {

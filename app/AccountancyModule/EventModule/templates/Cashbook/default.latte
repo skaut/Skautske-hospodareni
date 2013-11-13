@@ -66,8 +66,8 @@
                             <td {if strlen($item->purpose) > 30} title="{$item->purpose}"{/if}>{$item->purpose|truncate:"30"}</td>
                             <td title="{$item->clabel}" class="hidden-phone">{$item->cshort}</td>
                             <td class="hidden-phone">{$item->recipient}</td>
-                            <td class="r"><span class="visible-desktop">{! in_array($item->ctype, array("in", "hpd")) ? $item->price: '&nbsp;'|price}</span><span class="hidden-desktop">{! in_array($item->ctype, array("in", "hpd")) ? $item->price: '&nbsp;'|price:false}</span></td>{* ! je tady kvuli &nbsp;*}
-                            <td class="r"><span class="visible-desktop">{!$item->ctype == 'out' ? $item->price : '&nbsp;'|price}</span><span class="hidden-desktop">{!$item->ctype == 'out' ? $item->price : '&nbsp;'|price:false}</span></td>{* ! je tady kvuli &nbsp;*}
+                            <td class="r">{if in_array($item->ctype, array("in", "hpd"))}<span class="visible-desktop price-edit" data-id="{$item->id}" data-type="price">{$item->price|price}</span><span class="hidden-desktop">{$item->price|price:false}</span>{else}<span>&nbsp;</span>{/if}</td>
+                            <td class="r">{if $item->ctype == 'out'}<span class="visible-desktop price-edit" data-id="{$item->id}" data-type="price">{$item->price|price}</span><span class="hidden-desktop">{$item->price|price:false}</span>{else}<span>&nbsp;</span>{/if}</td>
                             {? $balance += $item->ctype != 'out' ? $item->price : (-$item->price);}
                             <td class="{if $balance < 0}isMinus {/if}r"><span class="visible-desktop">{$balance|price}</span><span class="hidden-desktop">{$balance|price:false}</span></td>
                         </tr>
@@ -154,3 +154,4 @@
         priceControl(priceInputOut);
     })
 </script>
+{include APP_DIR.'/templates/inline-price-edit.latte'}

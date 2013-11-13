@@ -103,7 +103,7 @@ class ChitService extends MutableBaseService {
     }
 
     /**
-     * upravit paragon
+     * upravit paragon - staci vyplnit data, ktera se maji zmenit
      * @param type $chitId
      * @param ArrayAccess $val
      * @return type 
