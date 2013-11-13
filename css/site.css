@@ -23,6 +23,36 @@
     background-color: #ff0000;
 }
 
+#topAlertBox {
+    position:fixed;
+    top:45px;
+    width: 100%;
+    z-index: 1100;
+    text-align: center;
+}
+
+#topAlertBox ul li{
+    list-style-type: none;
+}
+#topAlertBox ul li span{
+    padding: 1px 15px;
+    background-color: yellow;
+    font-weight: bold;
+}
+
+.num-edit, .price-edit, .text-edit {
+    cursor: pointer;
+}
+
+.num-edit:hover:not(:focus):after, .price-edit:hover:not(:focus):after, .text-edit:hover:not(:focus):after  {
+    content: url(../images/inline-edit.png);
+}
+
+.onEdit {
+    border: 2px outset !important;
+}
+
+
 .required {
     color: maroon;
 }
@@ -190,3 +220,5 @@ footer {
 #front-carousel .hero-unit h1 {
     font-size: 58px;
 }
+
+

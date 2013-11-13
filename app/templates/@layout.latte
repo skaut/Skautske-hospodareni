@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="cs" manifest="{$baseUri}/appa.manifest">
+<html lang="cs">
+{*}<html lang="cs" manifest="{$baseUri}/appa.manifest">{*}
     <head>
         <meta charset=utf-8 />
         <title>{block #title|striptags|trim}SkaHos{/block}</title>
@@ -31,6 +32,10 @@
     </head>
 
     <body>
+        <div id="topAlertBox">
+            <ul> </ul>
+        </div>
+
         <div class="navbar navbar-inverse navbar-fixed-top" id="topBar">
             <div class="navbar-inner">
                 <div class="container">
