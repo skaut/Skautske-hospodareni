@@ -31,7 +31,7 @@ class ParticipantService extends MutableBaseService {
         if (!($res = $this->loadSes($cacheId))) {
             $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "All"}(array("ID_Event" . self::$typeName => $ID));
             $res = array();
-            foreach ($tmp as $p) {//objekt má vzdy Note a je pod associativnium klicem
+            foreach ($tmp as $p) {//objekt má vzdy Note a je pod associativnim klicem
                 $p->Note = isset($p->Note) ? $p->Note : 0;
                 $res[$p->ID] = $p;
             }
@@ -182,7 +182,11 @@ class ParticipantService extends MutableBaseService {
         }
         $res = array();
         foreach ($participants as $k=> $par) {
-            $res[$k] = array_merge((array)$par, (array)$this->skautIS->org->PersonDetail(array("ID" => $par->ID_Person)));
+            try {
+                $res[$k] = array_merge((array)$par, (array)$this->skautIS->org->PersonDetail(array("ID" => $par->ID_Person)));
+            } catch (\SkautIS\Exception\WsdlException $exc) {
+                 $res[$k] = (array)$par;
+            }
         }
         return \Nette\ArrayHash::from($res);
     }
