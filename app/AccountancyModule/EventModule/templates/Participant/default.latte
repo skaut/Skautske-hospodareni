@@ -6,20 +6,20 @@
 
 {dump $list}
 {dump $participants}
+{var $participantTbodyId = "participants-list-tbody"}{* v kodu je to napevno *}
 
 <div class="row-fluid wipeBox">
     <div class="span6" n:if="$accessInsertParticipant">
         {snippet potencialParticipants}
-
-        <div n:ifset="$participants">
-            <h3>Účastníci jednotky</h3>
-
-            {form formMassAdd}
+{var $unitTbodyId = "unit-participants-tbody"}
+        <div>
+            <h3>Osoby v jednotce</h3>
+            {*}{form formMassAdd}{*}
             <div class="well well-small threeButtons">
                 <div class="btn-group">
                     <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#" rel="tooltip" data-original-title="Jednotka, ze které se zobrazí seznam členů">{$unit->DisplayName|truncate:20, ""} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a></li>
+                        <li n:if="isset($uparrent->ID)"><a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a></li>
                         <li><a class="active" style="font-weight: bold" href="#">&minus;&gt;{$unit->DisplayName}</a></li>
                         <li n:foreach="$uchildrens as $ch"><a n:href="this $aid, $ch->ID">&minus;&minus;&gt; {$ch->DisplayName}</a></li>      
                     </ul>
@@ -31,30 +31,33 @@
 
                 <a class="btn btn-primary btn-small" href="#addParticipant" data-toggle="modal">Nový účastník</a>
             </div>
-            <table class="table table-striped table-bordered table-condensed">
-                {if count($list) > 0}
-                <tr>
-                    <th class="twoButtons">
+            <table class="table table-striped table-bordered">
+                <thead class="onlyWithUnitPersons">
+                    <tr>
+                        <th style="width:30px">{*}
                         <input type="checkbox" class="hidden-phone" id="frmformMassAdd-all-all" onclick="jqCheckAll(this.id, 'all')" />
                         {input massAddSend class=>"btn btn-primary btn-mini allDependend hidden-phone", title=>"Přidat vybrané"}
-                    </th>
-                    <th>Příjmění a jméno</th>
-                </tr>
-                <tr n:foreach="$list as $id=>$name">
-                    <td>
-                        {input all-$id class=>"hidden-phone"}
-                        <a n:href="add! $id" class="btn btn-primary btn-mini hidden-phone ajax"><i class="icon-plus icon-white"></i></a>
-                        <a n:href="add! $id" class="btn btn-primary btn-small visible-phone ajax"><i class="icon-plus icon-white"></i></a>
-                    </td>
-                    <td>{label all-$id /}</td>
-                </tr>
-                {else}
-                <tr>
-                    <th style="text-align: center;">Nejsou žádné nevybrané osoby.</th>
-                </tr>
+                        {*}
+
+                        </th>
+                        <th>Příjmění a jméno</th>
+                    </tr>
+                </thead>
+                <tbody class="dropable" id="{$unitTbodyId}">
+                {if count($list) > 0}
+                    <tr n:foreach="$list as $id=>$name" id='unit-par-row-{$id}' data-pid='{$id}'>
+                        <td>
+                        {*}{input all-$id class=>"hidden-phone"}{*}
+                        {*}{if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a>{/if}{*}
+                        {if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini addRow"><i class="icon-plus icon-white"></i></a>{/if}
+                        </td>
+                        <td><i class="icon icon-move" style='float: right;'></i> {$name}{*{label all-$id /}*}</td>
+                    </tr>
                 {/if}
+                    <tr class="alert info no-unit-persons" draggable="false"><td colspan="2"><b>Nejsou žádné nevybrané osoby v jednotce.</b></td></tr>
+                </tbody>
             </table>
-            {/form}
+            {*}{/form}{*}
         </div>
         {/snippet}
     </div>
@@ -63,21 +66,21 @@
 
     <div class="span6">
         {snippet participants}
-{form formMassParticipants}
+{*}{form formMassParticipants}{*}
 {assign $tabIndex = 1}
         <div n:ifset="$participants">
             <h3>Seznam účastníků</h3>
-            {if !empty($participants)}
-
+            {var $participantsNames = []}
             <div class="well well-small hidden-phone">
-                <a n:href="export $aid" target="_blank" class="btn btn-info btn-small"><i class="icon icon-white icon-print"></i> Seznam účastníků</a>
+                <a n:href="export $aid" target="_blank" class="btn btn-info btn-small{if empty($participants)} disabled{/if}"><i class="icon icon-white icon-print"></i> Seznam účastníků</a>
             </div>
 
-            <table id="participants-list" class="table table-striped table-bordered table-condensed">
-                <tr>
-                    <th>Příjmení a jméno ({= count($participants)})</th>
-                    <th>Dnů &nbsp; </th>
-                    <th>Částka</th>
+            <table id="participants-list" class="table table-striped table-bordered">
+                <thead class="onlyWithParticipants">
+                    <tr>
+                        <th>Příjmení a jméno ({= count($participants)})</th>
+                        <th>Dnů &nbsp; </th>
+                        <th>Částka</th>
                     {*}
                     <th class="hidden-phone" n:if="$accessUpdateParticipant || $accessDeleteParticipant" style="width:90px;">
                         <input type="checkbox" id="frmformMassParticipants-ids-all" onclick="jqCheckAll(this.id, 'ids')" />
@@ -85,41 +88,42 @@
                         <a n:if="$accessUpdateParticipant" href="#massEdit" data-toggle="modal" class="btn btn-primary btn-mini massDependend" title="Upravit vybrané"><i class="icon-edit icon-white"></i></a>
                     </th>
                     {*}
-                    <th class="hidden-phone"  style="width:30px;"> &nbsp; </th>
-                    <th class="visible-phone"> &nbsp; </th>
-                </tr>
-                {assign $total = 0}
-                {if !empty($participants)}
-                <tr n:foreach="$participants as $p">
-                    <td>{label ids-$p->ID /}</td>
-                    <td id="par-days-{$p->ID}"{if $isEditable} class="num-edit" data-type="day" data-id="{$p->ID}" tabindex="{$tabIndex}"{/if}>{$p->Days}</td>
-                    <td id="par-payment-{$p->ID}"{if $isEditable} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex}"{/if}>{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</td>
-                    <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
+                        <th class="hidden-phone"  style="width:30px;"> &nbsp; </th>
+                        <th class="visible-phone"> &nbsp; </th>
+                    </tr>
+                </thead>
+                {var $total = 0}
+                <tbody class="dropable" id="participants-list-tbody">
+                    {if !empty($participants)}
+                    <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
+                    {? $participantsNames[] = $p->Person}
+                        <td>{*}{label ids-$p->ID /}{*}<i class="icon icon-move"></i> {$p->Person}</td>
+                        <td id="par-days-{$p->ID}"{if $isEditable} class="num-edit" data-type="day" data-id="{$p->ID}" tabindex="{$tabIndex}"{/if}>{$p->Days}</td>
+                        <td id="par-payment-{$p->ID}"{if $isEditable} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex}"{/if}>{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</td>
+                        <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
                         {*}
                         {input ids-$p->ID class=>"hidden-phone"}
                         <a n:if="$accessUpdateParticipant" class="fancybox fancybox.ajax btn btn-primary btn-mini hidden-phone" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
                         <a n:if="$accessUpdateParticipant" class="fancybox fancybox.ajax btn btn-primary btn-small visible-phone" n:href="edit $aid, $p->ID, $p->Days, $p->Note"><i class="icon-edit icon-white"></i></a>
                         {*}
-                        <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax hidden-phone"><i class="icon-remove icon-white"></i></a>
-                        <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-small ajax visible-phone"><i class="icon-remove icon-white"></i></a>
-                    </td>
-                </tr>
-                {/if}
-                <tr>
-                    <td colspan="2"><b>Celkem</b></td>
-                    <td><b id="payment-total">{$total}</b></td>
+                            <a n:if="$accessDeleteParticipant" n:href="remove! $p->ID" class="btn btn-danger btn-mini addRow"><i class="icon-remove icon-white"></i></a>
+                        </td>
+                    </tr>
+                    {/if}
+                    <tr class="alert info noparticipants" id="noparticipant" draggable="false"><td colspan="4"><b>Nejsou vybráni žádní účastníci.</b></td></tr>
+                </tbody>
+                <tfoot class="onlyWithParticipants">
+                    <tr>
+                        <td colspan="2"><b>Celkem</b></td>
+                        <td><b id="payment-total">{$total}</b></td>
                     {*}<td n:if="$accessUpdateParticipant || $accessDeleteParticipant">&nbsp;</td>{*}
-                    <td>&nbsp;</td>
-                </tr>
-
+                        <td>&nbsp;</td>
+                    </tr>
+                </tfoot>
             </table>
-
-            {else}
-            <p class="alert info">Nejsou vybáni žádní účastníci.</p>
-            {/if}
         </div>
     {* hromadné úpravy účastníků*}
-
+{*}
     {if $isEditable}
         <div class="modal myModal fade" id="massEdit">
             <div class="modal-header">
@@ -144,11 +148,29 @@
             </div>
         </div>
     {/if}
-        {/form}
+        {*}
+        
+        {*}{/form}{*}
         <script type="text/javascript">
         $(document).ready(function() {
+            participantsList = $({$participantsNames});
+            if(participantsList.size() == 0){
+                $(".noparticipants").show();
+                $(".onlyWithParticipants").hide();
+            } else {
+                $(".noparticipants").hide();
+                $(".onlyWithParticipants").show();
+            }
+            $unitPersons = $("#unit-participants-tbody tr:not(.no-unit-persons)");
+            if($unitPersons.size() == 0){
+                $(".no-unit-persons").show();
+                $(".onlyWithUnitPersons").hide();
+            } else {
+                $(".no-unit-persons").hide();
+                $(".onlyWithUnitPersons").show();
+            }        
 
-            $("input[type=text][id^=frmformMassParticipants-isChange-]").change(function (){
+        {*} $("input[type=text][id^=frmformMassParticipants-isChange-]").change(function (){
                 $("#"+this.id+"c").attr('checked', true);
             });
     
@@ -160,9 +182,9 @@
             $(".massDependend").addClass("disabled").attr("disabled", "disabled");
             onlyWithCheckbox("frmformMassParticipants-ids-", "massDependend");
     
+        {*}
         });
-
-        </script>   
+        </script>
         {/snippet}
     </div>
 
@@ -185,19 +207,183 @@
 </div>
 {/if}
 
+
 <script type="text/javascript">
-//$(document).ready(function() {
-//
-//    $(document).keypress(//???
-//        function(event){
-//         if (event.which == '13') {
-////            event.preventDefault();
-//          }
-//    });
-//});
+$(document).ready(function() {
 
+    function handleDragStart(e) {
+//        console.log("start");
+        this.style.opacity = '0.5';
+//        console.log(getDropableId(e.target));
+//        console.log(e.target);
+        var data = { "id":e.target.getAttribute('id'), "sourceBlock":getDropableId(e.target) }; //sourceBlock je rodic, co je dropable
+        e.dataTransfer.setData("text/plain", JSON.stringify(data));
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setDragImage(e.target, 0, 20);
+        return true;
+    }
+    
+    function handleDragEnd(e) {
+        this.style.opacity = '1';
+        return true;
+    }
+    
+    activeOverBlockId = null;
+    
+    function handleDragEnter(e) {
+        var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        var dropableId = getDropableId(e.target);
+        if(activeOverBlockId == null && data.sourceBlock != dropableId) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+//            e.stopPropagation();
+            activeOverBlockId = dropableId;
+            $tbody = $('#'+dropableId);
+            $tbody.addClass("dropableOver");
+            
+            return false;
+        }
+        return true;
+    }
+    function handleDragLeave(e) {
+        var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        var dropableId = getDropableId(e.target);
+//        console.log(e.target);
+//        console.log(getDropableId(e.target));
+        if(data.sourceBlock == dropableId) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.stopPropagation();
+            $tbody = $('#'+activeOverBlockId);
+            $tbody.removeClass("dropableOver");
+            activeOverBlockId = null;
+            return false;
+        }
+        return true;
+    }
+      
+    function handleDragOver(e) { //container
+        var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+//            console.log(data.sourceBlock);
+//            console.log(getDropableId(e.target));
+        if(data.sourceBlock != getDropableId(e.target)) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            return false;
+        }
+        return true;
+    }
+      
+    function handleDrop(e) { //container
+//        console.log("drop");
+        e.stopPropagation();
+        e.preventDefault();
+        $("tbody").removeClass("dropableOver");
+        var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        targetBlockId = getDropableId(e.target);
+        return addRow(data.id, targetBlockId);
+    }
+    
+    //mění pozici řádku pro oba směry
+    function addRow(rowId, targetBlockId){
+        $ne = $('#'+rowId)
+        $.post($ne.find("a").attr("href"), $.nette.success);
+        $topAlertBoxText = $("#topAlertBox ul");
+        var rand = Math.floor((Math.random()*10000)+1);
+        if(targetBlockId == {$participantTbodyId}){
+            newName = $ne.text().trim();
+            $topAlertBoxText.append('<li id="newParticipant-'+rand+'"><span>Účastník '+newName+' byl přidán');    
+        } else {
+            newName = $('#'+ rowId + ' td:first').text().trim();
+            $topAlertBoxText.append('<li id="newParticipant-'+rand+'"><span>Účastník '+newName+' byl odebrán');
+            if(participantsList.size() == 1){
+                $(".noparticipants").show();
+                $(".onlyWithParticipants").hide();
+            }
+        }
+        
+        setTimeout(function() {
+            $('#newParticipant-'+rand+'').hide('blind', 400);
+        }, 4000);
+        
+        $ne.hide(0, function() {
+            if(targetBlockId == {$participantTbodyId}){
+                $ne = $('<tr><td><i class="icon icon-move"></i>'+newName+'</td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td></td></tr>');
+                participantsList.push(newName);
+                participantsList.sort();
+                var index = jQuery.inArray(newName, participantsList);
+                
+                if(index == 0){
+                    $($('#'+targetBlockId + ' tr').get(index)).before($ne);
+                } else {
+                    $($('#'+targetBlockId + ' tr').get(index-1)).after($ne);
+                }
+                $(".noparticipants").hide();
+                $ne.hide().show(500);
+                $(".onlyWithParticipants").show(500);
+                
+                $unitPersons = $("#unit-participants-tbody tr:not(.no-unit-persons)");
+//                console.log($unitPersons.size());
+                if($unitPersons.size() == 1){ //byl posledni zobrazeny
+                    $(".onlyWithUnitPersons").hide();
+                    $(".no-unit-persons").show();
+                }
+            }
+        });
+        return false;
+    }
+    
+    var objects = document.querySelectorAll('tbody.dropable tr:not([draggable=false])');
+    [].forEach.call(objects, function(col) {
+        col.setAttribute('draggable', 'true');  // Enable columns to be draggable.
+        col.addEventListener('dragstart', handleDragStart, false);
+        col.addEventListener('dragend', handleDragEnd, false);
+    });
+    
+    objects = document.querySelectorAll('tbody.dropable');
+    [].forEach.call(objects, function(col) {
+        col.addEventListener('dragover', handleDragOver, false);
+        col.addEventListener('dragenter', handleDragEnter, false);
+        col.addEventListener('dragleave', handleDragLeave, false);
+        col.addEventListener('drop', handleDrop, false);
+    });
+    
+    objects = document.querySelectorAll('a.addRow');
+    [].forEach.call(objects, function(col) {
+        col.addEventListener('click', aAddRow, false);
+    });
+    
+     function aAddRow(e){
+         e.preventDefault();
+         $this = $(this);
+         var rowId = $this.parents("tr").attr("id");
+         var myBlockId = $this.parents("tbody.dropable").attr("id");
+         if(myBlockId == {$participantTbodyId}){
+             targetBlockId = "unit-participants-tbody"
+         } else {
+             targetBlockId = {$participantTbodyId};
+         }
+         console.log(rowId);
+         console.log(targetBlockId);
+         return addRow(rowId, targetBlockId);
+     }
+    
+    function getDropableId(o){
+        $obj = $(o);
+        if($obj.hasClass(".dropable")){
+            return $obj.id;
+        }
+        parents = $obj.parents(".dropable");
+        return (parents.length > 0) ? parents.get(0).id : null;
+    }
 
+});
 </script>
+
+
 {include APP_DIR.'/templates/inline-num-edit.latte'}
 {*}
 <!--hromadné vyplnění částek-->

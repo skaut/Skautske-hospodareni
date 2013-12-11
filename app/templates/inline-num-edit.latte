@@ -7,26 +7,31 @@ $(document).ready(function() {
     $('.num-edit')
         .each(function(){
             $(this).attr('contenteditable', 'true');//.data('orig-value', $(this).text())                    
-        }).focus(function(){
+        }).live("focus", function() {
             $obj = $(this);
             if($obj.text() == 0){
                 $obj.text("");
             }
             $obj.addClass("onEdit");
             $obj.data('orig-value', $obj.text());
-            $obj.keypress(function( event ) {
-                if ( event.which == 13 ) { //press key enter                
-//                    $obj.blur();
+            
+            $obj.live("keydown", function( event ) {
+                if ( event.which == 13 ) { //press key enter
+                    console.log(event.which);
+                    event.preventDefault();
+                    event.stopImmediatePropagation();//zastaveni opakovaneho volani enteru
 
-                    var tds = $obj.closest('table').find("td.num-edit[data-type='"+$obj.data("type")+"']");
+//                    $obj.blur();
+                    tds = $obj.closest('table').find("td.num-edit[data-type='"+$obj.data("type")+"']");
                     var nextIndex = (tds.index($obj)+1);
+                    console.log(nextIndex);
                     if(nextIndex < tds.size()){
                         tds.get(nextIndex).focus();
                     }
-                    event.preventDefault();
+                    return true;
                 }
                 });
-        }).blur(function(event){
+        }).live("blur", function(event){
             var topAlertBoxText = $("#topAlertBox ul");
             var $obj = $(this);
             $obj.removeClass("onEdit");

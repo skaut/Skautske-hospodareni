@@ -41,7 +41,7 @@
 }
 
 .num-edit, .price-edit, .text-edit {
-    cursor: pointer;
+    cursor: text;
 }
 
 .num-edit:hover:not(:focus):after, .price-edit:hover:not(:focus):after, .text-edit:hover:not(:focus):after  {
@@ -52,6 +52,15 @@
     border: 2px outset !important;
 }
 
+[draggable=true]:hover{
+    font-weight: bold;
+    cursor: move;
+}
+
+tbody.dropableOver td {
+    opacity: 0.6;
+    background-color: #ccc!important;
+}
 
 .required {
     color: maroon;
