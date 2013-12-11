@@ -40,7 +40,6 @@ class ExportService extends BaseService {
             $template->list = $service->participants->getAllPersonDetail($aid, $service->participants->getAll($aid));
         }
         $template->info = $service->event->get($aid);
-//        echo $template;die();
         return $template;
     }
 

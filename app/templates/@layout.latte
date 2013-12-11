@@ -44,7 +44,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" n:href=":Default:">Hospodaření</a>
+                    <a class="brand" n:href=":Default:"><span style="color:yellow;font-weight: bold;" n:tag-if="!$ssl">Hospodaření </span></a>
                     <div class="nav-collapse">
                         <ul class="nav">
                             <li n:if="!$user->isLoggedIn()" {ifCurrent :Default:about}class='active'{/ifCurrent}><a n:href=":Default:about">O projektu</a></li>
