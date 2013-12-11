@@ -113,29 +113,35 @@ class DefaultPresenter extends BasePresenter {
         $this->redirect("default", array("aid" => $this->aid));
     }
 
+    function isDateValidator($item, $args) {
+        return $item == NULL ? FALSE : TRUE;
+    }
+
     function createComponentFormCreate($name) {
         $scopes = $this->context->eventService->event->getScopes();
         $types = $this->context->eventService->event->getTypes();
         $tmpId = $this->context->skautIS->getUnitId();
         $units = array($tmpId => $this->context->unitService->getDetail($tmpId)->SortName);
         foreach ($this->context->unitService->getChild($tmpId) as $u)
-            $units[$u->ID] = "» ".$u->SortName;
+            $units[$u->ID] = "» " . $u->SortName;
 
         $form = new Form($this, $name);
-        $form->addText("name", "Název akce")
+        $form->addText("name", "Název akce*")
                 ->addRule(Form::FILLED, "Musíte vyplnit název akce");
-        $form->addDatePicker("start", "Od")
-                ->addRule(Form::FILLED, "Musíte vyplnit začátek akce");
-        $form->addDatePicker("end", "Do")
-                ->addRule(Form::FILLED, "Musíte vyplnit konec akce");
+        $form->addDatePicker("start", "Od*")
+                ->addRule(Form::FILLED, "Musíte vyplnit začátek akce")
+                ->addRule(callback('MyValidators::isValidDate'), 'Vyplňte platné datum.');
+        $form->addDatePicker("end", "Do*")
+                ->addRule(Form::FILLED, "Musíte vyplnit konec akce")
+                ->addRule(callback('MyValidators::isValidDate'), 'Vyplňte platné datum.');
         $form->addText("location", "Místo");
         $form->addSelect("orgID", "Pořádající jednotka", $units);
         $form->addSelect("scope", "Rozsah (+)", $scopes)
                 ->setDefaultValue("2");
         $form->addSelect("type", "Typ (+)", $types)
                 ->setDefaultValue("2");
-        $form->addSubmit('send', 'Založit akci')
-                ->getControlPrototype()->setClass("btn btn-primary");
+        $form->addSubmit('send', 'Založit novou akci')
+                ->getControlPrototype()->setClass("btn btn-primary btn-large");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -146,8 +152,20 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("this");
         }
         $v = $form->getValues();
+//        if($v->start == NULL){
+//            $this->flashMessage("Neplatné datum začátku akce.", "error");
+//            $this->redirect("this");
+//        }
+//        if($v->end == NULL){
+//            $this->flashMessage("Neplatné datum konce akce.", "error");
+//            $this->redirect("this");
+//        }
+//        if($v->end < $v->start){
+//            $this->flashMessage("Nelze založit akci, která dříve skončí nežli začne.", "error");
+//            $this->redirect("this");
+//        }
         $id = $this->context->eventService->event->create(
-                $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $unit = $v->orgID, $v['scope'], $v['type']
+                $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v->orgID, $v['scope'], $v['type']
         );
 
         if ($id) {

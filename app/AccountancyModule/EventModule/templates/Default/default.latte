@@ -4,10 +4,10 @@
 <div class="row-fluid">
     <div class="span">
         <p n:if="$accessCreate">
-            <a href="#createNew" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</a>
+            <a href="#createNew" data-toggle="modal" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</a>
         </p>
 {dump $list}
-        
+
     {snippet events}
         <div class="well well-small">
         {form formFilter class=>"ajax filter"}
@@ -17,10 +17,10 @@
             <br class="visible-phone"/>
             {input send}
         {/form}
-            </div>
-        
+        </div>
+
         {if is_array($list)}
-        <table class="myTable table table-striped table-bordered table-condensed">
+        <table class="myTable table table-striped table-bordered">
             <thead>
                 <tr>
                     <th class="hidden-phone">&nbsp;</th>
@@ -28,15 +28,23 @@
                     <th>Od</th>
                     <th>Do</th>
                     <th>Stav</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr n:foreach="$list as $i">
-                    <td class="hidden-phone">{if $i->accessDelete}<a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-mini" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
-                    <td><a n:tag-if="$i->accessDetail" n:href="Event: $i->ID">{$i->DisplayName}</a></td>
+                    <td class="hidden-phone">{if $i->accessDelete}<a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
+                    <td>
+                        <a n:tag-if="$i->accessDetail" n:href="Event: $i->ID">{$i->DisplayName}</a>
+                    </td>
                     <td>{$i->StartDate|date:"j.n.Y"}</td>
                     <td>{$i->EndDate|date:"j.n.Y"}</td>
                     <td>{!$i->ID_EventGeneralState|eventStateLabel}</td>
+                    <td n:inner-if="$i->accessDetail">
+                        <a n:href="Event:  $i->ID" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
+                        <a n:href="Participant: $i->ID" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
+                        <a n:href="Cashbook: $i->ID" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -53,7 +61,47 @@
         <h3>Založit novou akci</h3>
     </div>
     <div class="modal-body">
-        {control formCreate}
+        {form formCreate}
+        <ul class="errors" n:if="$form->hasErrors()">
+            <li n:foreach="$form->errors as $error">{$error}</li>
+        </ul>
+        <table>
+            <tbody>
+                <tr class="required">
+                    <th>{label name/}</th>
+                    <td>{input name}</td>
+                </tr>
+                <tr class="required">
+                    <th>{label start /}</th>
+                    <td>{input start}</td>
+                </tr>
+                <tr class="required">
+                    <th>{label end /}</th>
+                    <td>{input end}</td>
+                </tr>
+                <tr>
+                    <th>{label location /}</th>
+                    <td>{input location}</td>
+                </tr>
+                <tr>
+                    <th>{label orgID /}</th>
+                    <td>{input orgID}</td>
+                </tr>
+                <tr>
+                    <th>{label scope /}</th>
+                    <td>{input scope}</td>
+                </tr>
+                <tr>
+                    <th>{label type /}</th>
+                    <td>{input type}</td>
+                </tr>
+                <tr>
+                    <th>&nbsp;</th>
+                    <td>{input send}</td>
+                </tr>
+            </tbody>
+        </table>
+        {/form formCreate}
         (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
     </div>
 </div>
@@ -65,4 +113,24 @@
     function changeState(val){
          $.post({link changeState!}, { state : val });
     }
+
+    Nette.validators.MyValidators_isValidDate = function(elem, args, val) {
+        var regexp = /^(\d{! "{1,2}"})[\/\-\.] ?(\d{! "{1,2}"})[\/\-\.] ?(\d{! "{4}"})$/;
+        var match = val.match(regexp); 
+       
+        return match == null ? false : true;
+    };
+  
+
+//            
+//    Nette.validators.isValidDate = function(elem, args, val) {
+//        alert("s");
+//        console.log(elem);
+//        console.log(args);
+//        console.log(val);
+//        return false;
+////        return val % args === 0;
+//    };
+    
 </script>
+

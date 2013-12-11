@@ -81,9 +81,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'jquery.nette.js',
             'bootstrap.js',
             'jquery.fancybox.pack.js',
+            'live-form-validation.js',
             'jquery.ajaxform.js',
             'offline.js',
             'html5.js',
+            'h5utils.js',
             'my.js'
         ));
         return new WebLoader\Nette\JavaScriptLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
