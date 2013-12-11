@@ -12,6 +12,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $storage = \Nette\Environment::getSession()->getSection("__" . __CLASS__);
         $this->context->skautIS->setStorage($storage, TRUE);
         $this->template->backlink = $this->getParameter("backlink");
+        $params = $this->context->getParameters();
+        $this->template->ssl = $params['ssl'];
 
         \Nette\Forms\Container::extensionMethod('addDatePicker', function (\Nette\Forms\Container $container, $name, $label = NULL) {
                     return $container[$name] = new JanTvrdik\Components\DatePicker($label);
