@@ -63,7 +63,7 @@ class CashbookPresenter extends BasePresenter {
         $this->editableOnly();
         $totalPayment = $this->context->eventService->participants->getTotalPayment($this->aid);
         $func = $this->context->eventService->event->getFunctions($this->aid);
-        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
+        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : "";//$func[0]->Person
         $date = $this->context->eventService->event->get($aid)->StartDate;
         $category = $this->context->eventService->chits->getEventCategoryParticipant();
 
