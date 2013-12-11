@@ -158,12 +158,12 @@ abstract class AccountancyHelpers extends Object {
         else
             $string .= $_desitky[$numbers[1]] . $_jednotky[$numbers[0]];
 
-        //desetinná část
-        if (isset($parts[1])) {
-            if (strlen($parts[1]) < 2)
-                $parts[1] .= "0";
-            $string .= "," . $parts[1];
-        }
+//         //desetinná část
+//        if (isset($parts[1])) {
+//            if (strlen($parts[1]) < 2)
+//                $parts[1] .= "0";
+//            $string .= "," . $parts[1];
+//        }
 //        return ucfirst($string);
         return mb_convert_case(mb_substr($string,0,1),MB_CASE_UPPER,"UTF-8").mb_substr($string,1);
     }
