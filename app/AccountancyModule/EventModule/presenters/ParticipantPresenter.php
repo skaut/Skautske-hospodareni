@@ -41,8 +41,6 @@ class ParticipantPresenter extends BasePresenter {
         $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
         $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
-
-
         usort($participants, function($a, $b) {/* setrizeni podle abecedy */
                     return strcasecmp($a->Person, $b->Person);
                 });
@@ -65,14 +63,14 @@ class ParticipantPresenter extends BasePresenter {
     public function actionEditField($aid, $id, $field, $value) {
         $this->editableOnly();
         $oldData = $this->context->eventService->participants->get($id);
-        
+
         if ($field == "day") {
             $arr = array(
                 "payment" => @$oldData['payment'],
                 "days" => $value,
             );
             $this->context->eventService->participants->update($id, $arr);
-        } else if ($field == "payment"){
+        } else if ($field == "payment") {
             $arr = array(
                 "payment" => $value,
                 "days" => @$oldData['days'],
