@@ -183,6 +183,7 @@ class ParticipantService extends MutableBaseService {
         $res = array();
         foreach ($participants as $k=> $par) {
             try {
+//                $res[$k] = array_merge((array)$par, (array)$this->skautIS->event->{"Participant" . self::$typeName . "Detail"}(array("ID" => $par->ID)));
                 $res[$k] = array_merge((array)$par, (array)$this->skautIS->org->PersonDetail(array("ID" => $par->ID_Person)));
             } catch (\SkautIS\Exception\WsdlException $exc) {
                  $res[$k] = (array)$par;
