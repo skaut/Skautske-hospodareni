@@ -32,6 +32,7 @@ $(document).ready(function() {
                 }
                 });
         }).live("blur", function(event){
+            event.stopImmediatePropagation();
             var topAlertBoxText = $("#topAlertBox ul");
             var $obj = $(this);
             $obj.removeClass("onEdit");

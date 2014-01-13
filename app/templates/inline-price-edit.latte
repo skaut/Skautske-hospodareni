@@ -25,7 +25,7 @@ $(document).ready(function() {
                     event.preventDefault();
                 }
                 });
-        }).blur(function(){
+        }).live("blur", function(event){
             var topAlertBoxText = $("#topAlertBox ul");
             var $obj = $(this);
             var field = $obj.data('type');
