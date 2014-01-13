@@ -42,6 +42,7 @@
 
 .num-edit, .price-edit, .text-edit {
     cursor: text;
+    height: 1.5em;
 }
 
 .num-edit:hover:not(:focus):after, .price-edit:hover:not(:focus):after, .text-edit:hover:not(:focus):after  {

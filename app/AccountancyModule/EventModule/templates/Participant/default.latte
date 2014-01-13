@@ -98,8 +98,8 @@
                     <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
                     {? $participantsNames[] = $p->Person}
                         <td>{*}{label ids-$p->ID /}{*}<i class="icon icon-move"></i> {$p->Person}</td>
-                        <td id="par-days-{$p->ID}"{if $isEditable} class="num-edit" data-type="day" data-id="{$p->ID}" tabindex="{$tabIndex}"{/if}>{$p->Days}</td>
-                        <td id="par-payment-{$p->ID}"{if $isEditable} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex}"{/if}>{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</td>
+                        <td><div id="par-days-{$p->ID}"{if $isEditable} class="num-edit" data-type="day" data-id="{$p->ID}" tabindex="{$tabIndex}"{/if}>{$p->Days}</div></td>
+                        <td><div id="par-payment-{$p->ID}"{if $isEditable} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex}"{/if} >{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</div></td>
                         <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
                         {*}
                         {input ids-$p->ID class=>"hidden-phone"}
@@ -305,6 +305,9 @@ $(document).ready(function() {
         $("tbody").removeClass("dropableOver");
         var data = JSON.parse(e.dataTransfer.getData("text/plain"));
         targetBlockId = getDropableId(e.target);
+        if(data.sourceBlock == targetBlockId){ {* docházelo k odeslání při najetí na sousední bunku *}
+            return false;
+        }
         return addRow(data.id, targetBlockId);
     }
     
