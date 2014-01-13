@@ -231,7 +231,14 @@ $(document).ready(function() {
     activeOverBlockId = null;
     
     function handleDragEnter(e) {
-        var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        try {
+            var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        } catch(err) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            return false;
+        }
         var dropableId = getDropableId(e.target);
         if(activeOverBlockId == null && data.sourceBlock != dropableId) {
             if (e.preventDefault) {
@@ -247,7 +254,14 @@ $(document).ready(function() {
         return true;
     }
     function handleDragLeave(e) {
-        var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        try {
+            var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        } catch(err) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            return false;
+        }
         var dropableId = getDropableId(e.target);
 //        console.log(e.target);
 //        console.log(getDropableId(e.target));
@@ -265,7 +279,14 @@ $(document).ready(function() {
     }
       
     function handleDragOver(e) { //container
-        var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        try {
+            var data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        } catch(err) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            return false;
+        }
 //            console.log(data.sourceBlock);
 //            console.log(getDropableId(e.target));
         if(data.sourceBlock != getDropableId(e.target)) {
