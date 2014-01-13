@@ -129,7 +129,7 @@ class ParticipantService extends MutableBaseService {
             "City" => isset($data['city']) ? $data['city'] : null,
             "Postcode" => isset($data['postcode']) ? $data['postcode'] : null,
         );
-        $this->skautIS->org->PersonUpdateBasic($data, "personUpdateBasicInput");
+        $this->skautIS->org->PersonUpdate($data, "person");
     }
 
     /**
