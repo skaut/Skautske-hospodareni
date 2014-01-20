@@ -53,6 +53,10 @@
     border: 2px outset !important;
 }
 
+input#editTd-input {
+    width: 4em;
+}
+
 [draggable=true]:hover{
     font-weight: bold;
     cursor: move;
