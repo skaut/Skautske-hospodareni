@@ -1,9 +1,107 @@
+<script type="text/javascript">
+$(document).ready(function() {
+    var alertBoxTime = 6000;
+    
+    function openInput(event) {
+        $source = $(this);
+        $source.addClass("onEdit");
+        $source.data('orig-value', $source.text() == 0 ? "" : $source.text());
+
+        $source.live("keydown", function( event ) { 
+            if ( event.which == 13 ) { //press key enter
+                event.preventDefault();//jsou potreba oba radky
+                event.stopImmediatePropagation();//zastaveni opakovaneho volani enteru
+                //prechod na dalsi policko
+                nexts = $source.closest('table').find(".num-edit[data-type='"+$source.data("type")+"']");
+                var nextIndex = (nexts.index($source)+1);
+//                console.log(nextIndex);
+                if(nextIndex < nexts.size()) {
+                    nexts.get(nextIndex).focus();
+                }
+                return true;
+            }
+        });
+    };
+        
+    function closeInput(event){
+        event.stopImmediatePropagation();
+        var topAlertBoxText = $("#topAlertBox ul");
+        var $source = $(this);
+        $source.removeClass("onEdit");
+        var field = $source.data('type');
+        var dataId = $source.data('id');
+        origValue = $source.data('orig-value') != "" ? $source.data('orig-value') : 0;
+        var newValue = parseFloat($source.text().replace(",", "."));
+        if(isNaN(newValue)){
+            newValue = 0;
+        }
+        $source.text(newValue);
+
+        // sending changed data
+        if(origValue != newValue){
+        topAlertBoxText.append('<li class="alertBox-saving-'+dataId+'"><span>Ukládám ...</span></li>');
+        calculateSum(field);
+        $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: newValue }, function(){
+            topAlertBoxText.find('li.alertBox-saving-'+dataId).fadeOut('slow').remove();
+            topAlertBoxText.append('<li class="alertBox-saved-'+dataId+'"><span>Uloženo. <a href="#">Vrátit úpravu?</a></span></li>')
+                    .find('li.alertBox-saved-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                 // undo link
+            topAlertBoxText.find('a').live('click', function(event){
+                event.stopImmediatePropagation();
+                $(this).parent().parent().remove();
+                topAlertBoxText.find('li.alertBox-saved-'+dataId).fadeOut('slow').remove();
+                $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: origValue }, function(){
+                    topAlertBoxText.append('<li class="alertBox-back-'+dataId+'"><span>Úprava byla vrácena zpět</span></li>')
+                        .find('li.alertBox-back-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                    console.log($("#par-"+field+"-"+dataId));
+                    $("#par-"+field+"-"+dataId).text(origValue);
+                    calculateSum(field);
+                });
+                return false;
+            });
+        });
+        event.preventDefault();
+    }
+
+    };
+
+    
+    $('.num-edit')
+        .each(function(){ $(this).attr('contenteditable', 'true');})
+        .live("focus", openInput)//potřeba pro klavesove ovladani
+        .live("click", openInput)
+        .live("blur", closeInput);
+        
+    //prepocte soucet a ulozi do ID=type+"-total"
+    function calculateSum(type) {
+        var sum = 0;
+//        alert(type);
+        $("td[data-type='"+type+"']").each(function() {
+            var val = $(this).text();
+            if(!isNaN(val) && val.length!=0) {
+                sum += parseFloat(val);
+            }
+        });
+        $('#'+type+'-total').text(sum);
+    };
+        
+});
+
+</script>
 
 
+
+{*}
 <script type="text/javascript">
 $(document).ready(function() {
     
-    function isContentEditable(){
+    //inline editace policek
+    var alertBoxTime = 6000;
+//    $('.num-edit').live("focus", openInput);
+//    $('.num-edit').live("touchstart", openInput);
+//    $("#editTd-input").live("blur", closeInput);
+    
+        function isContentEditable(){
         var ua = navigator.userAgent;
         var android_version = ua.match(/Android ([0-9\.]+)/);
         var div = document.createElement("DIV");
@@ -19,9 +117,8 @@ $(document).ready(function() {
             return true;
         }
     }
-        //inline editace policek
-    var alertBoxTime = 6000;
-    $('.num-edit')
+
+$('.num-edit')
         .each(function(){
             $(this).attr('contenteditable', 'true');//.data('orig-value', $(this).text())                    
         }).live("click", function() {
@@ -40,11 +137,11 @@ $(document).ready(function() {
                         event.stopImmediatePropagation();//zastaveni opakovaneho volani enteru
 
     //                    $obj.blur();
-                        tds = $obj.closest('table').find("td.num-edit[data-type='"+$obj.data("type")+"']");
-                        var nextIndex = (tds.index($obj)+1);
+                        nexts = $obj.closest('table').find("td.num-edit[data-type='"+$obj.data("type")+"']");
+                        var nextIndex = (nexts.index($obj)+1);
 //                        console.log(nextIndex);
-                        if(nextIndex < tds.size()){
-                            tds.get(nextIndex).focus();
+                        if(nextIndex < nexts.size()){
+                            nexts.get(nextIndex).focus();
                         }
                         return true;
                     }
@@ -114,6 +211,7 @@ $(document).ready(function() {
                 }
             }
         });
+        
     //prepocte soucet a ulozi do ID=type+"-total"
     function calculateSum(type) {
         var sum = 0;
@@ -130,3 +228,84 @@ $(document).ready(function() {
 });
 
 </script>
+{*}
+
+{*}
+  //otevře input pro editaci záznamu 
+    function openInput(event) {
+        event.stopImmediatePropagation();
+        $source = $(this);
+        $source.hide();
+        parent = $source.parent();
+        parent.append("<input type='text' pattern='\d*'  id='editTd-input' value='" + $source.text() + "' />");
+        parent.children(":text").focus();
+        $input = $("#editTd-input");
+        $input.val($source.text() == 0 ? "" : $source.text());
+//        $source.addClass("onEdit");
+        $source.data('orig-value', $source.text());
+        $input.live("keydown", function(event) {
+            if ( event.which == 13 ) { //press key enter
+//                console.log(event.which);
+                event.stopImmediatePropagation();//zastaveni opakovaneho volani enteru
+                // přechod na další buňku 
+                nexts = $source.closest('table').find(".num-edit[data-type='"+$source.data("type")+"']");
+                var nextIndex = (nexts.index($source)+1);
+                if(nextIndex < nexts.size()){
+                    nexts.get(nextIndex).focus();
+                }
+                return true;
+            }
+        });
+//        return false;
+    }
+    
+    //obsluha vyskočení z editačního okna
+    function closeInput (event) {
+        event.stopImmediatePropagation();
+        var topAlertBoxText = $("#topAlertBox ul");
+        $input = $(this);
+        $source = $input.prev();
+//            $source.text($(this).val());
+//            $obj.removeClass("onEdit");
+        var field = $source.data('type');
+        var dataId = $source.data('id');
+        var origValue = $source.data('orig-value') != "" ? $source.data('orig-value') : 0;
+        var newValue = parseFloat($input.val().replace(",", "."));
+
+        if(isNaN(newValue)){
+            newValue = 0;
+        }
+        $source.text(newValue);
+        $source.show();
+        $input.remove();
+
+        // sending changed data
+        if(origValue != newValue){
+            topAlertBoxText.append('<li class="alertBox-saving-'+dataId+'"><span>Ukládám ...</span></li>');
+            calculateSum(field);
+            $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: newValue }, function(){
+                topAlertBoxText.find('li.alertBox-saving-'+dataId).fadeOut('slow').remove();
+                topAlertBoxText.append('<li class="alertBox-saved-'+dataId+'"><span>Uloženo. <a href="#">Vrátit úpravu?</a></span></li>')
+                        .find('li.alertBox-saved-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                     // undo link
+                topAlertBoxText.find('a').live('click', function(event){
+                    $(this).parent().parent().remove();
+                    event.stopImmediatePropagation();
+                    topAlertBoxText.find('li.alertBox-saved-'+dataId).fadeOut('slow').remove();
+                    $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: origValue }, function(){
+                        topAlertBoxText.append('<li class="alertBox-back-'+dataId+'"><span>Úprava byla vrácena zpět</span></li>')
+                            .find('li.alertBox-back-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                        console.log($("#par-"+field+"-"+dataId));
+                        $("#par-"+field+"-"+dataId).text(origValue);
+                        calculateSum(field);
+                    });
+//                
+                    return false;
+                });
+            });
+            event.preventDefault();
+        }
+    }
+    
+
+{*}

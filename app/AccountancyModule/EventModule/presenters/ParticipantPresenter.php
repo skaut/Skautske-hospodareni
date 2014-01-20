@@ -64,7 +64,7 @@ class ParticipantPresenter extends BasePresenter {
         $this->editableOnly();
         $oldData = $this->context->eventService->participants->get($id);
         
-        if ($field == "day") {
+        if ($field == "days") {
             $arr = array(
                 "payment" => @$oldData['payment'],
                 "days" => $value,
