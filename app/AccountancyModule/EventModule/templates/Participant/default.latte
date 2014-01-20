@@ -14,8 +14,7 @@
 <div class="row-fluid wipeBox">
     <div class="span6" n:if="$accessInsertParticipant">
         {snippet potencialParticipants}
-{var $unitTbodyId = "unit-participants-tbody"}
-        <div>
+        {var $unitTbodyId = "unit-participants-tbody"}
             <h3>Osoby v jednotce</h3>
             {*}{form formMassAdd}{*}
             <div class="well well-small threeButtons">
@@ -54,14 +53,13 @@
                         {*}{if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a>{/if}{*}
                         {if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini addRow"><i class="icon-plus icon-white"></i></a>{/if}
                         </td>
-                        <td><i class="icon icon-move hidden-phone" style='float: right;'></i> {$name}{*{label all-$id /}*}</td>
+                        <td><i class="icon icon-move hidden-tablet hidden-phone" style='float: right;'></i> {$name}{*{label all-$id /}*}</td>
                     </tr>
                 {/if}
                     <tr class="alert info no-unit-persons" draggable="false"><td colspan="2"><b>Nejsou žádné nevybrané osoby v jednotce.</b></td></tr>
                 </tbody>
             </table>
             {*}{/form}{*}
-        </div>
         {/snippet}
     </div>
 
@@ -101,9 +99,9 @@
                     {if !empty($participants)}
                     <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
                     {? $participantsNames[] = $p->Person}
-                        <td>{*}{label ids-$p->ID /}{*}<i class="icon icon-move hidden-phone"></i> {$p->Person}</td>
-                        <td><div id="par-days-{$p->ID}"{if $isEditable} class="num-edit" data-type="day" data-id="{$p->ID}" tabindex="{$tabIndex}"{/if}>{$p->Days}</div></td>
-                        <td><div id="par-payment-{$p->ID}"{if $isEditable} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex}"{/if} >{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</div></td>
+                        <td>{*}{label ids-$p->ID /}{*}<i class="icon icon-move hidden-tablet hidden-phone"></i> {$p->Person}</td>
+                        <td><a id="par-days-{$p->ID}"{if $isEditable} class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if}>{$p->Days}</a></td>
+                        <td><a id="par-payment-{$p->ID}"{if $isEditable} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if} >{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</a></td>
                         <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
                         {*}
                         {input ids-$p->ID class=>"hidden-phone"}
@@ -309,7 +307,7 @@ $(document).ready(function() {
         $("tbody").removeClass("dropableOver");
         var data = JSON.parse(e.dataTransfer.getData("text/plain"));
         targetBlockId = getDropableId(e.target);
-        if(data.sourceBlock == targetBlockId){ {* docházelo k odeslání při najetí na sousední bunku *}
+        if(data.sourceBlock == targetBlockId){ // docházelo k odeslání při najetí na sousední bunku
             return false;
         }
         return addRow(data.id, targetBlockId);
@@ -339,7 +337,7 @@ $(document).ready(function() {
         
         $ne.hide(0, function() {
             if(targetBlockId == {$participantTbodyId}){
-                $ne = $('<tr><td><i class="icon icon-move hidden-phone"></i>'+newName+'</td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td></td></tr>');
+                $ne = $('<tr><td><i class="icon icon-move hidden-tablet hidden-phone"></i>'+newName+'</td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td></td></tr>');
                 participantsList.push(newName);
                 participantsList.sort();
                 var index = jQuery.inArray(newName, participantsList);
@@ -366,11 +364,13 @@ $(document).ready(function() {
     
     var objects = document.querySelectorAll('tbody.dropable tr:not([draggable=false])');
     [].forEach.call(objects, function(col) {
+    {*}
         col.setAttribute('draggable', 'true');  // Enable columns to be draggable.
+    {*}
         col.addEventListener('dragstart', handleDragStart, false);
         col.addEventListener('dragend', handleDragEnd, false);
     });
-    
+ 
     objects = document.querySelectorAll('tbody.dropable');
     [].forEach.call(objects, function(col) {
         col.addEventListener('dragover', handleDragOver, false);
