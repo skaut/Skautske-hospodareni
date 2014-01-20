@@ -2,78 +2,116 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
+    
+    function isContentEditable(){
+        var ua = navigator.userAgent;
+        var android_version = ua.match(/Android ([0-9\.]+)/);
+        var div = document.createElement("DIV");
+
+        //kontroluje jestli je dostupná funkce contentEditable
+        if( typeof(div.contentEditable) == 'undefined' ||
+          (/(iPhone|iPod|iPad)/i.test(ua) && /OS [1-4]_\d like Mac OS X/i.test(ua)) ||
+          (android_version!=null && parseFloat(android_version[1])<3 ) ||
+          (/(Opera Mobi)/i.test(ua))
+        ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
         //inline editace policek
     var alertBoxTime = 6000;
     $('.num-edit')
         .each(function(){
             $(this).attr('contenteditable', 'true');//.data('orig-value', $(this).text())                    
-        }).live("focus", function() {
-            $obj = $(this);
-            if($obj.text() == 0){
-                $obj.text("");
-            }
-            $obj.addClass("onEdit");
-            $obj.data('orig-value', $obj.text());
-            
-            $obj.live("keydown", function( event ) {
-                if ( event.which == 13 ) { //press key enter
-                    console.log(event.which);
-                    event.preventDefault();
-                    event.stopImmediatePropagation();//zastaveni opakovaneho volani enteru
-
-//                    $obj.blur();
-                    tds = $obj.closest('table').find("td.num-edit[data-type='"+$obj.data("type")+"']");
-                    var nextIndex = (tds.index($obj)+1);
-                    console.log(nextIndex);
-                    if(nextIndex < tds.size()){
-                        tds.get(nextIndex).focus();
-                    }
-                    return true;
+        }).live("click", function() {
+            if(isContentEditable()){
+                $obj = $(this);
+                if($obj.text() == 0){
+                    $obj.text("");
                 }
-                });
-        }).live("blur", function(event){
-            event.stopImmediatePropagation();
-            var topAlertBoxText = $("#topAlertBox ul");
-            var $obj = $(this);
-            $obj.removeClass("onEdit");
-            var field = $obj.data('type');
-            var dataId = $obj.data('id');
-            var origValue = $obj.data('orig-value');
-            origValue != "" ? origValue : 0;
-            var newValue = parseFloat($obj.text().replace(",", "."));
-            if(isNaN(newValue)){
-                newValue = 0;
-            }
-            $obj.text(newValue);
+                $obj.addClass("onEdit");
+                $obj.data('orig-value', $obj.text());
 
-            // sending changed data
-            if(origValue != newValue){
-//              $obj.removeAttr('contenteditable').removeClass('num-edit');
-                topAlertBoxText.append('<li class="alertBox-saving-'+dataId+'"><span>Ukládám ...</span></li>');
-                calculateSum(field);
-                
-//                $.ajaxSetup({ cache: false });
-                $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: newValue }
-                , function(){
-//                    
-                    topAlertBoxText.find('li.alertBox-saving-'+dataId).fadeOut('slow').remove();
-                    topAlertBoxText.append('<li class="alertBox-saved-'+dataId+'"><span>Uloženo. <a href="#">Vrátit úpravu?</a></span></li>')
-                            .find('li.alertBox-saved-'+dataId).delay(alertBoxTime).fadeOut('slow');
-                         // undo link
-                    topAlertBoxText.find('a').click(function(){
-                        topAlertBoxText.find('li.alertBox-saved-'+dataId).fadeOut('slow').remove();
-                        $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: origValue }, function(){
-                            topAlertBoxText.append('<li class="alertBox-back-'+dataId+'"><span>Úprava byla vrácena zpět</span></li>')
-                                .find('li.alertBox-back-'+dataId).delay(alertBoxTime).fadeOut('slow');
-                            $obj.text(origValue);
-                            calculateSum(field);
-//                                  $obj.attr('contenteditable', 'true').addClass('num-edit');
-                        });
-//                
-                        return false;
+                $obj.live("keydown", function( event ) {
+                    if ( event.which == 13 ) { //press key enter
+//                        console.log(event.which);
+                        event.preventDefault();
+                        event.stopImmediatePropagation();//zastaveni opakovaneho volani enteru
+
+    //                    $obj.blur();
+                        tds = $obj.closest('table').find("td.num-edit[data-type='"+$obj.data("type")+"']");
+                        var nextIndex = (tds.index($obj)+1);
+//                        console.log(nextIndex);
+                        if(nextIndex < tds.size()){
+                            tds.get(nextIndex).focus();
+                        }
+                        return true;
+                    }
                     });
+            } else { //moznost ze nefunguje inline editace
+            //vyzaduje vytvorene modal window #editTd i s prvky uvnitř
+//                console.log($(this));
+                $source = $(this);
+                $source.hide();
+                $source.parent().append("<input type='text' id='editTd-input' value='" + $source.text() + "' />");
+                $source.parent().children(":text").focus();
+                
+                $("#editTd-input").live("blur", function(event){
+                    event.stopImmediatePropagation();
+                    $input = $(this);
+                    $source = $input.prev();
+                    $.get({link editField}, { aid:{$aid}, id:$source.data("id"), field: $source.data("type"), value: $input.val() }, $.nette.success);
+
+                    $source.text($(this).val());
+                    $source.show();
+                    $input.remove();
                 });
-                event.preventDefault();
+            }
+        }).live("blur", function(event){ //má smysl jen kdyz je editovatelné políčko
+            if(isContentEditable()){
+                event.stopImmediatePropagation();
+                var topAlertBoxText = $("#topAlertBox ul");
+                var $obj = $(this);
+                $obj.removeClass("onEdit");
+                var field = $obj.data('type');
+                var dataId = $obj.data('id');
+                var origValue = $obj.data('orig-value');
+                origValue != "" ? origValue : 0;
+                var newValue = parseFloat($obj.text().replace(",", "."));
+                if(isNaN(newValue)){
+                    newValue = 0;
+                }
+                $obj.text(newValue);
+
+                // sending changed data
+                if(origValue != newValue){
+    //              $obj.removeAttr('contenteditable').removeClass('num-edit');
+                    topAlertBoxText.append('<li class="alertBox-saving-'+dataId+'"><span>Ukládám ...</span></li>');
+                    calculateSum(field);
+
+    //                $.ajaxSetup({ cache: false });
+                    $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: newValue }
+                    , function(){
+                        topAlertBoxText.find('li.alertBox-saving-'+dataId).fadeOut('slow').remove();
+                        topAlertBoxText.append('<li class="alertBox-saved-'+dataId+'"><span>Uloženo. <a href="#">Vrátit úpravu?</a></span></li>')
+                                .find('li.alertBox-saved-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                             // undo link
+                        topAlertBoxText.find('a').click(function(){
+                            topAlertBoxText.find('li.alertBox-saved-'+dataId).fadeOut('slow').remove();
+                            $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: origValue }, function(){
+                                topAlertBoxText.append('<li class="alertBox-back-'+dataId+'"><span>Úprava byla vrácena zpět</span></li>')
+                                    .find('li.alertBox-back-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                                $obj.text(origValue);
+                                calculateSum(field);
+    //                                  $obj.attr('contenteditable', 'true').addClass('num-edit');
+                            });
+    //                
+                            return false;
+                        });
+                    });
+                    event.preventDefault();
+                }
             }
         });
     //prepocte soucet a ulozi do ID=type+"-total"
@@ -88,7 +126,6 @@ $(document).ready(function() {
         });
         $('#'+type+'-total').text(sum);
     };
-        
         
 });
 

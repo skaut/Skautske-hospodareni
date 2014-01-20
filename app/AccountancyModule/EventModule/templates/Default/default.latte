@@ -11,9 +11,8 @@
     {snippet events}
         <div class="well well-small">
         {form formFilter class=>"ajax filter"}
-            {label year /}{input year onchange=>"changeYear(this.value)"}
-            <br class="visible-phone"/>
-            {label state /}{input state onchange=>"changeState(this.value)"}
+            <span class="hidden-phone">{label year /}</span>{input year onchange=>"changeYear(this.value)"}
+            <span class="hidden-phone">{label state /}</span>{input state onchange=>"changeState(this.value)"}
             <br class="visible-phone"/>
             {input send}
         {/form}
@@ -28,7 +27,7 @@
                     <th>Od</th>
                     <th>Do</th>
                     <th>Stav</th>
-                    <th></th>
+                    <th class="hidden-phone"></th>
                 </tr>
             </thead>
             <tbody>
@@ -40,7 +39,7 @@
                     <td>{$i->StartDate|date:"j.n.Y"}</td>
                     <td>{$i->EndDate|date:"j.n.Y"}</td>
                     <td>{!$i->ID_EventGeneralState|eventStateLabel}</td>
-                    <td n:inner-if="$i->accessDetail">
+                    <td n:inner-if="$i->accessDetail" class="hidden-phone">
                         <a n:href="Event:  $i->ID" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
                         <a n:href="Participant: $i->ID" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
                         <a n:href="Cashbook: $i->ID" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>

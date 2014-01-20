@@ -63,7 +63,7 @@ class ParticipantPresenter extends BasePresenter {
     public function actionEditField($aid, $id, $field, $value) {
         $this->editableOnly();
         $oldData = $this->context->eventService->participants->get($id);
-
+        
         if ($field == "day") {
             $arr = array(
                 "payment" => @$oldData['payment'],

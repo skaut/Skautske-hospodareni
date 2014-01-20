@@ -2,7 +2,7 @@
 Menu pro pohyb mezi částmi akce
 *}
 <ul class="nav nav-pills">
-    <li {ifCurrent Event: $aid}class='active'{/ifCurrent}><a n:href="Event: $aid"><i class="icon icon-briefcase"></i> Základní údaje</a></li>
-    <li {ifCurrent Participant:default $aid}class='active'{/ifCurrent}><a n:href="Participant:default $aid"><i class="icon icon-user"></i> Účastníci</a></li>
-    <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}><a n:href="Cashbook:default $aid"><i class="icon icon-shopping-cart"></i> Pokladní kniha</a></li>
+    <li {ifCurrent Event: $aid}class='active'{/ifCurrent}><a n:href="Event: $aid"><i class="icon icon-briefcase hidden-phone"></i> Základní <span class="hidden-phone">údaje</span></a></li>
+    <li {ifCurrent Participant:default $aid}class='active'{/ifCurrent}><a n:href="Participant:default $aid"><i class="icon icon-user hidden-phone"></i> Účastníci</a></li>
+    <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}><a n:href="Cashbook:default $aid"><i class="icon icon-shopping-cart hidden-phone"></i> Pokladní kniha</a></li>
 </ul>

@@ -8,6 +8,9 @@
 {dump $participants}
 {var $participantTbodyId = "participants-list-tbody"}{* v kodu je to napevno *}
 
+<div class="row-fluid wipeBox visible-phone" id="potencial-menu">
+    <a href="#participants-menu" class="btn btn-primary"><i class="icon icon-arrow-down icon-white"></i> Vybraní účastníci <i class="icon icon-arrow-down icon-white"></i></a>
+</div>
 <div class="row-fluid wipeBox">
     <div class="span6" n:if="$accessInsertParticipant">
         {snippet potencialParticipants}
@@ -51,7 +54,7 @@
                         {*}{if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a>{/if}{*}
                         {if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini addRow"><i class="icon-plus icon-white"></i></a>{/if}
                         </td>
-                        <td><i class="icon icon-move" style='float: right;'></i> {$name}{*{label all-$id /}*}</td>
+                        <td><i class="icon icon-move hidden-phone" style='float: right;'></i> {$name}{*{label all-$id /}*}</td>
                     </tr>
                 {/if}
                     <tr class="alert info no-unit-persons" draggable="false"><td colspan="2"><b>Nejsou žádné nevybrané osoby v jednotce.</b></td></tr>
@@ -62,8 +65,9 @@
         {/snippet}
     </div>
 
-
-
+<div class="row-fluid wipeBox visible-phone" id="participants-menu">
+    <a href="#potencial-menu" class="btn btn-primary"><i class="icon icon-arrow-up icon-white"></i> Nevybraní účastníci <i class="icon icon-arrow-up icon-white"></i></a>
+</div>
     <div class="span6">
         {snippet participants}
 {*}{form formMassParticipants}{*}
@@ -97,7 +101,7 @@
                     {if !empty($participants)}
                     <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
                     {? $participantsNames[] = $p->Person}
-                        <td>{*}{label ids-$p->ID /}{*}<i class="icon icon-move"></i> {$p->Person}</td>
+                        <td>{*}{label ids-$p->ID /}{*}<i class="icon icon-move hidden-phone"></i> {$p->Person}</td>
                         <td><div id="par-days-{$p->ID}"{if $isEditable} class="num-edit" data-type="day" data-id="{$p->ID}" tabindex="{$tabIndex}"{/if}>{$p->Days}</div></td>
                         <td><div id="par-payment-{$p->ID}"{if $isEditable} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex}"{/if} >{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</div></td>
                         <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
@@ -335,7 +339,7 @@ $(document).ready(function() {
         
         $ne.hide(0, function() {
             if(targetBlockId == {$participantTbodyId}){
-                $ne = $('<tr><td><i class="icon icon-move"></i>'+newName+'</td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td></td></tr>');
+                $ne = $('<tr><td><i class="icon icon-move hidden-phone"></i>'+newName+'</td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td></td></tr>');
                 participantsList.push(newName);
                 participantsList.sort();
                 var index = jQuery.inArray(newName, participantsList);
