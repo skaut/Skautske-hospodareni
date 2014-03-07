@@ -53,7 +53,7 @@
                         {*}{if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a>{/if}{*}
                         {if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini addRow"><i class="icon-plus icon-white"></i></a>{/if}
                         </td>
-                        <td><i class="icon icon-move hidden-tablet hidden-phone" style='float: right;'></i> {$name}{*{label all-$id /}*}</td>
+                        <td>{*}<i class="icon icon-move hidden-tablet hidden-phone" style='float: right;'></i> {*}{$name}{*{label all-$id /}*}</td>
                     </tr>
                 {/if}
                     <tr class="alert info no-unit-persons" draggable="false"><td colspan="2"><b>Nejsou žádné nevybrané osoby v jednotce.</b></td></tr>
@@ -99,7 +99,7 @@
                     {if !empty($participants)}
                     <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
                     {? $participantsNames[] = $p->Person}
-                        <td>{*}{label ids-$p->ID /}{*}<i class="icon icon-move hidden-tablet hidden-phone"></i> {$p->Person}</td>
+                        <td>{*}{label ids-$p->ID /}{*}{*}<i class="icon icon-move hidden-tablet hidden-phone"></i> {*}{$p->Person}</td>
                         <td><a id="par-days-{$p->ID}"{if $isEditable} class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if}>{$p->Days}</a></td>
                         <td><a id="par-payment-{$p->ID}"{if $isEditable} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if} >{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</a></td>
                         <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
@@ -212,7 +212,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-
+{*}
     function handleDragStart(e) {
 //        console.log("start");
         this.style.opacity = '0.5';
@@ -312,11 +312,13 @@ $(document).ready(function() {
         }
         return addRow(data.id, targetBlockId);
     }
-    
+    {*}
     //mění pozici řádku pro oba směry
     function addRow(rowId, targetBlockId){
         $ne = $('#'+rowId)
-        $.post($ne.find("a").attr("href"), $.nette.success);
+        $.post($ne.find("a.addRow").attr("href"), $.nette.success);
+        
+        
         $topAlertBoxText = $("#topAlertBox ul");
         var rand = Math.floor((Math.random()*10000)+1);
         if(targetBlockId == {$participantTbodyId}){
@@ -337,7 +339,7 @@ $(document).ready(function() {
         
         $ne.hide(0, function() {
             if(targetBlockId == {$participantTbodyId}){
-                $ne = $('<tr><td><i class="icon icon-move hidden-tablet hidden-phone"></i>'+newName+'</td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td></td></tr>');
+                $ne = $('<tr><td>{*}<i class="icon icon-move hidden-tablet hidden-phone"></i>{*}'+newName+'</td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td></td></tr>');
                 participantsList.push(newName);
                 participantsList.sort();
                 var index = jQuery.inArray(newName, participantsList);
@@ -359,18 +361,19 @@ $(document).ready(function() {
                 }
             }
         });
+        
         return false;
     }
     
+    {*}
     var objects = document.querySelectorAll('tbody.dropable tr:not([draggable=false])');
     [].forEach.call(objects, function(col) {
-    {*}
         col.setAttribute('draggable', 'true');  // Enable columns to be draggable.
-    {*}
         col.addEventListener('dragstart', handleDragStart, false);
         col.addEventListener('dragend', handleDragEnd, false);
     });
- 
+    {*}
+ {*}
     objects = document.querySelectorAll('tbody.dropable');
     [].forEach.call(objects, function(col) {
         col.addEventListener('dragover', handleDragOver, false);
@@ -378,7 +381,7 @@ $(document).ready(function() {
         col.addEventListener('dragleave', handleDragLeave, false);
         col.addEventListener('drop', handleDrop, false);
     });
-    
+    {*}
     objects = document.querySelectorAll('a.addRow');
     [].forEach.call(objects, function(col) {
         col.addEventListener('click', aAddRow, false);
@@ -394,8 +397,8 @@ $(document).ready(function() {
          } else {
              targetBlockId = {$participantTbodyId};
          }
-         console.log(rowId);
-         console.log(targetBlockId);
+//         console.log(rowId);
+//         console.log(targetBlockId);
          return addRow(rowId, targetBlockId);
      }
     
@@ -408,9 +411,9 @@ $(document).ready(function() {
         return (parents.length > 0) ? parents.get(0).id : null;
     }
 
+
 });
 </script>
-
 
 {include APP_DIR.'/templates/inline-num-edit.latte'}
 {*}

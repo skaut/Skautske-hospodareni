@@ -41,10 +41,10 @@ class ParticipantPresenter extends BasePresenter {
         $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
         $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
-        usort($participants, function($a, $b) {/* setrizeni podle abecedy */
-                    return strcasecmp($a->Person, $b->Person);
-                });
-        natcasesort($list);
+//        usort($participants, function($a, $b) {/* setrizeni podle abecedy */
+//                    return strcasecmp($a->Person, $b->Person);
+//                });
+//        natcasesort($list);
 
         $this->template->participants = $participants;
         $this->template->list = $list;
