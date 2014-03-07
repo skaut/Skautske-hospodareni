@@ -43,9 +43,10 @@ $(document).ready(function() {
         calculateSum(field);
         $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: newValue }, function(){
             topAlertBoxText.find('li.alertBox-saving-'+dataId).fadeOut('slow').remove();
-            topAlertBoxText.append('<li class="alertBox-saved-'+dataId+'"><span>Uloženo. <a href="#">Vrátit úpravu?</a></span></li>')
+            topAlertBoxText.append('<li class="alertBox-saved-'+dataId+'"><span>Uloženo.</span></li>')//<a href="#">Vrátit úpravu?</a>
                     .find('li.alertBox-saved-'+dataId).delay(alertBoxTime).fadeOut('slow');
                  // undo link
+            {*}
             topAlertBoxText.find('a').live('click', function(event){
                 event.stopImmediatePropagation();
                 $(this).parent().parent().remove();
@@ -59,6 +60,7 @@ $(document).ready(function() {
                 });
                 return false;
             });
+            {*}
         });
         event.preventDefault();
     }
