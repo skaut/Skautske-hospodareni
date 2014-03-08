@@ -16,6 +16,10 @@ class CashbookPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
 //        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
+        if ($this->camp->prefix == "") {
+            
+        }
+//            unset($this['formOutEdit']['num']);
     }
 
     public function beforeRender() {
@@ -98,7 +102,7 @@ class CashbookPresenter extends BasePresenter {
                 $this->flashMessage("Paragon byl smazán");
             } else {
                 $this->flashMessage("Paragon se nepodařilo smazat");
-            }   
+            }
         } catch (\SkautIS\Exception\WsdlException $exc) {
             $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
         }
@@ -230,6 +234,12 @@ class CashbookPresenter extends BasePresenter {
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("input-medium");
+//        if ($thisP->camp->prefix != "") {
+//            $form->addText("num", "Číslo:", 4)
+//                    ->getControlPrototype()->class("input-medium")
+//                    ->addCondition(Form::FILLED)
+//                    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+//        }
 //@TODO kontrola platneho data, problem s componentou
         $form->addText("recipient", "Vyplaceno komu:", 20, 30)
                 ->setHtmlId("form-out-recipient")
@@ -272,6 +282,12 @@ class CashbookPresenter extends BasePresenter {
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("input-medium");
+//        if ($thisP->camp->prefix != "") {
+//            $form->addText("num", "Číslo:", 4)
+//                    ->getControlPrototype()->class("input-medium")
+//                    ->addCondition(Form::FILLED)
+//                    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+//        }
         $form->addText("recipient", "Přijato od:", 20, 30)
                 ->setHtmlId("form-in-recipient")
                 ->getControlPrototype()->class("input-medium");
@@ -322,11 +338,11 @@ class CashbookPresenter extends BasePresenter {
     function formEditSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
-        $id = $values['id'];
+        $chitId = $values['id'];
         unset($values['id']);
 
         try {
-            if ($this->context->campService->chits->update($id, $values)) {
+            if ($this->context->campService->chits->update($chitId, $values)) {
                 $this->flashMessage("Paragon byl upraven.");
             } else {
                 $this->flashMessage("Paragon se nepodařilo upravit.", "danger");

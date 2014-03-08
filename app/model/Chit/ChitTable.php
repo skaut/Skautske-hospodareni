@@ -16,23 +16,23 @@ class ChitTable extends BaseTable {
 
     /**
      * vrací seznam všech paragonů k danému $actionId
-     * @param int $actionId
+     * @param int $localEventId
      * @return array
      */
-    public function getAll($actionId) {
+    public function getAll($localEventId) {
         return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "]
-                WHERE actionId=%i", $actionId, "
+                WHERE eventId=%i", $localEventId, "
                 ORDER BY date, ctype ");
     }
 
     /**
      * vrací seznam poragonů podle zadaných ID
-     * @param int $actionId
+     * @param int $localEventId
      * @param array $list - seznam id
      * @return array
      */
-    public function getIn($actionId, array $list) {
-        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE actionId=%i", $actionId, " AND id in %in", $list, "ORDER BY date");
+    public function getIn($localEventId, array $list) {
+        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE eventId=%i", $localEventId, " AND id in %in", $list, "ORDER BY date");
     }
 
     /**
@@ -44,6 +44,17 @@ class ChitTable extends BaseTable {
         dibi::query("INSERT INTO [" . self::TABLE_CHIT . "] %v", $values);
         return dibi::getInsertId();
     }
+    
+    /**
+     * generuje pořadové číslo dokladu
+     * @param int $eventId
+     * @param array(id_kategorií) $category
+     * @param itn $length - délka čísla
+     * @return type
+     */
+    public function generateNumber($eventId, $category, $length = 3){
+        return str_pad((int) dibi::fetchSingle("SELECT COUNT(*) from ac_chits where eventId=%i and category IN %in", $eventId, $category),$length,"0",STR_PAD_LEFT);
+    }
 
     /**
      * aktualizuje paragon podle $id
@@ -52,26 +63,26 @@ class ChitTable extends BaseTable {
      * @return type 
      */
     public function update($chitId, $values) {
-        return dibi::query("UPDATE [" . self::TABLE_CHIT . "] SET ", $values, "WHERE id=%s", $chitId);
+        return dibi::query("UPDATE [" . self::TABLE_CHIT . "] SET ", $values, "WHERE id=%i", $chitId);
     }
 
     /**
      * označí paragon jako smazaný
      * @param int $chitId
-     * @param int $actionId
+     * @param int $localEventId
      * @return type 
      */
-    public function delete($chitId, $actionId) {
-        return dibi::query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND actionID = %i LIMIT 1", $chitId, $actionId);
+    public function delete($chitId, $localEventId) {
+        return dibi::query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
     }
 
     /**
      * označí paragony z dané akce za smazané
-     * @param type $actionId
+     * @param type $localEventId
      * @return type 
      */
-    public function deleteAll($actionId) {
-        return dibi::query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE actionID = %i", $actionId);
+    public function deleteAll($localEventId) {
+        return dibi::query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE eventId = %i", $localEventId);
     }
 
     /**
@@ -93,37 +104,37 @@ class ChitTable extends BaseTable {
     public function getCategoriesAll($type = NULL) {
         return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
     }
-    
+
     /**
      * celková cena v dané kategorii
      * @param int $categoryId
      * @param string $type - camp/general
      * @return int 
      */
-    public function getTotalInCategory($categoryId, $type="camp"){
-        return dibi::fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND type=%s", $type);
+    public function getTotalInCategory($categoryId, $eId) {
+        return dibi::fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND eventId=%i", $eId, " GROUP BY eventId");
     }
 
     /**
      * spočítá příjmy a výdaje a ty pak odečte
-     * @param int $actionId
+     * @param int $localEventId
      * @return bool 
      */
-    public function isInMinus($actionId) {
-        $data = dibi::fetchPairs("SELECT cat.type, SUM(ch.price) as sum FROM [" . self::TABLE_CHIT . "] as ch
+    public function isInMinus($localEventId) {
+        $data = dibi::fetchAll("SELECT cat.type, SUM(ch.price) as sum FROM [" . self::TABLE_CHIT . "] as ch
             LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.id) 
-            WHERE ch.actionId = %i AND ch.deleted = 0
-            GROUP BY cat.type", $actionId);
+            WHERE ch.eventId = %i AND ch.deleted = 0
+            GROUP BY cat.type", $localEventId);
         return $data;
     }
-    
+
     /**
      * spočte součet částek v jednotlivých kategoriích
-     * @param type $actionId
+     * @param type $localEventId
      * @return (categoryId=>SUM)
      */
-    public function getTotalInCategories($actionId) {
-        return dibi::fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE actionId=%i", $actionId ," AND deleted=0 GROUP BY category");
+    public function getTotalInCategories($localEventId) {
+        return dibi::fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE eventId=%i", $localEventId, " AND deleted=0 GROUP BY category");
     }
 
 }

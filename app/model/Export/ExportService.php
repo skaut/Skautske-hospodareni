@@ -92,7 +92,7 @@ class ExportService extends BaseService {
      * @param type $chits
      * @param type $fileName 
      */
-    public function getChits($aid, EventEntity $eventService, BaseService $unitService, array $chits, $type = "eventGeneral") {
+    public function getChits($aid, EventEntity $eventService, BaseService $unitService, array $chits, $type = "general") {
 
         $income = array();
         $outcome = array();
@@ -105,7 +105,7 @@ class ExportService extends BaseService {
                     $income[] = $c;
                     break;
                 default:
-                    throw new \Nette\InvalidStateException("Neznámý typ paragou");
+                    throw new \Nette\InvalidStateException("Neznámý typ paragou: ". $c->ctype);
                     break;
             }
         }
@@ -119,6 +119,7 @@ class ExportService extends BaseService {
             $template->list = $eventService->participants->getAll($aid);
         }
 
+        $template->event = $eventService->event->get($aid);
         $template->income = $income;
         $template->outcome = $outcome;
         $template->oficialName = $unitService->getOficialName($eventService->event->get($aid)->ID_Unit);
