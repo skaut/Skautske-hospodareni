@@ -90,8 +90,10 @@
                         <a n:if="$accessUpdateParticipant" href="#massEdit" data-toggle="modal" class="btn btn-primary btn-mini massDependend" title="Upravit vybrané"><i class="icon-edit icon-white"></i></a>
                     </th>
                     {*}
+                        {if  $accessUpdateParticipant || $accessDeleteParticipant}
                         <th class="hidden-phone"  style="width:30px;"> &nbsp; </th>
                         <th class="visible-phone"> &nbsp; </th>
+                        {/if}
                     </tr>
                 </thead>
                 {var $total = 0}
@@ -119,7 +121,7 @@
                         <td colspan="2"><b>Celkem</b></td>
                         <td><b id="payment-total">{$total}</b></td>
                     {*}<td n:if="$accessUpdateParticipant || $accessDeleteParticipant">&nbsp;</td>{*}
-                        <td>&nbsp;</td>
+                        <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">&nbsp;</td>
                     </tr>
                 </tfoot>
             </table>

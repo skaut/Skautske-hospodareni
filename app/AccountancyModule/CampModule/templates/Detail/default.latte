@@ -30,6 +30,10 @@
                 <th>Stav</th>
                 <td {if $camp->ID_EventCampState == closed}title="Uzavřel: {$camp->PersonClosed} dne: {$camp->DateClosed|date:"j.n.Y"}" {/if}>{!$camp->ID_EventCampState|campStateLabel}</td>
             </tr>
+            <tr n:ifset="$camp->prefix">
+                <th>Prefix</th>
+                <td>{$camp->prefix}</td>
+            </tr>
         </table>
     </div>
 

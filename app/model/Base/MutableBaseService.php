@@ -12,6 +12,7 @@ abstract class MutableBaseService extends BaseService {
     static protected $typeName;
     static protected $typeLongName;
     static protected $expire;
+    static protected $type;
 
     /** @var Nette\Caching\Cache */
     protected $cache;
@@ -20,6 +21,7 @@ abstract class MutableBaseService extends BaseService {
         self::$typeName = $name;
         self::$typeLongName = $longName;
         self::$expire = $expire;
+        self::$type = strtolower($name);
 
         parent::__construct($skautIS);
         $cache = new Cache($cacheStorage, __CLASS__);

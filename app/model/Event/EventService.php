@@ -7,6 +7,12 @@ class EventService extends MutableBaseService {
 
     protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist");
 
+    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {
+        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage);
+        /** @var EventTable */
+        $this->table = new EventTable();
+    }
+
     public function getAll($year = NULL, $state = NULL) {
         $year = ($year == "all") ? NULL : $year;
         $state = ($state == "all") ? NULL : $state;
@@ -14,8 +20,25 @@ class EventService extends MutableBaseService {
         return $this->skautIS->event->{"Event" . self::$typeName . "All"}(array("IsRelation" => TRUE, "ID_Event" . self::$typeName . "State" => $state, "Year" => $year));
     }
 
+    public function getLocalId($skautisEventId) {
+        $cacheId = __FUNCTION__ . $skautisEventId;
+        if (!($res = $this->loadSes($cacheId))) {
+            $res = $this->saveSes($cacheId, $this->table->getLocalId($skautisEventId, self::$type));
+        }
+        return $res;
+    }
+    
+    public function getSkautisId($localEventId) {
+        $cacheId = __FUNCTION__ . $localEventId;
+        if (!($res = $this->loadSes($cacheId))) {
+            $res = $this->saveSes($cacheId, $this->table->getSkautisId($localEventId, self::$type));
+        }
+        return $res;
+    }
+
     /**
      * vrací detail
+     * spojuje data ze skautisu s daty z db
      * @param ID_Event $ID
      * @return stdClass 
      */
@@ -23,7 +46,11 @@ class EventService extends MutableBaseService {
         try {
             $cacheId = __FUNCTION__ . $ID;
             if (!($res = $this->loadSes($cacheId))) {
-                $res = $this->saveSes($cacheId, $this->skautIS->event->{"Event" . self::$typeName . "Detail"}(array("ID" => $ID)));
+                $skautisData = (array) $this->skautIS->event->{"Event" . self::$typeName . "Detail"}(array("ID" => $ID));
+                $tableData = (array) $this->table->getByEventId($ID, self::$type);
+//                unset($tableData['skautisId']);
+                $ev = \Nette\ArrayHash::from(array_merge($skautisData, $tableData));
+                $res = $this->saveSes($cacheId, $ev);
             }
             return $res;
         } catch (\SkautIS\Exception\BaseException $e) {
