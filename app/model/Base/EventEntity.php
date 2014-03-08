@@ -18,7 +18,7 @@ class EventEntity{
     public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {
         $this->event        = new EventService($name, $longName, $expire, $skautIS, $cacheStorage);
         $this->participants = new ParticipantService($name, $longName, $expire, $skautIS, $cacheStorage);
-        $this->chits        = new ChitService($name, $longName, $expire, $skautIS, $cacheStorage);
+        $this->chits        = new ChitService($name, $longName, $expire, $skautIS, $cacheStorage, $this->event);
     }
     
     public function __get($name) {
