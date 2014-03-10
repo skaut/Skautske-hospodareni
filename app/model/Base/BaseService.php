@@ -10,6 +10,10 @@ abstract class BaseService extends Nette\Object {
     const ASSISTANT = 1; //ID v poli funkcí
     const ECONOMIST = 2; //ID v poli funkcí
     
+    const TYPE_CAMP = "camp";
+//    const TYPE_GENERAL = "general";
+
+
     /**
      * reference na třídu typu Table
      * @var instance of BaseTable

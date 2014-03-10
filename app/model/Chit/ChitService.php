@@ -24,7 +24,7 @@ class ChitService extends MutableBaseService {
      */
     public function get($chitId) {
         $ret = $this->table->get($chitId);
-        if ($ret instanceof DibiRow && self::$type == "camp") {//doplnění kategorie u paragonu z tábora
+        if ($ret instanceof DibiRow && self::$type == self::TYPE_CAMP) {//doplnění kategorie u paragonu z tábora
             $categories = $this->getCategoriesCampPairs($this->eventService->getSkautisId($ret->eventId));
             $ret->ctype = array_key_exists($ret->category, $categories['in']) ? "in" : "out";
         }
@@ -38,7 +38,7 @@ class ChitService extends MutableBaseService {
      */
     public function getAll($skautisEventId) {
         $list = $this->table->getAll($this->eventService->getLocalId($skautisEventId));
-        if (!empty($list) && self::$type == "camp") {
+        if (!empty($list) && self::$type == self::TYPE_CAMP) {
             $categories = $this->getCategoriesCampPairs($skautisEventId);
             foreach ($list as $k => $i) {
                 $i->ctype = array_key_exists($i->category, $categories['in']) ? "in" : "out";
@@ -69,7 +69,7 @@ class ChitService extends MutableBaseService {
      */
     public function getIn($skautisEventId, $list) {
         $ret = $this->table->getIn($this->eventService->getLocalId($skautisEventId), (array) $list);
-        if (self::$type == "camp") {
+        if (self::$type == self::TYPE_CAMP) {
             $categories = $this->getCategoriesCampPairs($skautisEventId);
             foreach ($ret as $k => $v)
                 $ret[$k]->ctype = array_key_exists($ret[$k]->category, $categories['in']) ? "in" : "out";
@@ -101,7 +101,7 @@ class ChitService extends MutableBaseService {
         $ret = $this->table->add($values);
         //doplnění čísla dokladu
         $this->table->update($ret, array("num"=>$this->generateNumber($ret)));
-        if (self::$type == "camp") {
+        if (self::$type == self::TYPE_CAMP) {
             $this->updateCategory($skautisEventId, $val['category']);
         }
 
@@ -111,13 +111,18 @@ class ChitService extends MutableBaseService {
         public function generateNumber($chitId){
         $chit = $this->get($chitId);
 //        dump($chit);
-        $categories = $this->getCategoriesCampPairs($this->eventService->getSkautisId($chit->eventId));
+        if(self::$type == self::TYPE_CAMP){
+            $categories = $this->getCategoriesCampPairs($this->eventService->getSkautisId($chit->eventId));
+        } else {//GeneralEvent
+            $categories = array('in'=>$this->getCategoriesIn(), 'out'=>$this->getCategoriesOut());
+        }
+        
         if(array_key_exists($chit->category, $categories['in'])){
             $type = 'in';
-            $res = "0";
+            $res = "1";
         } else {
             $type = 'out';
-            $res = "1";
+            $res = "2";
         }
         $res .= $this->table->generateNumber($chit->eventId, array_keys($categories[$type]));
         return $res;
@@ -152,7 +157,7 @@ class ChitService extends MutableBaseService {
         }
         $ret = $this->table->update($chitId, $toChange);
         //category update
-        if (self::$type == "camp") {
+        if (self::$type == self::TYPE_CAMP) {
             $skautisEventId = $this->eventService->getSkautisId($chit->eventId);
             //@TODO: zkontrolovat proč to je tady 2x
             $this->updateCategory($skautisEventId, $chit->category);
