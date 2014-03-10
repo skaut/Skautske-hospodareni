@@ -78,7 +78,7 @@ $(document).ready(function() {
     function calculateSum(type) {
         var sum = 0;
 //        alert(type);
-        $("td[data-type='"+type+"']").each(function() {
+        $("[data-type='"+type+"']").each(function() {
             var val = $(this).text();
             if(!isNaN(val) && val.length!=0) {
                 sum += parseFloat(val);
