@@ -22,7 +22,7 @@
         <table class="myTable table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th class="hidden-phone">&nbsp;</th>
+                    <th n:if="reset($list)->accessDelete" class="hidden-phone">&nbsp;</th>
                     <th>Název</th>
                     <th>Od</th>
                     <th>Do</th>
@@ -32,7 +32,7 @@
             </thead>
             <tbody>
                 <tr n:foreach="$list as $i">
-                    <td class="hidden-phone">{if $i->accessDelete}<a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
+                    <td n:if="$i->accessDelete" class="hidden-phone"><a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a></td>
                     <td>
                         <a n:tag-if="$i->accessDetail" n:href="Event: $i->ID">{$i->DisplayName}</a>
                     </td>

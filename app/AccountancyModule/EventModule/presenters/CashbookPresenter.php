@@ -8,18 +8,19 @@ use Nette\Application\UI\Form;
  * @author sinacek
  */
 class CashbookPresenter extends BasePresenter {
-
+    
     function startup() {
         parent::startup();
         if (!$this->aid) {
             $this->flashMessage("Musíš vybrat akci", "error");
             $this->redirect("Event:");
         }
+        $this->isEditable = $this->template->isEditable = array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
     }
 
     function renderDefault($aid) {
         $this->template->isInMinus = $this->context->eventService->chits->isInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->isEditable = $this->context->eventService->event->isCommandEditable($this->aid);
+//        $this->template->isEditable = $this->context->eventService->event->isCommandEditable($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->eventService->chits->getAll($aid);
         if($this->isAjax()){
