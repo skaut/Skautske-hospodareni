@@ -16,6 +16,14 @@ class ParticipantPresenter extends BasePresenter {
      * @var int
      */
     protected $uid;
+    //kontrola oprávnění
+    protected $isAllowParticipantDetail;
+//    protected $isAllowParticipantAll;
+    protected $isAllowParticipantDelete;
+    protected $isAllowParticipantDays;
+    protected $isAllowParticipant;
+    protected $isAllowParticipantInsert;
+    protected $isAllowParticipantUpdate;
 
     function startup() {
         parent::startup();
@@ -25,6 +33,12 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
         $this->uid = $this->getParameter("uid", NULL);
+        $this->isAllowParticipantDetail = $this->template->isAllowParticipantDetail = array_key_exists("EV_ParticipantGeneral_DETAIL", $this->availableActions);
+//        $this->isAllowParticipantAll    = $this->template->isAllowParticipantAll = array_key_exists("EV_ParticipantGeneral_ALL_EventGeneral", $this->availableActions);
+        $this->isAllowParticipantDelete = $this->template->isAllowParticipantDelete = array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
+        $this->isAllowParticipantDays   = $this->template->isAllowParticipantDays = array_key_exists("EV_EventGeneral_UPDATE_Days", $this->availableActions);
+        $this->isAllowParticipantInsert = $this->template->isAllowParticipantInsert = array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
+        $this->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdate = array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
     }
 
     public function beforeRender() {
@@ -61,9 +75,16 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function actionEditField($aid, $id, $field, $value) {
-        $this->editableOnly();
-        $oldData = $this->context->eventService->participants->get($id);
+        if (!$this->isAllowParticipantDays) {
+            $this->flashMessage("Nemáte oprávnění měnit účastníkův jejich údaje.", "danger");
+            if ($this->isAjax()) {
+                $this->sendPayload();
+            } else {
+                $this->redirect("Default:");
+            }
+        }
         
+        $oldData = $this->context->eventService->participants->get($id);
         if ($field == "days") {
             $arr = array(
                 "payment" => @$oldData['payment'],
@@ -105,7 +126,14 @@ class ParticipantPresenter extends BasePresenter {
 //    }
 
     public function handleRemove($pid) {
-        $this->editableOnly();
+        if (!$this->isAllowParticipantDelete) {
+            $this->flashMessage("Nemáte oprávnění odebírat účastníky.", "danger");
+            if ($this->isAjax()) {
+                $this->sendPayload();
+            } else {
+                $this->redirect("Default:");
+            }
+        }
         $this->context->eventService->participants->removeParticipant($pid);
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
@@ -117,7 +145,14 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function handleAdd($pid) {
-        $this->editableOnly();
+        if (!$this->isAllowParticipantInsert) {
+            $this->flashMessage("Nemáte oprávnění přidávat účastníky.", "danger");
+            if ($this->isAjax()) {
+                $this->sendPayload();
+            } else {
+                $this->redirect("Default:");
+            }
+        }
         $this->context->eventService->participants->add($this->aid, $pid);
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
@@ -211,79 +246,79 @@ class ParticipantPresenter extends BasePresenter {
 //        }
 //    }
 
-    public function createComponentFormMassAdd($name) {
-        $participants = $this->context->eventService->participants->getAll($this->aid);
-        $all = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
-
-        $form = new Form($this, $name);
-
-        $group = $form->addContainer('all');
-        foreach ($all as $id => $p) {
-            $group->addCheckbox($id, $p);
-        }
-        $form->addSubmit('massAddSend', ' ')
-                ->getControlPrototype()->setName("button")->create('i class="icon-plus icon-white"');
-        $form->onSuccess[] = array($this, $name . 'Submitted');
-        return $form;
-    }
-
-    public function formMassAddSubmitted(Form $form) {
-        $this->editableOnly();
-        $values = $form->getValues();
-
-        foreach ($values['all'] as $id => $bool) {
-            if ($bool)
-                $this->context->eventService->participants->add($this->aid, $id);
-        }
-        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid)); //TODO je to ok?
-    }
-
-    public function createComponentFormMassParticipants($name) {
-        $participants = $this->context->eventService->participants->getAll($this->aid);
-
-        $form = new Form($this, $name);
-        $group = $form->addContainer('ids');
-        foreach ($participants as $id => $p) {
-            $group->addCheckbox($p->ID, $p->Person);
-        }
-
-        $form->addText("days", "dní");
-        $form->addText("payment", "částka");
-        $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
-                ->getControlPrototype()
-                ->setName("button")
-                ->create('i class="icon-remove icon-white"');
-        $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
-        $form->addSubmit('massEditSend', 'Upravit')
-                ->getControlPrototype()->setClass("btn btn-info btn-small");
-        $form['massEditSend']->onClick[] = callback($this, 'massEditSubmitted');
+//    public function createComponentFormMassAdd($name) {
+//        $participants = $this->context->eventService->participants->getAll($this->aid);
+//        $all = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+//
+//        $form = new Form($this, $name);
+//
+//        $group = $form->addContainer('all');
+//        foreach ($all as $id => $p) {
+//            $group->addCheckbox($id, $p);
+//        }
+//        $form->addSubmit('massAddSend', ' ')
+//                ->getControlPrototype()->setName("button")->create('i class="icon-plus icon-white"');
 //        $form->onSuccess[] = array($this, $name . 'Submitted');
-        return $form;
-    }
+//        return $form;
+//    }
+//
+//    public function formMassAddSubmitted(Form $form) {
+//        $this->editableOnly();
+//        $values = $form->getValues();
+//
+//        foreach ($values['all'] as $id => $bool) {
+//            if ($bool)
+//                $this->context->eventService->participants->add($this->aid, $id);
+//        }
+//        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid)); //TODO je to ok?
+//    }
 
-    public function massRemoveSubmitted(SubmitButton $button) {
-        $this->editableOnly();
-        $values = $button->getForm()->getValues();
-        foreach ($values['ids'] as $id => $bool) {
-            if ($bool)
-                $this->context->eventService->participants->removeParticipant($id);
-        }
-        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
-    }
-
-    public function massEditSubmitted(SubmitButton $button) {
-        $this->editableOnly();
-        $values = $button->getForm()->getValues();
-        $data = array(
-            "days" => $values['days'],
-            "payment" => $values['payment']
-        );
-        foreach ($values['ids'] as $id => $bool) {
-            if ($bool)
-                $this->context->eventService->participants->update($id, $data);
-        }
-        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
-    }
+//    public function createComponentFormMassParticipants($name) {
+//        $participants = $this->context->eventService->participants->getAll($this->aid);
+//
+//        $form = new Form($this, $name);
+//        $group = $form->addContainer('ids');
+//        foreach ($participants as $id => $p) {
+//            $group->addCheckbox($p->ID, $p->Person);
+//        }
+//
+//        $form->addText("days", "dní");
+//        $form->addText("payment", "částka");
+//        $form->addSubmit('massRemoveSend', 'Odebrat vybrané')
+//                ->getControlPrototype()
+//                ->setName("button")
+//                ->create('i class="icon-remove icon-white"');
+//        $form['massRemoveSend']->onClick[] = callback($this, 'massRemoveSubmitted');
+//        $form->addSubmit('massEditSend', 'Upravit')
+//                ->getControlPrototype()->setClass("btn btn-info btn-small");
+//        $form['massEditSend']->onClick[] = callback($this, 'massEditSubmitted');
+////        $form->onSuccess[] = array($this, $name . 'Submitted');
+//        return $form;
+//    }
+//
+//    public function massRemoveSubmitted(SubmitButton $button) {
+//        $this->editableOnly();
+//        $values = $button->getForm()->getValues();
+//        foreach ($values['ids'] as $id => $bool) {
+//            if ($bool)
+//                $this->context->eventService->participants->removeParticipant($id);
+//        }
+//        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
+//    }
+//
+//    public function massEditSubmitted(SubmitButton $button) {
+//        $this->editableOnly();
+//        $values = $button->getForm()->getValues();
+//        $data = array(
+//            "days" => $values['days'],
+//            "payment" => $values['payment']
+//        );
+//        foreach ($values['ids'] as $id => $bool) {
+//            if ($bool)
+//                $this->context->eventService->participants->update($id, $data);
+//        }
+//        $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
+//    }
 
 //    function createComponentFormFindByName($name) {
 //        $aid = $this->presenter->aid;
@@ -370,7 +405,14 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function formAddParticipantNewSubmitted(Form $form) {
-        $this->editableOnly();
+        if (!$this->isAllowParticipantInsert) {
+            $this->flashMessage("Nemáte oprávnění přidávat účastníky.", "danger");
+            if ($this->isAjax()) {
+                $this->sendPayload();
+            } else {
+                $this->redirect("Default:");
+            }
+        }
         $values = $form->getValues();
         $aid = $values['aid'];
         $person = array(

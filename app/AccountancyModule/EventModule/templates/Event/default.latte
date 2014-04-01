@@ -60,7 +60,7 @@
             </tr>
             <tr>
                 {? $index = 0}
-                <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
+                <td n:if="$accessFunctionUpdate">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td class="required">{$funkce[$index]->EventFunctionType}*
                     <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
@@ -68,7 +68,7 @@
             </tr>
             <tr>
                 {? $index = 1}
-                <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
+                <td n:if="$accessFunctionUpdate">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
                     <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
@@ -76,7 +76,7 @@
             </tr>
             <tr>
                 {? $index = 2}
-                <td n:if="$isEditable">{include #functionButtons $funkce, "index"=>$index}</td>
+                <td n:if="$accessFunctionUpdate">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
                     <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Osoba registrovaná ve SkautISu"/>
                 </td>

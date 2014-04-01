@@ -31,7 +31,7 @@
                     Podřízené?<i class="icon icon-white {if !$directMemberOnly}icon-ok{else}icon-ban-circle{/if}"></i>
                 </a>
 
-                <a class="btn btn-primary btn-small" href="#addParticipant" data-toggle="modal">Nový účastník</a>
+                <a n:if="$isAllowParticipantInsert" class="btn btn-primary btn-small" href="#addParticipant" data-toggle="modal">Nový účastník</a>
             </div>
             <table class="table table-striped table-bordered">
                 <thead class="onlyWithUnitPersons">
@@ -51,7 +51,7 @@
                         <td>
                         {*}{input all-$id class=>"hidden-phone"}{*}
                         {*}{if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini ajax"><i class="icon-plus icon-white"></i></a>{/if}{*}
-                        {if $isEditable}<a n:href="add! $id" class="btn btn-primary btn-mini addRow"><i class="icon-plus icon-white"></i></a>{/if}
+                        {if $isAllowParticipantInsert}<a n:href="add! $id" class="btn btn-primary btn-mini addRow"><i class="icon-plus icon-white"></i></a>{/if}
                         </td>
                         <td>{*}<i class="icon icon-move hidden-tablet hidden-phone" style='float: right;'></i> {*}{$name}{*{label all-$id /}*}</td>
                     </tr>
@@ -74,7 +74,11 @@
             <h3>Seznam účastníků</h3>
             {var $participantsNames = []}
             <div class="well well-small hidden-phone">
+                {if $isAllowParticipantDetail}
                 <a n:href="export $aid" target="_blank" class="btn btn-info btn-small{if empty($participants)} disabled{/if}"><i class="icon icon-white icon-print"></i> Seznam účastníků</a>
+                {else}
+                <p class="alert alert-info">Nemáte oprávnění zobrazit informace o účastnících!</p>
+                {/if}
             </div>
 
             <table id="participants-list" class="table table-striped table-bordered">
@@ -102,8 +106,8 @@
                     <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
                     {? $participantsNames[] = $p->Person}
                         <td>{*}{label ids-$p->ID /}{*}{*}<i class="icon icon-move hidden-tablet hidden-phone"></i> {*}{$p->Person}</td>
-                        <td><a id="par-days-{$p->ID}"{if $isEditable} class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if}>{$p->Days}</a></td>
-                        <td><a id="par-payment-{$p->ID}"{if $isEditable} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if} >{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</a></td>
+                        <td><a id="par-days-{$p->ID}"{if $isAllowParticipantDays} class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if}>{$p->Days}</a></td>
+                        <td><a id="par-payment-{$p->ID}"{if isAllowParticipantDays} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if} >{if isset($p->Note) && $p->Note != ""}{$p->Note}{? $total += $p->Note}{else}0{/if}</a></td>
                         <td n:if="$accessUpdateParticipant || $accessDeleteParticipant">
                         {*}
                         {input ids-$p->ID class=>"hidden-phone"}
@@ -195,7 +199,7 @@
 
 </div>
 
-{if $isEditable}
+{if $isAllowParticipantInsert}
 {* nový účastník *}
 <div class="modal myModal fade" id="addParticipant">
     <div class="modal-header">
