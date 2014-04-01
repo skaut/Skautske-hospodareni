@@ -30,7 +30,7 @@ class AuthPresenter extends BasePresenter {
     }
 
     /**
-     * zajistuje spracovani prihlaseni na skautIS
+     * zajistuje zpracovani prihlaseni na skautIS
      * @param string $ReturnUrl 
      */
     function actionSkautIS($ReturnUrl = NULL) {

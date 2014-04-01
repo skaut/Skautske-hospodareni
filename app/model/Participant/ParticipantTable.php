@@ -6,7 +6,7 @@
 class ParticipantTable extends BaseTable {
 
     public function get($participantId) {
-        return dibi::fetch("SELECT * FROM  [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId =%i LIMIT 1", $participantId);
+        return dibi::fetch("SELECT * FROM  [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId=%i LIMIT 1", $participantId);
     }
 
     /**
@@ -17,20 +17,20 @@ class ParticipantTable extends BaseTable {
     public function getAll($actionId) {
         return dibi::fetchAll("SELECT participantId, payment, repayment, isAccount FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE actionId=%i", $actionId);
     }
-    
+
     /**
-     * smaze záznam
+     * smaže záznam
      * @param type $participantId
      */
-    public function deleteDetail($participantId){
+    public function deleteDetail($participantId) {
         dibi::query("DELETE FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId =%i", $participantId);
     }
-    
-    public function update($participantId, $updateData){
+
+    public function update($participantId, $updateData) {
         $ins = $updateData;
         $ins['participantId'] = $participantId;
-        unset($updateData['actionId']);//to se neaktualizuje
-        return dibi::query("INSERT INTO [" . self::TABLE_CAMP_PARTICIPANT . "]", $ins,"
+        unset($updateData['actionId']); //to se neaktualizuje
+        return dibi::query("INSERT INTO [" . self::TABLE_CAMP_PARTICIPANT . "]", $ins, "
             ON DUPLICATE KEY 
             UPDATE %a", $updateData);
     }
