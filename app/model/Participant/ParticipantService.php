@@ -46,7 +46,7 @@ class ParticipantService extends MutableBaseService {
         $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "Detail"}(array("ID" => $participantId));
         $data = $this->table->get($participantId);
         if ($data === FALSE) {//u akcí to v tabulce nic nenajde
-            $data = array("payment" => (int) $tmp->{self::PAYMENT});
+            $data = array("payment" => (int) @$tmp->{self::PAYMENT});
         }
         $data['days'] = (int) $tmp->Days;
         return $data;

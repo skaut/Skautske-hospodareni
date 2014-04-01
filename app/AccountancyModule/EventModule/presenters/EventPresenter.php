@@ -37,8 +37,9 @@ class EventPresenter extends BasePresenter {
 //                "economist" => isset($func) && is_array($func) ? $func[EventService::ECONOMIST]->ID_Person : "",
             ));
         }
+
         $this->template->funkce = $func;
-        $this->template->isEditable = $this->context->eventService->event->isCommandEditable($this->event);
+        $this->template->accessFunctionUpdate = $this->isAllowed("EV_EventGeneral_UPDATE_Function");
         $this->template->accessEditBase = $accessEditBase;
         $this->template->accessCloseEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Close");
         $this->template->accessOpenEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Open");
