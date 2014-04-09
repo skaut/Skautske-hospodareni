@@ -195,6 +195,12 @@ class CashbookPresenter extends BasePresenter {
         $categories = $thisP->context->eventService->chits->getCategoriesOut();
         $form->addRadioList("category", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
+        if ($thisP->event->prefix != "") {
+            $form->addText("num", "Číslo d.:", NULL, 5)
+                    ->setAttribute('class', 'input-mini')
+                    ->addCondition(Form::FILLED)
+                        ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+        }
         return $form;
     }
 
@@ -236,6 +242,12 @@ class CashbookPresenter extends BasePresenter {
         $categories = $thisP->context->eventService->chits->getCategoriesIn();
         $form->addRadioList("category", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
+        if ($thisP->event->prefix != "") {
+            $form->addText("num", "Číslo d.:", NULL, 5)
+                    ->setAttribute('class', 'input-mini')
+                    ->addCondition(Form::FILLED)
+                        ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+        }
         return $form;
     }
 

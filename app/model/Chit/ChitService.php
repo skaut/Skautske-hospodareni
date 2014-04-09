@@ -96,11 +96,12 @@ class ChitService extends MutableBaseService {
             "price" => $this->solveString($val['price']),
             "priceText" => str_replace(",", ".", $val['price']),
             "category" => $val['category'],
+            "num" => $val['num'],//$val['num'] != "" ? str_pad((int) $val['num'],5,"0",STR_PAD_LEFT) : null
         );
 
         $ret = $this->table->add($values);
         //doplnění čísla dokladu
-        $this->table->update($ret, array("num"=>$this->generateNumber($ret)));
+        //$this->table->update($ret, array("num"=>$this->generateNumber($ret)));
         if (self::$type == self::TYPE_CAMP) {
             $this->updateCategory($skautisEventId, $val['category']);
         }
