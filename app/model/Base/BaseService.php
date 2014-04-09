@@ -12,7 +12,10 @@ abstract class BaseService extends Nette\Object {
     
     const TYPE_CAMP = "camp";
 //    const TYPE_GENERAL = "general";
-
+    /**
+     * věková hranice pro dítě
+     */
+    const ADULT_AGE = 18;
 
     /**
      * reference na třídu typu Table

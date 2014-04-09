@@ -8,7 +8,7 @@ use Nette\Application\UI\Form;
  * @author sinacek
  */
 class CashbookPresenter extends BasePresenter {
-    
+
     function startup() {
         parent::startup();
         if (!$this->aid) {
@@ -23,7 +23,7 @@ class CashbookPresenter extends BasePresenter {
 //        $this->template->isEditable = $this->context->eventService->event->isCommandEditable($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->eventService->chits->getAll($aid);
-        if($this->isAjax()){
+        if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
     }
@@ -47,24 +47,23 @@ class CashbookPresenter extends BasePresenter {
         $this->template->form = $form;
         $this->template->autoCompleter = $this->context->memberService->getAC();
     }
-    
+
     //AJAX edit
     public function actionEditField($aid, $id, $field, $value) {
         $this->editableOnly();
-        
+
         if ($field == "price") {
             $this->context->eventService->chits->update($id, array("price" => $value));
-        } 
-        
+        }
+
         $this->terminate();
     }
-    
 
     public function actionImportHpd($aid) {
         $this->editableOnly();
         $totalPayment = $this->context->eventService->participants->getTotalPayment($this->aid);
         $func = $this->context->eventService->event->getFunctions($this->aid);
-        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : "";//$func[0]->Person
+        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : ""; //$func[0]->Person
         $date = $this->context->eventService->event->get($aid)->StartDate;
         $category = $this->context->eventService->chits->getEventCategoryParticipant();
 
@@ -81,6 +80,11 @@ class CashbookPresenter extends BasePresenter {
     public function actionExport($aid) {
         $template = $this->context->exportService->getCashbook($aid, $this->context->eventService);
         $this->context->eventService->chits->makePdf($template, "pokladni-kniha.pdf");
+        $this->terminate();
+    }
+
+    public function actionExportExcel($aid) {
+        $this->context->excelService->getCashbook($this->context->eventService, $this->event);
         $this->terminate();
     }
 
@@ -279,4 +283,3 @@ class CashbookPresenter extends BasePresenter {
     }
 
 }
-
