@@ -86,6 +86,11 @@ class CashbookPresenter extends BasePresenter {
         $this->context->campService->chits->makePdf($template, "pokladni-kniha.pdf");
         $this->terminate();
     }
+    
+    public function actionExportExcel($aid) {
+        $this->context->excelService->getCashbook($this->context->eventService, $aid, $this->camp);
+        $this->terminate();
+    }
 
     function actionPrint($id, $aid) {
         $chits = array($this->context->campService->chits->get($id));

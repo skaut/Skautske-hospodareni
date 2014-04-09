@@ -75,7 +75,8 @@
             {var $participantsNames = []}
             <div class="well well-small hidden-phone">
                 {if $isAllowParticipantDetail}
-                <a n:href="export $aid" target="_blank" class="btn btn-info btn-small{if empty($participants)} disabled{/if}"><i class="icon icon-white icon-print"></i> Seznam účastníků</a>
+                <a n:href="export $aid" target="_blank" class="btn btn-info btn-small{if empty($participants)} disabled{/if}"><i class="icon icon-white icon-print"></i> Seznam účastníků (.pdf)</a>
+                <a n:href="exportExcel $aid" target="_blank" class="btn btn-info btn-small{if empty($participants)} disabled{/if}"><i class="icon icon-white icon-file"></i> Seznam účastníků (.xlsx)</a>
                 {else}
                 <p class="alert alert-info">Nemáte oprávnění zobrazit informace o účastnících!</p>
                 {/if}

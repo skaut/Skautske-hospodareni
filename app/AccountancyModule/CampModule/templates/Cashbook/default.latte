@@ -44,6 +44,7 @@
                 <div class="well well-small span12">
                     <a n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
                     <a n:href="export $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
+                    <a n:href="exportExcel $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon-file icon-white"></i> Exportovat do excelu</a>
                 </div>
             </div>
 
@@ -67,7 +68,7 @@
                     </thead>
                     <tbody>
             {assign $balance => 0}
-                    {foreach $list as $key => $item}
+                    {foreach $list as $item}
                         {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
                         <tr{if $balance < 0} class="alert alert-error"{/if}>
                             <td>
@@ -78,7 +79,7 @@
                             </td>
                             <td><span class="hidden-desktop">{$item->date|date:"j.n."}</span><span class="visible-desktop">{$item->date|date:"d.m.Y"}</span></td>
                             <td n:if="$camp->prefix !=''" title="{$camp->prefix}{$item->num}">{$item->num}</td>
-                            <td>{$item->purpose|truncate:"30"}</td>
+                            <td title="{$item->purpose}">{$item->purpose|truncate:"30"}</td>
                             <td class="hidden-phone" title="{$item->clabel}">{$item->cshort}</td>
                             <td class="hidden-phone">{$item->recipient}</td>
                             <td class="r">{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}

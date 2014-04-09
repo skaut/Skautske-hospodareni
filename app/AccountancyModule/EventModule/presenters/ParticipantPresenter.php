@@ -118,6 +118,11 @@ class ParticipantPresenter extends BasePresenter {
         $this->context->eventService->participants->makePdf($template, "seznam-ucastniku.pdf");
         $this->terminate();
     }
+    
+    public function renderExportExcel($aid) {
+        $this->context->excelService->getParticipants($this->context->eventService, $this->event);
+        $this->terminate();
+    }
 
 //    public function renderHpd($aid) {
 //        $template = $this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService);

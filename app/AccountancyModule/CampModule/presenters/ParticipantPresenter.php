@@ -42,8 +42,8 @@ class ParticipantPresenter extends BasePresenter {
         $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
         usort($participants, function ($a, $b) {
-                    return strcasecmp($a->Person, $b->Person);
-                });
+            return strcasecmp($a->Person, $b->Person);
+        });
         natcasesort($list);
 
         $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
@@ -83,6 +83,11 @@ class ParticipantPresenter extends BasePresenter {
         $template = $this->context->exportService->getParticipants($aid, $this->context->campService, "camp");
 //        echo $template;die();
         $this->context->campService->participants->makePdf($template, "seznam-ucastniku.pdf", true);
+        $this->terminate();
+    }
+
+    public function renderExportExcel($aid) {
+        $this->context->excelService->getParticipants($this->context->campService, $this->camp, "camp");
         $this->terminate();
     }
 
@@ -319,4 +324,3 @@ class ParticipantPresenter extends BasePresenter {
     }
 
 }
-
