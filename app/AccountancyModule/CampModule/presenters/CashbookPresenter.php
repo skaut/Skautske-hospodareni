@@ -239,12 +239,6 @@ class CashbookPresenter extends BasePresenter {
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("input-medium");
-//        if ($thisP->camp->prefix != "") {
-//            $form->addText("num", "Číslo:", 4)
-//                    ->getControlPrototype()->class("input-medium")
-//                    ->addCondition(Form::FILLED)
-//                    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
-//        }
 //@TODO kontrola platneho data, problem s componentou
         $form->addText("recipient", "Vyplaceno komu:", 20, 30)
                 ->setHtmlId("form-out-recipient")
@@ -260,6 +254,12 @@ class CashbookPresenter extends BasePresenter {
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
         $form->addRadioList("category", "Typ: ", $categories['out'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
+        if ($thisP->camp->prefix != "") {
+            $form->addText("num", "Číslo d.:", NULL, 5)
+                    ->setAttribute('class', 'input-mini')
+                    ->addCondition(Form::FILLED)
+                        ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+        }
         return $form;
     }
 
@@ -287,12 +287,6 @@ class CashbookPresenter extends BasePresenter {
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("input-medium");
-//        if ($thisP->camp->prefix != "") {
-//            $form->addText("num", "Číslo:", 4)
-//                    ->getControlPrototype()->class("input-medium")
-//                    ->addCondition(Form::FILLED)
-//                    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
-//        }
         $form->addText("recipient", "Přijato od:", 20, 30)
                 ->setHtmlId("form-in-recipient")
                 ->getControlPrototype()->class("input-medium");
@@ -307,6 +301,12 @@ class CashbookPresenter extends BasePresenter {
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
         $form->addRadioList("category", "Typ: ", $categories['in'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
+        if ($thisP->camp->prefix != "") {
+            $form->addText("num", "Číslo d.:", NULL, 5)
+                    ->setAttribute('class', 'input-mini')
+                    ->addCondition(Form::FILLED)
+                        ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+        }
         return $form;
     }
 

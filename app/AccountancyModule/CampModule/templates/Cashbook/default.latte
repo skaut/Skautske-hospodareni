@@ -57,7 +57,7 @@
                                 {input massPrintSend class=>"btn btn-info btn-mini allDependend hidden-phone"} 
                             </th>
                             <th>Ze dne</th>
-                            <th n:if="$camp->prefix !=''">Číslo</th>
+                            <th n:if="!isnull($camp->prefix) && $camp->prefix !=''">Číslo</th>
                             <th>Účel výplaty</th>
                             <th class="hidden-phone">Typ</th>
                             <th class="hidden-phone">Komu/Od</th>
@@ -78,7 +78,7 @@
                                 <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
                             </td>
                             <td><span class="hidden-desktop">{$item->date|date:"j.n."}</span><span class="visible-desktop">{$item->date|date:"d.m.Y"}</span></td>
-                            <td n:if="$camp->prefix !=''" title="{$camp->prefix}{$item->num}">{$item->num}</td>
+                            <td n:if="!isnull($camp->prefix) && $camp->prefix !=''" title="{$camp->prefix}{$item->num}">{$item->num}</td>
                             <td title="{$item->purpose}">{$item->purpose|truncate:"30"}</td>
                             <td class="hidden-phone" title="{$item->clabel}">{$item->cshort}</td>
                             <td class="hidden-phone">{$item->recipient}</td>
@@ -89,7 +89,7 @@
                         {/foreach}
                         <tr {if $balance < 0}class="alert alert-error"{/if}>
                             <td colspan="2">&nbsp;</td>
-                            <td n:if="$camp->prefix !=''">&nbsp;</td>
+                            <td n:if="!isnull($camp->prefix) && $camp->prefix !=''">&nbsp;</td>
                             <td class="hidden-phone">&nbsp;</td>
                             <td class="hidden-phone">&nbsp;</td>
                             <td><b>Konečný stav</b></td>

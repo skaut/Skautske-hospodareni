@@ -46,6 +46,7 @@
                                 {input massPrintSend class=>"btn btn-info btn-mini allDependend hidden-phone"} 
                             </th>
                             <th>Ze dne</th>
+                            <th n:if="!isnull($event->prefix) && $event->prefix != ''">Číslo</th>
                             <th>Účel výplaty</th>
                             <th class="hidden-phone">Typ</th>
                             <th class="hidden-phone">Komu/Od</th>
@@ -64,6 +65,7 @@
                                 <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
                             </td>
                             <td><span class="hidden-desktop">{$item->date|date:"j.n."}</span><span class="visible-desktop">{$item->date|date:"d.m.Y"}</span></td>
+                            <td n:if="!isnull($event->prefix) && $event->prefix != ''" title="{$event->prefix}{$item->num}">{$item->num}</td>
                             <td {if strlen($item->purpose) > 30} title="{$item->purpose}"{/if}>{$item->purpose|truncate:"30"}</td>
                             <td title="{$item->clabel}" class="hidden-phone">{$item->cshort}</td>
                             <td class="hidden-phone">{$item->recipient}</td>
@@ -75,6 +77,7 @@
                         <tr>
                             <td>&nbsp;</td>
                             <td class="hidden-phone">&nbsp;</td>
+                            <td n:if="!isnull($event->prefix) && $event->prefix != ''" class="hidden-phone">&nbsp;</td>
                             <td class="hidden-phone">&nbsp;</td>
                             <td colspan="2"><b>Konečný stav</b></td>
                             <td>&nbsp;</td>
