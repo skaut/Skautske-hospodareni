@@ -8,7 +8,7 @@ use Nette\Application\UI\Form;
  * @author sinacek
  */
 class CashbookPresenter extends BasePresenter {
-
+    
     function startup() {
         parent::startup();
         if (!$this->aid) {
