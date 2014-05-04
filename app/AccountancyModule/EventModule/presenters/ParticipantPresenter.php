@@ -79,6 +79,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function actionEditField($aid, $id, $field, $value) {
+
         if (!$this->isAllowParticipantUpdate) {
             $this->flashMessage("Nemáte oprávnění měnit účastníkův jejich údaje.", "danger");
             if ($this->isAjax()) {
@@ -87,7 +88,7 @@ class ParticipantPresenter extends BasePresenter {
                 $this->redirect("Default:");
             }
         }
-
+        
         $oldData = $this->context->eventService->participants->get($id);
         if ($field == "days") {
             $arr = array(

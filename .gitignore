@@ -1,0 +1,9 @@
+
+/www/webtemp
+/www/images
+htaccess
+/app/config/config.*.neon
+/vendor
+/temp
+/source
+/nbproject
