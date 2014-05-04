@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 use Nette\Application\UI\Form,
     Nette\Caching\Cache;
 
@@ -137,4 +139,3 @@ class OfflinePresenter extends BasePresenter {
     }
 
 }
-

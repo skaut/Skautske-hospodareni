@@ -1,8 +1,9 @@
 <?php
 
-namespace AccountancyModule\EventModule;
+namespace App\AccountancyModule\EventModule;
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+    Nette\Forms\Controls\SubmitButton;
 
 /**
  * @author Hána František
@@ -17,8 +18,9 @@ class EventPresenter extends BasePresenter {
         //nastavení dat do formuláře pro editaci
         $func = false;
 
-        if ($this->isAllowed("EV_EventFunction_ALL_EventGeneral"))
+        if ($this->isAllowed("EV_EventFunction_ALL_EventGeneral")) {
             $func = $this->context->eventService->event->getFunctions($aid);
+        }
 
         $accessEditBase = $this->isAllowed("EV_EventGeneral_UPDATE");
 //        && $this->isAllowed("EV_EventGeneral_UPDATE_Function");
@@ -32,6 +34,7 @@ class EventPresenter extends BasePresenter {
                 "location" => $this->event->Location,
                 "type" => $this->event->ID_EventGeneralType,
                 "scope" => $this->event->ID_EventGeneralScope,
+                "prefix" => $this->event->prefix,
 //                "leader" => isset($func) && is_array($func) ? $func[EventService::LEADER]->ID_Person : "",
 //                "assistant" => isset($func) && is_array($func) ? $func[EventService::ASSISTANT]->ID_Person : "",
 //                "economist" => isset($func) && is_array($func) ? $func[EventService::ECONOMIST]->ID_Person : "",
@@ -112,8 +115,9 @@ class EventPresenter extends BasePresenter {
             $this->redirect("this");
         }
 
-        if (!$this->context->eventService->event->setFunction($this->aid, NULL, $fid))
+        if (!$this->context->eventService->event->setFunction($this->aid, NULL, $fid)) {
             $this->flashMessage("Funkci se nepodařilo odebrat", "danger");
+        }
         $this->redirect("this");
     }
 
@@ -130,35 +134,32 @@ class EventPresenter extends BasePresenter {
 
     function createComponentFormEdit($name) {
 //        $combo = $this->context->memberService->getCombobox(NULL, TRUE);
-        $scopes = $this->context->eventService->event->getScopes();
-        $types = $this->context->eventService->event->getTypes();
-
         $form = new Form($this, $name);
+        $form->addProtection();
         $form->addText("name", "Název akce");
         $form->addDatePicker("start", "Od");
         $form->addDatePicker("end", "Do");
         $form->addText("location", "Místo");
-        $form->addSelect("type", "Typ (+)", $types);
-        $form->addSelect("scope", "Rozsah (+)", $scopes);
+        $form->addSelect("type", "Typ (+)", $this->context->eventService->event->getTypes());
+        $form->addSelect("scope", "Rozsah (+)", $this->context->eventService->event->getScopes());
+        $form->addText("prefix", "Prefix", NULL, 6);
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
-                ->getControlPrototype()->setClass("btn btn-primary");
-
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+                ->setAttribute("class", "btn btn-primary")
+                ->onClick[] = $this->{$name."Submitted"};
         return $form;
     }
 
-    function formEditSubmitted(Form $form) {
-
+    function formEditSubmitted(SubmitButton $button) {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE")) {
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
             $this->redirect("this");
         }
-        $values = $form->getValues();
+        $values = $button->getForm()->getValues();
 
         $values['start'] = $values['start']->format("Y-m-d");
         $values['end'] = $values['end']->format("Y-m-d");
-
+        
         $id = $this->context->eventService->event->update($values);
 
         if ($id) {

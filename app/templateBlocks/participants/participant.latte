@@ -1,0 +1,135 @@
+{block #content}
+<div class="row-fluid wipeBox visible-phone" id="participants-menu">
+    <a href="#potencial-menu" class="btn btn-primary"><i class="icon icon-arrow-up icon-white"></i> Nevybraní účastníci <i class="icon icon-arrow-up icon-white"></i></a>
+</div>
+<div class="span6" n:snippet="participants">
+        {form formMassParticipants}
+        <div n:if="$isAllowParticipantUpdate" class="modal myModal fade" id="massEdit"> 
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">×</a>
+                <h2>Hromadné nastavení</h2>
+            </div>
+            
+            {formContainer edit}
+            <div class="modal-body">
+                <table>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td><b>Upravit?</b></td>
+                    </tr>
+                    <tr>
+                        <td>{label days class=>"ca" /}</td>
+                        <td>{input days style=>"width:40px"}</td>
+                        <td class="ct">{input daysc}</td>
+                    </tr>
+                    <tr>
+                        <td>{label payment /}</td>
+                        <td>{input payment style=>"width:40px"}</td>
+                        <td class="ct">{input paymentc}</td>
+                    </tr>
+                    <tr n:if="$isAllowRepayment">
+                        <td>{label repayment /}</td>
+                        <td>{input repayment style=>"width:40px"}</td>
+                        <td class="ct">{input repaymentc}</td>
+                    </tr>
+                    <tr n:if="$isAllowIsAccount">
+                        <td>{label isAccount /}</td>
+                        <td>{input isAccount}</td>
+                        <td style="text-align: center;">{input isAccountc}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">{input send}</td>
+                    </tr>
+                </table>
+            </div>
+            {/formContainer}  
+        </div>
+            
+            
+            
+        {var $tabIndex = 1}
+        <div n:ifset="$participants">
+            <h3>Seznam účastníků</h3>
+            {var $participantsNames = []}
+            <div class="well well-small hidden-phone">
+                {if $isAllowParticipantDetail}
+                <a n:href="export $aid" target="_blank" class="btn btn-info btn-small{if empty($participants)} disabled{/if}"><i class="icon icon-white icon-print"></i> Seznam účastníků (.pdf)</a>
+                <a n:href="exportExcel $aid" target="_blank" class="btn btn-info btn-small{if empty($participants)} disabled{/if}"><i class="icon icon-white icon-file"></i> Seznam účastníků (.xlsx)</a>
+                {else}
+                <p class="alert alert-info">Nemáte oprávnění zobrazit informace o účastnících!</p>
+                {/if}
+            </div>
+
+            <table id="participants-list" class="table table-striped table-bordered">
+                <thead class="onlyWithParticipants">
+                    <tr>
+                        <th>Příjmení a jméno ({= count($participants)})</th>
+                        <th>Dnů &nbsp; </th>
+                        <th>Částka</th>
+                        <th n:if="$isAllowRepayment">Vratka</th>
+                        <th n:if="$isAllowIsAccount">Na účet?</th>
+                        <th n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" style="width: 85px;text-align: right;" class="hidden-phone">
+                            <a n:if="$isAllowParticipantUpdate" href="#massEdit" data-toggle="modal" class="btn btn-primary btn-mini dependentButtonParticipant" title="Upravit vybrané"><i class="icon-edit icon-white"></i></a>
+                            {if $isAllowParticipantDelete}
+                                <button n:name="send" title="Odebrat vybrané" class="btn btn-danger btn-mini dependentButtonParticipant" type="submit">
+                                    <i class="icon-remove icon-white"></i>
+                                </button>
+                            {/if}
+                            <input type="checkbox" id="massParticipants-all" name="massParticipants-all" onclick="jqCheckAll(this.id, 'massParticipants')"/>
+                        </th>
+                    </tr>
+                </thead>
+                {var $totalPayment = $totalRepayment = 0}
+                <tbody class="dropable" id="participants-list-tbody">
+                    {if !empty($participants)}
+                    <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
+                    {? $participantsNames[] = $p->Person}
+                        <td>{*}{label ids-$p->ID /}{*}{*}<i class="icon icon-move hidden-tablet hidden-phone"></i> {*}{$p->Person}</td>
+                        <td class="r"><a id="par-days-{$p->ID}"{if $isAllowParticipantUpdate}   class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if}>{$p->Days}</a></td>
+                        <td class="r"><a id="par-payment-{$p->ID}"{if $isAllowParticipantUpdate} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if} >{if isset($p->payment) && $p->payment != ""}{$p->payment|price:false}{? $totalPayment += $p->payment}{else}0{/if}</a></td>
+                        <td n:if="$isAllowRepayment"><a id="par-repayment-{$p->ID}"{if $isAllowParticipantUpdate} class="num-edit" data-type='repayment' data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if} >{if isset($p->repayment) && $p->repayment != ""}{$p->repayment|price:false}{? $totalRepayment += $p->repayment}{else}0{/if}</a></td>
+                        <td n:if="$isAllowIsAccount">{ifset $p->isAccount}{$p->isAccount == 'Y' ? 'Ano'}{/ifset}</td>
+                        <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="r">
+                            <a n:if="$isAllowParticipantDelete" n:href="remove! $p->ID" class="btn btn-danger btn-mini addRow"><i class="icon-remove icon-white"></i></a>
+                            <input type="checkbox" name="massParticipants[]" id="massParticipants-{$p->ID}" value={$p->ID}/>
+                        </td>
+                    </tr>
+                    {/if}
+                    <tr class="alert info noparticipants" {if count($participants)==0} style="display:none;"{/if} id="noparticipant" draggable="false"><td colspan="4"><b>Nejsou vybráni žádní účastníci.</b></td></tr>
+                </tbody>
+                <tfoot class="onlyWithParticipants">
+                    <tr>
+                        {var $total = $totalPayment - $totalRepayment}
+                        <td colspan="2"></td>
+                        <td n:if="$isAllowRepayment" class="r" id="payment-total">{$totalPayment}</td>
+                        <td n:if="$isAllowIsAccount" class="r" id="repayment-total">{$totalRepayment}</td>
+                        <td class="b" {if $isAllowParticipantUpdate || $isAllowParticipantDelete}colspan="2"{/if}>
+                            Celkem: <b id="total-total">{$total}</b>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {/form}
+        <script type="text/javascript">
+        $(document).ready(function() {
+            participantsList = $({$participantsNames});
+            if(participantsList.size() == 0){
+                $(".noparticipants").show();
+                $(".onlyWithParticipants").hide();
+            } else {
+                $(".noparticipants").hide();
+                $(".onlyWithParticipants").show();
+            }
+            $unitPersons = $("#unit-participants-tbody tr:not(.no-unit-persons)");
+            if($unitPersons.size() == 0){
+                $(".no-unit-persons").show();
+                $(".onlyWithUnitPersons").hide();
+            } else {
+                $(".no-unit-persons").hide();
+                $(".onlyWithUnitPersons").show();
+            }        
+        });
+        </script>
+    </div>

@@ -32,7 +32,7 @@ class ParticipantService extends MutableBaseService {
             $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "All"}(array("ID_Event" . self::$typeName => $ID));
             $res = array();
             foreach ($tmp as $p) {//objekt má vzdy Note a je pod associativnim klicem
-                $p->{self::PAYMENT} = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
+                $p->payment = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
                 $res[$p->ID] = $p;
             }
             $this->saveSes($cacheId, $res);
@@ -142,21 +142,26 @@ class ParticipantService extends MutableBaseService {
      */
     public function update($participantId, array $arr) {
         if (self::$typeName == "Camp") {
-            $sis = array(
-                'ID' => $participantId,
-                'Real' => TRUE,
-            );
             if (isset($arr['days'])) {
-                $sis['Days'] = $arr['days'];
+                $sis = array(
+                    'ID' => $participantId,
+                    'Real' => TRUE,
+                    'Days' => $arr['days'],
+                );
+                $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
             }
-            $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
-            $data = array(
-                "actionId" => $arr['actionId'],
-                "payment" => $arr['payment'],
-                "repayment" => @$arr['repayment'],
-                "isAccount" => @$arr['isAccount'],
-            );
-            $this->table->update($participantId, $data);
+            $keys = array("actionId", "payment", "repayment", "isAccount");
+            $dataUpdate = array();
+            $cnt = 0;
+            foreach ($keys as $key){
+                if(isset($arr[$key])){
+                    $dataUpdate[$key] = $arr[$key];
+                    $cnt++;
+                }
+            }
+            if($cnt > 1){
+                $this->table->update($participantId, $dataUpdate);
+            }
         } else {
             $sis = array(
                 'ID' => $participantId,
@@ -164,14 +169,13 @@ class ParticipantService extends MutableBaseService {
                 'Days' => $arr['days'],
                 self::PAYMENT => $arr['payment'],
             );
-
             $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
         }
     }
 
     /**
      * odebere účastníka
-     * @param type $person_ID
+     * @param type $participantId
      * @return type 
      */
     public function removeParticipant($participantId) {

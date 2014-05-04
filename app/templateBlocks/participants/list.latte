@@ -1,0 +1,54 @@
+{block #content}
+<div class="span6" n:if="$isAllowParticipantInsert">
+        {snippet potencialParticipants}
+        {var $unitTbodyId = "unit-participants-tbody"}
+            <h3>Osoby v jednotce</h3>
+            {*}{form formMassAdd}{*}
+            <div class="well well-small threeButtons">
+                <div class="btn-group">
+                    <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#" rel="tooltip" data-original-title="Jednotka, ze které se zobrazí seznam členů">{$unit->DisplayName|truncate:20, ""} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li n:ifset="$uparrent->ID"><a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a></li>
+                        <li><a class="active" style="font-weight: bold" href="#">&minus;&gt;{$unit->DisplayName}</a></li>
+                        <li n:foreach="$uchildrens as $ch"><a n:href="this $aid, $ch->ID">&minus;&minus;&gt; {$ch->DisplayName}</a></li>      
+                    </ul>
+                </div>
+
+                <a n:href="changeDirectMemberOnly!" class="ajax btn btn-primary btn-small" rel="tooltip" data-original-title="Zobrazit členy i z podřízených jednotek?">
+                    Podřízené?<i class="icon icon-white {if !$directMemberOnly}icon-ok{else}icon-ban-circle{/if}"></i>
+                </a>
+
+                <a n:if="$isAllowParticipantInsert" class="btn btn-primary btn-small" href="#addParticipant" data-toggle="modal">Nový účastník</a>
+            </div>                
+                
+            <table class="table table-striped table-bordered" n:form="formMassList">
+                <thead class="onlyWithUnitPersons">
+                    <tr>
+                        <th n:if="$isAllowParticipantInsert" class="twoButtons">
+                            <input type="checkbox" class="hidden-phone" id="massList-all" name="massList-all" onclick="jqCheckAll(this.id, 'massList')" />
+                            <button n:name="send" title="Přidat vybrané" class="btn btn-primary btn-mini dependentButtonList hidden-phone" type="submit">
+                                <i class="icon-plus icon-white"></i>
+                            </button>
+                        </th>
+                        <th>Příjmení a jméno</th>
+                    </tr>
+                </thead>
+                <tbody class="dropable" id="{$unitTbodyId}">
+                {if count($list) > 0}
+                    <tr n:foreach="$list as $id=>$name" id='unit-par-row-{$id}' data-pid='{$id}'>
+                        <td n:if="$isAllowParticipantInsert">
+                            <input type=checkbox class="hidden-phone" name="massList[]" id="massList-{$id}" value={$id} />
+                            {if $isAllowParticipantInsert}
+                                <a n:href="add! $id" class="btn btn-primary ajax btn-mini hidden-phone addRow"><i class="icon-plus icon-white"></i></a>
+                                <a n:href="add! $id" class="btn btn-primary ajax btn-small visible-phone addRow"><i class="icon-plus icon-white"></i></a>
+                            {/if}
+                        </td>
+                        <td><label for="massList-{$id}">{$name}</label></td>
+                    </tr>
+                {/if}
+                    <tr class="alert info no-unit-persons" draggable="false"><td colspan="2"><b>Nejsou žádné nevybrané osoby v jednotce.</b></td></tr>
+                </tbody>
+            </table>
+            {*}{/form}{*}
+        {/snippet}
+    </div>

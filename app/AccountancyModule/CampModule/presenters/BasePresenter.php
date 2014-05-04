@@ -1,16 +1,16 @@
 <?php
 
-namespace AccountancyModule\CampModule;
+namespace App\AccountancyModule\CampModule;
 
 use  Nette\Application\Routers\Route,
     Nette\Application\Routers\RouteList,
-    Extras\Sinacek\MyRoute,
+    Sinacek\MyRoute,
     SkautIS\Exception\PermissionException;
 
 /**
  * @author sinacek
  */
-class BasePresenter extends \AccountancyModule\BasePresenter {
+class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     const STable = "EV_EventCamp";
     

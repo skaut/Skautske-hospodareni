@@ -1,6 +1,6 @@
 <?php
 
-namespace AccountancyModule\CampModule;
+namespace App\AccountancyModule\CampModule;
 
 use Nette\Application\UI\Form;
 

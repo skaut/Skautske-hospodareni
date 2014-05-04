@@ -1,11 +1,11 @@
 <?php
 
-namespace AccountancyModule;
+namespace App\AccountancyModule;
 
 /**
  * @author sinacek
  */
-class DefaultPresenter extends \BasePresenter {
+class DefaultPresenter extends BasePresenter {
 
     /**
      * pouze přesměrovává na jiný presenter

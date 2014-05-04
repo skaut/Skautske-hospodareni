@@ -1,0 +1,383 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "fbb7039a8bafa25dbf286d7b838ff4c6",
+    "packages": [
+        {
+            "name": "dg/dibi",
+            "version": "v2.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dg/dibi.git",
+                "reference": "2c3fe68c6cf42e051b591d8897aedc3fad97024f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dg/dibi/zipball/2c3fe68c6cf42e051b591d8897aedc3fad97024f",
+                "reference": "2c3fe68c6cf42e051b591d8897aedc3fad97024f",
+                "shasum": ""
+            },
+            "replace": {
+                "dg/dibi": "self.version"
+            },
+            "require-dev": {
+                "nette/tester": "@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "dibi/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3",
+                "GPLv2",
+                "GPLv3"
+            ],
+            "authors": [
+                {
+                    "name": "David Grudl",
+                    "homepage": "http://davidgrudl.com"
+                }
+            ],
+            "description": "Dibi is Database Abstraction Library for PHP 5.",
+            "homepage": "http://dibiphp.com/",
+            "keywords": [
+                "access",
+                "database",
+                "dbal",
+                "mssql",
+                "mysql",
+                "odbc",
+                "oracle",
+                "pdo",
+                "postgresql",
+                "sqlite"
+            ],
+            "time": "2013-10-16 19:39:29"
+        },
+        {
+            "name": "janmarek/webloader",
+            "version": "2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/janmarek/WebLoader.git",
+                "reference": "5e62831fe7ba5779b97ebd0c23439dbcef80d102"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/janmarek/WebLoader/zipball/5e62831fe7ba5779b97ebd0c23439dbcef80d102",
+                "reference": "5e62831fe7ba5779b97ebd0c23439dbcef80d102",
+                "shasum": ""
+            },
+            "require": {
+                "nette/nette": "~2.0@rc"
+            },
+            "require-dev": {
+                "mockery/mockery": "0.7.*",
+                "phpunit/phpunit": "3.7.*"
+            },
+            "suggest": {
+                "leafo/lessphp": "Lessphp is a composer for LESS written in PHP."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "WebLoader": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Marek",
+                    "email": "mail@janmarek.net",
+                    "homepage": "http://www.janmarek.net/",
+                    "role": "Author"
+                }
+            ],
+            "description": "Tool for loading or deploying CSS and JS files into web pages",
+            "homepage": "http://addons.nette.org/cs/webloader",
+            "keywords": [
+                "assets",
+                "css",
+                "javascript",
+                "nette",
+                "webloader"
+            ],
+            "time": "2014-01-01 16:54:25"
+        },
+        {
+            "name": "mpdf/mpdf",
+            "version": "v5.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/finwe/mpdf.git",
+                "reference": "ca266f29a20ed00ee351aadee1934ddcfbbe4b53"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/finwe/mpdf/zipball/ca266f29a20ed00ee351aadee1934ddcfbbe4b53",
+                "reference": "ca266f29a20ed00ee351aadee1934ddcfbbe4b53",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=4.3.10"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "mpdf.php",
+                    "classes"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-1.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Ian Back"
+                }
+            ],
+            "description": "A PHP class to generate PDF files from HTML with Unicode/UTF-8 and CJK support",
+            "homepage": "http://www.mpdf1.com/mpdf/index.php",
+            "keywords": [
+                "pdf",
+                "php",
+                "utf-8"
+            ],
+            "time": "2013-09-02 12:16:35"
+        },
+        {
+            "name": "nette/nette",
+            "version": "v2.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nette/nette.git",
+                "reference": "8065ce5a8879557c7a3e5130cd9162e55fb3a5c4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nette/nette/zipball/8065ce5a8879557c7a3e5130cd9162e55fb3a5c4",
+                "reference": "8065ce5a8879557c7a3e5130cd9162e55fb3a5c4",
+                "shasum": ""
+            },
+            "require": {
+                "ext-iconv": "*",
+                "ext-tokenizer": "*",
+                "php": ">=5.3.1"
+            },
+            "require-dev": {
+                "nette/tester": "~1.0.0"
+            },
+            "suggest": {
+                "ext-fileinfo": "*",
+                "ext-gd": "*",
+                "ext-mbstring": "*",
+                "ext-pdo": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Nette/"
+                ],
+                "files": [
+                    "Nette/common/shortcuts.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause",
+                "GPL-2.0",
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "David Grudl",
+                    "homepage": "http://davidgrudl.com"
+                },
+                {
+                    "name": "Nette Community",
+                    "homepage": "http://nette.org/contributors"
+                }
+            ],
+            "description": "Nette Framework - innovative framework for fast and easy development of secured web applications in PHP. Write less, have cleaner code and your work will bring you joy.",
+            "homepage": "http://nette.org",
+            "keywords": [
+                "Forms",
+                "database",
+                "debugging",
+                "framework",
+                "mailing",
+                "mvc",
+                "templating"
+            ],
+            "time": "2014-03-17 18:54:21"
+        },
+        {
+            "name": "phpoffice/phpexcel",
+            "version": "1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/PHPExcel.git",
+                "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/e69a5e4d0ffa7fb6f171859e0a04346e580df30b",
+                "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-xml": "*",
+                "ext-xmlwriter": "*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPExcel": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "authors": [
+                {
+                    "name": "Maarten Balliauw",
+                    "homepage": "http://blog.maartenballiauw.be"
+                },
+                {
+                    "name": "Mark Baker"
+                },
+                {
+                    "name": "Franck Lefevre",
+                    "homepage": "http://blog.rootslabs.net"
+                },
+                {
+                    "name": "Erik Tilt"
+                }
+            ],
+            "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
+            "homepage": "http://phpexcel.codeplex.com",
+            "keywords": [
+                "OpenXML",
+                "excel",
+                "php",
+                "spreadsheet",
+                "xls",
+                "xlsx"
+            ],
+            "time": "2014-03-02 15:22:49"
+        },
+        {
+            "name": "skautis/skautis",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sinacek/SkautIS.git",
+                "reference": "dd4fa29acee5d37fe2a0200babfd352d5cdc0d69"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sinacek/SkautIS/zipball/dd4fa29acee5d37fe2a0200babfd352d5cdc0d69",
+                "reference": "dd4fa29acee5d37fe2a0200babfd352d5cdc0d69",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "0.8.*",
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "SkautIS": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "František Hána",
+                    "homepage": "http://sinacek.cz"
+                }
+            ],
+            "description": "Library for API calls to SkautIS",
+            "homepage": "https://github.com/sinacek/SkautIS",
+            "keywords": [
+                "api",
+                "skautis"
+            ],
+            "time": "2014-01-10 10:17:35"
+        },
+        {
+            "name": "srigi/nette-visualpaginator",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/srigi/nette-visualpaginator.git",
+                "reference": "2098503c9dc82d0c2787ea66e749672c5f06f9d1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/srigi/nette-visualpaginator/zipball/2098503c9dc82d0c2787ea66e749672c5f06f9d1",
+                "reference": "2098503c9dc82d0c2787ea66e749672c5f06f9d1",
+                "shasum": ""
+            },
+            "require": {
+                "nette/nette": "~2.0",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "VisualPaginator": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "David Grudl",
+                    "email": "david@grudl.com",
+                    "homepage": "http://davidgrudl.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Igor Hlina",
+                    "email": "srigi@srigi.sk"
+                }
+            ],
+            "description": "Addon to display paginator in Nette webapplications",
+            "time": "2013-02-21 16:57:03"
+        }
+    ],
+    "packages-dev": [
+
+    ],
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "skautis/skautis": 20,
+        "srigi/nette-visualpaginator": 20
+    },
+    "platform": {
+        "php": ">= 5.3.0"
+    },
+    "platform-dev": [
+
+    ]
+}

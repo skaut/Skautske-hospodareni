@@ -1,0 +1,56 @@
+#
+# SECURITY WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
+#
+# If you don't protect this directory from direct web access, anybody will be able to see your passwords.
+# http://nette.org/security-warning
+#
+parameters:
+
+php:
+    date.timezone: Europe/Prague
+    # zlib.output_compression: yes
+
+nette:
+    session:
+        autoStart: smart
+        expiration: "+ 3 days"
+    application:
+        errorPresenter: Error
+        catchExceptions: true
+        mapping:
+            *: App\*Module\*Presenter
+    debugger:
+        email: %sinacek@gmail.com%
+        strictMode: FALSE
+        maxDepth: 6
+
+
+services:
+    #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
+    - App\RouterFactory
+    router: @App\RouterFactory::createRouter
+    connection:
+        class: DibiConnection
+        factory: dibi::connect(%database%)
+        run: TRUE
+    authService:
+        class: AuthService( @skautIS )
+    eventService:
+        class: EventEntity( "General", "EventGeneral", "+ 2 days", @skautIS, @cacheStorage )
+    campService:
+        class: EventEntity( "Camp", "Camp", "+ 2 days", @skautIS, @cacheStorage)
+    memberService:
+        class: MemberService( @skautIS )
+    unitService:
+        class: UnitService( @skautIS )
+    userService:
+        class: UserService( @skautIS )
+    travelService:
+        class: TravelService( @skautIS )
+    exportService:
+        class: ExportService
+    excelService:
+        class: ExcelService
+    skautIS:
+        class: SkautIS\SkautIS
+        factory: SkautIS\SkautIS::getInstance(%skautisid%, %skautisTestMode%)

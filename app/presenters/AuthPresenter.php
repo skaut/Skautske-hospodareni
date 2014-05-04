@@ -1,4 +1,5 @@
 <?php
+namespace App;
 
 use SkautIS\Exception\AuthenticationException;
 
@@ -52,7 +53,7 @@ class AuthPresenter extends BasePresenter {
             $me = $this->context->userService->getPersonalDetail();
 
             $this->user->setExpiration('+ 29 minutes'); // nastavíme expiraci
-            $this->user->setAuthenticator(new SkautISAuthenticator());
+            $this->user->setAuthenticator(new \Sinacek\SkautISAuthenticator());
             $this->user->login($me);
 
             if (isset($ReturnUrl)) {

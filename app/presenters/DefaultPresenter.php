@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 class DefaultPresenter extends BasePresenter {
     protected function startup() {
         parent::startup();

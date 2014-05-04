@@ -17,7 +17,7 @@
             function changeRole(id){
                  $.post({link changeRole!}, { roleId : id });
             }
-{if $presenter->context->params['productionMode']}
+{if $presenter->context->parameters['productionMode']}
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-2900685-26']);
       _gaq.push(['_trackPageview']);

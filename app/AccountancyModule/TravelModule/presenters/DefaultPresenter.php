@@ -1,6 +1,6 @@
 <?php
 
-namespace AccountancyModule\TravelModule;
+namespace App\AccountancyModule\TravelModule;
 
 use Nette\Application\UI\Form;
 

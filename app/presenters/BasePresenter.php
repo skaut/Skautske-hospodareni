@@ -1,14 +1,20 @@
 <?php
 
-use SkautIS\Exception\AuthenticationException;
+namespace App;
+
+use Nette,
+    WebLoader,
+    SkautIS\Exception\AuthenticationException;
 
 abstract class BasePresenter extends Nette\Application\UI\Presenter {
 
+
     protected function startup() {
         parent::startup();
-//        if(Nette\Diagnostics\Debugger::isEnabled()){ 
-//            \Extras\Debug\RequestsPanel::register();//mozny problem s pretecenim pameti, viz http://forum.nette.org/cs/12212-padani-pri-prihlaseni-a-odhlaseni-regenerateid#p88026
-//        }
+        
+        //adresář s částmi šablon pro použití ve více modulech
+        $this->template->templateBlockDir = APP_DIR . "/templateBlocks/";
+        
         $storage = \Nette\Environment::getSession()->getSection("__" . __CLASS__);
         $this->context->skautIS->setStorage($storage, TRUE);
         $this->template->backlink = $this->getParameter("backlink");
@@ -16,14 +22,14 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $this->template->ssl = $params['ssl'];
 
         \Nette\Forms\Container::extensionMethod('addDatePicker', function (\Nette\Forms\Container $container, $name, $label = NULL) {
-                    return $container[$name] = new JanTvrdik\Components\DatePicker($label);
-                });
+            return $container[$name] = new \JanTvrdik\Components\DatePicker($label);
+        });
         try {
             if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
                 $this->context->authService->updateLogoutTime();
             }
         } catch (AuthenticationException $e) {
-            if ($this->name != "Auth" || $this->params['action'] != "skautisLogout"){ //pokud jde o odhlaseni, tak to nevadi
+            if ($this->name != "Auth" || $this->params['action'] != "skautisLogout") { //pokud jde o odhlaseni, tak to nevadi
                 throw $e;
             }
         }
@@ -74,6 +80,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $files->addFiles(array(
             'jquery-1.8.2.min.js',
             'jquery-ui-1.10.0.custom.min.js',
+            'netteForms.js',
             'jquery.touchwipe.min.js',
             'mobile.js',
             'my-datepicker.js',

@@ -47,6 +47,10 @@
                 <th>Stav</th>
                 <td {if $event->ID_EventGeneralState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{!$event->ID_EventGeneralState|eventStateLabel}</td>
             </tr>
+            <tr>
+                <th>Prefix <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů platná."/></th>
+                <td>{$event->prefix}</td>
+            </tr>
         </table>
     </div>
 

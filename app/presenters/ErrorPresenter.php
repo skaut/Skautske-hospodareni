@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 use Nette\Diagnostics\Debugger;
 
 class ErrorPresenter extends Nette\Application\UI\Presenter {
