@@ -1,0 +1,63 @@
+{block #content}
+<script type="text/javascript" >
+
+    $(function(){
+        $(".allDependend").addClass("disabled").attr("disabled", "disabled");
+        onlyWithCheckbox("chits", "allDependend");
+            
+        $( "#cashbook-tabs" ).tabs();
+        
+
+        //Autocompleter
+        var text = {$autoCompleter};
+        var optionsAC = {
+            source: text,
+            delay: 0,
+            minLength: 2,
+            items: 7
+        };
+        $('#form-in-recipient').typeahead(optionsAC);
+        $('#form-out-recipient').typeahead(optionsAC);
+
+        //CALC
+        var priceInputIn = $('#form-in-price');
+        var priceInputOut = $('#form-out-price');
+        
+        //reurn bool
+        function isNumber(val) {
+            return /^-?((\d+\.?\d?)|(\.\d+))$/.test(val);
+        }
+        //method onchange on form
+        function priceControl(obj){
+            var textPlace = obj.parent().prev().children().after('<span> </span>').next();
+            obj.change(
+                function () {
+                    var val = this.value.trim(), endIndex, isError = false;
+
+                    while(1) {
+                        endIndex = val.length-1;
+                        if(isNumber(val.charAt(endIndex)) || val.length < 1){
+                            if(isError)
+                                alert("Cena byla upravena, aby končila číslem");
+                            break;
+                        }
+                        else {
+                            val = val.substr(0, endIndex);
+                            obj.val(val);
+                            isError = true;
+                        }
+                    }
+                    //var textPlace = obj.parent().prev().children().next();
+                    if(val.length < 1) {
+                        textPlace.html('');
+                    } else {
+                        val = val.replace(",", ".");
+                        textPlace.html(eval(val).toFixed(2) +' =');
+                    }
+                }
+            )
+        }
+        priceControl(priceInputIn);
+        priceControl(priceInputOut);
+    })
+</script>

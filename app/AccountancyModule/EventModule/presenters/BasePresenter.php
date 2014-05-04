@@ -1,15 +1,15 @@
 <?php
 
-namespace AccountancyModule\EventModule;
+namespace App\AccountancyModule\EventModule;
 
 use Nette\Application\Routers\Route,
     Nette\Application\Routers\RouteList,
-    Extras\Sinacek\MyRoute;
+    Sinacek\MyRoute;
 
 /**
  * @author sinacek
  */
-class BasePresenter extends \AccountancyModule\BasePresenter {
+class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     const STable = "EV_EventGeneral";
 

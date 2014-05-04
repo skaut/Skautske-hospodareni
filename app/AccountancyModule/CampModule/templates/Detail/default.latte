@@ -30,9 +30,9 @@
                 <th>Stav</th>
                 <td {if $camp->ID_EventCampState == closed}title="Uzavřel: {$camp->PersonClosed} dne: {$camp->DateClosed|date:"j.n.Y"}" {/if}>{!$camp->ID_EventCampState|campStateLabel}</td>
             </tr>
-            <tr n:ifset="$camp->prefix">
-                <th>Prefix</th>
-                <td>{$camp->prefix}</td>
+            <tr>
+                <th>Prefix <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů aktivní."/></th>
+                <td>{$camp->prefix} <a n:if="$accessDetail" href="#editPrefix" class="btn btn-primary btn-mini" data-toggle="modal"><i class="icon-pencil icon-white"></i></a></td>
             </tr>
         </table>
     </div>
@@ -61,5 +61,14 @@
     </div>
 </div>
 <div class="row-fluid">
+    <div n:if="$accessDetail" class="modal myModal fade" id="editPrefix">
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>Upravit prefix</h3>
+        </div>
+        <div class="modal-body">
+            {control formEdit}
+        </div>
+    </div>
 </div>
 

@@ -4,116 +4,14 @@
 <h2>{$camp->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
-{dump $list}
-
 <div n:ifset="$missingCategories" class="alert alert-error">
     Nemáte aktivní automatické dopočítání z kategorií, bez kterého nelze přidávat záznamy. 
     <a n:href="activateAutocomputedCashbook! $aid" class="btn btn-primary btn-small">Aktivovat dopočítávání</a>
 </div>
 
 <div class="row-fluid">
-    {* sekce přidávání paragonů *}
-    <div class="span3" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)" style="width: 240px;">
-    {snippet tabs}
-        <ul class="nav nav-tabs" id="chitType">
-            <li class="active"><a data-toggle="tab" href="#vydajovy">Výdaje</a></li>
-            <li><a data-toggle="tab" href="#prijmovy">Příjmy</a></li>
-        </ul>
-
-        <div class="tab-content" id="chitTypeContent">
-            <div id="vydajovy" class="tab-pane fade active in">
-                {control formOutAdd}
-            </div>
-            <div id="prijmovy" class="tab-pane fade">
-                {control formInAdd}
-            </div>
-        </div>
-    {/snippet}    
-    </div>
-
-    {* sekce seznam paragonů *}
-    <div class="span9">
-
-        <div n:snippet="paragony">
-        {if $list}
-            <div class="row-fluid">
-                <p n:if="$isInMinus" class="alert alert-error">
-                    Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
-                </p>
-                {form formMass}
-                <div class="well well-small span12">
-                    <a n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
-                    <a n:href="export $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
-                    <a n:href="exportExcel $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon-file icon-white"></i> Exportovat do excelu</a>
-                </div>
-            </div>
-
-            <div class="row-fluid">
-                <table class="table myTable table-bordered table-condensed" id="cashbookTable">
-                    <thead>
-                        <tr>
-                            <th style="width:{if $isEditable}120{else}60{/if}px">
-                                <input type="checkbox" id="frmformMass-chits-all" onclick="jqCheckAll(this.id, 'chits')" class="hidden-phone" />
-                                {input massPrintSend class=>"btn btn-info btn-mini allDependend hidden-phone"} 
-                            </th>
-                            <th>Ze dne</th>
-                            <th n:if="!isnull($camp->prefix) && $camp->prefix !=''">Číslo</th>
-                            <th>Účel výplaty</th>
-                            <th class="hidden-phone">Typ</th>
-                            <th class="hidden-phone">Komu/Od</th>
-                            <th>Příjem</th>
-                            <th>Výdej</th>
-                            <th>Zůstatek</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            {assign $balance => 0}
-                    {foreach $list as $item}
-                        {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
-                        <tr{if $balance < 0} class="alert alert-error"{/if}>
-                            <td>
-                                {input chits-$item->id class=>"hidden-phone"}
-                                <a n:href="print $item->id, $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon icon-print icon-white"></i></a>
-                                <a n:if="$isEditable" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-primary"><i class="icon icon-edit icon-white"></i></a>
-                                <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
-                            </td>
-                            <td><span class="hidden-desktop">{$item->date|date:"j.n."}</span><span class="visible-desktop">{$item->date|date:"d.m.Y"}</span></td>
-                            <td n:if="!isnull($camp->prefix) && $camp->prefix !=''" title="{$camp->prefix}{$item->num}">{$item->num}</td>
-                            <td title="{$item->purpose}">{$item->purpose|truncate:"30"}</td>
-                            <td class="hidden-phone" title="{$item->clabel}">{$item->cshort}</td>
-                            <td class="hidden-phone">{$item->recipient}</td>
-                            <td class="r">{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
-                            <td class="r">{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>{* ! je tady kvuli &nbsp;*}
-                            <td class="r">{$balance|price}</td>
-                        </tr>
-                        {/foreach}
-                        <tr {if $balance < 0}class="alert alert-error"{/if}>
-                            <td colspan="2">&nbsp;</td>
-                            <td n:if="!isnull($camp->prefix) && $camp->prefix !=''">&nbsp;</td>
-                            <td class="hidden-phone">&nbsp;</td>
-                            <td class="hidden-phone">&nbsp;</td>
-                            <td><b>Konečný stav</b></td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td {if $balance < 0}class="isMinus"{/if}><b>{$balance|price}</b></td>
-                        </tr>
-                    <tbody>
-                </table>
-            </div>
-            {/form}
-        {else}
-            <div class="row-fluid" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)">
-                <div class="well well-small span4">
-                    <a href="#importHpd" role="button" data-toggle="modal" class="btn btn-mini btn-primary">Načíst příjmy od účastníků</a>
-                </div>
-            </div>
-            <div class="row-fluid">
-                <p class="alert span8">Zatím zde nemáte žádné doklady. Pro přidání dokladů je potřeba mít aktivované automatické dopočítávání kategorií ve skautisu.</p>
-            </div>
-        {/if}
-
-        </div>
-    </div>
+    {include $templateBlockDir.'cashbook/tabs.latte'}
+    {include $templateBlockDir.'cashbook/table.latte'}
 </div>
 
 <div id="importHpd" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="importHpdLabel" aria-hidden="true">
@@ -126,66 +24,4 @@
     </div>
 </div>
 
-
-<script type="text/javascript" >
-
-    $(function(){
-        $(".allDependend").addClass("disabled").attr("disabled", "disabled");
-        onlyWithCheckbox("frmformMass-chits-", "allDependend");
-            
-        $( "#cashbook-tabs" ).tabs();
-        
-
-        //Autocompleter
-        var text = {$autoCompleter};
-        var optionsAC = {
-            source: text,
-            delay: 0,
-            minLength: 2,
-            items: 7
-        };
-        $('#form-in-recipient').typeahead(optionsAC);
-        $('#form-out-recipient').typeahead(optionsAC);
-
-        //CALC
-        var priceInputIn = $('#form-in-price');
-        var priceInputOut = $('#form-out-price');
-        
-        //reurn bool
-        function isNumber(val) {
-            return /^-?((\d+\.?\d?)|(\.\d+))$/.test(val);
-        }
-        //method onchange on form
-        function priceControl(obj){
-            var textPlace = obj.parent().prev().children().after('<span> </span>').next();
-            obj.change(
-                function () {
-                    var val = this.value.trim(), endIndex, isError = false;
-
-                    while(1) {
-                        endIndex = val.length-1;
-                        if(isNumber(val.charAt(endIndex)) || val.length < 1){
-                            if(isError)
-                                alert("Cena byla upravena, aby končila číslem");
-                            break;
-                        }
-                        else {
-                            val = val.substr(0, endIndex);
-                            obj.val(val);
-                            isError = true;
-                        }
-                    }
-                    //var textPlace = obj.parent().prev().children().next();
-                    if(val.length < 1) {
-                        textPlace.html('');
-                    } else {
-                        val = val.replace(",", ".");
-                        textPlace.html(eval(val).toFixed(2) +' =');
-                    }
-                }
-            )
-        }
-        priceControl(priceInputIn);
-        priceControl(priceInputOut);
-    })
-</script>
+{include $templateBlockDir.'cashbook/js.latte'}

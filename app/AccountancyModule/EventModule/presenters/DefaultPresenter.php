@@ -1,6 +1,6 @@
 <?php
 
-namespace AccountancyModule\EventModule;
+namespace App\AccountancyModule\EventModule;
 
 use Nette\Application\UI\Form;
 

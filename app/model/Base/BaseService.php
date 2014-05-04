@@ -79,8 +79,8 @@ abstract class BaseService extends Nette\Object {
         $format = $landscape ? "A4-L" : "A4";
         if ($template === NULL)
             return FALSE;
-        define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
-        require_once(_MPDF_PATH . 'mpdf.php');
+//        define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
+//        require_once(_MPDF_PATH . 'mpdf.php');
         $mpdf = new mPDF(
                 'utf-8',
                 $format,

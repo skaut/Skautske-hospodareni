@@ -1,15 +1,15 @@
 <?php
 
-namespace AccountancyModule;
+namespace App\AccountancyModule;
 
 use Nette\Application\Routers\Route,
     Nette\Application\Routers\RouteList,
-    Extras\Sinacek\MyRoute;
+    Sinacek\MyRoute;
 
 /**
  * @author sinacek
  */
-class BasePresenter extends \BasePresenter {
+class BasePresenter extends \App\BasePresenter {
 
     /**
      * backlink

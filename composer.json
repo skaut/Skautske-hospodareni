@@ -1,0 +1,14 @@
+{
+	"name": "skautskeHospodareni",
+	"type": "project",
+	"require": {
+		"php": ">= 5.3.0",
+		"nette/nette": "~2.1.0",
+                "skautis/skautis": "dev-master",
+                "janmarek/webloader": "2.2.*",
+                "dg/dibi" : "~2.1",
+                "srigi/nette-visualpaginator": "dev-master",
+                "phpoffice/phpexcel": "1.8.0",
+                "mpdf/mpdf": "v5.7.1"
+	}
+}

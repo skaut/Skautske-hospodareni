@@ -1,15 +1,15 @@
 <?php
 
-namespace AccountancyModule\TravelModule;
+namespace App\AccountancyModule\TravelModule;
 
 use Nette\Application\Routers\Route,
     Nette\Application\Routers\RouteList,
-    Extras\Sinacek\MyRoute;
+    Sinacek\MyRoute;
 
 /**
  * @author sinacek
  */
-class BasePresenter extends \AccountancyModule\BasePresenter {
+class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     protected $unit;
 

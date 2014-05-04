@@ -1,9 +1,10 @@
 
 <ul class="nav nav-pills">
-    <li {ifCurrent Detail: $aid}class='active'{/ifCurrent}><a n:href="Detail: $aid">Základní údaje</a></li>
-    <li {ifCurrent Participant: $aid}class='active'{/ifCurrent}><a n:href="Participant: $aid">Účastníci</a></li>
-    <li {ifCurrent Cashbook: $aid}class='active'{/ifCurrent}><a n:href="Cashbook: $aid">Pokladní kniha</a></li>
-    <li {ifCurrent Budget: $aid}class='active'{/ifCurrent}><a n:href="Budget: $aid">Rozpočet</a></li>
+    <li {ifCurrent Detail: $aid}class='active'{/ifCurrent}><a n:href="Detail: $aid"><i class="icon icon-briefcase hidden-phone"></i> Základní<span class="hidden-phone"> údaje</span></a></li>
+    <li {ifCurrent Participant: $aid}class='active'{/ifCurrent}><a n:href="Participant: $aid"><i class="icon icon-user hidden-phone"></i> Účastníci</a></li>
+    <li {ifCurrent Cashbook: $aid}class='active'{/ifCurrent}><a n:href="Cashbook: $aid"><i class="icon icon-shopping-cart hidden-phone"></i> Pokladní kniha</a></li>
+    <li {ifCurrent Budget: $aid}class='active'{/ifCurrent}><a n:href="Budget: $aid"><i class="icon icon-th-list hidden-phone"></i> Rozpočet</a></li>
+    
 </ul>
 {*}
 <ul class="nav nav-pills">

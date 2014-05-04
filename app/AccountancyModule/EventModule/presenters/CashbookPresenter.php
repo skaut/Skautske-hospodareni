@@ -1,6 +1,6 @@
 <?php
 
-namespace AccountancyModule\EventModule;
+namespace App\AccountancyModule\EventModule;
 
 use Nette\Application\UI\Form;
 
@@ -150,7 +150,7 @@ class CashbookPresenter extends BasePresenter {
         $form->addSubmit('send', 'Uložit')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, 'formAddSubmitted');
-        $form->setDefaults(array('category' => 'un'));
+        //$form->setDefaults(array('category' => 'un'));
         return $form;
     }
 
@@ -195,11 +195,11 @@ class CashbookPresenter extends BasePresenter {
         $categories = $thisP->context->eventService->chits->getCategoriesOut();
         $form->addRadioList("category", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
-        if ($thisP->event->prefix != "") {
+        if (isset($thisP->event->prefix) && $thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
-                    ->addCondition(Form::FILLED)
-                        ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+                    ;//->addCondition(Form::FILLED)
+                    //    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
         }
         return $form;
     }
@@ -210,7 +210,7 @@ class CashbookPresenter extends BasePresenter {
         $form->addSubmit('send', 'Uložit')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, 'formAddSubmitted');
-        $form->setDefaults(array('category' => 'pp'));
+        //$form->setDefaults(array('category' => 'pp'));
         return $form;
     }
 
@@ -245,8 +245,8 @@ class CashbookPresenter extends BasePresenter {
         if ($thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
-                    ->addCondition(Form::FILLED)
-                        ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+                    ;//->addCondition(Form::FILLED)
+                    //    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
         }
         return $form;
     }

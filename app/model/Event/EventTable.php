@@ -20,4 +20,8 @@ class EventTable extends BaseTable {
         return dibi::fetch("SELECT id as localId, prefix FROM  [" . self::TABLE_EVENT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $evId, $type);
     }
 
+    public function updatePrefix($aid, $type, $prefix) {
+        return dibi::query("UPDATE [" . self::TABLE_EVENT . "] SET prefix=%s", $prefix == "" ? NULL : $prefix, " WHERE skautisId=%i ", $aid, "AND type=%s LIMIT 1", $type);
+    }
+
 }

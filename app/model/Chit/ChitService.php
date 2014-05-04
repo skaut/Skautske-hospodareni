@@ -138,12 +138,14 @@ class ChitService extends MutableBaseService {
     public function update($chitId, $val) {
         $changeAbleData = array("date", "num", "recipient", "purpose", "price", "category");
 
-        if (!is_array($val) && !($val instanceof ArrayAccess))
+        if (!is_array($val) && !($val instanceof ArrayAccess)) {
             throw new InvalidArgumentException("Values nejsou ve správném formátu");
+        }
         $chit = $this->get($chitId);
 
-        if (isset($val['id']))
+        if (isset($val['id'])) {
             $val['id'] = $chitId;
+        }
 
         $toChange = array();
         foreach ($changeAbleData as $name) {
@@ -162,8 +164,9 @@ class ChitService extends MutableBaseService {
             $skautisEventId = $this->eventService->getSkautisId($chit->eventId);
             //@TODO: zkontrolovat proč to je tady 2x
             $this->updateCategory($skautisEventId, $chit->category);
-            if (isset($val["category"]))
+            if (isset($val["category"])) {
                 $this->updateCategory($skautisEventId, $val["category"]);
+            }
         }
         return $ret;
     }
@@ -194,8 +197,9 @@ class ChitService extends MutableBaseService {
      * @return array
      */
     public function getCategories($all = FALSE) {
-        if ($all)
+        if ($all) {
             return $this->table->getCategoriesAll();
+        }
         return $this->table->getCategories();
     }
 

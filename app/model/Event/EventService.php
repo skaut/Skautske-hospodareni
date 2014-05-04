@@ -27,7 +27,7 @@ class EventService extends MutableBaseService {
         }
         return $res;
     }
-    
+
     public function getSkautisId($localEventId) {
         $cacheId = __FUNCTION__ . $localEventId;
         if (!($res = $this->loadSes($cacheId))) {
@@ -189,9 +189,17 @@ class EventService extends MutableBaseService {
 //            "ID_PersonEconomist" => $economist
 //        ));
 
-        if (isset($ret->ID))
+        if (isset($ret->ID)) {
             return $ret->ID;
+        }
         return $ret;
+    }
+
+    /**
+     * @param type $data
+     */
+    public function updatePrefix($skautisId, $prefix) {
+        return $this->table->updatePrefix($skautisId, strtolower(self::$typeName), $prefix);
     }
 
     /**
@@ -201,9 +209,13 @@ class EventService extends MutableBaseService {
      * @return int
      */
     public function update($data) {
-
         $ID = $data['aid'];
         $old = $this->get($ID);
+        
+        if (isset($data['prefix'])) {
+            $this->updatePrefix($ID, $data['prefix']);
+            unset($data['prefix']);
+        }
 
         $ret = $this->skautIS->event->EventGeneralUpdate(array(
             "ID" => $ID,
@@ -217,6 +229,7 @@ class EventService extends MutableBaseService {
             "EndDate" => $data['end'],
                 ), "eventGeneral");
 
+        
 
 //            $this->skautIS->event->EventGeneralUpdateFunction(array(
 //                "ID" => $ID,
@@ -225,9 +238,9 @@ class EventService extends MutableBaseService {
 //                "ID_PersonEconomist" => $data['economist'],
 //            ));
 
-
-        if (isset($ret->ID))
+        if (isset($ret->ID)) {
             return $ret->ID;
+        }
         return $ret;
     }
 
@@ -280,8 +293,9 @@ class EventService extends MutableBaseService {
      */
     public function isCloseable($ID) {
         $func = $this->getFunctions($ID);
-        if ($func[0]->ID_Person != NULL) // musí být nastaven vedoucí akce
+        if ($func[0]->ID_Person != NULL) { // musí být nastaven vedoucí akce
             return TRUE;
+        }
         return FALSE;
     }
 
@@ -333,4 +347,3 @@ class EventService extends MutableBaseService {
     }
 
 }
-

@@ -1,8 +1,9 @@
 <?php
 
-namespace AccountancyModule\CampModule;
+namespace App\AccountancyModule\CampModule;
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+    Nette\Forms\Controls\SubmitButton;
 
 /**
  * @author sinacek
@@ -16,9 +17,9 @@ class CashbookPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
 //        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
-        if ($this->camp->prefix == "") {
-            
-        }
+//        if ($this->camp->prefix == "") {
+//            
+//        }
 //            unset($this['formOutEdit']['num']);
     }
 
@@ -128,34 +129,13 @@ class CashbookPresenter extends BasePresenter {
 
     function createComponentFormMass($name) {
         $form = new Form($this, $name);
-        $chits = $this->context->campService->chits->getAll($this->aid);
-
-        $group = $form->addContainer('chits');
-        foreach ($chits as $c) {
-            $group->addCheckbox($c->id);
-        }
-
-//        $form->addSubmit('printSend', 'Vytisknout vybrané')
-//                ->getControlPrototype()->setClass("btn btn-info btn-small");
-
-        $form->addSubmit('massPrintSend', '')
-                ->getControlPrototype()
-                ->setName("button")
-                ->setHtml('<i class="icon-print icon-white"></i>');
-
-        $form['massPrintSend']->onClick[] = callback($this, 'massPrintSubmitted');
-        $form->setDefaults(array('category' => 'un'));
+        $form->addSubmit('massPrintSend');
+        $form['massPrintSend']->onClick[] = $this->massPrintSubmitted;
         return $form;
     }
 
-    function massPrintSubmitted(\Nette\Forms\Controls\SubmitButton $btn) {
-        $values = $btn->getForm()->getValues();
-        $selected = array();
-        foreach ($values['chits'] as $id => $bool) {
-            if ($bool)
-                $selected[] = $id;
-        }
-        $chits = $this->context->campService->chits->getIn($this->aid, $selected);
+    function massPrintSubmitted(SubmitButton $button) {
+        $chits = $this->context->campService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]'));
         $template = $this->context->exportService->getChits($this->aid, $this->context->campService, $this->context->unitService, $chits, "camp");
         $this->context->campService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
@@ -183,11 +163,11 @@ class CashbookPresenter extends BasePresenter {
         return $form;
     }
 
-    function formImportHpdSubmitted(\Nette\Forms\Controls\SubmitButton $btn) {
+    function formImportHpdSubmitted(SubmitButton $btn) {
         $this->editableOnly();
 
         $values = $btn->getForm()->getValues();
-        $func = $this->context->campService->event->getFunctions($values->aid);
+        //$func = $this->context->campService->event->getFunctions($values->aid);
 
         $data = array("date" => $this->context->campService->event->get($values->aid)->StartDate,
 //            "recipient" => $func[2]->Person,
@@ -210,7 +190,7 @@ class CashbookPresenter extends BasePresenter {
         $form->addSubmit('send', 'Uložit')
                 ->getControlPrototype()->setClass("btn btn-primary");
         $form->onSuccess[] = array($this, 'formAddSubmitted');
-        $form->setDefaults(array('category' => 'un'));
+        //$form->setDefaults(array('category' => 'un'));
         return $form;
     }
 
@@ -223,8 +203,8 @@ class CashbookPresenter extends BasePresenter {
         $form = self::makeFormOUT($this, $name);
         $form->addHidden('id');
         $form->addSubmit('send', 'Uložit')
-                ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, 'formEditSubmitted');
+                ->setAttribute("class", "btn btn-primary")
+                ->onClick[] = $this->formEditSubmitted;
         return $form;
     }
 
@@ -257,8 +237,8 @@ class CashbookPresenter extends BasePresenter {
         if ($thisP->camp->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
-                    ->addCondition(Form::FILLED)
-                        ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+                    ;//->addCondition(Form::FILLED)
+                        //->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
         }
         return $form;
     }
@@ -267,9 +247,9 @@ class CashbookPresenter extends BasePresenter {
     function createComponentFormInAdd($name) {
         $form = $this->makeFormIn($this, $name);
         $form->addSubmit('send', 'Uložit')
-                ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, 'formAddSubmitted');
-        $form->setDefaults(array('category' => 'pp'));
+                ->setAttribute("class", "btn btn-primary")
+                ->onClick[] = $this->formAddSubmitted;
+        //$form->setDefaults(array('category' => 'pp'));
         return $form;
     }
 
@@ -304,32 +284,32 @@ class CashbookPresenter extends BasePresenter {
         if ($thisP->camp->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
-                    ->addCondition(Form::FILLED)
-                        ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+                    ;//->addCondition(Form::FILLED)
+                     //   ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
         }
         return $form;
     }
 
     /**
      * přidává paragony všech kategorií
-     * @param Form $form 
+     * @param SubmitButton $button
      */
-    function formAddSubmitted(Form $form) {
+    function formAddSubmitted(SubmitButton $button) {
         $this->editableOnly();
-        $values = $form->getValues();
+        $values = $button->getForm()->getValues();
 
         try {
             $this->context->campService->chits->add($this->aid, $values);
             $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
-            if ($this->context->campService->chits->isInMinus($this->aid))
+            if ($this->context->campService->chits->isInMinus($this->aid)) {
                 $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
+            }
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
         } catch (\SkautIS\Exception\WsdlException $se) {
             $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
 //            $this->flashMessage("Nepodařilo se synchronizovat kategorie.");
         }
-
 
         if ($this->isAjax()) {
             $this->invalidateControl("tabs");
@@ -340,9 +320,9 @@ class CashbookPresenter extends BasePresenter {
         }
     }
 
-    function formEditSubmitted(Form $form) {
+    function formEditSubmitted(SubmitButton $button) {
         $this->editableOnly();
-        $values = $form->getValues();
+        $values = $button->getForm()->getValues();
         $chitId = $values['id'];
         unset($values['id']);
 
@@ -357,8 +337,9 @@ class CashbookPresenter extends BasePresenter {
         }
 
 
-        if ($this->context->campService->chits->isInMinus($this->aid))
+        if ($this->context->campService->chits->isInMinus($this->aid)) {
             $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
+        }
         $this->redirect("default", array("aid" => $this->aid));
     }
 
