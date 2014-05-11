@@ -28,7 +28,7 @@ table {
         <th>Celkem</th>
         <th>Na účet?</th>
     </tr>
-    {if is_array($list) || $list instanceof Traversable}
+    {if is_array($list) || $list instanceof \Traversable}
     {$totPDays = $totDDays = $totPay = $totRepay = $totAccount = 0}
     <tr n:foreach="$list as $u">
         {? $totPDays += $u->Days;$totPay += $u->payment;$totRepay += $u->repayment}

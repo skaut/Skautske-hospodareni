@@ -1,9 +1,11 @@
 <?php
 
+namespace Model;
+
 /**
  * @author sinacek
  */
-abstract class BaseService extends Nette\Object {
+abstract class BaseService extends \Nette\Object {
 
     //konstanty pro Event a Camp
     const LEADER = 0; //ID v poli funkcí
@@ -30,6 +32,13 @@ abstract class BaseService extends Nette\Object {
     protected $skautIS;
     
     /**
+     * připojení k databázi
+     * @var type 
+     */
+    protected $connection;
+
+
+    /**
      * používat lokální úložiště?
      * @var bool
      */
@@ -40,8 +49,9 @@ abstract class BaseService extends Nette\Object {
      */
     private static $storage= array();
     
-    public function __construct($skautIS = NULL) {
+    public function __construct($skautIS = NULL, $connection = NULL) {
         $this->skautIS = $skautIS;
+        $this->connection = $connection;
     }
     
 
@@ -83,7 +93,7 @@ abstract class BaseService extends Nette\Object {
         }
 //        define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
 //        require_once(_MPDF_PATH . 'mpdf.php');
-        $mpdf = new mPDF(
+        $mpdf = new \mPDF(
                 'utf-8',
                 $format,
                 $default_font_size=0,

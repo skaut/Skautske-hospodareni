@@ -32,7 +32,8 @@ class CashbookPresenter extends BasePresenter {
         $this->template->isInMinus = $this->context->campService->chits->isInMinus($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
-//        $this->template->missingCategories = false;
+        $this->template->missingCategories = false;
+        $this->template->linkImportHPD = "#importHpd";
 //        dump($this->camp);
         
         if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
@@ -68,7 +69,7 @@ class CashbookPresenter extends BasePresenter {
 //    public function actionImportHpd($aid) {
 //        $this->editableOnly();
 //        
-//        $totalPayment = $this->context->campService->participants->getTotalPayment($this->aid, "camp");
+//        $totalPayment = $this->context->campService->participants->getTotalPayment($this->aid);
 //        $func = $this->context->campService->event->getFunctions($this->aid);
 //        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
 //        $date = $this->context->campService->event->get($aid)->StartDate;
@@ -137,7 +138,7 @@ class CashbookPresenter extends BasePresenter {
     }
 
     function massPrintSubmitted(SubmitButton $button) {
-        $chits = $this->context->campService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]'));
+        $chits = $this->context->campService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $template = $this->context->exportService->getChits($this->aid, $this->context->campService, $this->context->unitService, $chits, "camp");
         $this->context->campService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
@@ -337,7 +338,6 @@ class CashbookPresenter extends BasePresenter {
         } catch (\SkautIS\Exception\WsdlException $exc) {
             $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
         }
-
 
         if ($this->context->campService->chits->isInMinus($this->aid)) {
             $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");

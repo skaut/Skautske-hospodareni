@@ -9,16 +9,17 @@ use Nette\Application\UI\Form,
  * @author sinacek
  */
 class CashbookPresenter extends BasePresenter {
-    
+
     function startup() {
         parent::startup();
         if (!$this->aid) {
             $this->flashMessage("Musíš vybrat akci", "error");
             $this->redirect("Event:");
         }
-        
+
         $ev_state = $this->event->ID_EventGeneralState == "draft" ? TRUE : FALSE;
         $this->isEditable = $this->template->isEditable = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
+        $this->template->missingCategories = FALSE;
     }
 
     function renderDefault($aid) {
@@ -26,6 +27,7 @@ class CashbookPresenter extends BasePresenter {
 //        $this->template->isEditable = $this->context->eventService->event->isCommandEditable($this->aid);
         $this->template->autoCompleter = $this->context->memberService->getAC();
         $this->template->list = $this->context->eventService->chits->getAll($aid);
+        $this->template->linkImportHPD = $this->link("importHpd", array("aid"=>$aid));
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
@@ -133,8 +135,8 @@ class CashbookPresenter extends BasePresenter {
     function createComponentFormOutAdd($name) {
         $form = self::makeFormOUT($this, $name);
         $form->addSubmit('send', 'Uložit')
-                ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, 'formAddSubmitted');
+                        ->setAttribute("class", "btn btn-primary")
+                ->onClick[] = array($this, 'formAddSubmitted');
         //$form->setDefaults(array('category' => 'un'));
         return $form;
     }
@@ -183,8 +185,8 @@ class CashbookPresenter extends BasePresenter {
         if (isset($thisP->event->prefix) && $thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
-                    ;//->addCondition(Form::FILLED)
-                    //    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+            ; //->addCondition(Form::FILLED)
+            //    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
         }
         return $form;
     }
@@ -193,8 +195,8 @@ class CashbookPresenter extends BasePresenter {
     function createComponentFormInAdd($name) {
         $form = $this->makeFormIn($this, $name);
         $form->addSubmit('send', 'Uložit')
-                ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, 'formAddSubmitted');
+                        ->setAttribute("class", "btn btn-primary")
+                ->onClick[] = array($this, 'formAddSubmitted');
         //$form->setDefaults(array('category' => 'pp'));
         return $form;
     }
@@ -230,25 +232,26 @@ class CashbookPresenter extends BasePresenter {
         if ($thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
-                    ;//->addCondition(Form::FILLED)
-                    //    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+            ; //->addCondition(Form::FILLED)
+            //    ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
         }
         return $form;
     }
 
     /**
      * přidává paragony všech kategorií
-     * @param Form $form 
+     * @param SubmitButton $button 
      */
-    function formAddSubmitted(Form $form) {
+    function formAddSubmitted(SubmitButton $button) {
         $this->editableOnly();
-        $values = $form->getValues();
-        
+        $values = $button->getForm()->getValues();
+
         try {
             $this->context->eventService->chits->add($this->aid, $values);
             $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
-            if ($this->context->eventService->chits->isInMinus($this->aid))
+            if ($this->context->eventService->chits->isInMinus($this->aid)) {
                 $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
+            }
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
         }

@@ -1,5 +1,7 @@
 <?php
 
+namespace Model;
+
 /**
  * @author Sinacek
  * správa cestovních příkazů
@@ -10,12 +12,13 @@ class TravelService extends BaseService {
     protected $tableContract;
     protected $tableVehicle;
 
-    public function __construct() {
+    public function __construct($skautIS = NULL, $connection = NULL) {
+        parent::__construct($skautIS, $connection);
         /** @var TravelTable */
-        $this->table = new CommandTable();
-        $this->tableTravel = new TravelTable();
-        $this->tableContract = new ContractTable();
-        $this->tableVehicle = new VehicleTable();
+        $this->table = new CommandTable($connection);
+        $this->tableTravel = new TravelTable($connection);
+        $this->tableContract = new ContractTable($connection);
+        $this->tableVehicle = new VehicleTable($connection);
     }
 
     public function isContractAccessible($contractId, $unit) {
@@ -121,8 +124,9 @@ class TravelService extends BaseService {
     }
 
     public function addContract($values) {
-        if (!$values['end'])
-            $values['end'] = date("Y-m-d", strtotime("+ 3 years", $values['start']->getTimestamp())); //nastavuje platnost smlouvy na 3 roky
+        if (!$values['end']) {
+            $values['end'] = date("Y-m-d", strtotime("+ 3 years", $values['start']->getTimestamp()));
+        } //nastavuje platnost smlouvy na 3 roky
         return $this->tableContract->add($values);
     }
 

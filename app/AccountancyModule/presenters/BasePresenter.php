@@ -50,7 +50,7 @@ class BasePresenter extends \App\BasePresenter {
 
     function beforeRender() {
         parent::beforeRender();
-        $this->template->registerHelperLoader("AccountancyHelpers::loader");
+        $this->template->registerHelperLoader("\App\AccountancyModule\AccountancyHelpers::loader");
     }
 
     protected function editableOnly() {
