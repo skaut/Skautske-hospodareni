@@ -31,7 +31,7 @@
         </script>
     </head>
 
-    <body>
+    <body{if $user->isLoggedIn()} onload="startLoginTimer()"{/if}>
         <div id="topAlertBox">
             <ul> </ul>
         </div>
@@ -55,15 +55,26 @@
                             <li><a n:href=":Accountancy:Travel:Default:">Cestovní příkazy</a></li>
                             {/if}
                         </ul>
-                        <p class="navbar-text pull-right" n:inner-if="$user->isLoggedIn()">
+                        
+                        
+                        {if $user->isLoggedIn()}
+                        <p class="navbar-text pull-right">
                             <select onchange="changeRole(this.value)" class="roleSelect input-large">
                                 <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->RegistrationNumber} - {$r->Role}</option>
                             </select>
                             <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small hidden-phone">Odhlásit se</a>
                             <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small visible-phone btn-block">Odhlásit se</a>
+                            </p>
+                            <div id="timer" class="navbar-text pull-right" style="width:100px;padding-top: 15px;">
+                            <div class="progress progress-success" style="height:7px;">
+                                <div class="bar" style="width: 100%;"></div>    
+                            </div>
+                        </div>
                         {else}
+                        <p class="navbar-text pull-right">
                             <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-small hidden-phone">Přihlásit se</a>
                         </p>
+                        {/if}
                       </div><!--/.nav-collapse -->
                     <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-small hidden-desktop btn-block" n:if="!$user->isLoggedIn()">Přihlásit se</a>
                 </div>
