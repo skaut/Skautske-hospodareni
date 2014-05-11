@@ -34,7 +34,9 @@ class CashbookPresenter extends BasePresenter {
         $this->template->list = $this->context->campService->chits->getAll($aid);
 //        $this->template->missingCategories = false;
 //        dump($this->camp);
-        if (!$this->event->IsRealTotalCostAutoComputed && $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost")) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
+        
+        if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
+            $this->template->isAllowedUpdateRealTotalCost = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
             $this->template->missingCategories = true; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
             $this->template->skautISHttpPrefix = $this->context->skautIS->getHttpPrefix();
         }
@@ -188,9 +190,9 @@ class CashbookPresenter extends BasePresenter {
     function createComponentFormOutAdd($name) {
         $form = self::makeFormOUT($this, $name);
         $form->addSubmit('send', 'Uložit')
-                ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, 'formAddSubmitted');
-        //$form->setDefaults(array('category' => 'un'));
+                ->setAttribute("class", "btn btn-primary")
+                ->onClick[] = $this->formAddSubmitted;
+        //$form->setDefaults(array('category' => 'pp'));
         return $form;
     }
 
@@ -258,7 +260,7 @@ class CashbookPresenter extends BasePresenter {
         $form->addHidden('id');
         $form->addSubmit('send', 'Uložit')
                 ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onSuccess[] = array($this, 'formEditSubmitted');
+        $form->onClick[] = array($this, 'formEditSubmitted');
         return $form;
     }
 
