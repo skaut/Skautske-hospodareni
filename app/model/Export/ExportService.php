@@ -111,14 +111,12 @@ class ExportService extends BaseService {
         }
         $template = $this->getTemplate(dirname(__FILE__) . "/templates/chits.latte");
 
-        if ($type != "camp") {
-            //HPD alias ctype == pp
-            $template->totalPayment = $eventService->participants->getTotalPayment($aid);
-            $func = $eventService->event->getFunctions($aid);
-            $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
-            $template->list = $eventService->participants->getAll($aid);
-        }
-
+        //HPD 
+        $template->totalPayment = $eventService->participants->getTotalPayment($aid);
+        $func = $eventService->event->getFunctions($aid);
+        $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
+        $template->list = $eventService->participants->getAll($aid);
+        
         $template->event = $eventService->event->get($aid);
         $template->income = $income;
         $template->outcome = $outcome;

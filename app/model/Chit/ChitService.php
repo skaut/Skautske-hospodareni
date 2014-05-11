@@ -71,8 +71,9 @@ class ChitService extends MutableBaseService {
         $ret = $this->table->getIn($this->eventService->getLocalId($skautisEventId), (array) $list);
         if (self::$type == self::TYPE_CAMP) {
             $categories = $this->getCategoriesCampPairs($skautisEventId);
-            foreach ($ret as $k => $v)
+            foreach ($ret as $k => $v) {
                 $ret[$k]->ctype = array_key_exists($ret[$k]->category, $categories['in']) ? "in" : "out";
+            }
         }
         return $ret;
     }

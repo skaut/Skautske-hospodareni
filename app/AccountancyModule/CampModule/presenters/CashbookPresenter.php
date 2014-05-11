@@ -34,7 +34,7 @@ class CashbookPresenter extends BasePresenter {
         $this->template->list = $this->context->campService->chits->getAll($aid);
 //        $this->template->missingCategories = false;
 //        dump($this->camp);
-        if (!$this->camp->IsRealTotalCostAutoComputed && $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost")) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
+        if (!$this->event->IsRealTotalCostAutoComputed && $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost")) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
             $this->template->missingCategories = true; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
             $this->template->skautISHttpPrefix = $this->context->skautIS->getHttpPrefix();
         }
@@ -89,14 +89,14 @@ class CashbookPresenter extends BasePresenter {
     }
     
     public function actionExportExcel($aid) {
-        $this->context->excelService->getCashbook($this->context->eventService, $aid, $this->camp);
+        $this->context->excelService->getCashbook($this->context->campService, $this->event);
         $this->terminate();
     }
 
     function actionPrint($id, $aid) {
         $chits = array($this->context->campService->chits->get($id));
         $template = $this->context->exportService->getChits($aid, $this->context->campService, $this->context->unitService, $chits);
-        $this->context->eventService->chits->makePdf($template, "paragony.pdf");
+        $this->context->campService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
 
@@ -129,8 +129,8 @@ class CashbookPresenter extends BasePresenter {
 
     function createComponentFormMass($name) {
         $form = new Form($this, $name);
-        $form->addSubmit('massPrintSend');
-        $form['massPrintSend']->onClick[] = $this->massPrintSubmitted;
+        $form->addSubmit('massPrintSend')
+                ->onClick[] = $this->massPrintSubmitted;
         return $form;
     }
 
@@ -234,7 +234,7 @@ class CashbookPresenter extends BasePresenter {
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
         $form->addRadioList("category", "Typ: ", $categories['out'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
-        if ($thisP->camp->prefix != "") {
+        if ($thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
                     ;//->addCondition(Form::FILLED)
@@ -281,7 +281,7 @@ class CashbookPresenter extends BasePresenter {
         $categories = $thisP->context->campService->chits->getCategoriesCampPairs($thisP->aid);
         $form->addRadioList("category", "Typ: ", $categories['in'])
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
-        if ($thisP->camp->prefix != "") {
+        if ($thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
                     ;//->addCondition(Form::FILLED)

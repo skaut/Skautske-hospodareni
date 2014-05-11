@@ -34,13 +34,15 @@ class ParticipantPresenter extends BasePresenter {
             $this->flashMessage("Nepovolený přístup", "danger");
             $this->redirect("Default:");
         }
+        $ev_state = $this->event->ID_EventGeneralState == "draft" ? TRUE : FALSE;
+        
         $this->uid = $this->getParameter("uid", NULL);
         $this->isAllowParticipantDetail = $this->template->isAllowParticipantDetail = array_key_exists("EV_ParticipantGeneral_DETAIL", $this->availableActions);
 //        $this->isAllowParticipantAll    = $this->template->isAllowParticipantAll = array_key_exists("EV_ParticipantGeneral_ALL_EventGeneral", $this->availableActions);
         //$this->isAllowParticipantDays = $this->template->isAllowParticipantDays = array_key_exists("EV_EventGeneral_UPDATE_Days", $this->availableActions);
-        $this->isAllowParticipantDelete = $this->template->isAllowParticipantDelete = array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
-        $this->isAllowParticipantInsert = $this->template->isAllowParticipantInsert = array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
-        $this->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdate = array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
+        $this->isAllowParticipantDelete = $this->template->isAllowParticipantDelete = $ev_state && array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
+        $this->isAllowParticipantInsert = $this->template->isAllowParticipantInsert = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
+        $this->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdate = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
         $this->isAllowRepayment = $this->template->isAllowRepayment = FALSE;
         $this->isAllowIsAccount = $this->template->isAllowIsAccount = FALSE;
     }
@@ -79,7 +81,6 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function actionEditField($aid, $id, $field, $value) {
-
         if (!$this->isAllowParticipantUpdate) {
             $this->flashMessage("Nemáte oprávnění měnit účastníkův jejich údaje.", "danger");
             if ($this->isAjax()) {
@@ -88,7 +89,7 @@ class ParticipantPresenter extends BasePresenter {
                 $this->redirect("Default:");
             }
         }
-        
+
         $oldData = $this->context->eventService->participants->get($id);
         if ($field == "days") {
             $arr = array(

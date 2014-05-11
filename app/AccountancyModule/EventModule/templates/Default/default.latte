@@ -2,57 +2,56 @@
 {block #content}
 <h2>Seznam akcí</h2>
 <div class="row-fluid">
-    <div class="span">
-        <p n:if="$accessCreate">
-            <a href="#createNew" data-toggle="modal" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</a>
-        </p>
-{dump $list}
-
-    {snippet events}
-        <div class="well well-small">
-        {form formFilter class=>"ajax filter"}
-            <span class="hidden-phone">{label year /}</span>{input year onchange=>"changeYear(this.value)"}
-            <span class="hidden-phone">{label state /}</span>{input state onchange=>"changeState(this.value)"}
-            <br class="visible-phone"/>
-            {input send}
-        {/form}
-        </div>
-
-        {if is_array($list)}
-        <table class="myTable table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th n:if="reset($list)->accessDelete" class="hidden-phone">&nbsp;</th>
-                    <th>Název</th>
-                    <th>Od</th>
-                    <th>Do</th>
-                    <th>Stav</th>
-                    <th class="hidden-phone"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr n:foreach="$list as $i">
-                    <td n:if="$i->accessDelete" class="hidden-phone"><a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a></td>
-                    <td>
-                        <a n:tag-if="$i->accessDetail" n:href="Event: $i->ID">{$i->DisplayName}</a>
-                    </td>
-                    <td>{$i->StartDate|date:"j.n.Y"}</td>
-                    <td>{$i->EndDate|date:"j.n.Y"}</td>
-                    <td>{!$i->ID_EventGeneralState|eventStateLabel}</td>
-                    <td n:inner-if="$i->accessDetail" class="hidden-phone">
-                        <a n:href="Event:  $i->ID" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
-                        <a n:href="Participant: $i->ID" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
-                        <a n:href="Cashbook: $i->ID" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        {else}
-        <p class="alert">Nemáte žádné akce.</p>
-        {/if}
-    {/snippet}
-    </div>
+    <p n:if="$accessCreate">
+        <a href="#createNew" data-toggle="modal" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</a>
+    </p>
 </div>
+{snippet events}
+    <div class="row-fluid">
+        <div class="well well-small span6">
+            {form formFilter class=>"ajax filter"}
+                <span class="hidden-phone">{label year /}</span>{input year onchange=>"changeYear(this.value)"}
+                <span class="hidden-phone">{label state /}</span>{input state onchange=>"changeState(this.value)"}
+                <br class="visible-phone"/>
+                {input send}
+            {/form}
+        </div>
+    </div>
+    <div class="row-fluid">
+        {if is_array($list)}
+            <table class="myTable table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th n:if="reset($list)->accessDelete" class="hidden-phone">&nbsp;</th>
+                        <th>Název</th>
+                        <th>Od</th>
+                        <th>Do</th>
+                        <th>Stav</th>
+                        <th class="hidden-phone"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr n:foreach="$list as $i">
+                        <td n:if="$i->accessDelete" class="hidden-phone"><a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a></td>
+                        <td>
+                            <a n:tag-if="$i->accessDetail" n:href="Event: $i->ID">{$i->DisplayName}</a>
+                        </td>
+                        <td>{$i->StartDate|date:"j.n.Y"}</td>
+                        <td>{$i->EndDate|date:"j.n.Y"}</td>
+                        <td>{!$i->ID_EventGeneralState|eventStateLabel}</td>
+                        <td n:inner-if="$i->accessDetail" class="hidden-phone">
+                            <a n:href="Event:  $i->ID" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
+                            <a n:href="Participant: $i->ID" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
+                            <a n:href="Cashbook: $i->ID" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        {else}
+            <p class="alert">Nemáte žádné akce.</p>
+        {/if}
+    </div>
+{/snippet}
 
 <div class="modal myModal fade" id="createNew">
     <div class="modal-header">
@@ -61,65 +60,65 @@
     </div>
     <div class="modal-body">
         {form formCreate}
-        <ul class="errors" n:if="$form->hasErrors()">
-            <li n:foreach="$form->errors as $error">{$error}</li>
-        </ul>
-        <table>
-            <tbody>
-                <tr class="required">
-                    <th>{label name/}</th>
-                    <td>{input name}</td>
-                </tr>
-                <tr class="required">
-                    <th>{label start /}</th>
-                    <td>{input start}</td>
-                </tr>
-                <tr class="required">
-                    <th>{label end /}</th>
-                    <td>{input end}</td>
-                </tr>
-                <tr>
-                    <th>{label location /}</th>
-                    <td>{input location}</td>
-                </tr>
-                <tr>
-                    <th>{label orgID /}</th>
-                    <td>{input orgID}</td>
-                </tr>
-                <tr>
-                    <th>{label scope /}</th>
-                    <td>{input scope}</td>
-                </tr>
-                <tr>
-                    <th>{label type /}</th>
-                    <td>{input type}</td>
-                </tr>
-                <tr>
-                    <th>&nbsp;</th>
-                    <td>{input send}</td>
-                </tr>
-            </tbody>
-        </table>
+            <ul class="errors" n:if="$form->hasErrors()">
+                <li n:foreach="$form->errors as $error">{$error}</li>
+            </ul>
+            <table>
+                <tbody>
+                    <tr class="required">
+                        <th>{label name/}</th>
+                        <td>{input name}</td>
+                    </tr>
+                    <tr class="required">
+                        <th>{label start /}</th>
+                        <td>{input start}</td>
+                    </tr>
+                    <tr class="required">
+                        <th>{label end /}</th>
+                        <td>{input end}</td>
+                    </tr>
+                    <tr>
+                        <th>{label location /}</th>
+                        <td>{input location}</td>
+                    </tr>
+                    <tr>
+                        <th>{label orgID /}</th>
+                        <td>{input orgID}</td>
+                    </tr>
+                    <tr>
+                        <th>{label scope /}</th>
+                        <td>{input scope}</td>
+                    </tr>
+                    <tr>
+                        <th>{label type /}</th>
+                        <td>{input type}</td>
+                    </tr>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <td>{input send}</td>
+                    </tr>
+                </tbody>
+            </table>
         {/form formCreate}
         (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
     </div>
 </div>
 
 <script type="text/javascript">
-    function changeYear(val){
-         $.post({link changeYear!}, { year : val });
+    function changeYear(val) {
+        $.post({link changeYear!}, { year: val});
     }
-    function changeState(val){
-         $.post({link changeState!}, { state : val });
+    function changeState(val) {
+        $.post({link changeState!}, { state: val});
     }
 
     Nette.validators.MyValidators_isValidDate = function(elem, args, val) {
         var regexp = /^(\d{! "{1,2}"})[\/\-\.] ?(\d{! "{1,2}"})[\/\-\.] ?(\d{! "{4}"})$/;
-        var match = val.match(regexp); 
-       
+        var match = val.match(regexp);
+
         return match == null ? false : true;
     };
-  
+
 
 //            
 //    Nette.validators.isValidDate = function(elem, args, val) {
@@ -130,6 +129,6 @@
 //        return false;
 ////        return val % args === 0;
 //    };
-    
+
 </script>
 
