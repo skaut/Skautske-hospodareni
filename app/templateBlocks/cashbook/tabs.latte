@@ -1,5 +1,6 @@
 {block #content}
-<div class="span3" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)" style="width: 240px;">
+
+<div class="span3" n:if="$isEditable && !$missingCategories" style="width: 240px;">
     {snippet tabs}
         <ul class="nav nav-tabs" id="chitType">
             <li class="active"><a data-toggle="tab" href="#vydajovy">Výdaje</a></li>
