@@ -2,7 +2,8 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+    Nette\Forms\Controls\SubmitButton;
 
 /**
  * @author sinacek
@@ -15,7 +16,9 @@ class CashbookPresenter extends BasePresenter {
             $this->flashMessage("Musíš vybrat akci", "error");
             $this->redirect("Event:");
         }
-        $this->isEditable = $this->template->isEditable = array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
+        
+        $ev_state = $this->event->ID_EventGeneralState == "draft" ? TRUE : FALSE;
+        $this->isEditable = $this->template->isEditable = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
     }
 
     function renderDefault($aid) {
@@ -114,32 +117,14 @@ class CashbookPresenter extends BasePresenter {
 
     function createComponentFormMass($name) {
         $form = new Form($this, $name);
-        $chits = $this->context->eventService->chits->getAll($this->aid);
-
-        $group = $form->addContainer('chits');
-        foreach ($chits as $c) {
-            $group->addCheckbox($c->id);
-        }
-
-        $form->addSubmit('massPrintSend', '')
-                ->getControlPrototype()
-                ->setName("button")
-                ->setHtml('<i class="icon-print icon-white"></i>');
-
-        $form['massPrintSend']->onClick[] = callback($this, 'massPrintSubmitted');
-        $form->setDefaults(array('category' => 'un'));
+        $form->addSubmit('massPrintSend')
+                ->onClick[] = $this->massPrintSubmitted;
         return $form;
     }
 
-    function massPrintSubmitted(\Nette\Forms\Controls\SubmitButton $btn) {
-        $values = $btn->getForm()->getValues();
-        $selected = array();
-        foreach ($values['chits'] as $id => $bool) {
-            if ($bool)
-                $selected[] = $id;
-        }
-        $chits = $this->context->eventService->chits->getIn($this->aid, $selected);
-        $template = $this->context->exportService->getChits($this->aid, $this->context->eventService, $this->context->unitService, $chits);
+    function massPrintSubmitted(SubmitButton $button) {
+        $chits = $this->context->eventService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
+        $template = $this->context->exportService->getChits($this->aid, $this->context->eventService, $this->context->unitService, $chits, "camp");
         $this->context->eventService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
@@ -258,7 +243,7 @@ class CashbookPresenter extends BasePresenter {
     function formAddSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
-
+        
         try {
             $this->context->eventService->chits->add($this->aid, $values);
             $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");

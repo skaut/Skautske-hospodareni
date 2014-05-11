@@ -66,7 +66,7 @@ class ParticipantPresenter extends BasePresenter {
         $this->template->isAllowParticipantDetail = $this->isAllowed(self::RULE_PARTICIPANTS_DETAIL);
         $this->template->isAllowParticipantUpdate = $this->isAllowed(self::RULE_PARTICIPANTS_UPDATE);
         $this->template->isAllowParticipantInsert = $this->isAllowed(self::RULE_PARTICIPANTS_INSERT);
-        $this->template->missingAvailableAutoComputed = !$this->camp->IsRealAutoComputed && $this->isAllowed(self::RULE_PARTICIPANTS_UPDATE_ADULT);
+        $this->template->missingAvailableAutoComputed = !$this->event->IsRealAutoComputed && $this->isAllowed(self::RULE_PARTICIPANTS_UPDATE_ADULT);
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
@@ -131,7 +131,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function renderExportExcel($aid) {
-        $this->context->excelService->getParticipants($this->context->campService, $this->camp, "camp");
+        $this->context->excelService->getParticipants($this->context->campService, $this->event, "camp");
         $this->terminate();
     }
 
