@@ -1,12 +1,14 @@
 <?php
 
+namespace Model;
+
 /**
  * @author sinacek
  */
 class ParticipantTable extends BaseTable {
 
     public function get($participantId) {
-        return dibi::fetch("SELECT * FROM  [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId=%i LIMIT 1", $participantId);
+        return $this->connection->fetch("SELECT * FROM  [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId=%i LIMIT 1", $participantId);
     }
 
     /**
@@ -15,7 +17,7 @@ class ParticipantTable extends BaseTable {
      * @return type
      */
     public function getAll($actionId) {
-        return dibi::fetchAll("SELECT participantId, payment, repayment, isAccount FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE actionId=%i", $actionId);
+        return $this->connection->fetchAll("SELECT participantId, payment, repayment, isAccount FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE actionId=%i", $actionId);
     }
 
     /**
@@ -23,14 +25,14 @@ class ParticipantTable extends BaseTable {
      * @param type $participantId
      */
     public function deleteDetail($participantId) {
-        dibi::query("DELETE FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId =%i", $participantId);
+        $this->connection->query("DELETE FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId =%i", $participantId);
     }
 
     public function update($participantId, $updateData) {
         $ins = $updateData;
         $ins['participantId'] = $participantId;
         unset($updateData['actionId']); //to se neaktualizuje
-        return dibi::query("INSERT INTO [" . self::TABLE_CAMP_PARTICIPANT . "]", $ins, "
+        return $this->connection->query("INSERT INTO [" . self::TABLE_CAMP_PARTICIPANT . "]", $ins, "
             ON DUPLICATE KEY 
             UPDATE %a", $updateData);
     }

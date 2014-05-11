@@ -1,6 +1,8 @@
 <?php
 
-use Nette\Object;
+namespace App\AccountancyModule;
+
+use \Nette\Object;
 
 /**
  * @author sinacek

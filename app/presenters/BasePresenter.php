@@ -40,7 +40,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
             $this->template->myRole = $this->context->userService->getRoleId();
         }
-        $this->template->registerHelperLoader("AccountancyHelpers::loader");
+        $this->template->registerHelperLoader("\App\AccountancyModule\AccountancyHelpers::loader");
     }
 
     //změní přihlášenou roli ve skautISu

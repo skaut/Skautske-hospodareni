@@ -1,5 +1,7 @@
 <?php
 
+namespace Model;
+
 /**
  *
  * @author sinacek
@@ -15,16 +17,16 @@ class EventEntity{
     /** @var ChitService*/
     private $chits;
     
-    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {
-        $this->event        = new EventService($name, $longName, $expire, $skautIS, $cacheStorage);
-        $this->participants = new ParticipantService($name, $longName, $expire, $skautIS, $cacheStorage);
-        $this->chits        = new ChitService($name, $longName, $expire, $skautIS, $cacheStorage, $this->event);
+    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection) {
+        $this->event        = new EventService($name, $longName, $expire, $skautIS, $cacheStorage, $connection);
+        $this->participants = new ParticipantService($name, $longName, $expire, $skautIS, $cacheStorage, $connection);
+        $this->chits        = new ChitService($name, $longName, $expire, $skautIS, $cacheStorage, $connection, $this->event);
     }
     
     public function __get($name) {
         if( isset($this->$name) ){
             return $this->$name;
         }
-        throw new InvalidArgumentException("Neplatný požazdavek na ".$name);
+        throw new InvalidArgumentException("Invalid service request for: ".$name);
     }
 }
