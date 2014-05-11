@@ -21,7 +21,7 @@ $(document).ready(function() {
         $(this).ajaxSubmit();
         return false;
     });
-
+    
 });
 
 function jqCheckAll(id, name) {
@@ -35,7 +35,7 @@ function jqCheckAll(id, name) {
 function onlyWithCheckbox(checkboxNameStart, dependentButtonClass) {
     $("input[name^=" + checkboxNameStart + "]").change(function() {
         var isSomeChecked = false;
-        
+
         $("input[name^=" + checkboxNameStart + "]").each(function() {
             if (this.checked) {
                 isSomeChecked = true;
@@ -59,6 +59,28 @@ function onlyWithCheckbox(checkboxNameStart, dependentButtonClass) {
 //    window.onpopstate = function(event) {
 //        $.post(location.href);
 //    };
+}
 
-
+function startLoginTimer() {
+    var start = 30;
+    var count = start;
+    var state = "success";
+    var perc;
+    timer();
+    var counter = setInterval(timer, 60000); //1000 will  run it every 1 minute
+    function timer() {
+        count = count - 1;
+        perc = 100 * (count / start);
+        $("#timer .bar").css("width", perc + "%");
+        $("#timer").attr("title", count + " min");
+        if (perc < 33 && state === "success") {
+            state = "danger";
+            $("#timer > div.progress").addClass("progress-danger").removeClass("progress-success");
+        }
+        if (count <= 0) {
+            $("#timer").addClass("navbar-text").removeAttr("style").html('<span class="label label-important">Byl jsi odhlášen!</span> ')
+            clearInterval(counter);
+            return;
+        }
+    }
 }
