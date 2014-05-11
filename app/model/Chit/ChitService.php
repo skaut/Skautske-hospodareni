@@ -1,5 +1,7 @@
 <?php
 
+namespace Model;
+
 /**
  * @author Hána František
  */
@@ -10,10 +12,10 @@ class ChitService extends MutableBaseService {
      */
     protected $eventService;
 
-    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage, $eventService) {
-        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage, $eventService);
+    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection, $eventService) {
+        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection);
         /** @var ChitTable */
-        $this->table = new ChitTable();
+        $this->table = new ChitTable($connection);
         $this->eventService = $eventService;
     }
 
@@ -24,7 +26,7 @@ class ChitService extends MutableBaseService {
      */
     public function get($chitId) {
         $ret = $this->table->get($chitId);
-        if ($ret instanceof DibiRow && self::$type == self::TYPE_CAMP) {//doplnění kategorie u paragonu z tábora
+        if ($ret instanceof \DibiRow && self::$type == self::TYPE_CAMP) {//doplnění kategorie u paragonu z tábora
             $categories = $this->getCategoriesCampPairs($this->eventService->getSkautisId($ret->eventId));
             $ret->ctype = array_key_exists($ret->category, $categories['in']) ? "in" : "out";
         }
@@ -86,8 +88,10 @@ class ChitService extends MutableBaseService {
      */
     public function add($skautisEventId, $val) {
         $localEventId = $this->eventService->getLocalId($skautisEventId);
-        if (!is_array($val) && !($val instanceof ArrayAccess))
-            throw new InvalidArgumentException("Values nejsou ve správném formátu");
+        
+        if (!is_array($val) && !($val instanceof \ArrayAccess)) {
+            throw new \Nette\InvalidArgumentException("Values nejsou ve správném formátu");
+        }
 
         $values = array(
             "eventId" => $localEventId,
@@ -97,7 +101,7 @@ class ChitService extends MutableBaseService {
             "price" => $this->solveString($val['price']),
             "priceText" => str_replace(",", ".", $val['price']),
             "category" => $val['category'],
-            "num" => $val['num'],//$val['num'] != "" ? str_pad((int) $val['num'],5,"0",STR_PAD_LEFT) : null
+            "num" => isset($val['num']) ? $val['num'] : "",//$val['num'] != "" ? str_pad((int) $val['num'],5,"0",STR_PAD_LEFT) : null
         );
 
         $ret = $this->table->add($values);
@@ -139,8 +143,8 @@ class ChitService extends MutableBaseService {
     public function update($chitId, $val) {
         $changeAbleData = array("date", "num", "recipient", "purpose", "price", "category");
 
-        if (!is_array($val) && !($val instanceof ArrayAccess)) {
-            throw new InvalidArgumentException("Values nejsou ve správném formátu");
+        if (!is_array($val) && !($val instanceof \ArrayAccess)) {
+            throw new \Nette\InvalidArgumentException("Values nejsou ve správném formátu");
         }
         $chit = $this->get($chitId);
 
@@ -250,8 +254,9 @@ class ChitService extends MutableBaseService {
             }
             $this->saveSes($cacheId, $res);
         }
-        if (!$res)
+        if (!$res) {
             throw new \Nette\InvalidStateException("Chybí typ pro příjem od účastníků", 500);
+        }
         return $res;
     }
 

@@ -1,7 +1,10 @@
 <?php
 
-use Nette\ArrayHash,
-    Nette\Templating\FileTemplate;
+namespace Model;
+
+use \Nette\ArrayHash,
+    \Nette\Templating\FileTemplate,
+    Nette\Latte\Engine;
 
 /**
  * @author Hána František
@@ -16,9 +19,9 @@ class ExportService extends BaseService {
     protected function getTemplate($fileName) {
         $template = new FileTemplate();
         $template->setFile($fileName);
-        $template->registerHelperLoader('Nette\Templating\Helpers::loader');
-        $template->registerHelperLoader('AccountancyHelpers::loader');
-        $template->registerFilter(new Nette\Latte\Engine);
+        $template->registerHelperLoader('\Nette\Templating\Helpers::loader');
+        $template->registerHelperLoader('\App\AccountancyModule\AccountancyHelpers::loader');
+        $template->registerFilter(new Engine);
         return $template;
     }
 
@@ -106,7 +109,6 @@ class ExportService extends BaseService {
                     break;
                 default:
                     throw new \Nette\InvalidStateException("Neznámý typ paragou: ". $c->ctype);
-                    break;
             }
         }
         $template = $this->getTemplate(dirname(__FILE__) . "/templates/chits.latte");

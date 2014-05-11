@@ -1,5 +1,7 @@
 <?php
 
+namespace Model;
+
 /**
  * @author sinacek
  */
@@ -61,9 +63,9 @@ class MemberService extends BaseService {
      */
     private function getPairs($data, $adultOnly = false) {
         $res = array();
-        $now = new DateTime();
+        $now = new \DateTime();
         foreach ($data as $p) {
-            $birth = new DateTime($p->Birthday);
+            $birth = new \DateTime($p->Birthday);
             $interval = $now->diff($birth);
             $diff = $interval->format("%y");
             if ($adultOnly && $diff < 18) {

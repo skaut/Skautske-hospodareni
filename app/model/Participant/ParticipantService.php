@@ -1,21 +1,22 @@
 <?php
 
+namespace Model;
+
 /**
  * slouží pro obsluhu účastníků
  * @author sinacek
  */
 class ParticipantService extends MutableBaseService {
 
-    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {
-        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage);
+    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection) {
+        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection);
         /** @var ParticipantTable */
-        $this->table = new ParticipantTable();
+        $this->table = new ParticipantTable($connection);
     }
 
     /**
      * název pod kterým je uložena čáska ve skautISu
      */
-
     const PAYMENT = "Note";
 
     /**
@@ -153,13 +154,13 @@ class ParticipantService extends MutableBaseService {
             $keys = array("actionId", "payment", "repayment", "isAccount");
             $dataUpdate = array();
             $cnt = 0;
-            foreach ($keys as $key){
-                if(isset($arr[$key])){
+            foreach ($keys as $key) {
+                if (isset($arr[$key])) {
                     $dataUpdate[$key] = $arr[$key];
                     $cnt++;
                 }
             }
-            if($cnt > 1){
+            if ($cnt > 1) {
                 $this->table->update($participantId, $dataUpdate);
             }
         } else {
@@ -204,12 +205,10 @@ class ParticipantService extends MutableBaseService {
      * @param int $eventId
      * @return int - vybraná částka 
      */
-    public function getTotalPayment($eventId, $type = "general") {
+    public function getTotalPayment($eventId) {
         return array_reduce($this->getAll($eventId), function ($res, $v) {
-                    if (isset($v->{ParticipantService::PAYMENT}))
-                        return $res += $v->{ParticipantService::PAYMENT};
-                    return 0;
-                });
+            return isset($v->{ParticipantService::PAYMENT}) ? $res + $v->{ParticipantService::PAYMENT} : $res;
+        });
     }
 
     public function getCampTotalPayment($campId, $category, $isAccount) {

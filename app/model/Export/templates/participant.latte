@@ -22,7 +22,7 @@ table {
         <th style="width: 12%;">Dat. nar.</th>
     </tr>
     {dump $list}
-    {if is_array($list) || $list instanceof Traversable}
+    {if is_array($list) || $list instanceof \Traversable}
     <tr n:foreach="$list as $u">
         <td>{$iterator->counter}</td>
         <td>{$u->FirstName}</td>

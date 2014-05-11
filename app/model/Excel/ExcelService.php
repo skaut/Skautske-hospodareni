@@ -1,9 +1,11 @@
 <?php
 
+namespace Model;
+
 class ExcelService extends BaseService {
 
     protected function getNewFile() {
-        $objPHPExcel = new PHPExcel();
+        $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()
                 ->setCreator("h.skauting.cz")
                 ->setLastModifiedBy("h.skauting.cz")
@@ -26,7 +28,7 @@ class ExcelService extends BaseService {
             $data = $service->participants->getAllPersonDetail($event->ID, $service->participants->getAll($event->ID));
             $this->setSheetParticipantGeneral($objPHPExcel->getActiveSheet(), $data, $event);
         }
-        $this->send($objPHPExcel, Nette\Utils\Strings::webalize($event->DisplayName) . "-v" . date("Y_n_j"));
+        $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-v" . date("Y_n_j"));
     }
 
     /**
@@ -39,7 +41,7 @@ class ExcelService extends BaseService {
         $objPHPExcel = $this->getNewFile();
         $data = $service->chits->getAll($event->ID);
         $this->setSheetCashbook($objPHPExcel->setActiveSheetIndex(0), $data, $event->prefix);
-        $this->send($objPHPExcel, Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
+        $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
     }
 
     protected function setSheetParticipantCamp(&$sheet, $data) {
@@ -84,7 +86,7 @@ class ExcelService extends BaseService {
     }
 
     protected function setSheetParticipantGeneral(&$sheet, $data, $event) {
-        $startDate = new DateTime($event->StartDate);
+        $startDate = new \DateTime($event->StartDate);
         $sheet->setCellValue('A1', "P.č.")
                 ->setCellValue('B1', "Jméno")
                 ->setCellValue('C1', "Příjmení")
@@ -105,7 +107,7 @@ class ExcelService extends BaseService {
                     ->setCellValue('F' . $rowCnt, $row->Postcode)
                     ->setCellValue('G' . $rowCnt, !is_null($row->Birthday) ? date("d.m.Y", strtotime($row->Birthday)) : "")
                     ->setCellValue('H' . $rowCnt, $row->Days)
-                    ->setCellValue('I' . $rowCnt, ($startDate->diff(new DateTime($row->Birthday))->format('%y') < self::ADULT_AGE && !is_null($row->Birthday)) ? $row->Days : 0)
+                    ->setCellValue('I' . $rowCnt, ($startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE && !is_null($row->Birthday)) ? $row->Days : 0)
                     ;
             $rowCnt++;
         }
@@ -153,7 +155,7 @@ class ExcelService extends BaseService {
         $sheet->setTitle('Pokladní kniha');
     }
 
-    protected function send(PHPExcel $obj, $filename) {
+    protected function send(\PHPExcel $obj, $filename) {
 // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
@@ -167,7 +169,7 @@ class ExcelService extends BaseService {
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
 
-        $objWriter = PHPExcel_IOFactory::createWriter($obj, 'Excel2007');
+        $objWriter = \PHPExcel_IOFactory::createWriter($obj, 'Excel2007');
         $objWriter->save('php://output');
         //exit;
     }

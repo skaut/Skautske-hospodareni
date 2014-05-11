@@ -1,5 +1,7 @@
 <?php
 
+namespace Model;
+
 /**
  * @author sinacek
  */
@@ -13,24 +15,26 @@ class UnitService extends BaseService {
      * @return stdClass 
      */
     public function getDetail($unitId = NULL) {
-        if ($unitId === NULL)
+        if ($unitId === NULL) {
             $unitId = $this->skautIS->getUnitId();
+        }
         try {
             return $this->skautIS->org->UnitDetail(array("ID" => $unitId));
         } catch (SkautIS_Exception $exc) {
-            throw new BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
+            throw new \Nette\Application\BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
         }
     }
 
     /**
      * vrací nadřízenou jednotku
-     * @param ID_Unit $id 
+     * @param ID_Unit $ID_Unit 
      * @return stdClass
      */
     public function getParrent($ID_Unit) {
         $ret = $this->skautIS->org->UnitAll(array("ID_UnitChild" => $ID_Unit));
-        if(is_array($ret))
+        if (is_array($ret)) {
             return $ret[0];
+        }
         return $ret;
     }
     
