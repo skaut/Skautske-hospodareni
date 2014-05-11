@@ -22,7 +22,7 @@ class DetailPresenter extends BasePresenter {
         $form = $this['formEdit'];
         $form->setDefaults(array(
             "aid" => $aid,
-            "prefix" => $this->camp->prefix,
+            "prefix" => $this->event->prefix,
         ));
     }
 
@@ -37,7 +37,7 @@ class DetailPresenter extends BasePresenter {
         }
 
         $template = $this->context->exportService->getCampReport($aid, $this->context->campService);
-        $this->context->eventService->participants->makePdf($template, "reportCamp.pdf");
+        $this->context->campService->participants->makePdf($template, "reportCamp.pdf");
         $this->terminate();
     }
 

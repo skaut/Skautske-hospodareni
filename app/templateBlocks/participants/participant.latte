@@ -65,7 +65,7 @@
                 <thead class="onlyWithParticipants">
                     <tr>
                         <th>Příjmení a jméno ({= count($participants)})</th>
-                        <th>Dnů &nbsp; </th>
+                        <th>Dnů</th>
                         <th>Částka</th>
                         <th n:if="$isAllowRepayment">Vratka</th>
                         <th n:if="$isAllowIsAccount">Na účet?</th>
@@ -86,8 +86,8 @@
                     <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
                     {? $participantsNames[] = $p->Person}
                         <td>{*}{label ids-$p->ID /}{*}{*}<i class="icon icon-move hidden-tablet hidden-phone"></i> {*}{$p->Person}</td>
-                        <td class="r"><a id="par-days-{$p->ID}"{if $isAllowParticipantUpdate}   class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if}>{$p->Days}</a></td>
-                        <td class="r"><a id="par-payment-{$p->ID}"{if $isAllowParticipantUpdate} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if} >{if isset($p->payment) && $p->payment != ""}{$p->payment|price:false}{? $totalPayment += $p->payment}{else}0{/if}</a></td>
+                        <td class="r"><a n:tag-if="$isAllowParticipantUpdate" id="par-days-{$p->ID}"{if $isAllowParticipantUpdate}   class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if}>{$p->Days}</a></td>
+                        <td class="r"><a n:tag-if="$isAllowParticipantUpdate" id="par-payment-{$p->ID}"{if $isAllowParticipantUpdate} class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if} >{if isset($p->payment) && $p->payment != ""}{$p->payment|price:false}{? $totalPayment += $p->payment}{else}0{/if}</a></td>
                         <td n:if="$isAllowRepayment"><a id="par-repayment-{$p->ID}"{if $isAllowParticipantUpdate} class="num-edit" data-type='repayment' data-id="{$p->ID}" tabindex="{$tabIndex++}"{/if} >{if isset($p->repayment) && $p->repayment != ""}{$p->repayment|price:false}{? $totalRepayment += $p->repayment}{else}0{/if}</a></td>
                         <td n:if="$isAllowIsAccount">{ifset $p->isAccount}{$p->isAccount == 'Y' ? 'Ano'}{/ifset}</td>
                         <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="r">

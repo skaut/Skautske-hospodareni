@@ -39,7 +39,7 @@ class ExcelService extends BaseService {
         $objPHPExcel = $this->getNewFile();
         $data = $service->chits->getAll($event->ID);
         $this->setSheetCashbook($objPHPExcel->setActiveSheetIndex(0), $data, $event->prefix);
-        $this->send($objPHPExcel, Nette\Utils\Strings::webalize($event->DisplayName) . "pokladni-kniha-v" . date("Y_n_j"));
+        $this->send($objPHPExcel, Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
     }
 
     protected function setSheetParticipantCamp(&$sheet, $data) {

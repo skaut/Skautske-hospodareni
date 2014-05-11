@@ -1,4 +1,4 @@
-{block #title}{$camp->DisplayName} - rozpočet{/block}
+{block #title}{$event->DisplayName} - rozpočet{/block}
 
 {block #bughetTable $data, $toRepair, $isIn}
 <table n:ifset="$data" class="table myTable table-bordered table-condensed">
@@ -22,7 +22,7 @@
 
 
 {block #content}
-<h2>{$camp->DisplayName}</h2>
+<h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
 <div class="alert alert-danger" n:if="!$isConsistent">

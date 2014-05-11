@@ -4,8 +4,8 @@ namespace App;
 
 use Nette\Diagnostics\Debugger;
 
-class ErrorPresenter extends Nette\Application\UI\Presenter {
-
+class ErrorPresenter extends \Nette\Application\UI\Presenter {
+    
     public function renderDefault($exception) {
         if ($this->isAjax()) { // AJAX request? Just note this error in payload.
             $this->payload->error = TRUE;

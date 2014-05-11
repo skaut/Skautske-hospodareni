@@ -1,7 +1,7 @@
-{block #title}{$camp->DisplayName} - pokladní kniha{/block}
+{block #title}{$event->DisplayName} - pokladní kniha{/block}
 
 {block #content}
-<h2>{$camp->DisplayName}</h2>
+<h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
 <div n:ifset="$missingCategories" class="alert alert-error">

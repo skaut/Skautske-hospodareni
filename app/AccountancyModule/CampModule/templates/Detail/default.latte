@@ -1,10 +1,10 @@
-{block #title}{$camp->DisplayName} - základní ůdaje{/block}
+{block #title}{$event->DisplayName} - základní ůdaje{/block}
 
 {block #content}
-<h2>{$camp->DisplayName}</h2>
+<h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
-{dump $camp}
+{dump $event}
 
 <div class="row-fluid">
     <div class="span3" n:if="$accessDetail">
@@ -12,27 +12,27 @@
         <table class="myTable table table-bordered table-condensed">
             <tr>
                 <th>Jednotka</th>
-                <td>{$camp->Unit}</td>
+                <td>{$event->Unit}</td>
             </tr>
             <tr>
                 <th>Od</th>
-                <td>{$camp->StartDate|date:"j. n. Y"}</td>
+                <td>{$event->StartDate|date:"j. n. Y"}</td>
             </tr>
             <tr>
                 <th>Do</th>
-                <td>{$camp->EndDate|date:"j. n. Y"}</td>
+                <td>{$event->EndDate|date:"j. n. Y"}</td>
             </tr>
             <tr>
                 <th>Místo</th>
-                <td>{$camp->Location}</td>
+                <td>{$event->Location}</td>
             </tr>
             <tr>
                 <th>Stav</th>
-                <td {if $camp->ID_EventCampState == closed}title="Uzavřel: {$camp->PersonClosed} dne: {$camp->DateClosed|date:"j.n.Y"}" {/if}>{!$camp->ID_EventCampState|campStateLabel}</td>
+                <td {if $event->ID_EventCampState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{!$event->ID_EventCampState|campStateLabel}</td>
             </tr>
             <tr>
                 <th>Prefix <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů aktivní."/></th>
-                <td>{$camp->prefix} <a n:if="$accessDetail" href="#editPrefix" class="btn btn-primary btn-mini" data-toggle="modal"><i class="icon-pencil icon-white"></i></a></td>
+                <td>{$event->prefix} <a n:if="$accessDetail" href="#editPrefix" class="btn btn-primary btn-mini" data-toggle="modal"><i class="icon-pencil icon-white"></i></a></td>
             </tr>
         </table>
     </div>
@@ -57,7 +57,7 @@
         <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info btn-small"><i class="icon icon-print icon-white"></i> Záverečná zpráva</a><br />
     </div>
     <div class="alert alert-info span4">
-        Pro úpravu údajů táborů použijte <a href="{$skautISUrl}Junak/Events/Camp/Detail.aspx?ID={$camp->ID}" target="_blank"><u>SkautIS</u></a>.
+        Pro úpravu údajů táborů použijte <a href="{$skautISUrl}Junak/Events/Camp/Detail.aspx?ID={$event->ID}" target="_blank"><u>SkautIS</u></a>.
     </div>
 </div>
 <div class="row-fluid">

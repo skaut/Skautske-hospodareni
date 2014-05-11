@@ -38,11 +38,10 @@ abstract class BaseService extends Nette\Object {
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
      * @var type 
      */
-    private static $storage;
+    private static $storage= array();
     
     public function __construct($skautIS = NULL) {
         $this->skautIS = $skautIS;
-        self::$storage = array();
     }
     
 
@@ -53,8 +52,9 @@ abstract class BaseService extends Nette\Object {
      * @return mixed 
      */
     protected function saveSes($id, $val){
-        if($this->useCache)
+        if ($this->useCache) {
             self::$storage[$id] = $val;
+        }
         return $val;
     }
     
@@ -64,8 +64,9 @@ abstract class BaseService extends Nette\Object {
      * @return mixed | FALSE
      */
     protected function loadSes($id){
-        if( $this->useCache && array_key_exists($id, self::$storage) )
+        if ($this->useCache && array_key_exists($id, self::$storage)) {
             return self::$storage[$id];
+        }
         return FALSE;
     }
     
@@ -77,8 +78,9 @@ abstract class BaseService extends Nette\Object {
      */
     function makePdf($template = NULL, $filename = NULL, $landscape = false) {
         $format = $landscape ? "A4-L" : "A4";
-        if ($template === NULL)
+        if ($template === NULL) {
             return FALSE;
+        }
 //        define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
 //        require_once(_MPDF_PATH . 'mpdf.php');
         $mpdf = new mPDF(

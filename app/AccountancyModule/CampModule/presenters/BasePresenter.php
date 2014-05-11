@@ -14,7 +14,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     const STable = "EV_EventCamp";
     
-    protected $camp;
+    protected $event;
 
     protected function startup() {
         parent::startup();
@@ -23,7 +23,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
         if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
-                $this->template->camp = $this->camp = $this->context->campService->event->get($this->aid);
+                $this->template->event = $this->event = $this->context->campService->event->get($this->aid);
                 $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
                 $this->template->isEditable = $this->isEditable = $this->isAllowed(self::STable . "_UPDATE_Real");
             } catch (PermissionException $exc) {
