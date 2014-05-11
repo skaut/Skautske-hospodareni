@@ -1,4 +1,7 @@
 <?php
+
+namespace Model;
+
 /**
  * @author sinacek
  */
@@ -14,4 +17,14 @@ class BaseTable {
     const TABLE_TC_COMMANDS = 'tc_commands';
     const TABLE_TC_TRAVELS = 'tc_travels'; 
     const TABLE_TC_VEHICLE = 'tc_vehicle'; 
+    
+    /**
+     *
+     * @var \DibiConnection
+     */
+    protected $connection;
+    
+    public function __construct($connection = NULL) {
+        $this->connection = $connection;
+    }
 }

@@ -1,5 +1,7 @@
 <?php
 
+namespace Model;
+
 /**
  * @author Hána František
  */
@@ -11,7 +13,7 @@ class ChitTable extends BaseTable {
      * @return DibiRow 
      */
     public function get($chitId) {
-        return dibi::fetch("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE id=%i", $chitId);
+        return $this->connection->fetch("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE id=%i", $chitId);
     }
 
     /**
@@ -20,7 +22,7 @@ class ChitTable extends BaseTable {
      * @return array
      */
     public function getAll($localEventId) {
-        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "]
+        return $this->connection->fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "]
                 WHERE eventId=%i", $localEventId, "
                 ORDER BY date, ctype ");
     }
@@ -32,7 +34,7 @@ class ChitTable extends BaseTable {
      * @return array
      */
     public function getIn($localEventId, array $list) {
-        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE eventId=%i", $localEventId, " AND id in %in", $list, "ORDER BY date");
+        return $this->connection->fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE eventId=%i", $localEventId, " AND id in %in", $list, "ORDER BY date");
     }
 
     /**
@@ -41,8 +43,8 @@ class ChitTable extends BaseTable {
      * @return int 
      */
     public function add($values) {
-        dibi::query("INSERT INTO [" . self::TABLE_CHIT . "] %v", $values);
-        return dibi::getInsertId();
+        $this->connection->query("INSERT INTO [" . self::TABLE_CHIT . "] %v", $values);
+        return $this->connection->getInsertId();
     }
     
     /**
@@ -53,7 +55,7 @@ class ChitTable extends BaseTable {
      * @return type
      */
     public function generateNumber($eventId, $category, $length = 3){
-        return str_pad((int) dibi::fetchSingle("SELECT COUNT(*) from ac_chits where eventId=%i and category IN %in", $eventId, $category),$length,"0",STR_PAD_LEFT);
+        return str_pad((int) $this->connection->fetchSingle("SELECT COUNT(*) from ac_chits where eventId=%i and category IN %in", $eventId, $category),$length,"0",STR_PAD_LEFT);
     }
 
     /**
@@ -63,7 +65,7 @@ class ChitTable extends BaseTable {
      * @return type 
      */
     public function update($chitId, $values) {
-        return dibi::query("UPDATE [" . self::TABLE_CHIT . "] SET ", $values, "WHERE id=%i", $chitId);
+        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET ", $values, "WHERE id=%i", $chitId);
     }
 
     /**
@@ -73,7 +75,7 @@ class ChitTable extends BaseTable {
      * @return type 
      */
     public function delete($chitId, $localEventId) {
-        return dibi::query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
+        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
     }
 
     /**
@@ -82,7 +84,7 @@ class ChitTable extends BaseTable {
      * @return type 
      */
     public function deleteAll($localEventId) {
-        return dibi::query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE eventId = %i", $localEventId);
+        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE eventId = %i", $localEventId);
     }
 
     /**
@@ -91,7 +93,7 @@ class ChitTable extends BaseTable {
      * @return array 
      */
     public function getCategories($type = NULL) {
-        return dibi::fetchPairs("SELECT id, label FROM [" . self::TABLE_CATEGORY . "]
+        return $this->connection->fetchPairs("SELECT id, label FROM [" . self::TABLE_CATEGORY . "]
             WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type, "ORDER BY orderby DESC"
         );
     }
@@ -102,7 +104,7 @@ class ChitTable extends BaseTable {
      * @return type 
      */
     public function getCategoriesAll($type = NULL) {
-        return dibi::fetchAll("SELECT * FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
+        return $this->connection->fetchAll("SELECT * FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
     }
 
     /**
@@ -112,7 +114,7 @@ class ChitTable extends BaseTable {
      * @return int 
      */
     public function getTotalInCategory($categoryId, $eId) {
-        return dibi::fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND eventId=%i", $eId, " GROUP BY eventId");
+        return $this->connection->fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND eventId=%i", $eId, " GROUP BY eventId");
     }
 
     /**
@@ -121,7 +123,7 @@ class ChitTable extends BaseTable {
      * @return bool 
      */
     public function isInMinus($localEventId) {
-        $data = dibi::fetchAll("SELECT cat.type, SUM(ch.price) as sum FROM [" . self::TABLE_CHIT . "] as ch
+        $data = $this->connection->fetchAll("SELECT cat.type, SUM(ch.price) as sum FROM [" . self::TABLE_CHIT . "] as ch
             LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.id) 
             WHERE ch.eventId = %i AND ch.deleted = 0
             GROUP BY cat.type", $localEventId);
@@ -134,7 +136,7 @@ class ChitTable extends BaseTable {
      * @return (categoryId=>SUM)
      */
     public function getTotalInCategories($localEventId) {
-        return dibi::fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE eventId=%i", $localEventId, " AND deleted=0 GROUP BY category");
+        return $this->connection->fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE eventId=%i", $localEventId, " AND deleted=0 GROUP BY category");
     }
 
 }

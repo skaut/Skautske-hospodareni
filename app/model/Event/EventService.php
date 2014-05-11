@@ -1,5 +1,7 @@
 <?php
 
+namespace Model;
+
 /**
  * @author Hána František
  */
@@ -7,10 +9,10 @@ class EventService extends MutableBaseService {
 
     protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist");
 
-    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {
-        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage);
+    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection) {
+        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection);
         /** @var EventTable */
-        $this->table = new EventTable();
+        $this->table = new EventTable($connection);
     }
 
     public function getAll($year = NULL, $state = NULL) {
@@ -305,7 +307,7 @@ class EventService extends MutableBaseService {
      * @return bool
      */
     public function isCommandEditable($arg) {
-        if (!$arg instanceof stdClass) {
+        if (!$arg instanceof \stdClass) {
             try {
                 $arg = $this->get($arg);
             } catch (\SkautIS\Exception\PermissionException $exc) {
@@ -343,7 +345,7 @@ class EventService extends MutableBaseService {
      * @return int počet událostí se záznamem
      */
     public function getCountOfActiveEvents() {
-        return dibi::query("SELECT COUNT(DISTINCT actionId) FROM [" . BaseTable::TABLE_CHIT . "] WHERE deleted = 0")->fetchSingle();
+        return $this->connection->query("SELECT COUNT(DISTINCT actionId) FROM [" . BaseTable::TABLE_CHIT . "] WHERE deleted = 0")->fetchSingle();
     }
 
 }

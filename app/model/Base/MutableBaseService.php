@@ -1,6 +1,8 @@
 <?php
 
-use Nette\Caching\Cache;
+namespace Model;
+
+use \Nette\Caching\Cache;
 
 /**
  * @author Hána František
@@ -14,16 +16,16 @@ abstract class MutableBaseService extends BaseService {
     static protected $expire;
     static protected $type;
 
-    /** @var Nette\Caching\Cache */
+    /** @var \Nette\Caching\Cache */
     protected $cache;
 
-    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage) {
+    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection) {
         self::$typeName = $name;
         self::$typeLongName = $longName;
         self::$expire = $expire;
         self::$type = strtolower($name);
 
-        parent::__construct($skautIS);
+        parent::__construct($skautIS, $connection);
         $cache = new Cache($cacheStorage, __CLASS__);
         $this->cache = $cache;
 //        $this->cache->clean();

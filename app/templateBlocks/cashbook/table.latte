@@ -8,7 +8,7 @@
                     Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
                 </p>
                 <div class="well well-small span8">
-                    <a n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)"  href="#importHpd" role="button" data-toggle="modal" class="btn btn-small btn-primary">Načíst příjmy od účastníků</a>
+                    <a n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)" href="{$linkImportHPD}" {if \Nette\Utils\Strings::startsWith($linkImportHPD, '#')} role="button" data-toggle="modal"{/if} class="btn btn-small btn-primary">Načíst příjmy od účastníků</a>
                     <a n:href="export $aid" target="_blank" class="btn btn-small btn-info hidden-phone"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
                     <a n:href="exportExcel $aid" target="_blank" class="btn btn-small btn-info hidden-phone"><i class="icon-file icon-white"></i> Exportovat do excelu</a>
                 </div>

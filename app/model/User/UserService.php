@@ -1,5 +1,7 @@
 <?php
 
+namespace Model;
+
 /**
  * @author sinacek
  */
@@ -74,7 +76,7 @@ class UserService extends BaseService {
             "ID_Action" => $ID_Action,
         ));
         if ($ID_Action !== NULL) { //pokud je zadána konrétní funkce pro ověřování, tak se vrací BOOL
-            if ($res instanceof stdClass)
+            if ($res instanceof \stdClass)
                 return false;
             if (is_array($res))
                 return true;
