@@ -15,7 +15,7 @@ nette:
         autoStart: smart
         expiration: "+ 3 days"
     application:
-        errorPresenter: Error
+        errorPresenter: Apps\Error
         catchExceptions: true
         mapping:
             *: App\*Module\*Presenter
