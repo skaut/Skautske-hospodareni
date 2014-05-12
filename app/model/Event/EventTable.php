@@ -15,7 +15,7 @@ class EventTable extends BaseTable {
      */
     public function getLocalId($skautisEventId, $type) {
         if (!($ret = $this->connection->fetchSingle("SELECT id FROM [" . self::TABLE_EVENT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type))) {
-            $ret = $this->connection->insert(self::TABLE_EVENT, array("skautisId" => $skautisEventId, "type" => $type))->execute($this->connection->IDENTIFIER);
+            $ret = $this->connection->insert(self::TABLE_EVENT, array("skautisId" => $skautisEventId, "type" => $type))->execute(\dibi::IDENTIFIER);
         }
         return $ret;
     }
