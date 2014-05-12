@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="cs">
-{*}<html lang="cs" manifest="{$baseUri}/appa.manifest">{*}
+    {*}<html lang="cs" manifest="{$baseUri}/appa.manifest">{*}
     <head>
         <meta charset=utf-8 />
         <title>{block #title|striptags|trim}SkaHos{/block}</title>
@@ -14,20 +14,26 @@
         {control css}
         {control js}
         <script type="text/javascript">
-            function changeRole(id){
-                 $.post({link changeRole!}, { roleId : id });
+            function changeRole(id) {
+                $.post({link changeRole!}, { roleId: id});
             }
-{if $presenter->context->parameters['productionMode']}
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-2900685-26']);
-      _gaq.push(['_trackPageview']);
+            {if $presenter->context->parameters['productionMode']}
+            (function(i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function() {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-{/if}
+            ga('create', 'UA-50892244-1', 'skauting.cz');
+            ga('require', 'displayfeatures');
+            ga('send', 'pageview');
+            {/if}
         </script>
     </head>
 
@@ -49,33 +55,33 @@
                         <ul class="nav">
                             <li n:if="!$user->isLoggedIn()" {ifCurrent :Default:about}class='active'{/ifCurrent}><a n:href=":Default:about">O projektu</a></li>
                             <li {ifCurrent :Tutorial:*}class='active'{/ifCurrent}><a n:href=":Tutorial:">Příručka</a></li>
-                            {if $user->isLoggedIn()}
-                            <li {ifCurrent :Accountancy:Event:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
-                            <li {ifCurrent :Accountancy:Camp:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory{*} <sup style="color:red;font-weight: bold;">BETA</sup>{*}</a></li>
-                            <li><a n:href=":Accountancy:Travel:Default:">Cestovní příkazy</a></li>
-                            {/if}
+                                {if $user->isLoggedIn()}
+                                <li {ifCurrent :Accountancy:Event:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
+                                <li {ifCurrent :Accountancy:Camp:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory{*} <sup style="color:red;font-weight: bold;">BETA</sup>{*}</a></li>
+                                <li><a n:href=":Accountancy:Travel:Default:">Cestovní příkazy</a></li>
+                                {/if}
                         </ul>
-                        
-                        
+
+
                         {if $user->isLoggedIn()}
-                        <p class="navbar-text pull-right">
-                            <select onchange="changeRole(this.value)" class="roleSelect input-large">
-                                <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->RegistrationNumber} - {$r->Role}</option>
-                            </select>
-                            <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small hidden-phone">Odhlásit se</a>
-                            <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small visible-phone btn-block">Odhlásit se</a>
+                            <p class="navbar-text pull-right">
+                                <select onchange="changeRole(this.value)" class="roleSelect input-large">
+                                    <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->RegistrationNumber} - {$r->Role}</option>
+                                </select>
+                                <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small hidden-phone">Odhlásit se</a>
+                                <a n:href=":Auth:logoutSis" class="btn btn-primary btn-small visible-phone btn-block">Odhlásit se</a>
                             </p>
                             <div id="timer" class="navbar-text pull-right" style="width:100px;padding-top: 15px;">
-                            <div class="progress progress-success" style="height:7px;">
-                                <div class="bar" style="width: 100%;"></div>    
+                                <div class="progress progress-success" style="height:7px;">
+                                    <div class="bar" style="width: 100%;"></div>    
+                                </div>
                             </div>
-                        </div>
                         {else}
-                        <p class="navbar-text pull-right">
-                            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-small hidden-phone">Přihlásit se</a>
-                        </p>
+                            <p class="navbar-text pull-right">
+                                <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-small hidden-phone">Přihlásit se</a>
+                            </p>
                         {/if}
-                      </div><!--/.nav-collapse -->
+                    </div><!--/.nav-collapse -->
                     <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-small hidden-desktop btn-block" n:if="!$user->isLoggedIn()">Přihlásit se</a>
                 </div>
             </div>
@@ -83,18 +89,18 @@
 
         <div class="container">
             <div id="content">
-            {snippet flash}
-                {foreach $flashes as $flash}
-                <div class="alert alert-{$flash->type}">
-                    <a class="close" data-dismiss="alert">×</a>
-                    {$flash->message}
-                </div>
-                {/foreach}
-            {/snippet}
-            {snippet contentSnip}
-                {include #content}
-            {/snippet}
-        </div><!-- /content -->
+                {snippet flash}
+                    {foreach $flashes as $flash}
+                        <div class="alert alert-{$flash->type}">
+                            <a class="close" data-dismiss="alert">×</a>
+                            {$flash->message}
+                        </div>
+                    {/foreach}
+                {/snippet}
+                {snippet contentSnip}
+                    {include #content}
+                {/snippet}
+            </div><!-- /content -->
             <hr style="clear: both" class="hidden-phone" />
             <footer class="hidden-phone">
                 {*}Účtovaných výprav {$cntActiveEvents} / {*}
