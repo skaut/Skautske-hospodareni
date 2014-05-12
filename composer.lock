@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "fbb7039a8bafa25dbf286d7b838ff4c6",
+    "hash": "9023bd7006543d6f08e25cd4e545de8f",
     "packages": [
         {
             "name": "dg/dibi",
@@ -364,7 +364,118 @@
         }
     ],
     "packages-dev": [
-
+        {
+            "name": "janmarek/mockista",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/janmarek/mockista.git",
+                "reference": "303a03deb96bca537f7b3d7aac2c2c796a5f26b9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/janmarek/mockista/zipball/303a03deb96bca537f7b3d7aac2c2c796a5f26b9",
+                "reference": "303a03deb96bca537f7b3d7aac2c2c796a5f26b9",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Mockista": ""
+                },
+                "files": [
+                    "Mockista/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Marek",
+                    "email": "mail@janmarek.net",
+                    "homepage": "http://www.janmarek.net/",
+                    "role": "Author"
+                },
+                {
+                    "name": "Jiří Knesl",
+                    "homepage": "http://www.knesl.com/"
+                }
+            ],
+            "description": "Mockista is library for mocking, which I've written, because I find mocking in PHPUnit awful.",
+            "homepage": "http://www.mockista.com/",
+            "keywords": [
+                "BDD",
+                "TDD",
+                "mock",
+                "mocking",
+                "mockista",
+                "phpunit",
+                "testing",
+                "tests"
+            ],
+            "time": "2014-03-18 20:47:03"
+        },
+        {
+            "name": "nette/tester",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nette/tester.git",
+                "reference": "a0d2bbada1e60d18fccc78631c1a4578180e57f4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nette/tester/zipball/a0d2bbada1e60d18fccc78631c1a4578180e57f4",
+                "reference": "a0d2bbada1e60d18fccc78631c1a4578180e57f4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "bin": [
+                "Tester/tester"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "Tester/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause",
+                "GPL-2.0",
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "David Grudl",
+                    "homepage": "http://davidgrudl.com"
+                },
+                {
+                    "name": "Nette Community",
+                    "homepage": "http://nette.org/contributors"
+                }
+            ],
+            "description": "An easy-to-use PHP Unit Testing framework.",
+            "homepage": "http://nette.org",
+            "keywords": [
+                "nette",
+                "testing",
+                "unit"
+            ],
+            "time": "2014-05-06 19:48:17"
+        }
     ],
     "aliases": [
 
@@ -372,7 +483,9 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "skautis/skautis": 20,
-        "srigi/nette-visualpaginator": 20
+        "srigi/nette-visualpaginator": 20,
+        "nette/tester": 20,
+        "janmarek/mockista": 20
     },
     "platform": {
         "php": ">= 5.3.0"
