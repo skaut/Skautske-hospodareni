@@ -57,7 +57,7 @@ class AuthPresenter extends BasePresenter {
             $this->user->login($me);
 
             if (isset($ReturnUrl)) {
-                $this->context->application->restoreRequest($ReturnUrl);
+                $this->restoreRequest($ReturnUrl);
             }
         } catch (AuthenticationException $e) {
             $this->flashMessage($e->getMessage(), "danger");
