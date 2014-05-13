@@ -19,7 +19,7 @@ table {
         <th style="width: 11%;">Výdej</th>
         <th style="width: 11%;">Zůstatek</th>
     </tr>
-    {assign balance => 0}
+    {var balance => 0}
     <tr n:foreach="$list as $item">
         <td style="height:30px;">{$item->date|date:"d.m.Y"}</td>
         <td>{if $info->prefix != null}{$info->prefix}{$item->num}{/if}</td>

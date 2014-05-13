@@ -230,12 +230,9 @@ class ParticipantService extends MutableBaseService {
      * @return int 
      */
     public function getPersonsDays($eventId) {
-
-        function daySum($res, $v) {
+        return array_reduce($this->getAll($eventId), function ($res, $v) {
             return $res += $v->Days;
-        }
-
-        return array_reduce($this->getAll($eventId), "daySum");
+        });
     }
 
     /**
