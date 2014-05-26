@@ -9,7 +9,6 @@ use Nette\Application\UI\Form;
  */
 class ContractPresenter extends BasePresenter {
 
-    
     function startup() {
         parent::startup();
 //        $contractId = $this->getParameter("contractId", NULL);
@@ -20,7 +19,7 @@ class ContractPresenter extends BasePresenter {
 //            $this->redirect("Default:");
 //        }
     }
-    
+
     protected function isContractAccessible($contractId) {
         return $this->context->travelService->isContractAccessible($contractId, $this->unit);
     }
@@ -28,8 +27,9 @@ class ContractPresenter extends BasePresenter {
     public function renderDefault() {
         $this->template->list = $this->context->travelService->getAllContracts($this->unit->ID);
     }
+
     public function renderDetail($id) {
-        if(!$this->isContractAccessible($id)){
+        if (!$this->isContractAccessible($id)) {
             $this->flashMessage("Nemáte oprávnění k cestovnímu příkazu.", "danger");
             $this->redirect("default");
         }
@@ -39,9 +39,20 @@ class ContractPresenter extends BasePresenter {
 
     public function actionPrint($contractId) {
         $template = $this->template;
-        $template->setFile(dirname(__FILE__) . '/../templates/Contract/ex.contract.latte');
         $template->contract = $contract = $this->context->travelService->getContract($contractId);
         $template->unit = $this->context->unitService->getDetail($contract->unit_id);
+
+        switch ($contract->template) {
+            case 1:
+                $templateName = 'ex.contract.old.latte';
+                break;
+            case 2:
+                $templateName = 'ex.contract.noz.latte';
+                break;
+            default:
+                throw new \Exception("Neznámá šablona pro " . $contract->template);
+        }
+        $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
         $this->context->unitService->makePdf($template, "Smlouva-o-proplaceni-cestovnich-nahrad.pdf");
     }
 
@@ -74,13 +85,14 @@ class ContractPresenter extends BasePresenter {
     }
 
     function formCreateContractSubmitted(Form $form) {
-        $v = @$form->getValues();
-        $v['end'] =  isset($v['end']) ? $v['end'] : NULL;
+        $v = $form->getValues();
+        $v['end'] = isset($v['end']) ? $v['end'] : NULL;
         $v->unit_id = $this->unit->ID;
-        if($this->context->travelService->addContract($v))
+        if ($this->context->travelService->addContract($v)) {
             $this->flashMessage("Smlouva byla založena.");
-        else 
+        } else {
             $this->flashMessage("Smlouvu se nepodazřilo založit.", "danger");
+        }
         $this->redirect("this");
     }
 
