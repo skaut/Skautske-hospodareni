@@ -62,38 +62,38 @@ class ExportService extends BaseService {
     /**
      * 
      * @param type $aid
-     * @param EventEntity $eventSerice
+     * @param EventEntity $eventService
      * @return type
      */
-    public function getEventReport($aid, EventEntity $eventSerice) {
+    public function getEventReport($aid, EventEntity $eventService) {
         $categories = array();
         //inicializuje pole s kategorií s částkami na 0
-        foreach (ArrayHash::from($eventSerice->chits->getCategories($all = TRUE)) as $c) {
+        foreach (ArrayHash::from($eventService->chits->getCategories($all = TRUE)) as $c) {
             $categories[$c->type][$c->short] = $c;
             $categories[$c->type][$c->short]->price = 0;
         }
 
         //rozpočítává paragony do jednotlivých skupin
-        foreach ($eventSerice->chits->getAll($aid) as $chit) {
+        foreach ($eventService->chits->getAll($aid) as $chit) {
             $categories[$chit->ctype][$chit->cshort]->price += $chit->price;
         }
 
         $template = $this->getTemplate(dirname(__FILE__) . '/templates/eventReport.latte');
-        $template->participants = $eventSerice->participants->getAll($aid);
-        $template->personsDays = $eventSerice->participants->getPersonsDays($aid);
-        $template->a = $eventSerice->event->get($aid);
+        $template->participants = $eventService->participants->getAll($aid);
+        $template->personsDays  = $eventService->participants->getPersonsDays($aid);
+        $template->a = $eventService->event->get($aid);
         $template->chits = $categories;
-        $template->func = $eventSerice->event->getFunctions($aid);
+        $template->func = $eventService->event->getFunctions($aid);
         return $template;
     }
 
     /**
      * vrací PDF s vybranými paragony
+     * @param type $aid
+     * @param type $eventService
      * @param type $unitService
-     * @param type $template
-     * @param type $actionInfo
      * @param type $chits
-     * @param type $fileName 
+     * @param type $type 
      */
     public function getChits($aid, EventEntity $eventService, BaseService $unitService, array $chits, $type = "general") {
 
@@ -126,18 +126,18 @@ class ExportService extends BaseService {
         return $template;
     }
 
-    public function getCampReport($aid, EventEntity $campSerice) {
+    public function getCampReport($aid, EventEntity $campService) {
         $categories = array();
-        foreach ($campSerice->chits->getCategoriesCamp($aid) as $c) {
+        foreach ($campService->chits->getCategoriesCamp($aid) as $c) {
             $categories[$c->IsRevenue ? "in" : "out"][$c->ID] = $c;
         }
 
         $template = $this->getTemplate(dirname(__FILE__) . '/templates/campReport.latte');
-        $template->participants = $campSerice->participants->getAll($aid);
-        $template->personsDays = $campSerice->participants->getPersonsDays($aid);
-        $template->a = $campSerice->event->get($aid);
+        $template->participants = $campService->participants->getAll($aid);
+        $template->personsDays = $campService->participants->getPersonsDays($aid);
+        $template->a = $campService->event->get($aid);
         $template->chits = $categories;
-        $template->func = $campSerice->event->getFunctions($aid);
+        $template->func = $campService->event->getFunctions($aid);
         return $template;
     }
 

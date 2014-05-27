@@ -18,8 +18,16 @@ class EventService extends MutableBaseService {
     public function getAll($year = NULL, $state = NULL) {
         $year = ($year == "all") ? NULL : $year;
         $state = ($state == "all") ? NULL : $state;
-
-        return $this->skautIS->event->{"Event" . self::$typeName . "All"}(array("IsRelation" => TRUE, "ID_Event" . self::$typeName . "State" => $state, "Year" => $year));
+        
+        $events = $this->skautIS->event->{"Event" . self::$typeName . "All"}(array("IsRelation" => TRUE, "ID_Event" . self::$typeName . "State" => $state, "Year" => $year));
+        if(is_array($events)){
+            usort($events, function ($a, $b) {
+                $at = strtotime($a->StartDate);
+                $bt = strtotime($b->StartDate);
+                return ($at == $bt) ? strcasecmp($a->DisplayName, $b->DisplayName) : ($at > $bt  ? 1 : -1);
+            });
+        }
+        return $events;
     }
 
     public function getLocalId($skautisEventId) {
@@ -213,7 +221,7 @@ class EventService extends MutableBaseService {
     public function update($data) {
         $ID = $data['aid'];
         $old = $this->get($ID);
-        
+
         if (isset($data['prefix'])) {
             $this->updatePrefix($ID, $data['prefix']);
             unset($data['prefix']);
@@ -231,7 +239,7 @@ class EventService extends MutableBaseService {
             "EndDate" => $data['end'],
                 ), "eventGeneral");
 
-        
+
 
 //            $this->skautIS->event->EventGeneralUpdateFunction(array(
 //                "ID" => $ID,
