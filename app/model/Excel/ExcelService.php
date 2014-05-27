@@ -28,7 +28,7 @@ class ExcelService extends BaseService {
             $data = $service->participants->getAllPersonDetail($event->ID, $service->participants->getAll($event->ID));
             $this->setSheetParticipantGeneral($objPHPExcel->getActiveSheet(), $data, $event);
         }
-        $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-v" . date("Y_n_j"));
+        $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-" . date("Y_n_j"));
     }
 
     /**
@@ -42,6 +42,23 @@ class ExcelService extends BaseService {
         $data = $service->chits->getAll($event->ID);
         $this->setSheetCashbook($objPHPExcel->setActiveSheetIndex(0), $data, $event->prefix);
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
+    }
+
+    public function getEventSummaries($eventIds, EventEntity $service) {
+        $objPHPExcel = $this->getNewFile();
+
+        $data = array();
+        foreach ($eventIds as $aid) {
+            $data[$aid] = $service->event->get($aid);
+            $data[$aid]['chits'] = $service->chits->getAll($aid);
+            $data[$aid]['func'] = $service->event->getFunctions($aid);
+            $data[$aid]['participantsCnt'] = count($service->participants->getAll($aid));
+            $data[$aid]['personDays'] = $service->participants->getPersonsDays($aid);
+        }
+        $this->setSheetEvents($objPHPExcel->setActiveSheetIndex(0), $data);
+        $objPHPExcel->createSheet(1);
+        $this->setSheetChits($objPHPExcel->setActiveSheetIndex(1), $data);
+        $this->send($objPHPExcel, "Souhrn-akcí-" . date("Y_n_j"));
     }
 
     protected function setSheetParticipantCamp(&$sheet, $data) {
@@ -108,7 +125,7 @@ class ExcelService extends BaseService {
                     ->setCellValue('G' . $rowCnt, !is_null($row->Birthday) ? date("d.m.Y", strtotime($row->Birthday)) : "")
                     ->setCellValue('H' . $rowCnt, $row->Days)
                     ->setCellValue('I' . $rowCnt, ($startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE && !is_null($row->Birthday)) ? $row->Days : 0)
-                    ;
+            ;
             $rowCnt++;
         }
         //format
@@ -153,6 +170,84 @@ class ExcelService extends BaseService {
         $sheet->setAutoFilter('A1:G' . ($rowCnt - 1));
 
         $sheet->setTitle('Pokladní kniha');
+    }
+
+    protected function setSheetEvents(&$sheet, $data) {
+        $sheet->setCellValue('A1', "Pořadatel")
+                ->setCellValue('B1', "Název akce")
+                ->setCellValue('C1', "Oddíl/družina")
+                ->setCellValue('D1', "Typ akce")
+                ->setCellValue('E1', "Rozsah")
+                ->setCellValue('F1', "Místo konání")
+                ->setCellValue('G1', "Vedoucí akce")
+                ->setCellValue('H1', "Hospodář akce")
+                ->setCellValue('I1', "Od")
+                ->setCellValue('J1', "Do")
+                ->setCellValue('K1', "Počet dnů")
+                ->setCellValue('L1', "Počet účastníků")
+                ->setCellValue('M1', "Počet osobodnů");
+
+        $rowCnt = 2;
+        foreach ($data as $row) {
+            $sheet->setCellValue('A' . $rowCnt, $row->Unit)
+                    ->setCellValue('B' . $rowCnt, $row->DisplayName)
+                    ->setCellValue('C' . $rowCnt, $row->ID_UnitEducative !== NULL ? $row->UnitEducative : "")
+                    ->setCellValue('D' . $rowCnt, $row->EventGeneralType)
+                    ->setCellValue('E' . $rowCnt, $row->EventGeneralScope)
+                    ->setCellValue('F' . $rowCnt, $row->Location)
+                    ->setCellValue('G' . $rowCnt, $row->func[0]->ID_Person !== NULL ? $row->func[0]->Person : "")
+                    ->setCellValue('H' . $rowCnt, $row->func[2]->ID_Person !== NULL ? $row->func[2]->Person : "")
+                    ->setCellValue('I' . $rowCnt, date("d.m.Y", strtotime($row->StartDate)))
+                    ->setCellValue('J' . $rowCnt, date("d.m.Y", strtotime($row->EndDate)))
+                    ->setCellValue('K' . $rowCnt, date("j", strtotime($row->EndDate) - strtotime($row->StartDate)))
+                    ->setCellValue('L' . $rowCnt, $row->participantsCnt)
+                    ->setCellValue('M' . $rowCnt, $row->personDays)
+            ;
+            $rowCnt++;
+        }
+
+        //format
+        foreach (range('A', 'M') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+        $sheet->getStyle('A1:M1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:M' . ($rowCnt - 1));
+        $sheet->setTitle('Přehled akcí');
+    }
+
+    protected function setSheetChits(&$sheet, $data) {
+        $sheet->setCellValue('A1', "Název akce")
+                ->setCellValue('B1', "Ze dne")
+                ->setCellValue('C1', "Číslo dokladu")
+                ->setCellValue('D1', "Účel výplaty")
+                ->setCellValue('E1', "Kategorie")
+                ->setCellValue('F1', "Komu/Od")
+                ->setCellValue('G1', "Příjem")
+                ->setCellValue('H1', "Výdej");
+
+        $rowCnt = 2;
+        foreach ($data as $event) {
+            foreach ($event['chits'] as $chit) {
+                $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
+                        ->setCellValue('B' . $rowCnt, date("d.m.Y", strtotime($chit->date)))
+                        ->setCellValue('C' . $rowCnt, $event->prefix !== NULL? $event->prefix.$chit->num: "")
+                        ->setCellValue('D' . $rowCnt, $chit->purpose)
+                        ->setCellValue('E' . $rowCnt, $chit->clabel)
+                        ->setCellValue('F' . $rowCnt, $chit->recipient)
+                        ->setCellValue('G' . $rowCnt, $chit->ctype == "in" ? $chit->price : "")
+                        ->setCellValue('H' . $rowCnt, $chit->ctype != "in" ? $chit->price : "")
+                ;
+                $rowCnt++;
+            }
+        }
+
+        //format
+        foreach (range('A', 'H') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
+        $sheet->setTitle('Doklady');
     }
 
     protected function send(\PHPExcel $obj, $filename) {
