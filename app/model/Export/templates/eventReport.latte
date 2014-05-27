@@ -41,7 +41,7 @@ $chits - paragony akce
     <tr>
         <th>{$a->StartDate|date:"j.n.Y"}</th>
         <th>{$a->EndDate|date:"j.n.Y"}</th>
-        <th>{= date("j", strtotime($a->EndDate) - strtotime($a->StartDate) ) }</th>
+        <th>{$a->TotalDays}</th>
         <th>{!= trim($a->Location) ? $a->Location : "&nbsp;"|stripTags}</th>
     </tr>
 </table>
