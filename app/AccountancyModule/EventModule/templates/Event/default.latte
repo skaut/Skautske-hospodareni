@@ -20,8 +20,12 @@
         <h3>Základní údaje</h3>
         <table class="myTable table table-bordered table-condensed">
             <tr>
-                <th>Jednotka</th>
+                <th>Pořadatel</th>
                 <td>{$event->Unit}</td>
+            </tr>
+            <tr n:ifset="$event->UnitEducative">
+                <th>Oddíl/Družina</th>
+                <td>{$event->UnitEducative}</td>
             </tr>
             <tr>
                 <th>Od</th>
