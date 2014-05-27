@@ -17,16 +17,16 @@
 </div>
 
 {if $isAllowParticipantInsert}
-{* nový účastník *}
-<div class="modal myModal fade" id="addParticipant">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h2>Založit nového účastníka</h2>
-    </div>
-    <div class="modal-body">
+    {* nový účastník *}
+    <div class="modal myModal fade" id="addParticipant">
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h2>Založit nového účastníka</h2>
+        </div>
+        <div class="modal-body">
             {control formAddParticipantNew}
+        </div>
     </div>
-</div>
 {/if}
 
 {include $templateBlockDir.'participants/js.latte'}
