@@ -35,7 +35,7 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
         $ev_state = $this->event->ID_EventGeneralState == "draft" ? TRUE : FALSE;
-        
+
         $this->uid = $this->getParameter("uid", NULL);
         $this->isAllowParticipantDetail = $this->template->isAllowParticipantDetail = array_key_exists("EV_ParticipantGeneral_DETAIL", $this->availableActions);
 //        $this->isAllowParticipantAll    = $this->template->isAllowParticipantAll = array_key_exists("EV_ParticipantGeneral_ALL_EventGeneral", $this->availableActions);
@@ -240,7 +240,7 @@ class ParticipantPresenter extends BasePresenter {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
             $this->redirect("Default:");
         }
-        
+
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
             $this->context->eventService->participants->removeParticipant($id);
         }
