@@ -42,6 +42,7 @@ class EventPresenter extends BasePresenter {
         }
 
         $this->template->funkce = $func;
+        $this->template->statistic = $this->context->eventService->participants->getEventStatistic($this->aid);
         $this->template->accessFunctionUpdate = $this->isAllowed("EV_EventGeneral_UPDATE_Function");
         $this->template->accessEditBase = $accessEditBase;
         $this->template->accessCloseEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Close");
@@ -74,6 +75,12 @@ class EventPresenter extends BasePresenter {
             $this->flashMessage("Před uzavřením akce musí být vyplněn vedoucí akce", "danger");
         }
         $this->redirect("this");
+    }
+    
+    public function handleActivateStatistic() {
+        $this->context->eventService->participants->activateEventStatistic($this->aid);
+        //flash message?
+        $this->redirect('this', array("aid" => $this->aid));
     }
 
     public function actionAddFunction($aid, $fid) {

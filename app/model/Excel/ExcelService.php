@@ -50,6 +50,7 @@ class ExcelService extends BaseService {
         $data = array();
         foreach ($eventIds as $aid) {
             $data[$aid] = $service->event->get($aid);
+            $data[$aid]['parStatistic'] = $service->participants->getEventStatistic($aid);
             $data[$aid]['chits'] = $service->chits->getAll($aid);
             $data[$aid]['func'] = $service->event->getFunctions($aid);
             $data[$aid]['participantsCnt'] = count($service->participants->getAll($aid));
@@ -173,6 +174,8 @@ class ExcelService extends BaseService {
     }
 
     protected function setSheetEvents(&$sheet, $data) {
+        $firstElement = reset($data);
+        
         $sheet->setCellValue('A1', "Pořadatel")
                 ->setCellValue('B1', "Název akce")
                 ->setCellValue('C1', "Oddíl/družina")
@@ -185,7 +188,14 @@ class ExcelService extends BaseService {
                 ->setCellValue('J1', "Do")
                 ->setCellValue('K1', "Počet dnů")
                 ->setCellValue('L1', "Počet účastníků")
-                ->setCellValue('M1', "Počet osobodnů");
+                ->setCellValue('M1', "Osobodnů")
+                ->setCellValue('N1', "Dětodnů")
+                ->setCellValue('O1', $firstElement->parStatistic[1]->ParticipantCategory)
+                ->setCellValue('P1', $firstElement->parStatistic[2]->ParticipantCategory)
+                ->setCellValue('Q1', $firstElement->parStatistic[3]->ParticipantCategory)
+                ->setCellValue('R1', $firstElement->parStatistic[4]->ParticipantCategory)
+                ->setCellValue('S1', $firstElement->parStatistic[5]->ParticipantCategory)
+                ;
 
         $rowCnt = 2;
         foreach ($data as $row) {
@@ -199,19 +209,25 @@ class ExcelService extends BaseService {
                     ->setCellValue('H' . $rowCnt, $row->func[2]->ID_Person !== NULL ? $row->func[2]->Person : "")
                     ->setCellValue('I' . $rowCnt, date("d.m.Y", strtotime($row->StartDate)))
                     ->setCellValue('J' . $rowCnt, date("d.m.Y", strtotime($row->EndDate)))
-                    ->setCellValue('K' . $rowCnt, date("j", strtotime($row->EndDate) - strtotime($row->StartDate)))
-                    ->setCellValue('L' . $rowCnt, $row->participantsCnt)
-                    ->setCellValue('M' . $rowCnt, $row->personDays)
+                    ->setCellValue('K' . $rowCnt, $row->TotalDays)
+                    ->setCellValue('L' . $rowCnt, $row->TotalParticipants)
+                    ->setCellValue('M' . $rowCnt, $row->PersonDays)
+                    ->setCellValue('N' . $rowCnt, $row->ChildDays)
+                    ->setCellValue('O' . $rowCnt, $row->parStatistic[1]->Count)
+                    ->setCellValue('P' . $rowCnt, $row->parStatistic[2]->Count)
+                    ->setCellValue('Q' . $rowCnt, $row->parStatistic[3]->Count)
+                    ->setCellValue('R' . $rowCnt, $row->parStatistic[4]->Count)
+                    ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count)
             ;
             $rowCnt++;
         }
 
         //format
-        foreach (range('A', 'M') as $columnID) {
+        foreach (range('A', 'S') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
-        $sheet->getStyle('A1:M1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:M' . ($rowCnt - 1));
+        $sheet->getStyle('A1:S1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:S' . ($rowCnt - 1));
         $sheet->setTitle('Přehled akcí');
     }
 

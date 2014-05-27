@@ -38,8 +38,9 @@ class ParticipantService extends MutableBaseService {
             }
             $this->saveSes($cacheId, $res);
         }
-        if (!is_array($res))//pokud je prázdná třída stdClass
+        if (!is_array($res)) {//pokud je prázdná třída stdClass
             return array();
+        }
         return $res;
     }
 
@@ -73,12 +74,15 @@ class ParticipantService extends MutableBaseService {
         }
 
         foreach ($participants as $pid => $p) {
-            if (!isset($participants[$pid]->isAccount))
+            if (!isset($participants[$pid]->isAccount)) {
                 $participants[$pid]->isAccount = null;
-            if (!isset($participants[$pid]->payment))
+            }
+            if (!isset($participants[$pid]->payment)) {
                 $participants[$pid]->payment = null;
-            if (!isset($participants[$pid]->repayment))
+            }
+            if (!isset($participants[$pid]->repayment)) {
                 $participants[$pid]->repayment = null;
+            }
         }
         return $participants;
     }
@@ -99,7 +103,7 @@ class ParticipantService extends MutableBaseService {
     /**
      * vytvoří nového účastníka
      * @param int $ID
-     * @param int $participantId
+     * @param int $person
      * @return type
      */
     public function addNew($ID, $person) {
@@ -234,14 +238,17 @@ class ParticipantService extends MutableBaseService {
             return $res += $v->Days;
         });
     }
-
-    /**
-     * počet účastníků
-     * @param type $eventId
-     * @return type 
-     */
-    public function getCount($eventId) {
-        return count($this->getAll($eventId));
+    
+    public function getEventStatistic($eventId){
+        $data = array();
+        foreach ($this->skautIS->event->{"EventStatisticAllEventGeneral"}(array("ID_EventGeneral" => $eventId)) as $item){
+            $data[$item->ID_ParticipantCategory] = $item;
+        }
+        return $data;
+    }
+    
+    public function activateEventStatistic($eventId){
+        return $this->skautIS->event->{"EventGeneralUpdateStatisticAutoComputed"}(array("ID" => $eventId, "IsStatisticAutoComputed"=>TRUE), "eventGeneral");
     }
 
 }
