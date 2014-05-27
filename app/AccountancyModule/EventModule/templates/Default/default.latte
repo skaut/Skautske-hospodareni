@@ -1,6 +1,9 @@
 {block #title}Seznam akcí{/block}
 {block #content}
 <h2>Seznam akcí</h2>
+
+{dump $list}
+
 <div class="row-fluid">
     <p n:if="$accessCreate">
         <a href="#createNew" data-toggle="modal" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</a>
