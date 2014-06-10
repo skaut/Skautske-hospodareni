@@ -104,7 +104,7 @@ class DefaultPresenter extends BasePresenter {
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
 
         return $form;
@@ -145,7 +145,7 @@ class DefaultPresenter extends BasePresenter {
         $form->addSelect("type", "Typ (+)", $types)
                 ->setDefaultValue("2");
         $form->addSubmit('send', 'Založit novou akci')
-                ->getControlPrototype()->setClass("btn btn-primary btn-large");
+                        ->setAttribute("class", "btn btn-primary btn-large");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }

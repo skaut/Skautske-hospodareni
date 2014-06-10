@@ -71,7 +71,7 @@ class DefaultPresenter extends BasePresenter {
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
 
         return $form;
