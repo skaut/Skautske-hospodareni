@@ -47,17 +47,17 @@ class DetailPresenter extends BasePresenter {
         $form->addText("prefix", "Prefix", NULL, 6);
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
-                        ->setAttribute("class", "btn btn-primary")
-                ->onClick[] = $this->{$name . "Submitted"};
+                ->setAttribute("class", "btn btn-primary");
+        $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
 
-    function formEditSubmitted(SubmitButton $button) {
+    function formEditSubmitted(Form $form) {
         if (!$this->isAllowed("EV_EventCamp_DETAIL")) {
             $this->flashMessage("Nemáte oprávnění pro úpravu tábora", "danger");
             $this->redirect("this");
         }
-        $values = $button->getForm()->getValues();
+        $values = $form->getValues();
 
         if ($this->context->campService->event->updatePrefix($values['aid'], $values['prefix'])) {
             $this->flashMessage("Prefix byl nastaven.");
@@ -78,8 +78,7 @@ class DetailPresenter extends BasePresenter {
         $form->addHidden("fid");
         $form->addHidden("aid");
         $form->addSubmit('send', 'Přidat')
-                ->getControlPrototype()->setClass("btn btn-primary");
-
+                        ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }

@@ -35,7 +35,7 @@ class CashbookPresenter extends BasePresenter {
         $this->template->missingCategories = false;
         $this->template->linkImportHPD = "#importHpd";
 //        dump($this->camp);
-        
+
         if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
             $this->template->isAllowedUpdateRealTotalCost = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
             $this->template->missingCategories = true; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
@@ -90,7 +90,7 @@ class CashbookPresenter extends BasePresenter {
         $this->context->campService->chits->makePdf($template, "pokladni-kniha.pdf");
         $this->terminate();
     }
-    
+
     public function actionExportExcel($aid) {
         $this->context->excelService->getCashbook($this->context->campService, $this->event);
         $this->terminate();
@@ -160,16 +160,16 @@ class CashbookPresenter extends BasePresenter {
         $form->addHidden("aid");
 
         $form->addSubmit('send', 'Importovat')
-                ->getControlPrototype()->setClass("btn btn-primary");
-        $form['send']->onClick[] = callback($this, $name . 'Submitted');
+                ->setAttribute("class", "btn btn-primary");
+        $form->onSuccess[] = array($this, $name . 'Submitted');
         $form->setDefaults(array('category' => 'un'));
         return $form;
     }
 
-    function formImportHpdSubmitted(SubmitButton $btn) {
+    function formImportHpdSubmitted(Form $form) {
         $this->editableOnly();
 
-        $values = $btn->getForm()->getValues();
+        $values = $form->getValues();
         //$func = $this->context->campService->event->getFunctions($values->aid);
 
         $data = array("date" => $this->context->campService->event->get($values->aid)->StartDate,
@@ -191,7 +191,7 @@ class CashbookPresenter extends BasePresenter {
     function createComponentFormOutAdd($name) {
         $form = self::makeFormOUT($this, $name);
         $form->addSubmit('send', 'Uložit')
-                ->setAttribute("class", "btn btn-primary")
+                        ->setAttribute("class", "btn btn-primary")
                 ->onClick[] = $this->formAddSubmitted;
         //$form->setDefaults(array('category' => 'pp'));
         return $form;
@@ -206,7 +206,7 @@ class CashbookPresenter extends BasePresenter {
         $form = self::makeFormOUT($this, $name);
         $form->addHidden('id');
         $form->addSubmit('send', 'Uložit')
-                ->setAttribute("class", "btn btn-primary")
+                        ->setAttribute("class", "btn btn-primary")
                 ->onClick[] = $this->formEditSubmitted;
         return $form;
     }
@@ -240,8 +240,8 @@ class CashbookPresenter extends BasePresenter {
         if ($thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
-                    ;//->addCondition(Form::FILLED)
-                        //->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+            ; //->addCondition(Form::FILLED)
+            //->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
         }
         return $form;
     }
@@ -250,7 +250,7 @@ class CashbookPresenter extends BasePresenter {
     function createComponentFormInAdd($name) {
         $form = $this->makeFormIn($this, $name);
         $form->addSubmit('send', 'Uložit')
-                ->setAttribute("class", "btn btn-primary")
+                        ->setAttribute("class", "btn btn-primary")
                 ->onClick[] = $this->formAddSubmitted;
         //$form->setDefaults(array('category' => 'pp'));
         return $form;
@@ -260,8 +260,8 @@ class CashbookPresenter extends BasePresenter {
         $form = self::makeFormIn($this, $name);
         $form->addHidden('id');
         $form->addSubmit('send', 'Uložit')
-                ->getControlPrototype()->setClass("btn btn-primary");
-        $form->onClick[] = array($this, 'formEditSubmitted');
+                ->setAttribute("class", "btn btn-primary");
+        $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
 
@@ -287,8 +287,8 @@ class CashbookPresenter extends BasePresenter {
         if ($thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
                     ->setAttribute('class', 'input-mini')
-                    ;//->addCondition(Form::FILLED)
-                     //   ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
+            ; //->addCondition(Form::FILLED)
+            //   ->addRule(Form::INTEGER, "Číslo dokladu musí být číslo!");
         }
         return $form;
     }
@@ -346,4 +346,3 @@ class CashbookPresenter extends BasePresenter {
     }
 
 }
-

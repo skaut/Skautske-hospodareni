@@ -159,7 +159,7 @@ class DefaultPresenter extends BasePresenter {
     function createComponentFormCreateCommand($name) {
         $form = $this->makeCommandForm($name);
         $form->addSubmit('send', 'Založit')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         return $form;
     }
 
@@ -178,7 +178,7 @@ class DefaultPresenter extends BasePresenter {
     function createComponentFormEditCommand($name) {
         $form = $this->makeCommandForm($name);
         $form->addSubmit('send', 'Upravit')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         $form->addHidden("id");
         return $form;
     }
@@ -213,7 +213,7 @@ class DefaultPresenter extends BasePresenter {
         $form->addText("distance", "Vzdálenost*")
                 ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.");
         $form->addSubmit('send', 'Přidat')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -267,7 +267,7 @@ class DefaultPresenter extends BasePresenter {
         $form->addText("distance", "Vzdálenost*")
                 ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.");
         $form->addSubmit('send', 'Upravit')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
