@@ -331,7 +331,7 @@ class EventService extends MutableBaseService {
      * @param type $state
      */
     public function activateAutocomputedCashbook($ID, $state = 1) {
-        $this->skautIS->event->{"EventCampUpdateRealTotalCost"}(
+        $this->skautIS->event->{"EventCampUpdateRealTotalCostBeforeEnd"}(
                 array(
             "ID" => $ID,
             "IsRealTotalCostAutoComputed" => $state
