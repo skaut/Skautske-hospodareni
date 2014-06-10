@@ -266,7 +266,7 @@ class ParticipantPresenter extends BasePresenter {
         $form->addText("postcode", "PSČ");
         $form->addHidden("aid", $aid);
         $form->addSubmit('send', 'Založit účastníka')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }

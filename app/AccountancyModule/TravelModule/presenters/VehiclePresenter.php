@@ -66,7 +66,7 @@ class VehiclePresenter extends BasePresenter {
     function createComponentFormCreateVehicle($name) {
         $form = $this->makeVehicleForm($name);
         $form->addSubmit('send', 'Založit')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         return $form;
     }
 

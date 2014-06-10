@@ -48,7 +48,7 @@ class EventPresenter extends BasePresenter {
         $this->template->accessCloseEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Close");
         $this->template->accessOpenEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Open");
         $this->template->accessDetailEvent = $this->isAllowed("EV_EventGeneral_DETAIL");
-        if($this->isAjax()){
+        if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
     }
@@ -76,7 +76,7 @@ class EventPresenter extends BasePresenter {
         }
         $this->redirect("this");
     }
-    
+
     public function handleActivateStatistic() {
         $this->context->eventService->participants->activateEventStatistic($this->aid);
         //flash message?
@@ -103,15 +103,15 @@ class EventPresenter extends BasePresenter {
         ));
     }
 
-    public function actionPrintAll($aid){
-        $chits = (array)$this->context->eventService->chits->getAll($this->aid);
+    public function actionPrintAll($aid) {
+        $chits = (array) $this->context->eventService->chits->getAll($this->aid);
 
-        $template = (string)$this->context->exportService->getEventReport($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
-        $template .= (string)$this->context->exportService->getParticipants($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
+        $template = (string) $this->context->exportService->getEventReport($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
+        $template .= (string) $this->context->exportService->getParticipants($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
 //        $template .= (string)$this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService) . $this->context->exportService->getNewPage();
-        $template .= (string)$this->context->exportService->getCashbook($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
-        $template .= (string)$this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
-        
+        $template .= (string) $this->context->exportService->getCashbook($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
+        $template .= (string) $this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
+
         $this->context->eventService->participants->makePdf($template, "all.pdf");
         $this->terminate();
     }
@@ -134,7 +134,7 @@ class EventPresenter extends BasePresenter {
             $this->redirect("default", array("aid" => $aid));
         }
         $template = $this->context->exportService->getEventReport($aid, $this->context->eventService);
-        
+
         $this->context->eventService->participants->makePdf($template, "report.pdf");
         $this->terminate();
     }
@@ -152,8 +152,8 @@ class EventPresenter extends BasePresenter {
         $form->addText("prefix", "Prefix", NULL, 6);
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
-                ->setAttribute("class", "btn btn-primary")
-                ->onClick[] = $this->{$name."Submitted"};
+                        ->setAttribute("class", "btn btn-primary")
+                ->onClick[] = array($this, $name . 'Submitted');
         return $form;
     }
 
@@ -166,7 +166,7 @@ class EventPresenter extends BasePresenter {
 
         $values['start'] = $values['start']->format("Y-m-d");
         $values['end'] = $values['end']->format("Y-m-d");
-        
+
         $id = $this->context->eventService->event->update($values);
 
         if ($id) {
@@ -188,8 +188,7 @@ class EventPresenter extends BasePresenter {
         $form->addHidden("fid");
         $form->addHidden("aid");
         $form->addSubmit('send', 'Přidat')
-                ->getControlPrototype()->setClass("btn btn-primary");
-
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -224,4 +223,3 @@ class EventPresenter extends BasePresenter {
     }
 
 }
-

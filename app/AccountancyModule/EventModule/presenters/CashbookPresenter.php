@@ -150,7 +150,7 @@ class CashbookPresenter extends BasePresenter {
         $form = self::makeFormOUT($this, $name);
         $form->addHidden('id');
         $form->addSubmit('send', 'Uložit')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, 'formEditSubmitted');
         return $form;
     }
@@ -205,7 +205,7 @@ class CashbookPresenter extends BasePresenter {
         $form = self::makeFormIn($this, $name);
         $form->addHidden('id');
         $form->addSubmit('send', 'Uložit')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, 'formEditSubmitted');
         return $form;
     }
