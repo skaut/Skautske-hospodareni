@@ -6,8 +6,8 @@
 
 <div n:if="$missingCategories" class="row-fluid">
     <div class="alert alert-error span12">
-        Nemáte aktivní automatické dopočítání z kategorií, bez kterého nelze přidávat záznamy. U táborů lze aktivovat až po jejich začátku.
-        <a n:if='$isAllowedUpdateRealTotalCost' n:href="activateAutocomputedCashbook! $aid" class="btn btn-primary btn-small">Aktivovat dopočítávání</a>
+        Nemáte aktivní automatické dopočítání z kategorií, bez kterého nelze přidávat záznamy.
+        <a n:href="activateAutocomputedCashbook! $aid" class="btn btn-primary btn-small">Aktivovat dopočítávání</a>
     </div>
 </div>
 
