@@ -79,7 +79,7 @@ class ContractPresenter extends BasePresenter {
                 ->addRule(Form::FILLED, "Musíte vyplnit začátek platnosti.");
 
         $form->addSubmit('send', 'Založit smlouvu')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                        ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }

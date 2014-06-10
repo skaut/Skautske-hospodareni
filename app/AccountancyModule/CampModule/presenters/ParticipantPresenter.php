@@ -219,7 +219,7 @@ class ParticipantPresenter extends BasePresenter {
     public function createComponentFormMassList($name) {
         $form = new Form($this, $name);
         $form->addSubmit('send')
-                ->onClick[] = $this->{$name . 'Submitted'};
+                ->onClick[] = array($this, $name . 'Submitted');
         return $form;
     }
 
@@ -314,7 +314,7 @@ class ParticipantPresenter extends BasePresenter {
         $form->addHidden("aid", $aid);
         $form->addSubmit('send', 'Založit účastníka')
                         ->setAttribute("class", "btn btn-primary")
-                ->onClick[] = $this->{$name . 'Submitted'};
+                ->onClick[] = array($this, $name . 'Submitted');
         return $form;
     }
 
