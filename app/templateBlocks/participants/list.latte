@@ -1,3 +1,9 @@
+{*
+$list = array($id=>name)
+$isAllowParticipantInsert
+$isCamp
+*}
+
 {block #content}
 <div class="span6" n:if="$isAllowParticipantInsert">
         {snippet potencialParticipants}
@@ -34,7 +40,7 @@
                     </tr>
                 </thead>
                 <tbody class="dropable" id="{$unitTbodyId}">
-                {if count($list) > 0}
+                {if isset($list) && count($list) > 0}
                     <tr n:foreach="$list as $id=>$name" id='unit-par-row-{$id}' data-pid='{$id}'>
                         <td n:if="$isAllowParticipantInsert">
                             <input type=checkbox class="hidden-phone" name="massList[]" id="massList-{$id}" value={$id} />

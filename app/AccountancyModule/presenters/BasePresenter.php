@@ -34,6 +34,8 @@ class BasePresenter extends \App\BasePresenter {
      * @var array
      */
     protected $availableActions;
+    
+    public $isCamp;
 
     protected function startup() {
         parent::startup();

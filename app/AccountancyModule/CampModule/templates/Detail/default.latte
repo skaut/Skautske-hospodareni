@@ -15,6 +15,11 @@
                 <td>{$event->Unit}</td>
             </tr>
             <tr>
+                <th>Oddíly</th>
+                <td>{foreach $troops as $t}{$t->DisplayName}{if !$iterator->isLast()}, {/if}{/foreach}</td>
+            </tr>
+            
+            <tr>
                 <th>Od</th>
                 <td>{$event->StartDate|date:"j. n. Y"}</td>
             </tr>

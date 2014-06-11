@@ -2,8 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
-use Nette\Application\UI\Form,
-    Nette\Forms\Controls\SubmitButton;
+use Nette\Application\UI\Form;
 
 /**
  * @author Hána František
@@ -15,6 +14,9 @@ class DetailPresenter extends BasePresenter {
         $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->context->campService->event->getFunctions($aid) : false;
         $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
         $this->template->skautISUrl = $this->context->skautIS->getHttpPrefix() . ".skaut.cz/";
+        $this->template->troops = array_map(function($id){
+            return $this->context->unitService->getDetail($id);
+        }, $this->event->ID_UnitArray->string);
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
