@@ -17,10 +17,12 @@ class DefaultPresenter extends BasePresenter {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
         $this->ses = $this->session->getSection(__CLASS__);
-        if (!isset($this->ses->state))
+        if (!isset($this->ses->state)) {
             $this->ses->state = self::DEFAULT_STATE;
-        if (!isset($this->ses->year))
+        }
+        if (!isset($this->ses->year)) {
             $this->ses->year = date("Y");
+        }
     }
 
     public function renderDefault() {
@@ -34,10 +36,12 @@ class DefaultPresenter extends BasePresenter {
             $list[$key] = $value;
         }
         $this->template->list = $list;
-        if ($year)
+        if ($year) {
             $this['formFilter']['year']->setDefaultValue($year);
-        if ($state)
+        }
+        if ($state) {
             $this['formFilter']['state']->setDefaultValue($state);
+        }
 
         //$this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
     }

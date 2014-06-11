@@ -83,7 +83,7 @@ abstract class AccountancyHelpers extends Object {
             return $price;
         $decimals = $full ? 2 : 0;
         //if (stripos($price, "."))
-            return number_format($price, $decimals, ",", " ");
+            return number_format((float)$price, $decimals, ",", " ");
         //return $price;
     }
     

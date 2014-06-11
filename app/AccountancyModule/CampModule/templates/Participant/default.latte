@@ -4,7 +4,6 @@
 <h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
-{dump $list}
 {dump $participants}
 
 <div class="row-fluid" n:if="$missingAvailableAutoComputed">
@@ -18,118 +17,6 @@
     
 {include $templateBlockDir.'participants/list.latte'}
 {include $templateBlockDir.'participants/participant.latte'}
-    {* 
-    
-    <div class="span6" n:snippet="participants">
-        {form formMassParticipants}
-        <div n:if="$isAllowParticipantUpdate" class="modal myModal fade" id="massEdit"> 
-            <div class="modal-header">
-                <a class="close" data-dismiss="modal">×</a>
-                <h2>Hromadné nastavení</h2>
-            </div>
-            
-            {formContainer edit}
-            <div class="modal-body">
-                <table>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td><b>Upravit?</b></td>
-                    </tr>
-                    <tr>
-                        <td>{label days class=>"ca" /}</td>
-                        <td>{input days style=>"width:40px"}</td>
-                        <td class="ct">{input daysc}</td>
-                    </tr>
-                    <tr>
-                        <td>{label payment /}</td>
-                        <td>{input payment style=>"width:40px"}</td>
-                        <td class="ct">{input paymentc}</td>
-                    </tr>
-                    <tr>
-                        <td>{label repayment /}</td>
-                        <td>{input repayment style=>"width:40px"}</td>
-                        <td class="ct">{input repaymentc}</td>
-                    </tr>
-                    <tr>
-                        <td>{label isAccount /}</td>
-                        <td>{input isAccount}</td>
-                        <td style="text-align: center;">{input isAccountc}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">{input send}</td>
-                    </tr>
-                </table>
-            </div>
-            {/formContainer}  
-        </div>
- 
-        <div n:ifset="$participants">
-            <h3>Seznam účastníků</h3>
-            {if !empty($participants)}
-            <div class="well well-small hidden-phone">
-                <a n:href="export $aid" target="_blank" class="btn btn-info btn-small{if empty($participants)} disabled{/if}"><i class="icon icon-white icon-print"></i> Seznam účastníků (.pdf)</a>
-                <a n:href="exportExcel $aid" target="_blank" class="btn btn-info btn-small{if empty($participants)} disabled{/if}"><i class="icon icon-white icon-file"></i> Seznam účastníků (.xlsx)</a>
-            </div>
-            <table id="participants-list" class="table table-striped table-bordered table-condensed">
-                <tr>
-                    <th n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" style="width: 90px" class="hidden-phone">
-                        <input type="checkbox" id="massParticipants-all" onclick="jqCheckAll(this.id, 'massParticipants')"/>
-                        
-                        <a n:if="$isAllowParticipantUpdate" href="#massEdit" data-toggle="modal" class="btn btn-primary btn-mini dependentButtonParticipant" title="Upravit vybrané"><i class="icon-edit icon-white"></i></a>
-                        {if $isAllowParticipantDelete}
-                            <button n:name="send" title="Odebrat vybrané" class="btn btn-danger btn-mini dependentButtonParticipant" type="submit">
-                                <i class="icon-remove icon-white"></i>
-                            </button>
-                        {/if}
-                        
-                    </th>
-                    <th class="visible-phone"> </th>
-                    <th>Příjmení a jméno ({= count($participants)})</th>
-                    <th class="hidden-phone">Dnů</th>
-                    <th>Částka</th>
-                    <th>Vratka</th>
-                    <th>Na účet?</th>
-                </tr>
-                {var $totalPayment = $totalRepayment = 0}
-                {if !empty($participants)}
-                <tr n:foreach="$participants as $p">
-                    <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete">
-                        <input type="checkbox" name="massParticipants[]" id="massParticipants-{$p->ID}" value={$p->ID}/>
-                        {if $isAllowParticipantUpdate}
-                        <a class="fancybox fancybox.ajax btn btn-primary btn-mini hidden-phone" n:href="edit $aid, $p->ID, $p->Days"><i class="icon-edit icon-white"></i></a>
-                        <a class="fancybox fancybox.ajax btn btn-primary btn-small visible-phone" n:href="edit $aid, $p->ID, $p->Days"><i class="icon-edit icon-white"></i></a>
-                        {/if}
-                        {if $isAllowParticipantDelete}
-                        <a n:href="remove! $p->ID" class="btn btn-danger ajax btn-mini hidden-phone"><i class="icon-remove icon-white"></i></a>
-                        <a n:href="remove! $p->ID" class="btn btn-danger ajax btn-small visible-phone"><i class="icon-remove icon-white"></i></a>
-                        {/if}
-                    </td>
-                    
-                    <td>{$p->Person}</td>
-                    <td class="r hidden-phone">{$p->Days}</td>
-                        <td class="r">{ifset $p->payment}{$p->payment|price:false}{? $totalPayment += $p->payment}{else}0{/ifset}</td>
-                    <td class="r">{ifset $p->repayment}{$p->repayment|price:false}{? $totalRepayment += $p->repayment}{else}0{/ifset}</td>
-                    <td>{ifset $p->isAccount}{$p->isAccount == 'Y' ? 'Ano'}{/ifset}</td>
-                </tr>
-                {/if}
-                <tr>
-                    <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete">&nbsp;</td>
-                    <td class="hidden-phone"></td>
-                    <td></td>
-                    <td class="r">{$totalPayment}</td>
-                    <td class="r">{$totalRepayment}</td>
-                    <td class="r b">{$totalPayment - $totalRepayment|price}</td>
-                </tr>
-            </table>
-            {else}
-            <p class="alert info">Nejsou vybáni žádní účastníci.</p>
-            {/if}
-        </div>
-        {/form}
-    </div>
-</div>
-    *}
 
 {* nový účastník *}
 <div n:if="$isAllowParticipantInsert" class="modal myModal fade" id="addParticipant">
