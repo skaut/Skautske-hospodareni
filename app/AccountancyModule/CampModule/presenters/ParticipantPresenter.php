@@ -13,9 +13,11 @@ class ParticipantPresenter extends BasePresenter {
 
     const RULE_PARTICIPANTS_DELETE = "EV_ParticipantCamp_DELETE";
     const RULE_PARTICIPANTS_DETAIL = "EV_ParticipantCamp_DETAIL";
-    const RULE_PARTICIPANTS_UPDATE = "EV_ParticipantCamp_UPDATE_EventCamp";//Upravit tabořícího
-    const RULE_PARTICIPANTS_UPDATE_ADULT = "EV_EventCamp_UPDATE_Adult";//Nastavit, zda se počty tábořících počítají automaticky
+    const RULE_PARTICIPANTS_UPDATE = "EV_ParticipantCamp_UPDATE_EventCamp"; //Upravit tabořícího
+    const RULE_PARTICIPANTS_UPDATE_COST = "EV_ParticipantCamp_UPDATE_EventCamp_Note";
+    const RULE_PARTICIPANTS_UPDATE_ADULT = "EV_EventCamp_UPDATE_Adult"; //Nastavit, zda se počty tábořících počítají automaticky
     const RULE_PARTICIPANTS_INSERT = "EV_ParticipantCamp_INSERT_EventCamp";
+    //const RULE_PARTICIPANTS_INSERT_MULTI = "OU_Person_ALL_EventCampMulti";
 
     protected $isAllowRepayment;
     protected $isAllowIsAccount;
@@ -50,23 +52,35 @@ class ParticipantPresenter extends BasePresenter {
 
         $participants = $this->context->campService->participants->getAllWithDetails($this->aid);
         $unit = $this->context->unitService->getDetail($this->uid);
-        $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        $this->template->list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+
+//        if ($this->isAllowed(self::RULE_PARTICIPANTS_INSERT)) {
+//            $this->template->list = $this->context->campService->participants->getPotencialCampParticipants($aid);
+//        }
 
         usort($participants, function ($a, $b) {
             return strcasecmp($a->Person, $b->Person);
         });
-        natcasesort($list);
 
         $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
         $this->template->unit = $unit;
         $this->template->uchildrens = $this->context->unitService->getChild($unit->ID);
-        $this->template->list = $list;
         $this->template->participants = $participants;
         $this->template->isAllowParticipantDelete = $this->isAllowed(self::RULE_PARTICIPANTS_DELETE);
         $this->template->isAllowParticipantDetail = $this->isAllowed(self::RULE_PARTICIPANTS_DETAIL);
         $this->template->isAllowParticipantUpdate = $this->isAllowed(self::RULE_PARTICIPANTS_UPDATE);
+        $this->template->isAllowParticipantUpdateLocal = $this->isAllowed(self::RULE_PARTICIPANTS_DELETE);
         $this->template->isAllowParticipantInsert = $this->isAllowed(self::RULE_PARTICIPANTS_INSERT);
         $this->template->missingAvailableAutoComputed = !$this->event->IsRealAutoComputed && $this->isAllowed(self::RULE_PARTICIPANTS_UPDATE_ADULT);
+
+//        dump($this->availableActions);
+//        dump($this->template->isAllowParticipantDelete);
+//        dump($this->isAllowed(self::RULE_PARTICIPANTS_DETAIL));
+//        dump($this->isAllowed(self::RULE_PARTICIPANTS_UPDATE));
+//        dump($this->isAllowed(self::RULE_PARTICIPANTS_INSERT));
+//        dump($this->event->IsRealAutoComputed);
+//        dump($this->isAllowed(self::RULE_PARTICIPANTS_UPDATE_ADULT));
+
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
@@ -81,10 +95,10 @@ class ParticipantPresenter extends BasePresenter {
                 $this->redirect("Default:");
             }
         }
-
-        $data = (array)$this->context->campService->participants->get($id);
-        $participantId = $data['participantId'];
-        unset($data['participantId']);
+        $data = array("actionId"=>$aid);
+        $sisdata = (array) $this->context->campService->participants->get($id);
+        $participantId = $sisdata['participantId'];
+        //unset($data['participantId']);
         switch ($field) {
             case "days":
             case "payment":
@@ -96,7 +110,7 @@ class ParticipantPresenter extends BasePresenter {
                 $this->payload->message = 'Error';
                 $this->terminate();
                 break;
-        }        
+        }
         $this->context->campService->participants->update($participantId, $data);
 
         $this->payload->message = 'Success';

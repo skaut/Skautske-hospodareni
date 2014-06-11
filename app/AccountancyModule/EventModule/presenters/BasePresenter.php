@@ -17,7 +17,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     protected function startup() {
         parent::startup();
-
+        $this->isCamp = $this->template->isCamp = false;
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
 
         if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění

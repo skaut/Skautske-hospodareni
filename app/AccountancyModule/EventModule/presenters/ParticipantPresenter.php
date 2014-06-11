@@ -42,7 +42,7 @@ class ParticipantPresenter extends BasePresenter {
         //$this->isAllowParticipantDays = $this->template->isAllowParticipantDays = array_key_exists("EV_EventGeneral_UPDATE_Days", $this->availableActions);
         $this->isAllowParticipantDelete = $this->template->isAllowParticipantDelete = $ev_state && array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
         $this->isAllowParticipantInsert = $this->template->isAllowParticipantInsert = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
-        $this->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdate = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
+        $this->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdateLocal = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
         $this->isAllowRepayment = $this->template->isAllowRepayment = FALSE;
         $this->isAllowIsAccount = $this->template->isAllowIsAccount = FALSE;
     }
