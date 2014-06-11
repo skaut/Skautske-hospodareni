@@ -48,7 +48,7 @@ class ParticipantService extends MutableBaseService {
         $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "Detail"}(array("ID" => $participantId));
         $data = $this->table->get($participantId);
         if ($data === FALSE) {//u akcí to v tabulce nic nenajde
-            $data = array("payment" => (int) @$tmp->{self::PAYMENT});
+            $data = array("payment" => (int) @$tmp->{self::PAYMENT}, 'participantId'=>$tmp->ID);
         }
         $data['days'] = (int) $tmp->Days;
         return $data;
@@ -148,18 +148,18 @@ class ParticipantService extends MutableBaseService {
     public function update($participantId, array $arr) {
         if (self::$typeName == "Camp") {
             if (isset($arr['days'])) {
-                $sis = array(
+                $sisData = array(
                     'ID' => $participantId,
                     'Real' => TRUE,
                     'Days' => $arr['days'],
                 );
-                $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
+                $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sisData, "participant" . self::$typeName);
             }
             $keys = array("actionId", "payment", "repayment", "isAccount");
             $dataUpdate = array();
             $cnt = 0;
             foreach ($keys as $key) {
-                if (isset($arr[$key])) {
+                if (array_key_exists($key, $arr)) {
                     $dataUpdate[$key] = $arr[$key];
                     $cnt++;
                 }
@@ -168,13 +168,13 @@ class ParticipantService extends MutableBaseService {
                 $this->table->update($participantId, $dataUpdate);
             }
         } else {
-            $sis = array(
+            $sisData = array(
                 'ID' => $participantId,
                 'Real' => TRUE,
                 'Days' => $arr['days'],
                 self::PAYMENT => $arr['payment'],
             );
-            $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sis, "participant" . self::$typeName);
+            $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sisData, "participant" . self::$typeName);
         }
     }
 
@@ -249,6 +249,15 @@ class ParticipantService extends MutableBaseService {
     
     public function activateEventStatistic($eventId){
         return $this->skautIS->event->{"EventGeneralUpdateStatisticAutoComputed"}(array("ID" => $eventId, "IsStatisticAutoComputed"=>TRUE), "eventGeneral");
+    }
+    
+    public function getPotencialCampParticipants($eventId){
+        $res = array();
+        foreach ($this->skautIS->org->{"PersonAllEventCampMulti"}(array("ID_EventCamp" => $eventId)) as $p){
+            $res[$p->ID] = $p->DisplayName;
+        }
+        natcasesort($res);
+        return $res;
     }
 
 }

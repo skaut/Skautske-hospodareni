@@ -35,6 +35,7 @@ class MemberService extends BaseService {
                 }
             }
         }
+        natcasesort($ret);
         return $ret;
     }
 
