@@ -14,7 +14,7 @@
                 <th>Jednotka</th>
                 <td>{$event->Unit}</td>
             </tr>
-            <tr>
+            <tr n:if="isset($troops) && $troops != NULL">
                 <th>Oddíly</th>
                 <td>{foreach $troops as $t}{$t->DisplayName}{if !$iterator->isLast()}, {/if}{/foreach}</td>
             </tr>

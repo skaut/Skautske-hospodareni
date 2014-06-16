@@ -14,9 +14,14 @@ class DetailPresenter extends BasePresenter {
         $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->context->campService->event->getFunctions($aid) : false;
         $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
         $this->template->skautISUrl = $this->context->skautIS->getHttpPrefix() . ".skaut.cz/";
-        $this->template->troops = array_map(function($id){
-            return $this->context->unitService->getDetail($id);
-        }, $this->event->ID_UnitArray->string);
+        
+        if (is_array($this->event->ID_UnitArray->string)) {
+            $this->template->troops = array_map(function($id) {
+                return $this->context->unitService->getDetail($id);
+            }, $this->event->ID_UnitArray->string);
+        } elseif(is_string($this->event->ID_UnitArray->string)) {
+            $this->template->troops = array($this->context->unitService->getDetail($this->event->ID_UnitArray->string));
+        }
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
@@ -80,7 +85,7 @@ class DetailPresenter extends BasePresenter {
         $form->addHidden("fid");
         $form->addHidden("aid");
         $form->addSubmit('send', 'Přidat')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }

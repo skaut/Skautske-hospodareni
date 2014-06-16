@@ -143,9 +143,10 @@ class ExcelService extends BaseService {
                 ->setCellValue('B1', "Číslo dokladu")
                 ->setCellValue('C1', "Účel platby")
                 ->setCellValue('D1', "Kategorie")
-                ->setCellValue('E1', "Příjem")
-                ->setCellValue('F1', "Výdej")
-                ->setCellValue('G1', "Zůstatek");
+                ->setCellValue('E1', "Komu/od")
+                ->setCellValue('F1', "Příjem")
+                ->setCellValue('G1', "Výdej")
+                ->setCellValue('H1', "Zůstatek");
 
         $balance = 0;
         $rowCnt = 2;
@@ -156,19 +157,20 @@ class ExcelService extends BaseService {
                     ->setCellValue('B' . $rowCnt, $prefix . $row->num)
                     ->setCellValue('C' . $rowCnt, $row->purpose)
                     ->setCellValue('D' . $rowCnt, $row->clabel)
-                    ->setCellValue('E' . $rowCnt, $row->ctype == 'in' ? $row->price : "")
-                    ->setCellValue('F' . $rowCnt, $row->ctype != 'in' ? $row->price : "")
-                    ->setCellValue('G' . $rowCnt, $balance);
+                    ->setCellValue('E' . $rowCnt, $row->recipient)
+                    ->setCellValue('F' . $rowCnt, $row->ctype == 'in' ? $row->price : "")
+                    ->setCellValue('G' . $rowCnt, $row->ctype != 'in' ? $row->price : "")
+                    ->setCellValue('H' . $rowCnt, $balance);
             $rowCnt++;
         }
 
         //format
-        foreach (range('A', 'G') as $columnID) {
+        foreach (range('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
-        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
-        $sheet->getStyle('G1:G' . ($rowCnt - 1))->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:G' . ($rowCnt - 1));
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->getStyle('H1:H' . ($rowCnt - 1))->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
 
         $sheet->setTitle('Pokladní kniha');
     }
