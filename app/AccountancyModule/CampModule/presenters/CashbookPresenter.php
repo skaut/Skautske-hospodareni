@@ -16,6 +16,7 @@ class CashbookPresenter extends BasePresenter {
             $this->flashMessage("Musíš vybrat akci", "error");
             $this->redirect("Default:");
         }
+        $this->template->isEditable = $this->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCostBeforeEnd");
 //        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
 //        if ($this->camp->prefix == "") {
 //            
@@ -35,7 +36,6 @@ class CashbookPresenter extends BasePresenter {
         $this->template->missingCategories = false;
         $this->template->linkImportHPD = "#importHpd";
 //        dump($this->camp);
-        $this->template->isEditable = $this->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCostBeforeEnd");
         if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
             //$this->template->isAllowedUpdateRealTotalCost = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
             $this->template->missingCategories = true; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
@@ -260,8 +260,8 @@ class CashbookPresenter extends BasePresenter {
         $form = self::makeFormIn($this, $name);
         $form->addHidden('id');
         $form->addSubmit('send', 'Uložit')
-                ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+                ->setAttribute("class", "btn btn-primary")
+                ->onClick[] = $this->formEditSubmitted;
         return $form;
     }
 
@@ -337,6 +337,8 @@ class CashbookPresenter extends BasePresenter {
             }
         } catch (\SkautIS\Exception\WsdlException $exc) {
             $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
+        } catch (\SkautIS\Exception\PermissionException $e){
+            //nepodařilo se změnit kategorie ve skautisu
         }
 
         if ($this->context->campService->chits->isInMinus($this->aid)) {
