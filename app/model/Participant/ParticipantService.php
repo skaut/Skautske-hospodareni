@@ -4,7 +4,7 @@ namespace Model;
 
 /**
  * slouží pro obsluhu účastníků
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class ParticipantService extends MutableBaseService {
 
