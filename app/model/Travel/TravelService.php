@@ -72,7 +72,7 @@ class TravelService extends BaseService {
 
     public function removeVehicle($vehicleId, $unitId) {
         $commands = $this->getAllCommandsByVehicle($unitId, $vehicleId);
-        if(count($commands) > 0 ){ //nelze mazat vozidlo s navazanými příkazy
+        if(count($commands) > 0){ //nelze mazat vozidlo s navazanými příkazy
             return false;
         }
         return $this->tableVehicle->remove($vehicleId);

@@ -7,7 +7,7 @@ $(document).ready(function() {
         $source.addClass("onEdit");
         $source.data('orig-value', $source.text() == 0 ? "" : $source.text());
 
-        $source.live("keydown", function( event ) { 
+        $source.keydown(function( event ) { 
             if ( event.which == 13 ) { //press key enter
                 event.preventDefault();//jsou potreba oba radky
                 event.stopImmediatePropagation();//zastaveni opakovaneho volani enteru
@@ -70,9 +70,9 @@ $(document).ready(function() {
     
     $('.num-edit')
         .each(function(){ $(this).attr('contenteditable', 'true');})
-        .live("focus", openInput)//potřeba pro klavesove ovladani
-        .live("click", openInput)
-        .live("blur", closeInput);
+            .focus(openInput)//potřeba pro klavesove ovladani
+            .click(openInput)
+            .blur(closeInput);
         
     //prepocte soucet a ulozi do ID=type+"-total"
     function calculateSum(type) {

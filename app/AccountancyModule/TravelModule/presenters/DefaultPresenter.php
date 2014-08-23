@@ -67,7 +67,7 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("default");
         }
         $template = $this->template;
-        $template->registerHelperLoader("\App\AccountancyModule\AccountancyHelpers::loader");
+        $template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
         $template->setFile(dirname(__FILE__) . '/../templates/Default/ex.command.latte');
         $template->command = $command = $this->context->travelService->getCommand($commandId);
         $template->contract = $this->context->travelService->getContract($command->contract_id);
@@ -211,7 +211,8 @@ class DefaultPresenter extends BasePresenter {
         $form->addText("end_place", "Do*")
                 ->addRule(Form::FILLED, "Musíte vyplnit místo konce cesty.");
         $form->addText("distance", "Vzdálenost*")
-                ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.");
+                ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.")
+                ->addRule(Form::FLOAT, "Vzdálenost musí být číslo!");
         $form->addSubmit('send', 'Přidat')
                         ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');

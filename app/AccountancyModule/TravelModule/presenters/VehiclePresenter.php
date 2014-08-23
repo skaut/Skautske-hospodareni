@@ -58,7 +58,8 @@ class VehiclePresenter extends BasePresenter {
         $form->addText("spz", "SPZ*")
                 ->addRule(Form::FILLED, "Musíte vyplnit SPZ.");
         $form->addText("consumption", "Průměrná spotřeba*")
-                ->addRule(Form::FILLED, "Musíte vyplnit průměrnou spotřebu.");
+                ->addRule(Form::FILLED, "Musíte vyplnit průměrnou spotřebu.")
+                ->addRule(Form::FLOAT, "Průměrná spotřeba musí být číslo!");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
