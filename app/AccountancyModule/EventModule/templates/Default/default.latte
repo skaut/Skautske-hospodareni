@@ -22,6 +22,7 @@
     </div>
     <div class="row-fluid">
         {if is_array($list)}
+            {form formExportSummary}
             <table class="myTable table table-striped table-bordered">
                 <thead>
                     <tr>
@@ -30,7 +31,11 @@
                         <th>Od</th>
                         <th>Do</th>
                         <th>Stav</th>
-                        <th class="hidden-phone"></th>
+                        <th class="hidden-phone">
+                        {input send class=>"btn btn-info btn-small selDependend"}
+                        <input type="checkbox" id="sel-all" name="sel" onclick="jqCheckAll(this.id, 'sel')" />
+                        
+                    </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,10 +51,12 @@
                             <a n:href="Event:  $i->ID" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
                             <a n:href="Participant: $i->ID" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
                             <a n:href="Cashbook: $i->ID" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>
+                            <input type='checkbox' name='sel[]' value='{$i->ID}'/>
                         </td>
                     </tr>
                 </tbody>
             </table>
+            {/form}
         {else}
             <p class="alert">Nemáte žádné akce.</p>
         {/if}
@@ -108,6 +115,10 @@
 </div>
 
 <script type="text/javascript">
+    $(document).ready(function() {
+        $(".selDependend").addClass("disabled").attr("disabled", "disabled");
+        onlyWithCheckbox("sel", "selDependend");
+    });
     function changeYear(val) {
         $.post({link changeYear!}, { year: val});
     }
