@@ -17,6 +17,7 @@ class ParticipantPresenter extends BasePresenter {
     const RULE_PARTICIPANTS_UPDATE_COST = "EV_ParticipantCamp_UPDATE_EventCamp_Note";
     const RULE_PARTICIPANTS_UPDATE_ADULT = "EV_EventCamp_UPDATE_Adult"; //Nastavit, zda se počty tábořících počítají automaticky
     const RULE_PARTICIPANTS_INSERT = "EV_ParticipantCamp_INSERT_EventCamp";
+
     //const RULE_PARTICIPANTS_INSERT_MULTI = "OU_Person_ALL_EventCampMulti";
 
     protected $isAllowRepayment;
@@ -95,7 +96,7 @@ class ParticipantPresenter extends BasePresenter {
                 $this->redirect("Default:");
             }
         }
-        $data = array("actionId"=>$aid);
+        $data = array("actionId" => $aid);
         $sisdata = (array) $this->context->campService->participants->get($id);
         $participantId = $sisdata['participantId'];
         //unset($data['participantId']);
@@ -118,34 +119,25 @@ class ParticipantPresenter extends BasePresenter {
         $this->terminate();
     }
 
-//    /**
-//     * 
-//     * @param type $aid - actionId
-//     * @param type $pid - participantId
-//     * @param type $dd - default days
-//     */
-//    public function actionEdit($aid, $pid, $dd = NULL) {
-//        $form = $this['formEditParticipant'];
-//        $data = $this->context->campService->participants->get($pid);
-//
-//        $form->setDefaults(array(
-//            "days" => isset($dd) ? $dd : $data['days'],
-//            "payment" => isset($data['payment']) ? $data['payment'] : "",
-//            "repayment" => isset($data['repayment']) ? $data['repayment'] : "",
-//            "isAccount" => isset($data['isAccount']) ? $data['isAccount'] : "N",
-//            "user" => $pid,
-//        ));
-//    }
-
-    public function renderExport($aid) {
-        $template = $this->context->exportService->getParticipants($aid, $this->context->campService, "camp");
-//        echo $template;die();
-        $this->context->campService->participants->makePdf($template, "seznam-ucastniku.pdf", true);
+    public function actionExport($aid) {
+        try {
+            $template = $this->context->exportService->getParticipants($aid, $this->context->campService, "camp");
+            //echo $template;die();
+            $this->context->campService->participants->makePdf($template, "seznam-ucastniku.pdf", true);
+        } catch (\SkautIS\Exception\PermissionException $ex) {
+            $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
+            $this->redirect("default", array("aid" => $aid));
+        }
         $this->terminate();
     }
 
-    public function renderExportExcel($aid) {
-        $this->context->excelService->getParticipants($this->context->campService, $this->event, "camp");
+    public function actionExportExcel($aid) {
+        try {
+            $this->context->excelService->getParticipants($this->context->campService, $this->event, "camp");
+        } catch (\SkautIS\Exception\PermissionException $ex) {
+            $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
+            $this->redirect("default", array("aid" => $aid));
+        }
         $this->terminate();
     }
 
