@@ -3,7 +3,7 @@
 namespace Model;
 
 /**
- * @author Sinacek
+ * @author Hána František <sinacek@gmail.com>
  * správa smluv o proplácení cestovních náhrad u cestovních příkazů
  */
 class ContractTable extends BaseTable {

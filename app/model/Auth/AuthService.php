@@ -3,7 +3,7 @@
 namespace Model;
 
 /**
- * @author Sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class AuthService extends BaseService {
 

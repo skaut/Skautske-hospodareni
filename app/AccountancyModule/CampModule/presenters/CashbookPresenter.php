@@ -6,7 +6,7 @@ use Nette\Application\UI\Form,
     Nette\Forms\Controls\SubmitButton;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class CashbookPresenter extends BasePresenter {
 

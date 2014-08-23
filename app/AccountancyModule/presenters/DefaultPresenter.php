@@ -3,7 +3,7 @@
 namespace App\AccountancyModule;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class DefaultPresenter extends BasePresenter {
 

@@ -8,7 +8,7 @@ use  Nette\Application\Routers\Route,
     SkautIS\Exception\PermissionException;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class BasePresenter extends \App\AccountancyModule\BasePresenter {
 

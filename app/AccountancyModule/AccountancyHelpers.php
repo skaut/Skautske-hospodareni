@@ -5,7 +5,7 @@ namespace App\AccountancyModule;
 use \Nette\Object;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 abstract class AccountancyHelpers extends Object {
 

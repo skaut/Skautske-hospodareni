@@ -3,7 +3,7 @@
 namespace Model;
 
 /**
- * @author Hána František
+ * @author Hána František <sinacek@gmail.com>
  */
 class ChitTable extends BaseTable {
 

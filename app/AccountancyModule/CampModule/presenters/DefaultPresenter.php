@@ -5,7 +5,7 @@ namespace App\AccountancyModule\CampModule;
 use Nette\Application\UI\Form;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class DefaultPresenter extends BasePresenter {
 
