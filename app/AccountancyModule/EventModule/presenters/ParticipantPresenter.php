@@ -109,8 +109,8 @@ class ParticipantPresenter extends BasePresenter {
         $this->terminate();
     }
 
-    public function renderExport($aid) {
-        $template = $this->context->exportService->getParticipants($aid, $this->context->eventService);
+    public function actionExport($aid) {
+        $template = $this->context->exportService->getParticipants($this->createTemplate(), $aid, $this->context->eventService);
         $this->context->eventService->participants->makePdf($template, "seznam-ucastniku.pdf");
         $this->terminate();
     }
