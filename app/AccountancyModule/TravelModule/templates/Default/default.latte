@@ -6,7 +6,11 @@
 <div class="row-fluid">
     <div class="span12">
         <div class="well well-small">
-            <a href="#createCommand" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit cestovní příkaz</a>
+            <button type="button" data-toggle="collapse" data-target="#createCommand" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit cestovní příkaz</button>
+            <div class="collapse" id="createCommand">
+                <br />
+                {control formCreateCommand}
+            </div>
         </div>
 
         <table n:if="!empty($list)" class="table table-bordered table-striped table-condensed">
@@ -33,15 +37,5 @@
                 <td>{!$item->closed|commandState}</td>
             </tr>
         </table>
-    </div>
-</div>
-
-<div class="modal myModal fade" id="createCommand">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h3>Nový cestovní příkaz</h3>
-    </div>
-    <div class="modal-body">
-            {control formCreateCommand}
     </div>
 </div>

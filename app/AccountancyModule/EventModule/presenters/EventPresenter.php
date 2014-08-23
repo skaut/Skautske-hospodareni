@@ -106,11 +106,11 @@ class EventPresenter extends BasePresenter {
     public function actionPrintAll($aid) {
         $chits = (array) $this->context->eventService->chits->getAll($this->aid);
 
-        $template = (string) $this->context->exportService->getEventReport($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
-        $template .= (string) $this->context->exportService->getParticipants($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
-//        $template .= (string)$this->context->exportService->getHpd($aid, $this->context->eventService, $this->context->unitService) . $this->context->exportService->getNewPage();
-        $template .= (string) $this->context->exportService->getCashbook($aid, $this->context->eventService) . $this->context->exportService->getNewPage();
-        $template .= (string) $this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
+        $template = (string) $this->context->exportService->getEventReport($this->createTemplate(), $aid, $this->context->eventService) . $this->context->exportService->getNewPage();
+        $template .= (string) $this->context->exportService->getParticipants($this->createTemplate(), $aid, $this->context->eventService) . $this->context->exportService->getNewPage();
+//        $template .= (string)$this->context->exportService->getHpd($this->createTemplate(), $aid, $this->context->eventService, $this->context->unitService) . $this->context->exportService->getNewPage();
+        $template .= (string) $this->context->exportService->getCashbook($this->createTemplate(), $aid, $this->context->eventService) . $this->context->exportService->getNewPage();
+        $template .= (string) $this->context->exportService->getChits($this->createTemplate(), $aid, $this->context->eventService, $this->context->unitService, $chits);
 
         $this->context->eventService->participants->makePdf($template, "all.pdf");
         $this->terminate();
@@ -133,7 +133,7 @@ class EventPresenter extends BasePresenter {
             $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
             $this->redirect("default", array("aid" => $aid));
         }
-        $template = $this->context->exportService->getEventReport($aid, $this->context->eventService);
+        $template = $this->context->exportService->getEventReport($this->createTemplate(), $aid, $this->context->eventService);
 
         $this->context->eventService->participants->makePdf($template, "report.pdf");
         $this->terminate();

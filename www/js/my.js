@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function() {    
     //Combobox
     $(".combobox").combobox(); //nejde předávat parametry
 

@@ -83,7 +83,7 @@ class CashbookPresenter extends BasePresenter {
     }
 
     public function actionExport($aid) {
-        $template = $this->context->exportService->getCashbook($aid, $this->context->eventService);
+        $template = $this->context->exportService->getCashbook($this->createTemplate(), $aid, $this->context->eventService);
         $this->context->eventService->chits->makePdf($template, "pokladni-kniha.pdf");
         $this->terminate();
     }
@@ -95,7 +95,7 @@ class CashbookPresenter extends BasePresenter {
 
     function actionPrint($id, $aid) {
         $chits = array($this->context->eventService->chits->get($id));
-        $template = $this->context->exportService->getChits($aid, $this->context->eventService, $this->context->unitService, $chits);
+        $template = $this->context->exportService->getChits($this->createTemplate(), $aid, $this->context->eventService, $this->context->unitService, $chits);
 //        echo $template->render();
         $this->context->eventService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
@@ -126,7 +126,7 @@ class CashbookPresenter extends BasePresenter {
 
     function massPrintSubmitted(SubmitButton $button) {
         $chits = $this->context->eventService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
-        $template = $this->context->exportService->getChits($this->aid, $this->context->eventService, $this->context->unitService, $chits, "camp");
+        $template = $this->context->exportService->getChits($this->createTemplate(), $this->aid, $this->context->eventService, $this->context->unitService, $chits);
         $this->context->eventService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
@@ -277,8 +277,9 @@ class CashbookPresenter extends BasePresenter {
             $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
         }
 
-        if ($this->context->eventService->chits->isInMinus($this->aid))
+        if ($this->context->eventService->chits->isInMinus($this->aid)) {
             $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
+        }
         $this->redirect("default", array("aid" => $this->aid));
     }
 

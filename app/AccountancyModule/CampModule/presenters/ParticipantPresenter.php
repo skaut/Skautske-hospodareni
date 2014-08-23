@@ -121,7 +121,7 @@ class ParticipantPresenter extends BasePresenter {
 
     public function actionExport($aid) {
         try {
-            $template = $this->context->exportService->getParticipants($aid, $this->context->campService, "camp");
+            $template = $this->context->exportService->getParticipants($this->createTemplate(), $aid, $this->context->campService, "camp");
             //echo $template;die();
             $this->context->campService->participants->makePdf($template, "seznam-ucastniku.pdf", true);
         } catch (\SkautIS\Exception\PermissionException $ex) {

@@ -8,7 +8,11 @@
 <div class="row-fluid">
     <div class="span10">
         <div class="well well-small">
-            <a href="#createContract" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou smlouvu</a>
+            <button type="button" data-toggle="collapse" data-target="#createContract" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou smlouvu</button>
+            <div class="collapse" id="createContract">
+                <br />
+                {control formCreateContract}
+            </div>
         </div>
         <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
             <tr>
@@ -33,13 +37,3 @@
     </div>
 </div>
 
-
-<div class="modal myModal fade" id="createContract">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h3>Nová smlouva o proplácení cestovních náhrad</h3>
-    </div>
-    <div class="modal-body">
-            {control formCreateContract}
-    </div>
-</div>
