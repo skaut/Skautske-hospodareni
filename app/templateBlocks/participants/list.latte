@@ -26,8 +26,8 @@ $isCamp
 
                 <a n:if="$isAllowParticipantInsert" class="btn btn-primary btn-small" href="#addParticipant" data-toggle="modal">Nový účastník</a>
             </div>                
-                
-            <table class="table table-striped table-bordered" n:form="formMassList">
+              {form formMassList}
+            <table class="table table-striped table-bordered">
                 <thead class="onlyWithUnitPersons">
                     <tr>
                         <th n:if="$isAllowParticipantInsert" class="twoButtons">
@@ -55,6 +55,6 @@ $isCamp
                     <tr class="alert info no-unit-persons" draggable="false"><td colspan="2"><b>Nejsou žádné nevybrané osoby v jednotce.</b></td></tr>
                 </tbody>
             </table>
-            {*}{/form}{*}
+            {/form}
         {/snippet}
     </div>
