@@ -103,7 +103,7 @@ class DefaultPresenter extends BasePresenter {
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
 
         return $form;
@@ -125,8 +125,9 @@ class DefaultPresenter extends BasePresenter {
         $types = $this->context->eventService->event->getTypes();
         $tmpId = $this->context->skautIS->getUnitId();
         $units = array($tmpId => $this->context->unitService->getDetail($tmpId)->SortName);
-        foreach ($this->context->unitService->getChild($tmpId) as $u)
+        foreach ($this->context->unitService->getChild($tmpId) as $u) {
             $units[$u->ID] = "» " . $u->SortName;
+        }
 
         $form = new Form($this, $name);
         $form->addText("name", "Název akce*")
@@ -144,7 +145,7 @@ class DefaultPresenter extends BasePresenter {
         $form->addSelect("type", "Typ (+)", $types)
                 ->setDefaultValue("2");
         $form->addSubmit('send', 'Založit novou akci')
-                        ->setAttribute("class", "btn btn-primary btn-large");
+                ->setAttribute("class", "btn btn-primary btn-large");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -155,18 +156,6 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("this");
         }
         $v = $form->getValues();
-//        if($v->start == NULL){
-//            $this->flashMessage("Neplatné datum začátku akce.", "error");
-//            $this->redirect("this");
-//        }
-//        if($v->end == NULL){
-//            $this->flashMessage("Neplatné datum konce akce.", "error");
-//            $this->redirect("this");
-//        }
-//        if($v->end < $v->start){
-//            $this->flashMessage("Nelze založit akci, která dříve skončí nežli začne.", "error");
-//            $this->redirect("this");
-//        }
         $id = $this->context->eventService->event->create(
                 $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v->orgID, $v['scope'], $v['type']
         );
@@ -176,10 +165,17 @@ class DefaultPresenter extends BasePresenter {
         }
         $this->redirect("this");
     }
-    
-    public function actionExportSummary(){
-        $this->context->excelService->getEventSummaries(array(255, 274, 261, 355), $this->context->eventService);
-        //$this->context->excelService->getEventSummaries(array(51, 70), $this->context->eventService);
+
+    function createComponentFormExportSummary($name) {
+        $form = new Form($this, $name);
+        $form->addSubmit('send', 'Souhrn vybraných');
+        $form->onSuccess[] = array($this, $name . 'Submitted');
+        return $form;
+    }
+
+    function formExportSummarySubmitted(Form $form) {
+        $values = $form->getHttpData($form::DATA_TEXT, 'sel[]');
+        $this->context->excelService->getEventSummaries($values, $this->context->eventService); //testovaci
     }
 
 }
