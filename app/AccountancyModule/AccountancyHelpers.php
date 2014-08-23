@@ -14,19 +14,23 @@ abstract class AccountancyHelpers extends Object {
      * @param type $helper
      * @return type 
      */
-    public static function loader($helper) {
-        if (method_exists(__CLASS__, $helper)) {
-            return callback(__CLASS__, $helper);
+    public static function loader($filter, $value) {
+        //dump(func_get_args());die();
+        if (method_exists(__CLASS__, $filter)) {
+            $args = func_get_args();
+            array_shift($args);
+            return call_user_func_array(array(__CLASS__, $filter), $args);
         }
     }
-    
+
     /*
      * zobrazení stavu ve formě ikony
      */
+
     public static function eventStateLabel($s) {
         if ($s == "draft")
             return '<span class="label label-warning hidden-phone">Rozpracováno</span>'
-            .'<span class="label label-warning visible-phone">Rozprac.</span>';
+                    . '<span class="label label-warning visible-phone">Rozprac.</span>';
         elseif ($s == "closed") {
             return '<span class="label label-success">Uzavřeno</span>';
         } else {
@@ -38,6 +42,7 @@ abstract class AccountancyHelpers extends Object {
     /*
      * zobrazuje popisky stavů u táborů
      */
+
     public static function campStateLabel($s) {
         switch ($s) {
             case "draft":
@@ -63,9 +68,9 @@ abstract class AccountancyHelpers extends Object {
         switch ($s) {
             case NULL:
                 return '<span class="label label-warning hidden-phone">Rozpracovaný</span>'
-            .'<span class="label label-warning visible-phone">Rozpr.</span>';
+                        . '<span class="label label-warning visible-phone">Rozpr.</span>';
             default :
-                return '<span class="label label-success" title="Uzavřeno dne: '. $s->format("j.n.Y H:i:s").'">Uzavřený</span>';
+                return '<span class="label label-success" title="Uzavřeno dne: ' . $s->format("j.n.Y H:i:s") . '">Uzavřený</span>';
                 break;
         }
     }
@@ -83,14 +88,14 @@ abstract class AccountancyHelpers extends Object {
             return $price;
         $decimals = $full ? 2 : 0;
         //if (stripos($price, "."))
-            return number_format((float)$price, $decimals, ",", " ");
+        return number_format((float) $price, $decimals, ",", " ");
         //return $price;
     }
-    
+
     public static function postCode($oldPsc) {
         $psc = preg_replace("[^0-9]", "", $oldPsc);
-        if(strlen($psc) == 5)
-            return substr($psc, 0, 3) . " ". substr($psc, -2);
+        if (strlen($psc) == 5)
+            return substr($psc, 0, 3) . " " . substr($psc, -2);
         return $oldPsc;
 //        number_format($psc, 0, "", " ");
     }
@@ -167,7 +172,7 @@ abstract class AccountancyHelpers extends Object {
 //            $string .= "," . $parts[1];
 //        }
 //        return ucfirst($string);
-        return mb_convert_case(mb_substr($string,0,1),MB_CASE_UPPER,"UTF-8").mb_substr($string,1);
+        return mb_convert_case(mb_substr($string, 0, 1), MB_CASE_UPPER, "UTF-8") . mb_substr($string, 1);
     }
 
 }

@@ -4,11 +4,16 @@
 <h2>Vozidla<span class="hidden-phone"> jednotky {$unit->DisplayName}</span></h2>
 {include ../menu.latte}
 
-<div class="row-fluid">
+<div class="row-fluid">    
     <div class="span6">
         <div class="well well-small">
-            <a href="#createVehicle" data-toggle="modal" class="btn btn-small btn-primary"><i class="icon-plus-sign icon-white"></i> Založit nové vozidlo</a>
+            <button type="button" data-toggle="collapse" data-target="#createVehicle" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit nové vozidlo</button>
+            <div class="collapse" id="createVehicle">
+                <br />
+                {control formCreateVehicle}
+            </div>
         </div>
+        
         <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
             <tr>
                 <th>&nbsp;</th>
@@ -26,16 +31,5 @@
                 <td>{$i->consumption}</td>
             </tr>
         </table>
-    </div>
-</div>
-
-
-<div class="modal myModal fade" id="createVehicle">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h3>Nové vozidlo</h3>
-    </div>
-    <div class="modal-body">
-            {control formCreateVehicle}
     </div>
 </div>

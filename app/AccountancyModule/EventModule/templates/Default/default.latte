@@ -5,13 +5,59 @@
 {dump $list}
 
 <div class="row-fluid">
-    <p n:if="$accessCreate">
-        <a href="#createNew" data-toggle="modal" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</a>
-    </p>
+    <div class="well" n:if="$accessCreate">
+        <button type="button" data-toggle="collapse" data-target="#createNew" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</button>
+        <div class="collapse" id="createNew">
+            <br />
+            {form formCreate}
+                <ul class="errors" n:if="$form->hasErrors()">
+                    <li n:foreach="$form->errors as $error">{$error}</li>
+                </ul>
+                <table>
+                    <tbody>
+                        <tr class="required">
+                            <th>{label name/}</th>
+                            <td>{input name}</td>
+                        </tr>
+                        <tr class="required">
+                            <th>{label start /}</th>
+                            <td>{input start}</td>
+                        </tr>
+                        <tr class="required">
+                            <th>{label end /}</th>
+                            <td>{input end}</td>
+                        </tr>
+                        <tr>
+                            <th>{label location /}</th>
+                            <td>{input location}</td>
+                        </tr>
+                        <tr>
+                            <th>{label orgID /}</th>
+                            <td>{input orgID}</td>
+                        </tr>
+                        <tr>
+                            <th>{label scope /}</th>
+                            <td>{input scope}</td>
+                        </tr>
+                        <tr>
+                            <th>{label type /}</th>
+                            <td>{input type}</td>
+                        </tr>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <td>{input send}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {/form formCreate}
+            (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
+        </div>
+    </div>
 </div>
+
 {snippet events}
     <div class="row-fluid">
-        <div class="well well-small span6">
+        <div class="well well-small">
             {form formFilter class=>"ajax filter"}
                 <span class="hidden-phone">{label year /}</span>{input year onchange=>"changeYear(this.value)"}
                 <span class="hidden-phone">{label state /}</span>{input state onchange=>"changeState(this.value)"}
@@ -23,96 +69,45 @@
     <div class="row-fluid">
         {if is_array($list)}
             {form formExportSummary}
-            <table class="myTable table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th n:if="reset($list)->accessDelete" class="hidden-phone">&nbsp;</th>
-                        <th>Název</th>
-                        <th>Od</th>
-                        <th>Do</th>
-                        <th>Stav</th>
-                        <th class="hidden-phone">
-                        {input send class=>"btn btn-info btn-small selDependend"}
-                        <input type="checkbox" id="sel-all" name="sel" onclick="jqCheckAll(this.id, 'sel')" />
-                        
-                    </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr n:foreach="$list as $i">
-                        <td class="hidden-phone">{if $i->accessDelete}<a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
-                        <td>
-                            <a n:tag-if="$i->accessDetail" n:href="Event: $i->ID">{$i->DisplayName}</a>
-                        </td>
-                        <td>{$i->StartDate|date:"j.n.Y"}</td>
-                        <td>{$i->EndDate|date:"j.n.Y"}</td>
-                        <td>{!$i->ID_EventGeneralState|eventStateLabel}</td>
-                        <td n:inner-if="$i->accessDetail" class="hidden-phone">
-                            <a n:href="Event:  $i->ID" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
-                            <a n:href="Participant: $i->ID" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
-                            <a n:href="Cashbook: $i->ID" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>
-                            <input type='checkbox' name='sel[]' value='{$i->ID}'/>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <table class="myTable table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th n:if="reset($list)->accessDelete" class="hidden-phone">&nbsp;</th>
+                            <th>Název</th>
+                            <th>Od</th>
+                            <th>Do</th>
+                            <th>Stav</th>
+                            <th class="hidden-phone">
+                                {input send class=>"btn btn-info btn-small selDependend"}
+                                <input type="checkbox" id="sel-all" name="sel" onclick="jqCheckAll(this.id, 'sel')" />
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr n:foreach="$list as $i">
+                            <td class="hidden-phone">{if $i->accessDelete}<a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
+                            <td>
+                                <a n:tag-if="$i->accessDetail" n:href="Event: $i->ID">{$i->DisplayName}</a>
+                            </td>
+                            <td>{$i->StartDate|date:"j.n.Y"}</td>
+                            <td>{$i->EndDate|date:"j.n.Y"}</td>
+                            <td>{!$i->ID_EventGeneralState|eventStateLabel}</td>
+                            <td n:inner-if="$i->accessDetail" class="hidden-phone">
+                                <a n:href="Event:  $i->ID" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
+                                <a n:href="Participant: $i->ID" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
+                                <a n:href="Cashbook: $i->ID" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>
+                                <input type='checkbox' name='sel[]' value='{$i->ID}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             {/form}
         {else}
             <p class="alert">Nemáte žádné akce.</p>
         {/if}
     </div>
 {/snippet}
-
-<div class="modal myModal fade" id="createNew">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h3>Založit novou akci</h3>
-    </div>
-    <div class="modal-body">
-        {form formCreate}
-            <ul class="errors" n:if="$form->hasErrors()">
-                <li n:foreach="$form->errors as $error">{$error}</li>
-            </ul>
-            <table>
-                <tbody>
-                    <tr class="required">
-                        <th>{label name/}</th>
-                        <td>{input name}</td>
-                    </tr>
-                    <tr class="required">
-                        <th>{label start /}</th>
-                        <td>{input start}</td>
-                    </tr>
-                    <tr class="required">
-                        <th>{label end /}</th>
-                        <td>{input end}</td>
-                    </tr>
-                    <tr>
-                        <th>{label location /}</th>
-                        <td>{input location}</td>
-                    </tr>
-                    <tr>
-                        <th>{label orgID /}</th>
-                        <td>{input orgID}</td>
-                    </tr>
-                    <tr>
-                        <th>{label scope /}</th>
-                        <td>{input scope}</td>
-                    </tr>
-                    <tr>
-                        <th>{label type /}</th>
-                        <td>{input type}</td>
-                    </tr>
-                    <tr>
-                        <th>&nbsp;</th>
-                        <td>{input send}</td>
-                    </tr>
-                </tbody>
-            </table>
-        {/form formCreate}
-        (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
-    </div>
-</div>
 
 <script type="text/javascript">
     $(document).ready(function() {
