@@ -86,7 +86,7 @@ class CashbookPresenter extends BasePresenter {
 //    }
 
     public function actionExport($aid) {
-        $template = $this->context->exportService->getCashbook($aid, $this->context->campService);
+        $template = $this->context->exportService->getCashbook($this->createTemplate(), $aid, $this->context->campService);
         $this->context->campService->chits->makePdf($template, "pokladni-kniha.pdf");
         $this->terminate();
     }
@@ -98,7 +98,7 @@ class CashbookPresenter extends BasePresenter {
 
     function actionPrint($id, $aid) {
         $chits = array($this->context->campService->chits->get($id));
-        $template = $this->context->exportService->getChits($aid, $this->context->campService, $this->context->unitService, $chits);
+        $template = $this->context->exportService->getChits($this->createTemplate(), $aid, $this->context->campService, $this->context->unitService, $chits);
         $this->context->campService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
@@ -139,7 +139,7 @@ class CashbookPresenter extends BasePresenter {
 
     function massPrintSubmitted(SubmitButton $button) {
         $chits = $this->context->campService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
-        $template = $this->context->exportService->getChits($this->aid, $this->context->campService, $this->context->unitService, $chits, "camp");
+        $template = $this->context->exportService->getChits($this->createTemplate(), $this->aid, $this->context->campService, $this->context->unitService, $chits);
         $this->context->campService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }

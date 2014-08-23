@@ -3,8 +3,7 @@
 namespace Model;
 
 use \Nette\ArrayHash,
-    \Nette\Templating\FileTemplate,
-    Nette\Latte\Engine;
+    Nette\Application\UI\ITemplate;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -12,17 +11,14 @@ use \Nette\ArrayHash,
 class ExportService extends BaseService {
 
     /**
-     * vrací připravenou template s filtry a helpery
+     * donastavuje helpery a zdrojový file do šablony
      * @param type $fileName
      * @return \FileTemplate
      */
-    protected function getTemplate($fileName) {
-        $template = new FileTemplate();
+    protected function setTemplate(ITemplate &$template, $fileName) {
         $template->setFile($fileName);
-        $template->registerHelperLoader('\Nette\Templating\Helpers::loader');
-        $template->registerHelperLoader('\App\AccountancyModule\AccountancyHelpers::loader');
-        $template->registerFilter(new Engine);
-        return $template;
+        $template->getLatte()->addFilter(NULL, '\App\AccountancyModule\AccountancyHelpers::loader');
+        //return $template;
     }
 
     public function getNewPage() {
@@ -34,12 +30,14 @@ class ExportService extends BaseService {
      * @param type $aid - ID akce
      * @param EventEntity $service
      */
-    public function getParticipants($aid, EventEntity $service, $type = "generalEvent") {
+    public function getParticipants(ITemplate $template, $aid, EventEntity $service, $type = "generalEvent") {
         if ($type == "camp") {
-            $template = $this->getTemplate(dirname(__FILE__) . '/templates/participantCamp.latte');
+            //$template = $this->getTemplate(dirname(__FILE__) . '/templates/participantCamp.latte');
+            $this->setTemplate($template, dirname(__FILE__) . '/templates/participantCamp.latte');
             $template->list = $service->participants->getAllPersonDetail($aid, $service->participants->getAllWithDetails($aid));
         } else {
-            $template = $this->getTemplate(dirname(__FILE__) . '/templates/participant.latte');
+            //$template = $this->getTemplate(dirname(__FILE__) . '/templates/participant.latte');
+            $this->setTemplate($template, dirname(__FILE__) . '/templates/participant.latte');
             $template->list = $service->participants->getAllPersonDetail($aid, $service->participants->getAll($aid));
         }
         $template->info = $service->event->get($aid);
@@ -52,8 +50,8 @@ class ExportService extends BaseService {
      * @param EventEntity $service
      * @return \FileTemplate
      */
-    public function getCashbook($aid, EventEntity $service) {
-        $template = $this->getTemplate(dirname(__FILE__) . '/templates/cashbook.latte');
+    public function getCashbook(ITemplate $template, $aid, EventEntity $service) {
+        $this->setTemplate($template, dirname(__FILE__) . '/templates/cashbook.latte');
         $template->list = $service->chits->getAll($aid);
         $template->info = $service->event->get($aid);
         return $template;
@@ -65,7 +63,7 @@ class ExportService extends BaseService {
      * @param EventEntity $eventService
      * @return type
      */
-    public function getEventReport($aid, EventEntity $eventService) {
+    public function getEventReport(ITemplate $template, $aid, EventEntity $eventService) {
         $categories = array();
         //inicializuje pole s kategorií s částkami na 0
         foreach (ArrayHash::from($eventService->chits->getCategories($all = TRUE)) as $c) {
@@ -77,10 +75,9 @@ class ExportService extends BaseService {
         foreach ($eventService->chits->getAll($aid) as $chit) {
             $categories[$chit->ctype][$chit->cshort]->price += $chit->price;
         }
-
-        $template = $this->getTemplate(dirname(__FILE__) . '/templates/eventReport.latte');
+        $this->setTemplate($template, dirname(__FILE__) . '/templates/eventReport.latte');
         $template->participants = $eventService->participants->getAll($aid);
-        $template->personsDays  = $eventService->participants->getPersonsDays($aid);
+        $template->personsDays = $eventService->participants->getPersonsDays($aid);
         $template->a = $eventService->event->get($aid);
         $template->chits = $categories;
         $template->func = $eventService->event->getFunctions($aid);
@@ -93,10 +90,8 @@ class ExportService extends BaseService {
      * @param type $eventService
      * @param type $unitService
      * @param type $chits
-     * @param type $type 
      */
-    public function getChits($aid, EventEntity $eventService, BaseService $unitService, array $chits, $type = "general") {
-
+    public function getChits(ITemplate $template, $aid, EventEntity $eventService, BaseService $unitService, array $chits) {
         $income = array();
         $outcome = array();
         foreach ($chits as $c) {
@@ -108,17 +103,17 @@ class ExportService extends BaseService {
                     $income[] = $c;
                     break;
                 default:
-                    throw new \Nette\InvalidStateException("Neznámý typ paragou: ". $c->ctype);
+                    throw new \Nette\InvalidStateException("Neznámý typ paragou: " . $c->ctype);
             }
         }
-        $template = $this->getTemplate(dirname(__FILE__) . "/templates/chits.latte");
+        $this->setTemplate($template, dirname(__FILE__) . '/templates/chits.latte');
 
         //HPD 
         $template->totalPayment = $eventService->participants->getTotalPayment($aid);
         $func = $eventService->event->getFunctions($aid);
         $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;
         $template->list = $eventService->participants->getAll($aid);
-        
+
         $template->event = $eventService->event->get($aid);
         $template->income = $income;
         $template->outcome = $outcome;
@@ -126,13 +121,13 @@ class ExportService extends BaseService {
         return $template;
     }
 
-    public function getCampReport($aid, EventEntity $campService) {
+    public function getCampReport(ITemplate $template, $aid, EventEntity $campService) {
         $categories = array();
         foreach ($campService->chits->getCategoriesCamp($aid) as $c) {
             $categories[$c->IsRevenue ? "in" : "out"][$c->ID] = $c;
         }
 
-        $template = $this->getTemplate(dirname(__FILE__) . '/templates/campReport.latte');
+        $this->setTemplate($template, dirname(__FILE__) . '/templates/campReport.latte');
         $template->participants = $campService->participants->getAll($aid);
         $template->personsDays = $campService->participants->getPersonsDays($aid);
         $template->a = $campService->event->get($aid);
@@ -142,4 +137,3 @@ class ExportService extends BaseService {
     }
 
 }
-

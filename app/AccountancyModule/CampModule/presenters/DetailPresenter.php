@@ -43,7 +43,7 @@ class DetailPresenter extends BasePresenter {
             $this->redirect("default", array("aid" => $aid));
         }
 
-        $template = $this->context->exportService->getCampReport($aid, $this->context->campService);
+        $template = $this->context->exportService->getCampReport($this->createTemplate(), $aid, $this->context->campService);
         $this->context->campService->participants->makePdf($template, "reportCamp.pdf");
         $this->terminate();
     }
