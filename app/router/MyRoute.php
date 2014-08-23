@@ -7,7 +7,7 @@ use Nette,
 
 /**
  *
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class MyRoute extends \Nette\Application\Routers\Route {
 

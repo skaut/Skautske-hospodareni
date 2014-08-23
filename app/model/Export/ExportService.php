@@ -7,7 +7,7 @@ use \Nette\ArrayHash,
     Nette\Latte\Engine;
 
 /**
- * @author Hána František
+ * @author Hána František <sinacek@gmail.com>
  */
 class ExportService extends BaseService {
 

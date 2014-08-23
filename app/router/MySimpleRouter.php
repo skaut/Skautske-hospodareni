@@ -8,7 +8,7 @@ use Nette,
 
 /**
  *
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class MySimpleRouter extends SimpleRouter {
 

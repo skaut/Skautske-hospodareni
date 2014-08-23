@@ -3,7 +3,7 @@
 namespace Model;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 abstract class BaseService extends \Nette\Object {
 
