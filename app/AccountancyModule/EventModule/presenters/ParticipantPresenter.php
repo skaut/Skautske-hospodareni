@@ -6,7 +6,7 @@ use Nette\Application\UI\Form,
     Nette\Forms\Controls\SubmitButton;
 
 /**
- * @author Hána František
+ * @author Hána František <sinacek@gmail.com>
  * účastníci
  */
 class ParticipantPresenter extends BasePresenter {

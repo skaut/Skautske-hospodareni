@@ -4,7 +4,7 @@ namespace Model;
 
 /**
  *
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class EventEntity{
     

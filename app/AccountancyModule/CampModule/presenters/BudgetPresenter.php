@@ -3,7 +3,7 @@
 namespace App\AccountancyModule\CampModule;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class BudgetPresenter extends BasePresenter {
 

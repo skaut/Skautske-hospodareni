@@ -5,7 +5,7 @@ namespace App\AccountancyModule\TravelModule;
 use Nette\Application\UI\Form;
 
 /**
- * @author Hána František
+ * @author Hána František <sinacek@gmail.com>
  */
 class DefaultPresenter extends BasePresenter {
 

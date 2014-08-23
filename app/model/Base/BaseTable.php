@@ -3,7 +3,7 @@
 namespace Model;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class BaseTable {
     const TABLE_CHIT = 'ac_chits';

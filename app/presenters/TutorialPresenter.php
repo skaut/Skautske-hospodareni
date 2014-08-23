@@ -1,7 +1,7 @@
 <?php
 namespace App;
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class TutorialPresenter extends BasePresenter {
 

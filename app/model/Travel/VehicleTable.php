@@ -3,7 +3,7 @@
 namespace Model;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  * správa vozidel u cestovních dokladů
  */
 class VehicleTable extends BaseTable {

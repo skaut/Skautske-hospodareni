@@ -6,7 +6,7 @@ use Nette\Application\UI\Form,
     Nette\Caching\Cache;
 
 /**
- * @author sinacek
+ * @author Hána František <sinacek@gmail.com>
  */
 class OfflinePresenter extends BasePresenter {
 
