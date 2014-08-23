@@ -52,7 +52,7 @@ class BasePresenter extends \App\BasePresenter {
 
     function beforeRender() {
         parent::beforeRender();
-        $this->template->registerHelperLoader("\App\AccountancyModule\AccountancyHelpers::loader");
+        $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
     }
 
     protected function editableOnly() {

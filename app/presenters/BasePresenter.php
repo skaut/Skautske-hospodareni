@@ -4,25 +4,27 @@ namespace App;
 
 use Nette,
     WebLoader,
-    SkautIS\Exception\AuthenticationException;
+    SkautIS\Exception\AuthenticationException,
+    Nette\Forms\Container;
 
 abstract class BasePresenter extends Nette\Application\UI\Presenter {
 
     protected function startup() {
         parent::startup();
-        
+
         //adresář s částmi šablon pro použití ve více modulech
         $this->template->templateBlockDir = APP_DIR . "/templateBlocks/";
-        
+
         $storage = \Nette\Environment::getSession()->getSection("__" . __CLASS__);
         $this->context->skautIS->setStorage($storage, TRUE);
         $this->template->backlink = $this->getParameter("backlink");
         $params = $this->context->getParameters();
         $this->template->ssl = $params['ssl'];
 
-        \Nette\Forms\Container::extensionMethod('addDatePicker', function (\Nette\Forms\Container $container, $name, $label = NULL) {
-            return $container[$name] = new \JanTvrdik\Components\DatePicker($label);
+        Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
+            return $container[$name] = new \Nextras\Forms\Controls\DatePicker($label);
         });
+        
         try {
             if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
                 $this->context->authService->updateLogoutTime();
@@ -40,7 +42,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
             $this->template->myRole = $this->context->userService->getRoleId();
         }
-        $this->template->registerHelperLoader("\App\AccountancyModule\AccountancyHelpers::loader");
+        $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
     }
 
     //změní přihlášenou roli ve skautISu
@@ -66,6 +68,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'bootstrap.min.css',
             'bootstrap-responsive.min.css',
             'jquery-ui-1.10.0.custom.css',
+            'bootstrap-datetimepicker.css',
             'my-responsive.css',
 //            'offline.css',
             'site.css'
@@ -77,22 +80,27 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $files = new WebLoader\FileCollection(WWW_DIR . '/js');
         $compiler = WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/webtemp');
         $files->addFiles(array(
-            'jquery-1.8.2.min.js',
+            'jquery-v1.11.1.js',
+            
             'jquery-ui-1.10.0.custom.min.js',
-            'netteForms.js',
-            'jquery.touchwipe.min.js',
-            'mobile.js',
-            'my-datepicker.js',
+            'bootstrap-datetimepicker.js',
+            'bootstrap-datetimepicker.cs.js',
+//            'jquery.touchwipe.min.js',
+//            'mobile.js',
+            //'my-datepicker.js',
             'combobox.js',
             'jquery.nette.js',
+            'netteForms.js',
+            'nextras.netteForms.js',
             'bootstrap.js',
+//            'nextras.typeahead.init.js',
             'jquery.fancybox.pack.js',
-            'live-form-validation.js',
-            'jquery.ajaxform.js',
-            'offline.js',
-            'html5.js',
-            'h5utils.js',
-            'my.js'
+//            'offline.js',
+//            'html5.js',
+//            'h5utils.js',
+            'my.js',
+            
+            'nextras.datetimepicker.init.js',
         ));
         return new WebLoader\Nette\JavaScriptLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
     }
