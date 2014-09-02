@@ -30,7 +30,9 @@
             obj.change(
                 function () {
                     var val = this.value.trim(), endIndex, isError = false;
-
+                    if(val.indexOf("(") > -1 || val.indexOf(")") > -1){
+                        alert("Cena obsahuje závorky, které však nejsou platnými znaky.");
+                    }
                     while(1) {
                         endIndex = val.length-1;
                         if(isNumber(val.charAt(endIndex)) || val.length < 1){
@@ -47,6 +49,7 @@
                     if(val.length < 1)
                         obj.next().html('');
                     else
+                        val = val.replace(/,/g,'.').replace("(", "").replace(")", "");
                         obj.next().html(' = '+eval(val));
                 }
             )
