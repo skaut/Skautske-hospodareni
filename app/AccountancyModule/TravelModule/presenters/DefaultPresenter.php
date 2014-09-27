@@ -159,7 +159,7 @@ class DefaultPresenter extends BasePresenter {
     function createComponentFormCreateCommand($name) {
         $form = $this->makeCommandForm($name);
         $form->addSubmit('send', 'Založit')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         return $form;
     }
 
@@ -178,7 +178,7 @@ class DefaultPresenter extends BasePresenter {
     function createComponentFormEditCommand($name) {
         $form = $this->makeCommandForm($name);
         $form->addSubmit('send', 'Upravit')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->addHidden("id");
         return $form;
     }
@@ -214,7 +214,7 @@ class DefaultPresenter extends BasePresenter {
                 ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.")
                 ->addRule(Form::FLOAT, "Vzdálenost musí být číslo!");
         $form->addSubmit('send', 'Přidat')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -238,7 +238,7 @@ class DefaultPresenter extends BasePresenter {
 
     function renderEditTravel($travelId) {
         $travel = $this->context->travelService->getTravel($travelId);
-        
+
         if (!$this->isCommandAccessible($travel->command_id)) {
             $this->flashMessage("Nemáte oprávnění upravovat záznam!", "danger");
             $this->redirect("default");
@@ -268,7 +268,7 @@ class DefaultPresenter extends BasePresenter {
         $form->addText("distance", "Vzdálenost*")
                 ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.");
         $form->addSubmit('send', 'Upravit')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -282,9 +282,9 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("default");
         }
         $data = array();
-        $kyes = array("start_date", "start_place", "end_place", "distance");
-        foreach ($kyes as $k) {
-            $data[$k] = $v[$k];
+        $keys = array("start_date", "start_place", "end_place", "distance");
+        foreach ($keys as $k) {
+            $data[$k] = $k == "distance" ? str_replace(",", ".", $v[$k]) : $v[$k];
         }
         $this->context->travelService->updateTravel($data, $tid);
         $this->flashMessage("Cesta byla upravena.");
