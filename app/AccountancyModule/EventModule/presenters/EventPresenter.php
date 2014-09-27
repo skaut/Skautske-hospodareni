@@ -98,7 +98,7 @@ class EventPresenter extends BasePresenter {
         $form = $this['formAddFunction'];
         $form->setDefaults(array(
             "aid" => $aid,
-            "person" => $func[$fid]->ID_Person,
+            "person" => array_key_exists($func[$fid]->ID_Person, $form['person']->getItems()) ? $func[$fid]->ID_Person : NULL,
             "fid" => $fid,
         ));
     }
