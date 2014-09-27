@@ -66,11 +66,13 @@ class MemberService extends BaseService {
         $res = array();
         $now = new \DateTime();
         foreach ($data as $p) {
-            $birth = new \DateTime($p->Birthday);
-            $interval = $now->diff($birth);
-            $diff = $interval->format("%y");
-            if ($adultOnly && $diff < 18) {
-                continue;
+            if($adultOnly){
+                $birth = new \DateTime($p->Birthday);
+                $interval = $now->diff($birth);
+                $diff = $interval->format("%y");
+                if ($diff < 18) {
+                    continue;
+                }
             }
             $res[$p->ID] = $p->LastName . " " . $p->FirstName . ($adultOnly ? " (" . $diff . ")" : "");
         }
