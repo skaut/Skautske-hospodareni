@@ -24,7 +24,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
             return $container[$name] = new \Nextras\Forms\Controls\DatePicker($label);
         });
-        
+
         try {
             if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
                 $this->context->authService->updateLogoutTime();
@@ -39,8 +39,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
     protected function beforeRender() {
         parent::beforeRender();
         if ($this->user->isLoggedIn()) {
-            $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
-            $this->template->myRole = $this->context->userService->getRoleId();
+            try {
+                $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
+                $this->template->myRole = $this->context->userService->getRoleId();
+            } catch (\SkautIS\Exception\AuthenticationException $ex) {
+                $this->user->logout();
+            }
         }
         $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
     }
@@ -81,7 +85,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $compiler = WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/webtemp');
         $files->addFiles(array(
             'jquery-v1.11.1.js',
-            
             'jquery-ui-1.10.0.custom.min.js',
             'bootstrap-datetimepicker.js',
             'bootstrap-datetimepicker.cs.js',
@@ -99,7 +102,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 //            'html5.js',
 //            'h5utils.js',
             'my.js',
-            
             'nextras.datetimepicker.init.js',
         ));
         return new WebLoader\Nette\JavaScriptLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
