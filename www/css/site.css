@@ -193,8 +193,12 @@ input[type="checkbox"], input[type="radio"] {
     text-align: center;
     vertical-align: text-top;
 }
-td.r {text-align: right;}
+td.r, th.r, .r {text-align: right;}
 .b {font-weight: bold;}
+
+td.vm, th.vm {
+    vertical-align: middle;
+}
 
 .tutorial .figure {
     padding: 5px 0;

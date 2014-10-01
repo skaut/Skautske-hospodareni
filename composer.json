@@ -10,7 +10,8 @@
                 "srigi/nette-visualpaginator": "dev-master",
                 "phpoffice/phpexcel": "1.8.0",
                 "mpdf/mpdf": "v5.7.1",
-		"nextras/forms": "~1.4"
+		"nextras/forms": "~1.4",
+                "foowie/dependentselectbox": "dev-master"
 	},
 	"require-dev": {
 		"nette/tester": "@dev",

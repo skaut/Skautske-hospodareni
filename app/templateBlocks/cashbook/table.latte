@@ -1,4 +1,13 @@
-    {block #content}
+{*
+$isEditable BOOL
+$missingCategories BOOL
+$linkImportHPD URL|NULL
+$aid INT
+$object - zdrojový objekt s informacemi
+$list array() - pole paragonů
+*}
+{dump $list}
+{block #content}
     <div class="span9">
         <div n:snippet="paragony">
         {if $list}
@@ -8,7 +17,7 @@
                     Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
                 </p>
                 <div class="well well-small span8">
-                    <a n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)" href="{$linkImportHPD}" {if \Nette\Utils\Strings::startsWith($linkImportHPD, '#')} role="button" data-toggle="modal"{/if} class="btn btn-small btn-primary">Načíst příjmy od účastníků</a>
+                    <a n:if="$isEditable && (!isset($missingCategories) || !$missingCategories) && isset($linkImportHPD)" href="{$linkImportHPD}" {if \Nette\Utils\Strings::startsWith($linkImportHPD, '#')} role="button" data-toggle="modal"{/if} class="btn btn-small btn-primary">Načíst příjmy od účastníků</a>
                     <a n:href="export $aid" target="_blank" class="btn btn-small btn-info hidden-phone"><i class="icon-print icon-white"></i> Vytisknout pokladní knihu</a>
                     <a n:href="exportExcel $aid" target="_blank" class="btn btn-small btn-info hidden-phone"><i class="icon-file icon-white"></i> Exportovat do excelu</a>
                 </div>
@@ -24,7 +33,7 @@
                                 </button>
                             </th>
                             <th>Ze dne</th>
-                            <th n:if="!is_null($event->prefix) && $event->prefix !=''">Číslo</th>
+                            <th n:if="!is_null($object->prefix) && $object->prefix !=''">Číslo</th>
                             <th>Účel výplaty</th>
                             <th class="hidden-phone">Typ</th>
                             <th class="hidden-phone">Komu/Od</th>
@@ -41,11 +50,11 @@
                             <td>
                                 <input type="checkbox" class="hidden-phone" name="chits[]" value={$item->id} />
                                 <a n:href="print $item->id, $aid" target="_blank" class="btn btn-mini btn-info hidden-phone"><i class="icon icon-print icon-white"></i></a>
-                                <a n:if="$isEditable" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-primary"><i class="icon icon-edit icon-white"></i></a>
-                                <a n:if="$isEditable" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
+                                <a n:if="$isEditable && is_null($item->lock)" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-mini btn-primary"><i class="icon icon-edit icon-white"></i></a>
+                                <a n:if="$isEditable && is_null($item->lock)" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-mini"><i class="icon icon-remove icon-white"></i></a>
                             </td>
                             <td><span class="hidden-desktop">{$item->date|date:"j.n."}</span><span class="visible-desktop">{$item->date|date:"d.m.Y"}</span></td>
-                            <td n:if="!is_null($event->prefix) && $event->prefix !=''" title="{$event->prefix}{$item->num}">{$item->num}</td>
+                            <td n:if="!is_null($object->prefix) && $object->prefix !=''" title="{$object->prefix}{$item->num}">{$item->num}</td>
                             <td title="{$item->purpose}">{$item->purpose|truncate:"30"}</td>
                             <td class="hidden-phone" title="{$item->clabel}">{$item->cshort}</td>
                             <td class="hidden-phone">{$item->recipient}</td>
@@ -56,7 +65,7 @@
                         {/foreach}
                         <tr {if $balance < 0}class="alert alert-error"{/if}>
                             <td colspan="2">&nbsp;</td>
-                            <td n:if="!is_null($event->prefix) && $event->prefix !=''">&nbsp;</td>
+                            <td n:if="!is_null($object->prefix) && $object->prefix !=''">&nbsp;</td>
                             <td class="hidden-phone">&nbsp;</td>
                             <td class="hidden-phone">&nbsp;</td>
                             <td><b>Konečný stav</b></td>

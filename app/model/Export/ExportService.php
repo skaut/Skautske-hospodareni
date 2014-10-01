@@ -66,7 +66,7 @@ class ExportService extends BaseService {
     public function getEventReport(ITemplate $template, $aid, EventEntity $eventService) {
         $categories = array();
         //inicializuje pole s kategorií s částkami na 0
-        foreach (ArrayHash::from($eventService->chits->getCategories($all = TRUE)) as $c) {
+        foreach (ArrayHash::from($eventService->chits->getCategories()) as $c) {
             $categories[$c->type][$c->short] = $c;
             $categories[$c->type][$c->short]->price = 0;
         }
@@ -123,7 +123,7 @@ class ExportService extends BaseService {
 
     public function getCampReport(ITemplate $template, $aid, EventEntity $campService) {
         $categories = array();
-        foreach ($campService->chits->getCategoriesCamp($aid) as $c) {
+        foreach ($campService->chits->getCategories($aid) as $c) {
             $categories[$c->IsRevenue ? "in" : "out"][$c->ID] = $c;
         }
 

@@ -84,7 +84,7 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("this");
         }
 
-        if ($this->context->eventService->event->cancel($aid)) {
+        if ($this->context->eventService->event->cancel($aid, $this->context->eventService->chits)) {
             $this->flashMessage("Akce byla zrušena");
         } else {
             $this->flashMessage("Akci se nepodařilo zrušit", "danger");

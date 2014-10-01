@@ -11,25 +11,19 @@ use \Nette\Caching\Cache;
  */
 abstract class MutableBaseService extends BaseService {
 
-    static protected $typeName;
-    static protected $typeLongName;
-    static protected $expire;
-    static protected $type;
+    protected $typeName;
+    public $type;
 
     /** @var \Nette\Caching\Cache */
     protected $cache;
 
-    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection) {
-        self::$typeName = $name;
-        self::$typeLongName = $longName;
-        self::$expire = $expire;
-        self::$type = strtolower($name);
-
+    public function __construct($name, $skautIS, $cacheStorage, $connection) {
         parent::__construct($skautIS, $connection);
+        $this->typeName = $name;
+        $this->type = strtolower($name);
         $cache = new Cache($cacheStorage, __CLASS__);
         $this->cache = $cache;
 //        $this->cache->clean();
     }
 
 }
-
