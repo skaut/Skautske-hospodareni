@@ -1,0 +1,49 @@
+{block #table}
+{var $level = 1}
+{var $maxLevel = 2}
+
+<table class="table table-bordered table-condensed">
+    <tr>
+        <th colspan='2'>Kategorie</th>
+        <th>Předpoklad</th>
+        <th>Čerpáno</th>
+    </tr>
+    <tr>
+        {block #cat}
+        {foreach $cat as $c}
+            {if !$iterator->isFirst()}</tr><tr>{/if}
+            <td {if count($c['childrens'])>1}rowspan="{= count($c['childrens'])}" class="vm"{/if} {if empty($c['childrens']) && $maxLevel != $level} colspan="{= 1+$maxLevel-$level}" {/if}>{$c->label}</td>
+            {if is_array($c['childrens']) && !empty($c['childrens'])}
+                {include #this cat=>$c['childrens'], level=>$level+1, maxLevel=>$maxLevel}
+            {elseif $maxLevel==$level}
+                <td class="r">{? $presenter->template->sum+=$c->value} {$c->value|number:2:',':' '} Kč</td>
+                <td class="r">{if array_key_exists($c->id, $categoriesSummary)}{? $presenter->template->sumReality+=$categoriesSummary[$c->id]}{$categoriesSummary[$c->id]|number:2:',':' '} Kč{/if}</td>
+            {else}
+                <td colspan='2'>&nbsp;</td>
+            {/if}
+        {/foreach}
+    </tr>
+    {/block}
+
+    <tr><th colspan="{$maxLevel}">Celkem</th><th class="r">{$presenter->template->sum|number:2:',':' '} Kč</th><th class="r">{$presenter->template->sumReality|number:2:',':' '} Kč</th></tr>
+</table>   
+{/block}
+
+
+{block #content}
+<h2 n:block="title">Rozpočet jednotky</h2>
+{include ../ActionMenu.latte}
+<div class="row-fluid">
+    <div class='well well-small'>
+        <a n:href='add' class='btn btn-primary'><i class='icon icon-plus icon-white hidden-phone'></i> Založit kategorii</a>
+    </div>
+</div>
+<div class="row-fluid" n:ifset="$categories">
+    <div class="span6" n:if="isset($categories['in']) && !empty($categories['in'])">
+        {include #table cat=>$categories['in']}
+    </div>
+    {? $presenter->template->sum = $presenter->template->sumReality = 0}
+    <div class="span6" n:if="isset($categories['out']) && !empty($categories['out'])">
+        {include #table cat=>$categories['out']}
+    </div>
+</div>

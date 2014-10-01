@@ -1,0 +1,60 @@
+{block #group}
+{if array_key_exists($type, $chitsArr)}
+    <h2>{$grpLabel}</h2>
+    {foreach $chitsArr[$type] as $id=>$chits}
+        {if !empty($chits)}
+            <h3>{$info[$type][$id]->DisplayName}</h3>
+            <table class='table table-condensed'>
+                <tr>
+                    <th>Účel</th>
+                    <th>Osoba</th>
+                    <th>Kategorie</th>
+                    <th>Částka</th>
+                    <th n:if='!isset($disableForm)'>Příjmová<br />kategorie</th>
+                    <th n:if='!isset($disableForm)'>Výdajová<br />kategorie</th>
+                    <th>&nbsp;</th>
+                </tr>
+                <tr n:foreach="$chits as $c">
+                    <td>{$c->purpose}</td>
+                    <td>{$c->recipient}</td>
+                    <td>{$c->clabel}</td>
+                    <td>{$c->price}</td>
+                    <td n:if='!isset($disableForm)'>{input selectBudget_in_$c->id}</td>
+                    <td n:if='!isset($disableForm)'>{input selectBudget_out_$c->id}</td>
+                    <td>
+                        {if $c->lock == NULL}
+                            <a href='{link lock! $c->eventId, $c->id, $type}' class='btn btn-mini btn-success ajax'><i class='icon icon-lock icon-white'></i> Uzamknout</a>
+                        {else}
+                            <a href='{link lock! $c->eventId, $c->id, $type, 'unlock'}' class='btn btn-mini btn-danger ajax'><i class='icon icon-folder-open icon-white'></i> Odemknout</a>
+                        {/if}
+                    </td>
+                </tr>
+            </table>
+            {*}{if !$iterator->isLast()}<hr />{/if}{*}
+        {/if}
+    {/foreach}
+{/if}
+{/block}
+
+
+{block #content}
+<h2 n:block="title">Přehled paragonů</h2>
+{include ../ActionMenu.latte}
+{dump $info}
+{dump $chitsArr}
+
+{snippet tableChits}
+    {form budgetCategoryForm}
+        <div class='well'>
+            <div style='float:right' n:if='!isset($disableForm)'>
+                {input send}
+            </div>
+            <a n:href="this onlyUnlocked=>!$onlyUnlocked" class="btn btn-primary">Zobrazit {if $onlyUnlocked}všechny{else}pouze nezamčené{/if}</a>
+        </div>
+{*}{*}
+        {include #group grpLabel=>'Výpravy', type=>'event'}
+        {include #group grpLabel=>'Tábory', type=>'camp'}
+        {include #group grpLabel=>'Jednotky', type=>'unit'}
+
+    {/form}{if !isset($disableForm)} {/if}
+{/snippet}

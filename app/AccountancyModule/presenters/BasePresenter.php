@@ -78,6 +78,7 @@ class BasePresenter extends \App\BasePresenter {
         $router[] = CampModule\BasePresenter::createRoutes();
         $router[] = EventModule\BasePresenter::createRoutes();
         $router[] = TravelModule\BasePresenter::createRoutes();
+        $router[] = UnitAccountModule\BasePresenter::createRoutes();
 
         $router[] = new MyRoute($prefix . '<module>/<presenter>[/<action>]', array(
             'module' => "Accountancy",
@@ -88,8 +89,7 @@ class BasePresenter extends \App\BasePresenter {
     }
 
     public function isAllowed($action, $avaibleActions = NULL) {
-        $avaibleActions = $avaibleActions == NULL ? $this->availableActions : $avaibleActions;
-        return array_key_exists($action, $avaibleActions);
+        return array_key_exists($action, $avaibleActions == NULL ? $this->availableActions : $avaibleActions);
     }
 
 }

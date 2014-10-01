@@ -34,23 +34,27 @@ services:
         factory: dibi::connect(%database%)
         run: TRUE
     authService:
-        class: Model\AuthService( @skautIS, @connection )
+        class: Model\AuthService(@skautIS, @connection)
     eventService:
-        class: Model\EventEntity( "General", "EventGeneral", "+ 2 days", @skautIS, @cacheStorage, @connection )
+        class: Model\EventEntity("General", "EventGeneral", @skautIS, @cacheStorage, @connection)
     campService:
-        class: Model\EventEntity( "Camp", "Camp", "+ 2 days", @skautIS, @cacheStorage, @connection )
+        class: Model\EventEntity("Camp", "Camp", @skautIS, @cacheStorage, @connection)
+    unitAccountService:
+        class: Model\EventEntity("Unit", "Unit", @skautIS, @cacheStorage, @connection)
     memberService:
-        class: Model\MemberService( @skautIS, @connection  )
+        class: Model\MemberService(@skautIS, @connection)
     unitService:
-        class: Model\UnitService( @skautIS, @connection  )
+        class: Model\UnitService(@skautIS, @connection)
     userService:
-        class: Model\UserService( @skautIS, @connection  )
+        class: Model\UserService(@skautIS, @connection)
     travelService:
-        class: Model\TravelService( NULL, @connection  )
+        class: Model\TravelService(NULL, @connection)
     exportService:
-        class: Model\ExportService(NULL, @connection )
+        class: Model\ExportService(NULL, @connection)
     excelService:
-        class: Model\ExcelService(NULL, @connection )
+        class: Model\ExcelService(NULL, @connection)
+    budgetService:
+        class: Model\BudgetService(NULL, @connection)
     skautIS:
         class: SkautIS\SkautIS
         factory: SkautIS\SkautIS::getInstance(%skautisid%, %skautisTestMode%)

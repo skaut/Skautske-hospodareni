@@ -15,7 +15,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         //adresář s částmi šablon pro použití ve více modulech
         $this->template->templateBlockDir = APP_DIR . "/templateBlocks/";
 
-        $storage = \Nette\Environment::getSession()->getSection("__" . __CLASS__);
+        $storage = $this->context->getByType('Nette\Http\Session')->getSection("__" . __CLASS__);
         $this->context->skautIS->setStorage($storage, TRUE);
         $this->template->backlink = $this->getParameter("backlink");
         $params = $this->context->getParameters();
@@ -24,6 +24,13 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
             return $container[$name] = new \Nextras\Forms\Controls\DatePicker($label);
         });
+
+        \DependentSelectBox\DependentSelectBox::register(); // First parameter of this method denotes name of method to add selectbox into form. Default name is addDependentSelectBox, but short name like addDSelect can be used.
+        //\DependentSelectBox\JsonDependentSelectBox::register();
+
+        \DependentSelectBox\JsonDependentSelectBox::register('addJSelect');
+
+
 
         try {
             if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
@@ -47,6 +54,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             }
         }
         $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
+        \DependentSelectBox\JsonDependentSelectBox::tryJsonResponse($this /* (presenter) */);
     }
 
     //změní přihlášenou roli ve skautISu
@@ -92,9 +100,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 //            'mobile.js',
             //'my-datepicker.js',
             'combobox.js',
-            'jquery.nette.js',
+            //'jquery.nette.js',
+            'nette.ajax.js',
             'netteForms.js',
             'nextras.netteForms.js',
+            'dependentselectbox.ajax.js',
+            'jquery.nette.dependentselectbox.js',
             'bootstrap.js',
 //            'nextras.typeahead.init.js',
             'jquery.fancybox.pack.js',
