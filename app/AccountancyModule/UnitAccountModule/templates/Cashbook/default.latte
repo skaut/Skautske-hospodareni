@@ -1,7 +1,5 @@
-{block #title}{$event->DisplayName} - pokladní kniha{/block}
-
 {block #content}
-<h2>{$event->DisplayName}</h2>
+<h2 n:block="title">Pokladní kniha jednotky</h2>
 {include ../ActionMenu.latte}
 
 <div class="row-fluid">

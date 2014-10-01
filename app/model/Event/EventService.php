@@ -7,43 +7,33 @@ namespace Model;
  */
 class EventService extends MutableBaseService {
 
+    protected $typeLongName;
     protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist");
 
-    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection) {
-        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection);
+    public function __construct($name, $longName, $skautIS, $cacheStorage, $connection) {
+        parent::__construct($name, $skautIS, $cacheStorage, $connection);
+        $this->typeLongName = $longName;
         /** @var EventTable */
         $this->table = new EventTable($connection);
     }
 
+    /**
+     * vrací všechny akce podle parametrů
+     * @param type $year
+     * @param type $state
+     * @return type
+     */
     public function getAll($year = NULL, $state = NULL) {
-        $year = ($year == "all") ? NULL : $year;
-        $state = ($state == "all") ? NULL : $state;
-        
-        $events = $this->skautIS->event->{"Event" . self::$typeName . "All"}(array("IsRelation" => TRUE, "ID_Event" . self::$typeName . "State" => $state, "Year" => $year));
-        if(is_array($events)){
-            usort($events, function ($a, $b) {
+        $events = $this->skautIS->event->{"Event" . $this->typeName . "All"}(array("IsRelation" => TRUE, "ID_Event" . $this->typeName . "State" => ($state == "all") ? NULL : $state, "Year" => ($year == "all") ? NULL : $year));
+        if (is_array($events)) {
+            $events = array_combine(array_map(create_function('$o', 'return $o->ID;'), $events), $events); //indexy pole nastaví na ID akcí
+            uasort($events, function ($a, $b) {
                 $at = strtotime($a->StartDate);
                 $bt = strtotime($b->StartDate);
-                return ($at == $bt) ? strcasecmp($a->DisplayName, $b->DisplayName) : ($at > $bt  ? 1 : -1);
+                return ($at == $bt) ? strcasecmp($a->DisplayName, $b->DisplayName) : ($at > $bt ? 1 : -1);
             });
         }
         return $events;
-    }
-
-    public function getLocalId($skautisEventId) {
-        $cacheId = __FUNCTION__ . $skautisEventId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->saveSes($cacheId, $this->table->getLocalId($skautisEventId, self::$type));
-        }
-        return $res;
-    }
-
-    public function getSkautisId($localEventId) {
-        $cacheId = __FUNCTION__ . $localEventId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->saveSes($cacheId, $this->table->getSkautisId($localEventId, self::$type));
-        }
-        return $res;
     }
 
     /**
@@ -56,11 +46,16 @@ class EventService extends MutableBaseService {
         try {
             $cacheId = __FUNCTION__ . $ID;
             if (!($res = $this->loadSes($cacheId))) {
-                $skautisData = (array) $this->skautIS->event->{"Event" . self::$typeName . "Detail"}(array("ID" => $ID));
-                $tableData = (array) $this->table->getByEventId($ID, self::$type);
-//                unset($tableData['skautisId']);
-                $ev = \Nette\ArrayHash::from(array_merge($skautisData, $tableData));
-                $res = $this->saveSes($cacheId, $ev);
+                $localData = (array) $this->table->getByEventId($ID, $this->type);
+                if (in_array($this->type, array(self::TYPE_GENERAL, self::TYPE_CAMP))) {
+                    $skautisData = (array) $this->skautIS->event->{"Event" . $this->typeName . "Detail"}(array("ID" => $ID));
+                } elseif ($this->type == self::TYPE_UNIT) {
+                    $skautisData = (array) $this->skautIS->org->{"UnitDetail"}(array("ID" => $ID));
+                } else {
+                    throw new \InvalidArgumentException("Neplatný typ: " . $this->typeName);
+                }
+                $data = \Nette\ArrayHash::from(array_merge($skautisData, $localData));
+                $res = $this->saveSes($cacheId, $data);
             }
             return $res;
         } catch (\SkautIS\Exception\BaseException $e) {
@@ -74,7 +69,7 @@ class EventService extends MutableBaseService {
      * @return type 
      */
     public function getFunctions($ID) {
-        return $this->skautIS->event->{"EventFunctionAll" . self::$typeName}(array("ID_Event" . self::$typeName => $ID));
+        return $this->skautIS->event->{"EventFunctionAll" . $this->typeName}(array("ID_Event" . $this->typeName => $ID));
     }
 
     /**
@@ -101,7 +96,7 @@ class EventService extends MutableBaseService {
     public function setFunction($ID_Event, $ID_Person, $ID_Function) {
         $query = $this->getPreparedFunctions($ID_Event);
         $query[self::$ID_Functions[$ID_Function]] = $ID_Person; //nova změna
-        return $this->skautIS->event->{self::$typeLongName . "UpdateFunction"}($query);
+        return $this->skautIS->event->{$this->typeLongName . "UpdateFunction"}($query);
     }
 
     /**
@@ -110,9 +105,9 @@ class EventService extends MutableBaseService {
      * @return array
      */
     public function getStates() {
-        $cacheId = __FUNCTION__ . self::$typeName;
+        $cacheId = __FUNCTION__ . $this->typeName;
         if (!($ret = $this->cache->load($cacheId))) {
-            $res = $this->skautIS->event->{"Event" . self::$typeName . "StateAll"}();
+            $res = $this->skautIS->event->{"Event" . $this->typeName . "StateAll"}();
             $ret = array();
             foreach ($res as $value) {
                 $ret[$value->ID] = $value->DisplayName;
@@ -129,7 +124,7 @@ class EventService extends MutableBaseService {
      * @return array
      */
     public function getScopes() {
-        $cacheId = __FUNCTION__ . self::$typeName;
+        $cacheId = __FUNCTION__ . $this->typeName;
         if (!($ret = $this->cache->load($cacheId))) {
             $res = $this->skautIS->event->EventGeneralScopeAll();
             $ret = array();
@@ -147,9 +142,9 @@ class EventService extends MutableBaseService {
      * @return array
      */
     public function getTypes() {
-        $cacheId = __FUNCTION__ . self::$typeName;
+        $cacheId = __FUNCTION__ . $this->typeName;
         if (!($ret = $this->cache->load($cacheId))) {
-            $res = $this->skautIS->event->{self::$typeLongName . "TypeAll"}();
+            $res = $this->skautIS->event->{$this->typeLongName . "TypeAll"}();
             $ret = array();
             foreach ($res as $value) {
                 $ret[$value->ID] = $value->DisplayName;
@@ -209,7 +204,7 @@ class EventService extends MutableBaseService {
      * @param type $data
      */
     public function updatePrefix($skautisId, $prefix) {
-        return $this->table->updatePrefix($skautisId, strtolower(self::$typeName), $prefix);
+        return $this->table->updatePrefix($skautisId, strtolower($this->typeName), $prefix);
     }
 
     /**
@@ -257,18 +252,17 @@ class EventService extends MutableBaseService {
     /**
      * zrušit akci
      * @param int $ID
+     * @param ChitService $chitService
      * @param string $msg
      * @return type 
      */
-    public function cancel($ID, $msg = NULL) {
-        $msg = $msg ? $msg : " ";
-
-        $ret = $this->skautIS->event->{"Event" . self::$typeName . "UpdateCancel"}(array(
+    public function cancel($ID, $chitService, $msg = NULL) {
+        $ret = $this->skautIS->event->{"Event" . $this->typeName . "UpdateCancel"}(array(
             "ID" => $ID,
-            "CancelDecision" => $msg
-                ), "event" . self::$typeName);
+            "CancelDecision" => !is_null($msg) ? $msg : " "
+                ), "event" . $this->typeName);
         if ($ret) {//smaže paragony
-            \Nette\Environment::getContext()->eventService->chits->deleteAll($ID);
+            $chitService->deleteAll($ID);
         }
         return $ret;
     }
@@ -279,10 +273,10 @@ class EventService extends MutableBaseService {
      * @return type 
      */
     public function open($ID) {
-        return $this->skautIS->event->{"Event" . self::$typeName . "UpdateOpen"}(
+        return $this->skautIS->event->{"Event" . $this->typeName . "UpdateOpen"}(
                         array(
                     "ID" => $ID,
-                        ), "event" . self::$typeName);
+                        ), "event" . $this->typeName);
     }
 
     /**
@@ -290,10 +284,10 @@ class EventService extends MutableBaseService {
      * @param int $ID - ID akce
      */
     public function close($ID) {
-        $this->skautIS->event->{"Event" . self::$typeName . "UpdateClose"}(
+        $this->skautIS->event->{"Event" . $this->typeName . "UpdateClose"}(
                 array(
             "ID" => $ID,
-                ), "event" . self::$typeName);
+                ), "event" . $this->typeName);
     }
 
     /**
@@ -322,7 +316,7 @@ class EventService extends MutableBaseService {
                 return FALSE;
             }
         }
-        return $arg->{"ID_Event" . self::$typeName . "State"} == "draft" ? TRUE : FALSE;
+        return $arg->{"ID_Event" . $this->typeName . "State"} == "draft" ? TRUE : FALSE;
     }
 
     /**
@@ -335,7 +329,7 @@ class EventService extends MutableBaseService {
                 array(
             "ID" => $ID,
             "IsRealTotalCostAutoComputed" => $state
-                ), "event" . self::$typeName
+                ), "event" . $this->typeName
         );
     }
 
@@ -345,7 +339,7 @@ class EventService extends MutableBaseService {
      * @param type $state
      */
     public function activateAutocomputedParticipants($ID, $state = 1) {
-        $this->skautIS->event->{"EventCampUpdateAdult"}(array("ID" => $ID, "IsRealAutoComputed" => $state), "event" . self::$typeName);
+        $this->skautIS->event->{"EventCampUpdateAdult"}(array("ID" => $ID, "IsRealAutoComputed" => $state), "event" . $this->typeName);
     }
 
     /**

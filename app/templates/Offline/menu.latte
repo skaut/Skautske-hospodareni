@@ -28,11 +28,3 @@
     </div>
 </div>
 
-{*}
-<ul class="nav nav-pills">
-    <li {ifCurrent Event: $aid}class='active'{/ifCurrent}><a n:href="Event: $aid" class="ajaxA">Základní údaje</a></li>
-    <li {ifCurrent Participant:default $aid}class='active'{/ifCurrent}><a n:href="Participant:default $aid" class="ajaxA">Účastníci</a></li>
-    <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}><a n:href="Cashbook:default $aid" class="ajaxA">Pokladní kniha</a></li>
-</ul>
-{*}
-

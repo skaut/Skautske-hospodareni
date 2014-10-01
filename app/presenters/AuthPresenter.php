@@ -14,7 +14,7 @@ class AuthPresenter extends BasePresenter {
      * @param string $backlink 
      */
     public function actionDefault($backlink) {
-        if (\Nette\Environment::getUser()->isLoggedIn()) {
+        if ($this->user->isLoggedIn()) {
             if ($backlink) {
                 $this->restoreRequest($backlink);
             }
