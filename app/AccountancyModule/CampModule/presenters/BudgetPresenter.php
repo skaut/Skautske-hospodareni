@@ -19,8 +19,8 @@ class BudgetPresenter extends BasePresenter {
         $toRepair = array();
         $this->template->isConsistent = $this->context->campService->chits->isConsistent($aid, false, $toRepair);
         $this->template->toRepair = $toRepair;
-        $this->template->dataEstimate = $this->context->campService->chits->getCategoriesCamp($aid, true);
-        $this->template->dataReal = $this->context->campService->chits->getCategoriesCamp($aid, false);
+        $this->template->dataEstimate = $this->context->campService->chits->getCategories($aid, true);
+        $this->template->dataReal = $this->context->campService->chits->getCategories($aid, false);
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }

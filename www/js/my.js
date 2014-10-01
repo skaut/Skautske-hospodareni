@@ -1,4 +1,7 @@
-$(document).ready(function() {    
+$(document).ready(function () {
+
+    $.nette.init();
+
     //Combobox
     $(".combobox").combobox(); //nejde předávat parametry
 
@@ -11,17 +14,17 @@ $(document).ready(function() {
     }
 
     // odeslání na formulářích
-    $("form.ajax").submit(function() {
+    $("form.ajax").submit(function () {
         $(this).ajaxSubmit();
         return false;
     });
 
     // odeslání pomocí tlačítek
-    $("form.ajax :submit").click(function() {
+    $("form.ajax :submit").click(function () {
         $(this).ajaxSubmit();
         return false;
     });
-    
+
 });
 
 function jqCheckAll(id, name) {
@@ -33,10 +36,10 @@ function jqCheckAll(id, name) {
  * dependentButtonClass - zavislé prvky mají třídu
  */
 function onlyWithCheckbox(checkboxNameStart, dependentButtonClass) {
-    $("input[name^=" + checkboxNameStart + "]").change(function() {
+    $("input[name^=" + checkboxNameStart + "]").change(function () {
         var isSomeChecked = false;
 
-        $("input[name^=" + checkboxNameStart + "]").each(function() {
+        $("input[name^=" + checkboxNameStart + "]").each(function () {
             if (this.checked) {
                 isSomeChecked = true;
                 return false;//konec cyklu

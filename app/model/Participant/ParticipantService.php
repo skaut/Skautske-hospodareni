@@ -8,8 +8,8 @@ namespace Model;
  */
 class ParticipantService extends MutableBaseService {
 
-    public function __construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection) {
-        parent::__construct($name, $longName, $expire, $skautIS, $cacheStorage, $connection);
+    public function __construct($name, $skautIS, $cacheStorage, $connection) {
+        parent::__construct($name, $skautIS, $cacheStorage, $connection);
         /** @var ParticipantTable */
         $this->table = new ParticipantTable($connection);
     }
@@ -30,7 +30,7 @@ class ParticipantService extends MutableBaseService {
         //$this->enableDaysAutocount($ID);
         $cacheId = __FUNCTION__ . $ID;
         if (!($res = $this->loadSes($cacheId))) {
-            $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "All"}(array("ID_Event" . self::$typeName => $ID));
+            $tmp = $this->skautIS->event->{"Participant" . $this->typeName . "All"}(array("ID_Event" . $this->typeName => $ID));
             $res = array();
             foreach ($tmp as $p) {//objekt má vzdy Note a je pod associativnim klicem
                 $p->payment = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
@@ -45,7 +45,7 @@ class ParticipantService extends MutableBaseService {
     }
 
     public function get($participantId) {
-        $tmp = $this->skautIS->event->{"Participant" . self::$typeName . "Detail"}(array("ID" => $participantId));
+        $tmp = $this->skautIS->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $participantId));
         $data = $this->table->get($participantId);
         if ($data === FALSE) {//u akcí to v tabulce nic nenajde
             $data = array("payment" => (int) @$tmp->{self::PAYMENT}, 'participantId'=>$tmp->ID);
@@ -94,8 +94,8 @@ class ParticipantService extends MutableBaseService {
      * @return type
      */
     public function add($ID, $participantId) {
-        return $this->skautIS->event->{"Participant" . self::$typeName . "Insert"}(array(
-                    "ID_Event" . self::$typeName => $ID,
+        return $this->skautIS->event->{"Participant" . $this->typeName . "Insert"}(array(
+                    "ID_Event" . $this->typeName => $ID,
                     "ID_Person" => $participantId,
         ));
     }
@@ -107,8 +107,8 @@ class ParticipantService extends MutableBaseService {
      * @return type
      */
     public function addNew($ID, $person) {
-        $newPaerticipantArr = $this->skautIS->event->{"Participant" . self::$typeName . "Insert"}(array(
-            "ID_Event" . self::$typeName => $ID,
+        $newPaerticipantArr = $this->skautIS->event->{"Participant" . $this->typeName . "Insert"}(array(
+            "ID_Event" . $this->typeName => $ID,
             "Person" => array(
                 "FirstName" => $person['firstName'],
                 "LastName" => $person['lastName'],
@@ -146,14 +146,14 @@ class ParticipantService extends MutableBaseService {
      * @param array $arr pole hodnot (payment, days, [repayment], [isAccount])
      */
     public function update($participantId, array $arr) {
-        if (self::$typeName == "Camp") {
+        if ($this->typeName == "Camp") {
             if (isset($arr['days'])) {
                 $sisData = array(
                     'ID' => $participantId,
                     'Real' => TRUE,
                     'Days' => $arr['days'],
                 );
-                $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sisData, "participant" . self::$typeName);
+                $this->skautIS->event->{"Participant" . $this->typeName . "Update"}($sisData, "participant" . $this->typeName);
             }
             $keys = array("actionId", "payment", "repayment", "isAccount");
             $dataUpdate = array();
@@ -174,7 +174,7 @@ class ParticipantService extends MutableBaseService {
                 'Days' => $arr['days'],
                 self::PAYMENT => $arr['payment'],
             );
-            $this->skautIS->event->{"Participant" . self::$typeName . "Update"}($sisData, "participant" . self::$typeName);
+            $this->skautIS->event->{"Participant" . $this->typeName . "Update"}($sisData, "participant" . $this->typeName);
         }
     }
 
@@ -185,7 +185,7 @@ class ParticipantService extends MutableBaseService {
      */
     public function removeParticipant($participantId) {
         $this->table->deleteDetail($participantId);
-        return $this->skautIS->event->{"Participant" . self::$typeName . "Delete"}(array("ID" => $participantId, "DeletePerson" => false));
+        return $this->skautIS->event->{"Participant" . $this->typeName . "Delete"}(array("ID" => $participantId, "DeletePerson" => false));
     }
 
     public function getAllPersonDetail($ID, $participants = NULL) {
@@ -195,7 +195,7 @@ class ParticipantService extends MutableBaseService {
         $res = array();
         foreach ($participants as $k => $par) {
             try {
-//                $res[$k] = array_merge((array)$par, (array)$this->skautIS->event->{"Participant" . self::$typeName . "Detail"}(array("ID" => $par->ID)));
+//                $res[$k] = array_merge((array)$par, (array)$this->skautIS->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $par->ID)));
                 $res[$k] = array_merge((array) $par, (array) $this->skautIS->org->PersonDetail(array("ID" => $par->ID_Person)));
             } catch (\SkautIS\Exception\WsdlException $exc) {
                 $res[$k] = (array) $par;

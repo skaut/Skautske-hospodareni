@@ -64,13 +64,13 @@ class OfflinePresenter extends BasePresenter {
 //        if($this->user->isLoggedIn()){
 //            $this->template->autoCompleter = $this->context->memberService->getAC();
 //        }
-        $this['formOut']['category']->setItems($this->context->eventService->chits->getCategoriesOut());
+        $this['formOut']['category']->setItems($this->context->eventService->chits->getCategoriesPairs('out'));
         $this->template->setFile(dirname(__FILE__) . '/../templates/Offline/form.latte');
         $this->template->form = $this['formOut'];
     }
 
     function actionIn() {
-        $this['formIn']['category']->setItems($this->context->eventService->chits->getCategoriesIn());
+        $this['formIn']['category']->setItems($this->context->eventService->chits->getCategoriesPairs('in'));
         $this->template->setFile(dirname(__FILE__) . '/../templates/Offline/form.latte');
         $this->template->form = $this['formIn'];
     }

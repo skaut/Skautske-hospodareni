@@ -105,12 +105,12 @@ jQuery(function($) {
 //		});
 	});
 	
-    //zobrazi pak i spravne adresu
-    $(document).on('click', 'a.ajaxA', function(event) {
-//	$('a.ajaxA').live('click', function(event) {
-		event.preventDefault();
-		if ($.active) return;
-		$.post($.nette.href = this.href, $.nette.success);
-	});
+//    //zobrazi pak i spravne adresu
+//    $(document).on('click', 'a.ajaxA', function(event) {
+////	$('a.ajaxA').live('click', function(event) {
+//		event.preventDefault();
+//		if ($.active) return;
+//		$.post($.nette.href = this.href, $.nette.success);
+//	});
 
 });
