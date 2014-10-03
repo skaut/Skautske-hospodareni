@@ -58,7 +58,7 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Event:");
         }
 
-        $participants = $this->context->eventService->participants->getAll($this->aid, $cache = FALSE);
+        $participants = $this->context->eventService->participants->getAll($this->aid);
         $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
 //        usort($participants, function($a, $b) {/* setrizeni podle abecedy */
