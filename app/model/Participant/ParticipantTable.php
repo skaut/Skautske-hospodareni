@@ -13,11 +13,12 @@ class ParticipantTable extends BaseTable {
 
     /**
      * seznam všech záznamů k dané akci
-     * @param type $actionId
+     * @param type $skautiEventId
      * @return type
      */
-    public function getAll($actionId) {
-        return $this->connection->fetchAll("SELECT participantId, payment, repayment, isAccount FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE actionId=%i", $actionId);
+    public function getAllCampDetails($skautiEventId) {
+        return $this->connection->query("SELECT participantId, payment, repayment, isAccount FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE actionId=%i", $skautiEventId)
+            ->fetchAssoc("participantId");
     }
 
     /**
