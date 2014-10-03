@@ -34,11 +34,11 @@ class ExportService extends BaseService {
         if ($type == "camp") {
             //$template = $this->getTemplate(dirname(__FILE__) . '/templates/participantCamp.latte');
             $this->setTemplate($template, dirname(__FILE__) . '/templates/participantCamp.latte');
-            $template->list = $service->participants->getAllPersonDetail($aid, $service->participants->getAllWithDetails($aid));
+            $template->list = $service->participants->getAll($aid);
         } else {
             //$template = $this->getTemplate(dirname(__FILE__) . '/templates/participant.latte');
             $this->setTemplate($template, dirname(__FILE__) . '/templates/participant.latte');
-            $template->list = $service->participants->getAllPersonDetail($aid, $service->participants->getAll($aid));
+            $template->list = $service->participants->getAll($aid);
         }
         $template->info = $service->event->get($aid);
         return $template;

@@ -51,7 +51,7 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
 
-        $participants = $this->context->campService->participants->getAllWithDetails($this->aid);
+        $participants = $this->context->campService->participants->getAll($this->aid);
         $unit = $this->context->unitService->getDetail($this->uid);
         $this->template->list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
@@ -98,8 +98,6 @@ class ParticipantPresenter extends BasePresenter {
         }
         $data = array("actionId" => $aid);
         $sisdata = (array) $this->context->campService->participants->get($id);
-        $participantId = $sisdata['participantId'];
-        //unset($data['participantId']);
         switch ($field) {
             case "days":
             case "payment":
@@ -112,7 +110,7 @@ class ParticipantPresenter extends BasePresenter {
                 $this->terminate();
                 break;
         }
-        $this->context->campService->participants->update($participantId, $data);
+        $this->context->campService->participants->update($sisdata['ID'], $data);
 
         $this->payload->message = 'Success';
 //        $this->sendResponse(new \Nette\Http\Response());

@@ -19,73 +19,81 @@ class ParticipantService extends MutableBaseService {
      */
     const PAYMENT = "Note";
 
-    /**
-     * vrací seznam účastníků
-     * používá lokální úložiště
-     * @param type $ID
-     * @param bool $cache
-     * @return array 
-     */
-    public function getAll($ID, $cache = TRUE) {
-        //$this->enableDaysAutocount($ID);
-        $cacheId = __FUNCTION__ . $ID;
-        if (!($res = $this->loadSes($cacheId))) {
-            $tmp = $this->skautIS->event->{"Participant" . $this->typeName . "All"}(array("ID_Event" . $this->typeName => $ID));
-            $res = array();
-            foreach ($tmp as $p) {//objekt má vzdy Note a je pod associativnim klicem
-                $p->payment = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
-                $res[$p->ID] = $p;
-            }
-            $this->saveSes($cacheId, $res);
-        }
-        if (!is_array($res)) {//pokud je prázdná třída stdClass
-            return array();
-        }
-        return $res;
-    }
-
     public function get($participantId) {
-        $tmp = $this->skautIS->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $participantId));
-        $data = $this->table->get($participantId);
-        if ($data === FALSE) {//u akcí to v tabulce nic nenajde
-            $data = array("payment" => (int) @$tmp->{self::PAYMENT}, 'participantId'=>$tmp->ID);
+        $data = (array) $this->skautIS->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $participantId));
+        $detail = $this->table->get($participantId);
+        if ($detail === FALSE) {//u akcí to v tabulce nic nenajde
+            $data->payment = isset($data->{self::PAYMENT}) ? (int) $data->{self::PAYMENT} : 0;
         }
-        $data['days'] = (int) $tmp->Days;
+        $this->setPersonName($data);
+        $data->days = (int) $data->Days;
         return $data;
     }
 
     /**
-     * vrací další informace o účastníkovi
-     * @param type $ID tábora
-     * @return type
+     * vrací seznam účastníků
+     * používá lokální úložiště
+     * @param type $ID
+     * @return array 
      */
-    public function getAllWithDetails($ID) {
-        $participants = $this->getAll($ID);
-        $details = $this->table->getAll($ID);
-
-        foreach ($details as $d) {
-            if (array_key_exists($d->participantId, $participants)) {
-                $participants[$d->participantId]->payment = $d->payment;
-                $participants[$d->participantId]->repayment = $d->repayment;
-                $participants[$d->participantId]->isAccount = $d->isAccount;
-            } else {
-                $this->table->deleteDetail($d->participantId); //delete zaznam, protoze neexistuje k nemu ucastnik
+    public function getAll($ID) {
+        //$this->enableDaysAutocount($ID);
+        $cacheId = __FUNCTION__ . $ID;
+        if (!($participants = $this->loadSes($cacheId))) {
+            $participants = $this->skautIS->event->{"Participant" . $this->typeName . "All"}(array("ID_Event" . $this->typeName => $ID));
+            $campDetails = $this->type == "camp" ? $this->table->getAllCampDetails($ID) : array();
+            if ($this->type == "camp") {
+                foreach (array_diff(array_keys($campDetails), array_map(create_function('$o', 'return $o->ID;'), $participants)) as $idForDelete) {
+                    $this->table->deleteDetail($idForDelete); //delete zaznam, protoze neexistuje k nemu ucastnik
+                }
             }
+
+            foreach ($participants as $p) {//objekt má vzdy Note a je pod associativnim klicem
+                $p->payment = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
+                $p->isAccount = array_key_exists($p->ID, $campDetails) ? $campDetails[$p->ID]->isAccount : null;
+                $p->repayment = array_key_exists($p->ID, $campDetails) ? $campDetails[$p->ID]->repayment : null;
+                $this->setPersonName($p);
+            }
+            $this->saveSes($cacheId, $participants);
         }
-
-        foreach ($participants as $pid => $p) {
-            if (!isset($participants[$pid]->isAccount)) {
-                $participants[$pid]->isAccount = null;
-            }
-            if (!isset($participants[$pid]->payment)) {
-                $participants[$pid]->payment = null;
-            }
-            if (!isset($participants[$pid]->repayment)) {
-                $participants[$pid]->repayment = null;
-            }
+        if (!is_array($participants)) {//pokud je prázdná třída stdClass
+            return array();
         }
         return $participants;
     }
+
+//    /**
+//     * vrací další informace o účastníkovi
+//     * @param type $ID tábora
+//     * @return type
+//     */
+//    public function getAllWithDetails($ID) {
+//        $participants = $this->getAll($ID);
+//        $details = $this->table->getAllCampDetails($ID);
+//
+//        foreach ($details as $d) {
+//            if (array_key_exists($d->participantId, $participants)) {
+//                $participants[$d->participantId]->payment = $d->payment;
+//                $participants[$d->participantId]->repayment = $d->repayment;
+//                $participants[$d->participantId]->isAccount = $d->isAccount;
+//            } else {
+//                $this->table->deleteDetail($d->participantId); //delete zaznam, protoze neexistuje k nemu ucastnik
+//            }
+//        }
+//
+//        foreach ($participants as $pid => $p) {
+//            if (!isset($participants[$pid]->isAccount)) {
+//                $participants[$pid]->isAccount = null;
+//            }
+//            if (!isset($participants[$pid]->payment)) {
+//                $participants[$pid]->payment = null;
+//            }
+//            if (!isset($participants[$pid]->repayment)) {
+//                $participants[$pid]->repayment = null;
+//            }
+//        }
+//        return $participants;
+//    }
 
     /**
      * přidat účastníka k akci
@@ -117,7 +125,6 @@ class ParticipantService extends MutableBaseService {
 //                        "Note" => $person['note'], //poznámka osoby, ne účastníka
             ),
         ));
-
         $this->personUpdate($newPaerticipantArr->ID_Person, $person);
     }
 
@@ -127,7 +134,7 @@ class ParticipantService extends MutableBaseService {
      * @param type $data
      */
     public function personUpdate($pid, $data) {
-        $data = array(
+        $this->skautIS->org->PersonUpdateBasic(array(
             "ID" => $pid,
             "FirstName" => isset($data['firstName']) ? $data['firstName'] : null,
             "LastName" => isset($data['lastName']) ? $data['lastName'] : null,
@@ -136,8 +143,7 @@ class ParticipantService extends MutableBaseService {
             "Street" => isset($data['street']) ? $data['street'] : null,
             "City" => isset($data['city']) ? $data['city'] : null,
             "Postcode" => isset($data['postcode']) ? $data['postcode'] : null,
-        );
-        $this->skautIS->org->PersonUpdate($data, "person");
+                ));
     }
 
     /**
@@ -188,21 +194,17 @@ class ParticipantService extends MutableBaseService {
         return $this->skautIS->event->{"Participant" . $this->typeName . "Delete"}(array("ID" => $participantId, "DeletePerson" => false));
     }
 
-    public function getAllPersonDetail($ID, $participants = NULL) {
-        if ($participants == NULL) {
-            $participants = $this->getAll($ID);
-        }
-        $res = array();
-        foreach ($participants as $k => $par) {
-            try {
-//                $res[$k] = array_merge((array)$par, (array)$this->skautIS->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $par->ID)));
-                $res[$k] = array_merge((array) $par, (array) $this->skautIS->org->PersonDetail(array("ID" => $par->ID_Person)));
-            } catch (\SkautIS\Exception\WsdlException $exc) {
-                $res[$k] = (array) $par;
-            }
-        }
-        return \Nette\ArrayHash::from($res);
-    }
+//    public function getAllPersonDetail($ID) {
+//        $participants = $this->getAll($ID);
+//        foreach ($participants as $k => $par) {
+//            try {
+//                $participants[$k] = array_merge((array) $par + $this->get($par->ID));
+//            } catch (\SkautIS\Exception\WsdlException $exc) {
+//                $participants[$k] = (array) $par;
+//            }
+//        }
+//        return ArrayHash::from($participants);
+//    }
 
     /**
      * celkově vybraná částka
@@ -217,7 +219,7 @@ class ParticipantService extends MutableBaseService {
 
     public function getCampTotalPayment($campId, $category, $isAccount) {
         $res = 0;
-        foreach ($this->getAllWithDetails($campId) as $p) {
+        foreach ($this->getAll($campId) as $p) {
             //pokud se alespon v jednom neshodují, tak pokracujte
             if (($category == "adult" xor preg_match("/^Dospěl/", $p->Category)) ||
                     ($isAccount == "Y" xor $p->isAccount == "Y")) {
@@ -238,26 +240,30 @@ class ParticipantService extends MutableBaseService {
             return $res += $v->Days;
         });
     }
-    
-    public function getEventStatistic($eventId){
-        $data = array();
-        foreach ($this->skautIS->event->{"EventStatisticAllEventGeneral"}(array("ID_EventGeneral" => $eventId)) as $item){
-            $data[$item->ID_ParticipantCategory] = $item;
-        }
-        return $data;
+
+    public function getEventStatistic($eventId) {
+        $skautisData = $this->skautIS->event->{"EventStatisticAllEventGeneral"}(array("ID_EventGeneral" => $eventId));
+        return array_combine(array_map(create_function('$o', 'return $o->ID_ParticipantCategory;'), $skautisData), $skautisData);
     }
-    
-    public function activateEventStatistic($eventId){
-        return $this->skautIS->event->{"EventGeneralUpdateStatisticAutoComputed"}(array("ID" => $eventId, "IsStatisticAutoComputed"=>TRUE), "eventGeneral");
+
+    public function activateEventStatistic($eventId) {
+        return $this->skautIS->event->{"EventGeneralUpdateStatisticAutoComputed"}(array("ID" => $eventId, "IsStatisticAutoComputed" => TRUE), "eventGeneral");
     }
-    
-    public function getPotencialCampParticipants($eventId){
+
+    public function getPotencialCampParticipants($eventId) {
         $res = array();
-        foreach ($this->skautIS->org->{"PersonAllEventCampMulti"}(array("ID_EventCamp" => $eventId)) as $p){
+        foreach ($this->skautIS->org->{"PersonAllEventCampMulti"}(array("ID_EventCamp" => $eventId)) as $p) {
             $res[$p->ID] = $p->DisplayName;
         }
         natcasesort($res);
         return $res;
+    }
+
+    protected function setPersonName(&$person) {
+        preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $person->Person, $matches);
+        $person->LastName = $matches['last'];
+        $person->FirstName = $matches['first'];
+        $person->NickName = isset($matches['nick']) ? $matches['nick'] : null;
     }
 
 }
