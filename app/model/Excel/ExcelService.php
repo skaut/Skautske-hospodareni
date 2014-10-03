@@ -22,10 +22,10 @@ class ExcelService extends BaseService {
         $objPHPExcel = $this->getNewFile();
 
         if ($type == "camp") {
-            $data = $service->participants->getAllPersonDetail($event->ID, $service->participants->getAllWithDetails($event->ID));
+            $data = $service->participants->getAll($event->ID);
             $this->setSheetParticipantCamp($objPHPExcel->getActiveSheet(), $data);
         } else {//GENERAL EVENT
-            $data = $service->participants->getAllPersonDetail($event->ID, $service->participants->getAll($event->ID));
+            $data = $service->participants->getAll($event->ID);
             $this->setSheetParticipantGeneral($objPHPExcel->getActiveSheet(), $data, $event);
         }
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-" . date("Y_n_j"));
