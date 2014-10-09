@@ -67,16 +67,17 @@
         </div>
     </div>
     <div class="row-fluid">
-        {if is_array($list)}
+        {if !empty($list)}
             {form formExportSummary}
                 <table class="myTable table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th n:if="reset($list)->accessDelete" class="hidden-phone">&nbsp;</th>
-                            <th>Název</th>
-                            <th>Od</th>
-                            <th>Do</th>
-                            <th>Stav</th>
+                            <th n:if="reset($list)['accessDelete']" class="hidden-phone">&nbsp;</th>
+                            <th><a n:href="this name" n:tag-if="$sort != 'name'">Název</a></th>
+                            <th><a n:href="this start" n:tag-if="$sort != 'start'">Od</a></th>
+                            <th><a n:href="this end" n:tag-if="$sort != 'end'">Do</a></th>
+                            <th><a n:href="this prefix" n:tag-if="$sort != 'prefix'">Prefix</a></th>
+                            <th><a n:href="this state" n:tag-if="$sort != 'state'">Stav</a></th>
                             <th class="hidden-phone">
                                 {input send class=>"btn btn-info btn-small selDependend"}
                                 <input type="checkbox" id="sel-all" name="sel" onclick="jqCheckAll(this.id, 'sel')" />
@@ -86,18 +87,19 @@
                     </thead>
                     <tbody>
                         <tr n:foreach="$list as $i">
-                            <td class="hidden-phone">{if $i->accessDelete}<a n:href="cancel! $i->ID" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
+                            <td class="hidden-phone">{if $i['accessDelete']}<a n:href="cancel! $i['ID']" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
                             <td>
-                                <a n:tag-if="$i->accessDetail" n:href="Event: $i->ID">{$i->DisplayName}</a>
+                                <a n:tag-if="$i['accessDetail']" n:href="Event: $i['ID']">{$i['DisplayName']}</a>
                             </td>
-                            <td>{$i->StartDate|date:"j.n.Y"}</td>
-                            <td>{$i->EndDate|date:"j.n.Y"}</td>
-                            <td>{!$i->ID_EventGeneralState|eventStateLabel}</td>
-                            <td n:inner-if="$i->accessDetail" class="hidden-phone">
-                                <a n:href="Event:  $i->ID" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
-                                <a n:href="Participant: $i->ID" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
-                                <a n:href="Cashbook: $i->ID" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>
-                                <input type='checkbox' name='sel[]' value='{$i->ID}'/>
+                            <td>{$i['StartDate']|date:"j.n.Y"}</td>
+                            <td>{$i['EndDate']|date:"j.n.Y"}</td>
+                            <td>{$i['prefix']}</td>
+                            <td>{!$i['ID_EventGeneralState']|eventStateLabel}</td>
+                            <td n:inner-if="$i['accessDetail']" class="hidden-phone">
+                                <a n:href="Event:  $i['ID']" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
+                                <a n:href="Participant: $i['ID']" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
+                                <a n:href="Cashbook: $i['ID']" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>
+                                <input type='checkbox' name='sel[]' value='{$i['ID']}'/>
                             </td>
                         </tr>
                     </tbody>
