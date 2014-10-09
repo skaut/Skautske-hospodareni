@@ -25,18 +25,19 @@ class DefaultPresenter extends BasePresenter {
         }
     }
 
-    public function renderDefault() {
+    public function renderDefault($sort = 'start') {
         //filtrovani zobrazených položek
         $year = isset($this->ses->year) ? $this->ses->year : date("Y");
         $state = isset($this->ses->state) ? $this->ses->state : NULL;
 
         $list = $this->context->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $localAvaibleActions = $this->context->userService->actionVerify(self::STable, $value->ID);
-            $value->accessDelete = $this->isAllowed("EV_EventGeneral_DELETE", $localAvaibleActions);
-            $value->accessDetail = $this->isAllowed("EV_EventGeneral_DETAIL", $localAvaibleActions);
-            $list[$key] = $value;
+            $localAvaibleActions = $this->context->userService->actionVerify(self::STable, $value['ID']);
+            $list[$key]['accessDelete'] = $this->isAllowed("EV_EventGeneral_DELETE", $localAvaibleActions);
+            $list[$key]['accessDetail'] = $this->isAllowed("EV_EventGeneral_DETAIL", $localAvaibleActions);
         }
+        $this->sortEvents($list, $sort);
+
         $this->template->list = $list;
         if ($year) {
             $this['formFilter']['year']->setDefaultValue($year);
@@ -46,6 +47,43 @@ class DefaultPresenter extends BasePresenter {
         }
 
         $this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
+        $this->template->sort = $sort;
+    }
+
+    protected function sortEvents(&$list, $param) {
+        switch ($param) {
+            case 'name':
+                $fnc = function ($a, $b) {
+                    return strcasecmp($a['DisplayName'], $b['DisplayName']);
+                };
+                break;
+            case 'end':
+                $fnc = function ($a, $b) {
+                    return strtotime($a['EndDate']) > strtotime($b['EndDate']);
+                };
+                break;
+            case 'prefix':
+                $fnc = function ($a, $b) {
+                    return strcasecmp($a['prefix'], $b['prefix']);
+                };
+                break;
+            case 'state':
+                $fnc = function ($a, $b) {
+                    return strcasecmp($a['ID_EventGeneralState'], $b['ID_EventGeneralState']);
+                };
+                break;
+            default:
+                $fnc = function ($a, $b) {
+                    return strtotime($a['StartDate']) > strtotime($b['StartDate']);
+                }; 
+        }
+        uasort($list, $fnc
+//                function ($a, $b) use ($fnc) {
+//            $at = strtotime($a[$sortParam]);
+//            $bt = strtotime($b[$sortParam]);
+//            return ($at == $bt) ? strcasecmp($a['DisplayName'], $b['DisplayName']) : ($fnc ? 1 : -1);
+//        }
+        );
     }
 
     /**
