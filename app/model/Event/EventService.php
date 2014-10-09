@@ -3,7 +3,7 @@
 namespace Model;
 
 /**
- * @author Hána František <sinacek@gmail.com>
+ * @author Hána František
  */
 class EventService extends MutableBaseService {
 
@@ -25,15 +25,13 @@ class EventService extends MutableBaseService {
      */
     public function getAll($year = NULL, $state = NULL) {
         $events = $this->skautIS->event->{"Event" . $this->typeName . "All"}(array("IsRelation" => TRUE, "ID_Event" . $this->typeName . "State" => ($state == "all") ? NULL : $state, "Year" => ($year == "all") ? NULL : $year));
+        $ret = array();
         if (is_array($events)) {
-            $events = array_combine(array_map(create_function('$o', 'return $o->ID;'), $events), $events); //indexy pole nastaví na ID akcí
-            uasort($events, function ($a, $b) {
-                $at = strtotime($a->StartDate);
-                $bt = strtotime($b->StartDate);
-                return ($at == $bt) ? strcasecmp($a->DisplayName, $b->DisplayName) : ($at > $bt ? 1 : -1);
-            });
+            foreach ($events as $e) {
+                $ret[$e->ID] = (array)$e + (array) $this->table->getByEventId($e->ID, $this->type);
+            }
         }
-        return $events;
+        return $ret;
     }
 
     /**
