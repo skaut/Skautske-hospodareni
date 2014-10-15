@@ -28,10 +28,10 @@ abstract class AccountancyHelpers extends Object {
      */
 
     public static function eventStateLabel($s) {
-        if ($s == "draft")
+        if ($s == "draft") {
             return '<span class="label label-warning hidden-phone">Rozpracováno</span>'
                     . '<span class="label label-warning visible-phone">Rozprac.</span>';
-        elseif ($s == "closed") {
+        } elseif ($s == "closed") {
             return '<span class="label label-success">Uzavřeno</span>';
         } else {
             return '<span class="label label-inverse">Zrušeno</span>';
@@ -55,7 +55,6 @@ abstract class AccountancyHelpers extends Object {
                 return '<span class="label label-success">Skutečnost odevzdána</span>';
             default:
                 return '<span class="label label-inverse">Zrušený</span>';
-                break;
         }
     }
 
@@ -71,7 +70,6 @@ abstract class AccountancyHelpers extends Object {
                         . '<span class="label label-warning visible-phone">Rozpr.</span>';
             default :
                 return '<span class="label label-success" title="Uzavřeno dne: ' . $s->format("j.n.Y H:i:s") . '">Uzavřený</span>';
-                break;
         }
     }
 
@@ -82,10 +80,12 @@ abstract class AccountancyHelpers extends Object {
      * @return int 
      */
     public static function price($price, $full = true) {
-        if ($price == NULL)
+        if ($price == NULL) {
             return 0;
-        if ($price == "&nbsp;")
+        }
+        if ($price == "&nbsp;") {
             return $price;
+        }
         $decimals = $full ? 2 : 0;
         //if (stripos($price, "."))
         return number_format((float) $price, $decimals, ",", " ");
@@ -94,8 +94,9 @@ abstract class AccountancyHelpers extends Object {
 
     public static function postCode($oldPsc) {
         $psc = preg_replace("[^0-9]", "", $oldPsc);
-        if (strlen($psc) == 5)
+        if (strlen($psc) == 5) {
             return substr($psc, 0, 3) . " " . substr($psc, -2);
+        }
         return $oldPsc;
 //        number_format($psc, 0, "", " ");
     }
@@ -135,8 +136,9 @@ abstract class AccountancyHelpers extends Object {
         $parts = explode(".", $price, 2); //0-pred 1-za desitou čárkou
         $numbers = array_reverse(str_split($parts[0]));
 
-        if (count($numbers) > 6)
+        if (count($numbers) > 6) {
             return "PŘÍLIŠ VYSOKÉ ČÍSLO";
+        }
 
         for ($i = count($numbers); $i < 6; ++$i) { //doplnění nezaplněných řádu
             $numbers[$i] = 0;
@@ -160,10 +162,11 @@ abstract class AccountancyHelpers extends Object {
 
         //desitky a jednotky
         $nDesitky = (int) ($numbers[1] . $numbers[0]);
-        if ($nDesitky < 20)
+        if ($nDesitky < 20) {
             $string .= $_jednotky[$nDesitky];
-        else
+        } else {
             $string .= $_desitky[$numbers[1]] . $_jednotky[$numbers[0]];
+        }
 
 //         //desetinná část
 //        if (isset($parts[1])) {
@@ -173,6 +176,23 @@ abstract class AccountancyHelpers extends Object {
 //        }
 //        return ucfirst($string);
         return mb_convert_case(mb_substr($string, 0, 1), MB_CASE_UPPER, "UTF-8") . mb_substr($string, 1);
+    }
+
+    public static function yesno($s) {
+        return $s == 1 ? "Ano" : "Ne";
+    }
+
+    public static function groupState($s) {
+        switch ($s) {
+            case 'open':
+                return '<span class="label label-success">Otevřená</span>';
+            case 'closed':
+                return '<span class="label label-warning">Uzavřená</span>';
+            case 'canceled':
+                return '<span class="label label-inverse">Zrušená</span>';
+            default:
+                return '<span class="label">Neznámý</span>';
+        }
     }
 
 }

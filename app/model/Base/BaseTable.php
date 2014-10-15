@@ -18,6 +18,10 @@ class BaseTable {
     const TABLE_TC_COMMANDS = 'tc_commands';
     const TABLE_TC_TRAVELS = 'tc_travels';
     const TABLE_TC_VEHICLE = 'tc_vehicle';
+    const TABLE_PA_GROUP = 'pa_group';
+    const TABLE_PA_GROUP_STATE = 'pa_group_state';
+    const TABLE_PA_PAYMENT = 'pa_payment';
+    const TABLE_PA_PAYMENT_STATE = 'pa_payment_state';
 
     /**
      *

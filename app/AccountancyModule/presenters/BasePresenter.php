@@ -79,6 +79,7 @@ class BasePresenter extends \App\BasePresenter {
         $router[] = EventModule\BasePresenter::createRoutes();
         $router[] = TravelModule\BasePresenter::createRoutes();
         $router[] = UnitAccountModule\BasePresenter::createRoutes();
+        $router[] = PaymentModule\BasePresenter::createRoutes();
 
         $router[] = new MyRoute($prefix . '<module>/<presenter>[/<action>]', array(
             'module' => "Accountancy",

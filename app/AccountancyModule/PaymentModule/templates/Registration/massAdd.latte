@@ -1,0 +1,46 @@
+{block #content}
+<h2 n:block="title">Členové v registraci bez založené platby</h2>
+{include ../ActionMenu.latte}
+{dump $list}
+{dump $detail}
+
+<a n:href="Payment:detail $detail->id" class="btn btn-primary"><i class="icon icon-white icon-chevron-left"></i> Zpět na detail skupiny plateb</a>
+{if !empty($list)}
+    {form registrationForm}
+        <ul class="errors" n:if="$form->hasErrors()">
+            <li n:foreach="$form->errors as $error">{$error}</li>
+        </ul>
+        {foreach $list as $uId => $u}
+            <h3>{= reset($u)['Unit']}</h3>
+            <table class="table table-bordered table-striped table-condensed">
+                <tr>
+                    <th><input type="checkbox" id='reg-all-{$uId}' onclick="jqCheckAll(this.id, '{$uId}')"/></th>
+                    <th>Jméno</th>
+                    <th>Email</th>
+                    <th>Částka</th>
+                    <th>Splatnost</th>
+                    <th>VS</th>
+                    <th>KS</th>
+                    <th>Poznámka</th>
+                    <th>STS</th>
+                </tr>
+                <tr n:foreach="$u as $p">
+                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_check'}</td>
+                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_name'}</td>
+                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_email'}</td>
+                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_amount'}</td>
+                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_maturity'}</td>
+                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_vs'}</td>
+                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_ks'}</td>
+                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_note'}</td>
+                    <td>{if $p['AmountServices'] > 0}{$p['AmountServices']/250}x{/if}</td>
+                </tr>
+            </table>
+        {/foreach}
+        {input send}
+    {/form}
+{else}
+    <p class="well">Nejsou žádné registrované osoby, které by neměli založenou platbu</p>
+{/if}
+
+
