@@ -1,0 +1,39 @@
+{block #content}
+<h2 n:block="title">{$nadpis}</h2>
+{include ../ActionMenu.latte}
+
+<div n:ifset="$registration['ID']" class="alert alert-info">
+    <a data-dismiss="alert" class="close">×</a>
+    Ve skautisu máte neodevzdanou <b>registraci pro rok {$registration['Year']}</b>, která nemá založenu skupin plateb. Chcete skupinu plateb založit?
+    <a n:href="createGroupRegistration $registration['ID']" class="btn btn-primary">Založit skupinu pro registraci {$registration['Year']}</a>
+</div>
+
+<div class="row-fluid">
+    <div class="span7">
+        {control groupForm}
+    </div>
+    <div class="span5 well">
+        <p><b>Typy skupin plateb</b></p>
+        <ul>
+            <li>Základní - slouží pro obecně libovolné platby a její funce jsou obsaženy i ve všech ostatních.</li>
+            <li>Registrační - slouží pro vybírání příspěvků během registrace, protože umožnuje načíst registrované osoby ze skautisu.</li>
+        </ul>
+        <p><b>Název</b><br />Název skupiny slouží pro vnitřní orientaci v platbách jednotky.</p>
+        <p><b>Výchozí částka</b><br />Výchozí čátka je předvyplněna o nových plateb ve skupině.</p>
+        <p><b>Výchozí splatnost</b><br />Výchozí splatnost je předvyplněna o nových plateb ve skupině.</p>
+        <p><b>KS</b><br />Konstantní symbol je číslo, které hospodář může přidělit dané skupině plateb jako výchozí hodnotu.</p>
+        <p><b>Informační email</b><br />Tento email se odchází s informacemi o platbě na email uvedený u platby.</p>
+        <p><b>Upomínací email</b><br />Tento email odchází v případě, že nedojde k zaplacení platby před uvedeným datem splatnosti.</p>
+        <p><b>Proměnné v emailu</b><br />Proměnné v emailu budou před odesláním nahrazeny údaji z platby. Jsou zapsány formou: "%Název_proměnné%".</p>
+        <ul>
+            <li>%account% - celé číslo účtu i s předčíslím a kódem banky</li>
+            <li>%qrcode%" - vynenerovaný obrázek QR kódu</li>
+            <li>%name%" - název/účel platby</li>
+            <li>%amount%" - částka</li>
+            <li>%maturity% - splatnost</li>
+            <li>%vs% - variabilní symbol</li>
+            <li>%ks% - konstantní symbol</li>
+        </ul>
+    </div>
+</div>
+
