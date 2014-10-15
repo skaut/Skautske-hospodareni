@@ -28,6 +28,8 @@ nette:
 services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory
+    - \Model\PaymentService(@skautIS, @connection)
+    - \Model\MailService(NULL, @connection, %sendEmail%)
     router: @App\RouterFactory::createRouter
     connection:
         class: DibiConnection

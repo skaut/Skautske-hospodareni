@@ -65,15 +65,15 @@ $(document).ready(function() {
         });
     //prepocte soucet a ulozi do ID=type+"-total"
     function calculateSum(type) {
-        var sum = 0;
+        var amount = 0;
 //        alert(type);
         $("[data-type='"+type+"']").each(function() {
             var val = $(this).text();
             if(!isNaN(val) && val.length!=0) {
-                sum += parseFloat(val);
+                amount += parseFloat(val);
             }
         });
-        $('#'+type+'-total').text(sum);
+        $('#'+type+'-total').text(amount);
     };
         
         

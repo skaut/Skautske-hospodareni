@@ -1,0 +1,72 @@
+{block #content}
+<h2 n:block="title">{$group->label}</h2>
+{include ../ActionMenu.latte}
+{dump $group}
+<div class="row-fluid">
+    <div class="span3">
+        <table class="table table-bordered table-striped">
+            <tr n:if="!is_null($group->maturity)">
+                <th class="l">Stav skupiny:</th>
+                <td>{$group->state|groupState|noescape}</td>
+            </tr>
+            <tr n:if="!is_null($group->maturity)">
+                <th class="l">Splatnost:</th>
+                <td>{$group->maturity|date:'j.n.Y'}</td>
+            </tr>
+            <tr n:if="!is_null($group->amount)">
+                <th class="l">Výchozí částka: </th>
+                <td> {$group->amount} Kč</td>
+            </tr>
+            <tr n:if="!is_null($group->ks)">
+                <th class="l">KS: </th>
+                <td>{$group->ks}</td>
+            </tr>
+
+            <tr n:foreach="$summarize as $name=>$r">
+                <th class="l">{$name} ({$r->count}): </th>
+                <td class="r">{if $r->amount != null}{$r->amount} Kč{else}&nbsp;{/if}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="span7" n:if="$group->state =='open'">
+        <div class="well collapse" id="createNewPayment" style="padding: 8px 8px 15px;">
+            <p>
+                <a n:href="Group: $group->id" class="btn btn-primary"><i class="icon icon-edit icon-white"></i> Upravit</a>
+                <button type="button" data-toggle="collapse" data-target="#createNewPayment" class="btn btn-primary"><i class="icon icon-plus-sign icon-white hidden-phone"></i> Založit platbu</button>
+                <a n:if="$group->groupType == 'registration'" n:href="Registration:massAdd $group['id']" class="btn btn-primary"><i class="icon icon-plus-sign icon-white hidden-phone"></i> Hromadné založení plateb</a>
+                <a n:href="sendGroup! $group->id" class="btn btn-primary"><i class="icon icon-envelope icon-white"></i> Rozeslat emaily</a>
+            </p>
+            {form paymentForm class=>"addPayment"}
+                <ul class="errors" n:if="$form->hasErrors()">
+                    <li n:foreach="$form->errors as $error">{$error}</li>
+                </ul>
+                <table>
+                    <tbody>
+                        <tr class="required">
+                            <th>{label name/}</th>
+                            <td>{input name}</td>
+                            <th>{label amount /}</th>
+                            <td>{input amount class=>"input-small"}</td>
+                            <th>{label maturity /}</th>
+                            <td>{input maturity class=>"input-small date"}</td>
+                        </tr>
+                        <tr>
+                            <th>{label email/}</th>
+                            <td>{input email}</td>
+                            <th>{label vs /}</th>
+                            <td>{input vs class=>"input-small"}</td>
+                            <th>{label ks /}</th>
+                            <td>{input ks class=>"input-small"}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">&nbsp;</td>
+                            <td colspan="2">{input send}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {/form}
+        </div>
+    </div>
+</div>
+
+{include $templateBlockDir.'paymentTable.latte', payments=>$payments, groupState=>$group['state']}
