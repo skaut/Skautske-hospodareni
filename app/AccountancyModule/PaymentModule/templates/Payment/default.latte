@@ -1,0 +1,18 @@
+{block #content}
+<h2 n:block="title">Přehled plateb</h2>
+{include ../ActionMenu.latte}
+{dump $payments}
+{dump $groups}
+
+<div class="row-fluid">
+    <div class="well well-small">
+        <a n:href="this !$onlyOpen" class="btn btn-info">Zobrazit {if $onlyOpen}všechny skupiny{else}pouze otevřené{/if}</a>
+        <a n:href="Group:" class="btn btn-primary"><i class="icon icon-white icon-plus-sign"></i> Založit skupinu plateb</a>
+    </div>
+</div>
+<div class="row-fluid">
+    {foreach $groups as $g}
+        <h2><a n:href="detail $g->id">{$g->label}</a></h2>
+            {include $templateBlockDir.'paymentTable.latte', payments=>isset($payments[$g->id]) ? $payments[$g->id] : array(), groupState=>$g->state}
+        {/foreach}
+</div>
