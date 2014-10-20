@@ -1,6 +1,7 @@
 {block #content}
 <h2 n:block="title">{$nadpis}</h2>
 {include ../ActionMenu.latte}
+<a href="{$linkBack}">Zpět</a>
 
 <div n:ifset="$registration['ID']" class="alert alert-info">
     <a data-dismiss="alert" class="close">×</a>
@@ -27,12 +28,13 @@
         <p><b>Proměnné v emailu</b><br />Proměnné v emailu budou před odesláním nahrazeny údaji z platby. Jsou zapsány formou: "%Název_proměnné%".</p>
         <ul>
             <li>%account% - celé číslo účtu i s předčíslím a kódem banky</li>
-            <li>%qrcode%" - vynenerovaný obrázek QR kódu</li>
-            <li>%name%" - název/účel platby</li>
-            <li>%amount%" - částka</li>
+            <li>%qrcode% - vynenerovaný obrázek QR kódu</li>
+            <li>%name% - název/účel platby</li>
+            <li>%amount% - částka</li>
             <li>%maturity% - splatnost</li>
             <li>%vs% - variabilní symbol</li>
             <li>%ks% - konstantní symbol</li>
+            <li>%note% - poznámka</li>
         </ul>
     </div>
 </div>

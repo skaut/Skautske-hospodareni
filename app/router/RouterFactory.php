@@ -4,7 +4,7 @@ namespace App;
 
 use Nette\Application\Routers\RouteList,
     Nette\Application\Routers\Route,
-    Nette\Application\Routers\SimpleRouter;
+        \Sinacek\MyRoute;
 
 /**
  * Router factory.
@@ -17,10 +17,10 @@ class RouterFactory {
     public function createRouter() {
         $router = new RouteList();
 
-        $router[] = new Route('index.php', ':Default:default', Route::ONE_WAY & Route::SECURED);
+        $router[] = new MyRoute('index.php', ':Default:default', Route::ONE_WAY & Route::SECURED);
         $router[] = new Route('app.manifest', 'Offline:manifest');
         $router[] = new Route("o-projektu", "Default:about");
-        $router[] = new Route('sign/<action>[/back-<backlink>]', array(
+        $router[] = new MyRoute('sign/<action>[/back-<backlink>]', array(
             "presenter" => "Auth",
             "action" => "default",
             "backlink" => NULL
@@ -45,7 +45,7 @@ class RouterFactory {
             ),
         ));
         $router[] = AccountancyModule\BasePresenter::createRoutes();
-        $router[] = new SimpleRouter('Default:default', Route::SECURED);
+        $router[] = new \Sinacek\MySimpleRouter('Default:default', Route::SECURED);
         return $router;
     }
 
