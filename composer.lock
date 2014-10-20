@@ -1401,12 +1401,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sinacek/SkautIS.git",
-                "reference": "d116224376b3397a35700972e880e769860b4cb8"
+                "reference": "d65f29b9f04de20ab48d33b7d8eef42088b01b00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sinacek/SkautIS/zipball/d116224376b3397a35700972e880e769860b4cb8",
-                "reference": "d116224376b3397a35700972e880e769860b4cb8",
+                "url": "https://api.github.com/repos/sinacek/SkautIS/zipball/d65f29b9f04de20ab48d33b7d8eef42088b01b00",
+                "reference": "d65f29b9f04de20ab48d33b7d8eef42088b01b00",
                 "shasum": ""
             },
             "require": {
@@ -1435,7 +1435,7 @@
                 "api",
                 "skautis"
             ],
-            "time": "2014-08-26 12:57:09"
+            "time": "2014-10-19 21:03:16"
         },
         {
             "name": "srigi/nette-visualpaginator",
@@ -1596,12 +1596,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tester.git",
-                "reference": "73e9511cb0bd03efdba398c00e91fac8b22edde7"
+                "reference": "ec2e8df903d955d8aeb238af74acf2d9f04ce2b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tester/zipball/73e9511cb0bd03efdba398c00e91fac8b22edde7",
-                "reference": "73e9511cb0bd03efdba398c00e91fac8b22edde7",
+                "url": "https://api.github.com/repos/nette/tester/zipball/ec2e8df903d955d8aeb238af74acf2d9f04ce2b6",
+                "reference": "ec2e8df903d955d8aeb238af74acf2d9f04ce2b6",
                 "shasum": ""
             },
             "require": {
@@ -1644,7 +1644,7 @@
                 "testing",
                 "unit"
             ],
-            "time": "2014-09-27 10:42:19"
+            "time": "2014-10-17 11:10:42"
         }
     ],
     "aliases": [],

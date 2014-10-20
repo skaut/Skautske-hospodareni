@@ -66,7 +66,7 @@ class PaymentService extends BaseService {
         if ($p->state != PaymentTable::STATE_PREPARING || mb_strlen($p->email) < 5) {
             return false;
         }
-        $accounts = $this->skautIS->org->AccountAll(array("ID_Unit" => $unitId, "IsValid" => TRUE));
+        $accounts = $this->skautis->org->AccountAll(array("ID_Unit" => $unitId, "IsValid" => TRUE));
         if (count($accounts) == 1) {
             $accountRaw = $accounts[0]->DisplayName;
         } else {
@@ -91,12 +91,12 @@ class PaymentService extends BaseService {
     }
 
     public function getGroups($onlyOpen = TRUE) {
-        return $this->table->getGroupsByObjectId($this->getLocalId($this->skautIS->getUnitId(), "unit"), $onlyOpen);
+        return $this->table->getGroupsByObjectId($this->getLocalId($this->skautis->getUnitId(), "unit"), $onlyOpen);
     }
 
     public function createGroup($oType, $sisId, $label, $oId = NULL, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {
         if ($oId === NULL) {
-            $oId = $this->getLocalId($this->skautIS->getUnitId(), "unit");
+            $oId = $this->getLocalId($this->skautis->getUnitId(), "unit");
         }
         return $this->table->createGroup(array(
                     'groupType' => $oType,
@@ -117,11 +117,11 @@ class PaymentService extends BaseService {
      * @return type
      */
     public function getRegistration($regId) {
-        return $this->skautIS->org->UnitRegistrationDetail(array("ID" => $regId));
+        return $this->skautis->org->UnitRegistrationDetail(array("ID" => $regId));
     }
 
     public function getNewestOpenRegistration($unitId = NULL, $withoutRecord = TRUE) {
-        $data = $this->skautIS->org->UnitRegistrationAll(array("ID_Unit" => $unitId === NULL ? $unitId = $this->skautIS->getUnitId() : $unitId, ""));
+        $data = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId === NULL ? $unitId = $this->skautis->getUnitId() : $unitId, ""));
         foreach ($data as $r) {
             if ($r->IsDelivered || ($withoutRecord && $this->table->getGroupsBySisId($r->ID))) {//filtrování odevzdaných nebo těch se záznamem
                 continue;
@@ -138,7 +138,7 @@ class PaymentService extends BaseService {
      * @return array(array())
      */
     public function getRegistrationPersons($id, $onlyWithoutRecord = TRUE) {
-        $persons = $this->skautIS->org->PersonRegistrationAll(array(
+        $persons = $this->skautis->org->PersonRegistrationAll(array(
             'ID_UnitRegistration' => $this->getGroup($id)->sisId,
             'IncludeChild' => TRUE,
         ));
@@ -154,7 +154,7 @@ class PaymentService extends BaseService {
             $result[$p->ID_Unit][$p->ID_Person] = (array) $p;
             $result[$p->ID_Unit][$p->ID_Person]['emails'] = array();
             try {
-                foreach ($this->skautIS->org->PersonContactAll(array('ID_Person' => $p->ID_Person)) as $c) {
+                foreach ($this->skautis->org->PersonContactAll(array('ID_Person' => $p->ID_Person)) as $c) {
                     if (mb_substr($c->ID_ContactType, 0, 5) == "email") {
                         $result[$p->ID_Unit][$p->ID_Person]['emails'][$c->Value] = $c->Value . " (" . $c->ContactType . ")";
                     }
