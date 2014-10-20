@@ -24,39 +24,40 @@ nette:
         strictMode: FALSE
         maxDepth: 6
 
+extensions:
+    skautis: SkautIS\Nette\SkautisExtension22
+    dibi: Dibi\Bridges\Nette\DibiExtension22
+    
 
 services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory
-    - \Model\PaymentService(@skautIS, @connection)
-    - \Model\MailService(NULL, @connection, %sendEmail%)
+    - \Model\PaymentService(@skautis, @dibi.connection)
+    - \Model\MailService(NULL, @dibi.connection, %sendEmail%)
     router: @App\RouterFactory::createRouter
-    connection:
-        class: DibiConnection
-        factory: dibi::connect(%database%)
-        run: TRUE
+    #connection:
+    #    class: DibiConnection
+    #    factory: dibi::connect(%database%)
+    #    run: TRUE
     authService:
-        class: Model\AuthService(@skautIS, @connection)
+        class: Model\AuthService(@skautis, @dibi.connection)
     eventService:
-        class: Model\EventEntity("General", "EventGeneral", @skautIS, @cacheStorage, @connection)
+        class: Model\EventEntity("General", "EventGeneral", @skautis, @cacheStorage, @dibi.connection)
     campService:
-        class: Model\EventEntity("Camp", "Camp", @skautIS, @cacheStorage, @connection)
+        class: Model\EventEntity("Camp", "Camp", @skautis, @cacheStorage, @dibi.connection)
     unitAccountService:
-        class: Model\EventEntity("Unit", "Unit", @skautIS, @cacheStorage, @connection)
+        class: Model\EventEntity("Unit", "Unit", @skautis, @cacheStorage, @dibi.connection)
     memberService:
-        class: Model\MemberService(@skautIS, @connection)
+        class: Model\MemberService(@skautis, @dibi.connection)
     unitService:
-        class: Model\UnitService(@skautIS, @connection)
+        class: Model\UnitService(@skautis, @dibi.connection)
     userService:
-        class: Model\UserService(@skautIS, @connection)
+        class: Model\UserService(@skautis, @dibi.connection)
     travelService:
-        class: Model\TravelService(NULL, @connection)
+        class: Model\TravelService(NULL, @dibi.connection)
     exportService:
-        class: Model\ExportService(NULL, @connection)
+        class: Model\ExportService(NULL, @dibi.connection)
     excelService:
-        class: Model\ExcelService(NULL, @connection)
+        class: Model\ExcelService(NULL, @dibi.connection)
     budgetService:
-        class: Model\BudgetService(NULL, @connection)
-    skautIS:
-        class: SkautIS\SkautIS
-        factory: SkautIS\SkautIS::getInstance(%skautisid%, %skautisTestMode%)
+        class: Model\BudgetService(NULL, @dibi.connection)

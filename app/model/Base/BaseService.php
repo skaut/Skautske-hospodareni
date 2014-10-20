@@ -30,7 +30,7 @@ abstract class BaseService extends \Nette\Object {
      * slouží pro komunikaci se skautISem
      * @var SkautIS
      */
-    protected $skautIS;
+    protected $skautis;
 
     /**
      * připojení k databázi
@@ -50,8 +50,8 @@ abstract class BaseService extends \Nette\Object {
      */
     private static $storage = array();
 
-    public function __construct($skautIS = NULL, $connection = NULL) {
-        $this->skautIS = $skautIS;
+    public function __construct($skautis = NULL, $connection = NULL) {
+        $this->skautis = $skautis;
         $this->connection = $connection;
 
         preg_match("/^(?P<name>.*)Service/", get_class($this), $matches);

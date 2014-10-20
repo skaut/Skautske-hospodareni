@@ -27,7 +27,7 @@ class EventEntity {
         if (isset($this->$name)) {
             return $this->$name;
         }
-        throw new InvalidArgumentException("Invalid service request for: " . $name);
+        throw new \InvalidArgumentException("Invalid service request for: " . $name);
     }
 
 }
