@@ -206,7 +206,7 @@ class ChitService extends MutableBaseService {
                 throw new \InvalidArgumentException("Neplatný vstup \$skautisEventId=NULL pro " . __FUNCTION__);
             }
             $res = array();
-            foreach ($this->skautIS->event->EventCampStatementAll(array("ID_EventCamp" => $skautisEventId, "IsEstimate" => $isEstimate)) as $i) { //prepisuje na tvar s klíčem jako ID
+            foreach ($this->skautis->event->EventCampStatementAll(array("ID_EventCamp" => $skautisEventId, "IsEstimate" => $isEstimate)) as $i) { //prepisuje na tvar s klíčem jako ID
                 if ($isEstimate == false && $i->ID_EventCampStatementType == 15) {//$i->ID_EventCampStatementType == 15 => Rezerva v rozpoctu
                     continue;
                 }
@@ -315,7 +315,7 @@ class ChitService extends MutableBaseService {
         if ($ammout === NULL) {
             $ammout = (int) $this->table->getTotalInCategory($categoryId, $this->getLocalId($skautisEventId));
         }
-        $this->skautIS->event->EventCampStatementUpdate(array(
+        $this->skautis->event->EventCampStatementUpdate(array(
             "ID" => $categoryId,
             "ID_EventCamp" => $skautisEventId,
             "Ammount" => $ammout,

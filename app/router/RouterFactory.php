@@ -4,8 +4,7 @@ namespace App;
 
 use Nette\Application\Routers\RouteList,
     Nette\Application\Routers\Route,
-    Sinacek\MyRoute,
-    Sinacek\MySimpleRouter;
+    Nette\Application\Routers\SimpleRouter;
 
 /**
  * Router factory.
@@ -18,16 +17,16 @@ class RouterFactory {
     public function createRouter() {
         $router = new RouteList();
 
-        $router[] = new MyRoute('index.php', ':Default:default', Route::ONE_WAY & Route::SECURED);
-        $router[] = new MyRoute('app.manifest', 'Offline:manifest');
-        $router[] = new MyRoute("o-projektu", "Default:about");
-        $router[] = new MyRoute('sign/<action>[/back-<backlink>]', array(
+        $router[] = new Route('index.php', ':Default:default', Route::ONE_WAY & Route::SECURED);
+        $router[] = new Route('app.manifest', 'Offline:manifest');
+        $router[] = new Route("o-projektu", "Default:about");
+        $router[] = new Route('sign/<action>[/back-<backlink>]', array(
             "presenter" => "Auth",
             "action" => "default",
             "backlink" => NULL
                 ), Route::SECURED);
 
-        $router[] = new MyRoute('prirucka/<action>[#<anchor>]', array(
+        $router[] = new Route('prirucka/<action>[#<anchor>]', array(
             "presenter" => "Tutorial",
             "action" => array(
                 Route::VALUE => 'default',
@@ -39,20 +38,20 @@ class RouterFactory {
                 )),
         ));
 
-        $router[] = new MyRoute('offline/<action>.html', array(
+        $router[] = new Route('offline/<action>.html', array(
             "presenter" => "Offline",
             "action" => array(
                 Route::VALUE => 'list',
             ),
         ));
         $router[] = AccountancyModule\BasePresenter::createRoutes();
-        $router[] = new MySimpleRouter('Default:default', Route::SECURED);
+        $router[] = new SimpleRouter('Default:default', Route::SECURED);
         return $router;
     }
 
 }
 
-//$router[] = new MyRoute('app.manifest', array(
+//$router[] = new Route('app.manifest', array(
 //            "Module" => "Default",
 //            "presenter" => "Offline",
 //            "action" => "manifest",

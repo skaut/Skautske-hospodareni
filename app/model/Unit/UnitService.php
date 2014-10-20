@@ -16,12 +16,12 @@ class UnitService extends BaseService {
      */
     public function getDetail($unitId = NULL) {
         if ($unitId === NULL) {
-            $unitId = $this->skautIS->getUnitId();
+            $unitId = $this->skautis->getUnitId();
         }
         try {
             $cacheId = __FUNCTION__ . $unitId;
             if (!($res = $this->loadSes($cacheId))) {
-                $res = $this->saveSes($cacheId, $this->skautIS->org->UnitDetail(array("ID" => $unitId)));
+                $res = $this->saveSes($cacheId, $this->skautis->org->UnitDetail(array("ID" => $unitId)));
             }
             return $res;
         } catch (SkautIS_Exception $exc) {
@@ -35,7 +35,7 @@ class UnitService extends BaseService {
      * @return stdClass
      */
     public function getParrent($ID_Unit) {
-        $ret = $this->skautIS->org->UnitAll(array("ID_UnitChild" => $ID_Unit));
+        $ret = $this->skautis->org->UnitAll(array("ID_UnitChild" => $ID_Unit));
         if (is_array($ret)) {
             return $ret[0];
         }
@@ -48,7 +48,7 @@ class UnitService extends BaseService {
      * @return array(stdClass) 
      */
     public function getChild($ID_Unit) {
-        return $this->skautIS->org->UnitAll(array("ID_UnitParent" => $ID_Unit));
+        return $this->skautis->org->UnitAll(array("ID_UnitParent" => $ID_Unit));
     }
 
     /**

@@ -15,24 +15,20 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         //adresář s částmi šablon pro použití ve více modulech
         $this->template->templateBlockDir = APP_DIR . "/templateBlocks/";
 
-        $storage = $this->context->getByType('Nette\Http\Session')->getSection("__" . __CLASS__);
-        $this->context->skautIS->setStorage($storage, TRUE);
+//        $storage = $this->context->getByType('Nette\Http\Session')->getSection("__" . __CLASS__);
+//        $this->context->skautis->setStorage($storage, TRUE);
         $this->template->backlink = $this->getParameter("backlink");
-        $params = $this->context->getParameters();
-        $this->template->ssl = $params['ssl'];
 
         Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
             return $container[$name] = new \Nextras\Forms\Controls\DatePicker($label);
         });
 
         \DependentSelectBox\DependentSelectBox::register(); // First parameter of this method denotes name of method to add selectbox into form. Default name is addDependentSelectBox, but short name like addDSelect can be used.
-        //\DependentSelectBox\JsonDependentSelectBox::register();
-
         \DependentSelectBox\JsonDependentSelectBox::register('addJSelect');
 
         try {
             if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
-                $this->context->authService->updateLogoutTime();
+                //$this->context->authService->updateLogoutTime();
             }
         } catch (AuthenticationException $e) {
             if ($this->name != "Auth" || $this->params['action'] != "skautisLogout") { //pokud jde o odhlaseni, tak to nevadi

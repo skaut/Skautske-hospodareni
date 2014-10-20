@@ -13,7 +13,7 @@ class AuthService extends BaseService {
      * @return string 
      */
     public function getLoginUrl($backlink) {
-        return $this->skautIS->getLoginUrl($backlink);
+        return $this->skautis->getLoginUrl($backlink);
     }
 
     /**
@@ -21,9 +21,9 @@ class AuthService extends BaseService {
      * @param array $arr 
      */
     public function setInit(array $arr) {
-        $this->skautIS->setToken($arr['token']);
-        $this->skautIS->setRoleId($arr['roleId']);
-        $this->skautIS->setUnitId($arr['unitId']);
+        $this->skautis->setToken($arr['token']);
+        $this->skautis->setRoleId($arr['roleId']);
+        $this->skautis->setUnitId($arr['unitId']);
     }
 
     /**
@@ -31,14 +31,14 @@ class AuthService extends BaseService {
      * @return string 
      */
     public function getLogoutUrl() {
-        return $this->skautIS->getLogoutUrl();
+        return $this->skautis->getLogoutUrl();
     }
 
     /**
-     * prodlouží dobu přihlášení do skautISu
+     * prodlouží dobu přihlášení do skautisu
      */
     public function updateLogoutTime() {
-        $this->skautIS->updateLogoutTime();
+        $this->skautis->updateLogoutTime();
     }
 
 }
