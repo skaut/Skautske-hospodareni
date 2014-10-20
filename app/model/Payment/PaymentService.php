@@ -14,13 +14,21 @@ class PaymentService extends BaseService {
         $this->mailService = $mailService;
     }
 
-    public function get($paymentId) {
-        return $this->table->get($paymentId);
+    public function get($objectId, $paymentId) {
+        return $this->table->get($objectId, $paymentId);
     }
 
-    public function getAll($pa_groupId = NULL) {
-        $result = $this->table->getAllPayments($pa_groupId);
-        if ($pa_groupId === NULL) {
+    /**
+     * 
+     * @param int|array $pa_groupIds
+     * @return type
+     */
+    public function getAll($pa_groupIds, $useHierarchy = TRUE) {
+        if (!is_array($pa_groupIds)) {
+            $pa_groupIds = array($pa_groupIds);
+        }
+        $result = $this->table->getAllPayments($pa_groupIds);
+        if (count($pa_groupIds) > 1 && $useHierarchy) {
             $tmp = array();
             foreach ($result as $v) {//roztrizeni podle událostí
                 $tmp[$v->groupId][] = $v;
@@ -30,16 +38,16 @@ class PaymentService extends BaseService {
         return $result;
     }
 
-    public function createPayment($pa_oid, $name, $email, $amount, $personId = NULL, $maturity = NULL, $vs = NULL, $ks = NULL, $note = NULL) {
+    public function createPayment($groupId, $name, $email, $amount, $maturity, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL) {
         return $this->table->createPayment(array(
-                    'groupId' => $pa_oid,
+                    'groupId' => $groupId,
                     'name' => $name,
                     'email' => $email,
                     'personId' => $personId,
-                    'amount' => $amount,
+                    'amount' => $amount != "" ? $amount : NULL,
                     'maturity' => $maturity,
-                    'vs' => $vs,
-                    'ks' => $ks,
+                    'vs' => $vs != "" ? $vs : NULL,
+                    'ks' => $ks != "" ? $ks : NULL,
                     'note' => $note,
         ));
     }
@@ -61,8 +69,8 @@ class PaymentService extends BaseService {
         return $this->table->summarizeByState($pa_id);
     }
 
-    public function sendInfo($template, $paymentId, $unitId) {
-        $p = $this->get($paymentId);
+    public function sendInfo($objectId, $template, $paymentId, $unitId) {
+        $p = $this->get($objectId, $paymentId);
         if ($p->state != PaymentTable::STATE_PREPARING || mb_strlen($p->email) < 5) {
             return false;
         }
@@ -78,38 +86,46 @@ class PaymentService extends BaseService {
             }
         }
         preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $accountRaw, $account);
-        $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?accountPrefix=' . $account['prefix'] . '&accountNumber=' . $account['number'] . '&bankCode=' . $account['code'] . '&amount=' . $p->amount . '&currency=CZK&vs=' . $p->vs . '&ks=' . $p->ks . '&message=' . $p->name . '&size=300"/>';
-        $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%"), array($accountRaw, $qrcode, $p->name, $p->amount, $p->maturity->format("j.n.Y"), $p->vs, $p->ks), $p->email_info);
+        $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?accountPrefix=' . $account['prefix'] . '&accountNumber=' . $account['number'] . '&bankCode=' . $account['code'] . '&amount=' . $p->amount . '&currency=CZK&vs=' . $p->vs . '&ks=' . $p->ks . '&message=' . $p->name . '&size=200"/>';
+        $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $p->name, $p->amount, $p->maturity->format("j.n.Y"), $p->vs, $p->ks, $p->note), $p->email_info);
         if ($this->mailService->sendPaymentInfo($template, $p->email, "Informace o platbě", $body)) {
             return $this->table->update($paymentId, array("state" => "send"));
         }
         return FALSE;
     }
 
-    public function getGroup($id) {
-        return $this->table->getGroup($id);
+    /**
+     * GROUP
+     */
+    public function getGroup($objectId, $groupId) {
+        return $this->table->getGroup($objectId, $groupId);
     }
 
-    public function getGroups($onlyOpen = TRUE) {
-        return $this->table->getGroupsByObjectId($this->getLocalId($this->skautis->getUnitId(), "unit"), $onlyOpen);
+    public function getGroups($objectId, $onlyOpen = FALSE) {
+        return $this->table->getGroupsByObjectId($objectId, $onlyOpen);
     }
 
-    public function createGroup($oType, $sisId, $label, $oId = NULL, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {
-        if ($oId === NULL) {
-            $oId = $this->getLocalId($this->skautis->getUnitId(), "unit");
-        }
+    public function createGroup($objectId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {
         return $this->table->createGroup(array(
                     'groupType' => $oType,
                     'sisId' => $sisId,
-                    'objectId' => $oId,
+                    'objectId' => $objectId,
                     'label' => $label,
                     'maturity' => $maturity,
-                    'ks' => $ks,
-                    'amount' => $amount,
+                    'ks' => $ks != "" ? $ks : NULL,
+                    'amount' => $amount != "" ? $amount : NULL,
                     'email_info' => $email_info,
                     'email_demand' => $email_demand,
         ));
     }
+
+    public function updateGroup($groupId, $arr) {
+        return $this->table->updateGroup($groupId, $arr);
+    }
+
+    /**
+     * REGISTRATION
+     */
 
     /**
      * detail registrace ze skautisu
@@ -123,7 +139,7 @@ class PaymentService extends BaseService {
     public function getNewestOpenRegistration($unitId = NULL, $withoutRecord = TRUE) {
         $data = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId === NULL ? $unitId = $this->skautis->getUnitId() : $unitId, ""));
         foreach ($data as $r) {
-            if ($r->IsDelivered || ($withoutRecord && $this->table->getGroupsBySisId($r->ID))) {//filtrování odevzdaných nebo těch se záznamem
+            if ($r->IsDelivered || ($withoutRecord && $this->table->getGroupsBySisId('registration', $r->ID))) {//filtrování odevzdaných nebo těch se záznamem
                 continue;
             }
             return (array) $r;
@@ -137,9 +153,9 @@ class PaymentService extends BaseService {
      * @param bool $onlyWithoutRecord pouze ty, které ještě nemají zadanou platbu
      * @return array(array())
      */
-    public function getRegistrationPersons($id, $onlyWithoutRecord = TRUE) {
+    public function getRegistrationPersons($objectId, $id, $onlyWithoutRecord = TRUE) {
         $persons = $this->skautis->org->PersonRegistrationAll(array(
-            'ID_UnitRegistration' => $this->getGroup($id)->sisId,
+            'ID_UnitRegistration' => $this->getGroup($objectId, $id)->sisId,
             'IncludeChild' => TRUE,
         ));
         if ($onlyWithoutRecord) {
@@ -164,6 +180,62 @@ class PaymentService extends BaseService {
             }
         }
         return $result;
+    }
+
+    /**
+     * BANK
+     */
+    public function getBankToken($objectId) {
+        return;
+    }
+
+    public function pairPayments($objectId, $groupId = NULL) {
+        $token = $this->table->getBankToken($objectId);
+        if (!$token) {
+            return FALSE;
+        }
+        $payments = $this->filterVS($this->getAll($groupId === NULL ? array_keys($this->getGroups($objectId)) : $groupId, FALSE));
+        $transactions = $this->getTransactionsFio($token);
+        if (!$transactions) {
+            return FALSE;
+        }
+        //dump($this->filterVS($transactions));dump($payments);die();
+        $cnt = 0;
+        foreach ($this->filterVS($transactions) as $t) {
+            foreach ($payments as $p){
+                if($t['vs'] == $p['vs'] && $t['amount'] == $p['amount']){
+                    $this->update($p->id, array("state"=>"completed", "transactionId"=>$t['id']));
+                    $cnt++;
+                }
+            }
+        }
+        return $cnt;
+    }
+
+    public function getTransactionsFio($token, $dateStart = NULL, $dateEnd = NULL) {
+        $dateStart = $dateStart === NULL ? date("Y-m-d", strtotime("-2 day")) : $dateStart;
+        $dateEnd = $dateEnd === NULL ? date("Y-m-d") : $dateEnd;
+        $url = "https://www.fio.cz/ib_api/rest/periods/$token/$dateStart/$dateEnd/transactions.json";
+        $file = file_get_contents($url);
+        if (!$file) {
+            return FALSE;
+        }
+        $transactions = array();
+        foreach (json_decode($file)->accountStatement->transactionList->transaction as $k => $t) {
+            $transactions[$k]['id'] = $t->column22->value;
+            $transactions[$k]['date'] = $t->column0->value;
+            $transactions[$k]['amount'] = $t->column1->value;
+            $transactions[$k]['prociucet'] = $t->column2->value . "/" . $t->column3->value;
+            $transactions[$k]['user'] = $t->column7->value;
+            $transactions[$k]['ks'] = isset($t->column4) ? $t->column4->value : NULL;
+            $transactions[$k]['vs'] = isset($t->column5) ? $t->column5->value : NULL;
+            $transactions[$k]['note'] = isset($t->column16) ? $t->column16->value : NULL;
+        }
+        return $transactions;
+    }
+
+    protected function filterVS($arr) {
+        return array_filter($arr, function ($t) {return array_key_exists("vs", $t) && $t['vs'] != NULL;});
     }
 
 }

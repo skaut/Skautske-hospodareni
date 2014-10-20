@@ -1,9 +1,14 @@
 {*
-$payments
-$groupState
+$payments - platby ve skupině
+$groupState - stav skupiny plateb
+$form - formulář, pro zadání nové platby
 *}
 {dump $payments}
+{var $isEditable = ($groupState == 'open')}
 {if !empty($payments)}
+    <ul class="alert alert-error" n:if="isset($form) && $form->hasErrors()">
+        <li n:foreach="$form->errors as $error">{$error}</li>
+    </ul>
     <table class="table table-bordered table-striped">
         <tr>
             <th>Název/účel</th>
@@ -14,9 +19,23 @@ $groupState
             <th>Splatnost</th>
             <th>Poznámka</th>
             <th>Stav</th>
-            <th n:if="$groupState == 'open'">&nbsp;</th>
+            <th n:if="$isEditable">&nbsp;</th>
         </tr>
-        <tr n:foreach="$payments as $l" {if in_array($l->state, $notFinalStates) && $l->maturity->getTimestamp() < time()}class="error" title="Po datu splatnosti"{/if}>
+        {* FORM ROW*}
+        <tr n:if="isset($form) && $isEditable">
+            {form $form}
+                <td>{input name class=>"input-medium"}</td>
+                <td>{input email class=>"input-medium"}</td>
+                <td>{input amount class=>"input-mini"}</td>
+                <td>{input vs class=>"input-mini"}</td>
+                <td>{input ks class=>"input-mini"}</td>
+                <td>{input maturity class=>"input-small date"}</td>
+                <td colspan="2">{input note class=>"input-medium"}</td>
+                <td>{input send}</td>
+            {/form}
+        </tr>
+
+        <tr n:foreach="$payments as $l" {if in_array($l->state, $notFinalStates) && $l->maturity->getTimestamp() < time()}class="error" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}>
             <td>{$l->name}</td>
             <td>{if $l->email == null}&nbsp;{else}{$l->email}{/if}</td>
             <td class="r">{$l->amount}</td>
@@ -25,11 +44,11 @@ $groupState
             <td>{$l->maturity|date:'j.n.Y'}</td>
             <td>{if $l->note == null}&nbsp;{else}{$l->note}{/if}</td>
             <td>{$l->stateLabel}</td>
-            <td n:if="$groupState == 'open'" class="r">{if in_array($l->state, $notFinalStates)}
+            <td n:if="$isEditable" class="r">{if in_array($l->state, $notFinalStates)}
                 {if $l->state == 'preparing'}
                     <a n:href="edit $l->id" class="btn btn-small btn-primary" title="Upravit platbu"><i class="icon icon-edit icon-white"></i></a>
                     <a n:href="send! $l->id" class="btn btn-small btn-primary{if $l->email == ""} disabled" title="Není uveden email{else}" title="Odeslat email o platbě{/if}" ><i class="icon-envelope icon-white"></i></a> 
-                {/if}
+                    {/if}
                 <a n:href="complete! $l->id" class="btn btn-small btn-success" title="Zaplaceno"><i class="icon-check icon-white"></i></a> 
                 <a n:href="cancel! $l->id" class="btn btn-small btn-danger" onclick="return confirm('Opravdu chcete zrušit platbu?');" title="Zrušit"><i class="icon-remove icon-white"></i></a>
             {else}&nbsp;{/if}

@@ -13,13 +13,26 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     /** @persistent */
     public $aid;
-    protected $object;
+    protected $objectId;
     protected $year;
     protected $isReadable;
+    /**
+     *
+     * @var \Model\PaymentService
+     */
+    protected $model;
+    
+    public function __construct(\Model\PaymentService $paymentService) {
+        parent::__construct();
+        $this->model = $paymentService;
+    }
 
     protected function startup() {
         parent::startup();
         $this->availableActions = $this->context->userService->actionVerify("OU_Unit", $this->aid);
+        $this->template->aid = $this->aid = (is_null($this->aid) ? $this->context->unitService->getUnitId() : $this->aid);
+        $this->objectId = $this->model->getLocalId($this->aid, "unit");
+        $this->template->isEditable = $this->isEditable = TRUE;
 //        $this->template->isEditable = $this->isEditable = array_key_exists("OU_Statement_INSERT_Unit", $this->availableActions); //moznost zalozit hospodárský výkaz
 //        $this->template->isReadable = $this->isReadable = array_key_exists("OU_Statement_ALL_Unit", $this->availableActions);
 //        if (!$this->isEditable) {
@@ -38,21 +51,22 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
         $prefix .= "platby/";
 
-//        $router[] = new MyRoute($prefix . '<aid [0-9]+>/[<presenter>/][<action>/][<year>/]', array(
-//            'presenter' => array(
-//                Route::VALUE => 'Default',
+        $router[] = new MyRoute($prefix . '<aid [0-9]+>/[<presenter>/][<action>/][<year>/]', array(
+            'presenter' => array(
+                Route::VALUE => 'Default',
 //                Route::FILTER_TABLE => array(
 //                    'kniha' => 'Cashbook',
 //                    'paragony' => 'Chit',
 //                    'rozpocet' => 'Budget',
-//                )),
-//            'action' => "default",
-//                ), Route::SECURED);
+//                )
+            ),
+            'action' => "default",
+        ));
 
         $router[] = new MyRoute($prefix . '[<presenter>/][<action>/]', array(
             'presenter' => 'Default',
             'action' => 'default',
-                ), Route::SECURED);
+        ));
         return $router;
     }
 
