@@ -223,18 +223,6 @@ footer {
     text-align: left;
 }
 
-.addPayment {
-    margin-bottom: 0;
-}
-
-.addPayment th {
-    padding-right:6px;
-    text-align: left;
-}
-.addPayment th:not(:first-child) {
-    padding-left:10px;
-}
-
 /* Homepage */
 #front-carousel .item div.carousel-caption {
     top: 0;

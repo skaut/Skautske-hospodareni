@@ -27,8 +27,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         \DependentSelectBox\JsonDependentSelectBox::register('addJSelect');
 
         try {
-            if ($this->user->isLoggedIn() && $this->context->userService->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
-                //$this->context->authService->updateLogoutTime();
+            if ($this->user->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
+                $this->context->userService->isLoggedIn();
             }
         } catch (AuthenticationException $e) {
             if ($this->name != "Auth" || $this->params['action'] != "skautisLogout") { //pokud jde o odhlaseni, tak to nevadi
