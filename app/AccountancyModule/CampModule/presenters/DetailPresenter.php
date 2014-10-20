@@ -13,7 +13,7 @@ class DetailPresenter extends BasePresenter {
     public function renderDefault($aid) {
         $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->context->campService->event->getFunctions($aid) : false;
         $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
-        $this->template->skautISUrl = $this->context->skautIS->getHttpPrefix() . ".skaut.cz/";
+        $this->template->skautISUrl = $this->context->skautis->getHttpPrefix() . ".skaut.cz/";
         
         if (is_array($this->event->ID_UnitArray->string)) {
             $this->template->troops = array_map(function($id) {

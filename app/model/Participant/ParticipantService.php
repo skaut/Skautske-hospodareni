@@ -20,7 +20,7 @@ class ParticipantService extends MutableBaseService {
     const PAYMENT = "Note";
 
     public function get($participantId) {
-        $data = (array) $this->skautIS->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $participantId));
+        $data = (array) $this->skautis->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $participantId));
         $detail = $this->table->get($participantId);
         if ($detail === FALSE) {//u akcí to v tabulce nic nenajde
             $data->payment = isset($data->{self::PAYMENT}) ? (int) $data->{self::PAYMENT} : 0;
@@ -40,7 +40,7 @@ class ParticipantService extends MutableBaseService {
         //$this->enableDaysAutocount($ID);
         $cacheId = __FUNCTION__ . $ID;
         if (!($participants = $this->loadSes($cacheId))) {
-            $participants = $this->skautIS->event->{"Participant" . $this->typeName . "All"}(array("ID_Event" . $this->typeName => $ID));
+            $participants = $this->skautis->event->{"Participant" . $this->typeName . "All"}(array("ID_Event" . $this->typeName => $ID));
             $campDetails = $this->type == "camp" ? $this->table->getAllCampDetails($ID) : array();
             if ($this->type == "camp") {
                 foreach (array_diff(array_keys($campDetails), array_map(create_function('$o', 'return $o->ID;'), $participants)) as $idForDelete) {
@@ -102,7 +102,7 @@ class ParticipantService extends MutableBaseService {
      * @return type
      */
     public function add($ID, $participantId) {
-        return $this->skautIS->event->{"Participant" . $this->typeName . "Insert"}(array(
+        return $this->skautis->event->{"Participant" . $this->typeName . "Insert"}(array(
                     "ID_Event" . $this->typeName => $ID,
                     "ID_Person" => $participantId,
         ));
@@ -115,7 +115,7 @@ class ParticipantService extends MutableBaseService {
      * @return type
      */
     public function addNew($ID, $person) {
-        $newPaerticipantArr = $this->skautIS->event->{"Participant" . $this->typeName . "Insert"}(array(
+        $newPaerticipantArr = $this->skautis->event->{"Participant" . $this->typeName . "Insert"}(array(
             "ID_Event" . $this->typeName => $ID,
             "Person" => array(
                 "FirstName" => $person['firstName'],
@@ -134,7 +134,7 @@ class ParticipantService extends MutableBaseService {
      * @param type $data
      */
     public function personUpdate($pid, $data) {
-        $this->skautIS->org->PersonUpdateBasic(array(
+        $this->skautis->org->PersonUpdateBasic(array(
             "ID" => $pid,
             "FirstName" => isset($data['firstName']) ? $data['firstName'] : null,
             "LastName" => isset($data['lastName']) ? $data['lastName'] : null,
@@ -159,7 +159,7 @@ class ParticipantService extends MutableBaseService {
                     'Real' => TRUE,
                     'Days' => $arr['days'],
                 );
-                $this->skautIS->event->{"Participant" . $this->typeName . "Update"}($sisData, "participant" . $this->typeName);
+                $this->skautis->event->{"Participant" . $this->typeName . "Update"}($sisData, "participant" . $this->typeName);
             }
             $keys = array("actionId", "payment", "repayment", "isAccount");
             $dataUpdate = array();
@@ -180,7 +180,7 @@ class ParticipantService extends MutableBaseService {
                 'Days' => $arr['days'],
                 self::PAYMENT => $arr['payment'],
             );
-            $this->skautIS->event->{"Participant" . $this->typeName . "Update"}($sisData, "participant" . $this->typeName);
+            $this->skautis->event->{"Participant" . $this->typeName . "Update"}($sisData, "participant" . $this->typeName);
         }
     }
 
@@ -191,7 +191,7 @@ class ParticipantService extends MutableBaseService {
      */
     public function removeParticipant($participantId) {
         $this->table->deleteDetail($participantId);
-        return $this->skautIS->event->{"Participant" . $this->typeName . "Delete"}(array("ID" => $participantId, "DeletePerson" => false));
+        return $this->skautis->event->{"Participant" . $this->typeName . "Delete"}(array("ID" => $participantId, "DeletePerson" => false));
     }
 
 //    public function getAllPersonDetail($ID) {
@@ -242,17 +242,17 @@ class ParticipantService extends MutableBaseService {
     }
 
     public function getEventStatistic($eventId) {
-        $skautisData = $this->skautIS->event->{"EventStatisticAllEventGeneral"}(array("ID_EventGeneral" => $eventId));
+        $skautisData = $this->skautis->event->{"EventStatisticAllEventGeneral"}(array("ID_EventGeneral" => $eventId));
         return array_combine(array_map(create_function('$o', 'return $o->ID_ParticipantCategory;'), $skautisData), $skautisData);
     }
 
     public function activateEventStatistic($eventId) {
-        return $this->skautIS->event->{"EventGeneralUpdateStatisticAutoComputed"}(array("ID" => $eventId, "IsStatisticAutoComputed" => TRUE), "eventGeneral");
+        return $this->skautis->event->{"EventGeneralUpdateStatisticAutoComputed"}(array("ID" => $eventId, "IsStatisticAutoComputed" => TRUE), "eventGeneral");
     }
 
     public function getPotencialCampParticipants($eventId) {
         $res = array();
-        foreach ($this->skautIS->org->{"PersonAllEventCampMulti"}(array("ID_EventCamp" => $eventId)) as $p) {
+        foreach ($this->skautis->org->{"PersonAllEventCampMulti"}(array("ID_EventCamp" => $eventId)) as $p) {
             $res[$p->ID] = $p->DisplayName;
         }
         natcasesort($res);

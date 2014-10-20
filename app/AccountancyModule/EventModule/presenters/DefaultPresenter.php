@@ -161,7 +161,7 @@ class DefaultPresenter extends BasePresenter {
     function createComponentFormCreate($name) {
         $scopes = $this->context->eventService->event->getScopes();
         $types = $this->context->eventService->event->getTypes();
-        $tmpId = $this->context->skautIS->getUnitId();
+        $tmpId = $this->context->skautis->getUnitId();
         $units = array($tmpId => $this->context->unitService->getDetail($tmpId)->SortName);
         foreach ($this->context->unitService->getChild($tmpId) as $u) {
             $units[$u->ID] = "» " . $u->SortName;

@@ -14,10 +14,9 @@ class MemberService extends BaseService {
      * @return array 
      */
     public function getAll($unitId = NULL, $onlyDirectMember = true, $participants = NULL) {
-        $unitId = $unitId === NULL ? $this->skautIS->getUnitId() : $unitId;
-        $onlyDirectMember = (bool) $onlyDirectMember;
-
-        $all = $this->skautIS->org->PersonAll(array("ID_Unit" => $unitId, "OnlyDirectMember" => $onlyDirectMember));
+        $unitId = $unitId === NULL ? $this->skautis->getUnitId() : $unitId;
+        
+        $all = $this->skautis->org->PersonAll(array("ID_Unit" => $unitId, "OnlyDirectMember" => (bool) $onlyDirectMember));
         $ret = array();
 
         if (empty($participants)) {
@@ -45,7 +44,7 @@ class MemberService extends BaseService {
      * @return array
      */
     public function getAC($OnlyDirectMember = false, $adultOnly = false) {
-        return array_values($this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $adultOnly));
+        return array_values($this->getPairs($this->skautis->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $adultOnly));
     }
 
     /**
@@ -54,7 +53,7 @@ class MemberService extends BaseService {
      * @return array
      */
     public function getCombobox($OnlyDirectMember = false, $adultOnly = false) {
-        return $this->getPairs($this->skautIS->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $adultOnly);
+        return $this->getPairs($this->skautis->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $adultOnly);
     }
 
     /**

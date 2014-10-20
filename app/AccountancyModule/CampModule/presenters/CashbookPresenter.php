@@ -33,7 +33,7 @@ class CashbookPresenter extends BasePresenter {
         if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
             //$this->template->isAllowedUpdateRealTotalCost = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
             $this->template->missingCategories = true; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
-            $this->template->skautISHttpPrefix = $this->context->skautIS->getHttpPrefix();
+            $this->template->skautISHttpPrefix = $this->context->skautis->getHttpPrefix();
         }
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
