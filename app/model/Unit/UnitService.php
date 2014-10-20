@@ -9,14 +9,18 @@ class UnitService extends BaseService {
 
     protected $oficialUnits = array("stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka");
 
-    /**
+    public function getUnitId(){
+        return $this->skautis->getUnitId();
+    }
+
+        /**
      * vrací detail jednotky
      * @param int $unitId
      * @return stdClass 
      */
     public function getDetail($unitId = NULL) {
         if ($unitId === NULL) {
-            $unitId = $this->skautis->getUnitId();
+            $unitId = $this->getUnitId();
         }
         try {
             $cacheId = __FUNCTION__ . $unitId;
