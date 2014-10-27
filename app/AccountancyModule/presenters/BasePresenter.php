@@ -25,7 +25,6 @@ class BasePresenter extends \App\BasePresenter {
     /**
      * je akci možné upravovat?
      * @var bool
-     * @deprecated since version 2.0
      */
     protected $isEditable;
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace App;
 
 use SkautIS\Exception\AuthenticationException;
@@ -51,10 +52,12 @@ class AuthPresenter extends BasePresenter {
                 throw new AuthenticationException("Nemáte platné přihlášení do skautISu");
             }
             $me = $this->context->userService->getPersonalDetail();
-
+            
             $this->user->setExpiration('+ 29 minutes'); // nastavíme expiraci
             $this->user->setAuthenticator(new \Sinacek\SkautISAuthenticator());
             $this->user->login($me);
+            
+            $this->updateUserAccess();
 
             if (isset($ReturnUrl)) {
                 $this->restoreRequest($ReturnUrl);
@@ -65,7 +68,7 @@ class AuthPresenter extends BasePresenter {
         }
         $this->presenter->redirect(':Accountancy:Default:');
     }
-    
+
     function actionAjax($backlink = NULL) {
         $this->template->backlink = $backlink;
         $this->flashMessage("Vypršel čas přihlášení. Přihlaste se prosím znovu.", "warning");
@@ -79,7 +82,7 @@ class AuthPresenter extends BasePresenter {
     function actionLogoutSIS() {
         $this->redirectUrl($this->context->authService->getLogoutUrl());
     }
-    
+
     function actionSkautisLogout() {
         $this->user->logout(TRUE);
         if ($this->request->post['skautIS_Logout']) {

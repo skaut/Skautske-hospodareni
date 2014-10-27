@@ -10,28 +10,23 @@ use Nette\Application\UI\Form;
 class PaymentPresenter extends BasePresenter {
 
     protected $notFinalStates;
-    protected $groups;
+//    protected $groups;
 
     protected function startup() {
         parent::startup();
         //Kontrola ověření přístupu
         $this->template->notFinalStates = $this->notFinalStates = $this->model->getNonFinalStates();
-        $this->groups = $this->model->getGroups($this->objectId);
+        //$this->groups = $this->model->getGroupsIn($this->user->getIdentity()->access['read']);
     }
 
     public function renderDefault($onlyOpen = 1) {
         $this->template->onlyOpen = $onlyOpen;
-        $this->template->groups = $onlyOpen ? array_filter($this->groups, create_function('$o', 'return $o->state == "open";')) : $this->groups;
-        $this->template->payments = $this->model->getAll(array_keys($this->groups));
+        $this->template->groups = $groups = $this->model->getGroupsIn($this->user->getIdentity()->access['read'], $onlyOpen);
+        $this->template->payments = $this->model->getAll(array_keys($groups));
     }
 
     public function renderDetail($id) {
-        //ověření přístupu
-        if (!array_key_exists($id, $this->groups)) {
-            $this->flashMessage("Neplatný požadavek na detail skupiny plateb", "fail");
-            $this->redirect("default");
-        }
-        $this->template->group = $group = $this->groups[$id];
+        $this->template->group = $group = $this->model->getGroup($this->aid, $id);
         $form = $this['paymentForm'];
         $form->addSubmit('send', 'Přidat platbu')->setAttribute("class", "btn btn-primary");
         $form->setDefaults(array(
@@ -48,8 +43,11 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function renderEdit($pid) {
-        //ověření přístupu
-        $payment = $this->model->get($this->objectId, $pid);
+        if(!$this->isEditable){
+            $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
+            $this->redirect("Payment:default");
+        }
+        $payment = $this->model->get($this->aid, $pid);
         $form = $this['paymentForm'];
         $form->addSubmit('send', 'Přidat')->setAttribute("class", "btn btn-primary");
         $form->setDefaults(array(
@@ -66,78 +64,82 @@ class PaymentPresenter extends BasePresenter {
         $this->template->linkBack = $this->link("detail", array("id" => $payment->groupId));
     }
 
-    public function handleCancel($id) {
-        //ověření přístupu
-        if (!$this->model->get($this->objectId, $id)) {
+    public function handleCancel($pid) {
+        if(!$this->isEditable){
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "error");
             $this->redirect("this");
         }
-        if ($this->model->update($id, array("state" => "canceled"))) {
+        if (!$this->model->get($this->aid, $pid)) {
+            $this->flashMessage("Platba pro zrušení nebyla nalezena!", "error");
+            $this->redirect("this");
+        }
+        if ($this->model->update($pid, array("state" => "canceled"))) {
             $this->flashMessage("Platba byla zrušena.");
         } else {
-            $this->flashMessage("Platbu se nepodařilo uzavřít!", "fail");
+            $this->flashMessage("Platbu se nepodařilo zrušit!", "error");
         }
         $this->redirect("this");
     }
 
-    public function handleSend($id) {
-        //ověření přístupu
-        if (!$this->model->get($this->objectId, $id)) {
+    public function handleSend($pid) {
+        if(!$this->isEditable){
             $this->flashMessage("Neplatný požadavek na odeslání emailu!", "error");
             $this->redirect("this");
         }
-        if ($this->model->sendInfo($this->objectId, $this->template, $id, $this->aid)) {
+        if (!$this->model->get($this->aid, $pid)) {
+            $this->flashMessage("Neplatný požadavek na odeslání emailu!", "error");
+            $this->redirect("this");
+        }
+        if ($this->model->sendInfo($this->aid, $this->template, $pid)) {
             $this->flashMessage("Informační email byl odeslán.");
         } else {
-            $this->flashMessage("Informační email se nepodařilo odeslat!", "fail");
+            $this->flashMessage("Informační email se nepodařilo odeslat!", "error");
         }
         $this->redirect("this");
     }
 
     /**
      * rozešle všechny neposlané emaily
-     * @param int $id groupId
+     * @param int $pid groupId
      */
-    public function handleSendGroup($id) {
-        //ověření přístupu
-        if (!array_key_exists($id, $this->groups)) {
-            $this->flashMessage("Neoprávněný přístup k záznamu!", "fail");
+    public function handleSendGroup($pid) {
+        if(!$this->isEditable){
+            $this->flashMessage("Neoprávněný přístup k záznamu!", "error");
             $this->redirect("this");
         }
-        $payments = $this->model->getAll($id);
+        $payments = $this->model->getAll($pid);
         $cnt = 0;
         foreach ($payments as $p) {
-            $cnt += $this->model->sendInfo($this->objectId, $this->template, $p->id, $this->aid);
+            $cnt += $this->model->sendInfo($this->aid, $this->template, $p->id);
         }
 
         if ($cnt > 0) {
             $this->flashMessage("Informační emaily($cnt) byly odeslány.");
         } else {
-            $this->flashMessage("Nebyl odeslán žádný informační email!", "fail");
+            $this->flashMessage("Nebyl odeslán žádný informační email!", "error");
         }
         $this->redirect("this");
     }
 
-    public function handleComplete($id) {
-        //ověření přístupu
-        if (!$this->model->get($this->objectId, $id)) {
-            $this->flashMessage("Neplatný požadavek na uzavření platby!", "error");
+    public function handleComplete($pid) {
+        if(!$this->isEditable){
+            $this->flashMessage("Nejste oprávněni k uzavření platby!", "error");
             $this->redirect("this");
         }
-        if ($this->model->update($id, array("state" => "completed"))) {
+        if ($this->model->update($pid, array("state" => "completed"))) {
             $this->flashMessage("Platba byla zaplacena.");
         } else {
-            $this->flashMessage("Platbu se nepodařilo uzavřít!", "fail");
+            $this->flashMessage("Platbu se nepodařilo uzavřít!", "error");
         }
         $this->redirect("this");
     }
 
-    public function handlePairPayments($id = NULL) {
-        if ($id !== NULL && !array_key_exists($id, $this->groups)) {
-            $this->flashMessage("Neoprávněný přístup k záznamu!", "fail");
+    public function handlePairPayments($gid = NULL) {
+        if ($gid !== NULL && !$this->isEditable) {
+            $this->flashMessage("Nemáte oprávnění párovat platby!", "error");
             $this->redirect("this");
         }
-        $pairsCnt = $this->model->pairPayments($this->objectId, $id);
+        $pairsCnt = $this->model->pairPayments($this->aid, $gid);
         if ($pairsCnt > 0) {
             $this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
         } else {
@@ -171,7 +173,10 @@ class PaymentPresenter extends BasePresenter {
     }
 
     function paymentSubmitted(Form $form) {
-        //ověření přístupu
+        if(!$this->isEditable){
+            $this->flashMessage("Nejste oprávněni k úpravám plateb!", "error");
+            $this->redirect("this");
+        }
         $v = $form->getValues();
         if ($v->maturity == NULL) {
             $form['maturity']->addError("Musíte vyplnit splatnost");
@@ -181,13 +186,13 @@ class PaymentPresenter extends BasePresenter {
             if ($this->model->update($v->pid, array('name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => $v->note))) {
                 $this->flashMessage("Platba byla upravena");
             } else {
-                $this->flashMessage("Platbu se nepodařilo založit", "fail");
+                $this->flashMessage("Platbu se nepodařilo založit", "error");
             }
         } else {//ADD
             if ($this->model->createPayment($v->oid, $v->name, $v->email, $v->amount, $v->maturity, NULL, $v->vs, $v->ks, $v->note)) {
                 $this->flashMessage("Platba byla přidána");
             } else {
-                $this->flashMessage("Platbu se nepodařilo založit", "fail");
+                $this->flashMessage("Platbu se nepodařilo založit", "error");
             }
         }
         $this->redirect("detail", array("id" => $v->oid));

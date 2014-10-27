@@ -14,8 +14,8 @@ class PaymentService extends BaseService {
         $this->mailService = $mailService;
     }
 
-    public function get($objectId, $paymentId) {
-        return $this->table->get($objectId, $paymentId);
+    public function get($unitId, $paymentId) {
+        return $this->table->get($unitId, $paymentId);
     }
 
     /**
@@ -69,8 +69,8 @@ class PaymentService extends BaseService {
         return $this->table->summarizeByState($pa_id);
     }
 
-    public function sendInfo($objectId, $template, $paymentId, $unitId) {
-        $p = $this->get($objectId, $paymentId);
+    public function sendInfo($unitId, $template, $paymentId) {
+        $p = $this->get($unitId, $paymentId);
         if ($p->state != PaymentTable::STATE_PREPARING || mb_strlen($p->email) < 5) {
             return false;
         }
@@ -97,19 +97,23 @@ class PaymentService extends BaseService {
     /**
      * GROUP
      */
-    public function getGroup($objectId, $groupId) {
-        return $this->table->getGroup($objectId, $groupId);
+    public function getGroup($unitId, $groupId) {
+        return $this->table->getGroup($unitId, $groupId);
     }
 
-    public function getGroups($objectId, $onlyOpen = FALSE) {
-        return $this->table->getGroupsByObjectId($objectId, $onlyOpen);
+    public function getGroups($unitId, $onlyOpen = FALSE) {
+        return $this->table->getGroups($unitId, $onlyOpen);
+    }
+    
+    public function getGroupsIn($unitIds, $onlyOpen) {
+        return $this->table->getGroupsIn($unitIds, $onlyOpen);
     }
 
-    public function createGroup($objectId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {
+    public function createGroup($unitId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {
         return $this->table->createGroup(array(
                     'groupType' => $oType,
                     'sisId' => $sisId,
-                    'objectId' => $objectId,
+                    'unitId' => $unitId,
                     'label' => $label,
                     'maturity' => $maturity,
                     'ks' => $ks != "" ? $ks : NULL,
@@ -153,9 +157,9 @@ class PaymentService extends BaseService {
      * @param bool $onlyWithoutRecord pouze ty, které ještě nemají zadanou platbu
      * @return array(array())
      */
-    public function getRegistrationPersons($objectId, $id, $onlyWithoutRecord = TRUE) {
+    public function getRegistrationPersons($unitId, $id, $onlyWithoutRecord = TRUE) {
         $persons = $this->skautis->org->PersonRegistrationAll(array(
-            'ID_UnitRegistration' => $this->getGroup($objectId, $id)->sisId,
+            'ID_UnitRegistration' => $this->getGroup($unitId, $id)->sisId,
             'IncludeChild' => TRUE,
         ));
         if ($onlyWithoutRecord) {
@@ -185,16 +189,16 @@ class PaymentService extends BaseService {
     /**
      * BANK
      */
-    public function getBankToken($objectId) {
+    public function getBankToken($unitId) {
         return;
     }
 
-    public function pairPayments($objectId, $groupId = NULL) {
-        $token = $this->table->getBankToken($objectId);
+    public function pairPayments($unitId, $groupId = NULL) {
+        $token = $this->table->getBankToken($unitId);
         if (!$token) {
             return FALSE;
         }
-        $payments = $this->filterVS($this->getAll($groupId === NULL ? array_keys($this->getGroups($objectId)) : $groupId, FALSE));
+        $payments = $this->filterVS($this->getAll($groupId === NULL ? array_keys($this->getGroups($unitId)) : $groupId, FALSE));
         $transactions = $this->getTransactionsFio($token);
         if (!$transactions) {
             return FALSE;
@@ -215,7 +219,9 @@ class PaymentService extends BaseService {
     public function getTransactionsFio($token, $dateStart = NULL, $dateEnd = NULL) {
         $dateStart = $dateStart === NULL ? date("Y-m-d", strtotime("-2 day")) : $dateStart;
         $dateEnd = $dateEnd === NULL ? date("Y-m-d") : $dateEnd;
-        $url = "https://www.fio.cz/ib_api/rest/periods/$token/$dateStart/$dateEnd/transactions.json";
+        $url = WWW_DIR . "/test-transactions.json";
+        //@TODO: zmenit URL adresu
+        //$url = "https://www.fio.cz/ib_api/rest/periods/$token/$dateStart/$dateEnd/transactions.json";
         $file = file_get_contents($url);
         if (!$file) {
             return FALSE;

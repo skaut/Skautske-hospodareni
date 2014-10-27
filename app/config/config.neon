@@ -16,7 +16,7 @@ nette:
         expiration: "+ 3 days"
     application:
         #errorPresenter: App\Error
-        catchExceptions: true
+        #catchExceptions: true
         mapping:
             *: App\*Module\*Presenter
     debugger:

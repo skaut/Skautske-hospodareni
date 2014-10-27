@@ -11,12 +11,12 @@ class RegistrationPresenter extends BasePresenter {
 
     public function actionMassAdd($id) {
         //ověření přístupu
-        $this->template->list = $data = $this->model->getRegistrationPersons($this->objectId, $id);
-        $this->template->detail = $detail = $this->model->getGroup($this->objectId, $id);
-        
-        if(!$detail){
+        $this->template->list = $data = $this->model->getRegistrationPersons($this->aid, $id);
+        $this->template->detail = $detail = $this->model->getGroup($this->aid, $id);
+
+        if (!$detail) {
             $this->flashMessage("Neplatný požadavek na přidání registračních plateb", "error");
-            $this->redirect("Payment:detail", array("id"=>$id));
+            $this->redirect("Payment:detail", array("id" => $id));
         }
 
         $form = $this['registrationForm'];
@@ -57,9 +57,12 @@ class RegistrationPresenter extends BasePresenter {
     }
 
     function registrationFormSubmitted(Form $form) {
-        //ověření přístupu
         $values = $form->getValues();
-        $data = $this->model->getRegistrationPersons($this->objectId, $values->oid);
+        if(!$this->isEditable){
+            $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "error");
+            $this->redirect("Payment:detail", array("id" => $values->oid));
+        }
+        $data = $this->model->getRegistrationPersons($this->aid, $values->oid);
         foreach ($data as $u) {
             foreach ($u as $p) {
                 if (!$values->{$p['ID_Unit'] . '_' . $p['ID_Person'] . '_' . 'check'}) {
