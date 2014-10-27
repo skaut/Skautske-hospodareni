@@ -15,19 +15,14 @@ class GroupPresenter extends BasePresenter {
      */
     protected $model;
     protected $defaultEmails;
-    protected $groups;
-    protected $objectId;
 
     public function __construct(\Model\PaymentService $paymentService) {
-        parent::__construct();
+        parent::__construct($paymentService);
         $this->model = $paymentService;
     }
 
     protected function startup() {
         parent::startup();
-        //Kontrola ověření přístupu
-        $this->objectId = $this->model->getLocalId($this->aid, "unit");
-        $this->groups = $this->model->getGroups($this->objectId);
         $this->defaultEmails = array(
             "registration" => array(
                 "info" => "Dobrý den,\nchtěli bychom vás požádat o úhradu členských příspěvků do našeho skautského střediska. \n<b>Informace k platbě:</b>\nÚčel platby: %name%\nČíslo účtu: %account%\nČástka: %amount%\nDatum splatnosti: %maturity%\nVS: %vs%\nKS: %ks%\n\nPro zrychlení platby jsme připravili QR kód, který lze použít při placení v mobilních aplikacích bank. Použití QR kódu šetří váš čas a snižuje pravděpodobnost překlepu.\n%qrcode%\n\nDěkujeme za včasné uhrazení",
@@ -41,6 +36,10 @@ class GroupPresenter extends BasePresenter {
     }
 
     public function renderDefault($id = NULL) {
+        if (!$this->isEditable) {
+            $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "error");
+            $this->redirect("Payment:default");
+        }
         $form = $this['groupForm'];
         $form->addSubmit('send', ($id === NULL ? "Založit" : "Upravit") . ' skupinu')->setAttribute("class", "btn btn-primary");
         if ($id === NULL) {//ADD
@@ -48,12 +47,7 @@ class GroupPresenter extends BasePresenter {
             $this->template->nadpis = "Založení skupiny plateb";
             $this->template->linkBack = $this->link("Default:");
         } else {//EDIT
-            //ověření přístupu
-            if (!array_key_exists($id, $this->groups)) {
-                $this->flashMessage("Neplatný požadavek na skupinu plateb", "fail");
-                $this->redirect("default");
-            }
-            $this->template->group = $group = $this->groups[$id];
+            $this->template->group = $group = $this->model->getGroup($this->aid, $id);
             $form->setDefaults(array(
                 "label" => $group->label,
                 "amount" => $group->amount,
@@ -69,6 +63,10 @@ class GroupPresenter extends BasePresenter {
     }
 
     public function actionCreateGroupRegistration($regId) {
+        if (!$this->isEditable) {
+            $this->flashMessage("Nemáte oprávnění pro založení registrace", "fail");
+            $this->redirect("default");
+        }
         $reg = $this->model->getRegistration($regId);
         $groupId = $this->model->createGroup($this->objectId, 'registration', $reg->ID, "Registrace " . $reg->Year, $reg->Year . "-01-15", NULL, NULL, $this->defaultEmails['registration']['info'], $this->defaultEmails['registration']['demand']);
         $this->redirect("Registration:massAdd", array("id" => $groupId));
@@ -97,7 +95,10 @@ class GroupPresenter extends BasePresenter {
     }
 
     function groupFormSubmitted(Form $form) {
-        //ověření přístupu
+        if (!$this->isEditable) {
+            $this->flashMessage("Nemáte oprávnění pro změny skupin plateb", "fail");
+            $this->redirect("default");
+        }
         $v = $form->getValues();
         if ($v->gid != "") {//EDIT
             if ($this->model->updateGroup($v->gid, array(

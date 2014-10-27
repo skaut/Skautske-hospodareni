@@ -2,9 +2,10 @@
 $payments - platby ve skupině
 $groupState - stav skupiny plateb
 $form - formulář, pro zadání nové platby
+$isEditable
 *}
 {dump $payments}
-{var $isEditable = ($groupState == 'open')}
+{var $isEditable = $isEditable && ($groupState == 'open')}
 {if !empty($payments)}
     <ul class="alert alert-error" n:if="isset($form) && $form->hasErrors()">
         <li n:foreach="$form->errors as $error">{$error}</li>
@@ -39,8 +40,8 @@ $form - formulář, pro zadání nové platby
             <td>{$l->name}</td>
             <td>{if $l->email == null}&nbsp;{else}{$l->email}{/if}</td>
             <td class="r">{$l->amount}</td>
-            <td>{if $l->vs == null}&nbsp;{else}{$l->vs}{/if}</td>
-            <td>{if $l->ks == null}&nbsp;{else}{$l->ks}{/if}</td>
+            <td class="r">{if $l->vs == null}&nbsp;{else}{$l->vs}{/if}</td>
+            <td class="r">{if $l->ks == null}&nbsp;{else}{$l->ks}{/if}</td>
             <td>{$l->maturity|date:'j.n.Y'}</td>
             <td>{if $l->note == null}&nbsp;{else}{$l->note}{/if}</td>
             <td>{$l->stateLabel}</td>

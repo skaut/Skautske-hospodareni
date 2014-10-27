@@ -44,7 +44,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
                 $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
                 $this->template->myRole = $this->context->userService->getRoleId();
             } catch (\SkautIS\Exception\AuthenticationException $ex) {
-                $this->user->logout();
+                $this->user->logout(TRUE);
             }
         }
         $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
@@ -54,6 +54,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
     //změní přihlášenou roli ve skautISu
     public function handleChangeRole($roleId) {
         $this->context->userService->updateSkautISRole($roleId);
+        $this->updateUserAccess();
         $this->redirect("this");
     }
 
@@ -110,6 +111,10 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'nextras.datetimepicker.init.js',
         ));
         return new WebLoader\Nette\JavaScriptLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
+    }
+    
+    protected function updateUserAccess(){
+        $this->user->getIdentity()->access = $this->context->userService->getAccessArrays($this->context->unitService);
     }
 
 }
