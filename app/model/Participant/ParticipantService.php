@@ -20,7 +20,7 @@ class ParticipantService extends MutableBaseService {
     const PAYMENT = "Note";
 
     public function get($participantId) {
-        $data = (array) $this->skautis->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $participantId));
+        $data = \Nette\Utils\ArrayHash::from($this->skautis->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $participantId)));
         $detail = $this->table->get($participantId);
         if ($detail === FALSE) {//u akcí to v tabulce nic nenajde
             $data->payment = isset($data->{self::PAYMENT}) ? (int) $data->{self::PAYMENT} : 0;
@@ -36,9 +36,9 @@ class ParticipantService extends MutableBaseService {
      * @param type $ID
      * @return array 
      */
-    public function getAll($ID) {
+    public function getAll($ID, $details = FALSE) {
         //$this->enableDaysAutocount($ID);
-        $cacheId = __FUNCTION__ . $ID;
+        $cacheId = __FUNCTION__ . $ID . "_" . $details;
         if (!($participants = $this->loadSes($cacheId))) {
             $participants = $this->skautis->event->{"Participant" . $this->typeName . "All"}(array("ID_Event" . $this->typeName => $ID));
             $campDetails = $this->type == "camp" ? $this->table->getAllCampDetails($ID) : array();
@@ -48,11 +48,14 @@ class ParticipantService extends MutableBaseService {
                 }
             }
 
-            foreach ($participants as $p) {//objekt má vzdy Note a je pod associativnim klicem
-                $p->payment = isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0;
+            foreach ($participants as $k => $p) {//objekt má vzdy Note a je pod associativnim klicem
+                $p->payment = array_key_exists($p->ID, $campDetails) ? $campDetails[$p->ID]->payment : (isset($p->{self::PAYMENT}) ? $p->{self::PAYMENT} : 0);
                 $p->isAccount = array_key_exists($p->ID, $campDetails) ? $campDetails[$p->ID]->isAccount : null;
                 $p->repayment = array_key_exists($p->ID, $campDetails) ? $campDetails[$p->ID]->repayment : null;
                 $this->setPersonName($p);
+                if ($details) {
+                    $participants[$k] = \Nette\Utils\ArrayHash::from((array) $p + (array) $this->skautis->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $p->ID)));
+                }
             }
             $this->saveSes($cacheId, $participants);
         }
@@ -143,7 +146,7 @@ class ParticipantService extends MutableBaseService {
             "Street" => isset($data['street']) ? $data['street'] : null,
             "City" => isset($data['city']) ? $data['city'] : null,
             "Postcode" => isset($data['postcode']) ? $data['postcode'] : null,
-                ));
+        ));
     }
 
     /**
@@ -232,13 +235,16 @@ class ParticipantService extends MutableBaseService {
 
     /**
      * vrací počet osobodní na dané akci
-     * @param int $eventId
+     * @param int|array $eventIdOrParticipants
      * @return int 
      */
-    public function getPersonsDays($eventId) {
-        return array_reduce($this->getAll($eventId), function ($res, $v) {
-            return $res += $v->Days;
-        });
+    public function getPersonsDays($eventIdOrParticipants) {
+        if($eventIdOrParticipants instanceof \Traversable || is_array($eventIdOrParticipants)){
+            $participants = $eventIdOrParticipants;
+        } else {
+            $participants = $this->getAll($eventIdOrParticipants);
+        }
+        return array_reduce($participants, create_function('$res,$v', 'return $res += $v->Days;'));
     }
 
     public function getEventStatistic($eventId) {

@@ -102,7 +102,7 @@ $isAllowIsAccount
                         <td n:if="$isAllowRepayment"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-repayment-{$p->ID}" class="num-edit" data-type='repayment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->repayment) && $p->repayment != ""}{$p->repayment|price:false}{? $totalRepayment += $p->repayment}{else}0{/if}</a></td>
                         <td n:if="$isAllowIsAccount">{ifset $p->isAccount}{$p->isAccount == 'Y' ? 'Ano'}{/ifset}</td>
                         <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="r">
-                            <a n:if="$isAllowParticipantDelete" n:href="remove! $p->ID" class="btn btn-danger btn-mini addRow"><i class="icon-remove icon-white"></i></a>
+                            <a n:if="$isAllowParticipantDelete" n:href="remove! $p->ID" class="btn btn-danger btn-mini ajax"><i class="icon-remove icon-white"></i></a>
                             <input type="checkbox" name="massParticipants[]" id="massParticipants-{$p->ID}" value={$p->ID}/>
                         </td>
                     </tr>

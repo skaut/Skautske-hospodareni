@@ -32,7 +32,7 @@ class DefaultPresenter extends BasePresenter {
 
         $list = $this->context->campService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $value->accessDetail = $this->context->userService->actionVerify(self::STable, $value->ID, self::STable . "_DETAIL");
+            $value['accessDetail'] = $this->context->userService->actionVerify(self::STable, $value['ID'], self::STable . "_DETAIL");
             $list[$key] = $value;
         }
         $this->template->list = $list;

@@ -27,7 +27,7 @@ table {
         <td>{$iterator->counter}</td>
         <td>{$u->FirstName}</td>
         <td>{$u->LastName}</td>
-        <td>{$u->Street}, {$u->City}, {$u->Postcode}</td>
+        <td>{if $u->Street != ""}{$u->Street}{else}&nbsp;{/if}{if $u->City != ""}, {$u->City}{/if}{if $u->Postcode != ""}, {$u->Postcode}{/if}</td>
         <td style="text-align: right;">{$u->Birthday|date:"d.m.Y"}</td>
     </tr>
     {/if}
