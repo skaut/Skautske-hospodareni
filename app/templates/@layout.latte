@@ -65,8 +65,10 @@
                                 <li {ifCurrent :Accountancy:Event:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
                                 <li {ifCurrent :Accountancy:Camp:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory{*} <sup style="color:red;font-weight: bold;">BETA</sup>{*}</a></li>
                                 <li><a n:href=":Accountancy:Travel:Default:">Cestovní příkazy</a></li>
-                                <li {ifCurrent :Accountancy:UnitAccount:*}class='active'{/ifCurrent}><a n:href=":Accountancy:UnitAccount:Default:">Jednotka</a></li>
-                                <li {ifCurrent :Accountancy:Payment:*}class='active'{/ifCurrent}><a n:href=":Accountancy:Payment:Payment:">Platby</a></li>
+                                {*}
+                                  <li {ifCurrent :Accountancy:UnitAccount:* }class='active'{/ifCurrent}><a n:href=":Accountancy:UnitAccount:Default:">Jednotka</a></li>
+                                <li {ifCurrent :Accountancy:Payment:* }class='active'{/ifCurrent}><a n:href=":Accountancy:Payment:Payment:">Platby</a></li>
+                                {*}
                                 {/if}
                         </ul>
 
