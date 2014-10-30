@@ -26,10 +26,10 @@
             </thead>
             <tbody>
                 <tr n:foreach="$list as $i">
-                    <td><a n:tag-if="$i->accessDetail" n:href="Detail: $i->ID">{$i->DisplayName}</a></td>
-                    <td>{$i->StartDate|date:"d.m.Y"}</td>
-                    <td>{$i->EndDate|date:"d.m.Y"}</td>
-                    <td>{!$i->ID_EventCampState|campStateLabel}</td>
+                    <td><a n:tag-if="$i['accessDetail']" n:href="Detail: $i['ID']">{$i['DisplayName']}</a></td>
+                    <td>{$i['StartDate']|date:"d.m.Y"}</td>
+                    <td>{$i['EndDate']|date:"d.m.Y"}</td>
+                    <td>{!$i['ID_EventCampState']|campStateLabel}</td>
                 </tr>
             </tbody>
         </table>

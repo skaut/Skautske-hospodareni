@@ -20,12 +20,10 @@ class ExcelService extends BaseService {
 
     public function getParticipants(EventEntity $service, $event, $type = "generalEvent") {
         $objPHPExcel = $this->getNewFile();
-
+        $data = $service->participants->getAll($event->ID, TRUE);
         if ($type == "camp") {
-            $data = $service->participants->getAll($event->ID);
             $this->setSheetParticipantCamp($objPHPExcel->getActiveSheet(), $data);
         } else {//GENERAL EVENT
-            $data = $service->participants->getAll($event->ID);
             $this->setSheetParticipantGeneral($objPHPExcel->getActiveSheet(), $data, $event);
         }
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-" . date("Y_n_j"));
@@ -53,8 +51,9 @@ class ExcelService extends BaseService {
             $data[$aid]['parStatistic'] = $service->participants->getEventStatistic($aid);
             $data[$aid]['chits'] = $service->chits->getAll($aid);
             $data[$aid]['func'] = $service->event->getFunctions($aid);
-            $data[$aid]['participantsCnt'] = count($service->participants->getAll($aid));
-            $data[$aid]['personDays'] = $service->participants->getPersonsDays($aid);
+            $participants = $service->participants->getAll($aid);
+            $data[$aid]['participantsCnt'] = count($participants);
+            $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
         }
         $this->setSheetEvents($objPHPExcel->setActiveSheetIndex(0), $data);
         $objPHPExcel->createSheet(1);
