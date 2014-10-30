@@ -32,14 +32,11 @@ class ExportService extends BaseService {
      */
     public function getParticipants(ITemplate $template, $aid, EventEntity $service, $type = "generalEvent") {
         if ($type == "camp") {
-            //$template = $this->getTemplate(dirname(__FILE__) . '/templates/participantCamp.latte');
             $this->setTemplate($template, dirname(__FILE__) . '/templates/participantCamp.latte');
-            $template->list = $service->participants->getAll($aid);
         } else {
-            //$template = $this->getTemplate(dirname(__FILE__) . '/templates/participant.latte');
             $this->setTemplate($template, dirname(__FILE__) . '/templates/participant.latte');
-            $template->list = $service->participants->getAll($aid);
         }
+        $template->list = $service->participants->getAll($aid, TRUE);
         $template->info = $service->event->get($aid);
         return $template;
     }
@@ -66,7 +63,7 @@ class ExportService extends BaseService {
     public function getEventReport(ITemplate $template, $aid, EventEntity $eventService) {
         $categories = array();
         //inicializuje pole s kategorií s částkami na 0
-        foreach (ArrayHash::from($eventService->chits->getCategories()) as $c) {
+        foreach (ArrayHash::from($eventService->chits->getCategories($aid)) as $c) {
             $categories[$c->type][$c->short] = $c;
             $categories[$c->type][$c->short]->price = 0;
         }
@@ -76,8 +73,9 @@ class ExportService extends BaseService {
             $categories[$chit->ctype][$chit->cshort]->price += $chit->price;
         }
         $this->setTemplate($template, dirname(__FILE__) . '/templates/eventReport.latte');
-        $template->participants = $eventService->participants->getAll($aid);
-        $template->personsDays = $eventService->participants->getPersonsDays($aid);
+        $participants = $eventService->participants->getAll($aid);
+        $template->participantsCnt = count($participants);
+        $template->personsDays = $eventService->participants->getPersonsDays($participants);
         $template->a = $eventService->event->get($aid);
         $template->chits = $categories;
         $template->func = $eventService->event->getFunctions($aid);
@@ -128,8 +126,9 @@ class ExportService extends BaseService {
         }
 
         $this->setTemplate($template, dirname(__FILE__) . '/templates/campReport.latte');
-        $template->participants = $campService->participants->getAll($aid);
-        $template->personsDays = $campService->participants->getPersonsDays($aid);
+        $participants = $campService->participants->getAll($aid);
+        $template->participantsCnt = count($participants);
+        $template->personsDays = $campService->participants->getPersonsDays($participants);
         $template->a = $campService->event->get($aid);
         $template->chits = $categories;
         $template->func = $campService->event->getFunctions($aid);
