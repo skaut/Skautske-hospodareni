@@ -1,7 +1,0 @@
-libs/.*
-nbproject/.*
-source/.*
-tests/.*
-zaloha.*
-app/temp/.*
-app/log/.*
