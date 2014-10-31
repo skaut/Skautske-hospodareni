@@ -45,8 +45,8 @@ $isCamp
                         <td n:if="$isAllowParticipantInsert">
                             <input type=checkbox class="hidden-phone" name="massList[]" id="massList-{$id}" value={$id} />
                             {if $isAllowParticipantInsert}
-                                <a n:href="add! $id" class="btn btn-primary ajax btn-mini hidden-phone "><i class="icon-plus icon-white"></i></a>
-                                <a n:href="add! $id" class="btn btn-primary ajax btn-small visible-phone"><i class="icon-plus icon-white"></i></a>
+                                <a n:href="add! $id" class="btn btn-primary btn-mini hidden-phone addRow"><i class="icon-plus icon-white"></i></a>
+                                <a n:href="add! $id" class="btn btn-primary btn-small visible-phone addRow"><i class="icon-plus icon-white"></i></a>
                             {/if}
                         </td>
                         <td><label for="massList-{$id}">{$name}</label></td>

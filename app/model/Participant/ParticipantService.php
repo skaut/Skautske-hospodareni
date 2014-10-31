@@ -105,10 +105,17 @@ class ParticipantService extends MutableBaseService {
      * @return type
      */
     public function add($ID, $participantId) {
-        return $this->skautis->event->{"Participant" . $this->typeName . "Insert"}(array(
-                    "ID_Event" . $this->typeName => $ID,
-                    "ID_Person" => $participantId,
-        ));
+        try {
+            return $this->skautis->event->{"Participant" . $this->typeName . "Insert"}(array(
+                        "ID_Event" . $this->typeName => $ID,
+                        "ID_Person" => $participantId,
+            ));
+        } catch (\SkautIS\Exception\WsdlException $ex) {
+            if($ex->getMessage() != "Chyba validace (Participant_PersonIsAllreadyParticipantGeneral)"){
+                throw $ex;
+            }
+            return FALSE;
+        }
     }
 
     /**
@@ -239,7 +246,7 @@ class ParticipantService extends MutableBaseService {
      * @return int 
      */
     public function getPersonsDays($eventIdOrParticipants) {
-        if($eventIdOrParticipants instanceof \Traversable || is_array($eventIdOrParticipants)){
+        if ($eventIdOrParticipants instanceof \Traversable || is_array($eventIdOrParticipants)) {
             $participants = $eventIdOrParticipants;
         } else {
             $participants = $this->getAll($eventIdOrParticipants);
