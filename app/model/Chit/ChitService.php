@@ -359,7 +359,7 @@ class ChitService extends MutableBaseService {
      * @return int 
      */
     function solveString($str) {
-        preg_match_all('/(?P<cislo>[0-9]+([.][0-9]{1,})?)(?P<operace>[\+\*]+)?/', str_replace(",", ".", $str), $matches);
+        preg_match_all('/(?P<cislo>-?[0-9]+([.][0-9]{1,})?)(?P<operace>[\+\*]+)?/', str_replace(",", ".", $str), $matches);
         $maxIndex = count($matches['cislo']);
         foreach ($matches['operace'] as $index => $op) { //vyřeší operaci násobení
             if ($op == "*" && $index + 1 <= $maxIndex) {

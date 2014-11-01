@@ -21,10 +21,11 @@ class ExcelService extends BaseService {
     public function getParticipants(EventEntity $service, $event, $type = "generalEvent") {
         $objPHPExcel = $this->getNewFile();
         $data = $service->participants->getAll($event->ID, TRUE);
+        $sheet = $objPHPExcel->getActiveSheet();
         if ($type == "camp") {
-            $this->setSheetParticipantCamp($objPHPExcel->getActiveSheet(), $data);
+            $this->setSheetParticipantCamp($sheet, $data);
         } else {//GENERAL EVENT
-            $this->setSheetParticipantGeneral($objPHPExcel->getActiveSheet(), $data, $event);
+            $this->setSheetParticipantGeneral($sheet, $data, $event);
         }
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-" . date("Y_n_j"));
     }
