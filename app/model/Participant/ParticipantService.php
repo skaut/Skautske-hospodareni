@@ -26,7 +26,7 @@ class ParticipantService extends MutableBaseService {
             $data->payment = isset($data->{self::PAYMENT}) ? (int) $data->{self::PAYMENT} : 0;
         }
         $this->setPersonName($data);
-        $data->days = (int) $data->Days;
+        $data->days = $data->Days;
         return $data;
     }
 

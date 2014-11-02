@@ -1401,12 +1401,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sinacek/SkautIS.git",
-                "reference": "362281fabdcdbd2b103b78ad79961840cbcfdff8"
+                "reference": "c6dfa6ea5c558d549c9442185dcc44fdc1f1ee98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sinacek/SkautIS/zipball/362281fabdcdbd2b103b78ad79961840cbcfdff8",
-                "reference": "362281fabdcdbd2b103b78ad79961840cbcfdff8",
+                "url": "https://api.github.com/repos/sinacek/SkautIS/zipball/c6dfa6ea5c558d549c9442185dcc44fdc1f1ee98",
+                "reference": "c6dfa6ea5c558d549c9442185dcc44fdc1f1ee98",
                 "shasum": ""
             },
             "require": {
@@ -1435,7 +1435,7 @@
                 "api",
                 "skautis"
             ],
-            "time": "2014-10-28 12:58:16"
+            "time": "2014-10-30 17:55:09"
         },
         {
             "name": "srigi/nette-visualpaginator",

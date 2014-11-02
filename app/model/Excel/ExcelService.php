@@ -56,9 +56,11 @@ class ExcelService extends BaseService {
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
         }
-        $this->setSheetEvents($objPHPExcel->setActiveSheetIndex(0), $data);
+        $sheetEvents = $objPHPExcel->setActiveSheetIndex(0);
+        $this->setSheetEvents($sheetEvents, $data);
         $objPHPExcel->createSheet(1);
-        $this->setSheetChits($objPHPExcel->setActiveSheetIndex(1), $data);
+        $sheetChit = $objPHPExcel->setActiveSheetIndex(1);
+        $this->setSheetChits($sheetChit, $data);
         $this->send($objPHPExcel, "Souhrn-akcí-" . date("Y_n_j"));
     }
 
@@ -88,7 +90,7 @@ class ExcelService extends BaseService {
                     ->setCellValue('F' . $rowCnt, $row->Postcode)
                     ->setCellValue('G' . $rowCnt, !is_null($row->Birthday) ? date("d.m.Y", strtotime($row->Birthday)) : "")
                     ->setCellValue('H' . $rowCnt, $row->Days)
-                    ->setCellValue('I' . $rowCnt, $row->Age < ADULT_AGE ? $row->Days : 0)
+                    ->setCellValue('I' . $rowCnt, $row->Age < self::ADULT_AGE ? $row->Days : 0)
                     ->setCellValue('J' . $rowCnt, !is_null($row->payment) ? $row->payment : 0)
                     ->setCellValue('K' . $rowCnt, !is_null($row->repayment) ? $row->repayment : 0)
                     ->setCellValue('L' . $rowCnt, ($row->payment - $row->repayment))
