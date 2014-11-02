@@ -93,19 +93,18 @@ class ParticipantPresenter extends BasePresenter {
         $oldData = $this->context->eventService->participants->get($id);
         if ($field == "days") {
             $arr = array(
-                "payment" => @$oldData['payment'],
+                "payment" => key_exists("payment", $oldData) ? $oldData['payment'] : 0,
                 "days" => $value,
             );
             $this->context->eventService->participants->update($id, $arr);
         } else if ($field == "payment") {
             $arr = array(
                 "payment" => $value,
-                "days" => @$oldData['days'],
+                "days" =>  key_exists("days", $oldData) ? $oldData['days'] : NULL,
             );
             $this->context->eventService->participants->update($id, $arr);
         }
         $this->payload->message = 'Success';
-//        $this->sendResponse(new \Nette\Http\Response());
         $this->terminate();
     }
 
