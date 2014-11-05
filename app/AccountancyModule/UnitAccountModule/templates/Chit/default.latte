@@ -3,7 +3,7 @@
     <h2>{$grpLabel}</h2>
     {foreach $chitsArr[$type] as $id=>$chits}
         {if !empty($chits)}
-            <h3>{$info[$type][$id]->DisplayName}</h3>
+            <h3>{$info[$type][$id]['DisplayName']}</h3>
             <table class='table table-condensed'>
                 <tr>
                     <th>Účel</th>

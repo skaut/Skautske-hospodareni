@@ -68,7 +68,7 @@ class GroupPresenter extends BasePresenter {
             $this->redirect("default");
         }
         $reg = $this->model->getRegistration($regId);
-        $groupId = $this->model->createGroup($this->objectId, 'registration', $reg->ID, "Registrace " . $reg->Year, $reg->Year . "-01-15", NULL, NULL, $this->defaultEmails['registration']['info'], $this->defaultEmails['registration']['demand']);
+        $groupId = $this->model->createGroup($this->aid, 'registration', $reg->ID, "Registrace " . $reg->Year, $reg->Year . "-01-15", NULL, NULL, $this->defaultEmails['registration']['info'], $this->defaultEmails['registration']['demand']);
         $this->redirect("Registration:massAdd", array("id" => $groupId));
     }
 
@@ -115,7 +115,7 @@ class GroupPresenter extends BasePresenter {
             }
             $this->redirect("Payment:detail", array("id" => $v->gid));
         } else {//ADD
-            if (($groupId = $this->model->createGroup($this->objectId, NULL, NULL, $v->label, $v->maturity, $v->ks, $v->amount))) {
+            if (($groupId = $this->model->createGroup($this->aid, NULL, NULL, $v->label, $v->maturity, $v->ks, $v->amount))) {
                 $this->flashMessage("Skupina byla založena");
                 $this->redirect("Payment:detail", array("id" => $groupId));
             } else {

@@ -27,11 +27,11 @@ class BudgetService extends BaseService {
     public function getCategoriesRoot($oid, $type = NULL) {
         if (is_null($type)) {
             return array(
-                'in' => $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), 'in')->where("parentId IS NULL")->fetchAssoc("id"),
-                'out' => $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), 'out')->where("parentId IS NULL")->fetchAssoc("id")
+                'in' => $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), 'in')->where("parentId IS NULL")->fetchPairs("id", "label"),
+                'out' => $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), 'out')->where("parentId IS NULL")->fetchPairs("id", "label")
             );
         }
-        return $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), $type)->where("parentId IS NULL")->fetchAssoc("id");
+        return $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), $type)->where("parentId IS NULL")->fetchPairs("id", "label");
     }
 
     public function getCategoriesLeaf($oid, $type = NULL) {
