@@ -29,7 +29,9 @@ class ChitPresenter extends BasePresenter {
         
         if (($this->info = $cache->load($cacheKey)) === NULL) {
             $this->info = array();
-            $this->info['unit'] = $this->context->unitService->getAllUnder($this->aid);
+            foreach ($this->context->unitService->getAllUnder($this->aid) as $ik=>$iu){
+                $this->info['unit'][$ik] = (array)$iu;
+            }
             $this->info['event'] = $this->context->eventService->event->getAll($this->year);
             $this->info['camp'] = $this->context->campService->event->getAll($this->year);
             $cache->save($cacheKey, $this->info, array(Cache::EXPIRE => '10 minutes'));
@@ -54,7 +56,8 @@ class ChitPresenter extends BasePresenter {
         if (in_array($objectType, array("event", "camp"))) {//filtrování akcí spojených pouze s danou jednotkou
             $ids = array();
             foreach ($this->info[$objectType] as $k=>$e) {
-                if(array_key_exists($e->ID_Unit, $this->info['unit'])){
+                
+                if(array_key_exists($e['ID_Unit'], $this->info['unit'])){
                     $ids[] = $k;
                 }
             }

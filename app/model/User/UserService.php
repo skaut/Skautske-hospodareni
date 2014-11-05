@@ -109,18 +109,19 @@ class UserService extends BaseService {
 
     public function getAccessArrays(UnitService $us) {
         $r = $this->getActualRole();
-
-        $unitIds = Strings::endsWith($r->Key, "Stredisko") || Strings::endsWith($r->Key, "Oddil") ? array_keys($us->getAllUnder($r->ID_Unit)) : array($r->ID_Unit);
-        if (Strings::startsWith($r->Key, "cinovnik")) {
-            return array(
-                "read" => $unitIds,
-                "edit" => array()
-            );
-        } elseif (Strings::startsWith($r->Key, "vedouci") || Strings::startsWith($r->Key, "hospodar")) {
-            return array(
-                "read" => $unitIds,
-                "edit" => $unitIds
-            );
+        if (isset($r->Key)) {
+            $unitIds = Strings::endsWith($r->Key, "Stredisko") || Strings::endsWith($r->Key, "Oddil") ? array_keys($us->getAllUnder($r->ID_Unit)) : array($r->ID_Unit);
+            if (Strings::startsWith($r->Key, "cinovnik")) {
+                return array(
+                    "read" => $unitIds,
+                    "edit" => array()
+                );
+            } elseif (Strings::startsWith($r->Key, "vedouci") || Strings::startsWith($r->Key, "hospodar")) {
+                return array(
+                    "read" => $unitIds,
+                    "edit" => $unitIds
+                );
+            }
         }
         return array(
             "read" => array(),
