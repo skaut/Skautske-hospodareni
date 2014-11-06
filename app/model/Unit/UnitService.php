@@ -9,11 +9,11 @@ class UnitService extends BaseService {
 
     protected $oficialUnits = array("stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka");
 
-    public function getUnitId(){
+    public function getUnitId() {
         return $this->skautis->getUnitId();
     }
 
-        /**
+    /**
      * vrací detail jednotky
      * @param int $unitId
      * @return stdClass 
@@ -86,6 +86,14 @@ class UnitService extends BaseService {
             $data = $data + $this->{__FUNCTION__}($u->ID, FALSE);
         }
         return $data;
+    }
+
+    public function getReadUnits(\Nette\Security\User $user) {
+        $res = array();
+        foreach ($user->getIdentity()->access['read'] as $uId =>$u) {
+            $res[$uId] = $u->DisplayName;
+        }
+        return $res;
     }
 
 }

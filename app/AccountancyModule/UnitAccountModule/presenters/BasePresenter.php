@@ -13,7 +13,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     /** @persistent */
     public $aid;
-    protected $object;
     protected $year;
     protected $isReadable;
 
@@ -23,9 +22,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
         $this->template->aid = $this->aid = (is_null($this->aid) ? $this->context->unitService->getUnitId() : $this->aid);
         $this->template->year = $this->year = $this->getParameter("year", date("Y"));
 
-        $this->availableActions = $this->context->userService->actionVerify("OU_Unit", $this->aid);
-        $this->template->isEditable = $this->isEditable = array_key_exists("OU_Statement_INSERT_Unit", $this->availableActions);//moznost zalozit hospodárský výkaz
-        $this->template->isReadable = $this->isReadable = array_key_exists("OU_Statement_ALL_Unit", $this->availableActions);
+        //$this->availableActions = $this->context->userService->actionVerify("OU_Unit", $this->aid);
+        $this->template->isReadable = $this->isReadable = key_exists($this->aid, $this->user->getIdentity()->access['read']);
+        $this->template->isEditable = $this->isEditable = key_exists($this->aid, $this->user->getIdentity()->access['edit']);
         
         if(!$this->isEditable){
             $this->flashMessage("Nemáte oprávnění pro zobrazení stránky", "warning");

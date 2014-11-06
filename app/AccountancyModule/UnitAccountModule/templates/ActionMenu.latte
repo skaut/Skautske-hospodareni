@@ -3,6 +3,16 @@ Menu pro pohyb mezi částmi akce
 *}
 <ul class="nav nav-pills">
     <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}><a n:href="Cashbook:default $aid"><i class="icon icon-shopping-cart hidden-phone"></i> Pokladní kniha</a></li>
-    <li {ifCurrent Chit:default date("Y")}class='active'{/ifCurrent}><a n:href="Chit:default date('Y')">Přehled paragonů</a></li>
+    <li {ifCurrent Chit:default date("Y")}class='active'{/ifCurrent}><a n:href="Chit:default date('Y')"><i class="icon icon-eye-open hidden-phone"></i> Přehled paragonů</a></li>
     <li {ifCurrent Budget:default date("Y")}class='active'{/ifCurrent}><a n:href="Budget:default date('Y')"><i class="icon icon-th-list hidden-phone"></i> Rozpočet</a></li>
+    <li n:ifset="$unitPairs" class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="icon icon-random hidden-phone"></i> Jednotka <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li n:foreach="$unitPairs as $id=>$label"><a n:href="this aid=>$id">{$label}</a></li>
+        </ul>
+    </li>
+
+
 </ul>
