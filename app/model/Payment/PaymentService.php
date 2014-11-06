@@ -208,8 +208,7 @@ class PaymentService extends BaseService {
         foreach ($this->filterVS($transactions) as $t) {
             foreach ($payments as $p){
                 if($t['vs'] == $p['vs'] && $t['amount'] == $p['amount']){
-                    $this->update($p->id, array("state"=>"completed", "transactionId"=>$t['id']));
-                    $cnt++;
+                    $cnt += $this->update($p->id, array("state"=>"completed", "transactionId"=>$t['id']));
                 }
             }
         }

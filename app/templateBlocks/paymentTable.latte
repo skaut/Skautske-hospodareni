@@ -6,7 +6,6 @@ $isEditable
 *}
 {dump $payments}
 {var $isEditable = $isEditable && ($groupState == 'open')}
-{if !empty($payments)}
     <ul class="alert alert-error" n:if="isset($form) && $form->hasErrors()">
         <li n:foreach="$form->errors as $error">{$error}</li>
     </ul>
@@ -23,19 +22,21 @@ $isEditable
             <th n:if="$isEditable">&nbsp;</th>
         </tr>
         {* FORM ROW*}
+        {dump isset($form)}
         <tr n:if="isset($form) && $isEditable">
+            
             {form $form}
-                <td>{input name class=>"input-medium"}</td>
+                <td>{input name class=>"input-medium"}*</td>
                 <td>{input email class=>"input-medium"}</td>
-                <td>{input amount class=>"input-mini"}</td>
+                <td>{input amount class=>"input-mini"}*</td>
                 <td>{input vs class=>"input-mini"}</td>
                 <td>{input ks class=>"input-mini"}</td>
-                <td>{input maturity class=>"input-small date"}</td>
+                <td>{input maturity class=>"input-small date"}*</td>
                 <td colspan="2">{input note class=>"input-medium"}</td>
                 <td>{input send}</td>
             {/form}
         </tr>
-
+{if !empty($payments)}
         <tr n:foreach="$payments as $l" {if in_array($l->state, $notFinalStates) && $l->maturity->getTimestamp() < time()}class="error" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}>
             <td>{$l->name}</td>
             <td>{if $l->email == null}&nbsp;{else}{$l->email}{/if}</td>
@@ -55,8 +56,10 @@ $isEditable
             {else}&nbsp;{/if}
         </td>
     </tr>
+    {else}
+        <tr>
+            <th colspan="9" class="alert alert-info" style="text-align: center;">Zatím zde nejsou žádné platby.</th>
+        </tr>
+{/if}
 </table>
 
-{else}
-    <div class="alert alert-info">Nejsou zde žádné platby.</div>
-{/if}
