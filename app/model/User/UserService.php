@@ -110,7 +110,7 @@ class UserService extends BaseService {
     public function getAccessArrays(UnitService $us) {
         $r = $this->getActualRole();
         if (isset($r->Key)) {
-            $unitIds = Strings::endsWith($r->Key, "Stredisko") || Strings::endsWith($r->Key, "Oddil") ? array_keys($us->getAllUnder($r->ID_Unit)) : array($r->ID_Unit);
+            $unitIds = Strings::endsWith($r->Key, "Stredisko") || Strings::endsWith($r->Key, "Oddil") ? $us->getAllUnder($r->ID_Unit) : array($r->ID_Unit => $us->getDetail($r->ID_Unit));
             if (Strings::startsWith($r->Key, "cinovnik")) {
                 return array(
                     "read" => $unitIds,

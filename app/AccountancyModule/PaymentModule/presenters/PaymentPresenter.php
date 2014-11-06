@@ -21,7 +21,7 @@ class PaymentPresenter extends BasePresenter {
 
     public function renderDefault($onlyOpen = 1) {
         $this->template->onlyOpen = $onlyOpen;
-        $this->template->groups = $groups = $this->model->getGroupsIn($this->user->getIdentity()->access['read'], $onlyOpen);
+        $this->template->groups = $groups = $this->model->getGroupsIn(array_keys($this->user->getIdentity()->access['read']), $onlyOpen);
         $this->template->payments = $this->model->getAll(array_keys($groups));
     }
 

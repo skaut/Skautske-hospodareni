@@ -19,35 +19,41 @@ class ChitPresenter extends BasePresenter {
     protected function startup() {
         parent::startup();
         $this->template->onlyUnlocked = $this->onlyUnlocked;
+        $oficialUnit = $this->context->unitService->getOficialUnit($this->aid);
+        if ($oficialUnit->ID != $this->aid) {
+            $this->flashMessage("Přehled paragonů je dostupný jen pro organizační jednotky.");
+            $this->redirect("this", array("aid" => $oficialUnit->ID));
+        }
     }
 
     public function actionDefault($year = NULL) {
-        $this->chits = array();
-        $cache = new Cache($this->context->cacheStorage);
-
-        $cacheKey = __METHOD__;
-        
-        if (($this->info = $cache->load($cacheKey)) === NULL) {
-            $this->info = array();
-            foreach ($this->context->unitService->getAllUnder($this->aid) as $ik=>$iu){
-                $this->info['unit'][$ik] = (array)$iu;
-            }
-            $this->info['event'] = $this->context->eventService->event->getAll($this->year);
-            $this->info['camp'] = $this->context->campService->event->getAll($this->year);
-            $cache->save($cacheKey, $this->info, array(Cache::EXPIRE => '10 minutes'));
+//        $cache = new Cache($this->context->cacheStorage);
+//        $cacheKey = __METHOD__;
+        //if (($this->info = $cache->load($cacheKey)) === NULL) {
+        $this->info = array();
+        foreach ($this->user->getIdentity()->access['edit'] as $ik => $iu) {
+            $this->info['unit'][$ik] = (array) $iu;
         }
-        
+        $this->info['event'] = $this->context->eventService->event->getAll($this->year);
+        $this->info['camp'] = $this->context->campService->event->getAll($this->year);
+//            $cache->save($cacheKey, $this->info, array(Cache::EXPIRE => '10 minutes'));
+//        }
+
         $categories = $this->context->budgetService->getCategoriesLeaf($this->aid);
-        if(empty($categories['in']) && empty($categories['out'])){
+        if (empty($categories['in']) && empty($categories['out'])) {
             $this->template->disableForm = TRUE;
         }
-    }
-
-    public function renderDefault($year = NULL) {
+        
+        $this->chits = array();
+        //formulář pro kategorie, to potrebuje drive nez v renderu
         $this->getAllChitsByObjectId("unit", $this->chits, $this->onlyUnlocked, $this->context->unitAccountService);
         $this->getAllChitsByObjectId("event", $this->chits, $this->onlyUnlocked, $this->context->eventService);
         $this->getAllChitsByObjectId("camp", $this->chits, $this->onlyUnlocked, $this->context->campService);
         
+    }
+
+    public function renderDefault($year = NULL) {
+
         $this->template->chitsArr = $this->chits;
         $this->template->info = $this->info;
     }
@@ -55,9 +61,9 @@ class ChitPresenter extends BasePresenter {
     protected function getAllChitsByObjectId($objectType, &$chits, $onlyUnlocked, $service) {
         if (in_array($objectType, array("event", "camp"))) {//filtrování akcí spojených pouze s danou jednotkou
             $ids = array();
-            foreach ($this->info[$objectType] as $k=>$e) {
-                
-                if(array_key_exists($e['ID_Unit'], $this->info['unit'])){
+            foreach ($this->info[$objectType] as $k => $e) {
+
+                if (array_key_exists($e['ID_Unit'], $this->info['unit'])) {
                     $ids[] = $k;
                 }
             }

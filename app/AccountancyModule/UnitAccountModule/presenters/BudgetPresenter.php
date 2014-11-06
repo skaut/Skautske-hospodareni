@@ -13,6 +13,7 @@ class BudgetPresenter extends BasePresenter {
         $this->template->categories = $this->context->budgetService->getCategories($this->aid);
         $this->template->categoriesSummary = $this->context->unitAccountService->chits->getBudgetCategoriesSummary($this->context->budgetService->getCategoriesLeaf($this->aid));
         $this->template->sum = $this->template->sumReality = 0; //je potreba kvuli sablone, kde se pouzije jako globalni promena
+        $this->template->unitPairs = $this->context->unitService->getReadUnits($this->user);
     }
 
     public function getParentCategories($form, $dependentSelectBoxName) {
