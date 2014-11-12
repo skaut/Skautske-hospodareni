@@ -28,9 +28,9 @@ class CashbookPresenter extends BasePresenter {
         $this->template->unitPairs = $this->context->unitService->getReadUnits($this->user);
     }
 
-    function renderDefault($aid) {
+    function renderDefault($aid, $disablePersons = FALSE) {
         $this->template->isInMinus = FALSE; //$this->context->unitAccountService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->autoCompleter = $this->context->memberService->getAC();
+        $this->template->autoCompleter = $disablePersons ? array() : $this->context->memberService->getAC();
         $this->template->list = $this->context->unitAccountService->chits->getAll($aid);
 //        if ($this->isAjax()) {
 //            $this->invalidateControl("contentSnip");

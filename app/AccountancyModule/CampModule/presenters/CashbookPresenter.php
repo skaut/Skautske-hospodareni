@@ -22,9 +22,9 @@ class CashbookPresenter extends BasePresenter {
 //        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
     }
 
-    function renderDefault($aid) {
+    function renderDefault($aid, $disablePersons = FALSE) {
         $this->template->isInMinus = $this->context->campService->chits->eventIsInMinus($this->aid);
-        $this->template->autoCompleter = $this->context->memberService->getAC();
+        $this->template->autoCompleter = $disablePersons ? array() : $this->context->memberService->getAC();
         $this->template->list = $this->context->campService->chits->getAll($aid);
         $this->template->missingCategories = false;
         $this->template->linkImportHPD = "#importHpd";
