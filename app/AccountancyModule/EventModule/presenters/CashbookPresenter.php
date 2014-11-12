@@ -22,9 +22,9 @@ class CashbookPresenter extends BasePresenter {
         $this->template->missingCategories = FALSE;
     }
 
-    public function renderDefault($aid) {
+    public function renderDefault($aid, $disablePersons = FALSE) {
         $this->template->isInMinus = $this->context->eventService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->autoCompleter = $this->context->memberService->getAC();
+        $this->template->autoCompleter = $disablePersons ? array() : $this->context->memberService->getAC();
         $this->template->list = $this->context->eventService->chits->getAll($aid);
         $this->template->linkImportHPD = $this->link("importHpd", array("aid" => $aid));
         $this->template->object = $this->event;
