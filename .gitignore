@@ -1,4 +1,3 @@
-
 /www/webtemp
 /www/images
 htaccess
@@ -8,3 +7,5 @@ htaccess
 /log
 /source
 /nbproject
+*.log
+deployment.*
