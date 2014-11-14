@@ -1,7 +1,14 @@
 
 {block #content}
-<h2 n:block="title">Založení kategorie</h2>
+<h2 n:block="title">Založení rozpočtové kategorie</h2>
 {include ../ActionMenu.latte}
+
+<div class="row-fluid">
+    <div class="alert alert-info span6">
+        <b>Kategorie bez nadřazené kategorie</b> pouze sdružují kategorie pod sebou.<br /><b>Podřízené kategorie</b> pak obsahují částku a lze do nich přidávat paragony. 
+    </div>
+</div>
+
 <div class="row-fluid">
     {snippet addCategoryForm}
         {control addCategoryForm}
@@ -13,14 +20,14 @@
         $row = $("#form-category-value").parent().parent();
         $row.hide();
         $("#form-select-parentId").change(function () {
-            if($("#form-select-parentId").val() === "0"){
+            if ($("#form-select-parentId").val() === "0") {
                 $row.hide();
                 $("#form-category-value").val("");
             } else {
                 $row.show();
             }
         });
-        
+
         //pri zmenene typu se skryje částka
         $("#form-select-type").change(function () {
             $row.hide();

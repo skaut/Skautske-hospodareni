@@ -1,0 +1,57 @@
+{block #noEmpty $val}
+{? echo $val == "" ? "&nbsp;" : $val;}
+{/block}
+
+{block #content}
+<h2 n:block="title">Bankovní účet</h2>
+{include ../ActionMenu.latte}
+
+<div class="row-fluid">
+    <button n:if="$token" type="button" class="btn btn-primary" data-toggle="collapse" data-target="#setToken">Nastavit token</button>
+    <div id="setToken" class="collapse{if !$token} in{/if}">
+        <br />
+        <div class="alert alert-info">
+            <h2>Jak získat token?</h2>
+            a) Oprávněná osoba se musí přihlásit do internetového bankovnictví.<br />
+            b) Administrace tokenů je v menu Přehledy na záložce Informace o účtu.<br />
+            c) Požadavek na zřízení tokenu musí být standardně autorizován.<br />
+            d) Do 5 minut po úspěšné autorizaci lze token použít. 
+        </div>
+        {form tokenForm}
+            <ul class="errors" n:if="$form->hasErrors()"><li n:foreach="$form->errors as $error">{$error}</li></ul>
+            <span class="required">{label token/}</span> {input token class=>"span6"} {input send}
+        {/form}
+    </div>
+</div>
+<div class="row-fluid" n:if="!empty($errMsg)">
+    <br />
+    <div class="alert alert-error" n:foreach="$errMsg as $m">{$m}</div>
+</div>
+
+<div class="row-fluid" n:if="$token">
+    <h2>Přehled plateb za posledních 14 dní</h2>
+    {if isset($transactions) && !empty($transactions)}
+        <table class="table table-bordered table-hover table-striped table-condensed">
+            <tr>
+                <th>Datum</th>
+                <th>Částka</th>
+                <th>Účet</th>
+                <th>Jméno</th>
+                <th>KS</th>
+                <th>VS</th>
+                <th>Poznámka</th>
+            </tr>
+            <tr n:foreach="$transactions as $t">
+                <td>{$t['date']|date:'j.n.Y'}</td>
+                <td class="r">{$t['amount']}</td>
+                <td class="r">{include #noEmpty val=>$t['prociucet']}</td>
+                <td>{include #noEmpty val=>$t['user']}</td>
+                <td class="r">{include #noEmpty val=>$t['ks']}</td>
+                <td class="r">{include #noEmpty val=>$t['vs']}</td>
+                <td>{include #noEmpty val=>$t['note']}</td>
+            </tr>
+        </table>
+    {else}
+        <p class="alert alert-info">Nebyly nalezeny žádné transakce</p>
+    {/if}
+</div>

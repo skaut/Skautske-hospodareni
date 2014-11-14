@@ -23,6 +23,7 @@ nette:
         email: %sinacek@gmail.com%
         strictMode: FALSE
         maxDepth: 6
+        maxLen: 500;
 
 extensions:
     skautis: SkautIS\Nette\SkautisExtension22
@@ -34,6 +35,7 @@ services:
     - App\RouterFactory
     - \Model\PaymentService(@skautis, @dibi.connection)
     - \Model\MailService(NULL, @dibi.connection, %sendEmail%)
+    - \Model\BankService(@cacheStorage, @dibi.connection)
     router: @App\RouterFactory::createRouter
     #connection:
     #    class: DibiConnection

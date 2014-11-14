@@ -10,7 +10,17 @@ use Nette\Application\UI\Form;
 class PaymentPresenter extends BasePresenter {
 
     protected $notFinalStates;
-//    protected $groups;
+    /**
+     *
+     * @var \Model\BankService
+     */
+    protected $bank;
+
+
+    public function __construct(\Model\PaymentService $paymentService, \Model\BankService $bankService) {
+        parent::__construct($paymentService);
+        $this->bank = $bankService;
+    }
 
     protected function startup() {
         parent::startup();
@@ -43,7 +53,7 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function renderEdit($pid) {
-        if(!$this->isEditable){
+        if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
             $this->redirect("Payment:default");
         }
@@ -65,7 +75,7 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function handleCancel($pid) {
-        if(!$this->isEditable){
+        if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "error");
             $this->redirect("this");
         }
@@ -82,7 +92,7 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function handleSend($pid) {
-        if(!$this->isEditable){
+        if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na odeslání emailu!", "error");
             $this->redirect("this");
         }
@@ -103,7 +113,7 @@ class PaymentPresenter extends BasePresenter {
      * @param int $pid groupId
      */
     public function handleSendGroup($pid) {
-        if(!$this->isEditable){
+        if (!$this->isEditable) {
             $this->flashMessage("Neoprávněný přístup k záznamu!", "error");
             $this->redirect("this");
         }
@@ -122,7 +132,7 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function handleComplete($pid) {
-        if(!$this->isEditable){
+        if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k uzavření platby!", "error");
             $this->redirect("this");
         }
@@ -139,7 +149,7 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Nemáte oprávnění párovat platby!", "error");
             $this->redirect("this");
         }
-        $pairsCnt = $this->model->pairPayments($this->aid, $gid);
+        $pairsCnt = $this->bank->pairPayments($this->aid, $gid);
         if ($pairsCnt > 0) {
             $this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
         } else {
@@ -173,7 +183,7 @@ class PaymentPresenter extends BasePresenter {
     }
 
     function paymentSubmitted(Form $form) {
-        if(!$this->isEditable){
+        if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k úpravám plateb!", "error");
             $this->redirect("this");
         }
