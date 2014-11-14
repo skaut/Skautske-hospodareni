@@ -104,7 +104,7 @@ class PaymentService extends BaseService {
     public function getGroups($unitId, $onlyOpen = FALSE) {
         return $this->table->getGroups($unitId, $onlyOpen);
     }
-    
+
     public function getGroupsIn($unitIds, $onlyOpen) {
         return $this->table->getGroupsIn($unitIds, $onlyOpen);
     }
@@ -184,63 +184,6 @@ class PaymentService extends BaseService {
             }
         }
         return $result;
-    }
-
-    /**
-     * BANK
-     */
-    public function getBankToken($unitId) {
-        return;
-    }
-
-    public function pairPayments($unitId, $groupId = NULL) {
-        $token = $this->table->getBankToken($unitId);
-        if (!$token) {
-            return FALSE;
-        }
-        $payments = $this->filterVS($this->getAll($groupId === NULL ? array_keys($this->getGroups($unitId)) : $groupId, FALSE));
-        $transactions = $this->getTransactionsFio($token);
-        if (!$transactions) {
-            return FALSE;
-        }
-        //dump($this->filterVS($transactions));dump($payments);die();
-        $cnt = 0;
-        foreach ($this->filterVS($transactions) as $t) {
-            foreach ($payments as $p){
-                if($t['vs'] == $p['vs'] && $t['amount'] == $p['amount']){
-                    $cnt += $this->update($p->id, array("state"=>"completed", "transactionId"=>$t['id']));
-                }
-            }
-        }
-        return $cnt;
-    }
-
-    public function getTransactionsFio($token, $dateStart = NULL, $dateEnd = NULL) {
-        $dateStart = $dateStart === NULL ? date("Y-m-d", strtotime("-2 day")) : $dateStart;
-        $dateEnd = $dateEnd === NULL ? date("Y-m-d") : $dateEnd;
-        $url = WWW_DIR . "/test-transactions.json";
-        //@TODO: zmenit URL adresu
-        //$url = "https://www.fio.cz/ib_api/rest/periods/$token/$dateStart/$dateEnd/transactions.json";
-        $file = file_get_contents($url);
-        if (!$file) {
-            return FALSE;
-        }
-        $transactions = array();
-        foreach (json_decode($file)->accountStatement->transactionList->transaction as $k => $t) {
-            $transactions[$k]['id'] = $t->column22->value;
-            $transactions[$k]['date'] = $t->column0->value;
-            $transactions[$k]['amount'] = $t->column1->value;
-            $transactions[$k]['prociucet'] = $t->column2->value . "/" . $t->column3->value;
-            $transactions[$k]['user'] = $t->column7->value;
-            $transactions[$k]['ks'] = isset($t->column4) ? $t->column4->value : NULL;
-            $transactions[$k]['vs'] = isset($t->column5) ? $t->column5->value : NULL;
-            $transactions[$k]['note'] = isset($t->column16) ? $t->column16->value : NULL;
-        }
-        return $transactions;
-    }
-
-    protected function filterVS($arr) {
-        return array_filter($arr, function ($t) {return array_key_exists("vs", $t) && $t['vs'] != NULL;});
     }
 
 }

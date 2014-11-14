@@ -72,8 +72,4 @@ class PaymentTable extends BaseTable {
         return $this->connection->update(self::TABLE_PA_GROUP, $arr)->where("id=%i", $groupId)->where("state='open'")->execute();
     }
 
-    public function getBankToken($unitId) {
-        return $this->connection->fetchSingle("SELECT token FROM [" . self::TABLE_PA_BANK . "] WHERE unitId=%i", $unitId);
-    }
-
 }
