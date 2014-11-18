@@ -14,7 +14,7 @@ class CommandTable extends BaseTable {
      * @return DibiRow 
      */
     public function get($commandId) {
-        return $this->connection->fetch("SELECT com.*, c.type as vehicle_type, c.spz as vehicle_spz, c.consumption as vehicle_consumption
+        return $this->connection->fetch("SELECT com.*, c.type as vehicle_type, c.spz as vehicle_spz, c.consumption as vehicle_consumption, com.place
             FROM [" . self::TABLE_TC_COMMANDS . "] as com
             LEFT JOIN [" . self::TABLE_TC_VEHICLE . "] as c ON (com.vehicle_id = c.id) WHERE com.id=%i AND com.deleted=0", $commandId);
     }
@@ -28,7 +28,7 @@ class CommandTable extends BaseTable {
     }
 
     public function getAll($unitId, $returnQuery = FALSE) {
-        $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.spz as vehicle_spz")
+        $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.spz as vehicle_spz, com.place")
                 ->from(self::TABLE_TC_COMMANDS . " AS com")
                 ->leftJoin(self::TABLE_TC_CONTRACTS . " AS con ON (com.contract_id = con.id)")
                 ->leftJoin(self::TABLE_TC_VEHICLE . " AS c ON (com.vehicle_id = c.id) ")

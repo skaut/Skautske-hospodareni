@@ -141,6 +141,7 @@ class DefaultPresenter extends BasePresenter {
                 ->addRule(Form::FILLED, "Musíte vybrat smlouvu");
         $form->addText("purpose", "Účel cesty*")
                 ->addRule(Form::FILLED, "Musíte vyplnit účel cesty.");
+        $form->addText("place", "Místo");
         $form->addText("passengers", "Spolucestující");
         $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
                 ->setPrompt("Vyberte vozidlo")
@@ -193,10 +194,11 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("default");
         }
 
-        if ($this->context->travelService->updateCommand($v, $this->unit, $id))
+        if ($this->context->travelService->updateCommand($v, $this->unit, $id)) {
             $this->flashMessage("Cestovní příkaz byl upraven.");
-        else
+        } else {
             $this->flashMessage("Cestovní příkaz se nepodařilo upravit.", "danger");
+        }
         $this->redirect("detail", array("id" => $id));
     }
 
