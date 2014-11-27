@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f1b07493d0b336d296fd0f7645c03419",
+    "hash": "68de034e7bd32624dcf2455e778e3f54",
     "packages": [
         {
             "name": "dg/dibi",
@@ -1398,16 +1398,16 @@
         },
         {
             "name": "skautis/skautis",
-            "version": "dev-master",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sinacek/SkautIS.git",
-                "reference": "c6dfa6ea5c558d549c9442185dcc44fdc1f1ee98"
+                "reference": "a8ba0b5e5a644b9da94797d869b26c660b7974ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sinacek/SkautIS/zipball/c6dfa6ea5c558d549c9442185dcc44fdc1f1ee98",
-                "reference": "c6dfa6ea5c558d549c9442185dcc44fdc1f1ee98",
+                "url": "https://api.github.com/repos/sinacek/SkautIS/zipball/a8ba0b5e5a644b9da94797d869b26c660b7974ae",
+                "reference": "a8ba0b5e5a644b9da94797d869b26c660b7974ae",
                 "shasum": ""
             },
             "require": {
@@ -1436,7 +1436,7 @@
                 "api",
                 "skautis"
             ],
-            "time": "2014-10-30 17:55:09"
+            "time": "2014-11-26 15:10:23"
         },
         {
             "name": "srigi/nette-visualpaginator",

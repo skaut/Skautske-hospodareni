@@ -4,7 +4,7 @@
 	"require": {
 		"php": ">= 5.3.0",
 		"nette/nette": "~2.2",
-                "skautis/skautis": "dev-master",
+                "skautis/skautis": "1.*@dev",
                 "janmarek/webloader": "2.2.*",
                 "dg/dibi" : "~2.2",
                 "srigi/nette-visualpaginator": "dev-master",
