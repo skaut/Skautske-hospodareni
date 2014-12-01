@@ -164,9 +164,11 @@ class PaymentService extends BaseService {
         ));
         if ($onlyWithoutRecord) {
             $payments_personIds = $this->table->getActivePaymentIds($id);
-            $persons = array_filter($persons, function ($v) use ($payments_personIds) {
-                return !in_array($v->ID_Person, $payments_personIds);
-            });
+            if (is_array($persons)) {
+                $persons = array_filter($persons, function ($v) use ($payments_personIds) {
+                    return !in_array($v->ID_Person, $payments_personIds);
+                });
+            }
         }
 
         $result = array();
