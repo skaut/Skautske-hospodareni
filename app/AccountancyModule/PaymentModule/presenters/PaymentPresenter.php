@@ -149,7 +149,7 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Nemáte oprávnění párovat platby!", "error");
             $this->redirect("this");
         }
-        $pairsCnt = $this->bank->pairPayments($this->aid, $gid);
+        $pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $gid);
         if ($pairsCnt > 0) {
             $this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
         } else {
