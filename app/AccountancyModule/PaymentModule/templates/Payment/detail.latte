@@ -35,6 +35,7 @@
             <a n:if="$group->groupType == 'registration'" n:href="Registration:massAdd $group['id']" class="btn btn-primary" ><i class="icon icon-plus-sign icon-white hidden-phone"></i> Přidat platby z registrace</a>
             <a n:href="sendGroup! $group->id" class="btn btn-primary{if !$isGroupSendActive} disabled" title="Nejsou žádné platby s vyplněným emailem k odeslání{/if}"><i class="icon icon-envelope icon-white"></i> Rozeslat emaily</a>
             <a n:href="pairPayments! $group->id" class="btn btn-primary"><i class="icon icon-resize-small icon-white"></i> Párovat platby</a>
+            <a n:href="massAdd $group->id" class="btn btn-primary">Hromadné přidání <sup style="color:red;">BETA</sup></a>
         </div>
     </div>
 </div>

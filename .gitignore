@@ -10,3 +10,5 @@ htaccess
 *.log
 deployment.*
 /www/*.json
+
+/composer.lock

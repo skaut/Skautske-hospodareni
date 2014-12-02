@@ -34,7 +34,7 @@ class RegistrationPresenter extends BasePresenter {
                         ->setDefaultValue((int) $p['AmountTotal'])
                         ->setAttribute('class', 'input-mini');
                 $form->addDatePicker($p['ID_Unit'] . '_' . $p['ID_Person'] . '_' . 'maturity')
-                        ->setDefaultValue($detail['maturity']->format("j.n.Y"))
+                        ->setDefaultValue($detail['maturity'] instanceof \DateTime ? $detail['maturity']->format("j.n.Y") : "")
                         ->setAttribute('class', 'input-small');
                 $form->addText($p['ID_Unit'] . '_' . $p['ID_Person'] . '_' . 'vs')
                         ->setAttribute('class', 'input-small');
@@ -82,9 +82,4 @@ class RegistrationPresenter extends BasePresenter {
         $this->flashMessage("Platby byly přidány");
         $this->redirect("Payment:detail", array("id" => $values->oid));
     }
-
-    protected function noEmpty($v) {
-        return $v == "" ? NULL : $v;
-    }
-
 }
