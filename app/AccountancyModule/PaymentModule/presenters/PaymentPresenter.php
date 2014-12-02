@@ -10,12 +10,12 @@ use Nette\Application\UI\Form;
 class PaymentPresenter extends BasePresenter {
 
     protected $notFinalStates;
+
     /**
      *
      * @var \Model\BankService
      */
     protected $bank;
-
 
     public function __construct(\Model\PaymentService $paymentService, \Model\BankService $bankService) {
         parent::__construct($paymentService);
@@ -72,6 +72,114 @@ class PaymentPresenter extends BasePresenter {
             'pid' => $payment->id,
         ));
         $this->template->linkBack = $this->link("detail", array("id" => $payment->groupId));
+    }
+
+    public function actionMassAdd($id) {
+        //ověření přístupu
+        $this->template->units = $units = $this->context->getService("unitService")->getAllUnder($this->aid);
+        $this->template->list = $data = $this->model->getPersons(array_keys($units), $id, TRUE);
+        $this->template->detail = $detail = $this->model->getGroup($this->aid, $id);
+
+        if (!$detail) {
+            $this->flashMessage("Neplatný požadavek na přehled osob", "error");
+            $this->redirect("Payment:detail", array("id" => $id));
+        }
+
+        $form = $this['massAddForm'];
+        $form['oid']->setDefaultValue($id);
+
+        foreach ($data as $uid => $u) {
+            foreach ($u as $p) {
+                $birth = \Nette\Utils\DateTime::from($p['Birthday']);
+                $chName = $uid . '_' . $p['ID'] . '_check';
+                $form->addCheckbox($chName);
+                $form->addText($uid . '_' . $p['ID'] . '_name')
+                        ->setDefaultValue($p['DisplayName']);
+                $form->addSelect($uid . '_' . $p['ID'] . '_email', NULL, array("") + $p['emails'])
+                        ->setDefaultValue(key($p['emails']))
+                        ->setAttribute('class', 'input-xlarge');
+                $form->addText($uid . '_' . $p['ID'] . '_amount')
+                        ->setAttribute('class', 'input-mini')
+                        ->addConditionOn($form[$chName], Form::EQUAL, TRUE)
+                        ->addCondition(Form::FILLED)
+                        ->addRule(Form::FLOAT, 'Částka musí být číslo');
+                $form->addDatePicker($uid . '_' . $p['ID'] . '_maturity')
+                        ->setDefaultValue($detail['maturity'] instanceof \DateTime ? $detail['maturity']->format("j.n.Y") : "")
+                        ->setAttribute('class', 'input-small');
+                $form->addText($uid . '_' . $p['ID'] . '_vs')
+                        ->setAttribute('class', 'input-small')
+                        ->setDefaultValue($birth->format("dmy"));
+                $form->addText($uid . '_' . $p['ID'] . '_ks')
+                        ->setDefaultValue($detail['ks'])
+                        ->setAttribute('class', 'input-mini');
+                $form->addText($uid . '_' . $p['ID'] . '_note')
+                        ->setAttribute('class', 'input-small');
+            }
+        }
+    }
+
+    public function createComponentMassAddForm($name) {
+        $form = new Form($this, $name);
+        $form->addHidden("oid");
+        $form->addText("defaultAmount", "Částka:")
+                ->setAttribute('class', 'input-mini');
+        $form->addDatePicker('defaultMaturity', "Splatnost:")
+                ->setAttribute('class', 'input-small');
+        $form->addText("defaultKs", "KS:")
+                ->setAttribute('class', 'input-mini');
+        $form->addText("defaultNote", "Poznámka:"); //->setAttribute('class', 'input-small')
+        $form->addSubmit('send', 'Přidat vybrané')
+                ->setAttribute("class", "btn btn-primary btn-large");
+        $form->onSubmit[] = array($this, $name . 'Submitted');
+        return $form;
+    }
+
+    function massAddFormSubmitted(Form $form) {
+        $values = $form->getValues();
+        if (!$this->isEditable) {
+            $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "error");
+            $this->redirect("Payment:detail", array("id" => $values->oid));
+        }
+
+        $this->template->units = $units = $this->context->getService("unitService")->getAllUnder($this->aid);
+        $data = $this->model->getPersons(array_keys($units), $values->oid, TRUE);
+
+        foreach ($data as $uid => $u) {
+            foreach ($u as $p) {
+                if (!$values->{$uid . '_' . $p['ID'] . '_check'}) {
+                    continue;
+                }
+                $tmpAmount = $values->{$uid . '_' . $p['ID'] . '_amount'};
+                $tmpMaturity = $values->{$uid . '_' . $p['ID'] . '_maturity'};
+                $tmpKS = $values->{$uid . '_' . $p['ID'] . '_ks'};
+                $tmpNote = $values->{$uid . '_' . $p['ID'] . '_note'};
+
+                $name = $this->noEmpty($values->{$uid . '_' . $p['ID'] . '_name'});
+                $amount = $tmpAmount == "" ? $this->noEmpty($values['defaultAmount']) : $tmpAmount;
+                if ($amount === NULL) {
+                    $form[$uid . '_' . $p['ID'] . '_amount']->addError("Musí být vyplněna částka."); //[$uid . '_' . $p['ID'] . '_amount']
+                    return;
+                }
+                if ($tmpMaturity instanceof \DateTime) {
+                    $maturity = date("Y-m-d", strtotime($tmpMaturity));
+                } else {
+                    if ($values['defaultMaturity'] instanceof \DateTime) {
+                        $maturity = date("Y-m-d", strtotime($values['defaultMaturity']));
+                    } else {
+                        $form[$uid . '_' . $p['ID'] . '_maturity']->addError("Musí být vyplněná splatnost."); //[$uid . '_' . $p['ID'] . '_amount']
+                        return;
+                    }
+                }
+                $email = $this->noEmpty($values->{$uid . '_' . $p['ID'] . '_email'});
+                $vs = $this->noEmpty($values->{$uid . '_' . $p['ID'] . '_vs'});
+                $ks = $tmpKS == "" ? $this->noEmpty($values['defaultKs']) : $tmpKS;
+                $note = $tmpNote == "" ? $this->noEmpty($values['defaultNote']) : $tmpNote;
+
+                $this->model->createPayment($values->oid, $name, $email, $amount, $maturity, $p['ID'], $vs, $ks, $note);
+            }
+        }
+        $this->flashMessage("Platby byly přidány");
+        $this->redirect("Payment:detail", array("id" => $values->oid));
     }
 
     public function handleCancel($pid) {

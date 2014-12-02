@@ -1,0 +1,58 @@
+{block #content}
+<h2 n:block="title">Seznam členů bez platby</h2>
+{include ../ActionMenu.latte}
+{dump $list}
+{dump $detail}
+
+<a n:href="Payment:detail $detail->id" class="btn btn-primary"><i class="icon icon-white icon-chevron-left"></i> Zpět na detail skupiny plateb</a>
+{if !empty($list)}
+    {form massAddForm}
+        <h3>Výchozí hodnoty</h3>
+        <p>Výchozí hodnoty se uloží u záznamů, kde nebude hodnota vyplněna.</p>
+        <table class="table table-bordered table-striped table-condensed">
+            <tr>
+                <th>{label defaultAmount /} {input defaultAmount}</th>
+                <th>{label defaultMaturity /} {input defaultMaturity}</th>
+                <th>{label defaultKs /} {input defaultKs}</th>
+                <th>{label defaultNote /} {input defaultNote}</th>
+            </tr>
+        </table>
+
+
+
+
+        <ul class="errors" n:if="$form->hasErrors()">
+            <li n:foreach="$form->errors as $error">{$error}</li>
+        </ul>
+        {foreach $list as $uId => $u}
+            <h3>{$units[$uId]->DisplayName}</h3>
+            <table class="table table-bordered table-striped table-condensed">
+                <tr>
+                    <th><input type="checkbox" id='reg-all-{$uId}' onclick="jqCheckAll(this.id, '{$uId}')"/></th>
+                    <th>Jméno</th>
+                    <th>Email</th>
+                    <th>Částka</th>
+                    <th>Splatnost</th>
+                    <th>VS</th>
+                    <th>KS</th>
+                    <th>Poznámka</th>
+                </tr>
+                <tr n:foreach="$u as $p">
+                    <td>{input $uId.'_'.$p['ID'].'_check'}</td>
+                    <td>{input $uId.'_'.$p['ID'].'_name'}</td>
+                    <td>{input $uId.'_'.$p['ID'].'_email'}</td>
+                    <td>{input $uId.'_'.$p['ID'].'_amount'}</td>
+                    <td>{input $uId.'_'.$p['ID'].'_maturity'}</td>
+                    <td>{input $uId.'_'.$p['ID'].'_vs'}</td>
+                    <td>{input $uId.'_'.$p['ID'].'_ks'}</td>
+                    <td>{input $uId.'_'.$p['ID'].'_note'}</td>
+                </tr>
+            </table>
+        {/foreach}
+        {input send}
+    {/form}
+{else}
+    <p class="well">Nejsou dostupné žádné osoby, které by neměli založenou platbu</p>
+{/if}
+
+

@@ -127,6 +127,35 @@ class PaymentService extends BaseService {
         return $this->table->updateGroup($groupId, $arr);
     }
 
+    public function getPersons(array $unitIds, $groupId, $onlyWithoutRecord = TRUE) {
+        $result = array();
+        foreach ($unitIds as $uid) {
+            $persons = $this->skautis->org->PersonAll(array("ID_Unit" => $uid));
+            if ($onlyWithoutRecord) {
+                $payments_personIds = $this->table->getActivePaymentIds($groupId);
+                if (is_array($persons)) {
+                    $persons = array_filter($persons, function ($v) use ($payments_personIds) {
+                        return !in_array($v->ID, $payments_personIds);
+                    });
+                }
+            }
+            foreach ($persons as $p) {
+                $result[$uid][$p->ID] = (array) $p;
+                $result[$uid][$p->ID]['emails'] = array();
+                try {
+                    foreach ($this->skautis->org->PersonContactAll(array('ID_Person' => $p->ID)) as $c) {
+                        if (mb_substr($c->ID_ContactType, 0, 5) == "email") {
+                            $result[$uid][$p->ID]['emails'][$c->Value] = $c->Value . " (" . $c->ContactType . ")";
+                        }
+                    }
+                } catch (\SkautIS\Exception\PermissionException $exc) {//odchycení bývalých členů, ke kterým už nemáme oprávnění
+                    $result[$uid][$p->ID_Person]['emails'] = array();
+                }
+            }
+        }
+        return $result;
+    }
+
     /**
      * REGISTRATION
      */
@@ -153,17 +182,17 @@ class PaymentService extends BaseService {
 
     /**
      * seznam osob z registrace
-     * @param int $id ID registrace
+     * @param int $groupId ID registrace
      * @param bool $onlyWithoutRecord pouze ty, které ještě nemají zadanou platbu
      * @return array(array())
      */
-    public function getRegistrationPersons($unitId, $id, $onlyWithoutRecord = TRUE) {
+    public function getRegistrationPersons($unitId, $groupId, $onlyWithoutRecord = TRUE) {
         $persons = $this->skautis->org->PersonRegistrationAll(array(
-            'ID_UnitRegistration' => $this->getGroup($unitId, $id)->sisId,
+            'ID_UnitRegistration' => $this->getGroup($unitId, $groupId)->sisId,
             'IncludeChild' => TRUE,
         ));
         if ($onlyWithoutRecord) {
-            $payments_personIds = $this->table->getActivePaymentIds($id);
+            $payments_personIds = $this->table->getActivePaymentIds($groupId);
             if (is_array($persons)) {
                 $persons = array_filter($persons, function ($v) use ($payments_personIds) {
                     return !in_array($v->ID_Person, $payments_personIds);

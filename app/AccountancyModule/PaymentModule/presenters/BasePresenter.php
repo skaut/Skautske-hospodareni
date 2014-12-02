@@ -65,5 +65,14 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
         ));
         return $router;
     }
+    
+    /**
+     * 
+     * @param string $v
+     * @return bool
+     */
+    protected function noEmpty($v) {
+        return $v == "" ? NULL : $v;
+    }
 
 }
