@@ -29,12 +29,12 @@ class BankService extends BaseService {
     }
 
     public function pairPayments(PaymentService $ps, $unitId, $groupId = NULL) {
-        $token = $this->getToken($unitId);
-        if (!$token) {
+        $bakInfo = $this->getInfo($unitId);
+        if (!$bakInfo->token) {
             return FALSE;
         }
         $payments = $this->filterVS($ps->getAll($groupId === NULL ? array_keys($ps->getGroups($unitId)) : $groupId, FALSE));
-        $transactions = $this->getTransactionsFio($token);
+        $transactions = $this->getTransactionsFio($bakInfo->token, $bakInfo->daysback);
         if (!$transactions) {
             return FALSE;
         }
@@ -43,16 +43,16 @@ class BankService extends BaseService {
         foreach ($this->filterVS($transactions) as $t) {
             foreach ($payments as $p) {
                 if ($t['vs'] == $p['vs'] && $t['amount'] == $p['amount']) {
-                    $cnt += $this->update($p->id, array("state" => "completed", "transactionId" => $t['id']));
+                    $cnt += $ps->update($p->id, array("state" => "completed", "transactionId" => $t['id']));
                 }
             }
         }
         return $cnt;
     }
 
-    public function getTransactionsFio($token, $dateStart = NULL, $dateEnd = NULL) {
-        $dateStart = $dateStart === NULL ? date("Y-m-d", strtotime("-14 day")) : $dateStart;
-        $dateEnd = $dateEnd === NULL ? date("Y-m-d") : $dateEnd;
+    public function getTransactionsFio($token, $daysBack = 14) {
+        $dateStart = date("Y-m-d", strtotime("-" . (int) $daysBack . " day"));
+        $dateEnd = date("Y-m-d");
         $cacheKey = __FUNCTION__ . $token;
         if (!($transactions = $this->cache->load($cacheKey))) {
             //$url = WWW_DIR . "/test-transactions.json";
