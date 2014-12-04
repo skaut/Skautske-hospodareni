@@ -26,11 +26,11 @@ class BankPresenter extends BasePresenter {
     }
 
     public function actionDefault() {
-        $this->template->token = $token = $this->bank->getToken($this->aid);
-        $this['tokenForm']['token']->setDefaultValue($token);
-        if ($token) {
+        $this->template->bankInfo = $bankInfo = $this->bank->getInfo($this->aid);
+        if ($bankInfo) {
+            $this['tokenForm']->setDefaults($bankInfo);
             try {
-                $this->template->transactions = $this->bank->getTransactionsFio($token, date("Y-m-d", strtotime("-14 day")));
+                $this->template->transactions = $this->bank->getTransactionsFio($bankInfo->token, date("Y-m-d", strtotime("-" . (int) $bankInfo->daysback . " day")));
             } catch (\Model\BankTimeoutException $exc) {
                 $this->template->errMsg[] = "Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.";
             } catch (\Model\BankTimeLimitException $exc) {
@@ -42,6 +42,7 @@ class BankPresenter extends BasePresenter {
     public function createComponentTokenForm($name) {
         $form = new Form($this, $name);
         $form->addText("token", "API Token");
+        $form->addText("daysback", "Počet dní kontrolovaných nazpět");
         $form->addSubmit('send', 'Nastavit')
                 ->setAttribute("class", "btn btn-primary");
         $form->onSubmit[] = array($this, $name . 'Submitted');
@@ -55,7 +56,7 @@ class BankPresenter extends BasePresenter {
         }
         $v = $form->getValues();
 
-        if ($this->bank->setToken($this->aid, $v->token)) {
+        if ($this->bank->setToken($this->aid, $v->token, $v->daysback)) {
             $this->flashMessage("Token byl nastaven");
         } else {
             $this->flashMessage("Token se nepodařilo nastavit", "error");

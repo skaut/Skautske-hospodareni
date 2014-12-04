@@ -20,12 +20,12 @@ class BankService extends BaseService {
         $this->cache = new \Nette\Caching\Cache($storage, __CLASS__);
     }
 
-    public function setToken($unitId, $token) {
-        return $token !== "" ? $this->table->setToken($unitId, $token) : $this->table->removeToken($unitId);
+    public function setToken($unitId, $token, $daysback = 14) {
+        return $token !== "" ? $this->table->setToken($unitId, $token, $daysback) : $this->table->removeToken($unitId);
     }
 
-    public function getToken($unitId) {
-        return $this->table->getToken($unitId);
+    public function getInfo($unitId) {
+        return $this->table->getInfo($unitId);
     }
 
     public function pairPayments(PaymentService $ps, $unitId, $groupId = NULL) {
@@ -51,7 +51,7 @@ class BankService extends BaseService {
     }
 
     public function getTransactionsFio($token, $dateStart = NULL, $dateEnd = NULL) {
-        $dateStart = $dateStart === NULL ? date("Y-m-d", strtotime("-2 day")) : $dateStart;
+        $dateStart = $dateStart === NULL ? date("Y-m-d", strtotime("-14 day")) : $dateStart;
         $dateEnd = $dateEnd === NULL ? date("Y-m-d") : $dateEnd;
         $cacheKey = __FUNCTION__ . $token;
         if (!($transactions = $this->cache->load($cacheKey))) {
