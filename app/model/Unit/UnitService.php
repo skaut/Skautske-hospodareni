@@ -88,12 +88,4 @@ class UnitService extends BaseService {
         return $data;
     }
 
-    public function getReadUnits(\Nette\Security\User $user) {
-        $res = array();
-        foreach ($user->getIdentity()->access['read'] as $uId => $u) {
-            $res[$uId] = $u->DisplayName;
-        }
-        return $res;
-    }
-
 }

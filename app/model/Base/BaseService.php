@@ -106,7 +106,7 @@ abstract class BaseService extends \Nette\Object {
         $mpdf->WriteHTML((string) $template, NULL);
         $mpdf->Output($filename, 'I');
     }
-    
+
     public function getLocalId($skautisEventId, $type = NULL) {
         $cacheId = __FUNCTION__ . $skautisEventId;
         if (!($res = $this->loadSes($cacheId))) {
@@ -119,6 +119,14 @@ abstract class BaseService extends \Nette\Object {
         $cacheId = __FUNCTION__ . $localEventId;
         if (!($res = $this->loadSes($cacheId))) {
             $res = $this->saveSes($cacheId, $this->table->getSkautisId($localEventId, $type !== NULL ? $type : self::$type));
+        }
+        return $res;
+    }
+
+    public function getReadUnits(\Nette\Security\User $user) {
+        $res = array();
+        foreach ($user->getIdentity()->access['read'] as $uId => $u) {
+            $res[$uId] = $u->DisplayName;
         }
         return $res;
     }

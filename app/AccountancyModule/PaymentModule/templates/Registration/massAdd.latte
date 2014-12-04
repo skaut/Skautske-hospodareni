@@ -3,44 +3,53 @@
 {include ../ActionMenu.latte}
 {dump $list}
 {dump $detail}
+{var $stsPrice = 250}
+<a n:href="Payment:detail $detail->id" class="btn btn-primary"><i class="icon icon-white icon-chevron-left"></i> Zpět na skupinu plateb</a>
 
-<a n:href="Payment:detail $detail->id" class="btn btn-primary"><i class="icon icon-white icon-chevron-left"></i> Zpět na detail skupiny plateb</a>
+<h3>{$unitPairs[$aid]}</h3>
+
 {if !empty($list)}
     {form registrationForm}
         <ul class="errors" n:if="$form->hasErrors()">
             <li n:foreach="$form->errors as $error">{$error}</li>
         </ul>
-        {foreach $list as $uId => $u}
-            <h3>{= reset($u)['Unit']}</h3>
-            <table class="table table-bordered table-striped table-condensed">
-                <tr>
-                    <th><input type="checkbox" id='reg-all-{$uId}' onclick="jqCheckAll(this.id, '{$uId}')"/></th>
-                    <th>Jméno</th>
-                    <th>Email</th>
-                    <th>Částka</th>
-                    <th>Splatnost</th>
-                    <th>VS</th>
-                    <th>KS</th>
-                    <th>Poznámka</th>
-                    <th>STS</th>
-                </tr>
-                <tr n:foreach="$u as $p">
-                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_check'}</td>
-                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_name'}</td>
-                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_email'}</td>
-                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_amount'}</td>
-                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_maturity'}</td>
-                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_vs'}</td>
-                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_ks'}</td>
-                    <td>{input $p['ID_Unit'].'_'.$p['ID_Person'].'_note'}</td>
-                    <td>{if $p['AmountServices'] > 0}{$p['AmountServices']/250}x{/if}</td>
-                </tr>
-            </table>
-        {/foreach}
+        <table class="table table-bordered table-striped table-condensed">
+            <tr>
+                <th><input type="checkbox" id='reg-all-p' onclick="jqCheckAll(this.id, 'p')"/></th>
+                <th>Jméno</th>
+                <th>Email</th>
+                <th>Částka</th>
+                <th>Splatnost</th>
+                <th>VS</th>
+                <th>KS</th>
+                <th>Poznámka</th>
+                <th>STS</th>
+            </tr>
+            <tr>
+                <td colspan="3"><b>Výchozí hodnoty</b> se uloží u záznamů, kde nebude hodnota vyplněna.</td>
+                <td>{input defaultAmount, value=>$detail['amount']}</td>
+                <td>{input defaultMaturity, value=>$detail['maturity']}</td>
+                <td>&nbsp;</td>
+                <td>{input defaultKs, value=>$detail['ks']}</td>
+                <td>{input defaultNote}</td>
+            </tr>
+            <tr n:foreach="$list as $p">
+                <td><input type=checkbox name="ch[]" value="p_{$p['ID_Person']}"></td>
+                <td><input type=text name="vals[{$p['ID_Person']}][name]" value="{$p['Person']}"></td>
+                <td>{input $p['ID_Person'].'_email', name=>"vals[{$p['ID_Person']}][email]"}</td>
+                <td><input type=text name="vals[{$p['ID_Person']}][amount]" class="input-mini"></td>
+                <td><input type=text name="vals[{$p['ID_Person']}][maturity]" class="input-small"></td>
+                <td><input type=text name="vals[{$p['ID_Person']}][vs]" class="input-small"></td>
+                <td><input type=text name="vals[{$p['ID_Person']}][ks]" class="input-mini"></td>
+                <td><input type=text name="vals[{$p['ID_Person']}][note]" class="input-small"></td>
+                <td>{if $p['AmountServices'] > 0}{$p['AmountServices']/$stsPrice}x{/if}</td>
+            </tr>
+        </table>
+
         {input send}
     {/form}
 {else}
-    <p class="well">Nejsou žádné registrované osoby, které by neměli založenou platbu</p>
+    <p class="well">Nejsou dostupné žádné registrované osoby, které by neměli založenou platbu</p>
 {/if}
 
 

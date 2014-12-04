@@ -115,7 +115,7 @@ class GroupPresenter extends BasePresenter {
             }
             $this->redirect("Payment:detail", array("id" => $v->gid));
         } else {//ADD
-            if (($groupId = $this->model->createGroup($this->aid, NULL, NULL, $v->label, $v->maturity, $v->ks, $v->amount))) {
+            if (($groupId = $this->model->createGroup($this->aid, NULL, NULL, $v->label, $v->maturity, $v->ks, $v->amount, $v->email_info, $v->email_demand))) {
                 $this->flashMessage("Skupina byla založena");
                 $this->redirect("Payment:detail", array("id" => $groupId));
             } else {
