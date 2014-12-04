@@ -42,6 +42,9 @@ class PaymentTable extends BaseTable {
     }
 
     public function getGroup($unitId, $id) {
+        if(is_array($unitId)){
+            return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE id=%i ", $id, " AND unitId IN %in ", $unitId, " AND state != 'canceled'");
+        }
         return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE id=%i ", $id, " AND unitId=%i ", $unitId, " AND state != 'canceled'");
     }
 

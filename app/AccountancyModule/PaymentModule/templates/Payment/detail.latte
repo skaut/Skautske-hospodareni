@@ -2,9 +2,14 @@
 <h2 n:block="title">{$group->label}</h2>
 {include ../ActionMenu.latte}
 {dump $group}
+{dump $units}
 <div class="row-fluid">
     <div class="span3">
         <table class="table table-bordered table-striped">
+            <tr>
+                <th class="l">Vlastník:</th>
+                <td>{$units[$group->unitId]}</td>
+            </tr>
             <tr n:if="!is_null($group->state)">
                 <th class="l">Stav skupiny:</th>
                 <td>{$group->state|groupState|noescape}</td>
@@ -29,9 +34,9 @@
             </tr>
         </table>
     </div>
-    <div class="span7" n:if="$group->state =='open' && $isEditable">
+    <div class="span9" n:if="$group->state =='open' && $isEditable">
         <div class="well well-small">
-            <a n:href="Group: $group->id" class="btn btn-primary"><i class="icon icon-edit icon-white"></i> Upravit skupinu</a>
+            <a n:href="Group: aid=>$group->unitId, $group->id" class="btn btn-primary"><i class="icon icon-edit icon-white"></i> Upravit skupinu</a>
             <a n:if="$group->groupType == 'registration'" n:href="Registration:massAdd $group['id']" class="btn btn-primary" ><i class="icon icon-plus-sign icon-white hidden-phone"></i> Přidat platby z registrace</a>
             <a n:href="sendGroup! $group->id" class="btn btn-primary{if !$isGroupSendActive} disabled" title="Nejsou žádné platby s vyplněným emailem k odeslání{/if}"><i class="icon icon-envelope icon-white"></i> Rozeslat emaily</a>
             <a n:href="pairPayments! $group->id" class="btn btn-primary"><i class="icon icon-resize-small icon-white"></i> Párovat platby</a>
