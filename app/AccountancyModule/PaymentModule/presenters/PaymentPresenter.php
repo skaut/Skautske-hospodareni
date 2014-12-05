@@ -32,7 +32,7 @@ class PaymentPresenter extends BasePresenter {
     public function renderDefault($onlyOpen = 1) {
         $this->template->onlyOpen = $onlyOpen;
         $this->template->groups = $groups = $this->model->getGroupsIn(array_keys($this->user->getIdentity()->access['read']), $onlyOpen);
-        $this->template->payments = $this->model->getAll(array_keys($groups));
+        $this->template->payments = $this->model->getAll(array_keys($groups), TRUE);
     }
 
     public function renderDetail($id) {
@@ -201,14 +201,14 @@ class PaymentPresenter extends BasePresenter {
 
     /**
      * rozešle všechny neposlané emaily
-     * @param int $pid groupId
+     * @param int $gid groupId
      */
-    public function handleSendGroup($pid) {
+    public function handleSendGroup($gid) {
         if (!$this->isEditable) {
             $this->flashMessage("Neoprávněný přístup k záznamu!", "error");
             $this->redirect("this");
         }
-        $payments = $this->model->getAll($pid);
+        $payments = $this->model->getAll($gid);
         $cnt = 0;
         foreach ($payments as $p) {
             $cnt += $this->model->sendInfo($this->aid, $this->template, $p->id);
