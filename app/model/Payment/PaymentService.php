@@ -23,12 +23,12 @@ class PaymentService extends BaseService {
      * @param int|array $pa_groupIds
      * @return type
      */
-    public function getAll($pa_groupIds, $useHierarchy = TRUE) {
+    public function getAll($pa_groupIds, $useHierarchy = FALSE) {
         if (!is_array($pa_groupIds)) {
             $pa_groupIds = array($pa_groupIds);
         }
         $result = $this->table->getAllPayments($pa_groupIds);
-        if (count($pa_groupIds) > 1 && $useHierarchy) {
+        if ($useHierarchy) {
             $tmp = array();
             foreach ($result as $v) {//roztrizeni podle událostí
                 $tmp[$v->groupId][] = $v;
