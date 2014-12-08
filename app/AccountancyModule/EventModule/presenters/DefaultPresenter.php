@@ -59,7 +59,12 @@ class DefaultPresenter extends BasePresenter {
                 break;
             case 'end':
                 $fnc = function ($a, $b) {
-                    return strtotime($a['EndDate']) > strtotime($b['EndDate']);
+                $aTime = strtotime($a['EndDate']);
+                    $bTime = strtotime($b['EndDate']);
+                    if ($aTime == $bTime) {
+                        return strcasecmp($a['DisplayName'], $b['DisplayName']);
+                    }
+                    return $aTime > $bTime;
                 };
                 break;
             case 'prefix':
@@ -74,8 +79,13 @@ class DefaultPresenter extends BasePresenter {
                 break;
             default:
                 $fnc = function ($a, $b) {
-                    return strtotime($a['StartDate']) > strtotime($b['StartDate']);
-                }; 
+                    $aTime = strtotime($a['StartDate']);
+                    $bTime = strtotime($b['StartDate']);
+                    if ($aTime == $bTime) {
+                        return strcasecmp($a['DisplayName'], $b['DisplayName']);
+                    }
+                    return $aTime > $bTime;
+                };
         }
         uasort($list, $fnc
 //                function ($a, $b) use ($fnc) {
