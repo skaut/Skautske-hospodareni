@@ -25,7 +25,7 @@ class ChitTable extends BaseTable {
         return $this->connection->query("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "]
                 WHERE eventId=%i", $localEventId, " AND deleted=0
                     %if ",  $onlyUnlocked," AND [lock] IS NULL %end
-                ORDER BY date, ctype ")->fetchAssoc("id");
+                ORDER BY date, ctype, num, cshort")->fetchAssoc("id");
     }
 
     /**
