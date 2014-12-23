@@ -14,6 +14,9 @@ abstract class BaseService extends \Nette\Object {
     const TYPE_CAMP = "camp";
     const TYPE_GENERAL = "general";
     const TYPE_UNIT = "unit";
+    //konstanty pro uživatelskou identitu
+    const ACCESS_READ = 'read';
+    const ACCESS_EDIT = 'edit';
 
     /**
      * věková hranice pro dítě
@@ -53,7 +56,7 @@ abstract class BaseService extends \Nette\Object {
     public function __construct($skautis = NULL, $connection = NULL) {
         $this->skautis = $skautis;
         $this->connection = $connection;
-
+        
         preg_match("/^(?P<name>.*)Service/", get_class($this), $matches);
         $tableName = $matches['name'] . "Table";
         if (class_exists($tableName)) {
@@ -123,9 +126,27 @@ abstract class BaseService extends \Nette\Object {
         return $res;
     }
 
+    /**
+     * vrací seznam jednotek, ke kterým má uživatel právo na čtení
+     * @param \Nette\Security\User $user
+     * @return type
+     */
     public function getReadUnits(\Nette\Security\User $user) {
         $res = array();
-        foreach ($user->getIdentity()->access['read'] as $uId => $u) {
+        foreach ($user->getIdentity()->access[self::ACCESS_READ] as $uId => $u) {
+            $res[$uId] = $u->DisplayName;
+        }
+        return $res;
+    }
+
+    /**
+     * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
+     * @param \Nette\Security\User $user
+     * @return type
+     */
+    public function getEditUnits(\Nette\Security\User $user) {
+        $res = array();
+        foreach ($user->getIdentity()->access[self::ACCESS_EDIT] as $uId => $u) {
             $res[$uId] = $u->DisplayName;
         }
         return $res;

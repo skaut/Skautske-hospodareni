@@ -57,7 +57,7 @@ class PaymentService extends BaseService {
     }
 
     public function getNonFinalStates() {
-        return array(PaymentTable::STATE_PREPARING, PaymentTable::STATE_SEND);
+        return array(PaymentTable::PAYMENT_STATE_PREPARING, PaymentTable::PAYMENT_STATE_SEND);
     }
 
     /**
@@ -69,27 +69,43 @@ class PaymentService extends BaseService {
         return $this->table->summarizeByState($pa_id);
     }
 
-    public function sendInfo($unitId, $template, $paymentId) {
+    public function sendInfo($unitId, $template, $paymentId, UnitService $us = NULL) {
         $p = $this->get($unitId, $paymentId);
-        if ($p->state != PaymentTable::STATE_PREPARING || mb_strlen($p->email) < 5) {
-            return false;
+
+        if ($p->state != PaymentTable::PAYMENT_STATE_PREPARING || mb_strlen($p->email) < 5) {
+            return FALSE;
         }
+        $oficialUnitId = $us->getOficialUnit($p->unitId)->ID;
+        $accountRaw = $this->getBankAccount($oficialUnitId);
+        preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $accountRaw, $account);
+
+        $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?'
+                . (array_key_exists('prefix', $account) && $account['prefix'] != '' ? 'accountPrefix=' . $account['prefix'] . '&' : '' )
+                . 'accountNumber=' . $account['number']
+                . '&bankCode=' . $account['code']
+                . '&amount=' . $p->amount
+                . '&currency=CZK&vs=' . $p->vs
+                . ($p->ks != '' ? '&ks=' . $p->ks : '' )
+                . ($p->name != '' ? '&message=' . urlencode($p->name) : '' )
+                . '&date=' . $p->maturity->format("Y-m-d")
+                . '&size=200"/>';
+        $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $p->name, $p->amount, $p->maturity->format("j.n.Y"), $p->vs, $p->ks, $p->note), $p->email_info);
+        if ($this->mailService->sendPaymentInfo($template, $p->email, "Informace o platbě", $body, $oficialUnitId)) {
+            return $this->table->update($paymentId, array("state" => PaymentTable::PAYMENT_STATE_SEND));
+        }
+        return FALSE;
+    }
+
+    protected function getBankAccount($unitId) {
         $accounts = $this->skautis->org->AccountAll(array("ID_Unit" => $unitId, "IsValid" => TRUE));
         if (count($accounts) == 1) {
-            $accountRaw = $accounts[0]->DisplayName;
+            return $accounts[0]->DisplayName;
         } else {
-            $accountRaw = FALSE;
             foreach ($accounts as $a) {//vyfiltrování hlavního emailu
                 if ($a->IsMain) {
-                    $accountRaw = $a->DisplayName;
+                    return $a->DisplayName;
                 }
             }
-        }
-        preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $accountRaw, $account);
-        $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?accountPrefix=' . $account['prefix'] . '&accountNumber=' . $account['number'] . '&bankCode=' . $account['code'] . '&amount=' . $p->amount . '&currency=CZK&vs=' . $p->vs . '&ks=' . $p->ks . '&message=' . $p->name . '&size=200"/>';
-        $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $p->name, $p->amount, $p->maturity->format("j.n.Y"), $p->vs, $p->ks, $p->note), $p->email_info);
-        if ($this->mailService->sendPaymentInfo($template, $p->email, "Informace o platbě", $body)) {
-            return $this->table->update($paymentId, array("state" => "send"));
         }
         return FALSE;
     }
@@ -103,10 +119,6 @@ class PaymentService extends BaseService {
 
     public function getGroups($unitId, $onlyOpen = FALSE) {
         return $this->table->getGroups($unitId, $onlyOpen);
-    }
-
-    public function getGroupsIn($unitIds, $onlyOpen) {
-        return $this->table->getGroupsIn($unitIds, $onlyOpen);
     }
 
     public function createGroup($unitId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {

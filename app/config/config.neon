@@ -21,7 +21,7 @@ nette:
             *: App\*Module\*Presenter
     debugger:
         email: %sinacek@gmail.com%
-        strictMode: FALSE
+        strictMode: TRUE
         maxDepth: 6
         maxLen: 500;
 
