@@ -7,13 +7,13 @@ namespace Model;
  */
 class PaymentTable extends BaseTable {
 
-    const STATE_PREPARING = "preparing";
-    const STATE_SEND = "send";
+    const PAYMENT_STATE_PREPARING = "preparing";
+    const PAYMENT_STATE_SEND = "send";
 
     public function get($unitId, $paymentId) {
-        return $this->connection->fetch("SELECT p.*, g.email_info, g.email_demand, g.state as groupState FROM [" . self::TABLE_PA_PAYMENT . "] p"
+        return $this->connection->fetch("SELECT p.*, g.email_info, g.email_demand, g.state as groupState, g.unitId FROM [" . self::TABLE_PA_PAYMENT . "] p"
                         . " LEFT JOIN [" . self::TABLE_PA_GROUP . "] g ON g.id = p.groupId"
-                        . " WHERE g.unitId=%i", $unitId, " AND p.id=%i ", $paymentId);
+                        . " WHERE g.unitId IN %in", !is_array($unitId) ? array($unitId) : $unitId, " AND p.id=%i ", $paymentId);
     }
 
     /**
@@ -36,24 +36,17 @@ class PaymentTable extends BaseTable {
     public function update($paymentId, $arr, $notClosed = TRUE) {
         $q = $this->connection->update(self::TABLE_PA_PAYMENT, $arr)->where("id=%i", $paymentId);
         if ($notClosed) {
-            $q->where("state in %in", array(self::STATE_PREPARING, self::STATE_SEND));
+            $q->where("state in %in", array(self::PAYMENT_STATE_PREPARING, self::PAYMENT_STATE_SEND));
         }
         return $q->execute();
     }
 
     public function getGroup($unitId, $id) {
-        if(is_array($unitId)){
-            return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE id=%i ", $id, " AND unitId IN %in ", $unitId, " AND state != 'canceled'");
-        }
-        return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE id=%i ", $id, " AND unitId=%i ", $unitId, " AND state != 'canceled'");
+        return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE id=%i ", $id, " AND unitId IN %in ", !is_array($unitId) ? array($unitId) : $unitId, " AND state != 'canceled'");
     }
 
     public function getGroups($unitId, $onlyOpen) {
-        return $this->connection->query("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE unitId=%i ", $unitId, " AND state", "%if ", $onlyOpen, "='open' %else !='canceled' %end")->fetchAssoc("id");
-    }
-
-    public function getGroupsIn($unitIds, $onlyOpen) {
-        return $this->connection->query("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE unitId IN %in ", $unitIds, " AND state", "%if ", $onlyOpen, "='open' %else !='canceled' %end")->fetchAssoc("id");
+        return $this->connection->query("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE unitId IN %in ", !is_array($unitId) ? array($unitId) : $unitId, " AND state", "%if ", $onlyOpen, "='open' %else !='canceled' %end")->fetchAssoc("id");
     }
 
     public function getGroupsBySisId($groupType, $sisId) {

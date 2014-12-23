@@ -113,19 +113,19 @@ class UserService extends BaseService {
             $unitIds = Strings::endsWith($r->Key, "Stredisko") || Strings::endsWith($r->Key, "Oddil") ? $us->getAllUnder($r->ID_Unit) : array($r->ID_Unit => $us->getDetail($r->ID_Unit));
             if (Strings::startsWith($r->Key, "cinovnik")) {
                 return array(
-                    "read" => $unitIds,
-                    "edit" => array()
+                    self::ACCESS_READ => $unitIds,
+                    self::ACCESS_EDIT => array()
                 );
             } elseif (Strings::startsWith($r->Key, "vedouci") || Strings::startsWith($r->Key, "hospodar")) {
                 return array(
-                    "read" => $unitIds,
-                    "edit" => $unitIds
+                    self::ACCESS_READ => $unitIds,
+                    self::ACCESS_EDIT => $unitIds
                 );
             }
         }
         return array(
-            "read" => array(),
-            "edit" => array()
+            self::ACCESS_READ => array(),
+            self::ACCESS_EDIT => array()
         );
     }
 

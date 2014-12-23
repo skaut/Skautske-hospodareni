@@ -16,6 +16,8 @@ class PaymentPresenter extends BasePresenter {
      * @var \Model\BankService
      */
     protected $bank;
+    protected $readUnits;
+    protected $editUnits;
 
     public function __construct(\Model\PaymentService $paymentService, \Model\BankService $bankService) {
         parent::__construct($paymentService);
@@ -27,18 +29,20 @@ class PaymentPresenter extends BasePresenter {
         //Kontrola ověření přístupu
         $this->template->notFinalStates = $this->notFinalStates = $this->model->getNonFinalStates();
         //$this->groups = $this->model->getGroupsIn($this->user->getIdentity()->access['read']);
+        $this->readUnits = $this->context->getService("unitService")->getReadUnits($this->user);
+        $this->editUnits = $this->context->getService("unitService")->getEditUnits($this->user);
     }
 
     public function renderDefault($onlyOpen = 1) {
         $this->template->onlyOpen = $onlyOpen;
-        $this->template->groups = $groups = $this->model->getGroupsIn(array_keys($this->user->getIdentity()->access['read']), $onlyOpen);
+        $this->template->groups = $groups = $this->model->getGroups(array_keys($this->user->getIdentity()->access['read']), $onlyOpen);
         $this->template->payments = $this->model->getAll(array_keys($groups), TRUE);
     }
 
     public function renderDetail($id) {
         $this->template->units = $units = $this->context->getService("unitService")->getReadUnits($this->user);
         $this->template->group = $group = $this->model->getGroup(array_keys($units), $id);
-        if(!$group){
+        if (!$group) {
             $this->flashMessage("Nemáte oprávnění zobrazit detail plateb", "warning");
             $this->redirect("Payment:default");
         }
@@ -183,15 +187,11 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function handleSend($pid) {
-        if (!$this->isEditable) {
+        if (!$this->isEditable || !$this->model->get(array_keys($this->editUnits), $pid)) {
             $this->flashMessage("Neplatný požadavek na odeslání emailu!", "error");
             $this->redirect("this");
         }
-        if (!$this->model->get($this->aid, $pid)) {
-            $this->flashMessage("Neplatný požadavek na odeslání emailu!", "error");
-            $this->redirect("this");
-        }
-        if ($this->model->sendInfo($this->aid, $this->template, $pid)) {
+        if ($this->model->sendInfo(array_keys($this->editUnits), $this->template, $pid, $this->context->getService("unitService"))) {
             $this->flashMessage("Informační email byl odeslán.");
         } else {
             $this->flashMessage("Informační email se nepodařilo odeslat!", "error");
@@ -211,7 +211,7 @@ class PaymentPresenter extends BasePresenter {
         $payments = $this->model->getAll($gid);
         $cnt = 0;
         foreach ($payments as $p) {
-            $cnt += $this->model->sendInfo($this->aid, $this->template, $p->id);
+            $cnt += $this->model->sendInfo(array_keys($this->editUnits), $this->template, $p->id);
         }
 
         if ($cnt > 0) {
