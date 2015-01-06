@@ -35,14 +35,14 @@
             </tr>
             <tr n:foreach="$list as $p">
                 <td><input type=checkbox name="ch[]" value="p_{$p['ID_Person']}"></td>
-                <td><input type=text name="vals[{$p['ID_Person']}][name]" value="{$p['Person']}"></td>
+                <td title="{$p['RegistrationCategory']}"><input type=text name="vals[{$p['ID_Person']}][name]" value="{$p['Person']}"></td>
                 <td>{input $p['ID_Person'].'_email', name=>"vals[{$p['ID_Person']}][email]"}</td>
-                <td><input type=text name="vals[{$p['ID_Person']}][amount]" class="input-mini"></td>
+                <td><input type=text name="vals[{$p['ID_Person']}][amount]" value="{$p['AmountTotal']|number:0:',':' '}" class="input-mini"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][maturity]" class="input-small"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][vs]" class="input-small"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][ks]" class="input-mini"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][note]" class="input-small"></td>
-                <td>{if $p['AmountServices'] > 0}{$p['AmountServices']/$stsPrice}x{/if}</td>
+                <td>{if $p['AmountServices'] > 0}{$p['AmountServices']/$stsPrice}x{else}&nbsp;{/if}</td>
             </tr>
         </table>
 
