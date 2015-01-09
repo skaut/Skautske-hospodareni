@@ -3,7 +3,12 @@
     <h2>{$grpLabel}</h2>
     {foreach $chitsArr[$type] as $id=>$chits}
         {if !empty($chits)}
-            <h3>{$info[$type][$id]['DisplayName']}</h3>
+
+            <h3>
+                <a href="{if $type == 'event'}{link :Accountancy:Event:Cashbook: $id}{elseif $type == 'camp'}{link :Accountancy:Camp:Cashbook: $id}{elseif $type == 'unit'}{link :Accountancy:UnitAccount:Cashbook: $id}{/if}">
+                    {$info[$type][$id]['DisplayName']}
+                </a>
+            </h3>
             <table class='table table-condensed'>
                 <tr>
                     <th>Účel</th>
@@ -51,7 +56,7 @@
             </div>
             <a n:href="this onlyUnlocked=>!$onlyUnlocked" class="btn btn-primary">Zobrazit {if $onlyUnlocked}všechny{else}pouze nezamčené{/if}</a>
         </div>
-{*}{*}
+        {*}{*}
         {include #group grpLabel=>'Výpravy', type=>'event'}
         {include #group grpLabel=>'Tábory', type=>'camp'}
         {include #group grpLabel=>'Jednotky', type=>'unit'}
