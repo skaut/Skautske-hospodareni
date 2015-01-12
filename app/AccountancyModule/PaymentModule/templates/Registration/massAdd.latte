@@ -37,7 +37,7 @@
                 <td><input type=checkbox name="ch[]" value="p_{$p['ID_Person']}"></td>
                 <td title="{$p['RegistrationCategory']}"><input type=text name="vals[{$p['ID_Person']}][name]" value="{$p['Person']}"></td>
                 <td>{input $p['ID_Person'].'_email', name=>"vals[{$p['ID_Person']}][email]"}</td>
-                <td><input type=text name="vals[{$p['ID_Person']}][amount]" value="{$p['AmountTotal']|number:0:',':' '}" class="input-mini"></td>
+                <td><input type=text name="vals[{$p['ID_Person']}][amount]" value="{$p['AmountTotal']|number:0:',':''}" class="input-mini"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][maturity]" class="input-small"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][vs]" class="input-small"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][ks]" class="input-mini"></td>
