@@ -63,7 +63,7 @@ class RegistrationPresenter extends BasePresenter {
             $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "error");
             $this->redirect("Payment:detail", array("id" => $values->oid));
         }
-       
+
         foreach ($checkboxs as $pid) {
             $pid = substr($pid, 2);
             $tmpAmount = $vals[$pid]['amount'];
@@ -79,7 +79,13 @@ class RegistrationPresenter extends BasePresenter {
             }
 
             if ($tmpMaturity != "") {
-                $maturity = date("Y-m-d", strtotime($tmpMaturity));
+                $matArr = preg_split('#[\. ]+#', $tmpMaturity);
+                if (count($matArr) == 3) {
+                    $maturity = date("Y-m-d", strtotime($matArr[2] . "-" . $matArr[1] . "-" . $matArr[0]));
+                } else {
+                    $this->flashMessage("Nepodařilo se nastavit splatnost pro $name", "danger");
+                    continue;
+                }
             } else {
                 if ($values['defaultMaturity'] instanceof \DateTime) {
                     $maturity = date("Y-m-d", strtotime($values['defaultMaturity']));
