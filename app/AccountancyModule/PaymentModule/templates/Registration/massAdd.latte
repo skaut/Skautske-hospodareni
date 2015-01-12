@@ -39,7 +39,7 @@
                 <td>{input $p['ID_Person'].'_email', name=>"vals[{$p['ID_Person']}][email]"}</td>
                 <td><input type=text name="vals[{$p['ID_Person']}][amount]" value="{$p['AmountTotal']|number:0:',':''}" class="input-mini"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][maturity]" class="input-small"></td>
-                <td><input type=text name="vals[{$p['ID_Person']}][vs]" class="input-small"></td>
+                <td><input type=text name="vals[{$p['ID_Person']}][vs]" {if $maxVS !== NULL}value="{= ++$maxVS}" {/if}class="input-small"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][ks]" class="input-mini"></td>
                 <td><input type=text name="vals[{$p['ID_Person']}][note]" class="input-small"></td>
                 <td>{if $p['AmountServices'] > 0}{$p['AmountServices']/$stsPrice}x{else}&nbsp;{/if}</td>

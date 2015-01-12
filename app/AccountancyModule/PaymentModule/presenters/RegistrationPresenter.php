@@ -18,8 +18,15 @@ class RegistrationPresenter extends BasePresenter {
 
     public function actionMassAdd($id) {
         //ověření přístupu
-        $this->template->list = $list = $this->model->getRegistrationPersons(array_keys($this->readUnits), $id);
+        try {
+            $this->template->list = $list = $this->model->getRegistrationPersons(array_keys($this->readUnits), $id);
+        } catch (\InvalidArgumentException $exc) {
+            $this->flashMessage("Neoprávněný přístup ke skupině.", "fail");
+            $this->redirect("Payment:default");
+        }
+        
         $this->template->detail = $detail = $this->model->getGroup(array_keys($this->readUnits), $id);
+        $this->template->maxVS = $this->model->getMaxVS($detail->id);
 
         if (!$detail) {
             $this->flashMessage("Neplatný požadavek na přidání registračních plateb", "error");

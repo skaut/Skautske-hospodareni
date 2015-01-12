@@ -138,6 +138,10 @@ class PaymentService extends BaseService {
     public function updateGroup($groupId, $arr) {
         return $this->table->updateGroup($groupId, $arr);
     }
+    
+    public function getMaxVS($groupId){
+        return $this->table->getMaxVS($groupId);
+    }
 
     /**
      * seznam osob z dané jednotky
@@ -222,12 +226,13 @@ class PaymentService extends BaseService {
      */
     public function getRegistrationPersons($units, $groupId = NULL) {
         $result = array();
-        $group = $this->getGroup($units, $groupId)->sisId;
+        
+        $group = $this->getGroup($units, $groupId);
         if (!$group) {
             throw new \InvalidArgumentException("Nebyla nalezena platební skupina");
         }
         $persons = $this->skautis->org->PersonRegistrationAll(array(
-            'ID_UnitRegistration' => $group,
+            'ID_UnitRegistration' => $group->sisId,
             'IncludeChild' => TRUE,
         ));
 

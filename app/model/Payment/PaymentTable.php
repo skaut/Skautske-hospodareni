@@ -67,5 +67,9 @@ class PaymentTable extends BaseTable {
     public function updateGroup($groupId, $arr) {
         return $this->connection->update(self::TABLE_PA_GROUP, $arr)->where("id=%i", $groupId)->where("state='open'")->execute();
     }
+    
+    public function getMaxVS($groupId){
+        return $this->connection->fetchSingle("SELECT MAX(vs) FROM [".self::TABLE_PA_PAYMENT."] WHERE groupId=%i", $groupId, " AND state != 'canceled'");
+    }
 
 }
