@@ -42,6 +42,7 @@ class PaymentPresenter extends BasePresenter {
     public function renderDetail($id) {
         $this->template->units = $units = $this->context->getService("unitService")->getReadUnits($this->user);
         $this->template->group = $group = $this->model->getGroup(array_keys($units), $id);
+        $maxVS = $this->model->getMaxVS($group['id']);
         if (!$group) {
             $this->flashMessage("Nemáte oprávnění zobrazit detail plateb", "warning");
             $this->redirect("Payment:default");
@@ -53,6 +54,7 @@ class PaymentPresenter extends BasePresenter {
             'maturity' => $group['maturity'],
             'ks' => $group['ks'],
             'oid' => $group['id'],
+            'vs' => $maxVS != NULL ? $maxVS+1 : "",
         ));
 
         $this->template->payments = $payments = $this->model->getAll($id);
