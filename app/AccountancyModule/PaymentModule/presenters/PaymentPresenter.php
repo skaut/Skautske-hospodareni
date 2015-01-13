@@ -54,7 +54,7 @@ class PaymentPresenter extends BasePresenter {
             'maturity' => $group['maturity'],
             'ks' => $group['ks'],
             'oid' => $group['id'],
-            'vs' => $maxVS != NULL ? $maxVS+1 : "",
+            'vs' => $maxVS != NULL ? $maxVS + 1 : "",
         ));
 
         $this->template->payments = $payments = $this->model->getAll($id);
@@ -68,7 +68,7 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
             $this->redirect("Payment:default");
         }
-        $payment = $this->model->get($this->aid, $pid);
+        $payment = $this->model->get(array_keys($this->editUnits), $pid);
         $form = $this['paymentForm'];
         $form->addSubmit('send', 'Přidat')->setAttribute("class", "btn btn-primary");
         $form->setDefaults(array(
@@ -89,7 +89,7 @@ class PaymentPresenter extends BasePresenter {
         //ověření přístupu
         $this->template->unitPairs = $units = $this->context->getService("unitService")->getReadUnits($this->user);
         $this->template->detail = $detail = $this->model->getGroup(array_keys($units), $id);
-        $this->template->list = $list = $this->model->getPersons($this->aid, $id);
+        $this->template->list = $list = $this->model->getPersons($this->aid, $id); //@todo:?nahradit aid za array_keys($this->editUnits) ??
 
         if (!$detail) {
             $this->flashMessage("Neplatný požadavek na přehled osob", "error");
@@ -176,7 +176,7 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "error");
             $this->redirect("this");
         }
-        if (!$this->model->get($this->aid, $pid)) {
+        if (!$this->model->get(array_keys($this->editUnits), $pid)) {
             $this->flashMessage("Platba pro zrušení nebyla nalezena!", "error");
             $this->redirect("this");
         }
