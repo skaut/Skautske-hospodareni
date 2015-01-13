@@ -92,6 +92,15 @@ abstract class AccountancyHelpers extends Object {
         //return $price;
     }
 
+    /**
+     * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
+     * @param number $num
+     * @return string
+     */
+    public static function num($num) {
+        return number_format($num, strpos($num, '.') ? 2 : 0, ",", " ");
+    }
+
     public static function postCode($oldPsc) {
         $psc = preg_replace("[^0-9]", "", $oldPsc);
         if (strlen($psc) == 5) {

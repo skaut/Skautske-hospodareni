@@ -40,10 +40,10 @@ $isEditable
         <tr n:foreach="$payments as $l" {if in_array($l->state, $notFinalStates) && $l->maturity->getTimestamp() < time()}class="error" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}>
             <td>{$l->name}</td>
             <td>{if $l->email == null}&nbsp;{else}{$l->email}{/if}</td>
-            <td class="r">{$l->amount}</td>
+            <td class="r">{$l->amount|num}</td>
             <td class="r">{if $l->vs == null}&nbsp;{else}{$l->vs}{/if}</td>
             <td class="r">{if $l->ks == null}&nbsp;{else}{$l->ks}{/if}</td>
-            <td>{$l->maturity|date:'j.n.Y'}</td>
+            <td class="r">{$l->maturity|date:'j.n.Y'}</td>
             <td>{if $l->note == null}&nbsp;{else}{$l->note}{/if}</td>
             <td>{$l->stateLabel}</td>
             <td n:if="$isEditable" class="r">{if in_array($l->state, $notFinalStates)}
