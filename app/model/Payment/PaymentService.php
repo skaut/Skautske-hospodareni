@@ -21,13 +21,10 @@ class PaymentService extends BaseService {
     /**
      * 
      * @param int|array $pa_groupIds
-     * @return type
+     * @return array
      */
     public function getAll($pa_groupIds, $useHierarchy = FALSE) {
-        if (!is_array($pa_groupIds)) {
-            $pa_groupIds = array($pa_groupIds);
-        }
-        $result = $this->table->getAllPayments($pa_groupIds);
+        $result = $this->table->getAllPayments(is_array($pa_groupIds) ? $pa_groupIds : array($pa_groupIds));
         if ($useHierarchy) {
             $tmp = array();
             foreach ($result as $v) {//roztrizeni podle událostí
@@ -237,6 +234,9 @@ class PaymentService extends BaseService {
         ));
 
         if (is_array($persons)) {
+            usort($persons, function ($a, $b) {
+                    return strcmp($a->Person, $b->Person);
+                });
             if ($groupId !== NULL) {
                 $payments_personIds = $this->table->getActivePaymentIds($groupId);
                 $persons = array_filter($persons, function ($v) use ($payments_personIds) {
