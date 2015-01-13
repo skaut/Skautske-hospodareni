@@ -76,16 +76,28 @@ class PaymentService extends BaseService {
         $accountRaw = $this->getBankAccount($oficialUnitId);
         preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $accountRaw, $account);
 
-        $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?'
-                . (array_key_exists('prefix', $account) && $account['prefix'] != '' ? 'accountPrefix=' . $account['prefix'] . '&' : '' )
-                . 'accountNumber=' . $account['number']
-                . '&bankCode=' . $account['code']
-                . '&amount=' . $p->amount
-                . '&currency=CZK&vs=' . $p->vs
-                . ($p->ks != '' ? '&ks=' . $p->ks : '' )
-                . ($p->name != '' ? '&message=' . urlencode($p->name) : '' )
-                . '&date=' . $p->maturity->format("Y-m-d")
-                . '&size=200"/>';
+        $params = array(
+            "accountNumber" => $account['number'],
+            "bankCode" => $account['code'],
+            "amount" => $p->amount,
+            "currency" => "CZK",
+            "date" => $p->maturity->format("Y-m-d"),
+            "size" => "200",
+        );
+        if (array_key_exists('prefix', $account) && $account['prefix'] != '') {
+            $params['accountPrefix'] = $account['prefix'];
+        }
+        if ($p->vs != '') {
+            $params['vs'] = $p->vs;
+        }
+        if ($p->ks != '') {
+            $params['ks'] = $p->ks;
+        }
+        if ($p->name != '') {
+            $params['message'] = $p->name;
+        }
+
+        $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params) . '"/>';
         $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $p->name, $p->amount, $p->maturity->format("j.n.Y"), $p->vs, $p->ks, $p->note), $p->email_info);
         if ($this->mailService->sendPaymentInfo($template, $p->email, "Informace o platbě", $body, $oficialUnitId)) {
             return $this->table->update($paymentId, array("state" => PaymentTable::PAYMENT_STATE_SEND));
@@ -135,8 +147,8 @@ class PaymentService extends BaseService {
     public function updateGroup($groupId, $arr) {
         return $this->table->updateGroup($groupId, $arr);
     }
-    
-    public function getMaxVS($groupId){
+
+    public function getMaxVS($groupId) {
         return $this->table->getMaxVS($groupId);
     }
 
@@ -223,7 +235,7 @@ class PaymentService extends BaseService {
      */
     public function getRegistrationPersons($units, $groupId = NULL) {
         $result = array();
-        
+
         $group = $this->getGroup($units, $groupId);
         if (!$group) {
             throw new \InvalidArgumentException("Nebyla nalezena platební skupina");
@@ -235,8 +247,8 @@ class PaymentService extends BaseService {
 
         if (is_array($persons)) {
             usort($persons, function ($a, $b) {
-                    return strcmp($a->Person, $b->Person);
-                });
+                return strcmp($a->Person, $b->Person);
+            });
             if ($groupId !== NULL) {
                 $payments_personIds = $this->table->getActivePaymentIds($groupId);
                 $persons = array_filter($persons, function ($v) use ($payments_personIds) {
