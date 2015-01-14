@@ -30,7 +30,7 @@ class BankPresenter extends BasePresenter {
         if ($bankInfo) {
             $this['tokenForm']->setDefaults($bankInfo);
             try {
-                $this->template->transactions = $this->bank->getTransactionsFio($bankInfo->token, $bankInfo->daysback);
+                $this->template->transactions = array_reverse($this->bank->getTransactionsFio($bankInfo->token, $bankInfo->daysback));
             } catch (\Model\BankTimeoutException $exc) {
                 $this->template->errMsg[] = "Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.";
             } catch (\Model\BankTimeLimitException $exc) {

@@ -65,12 +65,13 @@ class BankService extends BaseService {
             $transactions = array();
             $transactionList = json_decode($file)->accountStatement->transactionList;
             if ($transactionList !== NULL) {
+                //dump($transactionList->transaction);die();
                 foreach ($transactionList->transaction as $k => $t) {
                     $transactions[$k]['id'] = $t->column22->value;
                     $transactions[$k]['date'] = $t->column0->value;
                     $transactions[$k]['amount'] = $t->column1->value;
                     $transactions[$k]['prociucet'] = $t->column2 !== NULL ? $t->column2->value . "/" . $t->column3->value : "";
-                    $transactions[$k]['user'] = $t->column7 !== NULL ? $t->column7->value : "";
+                    $transactions[$k]['user'] = $t->column7 !== NULL ? $t->column7->value : ($t->column10 != NULL ? $t->column10->value : "");
                     $transactions[$k]['ks'] = isset($t->column4) ? $t->column4->value : NULL;
                     $transactions[$k]['vs'] = isset($t->column5) ? $t->column5->value : NULL;
                     $transactions[$k]['note'] = isset($t->column16) ? $t->column16->value : NULL;
