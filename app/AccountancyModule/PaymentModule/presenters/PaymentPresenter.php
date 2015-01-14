@@ -18,10 +18,12 @@ class PaymentPresenter extends BasePresenter {
     protected $bank;
     protected $readUnits;
     protected $editUnits;
+    protected $unitService;
 
-    public function __construct(\Model\PaymentService $paymentService, \Model\BankService $bankService) {
+    public function __construct(\Model\PaymentService $paymentService, \Model\BankService $bankService, \Model\UnitService $unitService) {
         parent::__construct($paymentService);
         $this->bank = $bankService;
+        $this->unitService = $unitService;
     }
 
     protected function startup() {
@@ -29,19 +31,19 @@ class PaymentPresenter extends BasePresenter {
         //Kontrola ověření přístupu
         $this->template->notFinalStates = $this->notFinalStates = $this->model->getNonFinalStates();
         //$this->groups = $this->model->getGroupsIn($this->user->getIdentity()->access['read']);
-        $this->readUnits = $this->context->getService("unitService")->getReadUnits($this->user);
-        $this->editUnits = $this->context->getService("unitService")->getEditUnits($this->user);
+        $this->readUnits = $this->unitService->getReadUnits($this->user);
+        $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
 
     public function renderDefault($onlyOpen = 1) {
         $this->template->onlyOpen = $onlyOpen;
-        $this->template->groups = $groups = $this->model->getGroups(array_keys($this->user->getIdentity()->access['read']), $onlyOpen);
+        $this->template->groups = $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
         $this->template->payments = $this->model->getAll(array_keys($groups), TRUE);
     }
 
     public function renderDetail($id) {
-        $this->template->units = $units = $this->context->getService("unitService")->getReadUnits($this->user);
-        $this->template->group = $group = $this->model->getGroup(array_keys($units), $id);
+        $this->template->units = $this->readUnits;
+        $this->template->group = $group = $this->model->getGroup(array_keys($this->readUnits), $id);
         $maxVS = $this->model->getMaxVS($group['id']);
         if (!$group) {
             $this->flashMessage("Nemáte oprávnění zobrazit detail plateb", "warning");
@@ -87,8 +89,8 @@ class PaymentPresenter extends BasePresenter {
 
     public function actionMassAdd($id) {
         //ověření přístupu
-        $this->template->unitPairs = $units = $this->context->getService("unitService")->getReadUnits($this->user);
-        $this->template->detail = $detail = $this->model->getGroup(array_keys($units), $id);
+        $this->template->unitPairs = $this->readUnits;
+        $this->template->detail = $detail = $this->model->getGroup(array_keys($this->readUnits), $id);
         $this->template->list = $list = $this->model->getPersons($this->aid, $id); //@todo:?nahradit aid za array_keys($this->editUnits) ??
 
         if (!$detail) {
@@ -193,7 +195,9 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Neplatný požadavek na odeslání emailu!", "error");
             $this->redirect("this");
         }
-        if ($this->model->sendInfo(array_keys($this->editUnits), $this->template, $pid, $this->context->getService("unitService"))) {
+        $payment = $this->model->get(array_keys($this->editUnits), $pid);
+
+        if ($this->model->sendInfo($this->template, $payment, $this->unitService)) {
             $this->flashMessage("Informační email byl odeslán.");
         } else {
             $this->flashMessage("Informační email se nepodařilo odeslat!", "error");
@@ -212,14 +216,48 @@ class PaymentPresenter extends BasePresenter {
         }
         $payments = $this->model->getAll($gid);
         $cnt = 0;
+        $unitIds = array_keys($this->editUnits);
         foreach ($payments as $p) {
-            $cnt += $this->model->sendInfo(array_keys($this->editUnits), $this->template, $p->id);
+            $payment = $this->model->get($unitIds, $p->id);
+            $cnt += $this->model->sendInfo($this->template, $payment, $this->unitService);
         }
 
         if ($cnt > 0) {
             $this->flashMessage("Informační emaily($cnt) byly odeslány.");
         } else {
             $this->flashMessage("Nebyl odeslán žádný informační email!", "error");
+        }
+        $this->redirect("this");
+    }
+
+    public function handleSendTest($gid) {
+        if (!$this->isEditable) {
+            $this->flashMessage("Neplatný požadavek na odeslání testovacího emailu!", "error");
+            $this->redirect("this");
+        }
+        $personalDetail = $this->context->getService("userService")->getPersonalDetail();
+        if (!isset($personalDetail->Email)) {
+            $this->flashMessage("Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!", "error");
+            $this->redirect("this");
+        }
+        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
+        $payment = \Nette\Utils\ArrayHash::from(array(
+                    "state" => \Model\PaymentTable::PAYMENT_STATE_PREPARING,
+                    "name" => "Testovací účel",
+                    "email" => $personalDetail->Email,
+                    "unitId" => $group->unitId,
+                    "amount" => $group->amount != 0 ? $group->amount : rand(50, 1000),
+                    "maturity" => $group->maturity instanceof \DateTime ? $group->maturity : new \DateTime(date("Y-m-d", strtotime("+2 week"))),
+                    "ks" => $group->ks,
+                    "vs" => rand(1000, 100000),
+                    "email_info" => $group->email_info,
+                    "note" => "obsah poznámky",
+        ));
+
+        if ($this->model->sendInfo($this->template, $payment, $this->unitService)) {
+            $this->flashMessage("Testovací email byl odeslán na " . $personalDetail->Email . " .");
+        } else {
+            $this->flashMessage("Testovací email se nepodařilo odeslat!", "error");
         }
         $this->redirect("this");
     }
