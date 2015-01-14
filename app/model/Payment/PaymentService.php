@@ -35,6 +35,19 @@ class PaymentService extends BaseService {
         return $result;
     }
 
+    /**
+     * 
+     * @param int $groupId
+     * @param string $name
+     * @param srting $email
+     * @param float $amount
+     * @param type $maturity
+     * @param int $personId
+     * @param int $vs
+     * @param int $ks
+     * @param string $note
+     * @return type
+     */
     public function createPayment($groupId, $name, $email, $amount, $maturity, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL) {
         return $this->table->createPayment(array(
                     'groupId' => $groupId,
@@ -49,10 +62,20 @@ class PaymentService extends BaseService {
         ));
     }
 
+    /**
+     * 
+     * @param int $pid
+     * @param array $arr
+     * @return type
+     */
     public function update($pid, $arr) {
         return $this->table->update($pid, $arr);
     }
 
+    /**
+     * seznam stavů, které jsou nedokončené
+     * @return array
+     */
     public function getNonFinalStates() {
         return array(PaymentTable::PAYMENT_STATE_PREPARING, PaymentTable::PAYMENT_STATE_SEND);
     }
@@ -66,45 +89,58 @@ class PaymentService extends BaseService {
         return $this->table->summarizeByState($pa_id);
     }
 
-    public function sendInfo($unitId, $template, $paymentId, UnitService $us = NULL) {
-        $p = $this->get($unitId, $paymentId);
-
-        if ($p->state != PaymentTable::PAYMENT_STATE_PREPARING || mb_strlen($p->email) < 5) {
+    /**
+     * 
+     * @param \Nette\Application\UI\ITemplate $template
+     * @param type $payment - state=PaymentTable::PAYMENT_STATE_PREPARING, email, unitId, amount, maturity, email_info, name, note, vs, ks
+     * @param \Model\UnitService $us
+     * @return boolean
+     */
+    public function sendInfo(\Nette\Application\UI\ITemplate $template, $payment, UnitService $us = NULL) {
+        if ($payment->state != PaymentTable::PAYMENT_STATE_PREPARING || mb_strlen($payment->email) < 5) {
             return FALSE;
         }
-        $oficialUnitId = $us->getOficialUnit($p->unitId)->ID;
+        $oficialUnitId = $us->getOficialUnit($payment->unitId)->ID;
         $accountRaw = $this->getBankAccount($oficialUnitId);
         preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $accountRaw, $account);
 
         $params = array(
             "accountNumber" => $account['number'],
             "bankCode" => $account['code'],
-            "amount" => $p->amount,
+            "amount" => $payment->amount,
             "currency" => "CZK",
-            "date" => $p->maturity->format("Y-m-d"),
+            "date" => $payment->maturity->format("Y-m-d"),
             "size" => "200",
         );
         if (array_key_exists('prefix', $account) && $account['prefix'] != '') {
             $params['accountPrefix'] = $account['prefix'];
         }
-        if ($p->vs != '') {
-            $params['vs'] = $p->vs;
+        if ($payment->vs != '') {
+            $params['vs'] = $payment->vs;
         }
-        if ($p->ks != '') {
-            $params['ks'] = $p->ks;
+        if ($payment->ks != '') {
+            $params['ks'] = $payment->ks;
         }
-        if ($p->name != '') {
-            $params['message'] = $p->name;
+        if ($payment->name != '') {
+            $params['message'] = $payment->name;
         }
 
         $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params) . '"/>';
-        $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $p->name, $p->amount, $p->maturity->format("j.n.Y"), $p->vs, $p->ks, $p->note), $p->email_info);
-        if ($this->mailService->sendPaymentInfo($template, $p->email, "Informace o platbě", $body, $oficialUnitId)) {
-            return $this->table->update($paymentId, array("state" => PaymentTable::PAYMENT_STATE_SEND));
+        $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $payment->name, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info);
+        if ($this->mailService->sendPaymentInfo($template, $payment->email, "Informace o platbě", $body, $oficialUnitId)) {
+            if (isset($payment->id)) {
+                return $this->table->update($payment->id, array("state" => PaymentTable::PAYMENT_STATE_SEND));
+            }
+            return TRUE;
         }
         return FALSE;
     }
 
+    /**
+     * číslo účtu jednotky ze skautisu
+     * @param int $unitId
+     * @return string|FALSE
+     */
     protected function getBankAccount($unitId) {
         $accounts = $this->skautis->org->AccountAll(array("ID_Unit" => $unitId, "IsValid" => TRUE));
         if (count($accounts) == 1) {
@@ -122,14 +158,40 @@ class PaymentService extends BaseService {
     /**
      * GROUP
      */
+
+    /**
+     * 
+     * @param int|array(int) $unitId
+     * @param int $groupId
+     * @return type
+     */
     public function getGroup($unitId, $groupId) {
         return $this->table->getGroup($unitId, $groupId);
     }
 
+    /**
+     * 
+     * @param int|array(int) $unitId
+     * @param boolean $onlyOpen
+     * @return type
+     */
     public function getGroups($unitId, $onlyOpen = FALSE) {
         return $this->table->getGroups($unitId, $onlyOpen);
     }
 
+    /**
+     * 
+     * @param int $unitId
+     * @param string $oType
+     * @param int $sisId
+     * @param string $label
+     * @param type $maturity
+     * @param int $ks
+     * @param float $amount
+     * @param string $email_info
+     * @param string $email_demand
+     * @return type
+     */
     public function createGroup($unitId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {
         return $this->table->createGroup(array(
                     'groupType' => $oType,
@@ -144,10 +206,21 @@ class PaymentService extends BaseService {
         ));
     }
 
+    /**
+     * 
+     * @param int $groupId
+     * @param array $arr
+     * @return type
+     */
     public function updateGroup($groupId, $arr) {
         return $this->table->updateGroup($groupId, $arr);
     }
 
+    /**
+     * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby
+     * @param int $groupId
+     * @return int
+     */
     public function getMaxVS($groupId) {
         return $this->table->getMaxVS($groupId);
     }

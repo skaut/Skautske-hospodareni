@@ -38,9 +38,17 @@
         <div class="well well-small">
             <a n:href="Group: aid=>$group->unitId, $group->id" class="btn btn-primary"><i class="icon icon-edit icon-white"></i> Upravit skupinu</a>
             <a n:if="$group->groupType == 'registration'" n:href="Registration:massAdd $group['id']" class="btn btn-primary" ><i class="icon icon-plus-sign icon-white hidden-phone"></i> Přidat z registrace</a>
-            <a n:href="sendGroup! $group->id" class="btn btn-primary{if !$isGroupSendActive} disabled" title="Nejsou žádné platby s vyplněným emailem k odeslání{/if}"><i class="icon icon-envelope icon-white"></i> Rozeslat emaily</a>
-            <a n:href="pairPayments! $group->id" class="btn btn-primary"><i class="icon icon-resize-small icon-white"></i> Párovat platby</a>
             <a n:href="massAdd $group->id" class="btn btn-primary">Hromadné přidání <sup style="color:red;">BETA</sup></a>
+            <div class="btn-group">
+                <a class="btn dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#">
+                    <i class="icon icon-envelope icon-white"></i> Email <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a n:href="sendTest! $group->id">Zaslat testovací email</a></li>
+                    <li><a {if $isGroupSendActive} href="{link sendGroup! $group->id}" onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily{else} class="disabled" title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s>{/if}</a></li>
+                </ul>
+            </div>
+            <a n:href="pairPayments! $group->id" class="btn btn-primary"><i class="icon icon-resize-small icon-white"></i> Párovat platby</a>
         </div>
     </div>
 </div>
