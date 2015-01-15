@@ -10,5 +10,6 @@ htaccess
 *.log
 deployment.*
 /www/*.json
+tests/*
 
 /composer.lock
