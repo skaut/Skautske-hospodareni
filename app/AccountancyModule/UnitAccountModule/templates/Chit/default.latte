@@ -23,7 +23,7 @@
                     <td>{$c->purpose}</td>
                     <td>{$c->recipient}</td>
                     <td>{$c->clabel}</td>
-                    <td>{$c->price}</td>
+                    <td>{if $c->ctype != 'in'}-{/if}{$c->price}</td>
                     <td n:if='!isset($disableForm)'>{input selectBudget_in_$c->id}</td>
                     <td n:if='!isset($disableForm)'>{input selectBudget_out_$c->id}</td>
                     <td>

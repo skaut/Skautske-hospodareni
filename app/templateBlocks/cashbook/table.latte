@@ -5,6 +5,7 @@ $linkImportHPD URL|NULL
 $aid INT
 $object - zdrojový objekt s informacemi
 $list array() - pole paragonů
+[$smallIconAdd]
 *}
 {dump $list}
 {block #content}
@@ -31,6 +32,8 @@ $list array() - pole paragonů
                                 <button n:name="massPrintSend" title="Vytisknout vybrané" class="btn btn-info btn-mini allDependend hidden-phone" type="submit">
                                     <i class="icon-print icon-white"></i>
                                 </button>
+                                
+                                {ifset $smallIcons}{!$smallIcons}{/ifset}
                             </th>
                             <th>Ze dne</th>
                             <th n:if="!is_null($object->prefix) && $object->prefix !=''">Číslo</th>

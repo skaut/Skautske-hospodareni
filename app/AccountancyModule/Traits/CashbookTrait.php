@@ -100,6 +100,8 @@ trait CashbookTrait {
         $form = new Form($this, $name);
         $form->addSubmit('massPrintSend')
                 ->onClick[] = $this->massPrintSubmitted;
+        $form->addSubmit('massExportSend')
+                ->onClick[] = $this->massExportSubmitted;
         return $form;
     }
 
@@ -107,6 +109,12 @@ trait CashbookTrait {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $template = $this->context->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $this->context->unitService, $chits);
         $this->entityService->chits->makePdf($template, "paragony.pdf");
+        $this->terminate();
+    }
+    
+    function massExportSubmitted(SubmitButton $button) {
+        $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
+        $this->context->excelService->getChitsExport($chits);
         $this->terminate();
     }
 

@@ -64,6 +64,15 @@ class ExcelService extends BaseService {
         $this->send($objPHPExcel, "Souhrn-akcí-" . date("Y_n_j"));
     }
 
+    public function getChitsExport($chits) {
+        $objPHPExcel = $this->getNewFile();
+        $sheetChit = $objPHPExcel->setActiveSheetIndex(0);
+        $this->setSheetChitsOnly($sheetChit, $chits);
+        $this->send($objPHPExcel, "Export-vybranych-paragonu");
+    }
+
+    /* PROTECTED */
+
     protected function setSheetParticipantCamp(&$sheet, $data) {
         $sheet->setCellValue('A1', "P.č.")
                 ->setCellValue('B1', "Jméno")
@@ -179,7 +188,7 @@ class ExcelService extends BaseService {
 
     protected function setSheetEvents(&$sheet, $data) {
         $firstElement = reset($data);
-        
+
         $sheet->setCellValue('A1', "Pořadatel")
                 ->setCellValue('B1', "Název akce")
                 ->setCellValue('C1', "Oddíl/družina")
@@ -199,7 +208,7 @@ class ExcelService extends BaseService {
                 ->setCellValue('Q1', $firstElement->parStatistic[3]->ParticipantCategory)
                 ->setCellValue('R1', $firstElement->parStatistic[4]->ParticipantCategory)
                 ->setCellValue('S1', $firstElement->parStatistic[5]->ParticipantCategory)
-                ;
+        ;
 
         $rowCnt = 2;
         foreach ($data as $row) {
@@ -250,7 +259,7 @@ class ExcelService extends BaseService {
             foreach ($event['chits'] as $chit) {
                 $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
                         ->setCellValue('B' . $rowCnt, date("d.m.Y", strtotime($chit->date)))
-                        ->setCellValue('C' . $rowCnt, $event->prefix !== NULL? $event->prefix.$chit->num: "")
+                        ->setCellValue('C' . $rowCnt, $event->prefix !== NULL ? $event->prefix . $chit->num : "")
                         ->setCellValue('D' . $rowCnt, $chit->purpose)
                         ->setCellValue('E' . $rowCnt, $chit->clabel)
                         ->setCellValue('F' . $rowCnt, $chit->recipient)
@@ -267,6 +276,57 @@ class ExcelService extends BaseService {
         }
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
+        $sheet->setTitle('Doklady');
+    }
+
+    protected function setSheetChitsOnly(&$sheet, $data) {
+        $sheet->setCellValue('B1', "Ze dne")
+                ->setCellValue('C1', "Účel výplaty")
+                ->setCellValue('D1', "Kategorie")
+                ->setCellValue('E1', "Komu/Od")
+                ->setCellValue('F1', "Částka")
+                ->setCellValue('G1', "Typ");
+
+        $rowCnt = 2;
+        $sumIn = $sumOut = 0;
+
+        foreach ($data as $chit) {
+            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
+                    ->setCellValue('B' . $rowCnt, date("d.m.Y", strtotime($chit->date)))
+                    ->setCellValue('C' . $rowCnt, $chit->purpose)
+                    ->setCellValue('D' . $rowCnt, $chit->clabel)
+                    ->setCellValue('E' . $rowCnt, $chit->recipient)
+                    ->setCellValue('F' . $rowCnt, $chit->price)
+                    ->setCellValue('G' . $rowCnt, $chit->ctype == "in" ? "Příjem" : "Výdaj")
+            ;
+            if ($chit->ctype == "in") {
+                $sumIn += $chit->price;
+            } else {
+                $sumOut += $chit->price;
+            }
+            $rowCnt++;
+        }
+        //add border
+        $sheet->getStyle('A1:G'.($rowCnt- 1))->getBorders()->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+        
+        if ($sumIn > 0) {
+            $rowCnt++;
+            $sheet->setCellValue('E' . $rowCnt, "Příjmy")
+                    ->setCellValue('F' . $rowCnt, $sumIn);
+            $sheet->getStyle('E' . $rowCnt)->getFont()->setBold(true);
+        }
+        if ($sumOut > 0) {
+            $rowCnt++;
+            $sheet->setCellValue('E' . $rowCnt, "Výdaje")
+                    ->setCellValue('F' . $rowCnt, $sumOut);
+            $sheet->getStyle('E' . $rowCnt)->getFont()->setBold(true);
+        }
+
+        //format
+        foreach (range('A', 'G') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
         $sheet->setTitle('Doklady');
     }
 
