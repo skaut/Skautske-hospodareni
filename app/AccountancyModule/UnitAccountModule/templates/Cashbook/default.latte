@@ -2,9 +2,12 @@
 <h2 n:block="title">Pokladní kniha: {$unitPairs[$aid]}</h2>
 {include ../ActionMenu.latte}
 
+{var $smallIcons = '<button name="massExportSend" title="Exportovat vybrané" class="btn btn-info btn-mini allDependend hidden-phone" type="submit"><i class="icon-download-alt icon-white"></i></button>'}
+
+
 <div class="row-fluid">
     {include $templateBlockDir.'cashbook/tabs.latte'}
-    {include $templateBlockDir.'cashbook/table.latte'}
+    {include $templateBlockDir.'cashbook/table.latte', smallIcons=>$smallIcons}
 </div>
 
 {include $templateBlockDir.'cashbook/js.latte'}
