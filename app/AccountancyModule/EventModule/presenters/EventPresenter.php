@@ -146,8 +146,8 @@ class EventPresenter extends BasePresenter {
         $form = new Form($this, $name);
         $form->addProtection();
         $form->addText("name", "Název akce");
-        $form->addDatePicker("start", "Od");
-        $form->addDatePicker("end", "Do");
+        $form->addDatePicker("start", "Od")->addRule(Form::FILLED, "Musíte zadat datum začátku akce");
+        $form->addDatePicker("end", "Do")->addRule(Form::FILLED, "Musíte zadat datum konce akce");
         $form->addText("location", "Místo");
         $form->addSelect("type", "Typ (+)", $this->context->eventService->event->getTypes());
         $form->addSelect("scope", "Rozsah (+)", $this->context->eventService->event->getScopes());
@@ -165,7 +165,6 @@ class EventPresenter extends BasePresenter {
             $this->redirect("this");
         }
         $values = $button->getForm()->getValues();
-
         $values['start'] = $values['start']->format("Y-m-d");
         $values['end'] = $values['end']->format("Y-m-d");
 
