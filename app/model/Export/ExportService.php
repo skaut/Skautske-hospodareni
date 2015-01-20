@@ -107,7 +107,7 @@ class ExportService extends BaseService {
         $this->setTemplate($template, dirname(__FILE__) . '/templates/chits.latte');
 
         //HPD 
-        if (in_array($eventService->event->type, array("camp", "event"))) {
+        if (in_array($eventService->event->type, array("camp", "general"))) {
             $template->totalPayment = $eventService->participants->getTotalPayment($aid);
             $func = $eventService->event->getFunctions($aid);
             $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : $func[0]->Person;

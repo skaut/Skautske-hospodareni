@@ -52,14 +52,14 @@ class ParticipantPresenter extends BasePresenter {
         $this->template->directMemberOnly = $this->getDirectMemberOnly();
     }
 
-    function renderDefault($aid, $uid = NULL) {
+    function renderDefault($aid, $uid = NULL, $disablePersons = FALSE) {
         if (!$this->isAllowed("EV_ParticipantGeneral_ALL_EventGeneral")) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");
             $this->redirect("Event:");
         }
 
         $participants = $this->context->eventService->participants->getAll($this->aid);
-        $list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        $list = $disablePersons ? array() : $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
 //        usort($participants, function($a, $b) {/* setrizeni podle abecedy */
 //                    return strcasecmp($a->Person, $b->Person);
