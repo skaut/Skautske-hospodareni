@@ -280,7 +280,14 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Nemáte oprávnění párovat platby!", "error");
             $this->redirect("this");
         }
-        $pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $gid);
+        try {
+            $pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $gid);
+        } catch (\Model\BankTimeoutException $exc) {
+            $this->template->errMsg[] = "Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.";
+        } catch (\Model\BankTimeLimitException $exc) {
+            $this->template->errMsg[] = "Mezi dotazy na bankovnictví musí být prodleva 1 minuta!";
+        }
+
         if ($pairsCnt > 0) {
             $this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
         } else {
