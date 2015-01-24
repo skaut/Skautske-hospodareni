@@ -11,13 +11,13 @@ $isEditable
     </ul>
     <table class="table table-bordered table-striped">
         <tr>
-            <th>Název/účel</th>
+            <th>Název/účel*</th>
             <th>Email</th>
-            <th>Částka</th>
+            <th>Částka*</th>
             <th>VS</th>
             <th>KS</th>
-            <th>Splatnost</th>
-            <th>Poznámka</th>
+            <th>Splatnost*</th>
+            {*}<th>Poznámka</th>{*}
             <th>Stav</th>
             <th n:if="$isEditable">&nbsp;</th>
         </tr>
@@ -26,13 +26,14 @@ $isEditable
         <tr n:if="isset($form) && $isEditable">
             
             {form $form}
-                <td>{input name class=>"input-medium"}*</td>
+                <td>{input name class=>"input-medium"}</td>
                 <td>{input email class=>"input-medium"}</td>
-                <td>{input amount class=>"input-mini"}*</td>
+                <td>{input amount class=>"input-mini"}</td>
                 <td>{input vs class=>"input-mini"}</td>
                 <td>{input ks class=>"input-mini"}</td>
-                <td>{input maturity class=>"input-small date"}*</td>
-                <td colspan="2">{input note class=>"input-medium"}</td>
+                <td>{input maturity class=>"input-small date"}</td>
+                <td>&nbsp;</td>
+                {*}<td colspan="2">{input note class=>"input-medium"}</td>{*}
                 <td>{input send}</td>
             {/form}
         </tr>
@@ -44,7 +45,7 @@ $isEditable
             <td class="r">{if $l->vs == null}&nbsp;{else}{$l->vs}{/if}</td>
             <td class="r">{if $l->ks == null}&nbsp;{else}{$l->ks}{/if}</td>
             <td class="r">{$l->maturity|date:'j.n.Y'}</td>
-            <td>{if $l->note == null}&nbsp;{else}{$l->note}{/if}</td>
+            {*}<td>{if $l->note == null}&nbsp;{else}{$l->note}{/if}</td>{*}
             <td>{$l->stateLabel}</td>
             <td n:if="$isEditable" class="r">{if in_array($l->state, $notFinalStates)}
                 {if $l->state == 'preparing'}
