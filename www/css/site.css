@@ -211,9 +211,9 @@ td.vm, th.vm {
     clear: left;
 }
 
-h2[id], h3[id] { /* nadpisy na ktere je odkaz a musi byt vice odsazeny */
+/*h2[id], h3[id] {  nadpisy na ktere je odkaz a musi byt vice odsazeny 
     padding-top: 45px;
-}
+}*/
 
 footer {
     text-align: center;
@@ -224,19 +224,47 @@ footer {
 }
 
 /* Homepage */
+/*#front-carousel {
+  height: 500px;
+  margin-bottom: 60px;
+}*/
+
 #front-carousel .item div.carousel-caption {
-    top: 0;
-    bottom: auto;
-    position: relative;
-    margin-bottom: 10px;
+    /*z-index: 10;*/
+    text-align: left;
+    left: 4%;
+    right: 3%;
+    color: #333;
+    text-shadow: none;
+}
+
+#front-carousel .carousel-indicators li {
+    background-color: #777;
+}
+
+#front-carousel .carousel-control {
+    width: 3%;
+    color: #333;
+    background-image: none;
+}
+
+/* Declare heights because of positioning of img element */
+#front-carousel .item {
+  height: 430px;
 }
 
 #front-carousel .item img {
-    padding: 0 63px;
+    margin-left: 20px;
+    /*padding: 0 63px;*/
 }
 
+#front-carousel h4 {
+    margin: 0 0 5px;
+}
 #front-carousel .hero-unit h1 {
     font-size: 58px;
 }
 
-
+.nowrap {
+    white-space:nowrap;
+}
