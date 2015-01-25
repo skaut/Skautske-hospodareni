@@ -4,14 +4,14 @@
 <h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
-<div n:if="$missingCategories" class="row-fluid">
-    <div class="alert alert-error span12">
+<div n:if="$missingCategories" class="row">
+    <div class="alert alert-danger">
         Nemáte aktivní automatické dopočítání z kategorií, bez kterého nelze přidávat záznamy.
-        <a n:href="activateAutocomputedCashbook! $aid" class="btn btn-primary btn-small">Aktivovat dopočítávání</a>
+        <a n:href="activateAutocomputedCashbook! $aid" class="btn btn-primary btn-sm">Aktivovat dopočítávání</a>
     </div>
 </div>
 
-<div class="row-fluid">
+<div class="row">
     {include $templateBlockDir.'cashbook/tabs.latte'}
     {include $templateBlockDir.'cashbook/table.latte'}
 </div>

@@ -2,7 +2,7 @@
 {include ../ActionMenu.latte}
 {dump $detail}
 <h2 n:block="title">Registrace jednotky {$detail->DisplayName} ({$detail->RegistrationNumber})</h2>
-<div class="row-fluid">
+<div class="row">
     <div class="span8">
         <table n:if="!empty($list)" class="table table-bordered table-striped">
             <tr>

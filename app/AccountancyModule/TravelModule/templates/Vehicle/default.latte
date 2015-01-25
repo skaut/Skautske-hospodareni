@@ -1,35 +1,34 @@
 {block #title}Vozidla jednotky {$unit->DisplayName}{/block}
 
 {block #content}
-<h2>Vozidla<span class="hidden-phone"> jednotky {$unit->DisplayName}</span></h2>
+<h2>Vozidla<span class="hidden-xs hidden-sm"> jednotky {$unit->DisplayName}</span></h2>
 {include ../menu.latte}
 
-<div class="row-fluid">    
-    <div class="span6">
-        <div class="well well-small">
-            <button type="button" data-toggle="collapse" data-target="#createVehicle" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit nové vozidlo</button>
-            <div class="collapse" id="createVehicle">
-                <br />
-                {control formCreateVehicle}
-            </div>
+<div class="row">
+    <div class="well well-sm">
+        <button type="button" data-toggle="collapse" data-target="#createVehicle" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit nové vozidlo</button>
+        <div class="collapse" id="createVehicle">
+            <br />
+            {control formCreateVehicle}
         </div>
-        
-        <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
-            <tr>
-                <th>&nbsp;</th>
-                <th>Typ</th>
-                <th>SPZ</th>
-                <th>&#0216; spotřeba (l/100 km)</th>
-            </tr>
-            <tr n:foreach="$list as $i">
-                <td>
-                    <a n:href="remove! $i->id" class="btn btn-danger btn-mini hidden-phone{if $i->commands > 0} disabled{/if}" {if $i->commands > 0} title="Nelze mazat vozidla s cestovními příkazy"{/if} onclick="return confirm('Opravdu chcete vozidlo odebrat?');"><i class="icon icon-remove icon-white"></i></a>
-                    <a n:href="detail $i->id" class="btn btn-primary btn-mini"><i class="icon icon-zoom-in icon-white"></i> Detail</a>
-                </td>
-                <td><a n:href="Vehicle:detail $i->id">{$i->type}</a></td>
-                <td>{$i->spz}</td>
-                <td>{$i->consumption}</td>
-            </tr>
-        </table>
     </div>
+</div>
+<div class="row">
+    <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
+        <tr>
+            <th>&nbsp;</th>
+            <th>Typ</th>
+            <th>SPZ</th>
+            <th>&#0216; spotřeba (l/100 km)</th>
+        </tr>
+        <tr n:foreach="$list as $i">
+            <td>
+                <a n:href="remove! $i->id" class="btn btn-danger btn-xs hidden-xs hidden-sm{if $i->commands > 0} disabled{/if}" {if $i->commands > 0} title="Nelze mazat vozidla s cestovními příkazy"{/if} onclick="return confirm('Opravdu chcete vozidlo odebrat?');"><i class="glyphicon glyphicon-remove"></i></a>
+                <a n:href="detail $i->id" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
+            </td>
+            <td><a n:href="Vehicle:detail $i->id">{$i->type}</a></td>
+            <td>{$i->spz}</td>
+            <td>{$i->consumption}</td>
+        </tr>
+    </table>
 </div>

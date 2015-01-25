@@ -1,17 +1,16 @@
 {block #title}{$event->DisplayName} - seznam účastníků{/block}
 
 {block #content}
+<div class="row">
 <h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
+</div>
 
 {dump $list}
 {dump $participants}
 
 
-<div class="row-fluid visible-phone" id="potencial-menu">
-    <a href="#participants-menu" class="btn btn-primary"><i class="icon icon-arrow-down icon-white"></i> Vybraní účastníci <i class="icon icon-arrow-down icon-white"></i></a>
-</div>
-<div class="row-fluid">
+<div class="row">
     {include $templateBlockDir.'participants/list.latte'}
     {include $templateBlockDir.'participants/participant.latte'}
 </div>

@@ -6,7 +6,7 @@
 <h2 n:block="title">Bankovní účet</h2>
 {include ../ActionMenu.latte}
 {dump $bankInfo}
-<div class="row-fluid">
+<div class="row">
     <button n:if="$bankInfo" type="button" class="btn btn-primary" data-toggle="collapse" data-target="#setToken">Nastavit token</button>
     <div id="setToken" class="collapse{if !$bankInfo} in{/if}">
         <br />
@@ -17,7 +17,7 @@
             c) Požadavek na zřízení tokenu musí být standardně autorizován.<br />
             d) Do 5 minut po úspěšné autorizaci lze token použít. 
         </div>
-        <div class="well well-small">
+        <div class="well well-sm">
             {form tokenForm}
                 <ul class="errors" n:if="$form->hasErrors()"><li n:foreach="$form->errors as $error">{$error}</li></ul>
                 <span class="required">{label token/}</span> {input token class=>"span6"} <br />
@@ -26,12 +26,12 @@
         </div>
     </div>
 </div>
-<div class="row-fluid" n:if="!empty($errMsg)">
+<div class="row" n:if="!empty($errMsg)">
     <br />
     <div class="alert alert-error" n:foreach="$errMsg as $m">{$m}</div>
 </div>
 
-<div class="row-fluid" n:if="$bankInfo">
+<div class="row" n:if="$bankInfo">
     <h2>Přehled plateb za posledních {$bankInfo->daysback} dní</h2>
     {if isset($transactions) && !empty($transactions)}
         <table class="table table-bordered table-hover table-striped table-condensed">

@@ -3,7 +3,6 @@
     <h2>{$grpLabel}</h2>
     {foreach $chitsArr[$type] as $id=>$chits}
         {if !empty($chits)}
-
             <h3>
                 <a href="{if $type == 'event'}{link :Accountancy:Event:Cashbook: $id}{elseif $type == 'camp'}{link :Accountancy:Camp:Cashbook: $id}{elseif $type == 'unit'}{link :Accountancy:UnitAccount:Cashbook: $id}{/if}">
                     {$info[$type][$id]['DisplayName']}
@@ -28,9 +27,9 @@
                     <td n:if='!isset($disableForm)'>{input selectBudget_out_$c->id}</td>
                     <td>
                         {if $c->lock == NULL}
-                            <a href='{link lock! $c->eventId, $c->id, $type}' class='btn btn-mini btn-success ajax'><i class='icon icon-lock icon-white'></i> Uzamknout</a>
+                            <a href='{link lock! $c->eventId, $c->id, $type}' class='btn btn-xs btn-success ajax'><i class='glyphicon glyphicon-lock'></i> Uzamknout</a>
                         {else}
-                            <a href='{link lock! $c->eventId, $c->id, $type, 'unlock'}' class='btn btn-mini btn-danger ajax'><i class='icon icon-folder-open icon-white'></i> Odemknout</a>
+                            <a href='{link lock! $c->eventId, $c->id, $type, 'unlock'}' class='btn btn-xs btn-danger ajax'><i class='glyphicon glyphicon-folder-open'></i> Odemknout</a>
                         {/if}
                     </td>
                 </tr>

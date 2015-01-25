@@ -12,7 +12,7 @@
     <tr n:if="$item->IsRevenue == $isIn">
         <td>{$item->EventCampStatementType}</td>
         <td style="text-align: right;">
-        {if array_key_exists($ID, $toRepair)} <span class="btn btn-mini btn-danger" title="Součet paragonů je {$toRepair[$ID]}"><i class="icon icon-white icon-ban-circle"></i></span>{/if}
+        {if array_key_exists($ID, $toRepair)} <span class="btn btn-xs btn-danger" title="Součet paragonů je {$toRepair[$ID]}"><i class="glyphicon glyphicon-ban-circle"></i></span>{/if}
         {$data[$ID]->Ammount|price}
         </td>
     </tr>
@@ -24,29 +24,33 @@
 {block #content}
 <h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
-
-<div class="alert alert-danger" n:if="!$isConsistent">
+{dump $isEditable}
+<div class="row alert alert-danger" n:if="!$isConsistent">
     <h4 class="alert-heading">Nekonzistentní data!</h4>
-Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu. Chcete sjednotit částky podle paragonů? 
-<a n:href="convert! $aid" class="btn btn-mini btn-primary">Ano</a>
+    <p>
+        Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu.
+        {if $isEditable}Chcete sjednotit částky podle paragonů? <a n:href="convert! $aid" class="btn btn-xs btn-primary">Ano</a>{/if}
+    </p>
 </div>
 
-<div class="row-fluid">
+<div class="row">
 
-    <div class="span3">
+    <div class="col-md-3 col-sm-6">
         <h3>Skutečné náklady</h3>
         {include #bughetTable data=>$dataReal, toRepair=>$toRepair, isIn=>false}
     </div>
-    <div class="span3">
+    <div class="col-md-3 col-sm-6">
         <h3>Skutečné výnosy</h3>
         {include #bughetTable data=>$dataReal, toRepair=>$toRepair, isIn=>true}
     </div>
+    
+    <div class="clearfix visible-sm-block"></div>
 
-    <div class="span3">
+    <div class="col-md-3 col-sm-6 ">
         <h3>Předpokl. náklady</h3>
         {include #bughetTable data=>$dataEstimate, toRepair=>$toRepair, isIn=>false}
     </div>
-    <div class="span3">
+    <div class="col-md-3">
         <h3>Předpokládané výnosy</h3>
         {include #bughetTable data=>$dataEstimate, toRepair=>$toRepair, isIn=>true}
     </div>

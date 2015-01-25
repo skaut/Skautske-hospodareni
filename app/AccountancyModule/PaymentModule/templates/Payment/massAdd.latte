@@ -5,12 +5,12 @@
 {dump $list}
 {dump $detail}
 
-<a n:href="Payment:detail $detail->id" class="btn btn-primary"><i class="icon icon-white icon-chevron-left"></i> Zpět na skupinu plateb</a>
+<a n:href="Payment:detail $detail->id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
 
 <div>
     <div n:if="$unitPairs" class="dropdown" style="float: left; margin-right: 7px;">
         <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
-            <i class="icon icon-random hidden-phone icon-white"></i> Jednotka <b class="caret"></b>
+            <i class="glyphicon glyphicon-random hidden-xs hidden-sm"></i> Jednotka <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
             <li n:foreach="$unitPairs as $id=>$label"><a n:href="this aid=>$id">{$label}</a></li>
@@ -40,19 +40,19 @@
                 <td colspan="3"><b>Výchozí hodnoty</b> se uloží u záznamů, kde nebude hodnota vyplněna.</td>
                 <td>{input defaultAmount, value=>$detail['amount']}</td>
                 <td>{input defaultMaturity, value=>$detail['maturity']}</td>
-                <td>&nbsp;</td>
+                <td> </td>
                 <td>{input defaultKs, value=>$detail['ks']}</td>
                 <td>{input defaultNote}</td>
             </tr>
             <tr n:foreach="$list as $p">
                 <td><input type=checkbox name="ch[]" value="p_{$p['ID']}"></td>
-                <td><input type=text name="vals[{$p['ID']}][name]" value="{$p['DisplayName']}"></td>
+                <td><input type=text name="vals[{$p['ID']}][name]" class="form-control" value="{$p['DisplayName']}"></td>
                 <td>{input $p['ID'].'_email', name=>"vals[{$p['ID']}][email]"}</td>
-                <td><input type=text name="vals[{$p['ID']}][amount]" class="input-mini"></td>
-                <td><input type=text name="vals[{$p['ID']}][maturity]" class="input-small"></td>
-                <td><input type=text name="vals[{$p['ID']}][vs]" class="input-small"></td>
-                <td><input type=text name="vals[{$p['ID']}][ks]" class="input-mini"></td>
-                <td><input type=text name="vals[{$p['ID']}][note]" class="input-small"></td>
+                <td><input type=text name="vals[{$p['ID']}][amount]" class="form-control input-sm"></td>
+                <td><input type=text name="vals[{$p['ID']}][maturity]" class="form-control input-sm"></td>
+                <td><input type=text name="vals[{$p['ID']}][vs]" class="form-control input-sm"></td>
+                <td><input type=text name="vals[{$p['ID']}][ks]" class="form-control input-sm"></td>
+                <td><input type=text name="vals[{$p['ID']}][note]" class="form-control input-sm"></td>
             </tr>
         </table>
 
