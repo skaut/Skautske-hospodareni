@@ -155,7 +155,7 @@
 
                     $ne.hide(0, function() {
                         if (targetBlockId == {$participantTbodyId}) {
-                            $ne = $('<tr><td>{*}<i class="icon icon-move hidden-tablet hidden-phone"></i>{*}' + newName + '</td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td></td></tr>');
+                            $ne = $('<tr><td>{*}<i class="glyphicon glyphicon-move hidden-tablet hidden-xs hidden-sm"></i>{*}' + newName + '</td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td><img src="{!$baseUri}/images/layout/spinner.gif"/></td><td></td></tr>');
                             participantsList.push(newName);
                             participantsList.sort();
                             var index = jQuery.inArray(newName, participantsList);

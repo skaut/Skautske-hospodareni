@@ -3,7 +3,7 @@
 {block #content}
 
 {include menu.latte}
-<div class="row-fluid">
+<div class="row">
     <div class="span12">
         <h2>Seznam akcí</h2>
         <table class="myTable table table-striped table-bordered table-condensed" n:ifset="$list">
@@ -17,7 +17,7 @@
             </thead>
             <tbody>
                 <tr n:foreach="$list as $i">
-                    <td><a n:href="synchronize! $i->ID" class="ajax btn btn-primary btn-small"><i class="icon icon-white icon-random"></i></a></td>
+                    <td><a n:href="synchronize! $i->ID" class="ajax btn btn-primary btn-sm"><i class="glyphicon glyphicon-random"></i></a></td>
                     <td>{$i->DisplayName}</td>
                     <td>{$i->StartDate|date:"j.n"}</td>
                     <td>{$i->EndDate|date:"j.n"}</td>

@@ -3,13 +3,14 @@
 <h2 n:block="title">Založení rozpočtové kategorie</h2>
 {include ../ActionMenu.latte}
 
-<div class="row-fluid">
+<div class="row">
     <div class="alert alert-info span6">
-        <b>Kategorie bez nadřazené kategorie</b> pouze sdružují kategorie pod sebou.<br /><b>Podřízené kategorie</b> pak obsahují částku a lze do nich přidávat paragony. 
+        <b>Kategorie bez nadřazené kategorie</b> pouze sdružují kategorie pod sebou.<br />
+        <b>Podřízené kategorie</b> pak obsahují částku a lze do nich přidávat paragony. 
     </div>
 </div>
 
-<div class="row-fluid">
+<div class="row">
     {snippet addCategoryForm}
         {control addCategoryForm}
     {/snippet}
@@ -33,5 +34,4 @@
             $row.hide();
         });
     });
-    
 </script>

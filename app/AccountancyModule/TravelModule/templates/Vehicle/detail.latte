@@ -3,10 +3,9 @@
 {block #content}
 <h2>{$vehicle->label}</h2>
 {include ../menu.latte}
-<div class="row-fluid">
-    <div class="span7">
-<!--        <a n:href="print " class="btn btn-primary btn-small"><i class="icon-print icon-white"></i> Vytisknout</a>-->
-        
+<div class="row">
+    <div class='col-sm-6'>
+        <h2>Údaje o vozidle</h2>
         <table class="table table-bordered table-striped">
             <tr>
                 <th>Typ</th>
@@ -21,7 +20,8 @@
                 <td>{$vehicle->consumption|number:2} l/100 km</td>
             </tr>
         </table>
-        
+    </div>
+    <div class='col-sm-6'>
         <h2>Cestovní příkazy</h2>
         {if !empty($commands)}
         <table class="table table-bordered table-striped table-condensed">
@@ -32,20 +32,16 @@
                 <th>Stav příkazu</th>
             </tr>
             <tr n:foreach="$commands as $c">
-                <td><a n:href="Default:detail $c->id" class="btn btn-mini btn-primary"><i class="icon icon-white icon-zoom-in"></i>Detail</a></td>
+                <td><a n:href="Default:detail $c->id" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-zoom-in"></i>Detail</a></td>
                 <td>{$c->driver_name}</td>
                 <td>{$c->purpose}</td>
                 <td>{!$c->closed|commandState}</td>
             </tr>
-            
         </table>
         {else}
         <div class="alert">
             <strong>Nejsou navázány žádné cestovní příkazy.</strong>
         </div>
         {/if}
-        
     </div>
-    
-    
 </div>

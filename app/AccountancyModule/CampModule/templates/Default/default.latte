@@ -2,19 +2,19 @@
 
 {block #content}
 <h2>Tábory</h2>
-<div class="row-fluid">
+<div class="row">
     <div class="span">
 
 {dump $list}
 
     {snippet camps}
-        {form formFilter class=>"ajax filter"}
-        {label year /}{input year onchange=>"changeYear(this.value)"}
-        {label state /}{input state onchange=>"changeState(this.value)"}
+        {form formFilter class=>"ajax filter form-inline"}
+        {label year /}{input year onchange=>"changeYear(this.value)", class=>"form-control input-sm"}
+        {label state /}{input state onchange=>"changeState(this.value)", class=>"form-control input-sm"}
         {input send}
         {/form}
         
-        {if is_array($list)}
+        {if !empty($list)}
         <table class="myTable table table-striped table-bordered table-condensed">
             <thead>
                 <tr>
@@ -34,7 +34,7 @@
             </tbody>
         </table>
         {else}
-        <p class="alert">Nemáte žádné tábory.</p>
+        <p class="alert alert-info" role='alert'>Nemáte žádné tábory.</p>
         {/if}
     {/snippet}
     </div>

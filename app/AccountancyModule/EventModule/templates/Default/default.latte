@@ -4,9 +4,9 @@
 
 {dump $list}
 
-<div class="row-fluid">
-    <div class="well" n:if="$accessCreate">
-        <button type="button" data-toggle="collapse" data-target="#createNew" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> Založit novou akci</button>
+<div class="row">
+    <div class="well well-sm" n:if="$accessCreate">
+        <button type="button" data-toggle="collapse" data-target="#createNew" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou akci</button>
         <div class="collapse" id="createNew">
             <br />
             {form formCreate}
@@ -56,38 +56,37 @@
 </div>
 
 {snippet events}
-    <div class="row-fluid">
-        <div class="well well-small">
-            {form formFilter class=>"ajax filter"}
-                <span class="hidden-phone">{label year /}</span>{input year onchange=>"changeYear(this.value)"}
-                <span class="hidden-phone">{label state /}</span>{input state onchange=>"changeState(this.value)"}
+    <div class="row">
+        <div class="well well-sm">
+            {form formFilter class=>"ajax filter form-inline"}
+                <span class="hidden-xs hidden-sm">{label year /}</span>{input year onchange=>"changeYear(this.value)", class=>"form-control input-sm"}
+                <span class="hidden-xs hidden-sm">{label state /}</span>{input state onchange=>"changeState(this.value)", class=>"form-control input-sm"}
                 <br class="visible-phone"/>
                 {input send}
             {/form}
         </div>
     </div>
-    <div class="row-fluid">
+    <div class="row">
         {if !empty($list)}
             {form formExportSummary}
                 <table class="myTable table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th n:if="reset($list)['accessDelete']" class="hidden-phone">&nbsp;</th>
+                            <th n:if="reset($list)['accessDelete']" class="hidden-xs hidden-sm">&nbsp;</th>
                             <th><a n:href="this name" n:tag-if="$sort != 'name'">Název</a></th>
                             <th><a n:href="this start" n:tag-if="$sort != 'start'">Od</a></th>
                             <th><a n:href="this end" n:tag-if="$sort != 'end'">Do</a></th>
                             <th><a n:href="this prefix" n:tag-if="$sort != 'prefix'">Prefix</a></th>
                             <th><a n:href="this state" n:tag-if="$sort != 'state'">Stav</a></th>
-                            <th class="hidden-phone">
-                                {input send class=>"btn btn-info btn-small selDependend"}
+                            <th class="hidden-xs hidden-sm">
+                                {input send class=>"btn btn-info btn-sm selDependend"}
                                 <input type="checkbox" id="sel-all" name="sel" onclick="jqCheckAll(this.id, 'sel')" />
-
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr n:foreach="$list as $i">
-                            <td class="hidden-phone">{if $i['accessDelete']}<a n:href="cancel! $i['ID']" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-small" title="Zrušit akci"><i class="icon-remove icon-white"></i></a>{else}&nbsp;{/if}</td>
+                            <td class="hidden-xs hidden-sm">{if $i['accessDelete']}<a n:href="cancel! $i['ID']" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-sm" title="Zrušit akci"><i class="glyphicon glyphicon-remove"></i></a>{else}&nbsp;{/if}</td>
                             <td>
                                 <a n:tag-if="$i['accessDetail']" n:href="Event: $i['ID']">{$i['DisplayName']}</a>
                             </td>
@@ -95,10 +94,12 @@
                             <td>{$i['EndDate']|date:"j.n.Y"}</td>
                             <td>{$i['prefix']}</td>
                             <td>{!$i['ID_EventGeneralState']|eventStateLabel}</td>
-                            <td n:inner-if="$i['accessDetail']" class="hidden-phone">
-                                <a n:href="Event:  $i['ID']" class="btn btn-small" title="Základní informace o akci"><i class="icon icon-briefcase"></i></a>
-                                <a n:href="Participant: $i['ID']" class="btn btn-small" title="Účastníci akce"><i class="icon icon-user"></i></a>
-                                <a n:href="Cashbook: $i['ID']" class="btn btn-small" title="Pokladní kniha"><i class="icon icon-shopping-cart"></i></a>
+                            <td n:inner-if="$i['accessDetail']" class="hidden-xs hidden-sm">
+                                <div class="btn-group" role="group">
+                                    <a n:href="Event:  $i['ID']" class="btn btn-default btn-sm" title="Základní informace o akci"><i class="glyphicon glyphicon-briefcase"></i></a>
+                                    <a n:href="Participant: $i['ID']" class="btn btn-default btn-sm" title="Účastníci akce"><i class="glyphicon glyphicon-user"></i></a>
+                                    <a n:href="Cashbook: $i['ID']" class="btn btn-default btn-sm" title="Pokladní kniha"><i class="glyphicon glyphicon-shopping-cart"></i></a>
+                                </div>
                                 <input type='checkbox' name='sel[]' value='{$i['ID']}'/>
                             </td>
                         </tr>

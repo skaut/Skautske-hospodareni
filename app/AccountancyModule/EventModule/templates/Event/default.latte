@@ -2,10 +2,10 @@
 
 {block #functionButtons $funkce, $index}
 {ifset $funkce[$index]->ID_Person}
-<a n:href="editFunction $aid, $index"  class="btn btn-primary btn-mini fancybox fancybox.ajax" title="Změnit osobu ve funci"><i class="icon-edit icon-white"></i></a>
-<a n:href="removeFunction! $aid, $index"  class="btn btn-danger btn-mini" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="icon-remove icon-white"></i></a>
+<a n:href="editFunction $aid, $index"  class="btn btn-primary btn-xs fancybox fancybox.ajax" title="Změnit osobu ve funci"><i class="glyphicon glyphicon-edit"></i></a>
+<a n:href="removeFunction! $aid, $index"  class="btn btn-danger btn-xs" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
             {else}
-<a n:href="addFunction $aid, $index" title="Přiřadit osobu k funkci" class="fancybox fancybox.ajax btn btn-primary btn-mini"><i class="icon icon-plus icon-white"></i></a>{/ifset}
+<a n:href="addFunction $aid, $index" title="Přiřadit osobu k funkci" class="fancybox fancybox.ajax btn btn-primary btn-xs"><i class="glyphicon glyphglyphicon glyphicon-plus"></i></a>{/ifset}
 {/block}
 
 {block #content}
@@ -15,8 +15,8 @@
 {dump $event}
 {dump $funkce}
 
-<div class="row-fluid wipeBox">
-    <div class="span3" n:if="$accessDetailEvent">
+<div class="row wipeBox">
+    <div class="col-md-3" n:if="$accessDetailEvent">
         <h3>Základní údaje</h3>
         <table class="myTable table table-bordered table-condensed">
             <tr>
@@ -39,11 +39,11 @@
                 <th>Místo</th>
                 <td>{$event->Location}</td>
             </tr>
-            <tr class="hidden-phone">
+            <tr class="hidden-xs hidden-sm">
                 <th>Typ</th>
                 <td>{$event->EventGeneralType}</td>
             </tr>
-            <tr class="hidden-phone">
+            <tr class="hidden-xs hidden-sm">
                 <th>Rozsah</th>
                 <td>{$event->EventGeneralScope}</td>
             </tr>
@@ -52,13 +52,13 @@
                 <td {if $event->ID_EventGeneralState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{!$event->ID_EventGeneralState|eventStateLabel}</td>
             </tr>
             <tr>
-                <th>Prefix <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů platná."/></th>
+                <th>Prefix <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů platná."/></th>
                 <td>{$event->prefix}</td>
             </tr>
         </table>
     </div>
     
-    <div class='span3'>
+    <div class='col-md-4'>
         <h3>Statistiky</h3>
         {if $event->IsStatisticAutoComputed}
             <table class="table table-bordered table-condensed">
@@ -88,11 +88,11 @@
     
             
 
-    <div class="span5" n:if="is_array($funkce)">
+    <div class="col-md-5" n:if="is_array($funkce)">
         <h3>Vedení akce</h3>
-        <table class="myTable table table-bordered table-condensed">
+        <table class="table table-bordered table-condensed">
             <tr>
-                <th style="width: 60px" n:if="$isEditable">&nbsp;</th>
+                <th class="nowrap" n:if="$isEditable">&nbsp;</th>
                 <th>Funkce</th>
                 <th>Příjmení a jméno</th>
             </tr>
@@ -100,7 +100,7 @@
                 {? $index = 0}
                 <td n:if="$accessFunctionUpdate">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td class="required">{$funkce[$index]->EventFunctionType}*
-                    <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
+                    <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
                 <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
@@ -108,7 +108,7 @@
                 {? $index = 1}
                 <td n:if="$accessFunctionUpdate">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
-                    <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
+                    <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/>
                 </td>
                 <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
@@ -116,7 +116,7 @@
                 {? $index = 2}
                 <td n:if="$accessFunctionUpdate">{include #functionButtons $funkce, "index"=>$index}</td>
                 <td>{$funkce[$index]->EventFunctionType}
-                    <i class="icon icon-info-sign hidden-phone" rel="tooltip" title="Osoba registrovaná ve SkautISu"/>
+                    <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Osoba registrovaná ve SkautISu"/>
                 </td>
                 <td>{ifset $funkce[$index]->ID_Person}{$funkce[$index]->Person}{/ifset}</td>
             </tr>
@@ -128,14 +128,14 @@
 </div>
 
 <div class="row">
-    <div class="span12 hidden-phone">
-        <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-small" data-toggle="modal"><i class="icon-pencil icon-white"></i> Upravit údaje</a>
-        <a n:if="$accessCloseEvent" n:href="close! $aid" class="btn btn-success btn-small"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
-        <a n:if="$accessOpenEvent"  n:href="open! $aid"  class="btn btn-warning btn-small"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
-        <a n:href="Event:report $aid" target="_blank" class="btn btn-info btn-small"><i class="icon icon-print icon-white"></i> Záverečná zpráva</a>
-        <a n:href="Event:printAll $aid" target="_blank" class="btn btn-info btn-small" onclick="return confirm('U větších akcí může trvat generování až několik minut. Chcete pokračovat?')"><i class="icon icon-print icon-white"></i> Vytisknout vše</a>
+    <div>
+        <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-sm hidden-xs hidden-sm" data-toggle="modal"><i class="glyphicon glyphicon-pencil"></i> Upravit údaje</a>
+        <a n:if="$accessCloseEvent" n:href="close! $aid" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít akci</a>
+        <a n:if="$accessOpenEvent"  n:href="open! $aid"  class="btn btn-warning btn-sm"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
+        <a n:href="Event:report $aid" target="_blank" class="btn btn-info btn-sm"><i class="glyphicon glyphicon-print"></i> Záverečná zpráva</a>
+        <a n:href="Event:printAll $aid" target="_blank" class="btn btn-info btn-sm hidden-xs hidden-sm" onclick="return confirm('U větších akcí může trvat generování až několik minut. Chcete pokračovat?')"><i class="glyphicon glyphicon-print"></i> Vytisknout vše</a>
 
-        <div n:if="$accessEditBase" class="modal myModal fade" id="editBasicInfo">
+        <div n:if="$accessEditBase" class="modal myModal fade hidden-xs hidden-sm" id="editBasicInfo">
             <div class="modal-header">
                 <a class="close" data-dismiss="modal">×</a>
                 <h3>Upravit akci</h3>
@@ -144,10 +144,6 @@
                 {control formEdit}
             </div>
         </div>
-    </div>
-    <div class="span12 visible-phone">
-        <a n:if="$accessCloseEvent" n:href="close! $aid" class="btn btn-success btn-small"><i class="icon icon-folder-close icon-white"></i> Uzavřít akci</a>
-        <a n:if="$accessOpenEvent"  n:href="open! $aid"  class="btn btn-warning btn-small"><i class="icon-refresh icon-white"></i> Znovu otevřít</a>
     </div>
 </div>
 
