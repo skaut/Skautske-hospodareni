@@ -2,7 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
-use  Nette\Application\Routers\Route,
+use Nette\Application\Routers\Route,
     Nette\Application\Routers\RouteList,
     Sinacek\MyRoute,
     SkautIS\Exception\PermissionException;
@@ -13,7 +13,7 @@ use  Nette\Application\Routers\Route,
 class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     const STable = "EV_EventCamp";
-    
+
     protected $event;
 
     protected function startup() {
@@ -57,19 +57,19 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
         $prefix .= "tabory/";
 
         $router[] = new MyRoute($prefix . '<aid [0-9]+>/[<presenter>/][<action>/]', array(
-                    'presenter' => array(
+            'presenter' => array(
 //                        Route::VALUE => 'Detail', //nefunguje pak report
-                        Route::FILTER_TABLE => array(
-                            'ucastnici' => 'Participant',
-                            'kniha' => 'Cashbook',
-                            'rozpocet' => 'Budget',
-                    )),
-                    'action' => "default",
+                Route::FILTER_TABLE => array(
+                    'ucastnici' => 'Participant',
+                    'kniha' => 'Cashbook',
+                    'rozpocet' => 'Budget',
+                )),
+            'action' => "default",
                 ), Route::SECURED);
 
         $router[] = new MyRoute($prefix . '[<presenter>/][<action>/]', array(
-                    'presenter' => 'Default',
-                    'action' => 'default',
+            'presenter' => 'Default',
+            'action' => 'default',
                 ), Route::SECURED);
 
         return $router;

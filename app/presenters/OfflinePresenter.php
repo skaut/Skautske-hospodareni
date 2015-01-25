@@ -132,7 +132,7 @@ class OfflinePresenter extends BasePresenter {
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         $form->addHidden("type", "in");
         $form->addSubmit('send', 'Uložit')
-                ->getControlPrototype()->setClass("btn btn-primary");
+                ->getControlPrototype()->setAttribute("class", "btn btn-primary");
 //        $form->onSuccess[] = array(null, 'formAddSubmitted');
         $form->setDefaults(array('category' => 1));
         return $form;

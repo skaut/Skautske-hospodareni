@@ -25,10 +25,10 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
         //$this->availableActions = $this->context->userService->actionVerify("OU_Unit", $this->aid);
         $this->template->isReadable = $this->isReadable = key_exists($this->aid, $this->user->getIdentity()->access['read']);
         $this->template->isEditable = $this->isEditable = key_exists($this->aid, $this->user->getIdentity()->access['edit']);
-        
-        if(!$this->isEditable){
+
+        if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro zobrazení stránky", "warning");
-            $this->redirect(":Accountancy:Default:", array("aid"=>NULL));
+            $this->redirect(":Accountancy:Default:", array("aid" => NULL));
         }
     }
 

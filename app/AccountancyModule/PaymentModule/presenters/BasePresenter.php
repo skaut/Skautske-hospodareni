@@ -14,12 +14,13 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
     /** @persistent */
     public $aid;
     protected $isReadable;
+
     /**
      *
      * @var \Model\PaymentService
      */
     protected $model;
-    
+
     public function __construct(\Model\PaymentService $paymentService) {
         parent::__construct();
         $this->model = $paymentService;
@@ -65,7 +66,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
         ));
         return $router;
     }
-    
+
     /**
      * 
      * @param string $v

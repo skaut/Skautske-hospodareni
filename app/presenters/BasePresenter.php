@@ -76,7 +76,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'bootstrap-responsive.min.css',
             'jquery-ui-1.10.0.custom.css',
             'bootstrap-datetimepicker.css',
-            'my-responsive.css',
+            'typeaheadjs.css',
 //            'offline.css',
             'site.css'
         ));
@@ -102,6 +102,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'dependentselectbox.ajax.js',
             'jquery.nette.dependentselectbox.js',
             'bootstrap.js',
+            'typeahead.js',
 //            'nextras.typeahead.init.js',
             'jquery.fancybox.pack.js',
 //            'offline.js',
@@ -109,11 +110,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 //            'h5utils.js',
             'my.js',
             'nextras.datetimepicker.init.js',
+            'ie10-viewport-bug-workaround.js', // IE10 viewport hack for Surface/desktop Windows 8 bug
         ));
         return new WebLoader\Nette\JavaScriptLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
     }
-    
-    protected function updateUserAccess(){
+
+    protected function updateUserAccess() {
         $this->user->getIdentity()->access = $this->context->userService->getAccessArrays($this->context->unitService);
     }
 

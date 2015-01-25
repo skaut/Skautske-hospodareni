@@ -85,7 +85,7 @@ class EventPresenter extends BasePresenter {
 
     public function actionAddFunction($aid, $fid) {
         $form = $this['formAddFunction'];
-        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE));//u hospodáře($fid==2) nevyžaduje 18 let
+        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
         $form->setDefaults(array(
             "aid" => $aid,
             "fid" => $fid,
@@ -97,7 +97,7 @@ class EventPresenter extends BasePresenter {
         $func = $this->context->eventService->event->getFunctions($aid);
 //        dump($func);die();
         $form = $this['formAddFunction'];
-        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE));//u hospodáře($fid==2) nevyžaduje 18 let
+        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
         $form->setDefaults(array(
             "aid" => $aid,
             "person" => array_key_exists($func[$fid]->ID_Person, $form['person']->getItems()) ? $func[$fid]->ID_Person : NULL,
@@ -183,7 +183,7 @@ class EventPresenter extends BasePresenter {
         $form = new Form($this, $name);
         $form->addSelect("person", NULL)
                 ->setPrompt("Vyber")
-                ->getControlPrototype()->setClass("combobox");
+                ->setAttribute("class", "combobox");
         $form->addHidden("fid");
         $form->addHidden("aid");
         $form->addSubmit('send', 'Přidat')

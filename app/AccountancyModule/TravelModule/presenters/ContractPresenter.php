@@ -64,22 +64,28 @@ class ContractPresenter extends BasePresenter {
     function createComponentFormCreateContract($name) {
         $form = new Form($this, $name);
         $form->addText("unit_person", "Zástupce jednotky*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit zátupce jednotky.");
         $form->addText("driver_name", "Jméno a příjmení řidiče*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit jméno řidiče.");
         $form->addText("driver_address", "Bydliště řidiče*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit bydliště řidiče.");
         $form->addDatePicker("driver_birthday", "Datum narození řidiče*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit datum narození řidiče.");
         $form->addText("driver_contact", "Telefon na řidiče (9cifer)*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit telefon na řidiče.")
                 ->addRule(Form::NUMERIC, "Telefon musí být číslo.");
         $form->addDatePicker("start", "Platnost od*")
+                ->setAttribute("class", "form-control")
                 ->setDefaultValue(date("j. n. Y"))
                 ->addRule(Form::FILLED, "Musíte vyplnit začátek platnosti.");
 
         $form->addSubmit('send', 'Založit smlouvu')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }

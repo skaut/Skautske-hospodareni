@@ -66,11 +66,17 @@ abstract class AccountancyHelpers extends Object {
     public static function commandState($s) {
         switch ($s) {
             case NULL:
-                return '<span class="label label-warning hidden-phone">Rozpracovaný</span>'
-                        . '<span class="label label-warning visible-phone">Rozpr.</span>';
+                return '<span class="label label-warning hidden-xs hidden-sm">Rozpracovaný</span>'
+                        . '<span class="label label-warning hidden-md hidden-lg">Rozpr.</span>';
             default :
                 return '<span class="label label-success" title="Uzavřeno dne: ' . $s->format("j.n.Y H:i:s") . '">Uzavřený</span>';
         }
+    }
+    
+    public static function paymentStateLabel($s) {
+        $long = $s;
+        $short = substr($s, 0, 4). ".";
+        return "<span class='hidden-xs hidden-sm'>$long</span><span class='hidden-md hidden-lg'>$short</span>";
     }
 
     /**
@@ -80,15 +86,12 @@ abstract class AccountancyHelpers extends Object {
      * @return int 
      */
     public static function price($price, $full = true) {
-        if ($price == NULL) {
-            return 0;
-        }
-        if ($price == "&nbsp;") {
-            return $price;
+        if ($price === NULL || $price === '') {
+            return ' '; //je tam nedělitelná mezera
         }
         $decimals = $full ? 2 : 0;
         //if (stripos($price, "."))
-        return number_format((float) $price, $decimals, ",", " ");
+        return number_format((float) $price, $decimals, ",", " "); //nedělitelná mezera
         //return $price;
     }
 
@@ -203,5 +206,7 @@ abstract class AccountancyHelpers extends Object {
                 return '<span class="label">Neznámý</span>';
         }
     }
+    
+    
 
 }

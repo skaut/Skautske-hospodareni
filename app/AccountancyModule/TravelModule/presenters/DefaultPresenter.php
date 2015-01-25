@@ -138,21 +138,29 @@ class DefaultPresenter extends BasePresenter {
         $form = new Form($this, $name);
         $form->addSelect("contract_id", "Smlouva", $contracts)
                 ->setPrompt("Vyberte smlouvu")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vybrat smlouvu");
         $form->addText("purpose", "Účel cesty*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit účel cesty.");
-        $form->addText("place", "Místo");
-        $form->addText("passengers", "Spolucestující");
+        $form->addText("place", "Místo")
+                ->setAttribute("class", "form-control");
+        $form->addText("passengers", "Spolucestující")
+                ->setAttribute("class", "form-control");
         $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
                 ->setPrompt("Vyberte vozidlo")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit typ vozidla.");
         $form->addText("fuel_price", "Cena paliva za 1l*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit cenu paliva.")
                 ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
         $form->addText("amortization", "Opotřebení*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit opotřebení.")
                 ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
-        $form->addText("note", "Poznámka", NULL, 64);
+        $form->addText("note", "Poznámka", NULL, 64)
+                ->setAttribute("class", "form-control");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }
@@ -207,12 +215,16 @@ class DefaultPresenter extends BasePresenter {
         $form->getElementPrototype()->class("form-inline");
         $form->addHidden("command_id");
         $form->addDatePicker("start_date", "Datum cesty")
+                ->setAttribute("class", "form-control input-sm date")
                 ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.");
         $form->addText("start_place", "Z*")
+                ->setAttribute("class", "form-control input-sm")
                 ->addRule(Form::FILLED, "Musíte vyplnit místo počátku cesty.");
         $form->addText("end_place", "Do*")
+                ->setAttribute("class", "form-control input-sm")
                 ->addRule(Form::FILLED, "Musíte vyplnit místo konce cesty.");
         $form->addText("distance", "Vzdálenost*")
+                ->setAttribute("class", "form-control input-sm")
                 ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.")
                 ->addRule(Form::FLOAT, "Vzdálenost musí být číslo!");
         $form->addSubmit('send', 'Přidat')
@@ -262,12 +274,16 @@ class DefaultPresenter extends BasePresenter {
         $form->addHidden("command_id");
         $form->addHidden("id");
         $form->addDatePicker("start_date", "Datum cesty")
+                ->setAttribute("class", "form-control input-sm date")
                 ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.");
         $form->addText("start_place", "Z*")
+                ->setAttribute("class", "form-control input-sm date")
                 ->addRule(Form::FILLED, "Musíte vyplnit místo počátku cesty.");
         $form->addText("end_place", "Do*")
+                ->setAttribute("class", "form-control input-sm date")
                 ->addRule(Form::FILLED, "Musíte vyplnit místo konce cesty.");
         $form->addText("distance", "Vzdálenost*")
+                ->setAttribute("class", "form-control input-sm date")
                 ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.");
         $form->addSubmit('send', 'Upravit')
                 ->setAttribute("class", "btn btn-primary");

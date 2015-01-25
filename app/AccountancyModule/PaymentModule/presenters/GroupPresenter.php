@@ -75,20 +75,24 @@ class GroupPresenter extends BasePresenter {
     public function createComponentGroupForm($name) {
         $form = new Form($this, $name);
         $form->addText("label", "Název")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte zadat název skupiny");
         $form->addText("amount", "Výchozí částka")
+                ->setAttribute("class", "form-control")
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
-        $form->addDatePicker("maturity", "Výchozí splatnost");
+        $form->addDatePicker("maturity", "Výchozí splatnost")
+                ->setAttribute("class", "form-control");
         $form->addText("ks", "KS", NULL, 10)
+                ->setAttribute("class", "form-control")
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
         $form->addTextArea("email_info", "Informační email", NULL, 6)
-                ->setDefaultValue($this->defaultEmails['base']['info'])
-                ->setAttribute("class", "input-xxlarge");
+                ->setAttribute("class", "form-control")
+                ->setDefaultValue($this->defaultEmails['base']['info']);
         $form->addTextArea("email_demand", "Upomínací email", NULL, 6)
-                ->setDefaultValue($this->defaultEmails['base']['demand'])
-                ->setAttribute("class", "input-xxlarge");
+                ->setAttribute("class", "form-control")
+                ->setDefaultValue($this->defaultEmails['base']['demand']);
         $form->addHidden("gid");
         $form->onSubmit[] = array($this, $name . 'Submitted');
         return $form;

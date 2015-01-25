@@ -111,7 +111,7 @@ trait CashbookTrait {
         $this->entityService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
-    
+
     function massExportSubmitted(SubmitButton $button) {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $this->context->excelService->getChitsExport($chits);
@@ -122,7 +122,7 @@ trait CashbookTrait {
     function createComponentFormOutAdd($name) {
         $form = self::makeFormOUT($this, $name);
         $form->addSubmit('send', 'Uložit')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, 'formAddSubmitted');
         //$form->setDefaults(array('category' => 'un'));
         return $form;
@@ -152,26 +152,26 @@ trait CashbookTrait {
         $form = new Form($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
-                ->getControlPrototype()->class("input-medium");
+                ->getControlPrototype()->class("form-control");
         //@TODO kontrola platneho data, problem s componentou
-        $form->addText("recipient", "Vyplaceno komu:", 20, 50)
+        $form->addText("recipient", "Vyplaceno komu:")
                 ->setHtmlId("form-out-recipient")
-                ->getControlPrototype()->class("input-medium");
+                ->getControlPrototype()->class("form-control");
         $form->addText("purpose", "Účel výplaty:", 20, 40)
                 ->addRule(Form::FILLED, 'Zadejte účel výplaty')
                 ->getControlPrototype()->placeholder("3 první položky")
-                ->class("input-medium");
+                ->class("form-control");
         $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-out-price")
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3")
-                ->class("input-medium");
+                ->class("form-control");
         $categories = $thisP->entityService->chits->getCategoriesPairs('out', $thisP->aid);
         $form->addRadioList("category", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         if (isset($thisP->event) && isset($thisP->event->prefix) && $thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
-                    ->setAttribute('class', 'input-mini');
+                    ->setAttribute('class', 'form-control input-sm');
         }
         return $form;
     }
@@ -180,7 +180,7 @@ trait CashbookTrait {
     function createComponentFormInAdd($name) {
         $form = $this->makeFormIn($this, $name);
         $form->addSubmit('send', 'Uložit')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, 'formAddSubmitted');
         return $form;
     }
@@ -198,24 +198,24 @@ trait CashbookTrait {
         $form = new Form($thisP, $name);
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
-                ->getControlPrototype()->class("input-medium");
+                ->getControlPrototype()->class("form-control");
         $form->addText("recipient", "Přijato od:", 20, 30)
                 ->setHtmlId("form-in-recipient")
-                ->getControlPrototype()->class("input-medium");
+                ->getControlPrototype()->class("form-control");
         $form->addText("purpose", "Účel příjmu:", 20, 40)
                 ->addRule(Form::FILLED, 'Zadejte účel přijmu')
-                ->getControlPrototype()->class("input-medium");
+                ->getControlPrototype()->class("form-control");
         $form->addText("price", "Částka: ", 20, 100)
                 ->setHtmlId("form-in-price")
                 //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3")
-                ->class("input-medium");
+                ->class("form-control");
         $categories = $thisP->entityService->chits->getCategoriesPairs('in', $thisP->aid);
         $form->addRadioList("category", "Typ: ", $categories)
                 ->addRule(Form::FILLED, 'Zadej typ paragonu');
         if (isset($thisP->event) && isset($thisP->event->prefix) && $thisP->event->prefix != "") {
             $form->addText("num", "Číslo d.:", NULL, 5)
-                    ->setAttribute('class', 'input-mini');
+                    ->setAttribute('class', 'form-control input-sm');
         }
         return $form;
     }

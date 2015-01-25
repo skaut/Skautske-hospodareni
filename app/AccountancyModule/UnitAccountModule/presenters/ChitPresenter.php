@@ -2,8 +2,7 @@
 
 namespace App\AccountancyModule\UnitAccountModule;
 
-use Nette\Caching\Cache,
-    Nette\Application\UI\Form;
+use Nette\Application\UI\Form;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -43,13 +42,12 @@ class ChitPresenter extends BasePresenter {
         if (empty($categories['in']) && empty($categories['out'])) {
             $this->template->disableForm = TRUE;
         }
-        
+
         $this->chits = array();
         //formulář pro kategorie, to potrebuje drive nez v renderu
         $this->getAllChitsByObjectId("unit", $this->chits, $this->onlyUnlocked, $this->context->unitAccountService);
         $this->getAllChitsByObjectId("event", $this->chits, $this->onlyUnlocked, $this->context->eventService);
         $this->getAllChitsByObjectId("camp", $this->chits, $this->onlyUnlocked, $this->context->campService);
-        
     }
 
     public function renderDefault($year = NULL) {
@@ -109,12 +107,14 @@ class ChitPresenter extends BasePresenter {
                 foreach ($chGrp as $ch) {
                     $form->addSelect("selectBudget_in_" . $ch->id, NULL, $categories['in'])
                             ->setPrompt("")
+                            ->setAttribute("class", "form-control input-sm")
                             ->setDefaultValue($ch->budgetCategoryIn)
-                            ->getControlPrototype()->setClass("input-medium");
+                            ->getControlPrototype()->setAttribute("class", "input-medium");
                     $form->addSelect("selectBudget_out_" . $ch->id, NULL, $categories['out'])
                             ->setPrompt("")
+                            ->setAttribute("class", "form-control input-sm")
                             ->setDefaultValue($ch->budgetCategoryOut)
-                            ->getControlPrototype()->setClass("input-medium");
+                            ->getControlPrototype();
                 }
             }
         }

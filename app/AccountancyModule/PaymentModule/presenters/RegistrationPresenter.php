@@ -24,7 +24,7 @@ class RegistrationPresenter extends BasePresenter {
             $this->flashMessage("Neoprávněný přístup ke skupině.", "fail");
             $this->redirect("Payment:default");
         }
-        
+
         $this->template->detail = $detail = $this->model->getGroup(array_keys($this->readUnits), $id);
         $this->template->maxVS = $this->model->getMaxVS($detail->id);
 
