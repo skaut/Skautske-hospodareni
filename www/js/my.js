@@ -74,14 +74,14 @@ function startLoginTimer() {
     function timer() {
         count = count - 1;
         perc = 100 * (count / start);
-        $("#timer .bar").css("width", perc + "%");
+        $("#timer .progress-bar").css("width", perc + "%");
         $("#timer").attr("title", count + " min");
         if (perc < 33 && state === "success") {
             state = "danger";
-            $("#timer > div.progress").addClass("progress-danger").removeClass("progress-success");
+            $("#timer .progress-bar").addClass("progress-bar-danger").removeClass("progress-bar-success");
         }
         if (count <= 0) {
-            $("#timer").addClass("navbar-text").removeAttr("style").html('<span class="label label-important">Byl jsi odhlášen!</span> ')
+            $("#timer").addClass("navbar-text").removeAttr("style").html('<span class="label label-danger">Byl jsi odhlášen!</span> ')
             clearInterval(counter);
             return;
         }
