@@ -43,9 +43,9 @@ class VehiclePresenter extends BasePresenter {
             $this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
             $this->redirect("default");
         }
-        if($this->context->travelService->removeVehicle($vehicleId, $this->unit->ID)){
+        if ($this->context->travelService->removeVehicle($vehicleId, $this->unit->ID)) {
             $this->flashMessage("Vozidlo bylo odebráno.");
-        }  else {
+        } else {
             $this->flashMessage("Nelze smazat vozidlo s cestovními příkazy.", "warning");
         }
         $this->redirect("this");
@@ -54,10 +54,13 @@ class VehiclePresenter extends BasePresenter {
     protected function makeVehicleForm($name) {
         $form = new Form($this, $name);
         $form->addText("type", "Typ*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit typ.");
         $form->addText("spz", "SPZ*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit SPZ.");
         $form->addText("consumption", "Průměrná spotřeba*")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit průměrnou spotřebu.")
                 ->addRule(Form::FLOAT, "Průměrná spotřeba musí být číslo!");
         $form->onSuccess[] = array($this, $name . 'Submitted');
@@ -67,7 +70,7 @@ class VehiclePresenter extends BasePresenter {
     function createComponentFormCreateVehicle($name) {
         $form = $this->makeVehicleForm($name);
         $form->addSubmit('send', 'Založit')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         return $form;
     }
 

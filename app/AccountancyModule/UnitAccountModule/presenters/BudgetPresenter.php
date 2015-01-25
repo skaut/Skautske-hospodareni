@@ -23,15 +23,20 @@ class BudgetPresenter extends BasePresenter {
     protected function createComponentAddCategoryForm($name) {
         $form = new Form($this, $name); // required for full running
         $form->addText("label", "Název")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Vyplňte název kategorie");
         $form->addSelect("type", "Typ", array("in" => "Příjmy", "out" => "Výdaje"))
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Vyberte typ")
                 ->setHtmlId("form-select-type");
         $form->addJSelect("parentId", "Nadřazená kategorie", $form["type"], array($this, "getParentCategories"))
+                ->setAttribute("class", "form-control")
                 ->setHtmlId("form-select-parentId");
         $form->addText("value", "Částka")
+                ->setAttribute("class", "form-control")
                 ->setHtmlId("form-category-value");
         $form->addText("year", "Rok")
+                ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Vyplňte rok")
                 ->setDefaultValue(date("Y"));
         $form->addHidden('oid', $this->aid);

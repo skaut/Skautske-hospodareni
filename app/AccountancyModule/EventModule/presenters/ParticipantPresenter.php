@@ -100,7 +100,7 @@ class ParticipantPresenter extends BasePresenter {
         } else if ($field == "payment") {
             $arr = array(
                 "payment" => $value,
-                "days" =>  key_exists("days", $oldData) ? $oldData['days'] : NULL,
+                "days" => key_exists("days", $oldData) ? $oldData['days'] : NULL,
             );
             $this->context->eventService->participants->update($id, $arr);
         }
@@ -265,7 +265,7 @@ class ParticipantPresenter extends BasePresenter {
         $form->addText("postcode", "PSČ");
         $form->addHidden("aid", $aid);
         $form->addSubmit('send', 'Založit účastníka')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;
     }

@@ -59,7 +59,7 @@ class DefaultPresenter extends BasePresenter {
                 break;
             case 'end':
                 $fnc = function ($a, $b) {
-                $aTime = strtotime($a['EndDate']);
+                    $aTime = strtotime($a['EndDate']);
                     $bTime = strtotime($b['EndDate']);
                     if ($aTime == $bTime) {
                         return strcasecmp($a['DisplayName'], $b['DisplayName']);

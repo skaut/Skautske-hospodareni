@@ -105,7 +105,7 @@ class PaymentPresenter extends BasePresenter {
             $form->addSelect($p['ID'] . '_email', NULL, $p['emails'])
                     ->setPrompt("")
                     ->setDefaultValue(key($p['emails']))
-                    ->setAttribute('class', 'input-xlarge');
+                    ->setAttribute('class', 'form-control');
         }
     }
 
@@ -113,13 +113,13 @@ class PaymentPresenter extends BasePresenter {
         $form = new Form($this, $name);
         $form->addHidden("oid");
         $form->addText("defaultAmount", "Částka:")
-                ->setAttribute('class', 'input-mini');
+                ->setAttribute('class', 'form-control input-sm');
         $form->addDatePicker('defaultMaturity', "Splatnost:")//
-                ->setAttribute('class', 'input-small');
+                ->setAttribute('class', 'form-control input-sm');
         $form->addText("defaultKs", "KS:")
-                ->setAttribute('class', 'input-mini');
+                ->setAttribute('class', 'form-control input-sm');
         $form->addText("defaultNote", "Poznámka:")
-                ->setAttribute('class', 'input-small');
+                ->setAttribute('class', 'form-control input-sm');
         $form->addSubmit('send', 'Přidat vybrané')
                 ->setAttribute("class", "btn btn-primary btn-large");
         $form->onSubmit[] = array($this, $name . 'Submitted');
@@ -299,21 +299,28 @@ class PaymentPresenter extends BasePresenter {
     public function createComponentPaymentForm($name) {
         $form = new Form($this, $name);
         $form->addText("name", "Název/účel")
+                ->setAttribute('class', 'form-control')
                 ->addRule(Form::FILLED, "Musíte zadat název platby");
         $form->addText("amount", "Částka")
+                ->setAttribute('class', 'form-control')
                 ->addRule(Form::FILLED, "Musíte vyplnit částku")
                 ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
         $form->addText("email", "Email")
+                ->setAttribute('class', 'form-control')
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::EMAIL, "Zadaný email nemá platný formát");
-        $form->addDatePicker("maturity", "Splatnost");
+        $form->addDatePicker("maturity", "Splatnost")
+                ->setAttribute('class', 'form-control');
         $form->addText("vs", "VS", NULL, 10)
+                ->setAttribute('class', 'form-control')
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addText("ks", "KS", NULL, 10)
+                ->setAttribute('class', 'form-control')
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
-        $form->addText("note", "Poznámka");
+        $form->addText("note", "Poznámka")
+                ->setAttribute('class', 'form-control');
         $form->addHidden("oid");
         $form->addHidden("pid");
         $form->onSubmit[] = array($this, 'paymentSubmitted');

@@ -44,4 +44,3 @@ class BudgetPresenter extends BasePresenter {
     }
 
 }
-

@@ -66,7 +66,7 @@ class DefaultPresenter extends BasePresenter {
 
     function createComponentFormFilter($name) {
         $states = array_merge(array("all" => "Nezrušené"), $this->context->campService->event->getStates());
-        $years = array("all"=>"Všechny");
+        $years = array("all" => "Všechny");
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
         }
@@ -75,7 +75,7 @@ class DefaultPresenter extends BasePresenter {
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
-                        ->setAttribute("class", "btn btn-primary");
+                ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
 
         return $form;
