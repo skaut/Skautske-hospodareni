@@ -29,6 +29,8 @@ class CommandTable extends BaseTable {
 
     public function getAll($unitId, $returnQuery = FALSE) {
         $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.spz as vehicle_spz, com.place")
+                ->select("(SELECT sum(distance) FROM tc_travels WHERE command_id = com.id) * (amortization+(com.fuel_price * (c.consumption/100))) as price")
+                ->select("(SELECT MIN(start_date) FROM tc_travels WHERE command_id = com.id) as start_date")
                 ->from(self::TABLE_TC_COMMANDS . " AS com")
                 ->leftJoin(self::TABLE_TC_CONTRACTS . " AS con ON (com.contract_id = con.id)")
                 ->leftJoin(self::TABLE_TC_VEHICLE . " AS c ON (com.vehicle_id = c.id) ")
@@ -36,8 +38,9 @@ class CommandTable extends BaseTable {
                 ->where("com.deleted=0")
                 ->where("con.deleted=0")
                 ->orderBy("closed, id");
-        if ($returnQuery)
+        if ($returnQuery) {
             return $q;
+        }
         return $q->fetchAll();
     }
 

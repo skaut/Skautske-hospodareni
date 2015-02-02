@@ -75,7 +75,7 @@ abstract class AccountancyHelpers extends Object {
     
     public static function paymentStateLabel($s) {
         $long = $s;
-        $short = substr($s, 0, 4). ".";
+        $short = mb_substr($s, 0, 5). ".";
         return "<span class='hidden-xs hidden-sm'>$long</span><span class='hidden-md hidden-lg'>$short</span>";
     }
 
