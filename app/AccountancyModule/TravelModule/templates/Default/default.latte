@@ -19,6 +19,8 @@
                 <th>Řidič</th>
                 <th>Účel cesty</th>
                 <th>Vozidlo</th>
+                <th>První jízda</th>
+                <th>Cena</th>
                 <th class="hidden-xs hidden-sm">Poznámka</th>
                 <th>Stav</th>
             </tr>
@@ -32,6 +34,8 @@
                 <td>{$item->driver_name}</td>
                 <td>{$item->purpose}</td>
                 <td><a n:href="Vehicle:detail $item->vehicle_id">{$item->vehicle_type} ({$item->vehicle_spz})</a></td>
+                <td>{$item->start_date|date:'j. n. Y'}</td>
+                <td>{$item->price|price}</td>
                 <td class="hidden-xs hidden-sm">{!$item->note}</td>
                 <td>{!$item->closed|commandState}</td>
             </tr>
