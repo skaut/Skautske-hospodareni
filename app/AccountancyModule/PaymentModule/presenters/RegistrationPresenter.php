@@ -21,7 +21,7 @@ class RegistrationPresenter extends BasePresenter {
         try {
             $this->template->list = $list = $this->model->getRegistrationPersons(array_keys($this->readUnits), $id);
         } catch (\InvalidArgumentException $exc) {
-            $this->flashMessage("Neoprávněný přístup ke skupině.", "fail");
+            $this->flashMessage("Neoprávněný přístup ke skupině.", "danger");
             $this->redirect("Payment:default");
         }
 
@@ -29,7 +29,7 @@ class RegistrationPresenter extends BasePresenter {
         $this->template->maxVS = $this->model->getMaxVS($detail->id);
 
         if (!$detail) {
-            $this->flashMessage("Neplatný požadavek na přidání registračních plateb", "error");
+            $this->flashMessage("Neplatný požadavek na přidání registračních plateb", "danger");
             $this->redirect("Payment:default");
         }
 
@@ -67,7 +67,7 @@ class RegistrationPresenter extends BasePresenter {
         $vals = $form->getHttpData()['vals'];
 
         if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "error");
+            $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "danger");
             $this->redirect("Payment:detail", array("id" => $values->oid));
         }
 

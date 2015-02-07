@@ -14,7 +14,7 @@ class CashbookPresenter extends BasePresenter {
     function startup() {
         parent::startup();
         if (!$this->aid) {
-            $this->flashMessage("Musíš vybrat akci", "error");
+            $this->flashMessage("Musíš vybrat akci", "danger");
             $this->redirect("Default:");
         }
         $this->entityService = $this->context->campService;
@@ -80,7 +80,7 @@ class CashbookPresenter extends BasePresenter {
         if ($this->context->campService->chits->add($values->aid, $data)) {
             $this->flashMessage("HPD byl importován");
         } else {
-            $this->flashMessage("HPD se nepodařilo importovat", "fail");
+            $this->flashMessage("HPD se nepodařilo importovat", "danger");
         }
         $this->redirect("default", array("aid" => $values->aid));
     }
