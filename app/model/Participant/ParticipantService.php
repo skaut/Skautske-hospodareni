@@ -111,7 +111,7 @@ class ParticipantService extends MutableBaseService {
                         "ID_Person" => $participantId,
             ));
         } catch (\SkautIS\Exception\WsdlException $ex) {
-            if($ex->getMessage() != "Chyba validace (Participant_PersonIsAllreadyParticipantGeneral)"){
+            if ($ex->getMessage() != "Chyba validace (Participant_PersonIsAllreadyParticipantGeneral)") {
                 throw $ex;
             }
             return FALSE;
