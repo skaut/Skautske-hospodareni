@@ -125,6 +125,9 @@ class PaymentService extends BaseService {
             $params['message'] = $payment->name;
         }
 
+        //$base64 = 'data:image/png;base64,' . base64_encode(file_get_contents("http://api.paylibo.com/paylibo/generator/czech/image?" . http_build_query($params)));
+        //$qrcode = '<img alt="QR platba" src="' . $base64 . '"/>';
+        
         $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params) . '"/>';
         $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $payment->name, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info);
         if ($this->mailService->sendPaymentInfo($template, $payment->email, "Informace o platbě", $body, $oficialUnitId)) {
@@ -257,7 +260,7 @@ class PaymentService extends BaseService {
      * @param type $personId
      * @return string
      */
-    protected function getPersonEmails($personId) {
+    public function getPersonEmails($personId) {
         $result = array();
         try {
             $emails = $this->skautis->org->PersonContactAll(array('ID_Person' => $personId));
