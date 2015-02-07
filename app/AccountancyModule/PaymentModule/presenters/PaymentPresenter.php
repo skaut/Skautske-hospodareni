@@ -94,7 +94,7 @@ class PaymentPresenter extends BasePresenter {
         $this->template->list = $list = $this->model->getPersons($this->aid, $id); //@todo:?nahradit aid za array_keys($this->editUnits) ??
 
         if (!$detail) {
-            $this->flashMessage("Neplatný požadavek na přehled osob", "error");
+            $this->flashMessage("Neplatný požadavek na přehled osob", "danger");
             $this->redirect("Payment:detail", array("id" => $id));
         }
 
@@ -132,7 +132,7 @@ class PaymentPresenter extends BasePresenter {
         $vals = $form->getHttpData()['vals'];
 
         if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "error");
+            $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "danger");
             $this->redirect("Payment:detail", array("id" => $values->oid));
         }
         //$list = $this->model->getPersons($this->aid, $values->oid);
@@ -175,24 +175,24 @@ class PaymentPresenter extends BasePresenter {
 
     public function handleCancel($pid) {
         if (!$this->isEditable) {
-            $this->flashMessage("Neplatný požadavek na zrušení platby!", "error");
+            $this->flashMessage("Neplatný požadavek na zrušení platby!", "danger");
             $this->redirect("this");
         }
         if (!$this->model->get(array_keys($this->editUnits), $pid)) {
-            $this->flashMessage("Platba pro zrušení nebyla nalezena!", "error");
+            $this->flashMessage("Platba pro zrušení nebyla nalezena!", "danger");
             $this->redirect("this");
         }
         if ($this->model->update($pid, array("state" => "canceled"))) {
             $this->flashMessage("Platba byla zrušena.");
         } else {
-            $this->flashMessage("Platbu se nepodařilo zrušit!", "error");
+            $this->flashMessage("Platbu se nepodařilo zrušit!", "danger");
         }
         $this->redirect("this");
     }
 
     public function handleSend($pid) {
         if (!$this->isEditable || !$this->model->get(array_keys($this->editUnits), $pid)) {
-            $this->flashMessage("Neplatný požadavek na odeslání emailu!", "error");
+            $this->flashMessage("Neplatný požadavek na odeslání emailu!", "danger");
             $this->redirect("this");
         }
         $payment = $this->model->get(array_keys($this->editUnits), $pid);
@@ -200,7 +200,7 @@ class PaymentPresenter extends BasePresenter {
         if ($this->model->sendInfo($this->template, $payment, $this->unitService)) {
             $this->flashMessage("Informační email byl odeslán.");
         } else {
-            $this->flashMessage("Informační email se nepodařilo odeslat!", "error");
+            $this->flashMessage("Informační email se nepodařilo odeslat!", "danger");
         }
         $this->redirect("this");
     }
@@ -211,7 +211,7 @@ class PaymentPresenter extends BasePresenter {
      */
     public function handleSendGroup($gid) {
         if (!$this->isEditable) {
-            $this->flashMessage("Neoprávněný přístup k záznamu!", "error");
+            $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
             $this->redirect("this");
         }
         $payments = $this->model->getAll($gid);
@@ -225,19 +225,19 @@ class PaymentPresenter extends BasePresenter {
         if ($cnt > 0) {
             $this->flashMessage("Informační emaily($cnt) byly odeslány.");
         } else {
-            $this->flashMessage("Nebyl odeslán žádný informační email!", "error");
+            $this->flashMessage("Nebyl odeslán žádný informační email!", "danger");
         }
         $this->redirect("this");
     }
 
     public function handleSendTest($gid) {
         if (!$this->isEditable) {
-            $this->flashMessage("Neplatný požadavek na odeslání testovacího emailu!", "error");
+            $this->flashMessage("Neplatný požadavek na odeslání testovacího emailu!", "danger");
             $this->redirect("this");
         }
         $personalDetail = $this->context->getService("userService")->getPersonalDetail();
         if (!isset($personalDetail->Email)) {
-            $this->flashMessage("Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!", "error");
+            $this->flashMessage("Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!", "danger");
             $this->redirect("this");
         }
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
@@ -257,27 +257,27 @@ class PaymentPresenter extends BasePresenter {
         if ($this->model->sendInfo($this->template, $payment, $this->unitService)) {
             $this->flashMessage("Testovací email byl odeslán na " . $personalDetail->Email . " .");
         } else {
-            $this->flashMessage("Testovací email se nepodařilo odeslat!", "error");
+            $this->flashMessage("Testovací email se nepodařilo odeslat!", "danger");
         }
         $this->redirect("this");
     }
 
     public function handleComplete($pid) {
         if (!$this->isEditable) {
-            $this->flashMessage("Nejste oprávněni k uzavření platby!", "error");
+            $this->flashMessage("Nejste oprávněni k uzavření platby!", "danger");
             $this->redirect("this");
         }
         if ($this->model->update($pid, array("state" => "completed"))) {
             $this->flashMessage("Platba byla zaplacena.");
         } else {
-            $this->flashMessage("Platbu se nepodařilo uzavřít!", "error");
+            $this->flashMessage("Platbu se nepodařilo uzavřít!", "danger");
         }
         $this->redirect("this");
     }
 
     public function handlePairPayments($gid = NULL) {
         if ($gid !== NULL && !$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění párovat platby!", "error");
+            $this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
             $this->redirect("this");
         }
         try {
@@ -329,7 +329,7 @@ class PaymentPresenter extends BasePresenter {
 
     function paymentSubmitted(Form $form) {
         if (!$this->isEditable) {
-            $this->flashMessage("Nejste oprávněni k úpravám plateb!", "error");
+            $this->flashMessage("Nejste oprávněni k úpravám plateb!", "danger");
             $this->redirect("this");
         }
         $v = $form->getValues();
@@ -341,13 +341,13 @@ class PaymentPresenter extends BasePresenter {
             if ($this->model->update($v->pid, array('name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => $v->note))) {
                 $this->flashMessage("Platba byla upravena");
             } else {
-                $this->flashMessage("Platbu se nepodařilo založit", "error");
+                $this->flashMessage("Platbu se nepodařilo založit", "danger");
             }
         } else {//ADD
             if ($this->model->createPayment($v->oid, $v->name, $v->email, $v->amount, $v->maturity, NULL, $v->vs, $v->ks, $v->note)) {
                 $this->flashMessage("Platba byla přidána");
             } else {
-                $this->flashMessage("Platbu se nepodařilo založit", "error");
+                $this->flashMessage("Platbu se nepodařilo založit", "danger");
             }
         }
         $this->redirect("detail", array("id" => $v->oid));

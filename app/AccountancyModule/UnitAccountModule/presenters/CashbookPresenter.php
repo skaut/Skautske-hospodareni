@@ -12,7 +12,7 @@ class CashbookPresenter extends BasePresenter {
     function startup() {
         parent::startup();
         if (!$this->aid) {
-            $this->flashMessage("Musíš vybrat jednotku", "error");
+            $this->flashMessage("Musíš vybrat jednotku", "danger");
             $this->redirect("Default:");
         }
         $this->entityService = $this->context->unitAccountService;
@@ -22,7 +22,7 @@ class CashbookPresenter extends BasePresenter {
          */
         $this->template->object = $this->context->unitAccountService->event->get($this->aid);
         if (!$this->isReadable) {
-            $this->flashMessage("Nemáš oprávnění číst data jednotky", "error");
+            $this->flashMessage("Nemáš oprávnění číst data jednotky", "danger");
             $this->redirect("Default:");
         }
         $this->template->unitPairs = $this->context->unitService->getReadUnits($this->user);

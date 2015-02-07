@@ -51,7 +51,7 @@ class BankPresenter extends BasePresenter {
 
     function tokenFormSubmitted(Form $form) {
         if (!$this->isEditable) {
-            $this->flashMessage("Nejste oprávněni k úpravám tokenu!", "error");
+            $this->flashMessage("Nejste oprávněni k úpravám tokenu!", "danger");
             $this->redirect("this");
         }
         $v = $form->getValues();
@@ -59,7 +59,7 @@ class BankPresenter extends BasePresenter {
         if ($this->bank->setToken($this->aid, $v->token, $v->daysback)) {
             $this->flashMessage("Token byl nastaven");
         } else {
-            $this->flashMessage("Token se nepodařilo nastavit", "error");
+            $this->flashMessage("Token se nepodařilo nastavit", "danger");
         }
         $this->redirect("this");
     }

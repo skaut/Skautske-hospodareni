@@ -37,7 +37,7 @@ class GroupPresenter extends BasePresenter {
 
     public function renderDefault($id = NULL) {
         if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "error");
+            $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
             $this->redirect("Payment:default");
         }
         $form = $this['groupForm'];
@@ -64,7 +64,7 @@ class GroupPresenter extends BasePresenter {
 
     public function actionCreateGroupRegistration($regId) {
         if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění pro založení registrace", "fail");
+            $this->flashMessage("Nemáte oprávnění pro založení registrace", "danger");
             $this->redirect("default");
         }
         $reg = $this->model->getRegistration($regId);
@@ -100,7 +100,7 @@ class GroupPresenter extends BasePresenter {
 
     function groupFormSubmitted(Form $form) {
         if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění pro změny skupin plateb", "fail");
+            $this->flashMessage("Nemáte oprávnění pro změny skupin plateb", "danger");
             $this->redirect("default");
         }
         $v = $form->getValues();
@@ -123,7 +123,7 @@ class GroupPresenter extends BasePresenter {
                 $this->flashMessage("Skupina byla založena");
                 $this->redirect("Payment:detail", array("id" => $groupId));
             } else {
-                $this->flashMessage("Skupinu plateb se nepodařilo založit", "fail");
+                $this->flashMessage("Skupinu plateb se nepodařilo založit", "danger");
             }
         }
         $this->redirect("Default:");

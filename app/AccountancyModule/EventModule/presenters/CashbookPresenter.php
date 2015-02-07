@@ -12,7 +12,7 @@ class CashbookPresenter extends BasePresenter {
     function startup() {
         parent::startup();
         if (!$this->aid) {
-            $this->flashMessage("Musíš vybrat akci", "error");
+            $this->flashMessage("Musíš vybrat akci", "danger");
             $this->redirect("Event:");
         }
         $this->entityService = $this->context->eventService;
@@ -46,7 +46,7 @@ class CashbookPresenter extends BasePresenter {
         if ($add) {
             $this->flashMessage("Účastníci byli importováni");
         } else {
-            $this->flashMessage("Účastníky se nepodařilo importovat", "fail");
+            $this->flashMessage("Účastníky se nepodařilo importovat", "danger");
         }
         $this->redirect("default", array("aid" => $aid));
     }

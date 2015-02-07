@@ -10,7 +10,7 @@ class BudgetPresenter extends BasePresenter {
     function startup() {
         parent::startup();
         if (!$this->aid) {
-            $this->flashMessage("Musíš vybrat akci", "error");
+            $this->flashMessage("Musíš vybrat akci", "danger");
             $this->redirect("Default:");
         }
     }
