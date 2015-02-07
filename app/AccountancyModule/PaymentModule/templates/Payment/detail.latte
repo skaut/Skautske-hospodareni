@@ -38,6 +38,7 @@
         <div class="well well-sm">
             <a n:href="Group: aid=>$group->unitId, $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit skupinu</a>
             <a n:if="$group->groupType == 'registration'" n:href="Registration:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphglyphicon glyphicon-plus-sign hidden-xs hidden-sm"></i> Přidat z registrace</a>
+            <a n:if="$group->groupType == 'camp'" n:href="Camp:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphglyphicon glyphicon-plus-sign hidden-xs hidden-sm"></i> Přidat z účastníků</a>
             <a n:href="massAdd $group->id" class="btn btn-primary">Hromadné přidání <sup style="color:red;">BETA</sup></a>
             <div class="btn-group">
                 <a class="btn dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#">

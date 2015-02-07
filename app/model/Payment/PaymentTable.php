@@ -84,7 +84,10 @@ class PaymentTable extends BaseTable {
      * @return array
      */
     public function getGroups($unitId, $onlyOpen) {
-        return $this->connection->query("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE unitId IN %in ", !is_array($unitId) ? array($unitId) : $unitId, " AND state", "%if ", $onlyOpen, "='open' %else !='canceled' %end")->fetchAssoc("id");
+        return $this->connection->query("SELECT * FROM [" . self::TABLE_PA_GROUP . "]"
+                . " WHERE unitId IN %in ", !is_array($unitId) ? array($unitId) : $unitId, " AND state", "%if ", $onlyOpen, "='open' %else !='canceled' %end"
+                . " ORDER BY id DESC")
+                ->fetchAssoc("id");
     }
 
     /**
