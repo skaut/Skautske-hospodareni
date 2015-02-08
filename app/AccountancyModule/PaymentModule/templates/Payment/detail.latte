@@ -4,7 +4,7 @@
 {dump $group}
 {dump $units}
 <div class="row">
-    <div class="span3">
+    <div class="col-md-3">
         <table class="table table-bordered table-striped">
             <tr>
                 <th class="l">Vlastník:</th>
@@ -34,7 +34,7 @@
             </tr>
         </table>
     </div>
-    <div class="span9" n:if="$group->state =='open' && $isEditable">
+    <div class="col-md-9" n:if="$group->state =='open' && $isEditable">
         <div class="well well-sm">
             <a n:href="Group: aid=>$group->unitId, $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit skupinu</a>
             <a n:if="$group->groupType == 'registration'" n:href="Registration:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphglyphicon glyphicon-plus-sign hidden-xs hidden-sm"></i> Přidat z registrace</a>

@@ -2,8 +2,8 @@
 
 {block #content}
 <div class="row">
-<h2>{$event->DisplayName}</h2>
-{include ../ActionMenu.latte}
+    <h2>{$event->DisplayName}</h2>
+    {include ../ActionMenu.latte}
 </div>
 
 {dump $list}
@@ -18,12 +18,16 @@
 {if $isAllowParticipantInsert}
     {* nový účastník *}
     <div class="modal myModal fade" id="addParticipant">
-        <div class="modal-header">
-            <a class="close" data-dismiss="modal">×</a>
-            <h2>Založit nového účastníka</h2>
-        </div>
-        <div class="modal-body">
-            {control formAddParticipantNew}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
+                    <h2>Založit nového účastníka</h2>
+                </div>
+                <div class="modal-body">
+                    {control formAddParticipantNew}
+                </div>
+            </div>
         </div>
     </div>
 {/if}
