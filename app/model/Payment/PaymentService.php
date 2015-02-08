@@ -82,11 +82,11 @@ class PaymentService extends BaseService {
 
     /**
      * spočte částky v jednotlivých stavech platby
-     * @param int $pa_id
+     * @param int $pa_groupId
      * @return array
      */
-    public function summarizeByState($pa_id) {
-        return $this->table->summarizeByState($pa_id);
+    public function summarizeByState($pa_groupId) {
+        return $this->table->summarizeByState($pa_groupId);
     }
 
     /**
