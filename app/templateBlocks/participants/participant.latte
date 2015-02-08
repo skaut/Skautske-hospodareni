@@ -14,61 +14,65 @@ $isAllowIsAccount
     <a href="#potencial-menu" class="btn btn-primary"><i class="glyphicon glyphicon-arrow-up"></i> Nevybraní účastníci <i class="glyphicon glyphicon-arrow-up"></i></a>
 </div>
 <div class="col-sm-6" n:snippet="participants">
-        {form formMassParticipants}
+    {form formMassParticipants}
         <div n:if="$isAllowParticipantUpdate" class="modal myModal fade" id="massEdit"> 
-            <div class="modal-header">
-                <a class="close" data-dismiss="modal">×</a>
-                <h2>Hromadné nastavení</h2>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
+                        <h2>Hromadné nastavení</h2>
+                    </div>
+
+                    {formContainer edit}
+                        <div class="modal-body">
+                            <table>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td><b>Upravit?</b></td>
+                                </tr>
+                                <tr>
+                                    <td>{label days class=>"ca" /}</td>
+                                    <td>{input days style=>"width:40px"}</td>
+                                    <td class="ct">{input daysc}</td>
+                                </tr>
+                                <tr>
+                                    <td>{label payment /}</td>
+                                    <td>{input payment style=>"width:40px"}</td>
+                                    <td class="ct">{input paymentc}</td>
+                                </tr>
+                                <tr n:if="$isAllowRepayment">
+                                    <td>{label repayment /}</td>
+                                    <td>{input repayment style=>"width:40px"}</td>
+                                    <td class="ct">{input repaymentc}</td>
+                                </tr>
+                                <tr n:if="$isAllowIsAccount">
+                                    <td>{label isAccount /}</td>
+                                    <td>{input isAccount}</td>
+                                    <td style="text-align: center;">{input isAccountc}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">{input send}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    {/formContainer}  
+                </div>
             </div>
-            
-            {formContainer edit}
-            <div class="modal-body">
-                <table>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td><b>Upravit?</b></td>
-                    </tr>
-                    <tr>
-                        <td>{label days class=>"ca" /}</td>
-                        <td>{input days style=>"width:40px"}</td>
-                        <td class="ct">{input daysc}</td>
-                    </tr>
-                    <tr>
-                        <td>{label payment /}</td>
-                        <td>{input payment style=>"width:40px"}</td>
-                        <td class="ct">{input paymentc}</td>
-                    </tr>
-                    <tr n:if="$isAllowRepayment">
-                        <td>{label repayment /}</td>
-                        <td>{input repayment style=>"width:40px"}</td>
-                        <td class="ct">{input repaymentc}</td>
-                    </tr>
-                    <tr n:if="$isAllowIsAccount">
-                        <td>{label isAccount /}</td>
-                        <td>{input isAccount}</td>
-                        <td style="text-align: center;">{input isAccountc}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">{input send}</td>
-                    </tr>
-                </table>
-            </div>
-            {/formContainer}  
         </div>
-            
-            
-            
+
+
+
         {var $tabIndex = 1}
         <div n:ifset="$participants">
             <h3>Seznam účastníků</h3>
             {var $participantsNames = []}
             <div class="well well-sm">
                 {if $isAllowParticipantDetail}
-                <a n:href="export $aid" target="_blank" class="btn btn-info btn-sm{if empty($participants)} disabled{/if}"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Seznam účastníků (.pdf)</a>
-                <a n:href="exportExcel $aid" target="_blank" class="btn btn-info btn-sm{if empty($participants)} disabled{/if}"><i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i> Seznam účastníků (.xlsx)</a>
+                    <a n:href="export $aid" target="_blank" class="btn btn-info btn-sm{if empty($participants)} disabled{/if}"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Seznam účastníků (.pdf)</a>
+                    <a n:href="exportExcel $aid" target="_blank" class="btn btn-info btn-sm{if empty($participants)} disabled{/if}"><i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i> Seznam účastníků (.xlsx)</a>
                 {else}
-                <p class="alert alert-info">Nemáte oprávnění zobrazit informace o účastnících!</p>
+                    <p class="alert alert-info">Nemáte oprávnění zobrazit informace o účastnících!</p>
                 {/if}
             </div>
 
@@ -83,8 +87,8 @@ $isAllowIsAccount
                         <th n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="nowrap r">
                             <span class="hidden-xs">
                                 <a n:if="$isAllowParticipantUpdate" href="#massEdit" data-toggle="modal" class="btn btn-primary btn-sm dependentButtonParticipant" title="Upravit vybrané"><i class="glyphicon glyphicon-edit"></i></a>
-                                {if $isAllowParticipantDelete}
-                                    <button n:name="send" title="Odebrat vybrané" class="btn btn-danger btn-sm dependentButtonParticipant" type="submit">
+                                    {if $isAllowParticipantDelete}
+                                    <button n:name="send" title="Odebrat vybrané" class="btn btn-danger btn-sm dependentButtonParticipant" onclick="return confirm('Opravdu chcete smazat vybrané?')" type="submit">
                                         <i class="glyphicon glyphicon-remove"></i>
                                     </button>
                                 {/if}
@@ -96,18 +100,18 @@ $isAllowIsAccount
                 {var $totalPayment = $totalRepayment = 0}
                 <tbody class="dropable" id="participants-list-tbody">
                     {if !empty($participants)}
-                    <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
-                    {? $participantsNames[] = $p->Person}
-                        <td>{$p->Person}</td>
-                        <td class="r"><a n:tag-if="$isAllowParticipantUpdate" id="par-days-{$p->ID}" class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}">{$p->Days}</a></td>
-                        <td class="r"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-payment-{$p->ID}" class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->payment) && $p->payment != ""}{$p->payment|price:false}{? $totalPayment += $p->payment}{else}0{/if}</a></td>
-                        <td n:if="$isAllowRepayment"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-repayment-{$p->ID}" class="num-edit" data-type='repayment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->repayment) && $p->repayment != ""}{$p->repayment|price:false}{? $totalRepayment += $p->repayment}{else}0{/if}</a></td>
-                        <td n:if="$isAllowIsAccount">{ifset $p->isAccount}{$p->isAccount == 'Y' ? 'Ano'}{/ifset}</td>
-                        <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="r">
-                            <a n:if="$isAllowParticipantDelete" n:href="remove! $p->ID" class="btn btn-danger btn-sm ajax"><i class="glyphicon glyphicon-remove"></i></a>
-                            <input type="checkbox" name="massParticipants[]" id="massParticipants-{$p->ID}" class="hidden-xs" value={$p->ID}/>
-                        </td>
-                    </tr>
+                        <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
+                            {? $participantsNames[] = $p->Person}
+                            <td>{$p->Person}</td>
+                            <td class="r"><a n:tag-if="$isAllowParticipantUpdate" id="par-days-{$p->ID}" class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}">{$p->Days}</a></td>
+                            <td class="r"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-payment-{$p->ID}" class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->payment) && $p->payment != ""}{$p->payment|price:false}{? $totalPayment += $p->payment}{else}0{/if}</a></td>
+                            <td n:if="$isAllowRepayment"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-repayment-{$p->ID}" class="num-edit" data-type='repayment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->repayment) && $p->repayment != ""}{$p->repayment|price:false}{? $totalRepayment += $p->repayment}{else}0{/if}</a></td>
+                            <td n:if="$isAllowIsAccount">{ifset $p->isAccount}{$p->isAccount == 'Y' ? 'Ano'}{/ifset}</td>
+                            <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="r">
+                                <a n:if="$isAllowParticipantDelete" n:href="remove! $p->ID" class="btn btn-danger btn-sm ajax"><i class="glyphicon glyphicon-remove"></i></a>
+                                <input type="checkbox" name="massParticipants[]" id="massParticipants-{$p->ID}" class="hidden-xs" value={$p->ID}/>
+                            </td>
+                        </tr>
                     {/if}
                     <tr class="alert info noparticipants" {if count($participants)==0} style="display:none;"{/if} id="noparticipant" draggable="false"><td colspan="4"><b>Nejsou vybráni žádní účastníci.</b></td></tr>
                 </tbody>
@@ -124,11 +128,11 @@ $isAllowIsAccount
                 </tfoot>
             </table>
         </div>
-        {/form}
-        <script type="text/javascript">
-        $(document).ready(function() {
-            participantsList = $({$participantsNames});
-            if(participantsList.size() == 0){
+    {/form}
+    <script type="text/javascript">
+        $(document).ready(function () {
+                participantsList = $({$participantsNames});
+            if (participantsList.size() == 0) {
                 $(".noparticipants").show();
                 $(".onlyWithParticipants").hide();
             } else {
@@ -136,13 +140,13 @@ $isAllowIsAccount
                 $(".onlyWithParticipants").show();
             }
             $unitPersons = $("#unit-participants-tbody tr:not(.no-unit-persons)");
-            if($unitPersons.size() == 0){
+            if ($unitPersons.size() == 0) {
                 $(".no-unit-persons").show();
                 $(".onlyWithUnitPersons").hide();
             } else {
                 $(".no-unit-persons").hide();
                 $(".onlyWithUnitPersons").show();
-            }        
+            }
         });
-        </script>
-    </div>
+    </script>
+</div>

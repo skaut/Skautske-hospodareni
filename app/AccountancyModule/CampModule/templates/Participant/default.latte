@@ -14,20 +14,24 @@
 </div>
 
 <div class="row">
-    
-{include $templateBlockDir.'participants/list.latte'}
-{include $templateBlockDir.'participants/participant.latte'}
 
-{* nový účastník *}
-<div n:if="$isAllowParticipantInsert" class="modal myModal fade" id="addParticipant">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h2>Založit nového účastníka</h2>
-    </div>
-    <div class="modal-body">
-            {control formAddParticipantNew}
-    </div>
-</div>
+    {include $templateBlockDir.'participants/list.latte'}
+    {include $templateBlockDir.'participants/participant.latte'}
 
-{include $templateBlockDir.'participants/js.latte'}
-{include $templateBlockDir.'inline-num-edit.latte'}
+    {* nový účastník *}
+    <div n:if="$isAllowParticipantInsert" class="modal myModal fade" id="addParticipant">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
+                    <h2>Založit nového účastníka</h2>
+                </div>
+                <div class="modal-body">
+                    {control formAddParticipantNew}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {include $templateBlockDir.'participants/js.latte'}
+    {include $templateBlockDir.'inline-num-edit.latte'}
