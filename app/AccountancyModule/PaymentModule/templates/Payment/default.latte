@@ -8,15 +8,36 @@
     <div class="well well-sm">
         <a n:href="this !$onlyOpen" class="btn btn-info">Zobrazit {if $onlyOpen}i uzavřené skupiny{else}pouze otevřené{/if}</a>
         {if $isEditable}
-        <a n:href="Group:" class="btn btn-primary"><i class="glyphicon  glyphicon glyphicon-plus-sign"></i> Založit skupinu plateb</a>
-        <a n:href="pairPayments!" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>
-        <a n:href="Bank:" class="btn btn-primary"><i class="glyphicon glyphicon-book"></i> Bankovní účet</a>
+            <a n:href="Group:" class="btn btn-primary"><i class="glyphicon  glyphicon glyphicon-plus-sign"></i> Založit skupinu plateb</a>
+            <a n:href="pairPayments!" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>
+            <a n:href="Bank:" class="btn btn-primary"><i class="glyphicon glyphicon-book"></i> Bankovní účet</a>
         {/if}
     </div>
 </div>
-
-    {foreach $groups as $g}
-        <h2><a n:href="Payment:detail $g->id">{$g->label}</a></h2>
-        {include $templateBlockDir.'paymentTable.latte', payments=>isset($payments[$g->id]) ? $payments[$g->id] : array(), groupState=>$g->state}
-    {/foreach}
+<div class="row">
+    {if !empty($groups)}
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th>Název</th>
+                <th>Připravené</th>
+                <th>Odeslané</th>
+                <th>Dokončené</th>
+                <th>Stav</th>
+            </tr>
+            <tr n:foreach="$groups as $g">
+                <td><a n:href="Payment:detail $g->id">{$g->label}</a></td>
+                <td n:foreach="$g->sumarize as $s" class="r">{if $s->count > 0}{$s->amount|num} ({$s->count}){else} {/if}</td>
+                <td>{$g->state|groupState|noescape}</td>
+            </tr> 
+        </table>
+    {else}
+        <div class=""></div>
+    {/if}
+</div>
+{*}
+{foreach $groups as $g}
+    <div class="row"><h2><a n:href="Payment:detail $g->id">{$g->label}</a></h2></div>
+    {include $templateBlockDir.'paymentTable.latte', payments=>isset($payments[$g->id]) ? $payments[$g->id] : array(), groupState=>$g->state}
+{/foreach}
+{*}
 

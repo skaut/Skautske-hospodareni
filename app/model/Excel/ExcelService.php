@@ -39,7 +39,8 @@ class ExcelService extends BaseService {
     public function getCashbook(EventEntity $service, $event) {
         $objPHPExcel = $this->getNewFile();
         $data = $service->chits->getAll($event->ID);
-        $this->setSheetCashbook($objPHPExcel->setActiveSheetIndex(0), $data, $event->prefix);
+        $sheet = $objPHPExcel->setActiveSheetIndex(0);
+        $this->setSheetCashbook($sheet, $data, $event->prefix);
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
     }
 
