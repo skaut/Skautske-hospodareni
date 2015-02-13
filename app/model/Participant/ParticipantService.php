@@ -187,7 +187,7 @@ class ParticipantService extends MutableBaseService {
             $sisData = array(
                 'ID' => $participantId,
                 'Real' => TRUE,
-                'Days' => $arr['days'],
+                'Days' => array_key_exists('days', $arr) ? $arr['days'] : NULL,
                 self::PAYMENT => $arr['payment'],
             );
             $this->skautis->event->{"Participant" . $this->typeName . "Update"}($sisData, "participant" . $this->typeName);

@@ -52,7 +52,7 @@ class VehiclePresenter extends BasePresenter {
     }
 
     protected function makeVehicleForm($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addText("type", "Typ*")
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit typ.");

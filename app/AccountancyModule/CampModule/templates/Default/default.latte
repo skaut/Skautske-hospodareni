@@ -9,13 +9,13 @@
 
     {snippet camps}
         {form formFilter class=>"ajax filter form-inline"}
-        {label year /}{input year onchange=>"changeYear(this.value)", class=>"form-control input-sm"}
-        {label state /}{input state onchange=>"changeState(this.value)", class=>"form-control input-sm"}
+        {label year /}{input year onchange=>"changeYear(this.value)", class=>"form-control"}
+        {label state /}{input state onchange=>"changeState(this.value)", class=>"form-control"}
         {input send}
         {/form}
         
         {if !empty($list)}
-        <table class="myTable table table-striped table-bordered table-condensed">
+        <table class="myTable table table-striped table-bordered">
             <thead>
                 <tr>
                     <th>Název</th>
@@ -43,9 +43,9 @@
 
 <script type="text/javascript">
     function changeYear(val){
-         $.post({link changeYear!}, { year : val });
+        $.nette.ajax({ url: {link changeYear!}+"&year="+val});
     }
     function changeState(val){
-         $.post({link changeState!}, { state : val });
+        $.nette.ajax({ url: {link changeState!}+"&state="+val});
     }
 </script>

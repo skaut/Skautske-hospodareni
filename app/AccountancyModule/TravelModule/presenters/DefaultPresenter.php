@@ -135,7 +135,7 @@ class DefaultPresenter extends BasePresenter {
         $contracts = $this->context->travelService->getAllContractsPairs($this->unit->ID);
         $vehicles = $this->context->travelService->getVehiclesPairs($this->unit->ID);
 
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addSelect("contract_id", "Smlouva", $contracts)
                 ->setPrompt("Vyberte smlouvu")
                 ->setAttribute("class", "form-control")
@@ -211,7 +211,7 @@ class DefaultPresenter extends BasePresenter {
     }
 
     public function createComponentFormAddTravel($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->getElementPrototype()->class("form-inline");
         $form->addHidden("command_id");
         $form->addDatePicker("start_date", "Datum cesty")
@@ -269,7 +269,7 @@ class DefaultPresenter extends BasePresenter {
     }
 
     public function createComponentFormEditTravel($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
 //        $form->getElementPrototype()->class("form-inline");
         $form->addHidden("command_id");
         $form->addHidden("id");

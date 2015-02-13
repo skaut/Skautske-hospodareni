@@ -11,7 +11,7 @@ use Nette\Application\UI\Form,
  */
 class EventPresenter extends BasePresenter {
 
-    public function renderDefault($aid) {
+    public function renderDefault($aid, $funcEdit = FALSE) {
         if ($aid == NULL) {
             $this->redirect("Default:");
         }
@@ -42,12 +42,14 @@ class EventPresenter extends BasePresenter {
         }
 
         $this->template->funkce = $func;
+        $this->template->funcEdit = $funcEdit;
         $this->template->statistic = $this->context->eventService->participants->getEventStatistic($this->aid);
         $this->template->accessFunctionUpdate = $this->isAllowed("EV_EventGeneral_UPDATE_Function");
         $this->template->accessEditBase = $accessEditBase;
         $this->template->accessCloseEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Close");
         $this->template->accessOpenEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Open");
         $this->template->accessDetailEvent = $this->isAllowed("EV_EventGeneral_DETAIL");
+
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
@@ -83,27 +85,25 @@ class EventPresenter extends BasePresenter {
         $this->redirect('this', array("aid" => $this->aid));
     }
 
-    public function actionAddFunction($aid, $fid) {
-        $form = $this['formAddFunction'];
-        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
-        $form->setDefaults(array(
-            "aid" => $aid,
-            "fid" => $fid,
-        ));
-    }
-
-    public function actionEditFunction($aid, $fid) {
-        $this->template->setFile(dirname(__FILE__) . "/../templates/Event/addFunction.latte");
-        $func = $this->context->eventService->event->getFunctions($aid);
-//        dump($func);die();
-        $form = $this['formAddFunction'];
-        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
-        $form->setDefaults(array(
-            "aid" => $aid,
-            "person" => array_key_exists($func[$fid]->ID_Person, $form['person']->getItems()) ? $func[$fid]->ID_Person : NULL,
-            "fid" => $fid,
-        ));
-    }
+//    public function actionAddFunction($aid, $fid) {
+//        $form = $this['formAddFunction'];
+//        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
+//        $form->setDefaults(array(
+//            "aid" => $aid,
+//            "fid" => $fid,
+//        ));
+//    }
+//    public function actionEditFunction($aid, $fid) {
+//        $this->template->setFile(dirname(__FILE__) . "/../templates/Event/addFunction.latte");
+//        $func = $this->context->eventService->event->getFunctions($aid);
+//        $form = $this['formAddFunction'];
+//        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
+//        $form->setDefaults(array(
+//            "aid" => $aid,
+//            "person" => array_key_exists($func[$fid]->ID_Person, $form['person']->getItems()) ? $func[$fid]->ID_Person : NULL,
+//            "fid" => $fid,
+//        ));
+//    }
 
     public function actionPrintAll($aid) {
         $chits = (array) $this->context->eventService->chits->getAll($this->aid);
@@ -143,7 +143,7 @@ class EventPresenter extends BasePresenter {
 
     function createComponentFormEdit($name) {
 //        $combo = $this->context->memberService->getCombobox(NULL, TRUE);
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addProtection();
         $form->addText("name", "Název akce");
         $form->addDatePicker("start", "Od")->addRule(Form::FILLED, "Musíte zadat datum začátku akce");
@@ -179,20 +179,35 @@ class EventPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    function createComponentFormAddFunction($name) {
-        $form = new Form($this, $name);
-        $form->addSelect("person", NULL)
-                ->setPrompt("Vyber")
-                ->setAttribute("class", "combobox");
-        $form->addHidden("fid");
-        $form->addHidden("aid");
-        $form->addSubmit('send', 'Přidat')
-                ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+    function createComponentFormVedouci($name) {
+        return $this->prepareFunctionForm($name, 0, 18);
+    }
+
+    function createComponentFormZastupce($name) {
+        return $this->prepareFunctionForm($name, 1, 18);
+    }
+
+    function createComponentFormHospodar($name) {
+        return $this->prepareFunctionForm($name, 2, 15);
+    }
+
+    protected function prepareFunctionForm($name, $fid, $ageLimit = NULL) {
+        $form = $this->prepareForm($this, $name);
+        $form->getElementPrototype()->setClass("form-inline");
+        $func = $this->context->eventService->event->getFunctions($this->aid);
+        $combo = $this->context->memberService->getCombobox(FALSE, $ageLimit);
+        $form->addSelect("person", NULL, $combo)
+                ->setPrompt("")
+                ->setDefaultValue(array_key_exists($func[$fid]->ID_Person, $combo) ? $func[$fid]->ID_Person : NULL);
+        $form->addHidden("fid", $fid);
+        $form->addHidden("aid", $this->aid);
+        $form->addSubmit('send', 'Nastavit')
+                ->setAttribute("class", "btn btn-sm btn-primary");
+        $form->onSuccess[] = array($this, 'formFunctionSubmitted');
         return $form;
     }
 
-    function formAddFunctionSubmitted(Form $form) {
+    function formFunctionSubmitted(Form $form) {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Function")) {
             $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
             $this->redirect("this");

@@ -103,7 +103,7 @@ class DefaultPresenter extends BasePresenter {
     public function handleChangeYear($year) {
         $this->ses->year = $year;
         if ($this->isAjax()) {
-            $this->invalidateControl("events");
+            $this->redrawControl('events');
         } else {
             $this->redirect("this");
         }
@@ -116,7 +116,7 @@ class DefaultPresenter extends BasePresenter {
     public function handleChangeState($state) {
         $this->ses->state = $state;
         if ($this->isAjax()) {
-            $this->invalidateControl("events");
+            $this->redrawControl('events');
         } else {
             $this->redirect("this");
         }
@@ -147,7 +147,7 @@ class DefaultPresenter extends BasePresenter {
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
         }
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
@@ -177,7 +177,7 @@ class DefaultPresenter extends BasePresenter {
             $units[$u->ID] = "» " . $u->SortName;
         }
 
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addText("name", "Název akce*")
                 ->addRule(Form::FILLED, "Musíte vyplnit název akce");
         $form->addDatePicker("start", "Od*")
@@ -215,7 +215,7 @@ class DefaultPresenter extends BasePresenter {
     }
 
     function createComponentFormExportSummary($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addSubmit('send', 'Souhrn vybraných');
         $form->onSuccess[] = array($this, $name . 'Submitted');
         return $form;

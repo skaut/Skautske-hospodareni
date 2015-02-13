@@ -45,7 +45,7 @@ class RegistrationPresenter extends BasePresenter {
     }
 
     public function createComponentRegistrationForm($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
         $form->addText("defaultAmount", "Částka:")
                 ->setAttribute('class', 'input-mini');

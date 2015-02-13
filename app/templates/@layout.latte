@@ -84,7 +84,7 @@
                         <div class="navbar-form pull-right" style="padding-left: 4px;width: 300px;">
                             <a n:href=":Auth:logoutSis" class="btn btn-primary btn-sm" style="float:right">Odhlásit se</a>
                             <select onchange="changeRole(this.value)" class="roleSelect input-sm" style="margin-top: 7px;width: 180px;">
-                                <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{$r->RegistrationNumber} - {$r->Role}</option>
+                                <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{ifset $r->RegistrationNumber}{$r->RegistrationNumber} - {/ifset}{$r->Role}</option>
                             </select>
                         </div>
                         <div id="timer" class="nav pull-right visible-lg" style="width: 100px; margin-top:22px;">

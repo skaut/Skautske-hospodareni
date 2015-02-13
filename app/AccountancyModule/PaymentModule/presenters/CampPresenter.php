@@ -56,7 +56,7 @@ class CampPresenter extends BasePresenter {
     }
 
     public function createComponentCampForm($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
         $form->addText("defaultAmount", "Částka:")
                 ->setAttribute('class', 'input-mini');

@@ -57,6 +57,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $this->updateUserAccess();
         $this->redirect("this");
     }
+    
+    protected function prepareForm($parent = NULL, $name = NULL){
+        $form = new Nette\Application\UI\Form($parent, $name);
+        $form->setRenderer(new \Nextras\Forms\Rendering\Bs3FormRenderer());
+        return $form;
+    }
 
     public function createComponentCss() {
         $files = new WebLoader\FileCollection(WWW_DIR . '/css');

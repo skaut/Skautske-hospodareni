@@ -52,7 +52,7 @@ class CashbookPresenter extends BasePresenter {
      * @return \Nette\Application\UI\Form
      */
     function createComponentFormImportHpd($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addRadioList("cat", "Kategorie:", array("child" => "Od dětí a roverů", "adult" => "Od dospělých"))
                 ->addRule(Form::FILLED, "Musíte vyplnit kategorii.")
                 ->setDefaultValue("child");
