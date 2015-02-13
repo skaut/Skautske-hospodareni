@@ -5,51 +5,11 @@
 {dump $list}
 
 <div class="row">
-    <div class="well well-sm" n:if="$accessCreate">
+    <div class="well well-sm col-md-6" n:if="$accessCreate">
         <button type="button" data-toggle="collapse" data-target="#createNew" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou akci</button>
         <div class="collapse" id="createNew">
             <br />
-            {form formCreate}
-                <ul class="errors" n:if="$form->hasErrors()">
-                    <li n:foreach="$form->errors as $error">{$error}</li>
-                </ul>
-                <table>
-                    <tbody>
-                        <tr class="required">
-                            <th>{label name/}</th>
-                            <td>{input name}</td>
-                        </tr>
-                        <tr class="required">
-                            <th>{label start /}</th>
-                            <td>{input start}</td>
-                        </tr>
-                        <tr class="required">
-                            <th>{label end /}</th>
-                            <td>{input end}</td>
-                        </tr>
-                        <tr>
-                            <th>{label location /}</th>
-                            <td>{input location}</td>
-                        </tr>
-                        <tr>
-                            <th>{label orgID /}</th>
-                            <td>{input orgID}</td>
-                        </tr>
-                        <tr>
-                            <th>{label scope /}</th>
-                            <td>{input scope}</td>
-                        </tr>
-                        <tr>
-                            <th>{label type /}</th>
-                            <td>{input type}</td>
-                        </tr>
-                        <tr>
-                            <th>&nbsp;</th>
-                            <td>{input send}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            {/form formCreate}
+            {control formCreate}
             (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
         </div>
     </div>
@@ -59,9 +19,8 @@
     <div class="row">
         <div class="well well-sm">
             {form formFilter class=>"ajax filter form-inline"}
-                <span class="hidden-xs hidden-sm">{label year /}</span>{input year onchange=>"changeYear(this.value)", class=>"form-control input-sm"}
-                <span class="hidden-xs hidden-sm">{label state /}</span>{input state onchange=>"changeState(this.value)", class=>"form-control input-sm"}
-                <br class="visible-phone"/>
+                <span class="hidden-xs hidden-sm">{label year /}</span>{input year onchange=>"changeYear(this.value)", class=>"form-control"}
+                <span class="hidden-xs hidden-sm">{label state /}</span>{input state onchange=>"changeState(this.value)", class=>"form-control"}
                 {input send}
             {/form}
         </div>
@@ -118,10 +77,10 @@
         onlyWithCheckbox("sel", "selDependend");
     });
     function changeYear(val) {
-        $.post({link changeYear!}, { year: val});
+        $.nette.ajax({ url: {link changeYear!}+"&year="+val});
     }
     function changeState(val) {
-        $.post({link changeState!}, { state: val});
+        $.nette.ajax({ url: {link changeState!}+"&state="+val});
     }
 
     Nette.validators.MyValidators_isValidDate = function(elem, args, val) {
@@ -130,17 +89,6 @@
 
         return match == null ? false : true;
     };
-
-
-//            
-//    Nette.validators.isValidDate = function(elem, args, val) {
-//        alert("s");
-//        console.log(elem);
-//        console.log(args);
-//        console.log(val);
-//        return false;
-////        return val % args === 0;
-//    };
-
+    
 </script>
 

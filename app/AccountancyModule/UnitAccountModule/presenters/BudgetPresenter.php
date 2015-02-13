@@ -21,7 +21,7 @@ class BudgetPresenter extends BasePresenter {
     }
 
     protected function createComponentAddCategoryForm($name) {
-        $form = new Form($this, $name); // required for full running
+        $form = $this->prepareForm($this, $name); // required for full running
         $form->addText("label", "Název")
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Vyplňte název kategorie");

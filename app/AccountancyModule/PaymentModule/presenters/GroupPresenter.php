@@ -73,7 +73,7 @@ class GroupPresenter extends BasePresenter {
     }
 
     public function createComponentGroupForm($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addText("label", "Název")
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte zadat název skupiny");

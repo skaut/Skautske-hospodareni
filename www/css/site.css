@@ -268,3 +268,8 @@ footer {
 .nowrap {
     white-space:nowrap;
 }
+
+form.functions {
+    float:right;
+    margin-left:7px;
+}

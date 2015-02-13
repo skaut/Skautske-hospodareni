@@ -101,7 +101,7 @@ class ChitPresenter extends BasePresenter {
 
     protected function createComponentBudgetCategoryForm($name) {
         $categories = $this->context->budgetService->getCategoriesLeaf($this->aid);
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         foreach ($this->chits as $chType) {
             foreach ($chType as $chGrp) {
                 foreach ($chGrp as $ch) {

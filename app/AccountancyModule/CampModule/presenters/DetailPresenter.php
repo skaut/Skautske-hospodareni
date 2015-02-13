@@ -49,7 +49,7 @@ class DetailPresenter extends BasePresenter {
     }
 
     function createComponentFormEdit($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addProtection();
         $form->addText("prefix", "Prefix", NULL, 6);
         $form->addHidden("aid");
@@ -76,9 +76,9 @@ class DetailPresenter extends BasePresenter {
     }
 
     function createComponentFormAddFunction($name) {
-        $combo = $this->context->memberService->getCombobox(FALSE, TRUE);
+        $combo = $this->context->memberService->getCombobox(FALSE, 18);
 
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addSelect("person", NULL, $combo)
                 ->setPrompt("Vyber")
                 ->getControlPrototype()->setAttribute("class", "combobox");

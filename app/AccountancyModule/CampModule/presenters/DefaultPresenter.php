@@ -71,7 +71,7 @@ class DefaultPresenter extends BasePresenter {
             $years[$y] = $y;
         }
 
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')

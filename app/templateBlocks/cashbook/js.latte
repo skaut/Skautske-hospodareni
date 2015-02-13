@@ -82,7 +82,7 @@
                         textPlace.html('');
                     } else {
                         val = val.replace(/,/g,'.').replace("(", "").replace(")", "");
-                        textPlace.html(eval(val).toFixed(2) +' =');
+                        textPlace.html(eval(val).toFixed(0));
                     }
                 }
             )

@@ -1,5 +1,6 @@
 $(document).ready(function () {
 
+    //nette.ajax.js
     $.nette.init();
 
     //Combobox

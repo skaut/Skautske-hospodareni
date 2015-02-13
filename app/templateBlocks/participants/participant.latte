@@ -31,24 +31,24 @@ $isAllowIsAccount
                                     <td></td>
                                     <td><b>Upravit?</b></td>
                                 </tr>
-                                <tr>
+                                <tr class="form-group">
                                     <td>{label days class=>"ca" /}</td>
-                                    <td>{input days style=>"width:40px"}</td>
+                                    <td>{input days class=>"form-control", style=>"width:60px"}</td>
                                     <td class="ct">{input daysc}</td>
                                 </tr>
-                                <tr>
+                                <tr class="form-group">
                                     <td>{label payment /}</td>
-                                    <td>{input payment style=>"width:40px"}</td>
+                                    <td>{input payment class=>"form-control", style=>"width:60px"}</td>
                                     <td class="ct">{input paymentc}</td>
                                 </tr>
-                                <tr n:if="$isAllowRepayment">
+                                <tr class="form-group" n:if="$isAllowRepayment">
                                     <td>{label repayment /}</td>
-                                    <td>{input repayment style=>"width:40px"}</td>
+                                    <td>{input repayment class=>"form-control", style=>"width:60px"}</td>
                                     <td class="ct">{input repaymentc}</td>
                                 </tr>
-                                <tr n:if="$isAllowIsAccount">
+                                <tr class="form-group" n:if="$isAllowIsAccount">
                                     <td>{label isAccount /}</td>
-                                    <td>{input isAccount}</td>
+                                    <td>{input isAccount class=>"form-control"}</td>
                                     <td style="text-align: center;">{input isAccountc}</td>
                                 </tr>
                                 <tr>
@@ -76,7 +76,7 @@ $isAllowIsAccount
                 {/if}
             </div>
 
-            <table id="participants-list" class="table table-striped table-bordered">
+            <table id="participants-list" class="table table-striped table-condensed table-bordered">
                 <thead class="onlyWithParticipants">
                     <tr>
                         <th>Příjmení a jméno ({= count($participants)})</th>
@@ -102,13 +102,13 @@ $isAllowIsAccount
                     {if !empty($participants)}
                         <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
                             {? $participantsNames[] = $p->Person}
-                            <td>{$p->Person}</td>
+                            <td><label for="massParticipants-{$p->ID}">{$p->Person}</label></td>
                             <td class="r"><a n:tag-if="$isAllowParticipantUpdate" id="par-days-{$p->ID}" class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}">{$p->Days}</a></td>
                             <td class="r"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-payment-{$p->ID}" class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->payment) && $p->payment != ""}{$p->payment|price:false}{? $totalPayment += $p->payment}{else}0{/if}</a></td>
                             <td n:if="$isAllowRepayment"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-repayment-{$p->ID}" class="num-edit" data-type='repayment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->repayment) && $p->repayment != ""}{$p->repayment|price:false}{? $totalRepayment += $p->repayment}{else}0{/if}</a></td>
                             <td n:if="$isAllowIsAccount">{ifset $p->isAccount}{$p->isAccount == 'Y' ? 'Ano'}{/ifset}</td>
                             <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="r">
-                                <a n:if="$isAllowParticipantDelete" n:href="remove! $p->ID" class="btn btn-danger btn-sm ajax"><i class="glyphicon glyphicon-remove"></i></a>
+                                <a n:if="$isAllowParticipantDelete" n:href="remove! $p->ID" class="btn btn-danger btn-sm addRow"><i class="glyphicon glyphicon-remove"></i></a>
                                 <input type="checkbox" name="massParticipants[]" id="massParticipants-{$p->ID}" class="hidden-xs" value={$p->ID}/>
                             </td>
                         </tr>

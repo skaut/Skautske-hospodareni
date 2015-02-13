@@ -52,8 +52,8 @@ class MemberService extends BaseService {
      * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
      * @return array
      */
-    public function getCombobox($OnlyDirectMember = false, $adultOnly = false) {
-        return $this->getPairs($this->skautis->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $adultOnly);
+    public function getCombobox($OnlyDirectMember = FALSE, $ageLimit = NULL) {
+        return $this->getPairs($this->skautis->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $ageLimit);
     }
 
     /**
@@ -61,19 +61,19 @@ class MemberService extends BaseService {
      * @param array $data - vráceno z PersonAll
      * @return array 
      */
-    private function getPairs($data, $adultOnly = false) {
+    private function getPairs($data, $ageLimit = NULL) {
         $res = array();
         $now = new \DateTime();
         foreach ($data as $p) {
-            if($adultOnly){
+            if($ageLimit !=NULL){
                 $birth = new \DateTime($p->Birthday);
                 $interval = $now->diff($birth);
                 $diff = $interval->format("%y");
-                if ($diff < 18) {
+                if ($diff < $ageLimit) {
                     continue;
                 }
             }
-            $res[$p->ID] = $p->LastName . " " . $p->FirstName . ($adultOnly ? " (" . $diff . ")" : "");
+            $res[$p->ID] = $p->LastName . " " . $p->FirstName;// . ($age && $adultOnly ? " (" . $diff . ")" : "");
         }
         asort($res);
         return $res;

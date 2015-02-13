@@ -9,7 +9,7 @@ $list array() - pole paragonů
 *}
 {dump $list}
 {block #content}
-    <div class="col-sm-8">
+    <div {if $isEditable}class="col-sm-8"{/if}>
         <div n:snippet="paragony">
         {if $list}
         {form formMass}
@@ -49,7 +49,7 @@ $list array() - pole paragonů
                     {foreach $list as $item}
                         {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
                         <tr{if $balance < 0} class="alert alert-error"{/if}>
-                            <td class="nowrap hidden-xs hidden-sm">
+                            <td class="nowrap">
                                 <input type="checkbox" class="hidden-xs hidden-sm" name="chits[]" value={$item->id} />
                                 <a n:href="print $item->id, $aid" target="_blank" class="btn btn-xs btn-info hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i></a>
                                 <a n:if="$isEditable && is_null($item->lock)" n:href="edit $item->id, $aid" class="fancybox fancybox.ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>

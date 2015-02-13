@@ -169,7 +169,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function createComponentFormMassList($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addSubmit('send')
                 ->onClick[] = $this->{$name . 'Submitted'};
         return $form;
@@ -187,7 +187,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function createComponentFormMassParticipants($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addProtection();
 
         $editCon = $form->addContainer("edit");
@@ -253,7 +253,7 @@ class ParticipantPresenter extends BasePresenter {
      */
     function createComponentFormAddParticipantNew($name) {
         $aid = $this->presenter->aid;
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addText("firstName", "Jméno")
                 ->addRule(Form::FILLED, "Musíš vyplnit křestní jméno.");
         $form->addText("lastName", "Příjmení")

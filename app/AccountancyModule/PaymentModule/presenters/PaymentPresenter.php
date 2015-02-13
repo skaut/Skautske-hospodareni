@@ -114,7 +114,7 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function createComponentMassAddForm($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
         $form->addText("defaultAmount", "Částka:")
                 ->setAttribute('class', 'form-control input-sm');
@@ -301,7 +301,7 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function createComponentPaymentForm($name) {
-        $form = new Form($this, $name);
+        $form = $this->prepareForm($this, $name);
         $form->addText("name", "Název/účel")
                 ->setAttribute('class', 'form-control')
                 ->addRule(Form::FILLED, "Musíte zadat název platby");
