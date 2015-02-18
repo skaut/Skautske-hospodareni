@@ -24,6 +24,7 @@ class BaseTable {
     const TABLE_PA_PAYMENT_STATE = 'pa_payment_state';
     const TABLE_PA_BANK = 'pa_bank';
     const TABLE_PA_SMTP = 'pa_smtp';
+    const TABLE_PA_GROUP_SMTP = 'pa_group_smtp';
 
     /**
      *

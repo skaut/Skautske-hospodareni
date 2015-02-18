@@ -1,0 +1,42 @@
+
+{block #content}
+<h2 n:block="title">Nastavení emailů</h2>
+{include ../ActionMenu.latte}
+{dump $list}
+
+
+<div class="row">
+    <div class="alert alert-warning" role="alert"><i class="glyphicon glyphicon-exclamation-sign"></i>
+        Hesla účtů jsou uchovávána v čitelné podobě, proto sem nikdy neukládejte osobní email, ale pouze email vytvoření pouze za tímto účelem!
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-7">
+        <h3>Seznam SMTP účtů jednotky</h3>
+        <table class="table table-bordered table-striped table-condensed">
+            <tr>
+                <th>&nbsp;</th>
+                <th>Uživatelské jméno</th>
+                <th>Host</th>
+                <th>Zabezpečení</th>
+            </tr>
+            <tr n:foreach="$list as $l">
+                <td>
+                    {*}<a n:href="detail $l->id" class="btn btn-sm btn-primary">Detail</a>{*}
+                    {*}<a n:href="edit! $l->id" class="btn btn-primary">Upravit</a>{*}
+                    <a n:href="remove! $l->id" class="btn btn-danger">Smazat</a>
+                </td>
+                <td>{$l->username}</td>
+                <td>{$l->host}</td>
+                <td>{$l->secure}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-md-5">
+        <h3>Přidat nový SMTP účet</h3>
+        <div class="well well-sm">
+            {control formCreate}
+        </div>
+    </div>
+</div>

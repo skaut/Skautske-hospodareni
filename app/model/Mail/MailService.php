@@ -19,9 +19,22 @@ class MailService extends BaseService {
         $this->sendEmail = $sendEmail;
     }
 
-    private function send(Message $mail, $unitId = NULL) {
+    protected function getSmtpMailer($groupId) {
+        $data = $this->getSmtpByGroup($groupId);
+        if ($data != NULL) {
+            return new \Nette\Mail\SmtpMailer(array(
+                'host' => $data['host'],
+                'username' => $data['username'],
+                'password' => $data['password'],
+                'secure' => $data['secure'],
+            ));
+        }
+        return FALSE;
+    }
+
+    private function send(Message $mail, $groupId = NULL) {
         if ($this->sendEmail) {
-            if ($unitId !== NULL && ($smtpMailer = $this->getSmtpMailer($unitId))) {
+            if ($groupId !== NULL && ($smtpMailer = $this->getSmtpMailer($groupId))) {
                 $mailer = $smtpMailer;
             } else {
                 $mailer = new SendmailMailer();
@@ -33,8 +46,47 @@ class MailService extends BaseService {
             die();
         }
     }
+    
+    //SMTP
 
-    public function sendPaymentInfo(\Nette\Application\UI\ITemplate $template, $to, $subject, $body, $unitId = NULL) {
+    public function get($id) {
+        return $this->table->get($id);
+    }
+    
+    public function getAll($unitId) {
+        return $this->table->getAll($unitId);
+    }
+    
+    public function getPairs($unitId) {
+        return $this->table->getPairs($unitId);
+    }
+    
+    public function getSmtpByGroup($groupId){
+        return $this->table->getSmtpByGroup($groupId);
+    }
+
+    public function addSmtp($unitId, $host, $username, $password, $secure = "ssl") {
+        return $this->table->addSmtp($unitId, $host, $username, $password, $secure);
+    }
+
+    public function removeSmtp($unitId, $id) {
+        return $this->table->removeSmtp($unitId, $id);
+    }
+
+    public function updateSmtp($unitId, $id, $data) {
+        return $this->table->updateSmtp($unitId, $id, $data);
+    }
+    
+    //SMTP GROUP
+    
+    public function addSmtpGroup($groupId, $smtpId){
+        return $this->table->addSmtpGroup($groupId, $smtpId);
+    }
+
+
+    //Odesílání emailů
+    
+    public function sendPaymentInfo(\Nette\Application\UI\ITemplate $template, $to, $subject, $body, $groupId = NULL) {
         $template->setFile(dirname(__FILE__) . "/mail.base.latte");
         $template->body = $body;
         $mail = new Message;
@@ -42,24 +94,7 @@ class MailService extends BaseService {
                 ->addTo($to)
                 ->setSubject($subject)
                 ->setHtmlBody($template);
-        return $this->send($mail, $unitId);
-    }
-
-    protected function getSmtpMailer($unitId) {
-        if (!is_array($unitId)) {
-            $unitId = array($unitId);
-        }
-
-        $data = $this->table->getSmtp($unitId);
-        if ($data != NULL) {
-            return new \Nette\Mail\SmtpMailer(array(
-                'host' => $data['host'],
-                'username' => $data['username'],
-                'password' => $data['password'],
-                'secure' => $data['secure'],
-            ));
-        }
-        return FALSE;
+        return $this->send($mail, $groupId);
     }
 
 }
