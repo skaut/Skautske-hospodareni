@@ -9,8 +9,9 @@
         <a n:href="this !$onlyOpen" class="btn btn-info">Zobrazit {if $onlyOpen}i uzavřené skupiny{else}pouze otevřené{/if}</a>
         {if $isEditable}
             <a n:href="Group:" class="btn btn-primary"><i class="glyphicon  glyphicon glyphicon-plus-sign"></i> Založit skupinu plateb</a>
-            <a n:href="pairPayments!" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>
+            {*}<a n:href="pairPayments!" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>{*}
             <a n:href="Bank:" class="btn btn-primary"><i class="glyphicon glyphicon-book"></i> Bankovní účet</a>
+            <a n:href="Mail:" class="btn btn-primary"><i class="glyphicon glyphicon-envelope"></i> Emaily</a>
         {/if}
     </div>
 </div>

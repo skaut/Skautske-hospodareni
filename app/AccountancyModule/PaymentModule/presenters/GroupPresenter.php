@@ -10,15 +10,25 @@ use Nette\Application\UI\Form;
 class GroupPresenter extends BasePresenter {
 
     /**
-     *
      * @var \Model\PaymentService
      */
     protected $model;
+
+    /**
+     * @var \Model\MailService
+     */
+    protected $mail;
+
+    /**
+     * výchozí text emailů
+     * @var array
+     */
     protected $defaultEmails;
 
-    public function __construct(\Model\PaymentService $paymentService) {
+    public function __construct(\Model\PaymentService $paymentService, \Model\MailService $mailService) {
         parent::__construct($paymentService);
         $this->model = $paymentService;
+        $this->mail = $mailService;
     }
 
     protected function startup() {
@@ -48,11 +58,13 @@ class GroupPresenter extends BasePresenter {
             $this->template->linkBack = $this->link("Default:");
         } else {//EDIT
             $this->template->group = $group = $this->model->getGroup($this->aid, $id);
+            $smtp = $this->mail->getSmtpByGroup($id);
             $form->setDefaults(array(
                 "label" => $group->label,
                 "amount" => $group->amount,
                 "maturity" => $group->maturity,
                 "ks" => $group->ks,
+                "smtp"=> isset($smtp->id) ? $smtp->id : NULL,
                 "email_info" => $group->email_info,
                 "email_demand" => $group->email_demand,
                 "gid" => $group->id,
@@ -87,6 +99,8 @@ class GroupPresenter extends BasePresenter {
                 ->setAttribute("class", "form-control")
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
+        $form->addSelect("smtp", "Odesílací email", $this->mail->getPairs($this->aid))
+                ->setPrompt(\Model\MailService::EMAIL_SENDER);
         $form->addTextArea("email_info", "Informační email", NULL, 6)
                 ->setAttribute("class", "form-control")
                 ->setDefaultValue($this->defaultEmails['base']['info']);
@@ -105,14 +119,17 @@ class GroupPresenter extends BasePresenter {
         }
         $v = $form->getValues();
         if ($v->gid != "") {//EDIT
-            if ($this->model->updateGroup($v->gid, array(
-                        "label" => $v->label,
-                        "amount" => $v->amount != "" ? $v->amount : NULL,
-                        "maturity" => $v->maturity,
-                        "ks" => $v->ks != "" ? $v->ks : NULL,
-                        "email_info" => $v->email_info,
-                        "email_demand" => $v->email_demand,
-                    ))) {
+            $groupId = $v->gid;
+            $isUpdate = $this->model->updateGroup($v->gid, array(
+                "label" => $v->label,
+                "amount" => $v->amount != "" ? $v->amount : NULL,
+                "maturity" => $v->maturity,
+                "ks" => $v->ks != "" ? $v->ks : NULL,
+                "email_info" => $v->email_info,
+                "email_demand" => $v->email_demand,
+            ));
+            $isUpdate = $this->mail->addSmtpGroup($groupId, $v->smtp) || $isUpdate;
+            if ($isUpdate) {
                 $this->flashMessage("Skupina byla upravena");
             } else {
                 $this->flashMessage("Skupina nebyla změněna!", "warning");
@@ -120,6 +137,7 @@ class GroupPresenter extends BasePresenter {
             $this->redirect("Payment:detail", array("id" => $v->gid));
         } else {//ADD
             if (($groupId = $this->model->createGroup($this->aid, NULL, NULL, $v->label, $v->maturity, $v->ks, $v->amount, $v->email_info, $v->email_demand))) {
+                $this->mail->addSmtpGroup($groupId, $v->smtp);
                 $this->flashMessage("Skupina byla založena");
                 $this->redirect("Payment:detail", array("id" => $groupId));
             } else {
