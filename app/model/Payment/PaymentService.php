@@ -72,12 +72,20 @@ class PaymentService extends BaseService {
         return $this->table->update($pid, $arr);
     }
 
+    public function cancelPayment($pid) {
+        return $this->update($pid, array("state" => "canceled", "dateClosed" => date("Y-m-d H:i:s")));
+    }
+
+    public function completePayment($pid, $transactionId = NULL) {
+        return $this->update($pid, array("state" => "completed", "dateClosed" => date("Y-m-d H:i:s"), "transactionId" => $transactionId));
+    }
+
     /**
      * seznam stavů, které jsou nedokončené
      * @return array
      */
     public function getNonFinalStates() {
-        return array(PaymentTable::PAYMENT_STATE_PREPARING, PaymentTable::PAYMENT_STATE_SEND);
+        return $this->table->getNonFinalStates();
     }
 
     /**
@@ -127,7 +135,7 @@ class PaymentService extends BaseService {
 
         //$base64 = 'data:image/png;base64,' . base64_encode(file_get_contents("http://api.paylibo.com/paylibo/generator/czech/image?" . http_build_query($params)));
         //$qrcode = '<img alt="QR platba" src="' . $base64 . '"/>';
-        
+
         $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params) . '"/>';
         $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $payment->name, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info);
         if ($this->mailService->sendPaymentInfo($template, $payment->email, "Informace o platbě", $body, $payment->groupId)) {

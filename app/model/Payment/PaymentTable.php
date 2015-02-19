@@ -62,9 +62,17 @@ class PaymentTable extends BaseTable {
     public function update($paymentId, $arr, $notClosed = TRUE) {
         $q = $this->connection->update(self::TABLE_PA_PAYMENT, $arr)->where("id=%i", $paymentId);
         if ($notClosed) {
-            $q->where("state in %in", array(self::PAYMENT_STATE_PREPARING, self::PAYMENT_STATE_SEND));
+            $q->where("state in %in", $this->getNonFinalStates());
         }
         return $q->execute();
+    }
+
+    /**
+     * seznam stavů, které jsou nedokončené
+     * @return array
+     */
+    public function getNonFinalStates() {
+        return array(self::PAYMENT_STATE_PREPARING, self::PAYMENT_STATE_SEND);
     }
 
     /**
@@ -85,9 +93,9 @@ class PaymentTable extends BaseTable {
      */
     public function getGroups($unitId, $onlyOpen) {
         return $this->connection->query("SELECT * FROM [" . self::TABLE_PA_GROUP . "]"
-                . " WHERE unitId IN %in ", !is_array($unitId) ? array($unitId) : $unitId, " AND state", "%if ", $onlyOpen, "='open' %else !='canceled' %end"
-                . " ORDER BY id DESC")
-                ->fetchAssoc("id");
+                                . " WHERE unitId IN %in ", !is_array($unitId) ? array($unitId) : $unitId, " AND state", "%if ", $onlyOpen, "='open' %else !='canceled' %end"
+                                . " ORDER BY id DESC")
+                        ->fetchAssoc("id");
     }
 
     /**
@@ -112,7 +120,7 @@ class PaymentTable extends BaseTable {
     /**
      * 
      * @param type $pa_groupId
-     * @return type
+     * @return array
      */
     public function summarizeByState($pa_groupId) {
         return $this->connection->query("SELECT s.label, SUM(amount) as amount, COUNT(p.id) as count FROM [" . self::TABLE_PA_PAYMENT . "] p"

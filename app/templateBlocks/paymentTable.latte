@@ -55,6 +55,7 @@ $isEditable
                         {/if}
                     <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="glyphicon glyphicon-check"></i></a> 
                     <a n:href="cancel! $l->id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete zrušit platbu?');" title="Zrušit"><i class="glyphicon glyphicon-remove"></i></a>
+                {elseif $l->dateClosed !== NULL} <span title="Datum uzavření platby">{$l->dateClosed|date:'j.n.Y'}</span> {if $l->transactionId}<span title="Číslo platby na účtu">({$l->transactionId})</span>{/if}
                 {else}&nbsp;{/if}
             </td>
         </tr>

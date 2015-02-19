@@ -43,7 +43,7 @@ class BankService extends BaseService {
         foreach ($this->filterVS($transactions) as $t) {
             foreach ($payments as $p) {
                 if ($t['vs'] == $p['vs'] && $t['amount'] == $p['amount']) {
-                    $cnt += $ps->update($p->id, array("state" => "completed", "transactionId" => $t['id']));
+                    $cnt += $ps->completePayment($p->id, $t['id']);
                 }
             }
         }

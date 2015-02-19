@@ -186,7 +186,7 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Platba pro zrušení nebyla nalezena!", "danger");
             $this->redirect("this");
         }
-        if ($this->model->update($pid, array("state" => "canceled"))) {
+        if ($this->model->cancelPayment($pid)) {
             $this->flashMessage("Platba byla zrušena.");
         } else {
             $this->flashMessage("Platbu se nepodařilo zrušit!", "danger");
@@ -271,7 +271,7 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Nejste oprávněni k uzavření platby!", "danger");
             $this->redirect("this");
         }
-        if ($this->model->update($pid, array("state" => "completed"))) {
+        if ($this->model->completePayment($pid)) {
             $this->flashMessage("Platba byla zaplacena.");
         } else {
             $this->flashMessage("Platbu se nepodařilo uzavřít!", "danger");
@@ -279,8 +279,8 @@ class PaymentPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function handlePairPayments($gid = NULL) {
-        if ($gid !== NULL && !$this->isEditable) {
+    public function handlePairPayments($gid) {
+        if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
             $this->redirect("this");
         }
