@@ -10,6 +10,25 @@ use Nette\Application\UI\Form,
  * akce
  */
 class EventPresenter extends BasePresenter {
+    
+    /**
+     *
+     * @var \Model\ExportService
+     */
+    protected $exportService;
+    
+    /**
+     *
+     * @var \Model\MemberService
+     */
+    protected $memberService;
+
+
+    public function __construct(\Model\ExportService $export, \Model\MemberService $member) {
+        parent::__construct();
+        $this->exportService = $export;
+        $this->memberService = $member;
+    }
 
     public function renderDefault($aid, $funcEdit = FALSE) {
         if ($aid == NULL) {
@@ -19,7 +38,7 @@ class EventPresenter extends BasePresenter {
         $func = false;
 
         if ($this->isAllowed("EV_EventFunction_ALL_EventGeneral")) {
-            $func = $this->context->eventService->event->getFunctions($aid);
+            $func = $this->eventService->event->getFunctions($aid);
         }
 
         $accessEditBase = $this->isAllowed("EV_EventGeneral_UPDATE");
@@ -43,7 +62,7 @@ class EventPresenter extends BasePresenter {
 
         $this->template->funkce = $func;
         $this->template->funcEdit = $funcEdit;
-        $this->template->statistic = $this->context->eventService->participants->getEventStatistic($this->aid);
+        $this->template->statistic = $this->eventService->participants->getEventStatistic($this->aid);
         $this->template->accessFunctionUpdate = $this->isAllowed("EV_EventGeneral_UPDATE_Function");
         $this->template->accessEditBase = $accessEditBase;
         $this->template->accessCloseEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Close");
@@ -60,7 +79,7 @@ class EventPresenter extends BasePresenter {
             $this->flashMessage("Nemáte právo otevřít akci", "warning");
             $this->redirect("this");
         }
-        $this->context->eventService->event->open($aid);
+        $this->eventService->event->open($aid);
         $this->flashMessage("Akce byla znovu otevřena.");
         $this->redirect("this");
     }
@@ -70,8 +89,8 @@ class EventPresenter extends BasePresenter {
             $this->flashMessage("Nemáte právo akci uzavřít", "warning");
             $this->redirect("this");
         }
-        if ($this->context->eventService->event->isCloseable($aid)) {
-            $this->context->eventService->event->close($aid);
+        if ($this->eventService->event->isCloseable($aid)) {
+            $this->eventService->event->close($aid);
             $this->flashMessage("Akce byla uzavřena.");
         } else {
             $this->flashMessage("Před uzavřením akce musí být vyplněn vedoucí akce", "danger");
@@ -80,14 +99,14 @@ class EventPresenter extends BasePresenter {
     }
 
     public function handleActivateStatistic() {
-        $this->context->eventService->participants->activateEventStatistic($this->aid);
+        $this->eventService->participants->activateEventStatistic($this->aid);
         //flash message?
         $this->redirect('this', array("aid" => $this->aid));
     }
 
 //    public function actionAddFunction($aid, $fid) {
 //        $form = $this['formAddFunction'];
-//        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
+//        $form['person']->setItems($this->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
 //        $form->setDefaults(array(
 //            "aid" => $aid,
 //            "fid" => $fid,
@@ -95,9 +114,9 @@ class EventPresenter extends BasePresenter {
 //    }
 //    public function actionEditFunction($aid, $fid) {
 //        $this->template->setFile(dirname(__FILE__) . "/../templates/Event/addFunction.latte");
-//        $func = $this->context->eventService->event->getFunctions($aid);
+//        $func = $this->eventService->event->getFunctions($aid);
 //        $form = $this['formAddFunction'];
-//        $form['person']->setItems($this->context->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
+//        $form['person']->setItems($this->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
 //        $form->setDefaults(array(
 //            "aid" => $aid,
 //            "person" => array_key_exists($func[$fid]->ID_Person, $form['person']->getItems()) ? $func[$fid]->ID_Person : NULL,
@@ -106,15 +125,15 @@ class EventPresenter extends BasePresenter {
 //    }
 
     public function actionPrintAll($aid) {
-        $chits = (array) $this->context->eventService->chits->getAll($this->aid);
+        $chits = (array) $this->eventService->chits->getAll($this->aid);
 
-        $template = (string) $this->context->exportService->getEventReport($this->createTemplate(), $aid, $this->context->eventService) . $this->context->exportService->getNewPage();
-        $template .= (string) $this->context->exportService->getParticipants($this->createTemplate(), $aid, $this->context->eventService) . $this->context->exportService->getNewPage();
-//        $template .= (string)$this->context->exportService->getHpd($this->createTemplate(), $aid, $this->context->eventService, $this->context->unitService) . $this->context->exportService->getNewPage();
-        $template .= (string) $this->context->exportService->getCashbook($this->createTemplate(), $aid, $this->context->eventService) . $this->context->exportService->getNewPage();
-        $template .= (string) $this->context->exportService->getChits($this->createTemplate(), $aid, $this->context->eventService, $this->context->unitService, $chits);
+        $template = (string) $this->exportService->getEventReport($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
+        $template .= (string) $this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
+//        $template .= (string)$this->exportService->getHpd($this->createTemplate(), $aid, $this->eventService, $this->unitService) . $this->exportService->getNewPage();
+        $template .= (string) $this->exportService->getCashbook($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
+        $template .= (string) $this->exportService->getChits($this->createTemplate(), $aid, $this->eventService, $this->unitService, $chits);
 
-        $this->context->eventService->participants->makePdf($template, "all.pdf");
+        $this->eventService->participants->makePdf($template, "all.pdf");
         $this->terminate();
     }
 
@@ -124,7 +143,7 @@ class EventPresenter extends BasePresenter {
             $this->redirect("this");
         }
 
-        if (!$this->context->eventService->event->setFunction($this->aid, NULL, $fid)) {
+        if (!$this->eventService->event->setFunction($this->aid, NULL, $fid)) {
             $this->flashMessage("Funkci se nepodařilo odebrat", "danger");
         }
         $this->redirect("this");
@@ -135,22 +154,22 @@ class EventPresenter extends BasePresenter {
             $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
             $this->redirect("default", array("aid" => $aid));
         }
-        $template = $this->context->exportService->getEventReport($this->createTemplate(), $aid, $this->context->eventService);
+        $template = $this->exportService->getEventReport($this->createTemplate(), $aid, $this->eventService);
 
-        $this->context->eventService->participants->makePdf($template, "report.pdf");
+        $this->eventService->participants->makePdf($template, "report.pdf");
         $this->terminate();
     }
 
     function createComponentFormEdit($name) {
-//        $combo = $this->context->memberService->getCombobox(NULL, TRUE);
+//        $combo = $this->memberService->getCombobox(NULL, TRUE);
         $form = $this->prepareForm($this, $name);
         $form->addProtection();
         $form->addText("name", "Název akce");
         $form->addDatePicker("start", "Od")->addRule(Form::FILLED, "Musíte zadat datum začátku akce");
         $form->addDatePicker("end", "Do")->addRule(Form::FILLED, "Musíte zadat datum konce akce");
         $form->addText("location", "Místo");
-        $form->addSelect("type", "Typ (+)", $this->context->eventService->event->getTypes());
-        $form->addSelect("scope", "Rozsah (+)", $this->context->eventService->event->getScopes());
+        $form->addSelect("type", "Typ (+)", $this->eventService->event->getTypes());
+        $form->addSelect("scope", "Rozsah (+)", $this->eventService->event->getScopes());
         $form->addText("prefix", "Prefix", NULL, 6);
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
@@ -168,7 +187,7 @@ class EventPresenter extends BasePresenter {
         $values['start'] = $values['start']->format("Y-m-d");
         $values['end'] = $values['end']->format("Y-m-d");
 
-        $id = $this->context->eventService->event->update($values);
+        $id = $this->eventService->event->update($values);
 
         if ($id) {
             $this->flashMessage("Základní údaje byly upraveny.");
@@ -194,8 +213,8 @@ class EventPresenter extends BasePresenter {
     protected function prepareFunctionForm($name, $fid, $ageLimit = NULL) {
         $form = $this->prepareForm($this, $name);
         $form->getElementPrototype()->setClass("form-inline");
-        $func = $this->context->eventService->event->getFunctions($this->aid);
-        $combo = $this->context->memberService->getCombobox(FALSE, $ageLimit);
+        $func = $this->eventService->event->getFunctions($this->aid);
+        $combo = $this->memberService->getCombobox(FALSE, $ageLimit);
         $form->addSelect("person", NULL, $combo)
                 ->setPrompt("")
                 ->setDefaultValue(array_key_exists($func[$fid]->ID_Person, $combo) ? $func[$fid]->ID_Person : NULL);
@@ -215,7 +234,7 @@ class EventPresenter extends BasePresenter {
         $values = $form->getValues();
 
         try {
-            $id = $this->context->eventService->event->setFunction($values['aid'], $values['person'], $values['fid']);
+            $id = $this->eventService->event->setFunction($values['aid'], $values['person'], $values['fid']);
         } catch (\SkautIS\Exception\PermissionException $exc) {
             $this->flashMessage($exc->getMessage(), "danger");
             $this->redirect("default", array("aid" => $this->aid));

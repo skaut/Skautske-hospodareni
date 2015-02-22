@@ -27,6 +27,31 @@ class ParticipantPresenter extends BasePresenter {
     protected $isAllowRepayment;
     protected $isAllowIsAccount;
 
+    /**
+     *
+     * @var \Model\MemberService
+     */
+    protected $memberService;
+
+    /**
+     *
+     * @var \Model\ExportService
+     */
+    protected $exportService;
+
+    /**
+     *
+     * @var \Model\ExcelService
+     */
+    protected $excelService;
+
+    public function __construct(\Model\MemberService $member, \Model\ExportService $export, \Model\ExcelService $excel) {
+        parent::__construct();
+        $this->memberService = $member;
+        $this->exportService = $export;
+        $this->excelService = $excel;
+    }
+
     function startup() {
         parent::startup();
 
@@ -58,8 +83,8 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Event:");
         }
 
-        $participants = $this->context->eventService->participants->getAll($this->aid);
-        $list = $disablePersons ? array() : $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        $participants = $this->eventService->participants->getAll($this->aid);
+        $list = $disablePersons ? array() : $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
 //        usort($participants, function($a, $b) {/* setrizeni podle abecedy */
 //                    return strcasecmp($a->Person, $b->Person);
@@ -68,9 +93,9 @@ class ParticipantPresenter extends BasePresenter {
 
         $this->template->participants = $participants;
         $this->template->list = $list;
-        $this->template->unit = $unit = $this->context->unitService->getDetail($this->uid);
-        $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
-        $this->template->uchildrens = $this->context->unitService->getChild($unit->ID);
+        $this->template->unit = $unit = $this->unitService->getDetail($this->uid);
+        $this->template->uparrent = $this->unitService->getParrent($unit->ID);
+        $this->template->uchildrens = $this->unitService->getChild($unit->ID);
 
 //        $this->template->accessDeleteParticipant = $this->isAllowed("EV_ParticipantGeneral_DELETE_EventGeneral");
 //        $this->template->accessUpdateParticipant = $this->isAllowed("EV_ParticipantGeneral_UPDATE_EventGeneral");
@@ -90,32 +115,32 @@ class ParticipantPresenter extends BasePresenter {
             }
         }
 
-        $oldData = $this->context->eventService->participants->get($id);
+        $oldData = $this->eventService->participants->get($id);
         if ($field == "days") {
             $arr = array(
                 "payment" => key_exists("payment", $oldData) ? $oldData['payment'] : 0,
                 "days" => $value,
             );
-            $this->context->eventService->participants->update($id, $arr);
+            $this->eventService->participants->update($id, $arr);
         } else if ($field == "payment") {
             $arr = array(
                 "payment" => $value,
                 "days" => key_exists("days", $oldData) ? $oldData['days'] : NULL,
             );
-            $this->context->eventService->participants->update($id, $arr);
+            $this->eventService->participants->update($id, $arr);
         }
         $this->payload->message = 'Success';
         $this->terminate();
     }
 
     public function actionExport($aid) {
-        $template = $this->context->exportService->getParticipants($this->createTemplate(), $aid, $this->context->eventService);
-        $this->context->eventService->participants->makePdf($template, "seznam-ucastniku.pdf");
+        $template = $this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService);
+        $this->eventService->participants->makePdf($template, "seznam-ucastniku.pdf");
         $this->terminate();
     }
 
     public function renderExportExcel($aid) {
-        $this->context->excelService->getParticipants($this->context->eventService, $this->event);
+        $this->excelService->getParticipants($this->eventService, $this->event);
         $this->terminate();
     }
 
@@ -128,7 +153,7 @@ class ParticipantPresenter extends BasePresenter {
                 $this->redirect("Default:");
             }
         }
-        $this->context->eventService->participants->removeParticipant($pid);
+        $this->eventService->participants->removeParticipant($pid);
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
@@ -147,7 +172,7 @@ class ParticipantPresenter extends BasePresenter {
                 $this->redirect("Default:");
             }
         }
-        $this->context->eventService->participants->add($this->aid, $pid);
+        $this->eventService->participants->add($this->aid, $pid);
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
@@ -181,7 +206,7 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massList[]') as $id) {
-            $this->context->eventService->participants->add($this->aid, $id);
+            $this->eventService->participants->add($this->aid, $id);
         }
         $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }
@@ -229,7 +254,7 @@ class ParticipantPresenter extends BasePresenter {
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $this->context->eventService->participants->update($id, $data);
+            $this->eventService->participants->update($id, $data);
         }
         $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }
@@ -241,7 +266,7 @@ class ParticipantPresenter extends BasePresenter {
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $this->context->eventService->participants->removeParticipant($id);
+            $this->eventService->participants->removeParticipant($id);
         }
         $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }
@@ -290,7 +315,7 @@ class ParticipantPresenter extends BasePresenter {
             "city" => $values['city'],
             "postcode" => $values['postcode'],
         );
-        $this->context->eventService->participants->addNew($aid, $person);
+        $this->eventService->participants->addNew($aid, $person);
         $this->redirect("this");
     }
 

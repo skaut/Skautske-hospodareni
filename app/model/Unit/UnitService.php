@@ -10,7 +10,7 @@ class UnitService extends BaseService {
     protected $oficialUnits = array("stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka");
 
     public function getUnitId() {
-        return $this->skautis->getUnitId();
+        return $this->skautis->getUser()->getUnitId();
     }
 
     /**

@@ -13,7 +13,7 @@ class RegistrationPresenter extends BasePresenter {
 
     protected function startup() {
         parent::startup();
-        $this->template->unitPairs = $this->readUnits = $units = $this->context->getService("unitService")->getReadUnits($this->user);
+        $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
     }
 
     public function actionMassAdd($id) {

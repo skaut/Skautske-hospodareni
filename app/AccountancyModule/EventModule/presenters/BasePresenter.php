@@ -15,22 +15,29 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     protected $event;
 
+    /**
+     *
+     * @var \Model\EventService
+     */
+    protected $eventService;
+
     protected function startup() {
         parent::startup();
+        $this->eventService = $this->context->getService("eventService");
         $this->isCamp = $this->template->isCamp = false;
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
 
         if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
-                $this->template->event = $this->event = $this->context->eventService->event->get($this->aid);
-                $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
+                $this->template->event = $this->event = $this->eventService->event->get($this->aid);
+                $this->availableActions = $this->userService->actionVerify(self::STable, $this->aid);
                 $this->template->isEditable = $this->isEditable = array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions);
             } catch (\SkautIS\Exception\PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Event:");
             }
         } else {
-            $this->availableActions = $this->context->userService->actionVerify(self::STable); //zjistení událostí nevázaných na konretnní akci
+            $this->availableActions = $this->userService->actionVerify(self::STable); //zjistení událostí nevázaných na konretnní akci
         }
     }
 

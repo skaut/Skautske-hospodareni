@@ -15,7 +15,7 @@ nette:
         autoStart: smart
         expiration: "+ 3 days"
     application:
-        #errorPresenter: App\Error
+        errorPresenter: Error
         #catchExceptions: true
         mapping:
             *: App\*Module\*Presenter
@@ -26,14 +26,14 @@ nette:
         maxLen: 500;
 
 extensions:
-    skautis: SkautIS\Nette\SkautisExtension22
+    skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
     
 
 services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory
-    - \Model\PaymentService(@skautis, @dibi.connection)
+    - \Model\PaymentService
     - \Model\MailService(NULL, @dibi.connection, %sendEmail%)
     - \Model\BankService(@cacheStorage, @dibi.connection)
     router: @App\RouterFactory::createRouter
@@ -41,25 +41,17 @@ services:
     #    class: DibiConnection
     #    factory: dibi::connect(%database%)
     #    run: TRUE
-    authService:
-        class: Model\AuthService(@skautis, @dibi.connection)
+    - \Model\AuthService
     eventService:
-        class: Model\EventEntity("General", "EventGeneral", @skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("General", "EventGeneral", @skautis.skautis, @cacheStorage, @dibi.connection)
     campService:
-        class: Model\EventEntity("Camp", "Camp", @skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("Camp", "Camp", @skautis.skautis, @cacheStorage, @dibi.connection)
     unitAccountService:
-        class: Model\EventEntity("Unit", "Unit", @skautis, @cacheStorage, @dibi.connection)
-    memberService:
-        class: Model\MemberService(@skautis, @dibi.connection)
-    unitService:
-        class: Model\UnitService(@skautis, @dibi.connection)
-    userService:
-        class: Model\UserService(@skautis, @dibi.connection)
-    travelService:
-        class: Model\TravelService(NULL, @dibi.connection)
-    exportService:
-        class: Model\ExportService(NULL, @dibi.connection)
-    excelService:
-        class: Model\ExcelService(NULL, @dibi.connection)
-    budgetService:
-        class: Model\BudgetService(NULL, @dibi.connection)
+        class: Model\EventEntity("Unit", "Unit", @skautis.skautis, @cacheStorage, @dibi.connection)
+    - \Model\MemberService
+    - \Model\UnitService
+    - \Model\UserService
+    - \Model\TravelService
+    - \Model\ExportService
+    - \Model\ExcelService
+    - \Model\BudgetService

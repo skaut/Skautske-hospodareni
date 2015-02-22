@@ -7,7 +7,6 @@ use Nette\Application\UI\Form,
 
 /**
  * @author Hána František <sinacek@gmail.com> 
- * účastníci
  */
 class ParticipantPresenter extends BasePresenter {
 
@@ -22,6 +21,30 @@ class ParticipantPresenter extends BasePresenter {
 
     protected $isAllowRepayment;
     protected $isAllowIsAccount;
+    
+    /**
+     *
+     * @var \Model\MemberService
+     */
+    protected $memberService;
+    /**
+     *
+     * @var \Model\ExportService
+     */
+    protected $exportService;
+    /**
+     *
+     * @var \Model\ExcelService
+     */
+    protected $excelService;
+
+
+    public function __construct(\Model\MemberService $member, \Model\ExportService $export, \Model\ExcelService $excel) {
+        parent::__construct();
+        $this->memberService = $member;
+        $this->exportService = $export;
+        $this->excelService = $excel;
+    }
 
     /**
      * číslo aktuální jendotky
@@ -51,21 +74,21 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
 
-        $participants = $this->context->campService->participants->getAll($this->aid);
-        $unit = $this->context->unitService->getDetail($this->uid);
-        $this->template->list = $this->context->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        $participants = $this->campService->participants->getAll($this->aid);
+        $unit = $this->unitService->getDetail($this->uid);
+        $this->template->list = $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
 
 //        if ($this->isAllowed(self::RULE_PARTICIPANTS_INSERT)) {
-//            $this->template->list = $this->context->campService->participants->getPotencialCampParticipants($aid);
+//            $this->template->list = $this->campService->participants->getPotencialCampParticipants($aid);
 //        }
 
         usort($participants, function ($a, $b) {
             return strcasecmp($a->Person, $b->Person);
         });
 
-        $this->template->uparrent = $this->context->unitService->getParrent($unit->ID);
+        $this->template->uparrent = $this->unitService->getParrent($unit->ID);
         $this->template->unit = $unit;
-        $this->template->uchildrens = $this->context->unitService->getChild($unit->ID);
+        $this->template->uchildrens = $this->unitService->getChild($unit->ID);
         $this->template->participants = $participants;
         $this->template->isAllowParticipantDelete = $this->isAllowed(self::RULE_PARTICIPANTS_DELETE);
         $this->template->isAllowParticipantDetail = $this->isAllowed(self::RULE_PARTICIPANTS_DETAIL);
@@ -97,7 +120,7 @@ class ParticipantPresenter extends BasePresenter {
             }
         }
         $data = array("actionId" => $aid);
-        $sisdata = (array) $this->context->campService->participants->get($id);
+        $sisdata = (array) $this->campService->participants->get($id);
         switch ($field) {
             case "days":
             case "payment":
@@ -110,7 +133,7 @@ class ParticipantPresenter extends BasePresenter {
                 $this->terminate();
                 break;
         }
-        $this->context->campService->participants->update($sisdata['ID'], $data);
+        $this->campService->participants->update($sisdata['ID'], $data);
 
         $this->payload->message = 'Success';
 //        $this->sendResponse(new \Nette\Http\Response());
@@ -119,9 +142,9 @@ class ParticipantPresenter extends BasePresenter {
 
     public function actionExport($aid) {
         try {
-            $template = $this->context->exportService->getParticipants($this->createTemplate(), $aid, $this->context->campService, "camp");
+            $template = $this->exportService->getParticipants($this->createTemplate(), $aid, $this->campService, "camp");
             //echo $template;die();
-            $this->context->campService->participants->makePdf($template, "seznam-ucastniku.pdf", true);
+            $this->campService->participants->makePdf($template, "seznam-ucastniku.pdf", true);
         } catch (\SkautIS\Exception\PermissionException $ex) {
             $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
             $this->redirect("default", array("aid" => $aid));
@@ -131,7 +154,7 @@ class ParticipantPresenter extends BasePresenter {
 
     public function actionExportExcel($aid) {
         try {
-            $this->context->excelService->getParticipants($this->context->campService, $this->event, "camp");
+            $this->excelService->getParticipants($this->campService, $this->event, "camp");
         } catch (\SkautIS\Exception\PermissionException $ex) {
             $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
             $this->redirect("default", array("aid" => $aid));
@@ -140,7 +163,7 @@ class ParticipantPresenter extends BasePresenter {
     }
 
     public function handleActivateAutocomputedParticipants($aid) {
-        $this->context->campService->event->activateAutocomputedParticipants($aid);
+        $this->campService->event->activateAutocomputedParticipants($aid);
         $this->flashMessage("Byl aktivován automatický výpočet seznamu osobodnů.");
         $this->redirect("this");
     }
@@ -150,7 +173,7 @@ class ParticipantPresenter extends BasePresenter {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
             $this->redirect("Default:");
         }
-        $this->context->campService->participants->removeParticipant($pid);
+        $this->campService->participants->removeParticipant($pid);
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
@@ -165,7 +188,7 @@ class ParticipantPresenter extends BasePresenter {
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
         }
-        $this->context->campService->participants->add($this->aid, $pid);
+        $this->campService->participants->add($this->aid, $pid);
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
@@ -208,7 +231,7 @@ class ParticipantPresenter extends BasePresenter {
 //        $values = $button->getForm()->getValues(TRUE);
 //        $values['repayment'] = $values['repayment'] != "" ? $values['repayment'] : 0;
 //        $values['actionId'] = $this->aid;
-//        $this->context->campService->participants->update($values['user'], $values);
+//        $this->campService->participants->update($values['user'], $values);
 //
 //        if ($this->isAjax()) {
 //            $this->flashMessage("Účastník byl upraven.");
@@ -233,7 +256,7 @@ class ParticipantPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massList[]') as $id) {
-            $this->context->campService->participants->add($this->aid, $id);
+            $this->campService->participants->add($this->aid, $id);
         }
         $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }
@@ -281,7 +304,7 @@ class ParticipantPresenter extends BasePresenter {
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $this->context->campService->participants->update($id, $data);
+            $this->campService->participants->update($id, $data);
         }
         $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }
@@ -293,7 +316,7 @@ class ParticipantPresenter extends BasePresenter {
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $this->context->campService->participants->removeParticipant($id);
+            $this->campService->participants->removeParticipant($id);
         }
         $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }
@@ -335,7 +358,7 @@ class ParticipantPresenter extends BasePresenter {
             "city" => $values['city'],
             "postcode" => $values['postcode'],
         );
-        $this->context->campService->participants->addNew($aid, $person);
+        $this->campService->participants->addNew($aid, $person);
         $this->redirect("this");
     }
 

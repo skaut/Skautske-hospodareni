@@ -15,24 +15,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     protected function startup() {
         parent::startup();
-
-        $this->template->unit = $this->unit = $this->context->unitService->getOficialUnit();
-
-
-//        $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
-//
-//        if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
-//            try {
-//                //$event = $this->context->eventService->event->get($this->aid);
-//                $this->availableActions = $this->context->userService->actionVerify(self::STable, $this->aid);
-//                $this->template->isEditable = $this->isEditable = $this->isAllowed("EV_EventGeneral_UPDATE");
-//            } catch (\SkautIS\Exception\PermissionException $exc) {
-//                $this->flashMessage($exc->getMessage(), "danger");
-//                $this->redirect("Event:");
-//            }
-//        } else {
-//            $this->availableActions = $this->context->userService->actionVerify(self::STable); //zjistení událostí nevázaných na konretnní akci
-//        }
+        $this->template->unit = $this->unit = $this->unitService->getOficialUnit();
     }
 
     protected function editableOnly() {
@@ -56,16 +39,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
         $router = new RouteList("Travel");
 
         $prefix .= "cestaky/";
-
-//        $router[] = new MyRoute($prefix . '<aid [0-9]+>/<presenter>/[<action>/]', array(
-//                    'presenter' => array(
-//                        Route::VALUE => 'Event',
-//                        Route::FILTER_TABLE => array(
-//                            'ucastnici' => 'Participant',
-//                            'kniha' => 'Cashbook',
-//                    )),
-//                    'action' => "default",
-//                ), Route::SECURED);
 
         $router[] = new MyRoute($prefix . '<presenter>/[<action>/][<id>/]', array(
             'presenter' => array(

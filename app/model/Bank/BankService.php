@@ -15,7 +15,7 @@ class BankService extends BaseService {
      */
     protected $cache;
 
-    public function __construct(\Nette\Caching\IStorage $storage, $connection = NULL) {
+    public function __construct(\Nette\Caching\IStorage $storage, \DibiConnection $connection = NULL) {
         parent::__construct(NULL, $connection);
         $this->cache = new \Nette\Caching\Cache($storage, __CLASS__);
     }

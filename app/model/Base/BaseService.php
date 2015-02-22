@@ -31,7 +31,7 @@ abstract class BaseService extends \Nette\Object {
 
     /**
      * slouží pro komunikaci se skautISem
-     * @var \SkautIS\SkautIS
+     * @var \Skautis\Skautis
      */
     protected $skautis;
 
@@ -53,14 +53,14 @@ abstract class BaseService extends \Nette\Object {
      */
     private static $storage = array();
 
-    public function __construct($skautis = NULL, $connection = NULL) {
+    public function __construct(\Skautis\Skautis $skautis = NULL, $connection = NULL) {
         $this->skautis = $skautis;
         $this->connection = $connection;
         
         preg_match("/^(?P<name>.*)Service/", get_class($this), $matches);
         $tableName = $matches['name'] . "Table";
         if (class_exists($tableName)) {
-            $this->table = new $tableName($connection);
+            $this->table = new $tableName($this->connection);
         }
     }
 

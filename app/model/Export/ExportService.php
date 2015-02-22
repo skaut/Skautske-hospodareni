@@ -94,7 +94,7 @@ class ExportService extends BaseService {
         $outcome = array();
         $activeHpd = FALSE;
         foreach ($chits as $c) {
-            if($c->cshort == "hpd"){
+            if ($c->cshort == "hpd") {
                 $activeHpd = TRUE;
             }
             switch ($c->ctype) {

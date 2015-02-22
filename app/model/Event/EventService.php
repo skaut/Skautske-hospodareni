@@ -163,12 +163,12 @@ class EventService extends MutableBaseService {
      * @param int $type typ akce
      * @return int|stdClass ID akce 
      */
-    public function create($name, $start, $end, $location = " ", $unit = NULL, $scope = NULL, $type = NULL) {
+    public function create($name, $start, $end, $location = NULL, $unit = NULL, $scope = NULL, $type = NULL) {
         $scope = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
         $type = $type !== NULL ? $type : 2; //2-vyprava
-        $unit = $unit !== NULL ? $unit : $this->skautis->getUnitId();
+        $unit = $unit !== NULL ? $unit : $this->skautis->getUser()->getUnitId();
 
-        $location = !empty($location) && $location != NULL ? $location : " ";
+        $location = !empty($location) && $location !== NULL ? $location : " ";
 
         $ret = $this->skautis->event->EventGeneralInsert(
                 array(

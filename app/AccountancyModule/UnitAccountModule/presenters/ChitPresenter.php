@@ -15,10 +15,21 @@ class ChitPresenter extends BasePresenter {
     /** @persistent */
     public $onlyUnlocked = 1;
 
+    /**
+     *
+     * @var \Model\BudgetService
+     */
+    protected $budgetService;
+
+    public function __construct(\Model\BudgetService $bs) {
+        parent::__construct();
+        $this->budgetService = $bs;
+    }
+
     protected function startup() {
         parent::startup();
         $this->template->onlyUnlocked = $this->onlyUnlocked;
-        $oficialUnit = $this->context->unitService->getOficialUnit($this->aid);
+        $oficialUnit = $this->unitService->getOficialUnit($this->aid);
         if ($oficialUnit->ID != $this->aid) {
             $this->flashMessage("Přehled paragonů je dostupný jen pro organizační jednotky.");
             $this->redirect("this", array("aid" => $oficialUnit->ID));
@@ -33,21 +44,24 @@ class ChitPresenter extends BasePresenter {
         foreach ($this->user->getIdentity()->access['edit'] as $ik => $iu) {
             $this->info['unit'][$ik] = (array) $iu;
         }
-        $this->info['event'] = $this->context->eventService->event->getAll($this->year);
-        $this->info['camp'] = $this->context->campService->event->getAll($this->year);
+        $eventService = $this->context->getService("eventService");
+        $campService = $this->context->getService("campService");
+
+        $this->info['event'] = $eventService->event->getAll($this->year);
+        $this->info['camp'] = $campService->event->getAll($this->year);
 //            $cache->save($cacheKey, $this->info, array(Cache::EXPIRE => '10 minutes'));
 //        }
 
-        $categories = $this->context->budgetService->getCategoriesLeaf($this->aid);
+        $categories = $this->budgetService->getCategoriesLeaf($this->aid);
         if (empty($categories['in']) && empty($categories['out'])) {
             $this->template->disableForm = TRUE;
         }
 
         $this->chits = array();
         //formulář pro kategorie, to potrebuje drive nez v renderu
-        $this->getAllChitsByObjectId("unit", $this->chits, $this->onlyUnlocked, $this->context->unitAccountService);
-        $this->getAllChitsByObjectId("event", $this->chits, $this->onlyUnlocked, $this->context->eventService);
-        $this->getAllChitsByObjectId("camp", $this->chits, $this->onlyUnlocked, $this->context->campService);
+        $this->getAllChitsByObjectId("unit", $this->chits, $this->onlyUnlocked, $this->context->getService("unitAccountService"));
+        $this->getAllChitsByObjectId("event", $this->chits, $this->onlyUnlocked, $eventService);
+        $this->getAllChitsByObjectId("camp", $this->chits, $this->onlyUnlocked, $campService);
     }
 
     public function renderDefault($year = NULL) {
@@ -81,7 +95,7 @@ class ChitPresenter extends BasePresenter {
         if (!in_array($type, array("event", "camp", "unit"))) {
             $this->flashMessage("Neplatný přístup!", "danger");
         } else {
-            $service = $this->context->{($type == "unit" ? "unitAccount" : $type) . "Service"};
+            $service = $this->context->getService(($type == "unit" ? "unitAccount" : $type) . "Service");
             $chit = $service->chits->get($id);
             if (!$this->accessChitControl($chit, $service, $type)) {
                 $this->flashMessage("Neplatný přístup!", "danger");
@@ -100,7 +114,7 @@ class ChitPresenter extends BasePresenter {
     }
 
     protected function createComponentBudgetCategoryForm($name) {
-        $categories = $this->context->budgetService->getCategoriesLeaf($this->aid);
+        $categories = $this->budgetService->getCategoriesLeaf($this->aid);
         $form = $this->prepareForm($this, $name);
         foreach ($this->chits as $chType) {
             foreach ($chType as $chGrp) {
@@ -130,7 +144,7 @@ class ChitPresenter extends BasePresenter {
         foreach ($this->chits as $chType) {
             foreach ($chType as $chGrp) {
                 foreach ($chGrp as $ch) {
-                    $this->context->eventService->chits->setBudgetCategories($ch->id, $v['selectBudget_in_' . $ch->id], $v['selectBudget_out_' . $ch->id]); //zde může být libovolný EntityService
+                    $this->context->getService("eventService")->chits->setBudgetCategories($ch->id, $v['selectBudget_in_' . $ch->id], $v['selectBudget_out_' . $ch->id]); //zde může být libovolný EntityService
                 }
             }
         }

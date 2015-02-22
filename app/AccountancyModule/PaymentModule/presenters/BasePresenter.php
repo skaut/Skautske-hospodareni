@@ -28,8 +28,8 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
     protected function startup() {
         parent::startup();
-        $this->availableActions = $this->context->userService->actionVerify("OU_Unit", $this->aid);
-        $this->template->aid = $this->aid = (is_null($this->aid) ? $this->context->unitService->getUnitId() : $this->aid);
+        $this->availableActions = $this->userService->actionVerify("OU_Unit", $this->aid);
+        $this->template->aid = $this->aid = (is_null($this->aid) ? $this->unitService->getUnitId() : $this->aid);
         $this->template->isReadable = $this->isReadable = key_exists($this->aid, $this->user->getIdentity()->access['read']);
         $this->template->isEditable = $this->isEditable = key_exists($this->aid, $this->user->getIdentity()->access['edit']);
         if (!$this->isReadable) {
