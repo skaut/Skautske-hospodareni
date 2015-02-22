@@ -30,9 +30,9 @@ class DefaultPresenter extends BasePresenter {
         $year = isset($this->ses->year) ? $this->ses->year : date("Y");
         $state = isset($this->ses->state) ? $this->ses->state : NULL;
 
-        $list = $this->context->campService->event->getAll($year, $state);
+        $list = $this->campService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $value['accessDetail'] = $this->context->userService->actionVerify(self::STable, $value['ID'], self::STable . "_DETAIL");
+            $value['accessDetail'] = $this->userService->actionVerify(self::STable, $value['ID'], self::STable . "_DETAIL");
             $list[$key] = $value;
         }
         $this->template->list = $list;
@@ -65,7 +65,7 @@ class DefaultPresenter extends BasePresenter {
     }
 
     function createComponentFormFilter($name) {
-        $states = array_merge(array("all" => "Nezrušené"), $this->context->campService->event->getStates());
+        $states = array_merge(array("all" => "Nezrušené"), $this->campService->event->getStates());
         $years = array("all" => "Všechny");
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;

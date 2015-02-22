@@ -7,9 +7,13 @@ namespace Model;
  */
 class PaymentService extends BaseService {
 
+    /**
+     *
+     * @var MailService
+     */
     protected $mailService;
 
-    public function __construct($skautIS = NULL, $connection = NULL, MailService $mailService = NULL) {
+    public function __construct(\Skautis\Skautis $skautIS, \DibiConnection $connection, MailService $mailService) {
         parent::__construct($skautIS, $connection);
         $this->mailService = $mailService;
     }
@@ -138,11 +142,10 @@ class PaymentService extends BaseService {
 
         $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params) . '"/>';
         $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $payment->name, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info);
-        if ($this->mailService->sendPaymentInfo($template, $payment->email, "Informace o platbě", $body, $payment->groupId)) {
+        if ($mailSend = ($this->mailService->sendPaymentInfo($template, $payment->email, "Informace o platbě", $body, $payment->groupId, $qrPrefix))) {
             if (isset($payment->id)) {
                 return $this->table->update($payment->id, array("state" => PaymentTable::PAYMENT_STATE_SEND));
             }
-            return TRUE;
         }
         return FALSE;
     }
@@ -301,7 +304,7 @@ class PaymentService extends BaseService {
     }
 
     public function getNewestOpenRegistration($unitId = NULL, $withoutRecord = TRUE) {
-        $data = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId === NULL ? $unitId = $this->skautis->getUnitId() : $unitId, ""));
+        $data = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId === NULL ? $unitId = $this->skautis->getUser()->getUnitId() : $unitId, ""));
         foreach ($data as $r) {
             if ($r->IsDelivered || ($withoutRecord && $this->table->getGroupsBySisId('registration', $r->ID))) {//filtrování odevzdaných nebo těch se záznamem
                 continue;

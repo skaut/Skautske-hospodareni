@@ -9,6 +9,26 @@ use Nette,
 
 abstract class BasePresenter extends Nette\Application\UI\Presenter {
 
+    /**
+     *
+     * @var \Model\UserService
+     */
+    protected $userService;
+
+    /**
+     *
+     * @var \Model\UnitService
+     */
+    protected $unitService;
+
+    public function injectUserService(\Model\UserService $u) {
+        $this->userService = $u;
+    }
+
+    public function injectUnitService(\Model\UnitService $u) {
+        $this->unitService = $u;
+    }
+
     protected function startup() {
         parent::startup();
 
@@ -28,7 +48,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 
         try {
             if ($this->user->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
-                $this->context->userService->isLoggedIn();
+                $this->userService->isLoggedIn();
             }
         } catch (AuthenticationException $e) {
             if ($this->name != "Auth" || $this->params['action'] != "skautisLogout") { //pokud jde o odhlaseni, tak to nevadi
@@ -41,8 +61,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         parent::beforeRender();
         if ($this->user->isLoggedIn()) {
             try {
-                $this->template->myRoles = $this->context->userService->getAllSkautISRoles();
-                $this->template->myRole = $this->context->userService->getRoleId();
+                $this->template->myRoles = $this->userService->getAllSkautISRoles();
+                $this->template->myRole = $this->userService->getRoleId();
             } catch (\SkautIS\Exception\AuthenticationException $ex) {
                 $this->user->logout(TRUE);
             }
@@ -53,12 +73,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 
     //změní přihlášenou roli ve skautISu
     public function handleChangeRole($roleId) {
-        $this->context->userService->updateSkautISRole($roleId);
+        $this->userService->updateSkautISRole($roleId);
         $this->updateUserAccess();
         $this->redirect("this");
     }
-    
-    protected function prepareForm($parent = NULL, $name = NULL){
+
+    protected function prepareForm($parent = NULL, $name = NULL) {
         $form = new Nette\Application\UI\Form($parent, $name);
         $form->setRenderer(new \Nextras\Forms\Rendering\Bs3FormRenderer());
         return $form;
@@ -74,7 +94,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 //            return CssMin::minify($code);
 //        }
 //        $compiler->addFilter("mini");
-        $control = new WebLoader\Nette\CssLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
+        $control = new WebLoader\Nette\CssLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
         $control->setMedia('screen');
         $files->addFiles(array(
             'fancybox/fancybox.css',
@@ -118,11 +138,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'nextras.datetimepicker.init.js',
             'ie10-viewport-bug-workaround.js', // IE10 viewport hack for Surface/desktop Windows 8 bug
         ));
-        return new WebLoader\Nette\JavaScriptLoader($compiler, $this->context->httpRequest->url->baseUrl . 'webtemp');
+        return new WebLoader\Nette\JavaScriptLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
     }
 
     protected function updateUserAccess() {
-        $this->user->getIdentity()->access = $this->context->userService->getAccessArrays($this->context->unitService);
+        $this->user->getIdentity()->access = $this->userService->getAccessArrays($this->unitService);
     }
 
 }

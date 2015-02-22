@@ -9,13 +9,24 @@ class CashbookPresenter extends BasePresenter {
 
     use \CashbookTrait;
 
+    /**
+     *
+     * @var \Model\MemberService
+     */
+    protected $memberService;
+
+    public function __construct(\Model\MemberService $member) {
+        parent::__construct();
+        $this->memberService = $member;
+    }
+
     function startup() {
         parent::startup();
         if (!$this->aid) {
             $this->flashMessage("Musíš vybrat akci", "danger");
             $this->redirect("Event:");
         }
-        $this->entityService = $this->context->eventService;
+        $this->entityService = $this->eventService;
 
         $ev_state = $this->event->ID_EventGeneralState == "draft" ? TRUE : FALSE;
         $this->isEditable = $this->template->isEditable = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
@@ -23,9 +34,9 @@ class CashbookPresenter extends BasePresenter {
     }
 
     public function renderDefault($aid, $disablePersons = FALSE) {
-        $this->template->isInMinus = $this->context->eventService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->autoCompleter = $disablePersons ? array() : $this->context->memberService->getAC();
-        $this->template->list = $this->context->eventService->chits->getAll($aid);
+        $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
+        $this->template->autoCompleter = $disablePersons ? array() : $this->memberService->getAC();
+        $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->linkImportHPD = $this->link("importHpd", array("aid" => $aid));
         $this->template->object = $this->event;
         if ($this->isAjax()) {
@@ -35,14 +46,14 @@ class CashbookPresenter extends BasePresenter {
 
     public function actionImportHpd($aid) {
         $this->editableOnly();
-        $totalPayment = $this->context->eventService->participants->getTotalPayment($this->aid);
-        $func = $this->context->eventService->event->getFunctions($this->aid);
-        $date = $this->context->eventService->event->get($aid)->StartDate;
+        $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);
+        $func = $this->eventService->event->getFunctions($this->aid);
+        $date = $this->eventService->event->get($aid)->StartDate;
         $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : ""; //$func[0]->Person
-        $category = $this->context->eventService->chits->getParticipantIncomeCategory();
+        $category = $this->eventService->chits->getParticipantIncomeCategory();
 
         $values = array("date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category);
-        $add = $this->context->eventService->chits->add($this->aid, $values);
+        $add = $this->eventService->chits->add($this->aid, $values);
         if ($add) {
             $this->flashMessage("Účastníci byli importováni");
         } else {

@@ -9,23 +9,23 @@ use Nette\Application\UI\Form;
  */
 class VehiclePresenter extends BasePresenter {
 
-    function startup() {
-        parent::startup();
-//        $contractId = $this->getParameter("contractId", NULL);
-//        $this->template->Vehicle = $Vehicle = $this->context->travelService->getVehicle($contractId);
-//        $this->template->isEditable = $this->isEditable = ($VehicleId === NULL || $this->unit->ID == $Vehicle->unit_id) ? true : false;
-//        if (!$this->isEditable) {
-//            $this->flashMessage("Neoprávněný přístup k cestovní smlouvě.", "danger");
-//            $this->redirect("Default:");
-//        }
-    }
+     /**
+     *
+     * @var \Model\TravelService
+     */
+    protected $travelService;
 
+    public function __construct(\Model\TravelService $ts) {
+        parent::__construct();
+        $this->travelService = $ts;
+    }
+    
     protected function isVehicleAccessible($vehicleId) {
-        return $this->context->travelService->isVehicleAccessible($vehicleId, $this->unit);
+        return $this->travelService->isVehicleAccessible($vehicleId, $this->unit);
     }
 
     public function renderDefault() {
-        $this->template->list = $this->context->travelService->getAllVehicles($this->unit->ID);
+        $this->template->list = $this->travelService->getAllVehicles($this->unit->ID);
     }
 
     public function renderDetail($id) {
@@ -34,8 +34,8 @@ class VehiclePresenter extends BasePresenter {
             $this->redirect("default");
         }
 
-        $this->template->vehicle = $contract = $this->context->travelService->getVehicle($id, true);
-        $this->template->commands = $this->context->travelService->getAllCommandsByVehicle($this->unit->ID, $id);
+        $this->template->vehicle = $contract = $this->travelService->getVehicle($id, true);
+        $this->template->commands = $this->travelService->getAllCommandsByVehicle($this->unit->ID, $id);
     }
 
     public function handleRemove($vehicleId) {
@@ -43,7 +43,7 @@ class VehiclePresenter extends BasePresenter {
             $this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
             $this->redirect("default");
         }
-        if ($this->context->travelService->removeVehicle($vehicleId, $this->unit->ID)) {
+        if ($this->travelService->removeVehicle($vehicleId, $this->unit->ID)) {
             $this->flashMessage("Vozidlo bylo odebráno.");
         } else {
             $this->flashMessage("Nelze smazat vozidlo s cestovními příkazy.", "warning");
@@ -78,7 +78,7 @@ class VehiclePresenter extends BasePresenter {
         $v = $form->getValues();
         $v['unit_id'] = $this->unit->ID;
         $v['consumption'] = str_replace(",", ".", $v['consumption']);
-        $this->context->travelService->addVehicle($v);
+        $this->travelService->addVehicle($v);
         $this->flashMessage("Záznam o vozidle byl založen.");
         $this->redirect("this");
     }

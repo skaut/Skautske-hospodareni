@@ -12,7 +12,7 @@ class ChitService extends MutableBaseService {
      */
     protected $objectService;
 
-    public function __construct($name, $skautIS, $cacheStorage, $connection, $objectService) {
+    public function __construct($name, $skautIS, $cacheStorage, $connection, EventService $objectService) {
         parent::__construct($name, $skautIS, $cacheStorage, $connection);
         $this->objectService = $objectService;
     }

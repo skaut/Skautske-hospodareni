@@ -8,16 +8,27 @@ use Nette\Application\UI\Form;
  * @author Hána František <sinacek@gmail.com>
  */
 class BudgetPresenter extends BasePresenter {
+    
+    /**
+     *
+     * @var \Model\BudgetService
+     */
+    protected $budgetService;
+
+    public function __construct(\Model\BudgetService $bs) {
+        parent::__construct();
+        $this->budgetService = $bs;
+    }
 
     public function renderDefault($year = NULL) {
-        $this->template->categories = $this->context->budgetService->getCategories($this->aid);
-        $this->template->categoriesSummary = $this->context->unitAccountService->chits->getBudgetCategoriesSummary($this->context->budgetService->getCategoriesLeaf($this->aid));
+        $this->template->categories = $this->budgetService->getCategories($this->aid);
+        $this->template->categoriesSummary = $this->context->getService("unitAccountService")->chits->getBudgetCategoriesSummary($this->budgetService->getCategoriesLeaf($this->aid));
         $this->template->sum = $this->template->sumReality = 0; //je potreba kvuli sablone, kde se pouzije jako globalni promena
-        $this->template->unitPairs = $this->context->unitService->getReadUnits($this->user);
+        $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
 
     public function getParentCategories($form, $dependentSelectBoxName) {
-        return array("0" => "Žádná") + $this->context->budgetService->getCategoriesRoot($this->aid, $form["type"]->getValue());
+        return array("0" => "Žádná") + $this->budgetService->getCategoriesRoot($this->aid, $form["type"]->getValue());
     }
 
     protected function createComponentAddCategoryForm($name) {
@@ -49,7 +60,7 @@ class BudgetPresenter extends BasePresenter {
     public function addCategoryFormSubmitted(Form $form) {
         if ($form["submit"]->isSubmittedBy()) {
             $v = $form->values;
-            $this->context->budgetService->addCategory($v->oid, $v->label, $v->type, $v->parentId == 0 ? NULL : $v->parentId, $v->value, $v->year);
+            $this->budgetService->addCategory($v->oid, $v->label, $v->type, $v->parentId == 0 ? NULL : $v->parentId, $v->value, $v->year);
             $this->flashMessage("Kategorie byla přidána.");
             $this->redirect("default");
         }

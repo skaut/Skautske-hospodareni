@@ -14,7 +14,7 @@ class UserService extends BaseService {
      * @return type 
      */
     public function getRoleId() {
-        return $this->skautis->getRoleId();
+        return $this->skautis->getUser()->getRoleId();
     }
 
     /**
@@ -38,10 +38,9 @@ class UserService extends BaseService {
      * @param ID_Role $id
      */
     public function updateSkautISRole($id) {
-        $unitId = $this->skautis->user->LoginUpdate(array("ID_UserRole" => $id, "ID" => $this->skautis->getToken()));
-        if ($unitId) {
-            $this->skautis->setRoleId($id);
-            $this->skautis->setUnitId($unitId->ID_Unit);
+        $response = $this->skautis->user->LoginUpdate(array("ID_UserRole" => $id, "ID" => $this->skautis->getUser()->getLoginId()));
+        if ($response) {
+            $this->skautis->getUser()->updateLoginData(NULL, $id, $response->ID_Unit);
         }
     }
 
@@ -70,10 +69,10 @@ class UserService extends BaseService {
 
     /**
      * kontroluje jestli je přihlášení platné
-     * @return type 
+     * @return boolean 
      */
     public function isLoggedIn() {
-        return $this->skautis->isLoggedIn();
+        return $this->skautis->getUser()->isLoggedIn();
     }
 
     /**
@@ -127,6 +126,14 @@ class UserService extends BaseService {
             self::ACCESS_READ => array(),
             self::ACCESS_EDIT => array()
         );
+    }
+    
+    /**
+     * vrací adresu skautisu např.: https://is.skaut.cz/
+     * @return string
+     */
+    public function getSkautisUrl(){
+        return $this->skautis->getBaseUrl();
     }
 
 }

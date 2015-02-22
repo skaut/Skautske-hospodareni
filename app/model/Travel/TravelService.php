@@ -12,8 +12,8 @@ class TravelService extends BaseService {
     protected $tableContract;
     protected $tableVehicle;
 
-    public function __construct($skautIS = NULL, $connection = NULL) {
-        parent::__construct($skautIS, $connection);
+    public function __construct(\DibiConnection $connection) {
+        parent::__construct(NULL, $connection);
         /** @var TravelTable */
         $this->table = new CommandTable($connection);
         $this->tableTravel = new TravelTable($connection);
@@ -24,16 +24,14 @@ class TravelService extends BaseService {
     public function isContractAccessible($contractId, $unit) {
         return $this->getContract($contractId)->unit_id == $unit->ID ? TRUE : FALSE;
     }
-    
+
     public function isCommandAccessible($commandId, $unit) {
         return ($this->isContractAccessible($this->getCommand($commandId)->contract_id, $unit)) ? TRUE : FALSE;
     }
-    
+
     public function isVehicleAccessible($vehicleId, $unit) {
         return $this->getVehicle($vehicleId, true)->unit_id == $unit->ID ? TRUE : FALSE;
     }
-    
-    
 
     /**     VEHICLES    */
 
@@ -44,7 +42,7 @@ class TravelService extends BaseService {
      * @return type
      */
     public function getVehicle($vehicleId, $withDeleted = false) {
-        $cacheId = __FUNCTION__ . "_" . $vehicleId."_" . (int)$withDeleted;
+        $cacheId = __FUNCTION__ . "_" . $vehicleId . "_" . (int) $withDeleted;
         if (!($res = $this->loadSes($cacheId))) {
             $res = $this->tableVehicle->get($vehicleId, $withDeleted);
             $this->saveSes($cacheId, $res);
@@ -72,7 +70,7 @@ class TravelService extends BaseService {
 
     public function removeVehicle($vehicleId, $unitId) {
         $commands = $this->getAllCommandsByVehicle($unitId, $vehicleId);
-        if(count($commands) > 0){ //nelze mazat vozidlo s navazanými příkazy
+        if (count($commands) > 0) { //nelze mazat vozidlo s navazanými příkazy
             return false;
         }
         return $this->tableVehicle->remove($vehicleId);
@@ -116,9 +114,9 @@ class TravelService extends BaseService {
     public function getAllContractsPairs($unitId) {
         $data = $this->getAllContracts($unitId);
         $res = array();
-        
+
         foreach ($data as $i) {
-            $res[$i->id] = $i->unit_person . " <=> " . $i->driver_name ." (platná do " . $i->end->format("j.n.Y").")";
+            $res[$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
         }
         return $res;
     }

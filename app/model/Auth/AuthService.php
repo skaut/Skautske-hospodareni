@@ -6,7 +6,7 @@ namespace Model;
  * @author Hána František <sinacek@gmail.com>
  */
 class AuthService extends BaseService {
-
+    
     /**
      * vrací přihlašovací url
      * @param string $backlink
@@ -21,9 +21,7 @@ class AuthService extends BaseService {
      * @param array $arr 
      */
     public function setInit(array $arr) {
-        $this->skautis->setToken($arr['token']);
-        $this->skautis->setRoleId($arr['roleId']);
-        $this->skautis->setUnitId($arr['unitId']);
+        $this->skautis->getUser()->setLoginData($arr['token'], $arr['roleId'], $arr['unitId']);
     }
 
     /**

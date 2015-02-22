@@ -239,7 +239,7 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Neplatný požadavek na odeslání testovacího emailu!", "danger");
             $this->redirect("this");
         }
-        $personalDetail = $this->context->getService("userService")->getPersonalDetail();
+        $personalDetail = $this->userService->getPersonalDetail();
         if (!isset($personalDetail->Email)) {
             $this->flashMessage("Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!", "danger");
             $this->redirect("this");
@@ -256,6 +256,7 @@ class PaymentPresenter extends BasePresenter {
                     "vs" => rand(1000, 100000),
                     "email_info" => $group->email_info,
                     "note" => "obsah poznámky",
+                    "groupId"=>$gid,
         ));
 
         if ($this->model->sendInfo($this->template, $payment, $this->unitService)) {

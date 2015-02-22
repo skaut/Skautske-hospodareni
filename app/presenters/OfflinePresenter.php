@@ -10,10 +10,6 @@ use Nette\Application\UI\Form,
  */
 class OfflinePresenter extends BasePresenter {
 
-    function startup() {
-        parent::startup();
-    }
-
     function actionSync() {
         if (!$this->user->isLoggedIn()) {
             $this->redirect(":Default:", array("backlink" => $this->storeRequest('+ 3 days')));

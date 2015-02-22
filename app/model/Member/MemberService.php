@@ -14,7 +14,7 @@ class MemberService extends BaseService {
      * @return array 
      */
     public function getAll($unitId = NULL, $onlyDirectMember = true, $participants = NULL) {
-        $unitId = $unitId === NULL ? $this->skautis->getUnitId() : $unitId;
+        $unitId = $unitId === NULL ? $this->skautis->getUser()->getUnitId() : $unitId;
         
         $all = $this->skautis->org->PersonAll(array("ID_Unit" => $unitId, "OnlyDirectMember" => (bool) $onlyDirectMember));
         $ret = array();

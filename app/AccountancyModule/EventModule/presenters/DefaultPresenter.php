@@ -9,9 +9,20 @@ use Nette\Application\UI\Form;
  */
 class DefaultPresenter extends BasePresenter {
 
+    const DEFAULT_STATE = "draft"; //filtrovani zobrazených položek
+
     public $ses;
 
-    const DEFAULT_STATE = "draft"; //filtrovani zobrazených položek
+    /**
+     *
+     * @var \Model\ExcelService
+     */
+    protected $excelService;
+
+    public function __construct(\Model\ExcelService $excel) {
+        parent::__construct();
+        $this->excelService = $excel;
+    }
 
     function startup() {
         parent::startup();
@@ -30,9 +41,9 @@ class DefaultPresenter extends BasePresenter {
         $year = isset($this->ses->year) ? $this->ses->year : date("Y");
         $state = isset($this->ses->state) ? $this->ses->state : NULL;
 
-        $list = $this->context->eventService->event->getAll($year, $state);
+        $list = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $localAvaibleActions = $this->context->userService->actionVerify(self::STable, $value['ID']);
+            $localAvaibleActions = $this->userService->actionVerify(self::STable, $value['ID']);
             $list[$key]['accessDelete'] = $this->isAllowed("EV_EventGeneral_DELETE", $localAvaibleActions);
             $list[$key]['accessDetail'] = $this->isAllowed("EV_EventGeneral_DETAIL", $localAvaibleActions);
         }
@@ -132,7 +143,7 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("this");
         }
 
-        if ($this->context->eventService->event->cancel($aid, $this->context->eventService->chits)) {
+        if ($this->eventService->event->cancel($aid, $this->eventService->chits)) {
             $this->flashMessage("Akce byla zrušena");
         } else {
             $this->flashMessage("Akci se nepodařilo zrušit", "danger");
@@ -142,7 +153,7 @@ class DefaultPresenter extends BasePresenter {
     }
 
     function createComponentFormFilter($name) {
-        $states = array_merge(array("all" => "Nezrušené"), $this->context->eventService->event->getStates());
+        $states = array_merge(array("all" => "Nezrušené"), $this->eventService->event->getStates());
         $years = array("all" => "Všechny");
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
@@ -169,11 +180,11 @@ class DefaultPresenter extends BasePresenter {
     }
 
     function createComponentFormCreate($name) {
-        $scopes = $this->context->eventService->event->getScopes();
-        $types = $this->context->eventService->event->getTypes();
-        $tmpId = $this->context->skautis->getUnitId();
-        $units = array($tmpId => $this->context->unitService->getDetail($tmpId)->SortName);
-        foreach ($this->context->unitService->getChild($tmpId) as $u) {
+        $scopes = $this->eventService->event->getScopes();
+        $types = $this->eventService->event->getTypes();
+        $tmpId = $this->unitService->getUnitId();
+        $units = array($tmpId => $this->unitService->getDetail($tmpId)->SortName);
+        foreach ($this->unitService->getChild($tmpId) as $u) {
             $units[$u->ID] = "» " . $u->SortName;
         }
 
@@ -204,7 +215,7 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("this");
         }
         $v = $form->getValues();
-        $id = $this->context->eventService->event->create(
+        $id = $this->eventService->event->create(
                 $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v->orgID, $v['scope'], $v['type']
         );
 
@@ -223,7 +234,7 @@ class DefaultPresenter extends BasePresenter {
 
     function formExportSummarySubmitted(Form $form) {
         $values = $form->getHttpData($form::DATA_TEXT, 'sel[]');
-        $this->context->excelService->getEventSummaries($values, $this->context->eventService); //testovaci
+        $this->excelService->getEventSummaries($values, $this->eventService);
     }
 
 }

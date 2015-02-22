@@ -26,7 +26,7 @@ trait CashbookTrait {
         $form['recipient']->setHtmlId("form-edit-recipient");
         $form['price']->setHtmlId("form-edit-price");
         $this->template->form = $form;
-        $this->template->autoCompleter = $this->context->memberService->getAC();
+        $this->template->autoCompleter = $this->memberService->getAC();
     }
 
 //    //AJAX edit
@@ -60,19 +60,19 @@ trait CashbookTrait {
 //    }
 //
     public function actionExport($aid) {
-        $template = $this->context->exportService->getCashbook($this->createTemplate(), $aid, $this->entityService);
+        $template = $this->exportService->getCashbook($this->createTemplate(), $aid, $this->entityService);
         $this->entityService->chits->makePdf($template, "pokladni-kniha.pdf");
         $this->terminate();
     }
 
     public function actionExportExcel($aid) {
-        $this->context->excelService->getCashbook($this->entityService, $this->event);
+        $this->excelService->getCashbook($this->entityService, $this->event);
         $this->terminate();
     }
 
     function actionPrint($id, $aid) {
         $chits = array($this->entityService->chits->get($id));
-        $template = $this->context->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $this->context->unitService, $chits);
+        $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $this->unitService, $chits);
 //        echo $template->render();
         $this->entityService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
@@ -107,14 +107,14 @@ trait CashbookTrait {
 
     function massPrintSubmitted(SubmitButton $button) {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
-        $template = $this->context->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $this->context->unitService, $chits);
+        $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $this->unitService, $chits);
         $this->entityService->chits->makePdf($template, "paragony.pdf");
         $this->terminate();
     }
 
     function massExportSubmitted(SubmitButton $button) {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
-        $this->context->excelService->getChitsExport($chits);
+        $this->excelService->getChitsExport($chits);
         $this->terminate();
     }
 

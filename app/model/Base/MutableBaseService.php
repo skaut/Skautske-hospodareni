@@ -17,7 +17,7 @@ abstract class MutableBaseService extends BaseService {
     /** @var \Nette\Caching\Cache */
     protected $cache;
 
-    public function __construct($name, $skautIS, $cacheStorage, $connection) {
+    public function __construct($name, \Skautis\Skautis $skautIS, \Nette\Caching\IStorage $cacheStorage, \DibiConnection $connection) {
         parent::__construct($skautIS, $connection);
         $this->typeName = $name;
         $this->type = strtolower($name);

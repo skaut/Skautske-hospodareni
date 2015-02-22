@@ -11,21 +11,32 @@ class CashbookPresenter extends BasePresenter {
 
     use \CashbookTrait;
 
+    /**
+     *
+     * @var \Model\MemberService
+     */
+    protected $memberService;
+
+    public function __construct(\Model\MemberService $member) {
+        parent::__construct();
+        $this->memberService = $member;
+    }
+
     function startup() {
         parent::startup();
         if (!$this->aid) {
             $this->flashMessage("Musíš vybrat akci", "danger");
             $this->redirect("Default:");
         }
-        $this->entityService = $this->context->campService;
+        $this->entityService = $this->campService;
         $this->template->isEditable = $this->isEditable = ($this->isEditable || $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCostBeforeEnd"));
 //        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
     }
 
     function renderDefault($aid, $disablePersons = FALSE) {
-        $this->template->isInMinus = $this->context->campService->chits->eventIsInMinus($this->aid);
-        $this->template->autoCompleter = $disablePersons ? array() : $this->context->memberService->getAC();
-        $this->template->list = $this->context->campService->chits->getAll($aid);
+        $this->template->isInMinus = $this->campService->chits->eventIsInMinus($this->aid);
+        $this->template->autoCompleter = $disablePersons ? array() : $this->memberService->getAC();
+        $this->template->list = $this->campService->chits->getAll($aid);
         $this->template->missingCategories = false;
         $this->template->linkImportHPD = "#importHpd";
         $this->template->object = $this->event;
@@ -33,7 +44,6 @@ class CashbookPresenter extends BasePresenter {
         if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
             //$this->template->isAllowedUpdateRealTotalCost = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
             $this->template->missingCategories = true; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
-            $this->template->skautISHttpPrefix = $this->context->skautis->getHttpPrefix();
         }
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
@@ -41,7 +51,7 @@ class CashbookPresenter extends BasePresenter {
     }
 
     public function handleActivateAutocomputedCashbook($aid) {
-        $this->context->campService->event->activateAutocomputedCashbook($aid);
+        $this->campService->event->activateAutocomputedCashbook($aid);
         $this->flashMessage("Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.");
         $this->redirect("this");
     }
@@ -71,13 +81,13 @@ class CashbookPresenter extends BasePresenter {
     function formImportHpdSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
-        $data = array("date" => $this->context->campService->event->get($values->aid)->StartDate,
+        $data = array("date" => $this->campService->event->get($values->aid)->StartDate,
             "recipient" => "",
             "purpose" => "úč. příspěvky " . ($values->isAccount == "Y" ? "- účet" : "- hotovost"),
-            "price" => $this->context->campService->participants->getCampTotalPayment($values->aid, $values->cat, $values->isAccount),
-            "category" => $this->context->campService->chits->getParticipantIncomeCategory($values->aid, $values->cat));
+            "price" => $this->campService->participants->getCampTotalPayment($values->aid, $values->cat, $values->isAccount),
+            "category" => $this->campService->chits->getParticipantIncomeCategory($values->aid, $values->cat));
 
-        if ($this->context->campService->chits->add($values->aid, $data)) {
+        if ($this->campService->chits->add($values->aid, $data)) {
             $this->flashMessage("HPD byl importován");
         } else {
             $this->flashMessage("HPD se nepodařilo importovat", "danger");
