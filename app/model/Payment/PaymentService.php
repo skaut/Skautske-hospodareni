@@ -140,14 +140,26 @@ class PaymentService extends BaseService {
         //$base64 = 'data:image/png;base64,' . base64_encode(file_get_contents("http://api.paylibo.com/paylibo/generator/czech/image?" . http_build_query($params)));
         //$qrcode = '<img alt="QR platba" src="' . $base64 . '"/>';
 
-        $qrcode = '<img alt="QR platba" src="http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params) . '"/>';
+        $qrUrl = 'http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params);
+        $qrPrefix = $qrFilename = NULL;
+        if (strpos($payment->email_info, "%qrcode%")) {
+            $qrPrefix = WWW_DIR . "/webtemp/";
+            $qrFilename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime()) . ".png";
+            \Nette\Utils\Image::fromFile($qrUrl)->save($qrPrefix . $qrFilename);
+//            dump(is_readable($qrPrefix . $qrFilename));
+//            die();
+        }
+        $qrcode = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $qrFilename . '"/>';
         $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $payment->name, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info);
         if ($mailSend = ($this->mailService->sendPaymentInfo($template, $payment->email, "Informace o platbě", $body, $payment->groupId, $qrPrefix))) {
             if (isset($payment->id)) {
                 return $this->table->update($payment->id, array("state" => PaymentTable::PAYMENT_STATE_SEND));
             }
         }
-        return FALSE;
+        if (is_file($qrPrefix . $qrFilename)) {
+            unlink($qrPrefix . $qrFilename);
+        }
+        return $mailSend ? TRUE : FALSE;
     }
 
     /**
