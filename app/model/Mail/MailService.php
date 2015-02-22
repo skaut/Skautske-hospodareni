@@ -46,22 +46,22 @@ class MailService extends BaseService {
             die();
         }
     }
-    
+
     //SMTP
 
     public function get($id) {
         return $this->table->get($id);
     }
-    
+
     public function getAll($unitId) {
         return $this->table->getAll($unitId);
     }
-    
+
     public function getPairs($unitId) {
         return $this->table->getPairs($unitId);
     }
-    
-    public function getSmtpByGroup($groupId){
+
+    public function getSmtpByGroup($groupId) {
         return $this->table->getSmtpByGroup($groupId);
     }
 
@@ -76,24 +76,23 @@ class MailService extends BaseService {
     public function updateSmtp($unitId, $id, $data) {
         return $this->table->updateSmtp($unitId, $id, $data);
     }
-    
+
     //SMTP GROUP
-    
-    public function addSmtpGroup($groupId, $smtpId){
+
+    public function addSmtpGroup($groupId, $smtpId) {
         return $this->table->addSmtpGroup($groupId, $smtpId);
     }
 
-
     //Odesílání emailů
-    
-    public function sendPaymentInfo(\Nette\Application\UI\ITemplate $template, $to, $subject, $body, $groupId = NULL) {
+
+    public function sendPaymentInfo(\Nette\Application\UI\ITemplate $template, $to, $subject, $body, $groupId = NULL, $qrPrefix = NULL) {
         $template->setFile(dirname(__FILE__) . "/mail.base.latte");
         $template->body = $body;
         $mail = new Message;
         $mail->setFrom(self::EMAIL_SENDER)
                 ->addTo($to)
                 ->setSubject($subject)
-                ->setHtmlBody($template);
+                ->setHtmlBody($template, $qrPrefix);
         return $this->send($mail, $groupId);
     }
 
