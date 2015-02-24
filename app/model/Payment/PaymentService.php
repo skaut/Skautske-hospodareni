@@ -297,7 +297,7 @@ class PaymentService extends BaseService {
                     }
                 }
             }
-        } catch (\SkautIS\Exception\PermissionException $exc) {//odchycení bývalých členů, ke kterým už nemáme oprávnění
+        } catch (\Skautis\Wsdl\PermissionException $exc) {//odchycení bývalých členů, ke kterým už nemáme oprávnění
         }
         return $result;
     }

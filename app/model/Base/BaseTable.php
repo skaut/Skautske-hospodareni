@@ -44,7 +44,7 @@ class BaseTable {
      */
     public function getLocalId($skautisEventId, $type) {
         if (!($ret = $this->connection->fetchSingle("SELECT id FROM [" . self::TABLE_OBJECT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type))) {
-            $ret = $this->connection->insert(self::TABLE_OBJECT, array("skautisId" => $skautisEventId, "type" => $type))->execute(\dibi::IDENTIFIER);
+            $ret = $this->connection->insert(self::TABLE_OBJECT, array("skautisId" => $skautisEventId, "type" => $type))->execute(\Dibi::IDENTIFIER);
         }
         return $ret;
     }

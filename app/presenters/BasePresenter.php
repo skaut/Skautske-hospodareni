@@ -4,7 +4,7 @@ namespace App;
 
 use Nette,
     WebLoader,
-    SkautIS\Exception\AuthenticationException,
+    Skautis\Wsdl\AuthenticationException,
     Nette\Forms\Container;
 
 abstract class BasePresenter extends Nette\Application\UI\Presenter {
@@ -61,9 +61,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         parent::beforeRender();
         if ($this->user->isLoggedIn()) {
             try {
-                $this->template->myRoles = $this->userService->getAllSkautISRoles();
+                $this->template->myRoles = $this->userService->getAllSkautisRoles();
                 $this->template->myRole = $this->userService->getRoleId();
-            } catch (\SkautIS\Exception\AuthenticationException $ex) {
+            } catch (\Skautis\Wsdl\AuthenticationException $ex) {
                 $this->user->logout(TRUE);
             }
         }

@@ -108,7 +108,7 @@ class ChitService extends MutableBaseService {
         if ($this->type == self::TYPE_CAMP) {
             try {
                 $this->updateCategory($skautisEventId, $val['category']);
-            } catch (\SkautIS\Exception\PermissionException $ex) {
+            } catch (\Skautis\Wsdl\PermissionException $ex) {
                 
             }
         }
@@ -329,10 +329,10 @@ class ChitService extends MutableBaseService {
      * @return boolean 
      */
     public function isConsistent($skautisEventId, $repair = false, &$toRepair = NULL) {
-        $sumSkautIS = $this->getCategories($skautisEventId, false);
+        $sumSkautis = $this->getCategories($skautisEventId, false);
         //$toRepair = array();
         foreach ($this->getCategoriesSum($skautisEventId) as $catId => $ammount) {
-            if ($ammount != $sumSkautIS[$catId]->Ammount) {
+            if ($ammount != $sumSkautis[$catId]->Ammount) {
                 if ($repair) { //má se kategorie opravit?
                     $this->updateCategory($skautisEventId, $catId, $ammount);
                 } else {

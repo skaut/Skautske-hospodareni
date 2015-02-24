@@ -110,7 +110,7 @@ class ParticipantService extends MutableBaseService {
                         "ID_Event" . $this->typeName => $ID,
                         "ID_Person" => $participantId,
             ));
-        } catch (\SkautIS\Exception\WsdlException $ex) {
+        } catch (\Skautis\Wsdl\WsdlException $ex) {
             if ($ex->getMessage() != "Chyba validace (Participant_PersonIsAllreadyParticipantGeneral)") {
                 throw $ex;
             }
@@ -209,7 +209,7 @@ class ParticipantService extends MutableBaseService {
 //        foreach ($participants as $k => $par) {
 //            try {
 //                $participants[$k] = array_merge((array) $par + $this->get($par->ID));
-//            } catch (\SkautIS\Exception\WsdlException $exc) {
+//            } catch (\Skautis\Wsdl\WsdlException $exc) {
 //                $participants[$k] = (array) $par;
 //            }
 //        }

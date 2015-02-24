@@ -145,7 +145,7 @@ class ParticipantPresenter extends BasePresenter {
             $template = $this->exportService->getParticipants($this->createTemplate(), $aid, $this->campService, "camp");
             //echo $template;die();
             $this->campService->participants->makePdf($template, "seznam-ucastniku.pdf", true);
-        } catch (\SkautIS\Exception\PermissionException $ex) {
+        } catch (\Skautis\Wsdl\PermissionException $ex) {
             $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
             $this->redirect("default", array("aid" => $aid));
         }
@@ -155,7 +155,7 @@ class ParticipantPresenter extends BasePresenter {
     public function actionExportExcel($aid) {
         try {
             $this->excelService->getParticipants($this->campService, $this->event, "camp");
-        } catch (\SkautIS\Exception\PermissionException $ex) {
+        } catch (\Skautis\Wsdl\PermissionException $ex) {
             $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
             $this->redirect("default", array("aid" => $aid));
         }
