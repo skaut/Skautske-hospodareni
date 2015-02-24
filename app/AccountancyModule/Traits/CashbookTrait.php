@@ -236,7 +236,7 @@ trait CashbookTrait {
             }
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
-        } catch (\SkautIS\Exception\WsdlException $se) {
+        } catch (\Skautis\Wsdl\WsdlException $se) {
             $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
         }
 
@@ -262,9 +262,9 @@ trait CashbookTrait {
             } else {
                 $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
             }
-        } catch (\SkautIS\Exception\WsdlException $exc) {
+        } catch (\Skautis\Wsdl\WsdlException $exc) {
             $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
-        } catch (\SkautIS\Exception\PermissionException $e) {
+        } catch (\Skautis\Wsdl\PermissionException $e) {
             //nepodařilo se změnit kategorie ve skautisu
         }
 

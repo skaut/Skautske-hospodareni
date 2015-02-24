@@ -10,8 +10,8 @@ class EventService extends MutableBaseService {
     protected $typeLongName;
     protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist");
 
-    public function __construct($name, $longName, $skautIS, $cacheStorage, $connection) {
-        parent::__construct($name, $skautIS, $cacheStorage, $connection);
+    public function __construct($name, $longName, \Skautis\Skautis $skautis, $cacheStorage, $connection) {
+        parent::__construct($name, $skautis, $cacheStorage, $connection);
         $this->typeLongName = $longName;
         /** @var EventTable */
         $this->table = new EventTable($connection);
@@ -56,8 +56,8 @@ class EventService extends MutableBaseService {
                 $res = $this->saveSes($cacheId, $data);
             }
             return $res;
-        } catch (\SkautIS\Exception\BaseException $e) {
-            throw new \SkautIS\Exception\PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e->getCode());
+        } catch (Skautis\Exception $e) {
+            throw new \Skautis\Wsdl\PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e->getCode());
         }
     }
 
@@ -310,7 +310,7 @@ class EventService extends MutableBaseService {
         if (!$arg instanceof \stdClass) {
             try {
                 $arg = $this->get($arg);
-            } catch (\SkautIS\Exception\PermissionException $exc) {
+            } catch (\Skautis\Wsdl\PermissionException $exc) {
                 return FALSE;
             }
         }

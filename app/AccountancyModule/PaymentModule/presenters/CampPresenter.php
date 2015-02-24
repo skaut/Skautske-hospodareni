@@ -19,7 +19,7 @@ class CampPresenter extends BasePresenter {
 
     protected function startup() {
         parent::startup();
-        $this->template->unitPairs = $this->readUnits = $units = $this->context->getService("unitService")->getReadUnits($this->user);
+        $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
         $this->campService = $this->context->getService("campService");
     }
 

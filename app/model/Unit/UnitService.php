@@ -28,7 +28,7 @@ class UnitService extends BaseService {
                 $res = $this->saveSes($cacheId, $this->skautis->org->UnitDetail(array("ID" => $unitId)));
             }
             return $res;
-        } catch (SkautIS_Exception $exc) {
+        } catch (Skautis\Exception $exc) {
             throw new \Nette\Application\BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
         }
     }

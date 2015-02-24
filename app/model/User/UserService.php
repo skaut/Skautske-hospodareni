@@ -21,7 +21,7 @@ class UserService extends BaseService {
      * vrací pole 
      * @return array všech dostupných rolí přihlášeného uživatele
      */
-    public function getAllSkautISRoles($activeOnly = true) {
+    public function getAllSkautisRoles($activeOnly = true) {
         return $this->skautis->user->UserRoleAll(array("ID_User" => $this->getUserDetail()->ID, "IsActive" => $activeOnly));
     }
 
@@ -49,7 +49,7 @@ class UserService extends BaseService {
      * @return boolean
      */
     public function getActualRole() {
-        foreach ($this->getAllSkautISRoles() as $r) {
+        foreach ($this->getAllSkautisRoles() as $r) {
             if ($r->ID == $this->getRoleId()) {
                 return $r;
             }
@@ -133,7 +133,7 @@ class UserService extends BaseService {
      * @return string
      */
     public function getSkautisUrl(){
-        return $this->skautis->getBaseUrl();
+        return $this->skautis->getConfig()->getBaseUrl();
     }
 
 }

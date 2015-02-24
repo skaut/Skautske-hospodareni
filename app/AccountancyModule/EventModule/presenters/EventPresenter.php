@@ -235,10 +235,10 @@ class EventPresenter extends BasePresenter {
 
         try {
             $id = $this->eventService->event->setFunction($values['aid'], $values['person'], $values['fid']);
-        } catch (\SkautIS\Exception\PermissionException $exc) {
+        } catch (\Skautis\Wsdl\PermissionException $exc) {
             $this->flashMessage($exc->getMessage(), "danger");
             $this->redirect("default", array("aid" => $this->aid));
-        } catch (\SkautIS\Exception\BaseException $e) {
+        } catch (Skautis\Exception $e) {
             if (preg_match("/EventFunction_LeaderMustBeAdult/", $e->getMessage())) {//dospělost vedoucího akce
                 $this->flashMessage("Vedoucí akce musí být dosplělá osoba.", "danger");
             } elseif (preg_match("/EventFunction_AssistantMustBeAdult/", $e->getMessage())) { //dospělost zástupce
