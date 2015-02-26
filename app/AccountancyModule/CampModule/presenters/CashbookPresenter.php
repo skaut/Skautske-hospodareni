@@ -12,14 +12,25 @@ class CashbookPresenter extends BasePresenter {
     use \CashbookTrait;
 
     /**
-     *
      * @var \Model\MemberService
      */
     protected $memberService;
 
-    public function __construct(\Model\MemberService $member) {
+    /**
+     * @var \Model\ExportService
+     */
+    protected $exportService;
+
+    /**
+     * @var \Model\ExcelService
+     */
+    protected $excelService;
+
+    public function __construct(\Model\MemberService $member, \Model\ExportService $es, \Model\ExcelService $exs) {
         parent::__construct();
         $this->memberService = $member;
+        $this->exportService = $es;
+        $this->excelService = $exs;
     }
 
     function startup() {
