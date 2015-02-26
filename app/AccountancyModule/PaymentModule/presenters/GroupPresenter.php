@@ -58,13 +58,17 @@ class GroupPresenter extends BasePresenter {
             $this->template->linkBack = $this->link("Default:");
         } else {//EDIT
             $this->template->group = $group = $this->model->getGroup($this->aid, $id);
+            if (!$group) {
+                $this->flashMessage("Skupina nebyla nalezena", "warning");
+                $this->redirect("Payment:default");
+            }
             $smtp = $this->mail->getSmtpByGroup($id);
             $form->setDefaults(array(
                 "label" => $group->label,
                 "amount" => $group->amount,
                 "maturity" => $group->maturity,
                 "ks" => $group->ks,
-                "smtp"=> isset($smtp->id) ? $smtp->id : NULL,
+                "smtp" => isset($smtp->id) && array_key_exists($smtp->id, $form['smtp']->getItems()) ? $smtp->id : NULL,
                 "email_info" => $group->email_info,
                 "email_demand" => $group->email_demand,
                 "gid" => $group->id,
