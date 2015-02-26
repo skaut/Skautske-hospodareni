@@ -201,7 +201,7 @@ class PaymentPresenter extends BasePresenter {
         }
         $payment = $this->model->get(array_keys($this->editUnits), $pid);
 
-        if ($this->model->sendInfo($this->template, $payment, $this->unitService)) {
+        if ($this->sendInfoMail($payment)) {
             $this->flashMessage("Informační email byl odeslán.");
         } else {
             $this->flashMessage("Informační email se nepodařilo odeslat!", "danger");
@@ -223,7 +223,7 @@ class PaymentPresenter extends BasePresenter {
         $unitIds = array_keys($this->editUnits);
         foreach ($payments as $p) {
             $payment = $this->model->get($unitIds, $p->id);
-            $cnt += $this->model->sendInfo($this->template, $payment, $this->unitService);
+            $cnt += $this->sendInfoMail($payment);
         }
 
         if ($cnt > 0) {
@@ -256,14 +256,14 @@ class PaymentPresenter extends BasePresenter {
                     "vs" => rand(1000, 100000),
                     "email_info" => $group->email_info,
                     "note" => "obsah poznámky",
-                    "groupId"=>$gid,
+                    "groupId" => $gid,
         ));
-
-        if ($this->model->sendInfo($this->template, $payment, $this->unitService)) {
+        if ($this->sendInfoMail($payment)) {
             $this->flashMessage("Testovací email byl odeslán na " . $personalDetail->Email . " .");
         } else {
             $this->flashMessage("Testovací email se nepodařilo odeslat!", "danger");
         }
+
         $this->redirect("this");
     }
 
@@ -356,6 +356,15 @@ class PaymentPresenter extends BasePresenter {
             }
         }
         $this->redirect("detail", array("id" => $v->oid));
+    }
+
+    protected function sendInfoMail($payment) {
+        try {
+            return $this->model->sendInfo($this->template, $payment, $this->unitService);
+        } catch (\Nette\Mail\SmtpException $ex) {
+            $this->flashMessage("Nepodařilo se připojit k SMTP serveru (" . $ex->getMessage() . ")", "danger");
+            $this->redirect("this");
+        }
     }
 
 }
