@@ -23,7 +23,7 @@ nette:
         email: %sinacek@gmail.com%
         strictMode: TRUE
         maxDepth: 6
-        maxLen: 500;
+        maxLen: 500
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
