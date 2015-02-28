@@ -16,7 +16,7 @@
 <div class="row">
 
     {include $templateBlockDir.'participants/list.latte'}
-    {include $templateBlockDir.'participants/participant.latte'}
+    {include $templateBlockDir.'participants/participant.latte' type=>"camp"}
 
     {* nový účastník *}
     <div n:if="$isAllowParticipantInsert" class="modal myModal fade" id="addParticipant">

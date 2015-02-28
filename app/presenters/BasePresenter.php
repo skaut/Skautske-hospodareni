@@ -35,9 +35,10 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         //adresář s částmi šablon pro použití ve více modulech
         $this->template->templateBlockDir = APP_DIR . "/templateBlocks/";
 
-//        $storage = $this->context->getByType('Nette\Http\Session')->getSection("__" . __CLASS__);
-//        $this->context->skautis->setStorage($storage, TRUE);
-        $this->template->backlink = $this->getParameter("backlink");
+        $this->template->backlink = $backlink = $this->getParameter("backlink");
+        if ($this->user->isLoggedIn() && $backlink !== NULL) {
+            $this->restoreRequest($backlink);
+        }
 
         Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
             return $container[$name] = new \Nextras\Forms\Controls\DatePicker($label);
