@@ -363,4 +363,16 @@ class PaymentService extends BaseService {
         return $result;
     }
 
+    /**
+     * CAMP
+     */
+    public function getCamp($campId) {
+        return $this->skautis->event->{"EventCampDetail"}(array("ID" => $campId));
+    }
+
+    public function getGroupByCampId($campId) {
+        $g = $this->table->getGroupsBySisId('camp', $campId);
+        return empty($g) ? FALSE : $g[0];
+    }
+
 }

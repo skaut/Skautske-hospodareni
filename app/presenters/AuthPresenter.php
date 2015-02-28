@@ -22,11 +22,11 @@ class AuthPresenter extends BasePresenter {
      * @param string $backlink 
      */
     public function actionDefault($backlink) {
-        if ($this->user->isLoggedIn()) {
-            if ($backlink) {
-                $this->restoreRequest($backlink);
-            }
-        }
+//        if ($this->user->isLoggedIn()) {
+//            if ($backlink) {
+//                $this->restoreRequest($backlink);
+//            }
+//        }
         $this->redirect(':Default:');
     }
 

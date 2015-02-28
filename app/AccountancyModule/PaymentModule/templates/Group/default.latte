@@ -1,7 +1,7 @@
 {block #content}
 <h2 n:block="title">{$nadpis}</h2>
 {include ../ActionMenu.latte}
-<a href="{$linkBack}">Zpět</a>
+<a href="{$linkBack}" class="btn btn-primary btn-sm">Zpět</a>
 
 <div n:ifset="$registration['ID']" class="alert alert-info">
     <a data-dismiss="alert" class="close">×</a>
@@ -18,10 +18,11 @@
         <ul>
             <li>Základní - slouží pro obecně libovolné platby a její funce jsou obsaženy i ve všech ostatních.</li>
             <li>Registrační - slouží pro vybírání příspěvků během registrace, protože umožnuje načíst registrované osoby ze skautisu.</li>
+            <li>Táborová - je připojena ke konkrétnímu táboru a lze přidávat platby z účastníků.</li>
         </ul>
         <p><b>Název</b><br />Název skupiny slouží pro vnitřní orientaci v platbách jednotky.</p>
         <p><b>Výchozí částka</b><br />Výchozí čátka je předvyplněna o nových plateb ve skupině.</p>
-        <p><b>Výchozí splatnost</b><br />Výchozí splatnost je předvyplněna o nových plateb ve skupině.</p>
+        <p><b>Výchozí splatnost</b><br />Výchozí splatnost je předvyplněna u nových plateb ve skupině.</p>
         <p><b>KS</b><br />Konstantní symbol je číslo, které hospodář může přidělit dané skupině plateb jako výchozí hodnotu.</p>
         <p><b>Odesílací email</b><br />Email, ze kterého se budou zasílat informace o platbách. Kromě společného výchozího lze přidat další v sekci <a n:href="Mail:">Email</a>.</p>
         <p><b>Informační email</b><br />Tento email se odchází s informacemi o platbě na email uvedený u platby.</p>
@@ -40,3 +41,13 @@
     </div>
 </div>
 
+<script>
+
+    jQuery(function ($) {
+        $('.date').each(function (i, el) {
+            el = $(el);
+            el.datetimepicker('setDaysOfWeekDisabled', [0, 6]).datetimepicker('setStartDate', '+1d').datetimepicker('setEndDate', '+6m');
+        });
+    });
+
+</script>
