@@ -71,12 +71,12 @@
                         <li n:if="!$user->isLoggedIn()" {ifCurrent :Default:about}class='active'{/ifCurrent}><a n:href=":Default:about">O projektu</a></li>
                         <li {ifCurrent :Tutorial:* }class='active'{/ifCurrent}><a n:href=":Tutorial:">Příručka</a></li>
                             {if $user->isLoggedIn()}
-                            <li {ifCurrent :Accountancy:Event:* }class='active'{/ifCurrent}><a n:href=":Accountancy:Event:Default:">Akce</a></li>
-                            <li {ifCurrent :Accountancy:Camp:* }class='active'{/ifCurrent}><a n:href=":Accountancy:Camp:Default:">Tábory{* <sup style="color:red;font-weight: bold;">BETA</sup>*}</a></li>
+                            <li><a n:href=":Accountancy:Event:Default:">Akce</a></li>
+                            <li><a n:href=":Accountancy:Camp:Default:">Tábory{* <sup style="color:red;font-weight: bold;">BETA</sup>*}</a></li>
                             <li><a n:href=":Accountancy:Travel:Default:">Cestovní příkazy</a></li>
 
-                            <li {ifCurrent :Accountancy:UnitAccount:* }class='active'{/ifCurrent}><a class="hiddenText" n:href=":Accountancy:UnitAccount:Default:">Jednotka</a></li>
-                            <li {ifCurrent :Accountancy:Payment:* }class='active'{/ifCurrent}><a class="hiddenText" n:href=":Accountancy:Payment:Payment:">Platby</a></li>
+                            <li><a class="hiddenText" n:href=":Accountancy:UnitAccount:Default:">Jednotka</a></li>
+                            <li><a class="hiddenText" n:href=":Accountancy:Payment:Payment:">Platby</a></li>
                             {/if}
                     </ul>
 
