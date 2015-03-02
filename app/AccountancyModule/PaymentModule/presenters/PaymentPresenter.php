@@ -54,7 +54,6 @@ class PaymentPresenter extends BasePresenter {
             $this->redirect("Payment:default");
         }
         $form = $this['paymentForm'];
-        $form->addSubmit('send', 'Přidat platbu')->setAttribute("class", "btn btn-primary");
         $form->setDefaults(array(
             'amount' => $group['amount'],
             'maturity' => $group['maturity'],
@@ -76,7 +75,7 @@ class PaymentPresenter extends BasePresenter {
         }
         $payment = $this->model->get(array_keys($this->editUnits), $pid);
         $form = $this['paymentForm'];
-        $form->addSubmit('send', 'Přidat')->setAttribute("class", "btn btn-primary");
+        $form['send']->caption = "Upravit";
         $form->setDefaults(array(
             'name' => $payment->name,
             'email' => $payment->email,
@@ -88,6 +87,7 @@ class PaymentPresenter extends BasePresenter {
             'oid' => $payment->groupId,
             'pid' => $payment->id,
         ));
+        
         $this->template->linkBack = $this->link("detail", array("id" => $payment->groupId));
     }
 
@@ -328,6 +328,7 @@ class PaymentPresenter extends BasePresenter {
                 ->setAttribute('class', 'form-control');
         $form->addHidden("oid");
         $form->addHidden("pid");
+        $form->addSubmit('send', 'Přidat platbu')->setAttribute("class", "btn btn-primary");
         $form->onSubmit[] = array($this, 'paymentSubmitted');
         return $form;
     }
@@ -343,7 +344,7 @@ class PaymentPresenter extends BasePresenter {
             return;
         }
         if ($v->pid != "") {//EDIT
-            if ($this->model->update($v->pid, array('name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => $v->note))) {
+            if ($this->model->update($v->pid, array('state'=>'preparing', 'name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => $v->note))) {
                 $this->flashMessage("Platba byla upravena");
             } else {
                 $this->flashMessage("Platbu se nepodařilo založit", "danger");

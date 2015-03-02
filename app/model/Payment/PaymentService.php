@@ -109,7 +109,7 @@ class PaymentService extends BaseService {
      * @return boolean
      */
     public function sendInfo(\Nette\Application\UI\ITemplate $template, $payment, UnitService $us = NULL) {
-        if ($payment->state != PaymentTable::PAYMENT_STATE_PREPARING || mb_strlen($payment->email) < 5) {
+        if (!in_array($payment->state, $this->getNonFinalStates()) || mb_strlen($payment->email) < 5) {
             return FALSE;
         }
         $oficialUnitId = $us->getOficialUnit($payment->unitId)->ID;

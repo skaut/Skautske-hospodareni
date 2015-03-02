@@ -11,9 +11,9 @@
     </div>
 </div>
 
-<div class="row">
-    {include $templateBlockDir.'cashbook/tabs.latte'}
+<div n:snippet="paragony">
     {include $templateBlockDir.'cashbook/table.latte'}
+    {include $templateBlockDir.'cashbook/js.latte'}
 </div>
 
 <div id="importHpd" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="importHpdLabel" aria-hidden="true">
@@ -29,5 +29,4 @@
         </div>
     </div>
 </div>
-
-{include $templateBlockDir.'cashbook/js.latte'}
+            
