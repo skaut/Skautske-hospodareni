@@ -1,4 +1,5 @@
 {block #content}
+<input type="text" data-provide="typeahead" class='typeahead2'>
 
 <script type="text/javascript" >
 
@@ -6,49 +7,49 @@
         $(".allDependend").addClass("disabled").attr("disabled", "disabled");
         onlyWithCheckbox("chits", "allDependend");
             
-        $( "#cashbook-tabs" ).tabs();
+        //$( "#cashbook-tabs" ).tabs();
         
         
         //Autocompleter
-        var substringMatcher = function (strs) {
-            return function findMatches(q, cb) {
-                var matches;
-                // an array that will be populated with substring matches
-                matches = [];
-                // regex used to determine if a string contains the substring `q`
-                substrRegex = new RegExp(q, 'i');
-                // iterate through the pool of strings and for any string that
-                // contains the substring `q`, add it to the `matches` array
-                $.each(strs, function (i, str) {
-                    if (substrRegex.test(str)) {
-                        // the typeahead jQuery plugin expects suggestions to a
-                        // JavaScript object, refer to typeahead docs for more info
-                        matches.push({ value: str});
-                    }
-                });
-                cb(matches.slice(0, 4));//pouze prví 4
-            };
-        };
-
-        var text = {$autoCompleter};
-        var optionsTH = {
-          hint: true,
-          highlight: true,
-          minLength: 2
-        };
-
-        var datasourceTH = {
-          name: 'states',
-          displayKey: 'value',
-          source: substringMatcher(text)
-        };
-
-        $('#form-in-recipient').typeahead(optionsTH, datasourceTH);
-        $('#form-out-recipient').typeahead(optionsTH, datasourceTH);
+//        var substringMatcher = function (strs) {
+//            return function findMatches(q, cb) {
+//                var matches;
+//                // an array that will be populated with substring matches
+//                matches = [];
+//                // regex used to determine if a string contains the substring `q`
+//                substrRegex = new RegExp(q, 'i');
+//                // iterate through the pool of strings and for any string that
+//                // contains the substring `q`, add it to the `matches` array
+//                $.each(strs, function (i, str) {
+//                    if (substrRegex.test(str)) {
+//                        // the typeahead jQuery plugin expects suggestions to a
+//                        // JavaScript object, refer to typeahead docs for more info
+//                        matches.push({ value: str});
+//                    }
+//                });
+//                cb(matches.slice(0, 4));//pouze prví 4
+//            };
+//        };
+//
+//        var text = {$autoCompleter};
+//        var optionsTH = {
+//            hint: true,
+//            highlight: true,
+//            minLength: 2
+//        };
+//
+//        var datasourceTH = {
+//            name: 'states',
+//            displayKey: 'value',
+//            source: substringMatcher(text)
+//        };
+//
+//        $('#form-recipient').typeahead(optionsTH, datasourceTH);
+        //$('#form-recipient').typeahead({ source:text });
+        $('#form-recipient').typeahead({ source:{$autoCompleter} });
 
 
         //CALC
-        var priceInputIn = $('#form-in-price');
         var priceInputOut = $('#form-out-price');
         
         //reurn bool
@@ -78,16 +79,15 @@
                         }
                     }
                     //var textPlace = obj.parent().prev().children().next();
-                    if(val.length < 1) {
-                        textPlace.html('');
-                    } else {
-                        val = val.replace(/,/g,'.').replace("(", "").replace(")", "");
-                        textPlace.html(eval(val).toFixed(0));
-                    }
+//                    if(val.length < 1) {
+//                        textPlace.html('');
+//                    } else {
+//                        val = val.replace(/,/g,'.').replace("(", "").replace(")", "");
+//                        textPlace.html(eval(val).toFixed(0));
+//                    }
                 }
             )
         }
-        priceControl(priceInputIn);
         priceControl(priceInputOut);
     })
 </script>

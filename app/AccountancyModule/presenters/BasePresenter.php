@@ -47,6 +47,7 @@ class BasePresenter extends \App\BasePresenter {
                 $this->redirect(":Default:", array("backlink" => $this->backlink));
             }
         }
+        $this->userService->updateLogoutTime();
     }
 
     function beforeRender() {

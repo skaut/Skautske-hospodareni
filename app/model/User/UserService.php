@@ -74,6 +74,10 @@ class UserService extends BaseService {
     public function isLoggedIn() {
         return $this->skautis->getUser()->isLoggedIn();
     }
+    
+    public function updateLogoutTime(){
+        return $this->skautis->getUser()->updateLogoutTime()->getLogoutDate();
+    }
 
     /**
      *
