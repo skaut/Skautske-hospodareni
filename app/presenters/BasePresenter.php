@@ -100,7 +100,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $files->addFiles(array(
             'fancybox/fancybox.css',
             'bootstrap.min.css',
-            'bootstrap-responsive.min.css',
+            'bootstrap-theme.min.css',
             'jquery-ui-1.10.0.custom.css',
             'bootstrap-datetimepicker.css',
             'typeaheadjs.css',
@@ -129,7 +129,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'dependentselectbox.ajax.js',
             'jquery.nette.dependentselectbox.js',
             'bootstrap.js',
-            'typeahead.js',
+            'bootstrap3-typeahead.min.js',
 //            'nextras.typeahead.init.js',
             'jquery.fancybox.pack.js',
 //            'offline.js',
