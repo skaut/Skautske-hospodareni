@@ -84,7 +84,14 @@ class ParticipantPresenter extends BasePresenter {
         }
 
         $participants = $this->eventService->participants->getAll($this->aid);
-        $list = $disablePersons ? array() : $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        try {
+            $list = $disablePersons ? array() : $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+        } catch (\Skautis\Wsdl\WsdlException $e) {
+            if (!$disablePersons && strpos("Timeout expired", $e->getMessage())) {
+                $this->flashMessage("Bylo vypnuto doplňování osob, protože vypršel časový limit!", 'danger');
+                $this->redirect("this", array("aid" => $aid, "uid" => $uid, "disablePersons" => 1));
+            }
+        }
 
 //        usort($participants, function($a, $b) {/* setrizeni podle abecedy */
 //                    return strcasecmp($a->Person, $b->Person);

@@ -6,6 +6,10 @@ namespace Model;
  * @author Hána František <sinacek@gmail.com>
  */
 class BudgetService extends BaseService {
+    
+    public function __construct(\Skautis\Skautis $skautis, \DibiConnection $connection) {
+        parent::__construct($skautis, $connection);
+    }
 
     public function getCategories($oid) {
         return array(

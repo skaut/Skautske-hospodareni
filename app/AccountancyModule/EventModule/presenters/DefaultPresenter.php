@@ -215,9 +215,18 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("this");
         }
         $v = $form->getValues();
-        $id = $this->eventService->event->create(
-                $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v->orgID, $v['scope'], $v['type']
-        );
+        try {
+            $id = $this->eventService->event->create(
+                    $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v->orgID, $v['scope'], $v['type']
+            );
+        } catch (\Skautis\Wsdl\WsdlException $e) {
+            if (strpos("EventGeneral_EndLesserThanStart", $e->getMessage())) {
+                $form['start']->addError("Akce nemůže dříve začít než zkončit!");
+                return;
+            } else {
+                throw $e;
+            }
+        }
 
         if ($id) {
             $this->redirect("Event:", array("aid" => $id));
