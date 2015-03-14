@@ -9,18 +9,20 @@ $list array() - pole paragonů
 *}
 {dump $list}
 {block #content}
-        <div class="row" n:if='!empty($list)'>
+        <div class="row">
             <p n:if="$isInMinus" class="alert alert-danger">
                 Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
             </p>
             <div class="well well-sm">
                 <a n:if="$isEditable && (!isset($missingCategories) || !$missingCategories) && isset($linkImportHPD)" href="{$linkImportHPD}" {if \Nette\Utils\Strings::startsWith($linkImportHPD, '#')} role="button" data-toggle="modal"{/if} class="btn btn-sm btn-primary">Načíst příjmy od účastníků</a>
-                <a n:href="export $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout pokladní knihu</a>
-                <a n:href="exportExcel $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i> Exportovat do excelu</a>
+                {if !empty($list)}
+                    <a n:href="export $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout pokladní knihu</a>
+                    <a n:href="exportExcel $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i> Exportovat do excelu</a>
+                {/if}
             </div>
         </div>
 
-        <div class="row well well-sm" n:if="$isEditable">
+        <div class="row well well-sm" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)">
             {form cashbookForm}
                 <ul class="errors" n:if="$form->hasErrors()">
                     <li n:foreach="$form->errors as $error">{$error}</li>
@@ -103,5 +105,5 @@ $list array() - pole paragonů
         </div>
     </div>{*}
     <div class="row" n:if='empty($list)'>
-        <p class="alert span4">Zatím zde nemáte žádné doklady.</p>
+        <p class="alert alert-info">Zatím zde nemáte žádné doklady.</p>
     </div>
