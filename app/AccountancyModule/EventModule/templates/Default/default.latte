@@ -7,21 +7,21 @@
 {snippet events}
     <div class="row">
         <div class="well well-sm">
-            <div class='col-lg-2 col-md-3'>
-            {if $accessCreate}
+            <div n:if="$accessCreate" class='col-lg-2 col-md-3'>
                 <button type="button" data-toggle="collapse" data-target="#createNew" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou akci</button>
-                <div class="collapse" id="createNew">
-                    <br />
-                    {control formCreate}
-                    (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
-                </div>
-            {/if}
             </div>
             {form formFilter class=>"ajax filter form-inline"}
                 <span class="hidden-xs hidden-sm">{label year /}</span>{input year onchange=>"changeYear(this.value)", class=>"form-control"}
                 <span class="hidden-xs hidden-sm">{label state /}</span>{input state onchange=>"changeState(this.value)", class=>"form-control"}
                 {input send}
             {/form}
+        </div>
+    </div>
+    <div class="row" n:if="$accessCreate">
+        <div class="collapse col-md-8 well well-sm" id="createNew">
+            <br />
+            {control formCreate}
+            (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
         </div>
     </div>
     <div class="row">
@@ -71,7 +71,7 @@
 {/snippet}
 
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
         $(".selDependend").addClass("disabled").attr("disabled", "disabled");
         onlyWithCheckbox("sel", "selDependend");
     });
@@ -82,12 +82,12 @@
         $.nette.ajax({ url: {link changeState!}+"&state="+val});
     }
 
-    Nette.validators.MyValidators_isValidDate = function(elem, args, val) {
+    Nette.validators.MyValidators_isValidDate = function (elem, args, val) {
         var regexp = /^(\d{! "{1,2}"})[\/\-\.] ?(\d{! "{1,2}"})[\/\-\.] ?(\d{! "{4}"})$/;
         var match = val.match(regexp);
 
         return match == null ? false : true;
     };
-    
+
 </script>
 

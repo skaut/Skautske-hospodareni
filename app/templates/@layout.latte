@@ -69,7 +69,7 @@
                 <div id="mainNavbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li n:if="!$user->isLoggedIn()" {ifCurrent :Default:about}class='active'{/ifCurrent}><a n:href=":Default:about">O projektu</a></li>
-                        <li {ifCurrent :Tutorial:* }class='active'{/ifCurrent}><a n:href=":Tutorial:">Příručka</a></li>
+                        {*}<li {ifCurrent :Tutorial:* }class='active'{/ifCurrent}><a n:href=":Tutorial:">Příručka</a></li>{*}
                             {if $user->isLoggedIn()}
                             <li><a n:href=":Accountancy:Event:Default:">Akce</a></li>
                             <li><a n:href=":Accountancy:Camp:Default:">Tábory{* <sup style="color:red;font-weight: bold;">BETA</sup>*}</a></li>

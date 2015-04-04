@@ -22,11 +22,17 @@ class TravelService extends BaseService {
     }
 
     public function isContractAccessible($contractId, $unit) {
-        return $this->getContract($contractId)->unit_id == $unit->ID ? TRUE : FALSE;
+        if(($contract = $this->getContract($contractId))){
+            return $contract->unit_id == $unit->ID ? TRUE : FALSE;
+        }
+        return FALSE;
     }
 
     public function isCommandAccessible($commandId, $unit) {
-        return ($this->isContractAccessible($this->getCommand($commandId)->contract_id, $unit)) ? TRUE : FALSE;
+        if(($command = $this->getCommand($commandId))){
+            return ($this->isContractAccessible($command->contract_id, $unit)) ? TRUE : FALSE;
+        }
+        return FALSE;
     }
 
     public function isVehicleAccessible($vehicleId, $unit) {
