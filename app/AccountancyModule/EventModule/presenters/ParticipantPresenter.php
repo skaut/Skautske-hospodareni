@@ -261,7 +261,8 @@ class ParticipantPresenter extends BasePresenter {
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $this->eventService->participants->update($id, $data);
+            $oldData = $this->eventService->participants->get($id);
+            $this->eventService->participants->update($id, array_merge((array) $oldData, $data));
         }
         $this->redirect('default', array("aid" => $this->aid, "uid" => $this->uid));
     }

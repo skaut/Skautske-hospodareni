@@ -40,7 +40,7 @@ class ParticipantService extends MutableBaseService {
         //$this->enableDaysAutocount($ID);
         $cacheId = __FUNCTION__ . $ID . "_" . $details;
         if (!($participants = $this->loadSes($cacheId))) {
-            $participants = (array)$this->skautis->event->{"Participant" . $this->typeName . "All"}(array("ID_Event" . $this->typeName => $ID));
+            $participants = (array) $this->skautis->event->{"Participant" . $this->typeName . "All"}(array("ID_Event" . $this->typeName => $ID));
             $campDetails = $this->type == "camp" ? $this->table->getAllCampDetails($ID) : array();
             if ($this->type == "camp") {
                 foreach (array_diff(array_keys($campDetails), array_map(create_function('$o', 'return $o->ID;'), $participants)) as $idForDelete) {
@@ -188,7 +188,7 @@ class ParticipantService extends MutableBaseService {
                 'ID' => $participantId,
                 'Real' => TRUE,
                 'Days' => array_key_exists('days', $arr) ? $arr['days'] : NULL,
-                self::PAYMENT => $arr['payment'],
+                self::PAYMENT => array_key_exists('payment', $arr) ? $arr['payment'] : NULL,
             );
             $this->skautis->event->{"Participant" . $this->typeName . "Update"}($sisData, "participant" . $this->typeName);
         }
