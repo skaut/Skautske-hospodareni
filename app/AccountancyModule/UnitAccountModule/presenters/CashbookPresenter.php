@@ -76,4 +76,10 @@ class CashbookPresenter extends BasePresenter {
         }
     }
 
+    public function actionExportExcel($aid) {
+        $event = \Nette\Utils\ArrayHash::from(array("ID"=>$aid, "prefix"=>"", "DisplayName"=>"jednotka"));
+        $this->excelService->getCashbook($this->entityService, $event);
+        $this->terminate();
+    }
+
 }
