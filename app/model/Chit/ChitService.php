@@ -43,7 +43,7 @@ class ChitService extends MutableBaseService {
             foreach ($list as $k => $i) {
                 $i->ctype = array_key_exists($i->category, $categories['in']) ? "in" : "out";
                 $i->clabel = $categories[$i->ctype][$i->category];
-                $i->cshort = mb_substr($categories[$i->ctype][$i->category], 0, 5);
+                $i->cshort = mb_substr($categories[$i->ctype][$i->category], 0, 5, 'UTF-8');
 
                 $list[$k] = $i;
             }

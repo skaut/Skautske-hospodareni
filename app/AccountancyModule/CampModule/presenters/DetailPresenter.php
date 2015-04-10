@@ -33,14 +33,19 @@ class DetailPresenter extends BasePresenter {
         $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->campService->event->getFunctions($aid) : false;
         $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
         $this->template->skautISUrl = $this->userService->getSkautisUrl();
-
-        if (is_array($this->event->ID_UnitArray->string)) {
-            $this->template->troops = array_map(function($id) {
-                return $this->unitService->getDetail($id);
-            }, $this->event->ID_UnitArray->string);
-        } elseif (is_string($this->event->ID_UnitArray->string)) {
-            $this->template->troops = array($this->unitService->getDetail($this->event->ID_UnitArray->string));
+        
+        if(property_exists($this->event->ID_UnitArray, "string")){
+            if (is_array($this->event->ID_UnitArray->string)) {
+                $this->template->troops = array_map(function($id) {
+                    return $this->unitService->getDetail($id);
+                }, $this->event->ID_UnitArray->string);
+            } elseif (is_string($this->event->ID_UnitArray->string)) {
+                $this->template->troops = array($this->unitService->getDetail($this->event->ID_UnitArray->string));
+            }
+        } else {
+            $this->template->troops = array();
         }
+        
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
