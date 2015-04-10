@@ -78,8 +78,12 @@ class CashbookPresenter extends BasePresenter {
     }
 
     public function handleActivateAutocomputedCashbook($aid) {
-        $this->campService->event->activateAutocomputedCashbook($aid);
-        $this->flashMessage("Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.");
+        try {
+            $this->campService->event->activateAutocomputedCashbook($aid);
+            $this->flashMessage("Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.");
+        } catch (\Skautis\Wsdl\PermissionException $e){
+            $this->flashMessage("Dopočítávání se nepodařilo aktivovat. Pro aktivaci musí být tábor alespoň ve stavu schváleno střediskem.", "danger");
+        }
         $this->redirect("this");
     }
 
