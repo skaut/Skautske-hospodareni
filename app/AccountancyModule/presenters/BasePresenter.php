@@ -33,7 +33,6 @@ class BasePresenter extends \App\BasePresenter {
      * @var array
      */
     protected $availableActions;
-    
     public $isCamp;
 
     protected function startup() {
@@ -47,7 +46,13 @@ class BasePresenter extends \App\BasePresenter {
                 $this->redirect(":Default:", array("backlink" => $this->backlink));
             }
         }
-        $this->userService->updateLogoutTime();
+        try {
+            $this->userService->updateLogoutTime();
+        } catch (\Skautis\Wsdl\AuthenticationException $e) {
+            $this->user->logout();
+            $this->flashMessage("Vypršelo přihlášení do skautisu.");
+            $this->redirect("this");
+        }
     }
 
     function beforeRender() {
