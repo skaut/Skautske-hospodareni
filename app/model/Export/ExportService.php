@@ -93,6 +93,8 @@ class ExportService extends BaseService {
         $income = array();
         $outcome = array();
         $activeHpd = FALSE;
+        $this->setTemplate($template, dirname(__FILE__) . '/templates/chits.latte');
+        
         foreach ($chits as $c) {
             if ($c->cshort == "hpd") {
                 $activeHpd = TRUE;
@@ -108,18 +110,23 @@ class ExportService extends BaseService {
                     throw new \Nette\InvalidStateException("Neznámý typ paragou: " . $c->ctype);
             }
         }
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/chits.latte');
-
+        $event = $eventService->event->get($aid);
+        if(in_array($eventService->event->type, array("camp", "general"))){
+            $template->oficialName = $unitService->getOficialName($event->ID_Unit);
+        } elseif($eventService->event->type == "unit") {
+            $template->oficialName = $unitService->getOficialName($event->ID);
+        } else {
+            throw new \Nette\InvalidArgumentException("Neplatný typ události v ExportService");
+        }
         //HPD 
-        if ($activeHpd && in_array($eventService->event->type, array("camp", "general"))) {
+        if ($activeHpd) {
             $template->totalPayment = $eventService->participants->getTotalPayment($aid);
             $func = $eventService->event->getFunctions($aid);
             $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : (($func[0]->ID_Person != null) ? $func[0]->Person : "");
-            $template->list = $eventService->participants->getAll($aid);
-            $template->oficialName = $unitService->getOficialName($eventService->event->get($aid)->ID_Unit);
+            $template->list = $eventService->participants->getAll($aid);   
         }
 
-        $template->event = $eventService->event->get($aid);
+        $template->event = $event;
         $template->income = $income;
         $template->outcome = $outcome;
         return $template;
