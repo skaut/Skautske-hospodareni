@@ -78,16 +78,17 @@ class ExcelService extends BaseService {
         $sheet->setCellValue('A1', "P.č.")
                 ->setCellValue('B1', "Jméno")
                 ->setCellValue('C1', "Příjmení")
-                ->setCellValue('D1', "Ulice")
-                ->setCellValue('E1', "Město")
-                ->setCellValue('F1', "PSČ")
-                ->setCellValue('G1', "Datum narození")
-                ->setCellValue('H1', "Osobodny")
-                ->setCellValue('I1', "Dětodny")
-                ->setCellValue('J1', "Zaplaceno")
-                ->setCellValue('K1', "Vratka")
-                ->setCellValue('L1', "Celkem")
-                ->setCellValue('M1', "Na účet");
+                ->setCellValue('D1', "Příjmení")
+                ->setCellValue('E1', "Ulice")
+                ->setCellValue('F1', "Město")
+                ->setCellValue('G1', "PSČ")
+                ->setCellValue('H1', "Datum narození")
+                ->setCellValue('I1', "Osobodny")
+                ->setCellValue('J1', "Dětodny")
+                ->setCellValue('K1', "Zaplaceno")
+                ->setCellValue('L1', "Vratka")
+                ->setCellValue('M1', "Celkem")
+                ->setCellValue('N1', "Na účet");
 
         $rowCnt = 2;
 
@@ -95,24 +96,25 @@ class ExcelService extends BaseService {
             $sheet->setCellValue('A' . $rowCnt, ($rowCnt - 1))
                     ->setCellValue('B' . $rowCnt, $row->FirstName)
                     ->setCellValue('C' . $rowCnt, $row->LastName)
-                    ->setCellValue('D' . $rowCnt, $row->Street)
-                    ->setCellValue('E' . $rowCnt, $row->City)
-                    ->setCellValue('F' . $rowCnt, $row->Postcode)
-                    ->setCellValue('G' . $rowCnt, !is_null($row->Birthday) ? date("d.m.Y", strtotime($row->Birthday)) : "")
-                    ->setCellValue('H' . $rowCnt, $row->Days)
-                    ->setCellValue('I' . $rowCnt, $row->Age < self::ADULT_AGE ? $row->Days : 0)
-                    ->setCellValue('J' . $rowCnt, !is_null($row->payment) ? $row->payment : 0)
-                    ->setCellValue('K' . $rowCnt, !is_null($row->repayment) ? $row->repayment : 0)
-                    ->setCellValue('L' . $rowCnt, ($row->payment - $row->repayment))
-                    ->setCellValue('M' . $rowCnt, $row->isAccount == "Y" ? "Ano" : "Ne");
+                    ->setCellValue('D' . $rowCnt, $row->NickName)
+                    ->setCellValue('E' . $rowCnt, $row->Street)
+                    ->setCellValue('F' . $rowCnt, $row->City)
+                    ->setCellValue('G' . $rowCnt, $row->Postcode)
+                    ->setCellValue('H' . $rowCnt, !is_null($row->Birthday) ? date("d.m.Y", strtotime($row->Birthday)) : "")
+                    ->setCellValue('I' . $rowCnt, $row->Days)
+                    ->setCellValue('J' . $rowCnt, $row->Age < self::ADULT_AGE ? $row->Days : 0)
+                    ->setCellValue('K' . $rowCnt, !is_null($row->payment) ? $row->payment : 0)
+                    ->setCellValue('L' . $rowCnt, !is_null($row->repayment) ? $row->repayment : 0)
+                    ->setCellValue('M' . $rowCnt, ($row->payment - $row->repayment))
+                    ->setCellValue('N' . $rowCnt, $row->isAccount == "Y" ? "Ano" : "Ne");
             $rowCnt++;
         }
         //format
-        foreach (range('A', 'M') as $columnID) {
+        foreach (range('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
-        $sheet->getStyle('A1:M1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:M' . ($rowCnt - 1));
+        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
     }
 
     protected function setSheetParticipantGeneral(&$sheet, $data, $event) {
@@ -120,33 +122,35 @@ class ExcelService extends BaseService {
         $sheet->setCellValue('A1', "P.č.")
                 ->setCellValue('B1', "Jméno")
                 ->setCellValue('C1', "Příjmení")
-                ->setCellValue('D1', "Ulice")
-                ->setCellValue('E1', "Město")
-                ->setCellValue('F1', "PSČ")
-                ->setCellValue('G1', "Datum narození")
-                ->setCellValue('H1', "Osobodny")
-                ->setCellValue('I1', "Dětodny");
+                ->setCellValue('D1', "Přezdívka")
+                ->setCellValue('E1', "Ulice")
+                ->setCellValue('F1', "Město")
+                ->setCellValue('G1', "PSČ")
+                ->setCellValue('H1', "Datum narození")
+                ->setCellValue('I1', "Osobodny")
+                ->setCellValue('J1', "Dětodny");
 
         $rowCnt = 2;
         foreach ($data as $row) {
             $sheet->setCellValue('A' . $rowCnt, ($rowCnt - 1))
                     ->setCellValue('B' . $rowCnt, $row->FirstName)
                     ->setCellValue('C' . $rowCnt, $row->LastName)
-                    ->setCellValue('D' . $rowCnt, $row->Street)
-                    ->setCellValue('E' . $rowCnt, $row->City)
-                    ->setCellValue('F' . $rowCnt, $row->Postcode)
-                    ->setCellValue('G' . $rowCnt, !is_null($row->Birthday) ? date("d.m.Y", strtotime($row->Birthday)) : "")
-                    ->setCellValue('H' . $rowCnt, $row->Days)
-                    ->setCellValue('I' . $rowCnt, ($startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE && !is_null($row->Birthday)) ? $row->Days : 0)
+                    ->setCellValue('D' . $rowCnt, $row->NickName)
+                    ->setCellValue('E' . $rowCnt, $row->Street)
+                    ->setCellValue('F' . $rowCnt, $row->City)
+                    ->setCellValue('G' . $rowCnt, $row->Postcode)
+                    ->setCellValue('H' . $rowCnt, !is_null($row->Birthday) ? date("d.m.Y", strtotime($row->Birthday)) : "")
+                    ->setCellValue('I' . $rowCnt, $row->Days)
+                    ->setCellValue('J' . $rowCnt, ($startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE && !is_null($row->Birthday)) ? $row->Days : 0)
             ;
             $rowCnt++;
         }
         //format
-        foreach (range('A', 'I') as $columnID) {
+        foreach (range('A', 'J') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
-        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:I' . ($rowCnt - 1));
+        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:J' . ($rowCnt - 1));
         $sheet->setTitle('Seznam účastníků');
     }
 
