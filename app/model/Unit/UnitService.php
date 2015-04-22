@@ -76,7 +76,7 @@ class UnitService extends BaseService {
      */
     public function getOficialName($unitId) {
         $unit = $this->getOficialUnit($unitId);
-        return "IČO " . $unit->IC . " Junák - svaz skautů a skautek ČR, " . $unit->DisplayName . ", " . $unit->Street . ", " . $unit->City . ", " . $unit->Postcode;
+        return "IČO " . $unit->IC . " Junák - český skaut, " . $unit->DisplayName . ", " . $unit->Street . ", " . $unit->City . ", " . $unit->Postcode;
     }
 
     public function getAllUnder($ID_Unit, $self = TRUE) {
