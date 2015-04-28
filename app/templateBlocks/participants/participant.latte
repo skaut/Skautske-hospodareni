@@ -118,11 +118,11 @@ $isAllowIsAccount
                 <tfoot class="onlyWithParticipants">
                     <tr>
                         {var $total = $totalPayment - $totalRepayment}
-                        <td colspan="2"></td>
+                        <td colspan="2" class="b">Celkem: {= count($participants)} osob</td>
                         <td n:if="$isAllowRepayment" class="r" id="payment-total">{$totalPayment}</td>
                         <td n:if="$isAllowIsAccount" class="r" id="repayment-total">{$totalRepayment}</td>
-                        <td class="b" {if $isAllowParticipantUpdate || $isAllowParticipantDelete}colspan="2"{/if}>
-                            Celkem: <b id="total-total">{$total}</b>
+                        <td class="b r">
+                            <span id="total-total">{$total}</span>
                         </td>
                     </tr>
                 </tfoot>
