@@ -44,7 +44,7 @@ class CashbookPresenter extends BasePresenter {
         $this->template->missingCategories = FALSE;
     }
 
-    public function renderDefault($aid, $pid = NULL, $disablePersons = FALSE) {
+    public function renderDefault($aid, $pid = NULL, $dp = FALSE) {
         if ($pid !== NULL) {
             $this->isChitEditable($pid, $this->entityService);
             $form = $this['cashbookForm'];
@@ -62,7 +62,7 @@ class CashbookPresenter extends BasePresenter {
         }
 
         $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->autoCompleter = $disablePersons ? array() : array_values($this->memberService->getCombobox(FALSE, 15));
+        $this->template->autoCompleter = $dp ? array() : array_values($this->memberService->getCombobox(FALSE, 15));
         $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->linkImportHPD = $this->link("importHpd", array("aid" => $aid));
         $this->template->object = $this->event;
