@@ -44,7 +44,7 @@ class CashbookPresenter extends BasePresenter {
 //        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
     }
 
-    public function renderDefault($aid, $pid = NULL, $disablePersons = FALSE) {
+    public function renderDefault($aid, $pid = NULL, $dp = FALSE) {
         if ($pid !== NULL) {
             $this->isChitEditable($pid, $this->entityService);
             $form = $this['cashbookForm'];
@@ -62,7 +62,7 @@ class CashbookPresenter extends BasePresenter {
         }
 
         $this->template->isInMinus = $this->campService->chits->eventIsInMinus($this->aid);
-        $this->template->autoCompleter = $disablePersons ? array() : array_values($this->memberService->getCombobox(FALSE, 15));
+        $this->template->autoCompleter = $dp ? array() : array_values($this->memberService->getCombobox(FALSE, 15));
         $this->template->list = $this->campService->chits->getAll($aid);
         $this->template->missingCategories = false;
         $this->template->linkImportHPD = "#importHpd";

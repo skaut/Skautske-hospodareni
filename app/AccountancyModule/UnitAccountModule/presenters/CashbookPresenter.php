@@ -51,7 +51,7 @@ class CashbookPresenter extends BasePresenter {
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
 
-    public function renderDefault($aid, $pid = NULL, $disablePersons = FALSE) {
+    public function renderDefault($aid, $pid = NULL, $dp = FALSE) {
         if ($pid !== NULL) {
             $this->isChitEditable($pid, $this->entityService);
             $form = $this['cashbookForm'];
@@ -69,7 +69,7 @@ class CashbookPresenter extends BasePresenter {
         }
 
         $this->template->isInMinus = FALSE; //$this->context->unitAccountService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->autoCompleter = $disablePersons ? array() : array_values($this->memberService->getCombobox(FALSE, 15));
+        $this->template->autoCompleter = $dp ? array() : array_values($this->memberService->getCombobox(FALSE, 15));
         $this->template->list = $this->entityService->chits->getAll($aid);
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");

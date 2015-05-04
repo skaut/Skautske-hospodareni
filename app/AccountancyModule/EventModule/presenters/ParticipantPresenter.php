@@ -77,7 +77,14 @@ class ParticipantPresenter extends BasePresenter {
         $this->template->directMemberOnly = $this->getDirectMemberOnly();
     }
 
-    function renderDefault($aid, $uid = NULL, $disablePersons = FALSE) {
+    /**
+     * 
+     * @param type $aid
+     * @param type $uid
+     * @param bool $dp - disabled person
+     * @throws \Skautis\Wsdl\WsdlException
+     */
+    function renderDefault($aid, $uid = NULL, $dp = FALSE) {
         if (!$this->isAllowed("EV_ParticipantGeneral_ALL_EventGeneral")) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");
             $this->redirect("Event:");
@@ -85,12 +92,13 @@ class ParticipantPresenter extends BasePresenter {
 
         $participants = $this->eventService->participants->getAll($this->aid);
         try {
-            $list = $disablePersons ? array() : $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+            $list = $dp ? array() : $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
         } catch (\Skautis\Wsdl\WsdlException $e) {
-            if (!$disablePersons && strpos("Timeout expired", $e->getMessage())) {
+            if (!$dp && strpos("Timeout expired", $e->getMessage())) {
                 $this->flashMessage("Bylo vypnuto doplňování osob, protože vypršel časový limit!", 'danger');
                 $this->redirect("this", array("aid" => $aid, "uid" => $uid, "disablePersons" => 1));
             }
+            throw $e;
         }
 
 //        usort($participants, function($a, $b) {/* setrizeni podle abecedy */
