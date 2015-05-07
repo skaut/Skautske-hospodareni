@@ -7,12 +7,11 @@ namespace Model;
  */
 class EventService extends MutableBaseService {
 
-    protected $typeLongName;
+    
     protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist");
 
-    public function __construct($name, $longName, \Skautis\Skautis $skautis, $cacheStorage, $connection) {
+    public function __construct($name, \Skautis\Skautis $skautis, $cacheStorage, $connection) {
         parent::__construct($name, $skautis, $cacheStorage, $connection);
-        $this->typeLongName = $longName;
         /** @var EventTable */
         $this->table = new EventTable($connection);
     }
@@ -28,7 +27,7 @@ class EventService extends MutableBaseService {
         $ret = array();
         if (is_array($events)) {
             foreach ($events as $e) {
-                $ret[$e->ID] = (array)$e + (array) $this->table->getByEventId($e->ID, $this->type);
+                $ret[$e->ID] = (array) $e + (array) $this->table->getByEventId($e->ID, $this->type);
             }
         }
         return $ret;
@@ -94,7 +93,7 @@ class EventService extends MutableBaseService {
     public function setFunction($ID_Event, $ID_Person, $ID_Function) {
         $query = $this->getPreparedFunctions($ID_Event);
         $query[self::$ID_Functions[$ID_Function]] = $ID_Person; //nova změna
-        return $this->skautis->event->{$this->typeLongName . "UpdateFunction"}($query);
+        return $this->skautis->event->{"Event" . $this->typeName . "UpdateFunction"}($query);
     }
 
     /**
@@ -142,7 +141,7 @@ class EventService extends MutableBaseService {
     public function getTypes() {
         $cacheId = __FUNCTION__ . $this->typeName;
         if (!($ret = $this->cache->load($cacheId))) {
-            $res = $this->skautis->event->{$this->typeLongName . "TypeAll"}();
+            $res = $this->skautis->event->{($this->typeName != "Camp" ? "Event" : "") . $this->typeName . "TypeAll"}();
             $ret = array();
             foreach ($res as $value) {
                 $ret[$value->ID] = $value->DisplayName;

@@ -17,10 +17,10 @@ class BudgetPresenter extends BasePresenter {
 
     function renderDefault($aid) {
         $toRepair = array();
-        $this->template->isConsistent = $this->campService->chits->isConsistent($aid, false, $toRepair);
+        $this->template->isConsistent = $this->eventService->chits->isConsistent($aid, false, $toRepair);
         $this->template->toRepair = $toRepair;
-        $this->template->dataEstimate = $this->campService->chits->getCategories($aid, true);
-        $this->template->dataReal = $this->campService->chits->getCategories($aid, false);
+        $this->template->dataEstimate = $this->eventService->chits->getCategories($aid, true);
+        $this->template->dataReal = $this->eventService->chits->getCategories($aid, false);
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
@@ -32,7 +32,7 @@ class BudgetPresenter extends BasePresenter {
      */
     public function handleConvert($aid) {
         $this->editableOnly();
-        $this->campService->chits->isConsistent($aid, $repair = true);
+        $this->eventService->chits->isConsistent($aid, $repair = true);
         $this->flashMessage("Kategorie byly přepočítány.");
 
         if ($this->isAjax()) {

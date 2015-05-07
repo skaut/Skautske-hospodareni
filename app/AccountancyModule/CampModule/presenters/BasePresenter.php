@@ -20,17 +20,17 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
      *
      * @var \Model\EventService
      */
-    protected $campService;
+    protected $eventService;
 
     protected function startup() {
         parent::startup();
-        $this->campService = $this->context->getService("campService");
+        $this->eventService = $this->context->getService("campService");
         $this->isCamp = $this->template->isCamp = true;
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
 
         if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
-                $this->template->event = $this->event = $this->campService->event->get($this->aid);
+                $this->template->event = $this->event = $this->eventService->event->get($this->aid);
                 $this->availableActions = $this->userService->actionVerify(self::STable, $this->aid);
                 $this->template->isEditable = $this->isEditable = $this->isAllowed(self::STable . "_UPDATE_Real");
             } catch (PermissionException $exc) {

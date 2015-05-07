@@ -95,7 +95,7 @@ abstract class BaseService extends \Nette\Object {
      * @param string $filename
      * @return pdf 
      */
-    function makePdf($template = NULL, $filename = NULL, $landscape = false) {
+    function makePdf($template = NULL, $filename = NULL, $landscape = FALSE) {
         $format = $landscape ? "A4-L" : "A4";
         if ($template === NULL) {
             return FALSE;

@@ -39,7 +39,7 @@ class CashbookPresenter extends BasePresenter {
             $this->flashMessage("Musíš vybrat akci", "danger");
             $this->redirect("Default:");
         }
-        $this->entityService = $this->campService;
+        $this->entityService = $this->eventService;
         $this->template->isEditable = $this->isEditable = ($this->isEditable || $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCostBeforeEnd"));
 //        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
     }
@@ -61,9 +61,9 @@ class CashbookPresenter extends BasePresenter {
             ));
         }
 
-        $this->template->isInMinus = $this->campService->chits->eventIsInMinus($this->aid);
+        $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid);
         $this->template->autoCompleter = $dp ? array() : array_values($this->memberService->getCombobox(FALSE, 15));
-        $this->template->list = $this->campService->chits->getAll($aid);
+        $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->missingCategories = false;
         $this->template->linkImportHPD = "#importHpd";
         $this->template->object = $this->event;
@@ -79,7 +79,7 @@ class CashbookPresenter extends BasePresenter {
 
     public function handleActivateAutocomputedCashbook($aid) {
         try {
-            $this->campService->event->activateAutocomputedCashbook($aid);
+            $this->eventService->event->activateAutocomputedCashbook($aid);
             $this->flashMessage("Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.");
         } catch (\Skautis\Wsdl\PermissionException $e){
             $this->flashMessage("Dopočítávání se nepodařilo aktivovat. Pro aktivaci musí být tábor alespoň ve stavu schváleno střediskem.", "danger");
@@ -112,13 +112,13 @@ class CashbookPresenter extends BasePresenter {
     function formImportHpdSubmitted(Form $form) {
         $this->editableOnly();
         $values = $form->getValues();
-        $data = array("date" => $this->campService->event->get($values->aid)->StartDate,
+        $data = array("date" => $this->eventService->event->get($values->aid)->StartDate,
             "recipient" => "",
             "purpose" => "úč. příspěvky " . ($values->isAccount == "Y" ? "- účet" : "- hotovost"),
-            "price" => $this->campService->participants->getCampTotalPayment($values->aid, $values->cat, $values->isAccount),
-            "category" => $this->campService->chits->getParticipantIncomeCategory($values->aid, $values->cat));
+            "price" => $this->eventService->participants->getCampTotalPayment($values->aid, $values->cat, $values->isAccount),
+            "category" => $this->eventService->chits->getParticipantIncomeCategory($values->aid, $values->cat));
 
-        if ($this->campService->chits->add($values->aid, $data)) {
+        if ($this->eventService->chits->add($values->aid, $data)) {
             $this->flashMessage("HPD byl importován");
         } else {
             $this->flashMessage("HPD se nepodařilo importovat", "danger");

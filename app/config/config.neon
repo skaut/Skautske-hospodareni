@@ -43,11 +43,11 @@ services:
     #    run: TRUE
     - \Model\AuthService
     eventService:
-        class: Model\EventEntity("General", "EventGeneral", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("General", @skautis.skautis, @cacheStorage, @dibi.connection)
     campService:
-        class: Model\EventEntity("Camp", "Camp", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("Camp", @skautis.skautis, @cacheStorage, @dibi.connection)
     unitAccountService:
-        class: Model\EventEntity("Unit", "Unit", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("Unit", @skautis.skautis, @cacheStorage, @dibi.connection)
     - \Model\MemberService
     - \Model\UnitService
     - \Model\UserService
