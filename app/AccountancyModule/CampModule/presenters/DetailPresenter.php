@@ -30,7 +30,7 @@ class DetailPresenter extends BasePresenter {
     }
     
     public function renderDefault($aid) {
-        $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->campService->event->getFunctions($aid) : false;
+        $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->eventService->event->getFunctions($aid) : false;
         $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
         $this->template->skautISUrl = $this->userService->getSkautisUrl();
         
@@ -62,13 +62,13 @@ class DetailPresenter extends BasePresenter {
             $this->flashMessage("Nemáte právo přistupovat k táboru", "warning");
             $this->redirect("default", array("aid" => $aid));
         }
-        if (!$this->campService->chits->isConsistent($aid)) {
+        if (!$this->eventService->chits->isConsistent($aid)) {
             $this->flashMessage("Data v účtech a ve skautisu jsou nekonzistentní!", "warning");
             $this->redirect("default", array("aid" => $aid));
         }
 
-        $template = $this->exportService->getCampReport($this->createTemplate(), $aid, $this->campService);
-        $this->campService->participants->makePdf($template, "reportCamp.pdf");
+        $template = $this->exportService->getCampReport($this->createTemplate(), $aid, $this->eventService);
+        $this->eventService->participants->makePdf($template, "reportCamp.pdf");
         $this->terminate();
     }
 
@@ -90,7 +90,7 @@ class DetailPresenter extends BasePresenter {
         }
         $values = $form->getValues();
 
-        if ($this->campService->event->updatePrefix($values['aid'], $values['prefix'])) {
+        if ($this->eventService->event->updatePrefix($values['aid'], $values['prefix'])) {
             $this->flashMessage("Prefix byl nastaven.");
             //$this->redirect("default", array("aid" => $values['aid']));
         } else {

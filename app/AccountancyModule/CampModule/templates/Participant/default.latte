@@ -2,36 +2,37 @@
 
 {block #content}
 <h2>{$event->DisplayName}</h2>
-{include ../ActionMenu.latte}
-
+<div class="row">
+    {include ../ActionMenu.latte}
+</div>
+{dump $list}
 {dump $participants}
 
 <div class="row" n:if="$missingAvailableAutoComputed">
     <div class="coll-md-6 alert alert-info">
-        Není aktivní dopočítávání osob!
-        <a n:href="activateAutocomputedParticipants! $aid" class="btn btn-primary">Aktivovat</a>
+        Není aktivní dopočítávání osob! <a n:href="activateAutocomputedParticipants! $aid" class="btn btn-primary">Aktivovat</a>
     </div>
 </div>
 
 <div class="row">
-
     {include $templateBlockDir.'participants/list.latte'}
     {include $templateBlockDir.'participants/participant.latte' type=>"camp"}
-
-    {* nový účastník *}
-    <div n:if="$isAllowParticipantInsert" class="modal myModal fade" id="addParticipant">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
-                    <h2>Založit nového účastníka</h2>
-                </div>
-                <div class="modal-body">
-                    {control formAddParticipantNew}
-                </div>
+</div>
+{* nový účastník *}
+<div n:if="$isAllowParticipantInsert" class="modal myModal fade" id="addParticipant">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
+                <h2>Založit nového účastníka</h2>
+                Údaje založeného účastníka nelze editovat, lze ho pouze smazat a znovu založit.
+            </div>
+            <div class="modal-body">
+                {control formAddParticipantNew}
             </div>
         </div>
     </div>
+</div>
 
-    {include $templateBlockDir.'participants/js.latte'}
-    {include $templateBlockDir.'inline-num-edit.latte'}
+{include $templateBlockDir.'participants/js.latte'}
+{include $templateBlockDir.'inline-num-edit.latte'}

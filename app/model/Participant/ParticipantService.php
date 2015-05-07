@@ -36,9 +36,9 @@ class ParticipantService extends MutableBaseService {
      * @param type $ID
      * @return array 
      */
-    public function getAll($ID, $details = FALSE) {
+    public function getAll($ID, $useDetails = FALSE, $useRegNums = FALSE) {
         //$this->enableDaysAutocount($ID);
-        $cacheId = __FUNCTION__ . $ID . "_" . $details;
+        $cacheId = __FUNCTION__ . $ID . "_" . $useDetails;
         if (!($participants = $this->loadSes($cacheId))) {
             $participants = (array) $this->skautis->event->{"Participant" . $this->typeName . "All"}(array("ID_Event" . $this->typeName => $ID));
             $campDetails = $this->type == "camp" ? $this->table->getAllCampDetails($ID) : array();
@@ -53,10 +53,21 @@ class ParticipantService extends MutableBaseService {
                 $p->isAccount = array_key_exists($p->ID, $campDetails) ? $campDetails[$p->ID]->isAccount : null;
                 $p->repayment = array_key_exists($p->ID, $campDetails) ? $campDetails[$p->ID]->repayment : null;
                 $this->setPersonName($p);
-                if ($details) {
+                if ($useDetails) {
                     $participants[$k] = \Nette\Utils\ArrayHash::from((array) $p + (array) $this->skautis->event->{"Participant" . $this->typeName . "Detail"}(array("ID" => $p->ID)));
                 }
+                if ($useRegNums) {
+                    $participants[$k]->regNum = NULL;
+                    try {
+                        if (($membership = $this->skautis->org->{"MembershipAllPerson"}(array("ID_Person" => $p->ID_Person, "IsValid" => TRUE, "ID_MembershipType" => "radne"))) && property_exists($membership, "MembershipAllOutput")) {
+                            $participants[$k]->regNum = $membership->MembershipAllOutput->RegistrationNumber;
+                        }
+                    } catch (\Skautis\Wsdl\PermissionException $ex) {
+                        //u nečlenů nebo při čestném člentsví to nic nenajde
+                    }
+                }
             }
+
             $this->saveSes($cacheId, $participants);
         }
         if (!is_array($participants)) {//pokud je prázdná třída stdClass

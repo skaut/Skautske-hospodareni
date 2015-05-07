@@ -30,12 +30,8 @@ class ExportService extends BaseService {
      * @param type $aid - ID akce
      * @param EventEntity $service
      */
-    public function getParticipants(ITemplate $template, $aid, EventEntity $service, $type = "generalEvent") {
-        if ($type == "camp") {
-            $this->setTemplate($template, dirname(__FILE__) . '/templates/participantCamp.latte');
-        } else {
-            $this->setTemplate($template, dirname(__FILE__) . '/templates/participant.latte');
-        }
+    public function getParticipants(ITemplate $template, $aid, EventEntity $service, $type = "general") {
+        $this->setTemplate($template, dirname(__FILE__) . "/templates/participant" . ($type == "camp" ? "Camp" : "") . ".latte");
         $template->list = $service->participants->getAll($aid, TRUE);
         $template->info = $service->event->get($aid);
         return $template;
@@ -94,7 +90,7 @@ class ExportService extends BaseService {
         $outcome = array();
         $activeHpd = FALSE;
         $this->setTemplate($template, dirname(__FILE__) . '/templates/chits.latte');
-        
+
         foreach ($chits as $c) {
             if ($c->cshort == "hpd") {
                 $activeHpd = TRUE;
@@ -111,9 +107,9 @@ class ExportService extends BaseService {
             }
         }
         $event = $eventService->event->get($aid);
-        if(in_array($eventService->event->type, array("camp", "general"))){
+        if (in_array($eventService->event->type, array("camp", "general"))) {
             $template->oficialName = $unitService->getOficialName($event->ID_Unit);
-        } elseif($eventService->event->type == "unit") {
+        } elseif ($eventService->event->type == "unit") {
             $template->oficialName = $unitService->getOficialName($event->ID);
         } else {
             throw new \Nette\InvalidArgumentException("Neplatný typ události v ExportService");
@@ -123,7 +119,7 @@ class ExportService extends BaseService {
             $template->totalPayment = $eventService->participants->getTotalPayment($aid);
             $func = $eventService->event->getFunctions($aid);
             $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : (($func[0]->ID_Person != null) ? $func[0]->Person : "");
-            $template->list = $eventService->participants->getAll($aid);   
+            $template->list = $eventService->participants->getAll($aid);
         }
 
         $template->event = $event;

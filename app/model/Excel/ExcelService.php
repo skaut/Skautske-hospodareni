@@ -18,7 +18,7 @@ class ExcelService extends BaseService {
         return $objPHPExcel;
     }
 
-    public function getParticipants(EventEntity $service, $event, $type = "generalEvent") {
+    public function getParticipants(EventEntity $service, $event, $type = "general") {
         $objPHPExcel = $this->getNewFile();
         $data = $service->participants->getAll($event->ID, TRUE);
         $sheet = $objPHPExcel->getActiveSheet();
