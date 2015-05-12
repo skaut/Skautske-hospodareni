@@ -152,7 +152,7 @@ class DefaultPresenter extends BasePresenter {
                 ->addRule(Form::FILLED, "Musíte vyplnit účel cesty.");
         $form->addText("place", "Místo")
                 ->setAttribute("class", "form-control");
-        $form->addText("passengers", "Spolucestující")
+        $form->addText("passengers", "Spolucestující", NULL, 64)
                 ->setAttribute("class", "form-control");
         $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
                 ->setPrompt("Vyberte vozidlo")
