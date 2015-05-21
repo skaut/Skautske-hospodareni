@@ -30,7 +30,7 @@ class BankService extends BaseService {
 
     public function pairPayments(PaymentService $ps, $unitId, $groupId = NULL) {
         $bakInfo = $this->getInfo($unitId);
-        if (!$bakInfo->token) {
+        if (!isset($bakInfo->token)) {
             return FALSE;
         }
         $payments = $this->filterVS($ps->getAll($groupId === NULL ? array_keys($ps->getGroups($unitId)) : $groupId, FALSE));
