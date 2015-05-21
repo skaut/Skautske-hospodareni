@@ -177,7 +177,7 @@ class GroupPresenter extends BasePresenter {
             }
             $this->redirect("Payment:detail", array("id" => $v->gid));
         } else {//ADD
-            if (($groupId = $this->model->createGroup($this->aid, $v->type, $v->sisId, $v->label, $v->maturity, $v->ks, $v->amount, $v->email_info))) {//, $v->email_demand
+            if (($groupId = $this->model->createGroup($this->aid, $v->type != "" ? $v->type : NULL, $v->sisId != "" ? $v->sisId : NULL, $v->label, $v->maturity, $v->ks, $v->amount, $v->email_info))) {//, $v->email_demand
                 if ($v->smtp !== NULL) {
                     $this->mail->addSmtpGroup($groupId, $v->smtp);
                 }
