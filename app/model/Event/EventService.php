@@ -8,7 +8,7 @@ namespace Model;
 class EventService extends MutableBaseService {
 
     
-    protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist");
+    protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist", "ID_PersonMedic");
 
     public function __construct($name, \Skautis\Skautis $skautis, $cacheStorage, $connection) {
         parent::__construct($name, $skautis, $cacheStorage, $connection);
@@ -77,7 +77,7 @@ class EventService extends MutableBaseService {
     protected function getPreparedFunctions($ID_Event) {
         $data = $this->getFunctions($ID_Event);
         $query = array("ID" => $ID_Event);
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i <= 3; $i++) {
             $query[self::$ID_Functions[$i]] = $data[$i]->ID_Person;
         }
         return $query;
