@@ -209,6 +209,10 @@ class EventPresenter extends BasePresenter {
     function createComponentFormHospodar($name) {
         return $this->prepareFunctionForm($name, 2, 15);
     }
+    
+    function createComponentFormZdravotnik($name) {
+        return $this->prepareFunctionForm($name, 3, 15);
+    }
 
     protected function prepareFunctionForm($name, $fid, $ageLimit = NULL) {
         $form = $this->prepareForm($this, $name);

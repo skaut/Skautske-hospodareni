@@ -126,6 +126,19 @@
                     </td>
                 </tr>
                 <tr>
+                    <td>Zdravotník <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Osoba registrovaná ve SkautISu"/></td>
+                    {if $accessFunctionUpdate && $funcEdit}
+                        <td class="r">    
+                            {form formZdravotnik class=>"functions form-inline"}{input aid}{input fid}{input person class=>"form-control"}{input send}{/form}
+                            {if $funkce[3]->ID_Person != NULL}<a n:href="removeFunction! $aid, 3" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>{/if}
+                    {elseif $funkce[3]->ID_Person != NULL}
+                        <td>{$funkce[3]->Person}
+                    {else}
+                        <td>&nbsp;
+                    {/if}
+                    </td>
+                </tr>
+                <tr>
                     <td colspan="3"><i>Funkce označené <span class="required">*</span> jsou povinné</i></td>
                 </tr>
         </table>
