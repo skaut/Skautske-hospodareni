@@ -20,7 +20,7 @@ class ExcelService extends BaseService {
 
     public function getParticipants(EventEntity $service, $event, $type = "general") {
         $objPHPExcel = $this->getNewFile();
-        $data = $service->participants->getAll($event->ID, TRUE);
+        $data = $service->participants->getAll($event->ID);
         $sheet = $objPHPExcel->getActiveSheet();
         if ($type == "camp") {
             $this->setSheetParticipantCamp($sheet, $data);

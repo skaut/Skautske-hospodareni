@@ -16,7 +16,7 @@ class ParticipantTable extends BaseTable {
      * @param type $skautiEventId
      * @return type
      */
-    public function getAllCampDetails($skautiEventId) {
+    public function getCampLocalDetails($skautiEventId) {
         return $this->connection->query("SELECT participantId, payment, repayment, isAccount FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE actionId=%i", $skautiEventId)
             ->fetchAssoc("participantId");
     }
@@ -25,7 +25,7 @@ class ParticipantTable extends BaseTable {
      * smaže záznam
      * @param type $participantId
      */
-    public function deleteDetail($participantId) {
+    public function deleteLocalDetail($participantId) {
         $this->connection->query("DELETE FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId =%i", $participantId);
     }
 

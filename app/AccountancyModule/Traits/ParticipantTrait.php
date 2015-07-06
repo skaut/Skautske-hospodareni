@@ -54,7 +54,7 @@ trait ParticipantTrait {
     }
 
     protected function traitDefault($dp, $sort, $regNums) {
-        $participants = $this->eventService->participants->getAll($this->aid, FALSE, $regNums);
+        $participants = $this->eventService->participants->getAll($this->aid);
         try {
             $list = $dp ? array() : $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
         } catch (\Skautis\Wsdl\WsdlException $e) {
@@ -79,8 +79,10 @@ trait ParticipantTrait {
         $textItems = array("regNum", "isAccount");
         $numberItems = array("Days", "payment", "repayment");
         if (count($participants) > 0) {
-            if ($sort === NULL || !in_array($sort, array_merge($textItems, $numberItems)) || !property_exists($participants[0], $sort)) {
-                $sort = "Person";
+            if($sort == "regNum"){
+                $sort = "UnitRegistrationNumber";
+            } elseif ($sort === NULL || !in_array($sort, array_merge($textItems, $numberItems)) || !property_exists($participants[0], $sort)) {
+                $sort = "Person";//default sort
             }
             $isNumeric = in_array($sort, $numberItems);
             usort($participants, function ($a, $b) use ($sort, $isNumeric) {
