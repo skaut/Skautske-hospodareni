@@ -149,8 +149,8 @@
 <div class="row">
     <div>
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-sm hidden-xs hidden-sm" data-toggle="modal"><i class="glyphicon glyphicon-pencil"></i> Upravit údaje</a>
-        <a n:if="$accessCloseEvent" n:href="close! $aid" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít akci</a>
-        <a n:if="$accessOpenEvent"  n:href="open! $aid"  class="btn btn-warning btn-sm"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
+        <a n:if="$accessCloseEvent && $event->ID_EventGeneralState == 'draft'" n:href="close! $aid" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít akci</a>
+        <a n:if="$accessOpenEvent && $event->ID_EventGeneralState == 'closed'"  n:href="open! $aid"  class="btn btn-warning btn-sm"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
         <a n:href="Event:report $aid" target="_blank" class="btn btn-info btn-sm"><i class="glyphicon glyphicon-print"></i> Záverečná zpráva</a>
         <a n:href="Event:printAll $aid" target="_blank" class="btn btn-info btn-sm hidden-xs hidden-sm" onclick="return confirm('U větších akcí může trvat generování až několik minut. Chcete pokračovat?')"><i class="glyphicon glyphicon-print"></i> Vytisknout vše</a>
 
