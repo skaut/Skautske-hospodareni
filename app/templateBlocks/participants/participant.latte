@@ -7,7 +7,7 @@ $isAllowParticipantUpdateLocal
 $isAllowParticipantDelete
 $isAllowRepayment
 $isAllowIsAccount
-$useRegNums bool
+$useRegNums bool - zobrazovat číslo jednotky
 *}
 
 {block #content}
@@ -106,7 +106,7 @@ $useRegNums bool
                         <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
                             {? $participantsNames[] = $p->Person}
                             <td><label for="massParticipants-{$p->ID}">{$p->Person}</label></td>
-                            <td n:if="$useRegNums">{$p->regNum}</td>
+                            <td n:if="$useRegNums">{$p->UnitRegistrationNumber}</td>
                             <td class="r"><a n:tag-if="$isAllowParticipantUpdate" id="par-days-{$p->ID}" class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}">{$p->Days}</a></td>
                             <td class="r"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-payment-{$p->ID}" class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->payment) && $p->payment != ""}{$p->payment|price:false}{? $totalPayment += $p->payment}{else}0{/if}</a></td>
                             <td class="r" n:if="$isAllowRepayment"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-repayment-{$p->ID}" class="num-edit" data-type='repayment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->repayment) && $p->repayment != ""}{$p->repayment|price:false}{? $totalRepayment += $p->repayment}{else}0{/if}</a></td>

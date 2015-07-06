@@ -32,7 +32,7 @@ class ExportService extends BaseService {
      */
     public function getParticipants(ITemplate $template, $aid, EventEntity $service, $type = "general") {
         $this->setTemplate($template, dirname(__FILE__) . "/templates/participant" . ($type == "camp" ? "Camp" : "") . ".latte");
-        $template->list = $service->participants->getAll($aid, TRUE);
+        $template->list = $service->participants->getAll($aid);
         $template->info = $service->event->get($aid);
         return $template;
     }
