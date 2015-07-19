@@ -1,0 +1,40 @@
+{block #content}
+<h2 n:block="title">Vratky</h2>
+
+<div class="row">
+    {if !empty($participants)}
+        {form repaymentForm}
+            <ul class="errors" n:if="$form->hasErrors()">
+                <li n:foreach="$form->errors as $error">{$error}</li>
+            </ul>
+
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th colspan="4">
+                        <span class="col-md-1">{label accountFrom /}</span>
+                        <span class="col-md-2">{input accountFrom class=>"form-control"}</span>
+                        <span class="col-md-2">{label date /}</span>
+                        <span class="col-md-2">{input date class=>"form-control date"}</span>
+                    </th>
+                </tr>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>Jméno</th>
+                    <th>Částka</th>
+                    <th>Protiúčet</th>
+                </tr>
+                <tr n:foreach="$participants as $p">
+                    <td><input type=checkbox name="ch[]" value="p_{$p->ID}"></td>
+                    <td><input type=text name="vals[{$p->ID}][name]" class="form-control" value="Vratka - {$p->Person} - {$group->label}"></td>
+                    <td><input type=text name="vals[{$p->ID}][amount]" class="form-control" value="{$p->repayment}"></td>
+                    <td><input type=text name="vals[{$p->ID}][account]" class="form-control" value="{if array_key_exists($p->ID_Person, $payments)}{$payments[$p->ID_Person]->paidFrom}{/if}"></td>
+                </tr> 
+            </table>
+            {input send}
+        {/form}
+    {else}
+        <div class="alert alert-warning">Nejsou uvedeny žádné vratky u tábora.</div>
+    {/if}
+</div>
+{*}
+{*}
