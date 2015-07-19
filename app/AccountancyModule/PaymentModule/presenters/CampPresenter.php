@@ -60,7 +60,7 @@ class CampPresenter extends BasePresenter {
         $form->addHidden("oid");
         $form->addText("defaultAmount", "Částka:")
                 ->setAttribute('class', 'input-mini');
-        $form->addDatePicker('defaultMaturity', "Splatnost:")//
+        $form->addDatePicker('defaultMaturity', "Splatnost:")
                 ->setAttribute('class', 'input-small');
         $form->addText("defaultKs", "KS:")
                 ->setAttribute('class', 'input-mini');

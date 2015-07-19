@@ -80,8 +80,8 @@ class PaymentService extends BaseService {
         return $this->update($pid, array("state" => "canceled", "dateClosed" => date("Y-m-d H:i:s")));
     }
 
-    public function completePayment($pid, $transactionId = NULL) {
-        return $this->update($pid, array("state" => "completed", "dateClosed" => date("Y-m-d H:i:s"), "transactionId" => $transactionId));
+    public function completePayment($pid, $transactionId = NULL, $paidFrom = NULL) {
+        return $this->update($pid, array("state" => "completed", "dateClosed" => date("Y-m-d H:i:s"), "transactionId" => $transactionId, "paidFrom" => $paidFrom));
     }
 
     /**
@@ -167,7 +167,7 @@ class PaymentService extends BaseService {
      * @param int $unitId
      * @return string|FALSE
      */
-    protected function getBankAccount($unitId) {
+    public function getBankAccount($unitId) {
         $accounts = $this->skautis->org->AccountAll(array("ID_Unit" => $unitId, "IsValid" => TRUE));
         if (count($accounts) == 1) {
             return $accounts[0]->DisplayName;
@@ -373,6 +373,63 @@ class PaymentService extends BaseService {
     public function getGroupByCampId($campId) {
         $g = $this->table->getGroupsBySisId('camp', $campId);
         return empty($g) ? FALSE : $g[0];
+    }
+
+    /* Repayments */
+
+    public function getFioRepaymentString($repayments, $accountFrom, $date = NULL) {
+        if ($date === NULL) {
+            $date = date("Y-m-d");
+        }
+        $accountFromArr = explode("/", $accountFrom, 2);
+        
+        $ret = '<?xml version="1.0" encoding="UTF-8"?><Import xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.fio.cz/schema/importIB.xsd"> <Orders>';
+        foreach ($repayments as $r) {
+            $accountArr = explode("/", $r['account'], 2);
+            $ret .= "<DomesticTransaction>";
+            $ret .= "<accountFrom>" . $accountFromArr[0] . "</accountFrom>";
+            $ret .= "<currency>CZK</currency>";
+            $ret .= "<amount>" . $r['amount'] . "</amount>";
+            $ret .= "<accountTo>" . $accountArr[0] . "</accountTo>";
+            $ret .= "<bankCode>" . $accountArr[1] . "</bankCode>";
+            $ret .= "<date>" . $date . "</date>";
+            $ret .= "<messageForRecipient>" . $r['name'] . "</messageForRecipient>";
+            $ret .= "<comment></comment>";
+            $ret .= "<paymentType>431001</paymentType>";
+            $ret .= "</DomesticTransaction>";
+        }
+        $ret .= "</Orders></Import>";
+        return $ret;
+    }
+    
+    public function sendFioPaymentRequest($stringToRequest, $token){
+        $curl = curl_init();
+        $file = tempnam(WWW_DIR . "/../temp/", "XML"); // Vytvoření dočasného souboru s náhodným jménem v systémové temp složce.
+        file_put_contents($file, $stringToRequest); // Do souboru se uloží XML string s vygenerovanými příkazy k úhradě.
+        $cfile = new \CURLFile($file, 'application/xml', 'import.xml'); // Připraví soubor k odeslání přes cURL.
+        try {
+            curl_setopt($curl, CURLOPT_URL, 'https://www.fio.cz/ib_api/rest/import/');
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+            curl_setopt($curl, CURLOPT_HEADER, 0);
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_VERBOSE, 0);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data; charset=utf-8;'));
+            curl_setopt($curl, CURLOPT_POSTFIELDS, array(
+                'type' => 'xml',
+                'token' => $token,
+                'lng' => 'cs',
+                'file' => $cfile
+            ));
+            $resultXML = curl_exec($curl); // Odpověď z banky.
+            curl_close($curl);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        unlink($file);
+        return $resultXML;
     }
 
 }

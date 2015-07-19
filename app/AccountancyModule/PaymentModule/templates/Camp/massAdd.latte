@@ -26,22 +26,22 @@
             </tr>
             <tr>
                 <td colspan="3"><b>Výchozí hodnoty</b> se uloží u záznamů, kde nebude hodnota vyplněna.</td>
-                <td>{input defaultAmount, value=>$detail['amount']}</td>
-                <td>{input defaultMaturity, value=>$detail['maturity']}</td>
-                <td>&nbsp;</td>
-                <td>{input defaultKs, value=>$detail['ks']}</td>
-                <td>{input defaultNote}</td>
+                <td class='col-xs-1'>{input defaultAmount, value=>$detail['amount'], class=>"form-control input-sm"}</td>
+                <td>{input defaultMaturity, value=>$detail['maturity'], class=>"form-control input-sm date"}</td>
+                <td class='col-xs-1'>&nbsp;</td>
+                <td class='col-xs-1'>{input defaultKs, value=>$detail['ks'], class=>"form-control input-sm"}</td>
+                <td>{input defaultNote, class=>"form-control input-sm"}</td>
             </tr>
             {dump $list}
             <tr n:foreach="$list as $p">
-                <td><input type=checkbox name="ch[]" value="p_{$p->ID_Person}"></td>
-                <td title="{$p->Category}"><input type=text name="vals[{$p->ID_Person}][name]" value="{$p->Person}"></td>
-                <td>{input $p->ID_Person.'_email', name=>"vals[{$p->ID_Person}][email]"}</td>
-                <td><input type=text name="vals[{$p->ID_Person}][amount]" value="{if $p->payment != 0}{$p->payment|number:0:',':''}{/if}" class="input-mini"></td>
-                <td><input type=text name="vals[{$p->ID_Person}][maturity]" class="input-small"></td>
-                <td><input type=text name="vals[{$p->ID_Person}][vs]" {if $maxVS !== NULL}value="{= ++$maxVS}" {/if}class="input-small"></td>
-                <td><input type=text name="vals[{$p->ID_Person}][ks]" class="input-mini"></td>
-                <td><input type=text name="vals[{$p->ID_Person}][note]" class="input-small"></td>
+                <td><input type=checkbox name="ch[]" value="p_{$p->ID_Person}" class="form-control input-sm"></td>
+                <td title="{$p->Category}"><input type=text name="vals[{$p->ID_Person}][name]" value="{$p->Person}" class="form-control input-sm"></td>
+                <td>{input $p->ID_Person.'_email', name=>"vals[{$p->ID_Person}][email]", class=>"form-control input-sm"}</td>
+                <td class='col-xs-1'><input type=text name="vals[{$p->ID_Person}][amount]" value="{if $p->payment != 0}{$p->payment|number:0:',':''}{/if}" class="form-control input-sm"></td>
+                <td><input type=text name="vals[{$p->ID_Person}][maturity]" class="form-control input-sm"></td>
+                <td class='col-xs-1'><input type=text name="vals[{$p->ID_Person}][vs]" {if $maxVS !== NULL}value="{= ++$maxVS}" {/if}class="form-control input-sm"></td>
+                <td class='col-xs-1'><input type=text name="vals[{$p->ID_Person}][ks]" class="form-control input-sm"></td>
+                <td><input type=text name="vals[{$p->ID_Person}][note]" class="form-control input-sm"></td>
             </tr>
         </table>
 

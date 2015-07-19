@@ -113,6 +113,28 @@ class PaymentPresenter extends BasePresenter {
         }
     }
 
+    public function renderRepayment($id) {
+        $campService = $this->context->getService("campService");
+        $accountFrom = $this->model->getBankAccount($this->aid);
+        $this->template->group = $group = $this->model->getGroup(array_keys($this->readUnits), $id);
+        $this['repaymentForm']->setDefaults(array(
+            "gid" => $group->id,
+            "accountFrom" => $accountFrom,
+        ));
+        $payments = array();
+        foreach ($this->model->getAll($id) as $p) {
+            if ($p->state == "completed" && $p->personId != NULL) {
+                $payments[$p->personId] = $p;
+            }
+        }
+        $participantsWithRepayment = array_filter($campService->participants->getAll($group->sisId), function ($p) {
+            return $p->repayment != NULL;
+        });
+
+        $this->template->participants = $participantsWithRepayment;
+        $this->template->payments = $payments;
+    }
+
     public function createComponentMassAddForm($name) {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
@@ -371,6 +393,51 @@ class PaymentPresenter extends BasePresenter {
             $this->flashMessage("Nepodařilo se připojit k SMTP serveru (" . $ex->getMessage() . ")", "danger");
             $this->redirect("this");
         }
+    }
+
+    public function createComponentRepaymentForm($name) {
+        $form = $this->prepareForm($this, $name);
+        $form->addHidden("gid");
+        $form->addText("accountFrom", "Z účtu:")
+                ->addRule(Form::FILLED, "Zadejte číslo účtu ze kterého se mají peníze poslat");
+        $form->addDatePicker("date", "Datum splatnosti:")
+                ->setDefaultValue(date("j. n. Y", strtotime("+1 Weekday")));
+        $form->addSubmit('send', 'Odeslat platby do banky')
+                ->setAttribute("class", "btn btn-primary btn-large");
+        $form->onSubmit[] = array($this, $name . 'Submitted');
+        return $form;
+    }
+
+    function repaymentFormSubmitted(Form $form) {
+        $values = $form->getValues();
+        $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
+        $vals = $form->getHttpData()['vals'];
+        $accountFrom = $values->accountFrom;
+
+        if (!$this->isEditable) {
+            $this->flashMessage("Nemáte oprávnění pro práci s platbami jednotky", "danger");
+            $this->redirect("Payment:default", array("id" => $values->gid));
+        }
+        //$list = $this->model->getPersons($this->aid, $values->oid);
+
+        $data = array();
+        foreach ($checkboxs as $pid) {
+            $pid = substr($pid, 2);
+            $data[$pid]['name'] = $vals[$pid]['name'];
+            $data[$pid]['amount'] = $vals[$pid]['amount'];
+            $data[$pid]['account'] = $vals[$pid]['account'];
+        }
+        $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $date = NULL);
+        $bankInfo = $this->bank->getInfo($this->aid);
+        $resultXML = $this->model->sendFioPaymentRequest($dataToRequest, $bankInfo->token);
+        $result = (new \SimpleXMLElement($resultXML));
+        
+        if ($result->result->errorCode) {//OK
+            $this->flashMessage("Vratky byly odeslány do banky");
+            $this->redirect("Payment:detail", array("id" => $values->gid));
+        } else {
+            $form->addError("Chyba z banky: " . $result->ordersDetails->detail->messages->message);
+        }        
     }
 
 }

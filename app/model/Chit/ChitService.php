@@ -294,9 +294,6 @@ class ChitService extends MutableBaseService {
      * @return (ID=>SUM)
      */
     public function getCategoriesSum($skautisEventId) {
-        if ($this->type != self::TYPE_CAMP) {
-            trigger_error("Metoda '" . __METHOD__ . "' je určená pouze pro tábory.", E_USER_NOTICE);
-        }
         $db = $this->table->getTotalInCategories($this->getLocalId($skautisEventId));
         $all = $this->getCategories($skautisEventId, false);
         foreach (array_keys($all) as $key) {

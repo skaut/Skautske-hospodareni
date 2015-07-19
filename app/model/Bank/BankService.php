@@ -43,7 +43,7 @@ class BankService extends BaseService {
         foreach ($this->filterVS($transactions) as $t) {
             foreach ($payments as $p) {
                 if ($t['vs'] == $p['vs'] && $t['amount'] == $p['amount']) {
-                    $cnt += $ps->completePayment($p->id, $t['id']);
+                    $cnt += $ps->completePayment($p->id, $t['id'], $t['prociucet']);
                 }
             }
         }
@@ -55,10 +55,10 @@ class BankService extends BaseService {
         $dateEnd = date("Y-m-d");
         $cacheKey = __FUNCTION__ . $token;
         if (!($transactions = $this->cache->load($cacheKey))) {
-            //$url = WWW_DIR . "/test-transactions.json";
+            //$url = WWW_DIR . "/test-transactions3.json";
+            //$file = file_get_contents($url);
             $url = "https://www.fio.cz/ib_api/rest/periods/$token/$dateStart/$dateEnd/transactions.json";
             $file = $this->getTransactions($url);
-            //$file = file_get_contents($url);
             if (!$file) {
                 return FALSE;
             }
@@ -70,7 +70,7 @@ class BankService extends BaseService {
                     $transactions[$k]['id'] = $t->column22->value;
                     $transactions[$k]['date'] = $t->column0->value;
                     $transactions[$k]['amount'] = $t->column1->value;
-                    $transactions[$k]['prociucet'] = $t->column2 !== NULL ? $t->column2->value . "/" . $t->column3->value : "";
+                    $transactions[$k]['prociucet'] = $t->column2 !== NULL ? $t->column2->value  . ($t->column3 !== NULL ?  "/" . $t->column3->value : "") : "";
                     $transactions[$k]['user'] = $t->column7 !== NULL ? $t->column7->value : ($t->column10 != NULL ? $t->column10->value : "");
                     $transactions[$k]['ks'] = isset($t->column4) ? $t->column4->value : NULL;
                     $transactions[$k]['vs'] = isset($t->column5) ? $t->column5->value : NULL;

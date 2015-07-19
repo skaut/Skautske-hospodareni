@@ -43,6 +43,7 @@
                 </ul>
             </div>
             <a n:href="pairPayments! $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>
+            <a n:if="$group->groupType == 'camp'" n:href="repayment $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
         </div>
     </div>
 </div>

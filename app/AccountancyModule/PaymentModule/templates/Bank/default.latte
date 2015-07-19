@@ -18,11 +18,7 @@
             d) Do 5 minut po úspěšné autorizaci lze token použít. 
         </div>
         <div class="well well-sm">
-            {form tokenForm}
-                <ul class="errors" n:if="$form->hasErrors()"><li n:foreach="$form->errors as $error">{$error}</li></ul>
-                <span class="required">{label token/}</span> {input token class=>"span6"} <br />
-                {label daysback/} {input daysback class=>"span1"} {input send}
-            {/form}
+            {control tokenForm}
         </div>
     </div>
 </div>
