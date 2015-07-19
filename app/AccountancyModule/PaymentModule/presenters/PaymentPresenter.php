@@ -140,6 +140,11 @@ class PaymentPresenter extends BasePresenter {
             $this->redirect("Payment:detail", array("id" => $values->oid));
         }
         //$list = $this->model->getPersons($this->aid, $values->oid);
+        
+        if(empty($checkboxs)){
+            $form->addError("Nebyla vybrána žádná osoba k přidání!");
+            return;
+        }
 
         foreach ($checkboxs as $pid) {
             $pid = substr($pid, 2);
@@ -320,7 +325,7 @@ class PaymentPresenter extends BasePresenter {
                 ->setAttribute('class', 'form-control')
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
-        $form->addText("ks", "KS", NULL, 10)
+        $form->addText("ks", "KS", NULL, 4)
                 ->setAttribute('class', 'form-control')
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
