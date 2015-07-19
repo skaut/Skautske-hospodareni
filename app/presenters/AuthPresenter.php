@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Skautis\Exception\AuthenticationException;
+use Skautis\Wsdl\AuthenticationException;
 
 class AuthPresenter extends BasePresenter {
 
