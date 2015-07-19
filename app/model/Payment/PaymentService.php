@@ -382,7 +382,7 @@ class PaymentService extends BaseService {
             $date = date("Y-m-d");
         }
         $accountFromArr = explode("/", $accountFrom, 2);
-        
+
         $ret = '<?xml version="1.0" encoding="UTF-8"?><Import xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.fio.cz/schema/importIB.xsd"> <Orders>';
         foreach ($repayments as $r) {
             $accountArr = explode("/", $r['account'], 2);
@@ -401,13 +401,19 @@ class PaymentService extends BaseService {
         $ret .= "</Orders></Import>";
         return $ret;
     }
-    
-    public function sendFioPaymentRequest($stringToRequest, $token){
+
+    public function sendFioPaymentRequest($stringToRequest, $token) {
         $curl = curl_init();
         $file = tempnam(WWW_DIR . "/../temp/", "XML"); // Vytvoření dočasného souboru s náhodným jménem v systémové temp složce.
         file_put_contents($file, $stringToRequest); // Do souboru se uloží XML string s vygenerovanými příkazy k úhradě.
-        $cfile = new \CURLFile($file, 'application/xml', 'import.xml'); // Připraví soubor k odeslání přes cURL.
         try {
+            //$cfile = new \CURLFile($file, 'application/xml', 'import.xml'); // Připraví soubor k odeslání přes cURL pro PHP 5.5 a vyšší
+            $this->curl_custom_postfields($curl, array(
+                'type' => 'xml',
+                'token' => $token,
+                'lng' => 'cs',
+                    ), array("file" => $file));
+
             curl_setopt($curl, CURLOPT_URL, 'https://www.fio.cz/ib_api/rest/import/');
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);
@@ -416,13 +422,13 @@ class PaymentService extends BaseService {
             curl_setopt($curl, CURLOPT_POST, 1);
             curl_setopt($curl, CURLOPT_VERBOSE, 0);
             curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data; charset=utf-8;'));
-            curl_setopt($curl, CURLOPT_POSTFIELDS, array(
-                'type' => 'xml',
-                'token' => $token,
-                'lng' => 'cs',
-                'file' => $cfile
-            ));
+//            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data; charset=utf-8;'));
+//            curl_setopt($curl, CURLOPT_POSTFIELDS, array(
+//                'type' => 'xml',
+//                'token' => $token,
+//                'lng' => 'cs',
+//                'file' => $cfile
+//            ));
             $resultXML = curl_exec($curl); // Odpověď z banky.
             curl_close($curl);
         } catch (Exception $e) {
@@ -430,6 +436,75 @@ class PaymentService extends BaseService {
         }
         unlink($file);
         return $resultXML;
+    }
+
+    /**
+     * For safe multipart POST request for PHP5.3 ~ PHP 5.4.
+     *
+     * @param resource $ch cURL resource
+     * @param array $assoc "name => value"
+     * @param array $files "name => path"
+     * @return bool
+     */
+    function curl_custom_postfields($ch, array $assoc = array(), array $files = array()) {
+
+        // invalid characters for "name" and "filename"
+        static $disallow = array("\0", "\"", "\r", "\n");
+
+        // build normal parameters
+        foreach ($assoc as $k => $v) {
+            $k = str_replace($disallow, "_", $k);
+            $body[] = implode("\r\n", array(
+                "Content-Disposition: form-data; name=\"{$k}\"",
+                "",
+                filter_var($v),
+            ));
+        }
+
+        // build file parameters
+        foreach ($files as $k => $v) {
+            switch (true) {
+                case false === $v = realpath(filter_var($v)):
+                case!is_file($v):
+                case!is_readable($v):
+                    continue; // or return false, throw new InvalidArgumentException
+            }
+            $data = file_get_contents($v);
+            $v = call_user_func("end", explode(DIRECTORY_SEPARATOR, $v));
+            $k = str_replace($disallow, "_", $k);
+            $v = str_replace($disallow, "_", $v);
+            $body[] = implode("\r\n", array(
+                "Content-Disposition: form-data; name=\"{$k}\"; filename=\"{$v}\"",
+                "Content-Type: application/octet-stream",
+                "",
+                $data,
+            ));
+        }
+
+        // generate safe boundary
+        do {
+            $boundary = "---------------------" . md5(mt_rand() . microtime());
+        } while (preg_grep("/{$boundary}/", $body));
+
+        // add boundary for each parameters
+        array_walk($body, function (&$part) use ($boundary) {
+            $part = "--{$boundary}\r\n{$part}";
+        });
+
+        // add final boundary
+        $body[] = "--{$boundary}--";
+        $body[] = "";
+
+        // set options
+        return @curl_setopt_array($ch, array(
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => implode("\r\n", $body),
+                    CURLOPT_HTTPHEADER => array(
+                        "Expect: 100-continue",
+                        "charset=utf-8",
+                        "Content-Type: multipart/form-data; boundary={$boundary}", // change Content-Type
+                    ),
+        ));
     }
 
 }

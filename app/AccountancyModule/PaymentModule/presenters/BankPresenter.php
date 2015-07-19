@@ -42,7 +42,8 @@ class BankPresenter extends BasePresenter {
     public function createComponentTokenForm($name) {
         $form = $this->prepareForm($this, $name);
         $form->addText("token", "API Token");
-        $form->addText("daysback", "Počet dní kontrolovaných nazpět");
+        $form->addText("daysback", "Počet dní kontrolovaných nazpět")
+                ->setDefaultValue(14);
         $form->addSubmit('send', 'Nastavit')
                 ->setAttribute("class", "btn btn-primary");
         $form->onSubmit[] = array($this, $name . 'Submitted');

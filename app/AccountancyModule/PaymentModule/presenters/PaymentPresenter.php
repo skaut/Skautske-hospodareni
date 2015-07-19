@@ -162,8 +162,8 @@ class PaymentPresenter extends BasePresenter {
             $this->redirect("Payment:detail", array("id" => $values->oid));
         }
         //$list = $this->model->getPersons($this->aid, $values->oid);
-        
-        if(empty($checkboxs)){
+
+        if (empty($checkboxs)) {
             $form->addError("Nebyla vybrána žádná osoba k přidání!");
             return;
         }
@@ -420,6 +420,11 @@ class PaymentPresenter extends BasePresenter {
         }
         //$list = $this->model->getPersons($this->aid, $values->oid);
 
+        if (empty($checkboxs)) {
+            $form->addError("Nebyl vybrán žádný záznam k vrácení!");
+            return;
+        }
+
         $data = array();
         foreach ($checkboxs as $pid) {
             $pid = substr($pid, 2);
@@ -428,16 +433,20 @@ class PaymentPresenter extends BasePresenter {
             $data[$pid]['account'] = $vals[$pid]['account'];
         }
         $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $date = NULL);
-        $bankInfo = $this->bank->getInfo($this->aid);
+        if (!($bankInfo = $this->bank->getInfo($this->aid))) {
+            $this->flashMessage("Není zadán API token z banky!", "danger");
+            $this->redirect("this");
+        }
+
         $resultXML = $this->model->sendFioPaymentRequest($dataToRequest, $bankInfo->token);
         $result = (new \SimpleXMLElement($resultXML));
-        
+
         if ($result->result->errorCode) {//OK
             $this->flashMessage("Vratky byly odeslány do banky");
             $this->redirect("Payment:detail", array("id" => $values->gid));
         } else {
             $form->addError("Chyba z banky: " . $result->ordersDetails->detail->messages->message);
-        }        
+        }
     }
 
 }
