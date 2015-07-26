@@ -6,7 +6,18 @@
     <div class="well well-sm">
         <a n:href="this !$onlyOpen" class="btn btn-info">Zobrazit {if $onlyOpen}i uzavřené skupiny{else}pouze otevřené{/if}</a>
         {if $isEditable}
-            <a n:href="Group:" class="btn btn-primary"><i class="glyphicon  glyphicon glyphicon-plus-sign"></i> Založit skupinu plateb</a>
+            <span class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="createGroup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <i class="glyphicon glyphicon-plus-sign"></i> Založit skupinu plateb <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="createGroup">
+                    <li><a n:href="Group:">Obecná</a></li>
+                    <li><a n:href="Group: camp">Tábor</a></li>
+                    <li><a n:href="Group: registration">Registrace</a></li>
+                </ul>
+            </span>
+
+            {*}<a n:href="Group:" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit skupinu plateb</a>{*}
             {*}<a n:href="pairPayments!" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>{*}
             <a n:href="Bank:" class="btn btn-primary"><i class="glyphicon glyphicon-book"></i> Bankovní účet</a>
             <a n:href="Mail:" class="btn btn-primary"><i class="glyphicon glyphicon-envelope"></i> Emaily</a>

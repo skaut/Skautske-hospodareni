@@ -114,7 +114,7 @@ class PaymentTable extends BaseTable {
      * @return type
      */
     public function createGroup($arr) {
-        return $this->connection->insert(self::TABLE_PA_GROUP, $arr)->execute(\Dibi::IDENTIFIER);
+        return $this->connection->insert(self::TABLE_PA_GROUP, $arr)->execute(\dibi::IDENTIFIER);
     }
 
     /**
@@ -146,6 +146,13 @@ class PaymentTable extends BaseTable {
      */
     public function getMaxVS($groupId) {
         return $this->connection->fetchSingle("SELECT MAX(vs) FROM [" . self::TABLE_PA_PAYMENT . "] WHERE groupId=%i", $groupId, " AND state != 'canceled'");
+    }
+
+    /**
+     * vrací seznam id táborů se založenou aktivní skupinou
+     */
+    public function getCampIds() {
+        return $this->connection->fetchPairs("SELECT sisId, label FROM [" . self::TABLE_PA_GROUP . "] WHERE groupType = 'camp' AND state != 'canceled' ");
     }
 
 }

@@ -374,6 +374,13 @@ class PaymentService extends BaseService {
         $g = $this->table->getGroupsBySisId('camp', $campId);
         return empty($g) ? FALSE : $g[0];
     }
+    
+    /**
+     * vrací seznam id táborů se založenou aktivní skupinou
+     */
+    public function getCampIds(){
+        return $this->table->getCampIds();
+    }
 
     /* Repayments */
 
