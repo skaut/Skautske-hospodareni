@@ -45,5 +45,9 @@ class MailTable extends BaseTable {
     public function addSmtpGroup($groupId, $smtpId) {
         return $this->connection->query("INSERT INTO [" . self::TABLE_PA_GROUP_SMTP . "] (groupId, smtpId) VALUES (%i, ", $groupId, "  %i)", $smtpId, " ON DUPLICATE KEY UPDATE smtpId=%i", $smtpId);
     }
+    
+    public function removeSmtpGroup($groupId) {
+        return $this->connection->query("DELETE FROM [" . self::TABLE_PA_GROUP_SMTP . "] WHERE groupId = ", $groupId, " LIMIT 1");
+    }
 
 }

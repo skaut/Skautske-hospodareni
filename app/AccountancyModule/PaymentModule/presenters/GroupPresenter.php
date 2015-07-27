@@ -213,6 +213,8 @@ class GroupPresenter extends BasePresenter {
             ));
             if ($v->smtp !== NULL) {
                 $isUpdate = $this->mail->addSmtpGroup($groupId, $v->smtp) || $isUpdate;
+            } else {
+                $isUpdate = $this->mail->removeSmtpGroup($groupId) || $isUpdate;
             }
             if ($isUpdate) {
                 $this->flashMessage("Skupina byla upravena");

@@ -83,6 +83,10 @@ class MailService extends BaseService {
         return $this->table->addSmtpGroup($groupId, $smtpId);
     }
 
+    public function removeSmtpGroup($groupId) {
+        return $this->table->removeSmtpGroup($groupId);
+    }
+
     //Odesílání emailů
 
     public function sendPaymentInfo(\Nette\Application\UI\ITemplate $template, $to, $subject, $body, $groupId = NULL, $qrPrefix = NULL) {
