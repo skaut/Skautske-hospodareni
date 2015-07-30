@@ -30,7 +30,7 @@ $(document).ready(function() {
         $source.removeClass("onEdit");
         var field = $source.data('type');
         var dataId = $source.data('id');
-        origValue = $source.data('orig-value') != "" ? $source.data('orig-value') : 0;
+        origValue = $source.data('orig-value') !== "" ? $source.data('orig-value') : 0;
         var newValue = parseFloat($source.text().replace(",", "."));
         if(isNaN(newValue)){
             newValue = 0;
@@ -38,32 +38,32 @@ $(document).ready(function() {
         $source.text(newValue);
 
         // sending changed data
-        if(origValue != newValue){
-        topAlertBoxText.append('<li class="alertBox-saving-'+dataId+'"><span>Ukládám ...</span></li>');
-        calculateSum(field);
-        $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: newValue }, function(){
-            topAlertBoxText.find('li.alertBox-saving-'+dataId).fadeOut('slow').remove();
-            topAlertBoxText.append('<li class="alertBox-saved-'+dataId+'"><span>Uloženo.</span></li>')//<a href="#">Vrátit úpravu?</a>
-                    .find('li.alertBox-saved-'+dataId).delay(alertBoxTime).fadeOut('slow');
-                 // undo link
-            {*}
-            topAlertBoxText.find('a').live('click', function(event){
-                event.stopImmediatePropagation();
-                $(this).parent().parent().remove();
-                topAlertBoxText.find('li.alertBox-saved-'+dataId).fadeOut('slow').remove();
-                $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: origValue }, function(){
-                    topAlertBoxText.append('<li class="alertBox-back-'+dataId+'"><span>Úprava byla vrácena zpět</span></li>')
-                        .find('li.alertBox-back-'+dataId).delay(alertBoxTime).fadeOut('slow');
-                    console.log($("#par-"+field+"-"+dataId));
-                    $("#par-"+field+"-"+dataId).text(origValue);
-                    calculateSum(field);
+        if(origValue !== newValue){
+            topAlertBoxText.append('<li class="alertBox-saving-'+dataId+'"><span>Ukládám ...</span></li>');
+            calculateSum(field);
+            $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: newValue }, function(){
+                topAlertBoxText.find('li.alertBox-saving-'+dataId).fadeOut('slow').remove();
+                topAlertBoxText.append('<li class="alertBox-saved-'+dataId+'"><span>Uloženo.</span></li>')//<a href="#">Vrátit úpravu?</a>
+                        .find('li.alertBox-saved-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                     // undo link
+                {*}
+                topAlertBoxText.find('a').live('click', function(event){
+                    event.stopImmediatePropagation();
+                    $(this).parent().parent().remove();
+                    topAlertBoxText.find('li.alertBox-saved-'+dataId).fadeOut('slow').remove();
+                    $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: origValue }, function(){
+                        topAlertBoxText.append('<li class="alertBox-back-'+dataId+'"><span>Úprava byla vrácena zpět</span></li>')
+                            .find('li.alertBox-back-'+dataId).delay(alertBoxTime).fadeOut('slow');
+                        console.log($("#par-"+field+"-"+dataId));
+                        $("#par-"+field+"-"+dataId).text(origValue);
+                        calculateSum(field);
+                    });
+                    return false;
                 });
-                return false;
+                {*}
             });
-            {*}
-        });
-        event.preventDefault();
-    }
+            event.preventDefault();
+        }
 
     };
 
@@ -79,8 +79,8 @@ $(document).ready(function() {
         var amount = 0;
 //        alert(type);
         $("[data-type='"+type+"']").each(function() {
-            var val = $(this).text();
-            if(!isNaN(val) && val.length!=0) {
+            var val = $(this).text().replace(/\D+/g, "");
+            if(!isNaN(val) && val.length !== 0) {
                 amount += parseFloat(val);
             }
         });

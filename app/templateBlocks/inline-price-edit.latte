@@ -68,8 +68,8 @@ $(document).ready(function() {
         var amount = 0;
 //        alert(type);
         $("[data-type='"+type+"']").each(function() {
-            var val = $(this).text();
-            if(!isNaN(val) && val.length!=0) {
+            var val = $(this).text().replace(/\D+/g, "");
+            if(!isNaN(val) && val.length !== 0) {
                 amount += parseFloat(val);
             }
         });
