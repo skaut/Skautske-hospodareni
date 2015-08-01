@@ -6,12 +6,12 @@
 		"nette/nette": "~2.3",
                 "skautis/skautis": "2.*@dev",
                 "skautis/nette": "2.*@dev",
-                "janmarek/webloader": "2.2.*",
+                "janmarek/webloader": "~2.4",
                 "dg/dibi" : "~2.3",
-                "srigi/nette-visualpaginator": "dev-master",
-                "phpoffice/phpexcel": "1.8.0",
-                "mpdf/mpdf": "v5.7.1",
-		"nextras/forms": "~1.4",
+                "srigi/nette-visualpaginator": "~1.0",
+                "phpoffice/phpexcel": "~1.8",
+                "mpdf/mpdf": "~6.0",
+		"nextras/forms": "~1.6",
                 "foowie/dependentselectbox": "dev-master"
 	},
 	"require-dev": {
