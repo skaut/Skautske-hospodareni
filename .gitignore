@@ -1,0 +1,16 @@
+/www/webtemp
+/www/images
+htaccess
+/app/config/config.*.neon
+!/app/config/config.sample.local.neon
+/vendor
+/temp
+/log
+/source
+/nbproject
+*.log
+deployment.*
+/www/*.json
+tests/*
+/composer.lock
+/archiv
