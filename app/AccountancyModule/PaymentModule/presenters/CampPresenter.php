@@ -35,8 +35,7 @@ class CampPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
         $participants = $this->campService->participants->getAll($detail->sisId);
-        $paymentPersonIds = array_flip(array_map(function($a){return $a->personId;}, $this->model->getAll($id)));
-        
+        $paymentPersonIds = array_flip(array_filter(array_map(function($a){return $a->personId;}, $this->model->getAll($id))));
         $form = $this['campForm'];
         $form['oid']->setDefaultValue($id);
         $list = array();
@@ -62,7 +61,7 @@ class CampPresenter extends BasePresenter {
                 ->setAttribute('class', 'input-mini');
         $form->addDatePicker('defaultMaturity', "Splatnost:")
                 ->setAttribute('class', 'input-small');
-        $form->addText("defaultKs", "KS:")
+        $form->addText("defaultKs", "KS:", NULL, 4)
                 ->setAttribute('class', 'input-mini');
         $form->addText("defaultNote", "Poznámka:")
                 ->setAttribute('class', 'input-small');

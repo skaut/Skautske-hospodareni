@@ -142,8 +142,7 @@ class PaymentPresenter extends BasePresenter {
                 ->setAttribute('class', 'form-control input-sm');
         $form->addDatePicker('defaultMaturity', "Splatnost:")//
                 ->setAttribute('class', 'form-control input-sm');
-        $form->addText("defaultKs", "KS:")
-                ->setAttribute('class', 'form-control input-sm');
+        $form->addText("defaultKs", "KS:", NULL, 4);
         $form->addText("defaultNote", "Poznámka:")
                 ->setAttribute('class', 'form-control input-sm');
         $form->addSubmit('send', 'Přidat vybrané')
@@ -349,8 +348,7 @@ class PaymentPresenter extends BasePresenter {
                 ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addText("ks", "KS", NULL, 4)
                 ->setAttribute('class', 'form-control')
-                ->addCondition(Form::FILLED)
-                ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
+                ->addCondition(Form::FILLED)->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
         $form->addText("note", "Poznámka")
                 ->setAttribute('class', 'form-control');
         $form->addHidden("oid");
