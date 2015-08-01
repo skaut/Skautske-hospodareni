@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0901306b7dc891728c5287f810f47a04",
+    "hash": "0f72c6030ee5c091673ce2d6f1c675db",
     "packages": [
         {
             "name": "dg/dibi",
@@ -112,29 +112,61 @@
         },
         {
             "name": "janmarek/webloader",
-            "version": "2.2.0",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/janmarek/WebLoader.git",
-                "reference": "5e62831fe7ba5779b97ebd0c23439dbcef80d102"
+                "reference": "00de2c8772c121f3de9d80b1922f2179a23b36fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/janmarek/WebLoader/zipball/5e62831fe7ba5779b97ebd0c23439dbcef80d102",
-                "reference": "5e62831fe7ba5779b97ebd0c23439dbcef80d102",
+                "url": "https://api.github.com/repos/janmarek/WebLoader/zipball/00de2c8772c121f3de9d80b1922f2179a23b36fe",
+                "reference": "00de2c8772c121f3de9d80b1922f2179a23b36fe",
                 "shasum": ""
             },
             "require": {
-                "nette/nette": "~2.0@rc"
+                "nette/application": "~2.3@dev",
+                "nette/di": "~2.3@dev",
+                "nette/utils": "~2.3@dev"
             },
             "require-dev": {
+                "jakub-onderka/php-parallel-lint": "~0.7",
+                "latte/latte": "~2.3@dev",
+                "leafo/scssphp": "~0.1",
                 "mockery/mockery": "0.7.*",
-                "phpunit/phpunit": "3.7.*"
+                "nette/application": "~2.3@dev",
+                "nette/bootstrap": "~2.3@dev",
+                "nette/caching": "~2.3@dev",
+                "nette/component-model": "~2.2@dev",
+                "nette/database": "~2.3@dev",
+                "nette/deprecated": "~2.2@dev",
+                "nette/di": "~2.3@dev",
+                "nette/finder": "~2.3@dev",
+                "nette/forms": "~2.3@dev",
+                "nette/http": "~2.3@dev",
+                "nette/mail": "~2.3@dev",
+                "nette/neon": "~2.3@dev",
+                "nette/php-generator": "~2.3@dev",
+                "nette/reflection": "~2.3@dev",
+                "nette/robot-loader": "~2.3@dev",
+                "nette/safe-stream": "~2.3@dev",
+                "nette/security": "~2.3@dev",
+                "nette/tokenizer": "~2.2@dev",
+                "nette/utils": "~2.3@dev",
+                "oyejorge/less.php": "~1.5",
+                "phpunit/phpunit": "3.7.*",
+                "tracy/tracy": "~2.3@dev"
             },
             "suggest": {
-                "leafo/lessphp": "Lessphp is a composer for LESS written in PHP."
+                "leafo/scssphp": "Scssphp is a composer for SCSS written in PHP.",
+                "oyejorge/less.php": "Lessphp is a composer for LESS written in PHP."
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.4-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "WebLoader": ""
@@ -147,9 +179,7 @@
             "authors": [
                 {
                     "name": "Jan Marek",
-                    "email": "mail@janmarek.net",
-                    "homepage": "http://www.janmarek.net/",
-                    "role": "Author"
+                    "email": "mail@janmarek.net"
                 }
             ],
             "description": "Tool for loading or deploying CSS and JS files into web pages",
@@ -161,7 +191,7 @@
                 "nette",
                 "webloader"
             ],
-            "time": "2014-01-01 16:54:25"
+            "time": "2015-02-21 15:03:15"
         },
         {
             "name": "latte/latte",
@@ -220,19 +250,20 @@
         },
         {
             "name": "mpdf/mpdf",
-            "version": "v5.7.1",
+            "version": "v6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpdf/mpdf.git",
-                "reference": "ca266f29a20ed00ee351aadee1934ddcfbbe4b53"
+                "reference": "a15743d030ce3b5b7be36c6e83f76589b27c3f2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/ca266f29a20ed00ee351aadee1934ddcfbbe4b53",
-                "reference": "ca266f29a20ed00ee351aadee1934ddcfbbe4b53",
+                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/a15743d030ce3b5b7be36c6e83f76589b27c3f2c",
+                "reference": "a15743d030ce3b5b7be36c6e83f76589b27c3f2c",
                 "shasum": ""
             },
             "require": {
+                "ext-mbstring": "*",
                 "php": ">=4.3.10"
             },
             "type": "library",
@@ -258,7 +289,7 @@
                 "php",
                 "utf-8"
             ],
-            "time": "2013-09-02 12:16:35"
+            "time": "2015-03-01 10:27:49"
         },
         {
             "name": "nette/application",
@@ -1421,16 +1452,16 @@
         },
         {
             "name": "phpoffice/phpexcel",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b"
+                "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/e69a5e4d0ffa7fb6f171859e0a04346e580df30b",
-                "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
+                "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
                 "shasum": ""
             },
             "require": {
@@ -1474,7 +1505,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2014-03-02 15:22:49"
+            "time": "2015-05-01 07:00:55"
         },
         {
             "name": "skautis/nette",
@@ -1608,7 +1639,7 @@
         },
         {
             "name": "srigi/nette-visualpaginator",
-            "version": "dev-master",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/srigi/nette-visualpaginator.git",
@@ -1822,7 +1853,6 @@
     "stability-flags": {
         "skautis/skautis": 20,
         "skautis/nette": 20,
-        "srigi/nette-visualpaginator": 20,
         "foowie/dependentselectbox": 20,
         "janmarek/mockista": 20
     },
