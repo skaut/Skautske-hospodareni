@@ -438,8 +438,8 @@ class PaymentPresenter extends BasePresenter {
 
         $resultXML = $this->model->sendFioPaymentRequest($dataToRequest, $bankInfo->token);
         $result = (new \SimpleXMLElement($resultXML));
-
-        if ($result->result->errorCode) {//OK
+        
+        if ($result->result->errorCode == 0) {//OK
             $this->flashMessage("Vratky byly odeslány do banky");
             $this->redirect("Payment:detail", array("id" => $values->gid));
         } else {

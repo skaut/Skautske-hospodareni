@@ -187,7 +187,7 @@ abstract class AccountancyHelpers extends Object {
 //            $string .= "," . $parts[1];
 //        }
 //        return ucfirst($string);
-        return mb_convert_case(mb_substr($string, 0, 1), MB_CASE_UPPER, "UTF-8") . mb_substr($string, 1);
+        return mb_strtoupper(mb_substr($string, 0, 1, "UTF-8"), "UTF-8") . mb_substr($string, 1, NULL, "UTF-8");
     }
 
     public static function yesno($s) {
