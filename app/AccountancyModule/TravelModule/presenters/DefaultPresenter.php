@@ -147,10 +147,10 @@ class DefaultPresenter extends BasePresenter {
                 ->setPrompt("Vyberte smlouvu")
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vybrat smlouvu");
-        $form->addText("purpose", "Účel cesty*")
+        $form->addText("purpose", "Účel cesty*", NULL, 64)
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit účel cesty.");
-        $form->addText("place", "Místo")
+        $form->addText("place", "Místo", NULL, 64)
                 ->setAttribute("class", "form-control");
         $form->addText("passengers", "Spolucestující", NULL, 64)
                 ->setAttribute("class", "form-control");

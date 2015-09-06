@@ -53,6 +53,7 @@ class CashbookPresenter extends BasePresenter {
             $form->setDefaults(array(
                 "pid" => $pid,
                 "date" => $chit->date->format("j. n. Y"),
+                "num" => $chit->num,
                 "recipient" => $chit->recipient,
                 "purpose" => $chit->purpose,
                 "price" => $chit->priceText,
