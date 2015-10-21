@@ -125,9 +125,16 @@ $useRegNums bool - zobrazovat číslo jednotky
                         <td colspan="{if $useRegNums}3{else}2{/if}" class="b">Celkem: {= count($participants)} osob</td>
                         <td n:if="$isAllowRepayment" class="r" id="payment-total">{$totalPayment}</td>
                         <td n:if="$isAllowIsAccount" class="r" id="repayment-total">{$totalRepayment}</td>
-                        <td class="b r">
-                            <span id="total-total">{$total}</span>
-                        </td>
+                        {if !$isAllowRepayment}
+                            <td class="b r"><span id="total-total">{$total}</span></td>
+                        {else}
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td colspan="2" class="b r"><span id="total-total">{$total}</span></td>
+                            <td></td>
+                        {/if}
                     </tr>
                 </tfoot>
             </table>
