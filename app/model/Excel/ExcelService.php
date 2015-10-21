@@ -128,7 +128,8 @@ class ExcelService extends BaseService {
                 ->setCellValue('G1', "PSČ")
                 ->setCellValue('H1', "Datum narození")
                 ->setCellValue('I1', "Osobodny")
-                ->setCellValue('J1', "Dětodny");
+                ->setCellValue('J1', "Dětodny")
+                ->setCellValue('K1', "Zaplaceno");
 
         $rowCnt = 2;
         foreach ($data as $row) {
@@ -142,6 +143,7 @@ class ExcelService extends BaseService {
                     ->setCellValue('H' . $rowCnt, !is_null($row->Birthday) ? date("d.m.Y", strtotime($row->Birthday)) : "")
                     ->setCellValue('I' . $rowCnt, $row->Days)
                     ->setCellValue('J' . $rowCnt, ($startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE && !is_null($row->Birthday)) ? $row->Days : 0)
+                    ->setCellValue('K' . $rowCnt, $row->payment)
             ;
             $rowCnt++;
         }

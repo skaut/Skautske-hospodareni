@@ -24,9 +24,10 @@ td {
 <table class="all" border="1">
     <tr>
         <th style="width: 5%;">P.č.</th>
-        <th style="width: 33%">Příjmení a jméno</th>
-        <th style="width: 50%">Adresa</th>
+        <th style="width: 30%">Příjmení a jméno</th>
+        <th style="width: 45%">Adresa</th>
         <th style="width: 12%;">Dat. nar.</th>
+        <th style="width: 8%;">Zaplaceno</th>
     </tr>
     {dump $list}
     {if is_array($list) || $list instanceof \Traversable}
@@ -35,6 +36,7 @@ td {
         <td>{$u->Person}</td>
         <td>{if $u->Street != ""}{$u->Street}{else}&nbsp;{/if}{if $u->City != ""}, {$u->City}{/if}{if $u->Postcode != ""}, {$u->Postcode}{/if}</td>
         <td style="text-align: right;">{$u->Birthday|date:"d.m.Y"}</td>
+        <td style="text-align: right;">{$u->payment|price:0} Kč</td>
     </tr>
     {/if}
 </table>
