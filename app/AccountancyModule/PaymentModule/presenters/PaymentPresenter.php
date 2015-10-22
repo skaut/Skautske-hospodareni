@@ -389,6 +389,7 @@ class PaymentPresenter extends BasePresenter {
             return $this->model->sendInfo($this->template, $payment, $this->unitService);
         } catch (\Nette\Mail\SmtpException $ex) {
             $this->flashMessage("Nepodařilo se připojit k SMTP serveru (" . $ex->getMessage() . ")", "danger");
+            $this->flashMessage("V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs", "warning");
             $this->redirect("this");
         }
     }
