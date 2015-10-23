@@ -48,11 +48,11 @@ class PaymentPresenter extends BasePresenter {
     public function renderDetail($id) {
         $this->template->units = $this->readUnits;
         $this->template->group = $group = $this->model->getGroup(array_keys($this->readUnits), $id);
-        $maxVS = $this->model->getMaxVS($group['id']);
         if (!$group) {
             $this->flashMessage("Nemáte oprávnění zobrazit detail plateb", "warning");
             $this->redirect("Payment:default");
         }
+        $this->template->maxVS = $maxVS = $this->model->getMaxVS($group['id']);
         $form = $this['paymentForm'];
         $form->setDefaults(array(
             'amount' => $group['amount'],
@@ -324,6 +324,29 @@ class PaymentPresenter extends BasePresenter {
         } else {
             $this->flashMessage("Žádné platby nebyly spárovány");
         }
+        $this->redirect("this");
+    }
+        
+    public function handleGenerateVs($gid) {
+        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
+        if (!$group) {
+            $this->flashMessage("Nemáte oprávnění zobrazit detail plateb", "warning");
+            $this->redirect("Payment:default");
+        }
+        $maxVS = $this->model->getMaxVS($group['id']);
+        if(is_null($maxVS)) {
+            $this->flashMessage("Vyplňte VS libovolné platbě a další pak již budou dogenerovány způsobem +1.", "warning");
+            $this->redirect("this");
+        }
+        $payments = $this->model->getAll($gid);
+        $cnt = 0;
+        foreach ($payments as $payment) {
+            if(is_null($payment->vs)) {
+                $this->model->update($payment->id, array("vs"=> ++$maxVS));
+                $cnt++;
+            }
+        }
+        $this->flashMessage("Počet dogenerovaných VS: $cnt", "success");
         $this->redirect("this");
     }
 

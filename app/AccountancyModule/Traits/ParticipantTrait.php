@@ -79,13 +79,15 @@ trait ParticipantTrait {
         $textItems = array("regNum", "isAccount");
         $numberItems = array("Days", "payment", "repayment");
         if (count($participants) > 0) {
-            if($sort == "regNum"){
+            if ($sort == "regNum"){
                 $sort = "UnitRegistrationNumber";
             } elseif ($sort === NULL || !in_array($sort, array_merge($textItems, $numberItems)) || !property_exists($participants[0], $sort)) {
-                $sort = "Person";//default sort
+                $sort = "Person"; //default sort
             }
             $isNumeric = in_array($sort, $numberItems);
             usort($participants, function ($a, $b) use ($sort, $isNumeric) {
+                if(!property_exists($a, $sort)) {return TRUE;}
+                if(!property_exists($b, $sort)) {return FALSE;}
                 return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort}, $b->{$sort});
             });
         }
