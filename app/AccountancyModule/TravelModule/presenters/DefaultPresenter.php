@@ -141,6 +141,13 @@ class DefaultPresenter extends BasePresenter {
     protected function makeCommandForm($name) {
         $contracts = $this->travelService->getAllContractsPairs($this->unit->ID);
         $vehicles = $this->travelService->getVehiclesPairs($this->unit->ID);
+        
+        if(!empty($contracts["past"])){
+            $contracts = array("platné"=>$contracts["valid"], "ukončené"=>$contracts["past"]);
+        } else {
+            $contracts = $contracts["valid"];
+        }
+        
 
         $form = $this->prepareForm($this, $name);
         $form->addSelect("contract_id", "Smlouva", $contracts)

@@ -21,7 +21,7 @@
             <th>Platná od:</th>
             <th>Platná do:</th>
         </tr>
-        <tr n:foreach="$list as $c">
+        <tr n:foreach="$list as $c" {if $c->end->format("U")< time()}class='warning' title='Platnost smlouvy skončila'{/if}>
             <td>
                 <a n:href="print $c->id" class="btn btn-info btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i> Vytisknout</a>
                 <a n:href="detail $c->id" class="btn btn-primary btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
