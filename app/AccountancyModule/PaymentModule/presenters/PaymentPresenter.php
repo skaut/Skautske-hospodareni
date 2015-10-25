@@ -221,13 +221,14 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function handleSend($pid) {
-        if (!$this->isEditable || !$this->model->get(array_keys($this->editUnits), $pid)) {
+        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
+        if (!$this->isEditable || !$group || !$this->model->get(array_keys($this->editUnits), $pid)) {
             $this->flashMessage("Neplatný požadavek na odeslání emailu!", "danger");
             $this->redirect("this");
         }
         $payment = $this->model->get(array_keys($this->editUnits), $pid);
 
-        if ($this->sendInfoMail($payment)) {
+        if ($this->sendInfoMail($payment, $group)) {
             $this->flashMessage("Informační email byl odeslán.");
         } else {
             $this->flashMessage("Informační email se nepodařilo odeslat!", "danger");
@@ -240,7 +241,8 @@ class PaymentPresenter extends BasePresenter {
      * @param int $gid groupId
      */
     public function handleSendGroup($gid) {
-        if (!$this->isEditable) {
+        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
+        if (!$this->isEditable || !$group) {
             $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
             $this->redirect("this");
         }
@@ -249,7 +251,7 @@ class PaymentPresenter extends BasePresenter {
         $unitIds = array_keys($this->editUnits);
         foreach ($payments as $p) {
             $payment = $this->model->get($unitIds, $p->id);
-            $cnt += $this->sendInfoMail($payment);
+            $cnt += $this->sendInfoMail($payment, $group);
         }
 
         if ($cnt > 0) {
@@ -284,7 +286,7 @@ class PaymentPresenter extends BasePresenter {
                     "note" => "obsah poznámky",
                     "groupId" => $gid,
         ));
-        if ($this->sendInfoMail($payment)) {
+        if ($this->sendInfoMail($payment, $group)) {
             $this->flashMessage("Testovací email byl odeslán na " . $personalDetail->Email . " .");
         } else {
             $this->flashMessage("Testovací email se nepodařilo odeslat!", "danger");
@@ -429,9 +431,9 @@ class PaymentPresenter extends BasePresenter {
         $this->redirect("detail", array("id" => $v->oid));
     }
 
-    protected function sendInfoMail($payment) {
+    protected function sendInfoMail($payment, $group) {
         try {
-            return $this->model->sendInfo($this->template, $payment, $this->unitService);
+            return $this->model->sendInfo($this->template, $payment, $group, $this->unitService);
         } catch (\Nette\Mail\SmtpException $ex) {
             $this->flashMessage("Nepodařilo se připojit k SMTP serveru (" . $ex->getMessage() . ")", "danger");
             $this->flashMessage("V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs", "warning");

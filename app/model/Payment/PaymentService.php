@@ -108,7 +108,7 @@ class PaymentService extends BaseService {
      * @param \Model\UnitService $us
      * @return boolean
      */
-    public function sendInfo(\Nette\Application\UI\ITemplate $template, $payment, UnitService $us = NULL) {
+    public function sendInfo(\Nette\Application\UI\ITemplate $template, $payment, $group, UnitService $us = NULL) {
         if (!in_array($payment->state, $this->getNonFinalStates()) || mb_strlen($payment->email) < 5) {
             return FALSE;
         }
@@ -150,7 +150,10 @@ class PaymentService extends BaseService {
 //            die();
         }
         $qrcode = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $qrFilename . '"/>';
-        $body = str_replace(array("%account%", "%qrcode%", "%name%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), array($accountRaw, $qrcode, $payment->name, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info);
+        $body = str_replace(
+                array("%account%", "%qrcode%", "%name%", "%groupname%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), 
+                array($accountRaw, $qrcode, $payment->name, $group->label, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info
+                );
         if (($mailSend = ($this->mailService->sendPaymentInfo($template, $payment->email, "Informace o platbě", $body, $payment->groupId, $qrPrefix)))) {
             if (isset($payment->id)) {
                 $this->table->update($payment->id, array("state" => PaymentTable::PAYMENT_STATE_SEND));
