@@ -56,6 +56,17 @@ class ContractPresenter extends BasePresenter {
         $this->unitService->makePdf($template, "Smlouva-o-proplaceni-cestovnich-nahrad.pdf");
     }
 
+    public function handleDelete($contractId) {
+        $commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contractId);
+        if (!empty($commands)) {
+            $this->flashMessage("Nelze smazat smlouvu s navázanými cestovními příkazy!", "danger");
+            $this->redirect("this");
+        }
+        $this->travelService->deleteContract($contractId);
+        $this->flashMessage("Smlouva byla smazána", "success");
+        $this->redirect("default");
+    }
+
     /**
      * formular na zalozeni nove smlouvy
      * @param type $name
