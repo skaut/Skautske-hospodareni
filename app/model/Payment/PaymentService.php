@@ -238,8 +238,8 @@ class PaymentService extends BaseService {
      * @param array $arr
      * @return type
      */
-    public function updateGroup($groupId, $arr) {
-        return $this->table->updateGroup($groupId, $arr);
+    public function updateGroup($groupId, $arr, $openOnly = TRUE) {
+        return $this->table->updateGroup($groupId, $arr, $openOnly);
     }
 
     /**

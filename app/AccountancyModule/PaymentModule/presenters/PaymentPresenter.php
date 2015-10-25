@@ -326,27 +326,49 @@ class PaymentPresenter extends BasePresenter {
         }
         $this->redirect("this");
     }
-        
+
     public function handleGenerateVs($gid) {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
-        if (!$group) {
-            $this->flashMessage("Nemáte oprávnění zobrazit detail plateb", "warning");
+        if (!$this->isEditable || !$group) {
+            $this->flashMessage("Nemáte oprávnění generovat VS!", "danger");
             $this->redirect("Payment:default");
         }
         $maxVS = $this->model->getMaxVS($group['id']);
-        if(is_null($maxVS)) {
+        if (is_null($maxVS)) {
             $this->flashMessage("Vyplňte VS libovolné platbě a další pak již budou dogenerovány způsobem +1.", "warning");
             $this->redirect("this");
         }
         $payments = $this->model->getAll($gid);
         $cnt = 0;
         foreach ($payments as $payment) {
-            if(is_null($payment->vs)) {
-                $this->model->update($payment->id, array("vs"=> ++$maxVS));
+            if (is_null($payment->vs)) {
+                $this->model->update($payment->id, array("vs" => ++$maxVS));
                 $cnt++;
             }
         }
         $this->flashMessage("Počet dogenerovaných VS: $cnt", "success");
+        $this->redirect("this");
+    }
+
+    public function handleCloseGroup($gid) {
+        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
+        if (!$this->isEditable || !$group) {
+            $this->flashMessage("Nejste oprávněni úpravám akce!", "danger");
+            $this->redirect("this");
+        }
+        $userData = $this->userService->getUserDetail();
+        $this->model->updateGroup($gid, array("state" => "closed", "state_info" => "Uživatel " . $userData->Person . " uzavřel skupinu plateb dne " . date("j.n.Y H:i")));
+        $this->redirect("this");
+    }
+
+    public function handleOpenGroup($gid) {
+        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
+        if (!$this->isEditable || !$group) {
+            $this->flashMessage("Nejste oprávněni úpravám akce!", "danger");
+            $this->redirect("this");
+        }
+        $userData = $this->userService->getUserDetail();
+        $this->model->updateGroup($gid, array("state" => "open", "state_info" => "Uživatel " . $userData->Person . " otevřel skupinu plateb dne " . date("j.n.Y H:i")), FALSE);
         $this->redirect("this");
     }
 
@@ -462,7 +484,7 @@ class PaymentPresenter extends BasePresenter {
 
         $resultXML = $this->model->sendFioPaymentRequest($dataToRequest, $bankInfo->token);
         $result = (new \SimpleXMLElement($resultXML));
-        
+
         if ($result->result->errorCode == 0) {//OK
             $this->flashMessage("Vratky byly odeslány do banky");
             $this->redirect("Payment:detail", array("id" => $values->gid));
