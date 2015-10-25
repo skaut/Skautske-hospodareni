@@ -194,7 +194,7 @@ class ParticipantService extends MutableBaseService {
                     ($isAccount == "Y" xor $p->isAccount == "Y")) {
                 continue;
             }
-            $res += ($p->payment - $p->repayment);
+            $res += $p->payment;// - $p->repayment
         }
         return $res;
     }
