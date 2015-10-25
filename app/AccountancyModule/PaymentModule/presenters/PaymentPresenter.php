@@ -341,7 +341,7 @@ class PaymentPresenter extends BasePresenter {
         $payments = $this->model->getAll($gid);
         $cnt = 0;
         foreach ($payments as $payment) {
-            if (is_null($payment->vs)) {
+            if (is_null($payment->vs) && $payment->state == "preparing") {
                 $this->model->update($payment->id, array("vs" => ++$maxVS));
                 $cnt++;
             }
