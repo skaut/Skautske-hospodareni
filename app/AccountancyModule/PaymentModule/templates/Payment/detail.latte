@@ -12,7 +12,7 @@
             </tr>
             <tr n:if="!is_null($group->state)">
                 <th class="l">Stav skupiny:</th>
-                <td>{$group->state|groupState|noescape}</td>
+                <td title='{$group->state_info}'>{$group->state|groupState|noescape}</td>
             </tr>
             <tr>
                 <th class="l">Typ skupiny:</th>
@@ -29,24 +29,30 @@
     </div>
 </div> 
 <div class="row">
-    <div class="col-md-12" n:if="$group->state =='open' && $isEditable">
+    <div class="col-md-12">
         <div class="well well-sm">
-            <a n:href="Group:edit aid=>$group->unitId, $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit skupinu</a>
-            <a n:if="$group->groupType == 'registration'" n:href="Registration:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphglyphicon glyphicon-plus-sign hidden-xs hidden-sm"></i> Přidat z registrace</a>
-            <a n:if="$group->groupType == 'camp'" n:href="Camp:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphglyphicon glyphicon-plus-sign hidden-xs hidden-sm"></i> Přidat z účastníků</a>
-            <a n:href="massAdd $group->id" class="btn btn-primary">Hromadné přidání <sup style="color:red;">BETA</sup></a>
-            <div class="btn-group">
-                <a class="btn dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#">
-                    <i class="glyphicon glyphicon-envelope"></i> Email <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a n:href="sendTest! $group->id">Zaslat testovací email</a></li>
-                    <li><a {if $isGroupSendActive} href="{link sendGroup! $group->id}" onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily{else} class="disabled" title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s>{/if}</a></li>
-                </ul>
-            </div>
-            <a n:href="pairPayments! $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>
-            <a n:if="$group->groupType == 'camp'" n:href="repayment $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
-            <a n:href="generateVS! $group->id" class="btn btn-warning" {if is_null($maxVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
+            {if $group->state =='open' && $isEditable}
+                <a n:href="Group:edit aid=>$group->unitId, $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit skupinu</a>
+                <a n:if="$group->groupType == 'registration'" n:href="Registration:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphglyphicon glyphicon-plus-sign hidden-xs hidden-sm"></i> Přidat z registrace</a>
+                <a n:if="$group->groupType == 'camp'" n:href="Camp:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphglyphicon glyphicon-plus-sign hidden-xs hidden-sm"></i> Přidat z účastníků</a>
+                <a n:href="massAdd $group->id" class="btn btn-primary">Hromadné přidání <sup style="color:red;">BETA</sup></a>
+                <div class="btn-group">
+                    <a class="btn dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#">
+                        <i class="glyphicon glyphicon-envelope"></i> Email <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a n:href="sendTest! $group->id">Zaslat testovací email</a></li>
+                        <li><a {if $isGroupSendActive} href="{link sendGroup! $group->id}" onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily{else} class="disabled" title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s>{/if}</a></li>
+                    </ul>
+                </div>
+                <a n:href="pairPayments! $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>
+                <a n:if="$group->groupType == 'camp'" n:href="repayment $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
+                <a n:href="generateVS! $group->id" class="btn btn-warning" {if is_null($maxVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
+                <a n:href="closeGroup! $group->id" class="btn btn-success"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
+            {else}
+                <a n:if="$group->state == 'closed'" n:href="openGroup! $group->id"  class="btn btn-warning"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
+            {/if}
+            
         </div>
     </div>
 </div>

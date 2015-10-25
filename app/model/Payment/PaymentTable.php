@@ -135,8 +135,12 @@ class PaymentTable extends BaseTable {
      * @param array $arr
      * @return type
      */
-    public function updateGroup($groupId, $arr) {
-        return $this->connection->update(self::TABLE_PA_GROUP, $arr)->where("id=%i", $groupId)->where("state='open'")->execute();
+    public function updateGroup($groupId, $arr, $openOnly) {
+        $query = $this->connection->update(self::TABLE_PA_GROUP, $arr)->where("id=%i", $groupId); 
+        if($openOnly) {
+            $query = $query->where("state='open'");
+        }
+        return $query->execute();
     }
 
     /**
