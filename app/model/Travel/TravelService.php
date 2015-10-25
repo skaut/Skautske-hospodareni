@@ -141,6 +141,10 @@ class TravelService extends BaseService {
         } //nastavuje platnost smlouvy na 3 roky
         return $this->tableContract->add($values);
     }
+    
+    public function deleteContract($contractId) {
+         return $this->tableContract->delete($contractId);
+    }
 
     /**     COMMANDS    */
     public function getCommand($commandId) {
