@@ -24,7 +24,7 @@
                 <th>Začátek platnosti</th>
                 <td>{$contract->start|date:"j. n. Y"}</td>
             </tr>
-            <tr>
+            <tr {if $contract->end->format("U")< time()}class='warning' title='Platnost smlouvy skončila'{/if}>
                 <th>Konec platnosti</th>
                 <td>{$contract->end|date:"j. n. Y"}</td>
             </tr>

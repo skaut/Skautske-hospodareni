@@ -22,14 +22,14 @@ class TravelService extends BaseService {
     }
 
     public function isContractAccessible($contractId, $unit) {
-        if(($contract = $this->getContract($contractId))){
+        if (($contract = $this->getContract($contractId))) {
             return $contract->unit_id == $unit->ID ? TRUE : FALSE;
         }
         return FALSE;
     }
 
     public function isCommandAccessible($commandId, $unit) {
-        if(($command = $this->getCommand($commandId))){
+        if (($command = $this->getCommand($commandId))) {
             return ($this->isContractAccessible($command->contract_id, $unit)) ? TRUE : FALSE;
         }
         return FALSE;
@@ -119,10 +119,18 @@ class TravelService extends BaseService {
 
     public function getAllContractsPairs($unitId) {
         $data = $this->getAllContracts($unitId);
-        $res = array();
+        $res = array("valid" => array(), "past" => array());
 
         foreach ($data as $i) {
-            $res[$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
+
+            if ($i->end->format("U") > time()) {
+                $res["valid"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
+            } else {
+                if ($i->end->format("Y") < date("Y") - 1) {#skoncila uz predloni
+                    continue;
+                }
+                $res["past"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
+            }
         }
         return $res;
     }
