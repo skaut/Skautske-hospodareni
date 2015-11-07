@@ -7,8 +7,9 @@
 <div class="row">
     <div class="well well-sm">
         <a n:href="editCommand $command->id" n:if="$isEditable" class="fancybox fancybox.ajax btn btn-sm btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit</a>
-        <a n:href="removeCommand! $command->id" n:if="$command->closed == NULL" title="Smazat" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon glyphicon-remove"></i> Smazat</a>
-        <a n:href="closeCommand! $command->id" n:if="$isEditable" class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete nenávratně uzavřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
+        <a n:href="removeCommand! $command->id" n:if="is_null($command->closed)" title="Smazat" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon glyphicon-remove"></i> Smazat</a>
+        <a n:href="closeCommand! $command->id" n:if="$isEditable" class="btn btn-sm btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
+        <a n:href="openCommand! $command->id" n:if="!is_null($command->closed)" class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
         <a n:href="Contract:detail $contract->id" class="btn btn-sm btn-primary hidden-xs"><i class="glyphicon glyphicon-zoom-in"></i> Smlouva</a>
         <a n:href="print $command->id" class="btn btn-sm btn-info hidden-xs"><i class="glyphicon glyphicon-print"></i> Vytisknout cestovní příkaz</a>
     </div>
