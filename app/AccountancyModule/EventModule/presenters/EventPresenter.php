@@ -170,7 +170,8 @@ class EventPresenter extends BasePresenter {
         $form->addText("location", "Místo");
         $form->addSelect("type", "Typ (+)", $this->eventService->event->getTypes());
         $form->addSelect("scope", "Rozsah (+)", $this->eventService->event->getScopes());
-        $form->addText("prefix", "Prefix", NULL, 6);
+        $form->addText("prefix", "Prefix")
+                ->setMaxLength(6);
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
                         ->setAttribute("class", "btn btn-primary")

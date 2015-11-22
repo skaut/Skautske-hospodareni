@@ -142,7 +142,8 @@ class PaymentPresenter extends BasePresenter {
                 ->setAttribute('class', 'form-control input-sm');
         $form->addDatePicker('defaultMaturity', "Splatnost:")//
                 ->setAttribute('class', 'form-control input-sm');
-        $form->addText("defaultKs", "KS:", NULL, 4);
+        $form->addText("defaultKs", "KS:")
+                ->setMaxLength(4);
         $form->addText("defaultNote", "Poznámka:")
                 ->setAttribute('class', 'form-control input-sm');
         $form->addSubmit('send', 'Přidat vybrané')
@@ -389,11 +390,13 @@ class PaymentPresenter extends BasePresenter {
                 ->addRule(Form::EMAIL, "Zadaný email nemá platný formát");
         $form->addDatePicker("maturity", "Splatnost")
                 ->setAttribute('class', 'form-control');
-        $form->addText("vs", "VS", NULL, 10)
+        $form->addText("vs", "VS")
+                ->setMaxLength(10)
                 ->setAttribute('class', 'form-control')
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
-        $form->addText("ks", "KS", NULL, 4)
+        $form->addText("ks", "KS")
+                ->setMaxLength(4)
                 ->setAttribute('class', 'form-control')
                 ->addCondition(Form::FILLED)->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
         $form->addText("note", "Poznámka")
