@@ -71,7 +71,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
                     throw $ex;
                 }
                 $this->flashMessage("Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.");
-                $this->redirect(":Default:Default:");
+                $this->redirect(":Default:");
             }
         }
         $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");

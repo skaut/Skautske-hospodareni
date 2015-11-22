@@ -113,7 +113,7 @@ class PaymentPresenter extends BasePresenter {
         }
     }
 
-    public function renderRepayment($id) {
+    public function actionRepayment($id) {
         $campService = $this->context->getService("campService");
         $accountFrom = $this->model->getBankAccount($this->aid);
         $this->template->group = $group = $this->model->getGroup(array_keys($this->readUnits), $id);
@@ -130,6 +130,26 @@ class PaymentPresenter extends BasePresenter {
         $participantsWithRepayment = array_filter($campService->participants->getAll($group->sisId), function ($p) {
             return $p->repayment != NULL;
         });
+        
+        $form = $this['repaymentForm'];
+        foreach ($participantsWithRepayment as $p) {
+            $pid = "p_" . $p->ID;
+            $form->addCheckbox($pid);
+            $form->addText($pid . "_name")
+                    ->setDefaultValue("Vratka - " . $p->Person . " - " . $group->label)
+                    ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
+                    ->setRequired("Zadejte název vratky!");
+            $form->addText($pid . "_amount")
+                    ->setDefaultValue($p->repayment)
+                    ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
+                        ->setRequired("Zadejte částku vratky u " . $p->Person)
+                        ->addRule(Form::NUMERIC, "Vratka musí být číslo!");
+            $account = isset($payments[$p->ID_Person]->paidFrom) ? $payments[$p->ID_Person]->paidFrom : "";
+            $form->addText($pid . "_account")
+                    ->setDefaultValue($account)
+                    ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
+                    ->addRule(Form::PATTERN, "Zadejte platný bankovní účet u " . $p->Person, "[0-9]{5,}/[0-9]{4}$");
+        }
 
         $this->template->participants = $participantsWithRepayment;
         $this->template->payments = $payments;
@@ -222,12 +242,12 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function handleSend($pid) {
-        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
+        $payment = $this->model->get(array_keys($this->editUnits), $pid);
+        $group = $this->model->getGroup(array_keys($this->readUnits), $payment->groupId);
         if (!$this->isEditable || !$group || !$this->model->get(array_keys($this->editUnits), $pid)) {
             $this->flashMessage("Neplatný požadavek na odeslání emailu!", "danger");
             $this->redirect("this");
         }
-        $payment = $this->model->get(array_keys($this->editUnits), $pid);
 
         if ($this->sendInfoMail($payment, $group)) {
             $this->flashMessage("Informační email byl odeslán.");
@@ -458,28 +478,34 @@ class PaymentPresenter extends BasePresenter {
     }
 
     function repaymentFormSubmitted(Form $form) {
-        $values = $form->getValues();
-        $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
-        $vals = $form->getHttpData()['vals'];
-        $accountFrom = $values->accountFrom;
-
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro práci s platbami jednotky", "danger");
             $this->redirect("Payment:default", array("id" => $values->gid));
         }
         //$list = $this->model->getPersons($this->aid, $values->oid);
 
-        if (empty($checkboxs)) {
+        $values = $form->getValues();
+        $accountFrom = $values->accountFrom;
+        $ids = array_keys(array_filter((array) $values, function($val) {
+                    return(is_bool($val) && $val);
+                }));
+
+        if (empty($ids)) {
             $form->addError("Nebyl vybrán žádný záznam k vrácení!");
             return;
         }
 
+        $bankValidator = new \BankAccountValidator\Czech();
         $data = array();
-        foreach ($checkboxs as $pid) {
+        foreach ($ids as $pid) {
             $pid = substr($pid, 2);
-            $data[$pid]['name'] = $vals[$pid]['name'];
-            $data[$pid]['amount'] = $vals[$pid]['amount'];
-            $data[$pid]['account'] = $vals[$pid]['account'];
+            $data[$pid]['name'] = $values["p_" . $pid . "_name"];
+            $data[$pid]['amount'] = $values["p_" . $pid . "_amount"];
+            $data[$pid]['account'] = $values["p_" . $pid . "_account"];
+            if (!($bankValidator->validate($data[$pid]['account']))) {
+                $form->addError("Neplatné číslo účtu: '" . $data[$pid]['account'] . "' u jména '" . $data[$pid]['name'] . "' !");
+                return;
+            }
         }
         $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $date = NULL);
         if (!($bankInfo = $this->bank->getInfo($this->aid))) {
