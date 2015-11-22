@@ -61,7 +61,8 @@ class CampPresenter extends BasePresenter {
                 ->setAttribute('class', 'input-mini');
         $form->addDatePicker('defaultMaturity', "Splatnost:")
                 ->setAttribute('class', 'input-small');
-        $form->addText("defaultKs", "KS:", NULL, 4)
+        $form->addText("defaultKs", "KS:")
+                ->setMaxLength(4)
                 ->setAttribute('class', 'input-mini');
         $form->addText("defaultNote", "Poznámka:")
                 ->setAttribute('class', 'input-small');

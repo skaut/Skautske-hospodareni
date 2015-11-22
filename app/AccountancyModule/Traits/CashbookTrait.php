@@ -125,13 +125,15 @@ trait CashbookTrait {
 
     function createComponentCashbookForm($name) {
         $form = $this->prepareForm($this, $name);
-        $form->addDatePicker("date", "Ze dne:", 15)
+        $form->addDatePicker("date", "Ze dne:")
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("form-control input-sm required")->placeholder("Datum");
-        $form->addText("num", "Číslo d.:", NULL, 5)
+        $form->addText("num", "Číslo d.:")
+                ->setMaxLength(5)
                 ->getControlPrototype()->placeholder("Číslo")
                 ->class("form-control input-sm");
-        $form->addText("purpose", "Účel výplaty:", 20, 40)
+        $form->addText("purpose", "Účel výplaty:")
+                ->setMaxLength(40)
                 ->addRule(Form::FILLED, 'Zadejte účel výplaty')
                 ->getControlPrototype()->placeholder("Účel")
                 ->class("form-control input-sm required");
@@ -143,9 +145,11 @@ trait CashbookTrait {
         $form->addJSelect("category", "Kategorie", $form["type"], array($this, "getCategoriesByType"))
                 ->setAttribute("class", "form-control input-sm");
         $form->addText("recipient", "Vyplaceno komu:")
+                ->setMaxLength(64)
                 ->setHtmlId("form-recipient")
                 ->getControlPrototype()->class("form-control input-sm")->placeholder("Komu/Od");
-        $form->addText("price", "Částka: ", 20, 100)
+        $form->addText("price", "Částka: ")
+                ->setMaxLength(100)
                 ->setHtmlId("form-out-price")
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("Částka: 2+3*15")
@@ -257,11 +261,13 @@ trait CashbookTrait {
 //        $form->addText("recipient", "Vyplaceno komu:")
 //                ->setHtmlId("form-out-recipient")
 //                ->getControlPrototype()->class("form-control");
-//        $form->addText("purpose", "Účel výplaty:", 20, 40)
+//        $form->addText("purpose", "Účel výplaty:")
+//                ->setMaxLength(40)
 //                ->addRule(Form::FILLED, 'Zadejte účel výplaty')
 //                ->getControlPrototype()->placeholder("3 první položky")
 //                ->class("form-control");
-//        $form->addText("price", "Částka: ", 20, 100)
+//        $form->addText("price", "Částka: ")
+//                ->setMaxLength(100)
 //                ->setHtmlId("form-out-price")
 ////                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
 //                ->getControlPrototype()->placeholder("např. 20+15*3")
@@ -270,7 +276,8 @@ trait CashbookTrait {
 //        $form->addRadioList("category", "Typ: ", $categories)
 //                ->addRule(Form::FILLED, 'Zadej typ paragonu');
 //        if (isset($thisP->event) && isset($thisP->event->prefix) && $thisP->event->prefix != "") {
-//            $form->addText("num", "Číslo d.:", NULL, 5)
+//            $form->addText("num", "Číslo d.:")
+//                ->setMaxLength(5)            
 //                    ->setAttribute('class', 'form-control input-sm');
 //        }
 //        return $form;

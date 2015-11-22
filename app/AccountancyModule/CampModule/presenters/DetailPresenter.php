@@ -75,7 +75,8 @@ class DetailPresenter extends BasePresenter {
     function createComponentFormEdit($name) {
         $form = $this->prepareForm($this, $name);
         $form->addProtection();
-        $form->addText("prefix", "Prefix", NULL, 6);
+        $form->addText("prefix", "Prefix")
+                ->setMaxLength(6);
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
                 ->setAttribute("class", "btn btn-primary");

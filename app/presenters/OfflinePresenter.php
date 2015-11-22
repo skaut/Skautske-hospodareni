@@ -84,14 +84,17 @@ class OfflinePresenter extends BasePresenter {
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("input-medium");
         //@TODO kontrola platneho data, problem s componentou
-        $form->addText("recipient", "Vyplaceno komu:", 20, 50)
+        $form->addText("recipient", "Vyplaceno komu:")
+                ->setMaxLength(50)
                 ->setHtmlId("form-out-recipient")
                 ->getControlPrototype()->class("input-medium");
-        $form->addText("purpose", "Účel výplaty:", 20, 40)
+        $form->addText("purpose", "Účel výplaty:")
+                ->setMaxLength(40)
                 ->addRule(Form::FILLED, 'Zadejte účel výplaty')
                 ->getControlPrototype()->placeholder("3 první položky")
                 ->class("input-medium");
-        $form->addText("price", "Částka: ", 20, 100)
+        $form->addText("price", "Částka: ")
+                ->setMaxLength(100)
                 ->setHtmlId("form-out-price")
 //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3")
@@ -113,13 +116,16 @@ class OfflinePresenter extends BasePresenter {
         $form->addDatePicker("date", "Ze dne:", 15)
                 ->addRule(Form::FILLED, 'Zadejte datum')
                 ->getControlPrototype()->class("input-medium");
-        $form->addText("recipient", "Přijato od:", 20, 30)
+        $form->addText("recipient", "Přijato od:")
+                ->setMaxLength(30)
                 ->setHtmlId("form-in-recipient")
                 ->getControlPrototype()->class("input-medium");
-        $form->addText("purpose", "Účel příjmu:", 20, 40)
+        $form->addText("purpose", "Účel příjmu:")
+                ->setMaxLength(40)
                 ->addRule(Form::FILLED, 'Zadejte účel přijmu')
                 ->getControlPrototype()->class("input-medium");
-        $form->addText("price", "Částka: ", 20, 100)
+        $form->addText("price", "Částka: ")
+                ->setMaxLength(100)
                 ->setHtmlId("form-in-price")
                 //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
                 ->getControlPrototype()->placeholder("např. 20+15*3")

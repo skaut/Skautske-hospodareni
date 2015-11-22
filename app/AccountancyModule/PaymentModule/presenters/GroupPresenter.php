@@ -165,16 +165,17 @@ class GroupPresenter extends BasePresenter {
                 ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
         $form->addDatePicker("maturity", "Výchozí splatnost")
                 ->setAttribute("class", "form-control");
-        $form->addText("ks", "KS", NULL, 4)
+        $form->addText("ks", "KS")
+                ->setMaxLength(4)
                 ->setAttribute("class", "form-control")
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
         $form->addSelect("smtp", "Odesílací email", $this->mail->getPairs($this->aid))
                 ->setPrompt(\Model\MailService::EMAIL_SENDER);
-        $form->addTextArea("email_info", "Informační email", NULL, 6)
+        $form->addTextArea("email_info", "Informační email")
                 ->setAttribute("class", "form-control")
                 ->setDefaultValue($this->defaultEmails['base']['info']);
-//        $form->addTextArea("email_demand", "Upomínací email", NULL, 6)
+//        $form->addTextArea("email_demand", "Upomínací email")
 //                ->setAttribute("class", "form-control")
 //                ->setDefaultValue($this->defaultEmails['base']['demand']);
         $form->addHidden("type");
