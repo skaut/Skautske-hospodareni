@@ -24,10 +24,14 @@
                     <th>Protiúčet</th>
                 </tr>
                 <tr n:foreach="$participants as $p">
-                    <td><input type=checkbox name="ch[]" value="p_{$p->ID}"></td>
-                    <td><input type=text name="vals[{$p->ID}][name]" class="form-control" value="Vratka - {$p->Person} - {$group->label}"></td>
-                    <td><input type=text name="vals[{$p->ID}][amount]" class="form-control" value="{$p->repayment}"></td>
-                    <td><input type=text name="vals[{$p->ID}][account]" class="form-control" value="{if array_key_exists($p->ID_Person, $payments)}{$payments[$p->ID_Person]->paidFrom}{/if}"></td>
+                    <td>{input p_$p->ID}</td>
+                    <td>{input "p_".$p->ID."_name" class=>"form-control"}</td>
+                    <td>{input "p_".$p->ID."_amount" class=>"form-control"}</td>
+                    <td>{input "p_".$p->ID."_account" class=>"form-control"}</td>
+                    {*}
+                      <td><input type=text name="vals[{$p->ID}][amount]" class="form-control" value="{$p->repayment}"></td>
+                      <td><input type=text name="vals[{$p->ID}][account]" class="form-control" value="{if array_key_exists($p->ID_Person, $payments)}{$payments[$p->ID_Person]->paidFrom}{/if}"></td>
+                      {*}
                 </tr> 
             </table>
             {input send}
