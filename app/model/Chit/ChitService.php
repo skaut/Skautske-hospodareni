@@ -381,6 +381,10 @@ class ChitService extends MutableBaseService {
     public function unlock($oid, $chitId, $userid = NULL) {
         return $this->table->unlock($oid, $chitId);
     }
+    
+    public function lockEvent($oid, $userId) {
+        return $this->table->lockEvent($oid, $userId);
+    }
 
     /**
      * nastavuje kategorie z rozpočtu

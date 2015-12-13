@@ -65,7 +65,11 @@ class ChitPresenter extends BasePresenter {
     }
 
     public function renderDefault($year = NULL) {
-
+        $this->template->types = array(
+            "event" => "Výpravy",
+            "camp" => "Tábory",
+            "unit" => "Jednotky"
+        );
         $this->template->chitsArr = $this->chits;
         $this->template->info = $this->info;
     }
@@ -90,7 +94,29 @@ class ChitPresenter extends BasePresenter {
             $chits[$objectType][$oid] = $service->chits->getAll($oid, $onlyUnlocked);
         }
     }
+    
+    public function handleLockEvent($sid, $type) {
+        if (!in_array($type, array("event", "camp", "unit")) || !array_key_exists($sid, $this->info[$type])) {
+            $this->flashMessage("Neplatný přístup!", "danger");
+        } else {
+            $service = $this->context->getService(($type == "unit" ? "unitAccount" : $type) . "Service");
+            $service->chits->lockEvent($service->chits->getLocalId($sid), $this->user->id);
+        }
 
+        if ($this->isAjax()) {
+            $this->redrawControl();
+        } else {
+            $this->redirect("default");
+        }
+    }
+
+    /**
+     * 
+     * @param type $oid - id of object
+     * @param type $id - id of chit
+     * @param type $type type of object - camp, unit, event
+     * @param type $act
+     */
     public function handleLock($oid, $id, $type, $act = "lock") {
         if (!in_array($type, array("event", "camp", "unit"))) {
             $this->flashMessage("Neplatný přístup!", "danger");
@@ -104,7 +130,7 @@ class ChitPresenter extends BasePresenter {
             }
         }
 
-        if ($this->isAjax) {
+        if ($this->isAjax()) {
             $this->redrawControl('flash');
             $this->redrawControl('tableChits');
             $this->redrawControl();
