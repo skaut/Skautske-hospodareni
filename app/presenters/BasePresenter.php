@@ -124,6 +124,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'jquery-ui-1.10.0.custom.min.js',
             'bootstrap-datetimepicker.js',
             'bootstrap-datetimepicker.cs.js',
+            'jquery.placeholder.min.js',//IE 8, 9 placeholders bugfix
 //            'jquery.touchwipe.min.js',
 //            'mobile.js',
             //'my-datepicker.js',

@@ -147,6 +147,10 @@ class ChitTable extends BaseTable {
         return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=NULL WHERE eventId=%i AND id=%i", $oid, $chitId);
     }
     
+    public function lockEvent($oid, $userId) {
+        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i ", $oid, "AND `lock` IS NULL");
+    }
+    
     public function getBudgetCategoriesSummary($categories, $type){
         $catName = "budgetCategory".  ucfirst($type);
         return $this->connection->fetchPairs("SELECT $catName, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE $catName IN %in", $categories, " AND deleted=0 GROUP BY $catName");
