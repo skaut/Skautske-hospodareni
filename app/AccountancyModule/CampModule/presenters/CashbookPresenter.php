@@ -63,7 +63,14 @@ class CashbookPresenter extends BasePresenter {
         }
 
         $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid);
-        $this->template->autoCompleter = $dp ? array() : array_values($this->memberService->getCombobox(FALSE, 15));
+        $this->template->autoCompleter = array();
+        if (!$dp) {
+            try {
+                $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
+            } catch (\Skautis\Wsdl\WsdlException $exc) {
+                
+            }
+        }
         $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->missingCategories = false;
         $this->template->linkImportHPD = "#importHpd";
