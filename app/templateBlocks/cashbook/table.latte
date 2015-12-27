@@ -17,7 +17,11 @@ $list array() - pole paragonů
             <div class="well well-sm" n:if="!empty($list) || ($isEditable && isset($linkImportHPD) && (!isset($missingCategories) || !$missingCategories))">
                 <a n:if="$isEditable && (!isset($missingCategories) || !$missingCategories) && isset($linkImportHPD)" href="{$linkImportHPD}" {if \Nette\Utils\Strings::startsWith($linkImportHPD, '#')} role="button" data-toggle="modal"{/if} class="btn btn-sm btn-primary">Načíst příjmy od účastníků</a>
                 {if !empty($list)}
-                    <a n:href="export $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout pokladní knihu</a>
+                    {ifset $printChitlist}
+                        <a n:href="exportChitlist $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout seznam dokladů</a>
+                    {else}
+                        <a n:href="export $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout pokladní knihu</a>
+                    {/ifset}
                     <a n:href="exportExcel $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i> Exportovat do excelu</a>
                 {/if}
             </div>

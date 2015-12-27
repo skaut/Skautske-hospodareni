@@ -1,0 +1,39 @@
+{*
+$info - informace o akci
+$list - seznam položek
+*}
+<style>
+    table {
+        border-spacing: 0;
+    }
+</style>
+<h2>Seznam dokladů</h2>
+
+<table style="width: 800px;" border="1">
+    <tr>
+        <th style="width: 10%">Pol.č.</th>
+        <th style="width: 70%">Druh výdaje</th>
+        <th style="width: 20%">Částka v Kč</th>
+    </tr>
+    {var balance => 0}
+    <tr n:foreach="$list as $item">
+        <td style="text-align:right;height:30px;">{$iterator->getCounter()}. </td> {* height:30px; *}
+        <td>{$item->purpose}</td>
+        <td style="text-align:right;">{$item->price}</td>
+        {? $balance += $item->price}
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <th style="text-align:right;">Celkem</th>
+        <th style="text-align:right;"><b>{$balance|price}</b></th>
+    </tr>
+</table>
+<br />
+
+<p>
+    Předal dne: ___________________________
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Podpis: ___________________________
+</p>
+

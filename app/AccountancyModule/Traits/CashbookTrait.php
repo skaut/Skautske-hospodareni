@@ -64,6 +64,13 @@ trait CashbookTrait {
         $this->entityService->chits->makePdf($template, "pokladni-kniha.pdf");
         $this->terminate();
     }
+    
+    public function actionExportChitlist($aid) {
+        $template = $this->exportService->getChitlist($this->createTemplate(), $aid, $this->entityService);
+        //echo $template;die();
+        $this->entityService->chits->makePdf($template, "seznam-dokladu.pdf");
+        $this->terminate();
+    }
 
     public function actionExportExcel($aid) {
         $this->excelService->getCashbook($this->entityService, $this->event);

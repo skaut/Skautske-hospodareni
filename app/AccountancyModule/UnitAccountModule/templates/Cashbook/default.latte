@@ -3,6 +3,6 @@
 {include ../ActionMenu.latte}
 
 <div n:snippet="paragony">
-    {include $templateBlockDir.'cashbook/table.latte', smallIcons=>'<button name="massExportSend" title="Exportovat vybrané" class="btn btn-info btn-xs allDependend hidden-xs" type="submit"><i class="glyphicon glyphicon-download-alt"></i></button>'}
+    {include $templateBlockDir.'cashbook/table.latte', printChitlist=>true, smallIcons=>'<button name="massExportSend" title="Exportovat vybrané" class="btn btn-info btn-xs allDependend hidden-xs" type="submit"><i class="glyphicon glyphicon-download-alt"></i></button>'}
     {include $templateBlockDir.'cashbook/js.latte'}
 </div>
