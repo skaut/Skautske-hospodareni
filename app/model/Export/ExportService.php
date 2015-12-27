@@ -51,6 +51,20 @@ class ExportService extends BaseService {
     }
 
     /**
+     * vrací seznam dokladů
+     * @param type $aid - ID akce
+     * @param EventEntity $service
+     * @return \FileTemplate
+     */
+    public function getChitlist(ITemplate $template, $aid, EventEntity $service) {
+        $this->setTemplate($template, dirname(__FILE__) . '/templates/chitlist.latte');
+        $template->list =  array_filter($service->chits->getAll($aid), function($c) {
+            return $c->ctype == "out";
+        });
+        return $template;
+    }
+
+    /**
      * 
      * @param type $aid
      * @param EventEntity $eventService
