@@ -16,7 +16,9 @@ class BaseTable {
     const TABLE_UNIT_BUDGET_CATEGORY = 'ac_unit_budget_category';
     const TABLE_TC_CONTRACTS = 'tc_contracts';
     const TABLE_TC_COMMANDS = 'tc_commands';
+    const TABLE_TC_COMMAND_TYPES = 'tc_command_types';
     const TABLE_TC_TRAVELS = 'tc_travels';
+    const TABLE_TC_TRAVEL_TYPES = 'tc_travelTypes';
     const TABLE_TC_VEHICLE = 'tc_vehicle';
     const TABLE_PA_GROUP = 'pa_group';
     const TABLE_PA_GROUP_STATE = 'pa_group_state';

@@ -18,17 +18,20 @@
     <div class="col-sm-4">
         <h3>Příkaz</h3>
         <b>Účel cesty:</b> {$command->purpose}<br />
-        <b>Místo:</b> {$command->place}<br />
-        <b>Spolucestující:</b> {$command->passengers}<br />
+        {if $command->place != ""}<b>Místo:</b> {$command->place}<br />{/if}
+        {if $command->passengers != ""}<b>Spolucestující:</b> {$command->passengers}<br />{/if}
         {if $command->note != ""}<b>Poznámka:</b>{$command->note}{/if}
     </div>
     <div class="col-sm-4">
-        <h3>Vozidlo</h3>
-        <b>Typ a SPZ:</b> <a n:href="Vehicle:detail $command->vehicle_id">{$command->vehicle_type} ({$command->vehicle_spz})</a><br />
-        <b>&#0216; spotřeba dle t.p.:</b> {$command->vehicle_consumption|number:2} l/100 km<br />
-        <b>Cena paliva:</b> {$command->fuel_price|price} l/Kč<br />
-        <b>Opotřebení:</b> {$command->amortization|number:2} Kč/km<br />
-        <b>Sazba náhrady:</b> <b>{= $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}</b> Kč/km<br />
+        <h3>Prostředek</h3>
+        <b>Typ:</b> {foreach $types as $t} {$t}{if !$iterator->isLast()}, {/if} {/foreach}<br />
+        {ifset $command->vehicle_type}<b>Vozidlo:</b> <a n:href="Vehicle:detail $command->vehicle_id">{$command->vehicle_type} ({$command->vehicle_spz})</a><br />{/ifset}
+        {ifset $command->vehicle_consumption}<b>&#0216; spotřeba dle t.p.:</b> {$command->vehicle_consumption|number:2} l/100 km<br />{/ifset}
+        {if $command->fuel_price != 0}<b>Cena paliva:</b> {$command->fuel_price|price} l/Kč<br />{/if}
+        {if $command->amortization != 0}
+            <b>Opotřebení:</b> {$command->amortization|number:2} Kč/km<br />
+            <b>Sazba náhrady:</b> <b>{= $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}</b> Kč/km<br />
+        {/if}
         {var $sum = 0}
 
     </div>
@@ -44,11 +47,14 @@
         <table class="table table-bordered table-striped table-condensed">
             <tr>
                 <th n:if="$isEditable">&nbsp;</th>
+                <th>Prostředek</th>
                 <th>Datum</th>
                 <th>Z</th>
                 <th>Do</th>
-                <th>km</th>
-                <th>Kč</th>
+                <th>km nebo cena
+                <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" title="" rel="tooltip" data-original-title="Km u vlastního auta nebo motocyklu, jinak cena jízdenky"></i>
+                </th>
+                <th>&nbsp;</th>
             </tr>
             <tr n:if="$form->hasErrors()" colspan="6">
             <ul>
@@ -57,6 +63,7 @@
             </tr>
             <tr n:if="$isEditable">
                 <th>&nbsp;</th>
+                <th>{input type}</th>
                 <th>{input start_date}</th>
                 <th>{input start_place}</th>
                 <th>{input end_place}</th>
@@ -69,15 +76,22 @@
                         <a n:href="editTravel $t->id" class="fancybox fancybox.ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
                         <a n:href="removeTravel! $t->id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="glyphicon glyphicon-remove"></i></a>
                     </td>
+                    <td>{$t->typeLabel}</td>
                     <td>{$t->start_date|date:"j. n. Y"}</td>
                     <td>{$t->start_place}</td>
                     <td>{$t->end_place}</td>
                     <td>{$t->distance}</td>
-                    <td>{$sazba * $t->distance|price} {? $sum += $sazba * $t->distance}</td>
+                    <td>
+                        {if $t->fuel}
+                            {$sazba * $t->distance|price} {? $sum += $sazba * $t->distance}
+                        {else}
+                            {$t->distance|price} {? $sum += $t->distance}
+                        {/if}
+                    </td>
                 </tr>
                 <tr>
                     <th n:if="$isEditable">&nbsp;</th>
-                    <th colspan="4" class="r">Celkem: </th>
+                    <th colspan="5" class="r">Celkem: </th>
                     <th>{$sum|price}&nbsp;Kč</th>
                 </tr>
             {/if}

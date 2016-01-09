@@ -52,10 +52,9 @@
                     <td><a n:href="Default:detail $c->id" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-zoom-in"></i>Detail</a></td>
                     <td>{$c->driver_name}</td>
                     <td>{$c->purpose}</td>
-                    <td>{$c->vehicle_type} ({$c->vehicle_spz})</td>
+                    <td>{if $c->vehicle_type != ""}{$c->vehicle_type} ({$c->vehicle_spz}){/if}</td>
                     <td>{!$c->closed|commandState}</td>
                 </tr>
-
             </table>
         {else}
             <div class="alert">
@@ -63,5 +62,4 @@
             </div>
         {/if}
     </div>
-
 </div>

@@ -20,7 +20,7 @@ class CommandTable extends BaseTable {
     }
 
     public function add($v) {
-        return $this->connection->query("INSERT INTO [" . self::TABLE_TC_COMMANDS . "] ", $v);
+        return $this->connection->insert(self::TABLE_TC_COMMANDS, $v)->execute(\dibi::IDENTIFIER);
     }
 
     public function update($v, $id) {
@@ -31,6 +31,7 @@ class CommandTable extends BaseTable {
         $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.spz as vehicle_spz, com.place")
                 ->select("(SELECT sum(distance) FROM tc_travels WHERE command_id = com.id) * (amortization+(com.fuel_price * (c.consumption/100))) as price")
                 ->select("(SELECT MIN(start_date) FROM tc_travels WHERE command_id = com.id) as start_date")
+                ->select("(SELECT GROUP_CONCAT(tt.label SEPARATOR ', ') FROM " . self::TABLE_TC_COMMAND_TYPES . " ct LEFT JOIN " . self::TABLE_TC_TRAVEL_TYPES . " tt ON (ct.typeId = tt.type) WHERE commandId = com.id) as types")
                 ->from(self::TABLE_TC_COMMANDS . " AS com")
                 ->leftJoin(self::TABLE_TC_CONTRACTS . " AS con ON (com.contract_id = con.id)")
                 ->leftJoin(self::TABLE_TC_VEHICLE . " AS c ON (com.vehicle_id = c.id) ")
@@ -71,6 +72,19 @@ class CommandTable extends BaseTable {
 
     public function delete($commandId) {
         return $this->connection->query("UPDATE [" . self::TABLE_TC_COMMANDS . "] SET deleted=1 WHERE id = %i AND deleted=0 LIMIT 1", $commandId);
+    }
+
+    public function updateTypes($commandId, $commandTypes) {
+        $this->connection->query("DELETE FROM [" . self::TABLE_TC_COMMAND_TYPES . "] WHERE commandId=%i", $commandId);
+        $toInsert = array(
+            "commandId" => array_fill(0, count($commandTypes), $commandId),
+            "typeId" => $commandTypes
+        );
+        return $this->connection->query("INSERT INTO [" . self::TABLE_TC_COMMAND_TYPES . "] %m", $toInsert);
+    }
+    
+    public function getCommandTypes($commandId) {
+        return $this->connection->fetchPairs("SELECT tt.type, tt.label FROM [" . self::TABLE_TC_COMMAND_TYPES . "] ct LEFT JOIN [" . self::TABLE_TC_TRAVEL_TYPES . "] tt ON (ct.typeId = tt.type) WHERE ct.commandId=%i", $commandId );
     }
 
 }

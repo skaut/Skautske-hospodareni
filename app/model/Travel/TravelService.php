@@ -103,6 +103,10 @@ class TravelService extends BaseService {
         return $this->tableTravel->delete($travelId);
     }
 
+    public function getTravelTypes($pairs = FALSE) {
+        return $this->tableTravel->getTypes($pairs);
+    }
+
     /**     CONTRACTS    */
     public function getContract($contractId) {
         $cacheId = __FUNCTION__ . "_" . $contractId;
@@ -141,9 +145,9 @@ class TravelService extends BaseService {
         } //nastavuje platnost smlouvy na 3 roky
         return $this->tableContract->add($values);
     }
-    
+
     public function deleteContract($contractId) {
-         return $this->tableContract->delete($contractId);
+        return $this->tableContract->delete($contractId);
     }
 
     /**     COMMANDS    */
@@ -157,13 +161,21 @@ class TravelService extends BaseService {
     }
 
     public function addCommand($cmd) {
-        return $this->table->add($cmd);
+        $types = $cmd["type"];
+        unset($cmd["type"]);
+        $insertedId = $this->table->add($cmd);
+        $this->table->updateTypes($insertedId, $types);
+        return $insertedId;
     }
 
     public function updateCommand($v, $unit, $id) {
-        if (!$this->isContractAccessible($v['contract_id'], $unit))
-            return false; //neoprávěný přístup
-        return $this->table->update($v, $id);
+        if (!$this->isContractAccessible($v['contract_id'], $unit)) {
+            return FALSE; //neoprávěný přístup
+        }
+        $types = $v["type"];
+        unset($v["type"]);
+        $status = $this->table->update($v, $id);
+        return $status || $this->table->updateTypes($id, $types);
     }
 
     public function getAllCommands($unitId) {
@@ -204,6 +216,10 @@ class TravelService extends BaseService {
 
     public function deleteCommand($commandId) {
         return $this->table->delete($commandId);
+    }
+
+    public function getCommandTypes($commandId) {
+        return $this->table->getCommandTypes($commandId);
     }
 
 }
