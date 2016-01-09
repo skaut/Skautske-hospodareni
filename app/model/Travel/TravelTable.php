@@ -13,11 +13,11 @@ class TravelTable extends BaseTable {
     }
     
     public function getAll($commandId) {
-        return $this->connection->fetchAll("SELECT * FROM [" . self::TABLE_TC_TRAVELS . "] WHERE command_id=%i", $commandId, " ORDER BY start_date, id asc");
+        return $this->connection->fetchAll("SELECT *,  tt.label as typeLabel, tt.hasFuel as fuel FROM [" . self::TABLE_TC_TRAVELS . "] t LEFT JOIN [".self::TABLE_TC_TRAVEL_TYPES."] tt ON (t.type = tt.type) WHERE command_id=%i", $commandId, " ORDER BY start_date, id asc");
     }
     
     public function add($data) {
-        return $this->connection->insert(self::TABLE_TC_TRAVELS, $data)->execute();
+        return $this->connection->insert(self::TABLE_TC_TRAVELS, $data)->execute(\dibi::IDENTIFIER);
     }
     
     public function update($data, $tId) {
@@ -30,6 +30,13 @@ class TravelTable extends BaseTable {
     
     public function deleteAll($commandId) {
         return $this->connection->query("DELETE FROM [" . self::TABLE_TC_TRAVELS . "] WHERE command_id = %i", $commandId);
+    }
+    
+    public function getTypes($pairs = FALSE) {
+        if($pairs) {
+            return $this->connection->fetchPairs("SELECT type, label FROM [" . self::TABLE_TC_TRAVEL_TYPES . "] ORDER BY [order] DESC");
+        }
+        return $this->connection->query("SELECT type, label, hasFuel FROM [" . self::TABLE_TC_TRAVEL_TYPES . "] ORDER BY [order] DESC")->fetchAssoc("type");
     }
 
 

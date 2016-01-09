@@ -37,7 +37,7 @@ class DefaultPresenter extends BasePresenter {
         $this->template->list = $this->travelService->getAllCommands($this->unit->ID);
     }
 
-    public function renderDetail($id) {
+    public function actionDetail($id) {
         if ($id == NULL) {
             $this->redirect("default");
         }
@@ -45,14 +45,19 @@ class DefaultPresenter extends BasePresenter {
             $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
             $this->redirect("default");
         }
+        $this['formAddTravel']['type']->setItems($this->travelService->getCommandTypes($id));
+        $this['formAddTravel']->setDefaults(array("command_id" => $id));
+    }
+
+    public function renderDetail($id) {
         $this->template->command = $command = $this->travelService->getCommand($id);
         $this->template->contract = $contract = $this->travelService->getContract($command->contract_id);
         $this->template->isEditable = $this->isEditable = ($this->unit->ID == $contract->unit_id && $command->closed == NULL) ? true : false;
         $this->template->travels = $this->travelService->getTravels($command->id);
-        $this['formAddTravel']->setDefaults(array("command_id" => $command->id));
+        $this->template->types = $this->travelService->getCommandTypes($command->id);
     }
 
-    function renderEditCommand($commandId) {
+    function actionEditCommand($commandId) {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte oprávnění upravovat záznam!", "danger");
             $this->redirect("default");
@@ -61,7 +66,13 @@ class DefaultPresenter extends BasePresenter {
             $this->flashMessage("Záznam nelze upravovat", "warning");
             $this->redirect("default");
         }
+        $this['formEditCommand']['type']->setItems($this->travelService->getTravelTypes(TRUE));
+        $this['formEditCommand']->setDefaults(array("command_id" => $commandId));
+    }
+
+    function renderEditCommand($commandId) {
         $defaults = $this->travelService->getCommand($commandId);
+        $defaults["type"] = array_keys($this->travelService->getCommandTypes($commandId));
         $defaults['id'] = $commandId;
         $form = $this['formEditCommand'];
         $form->setDefaults($defaults);
@@ -79,6 +90,7 @@ class DefaultPresenter extends BasePresenter {
         $template->command = $command = $this->travelService->getCommand($commandId);
         $template->contract = $this->travelService->getContract($command->contract_id);
         $template->travels = $travels = $this->travelService->getTravels($command->id);
+        $template->types = $this->travelService->getCommandTypes($command->id);
         if (!empty($travels)) {
             $template->end = end($travels);
             $template->start = reset($travels);
@@ -141,41 +153,51 @@ class DefaultPresenter extends BasePresenter {
     protected function makeCommandForm($name) {
         $contracts = $this->travelService->getAllContractsPairs($this->unit->ID);
         $vehicles = $this->travelService->getVehiclesPairs($this->unit->ID);
-        
-        if(!empty($contracts["past"])){
-            $contracts = array("platné"=>$contracts["valid"], "ukončené"=>$contracts["past"]);
+
+        if (!empty($contracts["past"])) {
+            $contracts = array("platné" => $contracts["valid"], "ukončené" => $contracts["past"]);
         } else {
             $contracts = $contracts["valid"];
         }
-        
+
+        $vehicleTypes = $this->travelService->getTravelTypes();
+        $vehiclesWithFuel = array_map(function($v) {
+            return $v->type;
+        }, array_filter($vehicleTypes, function ($v) {
+                    return $v->hasFuel;
+                }));
+        $vehicleTypes = array_map(function($v) {
+            return $v->label;
+        }, $vehicleTypes);
 
         $form = $this->prepareForm($this, $name);
-        $form->addSelect("contract_id", "Smlouva", $contracts)
-                ->setPrompt("Vyberte smlouvu")
-                ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte vybrat smlouvu");
         $form->addText("purpose", "Účel cesty*")
                 ->setMaxLength(64)
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit účel cesty.");
+        $form->addSelect("contract_id", "Smlouva", $contracts)
+                ->setPrompt("Vyberte smlouvu")
+                ->setAttribute("class", "form-control")
+                ->addRule(Form::FILLED, "Musíte vybrat smlouvu");
+        $form->addCheckboxList("type", "Prostředek", $vehicleTypes)
+                ->addRule(Form::FILLED, "Vyberte alespoň jeden dopravní prostředek.");
         $form->addText("place", "Místo")
                 ->setMaxLength(64)
                 ->setAttribute("class", "form-control");
+
         $form->addText("passengers", "Spolucestující")
                 ->setMaxLength(64)
                 ->setAttribute("class", "form-control");
         $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
                 ->setPrompt("Vyberte vozidlo")
                 ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte vyplnit typ vozidla.");
+                ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)->addRule(Form::FILLED, "Musíte vyplnit typ vozidla.");
         $form->addText("fuel_price", "Cena paliva za 1l*")
                 ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte vyplnit cenu paliva.")
-                ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
+                ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)->addRule(Form::FILLED, "Musíte vyplnit cenu paliva.")->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
         $form->addText("amortization", "Opotřebení*")
                 ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte vyplnit opotřebení.")
-                ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
+                ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)->addRule(Form::FILLED, "Musíte vyplnit opotřebení.")->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
         $form->addText("note", "Poznámka")
                 ->setMaxLength(64)
                 ->setAttribute("class", "form-control");
@@ -192,7 +214,7 @@ class DefaultPresenter extends BasePresenter {
 
     function formCreateCommandSubmitted(Form $form) {
         $v = $form->getValues();
-        if (!$this->isContractAccessible($v['contract_id'])) {
+        if (isset($v->contract_id) && !$this->isContractAccessible($v->contract_id)) {
             $this->flashMessage("Nemáte právo založit cestovní příkaz.", "danger");
             $this->redirect("default");
         }
@@ -232,6 +254,7 @@ class DefaultPresenter extends BasePresenter {
         $form = $this->prepareForm($this, $name);
         $form->getElementPrototype()->class("form-inline");
         $form->addHidden("command_id");
+        $form->addSelect("type");
         $form->addDatePicker("start_date", "Datum cesty")
                 ->setAttribute("class", "form-control input-sm date")
                 ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.");
@@ -268,9 +291,8 @@ class DefaultPresenter extends BasePresenter {
      * EDIT TRAVEL
      */
 
-    function renderEditTravel($travelId) {
+    function actionEditTravel($travelId) {
         $travel = $this->travelService->getTravel($travelId);
-
         if (!$this->isCommandAccessible($travel->command_id)) {
             $this->flashMessage("Nemáte oprávnění upravovat záznam!", "danger");
             $this->redirect("default");
@@ -279,10 +301,9 @@ class DefaultPresenter extends BasePresenter {
             $this->flashMessage("Záznam nelze upravovat", "warning");
             $this->redirect("default");
         }
-        $defaults = $travel;
-//        $defaults['start_date'] = $travel->start_date->format('j. n. Y');
         $form = $this['formEditTravel'];
-        $form->setDefaults($defaults);
+        $form['type']->setItems($this->travelService->getCommandTypes($travel->command_id));
+        $form->setDefaults($travel);
         $this->template->form = $form;
     }
 
@@ -291,6 +312,7 @@ class DefaultPresenter extends BasePresenter {
 //        $form->getElementPrototype()->class("form-inline");
         $form->addHidden("command_id");
         $form->addHidden("id");
+        $form->addSelect("type", "Prostředek");
         $form->addDatePicker("start_date", "Datum cesty")
                 ->setAttribute("class", "form-control input-sm date")
                 ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.");
@@ -318,7 +340,7 @@ class DefaultPresenter extends BasePresenter {
             $this->redirect("default");
         }
         $data = array();
-        $keys = array("start_date", "start_place", "end_place", "distance");
+        $keys = array("start_date", "start_place", "end_place", "distance", "type");
         foreach ($keys as $k) {
             $data[$k] = $k == "distance" ? str_replace(",", ".", $v[$k]) : $v[$k];
         }
