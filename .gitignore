@@ -4,8 +4,8 @@ htaccess
 /app/config/config.*.neon
 !/app/config/config.sample.local.neon
 /vendor
-/temp
-/log
+temp/*
+log/*
 /source
 /nbproject
 *.log
@@ -14,3 +14,4 @@ deployment.*
 tests/*
 /composer.lock
 /archiv
+!.htaccess
