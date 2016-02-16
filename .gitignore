@@ -11,7 +11,6 @@ log/*
 *.log
 deployment.*
 /www/*.json
-tests/*
 /composer.lock
 /archiv
 !.htaccess
