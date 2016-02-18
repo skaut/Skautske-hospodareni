@@ -163,6 +163,8 @@ class TravelService extends BaseService {
     public function addCommand($cmd) {
         $types = $cmd["type"];
         unset($cmd["type"]);
+        $cmd->fuel_price = (float)$cmd->fuel_price;
+        $cmd->amortization = (float)$cmd->amortization;
         $insertedId = $this->table->add($cmd);
         $this->table->updateTypes($insertedId, $types);
         return $insertedId;

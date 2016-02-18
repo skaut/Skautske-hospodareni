@@ -30,7 +30,8 @@
         {if $command->fuel_price != 0}<b>Cena paliva:</b> {$command->fuel_price|price} l/Kč<br />{/if}
         {if $command->amortization != 0}
             <b>Opotřebení:</b> {$command->amortization|number:2} Kč/km<br />
-            <b>Sazba náhrady:</b> <b>{= $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}</b> Kč/km<br />
+            {var $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}
+            <b>Sazba náhrady:</b> <b>{= $sazba}</b> Kč/km<br />
         {/if}
         {var $sum = 0}
 
