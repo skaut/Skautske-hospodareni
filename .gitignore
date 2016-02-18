@@ -3,9 +3,10 @@
 htaccess
 /app/config/config.*.neon
 !/app/config/config.sample.local.neon
-/vendor
-/temp
-/log
+/vendor/*
+!/vendor/others
+/temp/*
+/log/*
 /source
 /nbproject
 *.log

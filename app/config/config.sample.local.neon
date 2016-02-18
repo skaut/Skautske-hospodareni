@@ -1,0 +1,25 @@
+nette:
+    application:
+        catchExceptions: false
+        debugger: true
+
+dibi:
+    driver: mysql
+    host: localhost
+    username: DOPLNIT
+    password: DOPLNIT
+    database: DOPLNIT
+    charset: utf8
+    profiler: true
+
+skautis:
+    applicationId : DOPLNIT
+    testMode : true #isTestMode?
+    
+parameters:
+    ssl : FALSE
+    sendEmail : FALSE
+
+services:
+    cacheStorage:
+        #class: Nette\Caching\Storages\DevNullStorage
