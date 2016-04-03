@@ -35,9 +35,9 @@ class CommandTable extends BaseTable {
                 ->from(self::TABLE_TC_COMMANDS . " AS com")
                 ->leftJoin(self::TABLE_TC_CONTRACTS . " AS con ON (com.contract_id = con.id)")
                 ->leftJoin(self::TABLE_TC_VEHICLE . " AS c ON (com.vehicle_id = c.id) ")
-                ->where("con.unit_id=%i", $unitId)
+                ->where("com.unit_id=%i", $unitId)
                 ->where("com.deleted=0")
-                ->where("con.deleted=0")
+                ->where("(con.deleted=0 OR con.deleted IS NULL)")
                 ->orderBy("closed, id");
         if ($returnQuery) {
             return $q;

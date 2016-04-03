@@ -74,9 +74,6 @@ class ContractPresenter extends BasePresenter {
      */
     function createComponentFormCreateContract($name) {
         $form = $this->prepareForm($this, $name);
-        $form->addText("unit_person", "Zástupce jednotky*")
-                ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte vyplnit zátupce jednotky.");
         $form->addText("driver_name", "Jméno a příjmení řidiče*")
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit jméno řidiče.");
@@ -90,10 +87,11 @@ class ContractPresenter extends BasePresenter {
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit telefon na řidiče.")
                 ->addRule(Form::NUMERIC, "Telefon musí být číslo.");
-        $form->addDatePicker("start", "Platnost od*")
-                ->setAttribute("class", "form-control")
-                ->setDefaultValue(date("j. n. Y"))
-                ->addRule(Form::FILLED, "Musíte vyplnit začátek platnosti.");
+        
+        $form->addText("unit_person", "Zástupce jednotky")
+                ->setAttribute("class", "form-control");
+        $form->addDatePicker("start", "Platnost od")
+                ->setAttribute("class", "form-control");
 
         $form->addSubmit('send', 'Založit smlouvu')
                 ->setAttribute("class", "btn btn-primary");
