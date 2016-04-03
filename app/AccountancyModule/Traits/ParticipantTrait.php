@@ -250,16 +250,19 @@ trait ParticipantTrait {
     function createComponentFormAddParticipantNew($name) {
         $aid = $this->presenter->aid;
         $form = $this->prepareForm($this, $name);
-        $form->addText("firstName", "Jméno")
+        $form->addText("firstName", "Jméno*")
                 ->addRule(Form::FILLED, "Musíš vyplnit křestní jméno.");
-        $form->addText("lastName", "Příjmení")
+        $form->addText("lastName", "Příjmení*")
                 ->addRule(Form::FILLED, "Musíš vyplnit příjmení.");
+        $form->addText("street", "Ulice*")
+                ->addRule(Form::FILLED, "Musíš vyplnit ulici.");
+        $form->addText("city", "Město*")
+                ->addRule(Form::FILLED, "Musíš vyplnit město.");
+        $form->addText("postcode", "PSČ*")
+                ->addRule(Form::FILLED, "Musíš vyplnit PSČ.");
+        $form->addHidden("aid", $aid);
         $form->addText("nick", "Přezdívka");
         $form->addText("birthday", "Dat. nar.");
-        $form->addText("street", "Ulice");
-        $form->addText("city", "Město");
-        $form->addText("postcode", "PSČ");
-        $form->addHidden("aid", $aid);
         $form->addSubmit('send', 'Založit účastníka')
                 ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = array($this, $name . 'Submitted');
