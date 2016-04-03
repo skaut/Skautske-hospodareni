@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="well well-sm">
-        <button type="button" data-toggle="collapse" data-target="#createContract" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou smlouvu</button>
+        <button type="button" data-toggle="collapse" data-target="#createContract" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou smlouvu/řidiče</button>
         <div class="collapse" id="createContract">
             <br />
             {control formCreateContract}
@@ -16,19 +16,19 @@
     <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
         <tr>
             <th>&nbsp;</th>
+            <th>Vykonavatel/Řidič</th>
             <th>Zástupce jednotky</th>
-            <th>Vykonavatel</th>
             <th>Platná od:</th>
             <th>Platná do:</th>
         </tr>
-        <tr n:foreach="$list as $c" {if $c->end->format("U")< time()}class='warning' title='Platnost smlouvy skončila'{/if}>
+        <tr n:foreach="$list as $c">
             <td>
                 <a n:href="print $c->id" class="btn btn-info btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i> Vytisknout</a>
                 <a n:href="detail $c->id" class="btn btn-primary btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
                 <a n:href="detail $c->id" class="btn btn-primary btn-sm visible-xs visible-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
             </td>
-            <td>{$c->unit_person}</td>
             <td>{$c->driver_name}</td>
+            <td>{$c->unit_person}</td>
             <td>{$c->start|date:"j. n. Y"}</td>
             <td>{$c->end|date:"j. n. Y"}</td>
         </tr>

@@ -30,7 +30,7 @@ class TravelService extends BaseService {
 
     public function isCommandAccessible($commandId, $unit) {
         if (($command = $this->getCommand($commandId))) {
-            return ($this->isContractAccessible($command->contract_id, $unit)) ? TRUE : FALSE;
+            return $command->unit_id == $unit->ID ? TRUE : FALSE;
         }
         return FALSE;
     }
@@ -126,22 +126,25 @@ class TravelService extends BaseService {
         $res = array("valid" => array(), "past" => array());
 
         foreach ($data as $i) {
-
-            if ($i->end->format("U") > time()) {
-                $res["valid"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
+            if(is_null($i->end)) {
+                $res["valid"][$i->id] = $i->driver_name;
             } else {
-                if ($i->end->format("Y") < date("Y") - 1) {#skoncila uz predloni
-                    continue;
+                if ($i->end->format("U") > time()) {
+                    $res["valid"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
+                } else {
+                    if ($i->end->format("Y") < date("Y") - 1) {#skoncila uz predloni
+                        continue;
+                    }
+                    $res["past"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
                 }
-                $res["past"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
             }
         }
         return $res;
     }
 
     public function addContract($values) {
-        if (!$values['end']) {
-            $values['end'] = date("Y-m-d", strtotime("+ 3 years", $values['start']->getTimestamp()));
+        if (!$values['end'] && !is_null($values["start"])) {
+            $values['end'] = date("Y-m-d", strtotime("+ 3 years", $values["start"]->getTimestamp()));
         } //nastavuje platnost smlouvy na 3 roky
         return $this->tableContract->add($values);
     }

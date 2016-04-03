@@ -13,7 +13,9 @@ class TravelTable extends BaseTable {
     }
     
     public function getAll($commandId) {
-        return $this->connection->fetchAll("SELECT *,  tt.label as typeLabel, tt.hasFuel as fuel FROM [" . self::TABLE_TC_TRAVELS . "] t LEFT JOIN [".self::TABLE_TC_TRAVEL_TYPES."] tt ON (t.type = tt.type) WHERE command_id=%i", $commandId, " ORDER BY start_date, id asc");
+        return $this->connection->fetchAll("SELECT *,  tt.label as typeLabel, tt.hasFuel as fuel FROM [" . self::TABLE_TC_TRAVELS . "] t"
+                . " LEFT JOIN [".self::TABLE_TC_TRAVEL_TYPES."] tt ON (t.type = tt.type)"
+                . " WHERE command_id=%i", $commandId, " ORDER BY start_date, id asc");
     }
     
     public function add($data) {

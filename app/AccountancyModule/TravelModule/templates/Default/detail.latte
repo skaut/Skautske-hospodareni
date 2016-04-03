@@ -10,7 +10,9 @@
         <a n:href="removeCommand! $command->id" n:if="is_null($command->closed)" title="Smazat" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon glyphicon-remove"></i> Smazat</a>
         <a n:href="closeCommand! $command->id" n:if="$isEditable" class="btn btn-sm btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
         <a n:href="openCommand! $command->id" n:if="!is_null($command->closed)" class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
-        <a n:href="Contract:detail $contract->id" class="btn btn-sm btn-primary hidden-xs"><i class="glyphicon glyphicon-zoom-in"></i> Smlouva</a>
+        {if !is_null($command->contract_id)}
+            <a n:href="Contract:detail $contract->id" class="btn btn-sm btn-primary hidden-xs"><i class="glyphicon glyphicon-zoom-in"></i> Smlouva</a>
+        {/if}
         <a n:href="print $command->id" class="btn btn-sm btn-info hidden-xs"><i class="glyphicon glyphicon-print"></i> Vytisknout cestovní příkaz</a>
     </div>
 </div>
@@ -36,11 +38,13 @@
         {var $sum = 0}
 
     </div>
+        {if !is_null($command->contract_id)}
     <div class="col-sm-4 hidden-xs">
         <h3>Řidič</h3>
         <b>Jméno:</b> {$contract->driver_name}<br />
         <b>Bydliště:</b> {$contract->driver_address}
     </div>
+    {/if}
 </div>
 <div class="row">
     <h3>Provedené cesty</h3>
