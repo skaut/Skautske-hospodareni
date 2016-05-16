@@ -30,11 +30,9 @@
         {ifset $command->vehicle_type}<b>Vozidlo:</b> <a n:href="Vehicle:detail $command->vehicle_id">{$command->vehicle_type} ({$command->vehicle_spz})</a><br />{/ifset}
         {ifset $command->vehicle_consumption}<b>&#0216; spotřeba dle t.p.:</b> {$command->vehicle_consumption|number:2} l/100 km<br />{/ifset}
         {if $command->fuel_price != 0}<b>Cena paliva:</b> {$command->fuel_price|price} l/Kč<br />{/if}
-        {if $command->amortization != 0}
-            <b>Opotřebení:</b> {$command->amortization|number:2} Kč/km<br />
-            {var $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}
-            <b>Sazba náhrady:</b> <b>{= $sazba}</b> Kč/km<br />
-        {/if}
+        <b>Opotřebení:</b> {$command->amortization|number:2} Kč/km<br />
+        {var $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}
+        <b>Sazba náhrady:</b> <b>{= $sazba}</b> Kč/km<br />
         {var $sum = 0}
 
     </div>
