@@ -10,7 +10,7 @@
                 <td class="required">Vedoucí akce* <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/></td>
                 {if $editation}
                 <td class="r">
-                    <div class="pull-right">{control leaderForm}</div>
+                    <div class="functions">{control leaderForm}</div>
                     <a n:if="$functions[0]->ID_Person != NULL" n:href="removeFunction! 0" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
                     {elseif $functions[0]->ID_Person != NULL}
                 <td>{$functions[0]->Person}
@@ -23,7 +23,7 @@
                 <td>Zástupce vedoucího <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/></td>
                 {if $editation}
                 <td class="r">
-                    <div class="pull-right">{control assistantForm}</div>
+                    <div class="functions">{control assistantForm}</div>
                     <a n:if="$functions[1]->ID_Person != NULL" n:href="removeFunction! 1" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
                     {elseif $functions[1]->ID_Person != NULL}
                 <td>{$functions[1]->Person}
@@ -36,7 +36,7 @@
                 <td>Hospodář <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Osoba registrovaná ve SkautISu"/></td>
                 {if $editation}
                 <td class="r">
-                    <div class="pull-right">{control accountantForm}</div>
+                    <div class="functions">{control accountantForm}</div>
                     <a n:if="$functions[2]->ID_Person != NULL" n:href="removeFunction! 2" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
                     {elseif $functions[2]->ID_Person != NULL}
                 <td>{$functions[2]->Person}
@@ -49,7 +49,7 @@
                 <td>Zdravotník <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Osoba registrovaná ve SkautISu"/></td>
                 {if $editation}
                 <td class="r">
-                    <div class="pull-right">{control medicForm}</div>
+                    <span class="functions">{control medicForm}</span>
                     <a n:if="$functions[3]->ID_Person != NULL" n:href="removeFunction! 3" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
                     {elseif $functions[3]->ID_Person != NULL}
                 <td>{$functions[3]->Person}

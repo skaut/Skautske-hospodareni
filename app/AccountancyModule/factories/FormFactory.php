@@ -2,8 +2,8 @@
 
 namespace App\AccountancyModule\Factories;
 
+use App\FormRenderer;
 use Nette\Application\UI\Form;
-use Nextras\Forms\Rendering\Bs3FormRenderer;
 
 class FormFactory
 {
@@ -14,11 +14,7 @@ class FormFactory
 	public function create($inline = FALSE)
 	{
 		$form = new Form();
-		$form->setRenderer(new Bs3FormRenderer());
-
-		if($inline) {
-			$form->getElementPrototype()->setClass("form-inline");
-		}
+		$form->setRenderer(new FormRenderer($inline));
 
 		return $form;
 	}
