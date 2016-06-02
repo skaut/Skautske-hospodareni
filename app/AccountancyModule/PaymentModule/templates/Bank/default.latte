@@ -41,13 +41,13 @@
                 <th>Poznámka</th>
             </tr>
             <tr n:foreach="$transactions as $t">
-                <td>{$t['date']|date:'j.n.Y'}</td>
-                <td class="r">{$t['amount']}</td>
-                <td class="r">{include #noEmpty val=>$t['prociucet']}</td>
-                <td>{include #noEmpty val=>$t['user']}</td>
-                <td class="r">{include #noEmpty val=>$t['ks']}</td>
-                <td class="r">{include #noEmpty val=>$t['vs']}</td>
-                <td>{include #noEmpty val=>$t['note']}</td>
+                <td>{$t->date|date:'j.n.Y'}</td>
+                <td class="r">{$t->amount}</td>
+                <td class="r">{include #noEmpty val=>$t->bankAccount}</td>
+                <td>{include #noEmpty val=>$t->name}</td>
+                <td class="r">{include #noEmpty val=>$t->constantSymbol}</td>
+                <td class="r">{include #noEmpty val=>$t->variableSymbol}</td>
+                <td>{include #noEmpty val=>$t->note}</td>
             </tr>
         </table>
     {else}
