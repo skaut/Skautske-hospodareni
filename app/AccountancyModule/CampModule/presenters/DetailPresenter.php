@@ -100,19 +100,4 @@ class DetailPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    function createComponentFormAddFunction($name) {
-        $combo = $this->memberService->getCombobox(FALSE, 18);
-
-        $form = $this->prepareForm($this, $name);
-        $form->addSelect("person", NULL, $combo)
-                ->setPrompt("Vyber")
-                ->getControlPrototype()->setAttribute("class", "combobox");
-        $form->addHidden("fid");
-        $form->addHidden("aid");
-        $form->addSubmit('send', 'Přidat')
-                ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
-        return $form;
-    }
-
 }
