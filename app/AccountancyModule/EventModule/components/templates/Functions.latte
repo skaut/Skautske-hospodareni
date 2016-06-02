@@ -10,8 +10,10 @@
                 <td class="required">Vedoucí akce* <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/></td>
                 {if $editation}
                 <td class="r">
-                    <div class="functions">{control leaderForm}</div>
-                    <a n:if="$functions[0]->ID_Person != NULL" n:href="removeFunction! 0" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                    <div class="functions">
+                        <a n:if="$functions[0]->ID_Person != NULL" n:href="removeFunction! 0" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                        {control leaderForm}
+                    </div>
                     {elseif $functions[0]->ID_Person != NULL}
                 <td>{$functions[0]->Person}
                     {else}
@@ -23,8 +25,10 @@
                 <td>Zástupce vedoucího <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"/></td>
                 {if $editation}
                 <td class="r">
-                    <div class="functions">{control assistantForm}</div>
-                    <a n:if="$functions[1]->ID_Person != NULL" n:href="removeFunction! 1" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                    <div class="functions">
+                        <a n:if="$functions[1]->ID_Person != NULL" n:href="removeFunction! 1" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                        {control assistantForm}
+                    </div>
                     {elseif $functions[1]->ID_Person != NULL}
                 <td>{$functions[1]->Person}
                     {else}
@@ -36,8 +40,10 @@
                 <td>Hospodář <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Osoba registrovaná ve SkautISu"/></td>
                 {if $editation}
                 <td class="r">
-                    <div class="functions">{control accountantForm}</div>
-                    <a n:if="$functions[2]->ID_Person != NULL" n:href="removeFunction! 2" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                    <div class="functions">
+                        <a n:if="$functions[2]->ID_Person != NULL" n:href="removeFunction! 2" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                        {control accountantForm}
+                    </div>
                     {elseif $functions[2]->ID_Person != NULL}
                 <td>{$functions[2]->Person}
                     {else}
@@ -49,8 +55,10 @@
                 <td>Zdravotník <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Osoba registrovaná ve SkautISu"/></td>
                 {if $editation}
                 <td class="r">
-                    <span class="functions">{control medicForm}</span>
-                    <a n:if="$functions[3]->ID_Person != NULL" n:href="removeFunction! 3" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                    <span class="functions">
+                        <a n:if="$functions[3]->ID_Person != NULL" n:href="removeFunction! 3" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                        {control medicForm}
+                    </span>
                     {elseif $functions[3]->ID_Person != NULL}
                 <td>{$functions[3]->Person}
                     {else}

@@ -106,6 +106,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         $files->addFiles(array(
             'fancybox/fancybox.css',
             'bootstrap.min.css',
+            'bootstrap-select.css',
             'bootstrap-theme.min.css',
             'jquery-ui-1.10.0.custom.css',
             'bootstrap-datetimepicker.css',
@@ -128,7 +129,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 //            'jquery.touchwipe.min.js',
 //            'mobile.js',
             //'my-datepicker.js',
-            'combobox.js',
+            'bootstrap-select.js',
             //'jquery.nette.js',
             'nette.ajax.js',
             'netteForms.js',

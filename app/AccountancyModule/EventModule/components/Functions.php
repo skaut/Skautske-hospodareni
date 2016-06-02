@@ -98,7 +98,9 @@ class Functions extends Control
 
 		$form->addSelect("person", NULL, $combo)
 			->setPrompt("")
-			->setDefaultValue($selectedPerson);
+			->setDefaultValue($selectedPerson)
+			->setAttribute('class', 'combobox')
+		->setAttribute('data-autocomplete');
 		$form->addSubmit('send', 'Nastavit')
 			->setAttribute("class", "btn btn-sm btn-primary ajax");
 

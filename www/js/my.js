@@ -3,8 +3,16 @@ $(document).ready(function () {
     //nette.ajax.js
     $.nette.init();
 
-    //Combobox
-    $(".combobox").combobox(); //nejde předávat parametry
+    $.nette.ext({
+        load: function() {
+            //Combobox
+            $(".combobox").data('live-search', true).selectpicker({
+                dropupAuto: false,
+                noneSelectedText: 'Nevybráno',
+                noneResultsText: 'Nenalezeny žádné výsledky {0}'
+            });
+        }
+    });
 
     //fancybox2
     $(".fancybox").fancybox();

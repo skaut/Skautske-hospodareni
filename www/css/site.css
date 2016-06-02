@@ -269,9 +269,18 @@ footer {
     white-space:nowrap;
 }
 
+.functions {
+    display: flex;
+}
+
 .functions form {
-    float:right;
     margin-left:7px;
+    display: flex;
+    flex: 1;
+}
+
+.functions input[type="submit"] {
+    margin-left: 7px;
 }
 
 //bootstrap3 typeahead
