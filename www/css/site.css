@@ -269,7 +269,7 @@ footer {
     white-space:nowrap;
 }
 
-form.functions {
+.functions form {
     float:right;
     margin-left:7px;
 }

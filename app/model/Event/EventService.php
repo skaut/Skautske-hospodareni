@@ -1,6 +1,9 @@
 <?php
 
 namespace Model;
+use Model\Event\AssistantNotAdultException;
+use Model\Event\LeaderNotAdultException;
+use Skautis\Wsdl\WsdlException;
 
 /**
  * @author Hána František
@@ -62,7 +65,7 @@ class EventService extends MutableBaseService {
 
     /**
      * vrací obsazení funkcí na zadané akci
-     * @param ID_Unit $ID
+     * @param int $ID
      * @return type 
      */
     public function getFunctions($ID) {
@@ -85,15 +88,26 @@ class EventService extends MutableBaseService {
 
     /**
      * nastaví danou funkci
-     * @param type $ID_Event
-     * @param type $ID_Person
-     * @param type $ID_Function
+     * @param int $ID_Event
+     * @param int $ID_Person
+     * @param int $ID_Function
      * @return type
      */
     public function setFunction($ID_Event, $ID_Person, $ID_Function) {
         $query = $this->getPreparedFunctions($ID_Event);
         $query[self::$ID_Functions[$ID_Function]] = $ID_Person; //nova změna
-        return $this->skautis->event->{"Event" . $this->typeName . "UpdateFunction"}($query);
+
+        try {
+            return $this->skautis->event->{"Event" . $this->typeName . "UpdateFunction"}($query);
+        } catch(WsdlException $e) {
+            if(strpos($e->getMessage(), 'EventFunction_LeaderMustBeAdult') != FALSE) {
+                throw new LeaderNotAdultException;
+            }
+            if(strpos($e->getMessage(), 'EventFunction_AssistantMustBeAdult') !== FALSE) {
+                throw new AssistantNotAdultException;
+            }
+        }
+
     }
 
     /**

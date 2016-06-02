@@ -2,8 +2,11 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use Nette\Application\UI\Form,
-    Nette\Forms\Controls\SubmitButton;
+use App\AccountancyModule\EventModule\Factories\IFunctionsFactory;
+use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SubmitButton;
+use Model\MemberService;
+use Model\ExportService;
 
 /**
  * @author Hána František <sinacek@gmail.com> 
@@ -11,23 +14,26 @@ use Nette\Application\UI\Form,
  */
 class EventPresenter extends BasePresenter {
     
-    /**
-     *
-     * @var \Model\ExportService
-     */
+    /** @var ExportService */
     protected $exportService;
     
+    /** @var MemberService */
+    private $memberService;
+
+    /** @var IFunctionsFactory */
+    private $functionsFactory;
+
     /**
-     *
-     * @var \Model\MemberService
+     * EventPresenter constructor.
+     * @param ExportService $exportService
+     * @param MemberService $memberService
+     * @param IFunctionsFactory $functionsFactory
      */
-    protected $memberService;
-
-
-    public function __construct(\Model\ExportService $export, \Model\MemberService $member) {
-        parent::__construct();
-        $this->exportService = $export;
-        $this->memberService = $member;
+    public function __construct(ExportService $exportService, MemberService $memberService, IFunctionsFactory $functionsFactory)
+    {
+        $this->exportService = $exportService;
+        $this->memberService = $memberService;
+        $this->functionsFactory = $functionsFactory;
     }
 
     public function renderDefault($aid, $funcEdit = FALSE) {
@@ -200,11 +206,11 @@ class EventPresenter extends BasePresenter {
     }
 
     function createComponentFormVedouci($name) {
-        return $this->prepareFunctionForm($name, 0, 18);
+        return $this->prepareFunctionForm($name, 0, 0);
     }
 
     function createComponentFormZastupce($name) {
-        return $this->prepareFunctionForm($name, 1, 18);
+        return $this->prepareFunctionForm($name, 1, 0);
     }
 
     function createComponentFormHospodar($name) {
@@ -215,26 +221,31 @@ class EventPresenter extends BasePresenter {
         return $this->prepareFunctionForm($name, 3, 15);
     }
 
+    protected function createComponentFunctions()
+    {
+        return $this->functionsFactory->create($this->aid);
+    }
+
     protected function prepareFunctionForm($name, $fid, $ageLimit = NULL) {
         $form = $this->prepareForm($this, $name);
         $form->getElementPrototype()->setClass("form-inline");
         $func = $this->eventService->event->getFunctions($this->aid);
         $combo = $this->memberService->getCombobox(FALSE, $ageLimit);
         $form->addSelect("person", NULL, $combo)
-                ->setPrompt("")
-                ->setDefaultValue(array_key_exists($func[$fid]->ID_Person, $combo) ? $func[$fid]->ID_Person : NULL);
+            ->setPrompt("")
+            ->setDefaultValue(array_key_exists($func[$fid]->ID_Person, $combo) ? $func[$fid]->ID_Person : NULL);
         $form->addHidden("fid", $fid);
         $form->addHidden("aid", $this->aid);
         $form->addSubmit('send', 'Nastavit')
-                ->setAttribute("class", "btn btn-sm btn-primary");
+            ->setAttribute("class", "btn btn-sm btn-primary");
         $form->onSuccess[] = array($this, 'formFunctionSubmitted');
         return $form;
     }
 
     function formFunctionSubmitted(Form $form) {
-        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Function")) {
-            $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
-            $this->redirect("this");
+        if (!$this->presenter->isAllowed('EV_EventGeneral_UPDATE_Function')) {
+            $this->flashMessage('Nemáte oprávnění upravit vedení akce', 'danger');
+            $this->redirect('this');
         }
         $values = $form->getValues();
 
