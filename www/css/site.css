@@ -272,9 +272,10 @@ footer {
 .functions {
     display: flex;
 }
-
+.functions > .btn {
+    margin-right: 7px;
+}
 .functions form {
-    margin-left:7px;
     display: flex;
     flex: 1;
 }

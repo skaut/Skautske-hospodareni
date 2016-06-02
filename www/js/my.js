@@ -1,18 +1,22 @@
+// Should be called when DOM is loaded or after AJAX request
+function domInit() {
+    //Combobox
+    $(".combobox").data('live-search', true).selectpicker({
+        dropupAuto: false,
+        noneSelectedText: 'Nevybráno',
+        noneResultsText: 'Nenalezeny žádné výsledky {0}'
+    });
+}
+
 $(document).ready(function () {
+
+    $.nette.ext({
+        load: domInit,
+        init: domInit
+    });
 
     //nette.ajax.js
     $.nette.init();
-
-    $.nette.ext({
-        load: function() {
-            //Combobox
-            $(".combobox").data('live-search', true).selectpicker({
-                dropupAuto: false,
-                noneSelectedText: 'Nevybráno',
-                noneResultsText: 'Nenalezeny žádné výsledky {0}'
-            });
-        }
-    });
 
     //fancybox2
     $(".fancybox").fancybox();

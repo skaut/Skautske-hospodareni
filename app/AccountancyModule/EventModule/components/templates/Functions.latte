@@ -11,7 +11,7 @@
                 {if $editation}
                 <td class="r">
                     <div class="functions">
-                        <a n:if="$functions[0]->ID_Person != NULL" n:href="removeFunction! 0" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                        <a n:if="$functions[0]->ID_Person != NULL" n:href="removeFunction! 0" class="btn btn-danger ajax" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
                         {control leaderForm}
                     </div>
                     {elseif $functions[0]->ID_Person != NULL}
@@ -26,7 +26,7 @@
                 {if $editation}
                 <td class="r">
                     <div class="functions">
-                        <a n:if="$functions[1]->ID_Person != NULL" n:href="removeFunction! 1" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                        <a n:if="$functions[1]->ID_Person != NULL" n:href="removeFunction! 1" class="btn btn-danger ajax" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
                         {control assistantForm}
                     </div>
                     {elseif $functions[1]->ID_Person != NULL}
@@ -41,7 +41,7 @@
                 {if $editation}
                 <td class="r">
                     <div class="functions">
-                        <a n:if="$functions[2]->ID_Person != NULL" n:href="removeFunction! 2" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                        <a n:if="$functions[2]->ID_Person != NULL" n:href="removeFunction! 2" class="btn btn-danger ajax" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
                         {control accountantForm}
                     </div>
                     {elseif $functions[2]->ID_Person != NULL}
@@ -56,7 +56,7 @@
                 {if $editation}
                 <td class="r">
                     <span class="functions">
-                        <a n:if="$functions[3]->ID_Person != NULL" n:href="removeFunction! 3" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
+                        <a n:if="$functions[3]->ID_Person != NULL" n:href="removeFunction! 3" class="btn btn-danger ajax" onclick="return confirm('Opravdu chcete smazat funkci?')" title="Odebrat osobu z funkce"><i class="glyphicon glyphicon-remove"></i></a>
                         {control medicForm}
                     </span>
                     {elseif $functions[3]->ID_Person != NULL}

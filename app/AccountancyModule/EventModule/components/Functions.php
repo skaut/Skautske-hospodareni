@@ -128,14 +128,13 @@ class Functions extends Control
 	public function handleRemoveFunction($functionId)
 	{
 		if (!$this->canEdit()) {
-			$this->flashMessage('Nemáte oprávnění upravit vedení akce', 'danger');
-			$this->redirect('this');
+			$this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
 		}
 
-		if (!$this->events->setFunction($this->aid, NULL, $functionId)) {
-			$this->flashMessage('Funkci se nepodařilo odebrat', 'danger');
+		if (!$this->events->setFunction($this->eventId, NULL, $functionId)) {
+			$this->reload('Funkci se nepodařilo odebrat', 'danger');
 		}
-		$this->redirect('this');
+		$this->reload();
 	}
 
 	protected function createComponentLeaderForm()
