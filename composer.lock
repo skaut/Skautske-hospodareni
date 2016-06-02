@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "378cc37a5671f874c5d23b9289123986",
-    "content-hash": "44ceafec77085718e8c9db6de096b9c7",
+    "hash": "790d4724cd992335a4e21c29c41fbac0",
+    "content-hash": "56326143f0b32575cdd13dafb4fe23fa",
     "packages": [
         {
             "name": "dg/dibi",
@@ -114,6 +114,51 @@
                 "selectbox"
             ],
             "time": "2014-07-09 13:03:27"
+        },
+        {
+            "name": "hamcrest/hamcrest-php",
+            "version": "v1.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hamcrest/hamcrest-php.git",
+                "reference": "b37020aa976fa52d3de9aa904aa2522dc518f79c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hamcrest/hamcrest-php/zipball/b37020aa976fa52d3de9aa904aa2522dc518f79c",
+                "reference": "b37020aa976fa52d3de9aa904aa2522dc518f79c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "replace": {
+                "cordoval/hamcrest-php": "*",
+                "davedevelopment/hamcrest-php": "*",
+                "kodova/hamcrest-php": "*"
+            },
+            "require-dev": {
+                "phpunit/php-file-iterator": "1.3.3",
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "hamcrest"
+                ],
+                "files": [
+                    "hamcrest/Hamcrest.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD"
+            ],
+            "description": "This is the PHP port of Hamcrest Matchers",
+            "keywords": [
+                "test"
+            ],
+            "time": "2015-05-11 14:41:42"
         },
         {
             "name": "heureka/bank-account-validator",
@@ -293,6 +338,71 @@
                 "twig"
             ],
             "time": "2015-12-02 22:05:24"
+        },
+        {
+            "name": "mockery/mockery",
+            "version": "0.9.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/padraic/mockery.git",
+                "reference": "4db079511a283e5aba1b3c2fb19037c645e70fc2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/4db079511a283e5aba1b3c2fb19037c645e70fc2",
+                "reference": "4db079511a283e5aba1b3c2fb19037c645e70fc2",
+                "shasum": ""
+            },
+            "require": {
+                "hamcrest/hamcrest-php": "~1.1",
+                "lib-pcre": ">=7.0",
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.9.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Mockery": "library/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Pádraic Brady",
+                    "email": "padraic.brady@gmail.com",
+                    "homepage": "http://blog.astrumfutura.com"
+                },
+                {
+                    "name": "Dave Marshall",
+                    "email": "dave.marshall@atstsolutions.co.uk",
+                    "homepage": "http://davedevelopment.co.uk"
+                }
+            ],
+            "description": "Mockery is a simple yet flexible PHP mock object framework for use in unit testing with PHPUnit, PHPSpec or any other testing framework. Its core goal is to offer a test double framework with a succinct API capable of clearly defining all possible object operations and interactions using a human readable Domain Specific Language (DSL). Designed as a drop in alternative to PHPUnit's phpunit-mock-objects library, Mockery is easy to integrate with PHPUnit and can operate alongside phpunit-mock-objects without the World ending.",
+            "homepage": "http://github.com/padraic/mockery",
+            "keywords": [
+                "BDD",
+                "TDD",
+                "library",
+                "mock",
+                "mock objects",
+                "mockery",
+                "stub",
+                "test",
+                "test double",
+                "testing"
+            ],
+            "time": "2016-05-22 21:52:33"
         },
         {
             "name": "mpdf/mpdf",
@@ -1784,60 +1894,6 @@
     ],
     "packages-dev": [
         {
-            "name": "janmarek/mockista",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/janmarek/mockista.git",
-                "reference": "e182e1a953c99ff345a5e292e43c2a13db2fa5f9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/janmarek/mockista/zipball/e182e1a953c99ff345a5e292e43c2a13db2fa5f9",
-                "reference": "e182e1a953c99ff345a5e292e43c2a13db2fa5f9",
-                "shasum": ""
-            },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Mockista": ""
-                },
-                "files": [
-                    "Mockista/functions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Jiří Knesl",
-                    "homepage": "http://www.knesl.com/"
-                },
-                {
-                    "name": "Jan Marek",
-                    "homepage": "http://www.janmarek.net/"
-                }
-            ],
-            "description": "Mockista is library for mocking, which I've written, because I find mocking in PHPUnit awful.",
-            "homepage": "https://github.com/janmarek/mockista",
-            "keywords": [
-                "BDD",
-                "TDD",
-                "mock",
-                "mocking",
-                "mockista",
-                "phpunit",
-                "testing",
-                "tests"
-            ],
-            "time": "2015-01-26 04:10:48"
-        },
-        {
             "name": "nette/tester",
             "version": "v1.3.2",
             "source": {
@@ -1899,8 +1955,7 @@
     "stability-flags": {
         "skautis/skautis": 20,
         "skautis/nette": 20,
-        "foowie/dependentselectbox": 20,
-        "janmarek/mockista": 20
+        "foowie/dependentselectbox": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

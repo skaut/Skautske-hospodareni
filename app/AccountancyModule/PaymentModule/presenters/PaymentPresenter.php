@@ -337,12 +337,12 @@ class PaymentPresenter extends BasePresenter {
         try {
             $pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $gid);
         } catch (\Model\BankTimeoutException $exc) {
-            $this->template->errMsg[] = "Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.";
+            $this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
         } catch (\Model\BankTimeLimitException $exc) {
-            $this->template->errMsg[] = "Mezi dotazy na bankovnictví musí být prodleva 1 minuta!";
+            $this->flashMessage("Mezi dotazy na bankovnictví musí být prodleva 1 minuta!", 'danger');
         }
 
-        if ($pairsCnt > 0) {
+        if (isset($pairsCnt) && $pairsCnt > 0) {
             $this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
         } else {
             $this->flashMessage("Žádné platby nebyly spárovány");
