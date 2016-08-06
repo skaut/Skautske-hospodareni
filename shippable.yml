@@ -11,6 +11,7 @@ build:
         pull: true
 
     ci:
+        - rm shippable -rf
         # Add Github token for Github quota
         - composer config -g github-oauth.github.com $GITHUB_OAUTH_TOKEN
 
@@ -21,7 +22,7 @@ build:
         - mkdir -p shippable/testresults
 
         # Unit tests
-        - vendor/bin/tester tests/unit -C -o=junit > shippable/testresults/junit.xml && echo 'tests OK'
+        - vendor/bin/tester tests -C -d date.timezone=Europe/Prague -o=junit
 
     cache: true
     cache_dir_list:
