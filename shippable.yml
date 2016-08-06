@@ -17,8 +17,11 @@ build:
         # Instal composer dependencies
         - composer install --no-interaction
 
+        # Create folder for test results
+        - mkdir -p shippable/testresults
+
         # Unit tests
-        - vendor/bin/tester tests/unit -C -o=junit >&1 > shippable/testresults/result.xml
+        - vendor/bin/tester tests/unit -C -o=junit > shippable/testresults/result.xml
 
     cache: true
     cache_dir_list:
