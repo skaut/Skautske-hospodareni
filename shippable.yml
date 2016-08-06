@@ -6,7 +6,7 @@ env:
         - secure: DrouZdZsNa6t6wxiSho15D2ryXAHowfR2dYa5TsSyz1sNEPLmS5VCTOwMIG4Z+vroyJgG2fizCqHsB6fuKZ8iwycLlvQoWhm8KxRGrZItyARruCZ8ILLfLCctCs+Q5evt9jMCV5xuuG9vC/eHktI9SyiqWPPr7yYdGndB++W6gBESIVR9qrECm0p0fcFqw6XciaoltQv9jcNKAqwmu7f3IwWmqqEOA1UXXsjeK9tiHShJR9uFaJFDqRuUuaOXgqc54oYLh217vJD2Hu4zIQNM8WZdxcWoH/wrHWB6T+5T4t9fqVFw1P0YfFNz3avjFCby/MMNogj4gOSxTbfF4ktbA==
 build:
     pre_ci_boot:
-        image_name: shipito:php
+        image_name: shipito/php
         image_tag: 5.6
         pull: true
 
