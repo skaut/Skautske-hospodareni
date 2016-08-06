@@ -21,7 +21,7 @@ build:
         - mkdir -p shippable/testresults
 
         # Unit tests
-        - vendor/bin/tester tests/unit -C -o=junit > shippable/testresults/junit.xml
+        - vendor/bin/tester tests/unit -C -o=junit > shippable/testresults/junit.xml && echo 'tests OK'
 
     cache: true
     cache_dir_list:
