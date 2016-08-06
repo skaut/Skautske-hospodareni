@@ -1,0 +1,28 @@
+env:
+    global:
+        # GITHUB_OAUTH_TOKEN
+        - secure: DrouZdZsNa6t6wxiSho15D2ryXAHowfR2dYa5TsSyz1sNEPLmS5VCTOwMIG4Z+vroyJgG2fizCqHsB6fuKZ8iwycLlvQoWhm8KxRGrZItyARruCZ8ILLfLCctCs+Q5evt9jMCV5xuuG9vC/eHktI9SyiqWPPr7yYdGndB++W6gBESIVR9qrECm0p0fcFqw6XciaoltQv9jcNKAqwmu7f3IwWmqqEOA1UXXsjeK9tiHShJR9uFaJFDqRuUuaOXgqc54oYLh217vJD2Hu4zIQNM8WZdxcWoH/wrHWB6T+5T4t9fqVFw1P0YfFNz3avjFCby/MMNogj4gOSxTbfF4ktbA==
+
+build_image: drydock/u14php7all:tip
+
+# language setting
+language: php
+
+# specifying runtime
+php:
+   '5.4'
+
+build:
+    ci:
+        # Add Github token for Github quota
+        - composer config -g github-oauth.github.com $GITHUB_OAUTH_TOKEN
+
+        # Instal composer dependencies
+        - composer install --no-interaction
+
+        # Unit tests
+        - vendor/bin/tester tests/unit -C -o=junit:shippable/testresults
+
+    cache: true
+    cache_dir_list:
+        - $HOME/.composer/cache
