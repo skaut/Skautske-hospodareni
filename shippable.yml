@@ -18,7 +18,7 @@ build:
         - composer install --no-interaction
 
         # Unit tests
-        - vendor/bin/tester tests/unit -C -o=junit >&1 > shippable/testresults
+        - vendor/bin/tester tests/unit -C -o=junit >&1 > shippable/testresults/result.xml
 
     cache: true
     cache_dir_list:
