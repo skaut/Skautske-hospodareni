@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "790d4724cd992335a4e21c29c41fbac0",
-    "content-hash": "56326143f0b32575cdd13dafb4fe23fa",
+    "hash": "c33029a1367e7bee5194c17ebd947dc7",
+    "content-hash": "b4691a7a42452ab688b210b93b29f74d",
     "packages": [
         {
             "name": "dg/dibi",
@@ -72,6 +72,7 @@
                 "sqlite",
                 "sqlsrv"
             ],
+            "abandoned": "dibi/dibi",
             "time": "2016-02-21 01:07:19"
         },
         {
@@ -1895,33 +1896,33 @@
     "packages-dev": [
         {
             "name": "nette/tester",
-            "version": "v1.3.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tester.git",
-                "reference": "2ce1cd9a6d7012ba059efa08613d5cd6e50c6560"
+                "reference": "7d29c02f3216a1c4debe4c6475830b5884786922"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tester/zipball/2ce1cd9a6d7012ba059efa08613d5cd6e50c6560",
-                "reference": "2ce1cd9a6d7012ba059efa08613d5cd6e50c6560",
+                "url": "https://api.github.com/repos/nette/tester/zipball/7d29c02f3216a1c4debe4c6475830b5884786922",
+                "reference": "7d29c02f3216a1c4debe4c6475830b5884786922",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.4.0"
             },
             "bin": [
-                "Tester/tester"
+                "src/tester"
             ],
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.3-dev"
+                    "dev-master": "2.0-dev"
                 }
             },
             "autoload": {
                 "classmap": [
-                    "Tester/"
+                    "src/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1933,21 +1934,21 @@
             "authors": [
                 {
                     "name": "David Grudl",
-                    "homepage": "http://davidgrudl.com"
+                    "homepage": "https://davidgrudl.com"
                 },
                 {
                     "name": "Nette Community",
-                    "homepage": "http://nette.org/contributors"
+                    "homepage": "https://nette.org/contributors"
                 }
             ],
             "description": "An easy-to-use PHP unit testing framework.",
-            "homepage": "http://nette.org",
+            "homepage": "https://tester.nette.org",
             "keywords": [
                 "nette",
                 "testing",
                 "unit"
             ],
-            "time": "2015-02-08 04:13:28"
+            "time": "2016-07-14 15:31:47"
         }
     ],
     "aliases": [],
@@ -1955,7 +1956,8 @@
     "stability-flags": {
         "skautis/skautis": 20,
         "skautis/nette": 20,
-        "foowie/dependentselectbox": 20
+        "foowie/dependentselectbox": 20,
+        "nette/tester": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
