@@ -38,12 +38,12 @@ class OfflinePresenter extends BasePresenter {
 
     function beforeRender() {
         parent::beforeRender();
-        $cache = new Cache(new Nette\Caching\Storages\FileStorage(TEMP_DIR));
+//        $cache = new Cache(new \Nette\Caching\Storages\FileStorage(TEMP_DIR));
         if (!$this->user->isLoggedIn()) {
-            if (!($backlink = $cache->load("loginBacklink"))) {
-                $backlink = $cache->save("loginBacklink", $this->storeRequest('+ 3 days'), array(Cache::EXPIRE => '+2 days'));
-            }
-            $this->template->backlink = $backlink;
+//            if (!($backlink = $cache->load("loginBacklink"))) {
+//                $backlink = $cache->save("loginBacklink", $this->storeRequest('+ 3 days'), array(Cache::EXPIRE => '+2 days'));
+//            }
+//            $this->template->backlink = $backlink;
         }
     }
 
@@ -60,13 +60,13 @@ class OfflinePresenter extends BasePresenter {
 //        if($this->user->isLoggedIn()){
 //            $this->template->autoCompleter = $this->context->memberService->getAC();
 //        }
-        $this['formOut']['category']->setItems($this->context->eventService->chits->getCategoriesPairs('out'));
+        $this['formOut']['category']->setItems($this->context->getService("eventService")->chits->getCategoriesPairs('out'));
         $this->template->setFile(dirname(__FILE__) . '/../templates/Offline/form.latte');
         $this->template->form = $this['formOut'];
     }
 
     function actionIn() {
-        $this['formIn']['category']->setItems($this->context->eventService->chits->getCategoriesPairs('in'));
+        $this['formIn']['category']->setItems($this->context->getService("eventService")->chits->getCategoriesPairs('in'));
         $this->template->setFile(dirname(__FILE__) . '/../templates/Offline/form.latte');
         $this->template->form = $this['formIn'];
     }
@@ -106,7 +106,7 @@ class OfflinePresenter extends BasePresenter {
         $form->addSubmit('send', 'Uložit')
                         ->setAttribute("class", "btn btn-primary");
 //        $form->onSuccess[] = array(null, 'formAddSubmitted');
-        $form->setDefaults(array('category' => 8));
+        //$form->setDefaults(array('category' => 8));
         return $form;
     }
 
@@ -136,7 +136,7 @@ class OfflinePresenter extends BasePresenter {
         $form->addSubmit('send', 'Uložit')
                 ->getControlPrototype()->setAttribute("class", "btn btn-primary");
 //        $form->onSuccess[] = array(null, 'formAddSubmitted');
-        $form->setDefaults(array('category' => 1));
+        //$form->setDefaults(array('category' => 1));
         return $form;
     }
 

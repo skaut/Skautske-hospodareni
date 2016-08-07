@@ -110,7 +110,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'jquery-ui-1.10.0.custom.css',
             'bootstrap-datetimepicker.css',
             'typeaheadjs.css',
-//            'offline.css',
+            'offline.css',
             'site.css'
         ));
         return $control;
@@ -139,7 +139,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'bootstrap3-typeahead.min.js',
 //            'nextras.typeahead.init.js',
             'jquery.fancybox.pack.js',
-//            'offline.js',
+            'offline.js',
 //            'html5.js',
 //            'h5utils.js',
             'my.js',
