@@ -13,11 +13,11 @@
                 "mpdf/mpdf": "~6.0",
 		"nextras/forms": "~1.6",
                 "foowie/dependentselectbox": "dev-master",
-		"heureka/bank-account-validator": "^1.0",
-		"mockery/mockery": "^0.9.5"
+		"heureka/bank-account-validator": "^1.0"
 	},
 	"require-dev": {
-		"nette/tester": "~1.3.0"
+		"nette/tester": "dev-master",
+		"mockery/mockery": "^0.9.5"
 	},
         "minimum-stability" : "RC"
 }
