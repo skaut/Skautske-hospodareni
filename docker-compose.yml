@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+    app:
+        container_name: hskauting
+        tty: true
+        build: docker
+        volumes:
+            - www:/var/www
+            - .:/var/www/html
+            - /etc/mysql
+            - mysql:/var/lib/mysql
+            - /var/www/html/temp
+        ports:
+            - 80:80
+            - 9000:9000
+
+volumes:
+    mysql:
+    www:
