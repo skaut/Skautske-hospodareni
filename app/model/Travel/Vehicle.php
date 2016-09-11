@@ -51,14 +51,6 @@ class Vehicle extends Nette\Object
 	}
 
 	/**
-	 * @param string $note
-	 */
-	public function setNote($note)
-	{
-		$this->note = $note;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getType()

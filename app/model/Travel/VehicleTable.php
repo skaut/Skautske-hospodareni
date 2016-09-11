@@ -13,34 +13,33 @@ class VehicleTable extends BaseTable {
     const LABEL = "CONCAT(type,' (', spz,')')";
 
 	/**
-	 * @param object $row
-	 * @return Vehicle
-	 */
-	private function hydrate($row, $commandsCount = 0)
-	{
-		return new Vehicle($row->id, $row->type, $row->unit_id, $row->spz, $row->consumption, $commandsCount);
-	}
-
-	/**
 	 * @param int $id
 	 * @throws VehicleNotFoundException
 	 * @return Vehicle
 	 */
-	public function getObject($id)
+	public function get($id)
 	{
-		$id = (int)$id;
-		$row = $this->get($id);
+		$row = $this->connection->select('*')
+			->from(self::TABLE_TC_VEHICLE)
+			->where('id = %i', $id)
+			->fetch();
 
 		if(!$row) {
 			throw new VehicleNotFoundException;
 		}
+
 		return $this->hydrate($row, $this->countCommands([$id])[$id]);
 	}
 
-    private function get($vehicleId)
+	/**
+	 * @param object $row
+	 * @param int $commandsCount
+	 * @return Vehicle
+	 */
+	private function hydrate($row, $commandsCount)
 	{
-        return $this->connection->fetch("SELECT *, ", self::LABEL," as label FROM [" . self::TABLE_TC_VEHICLE . "] WHERE id=%i", $vehicleId, " LIMIT 1");
-    }
+		return new Vehicle($row->id, $row->type, $row->unit_id, $row->spz, $row->consumption, $commandsCount);
+	}
 
 	/**
 	 * @param array $vehicleIds

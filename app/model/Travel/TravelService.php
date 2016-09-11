@@ -46,7 +46,7 @@ class TravelService extends BaseService {
     public function getVehicle($vehicleId) {
         $cacheId = __FUNCTION__ . "_" . $vehicleId;
         if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->tableVehicle->getObject($vehicleId);
+            $res = $this->tableVehicle->get($vehicleId);
             $this->saveSes($cacheId, $res);
         }
         return $res;
