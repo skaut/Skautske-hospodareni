@@ -2,6 +2,7 @@
 
 namespace Model;
 use Model\Travel\Vehicle;
+use Model\Travel\VehicleNotFoundException;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -13,12 +14,18 @@ class VehicleTable extends BaseTable {
 
 	/**
 	 * @param int $id
+	 * @throws VehicleNotFoundException
 	 * @return Vehicle
 	 */
 	public function getObject($id)
 	{
 		$id = (int)$id;
 		$row = $this->get($id);
+
+		if(!$row) {
+			throw new VehicleNotFoundException;
+		}
+
 		return new Vehicle($id, $row->unit_id, $row->spz, $row->consumption);
 	}
 
