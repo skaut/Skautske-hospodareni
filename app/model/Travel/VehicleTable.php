@@ -1,6 +1,7 @@
 <?php
 
 namespace Model;
+use Model\Travel\Vehicle;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -9,6 +10,17 @@ namespace Model;
 class VehicleTable extends BaseTable {
     
     const LABEL = "CONCAT(type,' (', spz,')')";
+
+	/**
+	 * @param int $id
+	 * @return Vehicle
+	 */
+	public function getObject($id)
+	{
+		$id = (int)$id;
+		$row = $this->get($id);
+		return new Vehicle($id, $row->unit_id, $row->spz, $row->consumption);
+	}
 
     public function get($vehicleId, $withDeleted = false) {
         return $this->connection->fetch("SELECT *, ", self::LABEL," as label FROM [" . self::TABLE_TC_VEHICLE . "] WHERE id=%i", $vehicleId, "%if", !$withDeleted," AND deleted=0 %end", " LIMIT 1");
