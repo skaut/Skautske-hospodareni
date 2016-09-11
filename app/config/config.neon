@@ -58,3 +58,8 @@ services:
     - \Model\ExportService
     - \Model\ExcelService
     - \Model\BudgetService
+
+    - App\AccountancyModule\Factories\FormFactory
+
+includes:
+	- components.neon
