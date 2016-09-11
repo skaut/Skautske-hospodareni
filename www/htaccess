@@ -1,6 +1,9 @@
 # disable directory listing
 Options -Indexes
-AddType text/cache-manifest .manifest
+#AddType text/cache-manifest .manifest
+
+RewriteCond %{HTTPS} !^.*on
+RewriteRule ^(.*)$ https://h.skauting.cz/$1 [R,L]
 
 # mod_rewrite
 <IfModule mod_rewrite.c>

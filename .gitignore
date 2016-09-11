@@ -1,6 +1,5 @@
 /www/webtemp
 /www/images
-htaccess
 /app/config/config.*.neon
 !/app/config/config.sample.local.neon
 !/vendor/others
@@ -14,4 +13,3 @@ log/*
 deployment.*
 /www/*.json
 /archiv
-!.htaccess
