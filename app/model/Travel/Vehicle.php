@@ -7,7 +7,7 @@ use Nette;
 class Vehicle extends Nette\Object
 {
 
-	/** @var int */
+	/** @var int|NULL */
 	private $id;
 
 	/** @var string */
@@ -33,21 +33,24 @@ class Vehicle extends Nette\Object
 
 	/**
 	 * Vehicle constructor.
-	 * @param int $id
 	 * @param string $type
 	 * @param int $unitId
 	 * @param string $registration
 	 * @param float $consumption
 	 * @param int $commandsCount
 	 */
-	public function __construct($id, $type, $unitId, $registration, $consumption, $commandsCount)
+	public function __construct($type, $unitId, $registration, $consumption, $commandsCount)
 	{
-		$this->id = $id;
 		$this->type = $type;
 		$this->unitId = $unitId;
 		$this->registration = $registration;
 		$this->consumption = $consumption;
 		$this->commandsCount = $commandsCount;
+	}
+
+	public function archive()
+	{
+		$this->archived = TRUE;
 	}
 
 	/**
@@ -59,7 +62,7 @@ class Vehicle extends Nette\Object
 	}
 
 	/**
-	 * @return int
+	 * @return int|NULL
 	 */
 	public function getId()
 	{

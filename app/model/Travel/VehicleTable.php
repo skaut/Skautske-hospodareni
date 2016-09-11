@@ -1,6 +1,7 @@
 <?php
 
 namespace Model;
+use Dibi\Connection;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 
@@ -11,6 +12,17 @@ use Model\Travel\VehicleNotFoundException;
 class VehicleTable extends BaseTable {
     
     const LABEL = "CONCAT(type,' (', spz,')')";
+
+	/** @var \ReflectionProperty */
+	private $idProperty;
+
+	public function __construct(Connection $connection)
+	{
+		parent::__construct($connection);
+		$reflection = new \ReflectionClass('Model\Travel\Vehicle');
+		$this->idProperty = $reflection->getProperty('id');
+		$this->idProperty->setAccessible(TRUE);
+	}
 
 	/**
 	 * @param int $id
@@ -33,13 +45,15 @@ class VehicleTable extends BaseTable {
 
 	/**
 	 * @param $unitId
+	 * @param bool $archived
 	 * @return Vehicle[]
 	 */
-    public function getAll($unitId)
+    public function getAll($unitId, $archived = FALSE)
 	{
 		$rows = $this->connection->select('*')
 			->from(self::TABLE_TC_VEHICLE)
 			->where('deleted != 1')
+			->where('archived = %b', $archived)
 			->where('unit_id = %i', $unitId)
 			->execute()
 			->fetchAll('id');
@@ -70,7 +84,7 @@ class VehicleTable extends BaseTable {
 			->where('deleted = 0')
 			->fetchPairs();
     }
-    
+
     public function add($data)
 	{
         return $this->connection->insert(self::TABLE_TC_VEHICLE, $data)->execute();
@@ -88,13 +102,30 @@ class VehicleTable extends BaseTable {
     }
 
 	/**
+	 * @param Vehicle $vehicle
+	 * @param int $id
+	 */
+    private function injectId(Vehicle $vehicle, $id)
+	{
+		$this->idProperty->setValue($vehicle, $id);
+	}
+
+	/**
 	 * @param object $row
 	 * @param int $commandsCount
 	 * @return Vehicle
 	 */
 	private function hydrate($row, $commandsCount)
 	{
-		return new Vehicle($row->id, $row->type, $row->unit_id, $row->spz, $row->consumption, $commandsCount);
+		$vehicle = new Vehicle($row->type, $row->unit_id, $row->spz, $row->consumption, $commandsCount);
+
+		$this->injectId($vehicle, $row->id);
+
+		if($row->archived) {
+			$vehicle->archive();
+		}
+
+		return $vehicle;
 	}
 
 	/**
