@@ -17,7 +17,7 @@ class RouterFactory {
     public function createRouter() {
         $router = new RouteList();
 
-        $router[] = new MyRoute('index.php', ':Default:default', Route::ONE_WAY & Route::SECURED);
+        $router[] = new MyRoute('index.php', 'Default:default', Route::ONE_WAY & Route::SECURED);
         $router[] = new Route('app.manifest', 'Offline:manifest');
         $router[] = new Route("o-projektu", "Default:about");
         $router[] = new MyRoute('sign/<action>[/back-<backlink>]', array(
