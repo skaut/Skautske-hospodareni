@@ -58,6 +58,10 @@ class VehicleTable extends BaseTable {
 			->execute()
 			->fetchAll('id');
 
+		if(!$rows) {
+			return [];
+		}
+
 		$indexedRows = [];
 		foreach($rows as $row) {
 			$indexedRows[$row->id] = $row;
