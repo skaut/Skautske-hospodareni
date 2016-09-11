@@ -82,6 +82,22 @@ class TravelService extends BaseService {
         return $this->tableVehicle->remove($vehicleId);
     }
 
+	/**
+	 * Archives specified vehicle
+	 * @param int $vehicleId
+	 */
+    public function archiveVehicle($vehicleId)
+	{
+		$vehicle = $this->tableVehicle->get($vehicleId);
+
+		if($vehicle->isArchived()) {
+			return;
+		}
+
+		$vehicle->archive();
+		$this->tableVehicle->save($vehicle);
+	}
+
     /**     TRAVELS    */
     public function getTravel($commandId) {
         return $this->tableTravel->get($commandId);
