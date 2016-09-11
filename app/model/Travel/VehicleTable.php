@@ -32,42 +32,13 @@ class VehicleTable extends BaseTable {
 	}
 
 	/**
-	 * @param object $row
-	 * @param int $commandsCount
-	 * @return Vehicle
-	 */
-	private function hydrate($row, $commandsCount)
-	{
-		return new Vehicle($row->id, $row->type, $row->unit_id, $row->spz, $row->consumption, $commandsCount);
-	}
-
-	/**
-	 * @param array $vehicleIds
-	 * @return int[]
-	 */
-    private function countCommands(array $vehicleIds)
-	{
-		$counts = $this->connection->select('vehicle_id, COUNT(id) as commandsCount')
-			->from(self::TABLE_TC_COMMANDS)
-			->where('vehicle_id IN (%i)', $vehicleIds)
-			->groupBy('vehicle_id')
-			->execute()
-			->fetchPairs('vehicle_id', 'commandsCount');
-
-		// Add vehicles without commands
-		$counts += array_fill_keys(array_diff($vehicleIds, array_keys($counts)), 0);
-
-		return $counts;
-	}
-
-	/**
 	 * @param $unitId
 	 * @return Vehicle[]
 	 */
     public function getAll($unitId)
 	{
 		$rows = $this->connection->select('*')
-			->from(self::TABLE_TC_VEHICLE, 'AS vehicle')
+			->from(self::TABLE_TC_VEHICLE)
 			->where('deleted != 1')
 			->where('unit_id = %i', $unitId)
 			->execute()
@@ -86,16 +57,63 @@ class VehicleTable extends BaseTable {
 		}
 		return $vehicles;
     }
-    
-    public function getPairs($unitId) {
-        return $this->connection->fetchPairs("SELECT id, ", self::LABEL," FROM [" . self::TABLE_TC_VEHICLE . "] WHERE unit_id=%i", $unitId, " AND deleted=0");
+
+	/**
+	 * @param int $unitId
+	 * @return array
+	 */
+    public function getPairs($unitId)
+	{
+		return $this->connection->select('id', self::LABEL)
+			->from(self::TABLE_TC_VEHICLE)
+			->where('unit_id = %i', $unitId)
+			->where('deleted = 0')
+			->fetchPairs();
     }
     
-    public function add($data) {
+    public function add($data)
+	{
         return $this->connection->insert(self::TABLE_TC_VEHICLE, $data)->execute();
     }
-    
-    public function remove($vehicleId) {
-        return $this->connection->update(self::TABLE_TC_VEHICLE, array("deleted"=>1))->where("id=%i", $vehicleId)->execute();
+
+	/**
+	 * Removes vehicle with specified ID
+	 * @param $vehicleId
+	 * @return bool
+	 */
+    public function remove($vehicleId)
+	{
+        return (bool)$this->connection->update(self::TABLE_TC_VEHICLE, ['deleted' => 1])
+			->where('id = %i', $vehicleId)->execute();
     }
+
+	/**
+	 * @param object $row
+	 * @param int $commandsCount
+	 * @return Vehicle
+	 */
+	private function hydrate($row, $commandsCount)
+	{
+		return new Vehicle($row->id, $row->type, $row->unit_id, $row->spz, $row->consumption, $commandsCount);
+	}
+
+	/**
+	 * @param array $vehicleIds
+	 * @return int[]
+	 */
+	private function countCommands(array $vehicleIds)
+	{
+		$counts = $this->connection->select('vehicle_id, COUNT(id) as commandsCount')
+			->from(self::TABLE_TC_COMMANDS)
+			->where('vehicle_id IN (%i)', $vehicleIds)
+			->groupBy('vehicle_id')
+			->execute()
+			->fetchPairs('vehicle_id', 'commandsCount');
+
+		// Add vehicles without commands
+		$counts += array_fill_keys(array_diff($vehicleIds, array_keys($counts)), 0);
+
+		return $counts;
+	}
+
 }
