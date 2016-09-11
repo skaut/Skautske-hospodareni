@@ -211,13 +211,13 @@ trait ParticipantTrait {
         $values = $button->getForm()->getValues();
         $data = array("actionId" => $this->aid);
         if ($values['edit']['daysc']) {
-            $data['days'] = $values['edit']['days'];
+            $data['days'] = (int)$values['edit']['days'];
         }
         if ($values['edit']['paymentc']) {
-            $data['payment'] = $values['edit']['payment'];
+            $data['payment'] = (double)$values['edit']['payment'];
         }
         if ($values['edit']['repaymentc']) {
-            $data['repayment'] = $values['edit']['repayment'];
+            $data['repayment'] = (double)$values['edit']['repayment'];
         }
         if ($values['edit']['isAccountc']) {
             $data['isAccount'] = $values['edit']['isAccount'];
