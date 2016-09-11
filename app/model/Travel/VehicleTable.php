@@ -78,7 +78,8 @@ class VehicleTable extends BaseTable {
 	 */
     public function getPairs($unitId)
 	{
-		return $this->connection->select('id', self::LABEL)
+		return $this->connection->select('id')
+			->select(self::LABEL)
 			->from(self::TABLE_TC_VEHICLE)
 			->where('unit_id = %i', $unitId)
 			->where('deleted = 0')
