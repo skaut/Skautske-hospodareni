@@ -56,14 +56,13 @@ class TravelService extends BaseService {
         return $this->tableVehicle->getPairs($unitId);
     }
 
-    public function getAllVehicles($unitId) {
-        $all = $this->tableVehicle->getAll($unitId);
-        //TODO predelat na databazi
-        foreach ($all as $key => $value) {
-            $command = $this->getAllCommandsByVehicle($unitId, $value->id);
-            $all[$key]['commands'] = count($command);
-        }
-        return $all;
+	/**
+	 * @param int $unitId
+	 * @return Travel\Vehicle[]
+	 */
+    public function getAllVehicles($unitId)
+	{
+        return $this->tableVehicle->getAll($unitId);
     }
 
     public function addVehicle($data) {

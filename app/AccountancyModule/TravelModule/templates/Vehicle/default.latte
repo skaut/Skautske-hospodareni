@@ -23,11 +23,11 @@
         </tr>
         <tr n:foreach="$list as $i">
             <td>
-                <a n:href="remove! $i->id" class="btn btn-danger btn-xs hidden-xs hidden-sm{if $i->commands > 0} disabled{/if}" {if $i->commands > 0} title="Nelze mazat vozidla s cestovními příkazy"{/if} onclick="return confirm('Opravdu chcete vozidlo odebrat?');"><i class="glyphicon glyphicon-remove"></i></a>
+                <a n:href="remove! $i->id" class="btn btn-danger btn-xs hidden-xs hidden-sm{if $i->commandsCount > 0} disabled{/if}" {if $i->commandsCount > 0} title="Nelze mazat vozidla s cestovními příkazy"{/if} onclick="return confirm('Opravdu chcete vozidlo odebrat?');"><i class="glyphicon glyphicon-remove"></i></a>
                 <a n:href="detail $i->id" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
             </td>
             <td><a n:href="Vehicle:detail $i->id">{$i->type}</a></td>
-            <td>{$i->spz}</td>
+            <td>{$i->registration}</td>
             <td>{$i->consumption}</td>
         </tr>
     </table>
