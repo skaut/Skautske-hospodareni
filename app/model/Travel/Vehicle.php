@@ -10,6 +10,9 @@ class Vehicle extends Nette\Object
 	/** @var int */
 	private $id;
 
+	/** @var string */
+	private $type;
+
 	/** @var int */
 	private $unitId;
 
@@ -28,13 +31,15 @@ class Vehicle extends Nette\Object
 	/**
 	 * Vehicle constructor.
 	 * @param int $id
+	 * @param string $type
 	 * @param int $unitId
 	 * @param string $registration
 	 * @param float $consumption
 	 */
-	public function __construct($id, $unitId, $registration, $consumption)
+	public function __construct($id, $type, $unitId, $registration, $consumption)
 	{
 		$this->id = $id;
+		$this->type = $type;
 		$this->unitId = $unitId;
 		$this->registration = $registration;
 		$this->consumption = $consumption;
@@ -46,6 +51,14 @@ class Vehicle extends Nette\Object
 	public function setNote($note)
 	{
 		$this->note = $note;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getType()
+	{
+		return $this->type;
 	}
 
 	/**
@@ -94,6 +107,11 @@ class Vehicle extends Nette\Object
 	public function isArchived()
 	{
 		return $this->archived;
+	}
+
+	public function getLabel()
+	{
+		return $this->type . '('. $this->registration . ')';
 	}
 
 }

@@ -26,7 +26,7 @@ class VehicleTable extends BaseTable {
 			throw new VehicleNotFoundException;
 		}
 
-		return new Vehicle($id, $row->unit_id, $row->spz, $row->consumption);
+		return new Vehicle($id, $row->type, $row->unit_id, $row->spz, $row->consumption);
 	}
 
     public function get($vehicleId, $withDeleted = false) {
