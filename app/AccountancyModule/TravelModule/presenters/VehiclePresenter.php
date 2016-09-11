@@ -68,6 +68,17 @@ class VehiclePresenter extends BasePresenter {
         $this->redirect("this");
     }
 
+    public function handleArchive($vehicleId)
+	{
+		// Check whether vehicle exists and belongs to unit
+		$this->getVehicle($vehicleId);
+
+		$this->travelService->archiveVehicle($vehicleId);
+		$this->flashMessage('Vozidlo bylo archivováno', 'success');
+
+		$this->redirect('this');
+	}
+
     protected function makeVehicleForm($name) {
         $form = $this->prepareForm($this, $name);
         $form->addText("type", "Typ*")
