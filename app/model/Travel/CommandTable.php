@@ -38,7 +38,7 @@ class CommandTable extends BaseTable {
                 ->where("com.unit_id=%i", $unitId)
                 ->where("com.deleted=0")
                 ->where("(con.deleted=0 OR con.deleted IS NULL)")
-                ->orderBy("closed, id");
+                ->orderBy("closed, id desc");
         if ($returnQuery) {
             return $q;
         }
