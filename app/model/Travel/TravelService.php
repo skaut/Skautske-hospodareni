@@ -36,25 +36,17 @@ class TravelService extends BaseService {
         return FALSE;
     }
 
-    public function isVehicleAccessible($vehicleId, $unit) {
-        return $this->getVehicle($vehicleId, true)->unit_id == $unit->ID ? TRUE : FALSE;
-    }
-
     /**     VEHICLES    */
 
     /**
      * vraci detail daného vozidla
      * @param int $vehicleId - ID vozidla
-     * @param bool $withDeleted - i smazana vozidla?
-	 * @param bool $asObject – vrátit entitu místo row
-     * @return Vehicle|object
+     * @return Vehicle
      */
-    public function getVehicle($vehicleId, $withDeleted = false, $asObject = FALSE) {
-        $cacheId = __FUNCTION__ . "_" . $vehicleId . "_" . (int) $withDeleted . '_' . (int)$asObject;
+    public function getVehicle($vehicleId) {
+        $cacheId = __FUNCTION__ . "_" . $vehicleId;
         if (!($res = $this->loadSes($cacheId))) {
-            $res = $asObject
-				? $this->tableVehicle->getObject($vehicleId)
-				: $this->tableVehicle->get($vehicleId, $withDeleted);
+            $res = $this->tableVehicle->getObject($vehicleId);
             $this->saveSes($cacheId, $res);
         }
         return $res;

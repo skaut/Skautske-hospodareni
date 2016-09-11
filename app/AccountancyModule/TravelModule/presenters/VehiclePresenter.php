@@ -21,33 +21,35 @@ class VehiclePresenter extends BasePresenter {
         parent::__construct();
         $this->travelService = $ts;
     }
-    
-    protected function isVehicleAccessible($vehicleId) {
-        return $this->travelService->isVehicleAccessible($vehicleId, $this->unit);
-    }
 
     public function renderDefault() {
         $this->template->list = $this->travelService->getAllVehicles($this->unit->ID);
     }
 
-    public function actionDetail($id)
+	/**
+	 * @param string $id
+	 * @return \Model\Travel\Vehicle
+	 * @throws BadRequestException
+	 */
+    private function getVehicle($id)
 	{
-		if (!$this->isVehicleAccessible($id)) {
-			$this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
-			$this->redirect("default");
-		}
 		try {
-			$vehicle = $this->travelService->getVehicle($id, FALSE, TRUE);
+			$vehicle = $this->travelService->getVehicle($id);
 		} catch(VehicleNotFoundException $e) {
 			throw new BadRequestException('Zadané vozidlo neexistuje', 404);
 		}
 
+		// Check whether vehicle belongs to unit
 		if($vehicle->getUnitId() != $this->unit->ID) {
 			$this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
 			$this->redirect('default');
 		}
+		return $vehicle;
+	}
 
-		$this->template->vehicle = $vehicle;
+    public function actionDetail($id)
+	{
+		$this->template->vehicle = $this->getVehicle($id);
 	}
 
     public function renderDetail($id) {
@@ -55,10 +57,9 @@ class VehiclePresenter extends BasePresenter {
     }
 
     public function handleRemove($vehicleId) {
-        if (!$this->isVehicleAccessible($vehicleId)) {
-            $this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
-            $this->redirect("default");
-        }
+		// Check whether vehicle exists and belongs to unit
+    	$this->getVehicle($vehicleId);
+
         if ($this->travelService->removeVehicle($vehicleId, $this->unit->ID)) {
             $this->flashMessage("Vozidlo bylo odebráno.");
         } else {

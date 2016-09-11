@@ -29,8 +29,9 @@ class VehicleTable extends BaseTable {
 		return new Vehicle($id, $row->type, $row->unit_id, $row->spz, $row->consumption);
 	}
 
-    public function get($vehicleId, $withDeleted = false) {
-        return $this->connection->fetch("SELECT *, ", self::LABEL," as label FROM [" . self::TABLE_TC_VEHICLE . "] WHERE id=%i", $vehicleId, "%if", !$withDeleted," AND deleted=0 %end", " LIMIT 1");
+    private function get($vehicleId)
+	{
+        return $this->connection->fetch("SELECT *, ", self::LABEL," as label FROM [" . self::TABLE_TC_VEHICLE . "] WHERE id=%i", $vehicleId, " LIMIT 1");
     }
     
     public function getAll($unitId) {
