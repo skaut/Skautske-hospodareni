@@ -116,7 +116,7 @@ class Vehicle extends Nette\Object
 
 	public function getLabel()
 	{
-		return $this->type . '('. $this->registration . ')';
+		return $this->type . ' ('. $this->registration . ')';
 	}
 
 }
