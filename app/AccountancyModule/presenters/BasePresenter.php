@@ -72,6 +72,12 @@ class BasePresenter extends \App\BasePresenter {
 //        }
     }
 
+    public function flashMessage($message, $type = 'info')
+    {
+        $this->redrawControl('flash');
+        return parent::flashMessage($message, $type);
+    }
+
     /**
      * vytváří routy pro modul
      * @param RouteList $router

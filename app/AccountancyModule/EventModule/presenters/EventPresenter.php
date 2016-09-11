@@ -2,8 +2,11 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use Nette\Application\UI\Form,
-    Nette\Forms\Controls\SubmitButton;
+use App\AccountancyModule\EventModule\Factories\IFunctionsFactory;
+use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SubmitButton;
+use Model\MemberService;
+use Model\ExportService;
 
 /**
  * @author Hána František <sinacek@gmail.com> 
@@ -11,23 +14,26 @@ use Nette\Application\UI\Form,
  */
 class EventPresenter extends BasePresenter {
     
-    /**
-     *
-     * @var \Model\ExportService
-     */
+    /** @var ExportService */
     protected $exportService;
     
+    /** @var MemberService */
+    private $memberService;
+
+    /** @var IFunctionsFactory */
+    private $functionsFactory;
+
     /**
-     *
-     * @var \Model\MemberService
+     * EventPresenter constructor.
+     * @param ExportService $exportService
+     * @param MemberService $memberService
+     * @param IFunctionsFactory $functionsFactory
      */
-    protected $memberService;
-
-
-    public function __construct(\Model\ExportService $export, \Model\MemberService $member) {
-        parent::__construct();
-        $this->exportService = $export;
-        $this->memberService = $member;
+    public function __construct(ExportService $exportService, MemberService $memberService, IFunctionsFactory $functionsFactory)
+    {
+        $this->exportService = $exportService;
+        $this->memberService = $memberService;
+        $this->functionsFactory = $functionsFactory;
     }
 
     public function renderDefault($aid, $funcEdit = FALSE) {
@@ -53,10 +59,7 @@ class EventPresenter extends BasePresenter {
                 "location" => $this->event->Location,
                 "type" => $this->event->ID_EventGeneralType,
                 "scope" => $this->event->ID_EventGeneralScope,
-                "prefix" => $this->event->prefix,
-//                "leader" => isset($func) && is_array($func) ? $func[EventService::LEADER]->ID_Person : "",
-//                "assistant" => isset($func) && is_array($func) ? $func[EventService::ASSISTANT]->ID_Person : "",
-//                "economist" => isset($func) && is_array($func) ? $func[EventService::ECONOMIST]->ID_Person : "",
+                "prefix" => $this->event->prefix
             ));
         }
 
@@ -103,26 +106,6 @@ class EventPresenter extends BasePresenter {
         //flash message?
         $this->redirect('this', array("aid" => $this->aid));
     }
-
-//    public function actionAddFunction($aid, $fid) {
-//        $form = $this['formAddFunction'];
-//        $form['person']->setItems($this->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
-//        $form->setDefaults(array(
-//            "aid" => $aid,
-//            "fid" => $fid,
-//        ));
-//    }
-//    public function actionEditFunction($aid, $fid) {
-//        $this->template->setFile(dirname(__FILE__) . "/../templates/Event/addFunction.latte");
-//        $func = $this->eventService->event->getFunctions($aid);
-//        $form = $this['formAddFunction'];
-//        $form['person']->setItems($this->memberService->getCombobox(FALSE, $fid == 2 ? FALSE : TRUE)); //u hospodáře($fid==2) nevyžaduje 18 let
-//        $form->setDefaults(array(
-//            "aid" => $aid,
-//            "person" => array_key_exists($func[$fid]->ID_Person, $form['person']->getItems()) ? $func[$fid]->ID_Person : NULL,
-//            "fid" => $fid,
-//        ));
-//    }
 
     public function actionPrintAll($aid) {
         $chits = (array) $this->eventService->chits->getAll($this->aid);
@@ -199,65 +182,8 @@ class EventPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    function createComponentFormVedouci($name) {
-        return $this->prepareFunctionForm($name, 0, 18);
+    protected function createComponentFunctions()
+    {
+        return $this->functionsFactory->create($this->aid);
     }
-
-    function createComponentFormZastupce($name) {
-        return $this->prepareFunctionForm($name, 1, 18);
-    }
-
-    function createComponentFormHospodar($name) {
-        return $this->prepareFunctionForm($name, 2, 15);
-    }
-    
-    function createComponentFormZdravotnik($name) {
-        return $this->prepareFunctionForm($name, 3, 15);
-    }
-
-    protected function prepareFunctionForm($name, $fid, $ageLimit = NULL) {
-        $form = $this->prepareForm($this, $name);
-        $form->getElementPrototype()->setClass("form-inline");
-        $func = $this->eventService->event->getFunctions($this->aid);
-        $combo = $this->memberService->getCombobox(FALSE, $ageLimit);
-        $form->addSelect("person", NULL, $combo)
-                ->setPrompt("")
-                ->setDefaultValue(array_key_exists($func[$fid]->ID_Person, $combo) ? $func[$fid]->ID_Person : NULL);
-        $form->addHidden("fid", $fid);
-        $form->addHidden("aid", $this->aid);
-        $form->addSubmit('send', 'Nastavit')
-                ->setAttribute("class", "btn btn-sm btn-primary");
-        $form->onSuccess[] = array($this, 'formFunctionSubmitted');
-        return $form;
-    }
-
-    function formFunctionSubmitted(Form $form) {
-        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Function")) {
-            $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
-            $this->redirect("this");
-        }
-        $values = $form->getValues();
-
-        try {
-            $id = $this->eventService->event->setFunction($values['aid'], $values['person'], $values['fid']);
-        } catch (\Skautis\Wsdl\PermissionException $exc) {
-            $this->flashMessage($exc->getMessage(), "danger");
-            $this->redirect("default", array("aid" => $this->aid));
-        } catch (Skautis\Exception $e) {
-            if (preg_match("/EventFunction_LeaderMustBeAdult/", $e->getMessage())) {//dospělost vedoucího akce
-                $this->flashMessage("Vedoucí akce musí být dosplělá osoba.", "danger");
-            } elseif (preg_match("/EventFunction_AssistantMustBeAdult/", $e->getMessage())) { //dospělost zástupce
-                $this->flashMessage("Zástupce musí být dosplělá osoba.", "danger");
-            } else {
-                throw $e;
-            }
-            $this->redirect("Default", array("aid" => $this->aid));
-        }
-
-        if (!$id) {
-            $this->flashMessage("Nepodařilo se upravit funkci", "danger");
-        }
-        $this->redirect("default", array("aid" => $this->aid));
-    }
-
 }

@@ -73,7 +73,7 @@ class MemberService extends BaseService {
                     continue;
                 }
             }
-            $res[$p->ID] = $p->LastName . " " . $p->FirstName;// . ($age && $adultOnly ? " (" . $diff . ")" : "");
+            $res[$p->ID] = $p->DisplayName;
         }
         asort($res);
         return $res;
