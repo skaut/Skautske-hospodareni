@@ -39,7 +39,7 @@ class Vehicle extends Nette\Object
 	 * @param float $consumption
 	 * @param int $commandsCount
 	 */
-	public function __construct($type, $unitId, $registration, $consumption, $commandsCount)
+	public function __construct($type, $unitId, $registration, $consumption, $commandsCount = 0)
 	{
 		$this->type = $type;
 		$this->unitId = $unitId;

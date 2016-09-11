@@ -73,7 +73,7 @@ class VehiclePresenter extends BasePresenter {
         $form->addText("type", "Typ*")
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit typ.");
-        $form->addText("spz", "SPZ*")
+        $form->addText("registration", "SPZ*")
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit SPZ.");
         $form->addText("consumption", "Průměrná spotřeba*")

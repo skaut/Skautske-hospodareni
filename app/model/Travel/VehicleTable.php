@@ -85,10 +85,26 @@ class VehicleTable extends BaseTable {
 			->fetchPairs();
     }
 
-    public function add($data)
+	/**
+	 * @param Vehicle $vehicle
+	 */
+    public function save(Vehicle $vehicle)
 	{
-        return $this->connection->insert(self::TABLE_TC_VEHICLE, $data)->execute();
-    }
+		if($vehicle->getId()) {
+			$this->connection->update(self::TABLE_TC_VEHICLE, [
+				'archived' => $vehicle->isArchived(),
+			])->execute();
+			return;
+		}
+
+		$id = $this->connection->insert(self::TABLE_TC_VEHICLE, [
+			'type' => $vehicle->getType(),
+			'unit_id' => $vehicle->getUnitId(),
+			'spz' => $vehicle->getRegistration(),
+			'consumption' => $vehicle->getConsumption(),
+		])->execute(\dibi::IDENTIFIER);
+		$this->injectId($vehicle, $id);
+	}
 
 	/**
 	 * Removes vehicle with specified ID
