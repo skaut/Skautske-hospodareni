@@ -74,9 +74,11 @@ class TravelService extends BaseService {
         $this->tableVehicle->save($vehicle);
     }
 
-    public function removeVehicle($vehicleId, $unitId) {
-        $commands = $this->getAllCommandsByVehicle($unitId, $vehicleId);
-        if (count($commands) > 0) { //nelze mazat vozidlo s navazanými příkazy
+    public function removeVehicle($vehicleId)
+	{
+    	$vehicle = $this->getVehicle($vehicleId);
+
+        if ($vehicle->getCommandsCount() > 0) { //nelze mazat vozidlo s navazanými příkazy
             return false;
         }
         return $this->tableVehicle->remove($vehicleId);
@@ -88,7 +90,7 @@ class TravelService extends BaseService {
 	 */
     public function archiveVehicle($vehicleId)
 	{
-		$vehicle = $this->tableVehicle->get($vehicleId);
+		$vehicle = $this->getVehicle($vehicleId);
 
 		if($vehicle->isArchived()) {
 			return;

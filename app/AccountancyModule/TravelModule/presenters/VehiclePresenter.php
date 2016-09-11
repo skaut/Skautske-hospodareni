@@ -60,7 +60,7 @@ class VehiclePresenter extends BasePresenter {
 		// Check whether vehicle exists and belongs to unit
     	$this->getVehicle($vehicleId);
 
-        if ($this->travelService->removeVehicle($vehicleId, $this->unit->ID)) {
+        if ($this->travelService->removeVehicle($vehicleId)) {
             $this->flashMessage("Vozidlo bylo odebráno.");
         } else {
             $this->flashMessage("Nelze smazat vozidlo s cestovními příkazy.", "warning");
