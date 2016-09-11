@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use Model\Travel\VehicleNotFoundException;
+use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 
 /**
@@ -28,13 +30,27 @@ class VehiclePresenter extends BasePresenter {
         $this->template->list = $this->travelService->getAllVehicles($this->unit->ID);
     }
 
-    public function renderDetail($id) {
-        if (!$this->isVehicleAccessible($id)) {
-            $this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
-            $this->redirect("default");
-        }
+    public function actionDetail($id)
+	{
+		if (!$this->isVehicleAccessible($id)) {
+			$this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
+			$this->redirect("default");
+		}
+		try {
+			$vehicle = $this->travelService->getVehicle($id, FALSE, TRUE);
+		} catch(VehicleNotFoundException $e) {
+			throw new BadRequestException('Zadané vozidlo neexistuje', 404);
+		}
 
-        $this->template->vehicle = $contract = $this->travelService->getVehicle($id, true);
+		if($vehicle->getUnitId() != $this->unit->ID) {
+			$this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
+			$this->redirect('default');
+		}
+
+		$this->template->vehicle = $vehicle;
+	}
+
+    public function renderDetail($id) {
         $this->template->commands = $this->travelService->getAllCommandsByVehicle($this->unit->ID, $id);
     }
 

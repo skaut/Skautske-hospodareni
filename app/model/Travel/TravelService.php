@@ -1,6 +1,7 @@
 <?php
 
 namespace Model;
+use Model\Travel\Vehicle;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -43,14 +44,17 @@ class TravelService extends BaseService {
 
     /**
      * vraci detail daného vozidla
-     * @param type $vehicleId - ID vozidla
-     * @param type $withDeleted - i smazana vozidla?
-     * @return type
+     * @param int $vehicleId - ID vozidla
+     * @param bool $withDeleted - i smazana vozidla?
+	 * @param bool $asObject – vrátit entitu místo row
+     * @return Vehicle|object
      */
-    public function getVehicle($vehicleId, $withDeleted = false) {
-        $cacheId = __FUNCTION__ . "_" . $vehicleId . "_" . (int) $withDeleted;
+    public function getVehicle($vehicleId, $withDeleted = false, $asObject = FALSE) {
+        $cacheId = __FUNCTION__ . "_" . $vehicleId . "_" . (int) $withDeleted . '_' . (int)$asObject;
         if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->tableVehicle->get($vehicleId, $withDeleted);
+            $res = $asObject
+				? $this->tableVehicle->getObject($vehicleId)
+				: $this->tableVehicle->get($vehicleId, $withDeleted);
             $this->saveSes($cacheId, $res);
         }
         return $res;
