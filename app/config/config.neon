@@ -59,6 +59,9 @@ services:
     - \Model\ExcelService
     - \Model\BudgetService
 
+    # Repositories
+    - Model\Travel\Repositories\VehicleRepository
+
     - App\AccountancyModule\Factories\FormFactory
 
 includes:

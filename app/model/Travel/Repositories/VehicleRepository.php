@@ -1,7 +1,8 @@
 <?php
 
-namespace Model;
+namespace Model\Travel\Repositories;
 use Dibi\Connection;
+use Model\BaseTable;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 
@@ -9,7 +10,8 @@ use Model\Travel\VehicleNotFoundException;
  * @author Hána František <sinacek@gmail.com>
  * správa vozidel u cestovních dokladů
  */
-class VehicleTable extends BaseTable {
+class VehicleRepository extends BaseTable implements IVehicleRepository
+{
     
     const LABEL = "CONCAT(type,' (', spz,')')";
 

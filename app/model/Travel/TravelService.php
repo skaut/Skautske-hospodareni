@@ -1,25 +1,36 @@
 <?php
 
 namespace Model;
+use Dibi\Connection;
+use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  * správa cestovních příkazů
  */
-class TravelService extends BaseService {
+class TravelService extends BaseService
+{
 
     protected $tableTravel;
-    protected $tableContract;
-    protected $tableVehicle;
 
-    public function __construct(\DibiConnection $connection) {
+    protected $tableContract;
+
+	/** @var IVehicleRepository */
+	private $vehicles;
+
+	/**
+	 * TravelService constructor.
+	 * @param Connection $connection
+	 * @param IVehicleRepository $vehicles
+	 */
+    public function __construct(Connection $connection, IVehicleRepository $vehicles)
+	{
         parent::__construct(NULL, $connection);
-        /** @var TravelTable */
         $this->table = new CommandTable($connection);
         $this->tableTravel = new TravelTable($connection);
         $this->tableContract = new ContractTable($connection);
-        $this->tableVehicle = new VehicleTable($connection);
+        $this->vehicles = $vehicles;
     }
 
     public function isContractAccessible($contractId, $unit) {
@@ -46,14 +57,14 @@ class TravelService extends BaseService {
     public function getVehicle($vehicleId) {
         $cacheId = __FUNCTION__ . "_" . $vehicleId;
         if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->tableVehicle->get($vehicleId);
+            $res = $this->vehicles->get($vehicleId);
             $this->saveSes($cacheId, $res);
         }
         return $res;
     }
 
     public function getVehiclesPairs($unitId) {
-        return $this->tableVehicle->getPairs($unitId);
+        return $this->vehicles->getPairs($unitId);
     }
 
 	/**
@@ -62,7 +73,7 @@ class TravelService extends BaseService {
 	 */
     public function getAllVehicles($unitId)
 	{
-        return $this->tableVehicle->getAll($unitId);
+        return $this->vehicles->getAll($unitId);
     }
 
 	/**
@@ -71,7 +82,7 @@ class TravelService extends BaseService {
     public function addVehicle($data)
 	{
     	$vehicle = new Vehicle($data['type'], $data['unit_id'], $data['registration'], $data['consumption']);
-        $this->tableVehicle->save($vehicle);
+        $this->vehicles->save($vehicle);
     }
 
     public function removeVehicle($vehicleId)
@@ -81,7 +92,7 @@ class TravelService extends BaseService {
         if ($vehicle->getCommandsCount() > 0) { //nelze mazat vozidlo s navazanými příkazy
             return false;
         }
-        return $this->tableVehicle->remove($vehicleId);
+        return $this->vehicles->remove($vehicleId);
     }
 
 	/**
@@ -97,7 +108,7 @@ class TravelService extends BaseService {
 		}
 
 		$vehicle->archive();
-		$this->tableVehicle->save($vehicle);
+		$this->vehicles->save($vehicle);
 	}
 
     /**     TRAVELS    */
