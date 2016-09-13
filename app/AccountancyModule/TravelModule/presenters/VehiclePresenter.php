@@ -36,7 +36,7 @@ class VehiclePresenter extends BasePresenter {
 		try {
 			$vehicle = $this->travelService->getVehicle($id);
 		} catch(VehicleNotFoundException $e) {
-			throw new BadRequestException('Zadané vozidlo neexistuje', 404);
+			throw new BadRequestException('Zadané vozidlo neexistuje');
 		}
 
 		// Check whether vehicle belongs to unit
