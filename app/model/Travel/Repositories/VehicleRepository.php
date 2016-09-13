@@ -160,6 +160,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 		$counts = $this->connection->select('vehicle_id, COUNT(id) as commandsCount')
 			->from(self::TABLE_TC_COMMANDS)
 			->where('vehicle_id IN (%i)', $vehicleIds)
+			->where('deleted = 0')
 			->groupBy('vehicle_id')
 			->execute()
 			->fetchPairs('vehicle_id', 'commandsCount');
