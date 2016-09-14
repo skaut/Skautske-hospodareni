@@ -17,10 +17,9 @@ interface IVehicleRepository
 
 	/**
 	 * @param $unitId
-	 * @param bool $archived
 	 * @return Vehicle[]
 	 */
-	public function getAll($unitId, $archived = FALSE);
+	public function getAll($unitId);
 
 	/**
 	 * @param int $unitId

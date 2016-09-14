@@ -47,15 +47,13 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 
 	/**
 	 * @param $unitId
-	 * @param bool $archived
 	 * @return Vehicle[]
 	 */
-    public function getAll($unitId, $archived = FALSE)
+    public function getAll($unitId)
 	{
 		$rows = $this->connection->select('*')
 			->from(self::TABLE_TC_VEHICLE)
 			->where('deleted != 1')
-			->where('archived = %b', $archived)
 			->where('unit_id = %i', $unitId)
 			->execute()
 			->fetchAll('id');
