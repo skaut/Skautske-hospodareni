@@ -1,24 +1,3 @@
-@media (min-width: 979px) { 
-    body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-    }
-    #front-panel-left {
-        width: 65.812%;
-    }
-    #front-panel-fb {
-        width: 31.6239%;
-    }
-}
-@media (max-width: 978px) { 
-   
-    #front-panel-left {
-        width: 100%;
-    }
-    #front-panel-fb {
-        display: none;
-    }
-}
-
 .fail {
     background-color: #ff0000;
 }
@@ -79,7 +58,7 @@ tbody.dropableOver td {
 .roleSelect {
     font-size: 12px;
     margin: 0 4px 0;
-    
+
 }
 
 #cashbook-tabs {
