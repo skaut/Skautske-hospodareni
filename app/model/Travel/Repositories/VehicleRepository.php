@@ -53,7 +53,6 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 	{
 		$rows = $this->connection->select('*')
 			->from(self::TABLE_TC_VEHICLE)
-			->where('deleted != 1')
 			->where('unit_id = %i', $unitId)
 			->execute()
 			->fetchAll('id');
@@ -86,7 +85,6 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 			->select(self::LABEL)
 			->from(self::TABLE_TC_VEHICLE)
 			->where('unit_id = %i', $unitId)
-			->where('deleted = 0')
 			->fetchPairs();
     }
 
@@ -118,7 +116,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 	 */
     public function remove($vehicleId)
 	{
-        return (bool)$this->connection->update(self::TABLE_TC_VEHICLE, ['deleted' => 1])
+        return (bool)$this->connection->delete(self::TABLE_TC_VEHICLE)
 			->where('id = %i', $vehicleId)->execute();
     }
 
