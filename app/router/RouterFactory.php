@@ -16,12 +16,12 @@ class RouterFactory {
 
 	/**
 	 * RouterFactory constructor.
-	 * @param bool $debugMode
+	 * @param bool $ssl
 	 */
-	public function __construct($debugMode)
+	public function __construct($ssl)
 	{
 		// Disable https for development
-		$this->secured = $debugMode ? 0 : $this->secured;
+		$this->secured = $ssl ? 0 : $this->secured;
 	}
 
 	/**
