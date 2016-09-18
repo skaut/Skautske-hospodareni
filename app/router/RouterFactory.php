@@ -14,8 +14,31 @@ class RouterFactory {
     /**
      * @return \Nette\Application\IRouter
      */
-    public function createRouter() {
+    public function createRouter()
+	{
         $router = new RouteList();
+
+		$metadata = [
+			'module' => [
+				Route::FILTER_TABLE => [
+					'tabory' => 'Accountancy:Camp',
+				]
+			],
+			'presenter' => [
+				Route::FILTER_TABLE => [
+					// Camps
+					'ucastnici' => 'Participant',
+					'kniha' => 'Cashbook',
+					'rozpocet' => 'Budget',
+				]
+			],
+			'action' => [
+				Route::VALUE => 'default',
+			],
+		];
+
+		$router[] = new Route('<module>/<aid [0-9]+>/<presenter>[/<action>/]', $metadata, Route::SECURED);
+		$router[] = new Route('<module>/[<presenter>/][<action>/]', $metadata, Route::SECURED);
 
         $router[] = new MyRoute('index.php', 'Default:default', Route::ONE_WAY & Route::SECURED);
         $router[] = new Route('app.manifest', 'Offline:manifest');
