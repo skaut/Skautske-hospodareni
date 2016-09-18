@@ -13,7 +13,7 @@ use Model\Travel\VehicleNotFoundException;
 class VehicleRepository extends BaseTable implements IVehicleRepository
 {
     
-    const LABEL = "CONCAT(type,' (', spz,')')";
+    const LABEL = "CONCAT(type,' (', registration,')')";
 
 	/** @var \ReflectionProperty */
 	private $idProperty;
@@ -103,7 +103,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 		$id = $this->connection->insert(self::TABLE_TC_VEHICLE, [
 			'type' => $vehicle->getType(),
 			'unit_id' => $vehicle->getUnitId(),
-			'spz' => $vehicle->getRegistration(),
+			'registration' => $vehicle->getRegistration(),
 			'consumption' => $vehicle->getConsumption(),
 		])->execute(\dibi::IDENTIFIER);
 		$this->injectId($vehicle, $id);
@@ -136,7 +136,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 	 */
 	private function hydrate($row, $commandsCount)
 	{
-		$vehicle = new Vehicle($row->type, $row->unit_id, $row->spz, $row->consumption, $commandsCount);
+		$vehicle = new Vehicle($row->type, $row->unit_id, $row->registration, $row->consumption, $commandsCount);
 
 		$this->injectId($vehicle, $row->id);
 
