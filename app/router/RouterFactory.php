@@ -181,7 +181,7 @@ class RouterFactory {
 
 		$prefix = 'platby';
 
-		$router[] = new Route($prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]', 'Payment:default');
+		$router[] = new Route($prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]', 'Default:default');
 
 		$router[] = new Route($prefix . '[/<presenter>][/<action>]', [
 			'presenter' => 'Default',
