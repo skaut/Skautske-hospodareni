@@ -32,7 +32,7 @@ extensions:
 
 services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
-    - App\RouterFactory(%routes%, %debugMode%)
+    - App\RouterFactory(%debugMode%)
     - \Model\PaymentService
     - \Model\MailService(NULL, @dibi.connection, %sendEmail%)
 
@@ -63,4 +63,3 @@ services:
 
 includes:
 	- components.neon
-	- routes.neon

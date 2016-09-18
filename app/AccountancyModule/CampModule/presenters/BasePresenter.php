@@ -2,10 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
-use Nette\Application\Routers\Route,
-    Nette\Application\Routers\RouteList,
-    Sinacek\MyRoute,
-    Skautis\Wsdl\PermissionException;
+use Skautis\Wsdl\PermissionException;
 
 /**
  * @author Hána František <sinacek@gmail.com>
