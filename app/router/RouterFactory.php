@@ -11,12 +11,27 @@ use Nette\Application\Routers\RouteList,
  */
 class RouterFactory {
 
-    /**
+	/** @var bool */
+	private $debugMode;
+
+	/**
+	 * RouterFactory constructor.
+	 * @param bool $debugMode
+	 */
+	public function __construct($debugMode)
+	{
+		$this->debugMode = $debugMode;
+	}
+
+	/**
      * @return \Nette\Application\IRouter
      */
     public function createRouter()
 	{
         $router = new RouteList();
+
+		// Disable https for development
+		$secured = $this->debugMode ? 0 : Route::SECURED;
 
 		$metadata = [
 			'module' => [
@@ -37,8 +52,8 @@ class RouterFactory {
 			],
 		];
 
-		$router[] = new Route('<module>/<aid [0-9]+>/<presenter>[/<action>/]', $metadata, Route::SECURED);
-		$router[] = new Route('<module>/[<presenter>/][<action>/]', $metadata, Route::SECURED);
+		$router[] = new Route('<module>/<aid [0-9]+>/<presenter>[/<action>/]', $metadata, $secured);
+		$router[] = new Route('<module>/[<presenter>/][<action>/]', $metadata, $secured);
 
         $router[] = new MyRoute('index.php', 'Default:default', Route::ONE_WAY & Route::SECURED);
         $router[] = new Route('app.manifest', 'Offline:manifest');
