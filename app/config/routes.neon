@@ -1,0 +1,9 @@
+parameters:
+	routes:
+		tabory:
+			module: Camp
+			presenters:
+				ucastnici: Participants
+				kniha: Cashbook
+				rozpocet: Budget
+			defaultPresenter: Default

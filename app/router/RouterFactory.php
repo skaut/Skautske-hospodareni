@@ -11,15 +11,20 @@ use Nette\Application\Routers\RouteList,
  */
 class RouterFactory {
 
+	/** @var array */
+	private $routes;
+
 	/** @var bool */
 	private $debugMode;
 
 	/**
 	 * RouterFactory constructor.
+	 * @param array $routes
 	 * @param bool $debugMode
 	 */
-	public function __construct($debugMode)
+	public function __construct(array $routes, $debugMode)
 	{
+		$this->routes = $routes;
 		$this->debugMode = $debugMode;
 	}
 
@@ -33,27 +38,20 @@ class RouterFactory {
 		// Disable https for development
 		$secured = $this->debugMode ? 0 : Route::SECURED;
 
-		$metadata = [
-			'module' => [
-				Route::FILTER_TABLE => [
-					'tabory' => 'Accountancy:Camp',
+		foreach($this->routes as $prefix => $config) {
+			$metadata = [
+				'module' => 'Accountancy:' . $config['module'],
+				'presenter' => [
+					Route::FILTER_TABLE => $config['presenters'],
+					Route::VALUE => $config['defaultPresenter'],
+				],
+				'action' => [
+					Route::VALUE => 'default',
 				]
-			],
-			'presenter' => [
-				Route::FILTER_TABLE => [
-					// Camps
-					'ucastnici' => 'Participant',
-					'kniha' => 'Cashbook',
-					'rozpocet' => 'Budget',
-				]
-			],
-			'action' => [
-				Route::VALUE => 'default',
-			],
-		];
-
-		$router[] = new Route('<module>/<aid [0-9]+>/<presenter>[/<action>/]', $metadata, $secured);
-		$router[] = new Route('<module>/[<presenter>/][<action>/]', $metadata, $secured);
+			];
+			$router[] = new Route($prefix.'/<aid [0-9]+>[/<presenter>[/<action>/]]', $metadata, $secured);
+			$router[] = new Route($prefix.'[/<presenter>/][<action>/]', $metadata, $secured);
+		}
 
         $router[] = new MyRoute('index.php', 'Default:default', Route::ONE_WAY & Route::SECURED);
         $router[] = new Route('app.manifest', 'Offline:manifest');
