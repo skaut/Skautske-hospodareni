@@ -7,3 +7,9 @@ parameters:
 				kniha: Cashbook
 				rozpocet: Budget
 			defaultPresenter: Default
+		akce:
+			module: Event
+			presenters:
+				ucastnici: Participant
+				kniha: Cashbook
+			defaultPresenter: Event

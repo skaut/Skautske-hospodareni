@@ -86,7 +86,6 @@ class BasePresenter extends \App\BasePresenter {
     static function createRoutes($prefix = "") {
         $router = new RouteList("Accountancy");
 //        $prefix .= "ucto/";
-        $router[] = EventModule\BasePresenter::createRoutes();
         $router[] = TravelModule\BasePresenter::createRoutes();
         $router[] = UnitAccountModule\BasePresenter::createRoutes();
         $router[] = PaymentModule\BasePresenter::createRoutes();
