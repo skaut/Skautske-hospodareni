@@ -3,6 +3,13 @@
 {block #content}
 <h2>{$vehicle->label}</h2>
 {include ../menu.latte}
+{if $vehicle->archived}
+<div class="alert alert-warning">Toto vozidlo je archivované.</div>
+{else}
+<div class="well well-sm">
+    <a n:href="archive! $vehicle->id" class="btn btn-primary"><span class="glyphicon glyphicon-trash"></span> Archivovat</a>
+</div>
+{/if}
 <div class="row">
     <div class='col-sm-6'>
         <h2>Údaje o vozidle</h2>
@@ -13,7 +20,7 @@
             </tr>
             <tr>
                 <th>SPZ</th>
-                <td>{$vehicle->spz}</td>
+                <td>{$vehicle->registration}</td>
             </tr>
             <tr>
                 <th>Průměrná spotřeba</th>

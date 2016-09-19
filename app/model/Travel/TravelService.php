@@ -1,24 +1,36 @@
 <?php
 
 namespace Model;
+use Dibi\Connection;
+use Model\Travel\Repositories\IVehicleRepository;
+use Model\Travel\Vehicle;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  * správa cestovních příkazů
  */
-class TravelService extends BaseService {
+class TravelService extends BaseService
+{
 
     protected $tableTravel;
-    protected $tableContract;
-    protected $tableVehicle;
 
-    public function __construct(\DibiConnection $connection) {
+    protected $tableContract;
+
+	/** @var IVehicleRepository */
+	private $vehicles;
+
+	/**
+	 * TravelService constructor.
+	 * @param Connection $connection
+	 * @param IVehicleRepository $vehicles
+	 */
+    public function __construct(Connection $connection, IVehicleRepository $vehicles)
+	{
         parent::__construct(NULL, $connection);
-        /** @var TravelTable */
         $this->table = new CommandTable($connection);
         $this->tableTravel = new TravelTable($connection);
         $this->tableContract = new ContractTable($connection);
-        $this->tableVehicle = new VehicleTable($connection);
+        $this->vehicles = $vehicles;
     }
 
     public function isContractAccessible($contractId, $unit) {
@@ -35,52 +47,69 @@ class TravelService extends BaseService {
         return FALSE;
     }
 
-    public function isVehicleAccessible($vehicleId, $unit) {
-        return $this->getVehicle($vehicleId, true)->unit_id == $unit->ID ? TRUE : FALSE;
-    }
-
     /**     VEHICLES    */
 
     /**
      * vraci detail daného vozidla
-     * @param type $vehicleId - ID vozidla
-     * @param type $withDeleted - i smazana vozidla?
-     * @return type
+     * @param int $vehicleId - ID vozidla
+     * @return Vehicle
      */
-    public function getVehicle($vehicleId, $withDeleted = false) {
-        $cacheId = __FUNCTION__ . "_" . $vehicleId . "_" . (int) $withDeleted;
+    public function getVehicle($vehicleId) {
+        $cacheId = __FUNCTION__ . "_" . $vehicleId;
         if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->tableVehicle->get($vehicleId, $withDeleted);
+            $res = $this->vehicles->get($vehicleId);
             $this->saveSes($cacheId, $res);
         }
         return $res;
     }
 
     public function getVehiclesPairs($unitId) {
-        return $this->tableVehicle->getPairs($unitId);
+        return $this->vehicles->getPairs($unitId);
     }
 
-    public function getAllVehicles($unitId) {
-        $all = $this->tableVehicle->getAll($unitId);
-        //TODO predelat na databazi
-        foreach ($all as $key => $value) {
-            $command = $this->getAllCommandsByVehicle($unitId, $value->id);
-            $all[$key]['commands'] = count($command);
-        }
-        return $all;
+	/**
+	 * @param int $unitId
+	 * @return Travel\Vehicle[]
+	 */
+    public function getAllVehicles($unitId)
+	{
+        return $this->vehicles->getAll($unitId);
     }
 
-    public function addVehicle($data) {
-        return $this->tableVehicle->add($data);
+	/**
+	 * @param array $data
+	 */
+    public function addVehicle($data)
+	{
+    	$vehicle = new Vehicle($data['type'], $data['unit_id'], $data['registration'], $data['consumption']);
+        $this->vehicles->save($vehicle);
     }
 
-    public function removeVehicle($vehicleId, $unitId) {
-        $commands = $this->getAllCommandsByVehicle($unitId, $vehicleId);
-        if (count($commands) > 0) { //nelze mazat vozidlo s navazanými příkazy
+    public function removeVehicle($vehicleId)
+	{
+    	$vehicle = $this->getVehicle($vehicleId);
+
+        if ($vehicle->getCommandsCount() > 0) { //nelze mazat vozidlo s navazanými příkazy
             return false;
         }
-        return $this->tableVehicle->remove($vehicleId);
+        return $this->vehicles->remove($vehicleId);
     }
+
+	/**
+	 * Archives specified vehicle
+	 * @param int $vehicleId
+	 */
+    public function archiveVehicle($vehicleId)
+	{
+		$vehicle = $this->getVehicle($vehicleId);
+
+		if($vehicle->isArchived()) {
+			return;
+		}
+
+		$vehicle->archive();
+		$this->vehicles->save($vehicle);
+	}
 
     /**     TRAVELS    */
     public function getTravel($commandId) {
