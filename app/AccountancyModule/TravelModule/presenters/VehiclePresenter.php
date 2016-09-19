@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use Model\Travel\VehicleNotFoundException;
+use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 
 /**
@@ -19,31 +21,46 @@ class VehiclePresenter extends BasePresenter {
         parent::__construct();
         $this->travelService = $ts;
     }
-    
-    protected function isVehicleAccessible($vehicleId) {
-        return $this->travelService->isVehicleAccessible($vehicleId, $this->unit);
-    }
 
     public function renderDefault() {
         $this->template->list = $this->travelService->getAllVehicles($this->unit->ID);
     }
 
-    public function renderDetail($id) {
-        if (!$this->isVehicleAccessible($id)) {
-            $this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
-            $this->redirect("default");
-        }
+	/**
+	 * @param string $id
+	 * @return \Model\Travel\Vehicle
+	 * @throws BadRequestException
+	 */
+    private function getVehicle($id)
+	{
+		try {
+			$vehicle = $this->travelService->getVehicle($id);
+		} catch(VehicleNotFoundException $e) {
+			throw new BadRequestException('Zadané vozidlo neexistuje');
+		}
 
-        $this->template->vehicle = $contract = $this->travelService->getVehicle($id, true);
+		// Check whether vehicle belongs to unit
+		if($vehicle->getUnitId() != $this->unit->ID) {
+			$this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
+			$this->redirect('default');
+		}
+		return $vehicle;
+	}
+
+    public function actionDetail($id)
+	{
+		$this->template->vehicle = $this->getVehicle($id);
+	}
+
+    public function renderDetail($id) {
         $this->template->commands = $this->travelService->getAllCommandsByVehicle($this->unit->ID, $id);
     }
 
     public function handleRemove($vehicleId) {
-        if (!$this->isVehicleAccessible($vehicleId)) {
-            $this->flashMessage("Nemáte oprávnění k vozidlu", "danger");
-            $this->redirect("default");
-        }
-        if ($this->travelService->removeVehicle($vehicleId, $this->unit->ID)) {
+		// Check whether vehicle exists and belongs to unit
+    	$this->getVehicle($vehicleId);
+
+        if ($this->travelService->removeVehicle($vehicleId)) {
             $this->flashMessage("Vozidlo bylo odebráno.");
         } else {
             $this->flashMessage("Nelze smazat vozidlo s cestovními příkazy.", "warning");
@@ -51,12 +68,23 @@ class VehiclePresenter extends BasePresenter {
         $this->redirect("this");
     }
 
+    public function handleArchive($vehicleId)
+	{
+		// Check whether vehicle exists and belongs to unit
+		$this->getVehicle($vehicleId);
+
+		$this->travelService->archiveVehicle($vehicleId);
+		$this->flashMessage('Vozidlo bylo archivováno', 'success');
+
+		$this->redirect('this');
+	}
+
     protected function makeVehicleForm($name) {
         $form = $this->prepareForm($this, $name);
         $form->addText("type", "Typ*")
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit typ.");
-        $form->addText("spz", "SPZ*")
+        $form->addText("registration", "SPZ*")
                 ->setAttribute("class", "form-control")
                 ->addRule(Form::FILLED, "Musíte vyplnit SPZ.");
         $form->addText("consumption", "Průměrná spotřeba*")

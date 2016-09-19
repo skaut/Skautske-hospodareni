@@ -30,7 +30,7 @@ class BaseTable {
 
     /**
      *
-     * @var \DibiConnection
+     * @var \Dibi\Connection
      */
     protected $connection;
 

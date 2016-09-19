@@ -14,7 +14,8 @@ services:
         ports:
             - 80:80
             - 9000:9000
-
+        environment:
+            DEVELOPMENT_MACHINE: 'true'
 volumes:
     mysql:
     www:
