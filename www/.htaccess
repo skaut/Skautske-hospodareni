@@ -2,8 +2,10 @@
 Options -Indexes
 #AddType text/cache-manifest .manifest
 
+RewriteCond %{HTTP_HOST} !=localhost # Localhost
+RewriteCond %{ENV:DEVELOPMENT_MACHINE} !true # Proměnná prostředí pro Docker
 RewriteCond %{HTTPS} !^.*on
-RewriteRule ^(.*)$ https://h.skauting.cz/$1 [R,L]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # mod_rewrite
 <IfModule mod_rewrite.c>
