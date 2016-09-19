@@ -14,7 +14,7 @@ class CommandTable extends BaseTable {
      * @return DibiRow 
      */
     public function get($commandId) {
-        return $this->connection->fetch("SELECT com.*, c.type as vehicle_type, c.spz as vehicle_spz, c.consumption as vehicle_consumption, com.place
+        return $this->connection->fetch("SELECT com.*, c.type as vehicle_type, c.registration as vehicle_spz, c.consumption as vehicle_consumption, com.place
             FROM [" . self::TABLE_TC_COMMANDS . "] as com
             LEFT JOIN [" . self::TABLE_TC_VEHICLE . "] as c ON (com.vehicle_id = c.id) WHERE com.id=%i AND com.deleted=0", $commandId);
     }
@@ -28,7 +28,7 @@ class CommandTable extends BaseTable {
     }
 
     public function getAll($unitId, $returnQuery = FALSE) {
-        $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.spz as vehicle_spz, com.place")
+        $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.registration as vehicle_spz, com.place")
                 ->select("(SELECT sum(distance) FROM tc_travels WHERE command_id = com.id AND type='auv') * (amortization+(com.fuel_price * (c.consumption/100))) + (SELECT sum(distance) FROM tc_travels WHERE command_id = com.id AND type !='auv') as price")
                 ->select("(SELECT MIN(start_date) FROM tc_travels WHERE command_id = com.id) as start_date")
                 ->select("(SELECT GROUP_CONCAT(tt.label SEPARATOR ', ') FROM " . self::TABLE_TC_COMMAND_TYPES . " ct LEFT JOIN " . self::TABLE_TC_TRAVEL_TYPES . " tt ON (ct.typeId = tt.type) WHERE commandId = com.id) as types")
