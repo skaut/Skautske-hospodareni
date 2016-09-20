@@ -57,7 +57,7 @@ class VehiclePresenter extends BasePresenter {
     }
 
     public function handleRemove($vehicleId) {
-		// Check whether vehicle exists and belongs to unit
+        // Check whether vehicle exists and belongs to unit
     	$this->getVehicle($vehicleId);
 
         if ($this->travelService->removeVehicle($vehicleId)) {
