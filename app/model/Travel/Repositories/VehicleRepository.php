@@ -54,6 +54,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 		$rows = $this->connection->select('*')
 			->from(self::TABLE_TC_VEHICLE)
 			->where('unit_id = %i', $unitId)
+                        ->where('archived = 0')
 			->execute()
 			->fetchAll('id');
 
@@ -85,6 +86,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 			->select(self::LABEL)
 			->from(self::TABLE_TC_VEHICLE)
 			->where('unit_id = %i', $unitId)
+                        ->where('archived = 0')
 			->fetchPairs();
     }
 
@@ -96,7 +98,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
 		if($vehicle->getId()) {
 			$this->connection->update(self::TABLE_TC_VEHICLE, [
 				'archived' => $vehicle->isArchived(),
-			])->execute();
+			])->where('id = %i', $vehicle->id)->execute();
 			return;
 		}
 
