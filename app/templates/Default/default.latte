@@ -10,9 +10,6 @@
 
 {block #content}
 <div class="row">
-
-
-
     <div class="col-sm-8">
         <div class="row">
             <div class="well visible-xs-block visible-sm-block">
@@ -98,20 +95,6 @@
         <div id="fb-root"></div>
         <div class="fb-like-box hidden-sm hidden-xs" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-width="330" data-height="540" data-show-faces="true" data-stream="true" data-border-color="#EEEEEE" data-header="false"></div>
     </div>
-    <script>
-        $(document).ready(function () {
-//            $('.carousel').carousel('cycle');
-        });
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id))
-                return;
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//connect.facebook.net/cs_CZ/all.js#xfbml=1&appId=262542393777882";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-
-    </script>
+    <script type="text/javascript" src="{$baseUri}/js/homepage.facebook.js"></script>
 </div>
 
