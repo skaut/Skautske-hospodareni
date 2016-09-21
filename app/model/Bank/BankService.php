@@ -32,16 +32,16 @@ class BankService extends BaseService {
         return $this->table->getInfo($unitId);
     }
 
-    public function pairPayments(PaymentService $ps, $unitId, $groupId = NULL) {
+    public function pairPayments(PaymentService $ps, $unitId, $groupId, $daysBack = NULL) {
         $bakInfo = $this->getInfo($unitId);
         if (!isset($bakInfo->token)) {
             return FALSE;
         }
         $payments = $ps->getAll($groupId === NULL ? array_keys($ps->getGroups($unitId)) : $groupId, FALSE);
 
-
+		$daysBack = $daysBack ?: $bakInfo->daysback;
 		$transactions = $this->bank->getTransactions(
-			(new \DateTime())->modify("- {$bakInfo->daysback} days"),
+			(new \DateTime())->modify("- $daysBack days"),
 			new \DateTime(),
 			$bakInfo->token
 		);

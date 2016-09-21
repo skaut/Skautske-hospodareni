@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\Factories\FormFactory;
 use Nette\Application\UI\Form;
 
 /**
@@ -20,10 +21,21 @@ class PaymentPresenter extends BasePresenter {
     protected $editUnits;
     protected $unitService;
 
-    public function __construct(\Model\PaymentService $paymentService, \Model\BankService $bankService, \Model\UnitService $unitService) {
+	/** @var FormFactory */
+	private $formFactory;
+
+	/** @var int */
+	private $id;
+
+    public function __construct(
+		\Model\PaymentService $paymentService,
+		\Model\BankService $bankService,
+		\Model\UnitService $unitService,
+		FormFactory $formFactory) {
         parent::__construct($paymentService);
         $this->bank = $bankService;
         $this->unitService = $unitService;
+		$this->formFactory = $formFactory;
     }
 
     protected function startup() {
@@ -44,6 +56,11 @@ class PaymentPresenter extends BasePresenter {
         $this->template->groups = $groups;
         $this->template->payments = $this->model->getAll(array_keys($groups), TRUE);
     }
+
+    public function actionDetail($id)
+	{
+		$this->id = $id;
+	}
 
     public function renderDetail($id) {
         $this->template->units = $this->readUnits;
@@ -329,25 +346,9 @@ class PaymentPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function handlePairPayments($gid) {
-        if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
-            $this->redirect("this");
-        }
-        try {
-            $pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $gid);
-        } catch (\Model\BankTimeoutException $exc) {
-            $this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
-        } catch (\Model\BankTimeLimitException $exc) {
-            $this->flashMessage("Mezi dotazy na bankovnictví musí být prodleva 1 minuta!", 'danger');
-        }
-
-        if (isset($pairsCnt) && $pairsCnt > 0) {
-            $this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
-        } else {
-            $this->flashMessage("Žádné platby nebyly spárovány");
-        }
-        $this->redirect("this");
+    public function handlePairPayments($gid)
+	{
+        $this->pairPairments($gid);
     }
 
     public function handleGenerateVs($gid) {
@@ -523,5 +524,50 @@ class PaymentPresenter extends BasePresenter {
             $form->addError("Chyba z banky: " . $result->ordersDetails->detail->messages->message);
         }
     }
+
+    protected function createComponentPairForm()
+	{
+		$form = $this->formFactory->create(TRUE);
+
+		$days = $this->bank->getInfo($this->aid)->daysback;
+
+		$form->addText('days', 'Počet dní', 2, 2)
+			->setDefaultValue($days)
+			->addRule($form::MIN, 'Musíte zadat alespoň počet dní z nastavení: %d', $days)
+			->setType('number');
+		$form->addSubmit('pair', 'Párovat');
+
+		$form->onSuccess[] = function($form, $values) {
+			$this->pairPairments($this->id, $values->days);
+		};
+
+		return $form;
+	}
+
+	/**
+	 * @param int $groupId
+	 * @param int|NULL $days
+	 */
+	private function pairPairments($groupId, $days = NULL)
+	{
+		if (!$this->isEditable) {
+			$this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
+			$this->redirect("this");
+		}
+		try {
+			$pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $groupId, $days);
+		} catch (\Model\BankTimeoutException $exc) {
+			$this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
+		} catch (\Model\BankTimeLimitException $exc) {
+			$this->flashMessage("Mezi dotazy na bankovnictví musí být prodleva 1 minuta!", 'danger');
+		}
+
+		if (isset($pairsCnt) && $pairsCnt > 0) {
+			$this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
+		} else {
+			$this->flashMessage("Žádné platby nebyly spárovány");
+		}
+		$this->redirect("this");
+	}
 
 }
