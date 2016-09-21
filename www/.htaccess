@@ -1,11 +1,6 @@
 # disable directory listing
 Options -Indexes
-#AddType text/cache-manifest .manifest
-
-RewriteCond %{HTTP_HOST} !=localhost # Localhost
-RewriteCond %{ENV:DEVELOPMENT_MACHINE} !true # Proměnná prostředí pro Docker
-RewriteCond %{HTTPS} !^.*on
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+AddType text/cache-manifest .manifest
 
 # mod_rewrite
 <IfModule mod_rewrite.c>
