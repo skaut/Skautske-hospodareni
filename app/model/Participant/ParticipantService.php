@@ -82,7 +82,7 @@ class ParticipantService extends MutableBaseService {
                         "ID_Person" => $participantId,
             ));
         } catch (\Skautis\Wsdl\WsdlException $ex) {
-            if ($ex->getMessage() != "Chyba validace (Participant_PersonIsAllreadyParticipantGeneral)") {
+            if (!preg_match("/Chyba validace \(Participant_PersonIsAllreadyParticipant(General)?\)/", $ex->getMessage())) {
                 throw $ex;
             }
             return FALSE;
@@ -194,7 +194,7 @@ class ParticipantService extends MutableBaseService {
                     ($isAccount == "Y" xor $p->isAccount == "Y")) {
                 continue;
             }
-            $res += $p->payment;// - $p->repayment
+            $res += $p->payment; // - $p->repayment
         }
         return $res;
     }
