@@ -2,10 +2,6 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use Nette\Application\Routers\Route,
-    Nette\Application\Routers\RouteList,
-    Sinacek\MyRoute;
-
 /**
  * @author Hána František <sinacek@gmail.com>
  */
@@ -50,33 +46,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
                 $this->redirect("Default:");
             }
         }
-    }
-
-    /**
-     * vytváří routy pro modul
-     * @param RouteList $router
-     * @param string $prefix 
-     */
-    static function createRoutes($prefix = "") {
-        $router = new RouteList("Event");
-
-        $prefix .= "akce/";
-
-        $router[] = new MyRoute($prefix . '<aid [0-9]+>/<presenter>/[<action>/]', array(
-            'presenter' => array(
-                Route::VALUE => 'Event',
-                Route::FILTER_TABLE => array(
-                    'ucastnici' => 'Participant',
-                    'kniha' => 'Cashbook',
-                )),
-            'action' => "default",
-                ), Route::SECURED);
-
-        $router[] = new MyRoute($prefix . '[<presenter>/][<action>/]', array(
-            'presenter' => 'Default',
-            'action' => 'default',
-                ), Route::SECURED);
-        return $router;
     }
 
 }

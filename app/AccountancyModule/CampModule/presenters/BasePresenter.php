@@ -2,10 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
-use Nette\Application\Routers\Route,
-    Nette\Application\Routers\RouteList,
-    Sinacek\MyRoute,
-    Skautis\Wsdl\PermissionException;
+use Skautis\Wsdl\PermissionException;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -51,35 +48,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
                 $this->redirect("Default:");
             }
         }
-    }
-
-    /**
-     * vytváří routy pro modul
-     * @param RouteList $router
-     * @param string $prefix 
-     */
-    static function createRoutes($prefix = "") {
-        $router = new RouteList("Camp");
-
-        $prefix .= "tabory/";
-
-        $router[] = new MyRoute($prefix . '<aid [0-9]+>/[<presenter>/][<action>/]', array(
-            'presenter' => array(
-//                        Route::VALUE => 'Detail', //nefunguje pak report
-                Route::FILTER_TABLE => array(
-                    'ucastnici' => 'Participant',
-                    'kniha' => 'Cashbook',
-                    'rozpocet' => 'Budget',
-                )),
-            'action' => "default",
-                ), Route::SECURED);
-
-        $router[] = new MyRoute($prefix . '[<presenter>/][<action>/]', array(
-            'presenter' => 'Default',
-            'action' => 'default',
-                ), Route::SECURED);
-
-        return $router;
     }
 
 }
