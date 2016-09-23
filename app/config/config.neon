@@ -5,7 +5,7 @@
 # http://nette.org/security-warning
 #
 parameters:
-
+	ssl: on
 php:
     date.timezone: Europe/Prague
     # zlib.output_compression: yes
@@ -32,7 +32,7 @@ extensions:
 
 services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
-    - App\RouterFactory
+    - App\RouterFactory(%ssl%)
     - \Model\PaymentService
     - \Model\MailService(NULL, @dibi.connection, %sendEmail%)
 
