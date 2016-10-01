@@ -535,12 +535,12 @@ class PaymentPresenter extends BasePresenter {
 			->setDefaultValue($days)
 			->addRule($form::MIN, 'Musíte zadat alespoň počet dní z nastavení: %d', $days)
 			->setType('number');
-		$form->addSubmit('pair', 'Párovat');
+		$form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
 
 		$form->onSuccess[] = function($form, $values) {
 			$this->pairPairments($this->id, $values->days);
 		};
-
+		$this->redrawControl('pairForm');
 		return $form;
 	}
 
@@ -552,7 +552,7 @@ class PaymentPresenter extends BasePresenter {
 	{
 		if (!$this->isEditable) {
 			$this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
-			$this->redirect("this");
+			$this->redraw('pairForm');
 		}
 		try {
 			$pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $groupId, $days);
@@ -567,7 +567,19 @@ class PaymentPresenter extends BasePresenter {
 		} else {
 			$this->flashMessage("Žádné platby nebyly spárovány");
 		}
-		$this->redirect("this");
+		$this->redraw('pairForm');
+	}
+
+	/**
+	 * @param string $snippet
+	 */
+	private function redraw($snippet)
+	{
+		if($this->isAjax()) {
+			$this->redrawControl($snippet);
+		} else {
+			$this->redirect('this');
+		}
 	}
 
 }
