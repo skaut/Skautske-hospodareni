@@ -24,6 +24,7 @@ RUN apt-get install apache2  libapache2-mod-php5 -y
 
 RUN a2enmod php5
 RUN a2enmod rewrite
+RUN a2enmod ssl
 
 RUN usermod -u 1000 www-data # Now www-data (Apache) is owner of app files
 
@@ -32,13 +33,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www/html
 
-ADD vhosts.conf /etc/apache2/sites-enabled/000-default.conf
-
 ADD run.sh /run.sh
 
 RUN chmod 755 /*.sh
 
 VOLUME  ["/etc/mysql", "/var/lib/mysql"]
 
-EXPOSE 80 9000
+EXPOSE 80 9000 443
 CMD ["/run.sh"]

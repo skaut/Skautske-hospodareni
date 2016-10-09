@@ -21,7 +21,7 @@ class RouterFactory {
 	public function __construct($ssl)
 	{
 		// Disable https for development
-		$this->secured = $ssl ? 0 : $this->secured;
+		$this->secured = $ssl ? 0 : Route::SECURED;
 	}
 
 	/**
