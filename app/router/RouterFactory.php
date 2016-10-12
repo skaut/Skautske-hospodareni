@@ -11,9 +11,6 @@ use Nette\Application\Routers\SimpleRouter;
  */
 class RouterFactory {
 
-	/** @var int */
-	private $secured;
-
 	/**
 	 * RouterFactory constructor.
 	 * @param bool $ssl
@@ -21,7 +18,7 @@ class RouterFactory {
 	public function __construct($ssl)
 	{
 		// Disable https for development
-		$this->secured = $ssl ? 0 : Route::SECURED;
+                Route::$defaultFlags = $ssl ? Route::SECURED : 0;
 	}
 
 	/**
@@ -37,7 +34,7 @@ class RouterFactory {
             'presenter' => 'Auth',
             'action' => 'default',
             'backlink' => NULL,
-		], $this->secured);
+		]);
 
         $router[] = new Route('prirucka/<action>[#<anchor>]', [
             'presenter' => 'Tutorial',
@@ -64,10 +61,10 @@ class RouterFactory {
 		$accountancy[] = $this->createUnitAccountRoutes();
 		$accountancy[] = $this->createPaymentRoutes();
 
-		$accountancy[] = new Route('<module>/<presenter>[/<action>]', ['action' => 'default'], $this->secured);
+		$accountancy[] = new Route('<module>/<presenter>[/<action>]', ['action' => 'default']);
 
 
-		$router[] = new SimpleRouter('Default:default', $this->secured);
+		$router[] = new SimpleRouter('Default:default');
         return $router;
     }
 
@@ -88,12 +85,12 @@ class RouterFactory {
 					'rozpocet' => 'Budget',
 				]],
 			'action' => 'default',
-		], $this->secured);
+		]);
 
 		$router[] = new Route($prefix . '[/<presenter>][/<action>]', [
 			'presenter' => 'Default',
 			'action' => 'default',
-		], $this->secured);
+		]);
 
 		return $router;
 	}
@@ -115,12 +112,12 @@ class RouterFactory {
 					'kniha' => 'Cashbook',
 				]],
 			'action' => 'default',
-		], $this->secured);
+		]);
 
 		$router[] = new Route($prefix . '[<presenter>][/<action>]', [
 			'presenter' => 'Default',
 			'action' => 'default',
-		], $this->secured);
+		]);
 
 		return $router;
 	}
@@ -142,7 +139,7 @@ class RouterFactory {
 					'smlouvy' => 'Contract',
 				)),
 			'action' => 'default',
-		], $this->secured);
+		]);
 
 		return $router;
 	}
@@ -165,12 +162,12 @@ class RouterFactory {
 					'rozpocet' => 'Budget',
 				)),
 			'action' => 'default',
-		), $this->secured);
+		));
 
 		$router[] = new Route($prefix . '[/<presenter>][/<action>]', [
 			'presenter' => 'Default',
 			'action' => 'default',
-		], $this->secured);
+		]);
 
 		return $router;
 	}
