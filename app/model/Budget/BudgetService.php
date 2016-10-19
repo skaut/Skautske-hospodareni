@@ -7,7 +7,7 @@ namespace Model;
  */
 class BudgetService extends BaseService {
     
-    public function __construct(\Skautis\Skautis $skautis, \DibiConnection $connection) {
+    public function __construct(\Skautis\Skautis $skautis, \Dibi\Connection $connection) {
         parent::__construct($skautis, $connection);
     }
 
