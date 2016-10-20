@@ -41,7 +41,7 @@ services:
     - \Model\BankService(@cacheStorage)
     router: @App\RouterFactory::createRouter
     #connection:
-    #    class: DibiConnection
+    #    class: \Dibi\Connection
     #    factory: dibi::connect(%database%)
     #    run: TRUE
     - \Model\AuthService
