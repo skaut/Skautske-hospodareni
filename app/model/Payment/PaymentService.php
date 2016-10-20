@@ -13,7 +13,7 @@ class PaymentService extends BaseService {
      */
     protected $mailService;
 
-    public function __construct(\Skautis\Skautis $skautIS, \DibiConnection $connection, MailService $mailService) {
+    public function __construct(\Skautis\Skautis $skautIS, \Dibi\Connection $connection, MailService $mailService) {
         parent::__construct($skautIS, $connection);
         $this->mailService = $mailService;
     }

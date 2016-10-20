@@ -3,8 +3,6 @@
 namespace Model;
 
 use Model\Bank\Fio\FioClient;
-use Model\Bank\Fio\Transaction;
-use Nette\Caching\Cache;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -20,7 +18,7 @@ class BankService extends BaseService {
      */
     protected $cache;
 
-    public function __construct(\Nette\Caching\IStorage $storage, FioClient $bank,\DibiConnection $connection = NULL) {
+    public function __construct(\Nette\Caching\IStorage $storage, FioClient $bank,\Dibi\Connection $connection = NULL) {
         parent::__construct(NULL, $connection);
 		$this->bank = $bank;
         $this->cache = new \Nette\Caching\Cache($storage, __CLASS__);
