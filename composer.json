@@ -7,7 +7,7 @@
                 "skautis/skautis": "2.*@dev",
                 "skautis/nette": "2.*@dev",
                 "janmarek/webloader": "~2.5",
-                "dg/dibi" : "~3.0",
+                "dibi/dibi" : "~3.0",
                 "srigi/nette-visualpaginator": "~1.0",
                 "phpoffice/phpexcel": "~1.8",
                 "mpdf/mpdf": "~6.0",
