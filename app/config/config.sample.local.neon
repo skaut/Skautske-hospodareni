@@ -17,7 +17,6 @@ skautis:
     testMode : true #isTestMode?
     
 parameters:
-    ssl : FALSE
     sendEmail : FALSE
 
 services:

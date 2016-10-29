@@ -4,8 +4,6 @@
 # If you don't protect this directory from direct web access, anybody will be able to see your passwords.
 # http://nette.org/security-warning
 #
-parameters:
-	ssl: on
 php:
     date.timezone: Europe/Prague
     # zlib.output_compression: yes
@@ -32,7 +30,7 @@ extensions:
 
 services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
-    - App\RouterFactory(%ssl%)
+    - App\RouterFactory
     - \Model\PaymentService
     - \Model\MailService(NULL, @dibi.connection, %sendEmail%)
 

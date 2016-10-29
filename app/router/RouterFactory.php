@@ -63,7 +63,7 @@ class RouterFactory {
 
 		$accountancy[] = new Route('<module>/<presenter>[/<action>]', ['action' => 'default']);
 
-		$router[] = new SimpleRouter('Default:default', Route::$defaultFlags);
+        $router[] = new SimpleRouter('Default:default');
         return $router;
     }
 
