@@ -33,7 +33,7 @@
             </tr>
             <tr>
                 <th>Stav</th>
-                <td {if $event->ID_EventCampState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{!$event->ID_EventCampState|campStateLabel}</td>
+                <td {if $event->ID_EventCampState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->ID_EventCampState|campStateLabel|noescape}</td>
             </tr>
             <tr>
                 <th>Prefix <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů aktivní."/></th>

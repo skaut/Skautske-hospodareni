@@ -98,7 +98,7 @@
                         <td class="r hidden-xs">{if $l->ks == null}&nbsp;{else}{$l->ks}{/if}</td>
                         <td class="r">{$l->maturity|date:'j.n.Y'}</td>
                         {*}<td>{if $l->note == null}&nbsp;{else}{$l->note}{/if}</td>{*}
-                        <td>{!$l->stateLabel|paymentStateLabel}</td>
+                        <td>{$l->stateLabel|paymentStateLabel|noescape}</td>
                         <td n:if="$isEditable" class="r nowrap">{if in_array($l->state, $notFinalStates)}
                             <a n:href="edit $l->id" class="btn btn-sm btn-primary" title="Upravit platbu"><i class="glyphicon glyphicon-edit"></i></a>
                             <a n:href="send! $l->id" class="btn btn-sm btn-primary{if $l->email == ""} disabled" title="Není uveden email{else}" title="Odeslat email o platbě{/if}" ><i class="glyphicon glyphicon-envelope"></i></a> 

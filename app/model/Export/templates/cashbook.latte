@@ -25,8 +25,8 @@ table {
         <td>{if $info->prefix != null}{$info->prefix}{$item->num}{/if}</td>
         <td>{$item->purpose}</td>
         <td>{$item->cshort}</td>
-        <td style="text-align:right;">{!$item->ctype == 'in' ? $item->price: '&nbsp;'|price}</td>
-        <td style="text-align:right;">{!$item->ctype != 'in' ? $item->price: '&nbsp;'|price}</td>
+        <td style="text-align:right;">{$item->ctype == 'in' ? $item->price: '&nbsp;'|price|noescape}</td>
+        <td style="text-align:right;">{$item->ctype != 'in' ? $item->price: '&nbsp;'|price|noescape}</td>
         <td style="text-align:right;">{$balance += $item->ctype == 'in' ? $item->price : (-$item->price)|price}</td>
     </tr>
     <tr>
