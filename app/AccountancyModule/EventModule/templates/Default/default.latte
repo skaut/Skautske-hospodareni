@@ -51,7 +51,7 @@
                             <td>{$i['StartDate']|date:"j.n.Y"}</td>
                             <td>{$i['EndDate']|date:"j.n.Y"}</td>
                             <td>{$i['prefix']}</td>
-                            <td>{!$i['ID_EventGeneralState']|eventStateLabel}</td>
+                            <td>{$i['ID_EventGeneralState']|eventStateLabel|noescape}</td>
                             <td n:inner-if="$i['accessDetail']" class="hidden-xs hidden-sm">
                                 <div class="btn-group" role="group">
                                     <a n:href="Event:  $i['ID']" class="btn btn-default btn-sm" title="Základní informace o akci"><i class="glyphicon glyphicon-briefcase"></i></a>

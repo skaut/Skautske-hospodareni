@@ -54,7 +54,7 @@
                     <td>{$c->driver_name}</td>
                     <td>{$c->purpose}</td>
                     <td>{if $c->vehicle_type != ""}{$c->vehicle_type} ({$c->vehicle_spz}){/if}</td>
-                    <td>{!$c->closed|commandState}</td>
+                    <td>{$c->closed|commandState|noescape}</td>
                 </tr>
             </table>
         {else}

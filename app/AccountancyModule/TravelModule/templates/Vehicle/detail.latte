@@ -43,7 +43,7 @@
                 <td><a n:href="Default:detail $c->id" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-zoom-in"></i>Detail</a></td>
                 <td>{$c->driver_name}</td>
                 <td>{$c->purpose}</td>
-                <td>{!$c->closed|commandState}</td>
+                <td>{$c->closed|commandState|noescape}</td>
             </tr>
         </table>
         {else}
