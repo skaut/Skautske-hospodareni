@@ -17,4 +17,9 @@ $configurator->addConfig(__DIR__ . '/config/config.local.neon');
 
 $container = $configurator->createContainer();
 
+$httpResponse = $container->getByType('Nette\Http\Response');
+$httpResponse->setHeader('Content-Security-Policy', "default-src 'none'; script-src 'self' www.google-analytics.com ajax.googleapis.com; connect-src 'self'; img-src 'self'; style-src 'self';");
+$httpResponse->setHeader('Strict-Transport-Security', "max-age=31536000; includeSubDomains; preload");
+$httpResponse->setHeader('X-Content-Type-Options', "nosniff");
+
 return $container;
