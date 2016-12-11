@@ -335,17 +335,14 @@ class PaymentService extends BaseService {
      * @param int $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
      * @return array(array())
      */
-    public function getRegistrationPersons($units, $groupId = NULL) {
+    public function getPersonsFromRegistrationWithoutPayment($units, $groupId = NULL) {
         $result = array();
 
         $group = $this->getGroup($units, $groupId);
         if (!$group) {
             throw new \InvalidArgumentException("Nebyla nalezena platební skupina");
         }
-        $persons = $this->skautis->org->PersonRegistrationAll(array(
-            'ID_UnitRegistration' => $group->sisId,
-            'IncludeChild' => TRUE,
-        ));
+        $persons = $this->getPersonFromRegistration($group->sisId, TRUE);
 
         if (is_array($persons)) {
             usort($persons, function ($a, $b) {
@@ -366,6 +363,13 @@ class PaymentService extends BaseService {
         return $result;
     }
 
+    public function getPersonFromRegistration($registrationId, $includeChild = TRUE) {
+        return($this->skautis->org->PersonRegistrationAll(array(
+                    'ID_UnitRegistration' => $registrationId,
+                    'IncludeChild' => $includeChild,
+        )));
+    }
+
     /**
      * CAMP
      */
@@ -377,11 +381,11 @@ class PaymentService extends BaseService {
         $g = $this->table->getGroupsBySisId('camp', $campId);
         return empty($g) ? FALSE : $g[0];
     }
-    
+
     /**
      * vrací seznam id táborů se založenou aktivní skupinou
      */
-    public function getCampIds(){
+    public function getCampIds() {
         return $this->table->getCampIds();
     }
 

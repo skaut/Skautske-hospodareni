@@ -19,7 +19,7 @@ class RegistrationPresenter extends BasePresenter {
     public function actionMassAdd($id) {
         //ověření přístupu
         try {
-            $this->template->list = $list = $this->model->getRegistrationPersons(array_keys($this->readUnits), $id);
+            $this->template->list = $list = $this->model->getPersonsFromRegistrationWithoutPayment(array_keys($this->readUnits), $id);
         } catch (\InvalidArgumentException $exc) {
             $this->flashMessage("Neoprávněný přístup ke skupině.", "danger");
             $this->redirect("Payment:default");
