@@ -371,6 +371,42 @@ class PaymentService extends BaseService {
     }
 
     /**
+     * JOURNAL
+     */
+    function getJournalChangesAfterRegistration($unitId, $year) {
+        $registrations = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId, "Year" => $year));
+        if (count($registrations) < 1) {
+            return NULL;
+        }
+        $registrationId = reset($registrations)->ID;
+        $registration = $this->getPersonFromRegistration($registrationId, FALSE);
+
+        $regCategories = [];
+        foreach ($this->skautis->org->RegistrationCategoryAll(array("ID_UnitRegistration" => $registrationId)) as $rc) {
+            $regCategories[$rc->ID] = $rc->IsJournal;
+        }
+        $unitJournals = $this->skautis->Journal->PersonJournalAllUnit(array("ID_Unit" => $unitId, "ShowHistory" => FALSE, "IncludeChild" => TRUE));
+
+        //seznam osob s casopisem
+        $personIdsWithJournal = [];
+        foreach ($unitJournals as $journal) {
+            $personIdsWithJournal[$journal->ID_Person] = TRUE;
+        }
+
+        $changes = ["add" => [], "remove" => []];
+        foreach ($registration as $p) {
+            $isRegustredWithJournal = $regCategories[$p->ID_RegistrationCategory];
+            $hasPersonJournal = array_key_exists($p->ID_Person, $personIdsWithJournal);
+            if ($hasPersonJournal && !$isRegustredWithJournal) {
+                $changes["remove"][] = $p->Person;
+            } elseif (!$hasPersonJournal && $isRegustredWithJournal) {
+                $changes["add"][] = $p->Person;
+            }
+        }
+        return($changes);
+    }
+
+    /**
      * CAMP
      */
     public function getCamp($campId) {
