@@ -375,7 +375,7 @@ class PaymentService extends BaseService {
      */
     public function getJournalChangesAfterRegistration($unitId, $year) {
         $registrations = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId, "Year" => $year));
-        if (count($registrations) < 1) {
+        if (!is_array($registrations) || count($registrations) < 1) {
             return NULL;
         }
         $registrationId = reset($registrations)->ID;
