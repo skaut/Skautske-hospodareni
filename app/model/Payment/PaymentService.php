@@ -335,17 +335,14 @@ class PaymentService extends BaseService {
      * @param int $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
      * @return array(array())
      */
-    public function getRegistrationPersons($units, $groupId = NULL) {
+    public function getPersonsFromRegistrationWithoutPayment($units, $groupId = NULL) {
         $result = array();
 
         $group = $this->getGroup($units, $groupId);
         if (!$group) {
             throw new \InvalidArgumentException("Nebyla nalezena platební skupina");
         }
-        $persons = $this->skautis->org->PersonRegistrationAll(array(
-            'ID_UnitRegistration' => $group->sisId,
-            'IncludeChild' => TRUE,
-        ));
+        $persons = $this->getPersonFromRegistration($group->sisId, TRUE);
 
         if (is_array($persons)) {
             usort($persons, function ($a, $b) {
@@ -366,6 +363,49 @@ class PaymentService extends BaseService {
         return $result;
     }
 
+    public function getPersonFromRegistration($registrationId, $includeChild = TRUE) {
+        return($this->skautis->org->PersonRegistrationAll(array(
+                    'ID_UnitRegistration' => $registrationId,
+                    'IncludeChild' => $includeChild,
+        )));
+    }
+
+    /**
+     * JOURNAL
+     */
+    public function getJournalChangesAfterRegistration($unitId, $year) {
+        $registrations = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId, "Year" => $year));
+        if (count($registrations) < 1) {
+            return NULL;
+        }
+        $registrationId = reset($registrations)->ID;
+        $registration = $this->getPersonFromRegistration($registrationId, FALSE);
+
+        $regCategories = [];
+        foreach ($this->skautis->org->RegistrationCategoryAll(array("ID_UnitRegistration" => $registrationId)) as $rc) {
+            $regCategories[$rc->ID] = $rc->IsJournal;
+        }
+        $unitJournals = $this->skautis->Journal->PersonJournalAllUnit(array("ID_Unit" => $unitId, "ShowHistory" => FALSE, "IncludeChild" => TRUE));
+
+        //seznam osob s casopisem
+        $personIdsWithJournal = [];
+        foreach ($unitJournals as $journal) {
+            $personIdsWithJournal[$journal->ID_Person] = TRUE;
+        }
+
+        $changes = ["add" => [], "remove" => []];
+        foreach ($registration as $p) {
+            $isRegustredWithJournal = $regCategories[$p->ID_RegistrationCategory];
+            $hasPersonJournal = array_key_exists($p->ID_Person, $personIdsWithJournal);
+            if ($hasPersonJournal && !$isRegustredWithJournal) {
+                $changes["remove"][] = $p->Person;
+            } elseif (!$hasPersonJournal && $isRegustredWithJournal) {
+                $changes["add"][] = $p->Person;
+            }
+        }
+        return($changes);
+    }
+
     /**
      * CAMP
      */
@@ -377,11 +417,11 @@ class PaymentService extends BaseService {
         $g = $this->table->getGroupsBySisId('camp', $campId);
         return empty($g) ? FALSE : $g[0];
     }
-    
+
     /**
      * vrací seznam id táborů se založenou aktivní skupinou
      */
-    public function getCampIds(){
+    public function getCampIds() {
         return $this->table->getCampIds();
     }
 

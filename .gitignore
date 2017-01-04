@@ -5,8 +5,8 @@ htaccess
 !/app/config/config.sample.local.neon
 !/vendor/others
 /vendor
-temp/*
-log/*
+nette-temp/*
+nette-log/*
 /source
 /nbproject
 .idea
