@@ -25,10 +25,14 @@ class JournalPresenter extends BasePresenter {
         $this->template->units = $units = $this->unitService->getAllUnder($this->aid);
         
         $changes = [];
+        $changeExists = FALSE;
         foreach (array_keys($units) as $unitId) {
-            $changes[$unitId] = $this->model->getJournalChangesAfterRegistration($unitId, $year);
+            $uch = $this->model->getJournalChangesAfterRegistration($unitId, $year);
+            $changeExists = $changeExists || (empty($uch["add"]) && $uch["remove"]);
+            $changes[$unitId] = $uch;
         }
         $this->template->changes = $changes;
+        $this->template->changeExists = $changeExists;
     }
 
 }
