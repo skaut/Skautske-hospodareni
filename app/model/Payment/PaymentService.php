@@ -377,7 +377,7 @@ class PaymentService extends BaseService {
     /**
      * @param int $unitId
      * @param int $year
-     * @return array("add" => [], "remove" => []) | NULL
+     * @return array | NULL - format array("add" => [], "remove" => [])
      */
     public function getJournalChangesAfterRegistration($unitId, $year) {
         $registrations = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId, "Year" => $year));
