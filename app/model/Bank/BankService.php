@@ -7,6 +7,7 @@ use Model\Payment\Repositories\IGroupRepository;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Dibi\Connection;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
@@ -37,7 +38,8 @@ class BankService extends BaseService {
         return $this->table->getInfo($unitId);
     }
 
-    public function pairPayments(PaymentService $ps, $unitId, $groupId, $daysBack = NULL) {
+    public function pairPayments(PaymentService $ps, $unitId, $groupId, $daysBack = NULL)
+	{
         $bakInfo = $this->getInfo($unitId);
         if (!isset($bakInfo->token)) {
             return FALSE;
@@ -45,16 +47,43 @@ class BankService extends BaseService {
 
         $payments = $ps->getAll($groupId === NULL ? array_keys($ps->getGroups($unitId)) : $groupId, FALSE);
 
-		$daysBack = $daysBack ?: $bakInfo->daysback;
+        $autoPairing = !$daysBack;
+		$group = $this->groups->find($groupId);
+        if($autoPairing) {
+			$lastPairing = $group->getLastPairing() ?: $group->getCreatedAt();
+			if($lastPairing) {
+				$daysBack = $lastPairing->diff(new \DateTime())->days + 3;
+			} else {
+				$daysBack = $bakInfo->daysback;
+			}
+		}
+
 		$transactions = $this->bank->getTransactions(
 			(new \DateTime())->modify("- $daysBack days"),
 			new \DateTime(),
 			$bakInfo->token
 		);
 
-        if (!$transactions) {
-            return FALSE;
-        }
+        $result = $this->markPaymentsAsComplete($ps, $transactions, $payments);
+
+        if($autoPairing) {
+        	$group->updateLastPairing(new \DateTimeImmutable());
+        	$this->groups->save($group);
+		}
+		return $result;
+    }
+
+	/**
+	 * @param PaymentService $ps
+	 * @param array $transactions
+	 * @param array $payments
+	 * @return int|FALSE
+	 */
+    private function markPaymentsAsComplete(PaymentService $ps, array $transactions, array $payments)
+	{
+		if (!$transactions) {
+			return FALSE;
+		}
 
 		/**
 		 * We'll need payments indexed by VS
@@ -86,8 +115,8 @@ class BankService extends BaseService {
 			}
 		}
 
-        return $cnt;
-    }
+		return $cnt;
+	}
 
 	/**
 	 * @deprecated Use FioClient::getTransactions()

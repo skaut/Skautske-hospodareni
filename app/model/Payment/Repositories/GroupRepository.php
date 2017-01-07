@@ -29,6 +29,7 @@ class GroupRepository implements IGroupRepository
 		'constantSymbol' => 'ks',
 		'state' => 'state',
 		'createdAt' => 'created_at',
+		'lastPairing' => 'last_pairing',
 		'emailTemplate' => 'email_info',
 	];
 

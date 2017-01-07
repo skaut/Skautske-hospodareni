@@ -35,6 +35,9 @@ class Group
 	/** @var \DateTimeImmutable */
 	private $createdAt;
 
+	/** @var \DateTimeImmutable|NULL */
+	private $lastPairing;
+
 	/** @var string */
 	private $emailTemplate;
 
@@ -160,6 +163,23 @@ class Group
 	public function getEmailTemplate()
 	{
 		return $this->emailTemplate;
+	}
+
+	/**
+	 * Update last pairing time
+	 * @param \DateTimeImmutable $at
+	 */
+	public function updateLastPairing(\DateTimeImmutable $at)
+	{
+		$this->lastPairing = $at;
+	}
+
+	/**
+	 * @return \DateTimeImmutable|NULL
+	 */
+	public function getLastPairing()
+	{
+		return $this->lastPairing;
 	}
 
 }
