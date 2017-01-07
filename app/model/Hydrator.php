@@ -2,11 +2,13 @@
 
 namespace Model;
 
+use Dibi\DateTime;
+
 class Hydrator
 {
 
-	/** @var string */
-	private $className;
+	/** @var \ReflectionClass */
+	private $reflection;
 
 	/** @var \ReflectionProperty[] */
 	private $properties;
@@ -19,32 +21,30 @@ class Hydrator
 	public function __construct($className, array $properties)
 	{
 		$this->className = $className;
-		$reflection = new \ReflectionClass($className);
+		$this->reflection = new \ReflectionClass($className);
 		foreach($properties as $propertyName) {
-			$property = $reflection->getProperty($propertyName);
+			$property = $this->reflection->getProperty($propertyName);
 			$property->setAccessible(TRUE);
-			$this->properties[$propertyName] = $properties;
+			$this->properties[$propertyName] = $property;
 		}
 	}
 
 	/**
-	 * @param object $object
-	 * @param string $name
-	 * @param mixed $value
-	 */
-	public function setProperty($object, $name, $value)
-	{
-		$this->properties[$name]->setValue($object, $value);
-	}
-
-	/**
-	 * @param object $object
-	 * @param string $name
+	 * @param array $properties
 	 * @return mixed
 	 */
-	public function getProperty($object, $name)
+	public function create(array $properties)
 	{
-		return $this->properties[$name]->getValue($object);
+		$object = $this->reflection->newInstanceWithoutConstructor();
+		foreach($properties as $name => $value) {
+			if($value instanceof DateTime) {
+				$timezone = $value->getTimezone();
+				$value = \DateTimeImmutable::createFromFormat('U', $value->getTimestamp());
+				$value = $value->setTimezone($timezone);
+			}
+			$this->properties[$name]->setValue($object, $value);
+		}
+		return $object;
 	}
 
 }

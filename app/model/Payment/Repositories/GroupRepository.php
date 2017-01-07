@@ -3,7 +3,9 @@
 namespace Model\Payment\Repositories;
 
 use Dibi\Connection;
+use Dibi\Row;
 use Model\BaseTable;
+use Model\Hydrator;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
 
@@ -12,6 +14,9 @@ class GroupRepository implements IGroupRepository
 
 	/** @var Connection */
 	private $db;
+
+	/** @var Hydrator */
+	private $hydrator;
 
 	private $fields = [
 		'id' => 'id',
@@ -22,7 +27,7 @@ class GroupRepository implements IGroupRepository
 		'defaultAmount' => 'amount',
 		'dueDate' => 'maturity',
 		'constantSymbol' => 'ks',
-		'open' => 'open',
+		'state' => 'state',
 	];
 
 	const TABLE = BaseTable::TABLE_PA_GROUP;
@@ -43,7 +48,7 @@ class GroupRepository implements IGroupRepository
 	 */
 	public function find($id)
 	{
-		$row = $this->db->select('*')
+		$row = $this->db->select(array_flip($this->fields))
 			->from(self::TABLE)
 			->where('id = %i', $id)
 			->fetch();
@@ -51,7 +56,7 @@ class GroupRepository implements IGroupRepository
 		if(!$row) {
 			throw new GroupNotFoundException;
 		}
-
+		return $this->getHydrator()->create($row->toArray());
 	}
 
 	public function save(Group $group)
@@ -59,9 +64,15 @@ class GroupRepository implements IGroupRepository
 		// TODO: Implement save() method.
 	}
 
-	private function hydrate()
+	/**
+	 * @return Hydrator
+	 */
+	private function getHydrator()
 	{
-
+		if(!$this->hydrator) {
+			$this->hydrator = new Hydrator(Group::class, array_keys($this->fields));
+		}
+		return $this->hydrator;
 	}
 
 }

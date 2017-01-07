@@ -61,6 +61,8 @@ services:
 
     # Repositories
     - Model\Travel\Repositories\VehicleRepository
+    - Model\Payment\Repositories\GroupRepository
+
 
     - App\AccountancyModule\Factories\FormFactory
 

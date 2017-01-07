@@ -3,7 +3,10 @@
 namespace Model;
 
 use Model\Bank\Fio\FioClient;
-
+use Model\Payment\Repositories\IGroupRepository;
+use Nette\Caching\Cache;
+use Nette\Caching\IStorage;
+use Dibi\Connection;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
@@ -12,16 +15,18 @@ class BankService extends BaseService {
 	/** @var FioClient */
 	private $bank;
 
-    /**
-     *
-     * @var \Nette\Caching\Cache
-     */
+    /** @var \Nette\Caching\Cache */
     protected $cache;
 
-    public function __construct(\Nette\Caching\IStorage $storage, FioClient $bank,\Dibi\Connection $connection = NULL) {
+    /** @var IGroupRepository */
+    private $groups;
+
+    public function __construct(IStorage $storage, FioClient $bank, Connection $connection, IGroupRepository $groups)
+	{
         parent::__construct(NULL, $connection);
 		$this->bank = $bank;
-        $this->cache = new \Nette\Caching\Cache($storage, __CLASS__);
+        $this->cache = new Cache($storage, __CLASS__);
+        $this->groups = $groups;
     }
 
     public function setToken($unitId, $token, $daysback = 14) {
@@ -37,6 +42,7 @@ class BankService extends BaseService {
         if (!isset($bakInfo->token)) {
             return FALSE;
         }
+
         $payments = $ps->getAll($groupId === NULL ? array_keys($ps->getGroups($unitId)) : $groupId, FALSE);
 
 		$daysBack = $daysBack ?: $bakInfo->daysback;
