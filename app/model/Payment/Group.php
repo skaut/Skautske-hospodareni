@@ -32,6 +32,9 @@ class Group
 	/** @var string */
 	private $state = self::STATE_OPEN;
 
+	/** @var \DateTimeImmutable */
+	private $createdAt;
+
 	const STATE_OPEN = 'open';
 
 	/**
@@ -44,8 +47,18 @@ class Group
 	 * @param float $defaultAmount
 	 * @param \DateTimeImmutable $dueDate
 	 * @param int $constantSymbol
+	 * @param \DateTimeImmutable $createdAt
 	 */
-	public function __construct($id, $type, $unitId, $eventId, $name, $defaultAmount, \DateTimeImmutable $dueDate, $constantSymbol)
+	public function __construct(
+		$id,
+		$type,
+		$unitId,
+		$eventId,
+		$name,
+		$defaultAmount,
+		\DateTimeImmutable $dueDate,
+		$constantSymbol,
+		\DateTimeImmutable $createdAt)
 	{
 		$this->id = $id;
 		$this->type = $type;
@@ -55,6 +68,7 @@ class Group
 		$this->defaultAmount = $defaultAmount;
 		$this->dueDate = $dueDate;
 		$this->constantSymbol = $constantSymbol;
+		$this->createdAt = $createdAt;
 	}
 
 	/**
@@ -127,6 +141,14 @@ class Group
 	public function getState()
 	{
 		return $this->state;
+	}
+
+	/**
+	 * @return \DateTimeImmutable
+	 */
+	public function getCreatedAt()
+	{
+		return $this->createdAt;
 	}
 
 }

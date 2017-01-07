@@ -28,6 +28,7 @@ class GroupRepository implements IGroupRepository
 		'dueDate' => 'maturity',
 		'constantSymbol' => 'ks',
 		'state' => 'state',
+		'createdAt' => 'created_at',
 	];
 
 	const TABLE = BaseTable::TABLE_PA_GROUP;
