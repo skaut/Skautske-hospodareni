@@ -47,4 +47,33 @@ class Hydrator
 		return $object;
 	}
 
+	/**
+	 * @param object $object
+	 * @return array
+	 */
+	public function toArray($object)
+	{
+		$row = [];
+		foreach($this->properties as $name => $property) {
+			$value = $property->getValue($object);
+			if($value instanceof \DateTimeImmutable) {
+				$timezone = $value->getTimezone();
+				$value = DateTime::createFromFormat('U', $value->getTimestamp());
+				$value->setTimezone($timezone);
+			}
+			$row[$name] = $value;
+		}
+		return $row;
+	}
+
+	/**
+	 * @param $object
+	 * @param $property
+	 * @param $value
+	 */
+	public function setProperty($object, $property, $value)
+	{
+		$this->properties[$property]->setValue($object, $value);
+	}
+
 }

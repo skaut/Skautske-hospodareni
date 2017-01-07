@@ -2,20 +2,27 @@
 
 namespace Model;
 
+use Dibi\Connection;
+use Model\Payment\Group;
+use Model\Payment\Repositories\IGroupRepository;
+use Skautis\Skautis;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
 class PaymentService extends BaseService {
 
-    /**
-     *
-     * @var MailService
-     */
+    /** @var MailService */
     protected $mailService;
 
-    public function __construct(\Skautis\Skautis $skautIS, \Dibi\Connection $connection, MailService $mailService) {
+    /** @var IGroupRepository */
+    private $groups;
+
+    public function __construct(Skautis $skautIS, Connection $connection, MailService $mailService, IGroupRepository $groups)
+	{
         parent::__construct($skautIS, $connection);
         $this->mailService = $mailService;
+		$this->groups = $groups;
     }
 
     public function get($unitId, $paymentId) {
@@ -214,25 +221,26 @@ class PaymentService extends BaseService {
      * @param string $oType
      * @param int $sisId
      * @param string $label
-     * @param type $maturity
+     * @param \DateTime $maturity
      * @param int $ks
      * @param float $amount
      * @param string $email_info
      * @param string $email_demand
-     * @return type
+     * @return int
      */
     public function createGroup($unitId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {
-        return $this->table->createGroup(array(
-                    'groupType' => $oType,
-                    'sisId' => $sisId,
-                    'unitId' => $unitId,
-                    'label' => $label,
-                    'maturity' => $maturity,
-                    'ks' => $ks != "" ? $ks : NULL,
-                    'amount' => $amount != "" ? $amount : NULL,
-                    'email_info' => $email_info,
-                    'email_demand' => $email_demand,
-        ));
+    	$group = new Group(
+        	$oType,
+			$unitId,
+			NULL,
+			$label,
+			$amount ?: NULL,
+			\DateTimeImmutable::createFromMutable($maturity),
+			$ks,
+			new \DateTimeImmutable(),
+			$email_info);
+        $this->groups->save($group);
+        return $group->getId();
     }
 
     /**

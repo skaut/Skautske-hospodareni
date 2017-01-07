@@ -35,11 +35,13 @@ class Group
 	/** @var \DateTimeImmutable */
 	private $createdAt;
 
+	/** @var string */
+	private $emailTemplate;
+
 	const STATE_OPEN = 'open';
 
 	/**
 	 * Group constructor.
-	 * @param int $id
 	 * @param string $type
 	 * @param int $unitId
 	 * @param int $eventId
@@ -48,9 +50,9 @@ class Group
 	 * @param \DateTimeImmutable $dueDate
 	 * @param int $constantSymbol
 	 * @param \DateTimeImmutable $createdAt
+	 * @param string $emailTemplate
 	 */
 	public function __construct(
-		$id,
 		$type,
 		$unitId,
 		$eventId,
@@ -58,9 +60,9 @@ class Group
 		$defaultAmount,
 		\DateTimeImmutable $dueDate,
 		$constantSymbol,
-		\DateTimeImmutable $createdAt)
+		\DateTimeImmutable $createdAt,
+		$emailTemplate)
 	{
-		$this->id = $id;
 		$this->type = $type;
 		$this->unitId = $unitId;
 		$this->eventId = $eventId;
@@ -69,6 +71,7 @@ class Group
 		$this->dueDate = $dueDate;
 		$this->constantSymbol = $constantSymbol;
 		$this->createdAt = $createdAt;
+		$this->emailTemplate = $emailTemplate;
 	}
 
 	/**
@@ -149,6 +152,14 @@ class Group
 	public function getCreatedAt()
 	{
 		return $this->createdAt;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getEmailTemplate()
+	{
+		return $this->emailTemplate;
 	}
 
 }
