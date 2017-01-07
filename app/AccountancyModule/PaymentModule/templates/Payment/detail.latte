@@ -45,9 +45,12 @@
                         <li><a {if $isGroupSendActive} href="{link sendGroup! $group->id}" onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily{else} class="disabled" title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s>{/if}</a></li>
                     </ul>
                 </div>
-                <div class="btn-group">
-                    <a n:href="pairPayments! $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>
-                    <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button"><span class="caret"></span></button>
+                <div class="btn-group"
+                     {if !$canPair}title="Není nastaven token pro komunikaci s Fio." rel="tooltip"{/if}>
+                    <a n:href="pairPayments! $group->id" n:class="!$canPair ? disabled, btn, btn-primary">
+                        <i class="glyphicon glyphicon-resize-small"></i> Párovat platby
+                    </a>
+                    <button n:class="!$canPair ? disabled, btn, btn-primary, dropdown-toggle" data-toggle="dropdown" type="button"><span class="caret"></span></button>
 
                     <div class="dropdown-menu dropdown-form" n:snippet="pairForm">
                         {control pairForm}

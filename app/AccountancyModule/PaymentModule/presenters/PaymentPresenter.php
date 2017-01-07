@@ -27,6 +27,9 @@ class PaymentPresenter extends BasePresenter {
 	/** @var int */
 	private $id;
 
+	/** @var object */
+	private $bankInfo;
+
     public function __construct(
 		\Model\PaymentService $paymentService,
 		\Model\BankService $bankService,
@@ -60,6 +63,7 @@ class PaymentPresenter extends BasePresenter {
     public function actionDetail($id)
 	{
 		$this->id = $id;
+		$this->bankInfo = $this->bank->getInfo($this->aid);
 	}
 
     public function renderDetail($id) {
@@ -83,6 +87,7 @@ class PaymentPresenter extends BasePresenter {
         $this->template->summarize = $this->model->summarizeByState($id);
         $paymentsForSendEmail = array_filter($payments, create_function('$p', 'return strlen($p->email)>4 && $p->state == "preparing";'));
         $this->template->isGroupSendActive = ($group->state == 'open') && count($paymentsForSendEmail) > 0;
+        $this->template->canPair = isset($this->bankInfo->token);
     }
 
     public function renderEdit($pid) {
@@ -529,7 +534,7 @@ class PaymentPresenter extends BasePresenter {
 	{
 		$form = $this->formFactory->create(TRUE);
 
-		$days = $this->bank->getInfo($this->aid)->daysback;
+		$days = $this->bankInfo ? $this->bankInfo->daysback : 0;
 
 		$form->addText('days', 'Počet dní', 2, 2)
 			->setDefaultValue($days)
