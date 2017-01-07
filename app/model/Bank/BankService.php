@@ -38,6 +38,14 @@ class BankService extends BaseService {
         return $this->table->getInfo($unitId);
     }
 
+	/**
+	 * Completes payments on bank account
+	 * @param PaymentService $ps
+	 * @param int $unitId
+	 * @param int $groupId
+	 * @param int|NULL $daysBack
+	 * @return int|FALSE
+	 */
     public function pairPayments(PaymentService $ps, $unitId, $groupId, $daysBack = NULL)
 	{
         $bakInfo = $this->getInfo($unitId);
