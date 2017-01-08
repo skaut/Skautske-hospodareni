@@ -38,7 +38,7 @@ $(document).ready(function () {
         return false;
     });
 
-    $('.dropdown-menu form').click(function(e) {
+    $('.dropdown-form').click(function(e) {
         e.stopPropagation();
     });
 
