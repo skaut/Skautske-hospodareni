@@ -4,6 +4,9 @@ namespace Model;
 
 use Dibi\DateTime;
 
+/**
+ * Creates domain objects from PHP array and vice versa. (ORM mapping)
+ */
 class Hydrator
 {
 
