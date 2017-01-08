@@ -4,8 +4,6 @@ namespace Model;
 
 use Model\Bank\Fio\FioClient;
 use Model\Payment\Repositories\IGroupRepository;
-use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
 use Dibi\Connection;
 
 /**
@@ -16,17 +14,13 @@ class BankService extends BaseService {
 	/** @var FioClient */
 	private $bank;
 
-    /** @var \Nette\Caching\Cache */
-    protected $cache;
-
     /** @var IGroupRepository */
     private $groups;
 
-    public function __construct(IStorage $storage, FioClient $bank, Connection $connection, IGroupRepository $groups)
+    public function __construct(Connection $connection, FioClient $bank, IGroupRepository $groups)
 	{
         parent::__construct(NULL, $connection);
 		$this->bank = $bank;
-        $this->cache = new Cache($storage, __CLASS__);
         $this->groups = $groups;
     }
 
