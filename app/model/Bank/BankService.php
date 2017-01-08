@@ -53,7 +53,7 @@ class BankService extends BaseService {
             return FALSE;
         }
 
-        $payments = $ps->getAll($groupId === NULL ? array_keys($ps->getGroups($unitId)) : $groupId, FALSE);
+        $payments = $ps->getAll($groupId, FALSE);
 
         $autoPairing = !$daysBack;
 		$group = $this->groups->find($groupId);
