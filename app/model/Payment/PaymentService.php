@@ -225,10 +225,9 @@ class PaymentService extends BaseService {
      * @param int $ks
      * @param float $amount
      * @param string $email_info
-     * @param string $email_demand
      * @return int
      */
-    public function createGroup($unitId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {
+    public function createGroup($unitId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL) {
     	$group = new Group(
         	$oType,
 			$unitId,
