@@ -120,35 +120,6 @@ class GroupPresenter extends BasePresenter {
         $this->template->linkBack = $this->link("Payment:detail", array("id" => $id));
     }
 
-//    public function actionCreateGroupRegistration($regId) {
-//        if (!$this->isEditable) {
-//            $this->flashMessage("Nemáte oprávnění pro založení registrační skupiny", "danger");
-//            $this->redirect("default");
-//        }
-//        $reg = $this->model->getRegistration($regId);
-//        $groupId = $this->model->createGroup($this->aid, 'registration', $reg->ID, "Registrace " . $reg->Year, $reg->Year . "-01-15", NULL, NULL, $this->defaultEmails['registration']['info'], $this->defaultEmails['registration']['demand']);
-//        $this->redirect("Registration:massAdd", array("id" => $groupId));
-//    }
-//
-//    public function actionCamp($campId) {
-//        if ($campId === NULL) {
-//            $this->flashMessage("Nebylo zadáno číslo tábora", "warning");
-//            $this->redirect("Payment:default");
-//        }
-//        if (($group = $this->model->getGroupByCampId($campId))) {
-//            $this->redirect("Payment:detail", array("id" => $group->id));
-//        }
-//        $this->template->linkBack = $this->link(":Accountancy:Camp:Participant:", array("aid" => $campId));
-//        $camp = $this->model->getCamp($campId);
-//        $form = $this['groupForm'];
-//
-//        $form->setDefaults(array(
-//            "type" => "camp",
-//            "label" => $camp->DisplayName,
-//            "sisId" => $camp->ID,
-//        ));
-//    }
-
     public function createComponentGroupForm($name) {
         $form = $this->prepareForm($this, $name);
         $form->addSelect("sisId");
