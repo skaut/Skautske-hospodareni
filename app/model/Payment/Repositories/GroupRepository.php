@@ -88,6 +88,7 @@ class GroupRepository implements IGroupRepository
 		$properties = $this->getHydrator()->toArray($group);
 		$row = [];
 		foreach($properties as $name => $value) {
+			// Map property name to column name
 			$row[$this->fields[$name]] = $value;
 		}
 		return $row;
