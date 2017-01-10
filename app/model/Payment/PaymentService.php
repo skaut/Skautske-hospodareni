@@ -232,7 +232,7 @@ class PaymentService extends BaseService {
     	$group = new Group(
         	$oType,
 			$unitId,
-			NULL,
+			$sisId,
 			$label,
 			$amount ? $amount : NULL,
 			$maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,

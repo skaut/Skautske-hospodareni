@@ -24,7 +24,7 @@ class GroupRepository implements IGroupRepository
 		'id' => 'id',
 		'type' => 'groupType',
 		'unitId' => 'unitId',
-		'eventId' => 'sisId',
+		'skautisId' => 'sisId',
 		'name' => 'label',
 		'defaultAmount' => 'amount',
 		'dueDate' => 'maturity',

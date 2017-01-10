@@ -17,7 +17,7 @@ class Group
 	private $unitId;
 
 	/** @var int */
-	private $eventId;
+	private $skautisId;
 
 	/** @var string|NULL */
 	private $name;
@@ -49,7 +49,7 @@ class Group
 	 * Group constructor.
 	 * @param string|NULL $type
 	 * @param int $unitId
-	 * @param int|NULL $eventId
+	 * @param int|NULL $skautisId
 	 * @param string $name
 	 * @param float|NULL $defaultAmount
 	 * @param \DateTimeImmutable|NULL $dueDate
@@ -60,7 +60,7 @@ class Group
 	public function __construct(
 		?string $type,
 		int $unitId,
-		?int $eventId,
+		?int $skautisId,
 		string $name,
 		?float $defaultAmount,
 		?\DateTimeImmutable $dueDate,
@@ -70,7 +70,7 @@ class Group
 	{
 		$this->type = $type;
 		$this->unitId = $unitId;
-		$this->eventId = $eventId;
+		$this->skautisId = $skautisId;
 		$this->name = $name;
 		$this->defaultAmount = $defaultAmount;
 		$this->dueDate = $dueDate;
@@ -106,9 +106,9 @@ class Group
 	/**
 	 * @return int|NULL
 	 */
-	public function getEventId() : ?int
+	public function getSkautisId() : ?int
 	{
-		return $this->eventId;
+		return $this->skautisId;
 	}
 
 	/**
