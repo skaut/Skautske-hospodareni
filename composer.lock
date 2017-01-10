@@ -4,7 +4,6 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "22e3d969d7a0393f8ec108992e93458d",
     "content-hash": "7f406f8f07a5ce13c08a3396878179eb",
     "packages": [
         {
@@ -72,7 +71,7 @@
                 "sqlite",
                 "sqlsrv"
             ],
-            "time": "2016-07-31 14:50:07"
+            "time": "2016-07-31T14:50:07+00:00"
         },
         {
             "name": "foowie/dependentselectbox",
@@ -151,7 +150,7 @@
                 }
             ],
             "description": "Simple validator for bank account number - verify only checksum",
-            "time": "2016-03-31 10:58:57"
+            "time": "2016-03-31T10:58:57+00:00"
         },
         {
             "name": "janmarek/webloader",
@@ -237,20 +236,20 @@
                 "nette",
                 "webloader"
             ],
-            "time": "2015-09-06 18:15:08"
+            "time": "2015-09-06T18:15:08+00:00"
         },
         {
             "name": "latte/latte",
-            "version": "v2.3.12",
+            "version": "v2.3.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/latte.git",
-                "reference": "26af8b6b68ea68bb466ce692c12b8898524456bd"
+                "reference": "995521e5ce0dc99ce8c801cba4c19322878f0a98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/latte/zipball/26af8b6b68ea68bb466ce692c12b8898524456bd",
-                "reference": "26af8b6b68ea68bb466ce692c12b8898524456bd",
+                "url": "https://api.github.com/repos/nette/latte/zipball/995521e5ce0dc99ce8c801cba4c19322878f0a98",
+                "reference": "995521e5ce0dc99ce8c801cba4c19322878f0a98",
                 "shasum": ""
             },
             "require": {
@@ -292,7 +291,7 @@
                 "templating",
                 "twig"
             ],
-            "time": "2016-05-30 09:11:18"
+            "time": "2016-12-21T02:04:59+00:00"
         },
         {
             "name": "mpdf/mpdf",
@@ -343,7 +342,7 @@
                 "php",
                 "utf-8"
             ],
-            "time": "2016-07-20 12:31:58"
+            "time": "2016-07-20T12:31:58+00:00"
         },
         {
             "name": "nette/application",
@@ -405,7 +404,7 @@
             ],
             "description": "Nette Application MVC Component",
             "homepage": "https://nette.org",
-            "time": "2016-06-17 17:40:16"
+            "time": "2016-06-17T17:40:16+00:00"
         },
         {
             "name": "nette/bootstrap",
@@ -471,7 +470,7 @@
             ],
             "description": "Nette Bootstrap",
             "homepage": "https://nette.org",
-            "time": "2016-05-17 19:52:51"
+            "time": "2016-05-17T19:52:51+00:00"
         },
         {
             "name": "nette/caching",
@@ -529,7 +528,7 @@
             ],
             "description": "Nette Caching Component",
             "homepage": "https://nette.org",
-            "time": "2016-02-22 02:08:08"
+            "time": "2016-02-22T02:08:08+00:00"
         },
         {
             "name": "nette/component-model",
@@ -579,7 +578,7 @@
             ],
             "description": "Nette Component Model",
             "homepage": "https://nette.org",
-            "time": "2015-10-06 17:54:05"
+            "time": "2015-10-06T17:54:05+00:00"
         },
         {
             "name": "nette/database",
@@ -633,7 +632,7 @@
             ],
             "description": "Nette Database Component",
             "homepage": "https://nette.org",
-            "time": "2016-10-18 13:30:07"
+            "time": "2016-10-18T13:30:07+00:00"
         },
         {
             "name": "nette/deprecated",
@@ -690,7 +689,7 @@
             ],
             "description": "APIs and features removed from Nette Framework",
             "homepage": "https://nette.org",
-            "time": "2016-07-15 13:06:38"
+            "time": "2016-07-15T13:06:38+00:00"
         },
         {
             "name": "nette/di",
@@ -742,7 +741,7 @@
             ],
             "description": "Nette Dependency Injection Component",
             "homepage": "https://nette.org",
-            "time": "2016-07-06 13:10:47"
+            "time": "2016-07-06T13:10:47+00:00"
         },
         {
             "name": "nette/finder",
@@ -792,7 +791,7 @@
             ],
             "description": "Nette Finder: Files Searching",
             "homepage": "https://nette.org",
-            "time": "2015-10-20 17:15:41"
+            "time": "2015-10-20T17:15:41+00:00"
         },
         {
             "name": "nette/forms",
@@ -847,7 +846,7 @@
             ],
             "description": "Nette Forms: greatly facilitates web forms",
             "homepage": "https://nette.org",
-            "time": "2016-09-26 22:28:39"
+            "time": "2016-09-26T22:28:39+00:00"
         },
         {
             "name": "nette/http",
@@ -901,7 +900,7 @@
             ],
             "description": "Nette HTTP Component",
             "homepage": "https://nette.org",
-            "time": "2016-06-06 17:31:40"
+            "time": "2016-06-06T17:31:40+00:00"
         },
         {
             "name": "nette/mail",
@@ -956,7 +955,7 @@
             ],
             "description": "Nette Mail: Sending E-mails",
             "homepage": "https://nette.org",
-            "time": "2016-04-10 12:50:29"
+            "time": "2016-04-10T12:50:29+00:00"
         },
         {
             "name": "nette/neon",
@@ -1003,7 +1002,7 @@
             ],
             "description": "Nette NEON: parser & generator for Nette Object Notation",
             "homepage": "http://ne-on.org",
-            "time": "2016-05-17 17:14:44"
+            "time": "2016-05-17T17:14:44+00:00"
         },
         {
             "name": "nette/nette",
@@ -1075,7 +1074,7 @@
                 "mvc",
                 "templating"
             ],
-            "time": "2016-04-13 18:47:10"
+            "time": "2016-04-13T18:47:10+00:00"
         },
         {
             "name": "nette/php-generator",
@@ -1125,7 +1124,7 @@
             ],
             "description": "Nette PHP Generator",
             "homepage": "https://nette.org",
-            "time": "2016-06-17 16:33:17"
+            "time": "2016-06-17T16:33:17+00:00"
         },
         {
             "name": "nette/reflection",
@@ -1178,7 +1177,7 @@
             ],
             "description": "Nette PHP Reflection Component",
             "homepage": "https://nette.org",
-            "time": "2016-03-12 14:57:07"
+            "time": "2016-03-12T14:57:07+00:00"
         },
         {
             "name": "nette/robot-loader",
@@ -1230,7 +1229,7 @@
             ],
             "description": "Nette RobotLoader: comfortable autoloading",
             "homepage": "https://nette.org",
-            "time": "2016-05-17 15:36:50"
+            "time": "2016-05-17T15:36:50+00:00"
         },
         {
             "name": "nette/safe-stream",
@@ -1285,7 +1284,7 @@
             ],
             "description": "Nette SafeStream: Atomic Operations",
             "homepage": "https://nette.org",
-            "time": "2016-03-19 13:06:04"
+            "time": "2016-03-19T13:06:04+00:00"
         },
         {
             "name": "nette/security",
@@ -1337,7 +1336,7 @@
             ],
             "description": "Nette Security: Access Control Component",
             "homepage": "https://nette.org",
-            "time": "2016-05-17 15:37:18"
+            "time": "2016-05-17T15:37:18+00:00"
         },
         {
             "name": "nette/tokenizer",
@@ -1387,7 +1386,7 @@
             ],
             "description": "Nette Tokenizer",
             "homepage": "https://nette.org",
-            "time": "2016-04-21 13:06:32"
+            "time": "2016-04-21T13:06:32+00:00"
         },
         {
             "name": "nette/utils",
@@ -1442,7 +1441,7 @@
             ],
             "description": "Nette Utility Classes",
             "homepage": "https://nette.org",
-            "time": "2016-06-17 13:28:41"
+            "time": "2016-06-17T13:28:41+00:00"
         },
         {
             "name": "nextras/forms",
@@ -1505,7 +1504,7 @@
                 "form",
                 "nette"
             ],
-            "time": "2016-07-12 11:15:27"
+            "time": "2016-07-12T11:15:27+00:00"
         },
         {
             "name": "phpoffice/phpexcel",
@@ -1562,7 +1561,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2015-05-01 07:00:55"
+            "time": "2015-05-01T07:00:55+00:00"
         },
         {
             "name": "setasign/fpdi",
@@ -1611,7 +1610,7 @@
                 "fpdi",
                 "pdf"
             ],
-            "time": "2015-11-30 10:53:14"
+            "time": "2015-11-30T10:53:14+00:00"
         },
         {
             "name": "skautis/nette",
@@ -1784,7 +1783,7 @@
                 }
             ],
             "description": "Addon to display paginator in Nette webapplications",
-            "time": "2013-02-21 16:57:03"
+            "time": "2013-02-21T16:57:03+00:00"
         },
         {
             "name": "tracy/tracy",
@@ -1839,7 +1838,7 @@
                 "debugger",
                 "nette"
             ],
-            "time": "2016-05-30 09:03:15"
+            "time": "2016-05-30T09:03:15+00:00"
         }
     ],
     "packages-dev": [
@@ -1886,7 +1885,7 @@
             "keywords": [
                 "test"
             ],
-            "time": "2015-05-11 14:41:42"
+            "time": "2015-05-11T14:41:42+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -1951,7 +1950,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2016-05-22 21:52:33"
+            "time": "2016-05-22T21:52:33+00:00"
         },
         {
             "name": "nette/tester",

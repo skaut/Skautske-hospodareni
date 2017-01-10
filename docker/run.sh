@@ -1,6 +1,7 @@
 #!/bin/bash
-chown www-data:www-data /var/www/html/temp -R
-chmod 777 /var/www/html/temp
+TEMP_DIR=/var/www/html/nette-temp
+chown www-data:www-data $TEMP_DIR -R
+chmod 777 $TEMP_DIR
 
 touch /var/www/.bash_history
 chown www-data:www-data /var/www/.bash_history
