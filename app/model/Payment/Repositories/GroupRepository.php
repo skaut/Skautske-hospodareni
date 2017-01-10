@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Repositories;
 
 use Dibi\Connection;
@@ -49,7 +51,7 @@ class GroupRepository implements IGroupRepository
 	 * @return Group
 	 * @throws GroupNotFoundException
 	 */
-	public function find($id)
+	public function find(int $id) : Group
 	{
 		$row = $this->db->select(array_flip($this->fields))
 			->from(self::TABLE)
@@ -62,7 +64,7 @@ class GroupRepository implements IGroupRepository
 		return $this->getHydrator()->create($row->toArray());
 	}
 
-	public function save(Group $group)
+	public function save(Group $group) : void
 	{
 		$row = $this->toRow($group);
 		$id = $row['id'];
@@ -83,7 +85,7 @@ class GroupRepository implements IGroupRepository
 	 * @param Group $group
 	 * @return array
 	 */
-	private function toRow(Group $group)
+	private function toRow(Group $group) : array
 	{
 		$properties = $this->getHydrator()->toArray($group);
 		$row = [];
@@ -97,7 +99,7 @@ class GroupRepository implements IGroupRepository
 	/**
 	 * @return Hydrator
 	 */
-	private function getHydrator()
+	private function getHydrator() : Hydrator
 	{
 		if(!$this->hydrator) {
 			$this->hydrator = new Hydrator(Group::class, array_keys($this->fields));

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment;
 
 class Group
@@ -17,22 +19,22 @@ class Group
 	/** @var int */
 	private $eventId;
 
-	/** @var string */
+	/** @var string|NULL */
 	private $name;
 
-	/** @var float */
+	/** @var float|NULL */
 	private $defaultAmount;
 
-	/** @var \DateTimeImmutable */
+	/** @var \DateTimeImmutable|NULL */
 	private $dueDate;
 
-	/** @var int */
+	/** @var int|NULL */
 	private $constantSymbol;
 
 	/** @var string */
 	private $state = self::STATE_OPEN;
 
-	/** @var \DateTimeImmutable */
+	/** @var \DateTimeImmutable|NULL */
 	private $createdAt;
 
 	/** @var \DateTimeImmutable|NULL */
@@ -45,26 +47,26 @@ class Group
 
 	/**
 	 * Group constructor.
-	 * @param string $type
+	 * @param string|NULL $type
 	 * @param int $unitId
-	 * @param int $eventId
+	 * @param int|NULL $eventId
 	 * @param string $name
-	 * @param float $defaultAmount
-	 * @param \DateTimeImmutable $dueDate
-	 * @param int $constantSymbol
+	 * @param float|NULL $defaultAmount
+	 * @param \DateTimeImmutable|NULL $dueDate
+	 * @param int|NULL $constantSymbol
 	 * @param \DateTimeImmutable $createdAt
 	 * @param string $emailTemplate
 	 */
 	public function __construct(
-		$type,
-		$unitId,
-		$eventId,
-		$name,
-		$defaultAmount,
-		\DateTimeImmutable $dueDate,
-		$constantSymbol,
+		?string $type,
+		int $unitId,
+		?int $eventId,
+		string $name,
+		?float $defaultAmount,
+		?\DateTimeImmutable $dueDate,
+		?int $constantSymbol,
 		\DateTimeImmutable $createdAt,
-		$emailTemplate)
+		string $emailTemplate)
 	{
 		$this->type = $type;
 		$this->unitId = $unitId;
@@ -80,15 +82,15 @@ class Group
 	/**
 	 * @return int
 	 */
-	public function getId()
+	public function getId() : ?int
 	{
 		return $this->id;
 	}
 
 	/**
-	 * @return string
+	 * @return string|NULL
 	 */
-	public function getType()
+	public function getType() : ?string
 	{
 		return $this->type;
 	}
@@ -96,15 +98,15 @@ class Group
 	/**
 	 * @return int
 	 */
-	public function getUnitId()
+	public function getUnitId() : int
 	{
 		return $this->unitId;
 	}
 
 	/**
-	 * @return int
+	 * @return int|NULL
 	 */
-	public function getEventId()
+	public function getEventId() : ?int
 	{
 		return $this->eventId;
 	}
@@ -112,31 +114,31 @@ class Group
 	/**
 	 * @return string
 	 */
-	public function getName()
+	public function getName() : string
 	{
 		return $this->name;
 	}
 
 	/**
-	 * @return float
+	 * @return float|NULL
 	 */
-	public function getDefaultAmount()
+	public function getDefaultAmount() : ?float
 	{
 		return $this->defaultAmount;
 	}
 
 	/**
-	 * @return \DateTimeImmutable
+	 * @return \DateTimeImmutable|NULL
 	 */
-	public function getDueDate()
+	public function getDueDate() : ?\DateTimeImmutable
 	{
 		return $this->dueDate;
 	}
 
 	/**
-	 * @return int
+	 * @return int|NULL
 	 */
-	public function getConstantSymbol()
+	public function getConstantSymbol() : ?int
 	{
 		return $this->constantSymbol;
 	}
@@ -144,15 +146,15 @@ class Group
 	/**
 	 * @return string
 	 */
-	public function getState()
+	public function getState() : string
 	{
 		return $this->state;
 	}
 
 	/**
-	 * @return \DateTimeImmutable
+	 * @return \DateTimeImmutable|NULL
 	 */
-	public function getCreatedAt()
+	public function getCreatedAt() : ?\DateTimeImmutable
 	{
 		return $this->createdAt;
 	}
@@ -160,7 +162,7 @@ class Group
 	/**
 	 * @return string
 	 */
-	public function getEmailTemplate()
+	public function getEmailTemplate() : string
 	{
 		return $this->emailTemplate;
 	}
@@ -169,7 +171,7 @@ class Group
 	 * Update last pairing time
 	 * @param \DateTimeImmutable $at
 	 */
-	public function updateLastPairing(\DateTimeImmutable $at)
+	public function updateLastPairing(\DateTimeImmutable $at) : void
 	{
 		$this->lastPairing = $at;
 	}
@@ -177,7 +179,7 @@ class Group
 	/**
 	 * @return \DateTimeImmutable|NULL
 	 */
-	public function getLastPairing()
+	public function getLastPairing() : ?\DateTimeImmutable
 	{
 		return $this->lastPairing;
 	}

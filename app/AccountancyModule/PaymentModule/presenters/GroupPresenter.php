@@ -188,7 +188,16 @@ class GroupPresenter extends BasePresenter {
             }
             $this->redirect("Payment:detail", array("id" => $v->gid));
         } else {//ADD
-            if (($groupId = $this->model->createGroup($this->aid, $v->type != "" ? $v->type : NULL, isset($v->sisId) ? $v->sisId : NULL, $v->label, $v->maturity, $v->ks, isset($v->amount) ? $v->amount : NULL, $v->email_info))) {
+			$groupId = $this->model->createGroup(
+				$this->aid,
+				$v->type != "" ? $v->type : NULL,
+				isset($v->sisId) ? (int)$v->sisId : NULL,
+				$v->label,
+				$v->maturity,
+				$v->ks ? (int)$v->ks : NULL,
+				isset($v->amount) ? (float)$v->amount : NULL,
+				$v->email_info);
+            if ($groupId) {
                 if ($v->smtp !== NULL) {
                     $this->mail->addSmtpGroup($groupId, $v->smtp);
                 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 use Dibi\DateTime;
@@ -21,9 +23,8 @@ class Hydrator
 	 * @param string $className
 	 * @param string[] $properties
 	 */
-	public function __construct($className, array $properties)
+	public function __construct(string $className, array $properties)
 	{
-		$this->className = $className;
 		$this->reflection = new \ReflectionClass($className);
 		foreach($properties as $propertyName) {
 			$property = $this->reflection->getProperty($propertyName);
@@ -42,7 +43,7 @@ class Hydrator
 		foreach($properties as $name => $value) {
 			if($value instanceof DateTime) {
 				$timezone = $value->getTimezone();
-				$value = \DateTimeImmutable::createFromFormat('U', $value->getTimestamp());
+				$value = \DateTimeImmutable::createFromFormat('U', (string)$value->getTimestamp());
 				$value = $value->setTimezone($timezone);
 			}
 			$this->properties[$name]->setValue($object, $value);
@@ -54,14 +55,14 @@ class Hydrator
 	 * @param object $object
 	 * @return array
 	 */
-	public function toArray($object)
+	public function toArray($object) : array
 	{
 		$row = [];
 		foreach($this->properties as $name => $property) {
 			$value = $property->getValue($object);
 			if($value instanceof \DateTimeImmutable) {
 				$timezone = $value->getTimezone();
-				$value = DateTime::createFromFormat('U', $value->getTimestamp());
+				$value = DateTime::createFromFormat('U', (string)$value->getTimestamp());
 				$value->setTimezone($timezone);
 			}
 			$row[$name] = $value;
@@ -70,11 +71,11 @@ class Hydrator
 	}
 
 	/**
-	 * @param $object
-	 * @param $property
-	 * @param $value
+	 * @param object $object
+	 * @param string $property
+	 * @param mixed $value
 	 */
-	public function setProperty($object, $property, $value)
+	public function setProperty($object, string $property, $value) : void
 	{
 		$this->properties[$property]->setValue($object, $value);
 	}

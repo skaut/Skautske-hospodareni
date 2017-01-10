@@ -227,14 +227,15 @@ class PaymentService extends BaseService {
      * @param string $email_info
      * @return int
      */
-    public function createGroup($unitId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL) {
+    public function createGroup(int $unitId, ?string $oType, ?int $sisId, string $label, ?\DateTime $maturity, ?int $ks, ?float $amount, string $email_info) : int
+	{
     	$group = new Group(
         	$oType,
 			$unitId,
 			NULL,
 			$label,
-			$amount ?: NULL,
-			\DateTimeImmutable::createFromMutable($maturity),
+			$amount ? $amount : NULL,
+			$maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
 			$ks,
 			new \DateTimeImmutable(),
 			$email_info);
