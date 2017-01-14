@@ -25,10 +25,10 @@ table {
     {if !$iterator->isFirst()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
     {include chits.hpd.latte "item"=>$item, "list"=>$list, "pokladnik"=>$pokladnik, "totalPayment"=>$totalPayment}
     {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
-    {? $incomeCnt = 0}
+    {php $incomeCnt = 0}
 {else}
     {include chits.in.latte "item"=>$item}
-    {? $incomeCnt++}
+    {php $incomeCnt++}
     {if $incomeCnt % 3 == 0}
         <pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />
     {else}
