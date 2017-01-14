@@ -1,23 +1,23 @@
 {
-	"name": "skautskeHospodareni",
-	"type": "project",
-	"require": {
-		"php": ">= 5.3.0",
-		"nette/nette": "~2.3",
-                "skautis/skautis": "2.*@dev",
-                "skautis/nette": "2.*@dev",
-                "janmarek/webloader": "~2.5",
-                "dibi/dibi" : "~3.0",
-                "srigi/nette-visualpaginator": "~1.0",
-                "phpoffice/phpexcel": "~1.8",
-                "mpdf/mpdf": "~6.0",
-		"nextras/forms": "~1.6",
-                "foowie/dependentselectbox": "dev-master",
-		"heureka/bank-account-validator": "^1.0"
-	},
-	"require-dev": {
-		"nette/tester": "dev-master",
-		"mockery/mockery": "^0.9.5"
-	},
-        "minimum-stability" : "RC"
+    "name": "skautskeHospodareni",
+    "type": "project",
+    "require": {
+        "php": ">= 7.1",
+        "nette/nette": "2.3.*",
+        "skautis/skautis": "2.*@dev",
+        "skautis/nette": "2.*@dev",
+        "janmarek/webloader": "2.5.*",
+        "dibi/dibi": "3.0.*",
+        "srigi/nette-visualpaginator": "1.0.*",
+        "phpoffice/phpexcel": "1.8.*",
+        "mpdf/mpdf": "6.1.*",
+        "nextras/forms": "1.6.*",
+        "foowie/dependentselectbox": "dev-master",
+        "heureka/bank-account-validator": "1.1.*"
+    },
+    "require-dev": {
+        "nette/tester": "dev-master",
+        "mockery/mockery": "^0.9.5"
+    },
+    "minimum-stability": "RC"
 }
