@@ -195,11 +195,11 @@ trait ParticipantTrait {
         $editCon->addCheckbox("isAccountc"); //->setDefaultValue(TRUE);
         $editCon->addSubmit('send', 'Upravit')
                         ->setAttribute('class', 'btn btn-info btn-small')
-                ->onClick[] = $this->massEditSubmitted;
+                ->onClick[] = [$this, 'massEditSubmitted'];
 
 
         $form->addSubmit('send', 'Odebrat vybrané')
-                ->onClick[] = $this->massRemoveSubmitted;
+                ->onClick[] = [$this, 'massRemoveSubmitted'];
     }
 
     public function massEditSubmitted(SubmitButton $button) {
