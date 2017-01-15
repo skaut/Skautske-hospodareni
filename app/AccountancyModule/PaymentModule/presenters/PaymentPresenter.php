@@ -540,7 +540,7 @@ class PaymentPresenter extends BasePresenter {
 	{
 		$form = $this->formFactory->create(TRUE);
 
-		$days = $this->bankInfo ? $this->bankInfo->daysback : 0;
+		$days = $this->bankInfo->daysback ?? 0;
 
 		$form->addText('days', 'Počet dní', 2, 2)
 			->setDefaultValue($days)
