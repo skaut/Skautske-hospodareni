@@ -479,18 +479,24 @@ class PaymentPresenter extends BasePresenter {
                 ->setDefaultValue(date("j. n. Y", strtotime("+1 Weekday")));
         $form->addSubmit('send', 'Odeslat platby do banky')
                 ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSubmit[] = array($this, $name . 'Submitted');
+
+        $form->onSubmit[] = function(Form $form) {
+        	$this->repaymentFormSubmitted($form);
+        };
+
         return $form;
     }
 
-    function repaymentFormSubmitted(Form $form) {
+    private function repaymentFormSubmitted(Form $form)
+	{
+		$values = $form->getValues();
+
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro práci s platbami jednotky", "danger");
             $this->redirect("Payment:default", array("id" => $values->gid));
         }
         //$list = $this->model->getPersons($this->aid, $values->oid);
 
-        $values = $form->getValues();
         $accountFrom = $values->accountFrom;
         $ids = array_keys(array_filter((array) $values, function($val) {
                     return(is_bool($val) && $val);
