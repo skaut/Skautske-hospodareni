@@ -10,7 +10,8 @@ services:
             - .:/var/www/html
             - /etc/mysql
             - mysql:/var/lib/mysql
-            - /var/www/html/temp
+            - ./docker/php.ini:/usr/local/etc/php/php.ini
+            - /var/www/html/nette-temp
             - ./docker/vhosts.conf:/etc/apache2/sites-enabled/000-default.conf
             - ./docker/default-ssl.conf:/etc/apache2/sites-enabled/default-ssl.conf
             - ./docker/ssl:/usr/local/apache2/conf

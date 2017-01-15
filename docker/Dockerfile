@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM php:7.1-apache
 
 MAINTAINER Frantisek Masa <masa@egen.cz>
 
@@ -6,23 +6,15 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update
 
-# Install base tools
-RUN apt-get install curl git -y
+RUN apt-get install -y libxml2-dev git zlib1g-dev --no-install-recommends
+
+RUN docker-php-ext-install soap && docker-php-ext-install mysqli && docker-php-ext-install zip
 
 # Install MySQL
 RUN apt-get install mysql-server -y
 
 RUN service mysql start && mysql -u root -e "FLUSH PRIVILEGES; SET PASSWORD FOR 'root'@'localhost' = PASSWORD(''); CREATE DATABASE hskauting"
 
-# Install PHP (5.4)
-RUN apt-get install php5 php5-cli php5-mysql php5-sqlite php5-gd php-pear php-apc php5-curl -y
-
-COPY php.ini /etc/php5/apache2/
-
-# Install apache
-RUN apt-get install apache2  libapache2-mod-php5 -y
-
-RUN a2enmod php5
 RUN a2enmod rewrite
 RUN a2enmod ssl
 
@@ -36,8 +28,6 @@ WORKDIR /var/www/html
 ADD run.sh /run.sh
 
 RUN chmod 755 /*.sh
-
-VOLUME  ["/etc/mysql", "/var/lib/mysql"]
 
 EXPOSE 80 9000 443
 CMD ["/run.sh"]
