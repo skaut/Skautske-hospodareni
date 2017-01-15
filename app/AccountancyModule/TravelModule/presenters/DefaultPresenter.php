@@ -76,13 +76,17 @@ class DefaultPresenter extends BasePresenter {
         $defaults['id'] = $commandId;
         $form = $this['formEditCommand'];
 
-		$index = 'vehicle_id';
-		// If command uses archived vehicle, add it to select
-		$items = $form[$index]->items;
-		if(!in_array($defaults[$index], $items)) {
-			$vehicle = $this->travelService->getVehicle($defaults[$index]);
-			$form[$index]->setItems([$vehicle->getId() => $vehicle->getLabel()] + $items);
-		}
+        $index = 'vehicle_id';
+        // If command uses archived vehicle, add it to select
+        $items = $form[$index]->items;
+        if(!in_array($defaults[$index], $items)) {
+            try {
+                $vehicle = $this->travelService->getVehicle($defaults[$index]);
+                $form[$index]->setItems([$vehicle->getId() => $vehicle->getLabel()] + $items);
+            } catch (\Model\Travel\VehicleNotFoundException $exc) {
+                
+            }            
+        }
 
         $form->setDefaults($defaults);
         $this->template->form = $form;
