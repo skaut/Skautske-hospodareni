@@ -106,7 +106,7 @@ abstract class BaseService extends \Nette\Object {
                 'utf-8', $format, $default_font_size = 0, $default_font = '', $mgl = 10, $mgr = 10, $mgt = 10, $mgb = 10, $mgh = 9, $mgf = 9, $orientation = 'P'
         );
 
-        $mpdf->WriteHTML((string) $template, NULL);
+        @$mpdf->WriteHTML((string) $template, NULL);
         $mpdf->Output($filename, 'I');
     }
 
