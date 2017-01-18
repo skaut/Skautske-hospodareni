@@ -10,15 +10,14 @@ php:
     date.timezone: Europe/Prague
     # zlib.output_compression: yes
 
-nette:
-    session:
-        autoStart: smart
-        expiration: "+ 3 days"
-    application:
-        errorPresenter: Error
-        #catchExceptions: true
-        mapping:
-            *: App\*Module\*Presenter
+session:
+    autoStart: smart
+    expiration: "+ 3 days"
+application:
+    errorPresenter: Error
+    #catchExceptions: true
+    mapping:
+        *: App\*Module\*Presenter
     debugger:
         email: sinacek@gmail.com
         strictMode: TRUE
