@@ -7,6 +7,16 @@ AddType text/cache-manifest .manifest
 	RewriteEngine On
 	# RewriteBase /
 
+    # www.h.skauting.cz -> https://h.skauting.cz
+	RewriteCond %{HTTP_HOST} ^www\.(h\.skauting\.cz)$ [NC]
+	RewriteRule ^(.*)$ https://h.skauting.cz%{REQUEST_URI} [L,R=301]
+
+    # http -> https
+	RewriteCond %{HTTP_HOST} ^h\.skauting\.cz$ [NC]
+	RewriteCond %{HTTPS} off
+	RewriteRule ^(.*)$ https://h.skauting.cz%{REQUEST_URI} [L,R=301]
+
+
 	# front controller
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
