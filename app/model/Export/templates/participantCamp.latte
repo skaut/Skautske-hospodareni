@@ -31,7 +31,7 @@ table {
     {if is_array($list) || $list instanceof \Traversable}
     {$totPDays = $totDDays = $totPay = $totRepay = $totAccount = 0}
     <tr n:foreach="$list as $u">
-        {? $totPDays += $u->Days;$totPay += $u->payment;$totRepay += $u->repayment}
+        {php $totPDays += $u->Days;$totPay += $u->payment;$totRepay += $u->repayment}
         <td>{$iterator->counter}</td>
         <td>{$u->FirstName}</td>
         <td>{$u->LastName}</td>
@@ -40,11 +40,11 @@ table {
         <td>{$u->Postcode|postCode}</td>
         <td style="text-align: right;">{$u->Birthday|date:"d.m.Y"}</td>
         <td style="text-align: right;">{$u->Days}</td>
-        <td style="text-align: right;">{if $u->Age < 18}{$u->Days}{? $totDDays += $u->Days}{else}0{/if}</td>
+        <td style="text-align: right;">{if $u->Age < 18}{$u->Days}{php $totDDays += $u->Days}{else}0{/if}</td>
         <td style="text-align: right;">{$u->payment|price:0}</td>
         <td style="text-align: right;">{$u->repayment|price:0}</td>
         <td style="text-align: right;">{= $u->payment - $u->repayment|price}</td>
-        <td style="text-align: right;">{if $u->isAccount == "Y"}Ano{? $totAccount += ($u->payment - $u->repayment)}{else}&nbsp;{/if}</td>
+        <td style="text-align: right;">{if $u->isAccount == "Y"}Ano{php $totAccount += ($u->payment - $u->repayment)}{else}&nbsp;{/if}</td>
     </tr>
     <tr>
         <td colspan="7">&nbsp;</td>

@@ -77,20 +77,20 @@ $totalOut = 0;
     {for $i = 0; $i < $iter; $i++}
     <tr>
         {if $i < $cntIn}
-            {? $in = current($chits['in'])}
+            {php $in = current($chits['in'])}
         <td>{$in->EventCampStatementType}</td>
         <td>{$in->Ammount|price}</td>
-            {? $totalIn += $in->Ammount}
-            {? next($chits['in'])}
+            {php $totalIn += $in->Ammount}
+            {php next($chits['in'])}
         {else}
             <td>&nbsp;</td><td>&nbsp;</td>
         {/if}
         {if $i < $cntOut}
-            {? $out = current($chits['out'])}
+            {php $out = current($chits['out'])}
             <td>{$out->EventCampStatementType}</td>
             <td>{$out->Ammount|price}</td>
-            {? $totalOut += $out->Ammount}
-            {? next($chits['out'])}
+            {php $totalOut += $out->Ammount}
+            {php next($chits['out'])}
         {else}
             <td>&nbsp;</td><td>&nbsp;</td>
         {/if}

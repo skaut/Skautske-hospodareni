@@ -20,7 +20,7 @@ $list - seznam položek
         <td style="text-align:right;height:30px;">{$iterator->getCounter()}. </td> {* height:30px; *}
         <td>{$item->purpose}</td>
         <td style="text-align:right;">{$item->price}</td>
-        {? $balance += $item->price}
+        {php $balance += $item->price}
     </tr>
     <tr>
         <td>&nbsp;</td>

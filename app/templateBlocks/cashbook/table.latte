@@ -71,7 +71,7 @@ $list array() - pole paragonů
                     <tbody>
                     {var $balance => 0}
                     {foreach $list as $item}
-                        {? $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
+                        {php $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
                         <tr{if $balance < 0} class="alert alert-error"{/if}>
                             <td class="nowrap">
                                 <input type="checkbox" class="hidden-xs hidden-sm" name="chits[]" value={$item->id} />

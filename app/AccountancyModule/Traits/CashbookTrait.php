@@ -106,9 +106,9 @@ trait CashbookTrait {
     function createComponentFormMass($name) {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('massPrintSend')
-                ->onClick[] = $this->massPrintSubmitted;
+                ->onClick[] = [$this, 'massPrintSubmitted'];
         $form->addSubmit('massExportSend')
-                ->onClick[] = $this->massExportSubmitted;
+                ->onClick[] = [$this, 'massExportSubmitted'];
         return $form;
     }
 
