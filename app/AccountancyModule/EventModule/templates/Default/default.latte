@@ -81,14 +81,11 @@
     function changeState(val) {
         $.nette.ajax({ url: {link changeState!}+"&state="+val});
     }
-
+</script>
+<script type="text/javascript" n:syntax="off">
     Nette.validators.MyValidators_isValidDate = function (elem, args, val) {
-        {var $regexpSuffix12 = "{1,2}"}
-        {var $regexpSuffix4 = "{4}"}
-        var regexp = /^(\d{$regexpSuffix12|noescape})[\/\-\.] ?(\d{$regexpSuffix12|noescape})[\/\-\.] ?(\d{$regexpSuffix4|noescape})$/;
-
+        var regexp = /^(\d{1,2})[\/\-\.] ?(\d{1,2})[\/\-\.] ?(\d{4})$/;
         var match = val.match(regexp);
-
         return match == null ? false : true;
     };
 
