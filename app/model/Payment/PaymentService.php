@@ -144,7 +144,7 @@ class PaymentService extends BaseService {
         $qrPrefix = $qrFilename = NULL;
         if (strpos($payment->email_info, "%qrcode%")) {
             $qrPrefix = WWW_DIR . "/webtemp/";
-            $qrFilename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime()) . ".png";
+            $qrFilename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime(TRUE)) . ".png";
             \Nette\Utils\Image::fromFile($qrUrl)->save($qrPrefix . $qrFilename);
 //            dump(is_readable($qrPrefix . $qrFilename));
 //            die();
@@ -539,7 +539,7 @@ class PaymentService extends BaseService {
 
         // generate safe boundary
         do {
-            $boundary = "---------------------" . md5(mt_rand() . microtime());
+            $boundary = "---------------------" . md5(mt_rand() . microtime(TRUE));
         } while (preg_grep("/{$boundary}/", $body));
 
         // add boundary for each parameters
