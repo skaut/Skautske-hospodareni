@@ -2,7 +2,8 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+    MyValidators;
 
 /**
  * @author Hána František <sinacek@gmail.com>
