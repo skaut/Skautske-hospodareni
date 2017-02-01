@@ -318,10 +318,10 @@ class PaymentService extends BaseService {
         return $this->skautis->org->UnitRegistrationDetail(array("ID" => $regId));
     }
 
-    public function getNewestOpenRegistration($unitId = NULL, $withoutRecord = TRUE) {
+    public function getNewestRegistration($unitId = NULL, $withoutRecord = TRUE) {
         $data = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId === NULL ? $unitId = $this->skautis->getUser()->getUnitId() : $unitId, ""));
         foreach ($data as $r) {
-            if ($r->IsDelivered || ($withoutRecord && $this->table->getGroupsBySisId('registration', $r->ID))) {//filtrování odevzdaných nebo těch se záznamem
+            if ($withoutRecord && $this->table->getGroupsBySisId('registration', $r->ID)) {
                 continue;
             }
             return (array) $r;
