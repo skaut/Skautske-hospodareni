@@ -1,6 +1,7 @@
 <?php
 
 namespace Model;
+use Nette\Utils\Arrays;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -318,15 +319,22 @@ class PaymentService extends BaseService {
         return $this->skautis->org->UnitRegistrationDetail(array("ID" => $regId));
     }
 
-    public function getNewestOpenRegistration($unitId = NULL, $withoutRecord = TRUE) {
-        $data = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId === NULL ? $unitId = $this->skautis->getUser()->getUnitId() : $unitId, ""));
-        foreach ($data as $r) {
-            if ($r->IsDelivered || ($withoutRecord && $this->table->getGroupsBySisId('registration', $r->ID))) {//filtrování odevzdaných nebo těch se záznamem
-                continue;
+    /**
+     * Returns newest registration without created group
+     */
+    public function getNewestRegistration() : array
+	{
+        $unitId = $this->skautis->getUser()->getUnitId();
+        $data = array_values($this->skautis->org->UnitRegistrationAll(["ID_Unit" => $unitId, ""]));
+
+        if($data) {
+            $registration = $data[0];
+            if(!$this->table->getGroupsBySisId('registration', $registration->ID)) {
+                return (array)$registration;
             }
-            return (array) $r;
         }
-        return FALSE;
+
+        return [];
     }
 
     /**
