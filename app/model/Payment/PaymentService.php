@@ -329,12 +329,12 @@ class PaymentService extends BaseService {
 
         if($data) {
             $registration = $data[0];
-        	if(!$this->table->getGroupsBySisId('registration', $registration->ID)) {
-        		return (array)$registration;
-			}
-		}
+            if(!$this->table->getGroupsBySisId('registration', $registration->ID)) {
+                return (array)$registration;
+            }
+        }
 
-		return [];
+        return [];
     }
 
     /**
