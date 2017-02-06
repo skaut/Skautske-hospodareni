@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "cacadb848d6ae2627c9c251a1595ae77",
+    "content-hash": "6090ccad821818902647c3eb4678f325",
     "packages": [
         {
             "name": "dibi/dibi",
@@ -1512,6 +1512,68 @@
             "time": "2016-07-12T11:15:27+00:00"
         },
         {
+            "name": "nextras/mail-panel",
+            "version": "v2.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nextras/mail-panel.git",
+                "reference": "42208df6d60ba40c657e0ef7e9d73506680082c4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nextras/mail-panel/zipball/42208df6d60ba40c657e0ef7e9d73506680082c4",
+                "reference": "42208df6d60ba40c657e0ef7e9d73506680082c4",
+                "shasum": ""
+            },
+            "require": {
+                "latte/latte": "~2.2",
+                "nette/http": "~2.2",
+                "nette/mail": "~2.3.1 || ~2.4",
+                "nette/utils": "~2.2",
+                "php": ">=5.3",
+                "tracy/tracy": "~2.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Nextras\\MailPanel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Drábek",
+                    "homepage": "http://www.jandrabek.cz"
+                },
+                {
+                    "name": "Jan Marek",
+                    "homepage": "http://www.janmarek.net"
+                },
+                {
+                    "name": "Jan Škrášek",
+                    "email": "hrach.cz@gmail.com"
+                }
+            ],
+            "description": "MailPanel is extension for Nette Framework which captures sent e-mails in development mode and shows them in debugger bar.",
+            "keywords": [
+                "debugging",
+                "framework",
+                "mail",
+                "mail panel",
+                "mailing",
+                "mailpanel"
+            ],
+            "time": "2016-06-08T09:45:07+00:00"
+        },
+        {
             "name": "phpoffice/phpexcel",
             "version": "1.8.1",
             "source": {
@@ -2011,7 +2073,7 @@
                 "testing",
                 "unit"
             ],
-            "time": "2017-01-09T19:57:29+00:00"
+            "time": "2017-01-09 19:57:29"
         }
     ],
     "aliases": [],
