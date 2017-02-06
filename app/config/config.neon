@@ -36,7 +36,7 @@ services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory(%ssl%)
     - \Model\PaymentService
-    - \Model\MailService(@dibi.connection, %sendEmail%)
+    - \Model\MailService(@dibi.connection)
 
     - Model\Bank\Http\Curl
     - Model\Bank\Fio\FioClient
