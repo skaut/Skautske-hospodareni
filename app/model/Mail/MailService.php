@@ -8,7 +8,6 @@ use Nette\Mail\Message;
 
 /**
  * @author Hána František
- * @property MailTable $table
  */
 class MailService
 {
