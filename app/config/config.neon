@@ -23,6 +23,9 @@ application:
         strictMode: TRUE
         maxDepth: 6
         maxLen: 500
+tracy:
+    bar:
+        - Nextras\MailPanel\MailPanel(%tempDir%/mail-panel-latte)
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
@@ -63,5 +66,11 @@ services:
 
     - App\AccountancyModule\Factories\FormFactory
 
+    debugMailer:
+        class: Nette\Mail\IMailer
+        factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
+        autowired: false
+
+    - Model\Mail\MailerFactory(@debugMailer, %sendEmail%)
 includes:
 	- components.neon
