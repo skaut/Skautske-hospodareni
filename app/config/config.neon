@@ -36,7 +36,7 @@ services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory(%ssl%)
     - \Model\PaymentService
-    - \Model\MailService(@dibi.connection)
+    - Model\MailService
 
     - Model\Bank\Http\Curl
     - Model\Bank\Fio\FioClient
@@ -66,6 +66,8 @@ services:
 
     - App\AccountancyModule\Factories\FormFactory
 
+    # Tables
+    - Model\MailTable
     nette.mailer:
         class: Nette\Mail\IMailer
         factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)

@@ -2,7 +2,6 @@
 
 namespace Model;
 
-use Dibi\Connection;
 use Model\Mail\IMailerFactory;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
@@ -11,7 +10,11 @@ use Nette\Mail\Message;
  * @author Hána František
  * @property MailTable $table
  */
-class MailService extends BaseService {
+class MailService
+{
+
+    /** @var MailTable */
+    private $table;
 
     /** @var IMailerFactory */
     private $mailerFactory;
@@ -21,9 +24,9 @@ class MailService extends BaseService {
 
     const EMAIL_SENDER = "platby@skauting.cz";
 
-    public function __construct(Connection $connection, IMailerFactory $mailerFactory, IMailer $defaultMailer)
+    public function __construct(MailTable $table, IMailerFactory $mailerFactory, IMailer $defaultMailer)
     {
-        parent::__construct(NULL, $connection);
+        $this->table = $table;
         $this->mailerFactory = $mailerFactory;
         $this->defaultMailer = $defaultMailer;
     }
