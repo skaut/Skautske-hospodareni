@@ -3,8 +3,9 @@
 namespace Model;
 
 use Dibi\Connection;
-use Nette\Mail\Message,
-    \Nette\Mail\SendmailMailer;
+use Model\Mail\IMailerFactory;
+use Nette\Mail\IMailer;
+use Nette\Mail\Message;
 
 /**
  * @author Hána František
@@ -12,42 +13,32 @@ use Nette\Mail\Message,
  */
 class MailService extends BaseService {
 
-    protected $sendEmail;
+    /** @var IMailerFactory */
+    private $mailerFactory;
+
+    /** @var IMailer */
+    private $defaultMailer;
 
     const EMAIL_SENDER = "platby@skauting.cz";
 
-    public function __construct(Connection $connection, $sendEmail = FALSE)
+    public function __construct(Connection $connection, IMailerFactory $mailerFactory, IMailer $defaultMailer)
     {
         parent::__construct(NULL, $connection);
-        $this->sendEmail = $sendEmail;
+        $this->mailerFactory = $mailerFactory;
+        $this->defaultMailer = $defaultMailer;
     }
 
-    protected function getSmtpMailer($groupId) {
-        $data = $this->getSmtpByGroup($groupId);
-        if ($data != NULL) {
-            return new \Nette\Mail\SmtpMailer(array(
-                'host' => $data['host'],
-                'username' => $data['username'],
-                'password' => $data['password'],
-                'secure' => $data['secure'],
-            ));
+    private function getMailer($groupId) : IMailer
+    {
+        if($groupId && $data = $this->getSmtpByGroup($groupId)) {
+            return $this->mailerFactory->create(
+                $data['host'],
+                $data['username'],
+                $data['password'],
+                $data['secure']
+            );
         }
-        return FALSE;
-    }
-
-    private function send(Message $mail, $groupId = NULL) {
-        if ($this->sendEmail) {
-            if ($groupId !== NULL && ($smtpMailer = $this->getSmtpMailer($groupId))) {
-                $mailer = $smtpMailer;
-            } else {
-                $mailer = new SendmailMailer();
-            }
-            $mailer->send($mail);
-            return TRUE;
-        } else {
-            echo $mail->getHtmlBody() . "<hr>";
-            die();
-        }
+        return $this->defaultMailer;
     }
 
     //SMTP
@@ -100,7 +91,8 @@ class MailService extends BaseService {
                 ->addTo($to)
                 ->setSubject($subject)
                 ->setHtmlBody($template, $qrPrefix);
-        return $this->send($mail, $groupId);
+        $this->getMailer($groupId)->send($mail);
+        return TRUE;
     }
 
 }
