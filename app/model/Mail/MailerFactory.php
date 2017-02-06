@@ -12,22 +12,22 @@ class MailerFactory implements IMailerFactory
     private $debugMailer;
 
     /** @var bool */
-    private $debug;
+    private $enabled;
 
     /**
      * MailerFactory constructor.
      * @param IMailer $debugMailer
-     * @param bool $debug
+     * @param bool $enabled
      */
-    public function __construct(IMailer $debugMailer, bool $debug)
+    public function __construct(IMailer $debugMailer, bool $enabled)
     {
         $this->debugMailer = $debugMailer;
-        $this->debug = $debug;
+        $this->enabled = $enabled;
     }
 
     public function create(string $host, string $username, string $password, string $secure): IMailer
     {
-        if($this->debug) {
+        if(!$this->enabled) {
             return $this->debugMailer;
         }
         return new SmtpMailer(array(
@@ -37,6 +37,5 @@ class MailerFactory implements IMailerFactory
             'secure' => $secure,
         ));
     }
-
 
 }

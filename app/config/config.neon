@@ -66,11 +66,10 @@ services:
 
     - App\AccountancyModule\Factories\FormFactory
 
-    debugMailer:
+    nette.mailer:
         class: Nette\Mail\IMailer
         factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
-        autowired: false
 
-    - Model\Mail\MailerFactory(@debugMailer, %sendEmail%)
+    - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
 includes:
 	- components.neon
