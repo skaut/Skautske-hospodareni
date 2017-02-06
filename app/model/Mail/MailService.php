@@ -2,11 +2,13 @@
 
 namespace Model;
 
+use Dibi\Connection;
 use Nette\Mail\Message,
     \Nette\Mail\SendmailMailer;
 
 /**
  * @author Hána František
+ * @property MailTable $table
  */
 class MailService extends BaseService {
 
@@ -14,8 +16,9 @@ class MailService extends BaseService {
 
     const EMAIL_SENDER = "platby@skauting.cz";
 
-    public function __construct($skautIS = NULL, $connection = NULL, $sendEmail = FALSE) {
-        parent::__construct($skautIS, $connection);
+    public function __construct(Connection $connection, $sendEmail = FALSE)
+    {
+        parent::__construct(NULL, $connection);
         $this->sendEmail = $sendEmail;
     }
 
