@@ -81,18 +81,15 @@ class MailService extends BaseService {
         return $this->table->removeSmtpGroup($groupId);
     }
 
-    //Odesílání emailů
-
-    public function sendPaymentInfo(\Nette\Application\UI\ITemplate $template, $to, $subject, $body, $groupId = NULL, $qrPrefix = NULL) {
-        $template->setFile(dirname(__FILE__) . "/mail.base.latte");
-        $template->body = $body;
-        $mail = new Message;
-        $mail->setFrom(self::EMAIL_SENDER)
-                ->addTo($to)
-                ->setSubject($subject)
-                ->setHtmlBody($template, $qrPrefix);
+    /**
+     * Sends message via email server specified in payment method group.
+     * @param Message $mail
+     * @param int $groupId
+     */
+    public function send(Message $mail, int $groupId) : void
+    {
+        $mail->setFrom(self::EMAIL_SENDER);
         $this->getMailer($groupId)->send($mail);
-        return TRUE;
     }
 
 }
