@@ -1,7 +1,7 @@
 <?php
 
 namespace Model;
-use Nette\Utils\Arrays;
+use Nette\Mail\Message;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -155,15 +155,24 @@ class PaymentService extends BaseService {
                 array("%account%", "%qrcode%", "%name%", "%groupname%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), 
                 array($accountRaw, $qrcode, $payment->name, $group->label, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info
                 );
-        if (($mailSend = ($this->mailService->sendPaymentInfo($template, $payment->email, "Informace o platbě", $body, $payment->groupId, $qrPrefix)))) {
-            if (isset($payment->id)) {
-                $this->table->update($payment->id, array("state" => PaymentTable::PAYMENT_STATE_SEND));
-            }
+
+        $template->setFile(__DIR__ . '/mail.base.latte');
+        $template->body = $body;
+
+        $mail = (new Message())
+                ->addTo($payment->email)
+                ->setSubject('Informace o platbě')
+                ->setHtmlBody($template, $qrPrefix);
+
+        $this->mailService->send($mail, $payment->groupId);
+        if (isset($payment->id)) {
+            $this->table->update($payment->id, array("state" => PaymentTable::PAYMENT_STATE_SEND));
         }
+
         if (is_file($qrPrefix . $qrFilename)) {
             unlink($qrPrefix . $qrFilename);
         }
-        return $mailSend ? TRUE : FALSE;
+        return TRUE;
     }
 
     /**

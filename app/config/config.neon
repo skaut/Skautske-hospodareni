@@ -23,6 +23,9 @@ application:
         strictMode: TRUE
         maxDepth: 6
         maxLen: 500
+tracy:
+    bar:
+        - Nextras\MailPanel\MailPanel(%tempDir%/mail-panel-latte)
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
@@ -33,7 +36,7 @@ services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory(%ssl%)
     - \Model\PaymentService
-    - \Model\MailService(NULL, @dibi.connection, %sendEmail%)
+    - Model\MailService
 
     - Model\Bank\Http\Curl
     - Model\Bank\Fio\FioClient
@@ -63,5 +66,12 @@ services:
 
     - App\AccountancyModule\Factories\FormFactory
 
+    # Tables
+    - Model\MailTable
+    nette.mailer:
+        class: Nette\Mail\IMailer
+        factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
+
+    - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
 includes:
 	- components.neon
