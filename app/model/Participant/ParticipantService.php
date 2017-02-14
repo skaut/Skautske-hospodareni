@@ -1,7 +1,7 @@
 <?php
 
 namespace Model;
-use Dibi\Connection;
+
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
@@ -15,9 +15,9 @@ class ParticipantService extends MutableBaseService
     /** @var ParticipantTable */
     private $table;
 
-    public function __construct(string $name, ParticipantTable $table, Skautis $skautIS, IStorage $cacheStorage, Connection $connection)
+    public function __construct(string $name, ParticipantTable $table, Skautis $skautIS, IStorage $cacheStorage)
     {
-        parent::__construct($name, $skautIS, $cacheStorage, $connection);
+        parent::__construct($name, $skautIS, $cacheStorage);
         $this->table = $table;
     }
 

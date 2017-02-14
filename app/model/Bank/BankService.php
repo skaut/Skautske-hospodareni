@@ -2,7 +2,6 @@
 
 namespace Model;
 
-use Dibi\Connection;
 use Model\Bank\Fio\FioClient;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
@@ -21,9 +20,9 @@ class BankService extends BaseService {
     /** @var BankTable */
     private $table;
 
-    public function __construct(BankTable $table, IStorage $storage, FioClient $bank, Connection $connection = NULL)
+    public function __construct(BankTable $table, IStorage $storage, FioClient $bank)
     {
-        parent::__construct(NULL, $connection);
+        parent::__construct();
 
         $this->table = $table;
 		$this->bank = $bank;

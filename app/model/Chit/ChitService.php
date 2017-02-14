@@ -1,7 +1,7 @@
 <?php
 
 namespace Model;
-use Dibi\Connection;
+
 use Model\Skautis\Mapper;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
@@ -17,9 +17,9 @@ class ChitService extends MutableBaseService {
     /** @var ChitTable */
     private $table;
 
-    public function __construct(string $name, ChitTable $table, Skautis $skautIS, IStorage $cacheStorage, Connection $connection, Mapper $skautisMapper)
+    public function __construct(string $name, ChitTable $table, Skautis $skautIS, IStorage $cacheStorage, Mapper $skautisMapper)
     {
-        parent::__construct($name, $skautIS, $cacheStorage, $connection);
+        parent::__construct($name, $skautIS, $cacheStorage);
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
     }

@@ -19,11 +19,15 @@ class EventService extends MutableBaseService
     /** @var EventTable */
     private $table;
 
+    /** @var Connection */
+    private $connection;
+
     public function __construct(string $name, EventTable $table, Skautis $skautis, IStorage $cacheStorage, Connection $connection)
     {
-        parent::__construct($name, $skautis, $cacheStorage, $connection);
+        parent::__construct($name, $skautis, $cacheStorage);
         /** @var EventTable */
         $this->table = $table;
+        $this->connection = $connection;
     }
 
     /**

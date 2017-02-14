@@ -1,6 +1,7 @@
 <?php
 
 namespace Model;
+
 use Nette\Mail\Message;
 
 /**
@@ -14,8 +15,9 @@ class PaymentService extends BaseService {
     /** @var MailService */
     protected $mailService;
 
-    public function __construct(PaymentTable $table, \Skautis\Skautis $skautIS, \Dibi\Connection $connection, MailService $mailService) {
-        parent::__construct($skautIS, $connection);
+    public function __construct(PaymentTable $table, \Skautis\Skautis $skautIS, MailService $mailService)
+    {
+        parent::__construct($skautIS);
         $this->table = $table;
         $this->mailService = $mailService;
     }

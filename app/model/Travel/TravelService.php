@@ -1,7 +1,6 @@
 <?php
 
 namespace Model;
-use Dibi\Connection;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 
@@ -29,12 +28,11 @@ class TravelService extends BaseService
      * @param CommandTable $table
      * @param TravelTable $tableTravel
      * @param ContractTable $tableContract
-     * @param Connection $connection
      * @param IVehicleRepository $vehicles
      */
-    public function __construct(CommandTable $table, TravelTable $tableTravel, ContractTable $tableContract, Connection $connection, IVehicleRepository $vehicles)
+    public function __construct(CommandTable $table, TravelTable $tableTravel, ContractTable $tableContract, IVehicleRepository $vehicles)
 	{
-        parent::__construct(NULL, $connection);
+        parent::__construct();
         $this->table = $table;
         $this->tableTravel = $tableTravel;
         $this->tableContract = $tableContract;

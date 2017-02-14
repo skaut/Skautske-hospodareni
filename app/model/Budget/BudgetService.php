@@ -2,7 +2,6 @@
 
 namespace Model;
 
-use Dibi\Connection;
 use Model\Skautis\Mapper;
 use Skautis\Skautis;
 
@@ -19,11 +18,11 @@ class BudgetService extends BaseService {
     /** @var BudgetTable */
     private $table;
 
-    public function __construct(BudgetTable $table, Skautis $skautis, Connection $connection, Mapper $skautisMapper)
+    public function __construct(BudgetTable $table, Skautis $skautis, Mapper $skautisMapper)
     {
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
-        parent::__construct($skautis, $connection);
+        parent::__construct($skautis);
     }
 
     public function getCategories($oid) {
