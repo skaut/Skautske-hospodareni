@@ -113,22 +113,6 @@ abstract class BaseService extends \Nette\Object {
         $mpdf->Output($filename, 'I');
     }
 
-    public function getLocalId($skautisEventId, $type = NULL) {
-        $cacheId = __FUNCTION__ . $skautisEventId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->saveSes($cacheId, $this->table->getLocalId($skautisEventId, $type !== NULL ? $type : self::$type));
-        }
-        return $res;
-    }
-
-    public function getSkautisId($localEventId, $type = NULL) {
-        $cacheId = __FUNCTION__ . $localEventId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->saveSes($cacheId, $this->table->getSkautisId($localEventId, $type !== NULL ? $type : self::$type));
-        }
-        return $res;
-    }
-
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na čtení
      * @param \Nette\Security\User $user

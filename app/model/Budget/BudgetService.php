@@ -1,13 +1,21 @@
 <?php
 
 namespace Model;
+use Model\Skautis\Mapper;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  */
 class BudgetService extends BaseService {
-    
-    public function __construct(\Skautis\Skautis $skautis, \Dibi\Connection $connection) {
+
+    /**
+     * @var Mapper
+     */
+    private $skautisMapper;
+
+    public function __construct(\Skautis\Skautis $skautis, \Dibi\Connection $connection, Mapper $skautisMapper)
+    {
+        $this->skautisMapper = $skautisMapper;
         parent::__construct($skautis, $connection);
     }
 

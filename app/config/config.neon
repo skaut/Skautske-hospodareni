@@ -72,7 +72,11 @@ services:
     - App\AccountancyModule\Factories\FormFactory
 
     # Tables
+    - Model\Skautis\ObjectTable
     - Model\MailTable
+
+    - Model\Skautis\Mapper
+
     nette.mailer:
         class: Nette\Mail\IMailer
         factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)

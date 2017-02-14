@@ -25,7 +25,7 @@ class EventEntity {
     {
         $this->event = $eventFactory->create($name);
         $this->participants = $participantFactory->create($name);
-        $this->chits = $chitFactory->create($name, $this->event);
+        $this->chits = $chitFactory->create($name);
     }
 
     public function __get($name) {

@@ -2,6 +2,7 @@
 
 namespace Model;
 use Dibi\Connection;
+use Model\Skautis\Mapper;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
@@ -10,15 +11,13 @@ use Skautis\Skautis;
  */
 class ChitService extends MutableBaseService {
 
-    /**
-     * @var EventService
-     */
-    protected $objectService;
+    /** @var Mapper */
+    private $skautisMapper;
 
-    public function __construct(string $name, EventService $events, Skautis $skautIS, IStorage $cacheStorage, Connection $connection)
+    public function __construct(string $name, Skautis $skautIS, IStorage $cacheStorage, Connection $connection, Mapper $skautisMapper)
     {
         parent::__construct($name, $skautIS, $cacheStorage, $connection);
-        $this->objectService = $events;
+        $this->skautisMapper = $skautisMapper;
     }
 
     /**
@@ -406,16 +405,17 @@ class ChitService extends MutableBaseService {
     }
 
     /**
-     * 
-     * @param type $localEventId
-     * @return type
+     * @param int $localEventId
+     * @return int|NULL
      */
-    function getSkautisId($localEventId, $type = NULL) {
-        return $this->objectService->getSkautisId($localEventId, $this->type);
+    public function getSkautisId(int $localEventId) : ?int
+    {
+        return $this->skautisMapper->getSkautisId($localEventId, $this->type);
     }
 
-    function getLocalId($skautisEventId, $type = NULL) {
-        return $this->objectService->getLocalId($skautisEventId, $this->type);
+    private function getLocalId(int $skautisEventId) : int
+    {
+        return $this->skautisMapper->getLocalId($skautisEventId, $this->type);
     }
 
 }
