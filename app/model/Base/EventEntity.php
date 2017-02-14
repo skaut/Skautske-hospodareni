@@ -1,6 +1,9 @@
 <?php
 
 namespace Model;
+use Dibi\Connection;
+use Nette\Caching\IStorage;
+use Skautis\Skautis;
 
 /**
  *
@@ -17,7 +20,8 @@ class EventEntity {
     /** @var ChitService */
     private $chits;
 
-    public function __construct($name, $skautIS, $cacheStorage, $connection) {
+    public function __construct(string $name, Skautis $skautIS, IStorage $cacheStorage, Connection $connection)
+    {
         $this->event = new EventService($name, $skautIS, $cacheStorage, $connection);
         $this->participants = new ParticipantService($name, $skautIS, $cacheStorage, $connection);
         $this->chits = new ChitService($name, $skautIS, $cacheStorage, $connection, $this->event);

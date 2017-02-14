@@ -48,11 +48,11 @@ services:
     #    run: TRUE
     - \Model\AuthService
     eventService:
-        class: Model\EventEntity("General", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("General")
     campService:
-        class: Model\EventEntity("Camp", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("Camp")
     unitAccountService:
-        class: Model\EventEntity("Unit", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("Unit")
     - \Model\MemberService
     - \Model\UnitService
     - \Model\UserService
