@@ -2,6 +2,9 @@
 
 namespace Model;
 
+use Dibi\Connection;
+use Skautis\Skautis;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
@@ -53,7 +56,7 @@ abstract class BaseService extends \Nette\Object {
      */
     private static $storage = array();
 
-    public function __construct(\Skautis\Skautis $skautis = NULL, $connection = NULL) {
+    public function __construct(Skautis $skautis = NULL, Connection $connection = NULL) {
         $this->skautis = $skautis;
         $this->connection = $connection;
         
