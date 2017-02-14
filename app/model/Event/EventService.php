@@ -16,11 +16,14 @@ class EventService extends MutableBaseService
     
     protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist", "ID_PersonMedic");
 
-    public function __construct(string $name, Skautis $skautis, IStorage $cacheStorage, Connection $connection)
+    /** @var EventTable */
+    private $table;
+
+    public function __construct(string $name, EventTable $table, Skautis $skautis, IStorage $cacheStorage, Connection $connection)
     {
         parent::__construct($name, $skautis, $cacheStorage, $connection);
         /** @var EventTable */
-        $this->table = new EventTable($connection);
+        $this->table = $table;
     }
 
     /**

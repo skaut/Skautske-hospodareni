@@ -12,24 +12,32 @@ use Model\Travel\Vehicle;
 class TravelService extends BaseService
 {
 
-    protected $tableTravel;
+    /** @var CommandTable */
+    private $table;
 
-    protected $tableContract;
+    /** @var TravelTable */
+    private $tableTravel;
+
+    /** @var ContractTable */
+    private $tableContract;
 
 	/** @var IVehicleRepository */
 	private $vehicles;
 
-	/**
-	 * TravelService constructor.
-	 * @param Connection $connection
-	 * @param IVehicleRepository $vehicles
-	 */
-    public function __construct(Connection $connection, IVehicleRepository $vehicles)
+    /**
+     * TravelService constructor.
+     * @param CommandTable $table
+     * @param TravelTable $tableTravel
+     * @param ContractTable $tableContract
+     * @param Connection $connection
+     * @param IVehicleRepository $vehicles
+     */
+    public function __construct(CommandTable $table, TravelTable $tableTravel, ContractTable $tableContract, Connection $connection, IVehicleRepository $vehicles)
 	{
         parent::__construct(NULL, $connection);
-        $this->table = new CommandTable($connection);
-        $this->tableTravel = new TravelTable($connection);
-        $this->tableContract = new ContractTable($connection);
+        $this->table = $table;
+        $this->tableTravel = $tableTravel;
+        $this->tableContract = $tableContract;
         $this->vehicles = $vehicles;
     }
 

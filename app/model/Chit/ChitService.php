@@ -14,9 +14,13 @@ class ChitService extends MutableBaseService {
     /** @var Mapper */
     private $skautisMapper;
 
-    public function __construct(string $name, Skautis $skautIS, IStorage $cacheStorage, Connection $connection, Mapper $skautisMapper)
+    /** @var ChitTable */
+    private $table;
+
+    public function __construct(string $name, ChitTable $table, Skautis $skautIS, IStorage $cacheStorage, Connection $connection, Mapper $skautisMapper)
     {
         parent::__construct($name, $skautIS, $cacheStorage, $connection);
+        $this->table = $table;
         $this->skautisMapper = $skautisMapper;
     }
 

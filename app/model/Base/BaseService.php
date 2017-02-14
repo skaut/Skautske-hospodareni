@@ -27,12 +27,6 @@ abstract class BaseService extends \Nette\Object {
     const ADULT_AGE = 18;
 
     /**
-     * reference na třídu typu Table
-     * @var instance of BaseTable
-     */
-    protected $table;
-
-    /**
      * slouží pro komunikaci se skautISem
      * @var \Skautis\Skautis
      */
@@ -59,12 +53,6 @@ abstract class BaseService extends \Nette\Object {
     public function __construct(Skautis $skautis = NULL, Connection $connection = NULL) {
         $this->skautis = $skautis;
         $this->connection = $connection;
-        
-        preg_match("/^(?P<name>.*)Service/", get_class($this), $matches);
-        $tableName = $matches['name'] . "Table";
-        if (class_exists($tableName)) {
-            $this->table = new $tableName($this->connection);
-        }
     }
 
     /**

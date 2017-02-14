@@ -12,11 +12,13 @@ use Skautis\Skautis;
 class ParticipantService extends MutableBaseService
 {
 
-    public function __construct(string $name, Skautis $skautIS, IStorage $cacheStorage, Connection $connection)
+    /** @var ParticipantTable */
+    private $table;
+
+    public function __construct(string $name, ParticipantTable $table, Skautis $skautIS, IStorage $cacheStorage, Connection $connection)
     {
         parent::__construct($name, $skautIS, $cacheStorage, $connection);
-        /** @var ParticipantTable */
-        $this->table = new ParticipantTable($connection);
+        $this->table = $table;
     }
 
     /**
