@@ -40,7 +40,7 @@ services:
 
     - Model\Bank\Http\Curl
     - Model\Bank\Fio\FioClient
-    - \Model\BankService(@cacheStorage)
+    - \Model\BankService
     router: @App\RouterFactory::createRouter
     #connection:
     #    class: \Dibi\Connection
@@ -72,6 +72,7 @@ services:
     - App\AccountancyModule\Factories\FormFactory
 
     # Tables
+    - Model\BankTable
     - Model\BudgetTable
     - Model\ChitTable
     - Model\CommandTable
