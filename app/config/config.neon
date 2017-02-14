@@ -63,6 +63,7 @@ services:
 
     # Factories
     - Model\IChitServiceFactory
+    - Model\IParticipantServiceFactory
 
     # Repositories
     - Model\Travel\Repositories\VehicleRepository
