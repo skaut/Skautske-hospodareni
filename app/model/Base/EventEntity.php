@@ -20,11 +20,12 @@ class EventEntity {
     /** @var ChitService */
     private $chits;
 
-    public function __construct(string $name, Skautis $skautIS, IStorage $cacheStorage, Connection $connection)
+    public function __construct(string $name, IChitServiceFactory $chitFactory, Skautis $skautIS, IStorage $cacheStorage, Connection $connection)
     {
         $this->event = new EventService($name, $skautIS, $cacheStorage, $connection);
         $this->participants = new ParticipantService($name, $skautIS, $cacheStorage, $connection);
-        $this->chits = new ChitService($name, $skautIS, $cacheStorage, $connection, $this->event);
+
+        $this->chits = $chitFactory->create($name, $this->event);
     }
 
     public function __get($name) {

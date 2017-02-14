@@ -1,6 +1,9 @@
 <?php
 
 namespace Model;
+use Dibi\Connection;
+use Nette\Caching\IStorage;
+use Skautis\Skautis;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -12,9 +15,10 @@ class ChitService extends MutableBaseService {
      */
     protected $objectService;
 
-    public function __construct($name, $skautIS, $cacheStorage, $connection, EventService $objectService) {
+    public function __construct(string $name, EventService $events, Skautis $skautIS, IStorage $cacheStorage, Connection $connection)
+    {
         parent::__construct($name, $skautIS, $cacheStorage, $connection);
-        $this->objectService = $objectService;
+        $this->objectService = $events;
     }
 
     /**
