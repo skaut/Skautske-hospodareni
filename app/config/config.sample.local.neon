@@ -23,3 +23,6 @@ parameters:
 services:
     cacheStorage:
         #class: Nette\Caching\Storages\DevNullStorage
+
+        # Pro produkci
+        # nette.mailer: Nette\Mail\SendmailMailer
