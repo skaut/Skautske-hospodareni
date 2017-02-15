@@ -2,12 +2,16 @@
 
 namespace Model;
 
+use Nette;
+use Nette\Application\UI\ITemplate;
+use Nette\Security\User;
 use Skautis\Skautis;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-abstract class BaseService extends \Nette\Object {
+abstract class BaseService extends Nette\Object
+{
 
     //konstanty pro Event a Camp
     const LEADER = 0; //ID v poli funkcí
@@ -27,7 +31,7 @@ abstract class BaseService extends \Nette\Object {
 
     /**
      * slouží pro komunikaci se skautISem
-     * @var \Skautis\Skautis
+     * @var Skautis|NULL
      */
     protected $skautis;
 
@@ -75,19 +79,13 @@ abstract class BaseService extends \Nette\Object {
 
     /**
      * vrátí pdf do prohlizece
-     * @param type $template
+     * @param ITemplate $template
      * @param string $filename
-     * @return pdf 
      */
-    function makePdf($template = NULL, $filename = NULL, $landscape = FALSE) {
-        $format = $landscape ? "A4-L" : "A4";
-        if ($template === NULL) {
-            return FALSE;
-        }
-//        define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
-//        require_once(_MPDF_PATH . 'mpdf.php');
+    public function makePdf(ITemplate $template, ?string $filename) : void
+    {
         $mpdf = new \mPDF(
-                'utf-8', $format, $default_font_size = 0, $default_font = '', $mgl = 10, $mgr = 10, $mgt = 10, $mgb = 10, $mgh = 9, $mgf = 9, $orientation = 'P'
+                'utf-8', 'A4', $default_font_size = 0, $default_font = '', $mgl = 10, $mgr = 10, $mgt = 10, $mgb = 10, $mgh = 9, $mgf = 9, $orientation = 'P'
         );
 
         $mpdf->WriteHTML((string) $template, NULL);
@@ -96,11 +94,12 @@ abstract class BaseService extends \Nette\Object {
 
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na čtení
-     * @param \Nette\Security\User $user
-     * @return type
+     * @param User $user
+     * @return array
      */
-    public function getReadUnits(\Nette\Security\User $user) {
-        $res = array();
+    public function getReadUnits(User $user) : array
+    {
+        $res = [];
         foreach ($user->getIdentity()->access[self::ACCESS_READ] as $uId => $u) {
             $res[$uId] = $u->DisplayName;
         }
@@ -109,11 +108,12 @@ abstract class BaseService extends \Nette\Object {
 
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
-     * @param \Nette\Security\User $user
-     * @return type
+     * @param User $user
+     * @return array
      */
-    public function getEditUnits(\Nette\Security\User $user) {
-        $res = array();
+    public function getEditUnits(User $user) : array
+    {
+        $res = [];
         foreach ($user->getIdentity()->access[self::ACCESS_EDIT] as $uId => $u) {
             $res[$uId] = $u->DisplayName;
         }
