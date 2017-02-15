@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use Model\Services\PdfRenderer;
+use Model\TravelService;
 use Nette\Application\UI\Form;
 
 /**
@@ -9,15 +11,17 @@ use Nette\Application\UI\Form;
  */
 class DefaultPresenter extends BasePresenter {
 
-    /**
-     *
-     * @var \Model\TravelService
-     */
-    protected $travelService;
+    /** @var TravelService */
+    private $travelService;
 
-    public function __construct(\Model\TravelService $ts) {
+    /** @var PdfRenderer */
+    private $pdf;
+
+    public function __construct(TravelService $travelService, PdfRenderer $pdf)
+    {
         parent::__construct();
-        $this->travelService = $ts;
+        $this->travelService = $travelService;
+        $this->pdf = $pdf;
     }
 
     protected function isCommandAccessible($commandId) {
@@ -108,8 +112,8 @@ class DefaultPresenter extends BasePresenter {
             $template->end = end($travels);
             $template->start = reset($travels);
         }
-        //        echo $template;die();
-        $this->travelService->makePdf($template, "cestovni-prikaz.pdf");
+
+        $this->pdf->render((string)$template, 'cestovni-prikaz.pdf');
         $this->terminate();
     }
 

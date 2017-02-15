@@ -84,6 +84,7 @@ services:
     - Model\Skautis\ObjectTable
     - Model\TravelTable
 
+    - Model\Services\PdfRenderer
     - Model\Skautis\Mapper
 
     nette.mailer:

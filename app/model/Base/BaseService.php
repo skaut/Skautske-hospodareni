@@ -3,7 +3,6 @@
 namespace Model;
 
 use Nette;
-use Nette\Application\UI\ITemplate;
 use Nette\Security\User;
 use Skautis\Skautis;
 
@@ -75,21 +74,6 @@ abstract class BaseService extends Nette\Object
             return self::$storage[$id];
         }
         return FALSE;
-    }
-
-    /**
-     * vrátí pdf do prohlizece
-     * @param ITemplate $template
-     * @param string $filename
-     */
-    public function makePdf(ITemplate $template, ?string $filename) : void
-    {
-        $mpdf = new \mPDF(
-                'utf-8', 'A4', $default_font_size = 0, $default_font = '', $mgl = 10, $mgr = 10, $mgt = 10, $mgb = 10, $mgh = 9, $mgf = 9, $orientation = 'P'
-        );
-
-        $mpdf->WriteHTML((string) $template, NULL);
-        $mpdf->Output($filename, 'I');
     }
 
     /**
