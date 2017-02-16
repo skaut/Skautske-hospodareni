@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a3e27b17c216d0828bcca8a88aeadda4",
+    "content-hash": "210cca9ce8d84d8fcd91bc3c2b91d8e7",
     "packages": [
         {
             "name": "dibi/dibi",
@@ -1854,16 +1854,16 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.3.11",
+            "version": "v2.3.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "152b7602115dd3a66f3190280951390097a15f65"
+                "reference": "80731c9eb4ee9b297cd23958644d21cfa53428b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/152b7602115dd3a66f3190280951390097a15f65",
-                "reference": "152b7602115dd3a66f3190280951390097a15f65",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/80731c9eb4ee9b297cd23958644d21cfa53428b4",
+                "reference": "80731c9eb4ee9b297cd23958644d21cfa53428b4",
                 "shasum": ""
             },
             "require": {
@@ -1905,7 +1905,7 @@
                 "debugger",
                 "nette"
             ],
-            "time": "2016-05-30T09:03:15+00:00"
+            "time": "2017-01-18T14:14:42+00:00"
         }
     ],
     "packages-dev": [
@@ -2028,12 +2028,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tester.git",
-                "reference": "a53970b9b4aefeb6568e5fa57b488573fa6b0954"
+                "reference": "97ff2e80849c773355f4e58eeb1045bf310f5575"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tester/zipball/a53970b9b4aefeb6568e5fa57b488573fa6b0954",
-                "reference": "a53970b9b4aefeb6568e5fa57b488573fa6b0954",
+                "url": "https://api.github.com/repos/nette/tester/zipball/97ff2e80849c773355f4e58eeb1045bf310f5575",
+                "reference": "97ff2e80849c773355f4e58eeb1045bf310f5575",
                 "shasum": ""
             },
             "require": {
@@ -2069,14 +2069,20 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "An easy-to-use PHP unit testing framework.",
+            "description": "Tester: enjoyable unit testing in PHP with code coverage reporter. 🍏🍏🍎🍏",
             "homepage": "https://tester.nette.org",
             "keywords": [
+                "Xdebug",
+                "assertions",
+                "clover",
+                "code coverage",
                 "nette",
+                "phpdbg",
+                "phpunit",
                 "testing",
                 "unit"
             ],
-            "time": "2017-01-09 19:57:29"
+            "time": "2017-02-09 19:50:19"
         }
     ],
     "aliases": [],
