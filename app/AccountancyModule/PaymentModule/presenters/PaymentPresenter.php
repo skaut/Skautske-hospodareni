@@ -85,14 +85,14 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění zobrazit detail plateb", "warning");
             $this->redirect("Payment:default");
         }
-        $this->template->maxVS = $maxVS = $this->model->getMaxVS($group['id']);
+        $this->template->nextVS = $nextVS = $this->model->getNextVS($group['id']);
         $form = $this['paymentForm'];
         $form->setDefaults([
             'amount' => $group['amount'],
             'maturity' => $group['maturity'],
             'ks' => $group['ks'],
             'oid' => $group['id'],
-            'vs' => $maxVS != NULL ? $maxVS + 1 : "",
+            'vs' => $nextVS != NULL ? $nextVS : "",
         ]);
 
         $this->template->payments = $payments = $this->model->getAll($id);
@@ -392,8 +392,8 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění generovat VS!", "danger");
             $this->redirect("Payment:default");
         }
-        $maxVS = $this->model->getMaxVS($group['id']);
-        if (is_null($maxVS)) {
+        $nextVS = $this->model->getNextVS($group['id']);
+        if (is_null($nextVS)) {
             $this->flashMessage("Vyplňte VS libovolné platbě a další pak již budou dogenerovány způsobem +1.", "warning");
             $this->redirect("this");
         }
@@ -401,7 +401,7 @@ class PaymentPresenter extends BasePresenter
         $cnt = 0;
         foreach ($payments as $payment) {
             if (empty($payment->vs) && $payment->state == "preparing") {
-                $this->model->update($payment->id, ["vs" => ++$maxVS]);
+                $this->model->update($payment->id, array("vs" => ++$nextVS));
                 $cnt++;
             }
         }

@@ -187,6 +187,7 @@ class PaymentService
      * @param int|NULL $smtpId
      * @return int
      */
+
     public function createGroup(
         int $unitId,
         ?string $oType,
@@ -256,9 +257,8 @@ class PaymentService
      * @param int $groupId
      * @return int
      */
-    public function getMaxVS($groupId)
-    {
-        return $this->table->getMaxVS($groupId);
+    public function getNextVS($groupId) {
+        return $this->table->getNextVS($groupId);
     }
 
     /**

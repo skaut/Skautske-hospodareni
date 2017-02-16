@@ -140,6 +140,10 @@ class GroupPresenter extends BasePresenter
             ->setAttribute("class", "form-control")
             ->addCondition(Form::FILLED)
             ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
+        $form->addText("nextVs", "Další VS:")
+                ->setMaxLength(10)
+                ->addCondition(Form::FILLED)
+                ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addSelect("smtp", "Odesílací email", $this->mail->getPairs($this->aid))
             ->setPrompt('Vyberte email');
         $form->addTextArea("email_info", "Informační email")
