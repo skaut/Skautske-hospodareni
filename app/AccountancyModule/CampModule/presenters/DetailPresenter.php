@@ -3,7 +3,6 @@
 namespace App\AccountancyModule\CampModule;
 
 use Model\ExportService;
-use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 
@@ -15,18 +14,14 @@ class DetailPresenter extends BasePresenter {
 
     /** @var ExportService */
     protected $exportService;
-    
-    /** @var MemberService */
-    protected $memberService;
 
     /** @var PdfRenderer */
     private $pdf;
 
-    public function __construct(ExportService $export, MemberService $member, PdfRenderer $pdf)
+    public function __construct(ExportService $export, PdfRenderer $pdf)
     {
         parent::__construct();
         $this->exportService = $export;
-        $this->memberService = $member;
         $this->pdf = $pdf;
     }
     
