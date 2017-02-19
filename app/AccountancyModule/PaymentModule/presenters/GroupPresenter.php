@@ -11,7 +11,7 @@ class GroupPresenter extends BasePresenter
 {
 
     /** @var \Model\PaymentService */
-    private $model;
+    protected $model;
 
     /** @var \Model\MailService */
     private $mail;
