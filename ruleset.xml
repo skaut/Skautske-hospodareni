@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="hskauting">
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    <rule ref="Generic.Files.EndFileNewline"/>
+    <rule ref="Generic.PHP.UpperCaseConstant"/>
+    <rule ref="Generic.WhiteSpace.ScopeIndent"/>
+    <rule ref="Generic.PHP.DisallowShortOpenTag"/>
+
+
+    <rule ref="PEAR.Classes.ClassDeclaration"/>
+    <!-- Methods -->
+    <rule ref="PSR2.Methods.MethodDeclaration"/>
+</ruleset>

@@ -5,9 +5,11 @@ namespace App\AccountancyModule\CampModule;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BudgetPresenter extends BasePresenter {
+class BudgetPresenter extends BasePresenter
+{
 
-    function startup() {
+    function startup()
+    {
         parent::startup();
         if (!$this->aid) {
             $this->flashMessage("Musíš vybrat akci", "danger");
@@ -15,12 +17,13 @@ class BudgetPresenter extends BasePresenter {
         }
     }
 
-    function renderDefault($aid) {
-        $toRepair = array();
-        $this->template->isConsistent = $this->eventService->chits->isConsistent($aid, false, $toRepair);
+    function renderDefault($aid)
+    {
+        $toRepair = [];
+        $this->template->isConsistent = $this->eventService->chits->isConsistent($aid, FALSE, $toRepair);
         $this->template->toRepair = $toRepair;
-        $this->template->dataEstimate = $this->eventService->chits->getCategories($aid, true);
-        $this->template->dataReal = $this->eventService->chits->getCategories($aid, false);
+        $this->template->dataEstimate = $this->eventService->chits->getCategories($aid, TRUE);
+        $this->template->dataReal = $this->eventService->chits->getCategories($aid, FALSE);
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
@@ -28,15 +31,16 @@ class BudgetPresenter extends BasePresenter {
 
     /**
      * přepočte hodnoty v jednotlivých kategorich
-     * @param type $aid 
+     * @param type $aid
      */
-    public function handleConvert($aid) {
+    public function handleConvert($aid)
+    {
         $this->editableOnly();
-        $this->eventService->chits->isConsistent($aid, $repair = true);
+        $this->eventService->chits->isConsistent($aid, $repair = TRUE);
         $this->flashMessage("Kategorie byly přepočítány.");
 
         if ($this->isAjax()) {
-//            $this->invalidateControl("paragony");
+            //            $this->invalidateControl("paragony");
             $this->invalidateControl("flash");
         } else {
             $this->redirect('this', $aid);

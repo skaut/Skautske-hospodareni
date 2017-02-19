@@ -7,7 +7,8 @@ use Nette,
     Skautis\Wsdl\AuthenticationException,
     Nette\Forms\Container;
 
-abstract class BasePresenter extends Nette\Application\UI\Presenter {
+abstract class BasePresenter extends Nette\Application\UI\Presenter
+{
 
     /**
      *
@@ -21,15 +22,18 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
      */
     protected $unitService;
 
-    public function injectUserService(\Model\UserService $u) {
+    public function injectUserService(\Model\UserService $u)
+    {
         $this->userService = $u;
     }
 
-    public function injectUnitService(\Model\UnitService $u) {
+    public function injectUnitService(\Model\UnitService $u)
+    {
         $this->unitService = $u;
     }
 
-    protected function startup() {
+    protected function startup()
+    {
         parent::startup();
 
         //adresář s částmi šablon pro použití ve více modulech
@@ -58,7 +62,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
         }
     }
 
-    protected function beforeRender() {
+    protected function beforeRender()
+    {
         parent::beforeRender();
         if ($this->user->isLoggedIn()) {
             try {
@@ -67,7 +72,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             } catch (\Skautis\Wsdl\AuthenticationException $ex) {
                 $this->user->logout(TRUE);
             } catch (\Skautis\Wsdl\WsdlException $ex) {
-                if($ex->getMessage() != "Could not connect to host") {
+                if ($ex->getMessage() != "Could not connect to host") {
                     throw $ex;
                 }
                 $this->flashMessage("Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.");
@@ -79,31 +84,34 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
     }
 
     //změní přihlášenou roli ve skautISu
-    public function handleChangeRole($roleId) {
+    public function handleChangeRole($roleId)
+    {
         $this->userService->updateSkautISRole($roleId);
         $this->updateUserAccess();
         $this->redirect("this");
     }
 
-    protected function prepareForm($parent = NULL, $name = NULL) {
+    protected function prepareForm($parent = NULL, $name = NULL)
+    {
         $form = new Nette\Application\UI\Form($parent, $name);
         $form->setRenderer(new \Nextras\Forms\Rendering\Bs3FormRenderer());
         return $form;
     }
 
-    public function createComponentCss() {
+    public function createComponentCss()
+    {
         $files = new WebLoader\FileCollection(WWW_DIR . '/css');
         $compiler = WebLoader\Compiler::createCssCompiler($files, WWW_DIR . '/webtemp');
 
         //s minimalizací zlobí bootstrap
-//        $compiler->addFilter(new VariablesFilter(array('foo' => 'bar')));        
-//        function mini($code) {
-//            return CssMin::minify($code);
-//        }
-//        $compiler->addFilter("mini");
+        //        $compiler->addFilter(new VariablesFilter(array('foo' => 'bar')));        
+        //        function mini($code) {
+        //            return CssMin::minify($code);
+        //        }
+        //        $compiler->addFilter("mini");
         $control = new WebLoader\Nette\CssLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
         $control->setMedia('screen');
-        $files->addFiles(array(
+        $files->addFiles([
             'fancybox/fancybox.css',
             'bootstrap.min.css',
             'bootstrap-select.css',
@@ -113,21 +121,22 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'typeaheadjs.css',
             'offline.css',
             'site.css'
-        ));
+        ]);
         return $control;
     }
 
-    public function createComponentJs() {
+    public function createComponentJs()
+    {
         $files = new WebLoader\FileCollection(WWW_DIR . '/js');
         $compiler = WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/webtemp');
-        $files->addFiles(array(
+        $files->addFiles([
             'jquery-v1.11.1.js',
             'jquery-ui-1.10.0.custom.min.js',
             'bootstrap-datetimepicker.js',
             'bootstrap-datetimepicker.cs.js',
             'jquery.placeholder.min.js',//IE 8, 9 placeholders bugfix
-//            'jquery.touchwipe.min.js',
-//            'mobile.js',
+            //            'jquery.touchwipe.min.js',
+            //            'mobile.js',
             //'my-datepicker.js',
             'bootstrap-select.js',
             //'jquery.nette.js',
@@ -138,19 +147,20 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
             'jquery.nette.dependentselectbox.js',
             'bootstrap.js',
             'bootstrap3-typeahead.min.js',
-//            'nextras.typeahead.init.js',
+            //            'nextras.typeahead.init.js',
             'jquery.fancybox.pack.js',
             'offline.js',
-//            'html5.js',
-//            'h5utils.js',
+            //            'html5.js',
+            //            'h5utils.js',
             'my.js',
             'nextras.datetimepicker.init.js',
             'ie10-viewport-bug-workaround.js', // IE10 viewport hack for Surface/desktop Windows 8 bug
-        ));
+        ]);
         return new WebLoader\Nette\JavaScriptLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
     }
 
-    protected function updateUserAccess() {
+    protected function updateUserAccess()
+    {
         $this->user->getIdentity()->access = $this->userService->getAccessArrays($this->unitService);
     }
 

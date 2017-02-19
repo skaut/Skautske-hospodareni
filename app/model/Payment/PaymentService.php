@@ -10,7 +10,8 @@ use Skautis\Skautis;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class PaymentService extends BaseService {
+class PaymentService extends BaseService
+{
 
     /** @var PaymentTable */
     private $table;
@@ -29,19 +30,21 @@ class PaymentService extends BaseService {
         $this->groups = $groups;
     }
 
-    public function get($unitId, $paymentId) {
+    public function get($unitId, $paymentId)
+    {
         return $this->table->get($unitId, $paymentId);
     }
 
     /**
-     * 
+     *
      * @param int|array $pa_groupIds
      * @return array
      */
-    public function getAll($pa_groupIds, $useHierarchy = FALSE) {
-        $result = $this->table->getAllPayments(is_array($pa_groupIds) ? $pa_groupIds : array($pa_groupIds));
+    public function getAll($pa_groupIds, $useHierarchy = FALSE)
+    {
+        $result = $this->table->getAllPayments(is_array($pa_groupIds) ? $pa_groupIds : [$pa_groupIds]);
         if ($useHierarchy) {
-            $tmp = array();
+            $tmp = [];
             foreach ($result as $v) {//roztrizeni podle událostí
                 $tmp[$v->groupId][] = $v;
             }
@@ -51,7 +54,7 @@ class PaymentService extends BaseService {
     }
 
     /**
-     * 
+     *
      * @param int $groupId
      * @param string $name
      * @param srting $email
@@ -63,43 +66,48 @@ class PaymentService extends BaseService {
      * @param string $note
      * @return type
      */
-    public function createPayment($groupId, $name, $email, $amount, $maturity, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL) {
-        return $this->table->createPayment(array(
-                    'groupId' => $groupId,
-                    'name' => $name,
-                    'email' => $email,
-                    'personId' => $personId,
-                    'amount' => $amount != "" ? $amount : NULL,
-                    'maturity' => $maturity,
-                    'vs' => $vs != "" ? $vs : NULL,
-                    'ks' => $ks != "" ? $ks : NULL,
-                    'note' => $note,
-        ));
+    public function createPayment($groupId, $name, $email, $amount, $maturity, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL)
+    {
+        return $this->table->createPayment([
+            'groupId' => $groupId,
+            'name' => $name,
+            'email' => $email,
+            'personId' => $personId,
+            'amount' => $amount != "" ? $amount : NULL,
+            'maturity' => $maturity,
+            'vs' => $vs != "" ? $vs : NULL,
+            'ks' => $ks != "" ? $ks : NULL,
+            'note' => $note,
+        ]);
     }
 
     /**
-     * 
+     *
      * @param int $pid
      * @param array $arr
      * @return type
      */
-    public function update($pid, $arr) {
+    public function update($pid, $arr)
+    {
         return $this->table->update($pid, $arr);
     }
 
-    public function cancelPayment($pid) {
-        return $this->update($pid, array("state" => "canceled", "dateClosed" => date("Y-m-d H:i:s")));
+    public function cancelPayment($pid)
+    {
+        return $this->update($pid, ["state" => "canceled", "dateClosed" => date("Y-m-d H:i:s")]);
     }
 
-    public function completePayment($pid, $transactionId = NULL, $paidFrom = NULL) {
-        return $this->update($pid, array("state" => "completed", "dateClosed" => date("Y-m-d H:i:s"), "transactionId" => $transactionId, "paidFrom" => $paidFrom));
+    public function completePayment($pid, $transactionId = NULL, $paidFrom = NULL)
+    {
+        return $this->update($pid, ["state" => "completed", "dateClosed" => date("Y-m-d H:i:s"), "transactionId" => $transactionId, "paidFrom" => $paidFrom]);
     }
 
     /**
      * seznam stavů, které jsou nedokončené
      * @return array
      */
-    public function getNonFinalStates() {
+    public function getNonFinalStates()
+    {
         return $this->table->getNonFinalStates();
     }
 
@@ -108,18 +116,20 @@ class PaymentService extends BaseService {
      * @param int $pa_groupId
      * @return array
      */
-    public function summarizeByState($pa_groupId) {
+    public function summarizeByState($pa_groupId)
+    {
         return $this->table->summarizeByState($pa_groupId);
     }
 
     /**
-     * 
+     *
      * @param \Nette\Application\UI\ITemplate $template
      * @param type $payment - state=PaymentTable::PAYMENT_STATE_PREPARING, email, unitId, amount, maturity, email_info, name, note, vs, ks
      * @param \Model\UnitService $us
      * @return boolean
      */
-    public function sendInfo(\Nette\Application\UI\ITemplate $template, $payment, $group, UnitService $us = NULL) {
+    public function sendInfo(\Nette\Application\UI\ITemplate $template, $payment, $group, UnitService $us = NULL)
+    {
         if (!in_array($payment->state, $this->getNonFinalStates()) || mb_strlen($payment->email) < 5) {
             return FALSE;
         }
@@ -127,14 +137,14 @@ class PaymentService extends BaseService {
         $accountRaw = $this->getBankAccount($oficialUnitId);
         preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $accountRaw, $account);
 
-        $params = array(
+        $params = [
             "accountNumber" => $account['number'],
             "bankCode" => $account['code'],
             "amount" => $payment->amount,
             "currency" => "CZK",
             "date" => $payment->maturity->format("Y-m-d"),
             "size" => "200",
-        );
+        ];
         if (array_key_exists('prefix', $account) && $account['prefix'] != '') {
             $params['accountPrefix'] = $account['prefix'];
         }
@@ -157,26 +167,26 @@ class PaymentService extends BaseService {
             $qrPrefix = WWW_DIR . "/webtemp/";
             $qrFilename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime(TRUE)) . ".png";
             \Nette\Utils\Image::fromFile($qrUrl)->save($qrPrefix . $qrFilename);
-//            dump(is_readable($qrPrefix . $qrFilename));
-//            die();
+            //            dump(is_readable($qrPrefix . $qrFilename));
+            //            die();
         }
         $qrcode = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $qrFilename . '"/>';
         $body = str_replace(
-                array("%account%", "%qrcode%", "%name%", "%groupname%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), 
-                array($accountRaw, $qrcode, $payment->name, $group->label, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info
-                );
+            ["%account%", "%qrcode%", "%name%", "%groupname%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"],
+            [$accountRaw, $qrcode, $payment->name, $group->label, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note], $payment->email_info
+        );
 
         $template->setFile(__DIR__ . '/mail.base.latte');
         $template->body = $body;
 
         $mail = (new Message())
-                ->addTo($payment->email)
-                ->setSubject('Informace o platbě')
-                ->setHtmlBody($template, $qrPrefix);
+            ->addTo($payment->email)
+            ->setSubject('Informace o platbě')
+            ->setHtmlBody($template, $qrPrefix);
 
         $this->mailService->send($mail, $payment->groupId);
         if (isset($payment->id)) {
-            $this->table->update($payment->id, array("state" => PaymentTable::PAYMENT_STATE_SEND));
+            $this->table->update($payment->id, ["state" => PaymentTable::PAYMENT_STATE_SEND]);
         }
 
         if (is_file($qrPrefix . $qrFilename)) {
@@ -190,8 +200,9 @@ class PaymentService extends BaseService {
      * @param int $unitId
      * @return string|FALSE
      */
-    public function getBankAccount($unitId) {
-        $accounts = $this->skautis->org->AccountAll(array("ID_Unit" => $unitId, "IsValid" => TRUE));
+    public function getBankAccount($unitId)
+    {
+        $accounts = $this->skautis->org->AccountAll(["ID_Unit" => $unitId, "IsValid" => TRUE]);
         if (count($accounts) == 1) {
             return $accounts[0]->DisplayName;
         } else {
@@ -209,27 +220,29 @@ class PaymentService extends BaseService {
      */
 
     /**
-     * 
+     *
      * @param int|array(int) $unitId
      * @param int $groupId
      * @return type
      */
-    public function getGroup($unitId, $groupId) {
+    public function getGroup($unitId, $groupId)
+    {
         return $this->table->getGroup($unitId, $groupId);
     }
 
     /**
-     * 
+     *
      * @param int|array(int) $unitId
      * @param boolean $onlyOpen
      * @return type
      */
-    public function getGroups($unitId, $onlyOpen = FALSE) {
+    public function getGroups($unitId, $onlyOpen = FALSE)
+    {
         return $this->table->getGroups($unitId, $onlyOpen);
     }
 
     /**
-     * 
+     *
      * @param int $unitId
      * @param string $oType
      * @param int $sisId
@@ -240,29 +253,30 @@ class PaymentService extends BaseService {
      * @param string $email_info
      * @return int
      */
-    public function createGroup(int $unitId, ?string $oType, ?int $sisId, string $label, ?\DateTime $maturity, ?int $ks, ?float $amount, string $email_info) : int
-	{
-    	$group = new Group(
-        	$oType,
-			$unitId,
-			$sisId,
-			$label,
-			$amount ? $amount : NULL,
-			$maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
-			$ks,
-			new \DateTimeImmutable(),
-			$email_info);
+    public function createGroup(int $unitId, ?string $oType, ?int $sisId, string $label, ?\DateTime $maturity, ?int $ks, ?float $amount, string $email_info): int
+    {
+        $group = new Group(
+            $oType,
+            $unitId,
+            $sisId,
+            $label,
+            $amount ? $amount : NULL,
+            $maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
+            $ks,
+            new \DateTimeImmutable(),
+            $email_info);
         $this->groups->save($group);
         return $group->getId();
     }
 
     /**
-     * 
+     *
      * @param int $groupId
      * @param array $arr
      * @return type
      */
-    public function updateGroup($groupId, $arr, $openOnly = TRUE) {
+    public function updateGroup($groupId, $arr, $openOnly = TRUE)
+    {
         return $this->table->updateGroup($groupId, $arr, $openOnly);
     }
 
@@ -271,7 +285,8 @@ class PaymentService extends BaseService {
      * @param int $groupId
      * @return int
      */
-    public function getMaxVS($groupId) {
+    public function getMaxVS($groupId)
+    {
         return $this->table->getMaxVS($groupId);
     }
 
@@ -281,9 +296,10 @@ class PaymentService extends BaseService {
      * @param type $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
      * @return array($personId => array(...))
      */
-    public function getPersons($unitId, $groupId = NULL) {
-        $result = array();
-        $persons = $this->skautis->org->PersonAll(array("ID_Unit" => $unitId, "OnlyDirectMember" => TRUE));
+    public function getPersons($unitId, $groupId = NULL)
+    {
+        $result = [];
+        $persons = $this->skautis->org->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => TRUE]);
         if ($groupId !== NULL) {
             $payments_personIds = $this->table->getActivePaymentIds($groupId);
             if (is_array($persons)) {
@@ -295,7 +311,7 @@ class PaymentService extends BaseService {
 
         if (is_array($persons)) {
             foreach ($persons as $p) {
-                $result[$p->ID] = (array) $p;
+                $result[$p->ID] = (array)$p;
                 $result[$p->ID]['emails'] = $this->getPersonEmails($p->ID);
             }
         }
@@ -307,10 +323,11 @@ class PaymentService extends BaseService {
      * @param type $personId
      * @return string
      */
-    public function getPersonEmails($personId) {
-        $result = array();
+    public function getPersonEmails($personId)
+    {
+        $result = [];
         try {
-            $emails = $this->skautis->org->PersonContactAll(array('ID_Person' => $personId));
+            $emails = $this->skautis->org->PersonContactAll(['ID_Person' => $personId]);
             if (is_array($emails)) {
                 usort($emails, function ($a, $b) {
                     return $a->IsMain == $b->IsMain ? 0 : ($a->IsMain > $b->IsMain) ? -1 : 1;
@@ -335,21 +352,22 @@ class PaymentService extends BaseService {
      * @param int $regId
      * @return type
      */
-    public function getRegistration($regId) {
-        return $this->skautis->org->UnitRegistrationDetail(array("ID" => $regId));
+    public function getRegistration($regId)
+    {
+        return $this->skautis->org->UnitRegistrationDetail(["ID" => $regId]);
     }
 
     /**
      * Returns newest registration without created group
      */
-    public function getNewestRegistration() : array
-	{
+    public function getNewestRegistration(): array
+    {
         $unitId = $this->skautis->getUser()->getUnitId();
         $data = array_values($this->skautis->org->UnitRegistrationAll(["ID_Unit" => $unitId, ""]));
 
-        if($data) {
+        if ($data) {
             $registration = $data[0];
-            if(!$this->table->getGroupsBySisId('registration', $registration->ID)) {
+            if (!$this->table->getGroupsBySisId('registration', $registration->ID)) {
                 return (array)$registration;
             }
         }
@@ -363,8 +381,9 @@ class PaymentService extends BaseService {
      * @param int $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
      * @return array(array())
      */
-    public function getPersonsFromRegistrationWithoutPayment($units, $groupId = NULL) {
-        $result = array();
+    public function getPersonsFromRegistrationWithoutPayment($units, $groupId = NULL)
+    {
+        $result = [];
 
         $group = $this->getGroup($units, $groupId);
         if (!$group) {
@@ -384,18 +403,19 @@ class PaymentService extends BaseService {
             }
 
             foreach ($persons as $p) {
-                $result[$p->ID_Person] = (array) $p;
+                $result[$p->ID_Person] = (array)$p;
                 $result[$p->ID_Person]['emails'] = $this->getPersonEmails($p->ID_Person);
             }
         }
         return $result;
     }
 
-    public function getPersonFromRegistration($registrationId, $includeChild = TRUE) {
-        return($this->skautis->org->PersonRegistrationAll(array(
-                    'ID_UnitRegistration' => $registrationId,
-                    'IncludeChild' => $includeChild,
-        )));
+    public function getPersonFromRegistration($registrationId, $includeChild = TRUE)
+    {
+        return ($this->skautis->org->PersonRegistrationAll([
+            'ID_UnitRegistration' => $registrationId,
+            'IncludeChild' => $includeChild,
+        ]));
     }
 
     /**
@@ -407,8 +427,9 @@ class PaymentService extends BaseService {
      * @param int $year
      * @return array | NULL - format array("add" => [], "remove" => [])
      */
-    public function getJournalChangesAfterRegistration($unitId, $year) {
-        $registrations = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId, "Year" => $year));
+    public function getJournalChangesAfterRegistration($unitId, $year)
+    {
+        $registrations = $this->skautis->org->UnitRegistrationAll(["ID_Unit" => $unitId, "Year" => $year]);
         if (!is_array($registrations) || count($registrations) < 1) {
             return NULL;
         }
@@ -416,10 +437,10 @@ class PaymentService extends BaseService {
         $registration = $this->getPersonFromRegistration($registrationId, FALSE);
 
         $regCategories = [];
-        foreach ($this->skautis->org->RegistrationCategoryAll(array("ID_UnitRegistration" => $registrationId)) as $rc) {
+        foreach ($this->skautis->org->RegistrationCategoryAll(["ID_UnitRegistration" => $registrationId]) as $rc) {
             $regCategories[$rc->ID] = $rc->IsJournal;
         }
-        $unitJournals = $this->skautis->Journal->PersonJournalAllUnit(array("ID_Unit" => $unitId, "ShowHistory" => FALSE, "IncludeChild" => TRUE));
+        $unitJournals = $this->skautis->Journal->PersonJournalAllUnit(["ID_Unit" => $unitId, "ShowHistory" => FALSE, "IncludeChild" => TRUE]);
 
         //seznam osob s casopisem
         $personIdsWithJournal = [];
@@ -437,17 +458,19 @@ class PaymentService extends BaseService {
                 $changes["add"][] = $p->Person;
             }
         }
-        return($changes);
+        return ($changes);
     }
 
     /**
      * CAMP
      */
-    public function getCamp($campId) {
-        return $this->skautis->event->{"EventCampDetail"}(array("ID" => $campId));
+    public function getCamp($campId)
+    {
+        return $this->skautis->event->{"EventCampDetail"}(["ID" => $campId]);
     }
 
-    public function getGroupByCampId($campId) {
+    public function getGroupByCampId($campId)
+    {
         $g = $this->table->getGroupsBySisId('camp', $campId);
         return empty($g) ? FALSE : $g[0];
     }
@@ -455,13 +478,15 @@ class PaymentService extends BaseService {
     /**
      * vrací seznam id táborů se založenou aktivní skupinou
      */
-    public function getCampIds() {
+    public function getCampIds()
+    {
         return $this->table->getCampIds();
     }
 
     /* Repayments */
 
-    public function getFioRepaymentString($repayments, $accountFrom, $date = NULL) {
+    public function getFioRepaymentString($repayments, $accountFrom, $date = NULL)
+    {
         if ($date === NULL) {
             $date = date("Y-m-d");
         }
@@ -486,17 +511,18 @@ class PaymentService extends BaseService {
         return $ret;
     }
 
-    public function sendFioPaymentRequest($stringToRequest, $token) {
+    public function sendFioPaymentRequest($stringToRequest, $token)
+    {
         $curl = curl_init();
         $file = tempnam(WWW_DIR . "/../temp/", "XML"); // Vytvoření dočasného souboru s náhodným jménem v systémové temp složce.
         file_put_contents($file, $stringToRequest); // Do souboru se uloží XML string s vygenerovanými příkazy k úhradě.
         try {
             //$cfile = new \CURLFile($file, 'application/xml', 'import.xml'); // Připraví soubor k odeslání přes cURL pro PHP 5.5 a vyšší
-            $this->curl_custom_postfields($curl, array(
+            $this->curl_custom_postfields($curl, [
                 'type' => 'xml',
                 'token' => $token,
                 'lng' => 'cs',
-                    ), array("file" => $file));
+            ], ["file" => $file]);
 
             curl_setopt($curl, CURLOPT_URL, 'https://www.fio.cz/ib_api/rest/import/');
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -506,13 +532,13 @@ class PaymentService extends BaseService {
             curl_setopt($curl, CURLOPT_POST, 1);
             curl_setopt($curl, CURLOPT_VERBOSE, 0);
             curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-//            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data; charset=utf-8;'));
-//            curl_setopt($curl, CURLOPT_POSTFIELDS, array(
-//                'type' => 'xml',
-//                'token' => $token,
-//                'lng' => 'cs',
-//                'file' => $cfile
-//            ));
+            //            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data; charset=utf-8;'));
+            //            curl_setopt($curl, CURLOPT_POSTFIELDS, array(
+            //                'type' => 'xml',
+            //                'token' => $token,
+            //                'lng' => 'cs',
+            //                'file' => $cfile
+            //            ));
             $resultXML = curl_exec($curl); // Odpověď z banky.
             curl_close($curl);
         } catch (Exception $e) {
@@ -530,25 +556,26 @@ class PaymentService extends BaseService {
      * @param array $files "name => path"
      * @return bool
      */
-    function curl_custom_postfields($ch, array $assoc = array(), array $files = array()) {
+    function curl_custom_postfields($ch, array $assoc = [], array $files = [])
+    {
 
         // invalid characters for "name" and "filename"
-        static $disallow = array("\0", "\"", "\r", "\n");
+        static $disallow = ["\0", "\"", "\r", "\n"];
 
         // build normal parameters
         foreach ($assoc as $k => $v) {
             $k = str_replace($disallow, "_", $k);
-            $body[] = implode("\r\n", array(
+            $body[] = implode("\r\n", [
                 "Content-Disposition: form-data; name=\"{$k}\"",
                 "",
                 filter_var($v),
-            ));
+            ]);
         }
 
         // build file parameters
         foreach ($files as $k => $v) {
-            switch (true) {
-                case false === $v = realpath(filter_var($v)):
+            switch (TRUE) {
+                case FALSE === $v = realpath(filter_var($v)):
                 case!is_file($v):
                 case!is_readable($v):
                     continue; // or return false, throw new InvalidArgumentException
@@ -557,12 +584,12 @@ class PaymentService extends BaseService {
             $v = call_user_func("end", explode(DIRECTORY_SEPARATOR, $v));
             $k = str_replace($disallow, "_", $k);
             $v = str_replace($disallow, "_", $v);
-            $body[] = implode("\r\n", array(
+            $body[] = implode("\r\n", [
                 "Content-Disposition: form-data; name=\"{$k}\"; filename=\"{$v}\"",
                 "Content-Type: application/octet-stream",
                 "",
                 $data,
-            ));
+            ]);
         }
 
         // generate safe boundary
@@ -580,15 +607,15 @@ class PaymentService extends BaseService {
         $body[] = "";
 
         // set options
-        return @curl_setopt_array($ch, array(
-                    CURLOPT_POST => true,
-                    CURLOPT_POSTFIELDS => implode("\r\n", $body),
-                    CURLOPT_HTTPHEADER => array(
-                        "Expect: 100-continue",
-                        "charset=utf-8",
-                        "Content-Type: multipart/form-data; boundary={$boundary}", // change Content-Type
-                    ),
-        ));
+        return @curl_setopt_array($ch, [
+            CURLOPT_POST => TRUE,
+            CURLOPT_POSTFIELDS => implode("\r\n", $body),
+            CURLOPT_HTTPHEADER => [
+                "Expect: 100-continue",
+                "charset=utf-8",
+                "Content-Type: multipart/form-data; boundary={$boundary}", // change Content-Type
+            ],
+        ]);
     }
 
 }

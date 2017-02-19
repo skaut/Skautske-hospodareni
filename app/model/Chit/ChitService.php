@@ -9,7 +9,8 @@ use Skautis\Skautis;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class ChitService extends MutableBaseService {
+class ChitService extends MutableBaseService
+{
 
     /** @var Mapper */
     private $skautisMapper;
@@ -29,7 +30,8 @@ class ChitService extends MutableBaseService {
      * @param type $chitId
      * @return \DibiRow
      */
-    public function get($chitId) {
+    public function get($chitId)
+    {
         $ret = $this->table->get($chitId);
         if ($ret instanceof \DibiRow && $this->type == self::TYPE_CAMP) {//doplnění kategorie u paragonu z tábora
             $categories = $this->getCategoriesPairs(NULL, $this->getSkautisId($ret->eventId));
@@ -41,9 +43,10 @@ class ChitService extends MutableBaseService {
     /**
      * seznam paragonů k akci
      * @param type $skautisEventId
-     * @return type 
+     * @return type
      */
-    public function getAll($skautisEventId, $onlyUnlocked = FALSE) {
+    public function getAll($skautisEventId, $onlyUnlocked = FALSE)
+    {
         $list = $this->table->getAll($this->getLocalId($skautisEventId), $onlyUnlocked);
         if (!empty($list) && $this->type == self::TYPE_CAMP) {
             $categories = $this->getCategoriesPairs(NULL, $skautisEventId);
@@ -74,8 +77,9 @@ class ChitService extends MutableBaseService {
      * @param type $list - pole id
      * @return array
      */
-    public function getIn($skautisEventId, $list) {
-        $ret = $this->table->getIn($this->getLocalId($skautisEventId), (array) $list);
+    public function getIn($skautisEventId, $list)
+    {
+        $ret = $this->table->getIn($this->getLocalId($skautisEventId), (array)$list);
         if ($this->type == self::TYPE_CAMP) {
             $categories = $this->getCategoriesPairs(NULL, $skautisEventId);
             foreach ($ret as $k => $v) {
@@ -89,16 +93,17 @@ class ChitService extends MutableBaseService {
      * přidat paragon
      * @param type $skautisEventId
      * @param array|ArrayAccess $val - údaje
-     * @return type 
+     * @return type
      */
-    public function add($skautisEventId, $val) {
+    public function add($skautisEventId, $val)
+    {
         $localEventId = $this->getLocalId($skautisEventId);
 
         if (!is_array($val) && !($val instanceof \ArrayAccess)) {
             throw new \Nette\InvalidArgumentException("Values nejsou ve správném formátu");
         }
 
-        $values = array(
+        $values = [
             "eventId" => $localEventId,
             "date" => $val['date'],
             "recipient" => $val['recipient'],
@@ -107,7 +112,7 @@ class ChitService extends MutableBaseService {
             "priceText" => str_replace(",", ".", $val['price']),
             "category" => $val['category'],
             "num" => isset($val['num']) ? $val['num'] : "", //$val['num'] != "" ? str_pad((int) $val['num'],5,"0",STR_PAD_LEFT) : null
-        );
+        ];
 
         $ret = $this->table->add($values);
         //doplnění čísla dokladu
@@ -116,16 +121,17 @@ class ChitService extends MutableBaseService {
             try {
                 $this->updateCategory($skautisEventId, $val['category']);
             } catch (\Skautis\Wsdl\PermissionException $ex) {
-                
+
             }
         }
 
         return $ret;
     }
 
-    public function generateNumber($chitId) {
+    public function generateNumber($chitId)
+    {
         $chit = $this->get($chitId);
-//        dump($chit);
+        //        dump($chit);
         $categories = $this->getCategoriesPairs(NULL, $this->type == self::TYPE_CAMP ? $this->getSkautisId($chit->eventId) : NULL);
 
         if (array_key_exists($chit->category, $categories['in'])) {
@@ -143,10 +149,11 @@ class ChitService extends MutableBaseService {
      * upravit paragon - staci vyplnit data, ktera se maji zmenit
      * @param type $chitId
      * @param ArrayAccess $val
-     * @return type 
+     * @return type
      */
-    public function update($chitId, $val) {
-        $changeAbleData = array("date", "num", "recipient", "purpose", "price", "category");
+    public function update($chitId, $val)
+    {
+        $changeAbleData = ["date", "num", "recipient", "purpose", "price", "category"];
 
         if (!is_array($val) && !($val instanceof \ArrayAccess)) {
             throw new \Nette\InvalidArgumentException("Values nejsou ve správném formátu");
@@ -157,7 +164,7 @@ class ChitService extends MutableBaseService {
             $val['id'] = $chitId;
         }
 
-        $toChange = array();
+        $toChange = [];
         foreach ($changeAbleData as $name) {
             if (isset($val[$name])) {
                 if ($name == 'price') {
@@ -185,9 +192,10 @@ class ChitService extends MutableBaseService {
      * smazat paragon
      * @param type $chitId
      * @param type $skautisEventId
-     * @return type 
+     * @return type
      */
-    public function delete($chitId, $skautisEventId) {
+    public function delete($chitId, $skautisEventId)
+    {
         return $this->table->delete($chitId, $this->getLocalId($skautisEventId));
     }
 
@@ -195,9 +203,10 @@ class ChitService extends MutableBaseService {
      * smazat všechny paragony dané akce
      * použití při rušení celé akce
      * @param type $skautisEventId
-     * @return type 
+     * @return type
      */
-    public function deleteAll($skautisEventId) {
+    public function deleteAll($skautisEventId)
+    {
         return $this->table->deleteAll($this->getLocalId($skautisEventId));
     }
 
@@ -207,14 +216,15 @@ class ChitService extends MutableBaseService {
      * @param bool $isEstimate - předpoklad?
      * @return array
      */
-    public function getCategories($skautisEventId, $isEstimate = false) {
+    public function getCategories($skautisEventId, $isEstimate = FALSE)
+    {
         if ($this->type == self::TYPE_CAMP) {
             if (is_null($skautisEventId)) {
                 throw new \InvalidArgumentException("Neplatný vstup \$skautisEventId=NULL pro " . __FUNCTION__);
             }
-            $res = array();
-            foreach ($this->skautis->event->EventCampStatementAll(array("ID_EventCamp" => $skautisEventId, "IsEstimate" => $isEstimate)) as $i) { //prepisuje na tvar s klíčem jako ID
-                if ($isEstimate == false && $i->ID_EventCampStatementType == 15) {//$i->ID_EventCampStatementType == 15 => Rezerva v rozpoctu
+            $res = [];
+            foreach ($this->skautis->event->EventCampStatementAll(["ID_EventCamp" => $skautisEventId, "IsEstimate" => $isEstimate]) as $i) { //prepisuje na tvar s klíčem jako ID
+                if ($isEstimate == FALSE && $i->ID_EventCampStatementType == 15) {//$i->ID_EventCampStatementType == 15 => Rezerva v rozpoctu
                     continue;
                 }
                 $res[$i->ID] = $i;
@@ -230,22 +240,23 @@ class ChitService extends MutableBaseService {
      * @param type $skautisEventId
      * @return array(in=>(id=>DisplayName, ...), out=>(...))
      */
-    public function getCategoriesPairs($typeInOut = NULL, $skautisEventId = NULL) {
+    public function getCategoriesPairs($typeInOut = NULL, $skautisEventId = NULL)
+    {
         $cacheId = __METHOD__ . $this->type . $skautisEventId . "_" . $typeInOut;
         if ($this->type == self::TYPE_CAMP) {
             if (is_null($skautisEventId)) {
                 throw new \InvalidArgumentException("Neplatný vstup \$skautisEventId=NULL pro " . __FUNCTION__);
             }
-            $in = $out = array();
+            $in = $out = [];
             if (!($categories = $this->loadSes($cacheId))) {
-                foreach ($this->getCategories($skautisEventId, false) as $i) {
+                foreach ($this->getCategories($skautisEventId, FALSE) as $i) {
                     if ($i->IsRevenue) {//výnosy?
                         $in[$i->ID] = $i->EventCampStatementType;
                     } else {
                         $out[$i->ID] = $i->EventCampStatementType;
                     }
                 }
-                $categories = array("in" => $in, "out" => $out);
+                $categories = ["in" => $in, "out" => $out];
 
                 $this->saveSes($cacheId, $categories);
             }
@@ -253,9 +264,9 @@ class ChitService extends MutableBaseService {
         } else {
             if (($res = $this->cache->load($cacheId)) == NULL) {
                 $res = $this->table->getGeneralCategoriesPairs($typeInOut);
-                $this->cache->save($cacheId, $res, array(
+                $this->cache->save($cacheId, $res, [
                     \Nette\Caching\Cache::EXPIRE => '+ 2 days',
-                ));
+                ]);
             }
             return $res;
         }
@@ -266,7 +277,8 @@ class ChitService extends MutableBaseService {
      * @return type
      * @throws \Nette\InvalidStateException
      */
-    public function getParticipantIncomeCategory($skautisEventId = NULL, $category = NULL) {
+    public function getParticipantIncomeCategory($skautisEventId = NULL, $category = NULL)
+    {
         $cacheId = __FUNCTION__;
         if ($this->type == self::TYPE_CAMP) {
             //@TODO: předělat na konstanty
@@ -300,9 +312,10 @@ class ChitService extends MutableBaseService {
      * @param type $skautisEventId
      * @return (ID=>SUM)
      */
-    public function getCategoriesSum($skautisEventId) {
+    public function getCategoriesSum($skautisEventId)
+    {
         $db = $this->table->getTotalInCategories($this->getLocalId($skautisEventId));
-        $all = $this->getCategories($skautisEventId, false);
+        $all = $this->getCategories($skautisEventId, FALSE);
         foreach (array_keys($all) as $key) {
             $all[$key] = array_key_exists($key, $db) ? $db[$key] : 0;
         }
@@ -312,28 +325,30 @@ class ChitService extends MutableBaseService {
     /**
      * upraví celkový součet dané kategorie ve skautISu podle zadaných paragonů nebo podle parametru $ammout
      * @param int $skautisEventId
-     * @param int $categoryId 
-     * @param float $ammout 
+     * @param int $categoryId
+     * @param float $ammout
      */
-    public function updateCategory($skautisEventId, $categoryId, $ammout = NULL) {
+    public function updateCategory($skautisEventId, $categoryId, $ammout = NULL)
+    {
         if ($ammout === NULL) {
-            $ammout = (int) $this->table->getTotalInCategory($categoryId, $this->getLocalId($skautisEventId));
+            $ammout = (int)$this->table->getTotalInCategory($categoryId, $this->getLocalId($skautisEventId));
         }
-        $this->skautis->event->EventCampStatementUpdate(array(
+        $this->skautis->event->EventCampStatementUpdate([
             "ID" => $categoryId,
             "ID_EventCamp" => $skautisEventId,
             "Ammount" => $ammout,
-            "IsEstimate" => false
-                ), "eventCampStatement");
+            "IsEstimate" => FALSE
+        ], "eventCampStatement");
     }
 
     /**
      * ověřuje konzistentnost dat mezi paragony a SkautISem
      * @param type $skautisEventId
-     * @return boolean 
+     * @return boolean
      */
-    public function isConsistent($skautisEventId, $repair = false, &$toRepair = NULL) {
-        $sumSkautis = $this->getCategories($skautisEventId, false);
+    public function isConsistent($skautisEventId, $repair = FALSE, &$toRepair = NULL)
+    {
+        $sumSkautis = $this->getCategories($skautisEventId, FALSE);
         //$toRepair = array();
         foreach ($this->getCategoriesSum($skautisEventId) as $catId => $ammount) {
             if ($ammount != $sumSkautis[$catId]->Ammount) {
@@ -344,7 +359,7 @@ class ChitService extends MutableBaseService {
                 }
             }
         }
-        return empty($toRepair) ? true : false;
+        return empty($toRepair) ? TRUE : FALSE;
     }
 
     /**
@@ -352,17 +367,19 @@ class ChitService extends MutableBaseService {
      * @param type $skautisEventId
      * @return bool
      */
-    public function eventIsInMinus($skautisEventId) {
+    public function eventIsInMinus($skautisEventId)
+    {
         $data = $this->table->eventIsInMinus($this->getLocalId($skautisEventId));
-        return @(($data["in"] - $data["out"]) < 0) ? true : false; //@ potlačuje chyby u neexistujicich indexů "in" a "out"
+        return @(($data["in"] - $data["out"]) < 0) ? TRUE : FALSE; //@ potlačuje chyby u neexistujicich indexů "in" a "out"
     }
 
     /**
      * vyhodnotí řetězec obsahující čísla, +, *
      * @param string $str - výraz k výpčtu
-     * @return int 
+     * @return int
      */
-    function solveString($str) {
+    function solveString($str)
+    {
         preg_match_all('/(?P<cislo>-?[0-9]+([.][0-9]{1,})?)(?P<operace>[\+\*]+)?/', str_replace(",", ".", $str), $matches);
         $maxIndex = count($matches['cislo']);
         foreach ($matches['operace'] as $index => $op) { //vyřeší operaci násobení
@@ -381,15 +398,18 @@ class ChitService extends MutableBaseService {
      * @param type $userId
      * @return type
      */
-    public function lock($oid, $chitId, $userId) {
+    public function lock($oid, $chitId, $userId)
+    {
         return $this->table->lock($oid, $chitId, $userId);
     }
 
-    public function unlock($oid, $chitId, $userid = NULL) {
+    public function unlock($oid, $chitId, $userid = NULL)
+    {
         return $this->table->unlock($oid, $chitId);
     }
-    
-    public function lockEvent($oid, $userId) {
+
+    public function lockEvent($oid, $userId)
+    {
         return $this->table->lockEvent($oid, $userId);
     }
 
@@ -400,11 +420,13 @@ class ChitService extends MutableBaseService {
      * @param int $out
      * @return type
      */
-    public function setBudgetCategories($chitId, $in = NULL, $out = NULL) {
-        return $this->table->update($chitId, array("budgetCategoryIn" => $in, "budgetCategoryOut" => $out));
+    public function setBudgetCategories($chitId, $in = NULL, $out = NULL)
+    {
+        return $this->table->update($chitId, ["budgetCategoryIn" => $in, "budgetCategoryOut" => $out]);
     }
 
-    public function getBudgetCategoriesSummary($categories) {
+    public function getBudgetCategoriesSummary($categories)
+    {
         return $this->table->getBudgetCategoriesSummary(array_keys($categories['in']), 'in') + $this->table->getBudgetCategoriesSummary(array_keys($categories['out']), 'out');
     }
 
@@ -412,12 +434,12 @@ class ChitService extends MutableBaseService {
      * @param int $localEventId
      * @return int|NULL
      */
-    public function getSkautisId(int $localEventId) : ?int
+    public function getSkautisId(int $localEventId): ?int
     {
         return $this->skautisMapper->getSkautisId($localEventId, $this->type);
     }
 
-    private function getLocalId(int $skautisEventId) : int
+    private function getLocalId(int $skautisEventId): int
     {
         return $this->skautisMapper->getLocalId($skautisEventId, $this->type);
     }

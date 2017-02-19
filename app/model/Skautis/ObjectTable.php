@@ -22,7 +22,7 @@ class ObjectTable
         $this->connection = $connection;
     }
 
-    public function add(int $skautisId, string $type) : int
+    public function add(int $skautisId, string $type): int
     {
         return $this->connection->insert(self::TABLE, [
             'skautisId' => $skautisId,
@@ -36,7 +36,7 @@ class ObjectTable
      * @param  $type
      * @return int
      */
-    public function getLocalId($skautisEventId, $type) : ?int
+    public function getLocalId($skautisEventId, $type): ?int
     {
         return $this->connection->select('id')
             ->from(self::TABLE)
@@ -45,7 +45,7 @@ class ObjectTable
             ->fetchSingle();
     }
 
-    public function getSkautisId(int $localId, string $type) : ?int
+    public function getSkautisId(int $localId, string $type): ?int
     {
         return $this->connection->select('skautisId')
             ->from(self::TABLE)

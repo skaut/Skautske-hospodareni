@@ -9,7 +9,8 @@ use Model\TravelService;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class ContractPresenter extends BasePresenter {
+class ContractPresenter extends BasePresenter
+{
 
     /** @var TravelService */
     private $travelService;
@@ -24,15 +25,18 @@ class ContractPresenter extends BasePresenter {
         $this->pdf = $pdf;
     }
 
-    protected function isContractAccessible($contractId) {
+    protected function isContractAccessible($contractId)
+    {
         return $this->travelService->isContractAccessible($contractId, $this->unit);
     }
 
-    public function renderDefault() {
+    public function renderDefault()
+    {
         $this->template->list = $this->travelService->getAllContracts($this->unit->ID);
     }
 
-    public function renderDetail($id) {
+    public function renderDetail($id)
+    {
         if (!$this->isContractAccessible($id)) {
             $this->flashMessage("Nemáte oprávnění k cestovnímu příkazu.", "danger");
             $this->redirect("default");
@@ -41,7 +45,8 @@ class ContractPresenter extends BasePresenter {
         $this->template->commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contract->id);
     }
 
-    public function actionPrint($contractId) {
+    public function actionPrint($contractId)
+    {
         $template = $this->template;
         $template->contract = $contract = $this->travelService->getContract($contractId);
         $template->unit = $this->unitService->getDetail($contract->unit_id);
@@ -61,7 +66,8 @@ class ContractPresenter extends BasePresenter {
         $this->pdf->render($template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
     }
 
-    public function handleDelete($contractId) {
+    public function handleDelete($contractId)
+    {
         $commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contractId);
         if (!empty($commands)) {
             $this->flashMessage("Nelze smazat smlouvu s navázanými cestovními příkazy!", "danger");
@@ -75,36 +81,38 @@ class ContractPresenter extends BasePresenter {
     /**
      * formular na zalozeni nove smlouvy
      * @param type $name
-     * @return \Form 
+     * @return \Form
      */
-    function createComponentFormCreateContract($name) {
+    function createComponentFormCreateContract($name)
+    {
         $form = $this->prepareForm($this, $name);
         $form->addText("driver_name", "Jméno a příjmení řidiče*")
-                ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte vyplnit jméno řidiče.");
+            ->setAttribute("class", "form-control")
+            ->addRule(Form::FILLED, "Musíte vyplnit jméno řidiče.");
         $form->addText("driver_address", "Bydliště řidiče*")
-                ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte vyplnit bydliště řidiče.");
+            ->setAttribute("class", "form-control")
+            ->addRule(Form::FILLED, "Musíte vyplnit bydliště řidiče.");
         $form->addDatePicker("driver_birthday", "Datum narození řidiče*")
-                ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte vyplnit datum narození řidiče.");
+            ->setAttribute("class", "form-control")
+            ->addRule(Form::FILLED, "Musíte vyplnit datum narození řidiče.");
         $form->addText("driver_contact", "Telefon na řidiče (9cifer)*")
-                ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte vyplnit telefon na řidiče.")
-                ->addRule(Form::NUMERIC, "Telefon musí být číslo.");
-        
+            ->setAttribute("class", "form-control")
+            ->addRule(Form::FILLED, "Musíte vyplnit telefon na řidiče.")
+            ->addRule(Form::NUMERIC, "Telefon musí být číslo.");
+
         $form->addText("unit_person", "Zástupce jednotky")
-                ->setAttribute("class", "form-control");
+            ->setAttribute("class", "form-control");
         $form->addDatePicker("start", "Platnost od")
-                ->setAttribute("class", "form-control");
+            ->setAttribute("class", "form-control");
 
         $form->addSubmit('send', 'Založit smlouvu')
-                ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary");
+        $form->onSuccess[] = [$this, $name . 'Submitted'];
         return $form;
     }
 
-    function formCreateContractSubmitted(Form $form) {
+    function formCreateContractSubmitted(Form $form)
+    {
         $v = $form->getValues();
         $v['end'] = isset($v['end']) ? $v['end'] : NULL;
         $v->unit_id = $this->unit->ID;

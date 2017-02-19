@@ -8,7 +8,8 @@ use Nette\Application\UI\Form;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class PaymentPresenter extends BasePresenter {
+class PaymentPresenter extends BasePresenter
+{
 
     protected $notFinalStates;
 
@@ -21,27 +22,29 @@ class PaymentPresenter extends BasePresenter {
     protected $editUnits;
     protected $unitService;
 
-	/** @var FormFactory */
-	private $formFactory;
+    /** @var FormFactory */
+    private $formFactory;
 
-	/** @var int */
-	private $id;
+    /** @var int */
+    private $id;
 
-	/** @var object */
-	private $bankInfo;
+    /** @var object */
+    private $bankInfo;
 
     public function __construct(
-		\Model\PaymentService $paymentService,
-		\Model\BankService $bankService,
-		\Model\UnitService $unitService,
-		FormFactory $formFactory) {
+        \Model\PaymentService $paymentService,
+        \Model\BankService $bankService,
+        \Model\UnitService $unitService,
+        FormFactory $formFactory)
+    {
         parent::__construct($paymentService);
         $this->bank = $bankService;
         $this->unitService = $unitService;
-		$this->formFactory = $formFactory;
+        $this->formFactory = $formFactory;
     }
 
-    protected function startup() {
+    protected function startup()
+    {
         parent::startup();
         //Kontrola ověření přístupu
         $this->template->notFinalStates = $this->notFinalStates = $this->model->getNonFinalStates();
@@ -50,7 +53,8 @@ class PaymentPresenter extends BasePresenter {
         $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
 
-    public function renderDefault($onlyOpen = 1) {
+    public function renderDefault($onlyOpen = 1)
+    {
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
         foreach ($groups as $gid => $g) {
@@ -61,12 +65,13 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function actionDetail($id)
-	{
-		$this->id = $id;
-		$this->bankInfo = $this->bank->getInfo($this->aid);
-	}
+    {
+        $this->id = $id;
+        $this->bankInfo = $this->bank->getInfo($this->aid);
+    }
 
-    public function renderDetail($id) {
+    public function renderDetail($id)
+    {
         $this->template->units = $this->readUnits;
         $this->template->group = $group = $this->model->getGroup(array_keys($this->readUnits), $id);
         if (!$group) {
@@ -75,13 +80,13 @@ class PaymentPresenter extends BasePresenter {
         }
         $this->template->maxVS = $maxVS = $this->model->getMaxVS($group['id']);
         $form = $this['paymentForm'];
-        $form->setDefaults(array(
+        $form->setDefaults([
             'amount' => $group['amount'],
             'maturity' => $group['maturity'],
             'ks' => $group['ks'],
             'oid' => $group['id'],
             'vs' => $maxVS != NULL ? $maxVS + 1 : "",
-        ));
+        ]);
 
         $this->template->payments = $payments = $this->model->getAll($id);
         $this->template->summarize = $this->model->summarizeByState($id);
@@ -90,7 +95,8 @@ class PaymentPresenter extends BasePresenter {
         $this->template->canPair = isset($this->bankInfo->token);
     }
 
-    public function renderEdit($pid) {
+    public function renderEdit($pid)
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
             $this->redirect("Payment:default");
@@ -98,7 +104,7 @@ class PaymentPresenter extends BasePresenter {
         $payment = $this->model->get(array_keys($this->editUnits), $pid);
         $form = $this['paymentForm'];
         $form['send']->caption = "Upravit";
-        $form->setDefaults(array(
+        $form->setDefaults([
             'name' => $payment->name,
             'email' => $payment->email,
             'amount' => $payment->amount,
@@ -108,12 +114,13 @@ class PaymentPresenter extends BasePresenter {
             'note' => $payment->note,
             'oid' => $payment->groupId,
             'pid' => $payment->id,
-        ));
+        ]);
 
-        $this->template->linkBack = $this->link("detail", array("id" => $payment->groupId));
+        $this->template->linkBack = $this->link("detail", ["id" => $payment->groupId]);
     }
 
-    public function actionMassAdd($id) {
+    public function actionMassAdd($id)
+    {
         //ověření přístupu
         $this->template->unitPairs = $this->readUnits;
         $this->template->detail = $detail = $this->model->getGroup(array_keys($this->readUnits), $id);
@@ -121,7 +128,7 @@ class PaymentPresenter extends BasePresenter {
 
         if (!$detail) {
             $this->flashMessage("Neplatný požadavek na přehled osob", "danger");
-            $this->redirect("Payment:detail", array("id" => $id));
+            $this->redirect("Payment:detail", ["id" => $id]);
         }
 
         $form = $this['massAddForm'];
@@ -129,21 +136,22 @@ class PaymentPresenter extends BasePresenter {
 
         foreach ($list as $p) {
             $form->addSelect($p['ID'] . '_email', NULL, $p['emails'])
-                    ->setPrompt("")
-                    ->setDefaultValue(key($p['emails']))
-                    ->setAttribute('class', 'form-control');
+                ->setPrompt("")
+                ->setDefaultValue(key($p['emails']))
+                ->setAttribute('class', 'form-control');
         }
     }
 
-    public function actionRepayment($id) {
+    public function actionRepayment($id)
+    {
         $campService = $this->context->getService("campService");
         $accountFrom = $this->model->getBankAccount($this->aid);
         $this->template->group = $group = $this->model->getGroup(array_keys($this->readUnits), $id);
-        $this['repaymentForm']->setDefaults(array(
+        $this['repaymentForm']->setDefaults([
             "gid" => $group->id,
             "accountFrom" => $accountFrom,
-        ));
-        $payments = array();
+        ]);
+        $payments = [];
         foreach ($this->model->getAll($id) as $p) {
             if ($p->state == "completed" && $p->personId != NULL) {
                 $payments[$p->personId] = $p;
@@ -152,56 +160,58 @@ class PaymentPresenter extends BasePresenter {
         $participantsWithRepayment = array_filter($campService->participants->getAll($group->sisId), function ($p) {
             return $p->repayment != NULL;
         });
-        
+
         $form = $this['repaymentForm'];
         foreach ($participantsWithRepayment as $p) {
             $pid = "p_" . $p->ID;
             $form->addCheckbox($pid);
             $form->addText($pid . "_name")
-                    ->setDefaultValue("Vratka - " . $p->Person . " - " . $group->label)
-                    ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
-                    ->setRequired("Zadejte název vratky!");
+                ->setDefaultValue("Vratka - " . $p->Person . " - " . $group->label)
+                ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
+                ->setRequired("Zadejte název vratky!");
             $form->addText($pid . "_amount")
-                    ->setDefaultValue($p->repayment)
-                    ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
-                        ->setRequired("Zadejte částku vratky u " . $p->Person)
-                        ->addRule(Form::NUMERIC, "Vratka musí být číslo!");
+                ->setDefaultValue($p->repayment)
+                ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
+                ->setRequired("Zadejte částku vratky u " . $p->Person)
+                ->addRule(Form::NUMERIC, "Vratka musí být číslo!");
             $account = isset($payments[$p->ID_Person]->paidFrom) ? $payments[$p->ID_Person]->paidFrom : "";
             $form->addText($pid . "_account")
-                    ->setDefaultValue($account)
-                    ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
-                    ->addRule(Form::PATTERN, "Zadejte platný bankovní účet u " . $p->Person, "[0-9]{5,}/[0-9]{4}$");
+                ->setDefaultValue($account)
+                ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
+                ->addRule(Form::PATTERN, "Zadejte platný bankovní účet u " . $p->Person, "[0-9]{5,}/[0-9]{4}$");
         }
 
         $this->template->participants = $participantsWithRepayment;
         $this->template->payments = $payments;
     }
 
-    public function createComponentMassAddForm($name) {
+    public function createComponentMassAddForm($name)
+    {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
         $form->addText("defaultAmount", "Částka:")
-                ->setAttribute('class', 'form-control input-sm');
+            ->setAttribute('class', 'form-control input-sm');
         $form->addDatePicker('defaultMaturity', "Splatnost:")//
-                ->setAttribute('class', 'form-control input-sm');
+        ->setAttribute('class', 'form-control input-sm');
         $form->addText("defaultKs", "KS:")
-                ->setMaxLength(4);
+            ->setMaxLength(4);
         $form->addText("defaultNote", "Poznámka:")
-                ->setAttribute('class', 'form-control input-sm');
+            ->setAttribute('class', 'form-control input-sm');
         $form->addSubmit('send', 'Přidat vybrané')
-                ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSubmit[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary btn-large");
+        $form->onSubmit[] = [$this, $name . 'Submitted'];
         return $form;
     }
 
-    function massAddFormSubmitted(Form $form) {
+    function massAddFormSubmitted(Form $form)
+    {
         $values = $form->getValues();
         $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
         $vals = $form->getHttpData()['vals'];
 
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "danger");
-            $this->redirect("Payment:detail", array("id" => $values->oid));
+            $this->redirect("Payment:detail", ["id" => $values->oid]);
         }
         //$list = $this->model->getPersons($this->aid, $values->oid);
 
@@ -243,10 +253,11 @@ class PaymentPresenter extends BasePresenter {
         }
 
         $this->flashMessage("Platby byly přidány");
-        $this->redirect("Payment:detail", array("id" => $values->oid));
+        $this->redirect("Payment:detail", ["id" => $values->oid]);
     }
 
-    public function handleCancel($pid) {
+    public function handleCancel($pid)
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "danger");
             $this->redirect("this");
@@ -263,7 +274,8 @@ class PaymentPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function handleSend($pid) {
+    public function handleSend($pid)
+    {
         $payment = $this->model->get(array_keys($this->editUnits), $pid);
         $group = $this->model->getGroup(array_keys($this->readUnits), $payment->groupId);
         if (!$this->isEditable || !$group || !$this->model->get(array_keys($this->editUnits), $pid)) {
@@ -283,7 +295,8 @@ class PaymentPresenter extends BasePresenter {
      * rozešle všechny neposlané emaily
      * @param int $gid groupId
      */
-    public function handleSendGroup($gid) {
+    public function handleSendGroup($gid)
+    {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
             $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
@@ -305,7 +318,8 @@ class PaymentPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function handleSendTest($gid) {
+    public function handleSendTest($gid)
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na odeslání testovacího emailu!", "danger");
             $this->redirect("this");
@@ -316,19 +330,19 @@ class PaymentPresenter extends BasePresenter {
             $this->redirect("this");
         }
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
-        $payment = \Nette\Utils\ArrayHash::from(array(
-                    "state" => \Model\PaymentTable::PAYMENT_STATE_PREPARING,
-                    "name" => "Testovací účel",
-                    "email" => $personalDetail->Email,
-                    "unitId" => $group->unitId,
-                    "amount" => $group->amount != 0 ? $group->amount : rand(50, 1000),
-                    "maturity" => $group->maturity instanceof \DateTime ? $group->maturity : new \DateTime(date("Y-m-d", strtotime("+2 week"))),
-                    "ks" => $group->ks,
-                    "vs" => rand(1000, 100000),
-                    "email_info" => $group->email_info,
-                    "note" => "obsah poznámky",
-                    "groupId" => $gid,
-        ));
+        $payment = \Nette\Utils\ArrayHash::from([
+            "state" => \Model\PaymentTable::PAYMENT_STATE_PREPARING,
+            "name" => "Testovací účel",
+            "email" => $personalDetail->Email,
+            "unitId" => $group->unitId,
+            "amount" => $group->amount != 0 ? $group->amount : rand(50, 1000),
+            "maturity" => $group->maturity instanceof \DateTime ? $group->maturity : new \DateTime(date("Y-m-d", strtotime("+2 week"))),
+            "ks" => $group->ks,
+            "vs" => rand(1000, 100000),
+            "email_info" => $group->email_info,
+            "note" => "obsah poznámky",
+            "groupId" => $gid,
+        ]);
         if ($this->sendInfoMail($payment, $group)) {
             $this->flashMessage("Testovací email byl odeslán na " . $personalDetail->Email . " .");
         } else {
@@ -338,7 +352,8 @@ class PaymentPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function handleComplete($pid) {
+    public function handleComplete($pid)
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k uzavření platby!", "danger");
             $this->redirect("this");
@@ -352,11 +367,12 @@ class PaymentPresenter extends BasePresenter {
     }
 
     public function handlePairPayments($gid)
-	{
+    {
         $this->pairPairments($gid);
     }
 
-    public function handleGenerateVs($gid) {
+    public function handleGenerateVs($gid)
+    {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
             $this->flashMessage("Nemáte oprávnění generovat VS!", "danger");
@@ -371,7 +387,7 @@ class PaymentPresenter extends BasePresenter {
         $cnt = 0;
         foreach ($payments as $payment) {
             if (empty($payment->vs) && $payment->state == "preparing") {
-                $this->model->update($payment->id, array("vs" => ++$maxVS));
+                $this->model->update($payment->id, ["vs" => ++$maxVS]);
                 $cnt++;
             }
         }
@@ -379,62 +395,66 @@ class PaymentPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function handleCloseGroup($gid) {
+    public function handleCloseGroup($gid)
+    {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
             $this->flashMessage("Nejste oprávněni úpravám akce!", "danger");
             $this->redirect("this");
         }
         $userData = $this->userService->getUserDetail();
-        $this->model->updateGroup($gid, array("state" => "closed", "state_info" => "Uživatel " . $userData->Person . " uzavřel skupinu plateb dne " . date("j.n.Y H:i")));
+        $this->model->updateGroup($gid, ["state" => "closed", "state_info" => "Uživatel " . $userData->Person . " uzavřel skupinu plateb dne " . date("j.n.Y H:i")]);
         $this->redirect("this");
     }
 
-    public function handleOpenGroup($gid) {
+    public function handleOpenGroup($gid)
+    {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
             $this->flashMessage("Nejste oprávněni úpravám akce!", "danger");
             $this->redirect("this");
         }
         $userData = $this->userService->getUserDetail();
-        $this->model->updateGroup($gid, array("state" => "open", "state_info" => "Uživatel " . $userData->Person . " otevřel skupinu plateb dne " . date("j.n.Y H:i")), FALSE);
+        $this->model->updateGroup($gid, ["state" => "open", "state_info" => "Uživatel " . $userData->Person . " otevřel skupinu plateb dne " . date("j.n.Y H:i")], FALSE);
         $this->redirect("this");
     }
 
-    public function createComponentPaymentForm($name) {
+    public function createComponentPaymentForm($name)
+    {
         $form = $this->prepareForm($this, $name);
         $form->addText("name", "Název/účel")
-                ->setAttribute('class', 'form-control')
-                ->addRule(Form::FILLED, "Musíte zadat název platby");
+            ->setAttribute('class', 'form-control')
+            ->addRule(Form::FILLED, "Musíte zadat název platby");
         $form->addText("amount", "Částka")
-                ->setAttribute('class', 'form-control')
-                ->addRule(Form::FILLED, "Musíte vyplnit částku")
-                ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
+            ->setAttribute('class', 'form-control')
+            ->addRule(Form::FILLED, "Musíte vyplnit částku")
+            ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
         $form->addText("email", "Email")
-                ->setAttribute('class', 'form-control')
-                ->addCondition(Form::FILLED)
-                ->addRule(Form::EMAIL, "Zadaný email nemá platný formát");
+            ->setAttribute('class', 'form-control')
+            ->addCondition(Form::FILLED)
+            ->addRule(Form::EMAIL, "Zadaný email nemá platný formát");
         $form->addDatePicker("maturity", "Splatnost")
-                ->setAttribute('class', 'form-control');
+            ->setAttribute('class', 'form-control');
         $form->addText("vs", "VS")
-                ->setMaxLength(10)
-                ->setAttribute('class', 'form-control')
-                ->addCondition(Form::FILLED)
-                ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
+            ->setMaxLength(10)
+            ->setAttribute('class', 'form-control')
+            ->addCondition(Form::FILLED)
+            ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addText("ks", "KS")
-                ->setMaxLength(4)
-                ->setAttribute('class', 'form-control')
-                ->addCondition(Form::FILLED)->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
+            ->setMaxLength(4)
+            ->setAttribute('class', 'form-control')
+            ->addCondition(Form::FILLED)->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
         $form->addText("note", "Poznámka")
-                ->setAttribute('class', 'form-control');
+            ->setAttribute('class', 'form-control');
         $form->addHidden("oid");
         $form->addHidden("pid");
         $form->addSubmit('send', 'Přidat platbu')->setAttribute("class", "btn btn-primary");
-        $form->onSubmit[] = array($this, 'paymentSubmitted');
+        $form->onSubmit[] = [$this, 'paymentSubmitted'];
         return $form;
     }
 
-    function paymentSubmitted(Form $form) {
+    function paymentSubmitted(Form $form)
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k úpravám plateb!", "danger");
             $this->redirect("this");
@@ -445,7 +465,7 @@ class PaymentPresenter extends BasePresenter {
             return;
         }
         if ($v->pid != "") {//EDIT
-            if ($this->model->update($v->pid, array('state' => 'preparing', 'name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => $v->note))) {
+            if ($this->model->update($v->pid, ['state' => 'preparing', 'name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => $v->note])) {
                 $this->flashMessage("Platba byla upravena");
             } else {
                 $this->flashMessage("Platbu se nepodařilo založit", "danger");
@@ -457,10 +477,11 @@ class PaymentPresenter extends BasePresenter {
                 $this->flashMessage("Platbu se nepodařilo založit", "danger");
             }
         }
-        $this->redirect("detail", array("id" => $v->oid));
+        $this->redirect("detail", ["id" => $v->oid]);
     }
 
-    protected function sendInfoMail($payment, $group) {
+    protected function sendInfoMail($payment, $group)
+    {
         try {
             return $this->model->sendInfo($this->template, $payment, $group, $this->unitService);
         } catch (\Nette\Mail\SmtpException $ex) {
@@ -470,37 +491,38 @@ class PaymentPresenter extends BasePresenter {
         }
     }
 
-    public function createComponentRepaymentForm($name) {
+    public function createComponentRepaymentForm($name)
+    {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("gid");
         $form->addText("accountFrom", "Z účtu:")
-                ->addRule(Form::FILLED, "Zadejte číslo účtu ze kterého se mají peníze poslat");
+            ->addRule(Form::FILLED, "Zadejte číslo účtu ze kterého se mají peníze poslat");
         $form->addDatePicker("date", "Datum splatnosti:")
-                ->setDefaultValue(date("j. n. Y", strtotime("+1 Weekday")));
+            ->setDefaultValue(date("j. n. Y", strtotime("+1 Weekday")));
         $form->addSubmit('send', 'Odeslat platby do banky')
-                ->setAttribute("class", "btn btn-primary btn-large");
+            ->setAttribute("class", "btn btn-primary btn-large");
 
-        $form->onSubmit[] = function(Form $form) {
-        	$this->repaymentFormSubmitted($form);
+        $form->onSubmit[] = function (Form $form) {
+            $this->repaymentFormSubmitted($form);
         };
 
         return $form;
     }
 
     private function repaymentFormSubmitted(Form $form)
-	{
-		$values = $form->getValues();
+    {
+        $values = $form->getValues();
 
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro práci s platbami jednotky", "danger");
-            $this->redirect("Payment:default", array("id" => $values->gid));
+            $this->redirect("Payment:default", ["id" => $values->gid]);
         }
         //$list = $this->model->getPersons($this->aid, $values->oid);
 
         $accountFrom = $values->accountFrom;
-        $ids = array_keys(array_filter((array) $values, function($val) {
-                    return(is_bool($val) && $val);
-                }));
+        $ids = array_keys(array_filter((array)$values, function ($val) {
+            return (is_bool($val) && $val);
+        }));
 
         if (empty($ids)) {
             $form->addError("Nebyl vybrán žádný záznam k vrácení!");
@@ -508,7 +530,7 @@ class PaymentPresenter extends BasePresenter {
         }
 
         $bankValidator = new \BankAccountValidator\Czech();
-        $data = array();
+        $data = [];
         foreach ($ids as $pid) {
             $pid = substr($pid, 2);
             $data[$pid]['name'] = $values["p_" . $pid . "_name"];
@@ -530,67 +552,67 @@ class PaymentPresenter extends BasePresenter {
 
         if ($result->result->errorCode == 0) {//OK
             $this->flashMessage("Vratky byly odeslány do banky");
-            $this->redirect("Payment:detail", array("id" => $values->gid));
+            $this->redirect("Payment:detail", ["id" => $values->gid]);
         } else {
             $form->addError("Chyba z banky: " . $result->ordersDetails->detail->messages->message);
         }
     }
 
     protected function createComponentPairForm()
-	{
-		$form = $this->formFactory->create(TRUE);
+    {
+        $form = $this->formFactory->create(TRUE);
 
-		$days = $this->bankInfo->daysback ?? 0;
+        $days = $this->bankInfo->daysback ?? 0;
 
-		$form->addText('days', 'Počet dní', 2, 2)
-			->setDefaultValue($days)
-			->addRule($form::MIN, 'Musíte zadat alespoň počet dní z nastavení: %d', $days)
-			->setType('number');
-		$form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
+        $form->addText('days', 'Počet dní', 2, 2)
+            ->setDefaultValue($days)
+            ->addRule($form::MIN, 'Musíte zadat alespoň počet dní z nastavení: %d', $days)
+            ->setType('number');
+        $form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
 
-		$form->onSuccess[] = function($form, $values) {
-			$this->pairPairments($this->id, $values->days);
-		};
-		$this->redrawControl('pairForm');
-		return $form;
-	}
+        $form->onSuccess[] = function ($form, $values) {
+            $this->pairPairments($this->id, $values->days);
+        };
+        $this->redrawControl('pairForm');
+        return $form;
+    }
 
-	/**
-	 * @param int $groupId
-	 * @param int|NULL $days
-	 */
-	private function pairPairments($groupId, $days = NULL)
-	{
-		if (!$this->isEditable) {
-			$this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
-			$this->redraw('pairForm');
-		}
-		try {
-			$pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $groupId, $days);
-		} catch (\Model\BankTimeoutException $exc) {
-			$this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
-		} catch (\Model\BankTimeLimitException $exc) {
-			$this->flashMessage("Mezi dotazy na bankovnictví musí být prodleva 1 minuta!", 'danger');
-		}
+    /**
+     * @param int $groupId
+     * @param int|NULL $days
+     */
+    private function pairPairments($groupId, $days = NULL)
+    {
+        if (!$this->isEditable) {
+            $this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
+            $this->redraw('pairForm');
+        }
+        try {
+            $pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $groupId, $days);
+        } catch (\Model\BankTimeoutException $exc) {
+            $this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
+        } catch (\Model\BankTimeLimitException $exc) {
+            $this->flashMessage("Mezi dotazy na bankovnictví musí být prodleva 1 minuta!", 'danger');
+        }
 
-		if (isset($pairsCnt) && $pairsCnt > 0) {
-			$this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
-		} else {
-			$this->flashMessage("Žádné platby nebyly spárovány");
-		}
-		$this->redraw('pairForm');
-	}
+        if (isset($pairsCnt) && $pairsCnt > 0) {
+            $this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
+        } else {
+            $this->flashMessage("Žádné platby nebyly spárovány");
+        }
+        $this->redraw('pairForm');
+    }
 
-	/**
-	 * @param string $snippet
-	 */
-	private function redraw($snippet)
-	{
-		if($this->isAjax()) {
-			$this->redrawControl($snippet);
-		} else {
-			$this->redirect('this');
-		}
-	}
+    /**
+     * @param string $snippet
+     */
+    private function redraw($snippet)
+    {
+        if ($this->isAjax()) {
+            $this->redrawControl($snippet);
+        } else {
+            $this->redirect('this');
+        }
+    }
 
 }

@@ -30,9 +30,9 @@ class MailService
         $this->defaultMailer = $defaultMailer;
     }
 
-    private function getMailer($groupId) : IMailer
+    private function getMailer($groupId): IMailer
     {
-        if($groupId && $data = $this->getSmtpByGroup($groupId)) {
+        if ($groupId && $data = $this->getSmtpByGroup($groupId)) {
             return $this->mailerFactory->create(
                 $data['host'],
                 $data['username'],
@@ -45,41 +45,50 @@ class MailService
 
     //SMTP
 
-    public function get($id) {
+    public function get($id)
+    {
         return $this->table->get($id);
     }
 
-    public function getAll($unitId) {
+    public function getAll($unitId)
+    {
         return $this->table->getAll($unitId);
     }
 
-    public function getPairs($unitId) {
+    public function getPairs($unitId)
+    {
         return $this->table->getPairs($unitId);
     }
 
-    public function getSmtpByGroup($groupId) {
+    public function getSmtpByGroup($groupId)
+    {
         return $this->table->getSmtpByGroup($groupId);
     }
 
-    public function addSmtp($unitId, $host, $username, $password, $secure = "ssl") {
+    public function addSmtp($unitId, $host, $username, $password, $secure = "ssl")
+    {
         return $this->table->addSmtp($unitId, $host, $username, $password, $secure);
     }
 
-    public function removeSmtp($unitId, $id) {
+    public function removeSmtp($unitId, $id)
+    {
         return $this->table->removeSmtp($unitId, $id);
     }
 
-    public function updateSmtp($unitId, $id, $data) {
+    public function updateSmtp($unitId, $id, $data)
+    {
         return $this->table->updateSmtp($unitId, $id, $data);
     }
 
     //SMTP GROUP
 
-    public function addSmtpGroup($groupId, $smtpId) {
+    public function addSmtpGroup($groupId, $smtpId)
+    {
         return $this->table->addSmtpGroup($groupId, $smtpId);
     }
 
-    public function removeSmtpGroup($groupId) {
+    public function removeSmtpGroup($groupId)
+    {
         return $this->table->removeSmtpGroup($groupId);
     }
 
@@ -88,7 +97,7 @@ class MailService
      * @param Message $mail
      * @param int $groupId
      */
-    public function send(Message $mail, int $groupId) : void
+    public function send(Message $mail, int $groupId): void
     {
         $mail->setFrom(self::EMAIL_SENDER);
         $this->getMailer($groupId)->send($mail);

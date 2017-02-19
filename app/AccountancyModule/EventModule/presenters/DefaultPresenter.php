@@ -8,7 +8,8 @@ use MyValidators;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class DefaultPresenter extends BasePresenter {
+class DefaultPresenter extends BasePresenter
+{
 
     const DEFAULT_STATE = "draft"; //filtrovani zobrazených položek
 
@@ -20,12 +21,14 @@ class DefaultPresenter extends BasePresenter {
      */
     protected $excelService;
 
-    public function __construct(\Model\ExcelService $excel) {
+    public function __construct(\Model\ExcelService $excel)
+    {
         parent::__construct();
         $this->excelService = $excel;
     }
 
-    function startup() {
+    function startup()
+    {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
         $this->ses = $this->session->getSection(__CLASS__);
@@ -37,7 +40,8 @@ class DefaultPresenter extends BasePresenter {
         }
     }
 
-    public function renderDefault($sort = 'start') {
+    public function renderDefault($sort = 'start')
+    {
         //filtrovani zobrazených položek
         $year = isset($this->ses->year) ? $this->ses->year : date("Y");
         $state = isset($this->ses->state) ? $this->ses->state : NULL;
@@ -62,7 +66,8 @@ class DefaultPresenter extends BasePresenter {
         $this->template->sort = $sort;
     }
 
-    protected function sortEvents(&$list, $param) {
+    protected function sortEvents(&$list, $param)
+    {
         switch ($param) {
             case 'name':
                 $fnc = function ($a, $b) {
@@ -100,19 +105,20 @@ class DefaultPresenter extends BasePresenter {
                 };
         }
         uasort($list, $fnc
-//                function ($a, $b) use ($fnc) {
-//            $at = strtotime($a[$sortParam]);
-//            $bt = strtotime($b[$sortParam]);
-//            return ($at == $bt) ? strcasecmp($a['DisplayName'], $b['DisplayName']) : ($fnc ? 1 : -1);
-//        }
+        //                function ($a, $b) use ($fnc) {
+        //            $at = strtotime($a[$sortParam]);
+        //            $bt = strtotime($b[$sortParam]);
+        //            return ($at == $bt) ? strcasecmp($a['DisplayName'], $b['DisplayName']) : ($fnc ? 1 : -1);
+        //        }
         );
     }
 
     /**
      * mění podmínky filtrování akcí podle roku
-     * @param type $year 
+     * @param type $year
      */
-    public function handleChangeYear($year) {
+    public function handleChangeYear($year)
+    {
         $this->ses->year = $year;
         if ($this->isAjax()) {
             $this->redrawControl('events');
@@ -123,9 +129,10 @@ class DefaultPresenter extends BasePresenter {
 
     /**
      * změní podmínky filtrování akcí podle stavu akce
-     * @param type $state 
+     * @param type $state
      */
-    public function handleChangeState($state) {
+    public function handleChangeState($state)
+    {
         $this->ses->state = $state;
         if ($this->isAjax()) {
             $this->redrawControl('events');
@@ -136,9 +143,10 @@ class DefaultPresenter extends BasePresenter {
 
     /**
      * zruší akci
-     * @param type $aid 
+     * @param type $aid
      */
-    public function handleCancel($aid) {
+    public function handleCancel($aid)
+    {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Cancel")) {
             $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
             $this->redirect("this");
@@ -153,9 +161,10 @@ class DefaultPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    function createComponentFormFilter($name) {
-        $states = array_merge(array("all" => "Nezrušené"), $this->eventService->event->getStates());
-        $years = array("all" => "Všechny");
+    function createComponentFormFilter($name)
+    {
+        $states = array_merge(["all" => "Nezrušené"], $this->eventService->event->getStates());
+        $years = ["all" => "Všechny"];
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
         }
@@ -163,54 +172,58 @@ class DefaultPresenter extends BasePresenter {
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
-                ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary");
+        $form->onSuccess[] = [$this, $name . 'Submitted'];
 
         return $form;
     }
 
-    function formFilterSubmitted(Form $form) {
+    function formFilterSubmitted(Form $form)
+    {
         $v = $form->getValues();
         $this->ses->year = $v['year'];
         $this->ses->state = $v['state'];
-        $this->redirect("default", array("aid" => $this->aid));
+        $this->redirect("default", ["aid" => $this->aid]);
     }
 
-    function isDateValidator($item, $args) {
+    function isDateValidator($item, $args)
+    {
         return $item == NULL ? FALSE : TRUE;
     }
 
-    function createComponentFormCreate($name) {
+    function createComponentFormCreate($name)
+    {
         $scopes = $this->eventService->event->getScopes();
         $types = $this->eventService->event->getTypes();
         $tmpId = $this->unitService->getUnitId();
-        $units = array($tmpId => $this->unitService->getDetail($tmpId)->SortName);
+        $units = [$tmpId => $this->unitService->getDetail($tmpId)->SortName];
         foreach ($this->unitService->getChild($tmpId) as $u) {
             $units[$u->ID] = "» " . $u->SortName;
         }
 
         $form = $this->prepareForm($this, $name);
         $form->addText("name", "Název akce*")
-                ->addRule(Form::FILLED, "Musíte vyplnit název akce");
+            ->addRule(Form::FILLED, "Musíte vyplnit název akce");
         $form->addDatePicker("start", "Od*")
-                ->addRule(Form::FILLED, "Musíte vyplnit začátek akce")
-                ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
+            ->addRule(Form::FILLED, "Musíte vyplnit začátek akce")
+            ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
         $form->addDatePicker("end", "Do*")
-                ->addRule(Form::FILLED, "Musíte vyplnit konec akce")
-                ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
+            ->addRule(Form::FILLED, "Musíte vyplnit konec akce")
+            ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
         $form->addText("location", "Místo");
         $form->addSelect("orgID", "Pořádající jednotka", $units);
         $form->addSelect("scope", "Rozsah (+)", $scopes)
-                ->setDefaultValue("2");
+            ->setDefaultValue("2");
         $form->addSelect("type", "Typ (+)", $types)
-                ->setDefaultValue("2");
+            ->setDefaultValue("2");
         $form->addSubmit('send', 'Založit novou akci')
-                ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary btn-large");
+        $form->onSuccess[] = [$this, $name . 'Submitted'];
         return $form;
     }
 
-    function formCreateSubmitted(Form $form) {
+    function formCreateSubmitted(Form $form)
+    {
         if (!$this->isAllowed("EV_EventGeneral_INSERT")) {
             $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
             $this->redirect("this");
@@ -218,7 +231,7 @@ class DefaultPresenter extends BasePresenter {
         $v = $form->getValues();
         try {
             $id = $this->eventService->event->create(
-                    $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v->orgID, $v['scope'], $v['type']
+                $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v->orgID, $v['scope'], $v['type']
             );
         } catch (\Skautis\Wsdl\WsdlException $e) {
             if (strpos("EventGeneral_EndLesserThanStart", $e->getMessage())) {
@@ -230,19 +243,21 @@ class DefaultPresenter extends BasePresenter {
         }
 
         if ($id) {
-            $this->redirect("Event:", array("aid" => $id));
+            $this->redirect("Event:", ["aid" => $id]);
         }
         $this->redirect("this");
     }
 
-    function createComponentFormExportSummary($name) {
+    function createComponentFormExportSummary($name)
+    {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('send', 'Souhrn vybraných');
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+        $form->onSuccess[] = [$this, $name . 'Submitted'];
         return $form;
     }
 
-    function formExportSummarySubmitted(Form $form) {
+    function formExportSummarySubmitted(Form $form)
+    {
         $values = $form->getHttpData($form::DATA_TEXT, 'sel[]');
         $this->excelService->getEventSummaries($values, $this->eventService);
     }

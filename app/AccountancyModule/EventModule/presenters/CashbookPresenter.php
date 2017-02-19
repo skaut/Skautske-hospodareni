@@ -1,6 +1,7 @@
 <?php
 
 namespace App\AccountancyModule\EventModule;
+
 use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
@@ -9,7 +10,8 @@ use Model\Services\PdfRenderer;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class CashbookPresenter extends BasePresenter {
+class CashbookPresenter extends BasePresenter
+{
 
     use \CashbookTrait;
 
@@ -37,7 +39,8 @@ class CashbookPresenter extends BasePresenter {
         $this->pdf = $pdf;
     }
 
-    function startup() {
+    function startup()
+    {
         parent::startup();
         if (!$this->aid) {
             $this->flashMessage("Musíš vybrat akci", "danger");
@@ -50,13 +53,14 @@ class CashbookPresenter extends BasePresenter {
         $this->template->missingCategories = FALSE;
     }
 
-    public function renderDefault($aid, $pid = NULL, $dp = FALSE) {
+    public function renderDefault($aid, $pid = NULL, $dp = FALSE)
+    {
         if ($pid !== NULL) {
             $this->isChitEditable($pid, $this->entityService);
             $form = $this['cashbookForm'];
             $chit = $this->entityService->chits->get($pid);
             $form['category']->setItems($this->entityService->chits->getCategoriesPairs($chit->ctype, $this->aid));
-            $form->setDefaults(array(
+            $form->setDefaults([
                 "pid" => $pid,
                 "date" => $chit->date->format("j. n. Y"),
                 "num" => $chit->num,
@@ -65,42 +69,43 @@ class CashbookPresenter extends BasePresenter {
                 "price" => $chit->priceText,
                 "type" => $chit->ctype,
                 "category" => $chit->category,
-            ));
+            ]);
         }
 
         $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->autoCompleter = array();
+        $this->template->autoCompleter = [];
         if (!$dp) {
             try {
                 $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
             } catch (\Skautis\Wsdl\WsdlException $exc) {
-                
+
             }
         }
         $this->template->list = $this->eventService->chits->getAll($aid);
-        $this->template->linkImportHPD = $this->link("importHpd", array("aid" => $aid));
+        $this->template->linkImportHPD = $this->link("importHpd", ["aid" => $aid]);
         $this->template->object = $this->event;
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
     }
 
-    public function actionImportHpd($aid) {
+    public function actionImportHpd($aid)
+    {
         $this->editableOnly();
         $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);
         $func = $this->eventService->event->getFunctions($this->aid);
         $date = $this->eventService->event->get($aid)->StartDate;
-        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : ""; //$func[0]->Person
+        $hospodar = ($func[2]->ID_Person != NULL) ? $func[2]->Person : ""; //$func[0]->Person
         $category = $this->eventService->chits->getParticipantIncomeCategory();
 
-        $values = array("date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category);
+        $values = ["date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category];
         $add = $this->eventService->chits->add($this->aid, $values);
         if ($add) {
             $this->flashMessage("Účastníci byli importováni");
         } else {
             $this->flashMessage("Účastníky se nepodařilo importovat", "danger");
         }
-        $this->redirect("default", array("aid" => $aid));
+        $this->redirect("default", ["aid" => $aid]);
     }
 
 }

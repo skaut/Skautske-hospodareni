@@ -2,4 +2,6 @@
 
 namespace Model\Travel;
 
-class VehicleNotFoundException extends \Exception {}
+class VehicleNotFoundException extends \Exception
+{
+}

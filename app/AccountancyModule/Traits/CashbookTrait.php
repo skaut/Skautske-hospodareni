@@ -12,7 +12,8 @@ trait CashbookTrait
     /** @var PdfRenderer */
     protected $pdf;
 
-    function renderEdit($id, $aid) {
+    function renderEdit($id, $aid)
+    {
         $this->editableOnly();
         $this->isChitEditable($id, $this->entityService);
 
@@ -34,62 +35,67 @@ trait CashbookTrait
         $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
     }
 
-//    //AJAX edit
-//    public function actionEditField($aid, $id, $field, $value) {
-//        $this->editableOnly();
-//        $this->isChitEditable($id, $this->entityService);
-//
-//        if ($field == "price") {
-//            $this->entityService->chits->update($id, array("price" => $value));
-//        }
-//
-//        $this->terminate();
-//    }
-//
-//    public function actionImportHpd($aid) {
-//        $this->editableOnly();
-//        $totalPayment = $this->entityService->participants->getTotalPayment($this->aid);
-//        $func = $this->entityService->event->getFunctions($this->aid);
-//        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : ""; //$func[0]->Person
-//        $date = $this->entityService->event->get($aid)->StartDate;
-//        $category = $this->entityService->chits->getEventCategoryParticipant();
-//
-//        $values = array("date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category);
-//        $add = $this->entityService->chits->add($this->aid, $values);
-//        if ($add) {
-//            $this->flashMessage("Účastníci byli importováni");
-//        } else {
-//            $this->flashMessage("Účastníky se nepodařilo importovat", "fail");
-//        }
-//        $this->redirect("default", array("aid" => $aid));
-//    }
-//
-    public function actionExport($aid) {
+    //    //AJAX edit
+    //    public function actionEditField($aid, $id, $field, $value) {
+    //        $this->editableOnly();
+    //        $this->isChitEditable($id, $this->entityService);
+    //
+    //        if ($field == "price") {
+    //            $this->entityService->chits->update($id, array("price" => $value));
+    //        }
+    //
+    //        $this->terminate();
+    //    }
+    //
+    //    public function actionImportHpd($aid) {
+    //        $this->editableOnly();
+    //        $totalPayment = $this->entityService->participants->getTotalPayment($this->aid);
+    //        $func = $this->entityService->event->getFunctions($this->aid);
+    //        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : ""; //$func[0]->Person
+    //        $date = $this->entityService->event->get($aid)->StartDate;
+    //        $category = $this->entityService->chits->getEventCategoryParticipant();
+    //
+    //        $values = array("date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category);
+    //        $add = $this->entityService->chits->add($this->aid, $values);
+    //        if ($add) {
+    //            $this->flashMessage("Účastníci byli importováni");
+    //        } else {
+    //            $this->flashMessage("Účastníky se nepodařilo importovat", "fail");
+    //        }
+    //        $this->redirect("default", array("aid" => $aid));
+    //    }
+    //
+    public function actionExport($aid)
+    {
         $template = $this->exportService->getCashbook($this->createTemplate(), $aid, $this->entityService);
         $this->pdf->render($template, 'pokladni-kniha.pdf');
         $this->terminate();
     }
-    
-    public function actionExportChitlist($aid) {
+
+    public function actionExportChitlist($aid)
+    {
         $template = $this->exportService->getChitlist($this->createTemplate(), $aid, $this->entityService);
         //echo $template;die();
         $this->pdf->render($template, 'seznam-dokladu.pdf');
         $this->terminate();
     }
 
-    public function actionExportExcel($aid) {
+    public function actionExportExcel($aid)
+    {
         $this->excelService->getCashbook($this->entityService, $this->event);
         $this->terminate();
     }
 
-    function actionPrint($id, $aid) {
-        $chits = array($this->entityService->chits->get($id));
+    function actionPrint($id, $aid)
+    {
+        $chits = [$this->entityService->chits->get($id)];
         $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $this->unitService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
 
-    function handleRemove($id, $actionId) {
+    function handleRemove($id, $actionId)
+    {
         $this->editableOnly();
         $this->isChitEditable($id, $this->entityService);
 
@@ -107,77 +113,83 @@ trait CashbookTrait
         }
     }
 
-    function createComponentFormMass($name) {
+    function createComponentFormMass($name)
+    {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('massPrintSend')
-                ->onClick[] = [$this, 'massPrintSubmitted'];
+            ->onClick[] = [$this, 'massPrintSubmitted'];
         $form->addSubmit('massExportSend')
-                ->onClick[] = [$this, 'massExportSubmitted'];
+            ->onClick[] = [$this, 'massExportSubmitted'];
         return $form;
     }
 
-    function massPrintSubmitted(SubmitButton $button) {
+    function massPrintSubmitted(SubmitButton $button)
+    {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $this->unitService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
 
-    function massExportSubmitted(SubmitButton $button) {
+    function massExportSubmitted(SubmitButton $button)
+    {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $this->excelService->getChitsExport($chits);
         $this->terminate();
     }
 
     //FORM CASHBOOK
-    public function getCategoriesByType($form, $dependentSelectBoxName) {
+    public function getCategoriesByType($form, $dependentSelectBoxName)
+    {
         return $this->entityService->chits->getCategoriesPairs($form["type"]->getValue(), $this->aid);
     }
 
-    function createComponentCashbookForm($name) {
+    function createComponentCashbookForm($name)
+    {
         $form = $this->prepareForm($this, $name);
         $form->addDatePicker("date", "Ze dne:")
-                ->addRule(Form::FILLED, 'Zadejte datum')
-                ->getControlPrototype()->class("form-control input-sm required")->placeholder("Datum");
+            ->addRule(Form::FILLED, 'Zadejte datum')
+            ->getControlPrototype()->class("form-control input-sm required")->placeholder("Datum");
         $form->addText("num", "Číslo d.:")
-                ->setMaxLength(5)
-                ->getControlPrototype()->placeholder("Číslo")
-                ->class("form-control input-sm");
+            ->setMaxLength(5)
+            ->getControlPrototype()->placeholder("Číslo")
+            ->class("form-control input-sm");
         $form->addText("purpose", "Účel výplaty:")
-                ->setMaxLength(40)
-                ->addRule(Form::FILLED, 'Zadejte účel výplaty')
-                ->getControlPrototype()->placeholder("Účel")
-                ->class("form-control input-sm required");
-        $form->addSelect("type", "Typ", array("in" => "Příjmy", "out" => "Výdaje"))
-                //->setAttribute("class", "form-control)
-                ->setAttribute("size", "2")
-                ->setDefaultValue("out")
-                ->addRule(Form::FILLED, "Vyberte typ");
-        $form->addJSelect("category", "Kategorie", $form["type"], array($this, "getCategoriesByType"))
-                ->setAttribute("class", "form-control input-sm");
+            ->setMaxLength(40)
+            ->addRule(Form::FILLED, 'Zadejte účel výplaty')
+            ->getControlPrototype()->placeholder("Účel")
+            ->class("form-control input-sm required");
+        $form->addSelect("type", "Typ", ["in" => "Příjmy", "out" => "Výdaje"])
+            //->setAttribute("class", "form-control)
+            ->setAttribute("size", "2")
+            ->setDefaultValue("out")
+            ->addRule(Form::FILLED, "Vyberte typ");
+        $form->addJSelect("category", "Kategorie", $form["type"], [$this, "getCategoriesByType"])
+            ->setAttribute("class", "form-control input-sm");
         $form->addText("recipient", "Vyplaceno komu:")
-                ->setMaxLength(64)
-                ->setHtmlId("form-recipient")
-                ->getControlPrototype()->class("form-control input-sm")->placeholder("Komu/Od");
+            ->setMaxLength(64)
+            ->setHtmlId("form-recipient")
+            ->getControlPrototype()->class("form-control input-sm")->placeholder("Komu/Od");
         $form->addText("price", "Částka: ")
-                ->setMaxLength(100)
-                ->setHtmlId("form-out-price")
-//                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
-                ->getControlPrototype()->placeholder("Částka: 2+3*15")
-                ->class("form-control input-sm");
+            ->setMaxLength(100)
+            ->setHtmlId("form-out-price")
+            //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
+            ->getControlPrototype()->placeholder("Částka: 2+3*15")
+            ->class("form-control input-sm");
         $form->addHidden("pid");
         $form->addSubmit('send', 'Uložit')
-                ->setAttribute("class", "btn btn-primary");
+            ->setAttribute("class", "btn btn-primary");
         //$form->setDefaults(array('category' => 'un'));
-        $form->onSuccess[] = array($this, 'cashbookFormSubmitted');
+        $form->onSuccess[] = [$this, 'cashbookFormSubmitted'];
         return $form;
     }
 
     /**
      * přidává paragony všech kategorií
-     * @param Form $form 
+     * @param Form $form
      */
-    function cashbookFormSubmitted(Form $form) {
+    function cashbookFormSubmitted(Form $form)
+    {
         if ($form["send"]->isSubmittedBy()) {
             $this->editableOnly();
             $values = $form->getValues();
@@ -205,13 +217,13 @@ trait CashbookTrait
                 $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
             }
 
-//            if ($this->isAjax()) {
-//                $this->invalidateControl("paragony");
-//                $this->invalidateControl("flash");
-//            } else {
-//                $this->redirect("default", array("aid" => $this->aid));
-//            }
-            $this->redirect("default", array("aid" => $this->aid));
+            //            if ($this->isAjax()) {
+            //                $this->invalidateControl("paragony");
+            //                $this->invalidateControl("flash");
+            //            } else {
+            //                $this->redirect("default", array("aid" => $this->aid));
+            //            }
+            $this->redirect("default", ["aid" => $this->aid]);
         }
     }
 
@@ -220,7 +232,8 @@ trait CashbookTrait
      * @param type $chitId
      * @param type $service
      */
-    protected function isChitEditable($chitId, $service) {
+    protected function isChitEditable($chitId, $service)
+    {
         $chit = $service->chits->get($chitId);
         if ($chit !== FALSE && is_null($chit->lock)) {
             return TRUE;
@@ -233,108 +246,108 @@ trait CashbookTrait
         }
     }
 
-//FORM OUT
-//    function createComponentFormOutAdd($name) {
-//        $form = self::makeFormOUT($this, $name);
-//        $form->addSubmit('send', 'Uložit')
-//                ->setAttribute("class", "btn btn-primary");
-//        $form->onSuccess[] = array($this, 'formAddSubmitted');
-//        //$form->setDefaults(array('category' => 'un'));
-//        return $form;
-//    }
-//
-//    /**
-//     * formular na úpravu výdajových dokladů
-//     * @param string $name
-//     * @return Form 
-//     */
-//    function createComponentFormOutEdit($name) {
-//        $form = self::makeFormOUT($this, $name);
-//        $form->addHidden('id');
-//        $form->addSubmit('send', 'Uložit')
-//                ->setAttribute("class", "btn btn-primary");
-//        $form->onSuccess[] = array($this, 'formEditSubmitted');
-//        return $form;
-//    }
-//
-//    /**
-//     * generuje základní Form pro ostatní formuláře
-//     * @param Presenter $thisP
-//     * @param <type> $name
-//     * @return Form
-//     */
-//    protected static function makeFormOUT($thisP, $name) {
-//        $form = new Form($thisP, $name);
-//        $form->addDatePicker("date", "Ze dne:", 15)
-//                ->addRule(Form::FILLED, 'Zadejte datum')
-//                ->getControlPrototype()->class("form-control");
-//        //@TODO kontrola platneho data, problem s componentou
-//        $form->addText("recipient", "Vyplaceno komu:")
-//                ->setHtmlId("form-out-recipient")
-//                ->getControlPrototype()->class("form-control");
-//        $form->addText("purpose", "Účel výplaty:")
-//                ->setMaxLength(40)
-//                ->addRule(Form::FILLED, 'Zadejte účel výplaty')
-//                ->getControlPrototype()->placeholder("3 první položky")
-//                ->class("form-control");
-//        $form->addText("price", "Částka: ")
-//                ->setMaxLength(100)
-//                ->setHtmlId("form-out-price")
-////                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
-//                ->getControlPrototype()->placeholder("např. 20+15*3")
-//                ->class("form-control");
-//        $categories = $thisP->entityService->chits->getCategoriesPairs('out', $thisP->aid);
-//        $form->addRadioList("category", "Typ: ", $categories)
-//                ->addRule(Form::FILLED, 'Zadej typ paragonu');
-//        if (isset($thisP->event) && isset($thisP->event->prefix) && $thisP->event->prefix != "") {
-//            $form->addText("num", "Číslo d.:")
-//                ->setMaxLength(5)            
-//                    ->setAttribute('class', 'form-control input-sm');
-//        }
-//        return $form;
-//    }
-//
-//    //FORM IN    
-//    function createComponentFormInAdd($name) {
-//        $form = $this->makeFormIn($this, $name);
-//        $form->addSubmit('send', 'Uložit')
-//                ->setAttribute("class", "btn btn-primary");
-//        $form->onSuccess[] = array($this, 'formAddSubmitted');
-//        return $form;
-//    }
-//
-//    function createComponentFormInEdit($name) {
-//        $form = self::makeFormIn($this, $name);
-//        $form->addHidden('id');
-//        $form->addSubmit('send', 'Uložit')
-//                ->setAttribute("class", "btn btn-primary");
-//        $form->onSuccess[] = array($this, 'formEditSubmitted');
-//        return $form;
-//    }
-//
-//    protected static function makeFormIn($thisP, $name) {
-//        $form = new Form($thisP, $name);
-//        $form->addDatePicker("date", "Ze dne:", 15)
-//                ->addRule(Form::FILLED, 'Zadejte datum')
-//                ->getControlPrototype()->class("form-control");
-//        $form->addText("recipient", "Přijato od:", 20, 30)
-//                ->setHtmlId("form-in-recipient")
-//                ->getControlPrototype()->class("form-control");
-//        $form->addText("purpose", "Účel příjmu:", 20, 40)
-//                ->addRule(Form::FILLED, 'Zadejte účel přijmu')
-//                ->getControlPrototype()->class("form-control");
-//        $form->addText("price", "Částka: ", 20, 100)
-//                ->setHtmlId("form-in-price")
-//                //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
-//                ->getControlPrototype()->placeholder("např. 20+15*3")
-//                ->class("form-control");
-//        $categories = $thisP->entityService->chits->getCategoriesPairs('in', $thisP->aid);
-//        $form->addRadioList("category", "Typ: ", $categories)
-//                ->addRule(Form::FILLED, 'Zadej typ paragonu');
-//        if (isset($thisP->event) && isset($thisP->event->prefix) && $thisP->event->prefix != "") {
-//            $form->addText("num", "Číslo d.:", NULL, 5)
-//                    ->setAttribute('class', 'form-control input-sm');
-//        }
-//        return $form;
-//    }
+    //FORM OUT
+    //    function createComponentFormOutAdd($name) {
+    //        $form = self::makeFormOUT($this, $name);
+    //        $form->addSubmit('send', 'Uložit')
+    //                ->setAttribute("class", "btn btn-primary");
+    //        $form->onSuccess[] = array($this, 'formAddSubmitted');
+    //        //$form->setDefaults(array('category' => 'un'));
+    //        return $form;
+    //    }
+    //
+    //    /**
+    //     * formular na úpravu výdajových dokladů
+    //     * @param string $name
+    //     * @return Form 
+    //     */
+    //    function createComponentFormOutEdit($name) {
+    //        $form = self::makeFormOUT($this, $name);
+    //        $form->addHidden('id');
+    //        $form->addSubmit('send', 'Uložit')
+    //                ->setAttribute("class", "btn btn-primary");
+    //        $form->onSuccess[] = array($this, 'formEditSubmitted');
+    //        return $form;
+    //    }
+    //
+    //    /**
+    //     * generuje základní Form pro ostatní formuláře
+    //     * @param Presenter $thisP
+    //     * @param <type> $name
+    //     * @return Form
+    //     */
+    //    protected static function makeFormOUT($thisP, $name) {
+    //        $form = new Form($thisP, $name);
+    //        $form->addDatePicker("date", "Ze dne:", 15)
+    //                ->addRule(Form::FILLED, 'Zadejte datum')
+    //                ->getControlPrototype()->class("form-control");
+    //        //@TODO kontrola platneho data, problem s componentou
+    //        $form->addText("recipient", "Vyplaceno komu:")
+    //                ->setHtmlId("form-out-recipient")
+    //                ->getControlPrototype()->class("form-control");
+    //        $form->addText("purpose", "Účel výplaty:")
+    //                ->setMaxLength(40)
+    //                ->addRule(Form::FILLED, 'Zadejte účel výplaty')
+    //                ->getControlPrototype()->placeholder("3 první položky")
+    //                ->class("form-control");
+    //        $form->addText("price", "Částka: ")
+    //                ->setMaxLength(100)
+    //                ->setHtmlId("form-out-price")
+    ////                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
+    //                ->getControlPrototype()->placeholder("např. 20+15*3")
+    //                ->class("form-control");
+    //        $categories = $thisP->entityService->chits->getCategoriesPairs('out', $thisP->aid);
+    //        $form->addRadioList("category", "Typ: ", $categories)
+    //                ->addRule(Form::FILLED, 'Zadej typ paragonu');
+    //        if (isset($thisP->event) && isset($thisP->event->prefix) && $thisP->event->prefix != "") {
+    //            $form->addText("num", "Číslo d.:")
+    //                ->setMaxLength(5)            
+    //                    ->setAttribute('class', 'form-control input-sm');
+    //        }
+    //        return $form;
+    //    }
+    //
+    //    //FORM IN    
+    //    function createComponentFormInAdd($name) {
+    //        $form = $this->makeFormIn($this, $name);
+    //        $form->addSubmit('send', 'Uložit')
+    //                ->setAttribute("class", "btn btn-primary");
+    //        $form->onSuccess[] = array($this, 'formAddSubmitted');
+    //        return $form;
+    //    }
+    //
+    //    function createComponentFormInEdit($name) {
+    //        $form = self::makeFormIn($this, $name);
+    //        $form->addHidden('id');
+    //        $form->addSubmit('send', 'Uložit')
+    //                ->setAttribute("class", "btn btn-primary");
+    //        $form->onSuccess[] = array($this, 'formEditSubmitted');
+    //        return $form;
+    //    }
+    //
+    //    protected static function makeFormIn($thisP, $name) {
+    //        $form = new Form($thisP, $name);
+    //        $form->addDatePicker("date", "Ze dne:", 15)
+    //                ->addRule(Form::FILLED, 'Zadejte datum')
+    //                ->getControlPrototype()->class("form-control");
+    //        $form->addText("recipient", "Přijato od:", 20, 30)
+    //                ->setHtmlId("form-in-recipient")
+    //                ->getControlPrototype()->class("form-control");
+    //        $form->addText("purpose", "Účel příjmu:", 20, 40)
+    //                ->addRule(Form::FILLED, 'Zadejte účel přijmu')
+    //                ->getControlPrototype()->class("form-control");
+    //        $form->addText("price", "Částka: ", 20, 100)
+    //                ->setHtmlId("form-in-price")
+    //                //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
+    //                ->getControlPrototype()->placeholder("např. 20+15*3")
+    //                ->class("form-control");
+    //        $categories = $thisP->entityService->chits->getCategoriesPairs('in', $thisP->aid);
+    //        $form->addRadioList("category", "Typ: ", $categories)
+    //                ->addRule(Form::FILLED, 'Zadej typ paragonu');
+    //        if (isset($thisP->event) && isset($thisP->event->prefix) && $thisP->event->prefix != "") {
+    //            $form->addText("num", "Číslo d.:", NULL, 5)
+    //                    ->setAttribute('class', 'form-control input-sm');
+    //        }
+    //        return $form;
+    //    }
 }

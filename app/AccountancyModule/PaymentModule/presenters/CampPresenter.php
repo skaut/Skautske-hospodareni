@@ -7,7 +7,8 @@ namespace App\AccountancyModule\PaymentModule;
  */
 use Nette\Application\UI\Form;
 
-class CampPresenter extends BasePresenter {
+class CampPresenter extends BasePresenter
+{
 
     protected $readUnits;
 
@@ -17,13 +18,15 @@ class CampPresenter extends BasePresenter {
      */
     protected $campService;
 
-    protected function startup() {
+    protected function startup()
+    {
         parent::startup();
         $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
         $this->campService = $this->context->getService("campService");
     }
 
-    public function actionMassAdd($id) {
+    public function actionMassAdd($id)
+    {
         //ověření přístupu
         $this->template->detail = $detail = $this->model->getGroup(array_keys($this->readUnits), $id);
         if (!$detail) {
@@ -35,51 +38,55 @@ class CampPresenter extends BasePresenter {
             $this->redirect("Default:");
         }
         $participants = $this->campService->participants->getAll($detail->sisId);
-        $paymentPersonIds = array_flip(array_filter(array_map(function($a){return $a->personId;}, $this->model->getAll($id))));
+        $paymentPersonIds = array_flip(array_filter(array_map(function ($a) {
+            return $a->personId;
+        }, $this->model->getAll($id))));
         $form = $this['campForm'];
         $form['oid']->setDefaultValue($id);
-        $list = array();
+        $list = [];
         foreach ($participants as $p) {
-            if(array_key_exists($p->ID_Person, $paymentPersonIds)){
+            if (array_key_exists($p->ID_Person, $paymentPersonIds)) {
                 continue;
             }
             $list[] = $p;
             $emails = $this->model->getPersonEmails($p->ID_Person);
             $form->addSelect($p->ID_Person . '_email', NULL, $emails)
-                    ->setPrompt("")
-                    ->setDefaultValue(key($emails))
-                    ->setAttribute('class', 'input-xlarge');
+                ->setPrompt("")
+                ->setDefaultValue(key($emails))
+                ->setAttribute('class', 'input-xlarge');
         }
         $this->template->list = $list;
         $this->template->maxVS = $this->model->getMaxVS($detail->id);
     }
 
-    public function createComponentCampForm($name) {
+    public function createComponentCampForm($name)
+    {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
         $form->addText("defaultAmount", "Částka:")
-                ->setAttribute('class', 'input-mini');
+            ->setAttribute('class', 'input-mini');
         $form->addDatePicker('defaultMaturity', "Splatnost:")
-                ->setAttribute('class', 'input-small');
+            ->setAttribute('class', 'input-small');
         $form->addText("defaultKs", "KS:")
-                ->setMaxLength(4)
-                ->setAttribute('class', 'input-mini');
+            ->setMaxLength(4)
+            ->setAttribute('class', 'input-mini');
         $form->addText("defaultNote", "Poznámka:")
-                ->setAttribute('class', 'input-small');
+            ->setAttribute('class', 'input-small');
         $form->addSubmit('send', 'Přidat vybrané')
-                ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSubmit[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary btn-large");
+        $form->onSubmit[] = [$this, $name . 'Submitted'];
         return $form;
     }
 
-    function campFormSubmitted(Form $form) {
+    function campFormSubmitted(Form $form)
+    {
         $values = $form->getValues();
         $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
         $vals = $form->getHttpData()['vals'];
 
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro práci s účastníky akce", "danger");
-            $this->redirect("Payment:detail", array("id" => $values->oid));
+            $this->redirect("Payment:detail", ["id" => $values->oid]);
         }
 
         foreach ($checkboxs as $pid) {
@@ -122,7 +129,7 @@ class CampPresenter extends BasePresenter {
         }
 
         $this->flashMessage("Platby byly přidány");
-        $this->redirect("Payment:detail", array("id" => $values->oid));
+        $this->redirect("Payment:detail", ["id" => $values->oid]);
     }
 
 }

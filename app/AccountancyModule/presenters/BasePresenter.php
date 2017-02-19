@@ -9,7 +9,8 @@ use Nette\Application\Routers\Route,
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BasePresenter extends \App\BasePresenter {
+class BasePresenter extends \App\BasePresenter
+{
 
     /**
      * backlink
@@ -35,15 +36,16 @@ class BasePresenter extends \App\BasePresenter {
     protected $availableActions;
     public $isCamp;
 
-    protected function startup() {
+    protected function startup()
+    {
         parent::startup();
 
         if (!$this->user->isLoggedIn()) {
             $this->backlink = $this->storeRequest('+ 3 days');
             if ($this->isAjax()) {
-                $this->forward(":Auth:ajax", array("backlink" => $this->backlink));
+                $this->forward(":Auth:ajax", ["backlink" => $this->backlink]);
             } else {
-                $this->redirect(":Default:", array("backlink" => $this->backlink));
+                $this->redirect(":Default:", ["backlink" => $this->backlink]);
             }
         }
         try {
@@ -55,21 +57,23 @@ class BasePresenter extends \App\BasePresenter {
         }
     }
 
-    function beforeRender() {
+    function beforeRender()
+    {
         parent::beforeRender();
         $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
     }
 
-    protected function editableOnly() {
+    protected function editableOnly()
+    {
         throw new NotImplementedException("Implementují jednotlivé moduly");
-//        if (!$this->isEditable) {
-//            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
-//            if($this->isAjax()){
-//                $this->sendPayload();
-//            } else {
-//                $this->redirect("Event:");
-//            }
-//        }
+        //        if (!$this->isEditable) {
+        //            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
+        //            if($this->isAjax()){
+        //                $this->sendPayload();
+        //            } else {
+        //                $this->redirect("Event:");
+        //            }
+        //        }
     }
 
     public function flashMessage($message, $type = 'info')
@@ -78,7 +82,8 @@ class BasePresenter extends \App\BasePresenter {
         return parent::flashMessage($message, $type);
     }
 
-    public function isAllowed($action, $avaibleActions = NULL) {
+    public function isAllowed($action, $avaibleActions = NULL)
+    {
         return array_key_exists($action, $avaibleActions == NULL ? $this->availableActions : $avaibleActions);
     }
 

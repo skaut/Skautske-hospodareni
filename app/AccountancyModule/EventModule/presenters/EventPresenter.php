@@ -10,14 +10,15 @@ use Model\MemberService;
 use Model\ExportService;
 
 /**
- * @author Hána František <sinacek@gmail.com> 
+ * @author Hána František <sinacek@gmail.com>
  * akce
  */
-class EventPresenter extends BasePresenter {
-    
+class EventPresenter extends BasePresenter
+{
+
     /** @var ExportService */
     protected $exportService;
-    
+
     /** @var MemberService */
     private $memberService;
 
@@ -47,22 +48,23 @@ class EventPresenter extends BasePresenter {
         $this->pdf = $pdf;
     }
 
-    public function renderDefault($aid, $funcEdit = FALSE) {
+    public function renderDefault($aid, $funcEdit = FALSE)
+    {
         if ($aid == NULL) {
             $this->redirect("Default:");
         }
         //nastavení dat do formuláře pro editaci
-        $func = false;
+        $func = FALSE;
 
         if ($this->isAllowed("EV_EventFunction_ALL_EventGeneral")) {
             $func = $this->eventService->event->getFunctions($aid);
         }
 
         $accessEditBase = $this->isAllowed("EV_EventGeneral_UPDATE");
-//        && $this->isAllowed("EV_EventGeneral_UPDATE_Function");
+        //        && $this->isAllowed("EV_EventGeneral_UPDATE_Function");
         if ($accessEditBase) {
             $form = $this['formEdit'];
-            $form->setDefaults(array(
+            $form->setDefaults([
                 "aid" => $aid,
                 "name" => $this->event->DisplayName,
                 "start" => $this->event->StartDate,
@@ -71,7 +73,7 @@ class EventPresenter extends BasePresenter {
                 "type" => $this->event->ID_EventGeneralType,
                 "scope" => $this->event->ID_EventGeneralScope,
                 "prefix" => $this->event->prefix
-            ));
+            ]);
         }
 
         $this->template->funkce = $func;
@@ -88,7 +90,8 @@ class EventPresenter extends BasePresenter {
         }
     }
 
-    public function handleOpen($aid) {
+    public function handleOpen($aid)
+    {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Open")) {
             $this->flashMessage("Nemáte právo otevřít akci", "warning");
             $this->redirect("this");
@@ -98,7 +101,8 @@ class EventPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function handleClose($aid) {
+    public function handleClose($aid)
+    {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Close")) {
             $this->flashMessage("Nemáte právo akci uzavřít", "warning");
             $this->redirect("this");
@@ -112,26 +116,29 @@ class EventPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function handleActivateStatistic() {
+    public function handleActivateStatistic()
+    {
         $this->eventService->participants->activateEventStatistic($this->aid);
         //flash message?
-        $this->redirect('this', array("aid" => $this->aid));
+        $this->redirect('this', ["aid" => $this->aid]);
     }
 
-    public function actionPrintAll($aid) {
-        $chits = (array) $this->eventService->chits->getAll($this->aid);
+    public function actionPrintAll($aid)
+    {
+        $chits = (array)$this->eventService->chits->getAll($this->aid);
 
-        $template = (string) $this->exportService->getEventReport($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= (string) $this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
-//        $template .= (string)$this->exportService->getHpd($this->createTemplate(), $aid, $this->eventService, $this->unitService) . $this->exportService->getNewPage();
-        $template .= (string) $this->exportService->getCashbook($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= (string) $this->exportService->getChits($this->createTemplate(), $aid, $this->eventService, $this->unitService, $chits);
+        $template = (string)$this->exportService->getEventReport($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
+        $template .= (string)$this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
+        //        $template .= (string)$this->exportService->getHpd($this->createTemplate(), $aid, $this->eventService, $this->unitService) . $this->exportService->getNewPage();
+        $template .= (string)$this->exportService->getCashbook($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
+        $template .= (string)$this->exportService->getChits($this->createTemplate(), $aid, $this->eventService, $this->unitService, $chits);
 
         $this->pdf->render($template, 'all.pdf');
         $this->terminate();
     }
 
-    public function handleRemoveFunction($aid, $fid) {
+    public function handleRemoveFunction($aid, $fid)
+    {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Function")) {
             $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
             $this->redirect("this");
@@ -143,10 +150,11 @@ class EventPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function renderReport($aid) {
+    public function renderReport($aid)
+    {
         if (!$this->isAllowed("EV_EventGeneral_DETAIL")) {
             $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
-            $this->redirect("default", array("aid" => $aid));
+            $this->redirect("default", ["aid" => $aid]);
         }
         $template = $this->exportService->getEventReport($this->createTemplate(), $aid, $this->eventService);
 
@@ -154,8 +162,9 @@ class EventPresenter extends BasePresenter {
         $this->terminate();
     }
 
-    function createComponentFormEdit($name) {
-//        $combo = $this->memberService->getCombobox(NULL, TRUE);
+    function createComponentFormEdit($name)
+    {
+        //        $combo = $this->memberService->getCombobox(NULL, TRUE);
         $form = $this->prepareForm($this, $name);
         $form->addProtection();
         $form->addText("name", "Název akce");
@@ -165,15 +174,16 @@ class EventPresenter extends BasePresenter {
         $form->addSelect("type", "Typ (+)", $this->eventService->event->getTypes());
         $form->addSelect("scope", "Rozsah (+)", $this->eventService->event->getScopes());
         $form->addText("prefix", "Prefix")
-                ->setMaxLength(6);
+            ->setMaxLength(6);
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
-                        ->setAttribute("class", "btn btn-primary")
-                ->onClick[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary")
+            ->onClick[] = [$this, $name . 'Submitted'];
         return $form;
     }
 
-    function formEditSubmitted(SubmitButton $button) {
+    function formEditSubmitted(SubmitButton $button)
+    {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE")) {
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
             $this->redirect("this");
@@ -186,7 +196,7 @@ class EventPresenter extends BasePresenter {
 
         if ($id) {
             $this->flashMessage("Základní údaje byly upraveny.");
-            $this->redirect("default", array("aid" => $values['aid']));
+            $this->redirect("default", ["aid" => $values['aid']]);
         } else {
             $this->flashMessage("Nepodařilo se upravit základní údaje", "danger");
         }
