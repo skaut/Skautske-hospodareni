@@ -2,6 +2,8 @@
 
 namespace Model;
 
+use Dibi\Connection;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
@@ -28,13 +30,11 @@ class BaseTable {
     const TABLE_PA_SMTP = 'pa_smtp';
     const TABLE_PA_GROUP_SMTP = 'pa_group_smtp';
 
-    /**
-     *
-     * @var \Dibi\Connection
-     */
+    /** @var \Dibi\Connection */
     protected $connection;
 
-    public function __construct($connection = NULL) {
+    public function __construct(Connection $connection)
+    {
         $this->connection = $connection;
     }
 

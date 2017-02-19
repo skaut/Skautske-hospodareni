@@ -2,22 +2,26 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
+use Model\TravelService;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  */
 class ContractPresenter extends BasePresenter {
 
-    /**
-     *
-     * @var \Model\TravelService
-     */
-    protected $travelService;
+    /** @var TravelService */
+    private $travelService;
 
-    public function __construct(\Model\TravelService $ts) {
+    /** @var PdfRenderer */
+    private $pdf;
+
+    public function __construct(TravelService $travelService, PdfRenderer $pdf)
+    {
         parent::__construct();
-        $this->travelService = $ts;
+        $this->travelService = $travelService;
+        $this->pdf = $pdf;
     }
 
     protected function isContractAccessible($contractId) {
@@ -53,7 +57,8 @@ class ContractPresenter extends BasePresenter {
                 throw new \Exception("Neznámá šablona pro " . $contract->template);
         }
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
-        $this->unitService->makePdf($template, "Smlouva-o-proplaceni-cestovnich-nahrad.pdf");
+
+        $this->pdf->render($template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
     }
 
     public function handleDelete($contractId) {

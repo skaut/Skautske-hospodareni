@@ -2,16 +2,23 @@
 
 namespace Model;
 
+use Nette\Caching\IStorage;
+use Skautis\Skautis;
+
 /**
  * slouží pro obsluhu účastníků
  * @author Hána František <sinacek@gmail.com>
  */
-class ParticipantService extends MutableBaseService {
+class ParticipantService extends MutableBaseService
+{
 
-    public function __construct($name, $skautIS, $cacheStorage, $connection) {
-        parent::__construct($name, $skautIS, $cacheStorage, $connection);
-        /** @var ParticipantTable */
-        $this->table = new ParticipantTable($connection);
+    /** @var ParticipantTable */
+    private $table;
+
+    public function __construct(string $name, ParticipantTable $table, Skautis $skautIS, IStorage $cacheStorage)
+    {
+        parent::__construct($name, $skautIS, $cacheStorage);
+        $this->table = $table;
     }
 
     /**

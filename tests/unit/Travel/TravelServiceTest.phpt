@@ -4,8 +4,11 @@ namespace Tests\Unit\Travel;
 
 use Dibi\Connection;
 use Mockery;
+use Model\CommandTable;
+use Model\ContractTable;
 use Model\Travel\Vehicle;
 use Model\TravelService;
+use Model\TravelTable;
 use Tester\Assert;
 
 require __DIR__.'/../../bootstrap.php';
@@ -25,7 +28,12 @@ class TravelServiceTest extends \Tester\TestCase
 	public function setUp()
 	{
 		$this->vehicles = Mockery::mock('Model\Travel\Repositories\IVehicleRepository');
-		$this->service = new TravelService(Mockery::mock('Dibi\Connection'), $this->vehicles);
+
+		$commands = Mockery::mock(CommandTable::class);
+		$travels = Mockery::mock(TravelTable::class);
+		$contracts = Mockery::mock(ContractTable::class);
+
+		$this->service = new TravelService($commands, $travels, $contracts, $this->vehicles);
 	}
 
 	public function tearDown()

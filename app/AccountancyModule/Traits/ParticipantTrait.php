@@ -1,7 +1,8 @@
 <?php
 
-use Nette\Application\UI\Form,
-    Nette\Forms\Controls\SubmitButton;
+use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SubmitButton;
+use Model\Services\PdfRenderer;
 
 trait ParticipantTrait {
     /**
@@ -38,6 +39,9 @@ trait ParticipantTrait {
      * @var \Model\ExcelService
      */
     protected $excelService;
+
+    /** @var PdfRenderer */
+    protected $pdf;
 
     protected function traitStartup() {
         parent::startup();
@@ -97,8 +101,7 @@ trait ParticipantTrait {
         $type = $this->eventService->participants->type; //camp vs general
         try {
             $template = $this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService, $type);
-            //echo $template;die();
-            $this->eventService->participants->makePdf($template, "seznam-ucastniku.pdf", $type == "camp" ? TRUE : FALSE);
+            $this->pdf->render($template, 'seznam-ucastniku.pdf', $type == 'camp');
         } catch (\Skautis\Wsdl\PermissionException $ex) {
             $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
             $this->redirect("default", array("aid" => $this->aid));
