@@ -44,7 +44,7 @@ class EventPresenter extends BasePresenter {
         $this->exportService = $exportService;
         $this->memberService = $memberService;
         $this->functionsFactory = $functionsFactory;
-        $this->pdf = $pdf
+        $this->pdf = $pdf;
     }
 
     public function renderDefault($aid, $funcEdit = FALSE) {
