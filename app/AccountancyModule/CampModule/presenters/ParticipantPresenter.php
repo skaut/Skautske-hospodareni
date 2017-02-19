@@ -33,7 +33,7 @@ class ParticipantPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    function startup()
+    protected function startup() : void
     {
         $this->traitStartup();
         $this->isAllowRepayment = $this->template->isAllowRepayment = TRUE;
@@ -44,7 +44,7 @@ class ParticipantPresenter extends BasePresenter
         $this->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdate = $this->isAllowed(self::RULE_PARTICIPANTS_UPDATE);
     }
 
-    function renderDefault($aid, $uid = NULL, $dp = FALSE, $sort = NULL, $regNums = FALSE)
+    public function renderDefault($aid, $uid = NULL, $dp = FALSE, $sort = NULL, $regNums = FALSE) : void
     {
         if (!$this->isAllowed("EV_ParticipantCamp_ALL_EventCamp")) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky", "danger");
@@ -67,7 +67,7 @@ class ParticipantPresenter extends BasePresenter
         }
     }
 
-    public function actionEditField($aid, $id, $field, $value)
+    public function actionEditField($aid, $id, $field, $value) : void
     {
         if (!$this->isAllowParticipantUpdate) {
             $this->flashMessage("Nemáte oprávnění měnit účastníkův jejich údaje.", "danger");
@@ -97,7 +97,7 @@ class ParticipantPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function handleActivateAutocomputedParticipants($aid)
+    public function handleActivateAutocomputedParticipants($aid) : void
     {
         $this->eventService->event->activateAutocomputedParticipants($aid);
         $this->flashMessage("Byl aktivován automatický výpočet seznamu osobodnů.");

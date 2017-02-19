@@ -11,7 +11,7 @@ class FormFactory
     /**
      * @return Form
      */
-    public function create($inline = FALSE)
+    public function create($inline = FALSE) : Form
     {
         $form = new Form();
         $form->setRenderer(new FormRenderer($inline));

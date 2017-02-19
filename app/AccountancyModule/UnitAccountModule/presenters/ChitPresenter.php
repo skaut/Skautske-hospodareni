@@ -28,7 +28,7 @@ class ChitPresenter extends BasePresenter
         $this->budgetService = $bs;
     }
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
         $this->template->onlyUnlocked = $this->onlyUnlocked;
@@ -39,7 +39,7 @@ class ChitPresenter extends BasePresenter
         }
     }
 
-    public function actionDefault($year = NULL)
+    public function actionDefault($year = NULL) : void
     {
         //        $cache = new Cache($this->context->cacheStorage);
         //        $cacheKey = __METHOD__;
@@ -68,7 +68,7 @@ class ChitPresenter extends BasePresenter
         $this->getAllChitsByObjectId("camp", $this->chits, $this->onlyUnlocked, $campService);
     }
 
-    public function renderDefault($year = NULL)
+    public function renderDefault($year = NULL) : void
     {
         $this->template->types = [
             "event" => "Výpravy",
@@ -79,7 +79,7 @@ class ChitPresenter extends BasePresenter
         $this->template->info = $this->info;
     }
 
-    protected function getAllChitsByObjectId($objectType, &$chits, $onlyUnlocked, $service)
+    private function getAllChitsByObjectId($objectType, &$chits, $onlyUnlocked, $service) : void
     {
         if (in_array($objectType, ["event", "camp"])) {//filtrování akcí spojených pouze s danou jednotkou
             $ids = [];
@@ -101,7 +101,7 @@ class ChitPresenter extends BasePresenter
         }
     }
 
-    public function handleLockEvent($sid, $type)
+    public function handleLockEvent($sid, $type) : void
     {
         if (!in_array($type, ["event", "camp", "unit"]) || !array_key_exists($sid, $this->info[$type])) {
             $this->flashMessage("Neplatný přístup!", "danger");
@@ -124,7 +124,7 @@ class ChitPresenter extends BasePresenter
      * @param type $type type of object - camp, unit, event
      * @param type $act
      */
-    public function handleLock($oid, $id, $type, $act = "lock")
+    public function handleLock($oid, $id, $type, $act = "lock") : void
     {
         if (!in_array($type, ["event", "camp", "unit"])) {
             $this->flashMessage("Neplatný přístup!", "danger");
@@ -147,7 +147,7 @@ class ChitPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentBudgetCategoryForm($name)
+    protected function createComponentBudgetCategoryForm($name) : Form
     {
         $categories = $this->budgetService->getCategoriesLeaf($this->aid);
         $form = $this->prepareForm($this, $name);
@@ -168,13 +168,16 @@ class ChitPresenter extends BasePresenter
             }
         }
 
-        $form->onSubmit[] = [$this, $name . 'Submitted'];
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->budgetCategoryFormSubmitted($form);
+        };
+
         $form->addSubmit("send", "Uložit kategorie")
             ->setAttribute("class", "btn btn-primary");
         return $form;
     }
 
-    public function budgetCategoryFormSubmitted(Form $form)
+    private function budgetCategoryFormSubmitted(Form $form) : void
     {
         $v = $form->values;
         foreach ($this->chits as $chType) {
@@ -189,7 +192,7 @@ class ChitPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function accessChitControl($chit, $service, $type)
+    private function accessChitControl($chit, $service, $type)
     {
         //dump($type);dump($chit);die();
         return array_key_exists($service->chits->getSkautisId($chit->eventId), $this->info[$type]);

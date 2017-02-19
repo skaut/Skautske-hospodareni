@@ -12,13 +12,13 @@ class RegistrationPresenter extends BasePresenter
 
     protected $readUnits;
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
         $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
     }
 
-    public function actionMassAdd($id)
+    public function actionMassAdd($id) : void
     {
         //ověření přístupu
         try {
@@ -47,7 +47,7 @@ class RegistrationPresenter extends BasePresenter
         }
     }
 
-    public function createComponentRegistrationForm($name)
+    protected function createComponentRegistrationForm($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
@@ -61,11 +61,15 @@ class RegistrationPresenter extends BasePresenter
             ->setAttribute('class', 'input-small');
         $form->addSubmit('send', 'Přidat vybrané')
             ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSubmit[] = [$this, $name . 'Submitted'];
+
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->registrationFormSubmitted($form);
+        };
+
         return $form;
     }
 
-    function registrationFormSubmitted(Form $form)
+    private function registrationFormSubmitted(Form $form) : void
     {
         $values = $form->getValues();
         $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');

@@ -15,20 +15,13 @@ class CashbookPresenter extends BasePresenter
 
     use \CashbookTrait;
 
-    /**
-     *
-     * @var \Model\MemberService
-     */
+    /** @var \Model\MemberService */
     protected $memberService;
 
-    /**
-     * @var \Model\ExportService
-     */
+    /** @var \Model\ExportService */
     protected $exportService;
 
-    /**
-     * @var \Model\ExcelService
-     */
+    /** @var \Model\ExcelService */
     protected $excelService;
 
     public function __construct(MemberService $member, ExportService $es, ExcelService $exs, PdfRenderer $pdf)
@@ -40,7 +33,7 @@ class CashbookPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    function startup()
+    protected function startup() : void
     {
         parent::startup();
         if (!$this->aid) {
@@ -60,14 +53,14 @@ class CashbookPresenter extends BasePresenter
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
 
-    public function actionDefault($aid, $pid = NULL, $dp = FALSE)
+    public function actionDefault($aid, $pid = NULL, $dp = FALSE) : void
     {
         $items = $this['cashbookForm']['category']->getItems();
         unset($items[7]);//remove prevod do strediskove pokladny
         $this['cashbookForm']['category']->setItems($items);
     }
 
-    public function renderDefault($aid, $pid = NULL, $dp = FALSE)
+    public function renderDefault($aid, $pid = NULL, $dp = FALSE) : void
     {
         if ($pid !== NULL) {
             $this->isChitEditable($pid, $this->entityService);
@@ -94,7 +87,7 @@ class CashbookPresenter extends BasePresenter
         }
     }
 
-    public function actionExportExcel($aid)
+    public function actionExportExcel($aid) : void
     {
         $event = \Nette\Utils\ArrayHash::from(["ID" => $aid, "prefix" => "", "DisplayName" => "jednotka"]);
         $this->excelService->getCashbook($this->entityService, $event);

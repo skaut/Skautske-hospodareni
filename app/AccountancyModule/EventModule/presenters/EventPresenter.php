@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\EventModule\Components\Functions;
 use App\AccountancyModule\EventModule\Factories\IFunctionsFactory;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
@@ -48,7 +49,7 @@ class EventPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    public function renderDefault($aid, $funcEdit = FALSE)
+    public function renderDefault($aid, $funcEdit = FALSE) : void
     {
         if ($aid == NULL) {
             $this->redirect("Default:");
@@ -90,7 +91,7 @@ class EventPresenter extends BasePresenter
         }
     }
 
-    public function handleOpen($aid)
+    public function handleOpen($aid) : void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Open")) {
             $this->flashMessage("Nemáte právo otevřít akci", "warning");
@@ -101,7 +102,7 @@ class EventPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleClose($aid)
+    public function handleClose($aid) : void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Close")) {
             $this->flashMessage("Nemáte právo akci uzavřít", "warning");
@@ -116,14 +117,14 @@ class EventPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleActivateStatistic()
+    public function handleActivateStatistic() : void
     {
         $this->eventService->participants->activateEventStatistic($this->aid);
         //flash message?
         $this->redirect('this', ["aid" => $this->aid]);
     }
 
-    public function actionPrintAll($aid)
+    public function actionPrintAll($aid) : void
     {
         $chits = (array)$this->eventService->chits->getAll($this->aid);
 
@@ -137,7 +138,7 @@ class EventPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function handleRemoveFunction($aid, $fid)
+    public function handleRemoveFunction($aid, $fid) : void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Function")) {
             $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
@@ -162,7 +163,7 @@ class EventPresenter extends BasePresenter
         $this->terminate();
     }
 
-    function createComponentFormEdit($name)
+    protected function createComponentFormEdit($name) : Form
     {
         //        $combo = $this->memberService->getCombobox(NULL, TRUE);
         $form = $this->prepareForm($this, $name);
@@ -178,11 +179,14 @@ class EventPresenter extends BasePresenter
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
             ->setAttribute("class", "btn btn-primary")
-            ->onClick[] = [$this, $name . 'Submitted'];
+            ->onClick[] = function(SubmitButton $button) : void {
+            $this->formEditSubmitted($button);
+        };
+
         return $form;
     }
 
-    function formEditSubmitted(SubmitButton $button)
+    private function formEditSubmitted(SubmitButton $button) : void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE")) {
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
@@ -203,7 +207,7 @@ class EventPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentFunctions()
+    protected function createComponentFunctions() : Functions
     {
         return $this->functionsFactory->create($this->aid);
     }

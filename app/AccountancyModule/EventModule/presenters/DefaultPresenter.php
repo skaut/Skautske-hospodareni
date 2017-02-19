@@ -15,10 +15,7 @@ class DefaultPresenter extends BasePresenter
 
     public $ses;
 
-    /**
-     *
-     * @var \Model\ExcelService
-     */
+    /** @var \Model\ExcelService */
     protected $excelService;
 
     public function __construct(\Model\ExcelService $excel)
@@ -27,7 +24,7 @@ class DefaultPresenter extends BasePresenter
         $this->excelService = $excel;
     }
 
-    function startup()
+    protected function startup() : void
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
@@ -40,7 +37,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function renderDefault($sort = 'start')
+    public function renderDefault($sort = 'start') : void
     {
         //filtrovani zobrazených položek
         $year = isset($this->ses->year) ? $this->ses->year : date("Y");
@@ -66,7 +63,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->sort = $sort;
     }
 
-    protected function sortEvents(&$list, $param)
+    private function sortEvents(&$list, $param) : void
     {
         switch ($param) {
             case 'name':
@@ -117,7 +114,7 @@ class DefaultPresenter extends BasePresenter
      * mění podmínky filtrování akcí podle roku
      * @param type $year
      */
-    public function handleChangeYear($year)
+    public function handleChangeYear($year) : void
     {
         $this->ses->year = $year;
         if ($this->isAjax()) {
@@ -131,7 +128,7 @@ class DefaultPresenter extends BasePresenter
      * změní podmínky filtrování akcí podle stavu akce
      * @param type $state
      */
-    public function handleChangeState($state)
+    public function handleChangeState($state) : void
     {
         $this->ses->state = $state;
         if ($this->isAjax()) {
@@ -145,7 +142,7 @@ class DefaultPresenter extends BasePresenter
      * zruší akci
      * @param type $aid
      */
-    public function handleCancel($aid)
+    public function handleCancel($aid) : void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Cancel")) {
             $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
@@ -161,7 +158,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    function createComponentFormFilter($name)
+    protected function createComponentFormFilter($name) : Form
     {
         $states = array_merge(["all" => "Nezrušené"], $this->eventService->event->getStates());
         $years = ["all" => "Všechny"];
@@ -173,12 +170,15 @@ class DefaultPresenter extends BasePresenter
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formFilterSubmitted($form);
+        };
 
         return $form;
     }
 
-    function formFilterSubmitted(Form $form)
+    private function formFilterSubmitted(Form $form) : Form
     {
         $v = $form->getValues();
         $this->ses->year = $v['year'];
@@ -191,7 +191,7 @@ class DefaultPresenter extends BasePresenter
         return $item == NULL ? FALSE : TRUE;
     }
 
-    function createComponentFormCreate($name)
+    protected function createComponentFormCreate($name) : Form
     {
         $scopes = $this->eventService->event->getScopes();
         $types = $this->eventService->event->getTypes();
@@ -218,11 +218,15 @@ class DefaultPresenter extends BasePresenter
             ->setDefaultValue("2");
         $form->addSubmit('send', 'Založit novou akci')
             ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formCreateSubmitted($form);
+        };
+
         return $form;
     }
 
-    function formCreateSubmitted(Form $form)
+    private function formCreateSubmitted(Form $form) : void
     {
         if (!$this->isAllowed("EV_EventGeneral_INSERT")) {
             $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
@@ -248,15 +252,19 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    function createComponentFormExportSummary($name)
+    protected function createComponentFormExportSummary($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('send', 'Souhrn vybraných');
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formExportSummarySubmitted($form);
+        };
+
         return $form;
     }
 
-    function formExportSummarySubmitted(Form $form)
+    private function formExportSummarySubmitted(Form $form) : void
     {
         $values = $form->getHttpData($form::DATA_TEXT, 'sel[]');
         $this->excelService->getEventSummaries($values, $this->eventService);

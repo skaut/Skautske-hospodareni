@@ -11,7 +11,7 @@ class DefaultPresenter extends BasePresenter
     /**
      * pouze přesměrovává na jiný presenter
      */
-    function startup()
+    protected function startup() : void
     {
         parent::startup();
         $this->redirect("Event:Default:");

@@ -10,10 +10,7 @@ use Nette\Application\UI\Form;
 class BudgetPresenter extends BasePresenter
 {
 
-    /**
-     *
-     * @var \Model\BudgetService
-     */
+    /** @var \Model\BudgetService */
     protected $budgetService;
 
     public function __construct(\Model\BudgetService $bs)
@@ -22,7 +19,7 @@ class BudgetPresenter extends BasePresenter
         $this->budgetService = $bs;
     }
 
-    public function renderDefault($year = NULL)
+    public function renderDefault($year = NULL) : void
     {
         $this->template->categories = $this->budgetService->getCategories($this->aid);
         $this->template->categoriesSummary = $this->context->getService("unitAccountService")->chits->getBudgetCategoriesSummary($this->budgetService->getCategoriesLeaf($this->aid));
@@ -30,12 +27,12 @@ class BudgetPresenter extends BasePresenter
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
 
-    public function getParentCategories($form, $dependentSelectBoxName)
+    public function getParentCategories($form, $dependentSelectBoxName) : array
     {
         return ["0" => "Žádná"] + $this->budgetService->getCategoriesRoot($this->aid, $form["type"]->getValue());
     }
 
-    protected function createComponentAddCategoryForm($name)
+    protected function createComponentAddCategoryForm($name) : Form
     {
         $form = $this->prepareForm($this, $name); // required for full running
         $form->addText("label", "Název")
@@ -56,13 +53,18 @@ class BudgetPresenter extends BasePresenter
             ->addRule(Form::FILLED, "Vyplňte rok")
             ->setDefaultValue(date("Y"));
         $form->addHidden('oid', $this->aid);
-        $form->onSubmit[] = [$this, $name . 'Submitted'];
+
         $form->addSubmit("submit", "Založit kategorii")
             ->setAttribute("class", "btn btn-primary");
+
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->addCategoryFormSubmitted($form);
+        };
+
         return $form;
     }
 
-    public function addCategoryFormSubmitted(Form $form)
+    private function addCategoryFormSubmitted(Form $form) : void
     {
         if ($form["submit"]->isSubmittedBy()) {
             $v = $form->values;

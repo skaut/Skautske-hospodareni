@@ -12,20 +12,17 @@ class CampPresenter extends BasePresenter
 
     protected $readUnits;
 
-    /**
-     *
-     * @var \Model\EventEntity
-     */
+    /** @var \Model\EventEntity */
     protected $campService;
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
         $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
         $this->campService = $this->context->getService("campService");
     }
 
-    public function actionMassAdd($id)
+    public function actionMassAdd($id) : void
     {
         //ověření přístupu
         $this->template->detail = $detail = $this->model->getGroup(array_keys($this->readUnits), $id);
@@ -59,7 +56,7 @@ class CampPresenter extends BasePresenter
         $this->template->maxVS = $this->model->getMaxVS($detail->id);
     }
 
-    public function createComponentCampForm($name)
+    protected function createComponentCampForm($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
@@ -74,11 +71,15 @@ class CampPresenter extends BasePresenter
             ->setAttribute('class', 'input-small');
         $form->addSubmit('send', 'Přidat vybrané')
             ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSubmit[] = [$this, $name . 'Submitted'];
+
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->campFormSubmitted($form);
+        };
+
         return $form;
     }
 
-    function campFormSubmitted(Form $form)
+    private function campFormSubmitted(Form $form) : void
     {
         $values = $form->getValues();
         $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');

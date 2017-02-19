@@ -14,7 +14,7 @@ class DefaultPresenter extends BasePresenter
 
     const DEFAULT_STATE = "approvedParent"; //filtrovani zobrazených položek
 
-    function startup()
+    protected function startup() : void
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
@@ -27,7 +27,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function renderDefault()
+    public function renderDefault() : void
     {
         //filtrovani zobrazených položek
         $year = isset($this->ses->year) ? $this->ses->year : date("Y");
@@ -49,7 +49,7 @@ class DefaultPresenter extends BasePresenter
         //$this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
     }
 
-    public function handleChangeYear($year)
+    public function handleChangeYear($year) : void
     {
         $this->ses->year = $year;
         if ($this->isAjax()) {
@@ -59,7 +59,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function handleChangeState($state)
+    public function handleChangeState($state) : void
     {
         $this->ses->state = $state;
         if ($this->isAjax()) {
@@ -69,7 +69,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    function createComponentFormFilter($name)
+    protected function createComponentFormFilter($name) : Form
     {
         $states = array_merge(["all" => "Nezrušené"], $this->eventService->event->getStates());
         $years = ["all" => "Všechny"];
@@ -82,12 +82,14 @@ class DefaultPresenter extends BasePresenter
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formFilterSubmitted($form);
+        };
 
         return $form;
     }
 
-    function formFilterSubmitted(Form $form)
+    private function formFilterSubmitted(Form $form) : void
     {
         $v = $form->getValues();
         $this->ses->year = $v['year'];

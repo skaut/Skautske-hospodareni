@@ -7,12 +7,13 @@ use Model\Services\PdfRenderer;
 trait CashbookTrait
 {
 
+    /** @var \Model\EventEntity */
     protected $entityService;
 
     /** @var PdfRenderer */
     protected $pdf;
 
-    function renderEdit($id, $aid)
+    public function renderEdit($id, $aid) : void
     {
         $this->editableOnly();
         $this->isChitEditable($id, $this->entityService);
@@ -65,14 +66,14 @@ trait CashbookTrait
     //        $this->redirect("default", array("aid" => $aid));
     //    }
     //
-    public function actionExport($aid)
+    public function actionExport($aid) : void
     {
         $template = $this->exportService->getCashbook($this->createTemplate(), $aid, $this->entityService);
         $this->pdf->render($template, 'pokladni-kniha.pdf');
         $this->terminate();
     }
 
-    public function actionExportChitlist($aid)
+    public function actionExportChitlist($aid) : void
     {
         $template = $this->exportService->getChitlist($this->createTemplate(), $aid, $this->entityService);
         //echo $template;die();
@@ -80,13 +81,13 @@ trait CashbookTrait
         $this->terminate();
     }
 
-    public function actionExportExcel($aid)
+    public function actionExportExcel($aid) : void
     {
         $this->excelService->getCashbook($this->entityService, $this->event);
         $this->terminate();
     }
 
-    function actionPrint($id, $aid)
+    public function actionPrint($id, $aid) : void
     {
         $chits = [$this->entityService->chits->get($id)];
         $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $this->unitService, $chits);
@@ -94,7 +95,7 @@ trait CashbookTrait
         $this->terminate();
     }
 
-    function handleRemove($id, $actionId)
+    public function handleRemove($id, $actionId) : void
     {
         $this->editableOnly();
         $this->isChitEditable($id, $this->entityService);
@@ -113,17 +114,21 @@ trait CashbookTrait
         }
     }
 
-    function createComponentFormMass($name)
+    protected function createComponentFormMass($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('massPrintSend')
-            ->onClick[] = [$this, 'massPrintSubmitted'];
+            ->onClick[] = function(SubmitButton $button) : void {
+            $this->massPrintSubmitted($button);
+        };
         $form->addSubmit('massExportSend')
-            ->onClick[] = [$this, 'massExportSubmitted'];
+            ->onClick[] = function(SubmitButton $button) : void {
+            $this->massExportSubmitted($button);
+        };
         return $form;
     }
 
-    function massPrintSubmitted(SubmitButton $button)
+    private function massPrintSubmitted(SubmitButton $button) : void
     {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $this->unitService, $chits);
@@ -131,7 +136,7 @@ trait CashbookTrait
         $this->terminate();
     }
 
-    function massExportSubmitted(SubmitButton $button)
+    private function massExportSubmitted(SubmitButton $button) : void
     {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $this->excelService->getChitsExport($chits);
@@ -139,12 +144,12 @@ trait CashbookTrait
     }
 
     //FORM CASHBOOK
-    public function getCategoriesByType($form, $dependentSelectBoxName)
+    public function getCategoriesByType($form, $dependentSelectBoxName) : array
     {
         return $this->entityService->chits->getCategoriesPairs($form["type"]->getValue(), $this->aid);
     }
 
-    function createComponentCashbookForm($name)
+    protected function createComponentCashbookForm($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addDatePicker("date", "Ze dne:")
@@ -180,7 +185,9 @@ trait CashbookTrait
         $form->addSubmit('send', 'Uložit')
             ->setAttribute("class", "btn btn-primary");
         //$form->setDefaults(array('category' => 'un'));
-        $form->onSuccess[] = [$this, 'cashbookFormSubmitted'];
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->cashbookFormSubmitted($form);
+        };
         return $form;
     }
 
@@ -188,7 +195,7 @@ trait CashbookTrait
      * přidává paragony všech kategorií
      * @param Form $form
      */
-    function cashbookFormSubmitted(Form $form)
+    private function cashbookFormSubmitted(Form $form) : void
     {
         if ($form["send"]->isSubmittedBy()) {
             $this->editableOnly();
@@ -232,7 +239,7 @@ trait CashbookTrait
      * @param type $chitId
      * @param type $service
      */
-    protected function isChitEditable($chitId, $service)
+    protected function isChitEditable($chitId, $service) : ?bool
     {
         $chit = $service->chits->get($chitId);
         if ($chit !== FALSE && is_null($chit->lock)) {

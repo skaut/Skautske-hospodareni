@@ -36,7 +36,7 @@ class BasePresenter extends \App\BasePresenter
     protected $availableActions;
     public $isCamp;
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
 
@@ -57,13 +57,13 @@ class BasePresenter extends \App\BasePresenter
         }
     }
 
-    function beforeRender()
+    protected function beforeRender() : void
     {
         parent::beforeRender();
         $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
     }
 
-    protected function editableOnly()
+    protected function editableOnly() : void
     {
         throw new NotImplementedException("Implementují jednotlivé moduly");
         //        if (!$this->isEditable) {
@@ -76,13 +76,13 @@ class BasePresenter extends \App\BasePresenter
         //        }
     }
 
-    public function flashMessage($message, $type = 'info')
+    public function flashMessage($message, $type = 'info') : \stdClass
     {
         $this->redrawControl('flash');
         return parent::flashMessage($message, $type);
     }
 
-    public function isAllowed($action, $avaibleActions = NULL)
+    protected function isAllowed($action, $avaibleActions = NULL) : bool
     {
         return array_key_exists($action, $avaibleActions == NULL ? $this->availableActions : $avaibleActions);
     }

@@ -31,7 +31,7 @@ class ParticipantPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    function startup()
+    protected function startup() : void
     {
         $this->traitStartup();
         $this->isAllowRepayment = $this->template->isAllowRepayment = FALSE;
@@ -53,7 +53,7 @@ class ParticipantPresenter extends BasePresenter
      * @param bool $dp - disabled person
      * @throws \Skautis\Wsdl\WsdlException
      */
-    function renderDefault($aid, $uid = NULL, $dp = FALSE, $sort = NULL, $regNums = FALSE)
+    public function renderDefault($aid, $uid = NULL, $dp = FALSE, $sort = NULL, $regNums = FALSE) : void
     {
         if (!$this->isAllowed("EV_ParticipantGeneral_ALL_EventGeneral")) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");
@@ -70,7 +70,7 @@ class ParticipantPresenter extends BasePresenter
         }
     }
 
-    public function actionEditField($aid, $id, $field, $value)
+    public function actionEditField($aid, $id, $field, $value) : void
     {
         if (!$this->isAllowParticipantUpdate) {
             $this->flashMessage("Nemáte oprávnění měnit účastníkův jejich údaje.", "danger");

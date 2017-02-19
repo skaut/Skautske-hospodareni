@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
@@ -12,10 +13,7 @@ use Nette\Application\UI\Form;
 class VehiclePresenter extends BasePresenter
 {
 
-    /**
-     *
-     * @var \Model\TravelService
-     */
+    /** @var \Model\TravelService */
     protected $travelService;
 
     public function __construct(\Model\TravelService $ts)
@@ -24,17 +22,17 @@ class VehiclePresenter extends BasePresenter
         $this->travelService = $ts;
     }
 
-    public function renderDefault()
+    public function renderDefault() : void
     {
         $this->template->list = $this->travelService->getAllVehicles($this->unit->ID);
     }
 
     /**
      * @param string $id
-     * @return \Model\Travel\Vehicle
+     * @return Vehicle
      * @throws BadRequestException
      */
-    private function getVehicle($id)
+    private function getVehicle($id) : Vehicle
     {
         try {
             $vehicle = $this->travelService->getVehicle($id);
@@ -50,17 +48,17 @@ class VehiclePresenter extends BasePresenter
         return $vehicle;
     }
 
-    public function actionDetail($id)
+    public function actionDetail($id) : void
     {
         $this->template->vehicle = $this->getVehicle($id);
     }
 
-    public function renderDetail($id)
+    public function renderDetail($id) : void
     {
         $this->template->commands = $this->travelService->getAllCommandsByVehicle($this->unit->ID, $id);
     }
 
-    public function handleRemove($vehicleId)
+    public function handleRemove($vehicleId) : void
     {
         // Check whether vehicle exists and belongs to unit
         $this->getVehicle($vehicleId);
@@ -73,7 +71,7 @@ class VehiclePresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleArchive($vehicleId)
+    public function handleArchive($vehicleId) : void
     {
         // Check whether vehicle exists and belongs to unit
         $this->getVehicle($vehicleId);
@@ -84,7 +82,7 @@ class VehiclePresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    protected function makeVehicleForm($name)
+    protected function createComponentFormCreateVehicle($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addText("type", "Typ*")
@@ -97,19 +95,15 @@ class VehiclePresenter extends BasePresenter
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Musíte vyplnit průměrnou spotřebu.")
             ->addRule(Form::FLOAT, "Průměrná spotřeba musí být číslo!");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formCreateVehicleSubmitted($form);
+        };
+
         return $form;
     }
 
-    function createComponentFormCreateVehicle($name)
-    {
-        $form = $this->makeVehicleForm($name);
-        $form->addSubmit('send', 'Založit')
-            ->setAttribute("class", "btn btn-primary");
-        return $form;
-    }
-
-    function formCreateVehicleSubmitted(Form $form)
+    private function formCreateVehicleSubmitted(Form $form) : void
     {
         $v = $form->getValues();
         $v['unit_id'] = $this->unit->ID;

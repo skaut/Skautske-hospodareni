@@ -14,13 +14,10 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     protected $event;
 
-    /**
-     *
-     * @var \Model\EventService
-     */
+    /** @var \Model\EventService */
     protected $eventService;
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
         $this->eventService = $this->context->getService("campService");
@@ -41,7 +38,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         }
     }
 
-    protected function editableOnly()
+    protected function editableOnly() : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");

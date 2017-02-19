@@ -10,20 +10,14 @@ use Nette\Application\UI\Form;
 class GroupPresenter extends BasePresenter
 {
 
-    /**
-     * @var \Model\PaymentService
-     */
-    protected $model;
+    /** @var \Model\PaymentService */
+    private $model;
 
-    /**
-     * @var \Model\MailService
-     */
-    protected $mail;
+    /** @var \Model\MailService */
+    private $mail;
 
-    /**
-     * @var \Model\EventService
-     */
-    protected $camp;
+    /** @var \Model\EventService */
+    private $camp;
 
     /**
      * výchozí text emailů
@@ -38,7 +32,7 @@ class GroupPresenter extends BasePresenter
         $this->mail = $mailService;
     }
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
         $this->camp = $this->context->getService("campService");
@@ -52,7 +46,7 @@ class GroupPresenter extends BasePresenter
         ];
     }
 
-    public function actionDefault($type = NULL)
+    public function actionDefault($type = NULL) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
@@ -96,7 +90,7 @@ class GroupPresenter extends BasePresenter
         $this->template->linkBack = $this->link("Default:");
     }
 
-    public function renderEdit($id)
+    public function renderEdit($id) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
@@ -125,7 +119,7 @@ class GroupPresenter extends BasePresenter
         $this->template->linkBack = $this->link("Payment:detail", ["id" => $id]);
     }
 
-    public function createComponentGroupForm($name)
+    protected function createComponentGroupForm($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addSelect("sisId");
@@ -152,11 +146,14 @@ class GroupPresenter extends BasePresenter
         $form->addHidden("type");
         $form->addHidden("gid");
         $form->addSubmit('send', "Založit skupinu")->setAttribute("class", "btn btn-primary");
-        $form->onSubmit[] = [$this, $name . 'Submitted'];
+
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->groupFormSubmitted($form);
+        };
         return $form;
     }
 
-    function groupFormSubmitted(Form $form)
+    private function groupFormSubmitted(Form $form) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro změny skupin plateb", "danger");

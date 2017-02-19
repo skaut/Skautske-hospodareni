@@ -2,8 +2,7 @@
 
 namespace App;
 
-use Nette\Application\UI\Form,
-    Nette\Caching\Cache;
+use Nette\Application\UI\Form;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -11,7 +10,7 @@ use Nette\Application\UI\Form,
 class OfflinePresenter extends BasePresenter
 {
 
-    function actionSync()
+    public function actionSync() : void
     {
         if (!$this->user->isLoggedIn()) {
             $this->redirect(":Default:", ["backlink" => $this->storeRequest('+ 3 days')]);
@@ -19,7 +18,7 @@ class OfflinePresenter extends BasePresenter
         $this->template->list = $this->context->eventService->event->getAll(date("Y"), "draft");
     }
 
-    function handleSynchronize($aid)
+    public function handleSynchronize($aid) : void
     {
         $this->invalidateControl();
         //        $post = $this->context->httpRequest->getPost();
@@ -35,12 +34,12 @@ class OfflinePresenter extends BasePresenter
         //        $this->context->eventService->chits->add($this->aid, $values);
     }
 
-    function renderList()
+    public function renderList() : void
     {
 
     }
 
-    function beforeRender()
+    protected function beforeRender() : void
     {
         parent::beforeRender();
         //        $cache = new Cache(new \Nette\Caching\Storages\FileStorage(TEMP_DIR));
@@ -52,7 +51,7 @@ class OfflinePresenter extends BasePresenter
         }
     }
 
-    function actionManifest()
+    public function actionManifest() : void
     {
         $this->context->httpResponse->setContentType('Context-Type:', 'text/cache-manifest');
 
@@ -62,7 +61,7 @@ class OfflinePresenter extends BasePresenter
         $this->template->js = "webtemp/" . $jsFile->file . "?" . $jsFile->lastModified; //name
     }
 
-    function actionOut()
+    public function actionOut() : void
     {
         //        if($this->user->isLoggedIn()){
         //            $this->template->autoCompleter = $this->context->memberService->getAC();
@@ -72,7 +71,7 @@ class OfflinePresenter extends BasePresenter
         $this->template->form = $this['formOut'];
     }
 
-    function actionIn()
+    public function actionIn() : void
     {
         $this['formIn']['category']->setItems($this->context->getService("eventService")->chits->getCategoriesPairs('in'));
         $this->template->setFile(dirname(__FILE__) . '/../templates/Offline/form.latte');
@@ -82,10 +81,10 @@ class OfflinePresenter extends BasePresenter
     /**
      * generuje základní Form pro ostatní formuláře
      * @param Presenter $thisP
-     * @param <type> $name
+     * @param string $name
      * @return Form
      */
-    protected function createComponentFormOut($name)
+    protected function createComponentFormOut($name) : Form
     {
         $form = new Form(NULL, $name);
         $form->getElementPrototype()->class[] = "offline";
@@ -119,7 +118,7 @@ class OfflinePresenter extends BasePresenter
         return $form;
     }
 
-    protected function createComponentFormIn($name)
+    protected function createComponentFormIn($name) : Form
     {
         $form = new Form(NULL, $name);
         $form->getElementPrototype()->class[] = "offline";

@@ -5,7 +5,7 @@ namespace App;
 class DefaultPresenter extends BasePresenter
 {
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
     }

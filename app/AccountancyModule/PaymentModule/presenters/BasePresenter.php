@@ -24,7 +24,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->model = $paymentService;
     }
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
         $this->availableActions = $this->userService->actionVerify("OU_Unit", $this->aid);

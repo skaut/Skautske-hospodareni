@@ -39,7 +39,7 @@ class CashbookPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    function startup()
+    protected function startup() : void
     {
         parent::startup();
         if (!$this->aid) {
@@ -53,7 +53,7 @@ class CashbookPresenter extends BasePresenter
         $this->template->missingCategories = FALSE;
     }
 
-    public function renderDefault($aid, $pid = NULL, $dp = FALSE)
+    public function renderDefault($aid, $pid = NULL, $dp = FALSE) : void
     {
         if ($pid !== NULL) {
             $this->isChitEditable($pid, $this->entityService);
@@ -89,7 +89,7 @@ class CashbookPresenter extends BasePresenter
         }
     }
 
-    public function actionImportHpd($aid)
+    public function actionImportHpd($aid) : void
     {
         $this->editableOnly();
         $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);

@@ -29,7 +29,7 @@ abstract class AccountancyHelpers extends Object
      * zobrazení stavu ve formě ikony
      */
 
-    public static function eventStateLabel($s)
+    public static function eventStateLabel($s) : string
     {
         if ($s == "draft") {
             return '<span class="label label-warning hidden-xs hidden-sm">Rozpracováno</span>'
@@ -46,7 +46,7 @@ abstract class AccountancyHelpers extends Object
      * zobrazuje popisky stavů u táborů
      */
 
-    public static function campStateLabel($s)
+    public static function campStateLabel($s) : string
     {
         switch ($s) {
             case "draft":
@@ -67,7 +67,7 @@ abstract class AccountancyHelpers extends Object
      * @param type $s - NULL|DibiDateTime
      * @return string
      */
-    public static function commandState($s)
+    public static function commandState($s) : string
     {
         switch ($s) {
             case NULL:
@@ -78,7 +78,7 @@ abstract class AccountancyHelpers extends Object
         }
     }
 
-    public static function paymentStateLabel($s)
+    public static function paymentStateLabel($s) : string
     {
         $long = $s;
         $short = mb_substr($s, 0, 5) . ".";
@@ -91,7 +91,7 @@ abstract class AccountancyHelpers extends Object
      * http://prirucka.ujc.cas.cz/?id=786
      * @return int
      */
-    public static function price($price, $full = TRUE)
+    public static function price($price, $full = TRUE) : string
     {
         if ($price === NULL || $price === '') {
             return ' '; //je tam nedělitelná mezera
@@ -107,12 +107,12 @@ abstract class AccountancyHelpers extends Object
      * @param number $num
      * @return string
      */
-    public static function num($num)
+    public static function num($num) : string
     {
         return number_format($num, strpos($num, '.') ? 2 : 0, ",", " ");
     }
 
-    public static function postCode($oldPsc)
+    public static function postCode($oldPsc) : string
     {
         $psc = preg_replace("[^0-9]", "", $oldPsc);
         if (strlen($psc) == 5) {
@@ -127,7 +127,7 @@ abstract class AccountancyHelpers extends Object
      * @param int $price
      * @return string
      */
-    public static function priceToString($price)
+    public static function priceToString($price) : string
     {
         //@todo ošetření správného tvaru
 
@@ -200,12 +200,12 @@ abstract class AccountancyHelpers extends Object
         return mb_strtoupper(mb_substr($string, 0, 1, "UTF-8"), "UTF-8") . mb_substr($string, 1, NULL, "UTF-8");
     }
 
-    public static function yesno($s)
+    public static function yesno($s) : string
     {
         return $s == 1 ? "Ano" : "Ne";
     }
 
-    public static function groupState($s)
+    public static function groupState($s) : string
     {
         switch ($s) {
             case 'open':

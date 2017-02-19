@@ -7,10 +7,7 @@ use Skautis\Wsdl\AuthenticationException;
 class AuthPresenter extends BasePresenter
 {
 
-    /**
-     *
-     * @var \Model\AuthService
-     */
+    /** @var \Model\AuthService */
     protected $authService;
 
     public function __construct(\Model\AuthService $as)
@@ -23,7 +20,7 @@ class AuthPresenter extends BasePresenter
      * pokud je uziatel uz prihlasen, staci udelat referesh
      * @param string $backlink
      */
-    public function actionDefault($backlink)
+    public function actionDefault($backlink) : void
     {
         //        if ($this->user->isLoggedIn()) {
         //            if ($backlink) {
@@ -37,7 +34,7 @@ class AuthPresenter extends BasePresenter
      * přesměruje na stránku s přihlášením
      * @param string $backlink
      */
-    function actionLogOnSkautIs($backlink = NULL)
+    public function actionLogOnSkautIs($backlink = NULL) : void
     {
         $this->redirectUrl($this->authService->getLoginUrl($backlink));
     }
@@ -46,7 +43,7 @@ class AuthPresenter extends BasePresenter
      * zajistuje zpracovani prihlaseni na skautIS
      * @param string $ReturnUrl
      */
-    function actionSkautIS($ReturnUrl = NULL)
+    public function actionSkautIS($ReturnUrl = NULL) : void
     {
         $post = $this->request->post;
         if (!isset($post['skautIS_Token'])) { //pokud není nastavený token, tak zde nemá co dělat
@@ -81,7 +78,7 @@ class AuthPresenter extends BasePresenter
         $this->presenter->redirect(':Accountancy:Default:');
     }
 
-    function actionAjax($backlink = NULL)
+    public function actionAjax($backlink = NULL) : void
     {
         $this->template->backlink = $backlink;
         $this->flashMessage("Vypršel čas přihlášení. Přihlaste se prosím znovu.", "warning");
@@ -92,12 +89,12 @@ class AuthPresenter extends BasePresenter
      * zajištuje odhlašení ze skautisu
      * Skautis sem přesměruje po svém odhlášení
      */
-    function actionLogoutSIS()
+    public function actionLogoutSIS() : void
     {
         $this->redirectUrl($this->authService->getLogoutUrl());
     }
 
-    function actionSkautisLogout()
+    public function actionSkautisLogout() : void
     {
         $this->user->logout(TRUE);
         if (isset($this->request->post['skautIS_Logout'])) {

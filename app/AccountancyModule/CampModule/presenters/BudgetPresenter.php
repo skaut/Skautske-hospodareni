@@ -8,7 +8,7 @@ namespace App\AccountancyModule\CampModule;
 class BudgetPresenter extends BasePresenter
 {
 
-    function startup()
+    protected function startup() : void
     {
         parent::startup();
         if (!$this->aid) {
@@ -17,7 +17,7 @@ class BudgetPresenter extends BasePresenter
         }
     }
 
-    function renderDefault($aid)
+    public function renderDefault($aid) : void
     {
         $toRepair = [];
         $this->template->isConsistent = $this->eventService->chits->isConsistent($aid, FALSE, $toRepair);
@@ -33,7 +33,7 @@ class BudgetPresenter extends BasePresenter
      * přepočte hodnoty v jednotlivých kategorich
      * @param type $aid
      */
-    public function handleConvert($aid)
+    public function handleConvert($aid) : void
     {
         $this->editableOnly();
         $this->eventService->chits->isConsistent($aid, $repair = TRUE);

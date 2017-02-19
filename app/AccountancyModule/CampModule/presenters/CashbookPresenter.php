@@ -40,7 +40,7 @@ class CashbookPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    function startup()
+    protected function startup() : void
     {
         parent::startup();
         if (!$this->aid) {
@@ -52,7 +52,7 @@ class CashbookPresenter extends BasePresenter
         //        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
     }
 
-    public function renderDefault($aid, $pid = NULL, $dp = FALSE)
+    public function renderDefault($aid, $pid = NULL, $dp = FALSE) : void
     {
         if ($pid !== NULL) {
             $this->isChitEditable($pid, $this->entityService);
@@ -94,7 +94,7 @@ class CashbookPresenter extends BasePresenter
         }
     }
 
-    public function handleActivateAutocomputedCashbook($aid)
+    public function handleActivateAutocomputedCashbook($aid) : void
     {
         try {
             $this->eventService->event->activateAutocomputedCashbook($aid);
@@ -108,9 +108,9 @@ class CashbookPresenter extends BasePresenter
     /**
      * formulář na výběr příjmů k importu
      * @param type $name
-     * @return \Nette\Application\UI\Form
+     * @return Form
      */
-    function createComponentFormImportHpd($name)
+    protected function createComponentFormImportHpd($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addRadioList("cat", "Kategorie:", ["child" => "Od dětí a roverů", "adult" => "Od dospělých"])
@@ -123,12 +123,17 @@ class CashbookPresenter extends BasePresenter
 
         $form->addSubmit('send', 'Importovat')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formImportHpdSubmitted($form);
+        };
+
         $form->setDefaults(['category' => 'un']);
+
         return $form;
     }
 
-    function formImportHpdSubmitted(Form $form)
+    private function formImportHpdSubmitted(Form $form) : void
     {
         $this->editableOnly();
         $values = $form->getValues();

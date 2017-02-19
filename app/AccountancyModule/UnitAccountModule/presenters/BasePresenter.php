@@ -17,7 +17,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected $year;
     protected $isReadable;
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
         $this->isCamp = $this->template->isCamp = FALSE;
@@ -34,7 +34,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         }
     }
 
-    protected function editableOnly()
+    protected function editableOnly() : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Data jednotky jsou uzavřené a nelze je upravovat.", "danger");

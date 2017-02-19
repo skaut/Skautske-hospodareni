@@ -26,7 +26,7 @@ class DetailPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    public function renderDefault($aid)
+    public function renderDefault($aid) : void
     {
         $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->eventService->event->getFunctions($aid) : FALSE;
         $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
@@ -55,7 +55,7 @@ class DetailPresenter extends BasePresenter
         ]);
     }
 
-    public function renderReport($aid)
+    public function renderReport($aid) : void
     {
         if (!$this->isAllowed("EV_EventFunction_ALL_EventCamp")) {
             $this->flashMessage("Nemáte právo přistupovat k táboru", "warning");
@@ -71,7 +71,7 @@ class DetailPresenter extends BasePresenter
         $this->terminate();
     }
 
-    function createComponentFormEdit($name)
+    protected function createComponentFormEdit($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addProtection();
@@ -80,11 +80,13 @@ class DetailPresenter extends BasePresenter
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formEditSubmitted($form);
+        };
         return $form;
     }
 
-    function formEditSubmitted(Form $form)
+    private function formEditSubmitted(Form $form) : void
     {
         if (!$this->isAllowed("EV_EventCamp_DETAIL")) {
             $this->flashMessage("Nemáte oprávnění pro úpravu tábora", "danger");

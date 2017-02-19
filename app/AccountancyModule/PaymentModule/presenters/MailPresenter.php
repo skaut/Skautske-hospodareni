@@ -10,10 +10,7 @@ use Nette\Application\UI\Form;
 class MailPresenter extends BasePresenter
 {
 
-    /**
-     *
-     * @var \Model\MailService
-     */
+    /** @var \Model\MailService */
     protected $model;
 
     public function __construct(\Model\PaymentService $paymentService, \Model\MailService $mailService)
@@ -22,7 +19,7 @@ class MailPresenter extends BasePresenter
         $this->model = $mailService;
     }
 
-    public function renderDefault($aid)
+    public function renderDefault($aid) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přistupovat ke správě emailů", "danger");
@@ -39,7 +36,7 @@ class MailPresenter extends BasePresenter
     //        $this->template->detail = $this->model->get($id);
     //    }
 
-    public function handleEdit($id)
+    public function handleEdit($id) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění měnit smtp", "danger");
@@ -47,7 +44,7 @@ class MailPresenter extends BasePresenter
         }
     }
 
-    public function handleRemove($id)
+    public function handleRemove($id) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění mazat smtp", "danger");
@@ -56,7 +53,7 @@ class MailPresenter extends BasePresenter
         $this->model->removeSmtp($this->aid, $id);
     }
 
-    function createComponentFormCreate($name)
+    protected function createComponentFormCreate($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addText("host", "Host")
@@ -70,11 +67,15 @@ class MailPresenter extends BasePresenter
         $form->addSelect("secure", "Zabezpečení", ["ssl" => "ssl", "tsl" => "tsl"]);
         $form->addSubmit('send', 'Založit')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formCreateSubmitted($form);
+        };
+
         return $form;
     }
 
-    function formCreateSubmitted(Form $form)
+    private function formCreateSubmitted(Form $form) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přidávat smtp", "danger");

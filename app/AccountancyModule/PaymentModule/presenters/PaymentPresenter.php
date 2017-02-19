@@ -43,7 +43,7 @@ class PaymentPresenter extends BasePresenter
         $this->formFactory = $formFactory;
     }
 
-    protected function startup()
+    protected function startup() : void
     {
         parent::startup();
         //Kontrola ověření přístupu
@@ -53,7 +53,7 @@ class PaymentPresenter extends BasePresenter
         $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
 
-    public function renderDefault($onlyOpen = 1)
+    public function renderDefault(int $onlyOpen = 1) : void
     {
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
@@ -64,13 +64,13 @@ class PaymentPresenter extends BasePresenter
         $this->template->payments = $this->model->getAll(array_keys($groups), TRUE);
     }
 
-    public function actionDetail($id)
+    public function actionDetail($id) : void
     {
         $this->id = $id;
         $this->bankInfo = $this->bank->getInfo($this->aid);
     }
 
-    public function renderDetail($id)
+    public function renderDetail($id) : void
     {
         $this->template->units = $this->readUnits;
         $this->template->group = $group = $this->model->getGroup(array_keys($this->readUnits), $id);
@@ -95,7 +95,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->canPair = isset($this->bankInfo->token);
     }
 
-    public function renderEdit($pid)
+    public function renderEdit($pid) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
@@ -119,7 +119,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->linkBack = $this->link("detail", ["id" => $payment->groupId]);
     }
 
-    public function actionMassAdd($id)
+    public function actionMassAdd($id) : void
     {
         //ověření přístupu
         $this->template->unitPairs = $this->readUnits;
@@ -142,7 +142,7 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    public function actionRepayment($id)
+    public function actionRepayment($id) : void
     {
         $campService = $this->context->getService("campService");
         $accountFrom = $this->model->getBankAccount($this->aid);
@@ -185,7 +185,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->payments = $payments;
     }
 
-    public function createComponentMassAddForm($name)
+    public function createComponentMassAddForm($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
@@ -199,11 +199,15 @@ class PaymentPresenter extends BasePresenter
             ->setAttribute('class', 'form-control input-sm');
         $form->addSubmit('send', 'Přidat vybrané')
             ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSubmit[] = [$this, $name . 'Submitted'];
+
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->massAddFormSubmitted($form);
+        };
+
         return $form;
     }
 
-    function massAddFormSubmitted(Form $form)
+    private function massAddFormSubmitted(Form $form) : void
     {
         $values = $form->getValues();
         $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
@@ -256,7 +260,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("Payment:detail", ["id" => $values->oid]);
     }
 
-    public function handleCancel($pid)
+    public function handleCancel($pid) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "danger");
@@ -274,7 +278,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleSend($pid)
+    public function handleSend($pid) : void
     {
         $payment = $this->model->get(array_keys($this->editUnits), $pid);
         $group = $this->model->getGroup(array_keys($this->readUnits), $payment->groupId);
@@ -295,7 +299,7 @@ class PaymentPresenter extends BasePresenter
      * rozešle všechny neposlané emaily
      * @param int $gid groupId
      */
-    public function handleSendGroup($gid)
+    public function handleSendGroup($gid) : void
     {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
@@ -318,7 +322,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleSendTest($gid)
+    public function handleSendTest($gid) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na odeslání testovacího emailu!", "danger");
@@ -352,7 +356,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleComplete($pid)
+    public function handleComplete($pid) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k uzavření platby!", "danger");
@@ -366,12 +370,12 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handlePairPayments($gid)
+    public function handlePairPayments($gid) : void
     {
         $this->pairPairments($gid);
     }
 
-    public function handleGenerateVs($gid)
+    public function handleGenerateVs($gid) : void
     {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
@@ -395,7 +399,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleCloseGroup($gid)
+    public function handleCloseGroup($gid) : void
     {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
@@ -407,7 +411,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleOpenGroup($gid)
+    public function handleOpenGroup($gid) : void
     {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
@@ -419,7 +423,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function createComponentPaymentForm($name)
+    public function createComponentPaymentForm($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addText("name", "Název/účel")
@@ -449,11 +453,15 @@ class PaymentPresenter extends BasePresenter
         $form->addHidden("oid");
         $form->addHidden("pid");
         $form->addSubmit('send', 'Přidat platbu')->setAttribute("class", "btn btn-primary");
-        $form->onSubmit[] = [$this, 'paymentSubmitted'];
+
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->paymentSubmitted($form);
+        };
+
         return $form;
     }
 
-    function paymentSubmitted(Form $form)
+    private function paymentSubmitted(Form $form) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k úpravám plateb!", "danger");
@@ -480,7 +488,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("detail", ["id" => $v->oid]);
     }
 
-    protected function sendInfoMail($payment, $group)
+    private function sendInfoMail($payment, $group) : ?bool
     {
         try {
             return $this->model->sendInfo($this->template, $payment, $group, $this->unitService);
@@ -491,7 +499,7 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    public function createComponentRepaymentForm($name)
+    protected function createComponentRepaymentForm($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("gid");
@@ -502,14 +510,14 @@ class PaymentPresenter extends BasePresenter
         $form->addSubmit('send', 'Odeslat platby do banky')
             ->setAttribute("class", "btn btn-primary btn-large");
 
-        $form->onSubmit[] = function (Form $form) {
+        $form->onSubmit[] = function (Form $form) : void {
             $this->repaymentFormSubmitted($form);
         };
 
         return $form;
     }
 
-    private function repaymentFormSubmitted(Form $form)
+    private function repaymentFormSubmitted(Form $form) : void
     {
         $values = $form->getValues();
 
@@ -558,7 +566,7 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentPairForm()
+    protected function createComponentPairForm() : Form
     {
         $form = $this->formFactory->create(TRUE);
 
@@ -570,7 +578,7 @@ class PaymentPresenter extends BasePresenter
             ->setType('number');
         $form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
 
-        $form->onSuccess[] = function ($form, $values) {
+        $form->onSuccess[] = function ($form, $values) : void {
             $this->pairPairments($this->id, $values->days);
         };
         $this->redrawControl('pairForm');
@@ -581,7 +589,7 @@ class PaymentPresenter extends BasePresenter
      * @param int $groupId
      * @param int|NULL $days
      */
-    private function pairPairments($groupId, $days = NULL)
+    private function pairPairments($groupId, $days = NULL) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
@@ -606,7 +614,7 @@ class PaymentPresenter extends BasePresenter
     /**
      * @param string $snippet
      */
-    private function redraw($snippet)
+    private function redraw($snippet) : void
     {
         if ($this->isAjax()) {
             $this->redrawControl($snippet);

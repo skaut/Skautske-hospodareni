@@ -44,7 +44,7 @@ trait ParticipantTrait
     /** @var PdfRenderer */
     protected $pdf;
 
-    protected function traitStartup()
+    protected function traitStartup() : void
     {
         parent::startup();
         if (!$this->aid) {
@@ -54,13 +54,13 @@ trait ParticipantTrait
         $this->uid = $this->getParameter("uid", NULL);
     }
 
-    public function beforeRender()
+    protected function beforeRender() : void
     {
         parent::beforeRender();
         $this->template->directMemberOnly = $this->getDirectMemberOnly();
     }
 
-    protected function traitDefault($dp, $sort, $regNums)
+    protected function traitDefault($dp, $sort, $regNums) : void
     {
         $participants = $this->eventService->participants->getAll($this->aid);
         try {
@@ -83,7 +83,7 @@ trait ParticipantTrait
         $this->template->useRegNums = $regNums;
     }
 
-    protected function sortParticipants(&$participants, $sort)
+    protected function sortParticipants(&$participants, $sort) : void
     {
         $textItems = ["regNum", "isAccount"];
         $numberItems = ["Days", "payment", "repayment"];
@@ -106,7 +106,7 @@ trait ParticipantTrait
         }
     }
 
-    public function actionExport($aid)
+    public function actionExport($aid) : void
     {
         $type = $this->eventService->participants->type; //camp vs general
         try {
@@ -119,7 +119,7 @@ trait ParticipantTrait
         $this->terminate();
     }
 
-    public function actionExportExcel($aid)
+    public function actionExportExcel($aid) : void
     {
         $type = $this->eventService->participants->type; //camp vs general
         try {
@@ -131,7 +131,7 @@ trait ParticipantTrait
         $this->terminate();
     }
 
-    public function handleRemove($pid)
+    public function handleRemove($pid) : void
     {
         if (!$this->isAllowParticipantDelete) {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
@@ -147,7 +147,7 @@ trait ParticipantTrait
         }
     }
 
-    public function handleAdd($pid)
+    public function handleAdd($pid) : void
     {
         if (!$this->isAllowParticipantInsert) {
             $this->flashMessage("Nemáte oprávnění přidávat účastníky.", "danger");
@@ -169,7 +169,7 @@ trait ParticipantTrait
     /**
      * mění stav jestli vypisovat pouze přímé členy
      */
-    public function handleChangeDirectMemberOnly()
+    public function handleChangeDirectMemberOnly() : void
     {
         $this->setDirectMemberOnly(!$this->getDirectMemberOnly());
         if ($this->isAjax()) {
@@ -179,15 +179,18 @@ trait ParticipantTrait
         }
     }
 
-    public function createComponentFormMassList($name)
+    public function createComponentFormMassList($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('send')
-            ->onClick[] = [$this, $name . 'Submitted'];
+            ->onClick[] = function(SubmitButton $button) : void {
+            $this->formMassListSubmitted($button);
+        };
+
         return $form;
     }
 
-    public function formMassListSubmitted(SubmitButton $button)
+    private function formMassListSubmitted(SubmitButton $button) : void
     {
         if (!$this->isAllowParticipantInsert) {
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
@@ -222,7 +225,7 @@ trait ParticipantTrait
             ->onClick[] = [$this, 'massRemoveSubmitted'];
     }
 
-    public function massEditSubmitted(SubmitButton $button)
+    public function massEditSubmitted(SubmitButton $button) : void
     {
         $type = $this->eventService->participants->type; //camp vs general
         if (!$this->isAllowParticipantUpdate) {
@@ -251,7 +254,7 @@ trait ParticipantTrait
         $this->redirect("this");
     }
 
-    public function massRemoveSubmitted(SubmitButton $button)
+    public function massRemoveSubmitted(SubmitButton $button) : void
     {
         if (!$this->isAllowParticipantDelete) {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
@@ -269,7 +272,7 @@ trait ParticipantTrait
      * @param string $name
      * @return Form
      */
-    function createComponentFormAddParticipantNew($name)
+    protected function createComponentFormAddParticipantNew($name) : Form
     {
         $aid = $this->presenter->aid;
         $form = $this->prepareForm($this, $name);
@@ -288,11 +291,15 @@ trait ParticipantTrait
         $form->addText("birthday", "Dat. nar.");
         $form->addSubmit('send', 'Založit účastníka')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formAddParticipantNewSubmitted($form);
+        };
+
         return $form;
     }
 
-    public function formAddParticipantNewSubmitted(Form $form)
+    private function formAddParticipantNewSubmitted(Form $form) : void
     {
         if (!$this->isAllowParticipantInsert) {
             $this->flashMessage("Nemáte oprávnění přidávat účastníky.", "danger");
@@ -317,7 +324,7 @@ trait ParticipantTrait
         $this->redirect("this");
     }
 
-    protected function getDirectMemberOnly()
+    protected function getDirectMemberOnly() : bool
     {
         return (bool)$this->getSession(__CLASS__)->DirectMemberOnly;
     }

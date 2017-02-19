@@ -46,7 +46,7 @@ class Functions extends Control
         $this->members = $members;
     }
 
-    private function reload($message = NULL, $type = NULL)
+    private function reload($message = NULL, $type = NULL) : void
     {
         if ($message) {
             $this->presenter->flashMessage($message, $type);
@@ -61,20 +61,20 @@ class Functions extends Control
     /**
      * @return bool
      */
-    private function canEdit()
+    private function canEdit() : bool
     {
         /* @var $presenter EventPresenter */
         $presenter = $this->getPresenter();
         return $presenter->isAllowed('EV_EventGeneral_UPDATE_Function');
     }
 
-    public function handleEdit()
+    public function handleEdit() : void
     {
         $this->editation = $this->canEdit();
         $this->reload();
     }
 
-    public function handleCloseEditation()
+    public function handleCloseEditation() : void
     {
         $this->editation = FALSE;
         $this->reload();
@@ -85,7 +85,7 @@ class Functions extends Control
      * @param int $minimalAge
      * @return Form
      */
-    private function createForm($functionId, $minimalAge)
+    private function createForm($functionId, $minimalAge) : Form
     {
         $form = $this->formFactory->create(TRUE);
 
@@ -125,7 +125,7 @@ class Functions extends Control
         return $form;
     }
 
-    public function handleRemoveFunction($functionId)
+    public function handleRemoveFunction($functionId) : void
     {
         if (!$this->canEdit()) {
             $this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
@@ -137,27 +137,27 @@ class Functions extends Control
         $this->reload();
     }
 
-    protected function createComponentLeaderForm()
+    protected function createComponentLeaderForm() : Form
     {
         return $this->createForm(0, 18);
     }
 
-    protected function createComponentAssistantForm()
+    protected function createComponentAssistantForm() : Form
     {
         return $this->createForm(1, 18);
     }
 
-    protected function createComponentAccountantForm()
+    protected function createComponentAccountantForm() : Form
     {
         return $this->createForm(2, 15);
     }
 
-    protected function createComponentMedicForm()
+    protected function createComponentMedicForm() : Form
     {
         return $this->createForm(3, 15);
     }
 
-    public function render()
+    public function render() : void
     {
         $this->template->setFile(__DIR__ . '/templates/Functions.latte');
         $this->template->functions = $this->events->getFunctions($this->eventId);

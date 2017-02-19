@@ -24,9 +24,8 @@ class ErrorPresenter extends \Nette\Application\UI\Presenter
      * @param  Exception
      * @return void
      */
-    public function renderDefault($exception)
+    public function renderDefault($exception) : void
     {
-
         if ($exception instanceof Nette\Application\BadRequestException) {
             $code = $exception->getCode();
             // load template 403.latte or 404.latte or ... 4xx.latte

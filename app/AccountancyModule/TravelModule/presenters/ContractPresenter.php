@@ -25,17 +25,17 @@ class ContractPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    protected function isContractAccessible($contractId)
+    protected function isContractAccessible($contractId) : bool
     {
         return $this->travelService->isContractAccessible($contractId, $this->unit);
     }
 
-    public function renderDefault()
+    public function renderDefault() : void
     {
         $this->template->list = $this->travelService->getAllContracts($this->unit->ID);
     }
 
-    public function renderDetail($id)
+    public function renderDetail($id) : void
     {
         if (!$this->isContractAccessible($id)) {
             $this->flashMessage("Nemáte oprávnění k cestovnímu příkazu.", "danger");
@@ -45,7 +45,7 @@ class ContractPresenter extends BasePresenter
         $this->template->commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contract->id);
     }
 
-    public function actionPrint($contractId)
+    public function actionPrint($contractId) : void
     {
         $template = $this->template;
         $template->contract = $contract = $this->travelService->getContract($contractId);
@@ -66,7 +66,7 @@ class ContractPresenter extends BasePresenter
         $this->pdf->render($template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
     }
 
-    public function handleDelete($contractId)
+    public function handleDelete($contractId) : void
     {
         $commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contractId);
         if (!empty($commands)) {
@@ -81,9 +81,9 @@ class ContractPresenter extends BasePresenter
     /**
      * formular na zalozeni nove smlouvy
      * @param type $name
-     * @return \Form
+     * @return Form
      */
-    function createComponentFormCreateContract($name)
+    protected function createComponentFormCreateContract($name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addText("driver_name", "Jméno a příjmení řidiče*")
@@ -107,11 +107,15 @@ class ContractPresenter extends BasePresenter
 
         $form->addSubmit('send', 'Založit smlouvu')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
+
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formCreateContractSubmitted($form);
+        };
+
         return $form;
     }
 
-    function formCreateContractSubmitted(Form $form)
+    private function formCreateContractSubmitted(Form $form) : void
     {
         $v = $form->getValues();
         $v['end'] = isset($v['end']) ? $v['end'] : NULL;
