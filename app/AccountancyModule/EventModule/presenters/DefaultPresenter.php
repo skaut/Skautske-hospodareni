@@ -186,7 +186,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("default", ["aid" => $this->aid]);
     }
 
-    function isDateValidator($item, $args)
+    public function isDateValidator($item, $args)
     {
         return $item == NULL ? FALSE : TRUE;
     }

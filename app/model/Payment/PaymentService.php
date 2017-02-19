@@ -556,7 +556,7 @@ class PaymentService extends BaseService
      * @param array $files "name => path"
      * @return bool
      */
-    function curl_custom_postfields($ch, array $assoc = [], array $files = [])
+    private function curl_custom_postfields($ch, array $assoc = [], array $files = [])
     {
 
         // invalid characters for "name" and "filename"

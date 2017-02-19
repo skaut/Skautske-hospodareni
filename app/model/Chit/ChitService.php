@@ -378,7 +378,7 @@ class ChitService extends MutableBaseService
      * @param string $str - výraz k výpčtu
      * @return int
      */
-    function solveString($str)
+    private function solveString($str)
     {
         preg_match_all('/(?P<cislo>-?[0-9]+([.][0-9]{1,})?)(?P<operace>[\+\*]+)?/', str_replace(",", ".", $str), $matches);
         $maxIndex = count($matches['cislo']);
