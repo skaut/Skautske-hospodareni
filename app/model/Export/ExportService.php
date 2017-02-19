@@ -12,10 +12,10 @@ class ExportService extends BaseService {
 
     /**
      * donastavuje helpery a zdrojový file do šablony
-     * @param type $fileName
+     * @param string $fileName
      * @return \FileTemplate
      */
-    protected function setTemplate(ITemplate &$template, $fileName) {
+    protected function setTemplate(ITemplate $template, string $fileName) {
         $template->setFile($fileName);
         $template->getLatte()->addFilter(NULL, '\App\AccountancyModule\AccountancyHelpers::loader');
         //return $template;

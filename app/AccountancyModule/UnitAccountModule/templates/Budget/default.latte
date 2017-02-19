@@ -16,8 +16,8 @@
             {if is_array($c['childrens']) && !empty($c['childrens'])}
                 {include #this cat=>$c['childrens'], level=>$level+1, maxLevel=>$maxLevel}
             {elseif $maxLevel==$level}
-                <td class="r">{? $presenter->template->sum+=$c->value} {$c->value|number:2:',':' '} Kč</td>
-                <td class="r">{if array_key_exists($c->id, $categoriesSummary)}{? $presenter->template->sumReality+=$categoriesSummary[$c->id]}{$categoriesSummary[$c->id]|number:2:',':' '} Kč{/if}</td>
+                <td class="r">{php $presenter->template->sum+=$c->value} {$c->value|number:2:',':' '} Kč</td>
+                <td class="r">{if array_key_exists($c->id, $categoriesSummary)}{php $presenter->template->sumReality+=$categoriesSummary[$c->id]}{$categoriesSummary[$c->id]|number:2:',':' '} Kč{/if}</td>
             {else}
                 <td colspan='2'>&nbsp;</td>
             {/if}
@@ -42,7 +42,7 @@
     <div class="col-sm-6" n:if="isset($categories['in']) && !empty($categories['in'])">
         {include #table cat=>$categories['in']}
     </div>
-    {? $presenter->template->sum = $presenter->template->sumReality = 0}
+    {php $presenter->template->sum = $presenter->template->sumReality = 0}
     <div class="col-sm-6" n:if="isset($categories['out']) && !empty($categories['out'])">
         {include #table cat=>$categories['out']}
     </div>

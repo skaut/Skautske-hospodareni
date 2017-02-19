@@ -2,49 +2,45 @@
 
 namespace Model;
 
-use Nette\Mail\Message,
-    \Nette\Mail\SendmailMailer;
+use Model\Mail\IMailerFactory;
+use Nette\Mail\IMailer;
+use Nette\Mail\Message;
 
 /**
  * @author Hána František
  */
-class MailService extends BaseService {
+class MailService
+{
 
-    protected $sendEmail;
+    /** @var MailTable */
+    private $table;
+
+    /** @var IMailerFactory */
+    private $mailerFactory;
+
+    /** @var IMailer */
+    private $defaultMailer;
 
     const EMAIL_SENDER = "platby@skauting.cz";
 
-    public function __construct($skautIS = NULL, $connection = NULL, $sendEmail = FALSE) {
-        parent::__construct($skautIS, $connection);
-        $this->sendEmail = $sendEmail;
+    public function __construct(MailTable $table, IMailerFactory $mailerFactory, IMailer $defaultMailer)
+    {
+        $this->table = $table;
+        $this->mailerFactory = $mailerFactory;
+        $this->defaultMailer = $defaultMailer;
     }
 
-    protected function getSmtpMailer($groupId) {
-        $data = $this->getSmtpByGroup($groupId);
-        if ($data != NULL) {
-            return new \Nette\Mail\SmtpMailer(array(
-                'host' => $data['host'],
-                'username' => $data['username'],
-                'password' => $data['password'],
-                'secure' => $data['secure'],
-            ));
+    private function getMailer($groupId) : IMailer
+    {
+        if($groupId && $data = $this->getSmtpByGroup($groupId)) {
+            return $this->mailerFactory->create(
+                $data['host'],
+                $data['username'],
+                $data['password'],
+                $data['secure']
+            );
         }
-        return FALSE;
-    }
-
-    private function send(Message $mail, $groupId = NULL) {
-        if ($this->sendEmail) {
-            if ($groupId !== NULL && ($smtpMailer = $this->getSmtpMailer($groupId))) {
-                $mailer = $smtpMailer;
-            } else {
-                $mailer = new SendmailMailer();
-            }
-            $mailer->send($mail);
-            return TRUE;
-        } else {
-            echo $mail->getHtmlBody() . "<hr>";
-            die();
-        }
+        return $this->defaultMailer;
     }
 
     //SMTP
@@ -87,17 +83,15 @@ class MailService extends BaseService {
         return $this->table->removeSmtpGroup($groupId);
     }
 
-    //Odesílání emailů
-
-    public function sendPaymentInfo(\Nette\Application\UI\ITemplate $template, $to, $subject, $body, $groupId = NULL, $qrPrefix = NULL) {
-        $template->setFile(dirname(__FILE__) . "/mail.base.latte");
-        $template->body = $body;
-        $mail = new Message;
-        $mail->setFrom(self::EMAIL_SENDER)
-                ->addTo($to)
-                ->setSubject($subject)
-                ->setHtmlBody($template, $qrPrefix);
-        return $this->send($mail, $groupId);
+    /**
+     * Sends message via email server specified in payment method group.
+     * @param Message $mail
+     * @param int $groupId
+     */
+    public function send(Message $mail, int $groupId) : void
+    {
+        $mail->setFrom(self::EMAIL_SENDER);
+        $this->getMailer($groupId)->send($mail);
     }
 
 }

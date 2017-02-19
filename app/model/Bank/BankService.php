@@ -3,8 +3,9 @@
 namespace Model;
 
 use Model\Bank\Fio\FioClient;
+use Nette\Caching\Cache;
+use Nette\Caching\IStorage;
 use Model\Payment\Repositories\IGroupRepository;
-use Dibi\Connection;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -14,14 +15,23 @@ class BankService extends BaseService {
 	/** @var FioClient */
 	private $bank;
 
+    /** @var Cache */
+    protected $cache;
+
     /** @var IGroupRepository */
     private $groups;
 
-    public function __construct(Connection $connection, FioClient $bank, IGroupRepository $groups)
-	{
-        parent::__construct(NULL, $connection);
-		$this->bank = $bank;
+    /** @var BankTable */
+    private $table;
+
+    public function __construct(BankTable $table, IGroupRepository $groups, FioClient $bank, IStorage $storage)
+    {
+        parent::__construct();
+
+        $this->table = $table;
         $this->groups = $groups;
+		$this->bank = $bank;
+        $this->cache = new Cache($storage, __CLASS__);
     }
 
     public function setToken($unitId, $token, $daysback = 14) {
@@ -117,8 +127,8 @@ class BankService extends BaseService {
 			}
 		}
 
-		return $cnt;
-	}
+        return $cnt;
+    }
 
 	/**
 	 * @deprecated Use FioClient::getTransactions()

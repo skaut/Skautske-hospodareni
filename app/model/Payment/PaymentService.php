@@ -2,9 +2,9 @@
 
 namespace Model;
 
-use Dibi\Connection;
 use Model\Payment\Group;
 use Model\Payment\Repositories\IGroupRepository;
+use Nette\Mail\Message;
 use Skautis\Skautis;
 
 /**
@@ -12,17 +12,21 @@ use Skautis\Skautis;
  */
 class PaymentService extends BaseService {
 
+    /** @var PaymentTable */
+    private $table;
+
     /** @var MailService */
     protected $mailService;
 
     /** @var IGroupRepository */
     private $groups;
 
-    public function __construct(Skautis $skautIS, Connection $connection, MailService $mailService, IGroupRepository $groups)
-	{
-        parent::__construct($skautIS, $connection);
+    public function __construct(PaymentTable $table, Skautis $skautIS, MailService $mailService, IGroupRepository $groups)
+    {
+        parent::__construct($skautIS);
+        $this->table = $table;
         $this->mailService = $mailService;
-		$this->groups = $groups;
+        $this->groups = $groups;
     }
 
     public function get($unitId, $paymentId) {
@@ -151,7 +155,7 @@ class PaymentService extends BaseService {
         $qrPrefix = $qrFilename = NULL;
         if (strpos($payment->email_info, "%qrcode%")) {
             $qrPrefix = WWW_DIR . "/webtemp/";
-            $qrFilename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime()) . ".png";
+            $qrFilename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime(TRUE)) . ".png";
             \Nette\Utils\Image::fromFile($qrUrl)->save($qrPrefix . $qrFilename);
 //            dump(is_readable($qrPrefix . $qrFilename));
 //            die();
@@ -161,15 +165,24 @@ class PaymentService extends BaseService {
                 array("%account%", "%qrcode%", "%name%", "%groupname%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"), 
                 array($accountRaw, $qrcode, $payment->name, $group->label, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note), $payment->email_info
                 );
-        if (($mailSend = ($this->mailService->sendPaymentInfo($template, $payment->email, "Informace o platbě", $body, $payment->groupId, $qrPrefix)))) {
-            if (isset($payment->id)) {
-                $this->table->update($payment->id, array("state" => PaymentTable::PAYMENT_STATE_SEND));
-            }
+
+        $template->setFile(__DIR__ . '/mail.base.latte');
+        $template->body = $body;
+
+        $mail = (new Message())
+                ->addTo($payment->email)
+                ->setSubject('Informace o platbě')
+                ->setHtmlBody($template, $qrPrefix);
+
+        $this->mailService->send($mail, $payment->groupId);
+        if (isset($payment->id)) {
+            $this->table->update($payment->id, array("state" => PaymentTable::PAYMENT_STATE_SEND));
         }
+
         if (is_file($qrPrefix . $qrFilename)) {
             unlink($qrPrefix . $qrFilename);
         }
-        return $mailSend ? TRUE : FALSE;
+        return TRUE;
     }
 
     /**
@@ -326,15 +339,22 @@ class PaymentService extends BaseService {
         return $this->skautis->org->UnitRegistrationDetail(array("ID" => $regId));
     }
 
-    public function getNewestOpenRegistration($unitId = NULL, $withoutRecord = TRUE) {
-        $data = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId === NULL ? $unitId = $this->skautis->getUser()->getUnitId() : $unitId, ""));
-        foreach ($data as $r) {
-            if ($r->IsDelivered || ($withoutRecord && $this->table->getGroupsBySisId('registration', $r->ID))) {//filtrování odevzdaných nebo těch se záznamem
-                continue;
+    /**
+     * Returns newest registration without created group
+     */
+    public function getNewestRegistration() : array
+	{
+        $unitId = $this->skautis->getUser()->getUnitId();
+        $data = array_values($this->skautis->org->UnitRegistrationAll(["ID_Unit" => $unitId, ""]));
+
+        if($data) {
+            $registration = $data[0];
+            if(!$this->table->getGroupsBySisId('registration', $registration->ID)) {
+                return (array)$registration;
             }
-            return (array) $r;
         }
-        return FALSE;
+
+        return [];
     }
 
     /**
@@ -381,9 +401,15 @@ class PaymentService extends BaseService {
     /**
      * JOURNAL
      */
+
+    /**
+     * @param int $unitId
+     * @param int $year
+     * @return array | NULL - format array("add" => [], "remove" => [])
+     */
     public function getJournalChangesAfterRegistration($unitId, $year) {
         $registrations = $this->skautis->org->UnitRegistrationAll(array("ID_Unit" => $unitId, "Year" => $year));
-        if (count($registrations) < 1) {
+        if (!is_array($registrations) || count($registrations) < 1) {
             return NULL;
         }
         $registrationId = reset($registrations)->ID;
@@ -541,7 +567,7 @@ class PaymentService extends BaseService {
 
         // generate safe boundary
         do {
-            $boundary = "---------------------" . md5(mt_rand() . microtime());
+            $boundary = "---------------------" . md5(mt_rand() . microtime(TRUE));
         } while (preg_grep("/{$boundary}/", $body));
 
         // add boundary for each parameters

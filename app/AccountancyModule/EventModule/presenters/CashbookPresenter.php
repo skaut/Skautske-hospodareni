@@ -1,6 +1,10 @@
 <?php
 
 namespace App\AccountancyModule\EventModule;
+use Model\ExcelService;
+use Model\ExportService;
+use Model\MemberService;
+use Model\Services\PdfRenderer;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -24,11 +28,13 @@ class CashbookPresenter extends BasePresenter {
      */
     protected $excelService;
 
-    public function __construct(\Model\MemberService $member, \Model\ExportService $es, \Model\ExcelService $exs) {
+    public function __construct(MemberService $member, ExportService $es, ExcelService $exs, PdfRenderer $pdf)
+    {
         parent::__construct();
         $this->memberService = $member;
         $this->exportService = $es;
         $this->excelService = $exs;
+        $this->pdf = $pdf;
     }
 
     function startup() {

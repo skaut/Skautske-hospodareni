@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\EventModule\Factories\IFunctionsFactory;
+use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Model\MemberService;
@@ -23,17 +24,27 @@ class EventPresenter extends BasePresenter {
     /** @var IFunctionsFactory */
     private $functionsFactory;
 
+    /** @var PdfRenderer */
+    private $pdf;
+
     /**
      * EventPresenter constructor.
      * @param ExportService $exportService
      * @param MemberService $memberService
      * @param IFunctionsFactory $functionsFactory
+     * @param PdfRenderer $pdf
      */
-    public function __construct(ExportService $exportService, MemberService $memberService, IFunctionsFactory $functionsFactory)
+    public function __construct(
+        ExportService $exportService,
+        MemberService $memberService,
+        IFunctionsFactory $functionsFactory,
+        PdfRenderer $pdf
+    )
     {
         $this->exportService = $exportService;
         $this->memberService = $memberService;
         $this->functionsFactory = $functionsFactory;
+        $this->pdf = $pdf;
     }
 
     public function renderDefault($aid, $funcEdit = FALSE) {
@@ -116,7 +127,7 @@ class EventPresenter extends BasePresenter {
         $template .= (string) $this->exportService->getCashbook($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= (string) $this->exportService->getChits($this->createTemplate(), $aid, $this->eventService, $this->unitService, $chits);
 
-        $this->eventService->participants->makePdf($template, "all.pdf");
+        $this->pdf->render($template, 'all.pdf');
         $this->terminate();
     }
 
@@ -139,7 +150,7 @@ class EventPresenter extends BasePresenter {
         }
         $template = $this->exportService->getEventReport($this->createTemplate(), $aid, $this->eventService);
 
-        $this->eventService->participants->makePdf($template, "report.pdf");
+        $this->pdf->render($template, 'report.pdf');
         $this->terminate();
     }
 

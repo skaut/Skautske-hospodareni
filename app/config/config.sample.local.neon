@@ -4,7 +4,7 @@ nette:
         debugger: true
 
 dibi:
-    driver: mysql
+    driver: mysqli
     host: localhost
     username: DOPLNIT
     password: DOPLNIT
@@ -23,3 +23,6 @@ parameters:
 services:
     cacheStorage:
         #class: Nette\Caching\Storages\DevNullStorage
+
+        # Pro produkci
+        # nette.mailer: Nette\Mail\SendmailMailer

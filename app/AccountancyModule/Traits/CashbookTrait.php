@@ -1,11 +1,16 @@
 <?php
 
-use Nette\Application\UI\Form,
-    Nette\Forms\Controls\SubmitButton;
+use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SubmitButton;
+use Model\Services\PdfRenderer;
 
-trait CashbookTrait {
+trait CashbookTrait
+{
 
     protected $entityService;
+
+    /** @var PdfRenderer */
+    protected $pdf;
 
     function renderEdit($id, $aid) {
         $this->editableOnly();
@@ -61,14 +66,14 @@ trait CashbookTrait {
 //
     public function actionExport($aid) {
         $template = $this->exportService->getCashbook($this->createTemplate(), $aid, $this->entityService);
-        $this->entityService->chits->makePdf($template, "pokladni-kniha.pdf");
+        $this->pdf->render($template, 'pokladni-kniha.pdf');
         $this->terminate();
     }
     
     public function actionExportChitlist($aid) {
         $template = $this->exportService->getChitlist($this->createTemplate(), $aid, $this->entityService);
         //echo $template;die();
-        $this->entityService->chits->makePdf($template, "seznam-dokladu.pdf");
+        $this->pdf->render($template, 'seznam-dokladu.pdf');
         $this->terminate();
     }
 
@@ -80,8 +85,7 @@ trait CashbookTrait {
     function actionPrint($id, $aid) {
         $chits = array($this->entityService->chits->get($id));
         $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $this->unitService, $chits);
-//        echo $template->render();
-        $this->entityService->chits->makePdf($template, "paragony.pdf");
+        $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
 
@@ -106,16 +110,16 @@ trait CashbookTrait {
     function createComponentFormMass($name) {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('massPrintSend')
-                ->onClick[] = $this->massPrintSubmitted;
+                ->onClick[] = [$this, 'massPrintSubmitted'];
         $form->addSubmit('massExportSend')
-                ->onClick[] = $this->massExportSubmitted;
+                ->onClick[] = [$this, 'massExportSubmitted'];
         return $form;
     }
 
     function massPrintSubmitted(SubmitButton $button) {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $this->unitService, $chits);
-        $this->entityService->chits->makePdf($template, "paragony.pdf");
+        $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
 

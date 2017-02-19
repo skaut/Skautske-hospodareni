@@ -17,10 +17,15 @@ class EventEntity {
     /** @var ChitService */
     private $chits;
 
-    public function __construct($name, $skautIS, $cacheStorage, $connection) {
-        $this->event = new EventService($name, $skautIS, $cacheStorage, $connection);
-        $this->participants = new ParticipantService($name, $skautIS, $cacheStorage, $connection);
-        $this->chits = new ChitService($name, $skautIS, $cacheStorage, $connection, $this->event);
+    public function __construct(
+        string $name,
+        IChitServiceFactory $chitFactory,
+        IParticipantServiceFactory $participantFactory,
+        IEventServiceFactory $eventFactory)
+    {
+        $this->event = $eventFactory->create($name);
+        $this->participants = $participantFactory->create($name);
+        $this->chits = $chitFactory->create($name);
     }
 
     public function __get($name) {

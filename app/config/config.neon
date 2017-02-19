@@ -10,20 +10,22 @@ php:
     date.timezone: Europe/Prague
     # zlib.output_compression: yes
 
-nette:
-    session:
-        autoStart: smart
-        expiration: "+ 3 days"
-    application:
-        errorPresenter: Error
-        #catchExceptions: true
-        mapping:
-            *: App\*Module\*Presenter
+session:
+    autoStart: smart
+    expiration: "+ 3 days"
+application:
+    errorPresenter: Error
+    #catchExceptions: true
+    mapping:
+        *: App\*Module\*Presenter
     debugger:
         email: sinacek@gmail.com
         strictMode: TRUE
         maxDepth: 6
         maxLen: 500
+tracy:
+    bar:
+        - Nextras\MailPanel\MailPanel(%tempDir%/mail-panel-latte)
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
@@ -34,7 +36,7 @@ services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory(%ssl%)
     - \Model\PaymentService
-    - \Model\MailService(NULL, @dibi.connection, %sendEmail%)
+    - Model\MailService
 
     - Model\Bank\Http\Curl
     - Model\Bank\Fio\FioClient
@@ -46,11 +48,11 @@ services:
     #    run: TRUE
     - \Model\AuthService
     eventService:
-        class: Model\EventEntity("General", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("General")
     campService:
-        class: Model\EventEntity("Camp", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("Camp")
     unitAccountService:
-        class: Model\EventEntity("Unit", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("Unit")
     - \Model\MemberService
     - \Model\UnitService
     - \Model\UserService
@@ -59,6 +61,11 @@ services:
     - \Model\ExcelService
     - \Model\BudgetService
 
+    # Factories
+    - Model\IChitServiceFactory
+    - Model\IEventServiceFactory
+    - Model\IParticipantServiceFactory
+
     # Repositories
     - Model\Travel\Repositories\VehicleRepository
     - Model\Payment\Repositories\GroupRepository
@@ -66,5 +73,26 @@ services:
 
     - App\AccountancyModule\Factories\FormFactory
 
+    # Tables
+    - Model\BankTable
+    - Model\BudgetTable
+    - Model\ChitTable
+    - Model\CommandTable
+    - Model\ContractTable
+    - Model\EventTable
+    - Model\MailTable
+    - Model\ParticipantTable
+    - Model\PaymentTable
+    - Model\Skautis\ObjectTable
+    - Model\TravelTable
+
+    - Model\Services\PdfRenderer
+    - Model\Skautis\Mapper
+
+    nette.mailer:
+        class: Nette\Mail\IMailer
+        factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
+
+    - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
 includes:
 	- components.neon

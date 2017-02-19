@@ -2,19 +2,26 @@
 
 namespace Model;
 
+use Model\Skautis\Mapper;
+use Nette\Caching\IStorage;
+use Skautis\Skautis;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
 class ChitService extends MutableBaseService {
 
-    /**
-     * @var EventService
-     */
-    protected $objectService;
+    /** @var Mapper */
+    private $skautisMapper;
 
-    public function __construct($name, $skautIS, $cacheStorage, $connection, EventService $objectService) {
-        parent::__construct($name, $skautIS, $cacheStorage, $connection);
-        $this->objectService = $objectService;
+    /** @var ChitTable */
+    private $table;
+
+    public function __construct(string $name, ChitTable $table, Skautis $skautIS, IStorage $cacheStorage, Mapper $skautisMapper)
+    {
+        parent::__construct($name, $skautIS, $cacheStorage);
+        $this->table = $table;
+        $this->skautisMapper = $skautisMapper;
     }
 
     /**
@@ -402,16 +409,17 @@ class ChitService extends MutableBaseService {
     }
 
     /**
-     * 
-     * @param type $localEventId
-     * @return type
+     * @param int $localEventId
+     * @return int|NULL
      */
-    function getSkautisId($localEventId, $type = NULL) {
-        return $this->objectService->getSkautisId($localEventId, $this->type);
+    public function getSkautisId(int $localEventId) : ?int
+    {
+        return $this->skautisMapper->getSkautisId($localEventId, $this->type);
     }
 
-    function getLocalId($skautisEventId, $type = NULL) {
-        return $this->objectService->getLocalId($skautisEventId, $this->type);
+    private function getLocalId(int $skautisEventId) : int
+    {
+        return $this->skautisMapper->getLocalId($skautisEventId, $this->type);
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\EventModule;
 
 use Nette\Application\UI\Form;
+use MyValidators;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -193,10 +194,10 @@ class DefaultPresenter extends BasePresenter {
                 ->addRule(Form::FILLED, "Musíte vyplnit název akce");
         $form->addDatePicker("start", "Od*")
                 ->addRule(Form::FILLED, "Musíte vyplnit začátek akce")
-                ->addRule(callback('MyValidators::isValidDate'), 'Vyplňte platné datum.');
+                ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
         $form->addDatePicker("end", "Do*")
                 ->addRule(Form::FILLED, "Musíte vyplnit konec akce")
-                ->addRule(callback('MyValidators::isValidDate'), 'Vyplňte platné datum.');
+                ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
         $form->addText("location", "Místo");
         $form->addSelect("orgID", "Pořádající jednotka", $units);
         $form->addSelect("scope", "Rozsah (+)", $scopes)

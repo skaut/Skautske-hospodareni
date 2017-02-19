@@ -1,22 +1,33 @@
 <?php
 
 namespace Model;
+use Dibi\Connection;
 use Model\Event\AssistantNotAdultException;
 use Model\Event\LeaderNotAdultException;
+use Nette\Caching\IStorage;
+use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
 
 /**
  * @author Hána František
  */
-class EventService extends MutableBaseService {
-
+class EventService extends MutableBaseService
+{
     
     protected static $ID_Functions = array("ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist", "ID_PersonMedic");
 
-    public function __construct($name, \Skautis\Skautis $skautis, $cacheStorage, $connection) {
-        parent::__construct($name, $skautis, $cacheStorage, $connection);
+    /** @var EventTable */
+    private $table;
+
+    /** @var Connection */
+    private $connection;
+
+    public function __construct(string $name, EventTable $table, Skautis $skautis, IStorage $cacheStorage, Connection $connection)
+    {
+        parent::__construct($name, $skautis, $cacheStorage);
         /** @var EventTable */
-        $this->table = new EventTable($connection);
+        $this->table = $table;
+        $this->connection = $connection;
     }
 
     /**

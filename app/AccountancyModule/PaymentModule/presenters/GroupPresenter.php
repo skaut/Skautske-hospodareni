@@ -70,7 +70,7 @@ class GroupPresenter extends BasePresenter {
                     ->setItems($camps);
             $this->template->nadpis = "Založení skupiny plateb tábora";
         } elseif ($type == "registration") {
-            if (!($reg = $this->model->getNewestOpenRegistration())) {
+            if (!($reg = $this->model->getNewestRegistration())) {
                 $this->flashMessage("Nemáte založenou žádnou otevřenou registraci", "warning");
                 $this->redirect("Payment:default");
             }

@@ -76,20 +76,20 @@ $totalOut = 0;
     {for $i = 0; $i < $iter; $i++}
     <tr>
         {if $i < $cntIn}
-            {? $in = current($chits['in'])}
+            {php $in = current($chits['in'])}
         <td>{$in->label}</td>
         <td>{$in->price|price}</td>
-            {? $totalIn += $in->price}
-            {? next($chits['in'])}
+            {php $totalIn += $in->price}
+            {php next($chits['in'])}
         {else}
         <td>&nbsp;</td><td>&nbsp;</td>
         {/if}
         {if $i < $cntOut}
-            {? $out = current($chits['out'])}
+            {php $out = current($chits['out'])}
         <td>{$out->label}</td>
         <td>{$out->price|price}</td>
-            {? $totalOut += $out->price}
-            {? next($chits['out'])}
+            {php $totalOut += $out->price}
+            {php next($chits['out'])}
         {else}
         <td>&nbsp;</td><td>&nbsp;</td>
         {/if}

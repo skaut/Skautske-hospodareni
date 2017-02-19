@@ -134,9 +134,9 @@
                     {/if}
                     <td>
                         {if $t->fuel}
-                            {$sazba * $t->distance|price} {? $sum += $sazba * $t->distance}
+                            {$sazba * $t->distance|price} {php $sum += $sazba * $t->distance}
                         {else}
-                            {$t->distance|price} {? $sum += $t->distance}
+                            {$t->distance|price} {php $sum += $t->distance}
                         {/if}
                         
                     </td>

@@ -1,11 +1,21 @@
 <?php
 
 namespace Model;
+use Dibi\Connection;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  */
 class MailTable extends BaseTable {
+
+    /**
+     * MailTable constructor.
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct($connection);
+    }
 
     public function get($id) {
         return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_SMTP . "] WHERE id=%i", $id);
