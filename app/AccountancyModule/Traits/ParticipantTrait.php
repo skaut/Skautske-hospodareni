@@ -101,7 +101,7 @@ trait ParticipantTrait {
         $type = $this->eventService->participants->type; //camp vs general
         try {
             $template = $this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService, $type);
-            $this->pdf->render((string)$template, 'seznam-ucastniku.pdf', $type == 'camp');
+            $this->pdf->render($template, 'seznam-ucastniku.pdf', $type == 'camp');
         } catch (\Skautis\Wsdl\PermissionException $ex) {
             $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
             $this->redirect("default", array("aid" => $this->aid));

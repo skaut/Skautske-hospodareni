@@ -113,7 +113,7 @@ class DefaultPresenter extends BasePresenter {
             $template->start = reset($travels);
         }
 
-        $this->pdf->render((string)$template, 'cestovni-prikaz.pdf');
+        $this->pdf->render($template, 'cestovni-prikaz.pdf');
         $this->terminate();
     }
 
