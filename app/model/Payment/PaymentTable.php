@@ -17,7 +17,7 @@ class PaymentTable extends BaseTable {
      * @return \DibiRow
      */
     public function get($unitId, $paymentId) {
-        return $this->connection->fetch("SELECT p.*, g.email_info, g.email_demand, g.state as groupState, g.unitId FROM [" . self::TABLE_PA_PAYMENT . "] p"
+        return $this->connection->fetch("SELECT p.*, g.email_info, g.state as groupState, g.unitId FROM [" . self::TABLE_PA_PAYMENT . "] p"
                         . " LEFT JOIN [" . self::TABLE_PA_GROUP . "] g ON g.id = p.groupId"
                         . " WHERE g.unitId IN %in", !is_array($unitId) ? array($unitId) : $unitId, " AND p.id=%i ", $paymentId);
     }

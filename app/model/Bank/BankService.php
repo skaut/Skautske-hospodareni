@@ -5,6 +5,7 @@ namespace Model;
 use Model\Bank\Fio\FioClient;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
+use Model\Payment\Repositories\IGroupRepository;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -14,17 +15,21 @@ class BankService extends BaseService {
 	/** @var FioClient */
 	private $bank;
 
-    /** @var \Nette\Caching\Cache */
+    /** @var Cache */
     protected $cache;
+
+    /** @var IGroupRepository */
+    private $groups;
 
     /** @var BankTable */
     private $table;
 
-    public function __construct(BankTable $table, IStorage $storage, FioClient $bank)
+    public function __construct(BankTable $table, IGroupRepository $groups, FioClient $bank, IStorage $storage)
     {
         parent::__construct();
 
         $this->table = $table;
+        $this->groups = $groups;
 		$this->bank = $bank;
         $this->cache = new Cache($storage, __CLASS__);
     }
@@ -37,23 +42,60 @@ class BankService extends BaseService {
         return $this->table->getInfo($unitId);
     }
 
-    public function pairPayments(PaymentService $ps, $unitId, $groupId = NULL) {
+	/**
+	 * Completes payments on bank account
+	 * @param PaymentService $ps
+	 * @param int $unitId
+	 * @param int $groupId
+	 * @param int|NULL $daysBack
+	 * @return int|FALSE
+	 */
+    public function pairPayments(PaymentService $ps, $unitId, $groupId, $daysBack = NULL)
+	{
         $bakInfo = $this->getInfo($unitId);
         if (!isset($bakInfo->token)) {
             return FALSE;
         }
-        $payments = $ps->getAll($groupId === NULL ? array_keys($ps->getGroups($unitId)) : $groupId, FALSE);
 
+        $payments = $ps->getAll($groupId, FALSE);
+
+        $autoPairing = !$daysBack;
+		$group = $this->groups->find($groupId);
+        if($autoPairing) {
+			$lastPairing = $group->getLastPairing() ?: $group->getCreatedAt();
+			if($lastPairing) {
+				$daysBack = $lastPairing->diff(new \DateTime())->days + 3;
+			} else {
+				$daysBack = $bakInfo->daysback;
+			}
+		}
 
 		$transactions = $this->bank->getTransactions(
-			(new \DateTime())->modify("- {$bakInfo->daysback} days"),
+			(new \DateTime())->modify("- $daysBack days"),
 			new \DateTime(),
 			$bakInfo->token
 		);
 
-        if (!$transactions) {
-            return FALSE;
-        }
+        $result = $this->markPaymentsAsComplete($ps, $transactions, $payments);
+
+        if($autoPairing) {
+        	$group->updateLastPairing(new \DateTimeImmutable());
+        	$this->groups->save($group);
+		}
+		return $result;
+    }
+
+	/**
+	 * @param PaymentService $ps
+	 * @param array $transactions
+	 * @param array $payments
+	 * @return int|FALSE
+	 */
+    private function markPaymentsAsComplete(PaymentService $ps, array $transactions, array $payments)
+	{
+		if (!$transactions) {
+			return FALSE;
+		}
 
 		/**
 		 * We'll need payments indexed by VS
