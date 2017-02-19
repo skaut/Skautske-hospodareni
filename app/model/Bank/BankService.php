@@ -3,6 +3,8 @@
 namespace Model;
 
 use Model\Bank\Fio\FioClient;
+use Nette\Caching\Cache;
+use Nette\Caching\IStorage;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -12,16 +14,19 @@ class BankService extends BaseService {
 	/** @var FioClient */
 	private $bank;
 
-    /**
-     *
-     * @var \Nette\Caching\Cache
-     */
+    /** @var \Nette\Caching\Cache */
     protected $cache;
 
-    public function __construct(\Nette\Caching\IStorage $storage, FioClient $bank,\Dibi\Connection $connection = NULL) {
-        parent::__construct(NULL, $connection);
+    /** @var BankTable */
+    private $table;
+
+    public function __construct(BankTable $table, IStorage $storage, FioClient $bank)
+    {
+        parent::__construct();
+
+        $this->table = $table;
 		$this->bank = $bank;
-        $this->cache = new \Nette\Caching\Cache($storage, __CLASS__);
+        $this->cache = new Cache($storage, __CLASS__);
     }
 
     public function setToken($unitId, $token, $daysback = 14) {

@@ -1,6 +1,10 @@
 <?php
 
 namespace App\AccountancyModule\EventModule;
+use Model\ExcelService;
+use Model\ExportService;
+use Model\MemberService;
+use Model\Services\PdfRenderer;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -16,11 +20,13 @@ class ParticipantPresenter extends BasePresenter {
     //protected $isAllowParticipantDays;
     protected $isAllowParticipant;
 
-    public function __construct(\Model\MemberService $member, \Model\ExportService $export, \Model\ExcelService $excel) {
+    public function __construct(MemberService $member, ExportService $export, ExcelService $excel, PdfRenderer $pdf)
+    {
         parent::__construct();
         $this->memberService = $member;
         $this->exportService = $export;
         $this->excelService = $excel;
+        $this->pdf = $pdf;
     }
 
     function startup() {

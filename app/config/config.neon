@@ -40,7 +40,7 @@ services:
 
     - Model\Bank\Http\Curl
     - Model\Bank\Fio\FioClient
-    - \Model\BankService(@cacheStorage)
+    - \Model\BankService
     router: @App\RouterFactory::createRouter
     #connection:
     #    class: \Dibi\Connection
@@ -48,11 +48,11 @@ services:
     #    run: TRUE
     - \Model\AuthService
     eventService:
-        class: Model\EventEntity("General", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("General")
     campService:
-        class: Model\EventEntity("Camp", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("Camp")
     unitAccountService:
-        class: Model\EventEntity("Unit", @skautis.skautis, @cacheStorage, @dibi.connection)
+        class: Model\EventEntity("Unit")
     - \Model\MemberService
     - \Model\UnitService
     - \Model\UserService
@@ -61,13 +61,32 @@ services:
     - \Model\ExcelService
     - \Model\BudgetService
 
+    # Factories
+    - Model\IChitServiceFactory
+    - Model\IEventServiceFactory
+    - Model\IParticipantServiceFactory
+
     # Repositories
     - Model\Travel\Repositories\VehicleRepository
 
     - App\AccountancyModule\Factories\FormFactory
 
     # Tables
+    - Model\BankTable
+    - Model\BudgetTable
+    - Model\ChitTable
+    - Model\CommandTable
+    - Model\ContractTable
+    - Model\EventTable
     - Model\MailTable
+    - Model\ParticipantTable
+    - Model\PaymentTable
+    - Model\Skautis\ObjectTable
+    - Model\TravelTable
+
+    - Model\Services\PdfRenderer
+    - Model\Skautis\Mapper
+
     nette.mailer:
         class: Nette\Mail\IMailer
         factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)

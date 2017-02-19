@@ -2,10 +2,15 @@
 
 namespace Model;
 
+use Nette;
+use Nette\Security\User;
+use Skautis\Skautis;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-abstract class BaseService extends \Nette\Object {
+abstract class BaseService extends Nette\Object
+{
 
     //konstanty pro Event a Camp
     const LEADER = 0; //ID v poli funkcí
@@ -24,22 +29,10 @@ abstract class BaseService extends \Nette\Object {
     const ADULT_AGE = 18;
 
     /**
-     * reference na třídu typu Table
-     * @var instance of BaseTable
-     */
-    protected $table;
-
-    /**
      * slouží pro komunikaci se skautISem
-     * @var \Skautis\Skautis
+     * @var Skautis|NULL
      */
     protected $skautis;
-
-    /**
-     * připojení k databázi
-     * @var type 
-     */
-    protected $connection;
 
     /**
      * používat lokální úložiště?
@@ -53,15 +46,9 @@ abstract class BaseService extends \Nette\Object {
      */
     private static $storage = array();
 
-    public function __construct(\Skautis\Skautis $skautis = NULL, $connection = NULL) {
+    public function __construct(Skautis $skautis = NULL)
+    {
         $this->skautis = $skautis;
-        $this->connection = $connection;
-        
-        preg_match("/^(?P<name>.*)Service/", get_class($this), $matches);
-        $tableName = $matches['name'] . "Table";
-        if (class_exists($tableName)) {
-            $this->table = new $tableName($this->connection);
-        }
     }
 
     /**
@@ -90,49 +77,13 @@ abstract class BaseService extends \Nette\Object {
     }
 
     /**
-     * vrátí pdf do prohlizece
-     * @param type $template
-     * @param string $filename
-     * @return pdf 
-     */
-    function makePdf($template = NULL, $filename = NULL, $landscape = FALSE) {
-        $format = $landscape ? "A4-L" : "A4";
-        if ($template === NULL) {
-            return FALSE;
-        }
-//        define('_MPDF_PATH', LIBS_DIR . '/mpdf/');
-//        require_once(_MPDF_PATH . 'mpdf.php');
-        $mpdf = new \mPDF(
-                'utf-8', $format, $default_font_size = 0, $default_font = '', $mgl = 10, $mgr = 10, $mgt = 10, $mgb = 10, $mgh = 9, $mgf = 9, $orientation = 'P'
-        );
-
-        $mpdf->WriteHTML((string) $template, NULL);
-        $mpdf->Output($filename, 'I');
-    }
-
-    public function getLocalId($skautisEventId, $type = NULL) {
-        $cacheId = __FUNCTION__ . $skautisEventId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->saveSes($cacheId, $this->table->getLocalId($skautisEventId, $type !== NULL ? $type : self::$type));
-        }
-        return $res;
-    }
-
-    public function getSkautisId($localEventId, $type = NULL) {
-        $cacheId = __FUNCTION__ . $localEventId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->saveSes($cacheId, $this->table->getSkautisId($localEventId, $type !== NULL ? $type : self::$type));
-        }
-        return $res;
-    }
-
-    /**
      * vrací seznam jednotek, ke kterým má uživatel právo na čtení
-     * @param \Nette\Security\User $user
-     * @return type
+     * @param User $user
+     * @return array
      */
-    public function getReadUnits(\Nette\Security\User $user) {
-        $res = array();
+    public function getReadUnits(User $user) : array
+    {
+        $res = [];
         foreach ($user->getIdentity()->access[self::ACCESS_READ] as $uId => $u) {
             $res[$uId] = $u->DisplayName;
         }
@@ -141,11 +92,12 @@ abstract class BaseService extends \Nette\Object {
 
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
-     * @param \Nette\Security\User $user
-     * @return type
+     * @param User $user
+     * @return array
      */
-    public function getEditUnits(\Nette\Security\User $user) {
-        $res = array();
+    public function getEditUnits(User $user) : array
+    {
+        $res = [];
         foreach ($user->getIdentity()->access[self::ACCESS_EDIT] as $uId => $u) {
             $res[$uId] = $u->DisplayName;
         }
