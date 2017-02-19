@@ -2,6 +2,9 @@
 
 namespace App\AccountancyModule\CampModule;
 
+use Model\ExportService;
+use Model\MemberService;
+use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 
 /**
@@ -10,23 +13,21 @@ use Nette\Application\UI\Form;
  */
 class DetailPresenter extends BasePresenter {
 
-    /**
-     *
-     * @var \Model\ExportService
-     */
+    /** @var ExportService */
     protected $exportService;
     
-    /**
-     *
-     * @var \Model\MemberService
-     */
+    /** @var MemberService */
     protected $memberService;
 
+    /** @var PdfRenderer */
+    private $pdf;
 
-    public function __construct(\Model\ExportService $export, \Model\MemberService $member) {
+    public function __construct(ExportService $export, MemberService $member, PdfRenderer $pdf)
+    {
         parent::__construct();
         $this->exportService = $export;
         $this->memberService = $member;
+        $this->pdf = $pdf;
     }
     
     public function renderDefault($aid) {
@@ -68,7 +69,7 @@ class DetailPresenter extends BasePresenter {
         }
 
         $template = $this->exportService->getCampReport($this->createTemplate(), $aid, $this->eventService);
-        $this->eventService->participants->makePdf($template, "reportCamp.pdf");
+        $this->pdf->render($template, 'reportCamp.pdf');
         $this->terminate();
     }
 
