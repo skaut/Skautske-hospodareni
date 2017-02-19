@@ -119,12 +119,12 @@ trait CashbookTrait
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('massPrintSend')
             ->onClick[] = function(SubmitButton $button) : void {
-            $this->massPrintSubmitted($button);
-        };
+                $this->massPrintSubmitted($button);
+            };
         $form->addSubmit('massExportSend')
             ->onClick[] = function(SubmitButton $button) : void {
-            $this->massExportSubmitted($button);
-        };
+                $this->massExportSubmitted($button);
+            };
         return $form;
     }
 

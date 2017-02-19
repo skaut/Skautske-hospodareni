@@ -184,8 +184,8 @@ trait ParticipantTrait
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('send')
             ->onClick[] = function(SubmitButton $button) : void {
-            $this->formMassListSubmitted($button);
-        };
+                $this->formMassListSubmitted($button);
+            };
 
         return $form;
     }

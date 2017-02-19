@@ -180,8 +180,8 @@ class EventPresenter extends BasePresenter
         $form->addSubmit('send', 'Upravit')
             ->setAttribute("class", "btn btn-primary")
             ->onClick[] = function(SubmitButton $button) : void {
-            $this->formEditSubmitted($button);
-        };
+                $this->formEditSubmitted($button);
+            };
 
         return $form;
     }
