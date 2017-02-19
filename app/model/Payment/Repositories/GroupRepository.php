@@ -76,7 +76,7 @@ class GroupRepository implements IGroupRepository
                 ->execute();
         } else {
             $id = $this->db->insert(self::TABLE, $row)
-                ->execute();
+                ->execute(\dibi::IDENTIFIER);
             $this->getHydrator()->setProperty($group, 'id', $id);
         }
     }
