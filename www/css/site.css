@@ -283,3 +283,8 @@ footer {
 
 /* jquery.placeholder.min.js */
 .placeholder { color: #aaa; }
+
+.dropdown-form {
+    padding: 15px;
+    white-space: nowrap;
+}

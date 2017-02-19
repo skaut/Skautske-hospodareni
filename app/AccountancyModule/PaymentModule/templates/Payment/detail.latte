@@ -48,14 +48,24 @@
                         <li><a {if $isGroupSendActive} href="{link sendGroup! $group->id}" onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily{else} class="disabled" title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s>{/if}</a></li>
                     </ul>
                 </div>
-                <a n:href="pairPayments! $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-resize-small"></i> Párovat platby</a>
+                <div class="btn-group"
+                     {if !$canPair}title="Není nastaven token pro komunikaci s Fio." rel="tooltip"{/if}>
+                    <a n:href="pairPayments! $group->id" n:class="!$canPair ? disabled, btn, btn-primary">
+                        <i class="glyphicon glyphicon-resize-small"></i> Párovat platby
+                    </a>
+                    <button n:class="!$canPair ? disabled, btn, btn-primary, dropdown-toggle" data-toggle="dropdown" type="button"><span class="caret"></span></button>
+
+                    <div class="dropdown-menu dropdown-form" n:snippet="pairForm">
+                        {control pairForm}
+                    </div>
+                </div>
                 <a n:if="$group->groupType == 'camp'" n:href="repayment $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
                 <a n:href="generateVS! $group->id" class="btn btn-warning" {if is_null($maxVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
                 <a n:href="closeGroup! $group->id" class="btn btn-success"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
             {else}
                 <a n:if="$group->state == 'closed'" n:href="openGroup! $group->id"  class="btn btn-warning"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
             {/if}
-            
+
         </div>
     </div>
 </div>

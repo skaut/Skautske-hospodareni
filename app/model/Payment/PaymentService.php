@@ -2,7 +2,10 @@
 
 namespace Model;
 
+use Model\Payment\Group;
+use Model\Payment\Repositories\IGroupRepository;
 use Nette\Mail\Message;
+use Skautis\Skautis;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -15,11 +18,15 @@ class PaymentService extends BaseService {
     /** @var MailService */
     protected $mailService;
 
-    public function __construct(PaymentTable $table, \Skautis\Skautis $skautIS, MailService $mailService)
+    /** @var IGroupRepository */
+    private $groups;
+
+    public function __construct(PaymentTable $table, Skautis $skautIS, MailService $mailService, IGroupRepository $groups)
     {
         parent::__construct($skautIS);
         $this->table = $table;
         $this->mailService = $mailService;
+        $this->groups = $groups;
     }
 
     public function get($unitId, $paymentId) {
@@ -227,25 +234,26 @@ class PaymentService extends BaseService {
      * @param string $oType
      * @param int $sisId
      * @param string $label
-     * @param type $maturity
+     * @param \DateTime $maturity
      * @param int $ks
      * @param float $amount
      * @param string $email_info
-     * @param string $email_demand
-     * @return type
+     * @return int
      */
-    public function createGroup($unitId, $oType, $sisId, $label, $maturity = NULL, $ks = NULL, $amount = NULL, $email_info = NULL, $email_demand = NULL) {
-        return $this->table->createGroup(array(
-                    'groupType' => $oType,
-                    'sisId' => $sisId,
-                    'unitId' => $unitId,
-                    'label' => $label,
-                    'maturity' => $maturity,
-                    'ks' => $ks != "" ? $ks : NULL,
-                    'amount' => $amount != "" ? $amount : NULL,
-                    'email_info' => $email_info,
-                    'email_demand' => $email_demand,
-        ));
+    public function createGroup(int $unitId, ?string $oType, ?int $sisId, string $label, ?\DateTime $maturity, ?int $ks, ?float $amount, string $email_info) : int
+	{
+    	$group = new Group(
+        	$oType,
+			$unitId,
+			$sisId,
+			$label,
+			$amount ? $amount : NULL,
+			$maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
+			$ks,
+			new \DateTimeImmutable(),
+			$email_info);
+        $this->groups->save($group);
+        return $group->getId();
     }
 
     /**

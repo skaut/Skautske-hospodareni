@@ -42,11 +42,9 @@ class GroupPresenter extends BasePresenter {
         $this->defaultEmails = array(
             "registration" => array(
                 "info" => "Dobrý den,\nchtěli bychom vás požádat o úhradu členských příspěvků do našeho skautského střediska. \n<b>Informace k platbě:</b>\nÚčel platby: %name%\nČíslo účtu: %account%\nČástka: %amount% Kč\nDatum splatnosti: %maturity%\nVS: %vs%\nKS: %ks%\n\nPro zrychlení platby jsme připravili QR kód, který lze použít při placení v mobilních aplikacích bank. Použití QR kódu šetří váš čas a snižuje pravděpodobnost překlepu.\n%qrcode%\n\nDěkujeme za včasné uhrazení",
-                "demand" => "",
             ),
             "base" => array(
                 "info" => "Dobrý den,\nchtěli bychom vás požádat o úhradu. \n<b>Informace k platbě:</b>\nÚčel platby: %name%\nČíslo účtu: %account%\nČástka: %amount% Kč\nDatum splatnosti: %maturity%\nVS: %vs%\nKS: %ks%\n\nPro zrychlení platby jsme připravili QR kód, který lze použít při placení v mobilních aplikacích bank. Použití QR kódu šetří váš čas a snižuje pravděpodobnost překlepu.\n%qrcode%\n\nDěkujeme za včasné uhrazení",
-                "demand" => "",
             )
         );
     }
@@ -116,41 +114,11 @@ class GroupPresenter extends BasePresenter {
             "ks" => $group->ks,
             "smtp" => isset($smtp->id) && array_key_exists($smtp->id, $form['smtp']->getItems()) ? $smtp->id : NULL,
             "email_info" => $group->email_info,
-            //"email_demand" => $group->email_demand,
             "gid" => $group->id,
         ));
         $this->template->nadpis = "Editace skupiny: " . $group->label;
         $this->template->linkBack = $this->link("Payment:detail", array("id" => $id));
     }
-
-//    public function actionCreateGroupRegistration($regId) {
-//        if (!$this->isEditable) {
-//            $this->flashMessage("Nemáte oprávnění pro založení registrační skupiny", "danger");
-//            $this->redirect("default");
-//        }
-//        $reg = $this->model->getRegistration($regId);
-//        $groupId = $this->model->createGroup($this->aid, 'registration', $reg->ID, "Registrace " . $reg->Year, $reg->Year . "-01-15", NULL, NULL, $this->defaultEmails['registration']['info'], $this->defaultEmails['registration']['demand']);
-//        $this->redirect("Registration:massAdd", array("id" => $groupId));
-//    }
-//
-//    public function actionCamp($campId) {
-//        if ($campId === NULL) {
-//            $this->flashMessage("Nebylo zadáno číslo tábora", "warning");
-//            $this->redirect("Payment:default");
-//        }
-//        if (($group = $this->model->getGroupByCampId($campId))) {
-//            $this->redirect("Payment:detail", array("id" => $group->id));
-//        }
-//        $this->template->linkBack = $this->link(":Accountancy:Camp:Participant:", array("aid" => $campId));
-//        $camp = $this->model->getCamp($campId);
-//        $form = $this['groupForm'];
-//
-//        $form->setDefaults(array(
-//            "type" => "camp",
-//            "label" => $camp->DisplayName,
-//            "sisId" => $camp->ID,
-//        ));
-//    }
 
     public function createComponentGroupForm($name) {
         $form = $this->prepareForm($this, $name);
@@ -175,9 +143,6 @@ class GroupPresenter extends BasePresenter {
         $form->addTextArea("email_info", "Informační email")
                 ->setAttribute("class", "form-control")
                 ->setDefaultValue($this->defaultEmails['base']['info']);
-//        $form->addTextArea("email_demand", "Upomínací email")
-//                ->setAttribute("class", "form-control")
-//                ->setDefaultValue($this->defaultEmails['base']['demand']);
         $form->addHidden("type");
         $form->addHidden("gid");
         $form->addSubmit('send', "Založit skupinu")->setAttribute("class", "btn btn-primary");
@@ -210,7 +175,6 @@ class GroupPresenter extends BasePresenter {
                 "maturity" => $v->maturity,
                 "ks" => $v->ks != "" ? $v->ks : NULL,
                 "email_info" => $v->email_info,
-                    //"email_demand" => $v->email_demand,
             ));
             if ($v->smtp !== NULL) {
                 $isUpdate = $this->mail->addSmtpGroup($groupId, $v->smtp) || $isUpdate;
@@ -224,7 +188,16 @@ class GroupPresenter extends BasePresenter {
             }
             $this->redirect("Payment:detail", array("id" => $v->gid));
         } else {//ADD
-            if (($groupId = $this->model->createGroup($this->aid, $v->type != "" ? $v->type : NULL, isset($v->sisId) ? $v->sisId : NULL, $v->label, $v->maturity, $v->ks, isset($v->amount) ? $v->amount : NULL, $v->email_info))) {//, $v->email_demand
+			$groupId = $this->model->createGroup(
+				$this->aid,
+				$v->type != "" ? $v->type : NULL,
+				isset($v->sisId) ? (int)$v->sisId : NULL,
+				$v->label,
+				$v->maturity,
+				$v->ks ? (int)$v->ks : NULL,
+				isset($v->amount) ? (float)$v->amount : NULL,
+				$v->email_info);
+            if ($groupId) {
                 if ($v->smtp !== NULL) {
                     $this->mail->addSmtpGroup($groupId, $v->smtp);
                 }

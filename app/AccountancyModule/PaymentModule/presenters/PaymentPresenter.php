@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\Factories\FormFactory;
 use Nette\Application\UI\Form;
 
 /**
@@ -20,10 +21,24 @@ class PaymentPresenter extends BasePresenter {
     protected $editUnits;
     protected $unitService;
 
-    public function __construct(\Model\PaymentService $paymentService, \Model\BankService $bankService, \Model\UnitService $unitService) {
+	/** @var FormFactory */
+	private $formFactory;
+
+	/** @var int */
+	private $id;
+
+	/** @var object */
+	private $bankInfo;
+
+    public function __construct(
+		\Model\PaymentService $paymentService,
+		\Model\BankService $bankService,
+		\Model\UnitService $unitService,
+		FormFactory $formFactory) {
         parent::__construct($paymentService);
         $this->bank = $bankService;
         $this->unitService = $unitService;
+		$this->formFactory = $formFactory;
     }
 
     protected function startup() {
@@ -44,6 +59,12 @@ class PaymentPresenter extends BasePresenter {
         $this->template->groups = $groups;
         $this->template->payments = $this->model->getAll(array_keys($groups), TRUE);
     }
+
+    public function actionDetail($id)
+	{
+		$this->id = $id;
+		$this->bankInfo = $this->bank->getInfo($this->aid);
+	}
 
     public function renderDetail($id) {
         $this->template->units = $this->readUnits;
@@ -66,6 +87,7 @@ class PaymentPresenter extends BasePresenter {
         $this->template->summarize = $this->model->summarizeByState($id);
         $paymentsForSendEmail = array_filter($payments, create_function('$p', 'return strlen($p->email)>4 && $p->state == "preparing";'));
         $this->template->isGroupSendActive = ($group->state == 'open') && count($paymentsForSendEmail) > 0;
+        $this->template->canPair = isset($this->bankInfo->token);
     }
 
     public function renderEdit($pid) {
@@ -329,25 +351,9 @@ class PaymentPresenter extends BasePresenter {
         $this->redirect("this");
     }
 
-    public function handlePairPayments($gid) {
-        if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
-            $this->redirect("this");
-        }
-        try {
-            $pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $gid);
-        } catch (\Model\BankTimeoutException $exc) {
-            $this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
-        } catch (\Model\BankTimeLimitException $exc) {
-            $this->flashMessage("Mezi dotazy na bankovnictví musí být prodleva 1 minuta!", 'danger');
-        }
-
-        if (isset($pairsCnt) && $pairsCnt > 0) {
-            $this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
-        } else {
-            $this->flashMessage("Žádné platby nebyly spárovány");
-        }
-        $this->redirect("this");
+    public function handlePairPayments($gid)
+	{
+        $this->pairPairments($gid);
     }
 
     public function handleGenerateVs($gid) {
@@ -473,18 +479,24 @@ class PaymentPresenter extends BasePresenter {
                 ->setDefaultValue(date("j. n. Y", strtotime("+1 Weekday")));
         $form->addSubmit('send', 'Odeslat platby do banky')
                 ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSubmit[] = array($this, $name . 'Submitted');
+
+        $form->onSubmit[] = function(Form $form) {
+        	$this->repaymentFormSubmitted($form);
+        };
+
         return $form;
     }
 
-    function repaymentFormSubmitted(Form $form) {
+    private function repaymentFormSubmitted(Form $form)
+	{
+		$values = $form->getValues();
+
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro práci s platbami jednotky", "danger");
             $this->redirect("Payment:default", array("id" => $values->gid));
         }
         //$list = $this->model->getPersons($this->aid, $values->oid);
 
-        $values = $form->getValues();
         $accountFrom = $values->accountFrom;
         $ids = array_keys(array_filter((array) $values, function($val) {
                     return(is_bool($val) && $val);
@@ -523,5 +535,62 @@ class PaymentPresenter extends BasePresenter {
             $form->addError("Chyba z banky: " . $result->ordersDetails->detail->messages->message);
         }
     }
+
+    protected function createComponentPairForm()
+	{
+		$form = $this->formFactory->create(TRUE);
+
+		$days = $this->bankInfo->daysback ?? 0;
+
+		$form->addText('days', 'Počet dní', 2, 2)
+			->setDefaultValue($days)
+			->addRule($form::MIN, 'Musíte zadat alespoň počet dní z nastavení: %d', $days)
+			->setType('number');
+		$form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
+
+		$form->onSuccess[] = function($form, $values) {
+			$this->pairPairments($this->id, $values->days);
+		};
+		$this->redrawControl('pairForm');
+		return $form;
+	}
+
+	/**
+	 * @param int $groupId
+	 * @param int|NULL $days
+	 */
+	private function pairPairments($groupId, $days = NULL)
+	{
+		if (!$this->isEditable) {
+			$this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
+			$this->redraw('pairForm');
+		}
+		try {
+			$pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $groupId, $days);
+		} catch (\Model\BankTimeoutException $exc) {
+			$this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
+		} catch (\Model\BankTimeLimitException $exc) {
+			$this->flashMessage("Mezi dotazy na bankovnictví musí být prodleva 1 minuta!", 'danger');
+		}
+
+		if (isset($pairsCnt) && $pairsCnt > 0) {
+			$this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
+		} else {
+			$this->flashMessage("Žádné platby nebyly spárovány");
+		}
+		$this->redraw('pairForm');
+	}
+
+	/**
+	 * @param string $snippet
+	 */
+	private function redraw($snippet)
+	{
+		if($this->isAjax()) {
+			$this->redrawControl($snippet);
+		} else {
+			$this->redirect('this');
+		}
+	}
 
 }

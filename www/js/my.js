@@ -38,6 +38,10 @@ $(document).ready(function () {
         return false;
     });
 
+    $('.dropdown-form').click(function(e) {
+        e.stopPropagation();
+    });
+
 });
 
 function jqCheckAll(id, name) {
