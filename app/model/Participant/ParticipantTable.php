@@ -5,9 +5,11 @@ namespace Model;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class ParticipantTable extends BaseTable {
+class ParticipantTable extends BaseTable
+{
 
-    public function get($participantId) {
+    public function get($participantId)
+    {
         return $this->connection->fetch("SELECT * FROM  [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId=%i LIMIT 1", $participantId);
     }
 
@@ -16,7 +18,8 @@ class ParticipantTable extends BaseTable {
      * @param type $skautiEventId
      * @return type
      */
-    public function getCampLocalDetails($skautiEventId) {
+    public function getCampLocalDetails($skautiEventId)
+    {
         return $this->connection->query("SELECT participantId, payment, repayment, isAccount FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE actionId=%i", $skautiEventId)
             ->fetchAssoc("participantId");
     }
@@ -25,11 +28,13 @@ class ParticipantTable extends BaseTable {
      * smaže záznam
      * @param type $participantId
      */
-    public function deleteLocalDetail($participantId) {
+    public function deleteLocalDetail($participantId)
+    {
         $this->connection->query("DELETE FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId =%i", $participantId);
     }
 
-    public function update($participantId, $updateData) {
+    public function update($participantId, $updateData)
+    {
         $ins = $updateData;
         $ins['participantId'] = $participantId;
         unset($updateData['actionId']); //to se neaktualizuje

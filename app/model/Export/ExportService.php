@@ -8,20 +8,23 @@ use \Nette\ArrayHash,
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class ExportService extends BaseService {
+class ExportService extends BaseService
+{
 
     /**
      * donastavuje helpery a zdrojový file do šablony
      * @param string $fileName
      * @return \FileTemplate
      */
-    protected function setTemplate(ITemplate $template, string $fileName) {
+    protected function setTemplate(ITemplate $template, string $fileName)
+    {
         $template->setFile($fileName);
         $template->getLatte()->addFilter(NULL, '\App\AccountancyModule\AccountancyHelpers::loader');
         //return $template;
     }
 
-    public function getNewPage() {
+    public function getNewPage()
+    {
         return '<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />';
     }
 
@@ -30,7 +33,8 @@ class ExportService extends BaseService {
      * @param type $aid - ID akce
      * @param EventEntity $service
      */
-    public function getParticipants(ITemplate $template, $aid, EventEntity $service, $type = "general") {
+    public function getParticipants(ITemplate $template, $aid, EventEntity $service, $type = "general")
+    {
         $this->setTemplate($template, dirname(__FILE__) . "/templates/participant" . ($type == "camp" ? "Camp" : "") . ".latte");
         $template->list = $service->participants->getAll($aid);
         $template->info = $service->event->get($aid);
@@ -43,7 +47,8 @@ class ExportService extends BaseService {
      * @param EventEntity $service
      * @return \FileTemplate
      */
-    public function getCashbook(ITemplate $template, $aid, EventEntity $service) {
+    public function getCashbook(ITemplate $template, $aid, EventEntity $service)
+    {
         $this->setTemplate($template, dirname(__FILE__) . '/templates/cashbook.latte');
         $template->list = $service->chits->getAll($aid);
         $template->info = $service->event->get($aid);
@@ -56,22 +61,24 @@ class ExportService extends BaseService {
      * @param EventEntity $service
      * @return \FileTemplate
      */
-    public function getChitlist(ITemplate $template, $aid, EventEntity $service) {
+    public function getChitlist(ITemplate $template, $aid, EventEntity $service)
+    {
         $this->setTemplate($template, dirname(__FILE__) . '/templates/chitlist.latte');
-        $template->list =  array_filter($service->chits->getAll($aid), function($c) {
+        $template->list = array_filter($service->chits->getAll($aid), function ($c) {
             return $c->ctype == "out";
         });
         return $template;
     }
 
     /**
-     * 
+     *
      * @param type $aid
      * @param EventEntity $eventService
      * @return type
      */
-    public function getEventReport(ITemplate $template, $aid, EventEntity $eventService) {
-        $categories = array();
+    public function getEventReport(ITemplate $template, $aid, EventEntity $eventService)
+    {
+        $categories = [];
         //inicializuje pole s kategorií s částkami na 0
         foreach (ArrayHash::from($eventService->chits->getCategories($aid)) as $c) {
             $categories[$c->type][$c->short] = $c;
@@ -99,9 +106,10 @@ class ExportService extends BaseService {
      * @param type $unitService
      * @param type $chits
      */
-    public function getChits(ITemplate $template, $aid, EventEntity $eventService, BaseService $unitService, array $chits) {
-        $income = array();
-        $outcome = array();
+    public function getChits(ITemplate $template, $aid, EventEntity $eventService, BaseService $unitService, array $chits)
+    {
+        $income = [];
+        $outcome = [];
         $activeHpd = FALSE;
         $this->setTemplate($template, dirname(__FILE__) . '/templates/chits.latte');
 
@@ -121,7 +129,7 @@ class ExportService extends BaseService {
             }
         }
         $event = $eventService->event->get($aid);
-        if (in_array($eventService->event->type, array("camp", "general"))) {
+        if (in_array($eventService->event->type, ["camp", "general"])) {
             $template->oficialName = $unitService->getOficialName($event->ID_Unit);
         } elseif ($eventService->event->type == "unit") {
             $template->oficialName = $unitService->getOficialName($event->ID);
@@ -132,7 +140,7 @@ class ExportService extends BaseService {
         if ($activeHpd) {
             $template->totalPayment = $eventService->participants->getTotalPayment($aid);
             $func = $eventService->event->getFunctions($aid);
-            $template->pokladnik = ($func[2]->ID_Person != null) ? $func[2]->Person : (($func[0]->ID_Person != null) ? $func[0]->Person : "");
+            $template->pokladnik = ($func[2]->ID_Person != NULL) ? $func[2]->Person : (($func[0]->ID_Person != NULL) ? $func[0]->Person : "");
             $template->list = $eventService->participants->getAll($aid);
         }
 
@@ -142,8 +150,9 @@ class ExportService extends BaseService {
         return $template;
     }
 
-    public function getCampReport(ITemplate $template, $aid, EventEntity $campService) {
-        $categories = array();
+    public function getCampReport(ITemplate $template, $aid, EventEntity $campService)
+    {
+        $categories = [];
         foreach ($campService->chits->getCategories($aid) as $c) {
             $categories[$c->IsRevenue ? "in" : "out"][$c->ID] = $c;
         }

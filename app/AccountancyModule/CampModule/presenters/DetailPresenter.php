@@ -10,7 +10,8 @@ use Nette\Application\UI\Form;
  * @author Hána František <sinacek@gmail.com>
  * akce
  */
-class DetailPresenter extends BasePresenter {
+class DetailPresenter extends BasePresenter
+{
 
     /** @var ExportService */
     protected $exportService;
@@ -24,43 +25,45 @@ class DetailPresenter extends BasePresenter {
         $this->exportService = $export;
         $this->pdf = $pdf;
     }
-    
-    public function renderDefault($aid) {
-        $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->eventService->event->getFunctions($aid) : false;
+
+    public function renderDefault($aid) : void
+    {
+        $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->eventService->event->getFunctions($aid) : FALSE;
         $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
         $this->template->skautISUrl = $this->userService->getSkautisUrl();
-        
-        if(property_exists($this->event->ID_UnitArray, "string")){
+
+        if (property_exists($this->event->ID_UnitArray, "string")) {
             if (is_array($this->event->ID_UnitArray->string)) {
-                $this->template->troops = array_map(function($id) {
+                $this->template->troops = array_map(function ($id) {
                     return $this->unitService->getDetail($id);
                 }, $this->event->ID_UnitArray->string);
             } elseif (is_string($this->event->ID_UnitArray->string)) {
-                $this->template->troops = array($this->unitService->getDetail($this->event->ID_UnitArray->string));
+                $this->template->troops = [$this->unitService->getDetail($this->event->ID_UnitArray->string)];
             }
         } else {
-            $this->template->troops = array();
+            $this->template->troops = [];
         }
-        
+
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }
 
         $form = $this['formEdit'];
-        $form->setDefaults(array(
+        $form->setDefaults([
             "aid" => $aid,
             "prefix" => $this->event->prefix,
-        ));
+        ]);
     }
 
-    public function renderReport($aid) {
+    public function renderReport($aid) : void
+    {
         if (!$this->isAllowed("EV_EventFunction_ALL_EventCamp")) {
             $this->flashMessage("Nemáte právo přistupovat k táboru", "warning");
-            $this->redirect("default", array("aid" => $aid));
+            $this->redirect("default", ["aid" => $aid]);
         }
         if (!$this->eventService->chits->isConsistent($aid)) {
             $this->flashMessage("Data v účtech a ve skautisu jsou nekonzistentní!", "warning");
-            $this->redirect("default", array("aid" => $aid));
+            $this->redirect("default", ["aid" => $aid]);
         }
 
         $template = $this->exportService->getCampReport($this->createTemplate(), $aid, $this->eventService);
@@ -68,19 +71,23 @@ class DetailPresenter extends BasePresenter {
         $this->terminate();
     }
 
-    function createComponentFormEdit($name) {
+    protected function createComponentFormEdit($name) : Form
+    {
         $form = $this->prepareForm($this, $name);
         $form->addProtection();
         $form->addText("prefix", "Prefix")
-                ->setMaxLength(6);
+            ->setMaxLength(6);
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
-                ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary");
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formEditSubmitted($form);
+        };
         return $form;
     }
 
-    function formEditSubmitted(Form $form) {
+    private function formEditSubmitted(Form $form) : void
+    {
         if (!$this->isAllowed("EV_EventCamp_DETAIL")) {
             $this->flashMessage("Nemáte oprávnění pro úpravu tábora", "danger");
             $this->redirect("this");

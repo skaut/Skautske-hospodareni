@@ -6,7 +6,8 @@ namespace Model;
  *
  * @author Hána František <sinacek@gmail.com>
  */
-class EventEntity {
+class EventEntity
+{
 
     /** @var EventService */
     private $event;
@@ -28,7 +29,8 @@ class EventEntity {
         $this->chits = $chitFactory->create($name);
     }
 
-    public function __get($name) {
+    public function __get($name)
+    {
         if (isset($this->$name)) {
             return $this->$name;
         }

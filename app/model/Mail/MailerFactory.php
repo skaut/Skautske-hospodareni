@@ -27,15 +27,15 @@ class MailerFactory implements IMailerFactory
 
     public function create(string $host, string $username, string $password, string $secure): IMailer
     {
-        if(!$this->enabled) {
+        if (!$this->enabled) {
             return $this->debugMailer;
         }
-        return new SmtpMailer(array(
+        return new SmtpMailer([
             'host' => $host,
             'username' => $username,
             'password' => $password,
             'secure' => $secure,
-        ));
+        ]);
     }
 
 }

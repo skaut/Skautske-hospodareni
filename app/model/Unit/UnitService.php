@@ -5,27 +5,30 @@ namespace Model;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class UnitService extends BaseService {
+class UnitService extends BaseService
+{
 
-    protected $oficialUnits = array("stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka");
+    protected $oficialUnits = ["stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka"];
 
-    public function getUnitId() {
+    public function getUnitId()
+    {
         return $this->skautis->getUser()->getUnitId();
     }
 
     /**
      * vrací detail jednotky
      * @param int $unitId
-     * @return stdClass 
+     * @return stdClass
      */
-    public function getDetail($unitId = NULL) {
+    public function getDetail($unitId = NULL)
+    {
         if ($unitId === NULL) {
             $unitId = $this->getUnitId();
         }
         try {
             $cacheId = __FUNCTION__ . $unitId;
             if (!($res = $this->loadSes($cacheId))) {
-                $res = $this->saveSes($cacheId, $this->skautis->org->UnitDetail(array("ID" => $unitId)));
+                $res = $this->saveSes($cacheId, $this->skautis->org->UnitDetail(["ID" => $unitId]));
             }
             return $res;
         } catch (Skautis\Exception $exc) {
@@ -35,11 +38,12 @@ class UnitService extends BaseService {
 
     /**
      * vrací nadřízenou jednotku
-     * @param ID_Unit $ID_Unit 
+     * @param ID_Unit $ID_Unit
      * @return stdClass
      */
-    public function getParrent($ID_Unit) {
-        $ret = $this->skautis->org->UnitAll(array("ID_UnitChild" => $ID_Unit));
+    public function getParrent($ID_Unit)
+    {
+        $ret = $this->skautis->org->UnitAll(["ID_UnitChild" => $ID_Unit]);
         if (is_array($ret)) {
             return $ret[0];
         }
@@ -49,10 +53,11 @@ class UnitService extends BaseService {
     /**
      * nalezne podřízené jednotky
      * @param type $ID_Unit
-     * @return array(stdClass) 
+     * @return array(stdClass)
      */
-    public function getChild($ID_Unit) {
-        return $this->skautis->org->UnitAll(array("ID_UnitParent" => $ID_Unit));
+    public function getChild($ID_Unit)
+    {
+        return $this->skautis->org->UnitAll(["ID_UnitParent" => $ID_Unit]);
     }
 
     /**
@@ -60,7 +65,8 @@ class UnitService extends BaseService {
      * @param int $unitId
      * @return stdClass
      */
-    public function getOficialUnit($unitId = NULL) {
+    public function getOficialUnit($unitId = NULL)
+    {
         $unit = $this->getDetail($unitId);
         if (!in_array($unit->ID_UnitType, $this->oficialUnits)) {
             $parent = $unit->ID_UnitParent;
@@ -74,13 +80,15 @@ class UnitService extends BaseService {
      * @param int $unitId
      * @return string
      */
-    public function getOficialName($unitId) {
+    public function getOficialName($unitId)
+    {
         $unit = $this->getOficialUnit($unitId);
-        return "IČO " . $unit->IC . " " . $unit->FullDisplayName . ", " . $unit->Street . ", " . $unit->City . ", " . $unit->Postcode; 
+        return "IČO " . $unit->IC . " " . $unit->FullDisplayName . ", " . $unit->Street . ", " . $unit->City . ", " . $unit->Postcode;
     }
 
-    public function getAllUnder($ID_Unit, $self = TRUE) {
-        $data = $self ? array($ID_Unit => $this->getDetail($ID_Unit)) : array();
+    public function getAllUnder($ID_Unit, $self = TRUE)
+    {
+        $data = $self ? [$ID_Unit => $this->getDetail($ID_Unit)] : [];
         foreach ($this->getChild($ID_Unit) as $u) {
             $data[$u->ID] = $u;
             $data = $data + $this->{__FUNCTION__}($u->ID, FALSE);

@@ -7,7 +7,8 @@ use Dibi\Connection;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BaseTable {
+class BaseTable
+{
 
     const TABLE_CHIT = 'ac_chits';
     const TABLE_CATEGORY = 'ac_chitsCategory';
@@ -44,18 +45,21 @@ class BaseTable {
      * @param type $type
      * @return localId
      */
-    public function getLocalId($skautisEventId, $type) {
+    public function getLocalId($skautisEventId, $type)
+    {
         if (!($ret = $this->connection->fetchSingle("SELECT id FROM [" . self::TABLE_OBJECT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type))) {
-            $ret = $this->connection->insert(self::TABLE_OBJECT, array("skautisId" => $skautisEventId, "type" => $type))->execute(\dibi::IDENTIFIER);
+            $ret = $this->connection->insert(self::TABLE_OBJECT, ["skautisId" => $skautisEventId, "type" => $type])->execute(\dibi::IDENTIFIER);
         }
         return $ret;
     }
 
-    public function getSkautisId($localId) {
+    public function getSkautisId($localId)
+    {
         return $this->connection->fetchSingle("SELECT skautisId FROM [" . self::TABLE_OBJECT . "] WHERE id=%i LIMIT 1", $localId);
     }
 
-    public function getByEventId($skautisEventId, $type) {
+    public function getByEventId($skautisEventId, $type)
+    {
         $ret = $this->connection->fetch("SELECT id as localId, prefix FROM  [" . self::TABLE_OBJECT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type);
         if (!$ret) {
             $this->getLocalId($skautisEventId, $type);

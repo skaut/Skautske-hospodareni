@@ -7,25 +7,26 @@ use Nette\Application\UI\Form;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BankPresenter extends BasePresenter {
+class BankPresenter extends BasePresenter
+{
 
-    /**
-     *
-     * @var \Model\BankService
-     */
+    /** @var \Model\BankService */
     protected $bank;
 
-    public function __construct(\Model\PaymentService $paymentService, \Model\BankService $bankService) {
+    public function __construct(\Model\PaymentService $paymentService, \Model\BankService $bankService)
+    {
         parent::__construct($paymentService);
         $this->bank = $bankService;
     }
 
-    protected function startup() {
+    protected function startup() : void
+    {
         parent::startup();
-        $this->template->errMsg = array();
+        $this->template->errMsg = [];
     }
 
-    public function actionDefault() {
+    public function actionDefault() : void
+    {
         $this->template->bankInfo = $bankInfo = $this->bank->getInfo($this->aid);
         if ($bankInfo) {
             $this['tokenForm']->setDefaults($bankInfo);
@@ -39,18 +40,24 @@ class BankPresenter extends BasePresenter {
         }
     }
 
-    public function createComponentTokenForm($name) {
+    public function createComponentTokenForm($name) : Form
+    {
         $form = $this->prepareForm($this, $name);
         $form->addText("token", "API Token");
         $form->addText("daysback", "Počet dní kontrolovaných nazpět")
-                ->setDefaultValue(14);
+            ->setDefaultValue(14);
         $form->addSubmit('send', 'Nastavit')
-                ->setAttribute("class", "btn btn-primary");
-        $form->onSubmit[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary");
+
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->tokenFormSubmitted($form);
+        };
+
         return $form;
     }
 
-    function tokenFormSubmitted(Form $form) {
+    private function tokenFormSubmitted(Form $form) : void
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k úpravám tokenu!", "danger");
             $this->redirect("this");

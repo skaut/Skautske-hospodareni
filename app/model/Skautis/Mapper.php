@@ -30,10 +30,10 @@ class Mapper
      * @param string $type
      * @return int|null
      */
-    public function getSkautisId(int $localId, string $type) : ?int
+    public function getSkautisId(int $localId, string $type): ?int
     {
         $key = $type . $localId;
-        if(!isset($this->skautisIds[$key])) {
+        if (!isset($this->skautisIds[$key])) {
             $skautisId = $this->table->getSkautisId($localId, $type);
             $this->cache($skautisId, $localId, $type);
         }
@@ -46,12 +46,12 @@ class Mapper
      * @param string $type
      * @return int
      */
-    public function getLocalId(int $skautisId, string $type) : int
+    public function getLocalId(int $skautisId, string $type): int
     {
         $key = $type . $skautisId;
-        if(!isset($this->localIds[$key])) {
+        if (!isset($this->localIds[$key])) {
             $localId = $this->table->getLocalId($skautisId, $type);
-            if($localId === NULL) {
+            if ($localId === NULL) {
                 $localId = $this->table->add($skautisId, $type);
             }
             $this->cache($skautisId, $localId, $type);
@@ -64,10 +64,10 @@ class Mapper
      * @param int|null $localId
      * @param string $type
      */
-    private function cache(?int $skautisId, ?int $localId, string $type) : void
+    private function cache(?int $skautisId, ?int $localId, string $type): void
     {
         $this->skautisIds[$type . $localId] = $skautisId;
-        if($skautisId) {
+        if ($skautisId) {
             $this->localIds[$type . $skautisId] = $localId;
         }
     }

@@ -4,7 +4,8 @@ use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Model\Services\PdfRenderer;
 
-trait ParticipantTrait {
+trait ParticipantTrait
+{
     /**
      *
      * @var \Model\EventService
@@ -43,7 +44,8 @@ trait ParticipantTrait {
     /** @var PdfRenderer */
     protected $pdf;
 
-    protected function traitStartup() {
+    protected function traitStartup() : void
+    {
         parent::startup();
         if (!$this->aid) {
             $this->flashMessage("Nepovolený přístup", "danger");
@@ -52,19 +54,21 @@ trait ParticipantTrait {
         $this->uid = $this->getParameter("uid", NULL);
     }
 
-    public function beforeRender() {
+    protected function beforeRender() : void
+    {
         parent::beforeRender();
         $this->template->directMemberOnly = $this->getDirectMemberOnly();
     }
 
-    protected function traitDefault($dp, $sort, $regNums) {
+    protected function traitDefault($dp, $sort, $regNums) : void
+    {
         $participants = $this->eventService->participants->getAll($this->aid);
         try {
-            $list = $dp ? array() : $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+            $list = $dp ? [] : $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
         } catch (\Skautis\Wsdl\WsdlException $e) {
             if (!$dp && strpos("Timeout expired", $e->getMessage())) {
                 $this->flashMessage("Bylo vypnuto doplňování osob, protože vypršel časový limit!", 'danger');
-                $this->redirect("this", array("aid" => $this->aid, "uid" => $this->uid, "dp" => 1));
+                $this->redirect("this", ["aid" => $this->aid, "uid" => $this->uid, "dp" => 1]);
             }
             throw $e;
         }
@@ -79,48 +83,56 @@ trait ParticipantTrait {
         $this->template->useRegNums = $regNums;
     }
 
-    protected function sortParticipants(&$participants, $sort) {
-        $textItems = array("regNum", "isAccount");
-        $numberItems = array("Days", "payment", "repayment");
+    protected function sortParticipants(&$participants, $sort) : void
+    {
+        $textItems = ["regNum", "isAccount"];
+        $numberItems = ["Days", "payment", "repayment"];
         if (count($participants) > 0) {
-            if ($sort == "regNum"){
+            if ($sort == "regNum") {
                 $sort = "UnitRegistrationNumber";
             } elseif ($sort === NULL || !in_array($sort, array_merge($textItems, $numberItems)) || !property_exists($participants[0], $sort)) {
                 $sort = "Person"; //default sort
             }
             $isNumeric = in_array($sort, $numberItems);
             usort($participants, function ($a, $b) use ($sort, $isNumeric) {
-                if(!property_exists($a, $sort)) {return TRUE;}
-                if(!property_exists($b, $sort)) {return FALSE;}
+                if (!property_exists($a, $sort)) {
+                    return TRUE;
+                }
+                if (!property_exists($b, $sort)) {
+                    return FALSE;
+                }
                 return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort}, $b->{$sort});
             });
         }
     }
 
-    public function actionExport($aid) {
+    public function actionExport($aid) : void
+    {
         $type = $this->eventService->participants->type; //camp vs general
         try {
             $template = $this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService, $type);
             $this->pdf->render($template, 'seznam-ucastniku.pdf', $type == 'camp');
         } catch (\Skautis\Wsdl\PermissionException $ex) {
             $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
-            $this->redirect("default", array("aid" => $this->aid));
+            $this->redirect("default", ["aid" => $this->aid]);
         }
         $this->terminate();
     }
 
-    public function actionExportExcel($aid) {
+    public function actionExportExcel($aid) : void
+    {
         $type = $this->eventService->participants->type; //camp vs general
         try {
             $this->excelService->getParticipants($this->eventService, $this->event, $type);
         } catch (\Skautis\Wsdl\PermissionException $ex) {
             $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");
-            $this->redirect("default", array("aid" => $aid));
+            $this->redirect("default", ["aid" => $aid]);
         }
         $this->terminate();
     }
 
-    public function handleRemove($pid) {
+    public function handleRemove($pid) : void
+    {
         if (!$this->isAllowParticipantDelete) {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
             $this->redirect("this");
@@ -129,13 +141,14 @@ trait ParticipantTrait {
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
             $this->invalidateControl("participants");
-//            $this->invalidateControl("flash");
+            //            $this->invalidateControl("flash");
         } else {
             $this->redirect('this');
         }
     }
 
-    public function handleAdd($pid) {
+    public function handleAdd($pid) : void
+    {
         if (!$this->isAllowParticipantInsert) {
             $this->flashMessage("Nemáte oprávnění přidávat účastníky.", "danger");
             if ($this->isAjax()) {
@@ -156,7 +169,8 @@ trait ParticipantTrait {
     /**
      * mění stav jestli vypisovat pouze přímé členy
      */
-    public function handleChangeDirectMemberOnly() {
+    public function handleChangeDirectMemberOnly() : void
+    {
         $this->setDirectMemberOnly(!$this->getDirectMemberOnly());
         if ($this->isAjax()) {
             $this->invalidateControl("potencialParticipants");
@@ -165,14 +179,19 @@ trait ParticipantTrait {
         }
     }
 
-    public function createComponentFormMassList($name) {
+    public function createComponentFormMassList($name) : Form
+    {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('send')
-                ->onClick[] = array($this, $name . 'Submitted');
+            ->onClick[] = function(SubmitButton $button) : void {
+                $this->formMassListSubmitted($button);
+            };
+
         return $form;
     }
 
-    public function formMassListSubmitted(SubmitButton $button) {
+    private function formMassListSubmitted(SubmitButton $button) : void
+    {
         if (!$this->isAllowParticipantInsert) {
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
@@ -183,7 +202,8 @@ trait ParticipantTrait {
         $this->redirect("this");
     }
 
-    public function createComponentFormMassParticipants($name) {
+    public function createComponentFormMassParticipants($name)
+    {
         $form = $this->prepareForm($this, $name);
         $form->addProtection();
 
@@ -191,28 +211,29 @@ trait ParticipantTrait {
         $editCon->addText("days", "Dní");
         $editCon->addText("payment", "Částka");
         $editCon->addText("repayment", "Vratka");
-        $editCon->addRadioList("isAccount", "Na účet?", array("N" => "Ne", "Y" => "Ano"));
+        $editCon->addRadioList("isAccount", "Na účet?", ["N" => "Ne", "Y" => "Ano"]);
         $editCon->addCheckbox("daysc");
         $editCon->addCheckbox("paymentc");
         $editCon->addCheckbox("repaymentc");
         $editCon->addCheckbox("isAccountc"); //->setDefaultValue(TRUE);
         $editCon->addSubmit('send', 'Upravit')
-                        ->setAttribute('class', 'btn btn-info btn-small')
-                ->onClick[] = [$this, 'massEditSubmitted'];
+            ->setAttribute('class', 'btn btn-info btn-small')
+            ->onClick[] = [$this, 'massEditSubmitted'];
 
 
         $form->addSubmit('send', 'Odebrat vybrané')
-                ->onClick[] = [$this, 'massRemoveSubmitted'];
+            ->onClick[] = [$this, 'massRemoveSubmitted'];
     }
 
-    public function massEditSubmitted(SubmitButton $button) {
+    public function massEditSubmitted(SubmitButton $button) : void
+    {
         $type = $this->eventService->participants->type; //camp vs general
         if (!$this->isAllowParticipantUpdate) {
             $this->flashMessage("Nemáte právo upravovat účastníky.", "danger");
             $this->redirect("Default:");
         }
         $values = $button->getForm()->getValues();
-        $data = array("actionId" => $this->aid);
+        $data = ["actionId" => $this->aid];
         if ($values['edit']['daysc']) {
             $data['days'] = (int)$values['edit']['days'];
         }
@@ -227,13 +248,14 @@ trait ParticipantTrait {
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $oldData = ($type == "camp") ? array() : $this->eventService->participants->get($id);
-            $this->eventService->participants->update($id, array_merge((array) $oldData, $data));
+            $oldData = ($type == "camp") ? [] : $this->eventService->participants->get($id);
+            $this->eventService->participants->update($id, array_merge((array)$oldData, $data));
         }
         $this->redirect("this");
     }
 
-    public function massRemoveSubmitted(SubmitButton $button) {
+    public function massRemoveSubmitted(SubmitButton $button) : void
+    {
         if (!$this->isAllowParticipantDelete) {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
             $this->redirect("Default:");
@@ -250,29 +272,35 @@ trait ParticipantTrait {
      * @param string $name
      * @return Form
      */
-    function createComponentFormAddParticipantNew($name) {
+    protected function createComponentFormAddParticipantNew($name) : Form
+    {
         $aid = $this->presenter->aid;
         $form = $this->prepareForm($this, $name);
         $form->addText("firstName", "Jméno*")
-                ->addRule(Form::FILLED, "Musíš vyplnit křestní jméno.");
+            ->addRule(Form::FILLED, "Musíš vyplnit křestní jméno.");
         $form->addText("lastName", "Příjmení*")
-                ->addRule(Form::FILLED, "Musíš vyplnit příjmení.");
+            ->addRule(Form::FILLED, "Musíš vyplnit příjmení.");
         $form->addText("street", "Ulice*")
-                ->addRule(Form::FILLED, "Musíš vyplnit ulici.");
+            ->addRule(Form::FILLED, "Musíš vyplnit ulici.");
         $form->addText("city", "Město*")
-                ->addRule(Form::FILLED, "Musíš vyplnit město.");
+            ->addRule(Form::FILLED, "Musíš vyplnit město.");
         $form->addText("postcode", "PSČ*")
-                ->addRule(Form::FILLED, "Musíš vyplnit PSČ.");
+            ->addRule(Form::FILLED, "Musíš vyplnit PSČ.");
         $form->addHidden("aid", $aid);
         $form->addText("nick", "Přezdívka");
         $form->addText("birthday", "Dat. nar.");
         $form->addSubmit('send', 'Založit účastníka')
-                ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary");
+
+        $form->onSuccess[] = function(Form $form) : void {
+            $this->formAddParticipantNewSubmitted($form);
+        };
+
         return $form;
     }
 
-    public function formAddParticipantNewSubmitted(Form $form) {
+    private function formAddParticipantNewSubmitted(Form $form) : void
+    {
         if (!$this->isAllowParticipantInsert) {
             $this->flashMessage("Nemáte oprávnění přidávat účastníky.", "danger");
             if ($this->isAjax()) {
@@ -283,7 +311,7 @@ trait ParticipantTrait {
         }
         $values = $form->getValues();
         $aid = $values['aid'];
-        $person = array(
+        $person = [
             "firstName" => $values['firstName'],
             "lastName" => $values['lastName'],
             "nick" => $values['nick'],
@@ -291,16 +319,18 @@ trait ParticipantTrait {
             "street" => $values['street'],
             "city" => $values['city'],
             "postcode" => $values['postcode'],
-        );
+        ];
         $this->eventService->participants->addNew($aid, $person);
         $this->redirect("this");
     }
 
-    protected function getDirectMemberOnly() {
-        return (bool) $this->getSession(__CLASS__)->DirectMemberOnly;
+    protected function getDirectMemberOnly() : bool
+    {
+        return (bool)$this->getSession(__CLASS__)->DirectMemberOnly;
     }
 
-    protected function setDirectMemberOnly($direct) {
+    protected function setDirectMemberOnly($direct)
+    {
         return $this->getSession(__CLASS__)->DirectMemberOnly = $direct;
     }
 

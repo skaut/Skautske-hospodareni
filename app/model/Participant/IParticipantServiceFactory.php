@@ -5,6 +5,6 @@ namespace Model;
 interface IParticipantServiceFactory
 {
 
-    public function create(string $name) : ParticipantService;
+    public function create(string $name): ParticipantService;
 
 }

@@ -42,9 +42,9 @@ abstract class BaseService extends Nette\Object
 
     /**
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
-     * @var type 
+     * @var type
      */
-    private static $storage = array();
+    private static $storage = [];
 
     public function __construct(Skautis $skautis = NULL)
     {
@@ -55,9 +55,10 @@ abstract class BaseService extends Nette\Object
      * ukládá $val do lokálního úložiště
      * @param mixed $id
      * @param mixed $val
-     * @return mixed 
+     * @return mixed
      */
-    protected function saveSes($id, $val) {
+    protected function saveSes($id, $val)
+    {
         if ($this->useCache) {
             self::$storage[$id] = $val;
         }
@@ -69,7 +70,8 @@ abstract class BaseService extends Nette\Object
      * @param string|int $id
      * @return mixed | FALSE
      */
-    protected function loadSes($id) {
+    protected function loadSes($id)
+    {
         if ($this->useCache && array_key_exists($id, self::$storage)) {
             return self::$storage[$id];
         }
@@ -81,7 +83,7 @@ abstract class BaseService extends Nette\Object
      * @param User $user
      * @return array
      */
-    public function getReadUnits(User $user) : array
+    public function getReadUnits(User $user): array
     {
         $res = [];
         foreach ($user->getIdentity()->access[self::ACCESS_READ] as $uId => $u) {
@@ -95,7 +97,7 @@ abstract class BaseService extends Nette\Object
      * @param User $user
      * @return array
      */
-    public function getEditUnits(User $user) : array
+    public function getEditUnits(User $user): array
     {
         $res = [];
         foreach ($user->getIdentity()->access[self::ACCESS_EDIT] as $uId => $u) {

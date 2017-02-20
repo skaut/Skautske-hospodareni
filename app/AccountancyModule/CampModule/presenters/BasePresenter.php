@@ -7,22 +7,21 @@ use Skautis\Wsdl\PermissionException;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BasePresenter extends \App\AccountancyModule\BasePresenter {
+class BasePresenter extends \App\AccountancyModule\BasePresenter
+{
 
     const STable = "EV_EventCamp";
 
     protected $event;
 
-    /**
-     *
-     * @var \Model\EventService
-     */
+    /** @var \Model\EventService */
     protected $eventService;
 
-    protected function startup() {
+    protected function startup() : void
+    {
         parent::startup();
         $this->eventService = $this->context->getService("campService");
-        $this->isCamp = $this->template->isCamp = true;
+        $this->isCamp = $this->template->isCamp = TRUE;
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
 
         if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
@@ -39,7 +38,8 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
         }
     }
 
-    protected function editableOnly() {
+    protected function editableOnly() : void
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
             if ($this->isAjax()) {
