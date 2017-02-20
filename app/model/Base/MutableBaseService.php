@@ -11,7 +11,8 @@ use Skautis\Skautis;
  * Třída pro odvozování tříd, které jsou přispůsobiltené parametry v konstruktoru
  * $longName a $name chci sjednotit - prověřit, jestli to ma stale skautis ruzně
  */
-abstract class MutableBaseService extends BaseService {
+abstract class MutableBaseService extends BaseService
+{
 
     protected $typeName;
     public $type;
@@ -26,7 +27,7 @@ abstract class MutableBaseService extends BaseService {
         $this->type = strtolower($name);
         $cache = new Cache($cacheStorage, __CLASS__);
         $this->cache = $cache;
-//        $this->cache->clean();
+        //        $this->cache->clean();
     }
 
 }

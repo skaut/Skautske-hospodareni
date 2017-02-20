@@ -5,14 +5,16 @@ namespace Model;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class ChitTable extends BaseTable {
+class ChitTable extends BaseTable
+{
 
     /**
      * vrací konretní paragon
      * @param type $chitId
-     * @return DibiRow 
+     * @return DibiRow
      */
-    public function get($chitId) {
+    public function get($chitId)
+    {
         return $this->connection->fetch("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE id=%i", $chitId);
     }
 
@@ -21,10 +23,11 @@ class ChitTable extends BaseTable {
      * @param int $localEventId
      * @return array
      */
-    public function getAll($localEventId, $onlyUnlocked) {
+    public function getAll($localEventId, $onlyUnlocked)
+    {
         return $this->connection->query("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "]
                 WHERE eventId=%i", $localEventId, " AND deleted=0
-                    %if ",  $onlyUnlocked," AND [lock] IS NULL %end
+                    %if ", $onlyUnlocked, " AND [lock] IS NULL %end
                 ORDER BY date, ctype, num, cshort")->fetchAssoc("id");
     }
 
@@ -34,16 +37,18 @@ class ChitTable extends BaseTable {
      * @param array $list - seznam id
      * @return array
      */
-    public function getIn($localEventId, array $list) {
+    public function getIn($localEventId, array $list)
+    {
         return $this->connection->fetchAll("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "] WHERE eventId=%i", $localEventId, " AND id in %in", $list, "ORDER BY date");
     }
 
     /**
      * přidá paragon do tabulky
      * @param array $values
-     * @return int 
+     * @return int
      */
-    public function add($values) {
+    public function add($values)
+    {
         $this->connection->query("INSERT INTO [" . self::TABLE_CHIT . "] %v", $values);
         return $this->connection->getInsertId();
     }
@@ -55,17 +60,19 @@ class ChitTable extends BaseTable {
      * @param itn $length - délka čísla
      * @return type
      */
-    public function generateNumber($eventId, $category, $length = 3) {
-        return str_pad((int) $this->connection->fetchSingle("SELECT COUNT(*) from ac_chits where eventId=%i and category IN %in", $eventId, $category), $length, "0", STR_PAD_LEFT);
+    public function generateNumber($eventId, $category, $length = 3)
+    {
+        return str_pad((int)$this->connection->fetchSingle("SELECT COUNT(*) from ac_chits where eventId=%i and category IN %in", $eventId, $category), $length, "0", STR_PAD_LEFT);
     }
 
     /**
      * aktualizuje paragon podle $id
      * @param int $chitId
      * @param array $values
-     * @return type 
+     * @return type
      */
-    public function update($chitId, $values) {
+    public function update($chitId, $values)
+    {
         return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET ", $values, "WHERE id=%i", $chitId);
     }
 
@@ -73,27 +80,30 @@ class ChitTable extends BaseTable {
      * označí paragon jako smazaný
      * @param int $chitId
      * @param int $localEventId
-     * @return type 
+     * @return type
      */
-    public function delete($chitId, $localEventId) {
+    public function delete($chitId, $localEventId)
+    {
         return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
     }
 
     /**
      * označí paragony z dané akce za smazané
      * @param type $localEventId
-     * @return type 
+     * @return type
      */
-    public function deleteAll($localEventId) {
+    public function deleteAll($localEventId)
+    {
         return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE eventId = %i", $localEventId);
     }
 
     /**
      * vrací seznam kategorií
      * @param string $type
-     * @return array 
+     * @return array
      */
-    public function getGeneralCategoriesPairs($type = NULL) {
+    public function getGeneralCategoriesPairs($type = NULL)
+    {
         return $this->connection->fetchPairs("SELECT id, label FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type, "ORDER BY orderby DESC"
         );
     }
@@ -101,9 +111,10 @@ class ChitTable extends BaseTable {
     /**
      * vrací všechny informace o kategoriích
      * @param string $type in|out
-     * @return type 
+     * @return type
      */
-    public function getGeneralCategories($type = NULL) {
+    public function getGeneralCategories($type = NULL)
+    {
         return $this->connection->fetchAll("SELECT * FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
     }
 
@@ -111,18 +122,20 @@ class ChitTable extends BaseTable {
      * celková cena v dané kategorii
      * @param int $categoryId
      * @param string $eId - camp/general
-     * @return int 
+     * @return int
      */
-    public function getTotalInCategory($categoryId, $eId) {
+    public function getTotalInCategory($categoryId, $eId)
+    {
         return $this->connection->fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND eventId=%i", $eId, " GROUP BY eventId");
     }
 
     /**
      * spočítá příjmy a výdaje a ty pak odečte
      * @param int $localEventId
-     * @return bool 
+     * @return bool
      */
-    public function eventIsInMinus($localEventId) {
+    public function eventIsInMinus($localEventId)
+    {
         $data = $this->connection->fetchAll("SELECT cat.type, SUM(ch.price) as sum FROM [" . self::TABLE_CHIT . "] as ch
             LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.id) 
             WHERE ch.eventId = %i AND ch.deleted = 0
@@ -135,24 +148,29 @@ class ChitTable extends BaseTable {
      * @param type $localEventId
      * @return (categoryId=>SUM)
      */
-    public function getTotalInCategories($localEventId) {
+    public function getTotalInCategories($localEventId)
+    {
         return $this->connection->fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE eventId=%i", $localEventId, " AND deleted=0 GROUP BY category");
     }
 
-    public function lock($oid, $chitId, $userId) {
+    public function lock($oid, $chitId, $userId)
+    {
         return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i AND id=%i", $oid, $chitId);
     }
 
-    public function unlock($oid, $chitId) {
+    public function unlock($oid, $chitId)
+    {
         return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=NULL WHERE eventId=%i AND id=%i", $oid, $chitId);
     }
-    
-    public function lockEvent($oid, $userId) {
+
+    public function lockEvent($oid, $userId)
+    {
         return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i ", $oid, "AND `lock` IS NULL");
     }
-    
-    public function getBudgetCategoriesSummary($categories, $type){
-        $catName = "budgetCategory".  ucfirst($type);
+
+    public function getBudgetCategoriesSummary($categories, $type)
+    {
+        $catName = "budgetCategory" . ucfirst($type);
         return $this->connection->fetchPairs("SELECT $catName, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE $catName IN %in", $categories, " AND deleted=0 GROUP BY $catName");
     }
 

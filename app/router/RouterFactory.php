@@ -9,23 +9,24 @@ use Nette\Application\Routers\SimpleRouter;
 /**
  * Router factory.
  */
-class RouterFactory {
+class RouterFactory
+{
 
-	/**
-	 * RouterFactory constructor.
-	 * @param bool $ssl
-	 */
-	public function __construct($ssl)
-	{
-		// Disable https for development
-                Route::$defaultFlags = $ssl ? Route::SECURED : 0;
-	}
+    /**
+     * RouterFactory constructor.
+     * @param bool $ssl
+     */
+    public function __construct($ssl)
+    {
+        // Disable https for development
+        Route::$defaultFlags = $ssl ? Route::SECURED : 0;
+    }
 
-	/**
+    /**
      * @return \Nette\Application\IRouter
      */
     public function createRouter()
-	{
+    {
         $router = new RouteList();
 
         $router[] = new Route('app.manifest', 'Offline:manifest');
@@ -34,7 +35,7 @@ class RouterFactory {
             'presenter' => 'Auth',
             'action' => 'default',
             'backlink' => NULL,
-		]);
+        ]);
 
         $router[] = new Route('prirucka/<action>[#<anchor>]', [
             'presenter' => 'Tutorial',
@@ -51,139 +52,139 @@ class RouterFactory {
         $router[] = new Route('offline/<action>.html', [
             'presenter' => 'Offline',
             'action' => 'list',
-		]);
+        ]);
 
-		$router[] = $accountancy = new RouteList('Accountancy');
+        $router[] = $accountancy = new RouteList('Accountancy');
 
-		$accountancy[] = $this->createCampRoutes();
-		$accountancy[] = $this->createEventRoutes();
-		$accountancy[] = $this->createTravelRoutes();
-		$accountancy[] = $this->createUnitAccountRoutes();
-		$accountancy[] = $this->createPaymentRoutes();
+        $accountancy[] = $this->createCampRoutes();
+        $accountancy[] = $this->createEventRoutes();
+        $accountancy[] = $this->createTravelRoutes();
+        $accountancy[] = $this->createUnitAccountRoutes();
+        $accountancy[] = $this->createPaymentRoutes();
 
-		$accountancy[] = new Route('<module>/<presenter>[/<action>]', ['action' => 'default']);
+        $accountancy[] = new Route('<module>/<presenter>[/<action>]', ['action' => 'default']);
 
-		$router[] = new SimpleRouter('Default:default', Route::$defaultFlags);
+        $router[] = new SimpleRouter('Default:default', Route::$defaultFlags);
         return $router;
     }
 
-	/**
-	 * @return RouteList
-	 */
+    /**
+     * @return RouteList
+     */
     private function createCampRoutes()
-	{
-		$router = new RouteList('Camp');
+    {
+        $router = new RouteList('Camp');
 
-		$prefix = 'tabory';
-		$router[] = new Route($prefix . '/<aid [0-9]+>/[<presenter>][/<action>]', [
-			'presenter' => [
-//				Route::VALUE => 'Detail', //nefunguje pak report
-				Route::FILTER_TABLE => [
-					'ucastnici' => 'Participant',
-					'kniha' => 'Cashbook',
-					'rozpocet' => 'Budget',
-				]],
-			'action' => 'default',
-		]);
+        $prefix = 'tabory';
+        $router[] = new Route($prefix . '/<aid [0-9]+>/[<presenter>][/<action>]', [
+            'presenter' => [
+                //				Route::VALUE => 'Detail', //nefunguje pak report
+                Route::FILTER_TABLE => [
+                    'ucastnici' => 'Participant',
+                    'kniha' => 'Cashbook',
+                    'rozpocet' => 'Budget',
+                ]],
+            'action' => 'default',
+        ]);
 
-		$router[] = new Route($prefix . '[/<presenter>][/<action>]', [
-			'presenter' => 'Default',
-			'action' => 'default',
-		]);
+        $router[] = new Route($prefix . '[/<presenter>][/<action>]', [
+            'presenter' => 'Default',
+            'action' => 'default',
+        ]);
 
-		return $router;
-	}
+        return $router;
+    }
 
-	/**
-	 * @return RouteList
-	 */
-	private function createEventRoutes()
-	{
-		$router = new RouteList('Event');
+    /**
+     * @return RouteList
+     */
+    private function createEventRoutes()
+    {
+        $router = new RouteList('Event');
 
-		$prefix = 'akce';
+        $prefix = 'akce';
 
-		$router[] = new Route($prefix . '/<aid [0-9]+>/<presenter>[/<action>]', [
-			'presenter' => [
-				Route::VALUE => 'Event',
-				Route::FILTER_TABLE => [
-					'ucastnici' => 'Participant',
-					'kniha' => 'Cashbook',
-				]],
-			'action' => 'default',
-		]);
+        $router[] = new Route($prefix . '/<aid [0-9]+>/<presenter>[/<action>]', [
+            'presenter' => [
+                Route::VALUE => 'Event',
+                Route::FILTER_TABLE => [
+                    'ucastnici' => 'Participant',
+                    'kniha' => 'Cashbook',
+                ]],
+            'action' => 'default',
+        ]);
 
-		$router[] = new Route($prefix . '[<presenter>][/<action>]', [
-			'presenter' => 'Default',
-			'action' => 'default',
-		]);
+        $router[] = new Route($prefix . '[<presenter>][/<action>]', [
+            'presenter' => 'Default',
+            'action' => 'default',
+        ]);
 
-		return $router;
-	}
+        return $router;
+    }
 
-	/**
-	 * @return RouteList
-	 */
-	private function createTravelRoutes()
-	{
-		$router = new RouteList('Travel');
+    /**
+     * @return RouteList
+     */
+    private function createTravelRoutes()
+    {
+        $router = new RouteList('Travel');
 
-		$prefix = 'cestaky';
+        $prefix = 'cestaky';
 
-		$router[] = new Route($prefix . '[/<presenter>[/<action>][/<id>]]', [
-			'presenter' => array(
-				Route::VALUE => 'Default',
-				Route::FILTER_TABLE => array(
-					'vozidla' => 'Vehicle',
-					'smlouvy' => 'Contract',
-				)),
-			'action' => 'default',
-		]);
+        $router[] = new Route($prefix . '[/<presenter>[/<action>][/<id>]]', [
+            'presenter' => [
+                Route::VALUE => 'Default',
+                Route::FILTER_TABLE => [
+                    'vozidla' => 'Vehicle',
+                    'smlouvy' => 'Contract',
+                ]],
+            'action' => 'default',
+        ]);
 
-		return $router;
-	}
+        return $router;
+    }
 
-	/**
-	 * @return RouteList
-	 */
-	private function createUnitAccountRoutes()
-	{
-		$router = new RouteList('UnitAccount');
+    /**
+     * @return RouteList
+     */
+    private function createUnitAccountRoutes()
+    {
+        $router = new RouteList('UnitAccount');
 
-		$prefix = 'jednotka';
+        $prefix = 'jednotka';
 
-		$router[] = new Route($prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]', array(
-			'presenter' => array(
-				Route::VALUE => 'Default',
-				Route::FILTER_TABLE => array(
-					'kniha' => 'Cashbook',
-					'paragony' => 'Chit',
-					'rozpocet' => 'Budget',
-				)),
-			'action' => 'default',
-		));
+        $router[] = new Route($prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]', [
+            'presenter' => [
+                Route::VALUE => 'Default',
+                Route::FILTER_TABLE => [
+                    'kniha' => 'Cashbook',
+                    'paragony' => 'Chit',
+                    'rozpocet' => 'Budget',
+                ]],
+            'action' => 'default',
+        ]);
 
-		$router[] = new Route($prefix . '[/<presenter>][/<action>]', [
-			'presenter' => 'Default',
-			'action' => 'default',
-		]);
+        $router[] = new Route($prefix . '[/<presenter>][/<action>]', [
+            'presenter' => 'Default',
+            'action' => 'default',
+        ]);
 
-		return $router;
-	}
+        return $router;
+    }
 
-	private function createPaymentRoutes()
-	{
-		$router = new RouteList('Payment');
+    private function createPaymentRoutes()
+    {
+        $router = new RouteList('Payment');
 
-		$prefix = 'platby';
+        $prefix = 'platby';
 
-		$router[] = new Route($prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]', 'Default:default');
+        $router[] = new Route($prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]', 'Default:default');
 
-		$router[] = new Route($prefix . '[/<presenter>][/<action>]', [
-			'presenter' => 'Default',
-			'action' => 'default',
-		]);
-		return $router;
-	}
+        $router[] = new Route($prefix . '[/<presenter>][/<action>]', [
+            'presenter' => 'Default',
+            'action' => 'default',
+        ]);
+        return $router;
+    }
 
 }

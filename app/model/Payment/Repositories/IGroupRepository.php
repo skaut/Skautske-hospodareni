@@ -10,16 +10,16 @@ use Model\Payment\GroupNotFoundException;
 interface IGroupRepository
 {
 
-	/**
-	 * @param int $id
-	 * @return Group
-	 * @throws GroupNotFoundException
-	 */
-	public function find(int $id) : Group;
+    /**
+     * @param int $id
+     * @return Group
+     * @throws GroupNotFoundException
+     */
+    public function find(int $id): Group;
 
-	/**
-	 * @param Group $group
-	 */
-	public function save(Group $group) : void;
+    /**
+     * @param Group $group
+     */
+    public function save(Group $group): void;
 
 }

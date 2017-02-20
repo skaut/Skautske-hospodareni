@@ -7,16 +7,19 @@ namespace App\AccountancyModule\PaymentModule;
  */
 use Nette\Application\UI\Form;
 
-class RegistrationPresenter extends BasePresenter {
+class RegistrationPresenter extends BasePresenter
+{
 
     protected $readUnits;
 
-    protected function startup() {
+    protected function startup() : void
+    {
         parent::startup();
         $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
     }
 
-    public function actionMassAdd($id) {
+    public function actionMassAdd($id) : void
+    {
         //ověření přístupu
         try {
             $this->template->list = $list = $this->model->getPersonsFromRegistrationWithoutPayment(array_keys($this->readUnits), $id);
@@ -38,37 +41,43 @@ class RegistrationPresenter extends BasePresenter {
         $form['oid']->setDefaultValue($id);
         foreach ($list as $p) {
             $form->addSelect($p['ID_Person'] . '_email', NULL, $p['emails'])
-                    ->setPrompt("")
-                    ->setDefaultValue(key($p['emails']))
-                    ->setAttribute('class', 'input-xlarge');
+                ->setPrompt("")
+                ->setDefaultValue(key($p['emails']))
+                ->setAttribute('class', 'input-xlarge');
         }
     }
 
-    public function createComponentRegistrationForm($name) {
+    protected function createComponentRegistrationForm($name) : Form
+    {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
         $form->addText("defaultAmount", "Částka:")
-                ->setAttribute('class', 'input-mini');
+            ->setAttribute('class', 'input-mini');
         $form->addDatePicker('defaultMaturity', "Splatnost:")//
-                ->setAttribute('class', 'input-small');
+        ->setAttribute('class', 'input-small');
         $form->addText("defaultKs", "KS:")
-                ->setAttribute('class', 'input-mini');
+            ->setAttribute('class', 'input-mini');
         $form->addText("defaultNote", "Poznámka:")
-                ->setAttribute('class', 'input-small');
+            ->setAttribute('class', 'input-small');
         $form->addSubmit('send', 'Přidat vybrané')
-                ->setAttribute("class", "btn btn-primary btn-large");
-        $form->onSubmit[] = array($this, $name . 'Submitted');
+            ->setAttribute("class", "btn btn-primary btn-large");
+
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->registrationFormSubmitted($form);
+        };
+
         return $form;
     }
 
-    function registrationFormSubmitted(Form $form) {
+    private function registrationFormSubmitted(Form $form) : void
+    {
         $values = $form->getValues();
         $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
         $vals = $form->getHttpData()['vals'];
 
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "danger");
-            $this->redirect("Payment:detail", array("id" => $values->oid));
+            $this->redirect("Payment:detail", ["id" => $values->oid]);
         }
 
         foreach ($checkboxs as $pid) {
@@ -110,7 +119,7 @@ class RegistrationPresenter extends BasePresenter {
         }
 
         $this->flashMessage("Platby byly přidány");
-        $this->redirect("Payment:detail", array("id" => $values->oid));
+        $this->redirect("Payment:detail", ["id" => $values->oid]);
     }
 
 }

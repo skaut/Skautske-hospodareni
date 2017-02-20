@@ -2,4 +2,6 @@
 
 namespace Model\Payment;
 
-class GroupNotFoundException extends \Exception {}
+class GroupNotFoundException extends \Exception
+{
+}

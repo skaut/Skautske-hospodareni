@@ -26,6 +26,9 @@ build:
         # Unit tests
         - vendor/bin/tester tests -C -o=junit > shippable/testresults/junit.xml
 
+        # Coding standard
+        - vendor/bin/phpcs app --standard=ruleset.xml
+
     cache: true
     cache_dir_list:
         - $HOME/.composer/cache

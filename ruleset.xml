@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset name="hskauting">
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/><!-- [] instead of array() -->
+    <rule ref="Generic.Files.EndFileNewline"/><!-- Empty line at the end (Nette does that) -->
+    <rule ref="Generic.PHP.UpperCaseConstant"/><!-- TRUE, FALSE, NULL -->
+    <rule ref="Generic.WhiteSpace.ScopeIndent"/><!-- Indented with spaces -->
+    <rule ref="Generic.PHP.DisallowShortOpenTag"/><!-- No <? open tags -->
+
+
+    <!-- Classes -->
+    <rule ref="PEAR.Classes.ClassDeclaration"/> <!-- Brackets on next line -->
+
+    <!-- Methods -->
+    <rule ref="PSR2.Methods.MethodDeclaration"/><!-- Brackets on next line -->
+    <rule ref="Squiz.Scope.MethodScope"/><!-- Visibility of method must be specified -->
+</ruleset>

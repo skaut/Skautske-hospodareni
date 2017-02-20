@@ -5,28 +5,30 @@ namespace Model;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class MemberService extends BaseService {
+class MemberService extends BaseService
+{
 
     /**
      * vrací seznam všech osob
      * @param ID_Unit $unitId - ID_Unit
      * @param bool $onlyDirectMember - pouze přímé členy?
-     * @return array 
+     * @return array
      */
-    public function getAll($unitId = NULL, $onlyDirectMember = true, $participants = NULL) {
+    public function getAll($unitId = NULL, $onlyDirectMember = TRUE, $participants = NULL)
+    {
         $unitId = $unitId === NULL ? $this->skautis->getUser()->getUnitId() : $unitId;
-        
-        $all = $this->skautis->org->PersonAll(array("ID_Unit" => $unitId, "OnlyDirectMember" => (bool) $onlyDirectMember));
-        $ret = array();
+
+        $all = $this->skautis->org->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => (bool)$onlyDirectMember]);
+        $ret = [];
 
         if (empty($participants)) {
             foreach ($all as $people) {
                 $ret[$people->ID] = $people->DisplayName;
             }
         } else { //odstranení jiz oznacených
-            $check = array();
+            $check = [];
             foreach ($participants as $p) {
-                $check[$p->ID_Person] = true;
+                $check[$p->ID_Person] = TRUE;
             }
             foreach ($all as $p) {
                 if (!array_key_exists($p->ID, $check)) {
@@ -43,8 +45,9 @@ class MemberService extends BaseService {
      * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
      * @return array
      */
-    public function getAC($OnlyDirectMember = false, $adultOnly = false) {
-        return array_values($this->getPairs($this->skautis->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $adultOnly));
+    public function getAC($OnlyDirectMember = FALSE, $adultOnly = FALSE)
+    {
+        return array_values($this->getPairs($this->skautis->org->PersonAll(["OnlyDirectMember" => $OnlyDirectMember]), $adultOnly));
     }
 
     /**
@@ -52,20 +55,22 @@ class MemberService extends BaseService {
      * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
      * @return array
      */
-    public function getCombobox($OnlyDirectMember = FALSE, $ageLimit = NULL) {
-        return $this->getPairs($this->skautis->org->PersonAll(array("OnlyDirectMember" => $OnlyDirectMember)), $ageLimit);
+    public function getCombobox($OnlyDirectMember = FALSE, $ageLimit = NULL)
+    {
+        return $this->getPairs($this->skautis->org->PersonAll(["OnlyDirectMember" => $OnlyDirectMember]), $ageLimit);
     }
 
     /**
      * vrací pole osob ID => jméno
      * @param array $data - vráceno z PersonAll
-     * @return array 
+     * @return array
      */
-    private function getPairs($data, $ageLimit = NULL) {
-        $res = array();
+    private function getPairs($data, $ageLimit = NULL)
+    {
+        $res = [];
         $now = new \DateTime();
         foreach ($data as $p) {
-            if($ageLimit !=NULL){
+            if ($ageLimit != NULL) {
                 $birth = new \DateTime($p->Birthday);
                 $interval = $now->diff($birth);
                 $diff = $interval->format("%y");

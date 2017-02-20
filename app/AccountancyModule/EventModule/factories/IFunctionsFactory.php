@@ -7,7 +7,6 @@ use App\AccountancyModule\EventModule\Components\Functions;
 interface IFunctionsFactory
 {
 
-	/** @return Functions */
-	public function create($eventId);
+    public function create($eventId) : Functions;
 
 }

@@ -1,15 +1,17 @@
 <?php
 
 namespace App\AccountancyModule\CampModule;
+
 use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
 
 /**
- * @author Hána František <sinacek@gmail.com> 
+ * @author Hána František <sinacek@gmail.com>
  */
-class ParticipantPresenter extends BasePresenter {
+class ParticipantPresenter extends BasePresenter
+{
 
     use \ParticipantTrait;
 
@@ -31,7 +33,8 @@ class ParticipantPresenter extends BasePresenter {
         $this->pdf = $pdf;
     }
 
-    function startup() {
+    protected function startup() : void
+    {
         $this->traitStartup();
         $this->isAllowRepayment = $this->template->isAllowRepayment = TRUE;
         $this->isAllowIsAccount = $this->template->isAllowIsAccount = TRUE;
@@ -41,7 +44,8 @@ class ParticipantPresenter extends BasePresenter {
         $this->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdate = $this->isAllowed(self::RULE_PARTICIPANTS_UPDATE);
     }
 
-    function renderDefault($aid, $uid = NULL, $dp = FALSE, $sort = NULL, $regNums = FALSE) {
+    public function renderDefault($aid, $uid = NULL, $dp = FALSE, $sort = NULL, $regNums = FALSE) : void
+    {
         if (!$this->isAllowed("EV_ParticipantCamp_ALL_EventCamp")) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky", "danger");
             $this->redirect("Default:");
@@ -50,9 +54,9 @@ class ParticipantPresenter extends BasePresenter {
         $this->traitDefault($dp, $sort, $regNums);
 
 
-//        if ($this->isAllowParticipantInsert) {
-//            $this->template->list = $this->campService->participants->getPotencialCampParticipants($aid);
-//        }
+        //        if ($this->isAllowParticipantInsert) {
+        //            $this->template->list = $this->campService->participants->getPotencialCampParticipants($aid);
+        //        }
 
         $this->template->isAllowParticipantDetail = $this->isAllowed(self::RULE_PARTICIPANTS_DETAIL);
         $this->template->isAllowParticipantUpdateLocal = $this->isAllowParticipantDelete;
@@ -63,7 +67,8 @@ class ParticipantPresenter extends BasePresenter {
         }
     }
 
-    public function actionEditField($aid, $id, $field, $value) {
+    public function actionEditField($aid, $id, $field, $value) : void
+    {
         if (!$this->isAllowParticipantUpdate) {
             $this->flashMessage("Nemáte oprávnění měnit účastníkův jejich údaje.", "danger");
             if ($this->isAjax()) {
@@ -72,8 +77,8 @@ class ParticipantPresenter extends BasePresenter {
                 $this->redirect("Default:");
             }
         }
-        $data = array("actionId" => $aid);
-        $sisdata = (array) $this->eventService->participants->get($id);
+        $data = ["actionId" => $aid];
+        $sisdata = (array)$this->eventService->participants->get($id);
         switch ($field) {
             case "days":
             case "payment":
@@ -92,7 +97,8 @@ class ParticipantPresenter extends BasePresenter {
         $this->terminate();
     }
 
-    public function handleActivateAutocomputedParticipants($aid) {
+    public function handleActivateAutocomputedParticipants($aid) : void
+    {
         $this->eventService->event->activateAutocomputedParticipants($aid);
         $this->flashMessage("Byl aktivován automatický výpočet seznamu osobodnů.");
         $this->redirect("this");

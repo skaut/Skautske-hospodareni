@@ -7,22 +7,17 @@ use Nette\Application\UI\Form;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class GroupPresenter extends BasePresenter {
+class GroupPresenter extends BasePresenter
+{
 
-    /**
-     * @var \Model\PaymentService
-     */
+    /** @var \Model\PaymentService */
     protected $model;
 
-    /**
-     * @var \Model\MailService
-     */
-    protected $mail;
+    /** @var \Model\MailService */
+    private $mail;
 
-    /**
-     * @var \Model\EventService
-     */
-    protected $camp;
+    /** @var \Model\EventService */
+    private $camp;
 
     /**
      * výchozí text emailů
@@ -30,26 +25,29 @@ class GroupPresenter extends BasePresenter {
      */
     protected $defaultEmails;
 
-    public function __construct(\Model\PaymentService $paymentService, \Model\MailService $mailService) {
+    public function __construct(\Model\PaymentService $paymentService, \Model\MailService $mailService)
+    {
         parent::__construct($paymentService);
         $this->model = $paymentService;
         $this->mail = $mailService;
     }
 
-    protected function startup() {
+    protected function startup() : void
+    {
         parent::startup();
         $this->camp = $this->context->getService("campService");
-        $this->defaultEmails = array(
-            "registration" => array(
+        $this->defaultEmails = [
+            "registration" => [
                 "info" => "Dobrý den,\nchtěli bychom vás požádat o úhradu členských příspěvků do našeho skautského střediska. \n<b>Informace k platbě:</b>\nÚčel platby: %name%\nČíslo účtu: %account%\nČástka: %amount% Kč\nDatum splatnosti: %maturity%\nVS: %vs%\nKS: %ks%\n\nPro zrychlení platby jsme připravili QR kód, který lze použít při placení v mobilních aplikacích bank. Použití QR kódu šetří váš čas a snižuje pravděpodobnost překlepu.\n%qrcode%\n\nDěkujeme za včasné uhrazení",
-            ),
-            "base" => array(
+            ],
+            "base" => [
                 "info" => "Dobrý den,\nchtěli bychom vás požádat o úhradu. \n<b>Informace k platbě:</b>\nÚčel platby: %name%\nČíslo účtu: %account%\nČástka: %amount% Kč\nDatum splatnosti: %maturity%\nVS: %vs%\nKS: %ks%\n\nPro zrychlení platby jsme připravili QR kód, který lze použít při placení v mobilních aplikacích bank. Použití QR kódu šetří váš čas a snižuje pravděpodobnost překlepu.\n%qrcode%\n\nDěkujeme za včasné uhrazení",
-            )
-        );
+            ]
+        ];
     }
 
-    public function actionDefault($type = NULL) {
+    public function actionDefault($type = NULL) : void
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
             $this->redirect("Payment:default");
@@ -57,17 +55,17 @@ class GroupPresenter extends BasePresenter {
 
         if ($type == "camp") {
             $allCamps = $this->camp->event->getAll(date("Y"));
-            $camps = array();
-            foreach (array_diff_key($allCamps, (array) $this->model->getCampIds()) as $id => $c) {
+            $camps = [];
+            foreach (array_diff_key($allCamps, (array)$this->model->getCampIds()) as $id => $c) {
                 $camps[$id] = $c['DisplayName'];
             }
             $this['groupForm']['sisId']->caption = "Tábor";
             $this['groupForm']['type']->setDefaultValue("camp");
             $this['groupForm']['sisId']
-                    ->addRule(Form::FILLED, "Vyberte tábor kterého se skupina týká!")
-                    ->setPrompt("Vyberte tábor")
-                    ->setHtmlId("camp-select")
-                    ->setItems($camps);
+                ->addRule(Form::FILLED, "Vyberte tábor kterého se skupina týká!")
+                ->setPrompt("Vyberte tábor")
+                ->setHtmlId("camp-select")
+                ->setItems($camps);
             $this->template->nadpis = "Založení skupiny plateb tábora";
         } elseif ($type == "registration") {
             if (!($reg = $this->model->getNewestRegistration())) {
@@ -78,11 +76,11 @@ class GroupPresenter extends BasePresenter {
             unset($this['groupForm']['amount']);
             unset($this['groupForm']['sisId']);
             $this['groupForm']->addHidden("sisId", $reg['ID']);
-            $this['groupForm']->setDefaults(array(
-                "label"=> "Registrace " . $reg['Year'], $reg['Year'] . "-01-15",
-            ));
+            $this['groupForm']->setDefaults([
+                "label" => "Registrace " . $reg['Year'], $reg['Year'] . "-01-15",
+            ]);
             $this->template->nadpis = "Založení skupiny plateb pro registraci";
-            
+
         } else {//obecná skupina
             unset($this['groupForm']['sisId']);
             $this->template->nadpis = "Založení skupiny plateb";
@@ -92,7 +90,8 @@ class GroupPresenter extends BasePresenter {
         $this->template->linkBack = $this->link("Default:");
     }
 
-    public function renderEdit($id) {
+    public function renderEdit($id) : void
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
             $this->redirect("Payment:default");
@@ -107,7 +106,7 @@ class GroupPresenter extends BasePresenter {
             $this->redirect("Payment:default");
         }
         $smtp = $this->mail->getSmtpByGroup($id);
-        $form->setDefaults(array(
+        $form->setDefaults([
             "label" => $group->label,
             "amount" => $group->amount,
             "maturity" => $group->maturity,
@@ -115,42 +114,47 @@ class GroupPresenter extends BasePresenter {
             "smtp" => isset($smtp->id) && array_key_exists($smtp->id, $form['smtp']->getItems()) ? $smtp->id : NULL,
             "email_info" => $group->email_info,
             "gid" => $group->id,
-        ));
+        ]);
         $this->template->nadpis = "Editace skupiny: " . $group->label;
-        $this->template->linkBack = $this->link("Payment:detail", array("id" => $id));
+        $this->template->linkBack = $this->link("Payment:detail", ["id" => $id]);
     }
 
-    public function createComponentGroupForm($name) {
+    protected function createComponentGroupForm($name) : Form
+    {
         $form = $this->prepareForm($this, $name);
         $form->addSelect("sisId");
         $form->addText("label", "Název")
-                ->setAttribute("class", "form-control")
-                ->addRule(Form::FILLED, "Musíte zadat název skupiny")
-                ->setHtmlId("group-name-input");
+            ->setAttribute("class", "form-control")
+            ->addRule(Form::FILLED, "Musíte zadat název skupiny")
+            ->setHtmlId("group-name-input");
         $form->addText("amount", "Výchozí částka")
-                ->setAttribute("class", "form-control")
-                ->addCondition(Form::FILLED)
-                ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
+            ->setAttribute("class", "form-control")
+            ->addCondition(Form::FILLED)
+            ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
         $form->addDatePicker("maturity", "Výchozí splatnost")
-                ->setAttribute("class", "form-control");
+            ->setAttribute("class", "form-control");
         $form->addText("ks", "KS")
-                ->setMaxLength(4)
-                ->setAttribute("class", "form-control")
-                ->addCondition(Form::FILLED)
-                ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
+            ->setMaxLength(4)
+            ->setAttribute("class", "form-control")
+            ->addCondition(Form::FILLED)
+            ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
         $form->addSelect("smtp", "Odesílací email", $this->mail->getPairs($this->aid))
-                ->setPrompt(\Model\MailService::EMAIL_SENDER);
+            ->setPrompt(\Model\MailService::EMAIL_SENDER);
         $form->addTextArea("email_info", "Informační email")
-                ->setAttribute("class", "form-control")
-                ->setDefaultValue($this->defaultEmails['base']['info']);
+            ->setAttribute("class", "form-control")
+            ->setDefaultValue($this->defaultEmails['base']['info']);
         $form->addHidden("type");
         $form->addHidden("gid");
         $form->addSubmit('send', "Založit skupinu")->setAttribute("class", "btn btn-primary");
-        $form->onSubmit[] = array($this, $name . 'Submitted');
+
+        $form->onSubmit[] = function(Form $form) : void {
+            $this->groupFormSubmitted($form);
+        };
         return $form;
     }
 
-    function groupFormSubmitted(Form $form) {
+    private function groupFormSubmitted(Form $form) : void
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro změny skupin plateb", "danger");
             $this->redirect("default");
@@ -169,13 +173,13 @@ class GroupPresenter extends BasePresenter {
 
         if ($v->gid != "") {//EDIT
             $groupId = $v->gid;
-            $isUpdate = $this->model->updateGroup($v->gid, array(
+            $isUpdate = $this->model->updateGroup($v->gid, [
                 "label" => $v->label,
                 "amount" => $v->amount != "" ? $v->amount : NULL,
                 "maturity" => $v->maturity,
                 "ks" => $v->ks != "" ? $v->ks : NULL,
                 "email_info" => $v->email_info,
-            ));
+            ]);
             if ($v->smtp !== NULL) {
                 $isUpdate = $this->mail->addSmtpGroup($groupId, $v->smtp) || $isUpdate;
             } else {
@@ -186,23 +190,23 @@ class GroupPresenter extends BasePresenter {
             } else {
                 $this->flashMessage("Skupina nebyla změněna!", "warning");
             }
-            $this->redirect("Payment:detail", array("id" => $v->gid));
+            $this->redirect("Payment:detail", ["id" => $v->gid]);
         } else {//ADD
-			$groupId = $this->model->createGroup(
-				$this->aid,
-				$v->type != "" ? $v->type : NULL,
-				isset($v->sisId) ? (int)$v->sisId : NULL,
-				$v->label,
-				$v->maturity,
-				$v->ks ? (int)$v->ks : NULL,
-				isset($v->amount) ? (float)$v->amount : NULL,
-				$v->email_info);
+            $groupId = $this->model->createGroup(
+                $this->aid,
+                $v->type != "" ? $v->type : NULL,
+                isset($v->sisId) ? (int)$v->sisId : NULL,
+                $v->label,
+                $v->maturity,
+                $v->ks ? (int)$v->ks : NULL,
+                isset($v->amount) ? (float)$v->amount : NULL,
+                $v->email_info);
             if ($groupId) {
                 if ($v->smtp !== NULL) {
                     $this->mail->addSmtpGroup($groupId, $v->smtp);
                 }
                 $this->flashMessage("Skupina byla založena");
-                $this->redirect("Payment:detail", array("id" => $groupId));
+                $this->redirect("Payment:detail", ["id" => $groupId]);
             } else {
                 $this->flashMessage("Skupinu plateb se nepodařilo založit", "danger");
             }

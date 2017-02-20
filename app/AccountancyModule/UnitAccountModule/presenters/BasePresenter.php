@@ -9,16 +9,18 @@ use Nette\Application\Routers\Route,
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BasePresenter extends \App\AccountancyModule\BasePresenter {
+class BasePresenter extends \App\AccountancyModule\BasePresenter
+{
 
     /** @persistent */
     public $aid;
     protected $year;
     protected $isReadable;
 
-    protected function startup() {
+    protected function startup() : void
+    {
         parent::startup();
-        $this->isCamp = $this->template->isCamp = false;
+        $this->isCamp = $this->template->isCamp = FALSE;
         $this->template->aid = $this->aid = (is_null($this->aid) ? $this->unitService->getUnitId() : $this->aid);
         $this->template->year = $this->year = $this->getParameter("year", date("Y"));
 
@@ -28,11 +30,12 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter {
 
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro zobrazení stránky", "warning");
-            $this->redirect(":Accountancy:Default:", array("aid" => NULL));
+            $this->redirect(":Accountancy:Default:", ["aid" => NULL]);
         }
     }
 
-    protected function editableOnly() {
+    protected function editableOnly() : void
+    {
         if (!$this->isEditable) {
             $this->flashMessage("Data jednotky jsou uzavřené a nelze je upravovat.", "danger");
             if ($this->isAjax()) {
