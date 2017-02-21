@@ -105,17 +105,19 @@ class GroupPresenter extends BasePresenter
             $this->flashMessage("Skupina nebyla nalezena", "warning");
             $this->redirect("Payment:default");
         }
-        $smtp = $this->mail->getSmtpByGroup($id);
+
+        $dto = $this->model->getGroupV2($id);
         $form->setDefaults([
-            "label" => $group->label,
-            "amount" => $group->amount,
-            "maturity" => $group->maturity,
-            "ks" => $group->ks,
-            "smtp" => isset($smtp->id) && array_key_exists($smtp->id, $form['smtp']->getItems()) ? $smtp->id : NULL,
-            "email_info" => $group->email_info,
-            "gid" => $group->id,
+            "label" => $dto->getName(),
+            "amount" => $dto->getDefaultAmount(),
+            "maturity" => $dto->getDueDate() ? $dto->getDueDate()->format(\DateTime::ISO8601) : NULL,
+            "ks" => $dto->getConstantSymbol(),
+            "smtp" => $dto->getSmtpId(),
+            "email_info" => $dto->getEmailTemplate(),
+            "gid" => $id,
         ]);
-        $this->template->nadpis = "Editace skupiny: " . $group->label;
+
+        $this->template->nadpis = "Editace skupiny: " . $dto->getName();
         $this->template->linkBack = $this->link("Payment:detail", ["id" => $id]);
     }
 
@@ -139,7 +141,7 @@ class GroupPresenter extends BasePresenter
             ->addCondition(Form::FILLED)
             ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
         $form->addSelect("smtp", "Odesílací email", $this->mail->getPairs($this->aid))
-            ->setPrompt(\Model\MailService::EMAIL_SENDER);
+            ->setPrompt('Vyberte email');
         $form->addTextArea("email_info", "Informační email")
             ->setAttribute("class", "form-control")
             ->setDefaultValue($this->defaultEmails['base']['info']);
@@ -173,24 +175,16 @@ class GroupPresenter extends BasePresenter
 
         if ($v->gid != "") {//EDIT
             $groupId = $v->gid;
-            $isUpdate = $this->model->updateGroup($v->gid, [
-                "label" => $v->label,
-                "amount" => $v->amount != "" ? $v->amount : NULL,
-                "maturity" => $v->maturity,
-                "ks" => $v->ks != "" ? $v->ks : NULL,
-                "email_info" => $v->email_info,
-            ]);
-            if ($v->smtp !== NULL) {
-                $isUpdate = $this->mail->addSmtpGroup($groupId, $v->smtp) || $isUpdate;
-            } else {
-                $isUpdate = $this->mail->removeSmtpGroup($groupId) || $isUpdate;
-            }
-            if ($isUpdate) {
-                $this->flashMessage("Skupina byla upravena");
-            } else {
-                $this->flashMessage("Skupina nebyla změněna!", "warning");
-            }
-            $this->redirect("Payment:detail", ["id" => $v->gid]);
+            $this->model->updateGroupV2(
+                $groupId,
+                $v->label,
+                $v->amount ? (float)$v->amount : NULL,
+                $v->maturity ? \DateTimeImmutable::createFromMutable($v->maturity) : NULL,
+                $v->ks ? (int)$v->ks : NULL,
+                $v->email_info,
+                $v->smtp);
+
+            $this->flashMessage('Skupina byla upravena');
         } else {//ADD
             $groupId = $this->model->createGroup(
                 $this->aid,
@@ -200,18 +194,12 @@ class GroupPresenter extends BasePresenter
                 $v->maturity,
                 $v->ks ? (int)$v->ks : NULL,
                 isset($v->amount) ? (float)$v->amount : NULL,
-                $v->email_info);
-            if ($groupId) {
-                if ($v->smtp !== NULL) {
-                    $this->mail->addSmtpGroup($groupId, $v->smtp);
-                }
-                $this->flashMessage("Skupina byla založena");
-                $this->redirect("Payment:detail", ["id" => $groupId]);
-            } else {
-                $this->flashMessage("Skupinu plateb se nepodařilo založit", "danger");
-            }
+                $v->email_info,
+                $v->smtp);
+
+            $this->flashMessage('Skupina byla založena');
         }
-        $this->redirect("Default:");
+        $this->redirect('Payment:detail', ['id' => $groupId]);
     }
 
 }

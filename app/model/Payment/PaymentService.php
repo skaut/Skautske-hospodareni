@@ -2,7 +2,9 @@
 
 namespace Model;
 
+use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
+use Model\Payment\GroupNotFoundException;
 use Model\Payment\Repositories\IGroupRepository;
 use Nette\Mail\Message;
 use Skautis\Skautis;
@@ -251,9 +253,20 @@ class PaymentService extends BaseService
      * @param int $ks
      * @param float $amount
      * @param string $email_info
+     * @param int|NULL $smtpId
      * @return int
      */
-    public function createGroup(int $unitId, ?string $oType, ?int $sisId, string $label, ?\DateTime $maturity, ?int $ks, ?float $amount, string $email_info): int
+    public function createGroup(
+        int $unitId,
+        ?string $oType,
+        ?int $sisId,
+        string $label,
+        ?\DateTime $maturity,
+        ?int $ks,
+        ?float $amount,
+        string $email_info,
+        ?int $smtpId
+    ): int
     {
         $group = new Group(
             $oType,
@@ -264,9 +277,36 @@ class PaymentService extends BaseService
             $maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
             $ks,
             new \DateTimeImmutable(),
-            $email_info);
+            $email_info,
+            $smtpId);
+
         $this->groups->save($group);
         return $group->getId();
+    }
+
+    public function updateGroupV2(
+        int $id,
+        string $name,
+        ?float $defaultAmount,
+        ?\DateTimeImmutable $dueDate,
+        ?int $constantSymbol,
+        string $emailTemplate,
+        ?int $smtpId)
+    {
+        $group = $this->groups->find($id);
+
+        $group->update($name, $defaultAmount, $dueDate, $constantSymbol, $emailTemplate, $smtpId);
+
+        $this->groups->save($group);
+    }
+
+    public function getGroupV2($id) : ?DTO\Group
+    {
+        try {
+            $group = $this->groups->find($id);
+            return DTO\GroupFactory::create($group);
+        } catch(GroupNotFoundException $e) {}
+        return NULL;
     }
 
     /**

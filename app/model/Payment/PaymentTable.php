@@ -149,6 +149,7 @@ class PaymentTable extends BaseTable
      */
     public function updateGroup($groupId, $arr, $openOnly)
     {
+        \Tracy\Debugger::barDump($arr);
         $query = $this->connection->update(self::TABLE_PA_GROUP, $arr)->where("id=%i", $groupId);
         if ($openOnly) {
             $query = $query->where("state='open'");

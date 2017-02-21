@@ -33,6 +33,7 @@ class GroupRepository implements IGroupRepository
         'createdAt' => 'created_at',
         'lastPairing' => 'last_pairing',
         'emailTemplate' => 'email_info',
+        'smtpId' => 'smtp_id',
     ];
 
     const TABLE = BaseTable::TABLE_PA_GROUP;

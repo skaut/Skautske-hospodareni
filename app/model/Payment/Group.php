@@ -43,6 +43,9 @@ class Group
     /** @var string */
     private $emailTemplate;
 
+    /** @var int|NULL */
+    private $smtpId;
+
     const STATE_OPEN = 'open';
 
     /**
@@ -56,6 +59,7 @@ class Group
      * @param int|NULL $constantSymbol
      * @param \DateTimeImmutable $createdAt
      * @param string $emailTemplate
+     * @param int|NULL $smtpId
      */
     public function __construct(
         ?string $type,
@@ -66,7 +70,9 @@ class Group
         ?\DateTimeImmutable $dueDate,
         ?int $constantSymbol,
         \DateTimeImmutable $createdAt,
-        string $emailTemplate)
+        string $emailTemplate,
+        ?int $smtpId
+    )
     {
         $this->type = $type;
         $this->unitId = $unitId;
@@ -77,6 +83,23 @@ class Group
         $this->constantSymbol = $constantSymbol;
         $this->createdAt = $createdAt;
         $this->emailTemplate = $emailTemplate;
+        $this->smtpId = $smtpId;
+    }
+
+    public function update(
+        string $name,
+        ?float $defaultAmount,
+        ?\DateTimeImmutable $dueDate,
+        ?int $constantSymbol,
+        string $emailTemplate,
+        ?int $smtpId) : void
+    {
+        $this->name = $name;
+        $this->defaultAmount = $defaultAmount;
+        $this->dueDate = $dueDate;
+        $this->constantSymbol = $constantSymbol;
+        $this->emailTemplate = $emailTemplate;
+        $this->smtpId = $smtpId;
     }
 
     /**
@@ -182,6 +205,14 @@ class Group
     public function getLastPairing(): ?\DateTimeImmutable
     {
         return $this->lastPairing;
+    }
+
+    /**
+     * @return int|NULL
+     */
+    public function getSmtpId() : ?int
+    {
+        return $this->smtpId;
     }
 
 }

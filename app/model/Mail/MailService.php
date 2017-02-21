@@ -80,18 +80,6 @@ class MailService
         return $this->table->updateSmtp($unitId, $id, $data);
     }
 
-    //SMTP GROUP
-
-    public function addSmtpGroup($groupId, $smtpId)
-    {
-        return $this->table->addSmtpGroup($groupId, $smtpId);
-    }
-
-    public function removeSmtpGroup($groupId)
-    {
-        return $this->table->removeSmtpGroup($groupId);
-    }
-
     /**
      * Sends message via email server specified in payment method group.
      * @param Message $mail
