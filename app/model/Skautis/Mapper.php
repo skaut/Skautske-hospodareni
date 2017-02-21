@@ -14,6 +14,8 @@ class Mapper
     /** @var ObjectTable */
     private $table;
 
+    public const UNIT = 'Unit';
+
     /**
      * UnitMapper constructor.
      * @param ObjectTable $table

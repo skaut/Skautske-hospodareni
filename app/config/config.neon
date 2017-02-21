@@ -30,7 +30,7 @@ tracy:
 extensions:
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
-    
+
 
 services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
@@ -68,6 +68,7 @@ services:
 
     # Repositories
     - Model\Travel\Repositories\VehicleRepository
+    - Model\Payment\Repositories\BankAccountRepository
     - Model\Payment\Repositories\GroupRepository
 
 
