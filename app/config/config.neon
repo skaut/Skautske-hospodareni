@@ -37,7 +37,7 @@ services:
     - App\RouterFactory(%ssl%)
     - \Model\PaymentService
     - Model\MailService
-
+    - Model\Payment\MailingService
     - Model\Bank\Http\Curl
     - Model\Bank\Fio\FioClient
     - Model\BankService
@@ -62,17 +62,20 @@ services:
     - \Model\BudgetService
 
     # Factories
+    - App\AccountancyModule\Factories\FormFactory
     - Model\IChitServiceFactory
     - Model\IEventServiceFactory
     - Model\IParticipantServiceFactory
+
+    # Model
 
     # Repositories
     - Model\Travel\Repositories\VehicleRepository
     - Model\Payment\Repositories\BankAccountRepository
     - Model\Payment\Repositories\GroupRepository
 
-
-    - App\AccountancyModule\Factories\FormFactory
+    # Factories
+    - Model\Services\TemplateFactory
 
     # Tables
     - Model\BankTable

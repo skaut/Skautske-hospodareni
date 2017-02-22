@@ -2,6 +2,7 @@
 
 namespace Model\Mail;
 
+use Model\MailTable;
 use Nette\Mail\IMailer;
 use Nette\Mail\SmtpMailer;
 
@@ -11,6 +12,9 @@ class MailerFactory implements IMailerFactory
     /** @var IMailer|NULL $debugMailer */
     private $debugMailer;
 
+    /** @var MailTable */
+    private $smtps;
+
     /** @var bool */
     private $enabled;
 
@@ -18,24 +22,28 @@ class MailerFactory implements IMailerFactory
      * MailerFactory constructor.
      * @param IMailer $debugMailer
      * @param bool $enabled
+     * @param MailTable $smtps
      */
-    public function __construct(IMailer $debugMailer, bool $enabled)
+    public function __construct(IMailer $debugMailer, bool $enabled, MailTable $smtps)
     {
         $this->debugMailer = $debugMailer;
         $this->enabled = $enabled;
+        $this->smtps = $smtps;
     }
 
-    public function create(string $host, string $username, string $password, string $secure): IMailer
+    public function create(int $smtpId): IMailer
     {
+        $smtp = $this->smtps->get($smtpId);
+
+        if(!$smtp) {
+            throw new MailerNotFoundException();
+        }
+
         if (!$this->enabled) {
             return $this->debugMailer;
         }
-        return new SmtpMailer([
-            'host' => $host,
-            'username' => $username,
-            'password' => $password,
-            'secure' => $secure,
-        ]);
+
+        return new SmtpMailer($smtp);
     }
 
 }

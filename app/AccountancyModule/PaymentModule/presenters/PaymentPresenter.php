@@ -3,7 +3,9 @@
 namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\Factories\FormFactory;
+use Model\Payment\MailingService;
 use Nette\Application\UI\Form;
+use Nette\Mail\SmtpException;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -31,16 +33,22 @@ class PaymentPresenter extends BasePresenter
     /** @var object */
     private $bankInfo;
 
+    /** @var MailingService */
+    private $mailing;
+
     public function __construct(
         \Model\PaymentService $paymentService,
         \Model\BankService $bankService,
         \Model\UnitService $unitService,
-        FormFactory $formFactory)
+        FormFactory $formFactory,
+        MailingService $mailing
+    )
     {
         parent::__construct($paymentService);
         $this->bank = $bankService;
         $this->unitService = $unitService;
         $this->formFactory = $formFactory;
+        $this->mailing = $mailing;
     }
 
     protected function startup() : void
@@ -278,8 +286,17 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
+    private function checkEditation() : void
+    {
+        if(!$this->isEditable || !isset($this->readUnits[$this->aid])) {
+            $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou!', 'danger');
+            $this->redirect('this');
+        }
+    }
+
     public function handleSend($pid) : void
     {
+        $this->checkEditation();
         $payment = $this->model->get(array_keys($this->editUnits), $pid);
         $group = $this->model->getGroup(array_keys($this->readUnits), $payment->groupId);
         if (!$this->isEditable || !$group || !$this->model->get(array_keys($this->editUnits), $pid)) {
@@ -301,25 +318,22 @@ class PaymentPresenter extends BasePresenter
      */
     public function handleSendGroup($gid) : void
     {
-        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
-        if (!$this->isEditable || !$group) {
-            $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
-            $this->redirect("this");
-        }
-        $payments = $this->model->getAll($gid);
-        $cnt = 0;
-        $unitIds = array_keys($this->editUnits);
-        foreach ($payments as $p) {
-            $payment = $this->model->get($unitIds, $p->id);
-            $cnt += $this->sendInfoMail($payment, $group);
+        $this->checkEditation();
+
+        try {
+            $sentCount = $this->mailing->sendEmailForGroup($gid);
+        } catch(SmtpException $e) {
+            $this->flashMessage("Nepodařilo se připojit k SMTP serveru ({$e->getMessage()})", 'danger');
+            $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
+            $this->redirect('this');
         }
 
-        if ($cnt > 0) {
-            $this->flashMessage("Informační emaily($cnt) byly odeslány.");
+        if ($sentCount > 0) {
+            $this->flashMessage("Informační emaily($sentCount) byly odeslány.");
         } else {
-            $this->flashMessage("Nebyl odeslán žádný informační email!", "danger");
+            $this->flashMessage('Nebyl odeslán žádný informační email!', 'danger');
         }
-        $this->redirect("this");
+        $this->redirect('this');
     }
 
     public function handleSendTest($gid) : void

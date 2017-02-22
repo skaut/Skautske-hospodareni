@@ -39,7 +39,7 @@ class Mapper
             $skautisId = $this->table->getSkautisId($localId, $type);
             $this->cache($skautisId, $localId, $type);
         }
-        $this->skautisIds[$key];
+        return $this->skautisIds[$key];
     }
 
     /**

@@ -14,6 +14,9 @@ class Group
     /** @var int */
     private $id;
 
+    /** @var int */
+    private $unitId;
+
     /** @var string */
     private $name;
 
@@ -35,6 +38,7 @@ class Group
     /**
      * Group constructor.
      * @param int $id
+     * @param int $unitId
      * @param string $name
      * @param float|NULL $defaultAmount
      * @param \DateTimeImmutable|NULL $dueDate
@@ -44,6 +48,7 @@ class Group
      */
     public function __construct(
         int $id,
+        int $unitId,
         string $name,
         ?float $defaultAmount,
         ?\DateTimeImmutable $dueDate,
@@ -52,6 +57,7 @@ class Group
         ?int $smtpId)
     {
         $this->id = $id;
+        $this->unitId = $unitId;
         $this->name = $name;
         $this->defaultAmount = $defaultAmount;
         $this->dueDate = $dueDate;
@@ -67,6 +73,14 @@ class Group
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUnitId(): int
+    {
+        return $this->unitId;
     }
 
     /**

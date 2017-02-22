@@ -11,6 +11,7 @@ class GroupFactory
     {
         return new Group(
             $group->getId(),
+            $group->getUnitId(),
             $group->getName(),
             $group->getDefaultAmount(),
             $group->getDueDate(),
