@@ -91,6 +91,7 @@ services:
     - Model\TravelTable
 
     - Model\Services\PdfRenderer
+    - Model\Payment\QR\QRGenerator
     - Model\Skautis\Mapper
 
     nette.mailer:

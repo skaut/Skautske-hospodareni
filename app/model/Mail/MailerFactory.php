@@ -41,7 +41,7 @@ class MailerFactory implements IMailerFactory
             return $this->debugMailer;
         }
 
-        return new SmtpMailer($smtp);
+        return new SmtpMailer($smtp->toArray());
     }
 
 }

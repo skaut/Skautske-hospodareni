@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use Dibi\Row;
 use Model\DTO\Payment\Payment;
 use Model\Mail\IMailerFactory;
+use Model\Payment\QR\IQRGenerator;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\PaymentTable;
@@ -32,23 +33,24 @@ class MailingService
     /** @var TemplateFactory */
     private $templateFactory;
 
-    private const QR_LOCATION = WWW_DIR . '/webtemp/';
+    /** @var IQRGenerator */
+    private $qr;
 
-    /**
-     * MailingService constructor.
-     * @param IGroupRepository $groups
-     * @param IMailerFactory $mailerFactory
-     * @param PaymentTable $payments
-     * @param IBankAccountRepository $bankAccounts
-     * @param TemplateFactory $templateFactory
-     */
-    public function __construct(IGroupRepository $groups, IMailerFactory $mailerFactory, PaymentTable $payments, IBankAccountRepository $bankAccounts, TemplateFactory $templateFactory)
+    public function __construct(
+        IGroupRepository $groups,
+        IMailerFactory $mailerFactory,
+        PaymentTable $payments,
+        IBankAccountRepository $bankAccounts,
+        TemplateFactory $templateFactory,
+        IQRGenerator $qr
+    )
     {
         $this->groups = $groups;
         $this->mailerFactory = $mailerFactory;
         $this->payments = $payments;
         $this->bankAccounts = $bankAccounts;
         $this->templateFactory = $templateFactory;
+        $this->qr = $qr;
     }
 
     public function sendEmail(int $paymentId)
@@ -191,14 +193,11 @@ class MailingService
             '%note%' => $payment->getNote(),
         ];
 
-        $qr = strpos($group->getEmailTemplate(), '%qrcode') !== FALSE;
-        $qrFile = NULL;
 
-        if($qr) {
-            $qrFile = $this->generateQRFile($bankAccount, $payment);
-            $parameters['%qrcode%'] = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $qrFile . '"/>';
+        if (strpos($group->getEmailTemplate(), '%qrcode') !== FALSE) {
+            $file = $this->qr->generate($bankAccount, $payment);
+            $parameters['%qrcode%'] = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $file . '"/>';
         }
-
 
         $template->body = str_replace(
             array_keys($parameters),
@@ -209,13 +208,9 @@ class MailingService
         $mail = (new Message())
             ->addTo($payment->getEmail())
             ->setSubject('Informace o platbě')
-            ->setHtmlBody($template, self::QR_LOCATION);
+            ->setHtmlBody($template, __DIR__);
 
         $this->mailerFactory->create($group->getSmtpId())->send($mail);
-
-        if (is_file($qr)) {
-            unlink(self::QR_LOCATION . $qrFile);
-        }
     }
 
 }
