@@ -1,6 +1,7 @@
 <?php
 
 namespace Model;
+use Nette\Security\User;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -94,6 +95,36 @@ class UnitService extends BaseService
             $data = $data + $this->{__FUNCTION__}($u->ID, FALSE);
         }
         return $data;
+    }
+
+
+    /**
+     * vrací seznam jednotek, ke kterým má uživatel právo na čtení
+     * @param User $user
+     * @return array
+     */
+    public function getReadUnits(User $user): array
+    {
+        return $this->getUnits($user, self::ACCESS_READ);
+    }
+
+    /**
+     * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
+     * @param User $user
+     * @return array
+     */
+    public function getEditUnits(User $user): array
+    {
+        return $this->getUnits($user, self::ACCESS_EDIT);
+    }
+
+    private function getUnits(User $user, string $accessType)
+    {
+        $res = [];
+        foreach ($user->getIdentity()->access[$accessType] as $uId => $u) {
+            $res[$uId] = $u->DisplayName;
+        }
+        return $res;
     }
 
 }
