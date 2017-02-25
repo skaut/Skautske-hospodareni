@@ -207,6 +207,7 @@ class MailingService
 
         $mail = (new Message())
             ->addTo($payment->getEmail())
+            ->setFrom('platby@skauting.cz') // There must be something, but gmail overwrites it :(
             ->setSubject('Informace o platbě')
             ->setHtmlBody($template, __DIR__);
 
