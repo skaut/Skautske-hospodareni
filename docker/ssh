@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-winpty docker exec -u www-data -it hskauting bash
+docker exec -u www-data -it hskauting bash
