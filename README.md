@@ -15,12 +15,12 @@ Aplikace vyžaduje:
 Pro lokální vývoj je připraven Docker container a konfigurace pro **docker-compose**.
 
 ```bash
-$ docker-compose up -d # Spustí container v detached modu
+docker-compose up -d # Spustí container v detached modu
 ```
 
 V kontejneru je možné zpustit bash pomocným skriptem:
 ```bash
-$ docker/ssh
+docker/ssh
 ```
 
 
@@ -54,11 +54,12 @@ Testy lze spustit příkazem v kontejneru:
 ```bash
 vendor/bin/tester tests -C
 ```
+
 ## Coding standard
 Coding standard vychází z Nette coding standardu.
 Zda je projekt v souladu s CS lze ověřit pomocí příkazu v kontejneru:
 ```bash
-$ vendor/bin/phpcs app --standard=ruleset.xml
+vendor/bin/phpcs app --standard=ruleset.xml
 ```
 
 ## CI
