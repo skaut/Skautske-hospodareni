@@ -2,7 +2,9 @@
 
 namespace Model\Payment;
 
+use DateTimeImmutable;
 use Dibi\Row;
+use Model\DTO\Payment\Payment;
 use Model\Mail\IMailerFactory;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
@@ -79,19 +81,81 @@ class MailingService
     private function getBankAccount(int $unitId) : ?string
     {
         $accounts = $this->bankAccounts->findByUnit($unitId);
+
         if($accounts) {
             return $accounts[0]->getNumber();
         }
+
+        return NULL;
     }
 
-    private function sendForPayment(Row $payment, Group $group, ?string $bankAccount)
+    private function sendForPayment(Row $paymentRow, Group $group, ?string $bankAccount) : void
     {
+        $state = $paymentRow->state;
 
-        if(!in_array($payment->state, $this->payments->getNonFinalStates())) {
+        if(!in_array($state, $this->payments->getNonFinalStates())) {
             throw new PaymentFinishedException();
         }
 
-        if(!$payment->email || !Validators::isEmail($payment->email)) {
+        $payment = new Payment(
+            $paymentRow->name,
+            $paymentRow->amount,
+            $paymentRow->email,
+            DateTimeImmutable::createFromMutable($paymentRow->maturity),
+            $paymentRow->vs,
+            $paymentRow->ks,
+            $paymentRow->note
+        );
+        $this->send($group, $payment, $bankAccount);
+
+        if ($state != PaymentTable::PAYMENT_STATE_SEND) {
+            $this->payments->update($paymentRow->id, ['state' => PaymentTable::PAYMENT_STATE_SEND]);
+        }
+
+    }
+
+    /**
+     * @TODO replace with class (QRGenerator etc.)
+     * @param string|NULL $bankAccount
+     * @param Row $payment
+     * @return string
+     */
+    private function generateQRFile(?string $bankAccount, Payment $payment) : string
+    {
+        preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $bankAccount, $account);
+
+        $params = [
+            "accountNumber" => $account['number'],
+            "bankCode" => $account['code'],
+            "amount" => $payment->getAmount(),
+            "currency" => "CZK",
+            "date" => $payment->getDueDate()->format("Y-m-d"),
+            "size" => "200",
+        ];
+        if (array_key_exists('prefix', $account) && $account['prefix'] != '') {
+            $params['accountPrefix'] = $account['prefix'];
+        }
+        if ($payment->getVariableSymbol() != '') {
+            $params['vs'] = $payment->getVariableSymbol();
+        }
+        if ($payment->getConstantSymbol() != '') {
+            $params['ks'] = $payment->getConstantSymbol();
+        }
+        if ($payment->getName() != '') {
+            $params['message'] = $payment->getName();
+        }
+
+        $url = 'http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params);
+        $filename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime(TRUE)) . ".png";
+        Image::fromFile($url)->save(self::QR_LOCATION . $filename);
+
+        return  $filename;
+    }
+
+    private function send(Group $group, Payment $payment, ?string $bankAccount) : void
+    {
+        $email = $payment->getEmail();
+        if ($email === NULL || !Validators::isEmail($email)) {
             throw new InvalidEmailException();
         }
 
@@ -100,13 +164,13 @@ class MailingService
 
         $parameters = [
             '%account%' => $bankAccount,
-            '%name%' => $payment->name,
+            '%name%' => $payment->getName(),
             '%groupname%' => $group->getName(),
-            '%amount%' => $payment->amount,
-            '%maturity%' => $payment->maturity->format('j.n.Y'),
-            '%vs%' => $payment->vs,
-            '%ks%' => $payment->ks,
-            '%note%' => $payment->note,
+            '%amount%' => $payment->getAmount(),
+            '%maturity%' => $payment->getDueDate()->format('j.n.Y'),
+            '%vs%' => $payment->getVariableSymbol(),
+            '%ks%' => $payment->getConstantSymbol(),
+            '%note%' => $payment->getNote(),
         ];
 
         $qr = strpos($group->getEmailTemplate(), '%qrcode') !== FALSE;
@@ -125,59 +189,15 @@ class MailingService
         );
 
         $mail = (new Message())
-            ->addTo($payment->email)
+            ->addTo($payment->getEmail())
             ->setSubject('Informace o platbě')
             ->setHtmlBody($template, self::QR_LOCATION);
 
         $this->mailerFactory->create($group->getSmtpId())->send($mail);
 
-        if ($payment->state != PaymentTable::PAYMENT_STATE_SEND) {
-            $this->payments->update($payment->id, ["state" => PaymentTable::PAYMENT_STATE_SEND]);
-        }
-
         if (is_file($qr)) {
             unlink(self::QR_LOCATION . $qrFile);
         }
-        return TRUE;
-
-    }
-
-    /**
-     * @TODO replace with class (QRGenerator etc.)
-     * @param string|NULL $bankAccount
-     * @param Row $payment
-     * @return string
-     */
-    private function generateQRFile(?string $bankAccount, Row $payment) : string
-    {
-        preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $bankAccount, $account);
-
-        $params = [
-            "accountNumber" => $account['number'],
-            "bankCode" => $account['code'],
-            "amount" => $payment->amount,
-            "currency" => "CZK",
-            "date" => $payment->maturity->format("Y-m-d"),
-            "size" => "200",
-        ];
-        if (array_key_exists('prefix', $account) && $account['prefix'] != '') {
-            $params['accountPrefix'] = $account['prefix'];
-        }
-        if ($payment->vs != '') {
-            $params['vs'] = $payment->vs;
-        }
-        if ($payment->ks != '') {
-            $params['ks'] = $payment->ks;
-        }
-        if ($payment->name != '') {
-            $params['message'] = $payment->name;
-        }
-
-        $url = 'http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params);
-        $filename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime(TRUE)) . ".png";
-        Image::fromFile($url)->save(self::QR_LOCATION . $filename);
-
-        return  $filename;
     }
 
 }
