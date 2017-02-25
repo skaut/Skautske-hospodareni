@@ -5,6 +5,7 @@ namespace Model;
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
+use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Skautis\Skautis;
 
@@ -20,11 +21,20 @@ class PaymentService extends BaseService
     /** @var IGroupRepository */
     private $groups;
 
-    public function __construct(PaymentTable $table, Skautis $skautIS, IGroupRepository $groups)
+    /** @var IBankAccountRepository */
+    private $bankAccounts;
+
+    public function __construct(
+        PaymentTable $table,
+        Skautis $skautIS,
+        IGroupRepository $groups,
+        IBankAccountRepository $bankAccounts
+    )
     {
         parent::__construct($skautIS);
         $this->table = $table;
         $this->groups = $groups;
+        $this->bankAccounts = $bankAccounts;
     }
 
     public function get($unitId, $paymentId)
@@ -121,21 +131,17 @@ class PaymentService extends BaseService
     /**
      * číslo účtu jednotky ze skautisu
      * @param int $unitId
-     * @return string|FALSE
+     * @return string|NULL
      */
-    public function getBankAccount($unitId)
+    public function getBankAccount(int $unitId) : ?string
     {
-        $accounts = $this->skautis->org->AccountAll(["ID_Unit" => $unitId, "IsValid" => TRUE]);
-        if (count($accounts) == 1) {
-            return $accounts[0]->DisplayName;
-        } else {
-            foreach ($accounts as $a) {//vyfiltrování hlavního emailu
-                if ($a->IsMain) {
-                    return $a->DisplayName;
-                }
-            }
+        $accounts = $this->bankAccounts->findByUnit($unitId);
+
+        if(empty($accounts)) {
+            return NULL;
         }
-        return FALSE;
+
+        return $accounts[0]->getNumber();
     }
 
     /**
