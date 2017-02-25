@@ -17,8 +17,6 @@ services:
             - ./docker/ssl:/usr/local/apache2/conf
         ports:
             - 80:80
-            - 443:443
-            - 9000:9000
         environment:
             DEVELOPMENT_MACHINE: 'true'
 volumes:
