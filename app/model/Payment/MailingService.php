@@ -78,6 +78,24 @@ class MailingService
         return $sent;
     }
 
+    public function sendTestMail(int $groupId, string $email) : void
+    {
+        $group = $this->groups->find($groupId);
+        $bankAccount = $this->getBankAccount($group->getUnitId());
+
+        $payment = new Payment(
+            'Testovací účel',
+            $group->getDefaultAmount() ?? rand(50, 1000),
+            $email,
+            $group->getDueDate() ?? new DateTimeImmutable('+ 2 weeks'),
+            rand(1000, 100000),
+            $group->getConstantSymbol(),
+            'obsah poznámky'
+        );
+
+        $this->send($group, $payment, $bankAccount);
+    }
+
     private function getBankAccount(int $unitId) : ?string
     {
         $accounts = $this->bankAccounts->findByUnit($unitId);

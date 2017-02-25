@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\Factories\FormFactory;
+use Model\Mail\MailerNotFoundException;
 use Model\Payment\MailingService;
 use Nette\Application\UI\Form;
 use Nette\Mail\SmtpException;
@@ -347,24 +348,16 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!", "danger");
             $this->redirect("this");
         }
-        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
-        $payment = \Nette\Utils\ArrayHash::from([
-            "state" => \Model\PaymentTable::PAYMENT_STATE_PREPARING,
-            "name" => "Testovací účel",
-            "email" => $personalDetail->Email,
-            "unitId" => $group->unitId,
-            "amount" => $group->amount != 0 ? $group->amount : rand(50, 1000),
-            "maturity" => $group->maturity instanceof \DateTime ? $group->maturity : new \DateTime(date("Y-m-d", strtotime("+2 week"))),
-            "ks" => $group->ks,
-            "vs" => rand(1000, 100000),
-            "email_info" => $group->email_info,
-            "note" => "obsah poznámky",
-            "groupId" => $gid,
-        ]);
-        if ($this->sendInfoMail($payment, $group)) {
-            $this->flashMessage("Testovací email byl odeslán na " . $personalDetail->Email . " .");
-        } else {
-            $this->flashMessage("Testovací email se nepodařilo odeslat!", "danger");
+
+        $email = $personalDetail->Email;
+
+        try {
+            $this->mailing->sendTestMail($gid, $email);
+            $this->flashMessage("Testovací email byl odeslán na $email.");
+        } catch(MailerNotFoundException $e) {
+            $this->flashMessage('Nemáte nastavený mail pro odesílání u skupiny.', 'danger');
+        } catch(SmtpException $e) {
+            $this->flashMessage('Testovací email se nepodařilo odeslat!', 'danger');
         }
 
         $this->redirect("this");
