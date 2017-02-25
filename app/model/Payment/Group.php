@@ -102,6 +102,7 @@ class Group
         $this->smtpId = $smtpId;
     }
 
+
     /**
      * @return int
      */
