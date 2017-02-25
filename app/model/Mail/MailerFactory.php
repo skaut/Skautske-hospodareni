@@ -31,7 +31,7 @@ class MailerFactory implements IMailerFactory
         $this->smtps = $smtps;
     }
 
-    public function create(int $smtpId): IMailer
+    public function create(?int $smtpId): IMailer
     {
         if($smtpId === NULL || !($smtp = $this->smtps->get($smtpId))) {
             throw new MailerNotFoundException();
