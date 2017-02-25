@@ -14,9 +14,9 @@ interface IBankAccountRepository
 {
 
     /**
-     * @param int $unitId
+     * @param int $unitSkautisId
      * @return BankAccount[]
      */
-    public function findByUnit(int $unitId) : array;
+    public function findByUnit(int $unitSkautisId) : array;
 
 }

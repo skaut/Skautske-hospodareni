@@ -12,9 +12,6 @@ class BankAccountRepository implements IBankAccountRepository
     /** @var Skautis */
     private $skautis;
 
-    /** @var Mapper */
-    private $mapper;
-
     /**
      * BankAccountRepository constructor.
      * @param Skautis $skautis
@@ -23,19 +20,12 @@ class BankAccountRepository implements IBankAccountRepository
     public function __construct(Skautis $skautis, Mapper $mapper)
     {
         $this->skautis = $skautis;
-        $this->mapper = $mapper;
     }
 
-    public function findByUnit(int $unitId) : array
+    public function findByUnit(int $unitSkautisId) : array
     {
-        $skautisId = $this->mapper->getSkautisId($unitId, Mapper::UNIT);
-
-        if($skautisId === NULL) {
-            return [];
-        }
-
         $accounts = $this->skautis->org->AccountAll([
-            'ID_Unit' => $skautisId,
+            'ID_Unit' => $unitSkautisId,
             'IsValid' => TRUE
         ]);
 
