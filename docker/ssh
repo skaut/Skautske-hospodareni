@@ -1,2 +1,11 @@
 #!/usr/bin/env bash
-docker exec -u www-data -it hskauting bash
+
+function compat() {
+    if hash winpty 2>/dev/null; then
+        winpty "$@"
+    else
+        $@
+    fi
+}
+
+compat "docker exec -u www-data -it hskauting bash"
