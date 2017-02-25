@@ -37,8 +37,7 @@ class PaymentPresenter extends BasePresenter
     /** @var MailingService */
     private $mailing;
 
-    private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny.';
-    private const SMTP_MESSAGE = 'Nepodařilo se odeslat email (problém s SMTP)';
+    private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
 
     public function __construct(
         \Model\PaymentService $paymentService,
