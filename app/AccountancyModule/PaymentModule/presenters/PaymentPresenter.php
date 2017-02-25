@@ -37,6 +37,9 @@ class PaymentPresenter extends BasePresenter
     /** @var MailingService */
     private $mailing;
 
+    private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny.';
+    private const SMTP_MESSAGE = 'Nepodařilo se odeslat email (problém s SMTP)';
+
     public function __construct(
         \Model\PaymentService $paymentService,
         \Model\BankService $bankService,
@@ -298,19 +301,17 @@ class PaymentPresenter extends BasePresenter
     public function handleSend($pid) : void
     {
         $this->checkEditation();
-        $payment = $this->model->get(array_keys($this->editUnits), $pid);
-        $group = $this->model->getGroup(array_keys($this->readUnits), $payment->groupId);
-        if (!$this->isEditable || !$group || !$this->model->get(array_keys($this->editUnits), $pid)) {
-            $this->flashMessage("Neplatný požadavek na odeslání emailu!", "danger");
-            $this->redirect("this");
+
+        try {
+            $this->mailing->sendEmail($pid);
+            $this->flashMessage('Informační email byl odeslán.');
+        } catch(MailerNotFoundException $e) {
+            $this->flashMessage(self::NO_MAILER_MESSAGE);
+        } catch(SmtpException $e) {
+            $this->smtpError($e);
         }
 
-        if ($this->sendInfoMail($payment, $group)) {
-            $this->flashMessage("Informační email byl odeslán.");
-        } else {
-            $this->flashMessage("Informační email se nepodařilo odeslat!", "danger");
-        }
-        $this->redirect("this");
+        $this->redirect('this');
     }
 
     /**
@@ -324,8 +325,7 @@ class PaymentPresenter extends BasePresenter
         try {
             $sentCount = $this->mailing->sendEmailForGroup($gid);
         } catch(SmtpException $e) {
-            $this->flashMessage("Nepodařilo se připojit k SMTP serveru ({$e->getMessage()})", 'danger');
-            $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
+            $this->smtpError($e);
             $this->redirect('this');
         }
 
@@ -355,9 +355,9 @@ class PaymentPresenter extends BasePresenter
             $this->mailing->sendTestMail($gid, $email);
             $this->flashMessage("Testovací email byl odeslán na $email.");
         } catch(MailerNotFoundException $e) {
-            $this->flashMessage('Nemáte nastavený mail pro odesílání u skupiny.', 'danger');
+            $this->flashMessage(self::NO_MAILER_MESSAGE, 'danger');
         } catch(SmtpException $e) {
-            $this->flashMessage('Testovací email se nepodařilo odeslat!', 'danger');
+            $this->smtpError($e);
         }
 
         $this->redirect("this");
@@ -495,17 +495,6 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("detail", ["id" => $v->oid]);
     }
 
-    private function sendInfoMail($payment, $group) : ?bool
-    {
-        try {
-            return $this->model->sendInfo($this->template, $payment, $group, $this->unitService);
-        } catch (\Nette\Mail\SmtpException $ex) {
-            $this->flashMessage("Nepodařilo se připojit k SMTP serveru (" . $ex->getMessage() . ")", "danger");
-            $this->flashMessage("V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs", "warning");
-            $this->redirect("this");
-        }
-    }
-
     protected function createComponentRepaymentForm($name) : Form
     {
         $form = $this->prepareForm($this, $name);
@@ -628,6 +617,12 @@ class PaymentPresenter extends BasePresenter
         } else {
             $this->redirect('this');
         }
+    }
+
+    private function smtpError(SmtpException $e) : void
+    {
+        $this->flashMessage("Nepodařilo se připojit k SMTP serveru ({$e->getMessage()})", 'danger');
+        $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
     }
 
 }

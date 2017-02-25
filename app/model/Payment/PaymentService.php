@@ -6,7 +6,6 @@ use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
 use Model\Payment\Repositories\IGroupRepository;
-use Nette\Mail\Message;
 use Skautis\Skautis;
 
 /**
@@ -18,17 +17,13 @@ class PaymentService extends BaseService
     /** @var PaymentTable */
     private $table;
 
-    /** @var MailService */
-    protected $mailService;
-
     /** @var IGroupRepository */
     private $groups;
 
-    public function __construct(PaymentTable $table, Skautis $skautIS, MailService $mailService, IGroupRepository $groups)
+    public function __construct(PaymentTable $table, Skautis $skautIS, IGroupRepository $groups)
     {
         parent::__construct($skautIS);
         $this->table = $table;
-        $this->mailService = $mailService;
         $this->groups = $groups;
     }
 
@@ -121,80 +116,6 @@ class PaymentService extends BaseService
     public function summarizeByState($pa_groupId)
     {
         return $this->table->summarizeByState($pa_groupId);
-    }
-
-    /**
-     *
-     * @param \Nette\Application\UI\ITemplate $template
-     * @param type $payment - state=PaymentTable::PAYMENT_STATE_PREPARING, email, unitId, amount, maturity, email_info, name, note, vs, ks
-     * @param \Model\UnitService $us
-     * @return boolean
-     */
-    public function sendInfo(\Nette\Application\UI\ITemplate $template, $payment, $group, UnitService $us = NULL)
-    {
-        if (!in_array($payment->state, $this->getNonFinalStates()) || mb_strlen($payment->email) < 5) {
-            return FALSE;
-        }
-        $oficialUnitId = $us->getOficialUnit($payment->unitId)->ID;
-        $accountRaw = $this->getBankAccount($oficialUnitId);
-        preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $accountRaw, $account);
-
-        $params = [
-            "accountNumber" => $account['number'],
-            "bankCode" => $account['code'],
-            "amount" => $payment->amount,
-            "currency" => "CZK",
-            "date" => $payment->maturity->format("Y-m-d"),
-            "size" => "200",
-        ];
-        if (array_key_exists('prefix', $account) && $account['prefix'] != '') {
-            $params['accountPrefix'] = $account['prefix'];
-        }
-        if ($payment->vs != '') {
-            $params['vs'] = $payment->vs;
-        }
-        if ($payment->ks != '') {
-            $params['ks'] = $payment->ks;
-        }
-        if ($payment->name != '') {
-            $params['message'] = $payment->name;
-        }
-
-        //$base64 = 'data:image/png;base64,' . base64_encode(file_get_contents("http://api.paylibo.com/paylibo/generator/czech/image?" . http_build_query($params)));
-        //$qrcode = '<img alt="QR platba" src="' . $base64 . '"/>';
-
-        $qrUrl = 'http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params);
-        $qrPrefix = $qrFilename = NULL;
-        if (strpos($payment->email_info, "%qrcode%")) {
-            $qrPrefix = WWW_DIR . "/webtemp/";
-            $qrFilename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime(TRUE)) . ".png";
-            \Nette\Utils\Image::fromFile($qrUrl)->save($qrPrefix . $qrFilename);
-            //            dump(is_readable($qrPrefix . $qrFilename));
-            //            die();
-        }
-        $qrcode = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $qrFilename . '"/>';
-        $body = str_replace(
-            ["%account%", "%qrcode%", "%name%", "%groupname%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"],
-            [$accountRaw, $qrcode, $payment->name, $group->label, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note], $payment->email_info
-        );
-
-        $template->setFile(__DIR__ . '/mail.base.latte');
-        $template->body = $body;
-
-        $mail = (new Message())
-            ->addTo($payment->email)
-            ->setSubject('Informace o platbě')
-            ->setHtmlBody($template, $qrPrefix);
-
-        $this->mailService->send($mail, $payment->groupId);
-        if (isset($payment->id)) {
-            $this->table->update($payment->id, ["state" => PaymentTable::PAYMENT_STATE_SEND]);
-        }
-
-        if (is_file($qrPrefix . $qrFilename)) {
-            unlink($qrPrefix . $qrFilename);
-        }
-        return TRUE;
     }
 
     /**
