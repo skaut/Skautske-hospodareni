@@ -2,7 +2,10 @@
 
 namespace Tests\Unit\Mail;
 
+use Dibi\Row;
 use Model\Mail\MailerFactory;
+use Model\Mail\MailerNotFoundException;
+use Model\MailTable;
 use Nette\Mail\IMailer;
 use Nette\Mail\SmtpMailer;
 use Tester\Assert;
@@ -10,39 +13,75 @@ use Tester\TestCase;
 
 require __DIR__.'/../../bootstrap.php';
 
+/**
+ * @testCase
+ */
 class MailerFactoryTest extends TestCase
 {
 
-    private const CONFIG = [
-        'host' => 'smtp.gmail.com',
-        'username' => 'platby@skauting.cz',
-        'password' => 'pass',
-        'secure' => 'ssl',
-    ];
-
-    public function tearDown()
+    public function tearDown() : void
     {
         \Mockery::close();
     }
 
-    private function create(MailerFactory $factory)
+    public function testNoSmtpRaisesException() : void
     {
-        $config = self::CONFIG;
-        return $factory->create($config['host'], $config['username'], $config['password'], $config['secure']);
+        $smtpId = 22;
+        $smtps = \Mockery::mock(MailTable::class);
+        $smtps->shouldReceive('get')
+            ->with($smtpId)
+            ->andReturn(NULL);
+
+        $factory = new MailerFactory(\Mockery::mock(IMailer::class), FALSE, $smtps);
+        Assert::throws(function () use ($factory, $smtpId) {
+            $factory->create($smtpId);
+        }, MailerNotFoundException::class);
     }
 
-    public function testDisabled()
+    public function testNullSmtpIdRaisesException() : void
     {
+        $factory = new MailerFactory(\Mockery::mock(IMailer::class), TRUE, \Mockery::mock(MailTable::class));
+        Assert::throws(function() use($factory) {
+            $factory->create(NULL);
+        }, MailerNotFoundException::class);
+    }
+
+    public function testExistingSmtpInDisabledModeReturnsDebugMailer() : void
+    {
+        $smtpId = 22;
+        $smtps = \Mockery::mock(MailTable::class);
+        $smtps->shouldReceive('get')
+            ->with($smtpId)
+            ->andReturn($this->getRow());
+
         $mailer = \Mockery::mock(IMailer::class);
-        $factory = new MailerFactory($mailer, FALSE);
-        Assert::same($mailer, $this->create($factory));
+        $factory = new MailerFactory($mailer, FALSE, $smtps);
+
+        Assert::same($mailer, $factory->create($smtpId));
     }
 
-    public function testEnabled()
+    public function testExistingSmtpInEnabledModeReturnsSmtpMailer() : void
     {
-        $factory = new MailerFactory(\Mockery::mock(IMailer::class), TRUE);
-        $mailer = $this->create($factory);
-        Assert::type(SmtpMailer::class, $mailer);
+        $smtpId = 22;
+        $smtps = \Mockery::mock(MailTable::class);
+        $smtps->shouldReceive('get')
+            ->with($smtpId)
+            ->andReturn($this->getRow());
+
+        $mailer = \Mockery::mock(IMailer::class);
+        $factory = new MailerFactory($mailer, TRUE, $smtps);
+
+        Assert::type(SmtpMailer::class, $factory->create($smtpId));
+    }
+
+    private function getRow() : Row
+    {
+        return new Row([
+            'host' => 'smtp.gmail.com',
+            'username' => 'platby@skauting.cz',
+            'password' => 'pass',
+            'secure' => 'ssl',
+        ]);
     }
 
 }
