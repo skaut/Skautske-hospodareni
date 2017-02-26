@@ -32,7 +32,7 @@ pro jiný způsob vývoje může být potřeba upravit např. přístupy k DB.
 Stačí tady zkopírovat soubor `config.sample.local.neon` a uložit pod názvem `config.local.neon`.
 
 ### Nastavení hosts
-Skautis při přihlašování přesměrovává na `test-h.skauting.cz`.
+Skautis při přihlašování přesměrovává na `hospodareni.loc`.
 Proto je třeba nastavit si mapování této domény na localhost.
 
 Stačí přidat tento řádek do souboru `/etc/hosts`:
