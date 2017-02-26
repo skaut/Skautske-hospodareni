@@ -6,23 +6,20 @@ nette:
 dibi:
     driver: mysqli
     host: localhost
-    username: DOPLNIT
-    password: DOPLNIT
-    database: DOPLNIT
+    username: root
+    password:
+    database: hskauting
     charset: utf8
     profiler: true
 
 skautis:
-    applicationId : DOPLNIT
-    testMode : true #isTestMode?
-    
+    applicationId: 48104fe2-b447-47f5-9a26-051c710da74e
+    testMode: true
+
 parameters:
-    ssl : FALSE
-    sendEmail : FALSE
+    ssl: FALSE
+    sendEmail: FALSE
 
 services:
-    cacheStorage:
-        #class: Nette\Caching\Storages\DevNullStorage
-
-        # Pro produkci
-        # nette.mailer: Nette\Mail\SendmailMailer
+    # Pro produkci
+    # nette.mailer: Nette\Mail\SendmailMailer
