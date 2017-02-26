@@ -37,7 +37,7 @@ Proto je třeba nastavit si mapování této domény na localhost.
 
 Stačí přidat tento řádek do souboru `/etc/hosts`:
 ```
-127.0.0.1   test-h.skauting.cz
+127.0.0.1   hospodareni.loc
 ```
 
 ### Databáze
