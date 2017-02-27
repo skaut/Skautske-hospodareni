@@ -2,7 +2,6 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
-use App\AccountancyModule\Factories\FormFactory;
 use Nette\Application\UI\Form;
 
 /**
@@ -22,9 +21,6 @@ class PaymentPresenter extends BasePresenter
     protected $editUnits;
     protected $unitService;
 
-    /** @var FormFactory */
-    private $formFactory;
-
     /** @var int */
     private $id;
 
@@ -34,13 +30,11 @@ class PaymentPresenter extends BasePresenter
     public function __construct(
         \Model\PaymentService $paymentService,
         \Model\BankService $bankService,
-        \Model\UnitService $unitService,
-        FormFactory $formFactory)
+        \Model\UnitService $unitService)
     {
         parent::__construct($paymentService);
         $this->bank = $bankService;
         $this->unitService = $unitService;
-        $this->formFactory = $formFactory;
     }
 
     protected function startup() : void

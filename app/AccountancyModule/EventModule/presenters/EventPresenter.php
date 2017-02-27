@@ -5,10 +5,12 @@ namespace App\AccountancyModule\EventModule;
 use App\AccountancyModule\EventModule\Components\Functions;
 use App\AccountancyModule\EventModule\Factories\IFunctionsFactory;
 use Model\Services\PdfRenderer;
+use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Model\MemberService;
 use Model\ExportService;
+use Nextras\Forms\Controls\DatePicker;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -169,8 +171,11 @@ class EventPresenter extends BasePresenter
         $form = $this->prepareForm($this, $name);
         $form->addProtection();
         $form->addText("name", "Název akce");
-        $form->addDatePicker("start", "Od")->addRule(Form::FILLED, "Musíte zadat datum začátku akce");
-        $form->addDatePicker("end", "Do")->addRule(Form::FILLED, "Musíte zadat datum konce akce");
+        $form->addDatePicker("start", "Od")
+            ->setRequired('Musíte zadat datum začátku akce');
+        $form->addDatePicker("end", "Do")
+            ->setRequired('Musíte zadat datum konce akce')
+            ->addRule([\MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
         $form->addText("location", "Místo");
         $form->addSelect("type", "Typ (+)", $this->eventService->event->getTypes());
         $form->addSelect("scope", "Rozsah (+)", $this->eventService->event->getScopes());

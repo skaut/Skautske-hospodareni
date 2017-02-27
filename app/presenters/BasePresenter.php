@@ -2,11 +2,12 @@
 
 namespace App;
 
-use Nette,
-    WebLoader,
-    Skautis\Wsdl\AuthenticationException,
-    Nette\Forms\Container;
-use Nette\Application\UI\Form;
+use App\AccountancyModule\Factories\FormFactory;
+use App\Forms\BaseForm;
+use Nette;
+use Nette\Application\UI\Control;
+use WebLoader;
+use Skautis\Wsdl\AuthenticationException;
 use WebLoader\Nette\CssLoader;
 use WebLoader\Nette\JavaScriptLoader;
 
@@ -25,6 +26,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
      */
     protected $unitService;
 
+    /** @var FormFactory */
+    protected $formFactory;
+
     public function injectUserService(\Model\UserService $u) : void
     {
         $this->userService = $u;
@@ -33,6 +37,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     public function injectUnitService(\Model\UnitService $u) : void
     {
         $this->unitService = $u;
+    }
+
+    public function injectFormFactory(FormFactory $formFactory)
+    {
+        $this->formFactory = $formFactory;
     }
 
     protected function startup() : void
@@ -46,13 +55,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         if ($this->user->isLoggedIn() && $backlink !== NULL) {
             $this->restoreRequest($backlink);
         }
-
-        Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
-            return $container[$name] = new \Nextras\Forms\Controls\DatePicker($label);
-        });
-
-        \DependentSelectBox\DependentSelectBox::register(); // First parameter of this method denotes name of method to add selectbox into form. Default name is addDependentSelectBox, but short name like addDSelect can be used.
-        \DependentSelectBox\JsonDependentSelectBox::register('addJSelect');
 
         try {
             if ($this->user->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
@@ -94,11 +96,10 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->redirect("this");
     }
 
-    protected function prepareForm($parent = NULL, $name = NULL) : Form
+    /* @deprecated Use $this->formFactory directly */
+    protected function prepareForm(Control $parent = NULL, string $name = NULL) : BaseForm
     {
-        $form = new Form($parent, $name);
-        $form->setRenderer(new \Nextras\Forms\Rendering\Bs3FormRenderer());
-        return $form;
+        return $this->formFactory->create();
     }
 
     protected function createComponentCss() : CssLoader

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Forms\BaseForm;
 use Nette\Application\UI\Form;
 
 /**
@@ -84,9 +85,9 @@ class OfflinePresenter extends BasePresenter
      * @param string $name
      * @return Form
      */
-    protected function createComponentFormOut($name) : Form
+    protected function createComponentFormOut($name) : BaseForm
     {
-        $form = new Form(NULL, $name);
+        $form = new BaseForm(NULL, $name);
         $form->getElementPrototype()->class[] = "offline";
         $form->addDatePicker("date", "Ze dne:", 15)
             ->addRule(Form::FILLED, 'Zadejte datum')
@@ -118,9 +119,9 @@ class OfflinePresenter extends BasePresenter
         return $form;
     }
 
-    protected function createComponentFormIn($name) : Form
+    protected function createComponentFormIn($name) : BaseForm
     {
-        $form = new Form(NULL, $name);
+        $form = new BaseForm(NULL, $name);
         $form->getElementPrototype()->class[] = "offline";
         $form->addDatePicker("date", "Ze dne:", 15)
             ->addRule(Form::FILLED, 'Zadejte datum')
