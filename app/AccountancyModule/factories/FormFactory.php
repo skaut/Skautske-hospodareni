@@ -2,18 +2,15 @@
 
 namespace App\AccountancyModule\Factories;
 
+use App\Forms\BaseForm;
 use App\FormRenderer;
-use Nette\Application\UI\Form;
 
 class FormFactory
 {
 
-    /**
-     * @return Form
-     */
-    public function create($inline = FALSE) : Form
+    public function create($inline = FALSE) : BaseForm
     {
-        $form = new Form();
+        $form = new BaseForm();
         $form->setRenderer(new FormRenderer($inline));
 
         return $form;
