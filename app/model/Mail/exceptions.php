@@ -2,4 +2,6 @@
 
 namespace Model\Mail;
 
-class MailerNotFoundException extends \Exception {}
+class MailerNotFoundException extends \Exception
+{
+}
