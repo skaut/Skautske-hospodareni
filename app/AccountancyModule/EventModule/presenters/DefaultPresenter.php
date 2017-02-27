@@ -209,7 +209,8 @@ class DefaultPresenter extends BasePresenter
             ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
         $form->addDatePicker("end", "Do*")
             ->addRule(Form::FILLED, "Musíte vyplnit konec akce")
-            ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
+            ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.')
+            ->addRule([\MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
         $form->addText("location", "Místo");
         $form->addSelect("orgID", "Pořádající jednotka", $units);
         $form->addSelect("scope", "Rozsah (+)", $scopes)
