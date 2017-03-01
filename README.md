@@ -18,14 +18,14 @@ Pro lokální vývoj je připraven Docker container a konfigurace pro **docker-c
 docker-compose up -d # Spustí container v detached modu
 ```
 
-V kontejneru je možné zpustit bash pomocným skriptem:
+V kontejneru je možné spustit bash pomocným skriptem:
 ```bash
 docker/ssh
 ```
 
 
 ### config.neon
-V repozitáři je připraven vzorový konfigurační soubor - `app/config/config.samble.local.neon`,
+V repozitáři je připraven vzorový konfigurační soubor - `app/config/config.sample.local.neon`,
 který obsahuje nastavení, které lze okamžitě začít používat s Docker containerem,
 pro jiný způsob vývoje může být potřeba upravit např. přístupy k DB.
 
@@ -42,7 +42,7 @@ Stačí přidat tento řádek do souboru `/etc/hosts`:
 
 ### Databáze
 Při prvním spuštění je třeba vytvořit schéma . Pro práci s databází lze využít přibalený adminer
-na adrese `http://test-h.skauting.cz/adminer.php`. Při používání Dockeru se lze přihlásit
+na adrese `http://hospodareni.loc/adminer.php`. Při používání Dockeru se lze přihlásit
 jako uživatel **root** bez hesla.
 
 **DB dump:** https://github.com/skaut/Skautske-hospodareni/files/799142/db.sql.txt
