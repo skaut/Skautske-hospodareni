@@ -24,7 +24,7 @@
         "dibi/dibi": "3.0.*",
         "srigi/nette-visualpaginator": "1.0.*",
         "phpoffice/phpexcel": "1.8.*",
-        "mpdf/mpdf": "6.1.*",
+        "mpdf/mpdf": "dev-development#042f2d2",
         "nextras/forms": "1.6.*",
         "foowie/dependentselectbox": "dev-master",
         "heureka/bank-account-validator": "1.1.*",
