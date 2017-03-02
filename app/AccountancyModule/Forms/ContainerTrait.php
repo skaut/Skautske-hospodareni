@@ -23,21 +23,21 @@ trait ContainerTrait
 
     public function addJSelect(string $name, string $label, $parents, $dataCallback) : JsonDependentSelectBox
     {
-    	$this->checkPresenter();
+        $this->checkPresenter();
         return $this[$name] = new JsonDependentSelectBox($label, $parents, $dataCallback);
     }
 
     public function addDependentSelectBox(string $name, string $label, $parents, $dataCallback) : DependentSelectBox
     {
-    	$this->checkPresenter();
+        $this->checkPresenter();
         return $this[$name] = new DependentSelectBox($label, $parents, $dataCallback);
     }
 
     private function checkPresenter() : void
-	{
-		/* @var $form \Nette\Application\UI\Form */
-		$form = $this->getForm(TRUE);
-		$form->getPresenter(TRUE);
-	}
+    {
+        /* @var $form \Nette\Application\UI\Form */
+        $form = $this->getForm(TRUE);
+        $form->getPresenter(TRUE);
+    }
 
 }
