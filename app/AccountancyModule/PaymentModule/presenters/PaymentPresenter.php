@@ -2,7 +2,10 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use Model\Mail\MailerNotFoundException;
+use Model\Payment\MailingService;
 use Nette\Application\UI\Form;
+use Nette\Mail\SmtpException;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -27,14 +30,22 @@ class PaymentPresenter extends BasePresenter
     /** @var object */
     private $bankInfo;
 
+    /** @var MailingService */
+    private $mailing;
+
+    private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
+
     public function __construct(
         \Model\PaymentService $paymentService,
         \Model\BankService $bankService,
-        \Model\UnitService $unitService)
+        \Model\UnitService $unitService,
+        MailingService $mailing
+    )
     {
         parent::__construct($paymentService);
         $this->bank = $bankService;
         $this->unitService = $unitService;
+        $this->mailing = $mailing;
     }
 
     protected function startup() : void
@@ -272,21 +283,28 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
+    private function checkEditation() : void
+    {
+        if(!$this->isEditable || !isset($this->readUnits[$this->aid])) {
+            $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou!', 'danger');
+            $this->redirect('this');
+        }
+    }
+
     public function handleSend($pid) : void
     {
-        $payment = $this->model->get(array_keys($this->editUnits), $pid);
-        $group = $this->model->getGroup(array_keys($this->readUnits), $payment->groupId);
-        if (!$this->isEditable || !$group || !$this->model->get(array_keys($this->editUnits), $pid)) {
-            $this->flashMessage("Neplatný požadavek na odeslání emailu!", "danger");
-            $this->redirect("this");
+        $this->checkEditation();
+
+        try {
+            $this->mailing->sendEmail($pid);
+            $this->flashMessage('Informační email byl odeslán.');
+        } catch(MailerNotFoundException $e) {
+            $this->flashMessage(self::NO_MAILER_MESSAGE);
+        } catch(SmtpException $e) {
+            $this->smtpError($e);
         }
 
-        if ($this->sendInfoMail($payment, $group)) {
-            $this->flashMessage("Informační email byl odeslán.");
-        } else {
-            $this->flashMessage("Informační email se nepodařilo odeslat!", "danger");
-        }
-        $this->redirect("this");
+        $this->redirect('this');
     }
 
     /**
@@ -295,25 +313,21 @@ class PaymentPresenter extends BasePresenter
      */
     public function handleSendGroup($gid) : void
     {
-        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
-        if (!$this->isEditable || !$group) {
-            $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
-            $this->redirect("this");
-        }
-        $payments = $this->model->getAll($gid);
-        $cnt = 0;
-        $unitIds = array_keys($this->editUnits);
-        foreach ($payments as $p) {
-            $payment = $this->model->get($unitIds, $p->id);
-            $cnt += $this->sendInfoMail($payment, $group);
+        $this->checkEditation();
+
+        try {
+            $sentCount = $this->mailing->sendEmailForGroup($gid);
+        } catch(SmtpException $e) {
+            $this->smtpError($e);
+            $this->redirect('this');
         }
 
-        if ($cnt > 0) {
-            $this->flashMessage("Informační emaily($cnt) byly odeslány.");
+        if ($sentCount > 0) {
+            $this->flashMessage("Informační emaily($sentCount) byly odeslány.");
         } else {
-            $this->flashMessage("Nebyl odeslán žádný informační email!", "danger");
+            $this->flashMessage('Nebyl odeslán žádný informační email!', 'danger');
         }
-        $this->redirect("this");
+        $this->redirect('this');
     }
 
     public function handleSendTest($gid) : void
@@ -327,24 +341,16 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!", "danger");
             $this->redirect("this");
         }
-        $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
-        $payment = \Nette\Utils\ArrayHash::from([
-            "state" => \Model\PaymentTable::PAYMENT_STATE_PREPARING,
-            "name" => "Testovací účel",
-            "email" => $personalDetail->Email,
-            "unitId" => $group->unitId,
-            "amount" => $group->amount != 0 ? $group->amount : rand(50, 1000),
-            "maturity" => $group->maturity instanceof \DateTime ? $group->maturity : new \DateTime(date("Y-m-d", strtotime("+2 week"))),
-            "ks" => $group->ks,
-            "vs" => rand(1000, 100000),
-            "email_info" => $group->email_info,
-            "note" => "obsah poznámky",
-            "groupId" => $gid,
-        ]);
-        if ($this->sendInfoMail($payment, $group)) {
-            $this->flashMessage("Testovací email byl odeslán na " . $personalDetail->Email . " .");
-        } else {
-            $this->flashMessage("Testovací email se nepodařilo odeslat!", "danger");
+
+        $email = $personalDetail->Email;
+
+        try {
+            $this->mailing->sendTestMail($gid, $email);
+            $this->flashMessage("Testovací email byl odeslán na $email.");
+        } catch(MailerNotFoundException $e) {
+            $this->flashMessage(self::NO_MAILER_MESSAGE, 'danger');
+        } catch(SmtpException $e) {
+            $this->smtpError($e);
         }
 
         $this->redirect("this");
@@ -482,17 +488,6 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("detail", ["id" => $v->oid]);
     }
 
-    private function sendInfoMail($payment, $group) : ?bool
-    {
-        try {
-            return $this->model->sendInfo($this->template, $payment, $group, $this->unitService);
-        } catch (\Nette\Mail\SmtpException $ex) {
-            $this->flashMessage("Nepodařilo se připojit k SMTP serveru (" . $ex->getMessage() . ")", "danger");
-            $this->flashMessage("V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs", "warning");
-            $this->redirect("this");
-        }
-    }
-
     protected function createComponentRepaymentForm($name) : Form
     {
         $form = $this->prepareForm($this, $name);
@@ -615,6 +610,12 @@ class PaymentPresenter extends BasePresenter
         } else {
             $this->redirect('this');
         }
+    }
+
+    private function smtpError(SmtpException $e) : void
+    {
+        $this->flashMessage("Nepodařilo se připojit k SMTP serveru ({$e->getMessage()})", 'danger');
+        $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
     }
 
 }

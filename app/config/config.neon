@@ -30,14 +30,14 @@ tracy:
 extensions:
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
-    
+
 
 services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory(%ssl%)
     - \Model\PaymentService
     - Model\MailService
-
+    - Model\Payment\MailingService
     - Model\Bank\Http\Curl
     - Model\Bank\Fio\FioClient
     - Model\BankService
@@ -62,16 +62,20 @@ services:
     - \Model\BudgetService
 
     # Factories
+    - App\AccountancyModule\Factories\FormFactory
     - Model\IChitServiceFactory
     - Model\IEventServiceFactory
     - Model\IParticipantServiceFactory
 
+    # Model
+
     # Repositories
     - Model\Travel\Repositories\VehicleRepository
+    - Model\Payment\Repositories\BankAccountRepository
     - Model\Payment\Repositories\GroupRepository
 
-
-    - App\AccountancyModule\Factories\FormFactory
+    # Factories
+    - Model\Services\TemplateFactory
 
     # Tables
     - Model\BankTable
@@ -87,6 +91,7 @@ services:
     - Model\TravelTable
 
     - Model\Services\PdfRenderer
+    - Model\Payment\QR\QRGenerator
     - Model\Skautis\Mapper
 
     nette.mailer:

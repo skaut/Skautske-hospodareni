@@ -7,6 +7,6 @@ use Nette\Mail\IMailer;
 interface IMailerFactory
 {
 
-    public function create(string $host, string $username, string $password, string $secure): IMailer;
+    public function create(?int $smtpId): IMailer;
 
 }

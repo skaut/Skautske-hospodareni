@@ -2,32 +2,43 @@
 
 namespace Model;
 
+use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
+use Model\Payment\GroupNotFoundException;
+use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
-use Nette\Mail\Message;
+use Nette\Security\User;
 use Skautis\Skautis;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class PaymentService extends BaseService
+class PaymentService
 {
 
     /** @var PaymentTable */
     private $table;
 
-    /** @var MailService */
-    protected $mailService;
+    /** @var Skautis */
+    private $skautis;
 
     /** @var IGroupRepository */
     private $groups;
 
-    public function __construct(PaymentTable $table, Skautis $skautIS, MailService $mailService, IGroupRepository $groups)
+    /** @var IBankAccountRepository */
+    private $bankAccounts;
+
+    public function __construct(
+        PaymentTable $table,
+        Skautis $skautis,
+        IGroupRepository $groups,
+        IBankAccountRepository $bankAccounts
+    )
     {
-        parent::__construct($skautIS);
         $this->table = $table;
-        $this->mailService = $mailService;
+        $this->skautis = $skautis;
         $this->groups = $groups;
+        $this->bankAccounts = $bankAccounts;
     }
 
     public function get($unitId, $paymentId)
@@ -122,97 +133,19 @@ class PaymentService extends BaseService
     }
 
     /**
-     *
-     * @param \Nette\Application\UI\ITemplate $template
-     * @param type $payment - state=PaymentTable::PAYMENT_STATE_PREPARING, email, unitId, amount, maturity, email_info, name, note, vs, ks
-     * @param \Model\UnitService $us
-     * @return boolean
-     */
-    public function sendInfo(\Nette\Application\UI\ITemplate $template, $payment, $group, UnitService $us = NULL)
-    {
-        if (!in_array($payment->state, $this->getNonFinalStates()) || mb_strlen($payment->email) < 5) {
-            return FALSE;
-        }
-        $oficialUnitId = $us->getOficialUnit($payment->unitId)->ID;
-        $accountRaw = $this->getBankAccount($oficialUnitId);
-        preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $accountRaw, $account);
-
-        $params = [
-            "accountNumber" => $account['number'],
-            "bankCode" => $account['code'],
-            "amount" => $payment->amount,
-            "currency" => "CZK",
-            "date" => $payment->maturity->format("Y-m-d"),
-            "size" => "200",
-        ];
-        if (array_key_exists('prefix', $account) && $account['prefix'] != '') {
-            $params['accountPrefix'] = $account['prefix'];
-        }
-        if ($payment->vs != '') {
-            $params['vs'] = $payment->vs;
-        }
-        if ($payment->ks != '') {
-            $params['ks'] = $payment->ks;
-        }
-        if ($payment->name != '') {
-            $params['message'] = $payment->name;
-        }
-
-        //$base64 = 'data:image/png;base64,' . base64_encode(file_get_contents("http://api.paylibo.com/paylibo/generator/czech/image?" . http_build_query($params)));
-        //$qrcode = '<img alt="QR platba" src="' . $base64 . '"/>';
-
-        $qrUrl = 'http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params);
-        $qrPrefix = $qrFilename = NULL;
-        if (strpos($payment->email_info, "%qrcode%")) {
-            $qrPrefix = WWW_DIR . "/webtemp/";
-            $qrFilename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime(TRUE)) . ".png";
-            \Nette\Utils\Image::fromFile($qrUrl)->save($qrPrefix . $qrFilename);
-            //            dump(is_readable($qrPrefix . $qrFilename));
-            //            die();
-        }
-        $qrcode = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $qrFilename . '"/>';
-        $body = str_replace(
-            ["%account%", "%qrcode%", "%name%", "%groupname%", "%amount%", "%maturity%", "%vs%", "%ks%", "%note%"],
-            [$accountRaw, $qrcode, $payment->name, $group->label, $payment->amount, $payment->maturity->format("j.n.Y"), $payment->vs, $payment->ks, $payment->note], $payment->email_info
-        );
-
-        $template->setFile(__DIR__ . '/mail.base.latte');
-        $template->body = $body;
-
-        $mail = (new Message())
-            ->addTo($payment->email)
-            ->setSubject('Informace o platbě')
-            ->setHtmlBody($template, $qrPrefix);
-
-        $this->mailService->send($mail, $payment->groupId);
-        if (isset($payment->id)) {
-            $this->table->update($payment->id, ["state" => PaymentTable::PAYMENT_STATE_SEND]);
-        }
-
-        if (is_file($qrPrefix . $qrFilename)) {
-            unlink($qrPrefix . $qrFilename);
-        }
-        return TRUE;
-    }
-
-    /**
      * číslo účtu jednotky ze skautisu
      * @param int $unitId
-     * @return string|FALSE
+     * @return string|NULL
      */
-    public function getBankAccount($unitId)
+    public function getBankAccount(int $unitId) : ?string
     {
-        $accounts = $this->skautis->org->AccountAll(["ID_Unit" => $unitId, "IsValid" => TRUE]);
-        if (count($accounts) == 1) {
-            return $accounts[0]->DisplayName;
-        } else {
-            foreach ($accounts as $a) {//vyfiltrování hlavního emailu
-                if ($a->IsMain) {
-                    return $a->DisplayName;
-                }
-            }
+        $accounts = $this->bankAccounts->findByUnit($unitId);
+
+        if(empty($accounts)) {
+            return NULL;
         }
-        return FALSE;
+
+        return $accounts[0]->getNumber();
     }
 
     /**
@@ -251,9 +184,20 @@ class PaymentService extends BaseService
      * @param int $ks
      * @param float $amount
      * @param string $email_info
+     * @param int|NULL $smtpId
      * @return int
      */
-    public function createGroup(int $unitId, ?string $oType, ?int $sisId, string $label, ?\DateTime $maturity, ?int $ks, ?float $amount, string $email_info): int
+    public function createGroup(
+        int $unitId,
+        ?string $oType,
+        ?int $sisId,
+        string $label,
+        ?\DateTime $maturity,
+        ?int $ks,
+        ?float $amount,
+        string $email_info,
+        ?int $smtpId
+    ): int
     {
         $group = new Group(
             $oType,
@@ -264,9 +208,36 @@ class PaymentService extends BaseService
             $maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
             $ks,
             new \DateTimeImmutable(),
-            $email_info);
+            $email_info,
+            $smtpId);
+
         $this->groups->save($group);
         return $group->getId();
+    }
+
+    public function updateGroupV2(
+        int $id,
+        string $name,
+        ?float $defaultAmount,
+        ?\DateTimeImmutable $dueDate,
+        ?int $constantSymbol,
+        string $emailTemplate,
+        ?int $smtpId)
+    {
+        $group = $this->groups->find($id);
+
+        $group->update($name, $defaultAmount, $dueDate, $constantSymbol, $emailTemplate, $smtpId);
+
+        $this->groups->save($group);
+    }
+
+    public function getGroupV2($id) : ?DTO\Group
+    {
+        try {
+            $group = $this->groups->find($id);
+            return DTO\GroupFactory::create($group);
+        } catch(GroupNotFoundException $e) {}
+        return NULL;
     }
 
     /**

@@ -78,32 +78,4 @@ abstract class BaseService extends Nette\Object
         return FALSE;
     }
 
-    /**
-     * vrací seznam jednotek, ke kterým má uživatel právo na čtení
-     * @param User $user
-     * @return array
-     */
-    public function getReadUnits(User $user): array
-    {
-        $res = [];
-        foreach ($user->getIdentity()->access[self::ACCESS_READ] as $uId => $u) {
-            $res[$uId] = $u->DisplayName;
-        }
-        return $res;
-    }
-
-    /**
-     * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
-     * @param User $user
-     * @return array
-     */
-    public function getEditUnits(User $user): array
-    {
-        $res = [];
-        foreach ($user->getIdentity()->access[self::ACCESS_EDIT] as $uId => $u) {
-            $res[$uId] = $u->DisplayName;
-        }
-        return $res;
-    }
-
 }
