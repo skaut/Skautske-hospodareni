@@ -15,35 +15,10 @@ class MailService
     /** @var MailTable */
     private $table;
 
-    /** @var IMailerFactory */
-    private $mailerFactory;
-
-    /** @var IMailer */
-    private $defaultMailer;
-
-    const EMAIL_SENDER = "platby@skauting.cz";
-
-    public function __construct(MailTable $table, IMailerFactory $mailerFactory, IMailer $defaultMailer)
+    public function __construct(MailTable $table)
     {
         $this->table = $table;
-        $this->mailerFactory = $mailerFactory;
-        $this->defaultMailer = $defaultMailer;
     }
-
-    private function getMailer($groupId): IMailer
-    {
-        if ($groupId && $data = $this->getSmtpByGroup($groupId)) {
-            return $this->mailerFactory->create(
-                $data['host'],
-                $data['username'],
-                $data['password'],
-                $data['secure']
-            );
-        }
-        return $this->defaultMailer;
-    }
-
-    //SMTP
 
     public function get($id)
     {
@@ -78,29 +53,6 @@ class MailService
     public function updateSmtp($unitId, $id, $data)
     {
         return $this->table->updateSmtp($unitId, $id, $data);
-    }
-
-    //SMTP GROUP
-
-    public function addSmtpGroup($groupId, $smtpId)
-    {
-        return $this->table->addSmtpGroup($groupId, $smtpId);
-    }
-
-    public function removeSmtpGroup($groupId)
-    {
-        return $this->table->removeSmtpGroup($groupId);
-    }
-
-    /**
-     * Sends message via email server specified in payment method group.
-     * @param Message $mail
-     * @param int $groupId
-     */
-    public function send(Message $mail, int $groupId): void
-    {
-        $mail->setFrom(self::EMAIL_SENDER);
-        $this->getMailer($groupId)->send($mail);
     }
 
 }

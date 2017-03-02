@@ -14,6 +14,8 @@ class Mapper
     /** @var ObjectTable */
     private $table;
 
+    public const UNIT = 'Unit';
+
     /**
      * UnitMapper constructor.
      * @param ObjectTable $table
@@ -37,7 +39,7 @@ class Mapper
             $skautisId = $this->table->getSkautisId($localId, $type);
             $this->cache($skautisId, $localId, $type);
         }
-        $this->skautisIds[$key];
+        return $this->skautisIds[$key];
     }
 
     /**
