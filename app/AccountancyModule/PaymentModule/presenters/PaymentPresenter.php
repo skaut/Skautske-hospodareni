@@ -299,7 +299,7 @@ class PaymentPresenter extends BasePresenter
             $this->mailing->sendEmail($pid);
             $this->flashMessage('Informační email byl odeslán.');
         } catch(MailerNotFoundException $e) {
-            $this->flashMessage(self::NO_MAILER_MESSAGE);
+            $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch(SmtpException $e) {
             $this->smtpError($e);
         }
@@ -348,7 +348,7 @@ class PaymentPresenter extends BasePresenter
             $this->mailing->sendTestMail($gid, $email);
             $this->flashMessage("Testovací email byl odeslán na $email.");
         } catch(MailerNotFoundException $e) {
-            $this->flashMessage(self::NO_MAILER_MESSAGE, 'danger');
+            $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch(SmtpException $e) {
             $this->smtpError($e);
         }
