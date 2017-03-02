@@ -1,9 +1,14 @@
 <?php
 
 use Nette\Application\UI\Form;
+use App\Forms\BaseForm;
+use App\AccountancyModule\Factories\FormFactory;
 use Nette\Forms\Controls\SubmitButton;
 use Model\Services\PdfRenderer;
 
+/**
+ * @property-read FormFactory $formFactory
+ */
 trait ParticipantTrait
 {
     /**
@@ -202,9 +207,9 @@ trait ParticipantTrait
         $this->redirect("this");
     }
 
-    public function createComponentFormMassParticipants($name)
+    public function createComponentFormMassParticipants() : BaseForm
     {
-        $form = $this->prepareForm($this, $name);
+        $form = $this->formFactory->create();
         $form->addProtection();
 
         $editCon = $form->addContainer("edit");
@@ -223,6 +228,8 @@ trait ParticipantTrait
 
         $form->addSubmit('send', 'Odebrat vybrané')
             ->onClick[] = [$this, 'massRemoveSubmitted'];
+
+        return $form;
     }
 
     public function massEditSubmitted(SubmitButton $button) : void

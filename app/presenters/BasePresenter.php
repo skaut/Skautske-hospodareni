@@ -99,7 +99,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /* @deprecated Use $this->formFactory directly */
     protected function prepareForm(Control $parent = NULL, string $name = NULL) : BaseForm
     {
-        return $this->formFactory->create();
+        $form = $this->formFactory->create();
+        $this->addComponent($form, $name);
+        return $form;
     }
 
     protected function createComponentCss() : CssLoader
