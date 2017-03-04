@@ -45,7 +45,10 @@ Při prvním spuštění je třeba vytvořit schéma . Pro práci s databází l
 na adrese `http://hospodareni.loc/adminer.php`. Při používání Dockeru se lze přihlásit
 jako uživatel **root** bez hesla.
 
-**DB dump:** https://github.com/skaut/Skautske-hospodareni/files/799142/db.sql.txt
+Změny v databázi jsou verzované, stačí tedy spustit příkaz:
+```bash
+php www/index.php migrations:migrate
+```
 
 ## Testy
 Snažíme se psát testy (i když jich zatím moc není).
