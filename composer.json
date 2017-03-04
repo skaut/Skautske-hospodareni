@@ -28,7 +28,9 @@
         "nextras/forms": "1.6.*",
         "foowie/dependentselectbox": "dev-master",
         "heureka/bank-account-validator": "1.1.*",
-        "nextras/mail-panel": "^2.3"
+        "nextras/mail-panel": "^2.3",
+        "zenify/doctrine-migrations": "^3.0",
+        "kdyby/console": "^2.6"
     },
     "require-dev": {
         "nette/tester": "dev-master",

@@ -29,12 +29,21 @@ tracy:
     bar:
         - Nextras\MailPanel\MailPanel(%tempDir%/mail-panel-latte)
 
+console:
+    url: https://h.skauting.cz
+
 extensions:
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
-
+    - Arachne\ContainerAdapter\DI\ContainerAdapterExtension
+    - Arachne\EventDispatcher\DI\EventDispatcherExtension
+    migrations: Zenify\DoctrineMigrations\DI\MigrationsExtension
+    console: Kdyby\Console\DI\ConsoleExtension
 
 services:
+    - class: Doctrine\DBAL\Connection
+      factory: Model\Infrastructure\DoctrineConnectionFactory::create
+
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory(%ssl%)
     - \Model\PaymentService
