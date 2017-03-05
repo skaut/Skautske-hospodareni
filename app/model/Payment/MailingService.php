@@ -124,7 +124,7 @@ class MailingService
             DateTimeImmutable::createFromMutable($paymentRow->maturity),
             $paymentRow->vs,
             $paymentRow->ks,
-            $paymentRow->note
+            (string)$paymentRow->note
         );
         $this->send($group, $payment, $bankAccount);
 
