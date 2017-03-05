@@ -134,44 +134,6 @@ class MailingService
 
     }
 
-    /**
-     * @TODO replace with class (QRGenerator etc.)
-     * @param string|NULL $bankAccount
-     * @param Row $payment
-     * @return string
-     */
-    private function generateQRFile(?string $bankAccount, Payment $payment) : string
-    {
-        preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $bankAccount, $account);
-
-        $params = [
-            "accountNumber" => $account['number'],
-            "bankCode" => $account['code'],
-            "amount" => $payment->getAmount(),
-            "currency" => "CZK",
-            "date" => $payment->getDueDate()->format("Y-m-d"),
-            "size" => "200",
-        ];
-        if (array_key_exists('prefix', $account) && $account['prefix'] != '') {
-            $params['accountPrefix'] = $account['prefix'];
-        }
-        if ($payment->getVariableSymbol() != '') {
-            $params['vs'] = $payment->getVariableSymbol();
-        }
-        if ($payment->getConstantSymbol() != '') {
-            $params['ks'] = $payment->getConstantSymbol();
-        }
-        if ($payment->getName() != '') {
-            $params['message'] = $payment->getName();
-        }
-
-        $url = 'http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params);
-        $filename = "qr_" . date("y_m_d_H_i_s_") . (rand(10, 20) * microtime(TRUE)) . ".png";
-        Image::fromFile($url)->save(self::QR_LOCATION . $filename);
-
-        return  $filename;
-    }
-
     private function send(Group $group, Payment $payment, ?string $bankAccount) : void
     {
         $email = $payment->getEmail();
