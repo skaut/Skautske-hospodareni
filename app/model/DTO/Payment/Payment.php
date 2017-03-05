@@ -44,8 +44,8 @@ class Payment
         ?string $email,
         DateTimeImmutable $dueDate,
         ?int $variableSymbol,
-        $constantSymbol,
-        $note
+        ?int $constantSymbol,
+        string $note
     )
     {
         $this->name = $name;
