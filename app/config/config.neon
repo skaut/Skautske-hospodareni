@@ -19,7 +19,9 @@ application:
     mapping:
         *: App\*Module\*Presenter
     debugger:
-        email: sinacek@gmail.com
+        email:
+            - sinacek@gmail.com
+            - frantisekmasa1@gmail.com
         strictMode: TRUE
         maxDepth: 6
         maxLen: 500
