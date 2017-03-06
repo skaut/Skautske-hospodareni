@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: fmasa
- * Date: 22.2.17
- * Time: 0:23
- */
 
 namespace Model\Payment;
 
@@ -15,21 +9,23 @@ class BankAccount
     /** @var string */
     private $number;
 
-    /**
-     * BankAccount constructor.
-     * @param string $number
-     */
-    public function __construct(string $number)
+    /** @var bool */
+    private $main;
+
+    public function __construct(string $number, bool $main)
     {
         $this->number = $number;
+        $this->main = $main;
     }
 
-    /**
-     * @return string
-     */
     public function getNumber(): string
     {
         return $this->number;
+    }
+
+    public function isMain(): bool
+    {
+        return $this->main;
     }
 
 }
