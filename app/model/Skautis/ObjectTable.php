@@ -38,11 +38,13 @@ class ObjectTable
      */
     public function getLocalId($skautisEventId, $type): ?int
     {
-        return $this->connection->select('id')
+        $id = $this->connection->select('id')
             ->from(self::TABLE)
             ->where('skautisId = %i', $skautisEventId)
             ->where('type = %s', $type)
             ->fetchSingle();
+
+        return $id !== FALSE ? $id : NULL;
     }
 
     public function getSkautisId(int $localId, string $type): ?int
