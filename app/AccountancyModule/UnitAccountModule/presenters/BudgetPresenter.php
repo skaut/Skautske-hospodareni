@@ -22,14 +22,14 @@ class BudgetPresenter extends BasePresenter
     public function renderDefault($year = NULL) : void
     {
         $this->template->categories = $this->budgetService->getCategories($this->aid);
-        $this->template->categoriesSummary = $this->context->getService("unitAccountService")->chits->getBudgetCategoriesSummary($this->budgetService->getCategoriesLeaf($this->aid));
+        $this->template->categoriesSummary = $this->context->getService("unitAccountService")->chits->getBudgetCategoriesSummary($this->budgetService->getCategoriesLeaf((int)$this->aid));
         $this->template->sum = $this->template->sumReality = 0; //je potreba kvuli sablone, kde se pouzije jako globalni promena
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
 
     public function getParentCategories($form, $dependentSelectBoxName) : array
     {
-        return ["0" => "Žádná"] + $this->budgetService->getCategoriesRoot($this->aid, $form["type"]->getValue());
+        return ["0" => "Žádná"] + $this->budgetService->getCategoriesRoot((int)$this->aid, $form["type"]->getValue());
     }
 
     protected function createComponentAddCategoryForm($name) : Form

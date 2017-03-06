@@ -11,9 +11,7 @@ use Skautis\Skautis;
 class BudgetService extends BaseService
 {
 
-    /**
-     * @var Mapper
-     */
+    /** @var Mapper */
     private $skautisMapper;
 
     /** @var BudgetTable */
@@ -28,9 +26,11 @@ class BudgetService extends BaseService
 
     public function getCategories($oid)
     {
+        $localId = $this->getLocalId($oid, self::TYPE_UNIT);
         return [
-            "in" => $this->getCategoriesAll($this->getLocalId($oid, self::TYPE_UNIT), "in"),
-            "out" => $this->getCategoriesAll($this->getLocalId($oid, self::TYPE_UNIT), "out")];
+            "in" => $this->getCategoriesAll($localId, "in"),
+            "out" => $this->getCategoriesAll($localId, "out")
+        ];
     }
 
     public function addCategory($oid, $label, $type, $parentId, $value, $year)
@@ -45,18 +45,20 @@ class BudgetService extends BaseService
         ]);
     }
 
-    public function getCategoriesRoot($oid, $type = NULL)
+    public function getCategoriesRoot(int $oid, $type = NULL)
     {
+        $localId = $this->getLocalId($oid, self::TYPE_UNIT);
+
         if (is_null($type)) {
             return [
-                'in' => $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), 'in')->where("parentId IS NULL")->fetchPairs("id", "label"),
-                'out' => $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), 'out')->where("parentId IS NULL")->fetchPairs("id", "label")
+                'in' => $this->table->getDS($localId, 'in')->where("parentId IS NULL")->fetchPairs("id", "label"),
+                'out' => $this->table->getDS($localId, 'out')->where("parentId IS NULL")->fetchPairs("id", "label")
             ];
         }
-        return $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), $type)->where("parentId IS NULL")->fetchPairs("id", "label");
+        return $this->table->getDS($localId, $type)->where("parentId IS NULL")->fetchPairs("id", "label");
     }
 
-    public function getCategoriesLeaf($oid, $type = NULL)
+    public function getCategoriesLeaf(int $oid, $type = NULL)
     {
         if (is_null($type)) {
             return [
@@ -74,6 +76,11 @@ class BudgetService extends BaseService
             $data[$k]['childrens'] = $this->{__FUNCTION__}($oid, $type, $v->id);
         }
         return $data;
+    }
+
+    private function getLocalId(int $id, string $type) : int
+    {
+        return $this->skautisMapper->getLocalId($id, $type);
     }
 
 }
