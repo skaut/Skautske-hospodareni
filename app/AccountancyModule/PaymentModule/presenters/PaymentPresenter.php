@@ -317,6 +317,8 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $sentCount = $this->mailing->sendEmailForGroup($gid);
+        } catch (MailerNotFoundException $e) {
+            $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch(SmtpException $e) {
             $this->smtpError($e);
             $this->redirect('this');
