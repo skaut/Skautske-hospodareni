@@ -13,6 +13,7 @@ use Model\PaymentTable;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
 use Nette\Utils\Image;
+use Nette\Utils\Strings;
 use Nette\Utils\Validators;
 
 class MailingService
@@ -144,6 +145,13 @@ class MailingService
         $template = $this->templateFactory->create();
         $template->setFile(__DIR__ . '/mail.base.latte');
 
+        $body = $group->getEmailTemplate();
+
+        $accountRequired = Strings::contains($body, '%qrcode') || Strings::contains($body, '%account');
+        if($bankAccount === NULL && $accountRequired) {
+            throw new InvalidBankAccountException('Bank account required for email.');
+        }
+
         $parameters = [
             '%account%' => $bankAccount,
             '%name%' => $payment->getName(),
@@ -155,8 +163,7 @@ class MailingService
             '%note%' => $payment->getNote(),
         ];
 
-
-        if (strpos($group->getEmailTemplate(), '%qrcode') !== FALSE) {
+        if (Strings::contains($body, '%qrcode')) {
             $file = $this->qr->generate($bankAccount, $payment);
             $parameters['%qrcode%'] = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $file . '"/>';
         }

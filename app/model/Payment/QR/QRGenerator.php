@@ -3,13 +3,18 @@
 namespace Model\Payment\QR;
 
 use Model\DTO\Payment\Payment;
+use Model\Payment\InvalidBankAccountException;
 
 class QRGenerator implements IQRGenerator
 {
 
-    public function generate(?string $bankAccount, Payment $payment): string
+    public function generate(string $bankAccount, Payment $payment): string
     {
-        preg_match('#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#', $bankAccount, $account);
+        $pattern = '#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#';
+
+        if(preg_match($pattern, $bankAccount, $account) !== 1) {
+            throw new InvalidBankAccountException();
+        }
 
         $params = [
             "accountNumber" => $account['number'],
