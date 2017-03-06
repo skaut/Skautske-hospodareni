@@ -18,7 +18,7 @@ build:
             code: composer install --no-interaction
         - script:
             name: run unit tests
-            code: vendor/bin/tester tests -C
+            code: vendor/bin/codecept unit
         - appnific/expandenv:
             input_file: app/config/config.ci.local.neon
             output_file: app/config/config.local.neon

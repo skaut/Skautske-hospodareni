@@ -17,3 +17,4 @@ deployment.*
 /archiv
 !.htaccess
 .wercker*
+tests/_output/*
