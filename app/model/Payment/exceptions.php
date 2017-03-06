@@ -13,3 +13,7 @@ class InvalidEmailException extends \Exception
 class PaymentFinishedException extends \Exception
 {
 }
+
+class InvalidBankAccountException extends \Exception
+{
+}

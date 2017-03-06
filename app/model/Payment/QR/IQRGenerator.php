@@ -7,6 +7,6 @@ use Model\DTO\Payment\Payment;
 interface IQRGenerator
 {
 
-    public function generate(?string $bankAccount, Payment $payment) : string;
+    public function generate(string $bankAccount, Payment $payment) : string;
 
 }
