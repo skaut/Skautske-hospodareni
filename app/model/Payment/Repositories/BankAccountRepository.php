@@ -26,12 +26,12 @@ class BankAccountRepository implements IBankAccountRepository
     {
         $accounts = $this->skautis->org->AccountAll([
             'ID_Unit' => $unitSkautisId,
-            'IsValid' => TRUE
+            'IsValid' => TRUE,
         ]);
 
         $result = [];
         foreach($accounts as $account) {
-            $result[] = new BankAccount($account->DisplayName);
+            $result[] = new BankAccount($account->DisplayName, (bool)$account->IsMain);
         }
 
         return $result;

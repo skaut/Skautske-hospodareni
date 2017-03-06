@@ -101,11 +101,11 @@ class MailingService
     private function getBankAccount(int $unitId) : ?string
     {
         $accounts = $this->bankAccounts->findByUnit($unitId);
-
-        if($accounts) {
-            return $accounts[0]->getNumber();
+        foreach($accounts as $account) {
+            if($account->isMain()) {
+                return $account->getNumber();
+            }
         }
-
         return NULL;
     }
 
