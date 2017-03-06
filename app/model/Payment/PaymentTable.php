@@ -43,7 +43,7 @@ class PaymentTable extends BaseTable
     {
         return $this->connection->fetchAll("SELECT p.*, s.label as stateLabel FROM [" . self::TABLE_PA_PAYMENT . "] p "
             . "LEFT JOIN [" . self::TABLE_PA_PAYMENT_STATE . "] s ON p.state = s.ID "
-            . "WHERE groupId IN (%i) ", $pa_groups, " "
+            . "WHERE groupId IN %in ", $pa_groups, " "
             . "ORDER BY s.orderby, p.name");
     }
 
