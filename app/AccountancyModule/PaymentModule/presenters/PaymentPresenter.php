@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\PaymentModule;
 
 use Model\Mail\MailerNotFoundException;
+use Model\Payment\InvalidBankAccountException;
 use Model\Payment\MailingService;
 use Nette\Application\UI\Form;
 use Nette\Mail\SmtpException;
@@ -34,6 +35,7 @@ class PaymentPresenter extends BasePresenter
     private $mailing;
 
     private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
+    private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
     public function __construct(
         \Model\PaymentService $paymentService,
@@ -302,6 +304,8 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch(SmtpException $e) {
             $this->smtpError($e);
+        } catch(InvalidBankAccountException $e) {
+            $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
         }
 
         $this->redirect('this');
@@ -322,6 +326,8 @@ class PaymentPresenter extends BasePresenter
         } catch(SmtpException $e) {
             $this->smtpError($e);
             $this->redirect('this');
+        } catch (InvalidBankAccountException $e) {
+            $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
         }
 
         if ($sentCount > 0) {
@@ -353,6 +359,8 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch(SmtpException $e) {
             $this->smtpError($e);
+        } catch (InvalidBankAccountException $e) {
+            $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
         }
 
         $this->redirect("this");
