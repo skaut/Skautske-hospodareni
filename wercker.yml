@@ -1,4 +1,4 @@
-box: fmasa/lebeda:7.1
+box: fmasa/lebeda:7.1-ci
 
 services:
     - name: mysql
@@ -7,7 +7,6 @@ services:
       env:
         MYSQL_ALLOW_EMPTY_PASSWORD: yes
         MYSQL_DATABASE: hskauting
-
 build:
     steps:
         - script:
@@ -18,16 +17,37 @@ build:
             code: composer install --no-interaction
         - script:
             name: run unit tests
-            code: vendor/bin/codecept unit
+            code: vendor/bin/codecept run unit
         - appnific/expandenv:
             input_file: app/config/config.ci.local.neon
             output_file: app/config/config.local.neon
         - script:
-            name: give mysql some time
+            name: start phantomjs
+            code: phantomjs --webdriver=4444 --ignore-ssl-errors=true --ssl-protocol=any &
+        - script:
+            name: Symlink webroot
+            code: rm -r /var/www/html && ln -s $(pwd) /var/www/html
+        - script:
+            name: start apache
+            code: service apache2 restart
+        - script:
+            name: give mysql and phantomjs some time
             code: sleep 10
         - script:
             name: run database migrations
             code: php www/index.php migrations:migrate --no-interaction
+        - script:
+            name: configure /etc/hosts (hospodareni.loc)
+            code: echo "127.0.0.1 hospodareni.loc" >> /etc/hosts
+        - script:
+            name: configure /etc/hosts (phantom)
+            code: echo "127.0.0.1 phantom" >> /etc/hosts
+        - script:
+            name: Make everything accessible
+            code: chown www-data:www-data . -R && chmod 777 . -R
+        - script:
+            name: acceptance testing
+            code: vendor/bin/codecept run --env=ci acceptance
         - script:
             name: test coding standard
             code: vendor/bin/phpcs app --standard=ruleset.xml

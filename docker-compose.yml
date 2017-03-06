@@ -16,6 +16,7 @@ services:
             main:
                 aliases:
                     - hospodareni.loc
+
     mysql:
         container_name: hskauting.mysql
         image: mysql:5.7
@@ -24,11 +25,22 @@ services:
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
             MYSQL_DATABASE: hskauting
-
         networks:
             main:
                 aliases:
                     - mysql
+
+    phantom:
+        container_name: hskauting.phantom
+        image: davert/phantomjs-env
+        networks:
+            main:
+                aliases:
+                    - phantom
+        environment:
+            APP_HOST: hospodareni.loc
+        command: phantomjs --webdriver=4444 --ssl-protocol=any --ignore-ssl-errors=true
+
 volumes:
     mysql:
     www:
