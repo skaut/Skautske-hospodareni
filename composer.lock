@@ -1334,16 +1334,16 @@
         },
         {
             "name": "nette/database",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/database.git",
-                "reference": "ed0dc48c58ddf9042f736f3c1ac431dfdd825019"
+                "reference": "28737ccbe10d2ada233e823075971a05b9cb11cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/database/zipball/ed0dc48c58ddf9042f736f3c1ac431dfdd825019",
-                "reference": "ed0dc48c58ddf9042f736f3c1ac431dfdd825019",
+                "url": "https://api.github.com/repos/nette/database/zipball/28737ccbe10d2ada233e823075971a05b9cb11cf",
+                "reference": "28737ccbe10d2ada233e823075971a05b9cb11cf",
                 "shasum": ""
             },
             "require": {
@@ -1384,7 +1384,7 @@
             ],
             "description": "Nette Database Component",
             "homepage": "https://nette.org",
-            "time": "2016-10-18T13:30:07+00:00"
+            "time": "2016-12-12T12:46:29+00:00"
         },
         {
             "name": "nette/deprecated",
@@ -2668,17 +2668,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/skaut/Skautis.git",
-                "reference": "308270868a0d2f07c1400c3900ee04299dc487bb"
+                "reference": "090fddb9d7d6da2467f52be9f6ff4db16724c1c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/skaut/Skautis/zipball/308270868a0d2f07c1400c3900ee04299dc487bb",
-                "reference": "308270868a0d2f07c1400c3900ee04299dc487bb",
+                "url": "https://api.github.com/repos/skaut/Skautis/zipball/090fddb9d7d6da2467f52be9f6ff4db16724c1c5",
+                "reference": "090fddb9d7d6da2467f52be9f6ff4db16724c1c5",
                 "shasum": ""
             },
             "require": {
                 "ext-soap": "*",
-                "php": ">=5.4"
+                "php": ">=5.6"
             },
             "require-dev": {
                 "fabpot/php-cs-fixer": "@stable",
@@ -2718,7 +2718,7 @@
                 "soap",
                 "wsdl"
             ],
-            "time": "2016-10-16 17:28:54"
+            "time": "2017-03-07 09:02:13"
         },
         {
             "name": "srigi/nette-visualpaginator",
@@ -3511,16 +3511,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "2.8.0",
+            "version": "2.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "86dd55a522238211f9f3631e3361703578941d9a"
+                "reference": "d7cf0d894e8aa4c73712ee4a331cc1eaa37cdc7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/86dd55a522238211f9f3631e3361703578941d9a",
-                "reference": "86dd55a522238211f9f3631e3361703578941d9a",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/d7cf0d894e8aa4c73712ee4a331cc1eaa37cdc7d",
+                "reference": "d7cf0d894e8aa4c73712ee4a331cc1eaa37cdc7d",
                 "shasum": ""
             },
             "require": {
@@ -3585,7 +3585,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2017-02-02T03:30:00+00:00"
+            "time": "2017-03-01T22:17:45+00:00"
         }
     ],
     "aliases": [],
