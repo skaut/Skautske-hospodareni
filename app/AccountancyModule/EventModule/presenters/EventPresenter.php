@@ -169,7 +169,7 @@ class EventPresenter extends BasePresenter
     {
         //        $combo = $this->memberService->getCombobox(NULL, TRUE);
         $form = $this->prepareForm($this, $name);
-        $form->addProtection();
+
         $form->addText("name", "Název akce");
         $form->addDatePicker("start", "Od")
             ->setRequired('Musíte zadat datum začátku akce');
