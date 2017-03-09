@@ -210,7 +210,6 @@ trait ParticipantTrait
     public function createComponentFormMassParticipants() : BaseForm
     {
         $form = $this->formFactory->create();
-        $form->addProtection();
 
         $editCon = $form->addContainer("edit");
         $editCon->addText("days", "Dní");

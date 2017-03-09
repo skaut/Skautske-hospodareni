@@ -74,7 +74,6 @@ class DetailPresenter extends BasePresenter
     protected function createComponentFormEdit($name) : Form
     {
         $form = $this->prepareForm($this, $name);
-        $form->addProtection();
         $form->addText("prefix", "Prefix")
             ->setMaxLength(6);
         $form->addHidden("aid");
