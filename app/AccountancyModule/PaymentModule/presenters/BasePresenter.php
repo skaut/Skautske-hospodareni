@@ -18,6 +18,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
      */
     protected $model;
 
+    /** @var int[] */
+    private $editableUnits;
+
     public function __construct(\Model\PaymentService $paymentService)
     {
         parent::__construct();
@@ -30,7 +33,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->availableActions = $this->userService->actionVerify("OU_Unit", $this->aid);
         $this->template->aid = $this->aid = (is_null($this->aid) ? $this->unitService->getUnitId() : $this->aid);
         $this->template->isReadable = $this->isReadable = key_exists($this->aid, $this->user->getIdentity()->access['read']);
-        $this->template->isEditable = $this->isEditable = key_exists($this->aid, $this->user->getIdentity()->access['edit']);
+
+        $this->editableUnits = array_keys($this->user->getIdentity()->access['edit']);
+        $this->template->isEditable = $this->isEditable = in_array($this->aid, $this->editableUnits);
         if (!$this->isReadable) {
             $this->flashMessage("Nemáte oprávnění pro zobrazení stránky", "warning");
             $this->redirect(":Accountancy:Default:", ["aid" => NULL]);
@@ -45,6 +50,14 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function noEmpty($v)
     {
         return $v == "" ? NULL : $v;
+    }
+
+    /**
+     * @return int[]
+     */
+    protected function getEditableUnits() : array
+    {
+        return $this->editableUnits;
     }
 
 }

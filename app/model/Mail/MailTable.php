@@ -24,14 +24,21 @@ class MailTable extends BaseTable
         return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_SMTP . "] WHERE id=%i", $id);
     }
 
-    public function getAll($unitId)
+    /**
+     * @param int[] $unitIds
+     * @return \Dibi\Row[]
+     */
+    public function getAll(array $unitIds) : array
     {
-        return $this->connection->fetchAll("SELECT id, host, username, secure, created FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId=%i", $unitId);
+        return $this->connection->select('id, host, username, secure, created, unitId')
+            ->from(self::TABLE_PA_SMTP)
+            ->where('unitId IN %in', $unitIds)
+            ->fetchAll();
     }
 
-    public function getPairs($unitId)
+    public function getPairs(array $unitIds) : array
     {
-        return $this->connection->fetchPairs("SELECT id, username FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId=%i", $unitId);
+        return $this->connection->fetchPairs("SELECT id, username FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId IN %in", $unitIds);
     }
 
     public function getSmtpByGroup($groupId)

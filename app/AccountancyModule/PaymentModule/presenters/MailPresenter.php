@@ -26,6 +26,7 @@ class MailPresenter extends BasePresenter
             $this->redirect("Payment:default");
         }
         $this->template->list = $this->model->getAll($this->aid);
+        $this->template->editableUnits = $this->getEditableUnits();
     }
 
     //    public function renderDetail($id){
@@ -46,7 +47,9 @@ class MailPresenter extends BasePresenter
 
     public function handleRemove($id) : void
     {
-        if (!$this->isEditable) {
+        $mail = $this->model->get($id);
+
+        if (!$this->isEditable || $mail->getUnitId() !== $this->aid) {
             $this->flashMessage("Nemáte oprávnění mazat smtp", "danger");
             $this->redirect("Payment:default");
         }
