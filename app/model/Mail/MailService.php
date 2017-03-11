@@ -2,9 +2,7 @@
 
 namespace Model;
 
-use Model\Mail\IMailerFactory;
-use Nette\Mail\IMailer;
-use Nette\Mail\Message;
+use Model\DTO\Payment\MailFactory;
 
 /**
  * @author Hána František
@@ -15,24 +13,30 @@ class MailService
     /** @var MailTable */
     private $table;
 
-    public function __construct(MailTable $table)
+    /** @var UnitService */
+    private $units;
+
+    public function __construct(MailTable $table, UnitService $units)
     {
         $this->table = $table;
+        $this->units = $units;
     }
 
     public function get($id)
     {
-        return $this->table->get($id);
+        $row = $this->table->get($id);
+        return $row !== FALSE ? MailFactory::create($row) : NULL;
     }
 
-    public function getAll($unitId)
+    public function getAll(int $unitId) : array
     {
-        return $this->table->getAll($unitId);
+        $mails = $this->table->getAll($this->getUnitIds($unitId));
+        return array_map([MailFactory::class, 'create'], $mails);
     }
 
-    public function getPairs($unitId)
+    public function getPairs(int $unitId) : array
     {
-        return $this->table->getPairs($unitId);
+        return $this->table->getPairs($this->getUnitIds($unitId));
     }
 
     public function getSmtpByGroup($groupId)
@@ -53,6 +57,15 @@ class MailService
     public function updateSmtp($unitId, $id, $data)
     {
         return $this->table->updateSmtp($unitId, $id, $data);
+    }
+
+    /**
+     * @param int $unitId
+     * @return int[]
+     */
+    private function getUnitIds(int $unitId) : array
+    {
+        return [$unitId, $this->units->getOficialUnit($unitId)->ID];
     }
 
 }
