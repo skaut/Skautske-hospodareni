@@ -112,6 +112,7 @@ class GroupPresenter extends BasePresenter
             "amount" => $dto->getDefaultAmount(),
             "maturity" => $dto->getDueDate() ? $dto->getDueDate()->format(\DateTime::ISO8601) : NULL,
             "ks" => $dto->getConstantSymbol(),
+            "nextVs" => $this->model->getNextVS($dto->getId()),
             "smtp" => $dto->getSmtpId(),
             "email_info" => $dto->getEmailTemplate(),
             "gid" => $id,
@@ -185,6 +186,7 @@ class GroupPresenter extends BasePresenter
                 $v->amount ? (float)$v->amount : NULL,
                 $v->maturity ? \DateTimeImmutable::createFromMutable($v->maturity) : NULL,
                 $v->ks ? (int)$v->ks : NULL,
+                $v->nextVs ? (int)$v->nextVs : NULL,
                 $v->email_info,
                 $v->smtp);
 
@@ -197,6 +199,7 @@ class GroupPresenter extends BasePresenter
                 $v->label,
                 $v->maturity,
                 $v->ks ? (int)$v->ks : NULL,
+                $v->nextVs ? (int)$v->nextVs : NULL,
                 isset($v->amount) ? (float)$v->amount : NULL,
                 $v->email_info,
                 $v->smtp);

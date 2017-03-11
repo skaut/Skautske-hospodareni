@@ -2,9 +2,12 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use Model\BankService;
 use Model\Mail\MailerNotFoundException;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\MailingService;
+use Model\PaymentService;
+use Model\UnitService;
 use Nette\Application\UI\Form;
 use Nette\Mail\SmtpException;
 
@@ -18,7 +21,7 @@ class PaymentPresenter extends BasePresenter
 
     /**
      *
-     * @var \Model\BankService
+     * @var BankService
      */
     protected $bank;
     protected $readUnits;
@@ -38,9 +41,9 @@ class PaymentPresenter extends BasePresenter
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
     public function __construct(
-        \Model\PaymentService $paymentService,
-        \Model\BankService $bankService,
-        \Model\UnitService $unitService,
+        PaymentService $paymentService,
+        BankService $bankService,
+        UnitService $unitService,
         MailingService $mailing
     )
     {
@@ -50,7 +53,7 @@ class PaymentPresenter extends BasePresenter
         $this->mailing = $mailing;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         //Kontrola ověření přístupu
@@ -60,7 +63,7 @@ class PaymentPresenter extends BasePresenter
         $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
 
-    public function renderDefault(int $onlyOpen = 1) : void
+    public function renderDefault(int $onlyOpen = 1): void
     {
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
@@ -71,13 +74,13 @@ class PaymentPresenter extends BasePresenter
         $this->template->payments = $this->model->getAll(array_keys($groups), TRUE);
     }
 
-    public function actionDetail($id) : void
+    public function actionDetail($id): void
     {
         $this->id = $id;
         $this->bankInfo = $this->bank->getInfo($this->aid);
     }
 
-    public function renderDetail($id) : void
+    public function renderDetail($id): void
     {
         $this->template->units = $this->readUnits;
         $this->template->group = $group = $this->model->getGroup(array_keys($this->readUnits), $id);
@@ -102,7 +105,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->canPair = isset($this->bankInfo->token);
     }
 
-    public function renderEdit($pid) : void
+    public function renderEdit($pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
@@ -126,7 +129,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->linkBack = $this->link("detail", ["id" => $payment->groupId]);
     }
 
-    public function actionMassAdd($id) : void
+    public function actionMassAdd($id): void
     {
         //ověření přístupu
         $this->template->unitPairs = $this->readUnits;
@@ -149,7 +152,7 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    public function actionRepayment($id) : void
+    public function actionRepayment($id): void
     {
         $campService = $this->context->getService("campService");
         $accountFrom = $this->model->getBankAccount($this->aid);
@@ -192,7 +195,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->payments = $payments;
     }
 
-    public function createComponentMassAddForm($name) : Form
+    public function createComponentMassAddForm($name): Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("oid");
@@ -207,14 +210,14 @@ class PaymentPresenter extends BasePresenter
         $form->addSubmit('send', 'Přidat vybrané')
             ->setAttribute("class", "btn btn-primary btn-large");
 
-        $form->onSubmit[] = function(Form $form) : void {
+        $form->onSubmit[] = function (Form $form): void {
             $this->massAddFormSubmitted($form);
         };
 
         return $form;
     }
 
-    private function massAddFormSubmitted(Form $form) : void
+    private function massAddFormSubmitted(Form $form): void
     {
         $values = $form->getValues();
         $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
@@ -267,7 +270,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("Payment:detail", ["id" => $values->oid]);
     }
 
-    public function handleCancel($pid) : void
+    public function handleCancel($pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "danger");
@@ -285,26 +288,26 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    private function checkEditation() : void
+    private function checkEditation(): void
     {
-        if(!$this->isEditable || !isset($this->readUnits[$this->aid])) {
+        if (!$this->isEditable || !isset($this->readUnits[$this->aid])) {
             $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou!', 'danger');
             $this->redirect('this');
         }
     }
 
-    public function handleSend($pid) : void
+    public function handleSend($pid): void
     {
         $this->checkEditation();
 
         try {
             $this->mailing->sendEmail($pid);
             $this->flashMessage('Informační email byl odeslán.');
-        } catch(MailerNotFoundException $e) {
+        } catch (MailerNotFoundException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-        } catch(SmtpException $e) {
+        } catch (SmtpException $e) {
             $this->smtpError($e);
-        } catch(InvalidBankAccountException $e) {
+        } catch (InvalidBankAccountException $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
         }
 
@@ -315,7 +318,7 @@ class PaymentPresenter extends BasePresenter
      * rozešle všechny neposlané emaily
      * @param int $gid groupId
      */
-    public function handleSendGroup($gid) : void
+    public function handleSendGroup($gid): void
     {
         $this->checkEditation();
 
@@ -323,7 +326,7 @@ class PaymentPresenter extends BasePresenter
             $sentCount = $this->mailing->sendEmailForGroup($gid);
         } catch (MailerNotFoundException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-        } catch(SmtpException $e) {
+        } catch (SmtpException $e) {
             $this->smtpError($e);
             $this->redirect('this');
         } catch (InvalidBankAccountException $e) {
@@ -338,7 +341,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleSendTest($gid) : void
+    public function handleSendTest($gid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na odeslání testovacího emailu!", "danger");
@@ -355,9 +358,9 @@ class PaymentPresenter extends BasePresenter
         try {
             $this->mailing->sendTestMail($gid, $email);
             $this->flashMessage("Testovací email byl odeslán na $email.");
-        } catch(MailerNotFoundException $e) {
+        } catch (MailerNotFoundException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-        } catch(SmtpException $e) {
+        } catch (SmtpException $e) {
             $this->smtpError($e);
         } catch (InvalidBankAccountException $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
@@ -366,7 +369,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleComplete($pid) : void
+    public function handleComplete($pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k uzavření platby!", "danger");
@@ -380,12 +383,12 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handlePairPayments($gid) : void
+    public function handlePairPayments($gid): void
     {
         $this->pairPairments($gid);
     }
 
-    public function handleGenerateVs($gid) : void
+    public function handleGenerateVs($gid): void
     {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
@@ -409,7 +412,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleCloseGroup($gid) : void
+    public function handleCloseGroup($gid): void
     {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
@@ -421,7 +424,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleOpenGroup($gid) : void
+    public function handleOpenGroup($gid): void
     {
         $group = $this->model->getGroup(array_keys($this->readUnits), $gid);
         if (!$this->isEditable || !$group) {
@@ -433,7 +436,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function createComponentPaymentForm($name) : Form
+    public function createComponentPaymentForm($name): Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addText("name", "Název/účel")
@@ -464,14 +467,14 @@ class PaymentPresenter extends BasePresenter
         $form->addHidden("pid");
         $form->addSubmit('send', 'Přidat platbu')->setAttribute("class", "btn btn-primary");
 
-        $form->onSubmit[] = function(Form $form) : void {
+        $form->onSubmit[] = function (Form $form): void {
             $this->paymentSubmitted($form);
         };
 
         return $form;
     }
 
-    private function paymentSubmitted(Form $form) : void
+    private function paymentSubmitted(Form $form): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k úpravám plateb!", "danger");
@@ -498,7 +501,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("detail", ["id" => $v->oid]);
     }
 
-    protected function createComponentRepaymentForm($name) : Form
+    protected function createComponentRepaymentForm($name): Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addHidden("gid");
@@ -509,14 +512,14 @@ class PaymentPresenter extends BasePresenter
         $form->addSubmit('send', 'Odeslat platby do banky')
             ->setAttribute("class", "btn btn-primary btn-large");
 
-        $form->onSubmit[] = function (Form $form) : void {
+        $form->onSubmit[] = function (Form $form): void {
             $this->repaymentFormSubmitted($form);
         };
 
         return $form;
     }
 
-    private function repaymentFormSubmitted(Form $form) : void
+    private function repaymentFormSubmitted(Form $form): void
     {
         $values = $form->getValues();
 
@@ -565,7 +568,7 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentPairForm() : Form
+    protected function createComponentPairForm(): Form
     {
         $form = $this->formFactory->create(TRUE);
 
@@ -577,7 +580,7 @@ class PaymentPresenter extends BasePresenter
             ->setType('number');
         $form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
 
-        $form->onSuccess[] = function ($form, $values) : void {
+        $form->onSuccess[] = function ($form, $values): void {
             $this->pairPairments($this->id, $values->days);
         };
         $this->redrawControl('pairForm');
@@ -588,7 +591,7 @@ class PaymentPresenter extends BasePresenter
      * @param int $groupId
      * @param int|NULL $days
      */
-    private function pairPairments($groupId, $days = NULL) : void
+    private function pairPairments($groupId, $days = NULL): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
@@ -613,7 +616,7 @@ class PaymentPresenter extends BasePresenter
     /**
      * @param string $snippet
      */
-    private function redraw($snippet) : void
+    private function redraw($snippet): void
     {
         if ($this->isAjax()) {
             $this->redrawControl($snippet);
@@ -622,7 +625,7 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    private function smtpError(SmtpException $e) : void
+    private function smtpError(SmtpException $e): void
     {
         $this->flashMessage("Nepodařilo se připojit k SMTP serveru ({$e->getMessage()})", 'danger');
         $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
