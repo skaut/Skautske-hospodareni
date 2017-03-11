@@ -404,7 +404,7 @@ class PaymentPresenter extends BasePresenter
         $cnt = 0;
         foreach ($payments as $payment) {
             if (empty($payment->vs) && $payment->state == "preparing") {
-                $this->model->update($payment->id, array("vs" => ++$nextVS));
+                $this->model->update($payment->id, ["vs" => ++$nextVS]);
                 $cnt++;
             }
         }
