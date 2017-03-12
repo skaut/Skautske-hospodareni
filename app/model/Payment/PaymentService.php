@@ -48,6 +48,7 @@ class PaymentService
     /**
      *
      * @param int|array $pa_groupIds
+     * @param bool $useHierarchy
      * @return array
      */
     public function getAll($pa_groupIds, $useHierarchy = FALSE)
@@ -181,6 +182,7 @@ class PaymentService
      * @param string $label
      * @param \DateTime $maturity
      * @param int $ks
+     * @param int|null $nextVS
      * @param float $amount
      * @param string $email_info
      * @param int|NULL $smtpId
