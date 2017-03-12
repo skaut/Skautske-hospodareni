@@ -118,8 +118,24 @@ class GroupPresenter extends BasePresenter
             "gid" => $id,
         ]);
 
+        $disableNextVs = FALSE;
         $payments = $this->model->getAll($dto->getId());
+        // pouze nezrušené platby
+        $payments = array_filter($payments, function ($obj) {
+            return $obj->state != "canceled";
+        });
         if (count($payments) > 0) {
+            $vss = array_map(function ($obj) {
+                return $obj->vs;
+            }, $payments);
+            if (max($vss) != "") {
+                $disableNextVs = TRUE;
+            }
+        } else {
+            $disableNextVs = TRUE;
+        }
+
+        if ($disableNextVs) {
             $form["nextVs"]->setDisabled(TRUE);
         }
 
