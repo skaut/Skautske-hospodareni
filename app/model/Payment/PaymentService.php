@@ -596,9 +596,10 @@ class PaymentService
     }
 
 
-    public function generateVs(int $gid, int $nextVS): int
+    public function generateVs(int $gid): int
     {
-        $payments = $this->getAll($gid);
+        $nextVS = $this->getNextVS($gid);
+        $payments = $this->groups->getAll($gid);
         $cnt = 0;
         foreach ($payments as $payment) {
             if (empty($payment->vs) && $payment->state == "preparing") {

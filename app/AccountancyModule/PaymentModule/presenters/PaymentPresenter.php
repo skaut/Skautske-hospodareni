@@ -401,7 +401,7 @@ class PaymentPresenter extends BasePresenter
             $this->redirect("this");
         }
 
-        $numberOfUpdatedVS = $this->model->generateVs($gid, $nextVS);
+        $numberOfUpdatedVS = $this->model->generateVs($gid);
         $this->flashMessage("Počet dogenerovaných VS: $numberOfUpdatedVS ", "success");
         $this->redirect("this");
     }
