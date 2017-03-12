@@ -29,6 +29,7 @@ class GroupRepository implements IGroupRepository
         'defaultAmount' => 'amount',
         'dueDate' => 'maturity',
         'constantSymbol' => 'ks',
+        'nextVariableSymbol' => 'nextVs',
         'state' => 'state',
         'createdAt' => 'created_at',
         'lastPairing' => 'last_pairing',

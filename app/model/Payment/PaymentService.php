@@ -7,7 +7,6 @@ use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
-use Nette\Security\User;
 use Skautis\Skautis;
 
 /**
@@ -49,6 +48,7 @@ class PaymentService
     /**
      *
      * @param int|array $pa_groupIds
+     * @param bool $useHierarchy
      * @return array
      */
     public function getAll($pa_groupIds, $useHierarchy = FALSE)
@@ -137,11 +137,11 @@ class PaymentService
      * @param int $unitId
      * @return string|NULL
      */
-    public function getBankAccount(int $unitId) : ?string
+    public function getBankAccount(int $unitId): ?string
     {
         $accounts = $this->bankAccounts->findByUnit($unitId);
 
-        if(empty($accounts)) {
+        if (empty($accounts)) {
             return NULL;
         }
 
@@ -182,11 +182,13 @@ class PaymentService
      * @param string $label
      * @param \DateTime $maturity
      * @param int $ks
+     * @param int|null $nextVS
      * @param float $amount
      * @param string $email_info
      * @param int|NULL $smtpId
      * @return int
      */
+
     public function createGroup(
         int $unitId,
         ?string $oType,
@@ -194,6 +196,7 @@ class PaymentService
         string $label,
         ?\DateTime $maturity,
         ?int $ks,
+        ?int $nextVS,
         ?float $amount,
         string $email_info,
         ?int $smtpId
@@ -207,6 +210,7 @@ class PaymentService
             $amount ? $amount : NULL,
             $maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
             $ks,
+            $nextVS,
             new \DateTimeImmutable(),
             $email_info,
             $smtpId);
@@ -221,22 +225,24 @@ class PaymentService
         ?float $defaultAmount,
         ?\DateTimeImmutable $dueDate,
         ?int $constantSymbol,
+        ?int $nextVariableSymbol,
         string $emailTemplate,
         ?int $smtpId)
     {
         $group = $this->groups->find($id);
 
-        $group->update($name, $defaultAmount, $dueDate, $constantSymbol, $emailTemplate, $smtpId);
+        $group->update($name, $defaultAmount, $dueDate, $constantSymbol, $nextVariableSymbol, $emailTemplate, $smtpId);
 
         $this->groups->save($group);
     }
 
-    public function getGroupV2($id) : ?DTO\Group
+    public function getGroupV2($id): ?DTO\Group
     {
         try {
             $group = $this->groups->find($id);
             return DTO\GroupFactory::create($group);
-        } catch(GroupNotFoundException $e) {}
+        } catch (GroupNotFoundException $e) {
+        }
         return NULL;
     }
 
@@ -256,9 +262,9 @@ class PaymentService
      * @param int $groupId
      * @return int
      */
-    public function getMaxVS($groupId)
+    public function getNextVS($groupId)
     {
-        return $this->table->getMaxVS($groupId);
+        return $this->table->getNextVS($groupId);
     }
 
     /**
@@ -588,5 +594,21 @@ class PaymentService
             ],
         ]);
     }
+
+
+    public function generateVs(int $gid): int
+    {
+        $nextVS = $this->getNextVS($gid);
+        $payments = $this->groups->getAll($gid);
+        $cnt = 0;
+        foreach ($payments as $payment) {
+            if (empty($payment->vs) && $payment->state == "preparing") {
+                $this->update($payment->id, ["vs" => ++$nextVS]);
+                $cnt++;
+            }
+        }
+        return $cnt;
+    }
+
 
 }

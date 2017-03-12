@@ -53,6 +53,7 @@ class Group
         ?float $defaultAmount,
         ?\DateTimeImmutable $dueDate,
         ?int $constantSymbol,
+        ?int $nextVariableSymbol,
         string $emailTemplate,
         ?int $smtpId)
     {
@@ -62,6 +63,7 @@ class Group
         $this->defaultAmount = $defaultAmount;
         $this->dueDate = $dueDate;
         $this->constantSymbol = $constantSymbol;
+        $this->nextVariableSymbol = $nextVariableSymbol;
         $this->emailTemplate = $emailTemplate;
         $this->smtpId = $smtpId;
     }
@@ -113,6 +115,14 @@ class Group
     public function getConstantSymbol() : ?int
     {
         return $this->constantSymbol;
+    }
+
+    /**
+     * @return int|NULL
+     */
+    public function getNextVariableSymbol() : ?int
+    {
+        return $this->nextVariableSymbol;
     }
 
     /**
