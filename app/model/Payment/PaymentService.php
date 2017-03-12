@@ -595,4 +595,19 @@ class PaymentService
         ]);
     }
 
+
+    public function generateVs(int $gid, int $nextVS): int
+    {
+        $payments = $this->getAll($gid);
+        $cnt = 0;
+        foreach ($payments as $payment) {
+            if (empty($payment->vs) && $payment->state == "preparing") {
+                $this->model->update($payment->id, ["vs" => ++$nextVS]);
+                $cnt++;
+            }
+        }
+        return $cnt;
+    }
+
+
 }

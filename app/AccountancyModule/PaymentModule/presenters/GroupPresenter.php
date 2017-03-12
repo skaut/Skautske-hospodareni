@@ -112,11 +112,16 @@ class GroupPresenter extends BasePresenter
             "amount" => $dto->getDefaultAmount(),
             "maturity" => $dto->getDueDate() ? $dto->getDueDate()->format(\DateTime::ISO8601) : NULL,
             "ks" => $dto->getConstantSymbol(),
-            "nextVs" => $this->model->getNextVS($dto->getId()),
+            "nextVs" => $dto->getNextVariableSymbol(),
             "smtp" => $dto->getSmtpId(),
             "email_info" => $dto->getEmailTemplate(),
             "gid" => $id,
         ]);
+
+        $payments = $this->model->getAll($dto->getId());
+        if (count($payments) > 0) {
+            $form["nextVs"]->setDisabled(TRUE);
+        }
 
         $this->template->nadpis = "Editace skupiny: " . $dto->getName();
         $this->template->linkBack = $this->link("Payment:detail", ["id" => $id]);
@@ -142,9 +147,9 @@ class GroupPresenter extends BasePresenter
             ->addCondition(Form::FILLED)
             ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
         $form->addText("nextVs", "Další VS:")
-                ->setMaxLength(10)
-                ->addCondition(Form::FILLED)
-                ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
+            ->setMaxLength(10)
+            ->addCondition(Form::FILLED)
+            ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addSelect("smtp", "Odesílací email", $this->mail->getPairs($this->aid))
             ->setPrompt('Vyberte email');
         $form->addTextArea("email_info", "Informační email")

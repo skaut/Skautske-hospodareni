@@ -173,9 +173,12 @@ class PaymentTable extends BaseTable
      */
     public function getNextVS($groupId) {
         $maxPaymentVs = $this->connection->fetchSingle("SELECT MAX(vs) FROM [" . self::TABLE_PA_PAYMENT . "] WHERE groupId=%i", $groupId, " AND state != 'canceled'");
-        $maxPaymentVs = is_null($maxPaymentVs) ? NULL : ++$maxPaymentVs;
-        $groupNextVs = $this->connection->fetchSingle("SELECT nextVs FROM [" . self::TABLE_PA_GROUP . "] WHERE id = %i", $groupId);
-        return max($groupNextVs, $maxPaymentVs);
+        if(!is_null($maxPaymentVs)) {
+            $maxPaymentVs = ++$maxPaymentVs;
+        } else {
+            $maxPaymentVs = $this->connection->fetchSingle("SELECT nextVs FROM [" . self::TABLE_PA_GROUP . "] WHERE id = %i", $groupId);
+        }
+        return $maxPaymentVs;
     }
 
     /**

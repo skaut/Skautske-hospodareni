@@ -400,15 +400,9 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Vyplňte VS libovolné platbě a další pak již budou dogenerovány způsobem +1.", "warning");
             $this->redirect("this");
         }
-        $payments = $this->model->getAll($gid);
-        $cnt = 0;
-        foreach ($payments as $payment) {
-            if (empty($payment->vs) && $payment->state == "preparing") {
-                $this->model->update($payment->id, ["vs" => ++$nextVS]);
-                $cnt++;
-            }
-        }
-        $this->flashMessage("Počet dogenerovaných VS: $cnt", "success");
+
+        $numberOfUpdatedVS = $this->model->generateVs($gid, $nextVS);
+        $this->flashMessage("Počet dogenerovaných VS: $numberOfUpdatedVS ", "success");
         $this->redirect("this");
     }
 
