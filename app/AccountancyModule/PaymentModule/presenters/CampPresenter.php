@@ -53,7 +53,6 @@ class CampPresenter extends BasePresenter
                 ->setAttribute('class', 'input-xlarge');
         }
         $this->template->list = $list;
-        $this->template->maxVS = $this->model->getMaxVS($detail->id);
     }
 
     protected function createComponentCampForm($name) : Form

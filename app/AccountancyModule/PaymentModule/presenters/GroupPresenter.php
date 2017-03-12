@@ -32,7 +32,7 @@ class GroupPresenter extends BasePresenter
         $this->mail = $mailService;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->camp = $this->context->getService("campService");
@@ -46,7 +46,7 @@ class GroupPresenter extends BasePresenter
         ];
     }
 
-    public function actionDefault($type = NULL) : void
+    public function actionDefault($type = NULL): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
@@ -90,7 +90,7 @@ class GroupPresenter extends BasePresenter
         $this->template->linkBack = $this->link("Default:");
     }
 
-    public function renderEdit($id) : void
+    public function renderEdit($id): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
@@ -112,16 +112,38 @@ class GroupPresenter extends BasePresenter
             "amount" => $dto->getDefaultAmount(),
             "maturity" => $dto->getDueDate() ? $dto->getDueDate()->format(\DateTime::ISO8601) : NULL,
             "ks" => $dto->getConstantSymbol(),
+            "nextVs" => $dto->getNextVariableSymbol(),
             "smtp" => $dto->getSmtpId(),
             "email_info" => $dto->getEmailTemplate(),
             "gid" => $id,
         ]);
 
+        $disableNextVs = FALSE;
+        $payments = $this->model->getAll($dto->getId());
+        // pouze nezrušené platby
+        $payments = array_filter($payments, function ($obj) {
+            return $obj->state != "canceled";
+        });
+        if (count($payments) > 0) {
+            $vss = array_map(function ($obj) {
+                return $obj->vs;
+            }, $payments);
+            if (max($vss) != "") {
+                $disableNextVs = TRUE;
+            }
+        } else {
+            $disableNextVs = TRUE;
+        }
+
+        if ($disableNextVs) {
+            $form["nextVs"]->setDisabled(TRUE);
+        }
+
         $this->template->nadpis = "Editace skupiny: " . $dto->getName();
         $this->template->linkBack = $this->link("Payment:detail", ["id" => $id]);
     }
 
-    protected function createComponentGroupForm($name) : Form
+    protected function createComponentGroupForm($name): Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addSelect("sisId");
@@ -140,6 +162,10 @@ class GroupPresenter extends BasePresenter
             ->setAttribute("class", "form-control")
             ->addCondition(Form::FILLED)
             ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
+        $form->addText("nextVs", "Další VS:")
+            ->setMaxLength(10)
+            ->addCondition(Form::FILLED)
+            ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addSelect("smtp", "Odesílací email", $this->mail->getPairs($this->aid))
             ->setPrompt('Vyberte email');
         $form->addTextArea("email_info", "Informační email")
@@ -149,13 +175,13 @@ class GroupPresenter extends BasePresenter
         $form->addHidden("gid");
         $form->addSubmit('send', "Založit skupinu")->setAttribute("class", "btn btn-primary");
 
-        $form->onSubmit[] = function(Form $form) : void {
+        $form->onSubmit[] = function (Form $form): void {
             $this->groupFormSubmitted($form);
         };
         return $form;
     }
 
-    private function groupFormSubmitted(Form $form) : void
+    private function groupFormSubmitted(Form $form): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro změny skupin plateb", "danger");
@@ -181,6 +207,7 @@ class GroupPresenter extends BasePresenter
                 $v->amount ? (float)$v->amount : NULL,
                 $v->maturity ? \DateTimeImmutable::createFromMutable($v->maturity) : NULL,
                 $v->ks ? (int)$v->ks : NULL,
+                $v->nextVs ? (int)$v->nextVs : NULL,
                 $v->email_info,
                 $v->smtp);
 
@@ -193,6 +220,7 @@ class GroupPresenter extends BasePresenter
                 $v->label,
                 $v->maturity,
                 $v->ks ? (int)$v->ks : NULL,
+                $v->nextVs ? (int)$v->nextVs : NULL,
                 isset($v->amount) ? (float)$v->amount : NULL,
                 $v->email_info,
                 $v->smtp);

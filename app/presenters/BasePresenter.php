@@ -6,8 +6,8 @@ use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseForm;
 use Nette;
 use Nette\Application\UI\Control;
-use WebLoader;
 use Skautis\Wsdl\AuthenticationException;
+use WebLoader;
 use WebLoader\Nette\CssLoader;
 use WebLoader\Nette\JavaScriptLoader;
 
@@ -29,12 +29,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var FormFactory */
     protected $formFactory;
 
-    public function injectUserService(\Model\UserService $u) : void
+    public function injectUserService(\Model\UserService $u): void
     {
         $this->userService = $u;
     }
 
-    public function injectUnitService(\Model\UnitService $u) : void
+    public function injectUnitService(\Model\UnitService $u): void
     {
         $this->unitService = $u;
     }
@@ -44,7 +44,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->formFactory = $formFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
 
@@ -67,7 +67,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         }
     }
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
         parent::beforeRender();
         if ($this->user->isLoggedIn()) {
@@ -89,7 +89,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     }
 
     //změní přihlášenou roli ve skautISu
-    public function handleChangeRole($roleId) : void
+    public function handleChangeRole($roleId): void
     {
         $this->userService->updateSkautISRole($roleId);
         $this->updateUserAccess();
@@ -97,14 +97,14 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     }
 
     /* @deprecated Use $this->formFactory directly */
-    protected function prepareForm(Control $parent = NULL, string $name = NULL) : BaseForm
+    protected function prepareForm(Control $parent = NULL, string $name = NULL): BaseForm
     {
         $form = $this->formFactory->create();
         $this->addComponent($form, $name);
         return $form;
     }
 
-    protected function createComponentCss() : CssLoader
+    protected function createComponentCss(): CssLoader
     {
         $files = new WebLoader\FileCollection(WWW_DIR . '/css');
         $compiler = WebLoader\Compiler::createCssCompiler($files, WWW_DIR . '/webtemp');
@@ -131,7 +131,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         return $control;
     }
 
-    protected function createComponentJs() : JavaScriptLoader
+    protected function createComponentJs(): JavaScriptLoader
     {
         $files = new WebLoader\FileCollection(WWW_DIR . '/js');
         $compiler = WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/webtemp');
@@ -165,7 +165,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         return new JavaScriptLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
     }
 
-    protected function updateUserAccess() : void
+    protected function updateUserAccess(): void
     {
         $this->user->getIdentity()->access = $this->userService->getAccessArrays($this->unitService);
     }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\AccountancyModule\PaymentModule;
+use Model\PaymentService;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -14,20 +15,20 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     /**
      *
-     * @var \Model\PaymentService
+     * @var PaymentService
      */
     protected $model;
 
     /** @var int[] */
     private $editableUnits;
 
-    public function __construct(\Model\PaymentService $paymentService)
+    public function __construct(PaymentService $paymentService)
     {
         parent::__construct();
         $this->model = $paymentService;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->availableActions = $this->userService->actionVerify("OU_Unit", $this->aid);
@@ -55,7 +56,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     /**
      * @return int[]
      */
-    protected function getEditableUnits() : array
+    protected function getEditableUnits(): array
     {
         return $this->editableUnits;
     }

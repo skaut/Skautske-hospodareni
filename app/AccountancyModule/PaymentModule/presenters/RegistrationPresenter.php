@@ -29,7 +29,6 @@ class RegistrationPresenter extends BasePresenter
         }
 
         $this->template->detail = $detail = $this->model->getGroup(array_keys($this->readUnits), $id);
-        $this->template->maxVS = $this->model->getMaxVS($detail->id);
 
         if (!$detail) {
             $this->flashMessage("Neplatný požadavek na přidání registračních plateb", "danger");
