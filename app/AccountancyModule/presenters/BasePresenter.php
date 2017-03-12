@@ -82,7 +82,7 @@ class BasePresenter extends \App\BasePresenter
         return parent::flashMessage($message, $type);
     }
 
-    protected function isAllowed($action, $avaibleActions = NULL) : bool
+    public function isAllowed($action, $avaibleActions = NULL) : bool
     {
         return array_key_exists($action, $avaibleActions == NULL ? $this->availableActions : $avaibleActions);
     }
