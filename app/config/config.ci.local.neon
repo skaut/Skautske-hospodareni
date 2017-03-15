@@ -1,0 +1,25 @@
+nette:
+    application:
+        catchExceptions: false
+        debugger: true
+
+dibi:
+    driver: mysqli
+    host: mysql
+    username: root
+    password:
+    database: hskauting
+    charset: utf8
+    profiler: true
+
+skautis:
+    applicationId: 48104fe2-b447-47f5-9a26-051c710da74e
+    testMode: true
+
+parameters:
+    ssl: FALSE
+    sendEmail: FALSE
+
+services:
+    # Pro produkci
+    # nette.mailer: Nette\Mail\SendmailMailer
