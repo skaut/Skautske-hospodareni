@@ -5,7 +5,7 @@ nette:
 
 dibi:
     driver: mysqli
-    host: 127.0.0.1
+    host: mysql
     username: root
     password:
     database: hskauting
