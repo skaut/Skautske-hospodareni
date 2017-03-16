@@ -95,6 +95,7 @@ class VehiclePresenter extends BasePresenter
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Musíte vyplnit průměrnou spotřebu.")
             ->addRule(Form::FLOAT, "Průměrná spotřeba musí být číslo!");
+        $form->addSubmit("send", "Založit");
 
         $form->onSuccess[] = function(Form $form) : void {
             $this->formCreateVehicleSubmitted($form);
