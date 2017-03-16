@@ -3,6 +3,7 @@
 htaccess
 /app/config/config.*.neon
 !/app/config/config.sample.local.neon
+!/app/config/config.ci.local.neon
 !/vendor/others
 /vendor
 nette-temp/*
@@ -15,3 +16,4 @@ deployment.*
 /www/*.json
 /archiv
 !.htaccess
+.wercker*
