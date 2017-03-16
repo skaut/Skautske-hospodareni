@@ -1,7 +1,7 @@
-#Skautské hospodaření
-[![Run Status](https://api.shippable.com/projects/57566fec2a8192902e22bd24/badge?branch=master)](https://app.shippable.com/projects/57566fec2a8192902e22bd24)
+# Skautské hospodaření
+[![wercker status](https://app.wercker.com/status/605e6519883993559fc355cc988e08a9/s/master "wercker status")](https://app.wercker.com/project/byKey/605e6519883993559fc355cc988e08a9)
 
-#Vývoj
+# Vývoj
 
 Aplikace vyžaduje:
 - PHP 7.1
@@ -66,4 +66,5 @@ vendor/bin/phpcs app --standard=ruleset.xml
 ```
 
 ## CI
-Pro každý PR běží v Shippable CI testy a kontrola coding standardu, která musí projít.
+Pro každý PR běží ve [Werckeru](http://www.wercker.com/) testy a kontrola coding standardu, která musí projít.
+Pro lokální build lze využít [Wercker CLI](http://www.wercker.com/wercker-cli) (Mac, Linux).
