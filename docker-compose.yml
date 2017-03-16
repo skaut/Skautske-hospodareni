@@ -2,23 +2,36 @@ version: '2'
 
 services:
     app:
-        container_name: hskauting
-        tty: true
-        build: docker
+        container_name: hskauting.app
+        image: fmasa/lebeda:7.1
         volumes:
             - www:/var/www
             - .:/var/www/html
-            - /etc/mysql
-            - mysql:/var/lib/mysql
-            - ./docker/php.ini:/usr/local/etc/php/php.ini
             - /var/www/html/nette-temp
-            - ./docker/vhosts.conf:/etc/apache2/sites-enabled/000-default.conf
-            - ./docker/default-ssl.conf:/etc/apache2/sites-enabled/default-ssl.conf
-            - ./docker/ssl:/usr/local/apache2/conf
         ports:
             - 80:80
         environment:
             DEVELOPMENT_MACHINE: 'true'
+        networks:
+            main:
+                aliases:
+                    - hospodareni.loc
+    mysql:
+        container_name: hskauting.mysql
+        image: mysql:5.7
+        volumes:
+            - mysql:/var/lib/mysql
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+            MYSQL_DATABASE: hskauting
+
+        networks:
+            main:
+                aliases:
+                    - mysql
 volumes:
     mysql:
     www:
+
+networks:
+    main:

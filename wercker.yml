@@ -1,0 +1,33 @@
+box: fmasa/lebeda:7.1
+
+services:
+    - name: mysql
+      id: mysql
+      tag: 5.7
+      env:
+        MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        MYSQL_DATABASE: hskauting
+
+build:
+    steps:
+        - script:
+            name: add Github token
+            code: composer config -g github-oauth.github.com $GITHUB_OAUTH_TOKEN
+        - script:
+            name: install composer dependencies
+            code: composer install --no-interaction
+        - script:
+            name: run unit tests
+            code: vendor/bin/tester tests -C
+        - appnific/expandenv:
+            input_file: app/config/config.ci.local.neon
+            output_file: app/config/config.local.neon
+        - script:
+            name: give mysql some time
+            code: sleep 10
+        - script:
+            name: run database migrations
+            code: php www/index.php migrations:migrate --no-interaction
+        - script:
+            name: test coding standard
+            code: vendor/bin/phpcs app --standard=ruleset.xml

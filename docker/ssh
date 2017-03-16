@@ -8,4 +8,4 @@ function compat() {
     fi
 }
 
-compat "docker exec -u www-data -it hskauting bash"
+compat "docker exec -u www-data -it hskauting.app bash"
