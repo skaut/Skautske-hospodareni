@@ -19,12 +19,6 @@ class GroupPresenter extends BasePresenter
     /** @var \Model\EventService */
     private $camp;
 
-    /**
-     * výchozí text emailů
-     * @var array
-     */
-    protected $defaultEmails;
-
     public function __construct(\Model\PaymentService $paymentService, \Model\MailService $mailService)
     {
         parent::__construct($paymentService);
@@ -36,11 +30,6 @@ class GroupPresenter extends BasePresenter
     {
         parent::startup();
         $this->camp = $this->context->getService("campService");
-        $this->defaultEmails = [
-            "base" => [
-                "info" => "Dobrý den,\nchtěli bychom vás požádat o úhradu. \n<b>Informace k platbě:</b>\nÚčel platby: %name%\nČíslo účtu: %account%\nČástka: %amount% Kč\nDatum splatnosti: %maturity%\nVS: %vs%\nKS: %ks%\n\nPro zrychlení platby jsme připravili QR kód, který lze použít při placení v mobilních aplikacích bank. Použití QR kódu šetří váš čas a snižuje pravděpodobnost překlepu.\n%qrcode%\n\nDěkujeme za včasné uhrazení",
-            ]
-        ];
     }
 
     public function actionDefault($type = NULL): void
@@ -167,7 +156,7 @@ class GroupPresenter extends BasePresenter
             ->setPrompt('Vyberte email');
         $form->addTextArea("email_info", "Informační email")
             ->setAttribute("class", "form-control")
-            ->setDefaultValue($this->defaultEmails['base']['info']);
+            ->setDefaultValue($this->getDefaultEmail('info'));
         $form->addHidden("type");
         $form->addHidden("gid");
         $form->addSubmit('send', "Založit skupinu")->setAttribute("class", "btn btn-primary");
@@ -225,6 +214,11 @@ class GroupPresenter extends BasePresenter
             $this->flashMessage('Skupina byla založena');
         }
         $this->redirect('Payment:detail', ['id' => $groupId]);
+    }
+
+    private function getDefaultEmail(string $name) : string
+    {
+        return file_get_contents(__DIR__.'/../templates/defaultEmails/'.$name.'.html');
     }
 
 }
