@@ -301,7 +301,7 @@ class PaymentPresenter extends BasePresenter
         $this->checkEditation();
 
         try {
-            $this->mailing->sendEmail($pid);
+            $this->mailing->sendEmail($pid, $this->user->getId());
             $this->flashMessage('Informační email byl odeslán.');
         } catch (MailerNotFoundException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
@@ -323,7 +323,7 @@ class PaymentPresenter extends BasePresenter
         $this->checkEditation();
 
         try {
-            $sentCount = $this->mailing->sendEmailForGroup($gid);
+            $sentCount = $this->mailing->sendEmailForGroup($gid, $this->user->getId());
         } catch (MailerNotFoundException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (SmtpException $e) {
@@ -356,7 +356,7 @@ class PaymentPresenter extends BasePresenter
         $email = $personalDetail->Email;
 
         try {
-            $this->mailing->sendTestMail($gid, $email);
+            $this->mailing->sendTestMail($gid, $email, $this->user->getId());
             $this->flashMessage("Testovací email byl odeslán na $email.");
         } catch (MailerNotFoundException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
