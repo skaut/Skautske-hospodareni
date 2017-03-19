@@ -1,4 +1,3 @@
-/www/webtemp
 /www/images
 htaccess
 /app/config/config.*.neon
@@ -17,3 +16,4 @@ deployment.*
 /archiv
 !.htaccess
 .wercker*
+tests/_output/*

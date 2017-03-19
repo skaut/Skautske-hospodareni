@@ -52,10 +52,10 @@ php www/index.php migrations:migrate
 
 ## Testy
 Snažíme se psát testy (i když jich zatím moc není).
-Pro testování používáme Nette Tester.
+Pro testování používáme [Codeception](http://codeception.com/).
 Testy lze spustit příkazem v kontejneru:
 ```bash
-vendor/bin/tester tests -C
+vendor/bin/codecept run
 ```
 
 ## Coding standard
