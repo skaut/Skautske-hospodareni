@@ -21,7 +21,6 @@ class QRGenerator implements IQRGenerator
             "bankCode" => $account['code'],
             "amount" => $payment->getAmount(),
             "currency" => "CZK",
-            "date" => $payment->getDueDate()->format("Y-m-d"),
             "size" => "200",
         ];
         if (array_key_exists('prefix', $account) && $account['prefix'] != '') {
