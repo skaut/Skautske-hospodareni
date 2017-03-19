@@ -37,8 +37,6 @@ services:
             main:
                 aliases:
                     - phantom
-        environment:
-            APP_HOST: hospodareni.loc
         command: phantomjs --webdriver=4444 --ssl-protocol=any --ignore-ssl-errors=true
 
 volumes:
