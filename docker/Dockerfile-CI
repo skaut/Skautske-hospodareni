@@ -1,0 +1,28 @@
+FROM php:7.1-apache
+
+MAINTAINER Frantisek Masa <masa@egen.cz>
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update
+
+ADD lamp.sh /lamp.sh
+ADD run.sh /run.sh
+RUN chmod 755 /*.sh
+
+RUN /lamp.sh
+
+RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
+
+RUN apt-get -y install build-essential chrpath libssl-dev libxft-dev \
+    libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev nodejs
+
+ENV HOME /var/www/html
+
+RUN npm install phantomjs -g
+
+ADD vhosts.conf /etc/apache2/sites-enabled/000-default.conf
+ADD php.ini /usr/local/etc/php/php.ini
+
+
+WORKDIR /var/www/html
