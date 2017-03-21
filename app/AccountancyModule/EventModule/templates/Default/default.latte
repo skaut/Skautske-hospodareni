@@ -44,7 +44,7 @@
                     </thead>
                     <tbody>
                         <tr n:foreach="$list as $i">
-                            <td class="hidden-xs hidden-sm">{if $i['accessDelete']}<a n:href="cancel! $i['ID']" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-sm" title="Zrušit akci"><i class="glyphicon glyphicon-remove"></i></a>{else}&nbsp;{/if}</td>
+                            <td class="hidden-xs hidden-sm" n:if="$i['accessDelete']"><a n:href="cancel! $i['ID']" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-sm" title="Zrušit akci"><i class="glyphicon glyphicon-remove"></i></a></td>
                             <td>
                                 <a n:tag-if="$i['accessDetail']" n:href="Event: $i['ID']">{$i['DisplayName']}</a>
                             </td>
