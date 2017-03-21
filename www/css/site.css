@@ -288,3 +288,7 @@ footer {
     padding: 15px;
     white-space: nowrap;
 }
+
+.dropdown-form label {
+    padding-right: 10px;
+}
