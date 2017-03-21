@@ -84,6 +84,7 @@ services:
     - Model\Travel\Repositories\VehicleRepository
     - Model\Payment\Repositories\BankAccountRepository
     - Model\Payment\Repositories\GroupRepository
+    - Model\Payment\Repositories\UserRepository
 
     # Factories
     - Model\Services\TemplateFactory
