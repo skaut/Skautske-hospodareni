@@ -11,6 +11,15 @@ use \Nette\ArrayHash,
 class ExportService extends BaseService
 {
 
+    /** @var UnitService */
+    private $units;
+
+    public function __construct(UnitService $units)
+    {
+        parent::__construct();
+        $this->units = $units;
+    }
+
     /**
      * donastavuje helpery a zdrojový file do šablony
      * @param string $fileName
@@ -43,7 +52,7 @@ class ExportService extends BaseService
 
     /**
      * vrací pokladní knihu
-     * @param type $aid - ID akce
+     * @param int $aid - ID akce
      * @param EventEntity $service
      * @return \FileTemplate
      */
@@ -103,10 +112,9 @@ class ExportService extends BaseService
      * vrací PDF s vybranými paragony
      * @param type $aid
      * @param type $eventService
-     * @param type $unitService
      * @param type $chits
      */
-    public function getChits(ITemplate $template, $aid, EventEntity $eventService, BaseService $unitService, array $chits)
+    public function getChits(ITemplate $template, $aid, EventEntity $eventService, array $chits)
     {
         $income = [];
         $outcome = [];
@@ -130,9 +138,9 @@ class ExportService extends BaseService
         }
         $event = $eventService->event->get($aid);
         if (in_array($eventService->event->type, ["camp", "general"])) {
-            $template->oficialName = $unitService->getOficialName($event->ID_Unit);
+            $template->oficialName = $this->units->getOficialName($event->ID_Unit);
         } elseif ($eventService->event->type == "unit") {
-            $template->oficialName = $unitService->getOficialName($event->ID);
+            $template->oficialName = $this->units->getOficialName($event->ID);
         } else {
             throw new \Nette\InvalidArgumentException("Neplatný typ události v ExportService");
         }

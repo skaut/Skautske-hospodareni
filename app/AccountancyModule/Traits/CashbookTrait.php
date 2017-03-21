@@ -2,6 +2,7 @@
 
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+use Model\ExportService;
 use Model\Services\PdfRenderer;
 
 trait CashbookTrait
@@ -12,6 +13,9 @@ trait CashbookTrait
 
     /** @var PdfRenderer */
     protected $pdf;
+
+    /** @var ExportService */
+    protected $exportService;
 
     public function renderEdit($id, $aid) : void
     {
@@ -60,7 +64,7 @@ trait CashbookTrait
     public function actionPrint($id, $aid) : void
     {
         $chits = [$this->entityService->chits->get($id)];
-        $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $this->unitService, $chits);
+        $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
@@ -101,7 +105,7 @@ trait CashbookTrait
     private function massPrintSubmitted(SubmitButton $button) : void
     {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
-        $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $this->unitService, $chits);
+        $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
