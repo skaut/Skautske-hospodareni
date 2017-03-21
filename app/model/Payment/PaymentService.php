@@ -340,9 +340,10 @@ class PaymentService
     public function getNewestRegistration(): array
     {
         $unitId = $this->skautis->getUser()->getUnitId();
-        $data = array_values($this->skautis->org->UnitRegistrationAll(["ID_Unit" => $unitId, ""]));
 
-        if ($data) {
+        $data = $this->skautis->org->UnitRegistrationAll(["ID_Unit" => $unitId, ""]);
+
+        if ($data != new \stdClass()) { // Skautis returns empty object when no registration is found
             $registration = $data[0];
             if (!$this->table->getGroupsBySisId('registration', $registration->ID)) {
                 return (array)$registration;

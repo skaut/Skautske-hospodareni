@@ -17,3 +17,7 @@ class PaymentFinishedException extends \Exception
 class InvalidBankAccountException extends \Exception
 {
 }
+
+class UserNotFoundException extends \Exception
+{
+}

@@ -9,6 +9,7 @@ use Model\Mail\IMailerFactory;
 use Model\Payment\QR\IQRGenerator;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
+use Model\Payment\Repositories\IUserRepository;
 use Model\PaymentTable;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
@@ -34,6 +35,9 @@ class MailingService
     /** @var TemplateFactory */
     private $templateFactory;
 
+    /** @var IUserRepository */
+    private $users;
+
     /** @var IQRGenerator */
     private $qr;
 
@@ -43,6 +47,7 @@ class MailingService
         PaymentTable $payments,
         IBankAccountRepository $bankAccounts,
         TemplateFactory $templateFactory,
+        IUserRepository $users,
         IQRGenerator $qr
     )
     {
@@ -51,29 +56,32 @@ class MailingService
         $this->payments = $payments;
         $this->bankAccounts = $bankAccounts;
         $this->templateFactory = $templateFactory;
+        $this->users = $users;
         $this->qr = $qr;
     }
 
-    public function sendEmail(int $paymentId)
+    public function sendEmail(int $paymentId, int $userId)
     {
         $payment = $this->payments->getSimple($paymentId);
         $group = $this->groups->find($payment->groupId);
         $bankAccount = $this->getBankAccount($group->getUnitId());
+        $user = $this->users->find($userId);
 
-        $this->sendForPayment($payment, $group, $bankAccount);
+        $this->sendForPayment($payment, $group, $bankAccount, $user);
     }
 
-    public function sendEmailForGroup(int $groupId) : int
+    public function sendEmailForGroup(int $groupId, int $userId) : int
     {
         $group = $this->groups->find($groupId);
         $bankAccount = $this->getBankAccount($group->getUnitId());
 
         $payments = $this->payments->getAllPayments($groupId);
+        $user = $this->users->find($userId);
 
         $sent = 0;
         foreach($payments as $payment) {
             try {
-                $this->sendForPayment($payment, $group, $bankAccount);
+                $this->sendForPayment($payment, $group, $bankAccount, $user);
                 $sent++;
             } catch(InvalidEmailException | PaymentFinishedException $e) {}
         }
@@ -81,7 +89,7 @@ class MailingService
         return $sent;
     }
 
-    public function sendTestMail(int $groupId, string $email) : void
+    public function sendTestMail(int $groupId, string $email, int $userId) : void
     {
         $group = $this->groups->find($groupId);
         $bankAccount = $this->getBankAccount($group->getUnitId());
@@ -96,7 +104,8 @@ class MailingService
             'obsah poznámky'
         );
 
-        $this->send($group, $payment, $bankAccount);
+        $user = $this->users->find($userId);
+        $this->send($group, $payment, $bankAccount, $user);
     }
 
     private function getBankAccount(int $unitId) : ?string
@@ -110,7 +119,7 @@ class MailingService
         return NULL;
     }
 
-    private function sendForPayment(Row $paymentRow, Group $group, ?string $bankAccount) : void
+    private function sendForPayment(Row $paymentRow, Group $group, ?string $bankAccount, User $user) : void
     {
         $state = $paymentRow->state;
 
@@ -127,7 +136,7 @@ class MailingService
             $paymentRow->ks ? (int)$paymentRow->ks : NULL,
             (string)$paymentRow->note
         );
-        $this->send($group, $payment, $bankAccount);
+        $this->send($group, $payment, $bankAccount, $user);
 
         if ($state != PaymentTable::PAYMENT_STATE_SEND) {
             $this->payments->update($paymentRow->id, ['state' => PaymentTable::PAYMENT_STATE_SEND]);
@@ -135,7 +144,7 @@ class MailingService
 
     }
 
-    private function send(Group $group, Payment $payment, ?string $bankAccount) : void
+    private function send(Group $group, Payment $payment, ?string $bankAccount, User $user) : void
     {
         $email = $payment->getEmail();
         if ($email === NULL || !Validators::isEmail($email)) {
@@ -161,6 +170,7 @@ class MailingService
             '%vs%' => $payment->getVariableSymbol(),
             '%ks%' => $payment->getConstantSymbol(),
             '%note%' => $payment->getNote(),
+            '%user%' => $user->getName(),
         ];
 
         if (Strings::contains($body, '%qrcode')) {
