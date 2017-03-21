@@ -134,7 +134,7 @@ class EventPresenter extends BasePresenter
         $template .= (string)$this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
         //        $template .= (string)$this->exportService->getHpd($this->createTemplate(), $aid, $this->eventService, $this->unitService) . $this->exportService->getNewPage();
         $template .= (string)$this->exportService->getCashbook($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= (string)$this->exportService->getChits($this->createTemplate(), $aid, $this->eventService, $this->unitService, $chits);
+        $template .= (string)$this->exportService->getChits($this->createTemplate(), $aid, $this->eventService, $chits);
 
         $this->pdf->render($template, 'all.pdf');
         $this->terminate();
