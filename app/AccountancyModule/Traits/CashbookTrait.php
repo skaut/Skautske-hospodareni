@@ -259,4 +259,23 @@ trait CashbookTrait
         }
     }
 
+    private function editChit(int $chitId)
+    {
+        $this->isChitEditable($chitId, $this->entityService);
+        $form = $this['cashbookForm'];
+        $chit = $this->entityService->chits->get($chitId);
+
+        $form['category']->setItems($this->entityService->chits->getCategoriesPairs($chit->ctype, $this->aid));
+        $form->setDefaults([
+            "pid" => $chitId,
+            "date" => $chit->date->format("j. n. Y"),
+            "num" => $chit->num,
+            "recipient" => $chit->recipient,
+            "purpose" => $chit->purpose,
+            "price" => $chit->priceText,
+            "type" => $chit->ctype,
+            "category" => $chit->category,
+        ]);
+    }
+
 }
