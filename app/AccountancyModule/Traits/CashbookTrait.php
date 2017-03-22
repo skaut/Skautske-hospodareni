@@ -43,7 +43,7 @@ trait CashbookTrait
     public function renderEdit($id, $aid) : void
     {
         $this->editableOnly();
-        $this->isChitEditable($id, $this->entityService);
+        $this->isChitEditable($id);
 
         $defaults = $this->entityService->chits->get($id);
         $defaults['id'] = $id;
@@ -95,7 +95,7 @@ trait CashbookTrait
     public function handleRemove($id, $actionId) : void
     {
         $this->editableOnly();
-        $this->isChitEditable($id, $this->entityService);
+        $this->isChitEditable($id);
 
         if ($this->entityService->chits->delete($id, $actionId)) {
             $this->flashMessage("Paragon byl smazán");
@@ -202,7 +202,7 @@ trait CashbookTrait
                 if ($values['pid'] != "") {//EDIT
                     $chitId = $values['pid'];
                     unset($values['id']);
-                    $this->isChitEditable($chitId, $this->entityService);
+                    $this->isChitEditable($chitId);
                     if ($this->entityService->chits->update($chitId, $values)) {
                         $this->flashMessage("Paragon byl upraven.");
                     } else {
@@ -233,14 +233,14 @@ trait CashbookTrait
 
     /**
      * ověřuje editovatelnost paragonu a případně vrací chybovou hlášku rovnou
-     * @param type $chitId
-     * @param type $service
+     * @param int $chitId
+     * @throws \Nette\Application\AbortException
      */
-    protected function isChitEditable($chitId, $service) : ?bool
+    private function isChitEditable(int $chitId) : void
     {
-        $chit = $service->chits->get($chitId);
+        $chit = $this->entityService->chits->get($chitId);
         if ($chit !== FALSE && is_null($chit->lock)) {
-            return TRUE;
+            return;
         }
         $this->flashMessage("Paragon není možné upravovat!", "danger");
         if ($this->isAjax()) {
@@ -261,7 +261,7 @@ trait CashbookTrait
 
     private function editChit(int $chitId)
     {
-        $this->isChitEditable($chitId, $this->entityService);
+        $this->isChitEditable($chitId);
         $form = $this['cashbookForm'];
         $chit = $this->entityService->chits->get($chitId);
 
