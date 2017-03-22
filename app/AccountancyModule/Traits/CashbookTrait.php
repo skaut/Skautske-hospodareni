@@ -2,7 +2,9 @@
 
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+use Model\ExcelService;
 use Model\ExportService;
+use Model\MemberService;
 use Model\Services\PdfRenderer;
 
 trait CashbookTrait
@@ -12,10 +14,31 @@ trait CashbookTrait
     protected $entityService;
 
     /** @var PdfRenderer */
-    protected $pdf;
+    private $pdf;
 
     /** @var ExportService */
-    protected $exportService;
+    private $exportService;
+
+    /** @var ExcelService */
+    private $excelService;
+
+    /** @var MemberService */
+    private $memberService;
+
+    /** @var \Nette\Utils\ArrayHash */
+    protected $event;
+
+    public function injectConstruct(
+        PdfRenderer $pdf,
+        ExportService $exports,
+        ExcelService $excel,
+        MemberService $members)
+    {
+        $this->pdf = $pdf;
+        $this->exportService = $exports;
+        $this->excelService = $excel;
+        $this->memberService = $members;
+    }
 
     public function renderEdit($id, $aid) : void
     {
@@ -81,8 +104,8 @@ trait CashbookTrait
         }
 
         if ($this->isAjax()) {
-            $this->invalidateControl("paragony");
-            $this->invalidateControl("flash");
+            $this->redrawControl("paragony");
+            $this->redrawControl("flash");
         } else {
             $this->redirect('this', $actionId);
         }
@@ -224,6 +247,15 @@ trait CashbookTrait
             $this->sendPayload();
         } else {
             $this->redirect("this");
+        }
+    }
+
+    public function render()
+    {
+        try {
+            $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
+        } catch(\Skautis\Wsdl\WsdlException $e) {
+            $this->template->autoCompleter = [];
         }
     }
 
