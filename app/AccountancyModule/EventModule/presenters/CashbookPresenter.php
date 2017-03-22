@@ -2,11 +2,6 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use Model\ExcelService;
-use Model\ExportService;
-use Model\MemberService;
-use Model\Services\PdfRenderer;
-
 /**
  * @author Hána František <sinacek@gmail.com>
  */
@@ -14,30 +9,6 @@ class CashbookPresenter extends BasePresenter
 {
 
     use \CashbookTrait;
-
-    /**
-     * @var \Model\MemberService
-     */
-    protected $memberService;
-
-    /**
-     * @var \Model\ExportService
-     */
-    protected $exportService;
-
-    /**
-     * @var \Model\ExcelService
-     */
-    protected $excelService;
-
-    public function __construct(MemberService $member, ExportService $es, ExcelService $exs, PdfRenderer $pdf)
-    {
-        parent::__construct();
-        $this->memberService = $member;
-        $this->exportService = $es;
-        $this->excelService = $exs;
-        $this->pdf = $pdf;
-    }
 
     protected function startup() : void
     {
@@ -73,17 +44,10 @@ class CashbookPresenter extends BasePresenter
         }
 
         $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->autoCompleter = [];
-        if (!$dp) {
-            try {
-                $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
-            } catch (\Skautis\Wsdl\WsdlException $exc) {
-
-            }
-        }
         $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->linkImportHPD = $this->link("importHpd", ["aid" => $aid]);
         $this->template->object = $this->event;
+        $this->render();
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
         }

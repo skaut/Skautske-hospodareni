@@ -2,10 +2,6 @@
 
 namespace App\AccountancyModule\CampModule;
 
-use Model\ExcelService;
-use Model\ExportService;
-use Model\MemberService;
-use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 
 /**
@@ -15,30 +11,6 @@ class CashbookPresenter extends BasePresenter
 {
 
     use \CashbookTrait;
-
-    /**
-     * @var \Model\MemberService
-     */
-    protected $memberService;
-
-    /**
-     * @var \Model\ExportService
-     */
-    protected $exportService;
-
-    /**
-     * @var \Model\ExcelService
-     */
-    protected $excelService;
-
-    public function __construct(MemberService $member, ExportService $es, ExcelService $exs, PdfRenderer $pdf)
-    {
-        parent::__construct();
-        $this->memberService = $member;
-        $this->exportService = $es;
-        $this->excelService = $exs;
-        $this->pdf = $pdf;
-    }
 
     protected function startup() : void
     {
@@ -72,19 +44,14 @@ class CashbookPresenter extends BasePresenter
         }
 
         $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid);
-        $this->template->autoCompleter = [];
-        if (!$dp) {
-            try {
-                $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
-            } catch (\Skautis\Wsdl\WsdlException $exc) {
 
-            }
-        }
         $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->missingCategories = FALSE;
         $this->template->linkImportHPD = "#importHpd";
         $this->template->object = $this->event;
-        //        dump($this->camp);
+
+        $this->render();
+
         if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
             //$this->template->isAllowedUpdateRealTotalCost = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
             $this->template->missingCategories = TRUE; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
