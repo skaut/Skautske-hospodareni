@@ -18,7 +18,7 @@ $I->amGoingTo('add first payment');
 
 $page->fillName('Testovací platba');
 $page->fillAmount(1000);
-$page->selectTomorrowForDueDate();
+$page->selectNextWorkdayForDueDate();
 $page->submitPayment();
 
 $I->waitForText('Platba byla přidána');
@@ -26,13 +26,13 @@ $I->waitForText('Platba byla přidána');
 $I->amGoingTo('add another payment');
 $page->fillName('Testovací platba 2');
 $page->fillAmount(500);
-$page->selectTomorrowForDueDate();
+$page->selectNextWorkdayForDueDate();
 $page->submitPayment();
 
 $I->amGoingTo('add third payment');
 $page->fillName('Testovací platba 2');
 $page->fillAmount(300);
-$page->selectTomorrowForDueDate();
+$page->selectNextWorkdayForDueDate();
 $page->submitPayment();
 
 $I->amGoingTo('mark second payment as complete');
