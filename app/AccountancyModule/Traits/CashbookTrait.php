@@ -250,7 +250,7 @@ trait CashbookTrait
         }
     }
 
-    public function render()
+    public function fillTemplateVariables()
     {
         try {
             $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
