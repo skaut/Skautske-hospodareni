@@ -37,5 +37,11 @@
         "codeception/codeception": "^2.2",
         "codeception/mockery-module": "^0.2.2"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:fmasa/dependentselectbox.git"
+        }
+    ],
     "minimum-stability": "RC"
 }
