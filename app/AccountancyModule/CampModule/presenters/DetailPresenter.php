@@ -45,7 +45,7 @@ class DetailPresenter extends BasePresenter
         }
 
         if ($this->isAjax()) {
-            $this->invalidateControl("contentSnip");
+            $this->redrawControl("contentSnip");
         }
 
         $form = $this['formEdit'];

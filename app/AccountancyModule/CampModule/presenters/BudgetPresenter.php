@@ -25,7 +25,7 @@ class BudgetPresenter extends BasePresenter
         $this->template->dataEstimate = $this->eventService->chits->getCategories($aid, TRUE);
         $this->template->dataReal = $this->eventService->chits->getCategories($aid, FALSE);
         if ($this->isAjax()) {
-            $this->invalidateControl("contentSnip");
+            $this->redrawControl("contentSnip");
         }
     }
 
@@ -40,8 +40,8 @@ class BudgetPresenter extends BasePresenter
         $this->flashMessage("Kategorie byly přepočítány.");
 
         if ($this->isAjax()) {
-            //            $this->invalidateControl("paragony");
-            $this->invalidateControl("flash");
+            //            $this->redrawControl("paragony");
+            $this->redrawControl("flash");
         } else {
             $this->redirect('this', $aid);
         }

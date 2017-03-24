@@ -222,8 +222,8 @@ trait CashbookTrait
             }
 
             //            if ($this->isAjax()) {
-            //                $this->invalidateControl("paragony");
-            //                $this->invalidateControl("flash");
+            //                $this->redrawControl("paragony");
+            //                $this->redrawControl("flash");
             //            } else {
             //                $this->redirect("default", array("aid" => $this->aid));
             //            }
