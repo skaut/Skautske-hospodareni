@@ -37,7 +37,7 @@ class CashbookPresenter extends BasePresenter
         $this->template->linkImportHPD = "#importHpd";
         $this->template->object = $this->event;
 
-        $this->render();
+        $this->fillTemplateVariables();
 
         if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
             //$this->template->isAllowedUpdateRealTotalCost = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
