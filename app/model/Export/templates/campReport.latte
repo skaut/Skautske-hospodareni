@@ -43,7 +43,7 @@ table {
         <th>{$a->StartDate|date:"j.n.Y"}</th>
         <th>{$a->EndDate|date:"j.n.Y"}</th>
         <th>{$a->TotalDays}</th>
-        <th>{!= trim($a->Location) ? $a->Location : "&nbsp;"|stripTags}</th>
+        <th>{!= trim($a->Location) ? $a->Location : "&nbsp;"|stripHtml}</th>
     </tr>
 </table>
 

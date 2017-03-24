@@ -3,7 +3,7 @@
     {*}<html lang="cs" manifest="{$baseUri}/appa.manifest">{*}
     <head>
         <meta charset=utf-8 />
-        <title>{block #title|striptags|trim}SkaHos{/block}</title>
+        <title>{block #title|stripHtml|trim}SkaHos{/block}</title>
         <meta name="keywords" content="" />
         <meta name="author" content="www.sinacek.cz" />
         <meta name="robots" content="{$robots}" n:ifset="$robots">
