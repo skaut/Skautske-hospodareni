@@ -2,6 +2,9 @@
 
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+use Model\ExcelService;
+use Model\ExportService;
+use Model\MemberService;
 use Model\Services\PdfRenderer;
 
 trait CashbookTrait
@@ -11,12 +14,36 @@ trait CashbookTrait
     protected $entityService;
 
     /** @var PdfRenderer */
-    protected $pdf;
+    private $pdf;
+
+    /** @var ExportService */
+    private $exportService;
+
+    /** @var ExcelService */
+    private $excelService;
+
+    /** @var MemberService */
+    private $memberService;
+
+    /** @var \Nette\Utils\ArrayHash */
+    protected $event;
+
+    public function injectConstruct(
+        PdfRenderer $pdf,
+        ExportService $exports,
+        ExcelService $excel,
+        MemberService $members)
+    {
+        $this->pdf = $pdf;
+        $this->exportService = $exports;
+        $this->excelService = $excel;
+        $this->memberService = $members;
+    }
 
     public function renderEdit($id, $aid) : void
     {
         $this->editableOnly();
-        $this->isChitEditable($id, $this->entityService);
+        $this->isChitEditable($id);
 
         $defaults = $this->entityService->chits->get($id);
         $defaults['id'] = $id;
@@ -36,36 +63,6 @@ trait CashbookTrait
         $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
     }
 
-    //    //AJAX edit
-    //    public function actionEditField($aid, $id, $field, $value) {
-    //        $this->editableOnly();
-    //        $this->isChitEditable($id, $this->entityService);
-    //
-    //        if ($field == "price") {
-    //            $this->entityService->chits->update($id, array("price" => $value));
-    //        }
-    //
-    //        $this->terminate();
-    //    }
-    //
-    //    public function actionImportHpd($aid) {
-    //        $this->editableOnly();
-    //        $totalPayment = $this->entityService->participants->getTotalPayment($this->aid);
-    //        $func = $this->entityService->event->getFunctions($this->aid);
-    //        $hospodar = ($func[2]->ID_Person != null) ? $func[2]->Person : ""; //$func[0]->Person
-    //        $date = $this->entityService->event->get($aid)->StartDate;
-    //        $category = $this->entityService->chits->getEventCategoryParticipant();
-    //
-    //        $values = array("date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category);
-    //        $add = $this->entityService->chits->add($this->aid, $values);
-    //        if ($add) {
-    //            $this->flashMessage("Účastníci byli importováni");
-    //        } else {
-    //            $this->flashMessage("Účastníky se nepodařilo importovat", "fail");
-    //        }
-    //        $this->redirect("default", array("aid" => $aid));
-    //    }
-    //
     public function actionExport($aid) : void
     {
         $template = $this->exportService->getCashbook($this->createTemplate(), $aid, $this->entityService);
@@ -90,7 +87,7 @@ trait CashbookTrait
     public function actionPrint($id, $aid) : void
     {
         $chits = [$this->entityService->chits->get($id)];
-        $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $this->unitService, $chits);
+        $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
@@ -98,7 +95,7 @@ trait CashbookTrait
     public function handleRemove($id, $actionId) : void
     {
         $this->editableOnly();
-        $this->isChitEditable($id, $this->entityService);
+        $this->isChitEditable($id);
 
         if ($this->entityService->chits->delete($id, $actionId)) {
             $this->flashMessage("Paragon byl smazán");
@@ -107,8 +104,8 @@ trait CashbookTrait
         }
 
         if ($this->isAjax()) {
-            $this->invalidateControl("paragony");
-            $this->invalidateControl("flash");
+            $this->redrawControl("paragony");
+            $this->redrawControl("flash");
         } else {
             $this->redirect('this', $actionId);
         }
@@ -131,7 +128,7 @@ trait CashbookTrait
     private function massPrintSubmitted(SubmitButton $button) : void
     {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
-        $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $this->unitService, $chits);
+        $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
@@ -205,7 +202,7 @@ trait CashbookTrait
                 if ($values['pid'] != "") {//EDIT
                     $chitId = $values['pid'];
                     unset($values['id']);
-                    $this->isChitEditable($chitId, $this->entityService);
+                    $this->isChitEditable($chitId);
                     if ($this->entityService->chits->update($chitId, $values)) {
                         $this->flashMessage("Paragon byl upraven.");
                     } else {
@@ -236,14 +233,14 @@ trait CashbookTrait
 
     /**
      * ověřuje editovatelnost paragonu a případně vrací chybovou hlášku rovnou
-     * @param type $chitId
-     * @param type $service
+     * @param int $chitId
+     * @throws \Nette\Application\AbortException
      */
-    protected function isChitEditable($chitId, $service) : ?bool
+    private function isChitEditable(int $chitId) : void
     {
-        $chit = $service->chits->get($chitId);
+        $chit = $this->entityService->chits->get($chitId);
         if ($chit !== FALSE && is_null($chit->lock)) {
-            return TRUE;
+            return;
         }
         $this->flashMessage("Paragon není možné upravovat!", "danger");
         if ($this->isAjax()) {
@@ -253,108 +250,33 @@ trait CashbookTrait
         }
     }
 
-    //FORM OUT
-    //    function createComponentFormOutAdd($name) {
-    //        $form = self::makeFormOUT($this, $name);
-    //        $form->addSubmit('send', 'Uložit')
-    //                ->setAttribute("class", "btn btn-primary");
-    //        $form->onSuccess[] = array($this, 'formAddSubmitted');
-    //        //$form->setDefaults(array('category' => 'un'));
-    //        return $form;
-    //    }
-    //
-    //    /**
-    //     * formular na úpravu výdajových dokladů
-    //     * @param string $name
-    //     * @return Form 
-    //     */
-    //    function createComponentFormOutEdit($name) {
-    //        $form = self::makeFormOUT($this, $name);
-    //        $form->addHidden('id');
-    //        $form->addSubmit('send', 'Uložit')
-    //                ->setAttribute("class", "btn btn-primary");
-    //        $form->onSuccess[] = array($this, 'formEditSubmitted');
-    //        return $form;
-    //    }
-    //
-    //    /**
-    //     * generuje základní Form pro ostatní formuláře
-    //     * @param Presenter $thisP
-    //     * @param <type> $name
-    //     * @return Form
-    //     */
-    //    protected static function makeFormOUT($thisP, $name) {
-    //        $form = new Form($thisP, $name);
-    //        $form->addDatePicker("date", "Ze dne:", 15)
-    //                ->addRule(Form::FILLED, 'Zadejte datum')
-    //                ->getControlPrototype()->class("form-control");
-    //        //@TODO kontrola platneho data, problem s componentou
-    //        $form->addText("recipient", "Vyplaceno komu:")
-    //                ->setHtmlId("form-out-recipient")
-    //                ->getControlPrototype()->class("form-control");
-    //        $form->addText("purpose", "Účel výplaty:")
-    //                ->setMaxLength(40)
-    //                ->addRule(Form::FILLED, 'Zadejte účel výplaty')
-    //                ->getControlPrototype()->placeholder("3 první položky")
-    //                ->class("form-control");
-    //        $form->addText("price", "Částka: ")
-    //                ->setMaxLength(100)
-    //                ->setHtmlId("form-out-price")
-    ////                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
-    //                ->getControlPrototype()->placeholder("např. 20+15*3")
-    //                ->class("form-control");
-    //        $categories = $thisP->entityService->chits->getCategoriesPairs('out', $thisP->aid);
-    //        $form->addRadioList("category", "Typ: ", $categories)
-    //                ->addRule(Form::FILLED, 'Zadej typ paragonu');
-    //        if (isset($thisP->event) && isset($thisP->event->prefix) && $thisP->event->prefix != "") {
-    //            $form->addText("num", "Číslo d.:")
-    //                ->setMaxLength(5)            
-    //                    ->setAttribute('class', 'form-control input-sm');
-    //        }
-    //        return $form;
-    //    }
-    //
-    //    //FORM IN    
-    //    function createComponentFormInAdd($name) {
-    //        $form = $this->makeFormIn($this, $name);
-    //        $form->addSubmit('send', 'Uložit')
-    //                ->setAttribute("class", "btn btn-primary");
-    //        $form->onSuccess[] = array($this, 'formAddSubmitted');
-    //        return $form;
-    //    }
-    //
-    //    function createComponentFormInEdit($name) {
-    //        $form = self::makeFormIn($this, $name);
-    //        $form->addHidden('id');
-    //        $form->addSubmit('send', 'Uložit')
-    //                ->setAttribute("class", "btn btn-primary");
-    //        $form->onSuccess[] = array($this, 'formEditSubmitted');
-    //        return $form;
-    //    }
-    //
-    //    protected static function makeFormIn($thisP, $name) {
-    //        $form = new Form($thisP, $name);
-    //        $form->addDatePicker("date", "Ze dne:", 15)
-    //                ->addRule(Form::FILLED, 'Zadejte datum')
-    //                ->getControlPrototype()->class("form-control");
-    //        $form->addText("recipient", "Přijato od:", 20, 30)
-    //                ->setHtmlId("form-in-recipient")
-    //                ->getControlPrototype()->class("form-control");
-    //        $form->addText("purpose", "Účel příjmu:", 20, 40)
-    //                ->addRule(Form::FILLED, 'Zadejte účel přijmu')
-    //                ->getControlPrototype()->class("form-control");
-    //        $form->addText("price", "Částka: ", 20, 100)
-    //                ->setHtmlId("form-in-price")
-    //                //->addRule(Form::REGEXP, 'Zadejte platnou částku', "/^([0-9]+(.[0-9]{0,2})?[\+\*])*[0-9]+([.][0-9]{0,2})?$/")
-    //                ->getControlPrototype()->placeholder("např. 20+15*3")
-    //                ->class("form-control");
-    //        $categories = $thisP->entityService->chits->getCategoriesPairs('in', $thisP->aid);
-    //        $form->addRadioList("category", "Typ: ", $categories)
-    //                ->addRule(Form::FILLED, 'Zadej typ paragonu');
-    //        if (isset($thisP->event) && isset($thisP->event->prefix) && $thisP->event->prefix != "") {
-    //            $form->addText("num", "Číslo d.:", NULL, 5)
-    //                    ->setAttribute('class', 'form-control input-sm');
-    //        }
-    //        return $form;
-    //    }
+    public function fillTemplateVariables()
+    {
+        $this->template->object = $this->event;
+        try {
+            $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
+        } catch(\Skautis\Wsdl\WsdlException $e) {
+            $this->template->autoCompleter = [];
+        }
+    }
+
+    private function editChit(int $chitId)
+    {
+        $this->isChitEditable($chitId);
+        $form = $this['cashbookForm'];
+        $chit = $this->entityService->chits->get($chitId);
+
+        $form['category']->setItems($this->entityService->chits->getCategoriesPairs($chit->ctype, $this->aid));
+        $form->setDefaults([
+            "pid" => $chitId,
+            "date" => $chit->date->format("j. n. Y"),
+            "num" => $chit->num,
+            "recipient" => $chit->recipient,
+            "purpose" => $chit->purpose,
+            "price" => $chit->priceText,
+            "type" => $chit->ctype,
+            "category" => $chit->category,
+        ]);
+    }
+
 }

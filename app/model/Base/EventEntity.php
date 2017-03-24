@@ -3,8 +3,9 @@
 namespace Model;
 
 /**
- *
- * @author Hána František <sinacek@gmail.com>
+ * @property-read EventService $event
+ * @property-read ParticipantService $participants
+ * @property-read ChitService $chits
  */
 class EventEntity
 {
