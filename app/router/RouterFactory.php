@@ -13,16 +13,6 @@ class RouterFactory
 {
 
     /**
-     * RouterFactory constructor.
-     * @param bool $ssl
-     */
-    public function __construct($ssl)
-    {
-        // Disable https for development
-        Route::$defaultFlags = $ssl ? Route::SECURED : 0;
-    }
-
-    /**
      * @return \Nette\Application\IRouter
      */
     public function createRouter()
