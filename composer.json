@@ -22,7 +22,6 @@
         "skautis/nette": "2.*@dev",
         "janmarek/webloader": "2.5.*",
         "dibi/dibi": "3.0.*",
-        "srigi/nette-visualpaginator": "1.0.*",
         "phpoffice/phpexcel": "1.8.*",
         "mpdf/mpdf": "dev-development#042f2d2",
         "nextras/forms": "1.6.*",
