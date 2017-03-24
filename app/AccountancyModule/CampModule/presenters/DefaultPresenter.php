@@ -53,7 +53,7 @@ class DefaultPresenter extends BasePresenter
     {
         $this->ses->year = $year;
         if ($this->isAjax()) {
-            $this->invalidateControl("camps");
+            $this->redrawControl("camps");
         } else {
             $this->redirect("this");
         }
@@ -63,7 +63,7 @@ class DefaultPresenter extends BasePresenter
     {
         $this->ses->state = $state;
         if ($this->isAjax()) {
-            $this->invalidateControl("camps");
+            $this->redrawControl("camps");
         } else {
             $this->redirect("this");
         }

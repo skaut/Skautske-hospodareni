@@ -82,7 +82,7 @@ class AuthPresenter extends BasePresenter
     {
         $this->template->backlink = $backlink;
         $this->flashMessage("Vypršel čas přihlášení. Přihlaste se prosím znovu.", "warning");
-        $this->invalidateControl();
+        $this->redrawControl();
     }
 
     /**

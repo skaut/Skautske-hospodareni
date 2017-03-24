@@ -21,7 +21,7 @@ class OfflinePresenter extends BasePresenter
 
     public function handleSynchronize($aid) : void
     {
-        $this->invalidateControl();
+        $this->redrawControl();
         //        $post = $this->context->httpRequest->getPost();
         //        dump($post);
         //        die();

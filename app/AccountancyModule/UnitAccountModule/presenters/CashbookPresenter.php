@@ -48,7 +48,7 @@ class CashbookPresenter extends BasePresenter
         $this->fillTemplateVariables();
         $this->template->list = $this->entityService->chits->getAll($aid);
         if ($this->isAjax()) {
-            $this->invalidateControl("contentSnip");
+            $this->redrawControl("contentSnip");
         }
     }
 

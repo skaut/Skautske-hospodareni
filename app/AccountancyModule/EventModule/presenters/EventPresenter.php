@@ -89,7 +89,7 @@ class EventPresenter extends BasePresenter
         $this->template->accessDetailEvent = $this->isAllowed("EV_EventGeneral_DETAIL");
 
         if ($this->isAjax()) {
-            $this->invalidateControl("contentSnip");
+            $this->redrawControl("contentSnip");
         }
     }
 
