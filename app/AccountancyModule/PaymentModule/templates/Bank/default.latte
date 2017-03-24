@@ -1,6 +1,6 @@
-{block #noEmpty $val}
+{define #noEmpty $val}
 {php echo $val == "" ? "&nbsp;" : $val;}
-{/block}
+{/define}
 
 {block #content}
 <h2 n:block="title">Bankovní účet</h2>
