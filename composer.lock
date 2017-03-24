@@ -728,12 +728,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fmasa/dependentselectbox.git",
-                "reference": "eb50a72b0a8949e83a04d95021f75ed0f98475df"
+                "reference": "36ac425e88af9ae49621bf8d38d4b450134e72b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fmasa/dependentselectbox/zipball/eb50a72b0a8949e83a04d95021f75ed0f98475df",
-                "reference": "eb50a72b0a8949e83a04d95021f75ed0f98475df",
+                "url": "https://api.github.com/repos/fmasa/dependentselectbox/zipball/36ac425e88af9ae49621bf8d38d4b450134e72b2",
+                "reference": "36ac425e88af9ae49621bf8d38d4b450134e72b2",
                 "shasum": ""
             },
             "require": {
@@ -764,7 +764,7 @@
             "support": {
                 "source": "https://github.com/fmasa/dependentselectbox/tree/master"
             },
-            "time": "2017-03-24 19:53:17"
+            "time": "2017-03-24 20:26:06"
         },
         {
             "name": "heureka/bank-account-validator",

@@ -570,6 +570,7 @@ class PaymentPresenter extends BasePresenter
 
         $form->addText('days', 'Počet dní', 2, 2)
             ->setDefaultValue($days)
+            ->setRequired('Musíte vyplnit počet dní')
             ->addRule($form::MIN, 'Musíte zadat alespoň počet dní z nastavení: %d', $days)
             ->setType('number');
         $form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
