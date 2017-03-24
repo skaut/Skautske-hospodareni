@@ -19,16 +19,13 @@ class CashbookPresenter extends BasePresenter
         }
         $this->entityService = $this->context->getService("unitAccountService");
 
-        /**
-         * $object potřebuje šablona cashbook/table.latte
-         */
-        $this->template->object = $this->entityService->event->get($this->aid);
+
+        $this->event = $this->entityService->event->get($this->aid);
+
         if (!$this->isReadable) {
             $this->flashMessage("Nemáš oprávnění číst data jednotky", "danger");
             $this->redirect("Default:");
         }
-
-        $this->event = \Nette\Utils\ArrayHash::from(["ID" => $this->aid, "prefix" => "", "DisplayName" => "jednotka"]);
 
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }

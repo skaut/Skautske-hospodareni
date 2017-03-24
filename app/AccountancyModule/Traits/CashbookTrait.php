@@ -252,6 +252,7 @@ trait CashbookTrait
 
     public function fillTemplateVariables()
     {
+	    $this->template->object = $this->event;
         try {
             $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
         } catch(\Skautis\Wsdl\WsdlException $e) {

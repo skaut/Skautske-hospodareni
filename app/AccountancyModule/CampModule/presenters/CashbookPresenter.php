@@ -35,7 +35,6 @@ class CashbookPresenter extends BasePresenter
         $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->missingCategories = FALSE;
         $this->template->linkImportHPD = "#importHpd";
-        $this->template->object = $this->event;
 
         $this->fillTemplateVariables();
 
