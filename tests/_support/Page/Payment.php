@@ -23,13 +23,21 @@ class Payment
         $this->tester->fillField("(//table//input)[3]", $amount);
     }
 
-    public function selectTomorrowForDueDate()
+    public function selectNextWorkdayForDueDate()
     {
         $I = $this->tester;
         $I->click('(//table//input)[6]');
-        $tomorrow = "//td[text()='" . (date('j') + 1) . "']"; // Tlačítko v datepickeru
-        $I->waitForElementVisible($tomorrow);
-        $I->click($tomorrow);
+
+        $dayOfWeek = date('N');
+
+        $daysToNextWorkday = $dayOfWeek < 5 ? 1 : 8 - $dayOfWeek;
+
+		$date = (new \DateTime())->modify("+ $daysToNextWorkday days")->format('j');
+
+        $button = "(//td[text()='$date'])[last()]"; // Tlačítko v datepickeru
+        $I->waitForElementVisible($button);
+        $I->click($button);
+        $I->waitForElementNotVisible($button);
     }
 
     public function submitPayment()
