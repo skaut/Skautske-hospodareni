@@ -40,7 +40,7 @@ class CashbookPresenter extends BasePresenter
     public function renderDefault($aid, $pid = NULL, $dp = FALSE) : void
     {
         if ($pid !== NULL) {
-           $this->editChit($pid);
+            $this->editChit($pid);
         }
 
         $this->template->isInMinus = FALSE; //$this->context->unitAccountService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
