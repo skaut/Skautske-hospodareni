@@ -45,7 +45,7 @@ services:
       factory: Model\Infrastructure\DoctrineConnectionFactory::create
 
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
-    - App\RouterFactory(%ssl%)
+    - App\RouterFactory
     - \Model\PaymentService
     - Model\MailService
     - Model\Payment\MailingService
