@@ -33,7 +33,6 @@ class CashbookPresenter extends BasePresenter
         $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
         $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->linkImportHPD = $this->link("importHpd", ["aid" => $aid]);
-        $this->template->object = $this->event;
         $this->fillTemplateVariables();
         if ($this->isAjax()) {
             $this->invalidateControl("contentSnip");
