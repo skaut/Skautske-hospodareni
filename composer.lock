@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "db6362c8ed02d224c76b19b5cd46602d",
+    "content-hash": "32cd6fa40c366e8b28c5fef34777594b",
     "packages": [
         {
             "name": "arachne/container-adapter",
@@ -727,17 +727,18 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/foowie/dependentselectbox.git",
-                "reference": "fd71801a079618d25d25ccf581da565ad5ccbfef"
+                "url": "https://github.com/fmasa/dependentselectbox.git",
+                "reference": "eb50a72b0a8949e83a04d95021f75ed0f98475df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/foowie/dependentselectbox/zipball/fd71801a079618d25d25ccf581da565ad5ccbfef",
-                "reference": "fd71801a079618d25d25ccf581da565ad5ccbfef",
+                "url": "https://api.github.com/repos/fmasa/dependentselectbox/zipball/eb50a72b0a8949e83a04d95021f75ed0f98475df",
+                "reference": "eb50a72b0a8949e83a04d95021f75ed0f98475df",
                 "shasum": ""
             },
             "require": {
-                "nette/nette": "*"
+                "nette/application": "^2.1",
+                "nette/forms": "^2.1"
             },
             "type": "library",
             "autoload": {
@@ -745,7 +746,6 @@
                     "DependentSelectBox": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause",
                 "MIT"
@@ -761,7 +761,10 @@
                 "nette",
                 "selectbox"
             ],
-            "time": "2014-07-09 13:03:27"
+            "support": {
+                "source": "https://github.com/fmasa/dependentselectbox/tree/master"
+            },
+            "time": "2017-03-24 19:53:17"
         },
         {
             "name": "heureka/bank-account-validator",
@@ -3378,6 +3381,7 @@
                 }
             ],
             "description": "Implementation of Doctrine Migrations to Nette",
+            "abandoned": "robmorgan/phinx",
             "time": "2016-09-23T19:04:56+00:00"
         }
     ],
