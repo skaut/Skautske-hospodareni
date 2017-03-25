@@ -4,11 +4,6 @@
 <h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
 
-{*}<div class="row" style="margin-top: 10px;">
-    {include $templateBlockDir.'cashbook/tabs.latte'}
-    {include $templateBlockDir.'cashbook/table.latte'}
-</div>
-{*}
 <div n:snippet="paragony">
     {include $templateBlockDir.'cashbook/table.latte'}
     {include $templateBlockDir.'cashbook/js.latte'}

@@ -103,12 +103,7 @@ $list array() - pole paragonů
                 </table>
             {/form}
         </div>
-        
-    {*}<div class="row" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)">
-        <div class="well well-sm span4">
-            <a href="#importHpd" role="button" data-toggle="modal" class="btn btn-xs btn-primary">Načíst příjmy od účastníků</a>
-        </div>
-    </div>{*}
+
     <div class="row" n:if='empty($list)'>
         <p class="alert alert-info">Zatím zde nemáte žádné doklady.</p>
     </div>

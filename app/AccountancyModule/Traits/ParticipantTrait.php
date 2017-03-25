@@ -11,11 +11,6 @@ use Model\Services\PdfRenderer;
  */
 trait ParticipantTrait
 {
-    /**
-     *
-     * @var \Model\EventService
-     */
-    //protected $eventService;
 
     /**
      * číslo aktuální jendotky
@@ -144,9 +139,8 @@ trait ParticipantTrait
         }
         $this->eventService->participants->removeParticipant($pid);
         if ($this->isAjax()) {
-            $this->invalidateControl("potencialParticipants");
-            $this->invalidateControl("participants");
-            //            $this->invalidateControl("flash");
+            $this->redrawControl("potencialParticipants");
+            $this->redrawControl("participants");
         } else {
             $this->redirect('this');
         }
@@ -164,8 +158,8 @@ trait ParticipantTrait
         }
         $this->eventService->participants->add($this->aid, $pid);
         if ($this->isAjax()) {
-            $this->invalidateControl("potencialParticipants");
-            $this->invalidateControl("participants");
+            $this->redrawControl("potencialParticipants");
+            $this->redrawControl("participants");
         } else {
             $this->redirect('this');
         }
@@ -178,7 +172,7 @@ trait ParticipantTrait
     {
         $this->setDirectMemberOnly(!$this->getDirectMemberOnly());
         if ($this->isAjax()) {
-            $this->invalidateControl("potencialParticipants");
+            $this->redrawControl("potencialParticipants");
         } else {
             $this->redirect("this");
         }

@@ -35,7 +35,7 @@ class CashbookPresenter extends BasePresenter
         $this->template->linkImportHPD = $this->link("importHpd", ["aid" => $aid]);
         $this->fillTemplateVariables();
         if ($this->isAjax()) {
-            $this->invalidateControl("contentSnip");
+            $this->redrawControl("contentSnip");
         }
     }
 

@@ -72,7 +72,6 @@ $useRegNums bool - zobrazovat číslo jednotky
                     <a n:href="export $aid" target="_blank" class="btn btn-info btn-sm{if empty($participants)} disabled{/if}"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Seznam účastníků (.pdf)</a>
                     <a n:href="exportExcel $aid" target="_blank" class="btn btn-info btn-sm{if empty($participants)} disabled{/if}"><i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i> Seznam účastníků (.xlsx)</a>
                     <a n:href="this regNums=>!$useRegNums" class='btn btn-primary btn-sm'>{if $useRegNums}Skrýt{else}Zobrazit{/if} jednotku</a>
-                    {*}{if isset($type) && $type == "camp"}<a n:href=":Accountancy:Payment:Group:camp $aid" class="btn btn-primary btn-sm">Platby</a>{/if}{*}
                 {else}
                     <p class="alert alert-info">Nemáte oprávnění zobrazit informace o účastnících!</p>
                 {/if}

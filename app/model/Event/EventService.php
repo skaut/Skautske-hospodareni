@@ -217,14 +217,6 @@ class EventService extends MutableBaseService
                 "EndDate" => $end,
                 "IsStatisticAutoComputed" => FALSE,
             ], "eventGeneral");
-        //
-        //
-        //        $this->skautis->event->EventGeneralUpdateFunction(array(
-        //            "ID" => $ret->ID,
-        //            "ID_PersonLeader" => $leader,
-        //            "ID_PersonAssistant" => $assistant,
-        //            "ID_PersonEconomist" => $economist
-        //        ));
 
         if (isset($ret->ID)) {
             return $ret->ID;
@@ -267,14 +259,6 @@ class EventService extends MutableBaseService
             "StartDate" => $data['start'],
             "EndDate" => $data['end'],
         ], "eventGeneral");
-
-
-        //            $this->skautis->event->EventGeneralUpdateFunction(array(
-        //                "ID" => $ID,
-        //                "ID_PersonLeader" => $data['leader'],
-        //                "ID_PersonAssistant" => $data['assistant'],
-        //                "ID_PersonEconomist" => $data['economist'],
-        //            ));
 
         if (isset($ret->ID)) {
             return $ret->ID;

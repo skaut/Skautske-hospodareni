@@ -17,3 +17,4 @@ deployment.*
 !.htaccess
 .wercker*
 tests/_output/*
+tests/_support/_generated/*

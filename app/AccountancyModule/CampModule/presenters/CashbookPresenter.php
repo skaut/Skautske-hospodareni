@@ -21,7 +21,6 @@ class CashbookPresenter extends BasePresenter
         }
         $this->entityService = $this->eventService;
         $this->template->isEditable = $this->isEditable = ($this->isEditable || $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCostBeforeEnd"));
-        //        $this->template->isEditable = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
     }
 
     public function renderDefault($aid, $pid = NULL, $dp = FALSE) : void
@@ -39,11 +38,10 @@ class CashbookPresenter extends BasePresenter
         $this->fillTemplateVariables();
 
         if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
-            //$this->template->isAllowedUpdateRealTotalCost = $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCost");
             $this->template->missingCategories = TRUE; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
         }
         if ($this->isAjax()) {
-            $this->invalidateControl("contentSnip");
+            $this->redrawControl("contentSnip");
         }
     }
 
