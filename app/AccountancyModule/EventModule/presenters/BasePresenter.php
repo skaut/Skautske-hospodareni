@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use Model\EventEntity;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
@@ -10,12 +12,10 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     const STable = "EV_EventGeneral";
 
+    /** @var array */
     protected $event;
 
-    /**
-     *
-     * @var \Model\EventService
-     */
+    /** @var EventEntity */
     protected $eventService;
 
     protected function startup() : void

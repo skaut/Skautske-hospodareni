@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Dibi\Row;
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
@@ -68,16 +69,16 @@ class PaymentService
      *
      * @param int $groupId
      * @param string $name
-     * @param srting $email
+     * @param string $email
      * @param float $amount
-     * @param type $maturity
+     * @param string $maturity
      * @param int $personId
      * @param int $vs
      * @param int $ks
      * @param string $note
-     * @return type
+     * @return bool
      */
-    public function createPayment($groupId, $name, $email, $amount, $maturity, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL)
+    public function createPayment($groupId, $name, $email, $amount, $maturity, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL): bool
     {
         return $this->table->createPayment([
             'groupId' => $groupId,
@@ -93,22 +94,31 @@ class PaymentService
     }
 
     /**
-     *
      * @param int $pid
      * @param array $arr
-     * @return type
+     * @return bool
      */
-    public function update($pid, $arr)
+    public function update($pid, $arr): bool
     {
         return $this->table->update($pid, $arr);
     }
 
-    public function cancelPayment($pid)
+    /**
+     * @param int $pid
+     * @return bool
+     */
+    public function cancelPayment($pid): bool
     {
         return $this->update($pid, ["state" => "canceled", "dateClosed" => date("Y-m-d H:i:s")]);
     }
 
-    public function completePayment($pid, $transactionId = NULL, $paidFrom = NULL)
+    /**
+     * @param int $pid
+     * @param int|NULL $transactionId
+     * @param string|NULL $paidFrom
+     * @return bool
+     */
+    public function completePayment($pid, $transactionId = NULL, $paidFrom = NULL): bool
     {
         return $this->update($pid, ["state" => "completed", "dateClosed" => date("Y-m-d H:i:s"), "transactionId" => $transactionId, "paidFrom" => $paidFrom]);
     }
@@ -153,10 +163,9 @@ class PaymentService
      */
 
     /**
-     *
      * @param int|array(int) $unitId
      * @param int $groupId
-     * @return type
+     * @return Row
      */
     public function getGroup($unitId, $groupId)
     {
@@ -167,27 +176,12 @@ class PaymentService
      *
      * @param int|array(int) $unitId
      * @param boolean $onlyOpen
-     * @return type
+     * @return array
      */
-    public function getGroups($unitId, $onlyOpen = FALSE)
+    public function getGroups($unitId, $onlyOpen = FALSE): array
     {
         return $this->table->getGroups($unitId, $onlyOpen);
     }
-
-    /**
-     *
-     * @param int $unitId
-     * @param string $oType
-     * @param int $sisId
-     * @param string $label
-     * @param \DateTime $maturity
-     * @param int $ks
-     * @param int|null $nextVS
-     * @param float $amount
-     * @param string $email_info
-     * @param int|NULL $smtpId
-     * @return int
-     */
 
     public function createGroup(
         int $unitId,
@@ -227,7 +221,7 @@ class PaymentService
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
         string $emailTemplate,
-        ?int $smtpId)
+        ?int $smtpId): void
     {
         $group = $this->groups->find($id);
 
@@ -250,11 +244,11 @@ class PaymentService
      *
      * @param int $groupId
      * @param array $arr
-     * @return type
+     * @param bool $openOnly
      */
-    public function updateGroup($groupId, $arr, $openOnly = TRUE)
+    public function updateGroup($groupId, $arr, $openOnly = TRUE): void
     {
-        return $this->table->updateGroup($groupId, $arr, $openOnly);
+        $this->table->updateGroup($groupId, $arr, $openOnly);
     }
 
     /**
@@ -269,9 +263,9 @@ class PaymentService
 
     /**
      * seznam osob z dané jednotky
-     * @param type $unitId
-     * @param type $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
-     * @return array($personId => array(...))
+     * @param int $unitId
+     * @param int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
+     * @return array[] array($personId => array(...))
      */
     public function getPersons($unitId, $groupId = NULL)
     {
@@ -297,8 +291,8 @@ class PaymentService
 
     /**
      * vrací seznam emailů osoby
-     * @param type $personId
-     * @return string
+     * @param int $personId
+     * @return string[]
      */
     public function getPersonEmails($personId)
     {
@@ -325,9 +319,10 @@ class PaymentService
      */
 
     /**
+     * [[ unused ]]
      * detail registrace ze skautisu
      * @param int $regId
-     * @return type
+     * @return \stdClass
      */
     public function getRegistration($regId)
     {
@@ -494,27 +489,25 @@ class PaymentService
         $curl = curl_init();
         $file = tempnam(WWW_DIR . "/../temp/", "XML"); // Vytvoření dočasného souboru s náhodným jménem v systémové temp složce.
         file_put_contents($file, $stringToRequest); // Do souboru se uloží XML string s vygenerovanými příkazy k úhradě.
-        try {
-            $this->curl_custom_postfields($curl, [
-                'type' => 'xml',
-                'token' => $token,
-                'lng' => 'cs',
-            ], ["file" => $file]);
 
-            curl_setopt($curl, CURLOPT_URL, 'https://www.fio.cz/ib_api/rest/import/');
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($curl, CURLOPT_HEADER, 0);
-            curl_setopt($curl, CURLOPT_POST, 1);
-            curl_setopt($curl, CURLOPT_VERBOSE, 0);
-            curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+        $this->curl_custom_postfields($curl, [
+            'type' => 'xml',
+            'token' => $token,
+            'lng' => 'cs',
+        ], ["file" => $file]);
 
-            $resultXML = curl_exec($curl); // Odpověď z banky.
-            curl_close($curl);
-        } catch (Exception $e) {
-            throw $e;
-        }
+        curl_setopt($curl, CURLOPT_URL, 'https://www.fio.cz/ib_api/rest/import/');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_VERBOSE, 0);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+
+        $resultXML = curl_exec($curl); // Odpověď z banky.
+        curl_close($curl);
+
         unlink($file);
         return $resultXML;
     }

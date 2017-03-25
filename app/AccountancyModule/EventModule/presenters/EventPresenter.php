@@ -45,6 +45,7 @@ class EventPresenter extends BasePresenter
         PdfRenderer $pdf
     )
     {
+        parent::__construct();
         $this->exportService = $exportService;
         $this->memberService = $memberService;
         $this->functionsFactory = $functionsFactory;

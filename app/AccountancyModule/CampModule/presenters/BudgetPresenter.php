@@ -31,9 +31,9 @@ class BudgetPresenter extends BasePresenter
 
     /**
      * přepočte hodnoty v jednotlivých kategorich
-     * @param type $aid
+     * @param int $aid
      */
-    public function handleConvert($aid) : void
+    public function handleConvert(int $aid) : void
     {
         $this->editableOnly();
         $this->eventService->chits->isConsistent($aid, $repair = TRUE);

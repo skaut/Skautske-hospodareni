@@ -2,7 +2,8 @@
 
 namespace App\AccountancyModule;
 
-use \Nette\Object;
+use DateTimeInterface;
+use Nette\Object;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -11,11 +12,11 @@ abstract class AccountancyHelpers extends Object
 {
 
     /**
-     * loader na všechny helpery
-     * @param type $helper
-     * @return type
+     * loader na všechny filtry
+     * @param string $filter
+     * @return string
      */
-    public static function loader($filter, $value)
+    public static function loader($filter, $value): string
     {
         //dump(func_get_args());die();
         if (method_exists(__CLASS__, $filter)) {
@@ -62,20 +63,14 @@ abstract class AccountancyHelpers extends Object
         }
     }
 
-    /**
-     *
-     * @param type $s - NULL|DibiDateTime
-     * @return string
-     */
-    public static function commandState($s) : string
+    public static function commandState(DateTimeInterface $s) : string
     {
-        switch ($s) {
-            case NULL:
-                return '<span class="label label-warning hidden-xs hidden-sm">Rozpracovaný</span>'
-                    . '<span class="label label-warning hidden-md hidden-lg">Rozpr.</span>';
-            default :
-                return '<span class="label label-success" title="Uzavřeno dne: ' . $s->format("j.n.Y H:i:s") . '">Uzavřený</span>';
+        if($s === NULL) {
+            return '<span class="label label-warning hidden-xs hidden-sm">Rozpracovaný</span>'
+                . '<span class="label label-warning hidden-md hidden-lg">Rozpr.</span>';
         }
+
+        return '<span class="label label-success" title="Uzavřeno dne: ' . $s->format("j.n.Y H:i:s") . '">Uzavřený</span>';
     }
 
     public static function paymentStateLabel($s) : string
@@ -87,9 +82,9 @@ abstract class AccountancyHelpers extends Object
 
     /**
      * formátuje číslo na částku
-     * @param type $price
+     * @param float|string $price
      * http://prirucka.ujc.cas.cz/?id=786
-     * @return int
+     * @return string
      */
     public static function price($price, $full = TRUE) : string
     {
@@ -97,14 +92,13 @@ abstract class AccountancyHelpers extends Object
             return ' '; //je tam nedělitelná mezera
         }
         $decimals = $full ? 2 : 0;
-        //if (stripos($price, "."))
+
         return number_format((float)$price, $decimals, ",", " "); //nedělitelná mezera
-        //return $price;
     }
 
     /**
      * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
-     * @param number $num
+     * @param int|float $num
      * @return string
      */
     public static function num($num) : string

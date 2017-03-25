@@ -1,6 +1,7 @@
 <?php
 
 namespace Model;
+use Dibi\Row;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -11,8 +12,8 @@ class CommandTable extends BaseTable
 
     /**
      * vrací konkretní příkaz
-     * @param type $commandId - id příkazu
-     * @return DibiRow
+     * @param int $commandId - id příkazu
+     * @return Row
      */
     public function get($commandId)
     {
@@ -50,6 +51,11 @@ class CommandTable extends BaseTable
         return $q->fetchAll();
     }
 
+    /**
+     * @param int $unitId
+     * @param int $contractId
+     * @return Row[]
+     */
     public function getAllByContract($unitId, $contractId)
     {
         return $this->getAll($unitId, TRUE)
@@ -66,13 +72,12 @@ class CommandTable extends BaseTable
 
     /**
      * uzavírání/otevírání cestovních příkazů
-     * @param type $commandId
-     * @param type $state
-     * @return type
+     * @param int $commandId
+     * @param string|NULL $state
      */
     public function changeState($commandId, $state)
     {
-        return $this->connection->update(self::TABLE_TC_COMMANDS, ["id" => $commandId, "closed" => $state])
+        $this->connection->update(self::TABLE_TC_COMMANDS, ["id" => $commandId, "closed" => $state])
             ->where("id=%i", $commandId)
             ->where("deleted = 0")
             ->execute();
@@ -80,7 +85,7 @@ class CommandTable extends BaseTable
 
     public function delete($commandId)
     {
-        return $this->connection->query("UPDATE [" . self::TABLE_TC_COMMANDS . "] SET deleted=1 WHERE id = %i AND deleted=0 LIMIT 1", $commandId);
+        $this->connection->query("UPDATE [" . self::TABLE_TC_COMMANDS . "] SET deleted=1 WHERE id = %i AND deleted=0 LIMIT 1", $commandId);
     }
 
     public function updateTypes($commandId, $commandTypes)

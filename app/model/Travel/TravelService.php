@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Dibi\Row;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 
@@ -244,9 +245,9 @@ class TravelService extends BaseService
 
     /**
      * vraci všechny přikazy navazane na smlouvu
-     * @param type $unitId
-     * @param type $contractId
-     * @return type
+     * @param int $unitId
+     * @param int $contractId
+     * @return Row[]
      */
     public function getAllCommandsByContract($unitId, $contractId)
     {
@@ -255,9 +256,9 @@ class TravelService extends BaseService
 
     /**
      * vraci všechny přikazy navazane na vozidlo
-     * @param type $unitId
-     * @param type $vehicleId
-     * @return type
+     * @param int $unitId
+     * @param int $vehicleId
+     * @return Row[]
      */
     public function getAllCommandsByVehicle($unitId, $vehicleId)
     {
@@ -266,21 +267,27 @@ class TravelService extends BaseService
 
     /**
      * uzavře cestovní příkaz a nastavi cas uzavření
-     * @param type $commandId
+     * @param int $commandId
      */
     public function closeCommand($commandId)
     {
-        return $this->table->changeState($commandId, date("Y-m-d H:i:s"));
+        $this->table->changeState($commandId, date("Y-m-d H:i:s"));
     }
 
+    /**
+     * @param int $commandId
+     */
     public function openCommand($commandId)
     {
-        return $this->table->changeState($commandId, NULL);
+        $this->table->changeState($commandId, NULL);
     }
 
+    /**
+     * @param int $commandId
+     */
     public function deleteCommand($commandId)
     {
-        return $this->table->delete($commandId);
+        $this->table->delete($commandId);
     }
 
     public function getCommandTypes($commandId)
