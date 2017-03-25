@@ -1,7 +1,6 @@
-nette:
-    application:
-        catchExceptions: false
-        debugger: true
+application:
+    catchExceptions: false
+    debugger: true
 
 dibi:
     driver: mysqli
