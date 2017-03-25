@@ -526,6 +526,8 @@ class PaymentService
         // invalid characters for "name" and "filename"
         static $disallow = ["\0", "\"", "\r", "\n"];
 
+        $body = [];
+
         // build normal parameters
         foreach ($assoc as $k => $v) {
             $k = str_replace($disallow, "_", $k);

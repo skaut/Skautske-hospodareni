@@ -228,9 +228,8 @@ class DefaultPresenter extends BasePresenter
             if (strpos("EventGeneral_EndLesserThanStart", $e->getMessage())) {
                 $form['start']->addError("Akce nemůže dříve začít než zkončit!");
                 return;
-            } else {
-                throw $e;
             }
+            throw $e;
         }
 
         if ($id) {
