@@ -3,13 +3,6 @@
 {include ../ActionMenu.latte}
 <a href="{$linkBack}" class="btn btn-primary btn-sm">Zpět</a>
 
-{*}
-<div n:ifset="$registration['ID']" class="alert alert-info">
-    <a data-dismiss="alert" class="close">×</a>
-    Ve skautisu máte neodevzdanou <b>registraci pro rok {$registration['Year']}</b>, která nemá založenu skupin plateb. Chcete skupinu plateb založit?
-    <a n:href="createGroupRegistration $registration['ID']" class="btn btn-primary">Založit skupinu pro registraci {$registration['Year']}</a>
-</div>
-{*}
 <div class="row">
     <div class="col-sm-6">
         {control groupForm}

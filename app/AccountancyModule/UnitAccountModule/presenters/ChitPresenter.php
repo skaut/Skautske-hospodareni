@@ -41,9 +41,6 @@ class ChitPresenter extends BasePresenter
 
     public function actionDefault($year = NULL) : void
     {
-        //        $cache = new Cache($this->context->cacheStorage);
-        //        $cacheKey = __METHOD__;
-        //if (($this->info = $cache->load($cacheKey)) === NULL) {
         $this->info = [];
         foreach ($this->user->getIdentity()->access['edit'] as $ik => $iu) {
             $this->info['unit'][$ik] = (array)$iu;
@@ -53,8 +50,6 @@ class ChitPresenter extends BasePresenter
 
         $this->info['event'] = $eventService->event->getAll($this->year);
         $this->info['camp'] = $campService->event->getAll($this->year);
-        //            $cache->save($cacheKey, $this->info, array(Cache::EXPIRE => '10 minutes'));
-        //        }
 
         $categories = $this->budgetService->getCategoriesLeaf($this->aid);
         if (empty($categories['in']) && empty($categories['out'])) {

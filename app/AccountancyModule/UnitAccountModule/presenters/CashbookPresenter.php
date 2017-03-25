@@ -43,12 +43,12 @@ class CashbookPresenter extends BasePresenter
             $this->editChit($pid);
         }
 
-        $this->template->isInMinus = FALSE; //$this->context->unitAccountService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
+        $this->template->isInMinus = FALSE; // musi byt v before render aby se vyhodnotila az po handleru
 
         $this->fillTemplateVariables();
         $this->template->list = $this->entityService->chits->getAll($aid);
         if ($this->isAjax()) {
-            $this->invalidateControl("contentSnip");
+            $this->redrawControl("contentSnip");
         }
     }
 

@@ -45,15 +45,13 @@ class DefaultPresenter extends BasePresenter
         if ($state) {
             $this['formFilter']['state']->setDefaultValue($state);
         }
-
-        //$this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
     }
 
     public function handleChangeYear($year) : void
     {
         $this->ses->year = $year;
         if ($this->isAjax()) {
-            $this->invalidateControl("camps");
+            $this->redrawControl("camps");
         } else {
             $this->redirect("this");
         }
@@ -63,7 +61,7 @@ class DefaultPresenter extends BasePresenter
     {
         $this->ses->state = $state;
         if ($this->isAjax()) {
-            $this->invalidateControl("camps");
+            $this->redrawControl("camps");
         } else {
             $this->redirect("this");
         }

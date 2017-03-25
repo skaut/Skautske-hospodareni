@@ -19,14 +19,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function editableOnly() : void
     {
         throw new NotImplementedException("todo");
-        //        if (!$this->isEditable) {
-        //            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
-        //            if ($this->isAjax()) {
-        //                $this->sendPayload();
-        //            } else {
-        //                $this->redirect("Default:");
-        //            }
-        //        }
     }
 
 }

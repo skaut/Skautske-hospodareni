@@ -133,7 +133,7 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage("Nemáte právo uzavřít cestovní příkaz.", "danger");
             $this->redirect("default");
         }
-        //        $who = $this->userService->getPersonalDetail()->Email;
+
         $this->travelService->closeCommand($commandId);
         $this->flashMessage("Cestovní příkaz byl uzavřen.");
         $this->redirect("this");
@@ -145,7 +145,7 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage("Nemáte právo otevřít cestovní příkaz.", "danger");
             $this->redirect("default");
         }
-        //        $who = $this->userService->getPersonalDetail()->Email;
+
         $this->travelService->openCommand($commandId);
         $this->flashMessage("Cestovní příkaz byl otevřen.");
         $this->redirect("this");
@@ -258,7 +258,6 @@ class DefaultPresenter extends BasePresenter
         }
         $v->unit_id = $this->unit->ID;
 
-        //        $v['state'] = "open";
         $this->travelService->addCommand($v);
         $this->flashMessage("Cestovní příkaz byl založen.");
         $this->redirect("this");
@@ -361,7 +360,7 @@ class DefaultPresenter extends BasePresenter
     protected function createComponentFormEditTravel($name) : Form
     {
         $form = $this->prepareForm($this, $name);
-        //        $form->getElementPrototype()->class("form-inline");
+
         $form->addHidden("command_id");
         $form->addHidden("id");
         $form->addSelect("type", "Prostředek");

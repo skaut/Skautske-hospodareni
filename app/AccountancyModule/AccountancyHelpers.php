@@ -119,7 +119,6 @@ abstract class AccountancyHelpers extends Object
             return substr($psc, 0, 3) . " " . substr($psc, -2);
         }
         return $oldPsc;
-        //        number_format($psc, 0, "", " ");
     }
 
     /**
@@ -190,13 +189,6 @@ abstract class AccountancyHelpers extends Object
             $string .= $_desitky[$numbers[1]] . $_jednotky[$numbers[0]];
         }
 
-        //         //desetinná část
-        //        if (isset($parts[1])) {
-        //            if (strlen($parts[1]) < 2)
-        //                $parts[1] .= "0";
-        //            $string .= "," . $parts[1];
-        //        }
-        //        return ucfirst($string);
         return mb_strtoupper(mb_substr($string, 0, 1, "UTF-8"), "UTF-8") . mb_substr($string, 1, NULL, "UTF-8");
     }
 

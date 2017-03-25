@@ -19,14 +19,12 @@
         priceControl($('#form-out-price'));
 
         $("form.offline").submit(function() {
-        //    event.preventDefault();
             $(this).offlineSubmit();
             return false;
         });
 
         // odeslání pomocí tlačítek
         $("form.offline :submit").click(function(event) {
-        //    event.preventDefault();
             $(this).offlineSubmit();
             return false;
         });

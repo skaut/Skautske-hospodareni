@@ -73,7 +73,6 @@ trait CashbookTrait
     public function actionExportChitlist($aid) : void
     {
         $template = $this->exportService->getChitlist($this->createTemplate(), $aid, $this->entityService);
-        //echo $template;die();
         $this->pdf->render($template, 'seznam-dokladu.pdf');
         $this->terminate();
     }
@@ -162,7 +161,6 @@ trait CashbookTrait
             ->getControlPrototype()->placeholder("Účel")
             ->class("form-control input-sm required");
         $form->addSelect("type", "Typ", ["in" => "Příjmy", "out" => "Výdaje"])
-            //->setAttribute("class", "form-control)
             ->setAttribute("size", "2")
             ->setDefaultValue("out")
             ->addRule(Form::FILLED, "Vyberte typ");
@@ -175,13 +173,11 @@ trait CashbookTrait
         $form->addText("price", "Částka: ")
             ->setMaxLength(100)
             ->setHtmlId("form-out-price")
-            //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
             ->getControlPrototype()->placeholder("Částka: 2+3*15")
             ->class("form-control input-sm");
         $form->addHidden("pid");
         $form->addSubmit('send', 'Uložit')
             ->setAttribute("class", "btn btn-primary");
-        //$form->setDefaults(array('category' => 'un'));
         $form->onSuccess[] = function(Form $form) : void {
             $this->cashbookFormSubmitted($form);
         };
@@ -221,12 +217,6 @@ trait CashbookTrait
                 $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
             }
 
-            //            if ($this->isAjax()) {
-            //                $this->invalidateControl("paragony");
-            //                $this->invalidateControl("flash");
-            //            } else {
-            //                $this->redirect("default", array("aid" => $this->aid));
-            //            }
             $this->redirect("default", ["aid" => $this->aid]);
         }
     }

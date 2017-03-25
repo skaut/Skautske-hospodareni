@@ -66,14 +66,6 @@ class BasePresenter extends \App\BasePresenter
     protected function editableOnly() : void
     {
         throw new NotImplementedException("Implementují jednotlivé moduly");
-        //        if (!$this->isEditable) {
-        //            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
-        //            if($this->isAjax()){
-        //                $this->sendPayload();
-        //            } else {
-        //                $this->redirect("Event:");
-        //            }
-        //        }
     }
 
     public function flashMessage($message, $type = 'info') : \stdClass

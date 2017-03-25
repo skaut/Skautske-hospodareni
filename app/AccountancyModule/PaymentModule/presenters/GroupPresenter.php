@@ -78,6 +78,8 @@ class GroupPresenter extends BasePresenter
 
     public function renderEdit($id): void
     {
+        $this->setView('default');
+
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
             $this->redirect("Payment:default");

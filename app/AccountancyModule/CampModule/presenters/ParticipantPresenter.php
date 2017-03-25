@@ -22,8 +22,6 @@ class ParticipantPresenter extends BasePresenter
     const RULE_PARTICIPANTS_UPDATE_ADULT = "EV_EventCamp_UPDATE_Adult"; //Nastavit, zda se počty tábořících počítají automaticky
     const RULE_PARTICIPANTS_INSERT = "EV_ParticipantCamp_INSERT_EventCamp";
 
-    //const RULE_PARTICIPANTS_INSERT_MULTI = "OU_Person_ALL_EventCampMulti";
-
     public function __construct(MemberService $member, ExportService $export, ExcelService $excel, PdfRenderer $pdf)
     {
         parent::__construct();
@@ -53,17 +51,12 @@ class ParticipantPresenter extends BasePresenter
 
         $this->traitDefault($dp, $sort, $regNums);
 
-
-        //        if ($this->isAllowParticipantInsert) {
-        //            $this->template->list = $this->campService->participants->getPotencialCampParticipants($aid);
-        //        }
-
         $this->template->isAllowParticipantDetail = $this->isAllowed(self::RULE_PARTICIPANTS_DETAIL);
         $this->template->isAllowParticipantUpdateLocal = $this->isAllowParticipantDelete;
         $this->template->missingAvailableAutoComputed = !$this->event->IsRealAutoComputed && $this->isAllowed(self::RULE_PARTICIPANTS_UPDATE_ADULT);
 
         if ($this->isAjax()) {
-            $this->invalidateControl("contentSnip");
+            $this->redrawControl("contentSnip");
         }
     }
 

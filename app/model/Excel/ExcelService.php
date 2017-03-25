@@ -10,13 +10,8 @@ class ExcelService extends BaseService
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()
             ->setCreator("h.skauting.cz")
-            ->setLastModifiedBy("h.skauting.cz")
-            //                ->setTitle("Office 2007 XLSX Test Document")
-            //                ->setSubject("Office 2007 XLSX Test Document")
-            //                ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-            //                ->setKeywords("office 2007 openxml php")
-            //                ->setCategory("Test result file")
-        ;
+            ->setLastModifiedBy("h.skauting.cz");
+
         return $objPHPExcel;
     }
 
@@ -178,7 +173,6 @@ class ExcelService extends BaseService
         $rowCnt = 2;
         foreach ($data as $row) {
             $balance += $row->ctype == 'in' ? $row->price : (-$row->price);
-            //                        <tr{if $balance < 0} class="alert alert-error"{/if}>
             $sheet->setCellValue('A' . $rowCnt, date("d.m.Y", strtotime($row->date)))
                 ->setCellValue('B' . $rowCnt, $prefix . $row->num)
                 ->setCellValue('C' . $rowCnt, $row->purpose)
