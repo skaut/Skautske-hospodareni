@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="cs">
-    {*}<html lang="cs" manifest="{$baseUri}/appa.manifest">{*}
     <head>
         <meta charset=utf-8 />
         <title>{block #title|stripHtml|trim}SkaHos{/block}</title>
@@ -61,15 +60,12 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" n:href=":Default:">Hospodaření
-                        {*}<span class="visible-xs">XS</span><span class="visible-sm">SM</span><span class="visible-md">MD</span><span class="visible-lg">LG</span>{*}
-                    </a>
+                    <a class="navbar-brand" n:href=":Default:">Hospodaření</a>
                 </div>
 
                 <div id="mainNavbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li n:if="!$user->isLoggedIn()" {ifCurrent :Default:about}class='active'{/ifCurrent}><a n:href=":Default:about">O projektu</a></li>
-                        {*}<li {ifCurrent :Tutorial:* }class='active'{/ifCurrent}><a n:href=":Tutorial:">Příručka</a></li>{*}
                             {if $user->isLoggedIn()}
                             <li><a n:href=":Accountancy:Event:Default:">Akce</a></li>
                             <li><a n:href=":Accountancy:Camp:Default:">Tábory{* <sup style="color:red;font-weight: bold;">BETA</sup>*}</a></li>
@@ -117,7 +113,6 @@
             </div><!-- /content -->
             <hr style="clear: both" class="hidden-xs hidden-sm" />
             <footer class="hidden-xs hidden-sm">
-                {*}Účtovaných výprav {$cntActiveEvents} / {*}
                 <a n:href=":Default:about">O projektu</a> / 
                 Vytvořil <a href="http://sinacek.cz">Sináček.cz</a> z <a href="http://osmnactka.net">18. střediska Kruh Praha 6</a>
             </footer>

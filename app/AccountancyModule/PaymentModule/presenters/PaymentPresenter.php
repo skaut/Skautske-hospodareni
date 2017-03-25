@@ -201,7 +201,7 @@ class PaymentPresenter extends BasePresenter
         $form->addHidden("oid");
         $form->addText("defaultAmount", "Částka:")
             ->setAttribute('class', 'form-control input-sm');
-        $form->addDatePicker('defaultMaturity', "Splatnost:")//
+        $form->addDatePicker('defaultMaturity', "Splatnost:")
         ->setAttribute('class', 'form-control input-sm');
         $form->addText("defaultKs", "KS:")
             ->setMaxLength(4);

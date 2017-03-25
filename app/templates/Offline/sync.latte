@@ -33,18 +33,6 @@
         
     });
     function sync(id){
-        if(!confirm('Opravdu chcete nahrát paragony? '))
-            return false;
-//        $.ajax({
-//            type: "POST",
-//            url: {link synchronize!},
-//            data: { id: id, data: localStorage['queue'] }
-//        });
-//        $.post({link synchronize!}, { id: id, data: "2pm" } );
-        
-//                .done(function( msg ) {
-//            alert( "Data Saved: " + msg );
-//        });
-        
+        return confirm('Opravdu chcete nahrát paragony? ');
     };
 </script>

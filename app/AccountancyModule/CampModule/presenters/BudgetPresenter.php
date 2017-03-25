@@ -40,7 +40,6 @@ class BudgetPresenter extends BasePresenter
         $this->flashMessage("Kategorie byly přepočítány.");
 
         if ($this->isAjax()) {
-            //            $this->redrawControl("paragony");
             $this->redrawControl("flash");
         } else {
             $this->redirect('this', $aid);

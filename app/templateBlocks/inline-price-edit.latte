@@ -6,7 +6,7 @@ $(document).ready(function() {
     var alertBoxTime = 6000;
     $('.price-edit')
         .each(function(){
-            $(this).attr('contenteditable', 'true');//.data('orig-value', $(this).text())                    
+            $(this).attr('contenteditable', 'true');
         }).focus(function(){
             $obj = $(this);
             $obj.text($obj.text().replace(" ", ""));
@@ -16,7 +16,6 @@ $(document).ready(function() {
             $obj.data('orig-value', $obj.text());
             $obj.keypress(function( event ) {
                 if ( event.which == 13 ) { //press key enter
-//                    $obj.blur();
                     var tds = $obj.closest('table').find("td.num-edit[data-type='"+$obj.data("type")+"']");
                     var nextIndex = (tds.index($obj)+1);
                     if(nextIndex < tds.size()){
@@ -40,7 +39,6 @@ $(document).ready(function() {
 
             // sending changed data
             if(origValue != newValue){
-//              $obj.removeAttr('contenteditable').removeClass('price-edit');
                 topAlertBoxText.append('<li class="alertBox-saving-'+dataId+'"><span>Ukládám ...</span></li>');
                 calculateSum(field);
                 $.get({link editField}, { aid:{$aid}, id:dataId, field: field, value: newValue }, function(){
@@ -56,7 +54,6 @@ $(document).ready(function() {
                                 .find('li.alertBox-back-'+dataId).delay(alertBoxTime).fadeOut('slow');
                             $obj.text(origValue);
                             calculateSum(field);
-//                                  $obj.attr('contenteditable', 'true').addClass('price-edit');
                         });
                         return false;
                     });
@@ -66,7 +63,7 @@ $(document).ready(function() {
     //prepocte soucet a ulozi do ID=type+"-total"
     function calculateSum(type) {
         var amount = 0;
-//        alert(type);
+
         $("[data-type='"+type+"']").each(function() {
             var val = $(this).text().replace(/\D+/g, "");
             if(!isNaN(val) && val.length !== 0) {

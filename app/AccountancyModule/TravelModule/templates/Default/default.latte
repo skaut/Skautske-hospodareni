@@ -27,9 +27,6 @@
             </tr>
             <tr n:foreach="$list as $item">
                 <td class="r nowrap">
-                    {*}<a n:href="editCommand $item->id"  n:if="$item->closed == NULL" title="Upravit" class="fancybox fancybox.ajax btn btn-xs btn-info"><i class="glyphicon glyphicon-edit"></i></a>
-                    <a n:href="removeCommand! $item->id" n:if="$item->closed == NULL" title="Smazat" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon  icon-remove"></i></a>
-                    <a n:href="Contract:detail $item->contract_id" class="btn btn-xs btn-info">Smlouva</a>{*}
                     <a n:href="detail $item->id" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-zoom-in hidden-xs hidden-sm"></i> Detail</a>
                 </td>
                 <td>{$item->driver_name}</td>

@@ -495,7 +495,6 @@ class PaymentService
         $file = tempnam(WWW_DIR . "/../temp/", "XML"); // Vytvoření dočasného souboru s náhodným jménem v systémové temp složce.
         file_put_contents($file, $stringToRequest); // Do souboru se uloží XML string s vygenerovanými příkazy k úhradě.
         try {
-            //$cfile = new \CURLFile($file, 'application/xml', 'import.xml'); // Připraví soubor k odeslání přes cURL pro PHP 5.5 a vyšší
             $this->curl_custom_postfields($curl, [
                 'type' => 'xml',
                 'token' => $token,
@@ -510,13 +509,7 @@ class PaymentService
             curl_setopt($curl, CURLOPT_POST, 1);
             curl_setopt($curl, CURLOPT_VERBOSE, 0);
             curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-            //            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data; charset=utf-8;'));
-            //            curl_setopt($curl, CURLOPT_POSTFIELDS, array(
-            //                'type' => 'xml',
-            //                'token' => $token,
-            //                'lng' => 'cs',
-            //                'file' => $cfile
-            //            ));
+
             $resultXML = curl_exec($curl); // Odpověď z banky.
             curl_close($curl);
         } catch (Exception $e) {

@@ -114,7 +114,6 @@ class ParticipantService extends MutableBaseService
                 "LastName" => $person['lastName'],
                 "NickName" => $person['nick'],
                 "Note" => "",
-                //                        "Note" => $person['note'], //poznámka osoby, ne účastníka
             ],
         ]);
         $this->personUpdate($newPaerticipantArr->ID_Person, $person);
@@ -211,7 +210,7 @@ class ParticipantService extends MutableBaseService
             ) {
                 continue;
             }
-            $res += $p->payment; // - $p->repayment
+            $res += $p->payment;
         }
         return $res;
     }

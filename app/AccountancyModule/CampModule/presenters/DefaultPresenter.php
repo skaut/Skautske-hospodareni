@@ -45,8 +45,6 @@ class DefaultPresenter extends BasePresenter
         if ($state) {
             $this['formFilter']['state']->setDefaultValue($state);
         }
-
-        //$this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
     }
 
     public function handleChangeYear($year) : void

@@ -101,13 +101,7 @@ class DefaultPresenter extends BasePresenter
                     return $aTime > $bTime;
                 };
         }
-        uasort($list, $fnc
-        //                function ($a, $b) use ($fnc) {
-        //            $at = strtotime($a[$sortParam]);
-        //            $bt = strtotime($b[$sortParam]);
-        //            return ($at == $bt) ? strcasecmp($a['DisplayName'], $b['DisplayName']) : ($fnc ? 1 : -1);
-        //        }
-        );
+        uasort($list, $fnc);
     }
 
     /**

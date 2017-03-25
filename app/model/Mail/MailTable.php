@@ -63,8 +63,4 @@ class MailTable extends BaseTable
         return $this->connection->query("DELETE FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId=%i", $unitId, " AND id=%i", $id, " LIMIT 1");
     }
 
-    //    public function updateSmtp($unitId, $id, $data) {
-    //        return $this->connection->update(self::TABLE_PA_SMTP, $data)->where("unitId=%i", $unitId, " AND id=%i", $id)->execute();
-    //    }
-
 }

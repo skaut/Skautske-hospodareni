@@ -115,8 +115,7 @@ class ChitService extends MutableBaseService
         ];
 
         $ret = $this->table->add($values);
-        //doplnění čísla dokladu
-        //$this->table->update($ret, array("num"=>$this->generateNumber($ret)));
+
         if ($this->type == self::TYPE_CAMP) {
             try {
                 $this->updateCategory($skautisEventId, $val['category']);
@@ -131,7 +130,6 @@ class ChitService extends MutableBaseService
     public function generateNumber($chitId)
     {
         $chit = $this->get($chitId);
-        //        dump($chit);
         $categories = $this->getCategoriesPairs(NULL, $this->type == self::TYPE_CAMP ? $this->getSkautisId($chit->eventId) : NULL);
 
         if (array_key_exists($chit->category, $categories['in'])) {
@@ -224,7 +222,7 @@ class ChitService extends MutableBaseService
             }
             $res = [];
             foreach ($this->skautis->event->EventCampStatementAll(["ID_EventCamp" => $skautisEventId, "IsEstimate" => $isEstimate]) as $i) { //prepisuje na tvar s klíčem jako ID
-                if ($isEstimate == FALSE && $i->ID_EventCampStatementType == 15) {//$i->ID_EventCampStatementType == 15 => Rezerva v rozpoctu
+                if ($isEstimate == FALSE && $i->ID_EventCampStatementType == 15) {
                     continue;
                 }
                 $res[$i->ID] = $i;
@@ -349,7 +347,7 @@ class ChitService extends MutableBaseService
     public function isConsistent($skautisEventId, $repair = FALSE, &$toRepair = NULL)
     {
         $sumSkautis = $this->getCategories($skautisEventId, FALSE);
-        //$toRepair = array();
+
         foreach ($this->getCategoriesSum($skautisEventId) as $catId => $ammount) {
             if ($ammount != $sumSkautis[$catId]->Ammount) {
                 if ($repair) { //má se kategorie opravit?
