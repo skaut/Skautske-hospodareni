@@ -22,11 +22,6 @@ class AuthPresenter extends BasePresenter
      */
     public function actionDefault($backlink) : void
     {
-        //        if ($this->user->isLoggedIn()) {
-        //            if ($backlink) {
-        //                $this->restoreRequest($backlink);
-        //            }
-        //        }
         $this->redirect(':Default:');
     }
 
@@ -49,7 +44,6 @@ class AuthPresenter extends BasePresenter
         if (!isset($post['skautIS_Token'])) { //pokud není nastavený token, tak zde nemá co dělat
             $this->redirect(":Default:");
         }
-        //        Nette\Diagnostics\Debugger::log("AuthP: ".$post['skautIS_Token']." / ". $post['skautIS_IDRole'] . " / " . $post['skautIS_IDUnit'], "auth");
         try {
             $this->authService->setInit([
                 "token" => $post['skautIS_Token'],

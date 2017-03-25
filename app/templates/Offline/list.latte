@@ -38,16 +38,10 @@
 <script type="text/javascript" >
     $(function(){ 
         offlineReady();
-//        localStorage.clear();
-//localStorage['queue']=JSON.stringify([]);
-//        var arr = JSON.parse(localStorage['queue']);
-//        var msg = { date: "1.3.2013", purpose:"testoviny", category:"12", recipient:"Jan Vomáčka", type:"out", price:"22.50" };
-//        arr.push(msg);
-//        localStorage['queue'] = JSON.stringify(arr);
 
         var data = queueLoad();
         var length = data.length;
-//        var tr, td;
+
         var tbody = $("#tbody");
         for(var i =0;i<length;i++){
             tbody.append('<tr><td>'+data[i].date+"</td><td>"+data[i].purpose+"</td><td>"+data[i].type+"</td><td>"+data[i].recipient+"</td><td>"+ (typeof data[i].price != 'undefined' ? data[i].price : '') +"</td></tr>");

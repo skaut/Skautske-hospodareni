@@ -109,12 +109,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $files = new WebLoader\FileCollection(WWW_DIR . '/css');
         $compiler = WebLoader\Compiler::createCssCompiler($files, WWW_DIR . '/webtemp');
 
-        //s minimalizací zlobí bootstrap
-        //        $compiler->addFilter(new VariablesFilter(array('foo' => 'bar')));        
-        //        function mini($code) {
-        //            return CssMin::minify($code);
-        //        }
-        //        $compiler->addFilter("mini");
         $control = new CssLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
         $control->setMedia('screen');
         $files->addFiles([
@@ -141,11 +135,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
             'bootstrap-datetimepicker.js',
             'bootstrap-datetimepicker.cs.js',
             'jquery.placeholder.min.js',//IE 8, 9 placeholders bugfix
-            //            'jquery.touchwipe.min.js',
-            //            'mobile.js',
-            //'my-datepicker.js',
             'bootstrap-select.js',
-            //'jquery.nette.js',
             'nette.ajax.js',
             'netteForms.js',
             'nextras.netteForms.js',
@@ -153,11 +143,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
             'jquery.nette.dependentselectbox.js',
             'bootstrap.js',
             'bootstrap3-typeahead.min.js',
-            //            'nextras.typeahead.init.js',
             'jquery.fancybox.pack.js',
             'offline.js',
-            //            'html5.js',
-            //            'h5utils.js',
             'my.js',
             'nextras.datetimepicker.init.js',
             'ie10-viewport-bug-workaround.js', // IE10 viewport hack for Surface/desktop Windows 8 bug

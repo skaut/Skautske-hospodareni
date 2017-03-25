@@ -25,8 +25,6 @@
             </tr>
             <tr n:foreach="$list as $l">
                 <td>
-                    {*}<a n:href="detail $l->id" class="btn btn-sm btn-primary">Detail</a>{*}
-                    {*}<a n:href="edit! $l->id" class="btn btn-primary">Upravit</a>{*}
                     <a n:if="in_array($l->unitId, $editableUnits)" n:href="remove! $l->id" class="btn btn-danger">Smazat</a>
                 </td>
                 <td>{$l->username}</td>

@@ -95,7 +95,7 @@ class DetailPresenter extends BasePresenter
 
         if ($this->eventService->event->updatePrefix($values['aid'], $values['prefix'])) {
             $this->flashMessage("Prefix byl nastaven.");
-            //$this->redirect("default", array("aid" => $values['aid']));
+
         } else {
             $this->flashMessage("Nepodařilo se nastavit prefix.", "danger");
         }

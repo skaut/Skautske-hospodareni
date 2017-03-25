@@ -11,11 +11,6 @@ use Model\Services\PdfRenderer;
  */
 trait ParticipantTrait
 {
-    /**
-     *
-     * @var \Model\EventService
-     */
-    //protected $eventService;
 
     /**
      * číslo aktuální jendotky
@@ -146,7 +141,6 @@ trait ParticipantTrait
         if ($this->isAjax()) {
             $this->redrawControl("potencialParticipants");
             $this->redrawControl("participants");
-            //            $this->redrawControl("flash");
         } else {
             $this->redirect('this');
         }

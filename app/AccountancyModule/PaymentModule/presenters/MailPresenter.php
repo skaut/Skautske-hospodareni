@@ -29,14 +29,6 @@ class MailPresenter extends BasePresenter
         $this->template->editableUnits = $this->getEditableUnits();
     }
 
-    //    public function renderDetail($id){
-    //        if (!$this->isEditable) {
-    //            $this->flashMessage("Nemáte oprávnění přistupovat ke správě emailů", "danger");
-    //            $this->redirect("Payment:default");
-    //        }
-    //        $this->template->detail = $this->model->get($id);
-    //    }
-
     public function handleEdit($id) : void
     {
         if (!$this->isEditable) {

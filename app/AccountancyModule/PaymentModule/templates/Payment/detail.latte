@@ -86,7 +86,6 @@
                     <th>VS <i title="Předvyplněná hodnota je dosavadní nejvyšší hodnota +1" rel="tooltip" class="glyphicon glyphicon-info-sign hidden-xs hidden-sm"></i></th>
                     <th class='hidden-xs'>KS</th>
                     <th>Splatnost*</th>
-                        {*}<th>Poznámka</th>{*}
                     <th>Stav</th>
                     <th n:if="$isEditable">&nbsp;</th>
                 </tr>
@@ -99,7 +98,6 @@
                     <td class='hidden-xs'>{input ks class=>"input-sm form-control"}</td>
                     <td>{input maturity class=>"input-sm form-control date"}</td>
                     <td>&nbsp;</td>
-                    {*}<td colspan="2">{input note class=>"input-medium"}</td>{*}
                     <td>{input send}</td>
                 </tr>
                 {if !empty($payments)}
@@ -110,7 +108,6 @@
                         <td {if $l->vs == null}class="warning" title="Bez VS nebude možné automaticky párovat platby">&nbsp;{else}class="r">{$l->vs}{/if}</td>
                         <td class="r hidden-xs">{if $l->ks == null}&nbsp;{else}{$l->ks}{/if}</td>
                         <td class="r">{$l->maturity|date:'j.n.Y'}</td>
-                        {*}<td>{if $l->note == null}&nbsp;{else}{$l->note}{/if}</td>{*}
                         <td>{$l->stateLabel|paymentStateLabel|noescape}</td>
                         <td n:if="$isEditable" class="r nowrap">{if in_array($l->state, $notFinalStates)}
                             <a n:href="edit $l->id" class="btn btn-sm btn-primary" title="Upravit platbu"><i class="glyphicon glyphicon-edit"></i></a>

@@ -25,109 +25,7 @@
         //(de)aktivace tlačítka pro hromadné akce nad seznamem účastníků
         $(".dependentButtonParticipant").addClass("disabled").attr("disabled", "disabled");
         onlyWithCheckbox("massParticipants", "dependentButtonParticipant");
-        
 
-    {*}
-        function handleDragStart(e) {
-    //        console.log("start");
-            this.style.opacity = '0.5';
-    //        console.log(getDropableId(e.target));
-    //        console.log(e.target);
-            var data = { "id":e.target.getAttribute('id'), "sourceBlock":getDropableId(e.target) }; //sourceBlock je rodic, co je dropable
-            e.dataTransfer.setData("text/plain", JSON.stringify(data));
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setDragImage(e.target, 0, 20);
-            return true;
-        }
-    
-        function handleDragEnd(e) {
-            this.style.opacity = '1';
-            return true;
-        }
-    
-        activeOverBlockId = null;
-    
-        function handleDragEnter(e) {
-            try {
-                var data = JSON.parse(e.dataTransfer.getData("text/plain"));
-            } catch(err) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
-                return false;
-            }
-            var dropableId = getDropableId(e.target);
-            if(activeOverBlockId == null && data.sourceBlock != dropableId) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
-    //            e.stopPropagation();
-                activeOverBlockId = dropableId;
-                $tbody = $('#'+dropableId);
-                $tbody.addClass("dropableOver");
-            
-                return false;
-            }
-            return true;
-        }
-        function handleDragLeave(e) {
-            try {
-                var data = JSON.parse(e.dataTransfer.getData("text/plain"));
-            } catch(err) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
-                return false;
-            }
-            var dropableId = getDropableId(e.target);
-    //        console.log(e.target);
-    //        console.log(getDropableId(e.target));
-            if(data.sourceBlock == dropableId) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
-                e.stopPropagation();
-                $tbody = $('#'+activeOverBlockId);
-                $tbody.removeClass("dropableOver");
-                activeOverBlockId = null;
-                return false;
-            }
-            return true;
-        }
-      
-        function handleDragOver(e) { //container
-            try {
-                var data = JSON.parse(e.dataTransfer.getData("text/plain"));
-            } catch(err) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
-                return false;
-            }
-    //            console.log(data.sourceBlock);
-    //            console.log(getDropableId(e.target));
-            if(data.sourceBlock != getDropableId(e.target)) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
-                return false;
-            }
-            return true;
-        }
-      
-        function handleDrop(e) { //container
-    //        console.log("drop");
-            e.stopPropagation();
-            e.preventDefault();
-            $("tbody").removeClass("dropableOver");
-            var data = JSON.parse(e.dataTransfer.getData("text/plain"));
-            targetBlockId = getDropableId(e.target);
-            if(data.sourceBlock == targetBlockId){ // docházelo k odeslání při najetí na sousední bunku
-                return false;
-            }
-            return addRow(data.id, targetBlockId);
-        }
-        {*}
                 //mění pozici řádku pro oba směry
                 function addRow(rowId, targetBlockId) {
                     $ne = $('#' + rowId)
@@ -155,7 +53,7 @@
 
                     $ne.hide(0, function() {
                         if (targetBlockId == {$participantTbodyId}) {
-                            $ne = $('<tr><td>{*}<i class="glyphicon glyphicon-move hidden-tablet hidden-xs hidden-sm"></i>{*}' + newName + '</td><td><img src="{$baseUri|noescape}/images/layout/spinner.gif"/></td><td><img src="{$baseUri|noescape}/images/layout/spinner.gif"/></td><td></td></tr>');
+                            $ne = $('<tr><td>' + newName + '</td><td><img src="{$baseUri|noescape}/images/layout/spinner.gif"/></td><td><img src="{$baseUri|noescape}/images/layout/spinner.gif"/></td><td></td></tr>');
                             participantsList.push(newName);
                             participantsList.sort();
                             var index = jQuery.inArray(newName, participantsList);
@@ -170,7 +68,7 @@
                             $(".onlyWithParticipants").show(500);
 
                             $unitPersons = $("#unit-participants-tbody tr:not(.no-unit-persons)");
-//                console.log($unitPersons.size());
+
                             if ($unitPersons.size() == 1) { //byl posledni zobrazeny
                                 $(".onlyWithUnitPersons").hide();
                                 $(".no-unit-persons").show();
@@ -181,23 +79,6 @@
                     return false;
                 }
 
-    {*}
-    var objects = document.querySelectorAll('tbody.dropable tr:not([draggable=false])');
-    [].forEach.call(objects, function(col) {
-        col.setAttribute('draggable', 'true');  // Enable columns to be draggable.
-        col.addEventListener('dragstart', handleDragStart, false);
-        col.addEventListener('dragend', handleDragEnd, false);
-    });
-    {*}
-    {*}
-       objects = document.querySelectorAll('tbody.dropable');
-       [].forEach.call(objects, function(col) {
-           col.addEventListener('dragover', handleDragOver, false);
-           col.addEventListener('dragenter', handleDragEnter, false);
-           col.addEventListener('dragleave', handleDragLeave, false);
-           col.addEventListener('drop', handleDrop, false);
-       });
-       {*}
                objects = document.querySelectorAll('a.addRow');
                [].forEach.call(objects, function(col) {
                    col.addEventListener('click', aAddRow, false);
@@ -213,8 +94,7 @@
                    } else {
                        targetBlockId = {$participantTbodyId};
                    }
-//         console.log(rowId);
-//         console.log(targetBlockId);
+
                    return addRow(rowId, targetBlockId);
                }
 
@@ -230,56 +110,3 @@
 
            });
 </script>
-
-{*}
-<!--hromadné vyplnění částek-->
-<div class="modal myModal fade" id="massEdit">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h2>Poplatek</h2>
-    </div>
-    <div class="modal-body">
-            {form formAddPaymentMass class=>"ajax"}
-        <ul class="errors" n:if="$form->hasErrors()">
-            <li n:foreach="$form->errors as $error">{$error}</li>
-        </ul>
-                {label sum/} {input sum style=>"width:40px;"} Kč <br />
-                {label rewrite/} {input rewrite}<br />
-                {input aid}{input send onclick=>"$('#addPaymentMass').modal('hide')"}
-            {/form}
-    </div>
-</div>
-
-<script type="text/javascript">
-$(document).ready(function() {
-    
-    $('#[id^="try-"]');
-    
-    $('#[id^="par-days-"]').editable({link editDays!},  { 
-         type : 'text',
-         id   : 'id',
-         name : 'days',
-         placeholder : ' ',
-         width : '20px',
-         height: '15px',
-         submitdata : function(value, settings) {
-             return { id: this.id.substr(9) }; //odstrani prefix
-         }
-     });
-
-    $('#[id^="par-payment-"]').editable({link editPayment!},  { 
-         type : 'text',
-         id   : 'id',
-         name : 'payment',
-         placeholder : ' ',
-         width : '35px',
-         height: '15px',
-         submitdata : function(value, settings) {
-             return { id: this.id.substr(12) }; //odstrani prefix
-         }
-     });
-
-});
-
-</script>
-{*}

@@ -18,8 +18,7 @@ class ParticipantPresenter extends BasePresenter
 
     //kontrola oprávnění
     protected $isAllowParticipantDetail;
-    //    protected $isAllowParticipantAll;
-    //protected $isAllowParticipantDays;
+
     protected $isAllowParticipant;
 
     public function __construct(MemberService $member, ExportService $export, ExcelService $excel, PdfRenderer $pdf)
@@ -39,8 +38,6 @@ class ParticipantPresenter extends BasePresenter
 
         $ev_state = $this->event->ID_EventGeneralState == "draft" ? TRUE : FALSE;
         $this->isAllowParticipantDetail = $this->template->isAllowParticipantDetail = array_key_exists("EV_ParticipantGeneral_DETAIL", $this->availableActions);
-        //        $this->isAllowParticipantAll    = $this->template->isAllowParticipantAll = array_key_exists("EV_ParticipantGeneral_ALL_EventGeneral", $this->availableActions);
-        //$this->isAllowParticipantDays = $this->template->isAllowParticipantDays = array_key_exists("EV_EventGeneral_UPDATE_Days", $this->availableActions);
         $this->isAllowParticipantDelete = $this->template->isAllowParticipantDelete = $ev_state && array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
         $this->isAllowParticipantInsert = $this->template->isAllowParticipantInsert = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
         $this->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdateLocal = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
@@ -62,9 +59,6 @@ class ParticipantPresenter extends BasePresenter
 
         $this->traitDefault($dp, $sort, $regNums);
 
-        //        $this->template->accessDeleteParticipant = $this->isAllowed("EV_ParticipantGeneral_DELETE_EventGeneral");
-        //        $this->template->accessUpdateParticipant = $this->isAllowed("EV_ParticipantGeneral_UPDATE_EventGeneral");
-        //        $this->template->accessInsertParticipant = $this->isAllowed("EV_ParticipantGeneral_INSERT_EventGeneral");
         if ($this->isAjax()) {
             $this->redrawControl("contentSnip");
         }

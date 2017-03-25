@@ -27,7 +27,6 @@ abstract class MutableBaseService extends BaseService
         $this->type = strtolower($name);
         $cache = new Cache($cacheStorage, __CLASS__);
         $this->cache = $cache;
-        //        $this->cache->clean();
     }
 
 }

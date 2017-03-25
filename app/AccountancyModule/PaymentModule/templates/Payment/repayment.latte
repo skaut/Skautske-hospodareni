@@ -28,10 +28,6 @@
                     <td>{input "p_".$p->ID."_name" class=>"form-control"}</td>
                     <td>{input "p_".$p->ID."_amount" class=>"form-control"}</td>
                     <td>{input "p_".$p->ID."_account" class=>"form-control"}</td>
-                    {*}
-                      <td><input type=text name="vals[{$p->ID}][amount]" class="form-control" value="{$p->repayment}"></td>
-                      <td><input type=text name="vals[{$p->ID}][account]" class="form-control" value="{if array_key_exists($p->ID_Person, $payments)}{$payments[$p->ID_Person]->paidFrom}{/if}"></td>
-                      {*}
                 </tr> 
             </table>
             {input send}
@@ -40,5 +36,3 @@
         <div class="alert alert-warning">Nejsou uvedeny žádné vratky u tábora.</div>
     {/if}
 </div>
-{*}
-{*}

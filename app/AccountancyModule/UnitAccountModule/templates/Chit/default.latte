@@ -39,7 +39,6 @@
                     </td>
                 </tr>
             </table>
-            {*}{if !$iterator->isLast()}<hr />{/if}{*}
         {/if}
     {/foreach}
 {/if}
@@ -70,7 +69,7 @@
                 <h3><a href="#a-{$id}">{$label}</a></h3>
                 <ul>
                     {foreach $info[$id] as $itemId=>$item}
-                        <li n:if="!empty($chitsArr[$id][$itemId])"><a href="#a-{$id}-{$itemId}">{$item["DisplayName"]}</a></li>{*}{*}
+                        <li n:if="!empty($chitsArr[$id][$itemId])"><a href="#a-{$id}-{$itemId}">{$item["DisplayName"]}</a></li>
                     {/foreach}
                 </ul>
             </div>

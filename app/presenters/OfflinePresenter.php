@@ -22,34 +22,11 @@ class OfflinePresenter extends BasePresenter
     public function handleSynchronize($aid) : void
     {
         $this->redrawControl();
-        //        $post = $this->context->httpRequest->getPost();
-        //        dump($post);
-        //        die();
-        //        $id = $post['id'];
-        //        $data = json_decode($post['data']);
-        //        $this->template->isEditable = $isEditable = $this->context->eventService->event->isCommandEditable($aid);
-        //        if (!$this->user->isLoggedIn() || !$isEditable) {
-        //            $this->flashMessage("Nemáte oprávnění pro tuto akci.");
-        //            $this->redirect(":Default:");
-        //        }
-        //        $this->context->eventService->chits->add($this->aid, $values);
     }
 
     public function renderList() : void
     {
 
-    }
-
-    protected function beforeRender() : void
-    {
-        parent::beforeRender();
-        //        $cache = new Cache(new \Nette\Caching\Storages\FileStorage(TEMP_DIR));
-        if (!$this->user->isLoggedIn()) {
-            //            if (!($backlink = $cache->load("loginBacklink"))) {
-            //                $backlink = $cache->save("loginBacklink", $this->storeRequest('+ 3 days'), array(Cache::EXPIRE => '+2 days'));
-            //            }
-            //            $this->template->backlink = $backlink;
-        }
     }
 
     public function actionManifest() : void
@@ -64,9 +41,6 @@ class OfflinePresenter extends BasePresenter
 
     public function actionOut() : void
     {
-        //        if($this->user->isLoggedIn()){
-        //            $this->template->autoCompleter = $this->context->memberService->getAC();
-        //        }
         $this['formOut']['category']->setItems($this->context->getService("eventService")->chits->getCategoriesPairs('out'));
         $this->template->setFile(dirname(__FILE__) . '/../templates/Offline/form.latte');
         $this->template->form = $this['formOut'];
@@ -105,7 +79,6 @@ class OfflinePresenter extends BasePresenter
         $form->addText("price", "Částka: ")
             ->setMaxLength(100)
             ->setHtmlId("form-out-price")
-            //                ->addRule(Form::REGEXP, 'Zadejte platnou částku bez mezer', "/^([0-9]+[\+\*])*[0-9]+$/")
             ->getControlPrototype()->placeholder("např. 20+15*3")
             ->class("input-medium");
 
@@ -114,8 +87,7 @@ class OfflinePresenter extends BasePresenter
         $form->addHidden("type", "out");
         $form->addSubmit('send', 'Uložit')
             ->setAttribute("class", "btn btn-primary");
-        //        $form->onSuccess[] = array(null, 'formAddSubmitted');
-        //$form->setDefaults(array('category' => 8));
+
         return $form;
     }
 
@@ -145,8 +117,7 @@ class OfflinePresenter extends BasePresenter
         $form->addHidden("type", "in");
         $form->addSubmit('send', 'Uložit')
             ->getControlPrototype()->setAttribute("class", "btn btn-primary");
-        //        $form->onSuccess[] = array(null, 'formAddSubmitted');
-        //$form->setDefaults(array('category' => 1));
+
         return $form;
     }
 
