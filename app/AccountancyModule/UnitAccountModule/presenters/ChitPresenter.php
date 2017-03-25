@@ -114,10 +114,10 @@ class ChitPresenter extends BasePresenter
 
     /**
      *
-     * @param type $oid - id of object
-     * @param type $id - id of chit
-     * @param type $type type of object - camp, unit, event
-     * @param type $act
+     * @param int $oid - id of object
+     * @param int $id - id of chit
+     * @param string $type type of object - camp, unit, event
+     * @param string $act
      */
     public function handleLock($oid, $id, $type, $act = "lock") : void
     {

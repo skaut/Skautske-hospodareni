@@ -20,7 +20,7 @@ abstract class MutableBaseService extends BaseService
     /** @var Cache */
     protected $cache;
 
-    public function __construct($name, Skautis $skautIS, IStorage $cacheStorage)
+    public function __construct(string $name, Skautis $skautIS, IStorage $cacheStorage)
     {
         parent::__construct($skautIS);
         $this->typeName = $name;

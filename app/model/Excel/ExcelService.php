@@ -29,10 +29,8 @@ class ExcelService extends BaseService
     }
 
     /**
-     *
-     * @param EventService $service
-     * @param type $aid číslo akce
-     * @param type $event
+     * @param EventEntity $service
+     * @param \stdClass $event
      */
     public function getCashbook(EventEntity $service, $event)
     {

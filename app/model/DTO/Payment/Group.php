@@ -29,23 +29,15 @@ class Group
     /** @var int|NULL */
     private $constantSymbol;
 
+    /** @var int|NULL */
+    private $nextVariableSymbol;
+
     /** @var string */
     private $emailTemplate;
 
     /** @var int|NULL */
     private $smtpId;
 
-    /**
-     * Group constructor.
-     * @param int $id
-     * @param int $unitId
-     * @param string $name
-     * @param float|NULL $defaultAmount
-     * @param \DateTimeImmutable|NULL $dueDate
-     * @param int|NULL $constantSymbol
-     * @param string $emailTemplate
-     * @param int|NULL $smtpId
-     */
     public function __construct(
         int $id,
         int $unitId,

@@ -12,7 +12,7 @@ class UserService extends BaseService
 
     /**
      * varcí ID role aktuálně přihlášeného uživatele
-     * @return type
+     * @return int|NULL
      */
     public function getRoleId()
     {
@@ -21,6 +21,7 @@ class UserService extends BaseService
 
     /**
      * vrací pole
+     * @param bool $activeOnly
      * @return array všech dostupných rolí přihlášeného uživatele
      */
     public function getAllSkautisRoles($activeOnly = TRUE)
@@ -39,7 +40,7 @@ class UserService extends BaseService
 
     /**
      * změní přihlášenou roli do skautISu
-     * @param ID_Role $id
+     * @param int $id
      */
     public function updateSkautISRole($id)
     {
@@ -65,7 +66,7 @@ class UserService extends BaseService
 
     /**
      * vrací kompletní seznam informací o přihlášené osobě
-     * @return type
+     * @return \stdClass
      */
     public function getPersonalDetail()
     {
@@ -90,10 +91,10 @@ class UserService extends BaseService
 
     /**
      *
-     * @param type $table - tabulka v DB skautisu
-     * @param type $id - např. ID_EventGeneral, NULL = oveření nad celou tabulkou
-     * @param type $ID_Action - id ověřované akce - např EV_EventGeneral_UPDATE
-     * @return BOOL|stdClass|array
+     * @param string $table - tabulka v DB skautisu
+     * @param int|NULL $id - např. ID_EventGeneral, NULL = oveření nad celou tabulkou
+     * @param string $ID_Action - id ověřované akce - např EV_EventGeneral_UPDATE
+     * @return bool|\stdClass|array
      */
     public function actionVerify($table, $id = NULL, $ID_Action = NULL)
     {

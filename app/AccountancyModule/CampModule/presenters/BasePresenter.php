@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
+use Model\EventEntity;
 use Skautis\Wsdl\PermissionException;
 
 /**
@@ -14,7 +15,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     protected $event;
 
-    /** @var \Model\EventService */
+    /** @var EventEntity */
     protected $eventService;
 
     protected function startup() : void

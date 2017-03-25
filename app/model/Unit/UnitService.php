@@ -1,7 +1,9 @@
 <?php
 
 namespace Model;
+
 use Nette\Security\User;
+use Skautis;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -18,8 +20,9 @@ class UnitService extends BaseService
 
     /**
      * vrací detail jednotky
-     * @param int $unitId
-     * @return stdClass
+     * @param int|NULL $unitId
+     * @return \stdClass
+     * @throws \Nette\Application\BadRequestException
      */
     public function getDetail($unitId = NULL)
     {
@@ -39,8 +42,8 @@ class UnitService extends BaseService
 
     /**
      * vrací nadřízenou jednotku
-     * @param ID_Unit $ID_Unit
-     * @return stdClass
+     * @param int $ID_Unit
+     * @return \stdClass
      */
     public function getParrent($ID_Unit)
     {
@@ -53,8 +56,8 @@ class UnitService extends BaseService
 
     /**
      * nalezne podřízené jednotky
-     * @param type $ID_Unit
-     * @return array(stdClass)
+     * @param int $ID_Unit
+     * @return \stdClass[]
      */
     public function getChild($ID_Unit)
     {
@@ -64,7 +67,7 @@ class UnitService extends BaseService
     /**
      * vrací jednotku, která má právní subjektivitu
      * @param int $unitId
-     * @return stdClass
+     * @return \stdClass
      */
     public function getOficialUnit($unitId = NULL)
     {
