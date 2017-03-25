@@ -1,6 +1,7 @@
 <?php
 
 namespace Model;
+
 use Dibi\Row;
 
 /**
