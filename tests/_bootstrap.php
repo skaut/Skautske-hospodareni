@@ -6,7 +6,5 @@ date_default_timezone_set('Europe/Prague');
 
 (new \Nette\Loaders\RobotLoader())
     ->addDirectory(__DIR__ . '/../app')
-    ->setCacheStorage(
-        new \Nette\Caching\Storages\FileStorage(__DIR__ . '/_temp'),
-        new \Nette\Caching\Storages\FileJournal(__DIR__ . '/_temp'))
+    ->setCacheStorage(new \Nette\Caching\Storages\FileStorage(__DIR__ . '/_temp'))
     ->register();
