@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Dibi\Row;
 use Model\Skautis\Mapper;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
@@ -27,13 +28,13 @@ class ChitService extends MutableBaseService
 
     /**
      * vrací jeden paragon
-     * @param type $chitId
-     * @return \DibiRow
+     * @param int $chitId
+     * @return Row
      */
     public function get($chitId)
     {
         $ret = $this->table->get($chitId);
-        if ($ret instanceof \DibiRow && $this->type == self::TYPE_CAMP) {//doplnění kategorie u paragonu z tábora
+        if ($ret instanceof Row && $this->type == self::TYPE_CAMP) {//doplnění kategorie u paragonu z tábora
             $categories = $this->getCategoriesPairs(NULL, $this->getSkautisId($ret->eventId));
             $ret->ctype = array_key_exists($ret->category, $categories['in']) ? "in" : "out";
         }
@@ -42,8 +43,8 @@ class ChitService extends MutableBaseService
 
     /**
      * seznam paragonů k akci
-     * @param type $skautisEventId
-     * @return type
+     * @param int $skautisEventId
+     * @return \stdClass[]
      */
     public function getAll($skautisEventId, $onlyUnlocked = FALSE)
     {
@@ -73,8 +74,8 @@ class ChitService extends MutableBaseService
     /**
      * vrací pole paragonů s ID zadanými v $list
      * použití - hromadný tisk
-     * @param type $skautisEventId
-     * @param type $list - pole id
+     * @param int $skautisEventId
+     * @param int[] $list - pole id
      * @return array
      */
     public function getIn($skautisEventId, $list)
@@ -91,11 +92,12 @@ class ChitService extends MutableBaseService
 
     /**
      * přidat paragon
-     * @param type $skautisEventId
-     * @param array|ArrayAccess $val - údaje
-     * @return type
+     * @param int $skautisEventId
+     * @param array|\ArrayAccess $val - údaje
+     * @throws \Nette\InvalidArgumentException
+     * @return bool
      */
-    public function add($skautisEventId, $val)
+    public function add($skautisEventId, $val): bool
     {
         $localEventId = $this->getLocalId($skautisEventId);
 
@@ -124,10 +126,14 @@ class ChitService extends MutableBaseService
             }
         }
 
-        return $ret;
+        return (bool)$ret;
     }
 
-    public function generateNumber($chitId)
+    /**
+     * @param int $chitId
+     * @return string
+     */
+    public function generateNumber($chitId): string
     {
         $chit = $this->get($chitId);
         $categories = $this->getCategoriesPairs(NULL, $this->type == self::TYPE_CAMP ? $this->getSkautisId($chit->eventId) : NULL);
@@ -145,11 +151,11 @@ class ChitService extends MutableBaseService
 
     /**
      * upravit paragon - staci vyplnit data, ktera se maji zmenit
-     * @param type $chitId
-     * @param ArrayAccess $val
-     * @return type
+     * @param int $chitId
+     * @param array|\ArrayAccess $val
+     * @return bool
      */
-    public function update($chitId, $val)
+    public function update($chitId, $val): bool
     {
         $changeAbleData = ["date", "num", "recipient", "purpose", "price", "category"];
 
@@ -188,11 +194,11 @@ class ChitService extends MutableBaseService
 
     /**
      * smazat paragon
-     * @param type $chitId
-     * @param type $skautisEventId
-     * @return type
+     * @param int $chitId
+     * @param int $skautisEventId
+     * @return bool
      */
-    public function delete($chitId, $skautisEventId)
+    public function delete($chitId, $skautisEventId): bool
     {
         return $this->table->delete($chitId, $this->getLocalId($skautisEventId));
     }
@@ -200,17 +206,16 @@ class ChitService extends MutableBaseService
     /**
      * smazat všechny paragony dané akce
      * použití při rušení celé akce
-     * @param type $skautisEventId
-     * @return type
+     * @param int $skautisEventId
      */
-    public function deleteAll($skautisEventId)
+    public function deleteAll($skautisEventId): void
     {
-        return $this->table->deleteAll($this->getLocalId($skautisEventId));
+        $this->table->deleteAll($this->getLocalId($skautisEventId));
     }
 
     /**
      * seznam všech kategorií pro daný typ
-     * @param type $skautisEventId
+     * @param int $skautisEventId
      * @param bool $isEstimate - předpoklad?
      * @return array
      */
@@ -235,10 +240,10 @@ class ChitService extends MutableBaseService
 
     /**
      * vrací rozpočtové kategorie rozdělené na příjmy a výdaje (camp)
-     * @param type $skautisEventId
-     * @return array(in=>(id=>DisplayName, ...), out=>(...))
+     * @param int|NULL $skautisEventId
+     * @return array array(in=>(id=>DisplayName, ...), out=>(...))
      */
-    public function getCategoriesPairs($typeInOut = NULL, $skautisEventId = NULL)
+    public function getCategoriesPairs($typeInOut = NULL, $skautisEventId = NULL): array
     {
         $cacheId = __METHOD__ . $this->type . $skautisEventId . "_" . $typeInOut;
         if ($this->type == self::TYPE_CAMP) {
@@ -272,8 +277,10 @@ class ChitService extends MutableBaseService
 
     /**
      * vrací ID kategorie pro příjmy od účastníků
-     * @return type
+     * @param int|NULL $skautisEventId
+     * @param string|NULL $category
      * @throws \Nette\InvalidStateException
+     * @return int
      */
     public function getParticipantIncomeCategory($skautisEventId = NULL, $category = NULL)
     {
@@ -307,8 +314,8 @@ class ChitService extends MutableBaseService
     /**
      * vrací soucet v kazdé kategorii
      * používá se pouze u táborů
-     * @param type $skautisEventId
-     * @return (ID=>SUM)
+     * @param int $skautisEventId
+     * @return array (ID=>SUM)
      */
     public function getCategoriesSum($skautisEventId)
     {
@@ -326,7 +333,7 @@ class ChitService extends MutableBaseService
      * @param int $categoryId
      * @param float $ammout
      */
-    public function updateCategory($skautisEventId, $categoryId, $ammout = NULL)
+    public function updateCategory($skautisEventId, $categoryId, $ammout = NULL): void
     {
         if ($ammout === NULL) {
             $ammout = (int)$this->table->getTotalInCategory($categoryId, $this->getLocalId($skautisEventId));
@@ -341,10 +348,12 @@ class ChitService extends MutableBaseService
 
     /**
      * ověřuje konzistentnost dat mezi paragony a SkautISem
-     * @param type $skautisEventId
+     * @param int $skautisEventId
+     * @param bool $repair
+     * @param array|NULL $toRepair
      * @return boolean
      */
-    public function isConsistent($skautisEventId, $repair = FALSE, &$toRepair = NULL)
+    public function isConsistent($skautisEventId, $repair = FALSE, array &$toRepair = NULL)
     {
         $sumSkautis = $this->getCategories($skautisEventId, FALSE);
 
@@ -352,17 +361,17 @@ class ChitService extends MutableBaseService
             if ($ammount != $sumSkautis[$catId]->Ammount) {
                 if ($repair) { //má se kategorie opravit?
                     $this->updateCategory($skautisEventId, $catId, $ammount);
-                } else {
+                } elseif($toRepair !== NULL) {
                     $toRepair[$catId] = $ammount; //seznam ID vadných kategorií a jejich částek
                 }
             }
         }
-        return empty($toRepair) ? TRUE : FALSE;
+        return empty($toRepair);
     }
 
     /**
      * je akce celkově v záporu?
-     * @param type $skautisEventId
+     * @param int $skautisEventId
      * @return bool
      */
     public function eventIsInMinus($skautisEventId)
@@ -390,22 +399,33 @@ class ChitService extends MutableBaseService
     }
 
     /**
+     * [[ UNUSED ]]
      * uzavře paragon proti editaci, měnit lze jen kategorie z rozpočtu jednotky
-     * @param type $oid
-     * @param type $chitId
-     * @param type $userId
-     * @return type
+     * @param int $oid
+     * @param int $chitId
+     * @param int $userId
      */
-    public function lock($oid, $chitId, $userId)
+    public function lock($oid, $chitId, $userId): void
     {
-        return $this->table->lock($oid, $chitId, $userId);
+        $this->table->lock($oid, $chitId, $userId);
     }
 
-    public function unlock($oid, $chitId, $userid = NULL)
+    /**
+     * [[ UNUSED ]]
+     * @param int $oid
+     * @param int $chitId
+     * @return \Dibi\Result|int
+     */
+    public function unlock($oid, $chitId)
     {
         return $this->table->unlock($oid, $chitId);
     }
 
+    /**
+     * @param int $oid
+     * @param int $userId
+     * @return \Dibi\Result|int
+     */
     public function lockEvent($oid, $userId)
     {
         return $this->table->lockEvent($oid, $userId);
@@ -414,24 +434,23 @@ class ChitService extends MutableBaseService
     /**
      * nastavuje kategorie z rozpočtu
      * @param int $chitId
-     * @param int $in
-     * @param int $out
-     * @return type
+     * @param int|NULL $in
+     * @param int|NULL $out
      */
-    public function setBudgetCategories($chitId, $in = NULL, $out = NULL)
+    public function setBudgetCategories($chitId, $in = NULL, $out = NULL): void
     {
-        return $this->table->update($chitId, ["budgetCategoryIn" => $in, "budgetCategoryOut" => $out]);
+        $this->table->update($chitId, ["budgetCategoryIn" => $in, "budgetCategoryOut" => $out]);
     }
 
+    /**
+     * @param array $categories
+     * @return array
+     */
     public function getBudgetCategoriesSummary($categories)
     {
         return $this->table->getBudgetCategoriesSummary(array_keys($categories['in']), 'in') + $this->table->getBudgetCategoriesSummary(array_keys($categories['out']), 'out');
     }
 
-    /**
-     * @param int $localEventId
-     * @return int|NULL
-     */
     public function getSkautisId(int $localEventId): ?int
     {
         return $this->skautisMapper->getSkautisId($localEventId, $this->type);

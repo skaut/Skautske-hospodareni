@@ -33,7 +33,7 @@ class BudgetService extends BaseService
         ];
     }
 
-    public function addCategory($oid, $label, $type, $parentId, $value, $year)
+    public function addCategory($oid, $label, $type, $parentId, $value, $year): void
     {
         $this->table->addCategory([
             "objectId" => $this->getLocalId($oid, self::TYPE_UNIT),

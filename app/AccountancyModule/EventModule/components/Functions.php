@@ -40,6 +40,7 @@ class Functions extends Control
      */
     public function __construct($eventId, FormFactory $formFactory, EventEntity $eventEntity, MemberService $members)
     {
+        parent::__construct();
         $this->eventId = $eventId;
         $this->formFactory = $formFactory;
         $this->events = $eventEntity->event;

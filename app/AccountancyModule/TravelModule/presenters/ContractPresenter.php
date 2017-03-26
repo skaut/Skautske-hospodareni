@@ -78,12 +78,7 @@ class ContractPresenter extends BasePresenter
         $this->redirect("default");
     }
 
-    /**
-     * formular na zalozeni nove smlouvy
-     * @param type $name
-     * @return Form
-     */
-    protected function createComponentFormCreateContract($name) : Form
+    protected function createComponentFormCreateContract(string $name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addText("driver_name", "Jméno a příjmení řidiče*")

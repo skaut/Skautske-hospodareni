@@ -9,6 +9,7 @@ use Nette\Caching\IStorage;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
 
+
 /**
  * @author Hána František
  */
@@ -33,9 +34,9 @@ class EventService extends MutableBaseService
 
     /**
      * vrací všechny akce podle parametrů
-     * @param type $year
-     * @param type $state
-     * @return type
+     * @param int|NULL $year
+     * @param string|NULL $state
+     * @return array
      */
     public function getAll($year = NULL, $state = NULL)
     {
@@ -52,8 +53,8 @@ class EventService extends MutableBaseService
     /**
      * vrací detail
      * spojuje data ze skautisu s daty z db
-     * @param ID_Event $ID
-     * @return stdClass
+     * @param int $ID
+     * @return \stdClass
      */
     public function get($ID)
     {
@@ -72,7 +73,7 @@ class EventService extends MutableBaseService
                 $res = $this->saveSes($cacheId, $data);
             }
             return $res;
-        } catch (Skautis\Exception $e) {
+        } catch (\Skautis\Exception $e) {
             throw new \Skautis\Wsdl\PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e->getCode());
         }
     }
@@ -89,8 +90,8 @@ class EventService extends MutableBaseService
 
     /**
      * vrátí data funkcí připravená pro update
-     * @param type $ID_Event
-     * @return type
+     * @param int $ID_Event
+     * @return string[]
      */
     protected function getPreparedFunctions($ID_Event)
     {
@@ -107,7 +108,9 @@ class EventService extends MutableBaseService
      * @param int $ID_Event
      * @param int $ID_Person
      * @param int $ID_Function
-     * @return type
+     * @return bool
+     * @throws LeaderNotAdultException
+     * @throws AssistantNotAdultException
      */
     public function setFunction($ID_Event, $ID_Person, $ID_Function)
     {
@@ -115,7 +118,7 @@ class EventService extends MutableBaseService
         $query[self::$ID_Functions[$ID_Function]] = $ID_Person; //nova změna
 
         try {
-            return $this->skautis->event->{"Event" . $this->typeName . "UpdateFunction"}($query);
+            return (bool)$this->skautis->event->{"Event" . $this->typeName . "UpdateFunction"}($query);
         } catch (WsdlException $e) {
             if (strpos($e->getMessage(), 'EventFunction_LeaderMustBeAdult') != FALSE) {
                 throw new LeaderNotAdultException;
@@ -124,13 +127,13 @@ class EventService extends MutableBaseService
                 throw new AssistantNotAdultException;
             }
         }
-
+        return FALSE;
     }
 
     /**
      * vrací seznam všech stavů akce
      * používá Cache
-     * @return array
+     * @return string[]
      */
     public function getStates()
     {
@@ -189,12 +192,12 @@ class EventService extends MutableBaseService
      * založí akci ve SkautIS
      * EventGeneral specific
      * @param string $name nazev
-     * @param date $start datum zacatku
-     * @param date $end datum konce
-     * @param ID_Unit $unit ID jednotky
+     * @param string $start datum zacatku
+     * @param string $end datum konce
+     * @param int $unit ID jednotky
      * @param int $scope rozsah zaměření akce
      * @param int $type typ akce
-     * @return int|stdClass ID akce
+     * @return int|\stdClass ID akce
      */
     public function create($name, $start, $end, $location = NULL, $unit = NULL, $scope = NULL, $type = NULL)
     {
@@ -225,11 +228,13 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * @param type $data
+     * @param int $skautisId
+     * @param string $prefix
+     * @return bool
      */
-    public function updatePrefix($skautisId, $prefix)
+    public function updatePrefix($skautisId, $prefix): bool
     {
-        return $this->table->updatePrefix($skautisId, strtolower($this->typeName), $prefix);
+        return (bool)$this->table->updatePrefix($skautisId, strtolower($this->typeName), $prefix);
     }
 
     /**
@@ -238,7 +243,7 @@ class EventService extends MutableBaseService
      * @param array $data
      * @return int
      */
-    public function update($data)
+    public function update(array $data)
     {
         $ID = $data['aid'];
         $old = $this->get($ID);
@@ -271,9 +276,9 @@ class EventService extends MutableBaseService
      * @param int $ID
      * @param ChitService $chitService
      * @param string $msg
-     * @return type
+     * @return bool
      */
-    public function cancel($ID, $chitService, $msg = NULL)
+    public function cancel($ID, $chitService, $msg = NULL) : bool
     {
         $ret = $this->skautis->event->{"Event" . $this->typeName . "UpdateCancel"}([
             "ID" => $ID,
@@ -282,17 +287,16 @@ class EventService extends MutableBaseService
         if ($ret) {//smaže paragony
             $chitService->deleteAll($ID);
         }
-        return $ret;
+        return (bool)$ret;
     }
 
     /**
      * znovu otevřít
-     * @param ID_ $ID
-     * @return type
+     * @param int $ID
      */
-    public function open($ID)
+    public function open($ID): void
     {
-        return $this->skautis->event->{"Event" . $this->typeName . "UpdateOpen"}(
+        $this->skautis->event->{"Event" . $this->typeName . "UpdateOpen"}(
             [
                 "ID" => $ID,
             ], "event" . $this->typeName);
@@ -302,7 +306,7 @@ class EventService extends MutableBaseService
      * uzavře
      * @param int $ID - ID akce
      */
-    public function close($ID)
+    public function close($ID): void
     {
         $this->skautis->event->{"Event" . $this->typeName . "UpdateClose"}(
             [
@@ -315,38 +319,18 @@ class EventService extends MutableBaseService
      * @param int $ID
      * @return bool
      */
-    public function isCloseable($ID)
+    public function isCloseable($ID): bool
     {
         $func = $this->getFunctions($ID);
-        if ($func[0]->ID_Person != NULL) { // musí být nastaven vedoucí akce
-            return TRUE;
-        }
-        return FALSE;
+
+        return $func[0]->ID_Person != NULL; // musí být nastaven vedoucí akce
     }
 
     /**
-     * kontroluje jestli lze upravovat
-     * @param ID_|stdClass $arg - příjmá bud ID nebo jiz akci samotnou
-     * @return bool
+     * @param int $ID
+     * @param int $state
      */
-    public function isCommandEditable($arg)
-    {
-        if (!$arg instanceof \stdClass) {
-            try {
-                $arg = $this->get($arg);
-            } catch (\Skautis\Wsdl\PermissionException $exc) {
-                return FALSE;
-            }
-        }
-        return $arg->{"ID_Event" . $this->typeName . "State"} == "draft" ? TRUE : FALSE;
-    }
-
-    /**
-     *
-     * @param type $ID
-     * @param type $state
-     */
-    public function activateAutocomputedCashbook($ID, $state = 1)
+    public function activateAutocomputedCashbook($ID, $state = 1): void
     {
         $this->skautis->event->{"EventCampUpdateRealTotalCostBeforeEnd"}(
             [
@@ -358,10 +342,10 @@ class EventService extends MutableBaseService
 
     /**
      * aktivuje automatické dopočítávání pro seznam osobodnů z tabulky účastníků
-     * @param type $ID
-     * @param type $state
+     * @param int $ID
+     * @param int $state
      */
-    public function activateAutocomputedParticipants($ID, $state = 1)
+    public function activateAutocomputedParticipants($ID, $state = 1): void
     {
         $this->skautis->event->{"EventCampUpdateAdult"}(["ID" => $ID, "IsRealAutoComputed" => $state], "event" . $this->typeName);
     }

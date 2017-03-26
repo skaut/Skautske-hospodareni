@@ -10,7 +10,7 @@ class MemberService extends BaseService
 
     /**
      * vrací seznam všech osob
-     * @param ID_Unit $unitId - ID_Unit
+     * @param int $unitId - ID_Unit
      * @param bool $onlyDirectMember - pouze přímé členy?
      * @return array
      */

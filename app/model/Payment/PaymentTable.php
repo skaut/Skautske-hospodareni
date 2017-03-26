@@ -14,10 +14,9 @@ class PaymentTable extends BaseTable
     const PAYMENT_STATE_SEND = "send";
 
     /**
-     *
-     * @param int|array $unitId
+     * @param int|int[] $unitId
      * @param int $paymentId
-     * @return \DibiRow
+     * @return Row
      */
     public function get($unitId, $paymentId)
     {
@@ -35,9 +34,8 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     *
      * @param int|NULL $pa_groups
-     * @return type
+     * @return Row[]
      */
     public function getAllPayments($pa_groups)
     {
@@ -48,7 +46,6 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     *
      * @param int $pa_groupId
      * @return array
      */
@@ -60,27 +57,26 @@ class PaymentTable extends BaseTable
     /**
      *
      * @param array $arr
-     * @return type
+     * @return bool
      */
-    public function createPayment($arr)
+    public function createPayment($arr): bool
     {
-        return $this->connection->insert(self::TABLE_PA_PAYMENT, $arr)->execute();
+        return (bool)$this->connection->insert(self::TABLE_PA_PAYMENT, $arr)->execute();
     }
 
     /**
-     *
      * @param int $paymentId
      * @param array $arr
      * @param bool $notClosed
-     * @return type
+     * @return bool
      */
-    public function update($paymentId, $arr, $notClosed = TRUE)
+    public function update($paymentId, $arr, $notClosed = TRUE): bool
     {
         $q = $this->connection->update(self::TABLE_PA_PAYMENT, $arr)->where("id=%i", $paymentId);
         if ($notClosed) {
             $q->where("state in %in", $this->getNonFinalStates());
         }
-        return $q->execute();
+        return (bool)$q->execute();
     }
 
     /**
@@ -93,10 +89,9 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     *
-     * @param int|array(int) $unitId
+     * @param int|int[] $unitId
      * @param int $id
-     * @return \DibiRow
+     * @return Row
      */
     public function getGroup($unitId, $id)
     {
@@ -104,12 +99,11 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     *
-     * @param int|array(int) $unitId
+     * @param int|int[] $unitId
      * @param bool $onlyOpen
      * @return array
      */
-    public function getGroups($unitId, $onlyOpen)
+    public function getGroups($unitId, $onlyOpen): array
     {
         return $this->connection->query("SELECT * FROM [" . self::TABLE_PA_GROUP . "]"
             . " WHERE unitId IN %in ", !is_array($unitId) ? [$unitId] : $unitId, " AND state", "%if ", $onlyOpen, "='open' %else !='canceled' %end"
@@ -118,10 +112,9 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     *
      * @param string $groupType
      * @param int $sisId
-     * @return \DibiRow[]
+     * @return Row[]
      */
     public function getGroupsBySisId($groupType, $sisId)
     {
@@ -129,9 +122,9 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     *
+     * [[ Unused ]]
      * @param array $arr
-     * @return type
+     * @return int
      */
     public function createGroup($arr)
     {
@@ -139,8 +132,7 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     *
-     * @param type $pa_groupId
+     * @param int $pa_groupId
      * @return array
      */
     public function summarizeByState($pa_groupId)
@@ -152,18 +144,18 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     *
+     * TODO: replace with open/close method on Group
      * @param int $groupId
      * @param array $arr
-     * @return type
+     * @param bool $openOnly
      */
-    public function updateGroup($groupId, $arr, $openOnly)
+    public function updateGroup($groupId, $arr, $openOnly): void
     {
         $query = $this->connection->update(self::TABLE_PA_GROUP, $arr)->where("id=%i", $groupId);
         if ($openOnly) {
             $query = $query->where("state='open'");
         }
-        return $query->execute();
+        $query->execute();
     }
 
     /**
@@ -184,7 +176,7 @@ class PaymentTable extends BaseTable
     /**
      * vrací seznam id táborů se založenou aktivní skupinou
      */
-    public function getCampIds()
+    public function getCampIds(): array
     {
         return $this->connection->fetchPairs("SELECT sisId, label FROM [" . self::TABLE_PA_GROUP . "] WHERE groupType = 'camp' AND state != 'canceled' ");
     }

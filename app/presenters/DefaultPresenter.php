@@ -10,7 +10,7 @@ class DefaultPresenter extends BasePresenter
         parent::startup();
     }
 
-    public function renderDefault($backlink = NULL)
+    public function renderDefault($backlink = NULL): void
     {
 
     }

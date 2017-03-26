@@ -9,7 +9,7 @@ use Skautis\Skautis;
  * slouží pro obsluhu účastníků
  * @author Hána František <sinacek@gmail.com>
  */
-class ParticipantService extends MutableBaseService
+class   ParticipantService extends MutableBaseService
 {
 
     /** @var ParticipantTable */
@@ -82,12 +82,13 @@ class ParticipantService extends MutableBaseService
      * přidat účastníka k akci
      * @param int $ID
      * @param int $participantId
-     * @return type
+     * @throws \Skautis\Wsdl\WsdlException
+     * @return bool
      */
-    public function add($ID, $participantId)
+    public function add($ID, $participantId): bool
     {
         try {
-            return $this->skautis->event->{"Participant" . $this->typeName . "Insert"}([
+            return (bool)$this->skautis->event->{"Participant" . $this->typeName . "Insert"}([
                 "ID_Event" . $this->typeName => $ID,
                 "ID_Person" => $participantId,
             ]);
@@ -95,17 +96,17 @@ class ParticipantService extends MutableBaseService
             if (!preg_match("/Chyba validace \(Participant_PersonIsAllreadyParticipant(General)?\)/", $ex->getMessage())) {
                 throw $ex;
             }
-            return FALSE;
         }
+
+        return FALSE;
     }
 
     /**
      * vytvoří nového účastníka
      * @param int $ID
      * @param int $person
-     * @return type
      */
-    public function addNew($ID, $person)
+    public function addNew($ID, $person): void
     {
         $newPaerticipantArr = $this->skautis->event->{"Participant" . $this->typeName . "Insert"}([
             "ID_Event" . $this->typeName => $ID,
@@ -121,10 +122,10 @@ class ParticipantService extends MutableBaseService
 
     /**
      * upravuje údaje zadané osoby
-     * @param type $pid
-     * @param type $data
+     * @param int $pid
+     * @param array $data
      */
-    public function personUpdate($pid, $data)
+    public function personUpdate($pid, $data): void
     {
         $this->skautis->org->PersonUpdateBasic([
             "ID" => $pid,
@@ -143,7 +144,7 @@ class ParticipantService extends MutableBaseService
      * @param int $participantId
      * @param array $arr pole hodnot (payment, days, [repayment], [isAccount])
      */
-    public function update($participantId, array $arr)
+    public function update($participantId, array $arr): void
     {
         if ($this->typeName == "Camp") {
             if (isset($arr['days'])) {
@@ -179,13 +180,12 @@ class ParticipantService extends MutableBaseService
 
     /**
      * odebere účastníka
-     * @param type $participantId
-     * @return type
+     * @param int $participantId
      */
-    public function removeParticipant($participantId)
+    public function removeParticipant($participantId): void
     {
         $this->table->deleteLocalDetail($participantId);
-        return $this->skautis->event->{"Participant" . $this->typeName . "Delete"}(["ID" => $participantId, "DeletePerson" => FALSE]);
+        $this->skautis->event->{"Participant" . $this->typeName . "Delete"}(["ID" => $participantId, "DeletePerson" => FALSE]);
     }
 
     /**
@@ -251,7 +251,7 @@ class ParticipantService extends MutableBaseService
         return $res;
     }
 
-    protected function setPersonName(&$person)
+    protected function setPersonName(&$person): void
     {
         preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $person->Person, $matches);
         $person->LastName = $matches['last'];

@@ -2,9 +2,7 @@
 
 namespace App\AccountancyModule;
 
-use Nette\Application\Routers\Route,
-    Nette\Application\Routers\RouteList,
-    Sinacek\MyRoute;
+use Nette\NotImplementedException;
 
 /**
  * @author Hána František <sinacek@gmail.com>

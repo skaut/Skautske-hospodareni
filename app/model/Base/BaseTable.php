@@ -41,11 +41,11 @@ class BaseTable
 
     /**
      * vyhleda akci|jednotku a pokud tam není, tak založí její záznam
-     * @param type $skautisEventId
-     * @param type $type
-     * @return localId
+     * @param int $skautisEventId
+     * @param string $type
+     * @return int localId
      */
-    public function getLocalId($skautisEventId, $type)
+    public function getLocalId(int $skautisEventId, string $type): int
     {
         if (!($ret = $this->connection->fetchSingle("SELECT id FROM [" . self::TABLE_OBJECT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type))) {
             $ret = $this->connection->insert(self::TABLE_OBJECT, ["skautisId" => $skautisEventId, "type" => $type])->execute(\dibi::IDENTIFIER);
