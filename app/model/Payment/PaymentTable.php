@@ -149,7 +149,7 @@ class PaymentTable extends BaseTable
      * @param array $arr
      * @param bool $openOnly
      */
-    public function updateGroup($groupId, $arr, $openOnly)
+    public function updateGroup($groupId, $arr, $openOnly): void
     {
         $query = $this->connection->update(self::TABLE_PA_GROUP, $arr)->where("id=%i", $groupId);
         if ($openOnly) {

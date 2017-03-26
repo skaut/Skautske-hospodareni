@@ -97,7 +97,7 @@ class ChitService extends MutableBaseService
      * @throws \Nette\InvalidArgumentException
      * @return bool
      */
-    public function add($skautisEventId, $val)
+    public function add($skautisEventId, $val): bool
     {
         $localEventId = $this->getLocalId($skautisEventId);
 
@@ -333,7 +333,7 @@ class ChitService extends MutableBaseService
      * @param int $categoryId
      * @param float $ammout
      */
-    public function updateCategory($skautisEventId, $categoryId, $ammout = NULL)
+    public function updateCategory($skautisEventId, $categoryId, $ammout = NULL): void
     {
         if ($ammout === NULL) {
             $ammout = (int)$this->table->getTotalInCategory($categoryId, $this->getLocalId($skautisEventId));
@@ -405,7 +405,7 @@ class ChitService extends MutableBaseService
      * @param int $chitId
      * @param int $userId
      */
-    public function lock($oid, $chitId, $userId)
+    public function lock($oid, $chitId, $userId): void
     {
         $this->table->lock($oid, $chitId, $userId);
     }
@@ -437,7 +437,7 @@ class ChitService extends MutableBaseService
      * @param int|NULL $in
      * @param int|NULL $out
      */
-    public function setBudgetCategories($chitId, $in = NULL, $out = NULL)
+    public function setBudgetCategories($chitId, $in = NULL, $out = NULL): void
     {
         $this->table->update($chitId, ["budgetCategoryIn" => $in, "budgetCategoryOut" => $out]);
     }

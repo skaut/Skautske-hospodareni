@@ -294,7 +294,7 @@ class EventService extends MutableBaseService
      * znovu otevřít
      * @param int $ID
      */
-    public function open($ID)
+    public function open($ID): void
     {
         $this->skautis->event->{"Event" . $this->typeName . "UpdateOpen"}(
             [
@@ -306,7 +306,7 @@ class EventService extends MutableBaseService
      * uzavře
      * @param int $ID - ID akce
      */
-    public function close($ID)
+    public function close($ID): void
     {
         $this->skautis->event->{"Event" . $this->typeName . "UpdateClose"}(
             [
@@ -319,20 +319,18 @@ class EventService extends MutableBaseService
      * @param int $ID
      * @return bool
      */
-    public function isCloseable($ID)
+    public function isCloseable($ID): bool
     {
         $func = $this->getFunctions($ID);
-        if ($func[0]->ID_Person != NULL) { // musí být nastaven vedoucí akce
-            return TRUE;
-        }
-        return FALSE;
+
+        return $func[0]->ID_Person != NULL; // musí být nastaven vedoucí akce
     }
 
     /**
      * @param int $ID
      * @param int $state
      */
-    public function activateAutocomputedCashbook($ID, $state = 1)
+    public function activateAutocomputedCashbook($ID, $state = 1): void
     {
         $this->skautis->event->{"EventCampUpdateRealTotalCostBeforeEnd"}(
             [
@@ -347,7 +345,7 @@ class EventService extends MutableBaseService
      * @param int $ID
      * @param int $state
      */
-    public function activateAutocomputedParticipants($ID, $state = 1)
+    public function activateAutocomputedParticipants($ID, $state = 1): void
     {
         $this->skautis->event->{"EventCampUpdateAdult"}(["ID" => $ID, "IsRealAutoComputed" => $state], "event" . $this->typeName);
     }

@@ -39,7 +39,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->unitService = $u;
     }
 
-    public function injectFormFactory(FormFactory $formFactory)
+    public function injectFormFactory(FormFactory $formFactory): void
     {
         $this->formFactory = $formFactory;
     }

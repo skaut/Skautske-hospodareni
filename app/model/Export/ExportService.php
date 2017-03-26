@@ -26,11 +26,10 @@ class ExportService extends BaseService
      * @param string $fileName
      * @return Template
      */
-    protected function setTemplate(Template $template, string $fileName)
+    protected function setTemplate(Template $template, string $fileName): void
     {
         $template->setFile($fileName);
         $template->getLatte()->addFilter(NULL, '\App\AccountancyModule\AccountancyHelpers::loader');
-        //return $template;
     }
 
     public function getNewPage()

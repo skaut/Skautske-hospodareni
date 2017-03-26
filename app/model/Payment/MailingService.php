@@ -60,7 +60,7 @@ class MailingService
         $this->qr = $qr;
     }
 
-    public function sendEmail(int $paymentId, int $userId)
+    public function sendEmail(int $paymentId, int $userId): void
     {
         $payment = $this->payments->getSimple($paymentId);
         $group = $this->groups->find($payment->groupId);

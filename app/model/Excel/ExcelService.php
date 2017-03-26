@@ -5,7 +5,7 @@ namespace Model;
 class ExcelService extends BaseService
 {
 
-    protected function getNewFile()
+    protected function getNewFile(): \PHPExcel
     {
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()
@@ -15,7 +15,7 @@ class ExcelService extends BaseService
         return $objPHPExcel;
     }
 
-    public function getParticipants(EventEntity $service, $event, $type = "general")
+    public function getParticipants(EventEntity $service, $event, $type = "general"): void
     {
         $objPHPExcel = $this->getNewFile();
         $data = $service->participants->getAll($event->ID);
@@ -32,7 +32,7 @@ class ExcelService extends BaseService
      * @param EventEntity $service
      * @param \stdClass $event
      */
-    public function getCashbook(EventEntity $service, $event)
+    public function getCashbook(EventEntity $service, $event): void
     {
         $objPHPExcel = $this->getNewFile();
         $data = $service->chits->getAll($event->ID);
@@ -41,7 +41,7 @@ class ExcelService extends BaseService
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
     }
 
-    public function getEventSummaries($eventIds, EventEntity $service)
+    public function getEventSummaries($eventIds, EventEntity $service): void
     {
         $objPHPExcel = $this->getNewFile();
 
@@ -63,7 +63,7 @@ class ExcelService extends BaseService
         $this->send($objPHPExcel, "Souhrn-akcí-" . date("Y_n_j"));
     }
 
-    public function getChitsExport($chits)
+    public function getChitsExport($chits): void
     {
         $objPHPExcel = $this->getNewFile();
         $sheetChit = $objPHPExcel->setActiveSheetIndex(0);
@@ -73,7 +73,7 @@ class ExcelService extends BaseService
 
     /* PROTECTED */
 
-    protected function setSheetParticipantCamp(&$sheet, $data)
+    protected function setSheetParticipantCamp(&$sheet, $data): void
     {
         $sheet->setCellValue('A1', "P.č.")
             ->setCellValue('B1', "Jméno")
@@ -117,7 +117,7 @@ class ExcelService extends BaseService
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
     }
 
-    protected function setSheetParticipantGeneral(&$sheet, $data, $event)
+    protected function setSheetParticipantGeneral(&$sheet, $data, $event): void
     {
         $startDate = new \DateTime($event->StartDate);
         $sheet->setCellValue('A1', "P.č.")
@@ -156,7 +156,7 @@ class ExcelService extends BaseService
         $sheet->setTitle('Seznam účastníků');
     }
 
-    protected function setSheetCashbook(&$sheet, $data, $prefix)
+    protected function setSheetCashbook(&$sheet, $data, $prefix): void
     {
         $sheet->setCellValue('A1', "Ze dne")
             ->setCellValue('B1', "Číslo dokladu")
@@ -193,7 +193,7 @@ class ExcelService extends BaseService
         $sheet->setTitle('Pokladní kniha');
     }
 
-    protected function setSheetEvents(&$sheet, $data)
+    protected function setSheetEvents(&$sheet, $data): void
     {
         $firstElement = reset($data);
 
@@ -250,7 +250,7 @@ class ExcelService extends BaseService
         $sheet->setTitle('Přehled akcí');
     }
 
-    protected function setSheetChits(&$sheet, $data)
+    protected function setSheetChits(&$sheet, $data): void
     {
         $sheet->setCellValue('A1', "Název akce")
             ->setCellValue('B1', "Ze dne")
@@ -285,7 +285,7 @@ class ExcelService extends BaseService
         $sheet->setTitle('Doklady');
     }
 
-    protected function setSheetChitsOnly(&$sheet, $data)
+    protected function setSheetChitsOnly(&$sheet, $data): void
     {
         $sheet->setCellValue('B1', "Ze dne")
             ->setCellValue('C1', "Účel výplaty")
@@ -336,7 +336,7 @@ class ExcelService extends BaseService
         $sheet->setTitle('Doklady');
     }
 
-    protected function send(\PHPExcel $obj, $filename)
+    protected function send(\PHPExcel $obj, $filename): void
     {
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

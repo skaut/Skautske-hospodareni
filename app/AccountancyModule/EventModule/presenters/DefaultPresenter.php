@@ -164,7 +164,7 @@ class DefaultPresenter extends BasePresenter
         return $form;
     }
 
-    private function formFilterSubmitted(Form $form) : Form
+    private function formFilterSubmitted(Form $form): void
     {
         $v = $form->getValues();
         $this->ses->year = $v['year'];

@@ -153,7 +153,7 @@ class EventPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function renderReport($aid)
+    public function renderReport($aid): void
     {
         if (!$this->isAllowed("EV_EventGeneral_DETAIL")) {
             $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
