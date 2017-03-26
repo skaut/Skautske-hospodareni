@@ -170,9 +170,6 @@ class MailingService
             throw new InvalidEmailException();
         }
 
-        $template = $this->templateFactory->create();
-        $template->setFile(__DIR__ . '/mail.base.latte');
-
         $body = $group->getEmailTemplate();
 
         $accountRequired = Strings::contains($body, '%qrcode') || Strings::contains($body, '%account');
@@ -197,11 +194,9 @@ class MailingService
             $parameters['%qrcode%'] = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $file . '"/>';
         }
 
-        $template->body = str_replace(
-            array_keys($parameters),
-            array_values($parameters),
-            $group->getEmailTemplate()
-        );
+        $template = $this->templateFactory->create('payment.base', [
+            'body' => str_replace(array_keys($parameters), array_values($parameters), $body),
+        ]);
 
         $mail = (new Message())
             ->addTo($payment->getEmail())
