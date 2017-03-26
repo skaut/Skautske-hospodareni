@@ -18,12 +18,6 @@ class MailerFactory implements IMailerFactory
     /** @var bool */
     private $enabled;
 
-    /**
-     * MailerFactory constructor.
-     * @param IMailer $debugMailer
-     * @param bool $enabled
-     * @param MailTable $smtps
-     */
     public function __construct(IMailer $debugMailer, bool $enabled, MailTable $smtps)
     {
         $this->debugMailer = $debugMailer;
@@ -31,17 +25,11 @@ class MailerFactory implements IMailerFactory
         $this->smtps = $smtps;
     }
 
-    public function create(?int $smtpId): IMailer
+    public function create(array $credentials): IMailer
     {
-        if($smtpId === NULL || !($smtp = $this->smtps->get($smtpId))) {
-            throw new MailerNotFoundException();
-        }
-
-        if (!$this->enabled) {
-            return $this->debugMailer;
-        }
-
-        return new SmtpMailer($smtp->toArray());
+        return $this->enabled
+            ? new SmtpMailer($credentials)
+            : $this->debugMailer;
     }
 
 }
