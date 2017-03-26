@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use Dibi\Row;
 use Model\DTO\Payment\Payment;
 use Model\Mail\IMailerFactory;
+use Model\MailTable;
 use Model\Payment\QR\IQRGenerator;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
@@ -38,6 +39,9 @@ class MailingService
     /** @var IUserRepository */
     private $users;
 
+    /** @var MailTable */
+    private $smtps;
+
     /** @var IQRGenerator */
     private $qr;
 
@@ -48,6 +52,7 @@ class MailingService
         IBankAccountRepository $bankAccounts,
         TemplateFactory $templateFactory,
         IUserRepository $users,
+        MailTable $smtps,
         IQRGenerator $qr
     )
     {
@@ -57,6 +62,7 @@ class MailingService
         $this->bankAccounts = $bankAccounts;
         $this->templateFactory = $templateFactory;
         $this->users = $users;
+        $this->smtps = $smtps;
         $this->qr = $qr;
     }
 
@@ -203,7 +209,8 @@ class MailingService
             ->setSubject('Informace o platbě')
             ->setHtmlBody($template, __DIR__);
 
-        $this->mailerFactory->create($group->getSmtpId())->send($mail);
+        $smtp = $this->smtps->get($group->getSmtpId());
+        $this->mailerFactory->create($smtp->toArray())->send($mail);
     }
 
 }

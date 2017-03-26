@@ -3,6 +3,8 @@
 namespace Model;
 
 use Dibi\Connection;
+use Dibi\Row;
+use Model\Mail\MailerNotFoundException;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -19,9 +21,15 @@ class MailTable extends BaseTable
         parent::__construct($connection);
     }
 
-    public function get($id)
+    public function get($id): Row
     {
-        return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_SMTP . "] WHERE id=%i", $id);
+        $row = $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_SMTP . "] WHERE id=%i", $id);
+
+        if($row === FALSE) {
+            throw new MailerNotFoundException();
+        }
+
+        return $row;
     }
 
     /**
