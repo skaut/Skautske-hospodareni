@@ -11,31 +11,29 @@ class User
     /** @var string */
     private $name;
 
-    /**
-     * User constructor.
-     * @param int $id
-     * @param string $name
-     */
-    public function __construct($id, $name)
+    /** @var string|NULL */
+    private $email;
+
+    public function __construct(int $id, string $name, ?string $email)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->email = $email;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
     }
 
 }

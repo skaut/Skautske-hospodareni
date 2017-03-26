@@ -89,23 +89,36 @@ class MailingService
         return $sent;
     }
 
-    public function sendTestMail(int $groupId, string $email, int $userId) : void
+    /**
+     * @param int $groupId
+     * @param int $userId
+     * @return string User's email
+     * @throws EmailNotSetException
+     */
+    public function sendTestMail(int $groupId, int $userId): string
     {
         $group = $this->groups->find($groupId);
         $bankAccount = $this->getBankAccount($group->getUnitId());
 
+        $user = $this->users->find($userId);
+
+        if($user->getEmail() === NULL) {
+            throw new EmailNotSetException();
+        }
+
         $payment = new Payment(
             'Testovací účel',
             $group->getDefaultAmount() ?? rand(50, 1000),
-            $email,
+            $user->getEmail(),
             $group->getDueDate() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
             $group->getConstantSymbol(),
             'obsah poznámky'
         );
 
-        $user = $this->users->find($userId);
         $this->send($group, $payment, $bankAccount, $user);
+
+        return $user->getEmail();
     }
 
     private function getBankAccount(int $unitId) : ?string
