@@ -37,11 +37,11 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function renderDefault($sort = 'start') : void
+    public function renderDefault(string $sort = 'start') : void
     {
         //filtrovani zobrazených položek
-        $year = isset($this->ses->year) ? $this->ses->year : date("Y");
-        $state = isset($this->ses->state) ? $this->ses->state : NULL;
+        $year = $this->ses->year ?? date('Y');
+        $state = $this->ses->state ?? NULL;
 
         $list = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
@@ -104,11 +104,7 @@ class DefaultPresenter extends BasePresenter
         uasort($list, $fnc);
     }
 
-    /**
-     * mění podmínky filtrování akcí podle roku
-     * @param type $year
-     */
-    public function handleChangeYear($year) : void
+    public function handleChangeYear(?int $year) : void
     {
         $this->ses->year = $year;
         if ($this->isAjax()) {
@@ -118,11 +114,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    /**
-     * změní podmínky filtrování akcí podle stavu akce
-     * @param type $state
-     */
-    public function handleChangeState($state) : void
+    public function handleChangeState(?string $state) : void
     {
         $this->ses->state = $state;
         if ($this->isAjax()) {
@@ -136,7 +128,7 @@ class DefaultPresenter extends BasePresenter
      * zruší akci
      * @param type $aid
      */
-    public function handleCancel($aid) : void
+    public function handleCancel(int $aid) : void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Cancel")) {
             $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
@@ -152,7 +144,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentFormFilter($name) : Form
+    protected function createComponentFormFilter(string $name) : Form
     {
         $states = array_merge(["all" => "Nezrušené"], $this->eventService->event->getStates());
         $years = ["all" => "Všechny"];
@@ -172,7 +164,7 @@ class DefaultPresenter extends BasePresenter
         return $form;
     }
 
-    private function formFilterSubmitted(Form $form) : Form
+    private function formFilterSubmitted(Form $form): void
     {
         $v = $form->getValues();
         $this->ses->year = $v['year'];
@@ -236,9 +228,8 @@ class DefaultPresenter extends BasePresenter
             if (strpos("EventGeneral_EndLesserThanStart", $e->getMessage())) {
                 $form['start']->addError("Akce nemůže dříve začít než zkončit!");
                 return;
-            } else {
-                throw $e;
             }
+            throw $e;
         }
 
         if ($id) {

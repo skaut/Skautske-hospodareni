@@ -42,7 +42,7 @@ abstract class BaseService extends Nette\Object
 
     /**
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
-     * @var type
+     * @var array
      */
     private static $storage = [];
 

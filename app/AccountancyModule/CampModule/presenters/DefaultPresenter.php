@@ -47,7 +47,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function handleChangeYear($year) : void
+    public function handleChangeYear(?int $year) : void
     {
         $this->ses->year = $year;
         if ($this->isAjax()) {

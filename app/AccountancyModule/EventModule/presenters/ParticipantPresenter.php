@@ -45,12 +45,12 @@ class ParticipantPresenter extends BasePresenter
 
     /**
      *
-     * @param type $aid
-     * @param type $uid
+     * @param int|NULL $aid
+     * @param int|NULL $uid
      * @param bool $dp - disabled person
      * @throws \Skautis\Wsdl\WsdlException
      */
-    public function renderDefault($aid, $uid = NULL, $dp = FALSE, $sort = NULL, $regNums = FALSE) : void
+    public function renderDefault(?int $aid, ?int $uid = NULL, bool $dp = FALSE, $sort = NULL, $regNums = FALSE) : void
     {
         if (!$this->isAllowed("EV_ParticipantGeneral_ALL_EventGeneral")) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");

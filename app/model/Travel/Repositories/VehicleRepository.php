@@ -94,7 +94,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
     /**
      * @param Vehicle $vehicle
      */
-    public function save(Vehicle $vehicle)
+    public function save(Vehicle $vehicle): void
     {
         if ($vehicle->getId()) {
             $this->connection->update(self::TABLE_TC_VEHICLE, [
@@ -117,7 +117,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
      * @param $vehicleId
      * @return bool
      */
-    public function remove($vehicleId)
+    public function remove($vehicleId): bool
     {
         return (bool)$this->connection->delete(self::TABLE_TC_VEHICLE)
             ->where('id = %i', $vehicleId)->execute();
@@ -127,7 +127,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
      * @param Vehicle $vehicle
      * @param int $id
      */
-    private function injectId(Vehicle $vehicle, $id)
+    private function injectId(Vehicle $vehicle, $id): void
     {
         $this->idProperty->setValue($vehicle, $id);
     }

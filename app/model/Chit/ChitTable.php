@@ -2,6 +2,8 @@
 
 namespace Model;
 
+use Dibi\Row;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
@@ -10,8 +12,8 @@ class ChitTable extends BaseTable
 
     /**
      * vrací konretní paragon
-     * @param type $chitId
-     * @return DibiRow
+     * @param int $chitId
+     * @return Row
      */
     public function get($chitId)
     {
@@ -57,8 +59,8 @@ class ChitTable extends BaseTable
      * generuje pořadové číslo dokladu
      * @param int $eventId
      * @param array(id_kategorií) $category
-     * @param itn $length - délka čísla
-     * @return type
+     * @param int $length - délka čísla
+     * @return string
      */
     public function generateNumber($eventId, $category, $length = 3)
     {
@@ -69,32 +71,31 @@ class ChitTable extends BaseTable
      * aktualizuje paragon podle $id
      * @param int $chitId
      * @param array $values
-     * @return type
+     * @return bool
      */
-    public function update($chitId, $values)
+    public function update($chitId, $values): bool
     {
-        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET ", $values, "WHERE id=%i", $chitId);
+        return (bool)$this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET ", $values, "WHERE id=%i", $chitId);
     }
 
     /**
      * označí paragon jako smazaný
      * @param int $chitId
      * @param int $localEventId
-     * @return type
+     * @return bool
      */
     public function delete($chitId, $localEventId)
     {
-        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
+        return (bool)$this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
     }
 
     /**
      * označí paragony z dané akce za smazané
-     * @param type $localEventId
-     * @return type
+     * @param int $localEventId
      */
-    public function deleteAll($localEventId)
+    public function deleteAll($localEventId): void
     {
-        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE eventId = %i", $localEventId);
+        $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE eventId = %i", $localEventId);
     }
 
     /**
@@ -111,7 +112,7 @@ class ChitTable extends BaseTable
     /**
      * vrací všechny informace o kategoriích
      * @param string $type in|out
-     * @return type
+     * @return array
      */
     public function getGeneralCategories($type = NULL)
     {
@@ -140,22 +141,27 @@ class ChitTable extends BaseTable
             LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.id) 
             WHERE ch.eventId = %i AND ch.deleted = 0
             GROUP BY cat.type", $localEventId);
-        return $data;
+        return (bool)$data;
     }
 
     /**
      * spočte součet částek v jednotlivých kategoriích
-     * @param type $localEventId
-     * @return (categoryId=>SUM)
+     * @param int $localEventId
+     * @return array (categoryId=>SUM)
      */
-    public function getTotalInCategories($localEventId)
+    public function getTotalInCategories($localEventId): array
     {
         return $this->connection->fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE eventId=%i", $localEventId, " AND deleted=0 GROUP BY category");
     }
 
-    public function lock($oid, $chitId, $userId)
+    /**
+     * @param int $oid
+     * @param int $chitId
+     * @param int $userId
+     */
+    public function lock($oid, $chitId, $userId): void
     {
-        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i AND id=%i", $oid, $chitId);
+        $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i AND id=%i", $oid, $chitId);
     }
 
     public function unlock($oid, $chitId)
@@ -168,7 +174,12 @@ class ChitTable extends BaseTable
         return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i ", $oid, "AND `lock` IS NULL");
     }
 
-    public function getBudgetCategoriesSummary($categories, $type)
+    /**
+     * @param int[] $categories
+     * @param string $type
+     * @return array
+     */
+    public function getBudgetCategoriesSummary(array $categories, string $type)
     {
         $catName = "budgetCategory" . ucfirst($type);
         return $this->connection->fetchPairs("SELECT $catName, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE $catName IN %in", $categories, " AND deleted=0 GROUP BY $catName");

@@ -56,12 +56,7 @@ class CashbookPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    /**
-     * formulář na výběr příjmů k importu
-     * @param type $name
-     * @return Form
-     */
-    protected function createComponentFormImportHpd($name) : Form
+    protected function createComponentFormImportHpd(string $name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addRadioList("cat", "Kategorie:", ["child" => "Od dětí a roverů", "adult" => "Od dospělých"])

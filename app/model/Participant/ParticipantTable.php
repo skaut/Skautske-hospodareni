@@ -15,8 +15,8 @@ class ParticipantTable extends BaseTable
 
     /**
      * seznam všech záznamů k dané akci
-     * @param type $skautiEventId
-     * @return type
+     * @param int $skautiEventId
+     * @return array
      */
     public function getCampLocalDetails($skautiEventId)
     {
@@ -26,9 +26,9 @@ class ParticipantTable extends BaseTable
 
     /**
      * smaže záznam
-     * @param type $participantId
+     * @param int $participantId
      */
-    public function deleteLocalDetail($participantId)
+    public function deleteLocalDetail($participantId): void
     {
         $this->connection->query("DELETE FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId =%i", $participantId);
     }

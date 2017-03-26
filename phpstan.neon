@@ -1,0 +1,14 @@
+parameters:
+    autoload_directories:
+        - %rootDir%/../../../app
+        - %rootDir%/../../../tests
+        - %rootDir%/../../../vendor/others
+        - %rootDir%/../../../code-quality
+
+includes:
+    - vendor/phpstan/phpstan-nette/extension.neon
+    - vendor/phpstan/phpstan-dibi/extension.neon
+
+services:
+	- class: MandatoryVoidRule
+	  tags: [ phpstan.rules.rule ]

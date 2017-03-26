@@ -324,20 +324,19 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $sentCount = $this->mailing->sendEmailForGroup($gid, $this->user->getId());
+            if ($sentCount > 0) {
+                $this->flashMessage("Informační emaily($sentCount) byly odeslány.");
+            } else {
+                $this->flashMessage('Nebyl odeslán žádný informační email!', 'danger');
+            }
         } catch (MailerNotFoundException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (SmtpException $e) {
             $this->smtpError($e);
-            $this->redirect('this');
         } catch (InvalidBankAccountException $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
         }
 
-        if ($sentCount > 0) {
-            $this->flashMessage("Informační emaily($sentCount) byly odeslány.");
-        } else {
-            $this->flashMessage('Nebyl odeslán žádný informační email!', 'danger');
-        }
         $this->redirect('this');
     }
 
