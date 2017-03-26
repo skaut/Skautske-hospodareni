@@ -1,4 +1,5 @@
 /www/images
+!www/images/logo.png
 htaccess
 /app/config/config.*.neon
 !/app/config/config.sample.local.neon
