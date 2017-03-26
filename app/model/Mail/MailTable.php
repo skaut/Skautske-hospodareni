@@ -54,9 +54,9 @@ class MailTable extends BaseTable
         return $this->connection->fetch("SELECT s.* FROM [" . self::TABLE_PA_GROUP_SMTP . "] gs INNER JOIN [" . self::TABLE_PA_SMTP . "] s ON (gs.smtpId = s.id) WHERE gs.groupId=%i", $groupId);
     }
 
-    public function addSmtp($unitId, $host, $username, $password, $secure)
+    public function addSmtp($unitId, $host, $username, $password, $secure): void
     {
-        return $this->connection->insert(self::TABLE_PA_SMTP, [
+        $this->connection->insert(self::TABLE_PA_SMTP, [
             "unitId" => $unitId,
             "host" => $host,
             "username" => $username,
