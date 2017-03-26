@@ -4,6 +4,7 @@ namespace App\AccountancyModule\PaymentModule;
 
 use Model\BankService;
 use Model\Mail\MailerNotFoundException;
+use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\MailingService;
 use Model\PaymentService;
@@ -346,16 +347,9 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Neplatný požadavek na odeslání testovacího emailu!", "danger");
             $this->redirect("this");
         }
-        $personalDetail = $this->userService->getPersonalDetail();
-        if (!isset($personalDetail->Email)) {
-            $this->flashMessage("Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!", "danger");
-            $this->redirect("this");
-        }
-
-        $email = $personalDetail->Email;
 
         try {
-            $this->mailing->sendTestMail($gid, $email, $this->user->getId());
+            $email = $this->mailing->sendTestMail($gid, $this->user->getId());
             $this->flashMessage("Testovací email byl odeslán na $email.");
         } catch (MailerNotFoundException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
@@ -363,6 +357,8 @@ class PaymentPresenter extends BasePresenter
             $this->smtpError($e);
         } catch (InvalidBankAccountException $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+        } catch(EmailNotSetException $e) {
+            $this->flashMessage("Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!", "danger");
         }
 
         $this->redirect("this");

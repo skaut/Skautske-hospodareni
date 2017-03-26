@@ -24,7 +24,8 @@ class UserRepository implements IUserRepository
         try {
             $user = $this->skautis->user->UserDetail(["ID" => $id]);
             if($user instanceof \stdClass) {
-                return new User($id, $user->Person);
+                $person = $this->skautis->org->PersonDetail(['ID' => $user->ID_Person]);
+                return new User($id, $user->Person, $person->Email);
             }
         } catch(PermissionException $e) {
 
