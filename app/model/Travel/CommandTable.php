@@ -76,7 +76,7 @@ class CommandTable extends BaseTable
      * @param int $commandId
      * @param string|NULL $state
      */
-    public function changeState($commandId, $state)
+    public function changeState($commandId, $state): void
     {
         $this->connection->update(self::TABLE_TC_COMMANDS, ["id" => $commandId, "closed" => $state])
             ->where("id=%i", $commandId)
@@ -84,7 +84,7 @@ class CommandTable extends BaseTable
             ->execute();
     }
 
-    public function delete($commandId)
+    public function delete($commandId): void
     {
         $this->connection->query("UPDATE [" . self::TABLE_TC_COMMANDS . "] SET deleted=1 WHERE id = %i AND deleted=0 LIMIT 1", $commandId);
     }

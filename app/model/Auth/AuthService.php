@@ -22,7 +22,7 @@ class AuthService extends BaseService
      * nastavuje základní udaje po prihlášení do SkautISu
      * @param array $arr
      */
-    public function setInit(array $arr)
+    public function setInit(array $arr): void
     {
         $this->skautis->getUser()->setLoginData($arr['token'], $arr['roleId'], $arr['unitId']);
     }
@@ -39,7 +39,7 @@ class AuthService extends BaseService
     /**
      * prodlouží dobu přihlášení do skautisu
      */
-    public function updateLogoutTime()
+    public function updateLogoutTime(): void
     {
         $this->skautis->updateLogoutTime();
     }

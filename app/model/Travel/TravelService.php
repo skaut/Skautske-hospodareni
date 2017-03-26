@@ -91,7 +91,7 @@ class TravelService extends BaseService
     /**
      * @param array $data
      */
-    public function addVehicle($data)
+    public function addVehicle($data): void
     {
         $vehicle = new Vehicle($data['type'], $data['unit_id'], $data['registration'], $data['consumption']);
         $this->vehicles->save($vehicle);
@@ -111,7 +111,7 @@ class TravelService extends BaseService
      * Archives specified vehicle
      * @param int $vehicleId
      */
-    public function archiveVehicle($vehicleId)
+    public function archiveVehicle($vehicleId): void
     {
         $vehicle = $this->getVehicle($vehicleId);
 
@@ -269,7 +269,7 @@ class TravelService extends BaseService
      * uzavře cestovní příkaz a nastavi cas uzavření
      * @param int $commandId
      */
-    public function closeCommand($commandId)
+    public function closeCommand($commandId): void
     {
         $this->table->changeState($commandId, date("Y-m-d H:i:s"));
     }
@@ -277,7 +277,7 @@ class TravelService extends BaseService
     /**
      * @param int $commandId
      */
-    public function openCommand($commandId)
+    public function openCommand($commandId): void
     {
         $this->table->changeState($commandId, NULL);
     }
@@ -285,7 +285,7 @@ class TravelService extends BaseService
     /**
      * @param int $commandId
      */
-    public function deleteCommand($commandId)
+    public function deleteCommand($commandId): void
     {
         $this->table->delete($commandId);
     }

@@ -93,7 +93,7 @@ class ChitTable extends BaseTable
      * označí paragony z dané akce za smazané
      * @param int $localEventId
      */
-    public function deleteAll($localEventId)
+    public function deleteAll($localEventId): void
     {
         $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE eventId = %i", $localEventId);
     }
@@ -159,7 +159,7 @@ class ChitTable extends BaseTable
      * @param int $chitId
      * @param int $userId
      */
-    public function lock($oid, $chitId, $userId)
+    public function lock($oid, $chitId, $userId): void
     {
         $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i AND id=%i", $oid, $chitId);
     }

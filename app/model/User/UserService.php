@@ -42,7 +42,7 @@ class UserService extends BaseService
      * změní přihlášenou roli do skautISu
      * @param int $id
      */
-    public function updateSkautISRole($id)
+    public function updateSkautISRole($id): void
     {
         $response = $this->skautis->user->LoginUpdate(["ID_UserRole" => $id, "ID" => $this->skautis->getUser()->getLoginId()]);
         if ($response) {

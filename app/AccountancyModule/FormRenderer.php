@@ -112,7 +112,7 @@ class FormRenderer extends DefaultFormRenderer
     }
 
 
-    private function controlsInit() : void
+    private function controlsInit(): void
     {
         if ($this->controlsInit) {
             return;

@@ -32,7 +32,8 @@ trait CashbookTrait
         PdfRenderer $pdf,
         ExportService $exports,
         ExcelService $excel,
-        MemberService $members)
+        MemberService $members
+    ): void
     {
         $this->pdf = $pdf;
         $this->exportService = $exports;
@@ -240,7 +241,7 @@ trait CashbookTrait
         }
     }
 
-    public function fillTemplateVariables()
+    public function fillTemplateVariables(): void
     {
         $this->template->object = $this->event;
         try {
@@ -250,7 +251,7 @@ trait CashbookTrait
         }
     }
 
-    private function editChit(int $chitId)
+    private function editChit(int $chitId): void
     {
         $this->isChitEditable($chitId);
         $form = $this['cashbookForm'];

@@ -30,7 +30,7 @@ interface IVehicleRepository
     /**
      * @param Vehicle $vehicle
      */
-    public function save(Vehicle $vehicle);
+    public function save(Vehicle $vehicle): void;
 
     /**
      * Removes vehicle with specified ID

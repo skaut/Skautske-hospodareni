@@ -28,7 +28,7 @@ class ParticipantTable extends BaseTable
      * smaže záznam
      * @param int $participantId
      */
-    public function deleteLocalDetail($participantId)
+    public function deleteLocalDetail($participantId): void
     {
         $this->connection->query("DELETE FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE participantId =%i", $participantId);
     }

@@ -48,7 +48,7 @@ class Vehicle extends Nette\Object
         $this->commandsCount = $commandsCount;
     }
 
-    public function archive()
+    public function archive(): void
     {
         $this->archived = TRUE;
     }
