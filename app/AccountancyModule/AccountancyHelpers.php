@@ -63,7 +63,7 @@ abstract class AccountancyHelpers extends Object
         }
     }
 
-    public static function commandState(DateTimeInterface $s) : string
+    public static function commandState(?DateTimeInterface $s) : string
     {
         if($s === NULL) {
             return '<span class="label label-warning hidden-xs hidden-sm">Rozpracovaný</span>'
