@@ -41,7 +41,7 @@ trait CashbookTrait
         $this->memberService = $members;
     }
 
-    public function renderEdit($id, $aid) : void
+    public function renderEdit(int $id, int $aid) : void
     {
         $this->editableOnly();
         $this->isChitEditable($id);
@@ -64,27 +64,27 @@ trait CashbookTrait
         $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
     }
 
-    public function actionExport($aid) : void
+    public function actionExport(int $aid) : void
     {
         $template = $this->exportService->getCashbook($this->createTemplate(), $aid, $this->entityService);
         $this->pdf->render($template, 'pokladni-kniha.pdf');
         $this->terminate();
     }
 
-    public function actionExportChitlist($aid) : void
+    public function actionExportChitlist(int $aid) : void
     {
         $template = $this->exportService->getChitlist($this->createTemplate(), $aid, $this->entityService);
         $this->pdf->render($template, 'seznam-dokladu.pdf');
         $this->terminate();
     }
 
-    public function actionExportExcel($aid) : void
+    public function actionExportExcel(int $aid) : void
     {
         $this->excelService->getCashbook($this->entityService, $this->event);
         $this->terminate();
     }
 
-    public function actionPrint($id, $aid) : void
+    public function actionPrint(int $id, int $aid) : void
     {
         $chits = [$this->entityService->chits->get($id)];
         $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $chits);
@@ -92,7 +92,7 @@ trait CashbookTrait
         $this->terminate();
     }
 
-    public function handleRemove($id, $actionId) : void
+    public function handleRemove(int $id, int $actionId) : void
     {
         $this->editableOnly();
         $this->isChitEditable($id);
@@ -141,12 +141,12 @@ trait CashbookTrait
     }
 
     //FORM CASHBOOK
-    public function getCategoriesByType($form, $dependentSelectBoxName) : array
+    public function getCategoriesByType(Form $form) : array
     {
         return $this->entityService->chits->getCategoriesPairs($form["type"]->getValue(), $this->aid);
     }
 
-    protected function createComponentCashbookForm($name) : Form
+    protected function createComponentCashbookForm(string $name) : Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addDatePicker("date", "Ze dne:")
