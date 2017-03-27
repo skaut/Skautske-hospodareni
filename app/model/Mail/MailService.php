@@ -9,7 +9,6 @@ use Model\Payment\Repositories\IUserRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
 use Nette\Mail\SmtpException;
-use Nette\Mail\SmtpMailer;
 
 /**
  * @author Hána František
@@ -94,11 +93,6 @@ class MailService
     public function removeSmtp($unitId, $id)
     {
         return $this->table->removeSmtp($unitId, $id);
-    }
-
-    public function updateSmtp($unitId, $id, $data)
-    {
-        return $this->table->updateSmtp($unitId, $id, $data);
     }
 
     /**
