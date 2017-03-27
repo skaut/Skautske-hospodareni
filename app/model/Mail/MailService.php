@@ -63,11 +63,6 @@ class MailService
         return $this->table->getPairs($this->getUnitIds($unitId));
     }
 
-    public function getSmtpByGroup($groupId)
-    {
-        return $this->table->getSmtpByGroup($groupId);
-    }
-
     /**
      * @param int $unitId
      * @param string $host
@@ -90,9 +85,9 @@ class MailService
         $this->table->addSmtp($unitId, $host, $username, $password, $secure);
     }
 
-    public function removeSmtp($unitId, $id)
+    public function removeSmtp($unitId, $id): void
     {
-        return $this->table->removeSmtp($unitId, $id);
+        $this->table->removeSmtp($unitId, $id);
     }
 
     /**

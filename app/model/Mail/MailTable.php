@@ -12,10 +12,6 @@ use Model\Mail\MailerNotFoundException;
 class MailTable extends BaseTable
 {
 
-    /**
-     * MailTable constructor.
-     * @param Connection $connection
-     */
     public function __construct(Connection $connection)
     {
         parent::__construct($connection);
@@ -49,11 +45,6 @@ class MailTable extends BaseTable
         return $this->connection->fetchPairs("SELECT id, username FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId IN %in", $unitIds);
     }
 
-    public function getSmtpByGroup($groupId)
-    {
-        return $this->connection->fetch("SELECT s.* FROM [" . self::TABLE_PA_GROUP_SMTP . "] gs INNER JOIN [" . self::TABLE_PA_SMTP . "] s ON (gs.smtpId = s.id) WHERE gs.groupId=%i", $groupId);
-    }
-
     public function addSmtp($unitId, $host, $username, $password, $secure): void
     {
         $this->connection->insert(self::TABLE_PA_SMTP, [
@@ -66,9 +57,9 @@ class MailTable extends BaseTable
         ])->execute();
     }
 
-    public function removeSmtp($unitId, $id)
+    public function removeSmtp($unitId, $id): void
     {
-        return $this->connection->query("DELETE FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId=%i", $unitId, " AND id=%i", $id, " LIMIT 1");
+        $this->connection->query("DELETE FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId=%i", $unitId, " AND id=%i", $id, " LIMIT 1");
     }
 
 }
