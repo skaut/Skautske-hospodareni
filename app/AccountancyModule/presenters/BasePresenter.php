@@ -38,6 +38,10 @@ class BasePresenter extends \App\BasePresenter
     {
         parent::startup();
 
+        if($this->aid != NULL) { // Persistent parameters aren't auto-casted to int
+            $this->aid = (int)$this->aid;
+        }
+
         if (!$this->user->isLoggedIn()) {
             $this->backlink = $this->storeRequest('+ 3 days');
             if ($this->isAjax()) {
