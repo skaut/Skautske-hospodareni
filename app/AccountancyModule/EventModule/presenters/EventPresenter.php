@@ -196,7 +196,7 @@ class EventPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
             $this->redirect("this");
         }
-        $values = $button->getForm()->getValues();
+        $values = $button->getForm()->getValues(TRUE);
         $values['start'] = $values['start']->format("Y-m-d");
         $values['end'] = $values['end']->format("Y-m-d");
 
