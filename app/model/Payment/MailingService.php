@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use Dibi\Row;
 use Model\DTO\Payment\Payment;
 use Model\Mail\IMailerFactory;
+use Model\MailTable;
 use Model\Payment\QR\IQRGenerator;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
@@ -38,6 +39,9 @@ class MailingService
     /** @var IUserRepository */
     private $users;
 
+    /** @var MailTable */
+    private $smtps;
+
     /** @var IQRGenerator */
     private $qr;
 
@@ -48,6 +52,7 @@ class MailingService
         IBankAccountRepository $bankAccounts,
         TemplateFactory $templateFactory,
         IUserRepository $users,
+        MailTable $smtps,
         IQRGenerator $qr
     )
     {
@@ -57,6 +62,7 @@ class MailingService
         $this->bankAccounts = $bankAccounts;
         $this->templateFactory = $templateFactory;
         $this->users = $users;
+        $this->smtps = $smtps;
         $this->qr = $qr;
     }
 
@@ -89,23 +95,36 @@ class MailingService
         return $sent;
     }
 
-    public function sendTestMail(int $groupId, string $email, int $userId) : void
+    /**
+     * @param int $groupId
+     * @param int $userId
+     * @return string User's email
+     * @throws EmailNotSetException
+     */
+    public function sendTestMail(int $groupId, int $userId): string
     {
         $group = $this->groups->find($groupId);
         $bankAccount = $this->getBankAccount($group->getUnitId());
 
+        $user = $this->users->find($userId);
+
+        if($user->getEmail() === NULL) {
+            throw new EmailNotSetException();
+        }
+
         $payment = new Payment(
             'Testovací účel',
             $group->getDefaultAmount() ?? rand(50, 1000),
-            $email,
+            $user->getEmail(),
             $group->getDueDate() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
             $group->getConstantSymbol(),
             'obsah poznámky'
         );
 
-        $user = $this->users->find($userId);
         $this->send($group, $payment, $bankAccount, $user);
+
+        return $user->getEmail();
     }
 
     private function getBankAccount(int $unitId) : ?string
@@ -151,9 +170,6 @@ class MailingService
             throw new InvalidEmailException();
         }
 
-        $template = $this->templateFactory->create();
-        $template->setFile(__DIR__ . '/mail.base.latte');
-
         $body = $group->getEmailTemplate();
 
         $accountRequired = Strings::contains($body, '%qrcode') || Strings::contains($body, '%account');
@@ -178,11 +194,9 @@ class MailingService
             $parameters['%qrcode%'] = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $file . '"/>';
         }
 
-        $template->body = str_replace(
-            array_keys($parameters),
-            array_values($parameters),
-            $group->getEmailTemplate()
-        );
+        $template = $this->templateFactory->create('payment.base', [
+            'body' => str_replace(array_keys($parameters), array_values($parameters), $body),
+        ]);
 
         $mail = (new Message())
             ->addTo($payment->getEmail())
@@ -190,7 +204,8 @@ class MailingService
             ->setSubject('Informace o platbě')
             ->setHtmlBody($template, __DIR__);
 
-        $this->mailerFactory->create($group->getSmtpId())->send($mail);
+        $smtp = $this->smtps->get($group->getSmtpId());
+        $this->mailerFactory->create($smtp->toArray())->send($mail);
     }
 
 }

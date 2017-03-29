@@ -3,6 +3,8 @@
 namespace Model;
 
 use Dibi\Connection;
+use Dibi\Row;
+use Model\Mail\MailerNotFoundException;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -10,18 +12,20 @@ use Dibi\Connection;
 class MailTable extends BaseTable
 {
 
-    /**
-     * MailTable constructor.
-     * @param Connection $connection
-     */
     public function __construct(Connection $connection)
     {
         parent::__construct($connection);
     }
 
-    public function get($id)
+    public function get($id): Row
     {
-        return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_SMTP . "] WHERE id=%i", $id);
+        $row = $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_SMTP . "] WHERE id=%i", $id);
+
+        if($row === FALSE) {
+            throw new MailerNotFoundException();
+        }
+
+        return $row;
     }
 
     /**
@@ -41,14 +45,9 @@ class MailTable extends BaseTable
         return $this->connection->fetchPairs("SELECT id, username FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId IN %in", $unitIds);
     }
 
-    public function getSmtpByGroup($groupId)
+    public function addSmtp($unitId, $host, $username, $password, $secure): void
     {
-        return $this->connection->fetch("SELECT s.* FROM [" . self::TABLE_PA_GROUP_SMTP . "] gs INNER JOIN [" . self::TABLE_PA_SMTP . "] s ON (gs.smtpId = s.id) WHERE gs.groupId=%i", $groupId);
-    }
-
-    public function addSmtp($unitId, $host, $username, $password, $secure)
-    {
-        return $this->connection->insert(self::TABLE_PA_SMTP, [
+        $this->connection->insert(self::TABLE_PA_SMTP, [
             "unitId" => $unitId,
             "host" => $host,
             "username" => $username,
@@ -58,9 +57,9 @@ class MailTable extends BaseTable
         ])->execute();
     }
 
-    public function removeSmtp($unitId, $id)
+    public function removeSmtp($unitId, $id): void
     {
-        return $this->connection->query("DELETE FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId=%i", $unitId, " AND id=%i", $id, " LIMIT 1");
+        $this->connection->query("DELETE FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId=%i", $unitId, " AND id=%i", $id, " LIMIT 1");
     }
 
 }

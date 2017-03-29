@@ -78,11 +78,23 @@ class MailPresenter extends BasePresenter
         }
         $v = $form->getValues();
 
-        if ($this->model->addSmtp($this->aid, $v->host, $v->username, $v->password, $v->secure)) {
+        $userId = $this->user->getId();
+        try {
+            $this->model->addSmtp(
+                    $this->aid,
+                    $v->host,
+                    $v->username,
+                    $v->password,
+                    $v->secure,
+                    $userId
+            );
             $this->flashMessage("SMTP účet byl přidán");
-        } else {
-            $this->flashMessage("SMTP účet se nepodařilo přidat", "danger");
+        } catch(\Nette\Mail\SmtpException $e) {
+            $this->flashMessage("K SMTP účtu se nepodařilo připojit", "danger");
+        } catch(\Model\Payment\EmailNotSetException $e) {
+            $this->flashMessage('Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!');
         }
+
         $this->redirect("this");
     }
 
