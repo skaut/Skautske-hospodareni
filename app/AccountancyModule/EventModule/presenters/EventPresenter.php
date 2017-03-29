@@ -200,7 +200,7 @@ class EventPresenter extends BasePresenter
         $values['start'] = $values['start']->format("Y-m-d");
         $values['end'] = $values['end']->format("Y-m-d");
 
-        $id = $this->eventService->event->update($values);
+        $id = $this->eventService->event->update((array)$values);
 
         if ($id) {
             $this->flashMessage("Základní údaje byly upraveny.");
