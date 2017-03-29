@@ -28,12 +28,14 @@ class TemplateFactory
         return $this->engine;
     }
 
-    /**
-     * @return Template
-     */
-    public function create()
+    public function create(string $file, array $parameters): string
     {
-        return new Template($this->getEngine());
+        $template = new Template($this->getEngine());
+
+        $template->setFile(__DIR__ . '/../emails/' . $file . '.latte');
+        $template->setParameters($parameters);
+
+        return (string)$template;
     }
 
 }
