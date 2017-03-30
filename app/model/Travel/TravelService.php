@@ -68,7 +68,7 @@ class TravelService extends BaseService
      * @param int $vehicleId - ID vozidla
      * @return Vehicle
      */
-    public function getVehicle($vehicleId)
+    public function getVehicle(int $vehicleId)
     {
         $cacheId = __FUNCTION__ . "_" . $vehicleId;
         if (!($res = $this->loadSes($cacheId))) {
@@ -113,7 +113,7 @@ class TravelService extends BaseService
      * Archives specified vehicle
      * @param int $vehicleId
      */
-    public function archiveVehicle($vehicleId): void
+    public function archiveVehicle(int $vehicleId): void
     {
         $vehicle = $this->getVehicle($vehicleId);
 

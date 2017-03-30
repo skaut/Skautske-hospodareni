@@ -13,7 +13,7 @@ interface IVehicleRepository
      * @throws VehicleNotFoundException
      * @return Vehicle
      */
-    public function get($id);
+    public function get(int $id);
 
     /**
      * @param $unitId
