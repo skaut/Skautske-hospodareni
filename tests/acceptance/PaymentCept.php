@@ -40,3 +40,9 @@ $I->click('(//*[@title="Zaplaceno"])[2]');
 
 $I->canSeeNumberOfElements('(//*[text()="Připravena"])', 2);
 $I->see('Dokončena');
+
+$I->amGoingTo('close and reopen group');
+$I->click('Uzavřít');
+$I->waitForText('Znovu otevřít');
+$I->click('Znovu otevřít');
+$I->waitForText('Uzavřít');
