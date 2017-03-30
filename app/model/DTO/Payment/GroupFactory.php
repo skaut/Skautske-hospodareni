@@ -21,7 +21,8 @@ class GroupFactory
             $group->getNextVariableSymbol(),
             $group->getState(),
             $group->getEmailTemplate(),
-            $group->getSmtpId()
+            $group->getSmtpId(),
+            $group->getNote()
         );
     }
 

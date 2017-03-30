@@ -49,7 +49,11 @@ class Group
     /** @var int|NULL */
     private $smtpId;
 
+    /** @var string */
+    private $note = '';
+
     const STATE_OPEN = 'open';
+    const STATE_CLOSED = 'closed';
 
     public function __construct(
         ?string $type,
@@ -94,6 +98,24 @@ class Group
         $this->nextVariableSymbol = $nextVariableSymbol;
         $this->emailTemplate = $emailTemplate;
         $this->smtpId = $smtpId;
+    }
+
+    public function open(string $note): void
+    {
+        if ($this->state === self::STATE_OPEN) {
+            return;
+        }
+        $this->state = self::STATE_OPEN;
+        $this->note = $note;
+    }
+
+    public function close(string $note): void
+    {
+        if($this->state === self::STATE_CLOSED) {
+            return;
+        }
+        $this->state = self::STATE_CLOSED;
+        $this->note = $note;
     }
 
 
@@ -216,6 +238,11 @@ class Group
     public function getSmtpId() : ?int
     {
         return $this->smtpId;
+    }
+
+    public function getNote(): string
+    {
+        return $this->note;
     }
 
 }
