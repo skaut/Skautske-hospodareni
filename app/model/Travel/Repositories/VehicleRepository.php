@@ -24,7 +24,7 @@ class VehicleRepository implements IVehicleRepository
      * @throws VehicleNotFoundException
      * @return Vehicle
      */
-    public function get($id)
+    public function get(int $id)
     {
         $vehicle = $this->em->find(Vehicle::class, $id);
 
