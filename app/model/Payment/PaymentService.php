@@ -309,17 +309,6 @@ class PaymentService
      */
 
     /**
-     * [[ unused ]]
-     * detail registrace ze skautisu
-     * @param int $regId
-     * @return \stdClass
-     */
-    public function getRegistration($regId)
-    {
-        return $this->skautis->org->UnitRegistrationDetail(["ID" => $regId]);
-    }
-
-    /**
      * Returns newest registration without created group
      */
     public function getNewestRegistration(): array
