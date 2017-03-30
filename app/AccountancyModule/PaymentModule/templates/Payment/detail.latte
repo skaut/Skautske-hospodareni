@@ -12,7 +12,7 @@
             </tr>
             <tr n:if="!is_null($group->state)">
                 <th class="l">Stav skupiny:</th>
-                <td title='{$group->state_info}'>{$group->state|groupState|noescape}</td>
+                <td title='{$group->note}'>{$group->state|groupState|noescape}</td>
             </tr>
             <tr>
                 <th class="l">Typ skupiny:</th>

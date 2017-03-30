@@ -230,15 +230,18 @@ class PaymentService
         return NULL;
     }
 
-    /**
-     *
-     * @param int $groupId
-     * @param array $arr
-     * @param bool $openOnly
-     */
-    public function updateGroup($groupId, $arr, $openOnly = TRUE): void
+    public function openGroup(int $id, string $note): void
     {
-        $this->table->updateGroup($groupId, $arr, $openOnly);
+        $group = $this->groups->find($id);
+        $group->open($note);
+        $this->groups->save($group);
+    }
+
+    public function closeGroup(int $id, string $note): void
+    {
+        $group = $this->groups->find($id);
+        $group->close($note);
+        $this->groups->save($group);
     }
 
     /**

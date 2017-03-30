@@ -426,8 +426,15 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Nejste oprávněni úpravám akce!", "danger");
             $this->redirect("this");
         }
+
         $userData = $this->userService->getUserDetail();
-        $this->model->updateGroup($gid, ["state" => "closed", "state_info" => "Uživatel " . $userData->Person . " uzavřel skupinu plateb dne " . date("j.n.Y H:i")]);
+        $note = "Uživatel " . $userData->Person . " uzavřel skupinu plateb dne " . date("j.n.Y H:i");
+
+        try {
+            $this->model->closeGroup($gid, $note);
+        } catch(\Model\Payment\GroupNotFoundException $e) {
+        }
+
         $this->redirect("this");
     }
 
@@ -441,7 +448,13 @@ class PaymentPresenter extends BasePresenter
         }
 
         $userData = $this->userService->getUserDetail();
-        $this->model->updateGroup($gid, ["state" => "open", "state_info" => "Uživatel " . $userData->Person . " otevřel skupinu plateb dne " . date("j.n.Y H:i")], FALSE);
+        $note = "Uživatel " . $userData->Person . " otevřel skupinu plateb dne " . date("j.n.Y H:i");
+
+        try {
+            $this->model->openGroup($gid, $note);
+        } catch(\Model\Payment\GroupNotFoundException $e) {
+        }
+
         $this->redirect("this");
     }
 

@@ -124,21 +124,6 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     * TODO: replace with open/close method on Group
-     * @param int $groupId
-     * @param array $arr
-     * @param bool $openOnly
-     */
-    public function updateGroup($groupId, $arr, $openOnly): void
-    {
-        $query = $this->connection->update(self::TABLE_PA_GROUP, $arr)->where("id=%i", $groupId);
-        if ($openOnly) {
-            $query = $query->where("state='open'");
-        }
-        $query->execute();
-    }
-
-    /**
      * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby
      * @param int $groupId
      * @return int
