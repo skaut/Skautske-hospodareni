@@ -89,14 +89,14 @@ class GroupPresenter extends BasePresenter
         unset($form['sisId']);
         $form['send']->caption = "Upravit skupinu";
 
-        $group = $this->model->getGroupV2($id);
+        $group = $this->model->getGroup($id);
 
         if ($group === NULL || $group->getUnitId() !== $this->aid) {
             $this->flashMessage("Skupina nebyla nalezena", "warning");
             $this->redirect("Payment:default");
         }
 
-        $dto = $this->model->getGroupV2($id);
+        $dto = $this->model->getGroup($id);
         $form->setDefaults([
             "label" => $dto->getName(),
             "amount" => $dto->getDefaultAmount(),
