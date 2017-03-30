@@ -101,6 +101,7 @@ services:
     # Model
 
     # Repositories
+    - Model\Travel\Repositories\CommandRepository
     - Model\Travel\Repositories\VehicleRepository
     - Model\Payment\Repositories\BankAccountRepository
     - Model\Payment\Repositories\GroupRepository

@@ -2,7 +2,6 @@
 
 namespace Model\Travel;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Nette;
 
 class Vehicle extends Nette\Object
@@ -22,9 +21,6 @@ class Vehicle extends Nette\Object
 
     /** @var float */
     private $consumption;
-
-    /** @var int */
-    private $commandsCount;
 
     /** @var string|NULL */
     private $note;
@@ -90,23 +86,6 @@ class Vehicle extends Nette\Object
     public function getConsumption()
     {
         return $this->consumption;
-    }
-
-    /**
-     * @TODO move out
-     * @param int $count
-     */
-    public function setCommandsCount(int $count)
-    {
-        $this->commandsCount = $count;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCommandsCount()
-    {
-        return $this->commandsCount;
     }
 
     /**

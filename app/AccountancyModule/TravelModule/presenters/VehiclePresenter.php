@@ -48,9 +48,10 @@ class VehiclePresenter extends BasePresenter
         return $vehicle;
     }
 
-    public function actionDetail($id) : void
+    public function actionDetail(int $id) : void
     {
         $this->template->vehicle = $this->getVehicle($id);
+        $this->template->canDelete = $this->travelService->getCommandsCount($id) === 0;
     }
 
     public function renderDetail($id) : void
