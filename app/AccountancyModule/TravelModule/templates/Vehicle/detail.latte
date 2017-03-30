@@ -9,7 +9,7 @@
 {else}
     <a n:href="archive! $vehicle->id" class="btn btn-primary"><span class="glyphicon glyphicon-trash"></span> Archivovat</a>    
 {/if}
-    <a n:href="remove! $vehicle->id" class="btn btn-danger hidden-xs hidden-sm{if $vehicle->commandsCount > 0} disabled{/if}" {if $vehicle->commandsCount > 0} title="Nelze mazat vozidla s cestovními příkazy"{/if} onclick="return confirm('Opravdu chcete vozidlo smazat?');"><i class="glyphicon glyphicon-remove"></i></a>
+    <a n:href="remove! $vehicle->id" class="btn btn-danger hidden-xs hidden-sm{if !$canDelete} disabled{/if}" {if !$canDelete} title="Nelze mazat vozidla s cestovními příkazy"{/if} onclick="return confirm('Opravdu chcete vozidlo smazat?');"><i class="glyphicon glyphicon-remove"></i></a>
 </div>
 <div class="row">
     <div class='col-sm-6'>
