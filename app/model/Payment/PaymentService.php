@@ -167,7 +167,7 @@ class PaymentService
      * @param int $groupId
      * @return Row
      */
-    public function getGroup($unitId, $groupId)
+    public function getGroup($unitId, $groupId, $new = FALSE)
     {
         return $this->table->getGroup($unitId, $groupId);
     }
@@ -350,30 +350,30 @@ class PaymentService
 
     /**
      * seznam osob z registrace
-     * @param int|array $units
+     * @param int[] $units
      * @param int $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
      * @return array(array())
      */
-    public function getPersonsFromRegistrationWithoutPayment($units, $groupId = NULL)
+    public function getPersonsFromRegistrationWithoutPayment(array $units, int $groupId)
     {
         $result = [];
 
-        $group = $this->getGroup($units, $groupId);
-        if (!$group) {
+        $group = $this->getGroupV2($groupId);
+
+        if ($group === NULL || !in_array($group->getUnitId(), $units, TRUE)) {
             throw new \InvalidArgumentException("Nebyla nalezena platební skupina");
         }
-        $persons = $this->getPersonFromRegistration($group->sisId, TRUE);
+        $persons = $this->getPersonFromRegistration($group->getSkautisId(), TRUE);
 
         if (is_array($persons)) {
             usort($persons, function ($a, $b) {
                 return strcmp($a->Person, $b->Person);
             });
-            if ($groupId !== NULL) {
-                $payments_personIds = $this->table->getActivePaymentIds($groupId);
-                $persons = array_filter($persons, function ($v) use ($payments_personIds) {
-                    return !in_array($v->ID_Person, $payments_personIds);
-                });
-            }
+
+            $payments_personIds = $this->table->getActivePaymentIds($groupId);
+            $persons = array_filter($persons, function ($v) use ($payments_personIds) {
+                return !in_array($v->ID_Person, $payments_personIds);
+            });
 
             foreach ($persons as $p) {
                 $result[$p->ID_Person] = (array)$p;

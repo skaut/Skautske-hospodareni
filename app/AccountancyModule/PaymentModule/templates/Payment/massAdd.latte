@@ -38,10 +38,10 @@
             </tr>
             <tr>
                 <td colspan="3"><b>Výchozí hodnoty</b> se uloží u záznamů, kde nebude hodnota vyplněna.</td>
-                <td>{input defaultAmount, value=>$detail['amount']}</td>
-                <td>{input defaultMaturity, value=>$detail['maturity']}</td>
+                <td>{input defaultAmount, value=>$detail->defaultAmount}</td>
+                <td>{input defaultMaturity, value=> $detail->dueDate !== NULL ? $detail->dueDate->format('d.m.Y') : NULL}</td>
                 <td> </td>
-                <td>{input defaultKs, value=>$detail['ks'], class=>"input-sm form-control"}</td>
+                <td>{input defaultKs, value=>$detail->constantSymbol, class=>"input-sm form-control"}</td>
                 <td>{input defaultNote}</td>
             </tr>
             <tr n:foreach="$list as $p">

@@ -1,5 +1,5 @@
 {block #content}
-<h2 n:block="title">{$group->label}</h2>
+<h2 n:block="title">{$group->name}</h2>
 {include ../ActionMenu.latte}
 {dump $group}
 {dump $units}
@@ -16,9 +16,9 @@
             </tr>
             <tr>
                 <th class="l">Typ skupiny:</th>
-                <td>{if $group->groupType == NULL}Obecná
-                    {elseif $group->groupType == "camp"}Táborová
-                    {elseif $group->groupType == "registration"}Registrační{/if}
+                <td>{if $group->type === NULL}Obecná
+                    {elseif $group->type === "camp"}Táborová
+                    {elseif $group->type === "registration"}Registrační{/if}
                 </td>
             </tr>
             <tr n:foreach="$summarize as $name=>$r">
@@ -33,11 +33,11 @@
         <div class="well well-sm">
             {if $group->state =='open' && $isEditable}
                 <a n:href="Group:edit aid=>$group->unitId, $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit skupinu</a>
-                {if $group->groupType == 'registration'}
+                {if $group->type === 'registration'}
                     <a n:href="Registration:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphicon-plus-sign hidden-xs"></i> Přidat z registrace</a>
                     <a n:href="Journal: $group['unitId']" class="btn btn-primary" ><i class="glyphicon glyphicon-book hidden-xs"></i> Časopisy</a>
                 {/if}
-                <a n:if="$group->groupType == 'camp'" n:href="Camp:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphicon-plus-sign hidden-xs"></i> Přidat z účastníků</a>
+                <a n:if="$group->type === 'camp'" n:href="Camp:massAdd $group['id']" class="btn btn-primary" ><i class="glyphicon glyphicon-plus-sign hidden-xs"></i> Přidat z účastníků</a>
                 <a n:href="massAdd $group->id" class="btn btn-primary">Hromadné přidání <sup style="color:red;">BETA</sup></a>
                 <div class="btn-group">
                     <a class="btn dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#">
@@ -59,7 +59,7 @@
                         {control pairForm}
                     </div>
                 </div>
-                <a n:if="$group->groupType == 'camp'" n:href="repayment $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
+                <a n:if="$group->type === 'camp'" n:href="repayment $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
                 <a n:href="generateVS! $group->id" class="btn btn-warning" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
                 <a n:href="closeGroup! $group->id" class="btn btn-success"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
             {else}
@@ -73,7 +73,7 @@
 <div class='row'>
     <div class='col-md-12'>
         {dump $payments}
-        {var $isEditable = $isEditable && ($group['state'] == 'open')}
+        {var $isEditable = $isEditable && ($group->state == 'open')}
         {form paymentForm}
             <ul class="alert alert-error" n:if="isset($form) && $form->hasErrors()">
                 <li n:foreach="$form->errors as $error">{$error}</li>
