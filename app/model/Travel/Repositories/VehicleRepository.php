@@ -89,7 +89,7 @@ class VehicleRepository implements IVehicleRepository
     public function remove($vehicleId): bool
     {
         try {
-            $this->em->remove($this->get($vehicleId));
+            $this->em->remove($this->get($vehicleId))->flush();
             return TRUE;
         } catch (VehicleNotFoundException $e) {
             return FALSE;
