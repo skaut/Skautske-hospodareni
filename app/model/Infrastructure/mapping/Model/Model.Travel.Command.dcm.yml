@@ -1,0 +1,18 @@
+Model\Travel\Command:
+
+    type: entity
+    table: tc_commands
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        deleted:
+            type: boolean
+
+    manyToOne:
+        vehicle:
+            targetEntity: Model\Travel\Vehicle
+            nullable: true
