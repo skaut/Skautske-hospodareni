@@ -5,6 +5,7 @@ namespace Model\Travel;
 use Mockery as m;
 use Model\CommandTable;
 use Model\ContractTable;
+use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\TravelService;
 use Model\TravelTable;
@@ -18,14 +19,18 @@ class TravelServiceTest extends \Codeception\Test\Unit
     /** @var m\MockInterface */
     private $vehicles;
 
+    /** @var m\MockInterface */
+    private $commands;
+
     protected function _before()
     {
         $this->vehicles = m::mock(IVehicleRepository::class);
         $commands = m::mock(CommandTable::class);
         $travels = m::mock(TravelTable::class);
         $contracts = m::mock(ContractTable::class);
+        $this->commands = m::mock(ICommandRepository::class);
 
-        $this->service = new TravelService($commands, $travels, $contracts, $this->vehicles);
+        $this->service = new TravelService($commands, $travels, $contracts, $this->vehicles, $this->commands);
     }
 
     public function testCreateVehicle()
@@ -56,13 +61,7 @@ class TravelServiceTest extends \Codeception\Test\Unit
     {
         $id = 15;
 
-        $vehicle = $this->mockVehicle();
-        $vehicle->shouldReceive('getCommandsCount')->once()->andReturn(0);
-
-        $this->vehicles->shouldReceive('get')
-            ->once()
-            ->with($id)
-            ->andReturn($vehicle);
+        $this->commands->shouldReceive('countByVehicle')->with($id)->andReturn(0);
 
         $this->vehicles->shouldReceive('remove')
             ->once()
@@ -76,12 +75,7 @@ class TravelServiceTest extends \Codeception\Test\Unit
     {
         $id = 16;
 
-        $vehicle = $this->mockVehicle();
-        $vehicle->shouldReceive('getCommandsCount')->once()->andReturn(50);
-        $this->vehicles->shouldReceive('get')
-            ->once()
-            ->with($id)
-            ->andReturn($vehicle);
+        $this->commands->shouldReceive('countByVehicle')->once()->with($id)->andReturn(50);
 
         $this->assertFalse($this->service->removeVehicle($id));
     }
@@ -181,9 +175,9 @@ class TravelServiceTest extends \Codeception\Test\Unit
         return m::mock(Vehicle::class);
     }
 
-    private function createService() : TravelService
+    protected function _after()
     {
-
+        m::close();
     }
 
 }

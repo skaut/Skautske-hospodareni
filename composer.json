@@ -29,7 +29,11 @@
         "heureka/bank-account-validator": "1.1.*",
         "nextras/mail-panel": "^2.3",
         "zenify/doctrine-migrations": "^3.0",
-        "kdyby/console": "^2.6"
+        "kdyby/console": "^2.6",
+        "consistence/consistence": "^0.22.0",
+        "kdyby/doctrine": "^3.1",
+        "consistence/consistence-doctrine": "^0.6.0",
+        "vasek-purchart/doctrine-date-time-immutable-types": "^0.4.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

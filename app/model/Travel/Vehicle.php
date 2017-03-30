@@ -22,9 +22,6 @@ class Vehicle extends Nette\Object
     /** @var float */
     private $consumption;
 
-    /** @var int */
-    private $commandsCount;
-
     /** @var string|NULL */
     private $note;
 
@@ -37,15 +34,13 @@ class Vehicle extends Nette\Object
      * @param int $unitId
      * @param string $registration
      * @param float $consumption
-     * @param int $commandsCount
      */
-    public function __construct($type, $unitId, $registration, $consumption, $commandsCount = 0)
+    public function __construct($type, $unitId, $registration, $consumption)
     {
         $this->type = $type;
         $this->unitId = $unitId;
         $this->registration = $registration;
         $this->consumption = $consumption;
-        $this->commandsCount = $commandsCount;
     }
 
     public function archive(): void
@@ -91,14 +86,6 @@ class Vehicle extends Nette\Object
     public function getConsumption()
     {
         return $this->consumption;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCommandsCount()
-    {
-        return $this->commandsCount;
     }
 
     /**
