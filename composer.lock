@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0cc9c79debe6bf44f7a30845432cf0f1",
+    "content-hash": "f13c13736d888ea3e069852cf079fa44",
     "packages": [
         {
             "name": "arachne/container-adapter",
@@ -3654,6 +3654,64 @@
                 "nette"
             ],
             "time": "2017-01-29T19:39:20+00:00"
+        },
+        {
+            "name": "vasek-purchart/doctrine-date-time-immutable-types",
+            "version": "0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/VasekPurchart/Doctrine-Date-Time-Immutable-Types.git",
+                "reference": "600f95109cd463f57bb5d72950463a0ffb3eced0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/VasekPurchart/Doctrine-Date-Time-Immutable-Types/zipball/600f95109cd463f57bb5d72950463a0ffb3eced0",
+                "reference": "600f95109cd463f57bb5d72950463a0ffb3eced0",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "~2.4",
+                "php": "~5.6|~7.0"
+            },
+            "require-dev": {
+                "consistence/coding-standard": "0.11.1",
+                "jakub-onderka/php-console-highlighter": "0.3.2",
+                "jakub-onderka/php-parallel-lint": "0.9.2",
+                "phing/phing": "2.14",
+                "phpunit/phpunit": "5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "VasekPurchart\\Doctrine\\Type\\DateTimeImmutable\\": [
+                        "src"
+                    ]
+                },
+                "classmap": [
+                    "src"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vašek Purchart",
+                    "email": "me@vasekpurchart.cz",
+                    "homepage": "http://vasekpurchart.cz"
+                }
+            ],
+            "description": "Doctrine DateTimeImmutable types",
+            "keywords": [
+                "datetime",
+                "datetimeimmutable",
+                "dbal",
+                "doctrine",
+                "immutable",
+                "type"
+            ],
+            "time": "2016-12-30T11:09:50+00:00"
         },
         {
             "name": "zendframework/zend-code",
