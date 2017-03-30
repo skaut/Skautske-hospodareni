@@ -4,9 +4,9 @@ namespace Model\Travel\Repositories;
 
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
-use Dibi\Connection;
+use Doctrine\DBAL\Connection;
 use Kdyby\Doctrine\EntityManager;
-use Model\BaseTable;
+use Model\Travel\Command;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 
@@ -16,12 +16,8 @@ class VehicleRepository implements IVehicleRepository
     /** @var EntityManager */
     private $em;
 
-    /** @var Connection */
-    private $connection;
-
-    public function __construct(Connection $connection, EntityManager $em)
+    public function __construct(EntityManager $em)
     {
-        $this->connection = $connection;
         $this->em = $em;
     }
 
@@ -116,13 +112,16 @@ class VehicleRepository implements IVehicleRepository
      */
     private function countCommands(array $vehicleIds)
     {
-        $counts = $this->connection->select('vehicle_id, COUNT(id) as commandsCount')
-            ->from(BaseTable::TABLE_TC_COMMANDS)
-            ->where('vehicle_id IN (%i)', $vehicleIds)
-            ->where('deleted = 0')
-            ->groupBy('vehicle_id')
-            ->execute()
-            ->fetchPairs('vehicle_id', 'commandsCount');
+        $vehicleIds = array_map('intval', $vehicleIds);
+
+        $counts = $this->em->getRepository(Command::class)
+            ->createQueryBuilder('c', 'c.id')
+            ->select('COUNT(c.id)')
+            ->where('IDENTITY(c.vehicle) IN (:ids)')
+            ->andWhere('c.deleted = FALSE')
+            ->setParameter('ids', $vehicleIds, Connection::PARAM_INT_ARRAY)
+            ->getQuery()
+            ->getScalarResult();
 
         // Add vehicles without commands
         $counts += array_fill_keys(array_diff($vehicleIds, array_keys($counts)), 0);

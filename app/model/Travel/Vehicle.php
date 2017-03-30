@@ -2,6 +2,7 @@
 
 namespace Model\Travel;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Nette;
 
 class Vehicle extends Nette\Object
@@ -37,7 +38,6 @@ class Vehicle extends Nette\Object
      * @param int $unitId
      * @param string $registration
      * @param float $consumption
-     * @param int $commandsCount
      */
     public function __construct($type, $unitId, $registration, $consumption)
     {
