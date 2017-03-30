@@ -1,0 +1,23 @@
+Model\Travel\Vehicle:
+
+    type: entity
+    table: tc_vehicle
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        type:
+            type: string
+        unitId:
+            type: integer
+        registration:
+            type: string
+        consumption:
+            type: float
+        note:
+            type: string
+        archived:
+            type: boolean

@@ -2,29 +2,27 @@
 
 namespace Model\Travel\Repositories;
 
+use Consistence\Type\ArrayType\ArrayType;
+use Consistence\Type\ArrayType\KeyValuePair;
 use Dibi\Connection;
+use Kdyby\Doctrine\EntityManager;
 use Model\BaseTable;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- * správa vozidel u cestovních dokladů
- */
-class VehicleRepository extends BaseTable implements IVehicleRepository
+class VehicleRepository implements IVehicleRepository
 {
 
-    const LABEL = "CONCAT(type,' (', registration,')')";
+    /** @var EntityManager */
+    private $em;
 
-    /** @var \ReflectionProperty */
-    private $idProperty;
+    /** @var Connection */
+    private $connection;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, EntityManager $em)
     {
-        parent::__construct($connection);
-        $reflection = new \ReflectionClass('Model\Travel\Vehicle');
-        $this->idProperty = $reflection->getProperty('id');
-        $this->idProperty->setAccessible(TRUE);
+        $this->connection = $connection;
+        $this->em = $em;
     }
 
     /**
@@ -34,16 +32,15 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
      */
     public function get($id)
     {
-        $row = $this->connection->select('*')
-            ->from(self::TABLE_TC_VEHICLE)
-            ->where('id = %i', $id)
-            ->fetch();
+        $vehicle = $this->em->find(Vehicle::class, $id);
 
-        if (!$row) {
-            throw new VehicleNotFoundException;
+        if(! $vehicle instanceof Vehicle) {
+            throw new VehicleNotFoundException();
         }
 
-        return $this->hydrate($row, $this->countCommands([$id])[$id]);
+        $vehicle->setCommandsCount($this->countCommands([$id])[$id]);
+
+        return $vehicle;
     }
 
     /**
@@ -52,28 +49,25 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
      */
     public function getAll($unitId)
     {
-        $rows = $this->connection->select('*')
-            ->from(self::TABLE_TC_VEHICLE)
-            ->where('unit_id = %i', $unitId)
-            ->where('archived = 0')
-            ->execute()
-            ->fetchAll('id');
+        $vehicles = $this->em->createQueryBuilder()
+            ->select('v')
+            ->from(Vehicle::class, 'v', 'v.id')
+            ->where('v.unitId = :unitId')
+            ->andWhere('v.archived = FALSE')
+            ->setParameter('unitId', $unitId)
+            ->getQuery()
+            ->getResult();
 
-        if (!$rows) {
+        if(empty($vehicles)) {
             return [];
         }
 
-        $indexedRows = [];
-        foreach ($rows as $row) {
-            $indexedRows[$row->id] = $row;
-        }
+        $commandCounts = $this->countCommands(array_keys($vehicles));
 
-        $commandCounts = $this->countCommands(array_keys($indexedRows));
+        array_map(function(Vehicle $vehicle) use($commandCounts) {
+            $vehicle->setCommandsCount($commandCounts[$vehicle->getId()]);
+        }, $vehicles);
 
-        $vehicles = [];
-        foreach ($indexedRows as $id => $row) {
-            $vehicles[] = $this->hydrate($row, $commandCounts[$id]);
-        }
         return $vehicles;
     }
 
@@ -83,33 +77,22 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
      */
     public function getPairs($unitId)
     {
-        return $this->connection->select('id')
-            ->select(self::LABEL)
-            ->from(self::TABLE_TC_VEHICLE)
-            ->where('unit_id = %i', $unitId)
-            ->where('archived = 0')
-            ->fetchPairs();
+        $vehicles = $this->em->getRepository(Vehicle::class)->findBy([
+            'unitId' => $unitId,
+            'archived' => FALSE,
+        ]);
+
+        return ArrayType::mapByCallback($vehicles, function(KeyValuePair $pair) {
+            $value = $pair->getValue();
+            /* @var $value Vehicle */
+            return new KeyValuePair($value->getId(), $value->getLabel());
+        });
+
     }
 
-    /**
-     * @param Vehicle $vehicle
-     */
     public function save(Vehicle $vehicle): void
     {
-        if ($vehicle->getId()) {
-            $this->connection->update(self::TABLE_TC_VEHICLE, [
-                'archived' => $vehicle->isArchived(),
-            ])->where('id = %i', $vehicle->id)->execute();
-            return;
-        }
-
-        $id = $this->connection->insert(self::TABLE_TC_VEHICLE, [
-            'type' => $vehicle->getType(),
-            'unit_id' => $vehicle->getUnitId(),
-            'registration' => $vehicle->getRegistration(),
-            'consumption' => $vehicle->getConsumption(),
-        ])->execute(\dibi::IDENTIFIER);
-        $this->injectId($vehicle, $id);
+        $this->em->persist($vehicle)->flush();
     }
 
     /**
@@ -119,35 +102,12 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
      */
     public function remove($vehicleId): bool
     {
-        return (bool)$this->connection->delete(self::TABLE_TC_VEHICLE)
-            ->where('id = %i', $vehicleId)->execute();
-    }
-
-    /**
-     * @param Vehicle $vehicle
-     * @param int $id
-     */
-    private function injectId(Vehicle $vehicle, $id): void
-    {
-        $this->idProperty->setValue($vehicle, $id);
-    }
-
-    /**
-     * @param object $row
-     * @param int $commandsCount
-     * @return Vehicle
-     */
-    private function hydrate($row, $commandsCount)
-    {
-        $vehicle = new Vehicle($row->type, $row->unit_id, $row->registration, $row->consumption, $commandsCount);
-
-        $this->injectId($vehicle, $row->id);
-
-        if ($row->archived) {
-            $vehicle->archive();
+        try {
+            $this->em->remove($this->get($vehicleId));
+            return TRUE;
+        } catch (VehicleNotFoundException $e) {
+            return FALSE;
         }
-
-        return $vehicle;
     }
 
     /**
@@ -157,7 +117,7 @@ class VehicleRepository extends BaseTable implements IVehicleRepository
     private function countCommands(array $vehicleIds)
     {
         $counts = $this->connection->select('vehicle_id, COUNT(id) as commandsCount')
-            ->from(self::TABLE_TC_COMMANDS)
+            ->from(BaseTable::TABLE_TC_COMMANDS)
             ->where('vehicle_id IN (%i)', $vehicleIds)
             ->where('deleted = 0')
             ->groupBy('vehicle_id')
