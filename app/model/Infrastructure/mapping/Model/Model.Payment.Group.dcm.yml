@@ -1,0 +1,54 @@
+Model\Payment\Group:
+
+    type: entity
+    table: pa_group
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        type:
+            type: string
+            column: groupType
+        unitId:
+            type: integer
+            column: unitId
+        skautisId:
+            type: integer
+            column: sisId
+        name:
+            type: string
+            nullable: true
+            column: label
+        defaultAmount:
+            type: float
+            nullable: true
+            column: amount
+        dueDate:
+            type: datetime_immutable
+            nullable: true
+            column: maturity
+        constantSymbol:
+            type: integer
+            nullable: true
+            column: ks
+        nextVariableSymbol:
+            type: integer
+            nullable: true
+            column: nextVs
+        state:
+            type: string
+        createdAt:
+            type: datetime_immutable
+            nullable: true
+        lastPairing:
+            type: datetime_immutable
+            nullable: true
+        emailTemplate:
+            type: text
+            column: email_info
+        smtpId:
+            type: integer
+            nullable: true

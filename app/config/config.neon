@@ -38,6 +38,9 @@ doctrine:
     password: %database.password%
     dbname: %database.name%
     metadata:
+        Model: yaml(%appDir%/model/Infrastructure/mapping/Model)
+    types:
+        datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
 
 dibi:
     driver: mysqli
