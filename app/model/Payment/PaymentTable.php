@@ -90,16 +90,6 @@ class PaymentTable extends BaseTable
 
     /**
      * @param int|int[] $unitId
-     * @param int $id
-     * @return Row
-     */
-    public function getGroup($unitId, $id)
-    {
-        return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE id=%i ", $id, " AND unitId IN %in ", !is_array($unitId) ? [$unitId] : $unitId, " AND state != 'canceled'");
-    }
-
-    /**
-     * @param int|int[] $unitId
      * @param bool $onlyOpen
      * @return array
      */

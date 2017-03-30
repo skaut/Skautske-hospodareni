@@ -83,7 +83,7 @@ class PaymentPresenter extends BasePresenter
 
     public function renderDetail(int $id): void
     {
-        $group = $this->model->getGroupV2($id);
+        $group = $this->model->getGroup($id);
 
         if($group === NULL || !$this->hasAccessToGroup($group)) {
             $this->flashMessage("Nemáte oprávnění zobrazit detail plateb", "warning");
@@ -139,7 +139,7 @@ class PaymentPresenter extends BasePresenter
         //ověření přístupu
         $this->template->unitPairs = $this->readUnits;
 
-        $group = $this->model->getGroupV2($id);
+        $group = $this->model->getGroup($id);
 
         if($group === NULL || !$this->hasAccessToGroup($group)) {
             $this->flashMessage("Neplatný požadavek na přehled osob", "danger");
@@ -166,7 +166,7 @@ class PaymentPresenter extends BasePresenter
         $campService = $this->context->getService("campService");
         $accountFrom = $this->model->getBankAccount($this->aid);
 
-        $group = $this->model->getGroupV2($id);
+        $group = $this->model->getGroup($id);
 
         if($group === NULL || !$this->hasAccessToGroup($group)) {
             $this->flashMessage('K této skupině nemáte přístup');
@@ -400,7 +400,7 @@ class PaymentPresenter extends BasePresenter
 
     public function handleGenerateVs(int $gid): void
     {
-        $group = $this->model->getGroupV2($gid);
+        $group = $this->model->getGroup($gid);
 
         if(!$this->isEditable || $group === NULL || !$this->hasAccessToGroup($group)) {
             $this->flashMessage("Nemáte oprávnění generovat VS!", "danger");
@@ -421,7 +421,7 @@ class PaymentPresenter extends BasePresenter
 
     public function handleCloseGroup(int $gid): void
     {
-        $group = $this->model->getGroupV2($gid);
+        $group = $this->model->getGroup($gid);
         if (!$this->isEditable || $group === NULL || !$this->hasAccessToGroup($group)) {
             $this->flashMessage("Nejste oprávněni úpravám akce!", "danger");
             $this->redirect("this");
@@ -433,7 +433,7 @@ class PaymentPresenter extends BasePresenter
 
     public function handleOpenGroup(int $gid): void
     {
-        $group = $this->model->getGroupV2($gid);
+        $group = $this->model->getGroup($gid);
 
         if(!$this->isEditable || $group === NULL || !$this->hasAccessToGroup($group)) {
             $this->flashMessage("Nejste oprávněni úpravám akce!", "danger");

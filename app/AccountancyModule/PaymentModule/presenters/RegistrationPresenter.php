@@ -28,7 +28,7 @@ class RegistrationPresenter extends BasePresenter
             $this->redirect("Payment:default");
         }
 
-        $group = $this->model->getGroupV2($id);
+        $group = $this->model->getGroup($id);
 
         if($group === NULL) {
             $this->flashMessage("Neplatný požadavek na přidání registračních plateb", "danger");

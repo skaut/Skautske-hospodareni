@@ -163,16 +163,6 @@ class PaymentService
      */
 
     /**
-     * @param int|array(int) $unitId
-     * @param int $groupId
-     * @return Row
-     */
-    public function getGroup($unitId, $groupId, $new = FALSE)
-    {
-        return $this->table->getGroup($unitId, $groupId);
-    }
-
-    /**
      *
      * @param int|array(int) $unitId
      * @param boolean $onlyOpen
@@ -230,7 +220,7 @@ class PaymentService
         $this->groups->save($group);
     }
 
-    public function getGroupV2($id): ?DTO\Group
+    public function getGroup($id): ?DTO\Group
     {
         try {
             $group = $this->groups->find($id);
@@ -358,7 +348,7 @@ class PaymentService
     {
         $result = [];
 
-        $group = $this->getGroupV2($groupId);
+        $group = $this->getGroup($groupId);
 
         if ($group === NULL || !in_array($group->getUnitId(), $units, TRUE)) {
             throw new \InvalidArgumentException("Nebyla nalezena platební skupina");

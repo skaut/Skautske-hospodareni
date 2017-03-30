@@ -24,7 +24,7 @@ class CampPresenter extends BasePresenter
 
     public function actionMassAdd(int $id) : void
     {
-        $group = $this->model->getGroupV2($id);
+        $group = $this->model->getGroup($id);
 
         if($group === NULL || !in_array($group->getUnitId(), array_keys($this->readUnits), TRUE)) {
             $this->flashMessage("Neoprávněný přístup ke skupině.", "danger");
