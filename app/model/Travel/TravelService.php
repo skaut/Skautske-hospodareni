@@ -3,6 +3,7 @@
 namespace Model;
 
 use Dibi\Row;
+use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 
@@ -25,20 +26,23 @@ class TravelService extends BaseService
     /** @var IVehicleRepository */
     private $vehicles;
 
-    /**
-     * TravelService constructor.
-     * @param CommandTable $table
-     * @param TravelTable $tableTravel
-     * @param ContractTable $tableContract
-     * @param IVehicleRepository $vehicles
-     */
-    public function __construct(CommandTable $table, TravelTable $tableTravel, ContractTable $tableContract, IVehicleRepository $vehicles)
+    /** @var ICommandRepository */
+    private $commands;
+
+    public function __construct(
+        CommandTable $table,
+        TravelTable $tableTravel,
+        ContractTable $tableContract,
+        IVehicleRepository $vehicles,
+        ICommandRepository $commands
+    )
     {
         parent::__construct();
         $this->table = $table;
         $this->tableTravel = $tableTravel;
         $this->tableContract = $tableContract;
         $this->vehicles = $vehicles;
+        $this->commands = $commands;
     }
 
     public function isContractAccessible($contractId, $unit)
@@ -99,9 +103,7 @@ class TravelService extends BaseService
 
     public function removeVehicle($vehicleId)
     {
-        $vehicle = $this->getVehicle($vehicleId);
-
-        if ($vehicle->getCommandsCount() > 0) { //nelze mazat vozidlo s navazanými příkazy
+        if ($this->commands->countByVehicle($vehicleId) > 0) { //nelze mazat vozidlo s navazanými příkazy
             return FALSE;
         }
         return $this->vehicles->remove($vehicleId);
@@ -241,6 +243,11 @@ class TravelService extends BaseService
     public function getAllCommands($unitId)
     {
         return $this->table->getAll($unitId);
+    }
+
+    public function getCommandsCount(int $vehicleId): int
+    {
+        return $this->commands->countByVehicle($vehicleId);
     }
 
     /**

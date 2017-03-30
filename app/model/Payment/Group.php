@@ -51,19 +51,6 @@ class Group
 
     const STATE_OPEN = 'open';
 
-    /**
-     * Group constructor.
-     * @param string|NULL $type
-     * @param int $unitId
-     * @param int|NULL $skautisId
-     * @param string $name
-     * @param float|NULL $defaultAmount
-     * @param \DateTimeImmutable|NULL $dueDate
-     * @param int|NULL $constantSymbol
-     * @param \DateTimeImmutable $createdAt
-     * @param string $emailTemplate
-     * @param int|NULL $smtpId
-     */
     public function __construct(
         ?string $type,
         int $unitId,

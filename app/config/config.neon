@@ -32,6 +32,24 @@ tracy:
 console:
     url: https://h.skauting.cz
 
+doctrine:
+    host: %database.host%
+    user: %database.user%
+    password: %database.password%
+    dbname: %database.name%
+    metadata:
+        Model: yaml(%appDir%/model/Infrastructure/mapping/Model)
+    types:
+        datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
+
+dibi:
+    driver: mysqli
+    host: %database.host%
+    username: %database.user%
+    password: %database.password%
+    database: %database.name%
+    charset: utf8
+
 extensions:
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
@@ -39,10 +57,12 @@ extensions:
     - Arachne\EventDispatcher\DI\EventDispatcherExtension
     migrations: Zenify\DoctrineMigrations\DI\MigrationsExtension
     console: Kdyby\Console\DI\ConsoleExtension
+    events: Kdyby\Events\DI\EventsExtension
+    annotations: Kdyby\Annotations\DI\AnnotationsExtension
+    doctrine: Kdyby\Doctrine\DI\OrmExtension
+
 
 services:
-    - class: Doctrine\DBAL\Connection
-      factory: Model\Infrastructure\DoctrineConnectionFactory::create
 
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory
@@ -81,6 +101,7 @@ services:
     # Model
 
     # Repositories
+    - Model\Travel\Repositories\CommandRepository
     - Model\Travel\Repositories\VehicleRepository
     - Model\Payment\Repositories\BankAccountRepository
     - Model\Payment\Repositories\GroupRepository
