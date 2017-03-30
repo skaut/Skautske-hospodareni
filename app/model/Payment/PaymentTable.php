@@ -112,16 +112,6 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     * [[ Unused ]]
-     * @param array $arr
-     * @return int
-     */
-    public function createGroup($arr)
-    {
-        return $this->connection->insert(self::TABLE_PA_GROUP, $arr)->execute(\dibi::IDENTIFIER);
-    }
-
-    /**
      * @param int $pa_groupId
      * @return array
      */
