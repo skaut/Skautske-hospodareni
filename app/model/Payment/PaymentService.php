@@ -163,14 +163,17 @@ class PaymentService
      */
 
     /**
-     *
-     * @param int|array(int) $unitId
-     * @param boolean $onlyOpen
-     * @return array
+     * @param int[] $unitIds
+     * @param bool $onlyOpen
+     * @return DTO\Group[]
      */
-    public function getGroups($unitId, $onlyOpen = FALSE): array
+    public function getGroups(array $unitIds, bool $onlyOpen): array
     {
-        return $this->table->getGroups($unitId, $onlyOpen);
+        $groups = $this->groups->findByUnits($unitIds, $onlyOpen);
+
+        return array_map(function(Group $group) {
+            return DTO\GroupFactory::create($group);
+        }, $groups);
     }
 
     public function createGroup(

@@ -18,6 +18,13 @@ interface IGroupRepository
     public function find(int $id): Group;
 
     /**
+     * @param int[] $unitIds
+     * @param bool $openOnly
+     * @return Group[]
+     */
+    public function findByUnits(array $unitIds, bool $openOnly): array;
+
+    /**
      * @param Group $group
      */
     public function save(Group $group): void;
