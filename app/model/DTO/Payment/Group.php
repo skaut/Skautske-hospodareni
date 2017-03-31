@@ -1,21 +1,41 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: fmasa
- * Date: 21.2.17
- * Time: 23:27
- */
 
 namespace Model\DTO\Payment;
 
+use DateTimeImmutable;
+use Nette\SmartObject;
+
+/**
+ * @property-read int $id
+ * @property-read string|NULL $type
+ * @property-read int $unitId
+ * @property-read int|NULL $skautisId
+ * @property-read string $name
+ * @property-read float|NULL $defaultAmount
+ * @property-read DateTimeImmutable|NULL $dueDate
+ * @property-read int|NULL $constantSymbol
+ * @property-read int|NULL $nextVariableSymbol
+ * @property-read string $state
+ * @property-read string $emailTemplate
+ * @property-read int|NULL $smtpId
+ * @property-read string $note
+ */
 class Group
 {
+
+    use SmartObject;
 
     /** @var int */
     private $id;
 
+    /** @var string|NULL */
+    private $type;
+
     /** @var int */
     private $unitId;
+
+    /** @var int|NULL */
+    private $skautisId;
 
     /** @var string */
     private $name;
@@ -23,7 +43,7 @@ class Group
     /** @var float|NULL */
     private $defaultAmount;
 
-    /** @var \DateTimeImmutable|NULL */
+    /** @var DateTimeImmutable|NULL */
     private $dueDate;
 
     /** @var int|NULL */
@@ -33,31 +53,45 @@ class Group
     private $nextVariableSymbol;
 
     /** @var string */
+    private $state;
+
+    /** @var string */
     private $emailTemplate;
 
     /** @var int|NULL */
     private $smtpId;
 
+    /** @var string */
+    private $note;
+
     public function __construct(
         int $id,
+        ?string $type,
         int $unitId,
+        ?int $skautisId,
         string $name,
         ?float $defaultAmount,
-        ?\DateTimeImmutable $dueDate,
+        ?DateTimeImmutable $dueDate,
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
+        string $state,
         string $emailTemplate,
-        ?int $smtpId)
+        ?int $smtpId,
+        string $note)
     {
         $this->id = $id;
+        $this->type = $type;
         $this->unitId = $unitId;
+        $this->skautisId = $skautisId;
         $this->name = $name;
         $this->defaultAmount = $defaultAmount;
         $this->dueDate = $dueDate;
         $this->constantSymbol = $constantSymbol;
         $this->nextVariableSymbol = $nextVariableSymbol;
+        $this->state = $state;
         $this->emailTemplate = $emailTemplate;
         $this->smtpId = $smtpId;
+        $this->note = $note;
     }
 
 
@@ -69,12 +103,22 @@ class Group
         return $this->id;
     }
 
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
     /**
      * @return int
      */
     public function getUnitId(): int
     {
         return $this->unitId;
+    }
+
+    public function getSkautisId(): ?int
+    {
+        return $this->skautisId;
     }
 
     /**
@@ -96,7 +140,7 @@ class Group
     /**
      * @return \DateTimeImmutable|NULL
      */
-    public function getDueDate() : ?\DateTimeImmutable
+    public function getDueDate() : ?DateTimeImmutable
     {
         return $this->dueDate;
     }
@@ -117,6 +161,11 @@ class Group
         return $this->nextVariableSymbol;
     }
 
+    public function getState(): string
+    {
+        return $this->state;
+    }
+
     /**
      * @return string
      */
@@ -131,6 +180,11 @@ class Group
     public function getSmtpId(): ?int
     {
         return $this->smtpId;
+    }
+
+    public function getNote(): string
+    {
+        return $this->note;
     }
 
 }

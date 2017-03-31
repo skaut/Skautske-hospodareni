@@ -84,17 +84,19 @@ class GroupPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
             $this->redirect("Payment:default");
         }
-        //$this->template->setFile(dirname(__DIR__)."/templates/Group/default.latte");
+
         $form = $this['groupForm'];
         unset($form['sisId']);
         $form['send']->caption = "Upravit skupinu";
-        $this->template->group = $group = $this->model->getGroup($this->aid, $id);
-        if (!$group) {
+
+        $group = $this->model->getGroup($id);
+
+        if ($group === NULL || $group->getUnitId() !== $this->aid) {
             $this->flashMessage("Skupina nebyla nalezena", "warning");
             $this->redirect("Payment:default");
         }
 
-        $dto = $this->model->getGroupV2($id);
+        $dto = $this->model->getGroup($id);
         $form->setDefaults([
             "label" => $dto->getName(),
             "amount" => $dto->getDefaultAmount(),

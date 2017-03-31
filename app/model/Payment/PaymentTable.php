@@ -90,16 +90,6 @@ class PaymentTable extends BaseTable
 
     /**
      * @param int|int[] $unitId
-     * @param int $id
-     * @return Row
-     */
-    public function getGroup($unitId, $id)
-    {
-        return $this->connection->fetch("SELECT * FROM [" . self::TABLE_PA_GROUP . "] WHERE id=%i ", $id, " AND unitId IN %in ", !is_array($unitId) ? [$unitId] : $unitId, " AND state != 'canceled'");
-    }
-
-    /**
-     * @param int|int[] $unitId
      * @param bool $onlyOpen
      * @return array
      */
@@ -122,16 +112,6 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     * [[ Unused ]]
-     * @param array $arr
-     * @return int
-     */
-    public function createGroup($arr)
-    {
-        return $this->connection->insert(self::TABLE_PA_GROUP, $arr)->execute(\dibi::IDENTIFIER);
-    }
-
-    /**
      * @param int $pa_groupId
      * @return array
      */
@@ -141,21 +121,6 @@ class PaymentTable extends BaseTable
             . " RIGHT JOIN [" . self::TABLE_PA_PAYMENT_STATE . "] s ON p.state = s.ID AND groupId=%i", $pa_groupId, " WHERE s.id != 'canceled'"
             . " GROUP BY s.id"
             . " ORDER BY s.orderby")->fetchAssoc("label");
-    }
-
-    /**
-     * TODO: replace with open/close method on Group
-     * @param int $groupId
-     * @param array $arr
-     * @param bool $openOnly
-     */
-    public function updateGroup($groupId, $arr, $openOnly): void
-    {
-        $query = $this->connection->update(self::TABLE_PA_GROUP, $arr)->where("id=%i", $groupId);
-        if ($openOnly) {
-            $query = $query->where("state='open'");
-        }
-        $query->execute();
     }
 
     /**

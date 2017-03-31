@@ -40,6 +40,9 @@ Model\Payment\Group:
             column: nextVs
         state:
             type: string
+        note:
+            type: string
+            column: state_info
         createdAt:
             type: datetime_immutable
             nullable: true
