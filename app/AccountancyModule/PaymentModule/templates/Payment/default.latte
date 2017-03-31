@@ -34,7 +34,7 @@
             </tr>
             <tr n:foreach="$groups as $g">
                 <td><a n:href="Payment:detail $g->id">{$g->name}</a></td>
-                <td n:foreach="$g->sumarize as $s" class="r">{if $s->count > 0}{$s->amount|num} ({$s->count}){else} {/if}</td>
+                <td n:foreach="$summarizations[$g->id] as $s" class="r">{if $s->count > 0}{$s->amount|num} ({$s->count}){else} {/if}</td>
                 <td>{$g->state|groupState|noescape}</td>
             </tr> 
         </table>
