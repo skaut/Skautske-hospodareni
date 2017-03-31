@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Repositories;
 
+use Kdyby\Doctrine\Connection;
 use Kdyby\Doctrine\EntityManager;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
@@ -35,6 +36,23 @@ class GroupRepository implements IGroupRepository
 
         return $group;
     }
+
+    public function findByUnits(array $unitIds, bool $openOnly): array
+    {
+        $qb = $this->em->createQueryBuilder()
+            ->select('g')
+            ->from(Group::class, 'g')
+            ->where('g.unitId IN (:unitIds)')
+            ->setParameter('unitIds', $unitIds, Connection::PARAM_INT_ARRAY);
+
+        if($openOnly) {
+            $qb->andWhere('g.state = :state')
+                ->setParameter('state', Group::STATE_OPEN);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
 
     public function save(Group $group): void
     {
