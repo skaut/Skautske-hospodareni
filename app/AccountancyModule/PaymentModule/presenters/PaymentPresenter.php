@@ -68,11 +68,15 @@ class PaymentPresenter extends BasePresenter
     {
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
-        foreach ($groups as $gid => $g) {
-            $groups[$gid]['sumarize'] = $this->model->summarizeByState($gid);
+
+        $summarizations = [];
+        foreach($groups as $group) {
+            $summarizations[$group->getId()] = $this->model->summarizeByState($group->getId());
         }
+
         $this->template->groups = $groups;
-        $this->template->payments = $this->model->getAll(array_keys($groups), TRUE);
+        $this->template->summarizations = $summarizations;
+        $this->template->payments = $this->model->getAll(array_keys($groups));
     }
 
     public function actionDetail($id): void
