@@ -11,14 +11,18 @@ class GroupFactory
     {
         return new Group(
             $group->getId(),
+            $group->getType(),
             $group->getUnitId(),
+            $group->getSkautisId(),
             $group->getName(),
             $group->getDefaultAmount(),
             $group->getDueDate(),
             $group->getConstantSymbol(),
             $group->getNextVariableSymbol(),
+            $group->getState(),
             $group->getEmailTemplate(),
-            $group->getSmtpId()
+            $group->getSmtpId(),
+            $group->getNote()
         );
     }
 

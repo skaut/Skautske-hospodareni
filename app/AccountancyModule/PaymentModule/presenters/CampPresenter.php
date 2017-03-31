@@ -22,19 +22,24 @@ class CampPresenter extends BasePresenter
         $this->campService = $this->context->getService("campService");
     }
 
-    public function actionMassAdd($id) : void
+    public function actionMassAdd(int $id) : void
     {
-        //ověření přístupu
-        $this->template->detail = $detail = $this->model->getGroup(array_keys($this->readUnits), $id);
-        if (!$detail) {
+        $group = $this->model->getGroup($id);
+
+        if($group === NULL || !in_array($group->getUnitId(), array_keys($this->readUnits), TRUE)) {
             $this->flashMessage("Neoprávněný přístup ke skupině.", "danger");
             $this->redirect("Payment:default");
         }
-        if ($detail->sisId === NULL) {
+
+        if ($group->getSkautisId() === NULL) {
             $this->flashMessage("Neplatné propojení skupiny plateb s táborem.", "warning");
             $this->redirect("Default:");
         }
-        $participants = $this->campService->participants->getAll($detail->sisId);
+
+        //ověření přístupu
+        $this->template->detail = $group;
+
+        $participants = $this->campService->participants->getAll($group->getSkautisId());
         $paymentPersonIds = array_flip(array_filter(array_map(function ($a) {
             return $a->personId;
         }, $this->model->getAll($id))));

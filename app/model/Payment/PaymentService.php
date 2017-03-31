@@ -163,16 +163,6 @@ class PaymentService
      */
 
     /**
-     * @param int|array(int) $unitId
-     * @param int $groupId
-     * @return Row
-     */
-    public function getGroup($unitId, $groupId)
-    {
-        return $this->table->getGroup($unitId, $groupId);
-    }
-
-    /**
      *
      * @param int|array(int) $unitId
      * @param boolean $onlyOpen
@@ -230,7 +220,7 @@ class PaymentService
         $this->groups->save($group);
     }
 
-    public function getGroupV2($id): ?DTO\Group
+    public function getGroup($id): ?DTO\Group
     {
         try {
             $group = $this->groups->find($id);
@@ -240,15 +230,18 @@ class PaymentService
         return NULL;
     }
 
-    /**
-     *
-     * @param int $groupId
-     * @param array $arr
-     * @param bool $openOnly
-     */
-    public function updateGroup($groupId, $arr, $openOnly = TRUE): void
+    public function openGroup(int $id, string $note): void
     {
-        $this->table->updateGroup($groupId, $arr, $openOnly);
+        $group = $this->groups->find($id);
+        $group->open($note);
+        $this->groups->save($group);
+    }
+
+    public function closeGroup(int $id, string $note): void
+    {
+        $group = $this->groups->find($id);
+        $group->close($note);
+        $this->groups->save($group);
     }
 
     /**
@@ -319,17 +312,6 @@ class PaymentService
      */
 
     /**
-     * [[ unused ]]
-     * detail registrace ze skautisu
-     * @param int $regId
-     * @return \stdClass
-     */
-    public function getRegistration($regId)
-    {
-        return $this->skautis->org->UnitRegistrationDetail(["ID" => $regId]);
-    }
-
-    /**
      * Returns newest registration without created group
      */
     public function getNewestRegistration(): array
@@ -350,30 +332,30 @@ class PaymentService
 
     /**
      * seznam osob z registrace
-     * @param int|array $units
+     * @param int[] $units
      * @param int $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
      * @return array(array())
      */
-    public function getPersonsFromRegistrationWithoutPayment($units, $groupId = NULL)
+    public function getPersonsFromRegistrationWithoutPayment(array $units, int $groupId)
     {
         $result = [];
 
-        $group = $this->getGroup($units, $groupId);
-        if (!$group) {
+        $group = $this->getGroup($groupId);
+
+        if ($group === NULL || !in_array($group->getUnitId(), $units, TRUE)) {
             throw new \InvalidArgumentException("Nebyla nalezena platební skupina");
         }
-        $persons = $this->getPersonFromRegistration($group->sisId, TRUE);
+        $persons = $this->getPersonFromRegistration($group->getSkautisId(), TRUE);
 
         if (is_array($persons)) {
             usort($persons, function ($a, $b) {
                 return strcmp($a->Person, $b->Person);
             });
-            if ($groupId !== NULL) {
-                $payments_personIds = $this->table->getActivePaymentIds($groupId);
-                $persons = array_filter($persons, function ($v) use ($payments_personIds) {
-                    return !in_array($v->ID_Person, $payments_personIds);
-                });
-            }
+
+            $payments_personIds = $this->table->getActivePaymentIds($groupId);
+            $persons = array_filter($persons, function ($v) use ($payments_personIds) {
+                return !in_array($v->ID_Person, $payments_personIds);
+            });
 
             foreach ($persons as $p) {
                 $result[$p->ID_Person] = (array)$p;

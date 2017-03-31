@@ -26,10 +26,10 @@
             </tr>
             <tr>
                 <td colspan="3"><b>Výchozí hodnoty</b> se uloží u záznamů, kde nebude hodnota vyplněna.</td>
-                <td class='col-xs-1'>{input defaultAmount, value=>$detail['amount'], class=>"form-control input-sm"}</td>
-                <td>{input defaultMaturity, value=>$detail['maturity'], class=>"form-control input-sm date"}</td>
+                <td class='col-xs-1'>{input defaultAmount, value=>$detail->defaultAmount, class=>"form-control input-sm"}</td>
+                <td>{input defaultMaturity, value=>$detail->dueDate !== NULL ? $detail->dueDate->format('d.m.Y') : NULL, class=>"form-control input-sm date"}</td>
                 <td class='col-xs-1'>&nbsp;</td>
-                <td class='col-xs-1'>{input defaultKs, value=>$detail['ks'], class=>"form-control input-sm"}</td>
+                <td class='col-xs-1'>{input defaultKs, value=>$detail->constantSymbol, class=>"form-control input-sm"}</td>
                 <td>{input defaultNote, class=>"form-control input-sm"}</td>
             </tr>
             {dump $list}

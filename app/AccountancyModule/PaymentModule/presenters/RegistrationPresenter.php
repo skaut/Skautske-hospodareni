@@ -18,7 +18,7 @@ class RegistrationPresenter extends BasePresenter
         $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
     }
 
-    public function actionMassAdd($id) : void
+    public function actionMassAdd(int $id) : void
     {
         //ověření přístupu
         try {
@@ -28,13 +28,14 @@ class RegistrationPresenter extends BasePresenter
             $this->redirect("Payment:default");
         }
 
-        $this->template->detail = $detail = $this->model->getGroup(array_keys($this->readUnits), $id);
+        $group = $this->model->getGroup($id);
 
-        if (!$detail) {
+        if($group === NULL) {
             $this->flashMessage("Neplatný požadavek na přidání registračních plateb", "danger");
             $this->redirect("Payment:default");
         }
 
+        $this->template->detail = $group;
 
         $form = $this['registrationForm'];
         $form['oid']->setDefaultValue($id);
