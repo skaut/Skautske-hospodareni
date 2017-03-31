@@ -94,7 +94,7 @@ class DefaultPresenter extends BasePresenter
         $items = $form[$index]->items;
         if (!in_array($defaults[$index], $items)) {
             try {
-                $vehicle = $this->travelService->getVehicle($defaults[$index]);
+                $vehicle = $this->travelService->getVehicle((int)$defaults[$index]);
                 $form[$index]->setItems([$vehicle->getId() => $vehicle->getLabel()] + $items);
             } catch (\Model\Travel\VehicleNotFoundException $exc) {
 

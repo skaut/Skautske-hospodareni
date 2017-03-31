@@ -23,7 +23,7 @@ class Vehicle extends Nette\Object
     private $consumption;
 
     /** @var string|NULL */
-    private $note;
+    private $note = '';
 
     /** @var bool */
     private $archived = FALSE;
