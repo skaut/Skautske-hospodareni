@@ -69,7 +69,7 @@ class VehiclePresenter extends BasePresenter
         } else {
             $this->flashMessage("Nelze smazat vozidlo s cestovními příkazy.", "warning");
         }
-        $this->redirect("this");
+        $this->redirect("default");
     }
 
     public function handleArchive(int $vehicleId) : void
