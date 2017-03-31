@@ -72,7 +72,7 @@ class VehiclePresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleArchive($vehicleId) : void
+    public function handleArchive(int $vehicleId) : void
     {
         // Check whether vehicle exists and belongs to unit
         $this->getVehicle($vehicleId);
