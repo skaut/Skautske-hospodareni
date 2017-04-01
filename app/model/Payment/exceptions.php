@@ -25,3 +25,7 @@ class UserNotFoundException extends \Exception
 class EmailNotSetException extends \Exception
 {
 }
+
+class PaymentNotFoundException extends \Exception
+{
+}

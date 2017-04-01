@@ -85,6 +85,12 @@ class Payment
         $this->closedAt = $time;
     }
 
+    public function markSent(): void
+	{
+		$this->checkNotClosed();
+		$this->state = State::get(State::SENT);
+	}
+
     /**
      * @throws \Exception
      */
@@ -103,12 +109,12 @@ class Payment
         return $this->id;
     }
 
-    /**
-     * @return Group
-     */
-    public function getGroup(): Group
+	/**
+	 * @return int
+	 */
+    public function getGroupId(): int
     {
-        return $this->group;
+        return $this->group->getId();
     }
 
     /**
@@ -171,5 +177,11 @@ class Payment
     {
         return $this->state;
     }
+
+    public function isFinished(): bool
+	{
+		$state = $this->state;
+		return $state->equalsValue(State::COMPLETED) || $state->equalsValue(State::CANCELED);
+	}
 
 }
