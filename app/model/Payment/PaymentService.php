@@ -6,8 +6,10 @@ use Dibi\Row;
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
+use Model\Payment\Payment;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
+use Model\Payment\Repositories\IPaymentRepository;
 use Skautis\Skautis;
 
 /**
@@ -25,6 +27,9 @@ class PaymentService
     /** @var IGroupRepository */
     private $groups;
 
+    /** @var IPaymentRepository */
+    private $payments;
+
     /** @var IBankAccountRepository */
     private $bankAccounts;
 
@@ -32,12 +37,14 @@ class PaymentService
         PaymentTable $table,
         Skautis $skautis,
         IGroupRepository $groups,
+        IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts
     )
     {
         $this->table = $table;
         $this->skautis = $skautis;
         $this->groups = $groups;
+        $this->payments = $payments;
         $this->bankAccounts = $bankAccounts;
     }
 
@@ -78,19 +85,13 @@ class PaymentService
      * @param string $note
      * @return bool
      */
-    public function createPayment($groupId, $name, $email, $amount, $maturity, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL): bool
+    public function createPayment(int $groupId, $name, $email, $amount, $dueDate, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL): void
     {
-        return $this->table->createPayment([
-            'groupId' => $groupId,
-            'name' => $name,
-            'email' => $email,
-            'personId' => $personId,
-            'amount' => $amount != "" ? $amount : NULL,
-            'maturity' => $maturity,
-            'vs' => $vs != "" ? $vs : NULL,
-            'ks' => $ks != "" ? $ks : NULL,
-            'note' => $note,
-        ]);
+        $group = $this->groups->find($groupId);
+
+        $payment = new Payment($group, $name, $email, $amount, $dueDate, $vs, $ks, $personId, $note);
+
+        $this->payments->save($payment);
     }
 
     /**

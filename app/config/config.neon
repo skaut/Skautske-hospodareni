@@ -110,6 +110,7 @@ services:
     - Model\Travel\Repositories\VehicleRepository
     - Model\Payment\Repositories\BankAccountRepository
     - Model\Payment\Repositories\GroupRepository
+    - Model\Payment\Repositories\PaymentRepository
     - Model\Payment\Repositories\UserRepository
 
     # Factories
