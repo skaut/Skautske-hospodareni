@@ -6,6 +6,10 @@
 #
 parameters:
 	ssl: on
+
+	annotations:
+	    enum: Consistence\Doctrine\Enum\EnumAnnotation
+
 php:
     date.timezone: Europe/Prague
     # zlib.output_compression: yes
@@ -41,6 +45,7 @@ doctrine:
         Model: yaml(%appDir%/model/Infrastructure/mapping/Model)
     types:
         datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
+        string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
 
 dibi:
     driver: mysqli
@@ -126,6 +131,20 @@ services:
     - Model\Services\PdfRenderer
     - Model\Payment\QR\QRGenerator
     - Model\Skautis\Mapper
+
+
+    # TODO opensource as separate package
+    yamlReader:
+        class: Model\Infrastructure\YamlReader
+        autowired: false
+
+    - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@yamlReader)
+
+    - class: Model\Infrastructure\EnumListener
+      tags: [kdyby.subscriber]
+
+    - class: Model\Infrastructure\NullableEmbeddables\Listener
+      tags: [kdyby.subscriber]
 
     nette.mailer:
         class: Nette\Mail\IMailer
