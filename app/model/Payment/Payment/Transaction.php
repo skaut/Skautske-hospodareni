@@ -2,8 +2,16 @@
 
 namespace Model\Payment\Payment;
 
+use Nette\SmartObject;
+
+/**
+ * @property-read int $id
+ * @property-read string $bankAccount
+ */
 class Transaction
 {
+
+	use SmartObject;
 
     /** @var int */
     private $id;

@@ -3,9 +3,31 @@
 namespace Model\DTO\Payment;
 
 use DateTimeImmutable;
+use Model\Payment\Payment\State;
+use Model\Payment\Payment\Transaction;
+use Nette\SmartObject;
 
+/**
+ * @property-read int $id
+ * @property-read string $name
+ * @property-read float $amount
+ * @property-read string|NULL $email
+ * @property-read DateTimeImmutable $dueDate
+ * @property-read int|NULL $variableSymbol
+ * @property-read int|NULL $constantSymbol
+ * @property-read string $note
+ * @property-read bool $finished
+ * @property-read State $state
+ * @property-read Transaction $transaction
+ * @property-read DateTimeImmutable|NULL $closedAt
+ */
 class Payment
 {
+
+	use SmartObject;
+
+	/** @var int */
+	private $id;
 
     /** @var string */
     private $name;
@@ -28,26 +50,34 @@ class Payment
     /** @var string */
     private $note;
 
-    /**
-     * Payment constructor.
-     * @param string $name
-     * @param float $amount
-     * @param string|NULL $email
-     * @param DateTimeImmutable $dueDate
-     * @param int|NULL $variableSymbol
-     * @param int|NULL $constantSymbol
-     * @param string $note
-     */
+    /** @var bool */
+    private $finished;
+
+    /** @var State */
+    private $state;
+
+    /** @var Transaction|NULL */
+    private $transaction;
+
+    /** @var DateTimeImmutable|NULL */
+    private $closedAt;
+
     public function __construct(
+    	int $id,
         string $name,
         float $amount,
         ?string $email,
         DateTimeImmutable $dueDate,
         ?int $variableSymbol,
         ?int $constantSymbol,
-        string $note
+        string $note,
+		bool $finished,
+		State $state,
+		?Transaction $transaction,
+		?DateTimeImmutable $closedAt
     )
     {
+    	$this->id = $id;
         $this->name = $name;
         $this->amount = $amount;
         $this->email = $email;
@@ -55,7 +85,16 @@ class Payment
         $this->variableSymbol = $variableSymbol;
         $this->constantSymbol = $constantSymbol;
         $this->note = $note;
+        $this->finished = $finished;
+        $this->state = $state;
+        $this->transaction = $transaction;
+        $this->closedAt = $closedAt;
     }
+
+	public function getId(): int
+	{
+		return $this->id;
+	}
 
     /**
      * @return string
@@ -112,5 +151,25 @@ class Payment
     {
         return $this->note;
     }
+
+	public function isFinished(): bool
+	{
+		return $this->finished;
+	}
+
+	public function getState(): State
+	{
+		return $this->state;
+	}
+
+	public function getTransaction(): ?Transaction
+	{
+		return $this->transaction;
+	}
+
+	public function getClosedAt(): ?DateTimeImmutable
+	{
+		return $this->closedAt;
+	}
 
 }

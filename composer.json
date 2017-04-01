@@ -33,7 +33,8 @@
         "consistence/consistence": "^0.22.0",
         "kdyby/doctrine": "^3.1",
         "consistence/consistence-doctrine": "^0.6.0",
-        "vasek-purchart/doctrine-date-time-immutable-types": "^0.4.0"
+        "vasek-purchart/doctrine-date-time-immutable-types": "^0.4.0",
+        "beberlei/DoctrineExtensions": "^1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

@@ -3,6 +3,7 @@
 namespace App\AccountancyModule;
 
 use DateTimeInterface;
+use Model\Payment\Payment\State;
 use Nette\Object;
 
 /**
@@ -73,8 +74,18 @@ abstract class AccountancyHelpers extends Object
         return '<span class="label label-success" title="Uzavřeno dne: ' . $s->format("j.n.Y H:i:s") . '">Uzavřený</span>';
     }
 
-    public static function paymentStateLabel($s) : string
+    public static function paymentStateLabel($s): string
     {
+        if ($s instanceof State) {
+            $labels = [
+                State::PREPARING => 'Připravena',
+                State::COMPLETED => 'Dokončena',
+                State::SENT => 'Odeslána',
+                State::CANCELED => 'Zrušena',
+            ];
+
+            $s = $labels[$s->getValue()] ?? $s->getValue();
+        }
         $long = $s;
         $short = mb_substr($s, 0, 5) . ".";
         return "<span class='hidden-xs hidden-sm'>$long</span><span class='hidden-md hidden-lg'>$short</span>";
@@ -86,7 +97,7 @@ abstract class AccountancyHelpers extends Object
      * http://prirucka.ujc.cas.cz/?id=786
      * @return string
      */
-    public static function price($price, $full = TRUE) : string
+    public static function price($price, $full = TRUE): string
     {
         if ($price === NULL || $price === '') {
             return ' '; //je tam nedělitelná mezera
@@ -101,12 +112,12 @@ abstract class AccountancyHelpers extends Object
      * @param int|float $num
      * @return string
      */
-    public static function num($num) : string
+    public static function num($num): string
     {
         return number_format($num, strpos($num, '.') ? 2 : 0, ",", " ");
     }
 
-    public static function postCode($oldPsc) : string
+    public static function postCode($oldPsc): string
     {
         $psc = preg_replace("[^0-9]", "", $oldPsc);
         if (strlen($psc) == 5) {
@@ -120,7 +131,7 @@ abstract class AccountancyHelpers extends Object
      * @param int $price
      * @return string
      */
-    public static function priceToString($price) : string
+    public static function priceToString($price): string
     {
         //@todo ošetření správného tvaru
 
@@ -186,12 +197,12 @@ abstract class AccountancyHelpers extends Object
         return mb_strtoupper(mb_substr($string, 0, 1, "UTF-8"), "UTF-8") . mb_substr($string, 1, NULL, "UTF-8");
     }
 
-    public static function yesno($s) : string
+    public static function yesno($s): string
     {
         return $s == 1 ? "Ano" : "Ne";
     }
 
-    public static function groupState($s) : string
+    public static function groupState($s): string
     {
         switch ($s) {
             case 'open':

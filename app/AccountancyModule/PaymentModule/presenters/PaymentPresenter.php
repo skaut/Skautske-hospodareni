@@ -107,8 +107,9 @@ class PaymentPresenter extends BasePresenter
             'vs' => $nextVS !== NULL ? (string)$nextVS : "",
         ]);
 
-        $this->template->payments = $payments = $this->model->getAll($id);
+        $this->template->payments = $payments = $this->model->findByGroup($id);
         $this->template->summarize = $this->model->summarizeByState($id);
+        $this->template->now = new \DateTimeImmutable();
         $paymentsForSendEmail = array_filter($payments, function($p) {
 			return strlen($p->email) > 4 && $p->state == "preparing";
 		});

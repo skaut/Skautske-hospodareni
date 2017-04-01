@@ -39,7 +39,7 @@ class Payment
     /** @var string */
     private $note = '';
 
-    /** @var Transaction */
+    /** @var Transaction|NULL */
     private $transaction;
 
     /** @var DateTimeImmutable|NULL */
@@ -163,7 +163,7 @@ class Payment
         return $this->note;
     }
 
-    public function getTransaction(): Transaction
+    public function getTransaction(): ?Transaction
     {
         return $this->transaction;
     }

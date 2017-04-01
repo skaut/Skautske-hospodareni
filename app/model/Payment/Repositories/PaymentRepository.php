@@ -2,8 +2,10 @@
 
 namespace Model\Payment\Repositories;
 
+use Doctrine\DBAL\Connection;
 use Kdyby\Doctrine\EntityManager;
 use Model\Payment\Payment;
+use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
 
 class PaymentRepository implements IPaymentRepository
@@ -11,6 +13,13 @@ class PaymentRepository implements IPaymentRepository
 
     /** @var EntityManager */
     private $em;
+
+    private const STATE_ORDER = [
+    	State::PREPARING,
+		State::SENT,
+		State::COMPLETED,
+		State::CANCELED,
+	];
 
     public function __construct(EntityManager $em)
     {
@@ -35,9 +44,10 @@ class PaymentRepository implements IPaymentRepository
             ->from(Payment::class, 'p')
             ->join('p.group', 'g')
             ->where('g.id = :groupId')
+			->orderBy('FIELD (g.state, :states)')
             ->setParameter('groupId', $groupId)
-            ->getQuery()
-            ->getResult();
+			->setParameter('states', self::STATE_ORDER, Connection::PARAM_STR_ARRAY)
+			->getQuery()->getResult();
     }
 
     public function save(Payment $payment): void
