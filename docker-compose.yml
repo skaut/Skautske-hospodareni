@@ -25,6 +25,8 @@ services:
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
             MYSQL_DATABASE: hskauting
+        ports:
+            - 3306:3306
         networks:
             main:
                 aliases:
