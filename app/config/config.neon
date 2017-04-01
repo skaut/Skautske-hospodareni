@@ -136,7 +136,8 @@ services:
 
     # TODO opensource as separate package
     yamlReader:
-        class: Model\Infrastructure\YamlReader
+        class: Model\Infrastructure\YamlReader()
+        arguments: { aliases: %annotations% }
         autowired: false
 
     - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@yamlReader)

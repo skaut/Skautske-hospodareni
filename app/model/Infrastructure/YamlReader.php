@@ -30,6 +30,7 @@ class YamlReader implements Reader
     public function __construct(EntityManager $em, array $aliases = [])
     {
         $this->configuration = $em->getConfiguration();
+        $this->aliases = $aliases;
     }
 
     /**
@@ -115,7 +116,6 @@ class YamlReader implements Reader
     {
         $class = $property->getDeclaringClass()->getName();
         $this->loadClass($class);
-
         return $this->propertyAnnotations[$class.'::'.$property->getName()][$annotationName] ?? NULL;
     }
 
