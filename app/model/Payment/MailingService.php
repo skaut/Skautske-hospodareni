@@ -113,13 +113,16 @@ class MailingService
         }
 
         $payment = new PaymentDTO(
+            1,
             'Testovací účel',
             $group->getDefaultAmount() ?? rand(50, 1000),
             $user->getEmail(),
             $group->getDueDate() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
             $group->getConstantSymbol(),
-            'obsah poznámky'
+            'obsah poznámky',
+            FALSE,
+            State::get(State::PREPARING)
         );
 
         $this->send($group, $payment, $bankAccount, $user);

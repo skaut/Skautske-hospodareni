@@ -46,7 +46,9 @@ doctrine:
     types:
         datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
-
+    dql:
+        string:
+            field: DoctrineExtensions\Query\Mysql\Field
 dibi:
     driver: mysqli
     host: %database.host%
