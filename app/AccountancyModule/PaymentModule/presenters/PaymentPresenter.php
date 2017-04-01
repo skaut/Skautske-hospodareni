@@ -518,11 +518,18 @@ class PaymentPresenter extends BasePresenter
                 $this->flashMessage("Platbu se nepodařilo založit", "danger");
             }
         } else {//ADD
-            if ($this->model->createPayment($v->oid, $v->name, $v->email, $v->amount, $v->maturity, NULL, $v->vs, $v->ks, $v->note)) {
-                $this->flashMessage("Platba byla přidána");
-            } else {
-                $this->flashMessage("Platbu se nepodařilo založit", "danger");
-            }
+            $this->model->createPayment(
+                (int)$v->oid,
+                $v->name,
+                $v->email,
+                (float)$v->amount,
+                \DateTimeImmutable::createFromMutable($v->maturity),
+                NULL,
+                (int)$v->vs,
+                $v->ks !== NULL ? (int)$v->ks : NULL,
+                (string)$v->note
+            );
+            $this->flashMessage("Platba byla přidána");
         }
         $this->redirect("detail", ["id" => $v->oid]);
     }
