@@ -3,18 +3,18 @@
 namespace Model\Payment;
 
 use DateTimeImmutable;
-use Dibi\Row;
-use Model\DTO\Payment\Payment;
+use Model\DTO\Payment\Payment as PaymentDTO;
+use Model\DTO\Payment\PaymentFactory;
 use Model\Mail\IMailerFactory;
 use Model\MailTable;
+use Model\Payment\Payment\State;
 use Model\Payment\QR\IQRGenerator;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
+use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Repositories\IUserRepository;
-use Model\PaymentTable;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
-use Nette\Utils\Image;
 use Nette\Utils\Strings;
 use Nette\Utils\Validators;
 
@@ -27,7 +27,7 @@ class MailingService
     /** @var IMailerFactory */
     private $mailerFactory;
 
-    /** @var PaymentTable */
+    /** @var IPaymentRepository */
     private $payments;
 
     /** @var IBankAccountRepository */
@@ -48,7 +48,7 @@ class MailingService
     public function __construct(
         IGroupRepository $groups,
         IMailerFactory $mailerFactory,
-        PaymentTable $payments,
+		IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts,
         TemplateFactory $templateFactory,
         IUserRepository $users,
@@ -68,8 +68,8 @@ class MailingService
 
     public function sendEmail(int $paymentId, int $userId): void
     {
-        $payment = $this->payments->getSimple($paymentId);
-        $group = $this->groups->find($payment->groupId);
+        $payment = $this->payments->find($paymentId);
+        $group = $this->groups->find($payment->getGroupId());
         $bankAccount = $this->getBankAccount($group->getUnitId());
         $user = $this->users->find($userId);
 
@@ -81,7 +81,7 @@ class MailingService
         $group = $this->groups->find($groupId);
         $bankAccount = $this->getBankAccount($group->getUnitId());
 
-        $payments = $this->payments->getAllPayments($groupId);
+        $payments = $this->payments->findByGroup($groupId);
         $user = $this->users->find($userId);
 
         $sent = 0;
@@ -112,7 +112,7 @@ class MailingService
             throw new EmailNotSetException();
         }
 
-        $payment = new Payment(
+        $payment = new PaymentDTO(
             'Testovací účel',
             $group->getDefaultAmount() ?? rand(50, 1000),
             $user->getEmail(),
@@ -138,32 +138,22 @@ class MailingService
         return NULL;
     }
 
-    private function sendForPayment(Row $paymentRow, Group $group, ?string $bankAccount, User $user) : void
+    private function sendForPayment(Payment $paymentRow, Group $group, ?string $bankAccount, User $user) : void
     {
-        $state = $paymentRow->state;
-
-        if(!in_array($state, $this->payments->getNonFinalStates())) {
+        if($paymentRow->isFinished()) {
             throw new PaymentFinishedException();
         }
 
-        $payment = new Payment(
-            $paymentRow->name,
-            $paymentRow->amount,
-            $paymentRow->email,
-            DateTimeImmutable::createFromMutable($paymentRow->maturity),
-            $paymentRow->vs ? (int) $paymentRow->vs : NULL,
-            $paymentRow->ks ? (int)$paymentRow->ks : NULL,
-            (string)$paymentRow->note
-        );
-        $this->send($group, $payment, $bankAccount, $user);
+        $this->send($group, PaymentFactory::create($paymentRow), $bankAccount, $user);
 
-        if ($state != PaymentTable::PAYMENT_STATE_SEND) {
-            $this->payments->update($paymentRow->id, ['state' => PaymentTable::PAYMENT_STATE_SEND]);
-        }
+        if($paymentRow->getState()->equalsValue(State::SENT)) {
+        	return;
+		}
 
+		$paymentRow->markSent();
     }
 
-    private function send(Group $group, Payment $payment, ?string $bankAccount, User $user) : void
+    private function send(Group $group, PaymentDTO $payment, ?string $bankAccount, User $user) : void
     {
         $email = $payment->getEmail();
         if ($email === NULL || !Validators::isEmail($email)) {

@@ -53,6 +53,11 @@ class PaymentService
         return $this->table->get($unitId, $paymentId);
     }
 
+    public function findByGroup(int $groupId): array
+	{
+
+	}
+
     /**
      *
      * @param int|array $pa_groupIds
