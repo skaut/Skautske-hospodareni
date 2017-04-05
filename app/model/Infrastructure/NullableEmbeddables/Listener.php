@@ -2,6 +2,7 @@
 
 namespace Model\Infrastructure\NullableEmbeddables;
 
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Kdyby\Events\Subscriber;
@@ -19,23 +20,21 @@ class Listener implements Subscriber
     /** @var string[] */
     private $embeddablesTree = [];
 
-    private $embeddables = [
-        Payment::class => [
-            'transaction' => Payment\Transaction::class,
-        ],
-    ];
-
     /** @var ReflectionClass[] */
     private $reflections = [];
+
+    /** @var Reader */
+    private $reader;
 
     public function getSubscribedEvents()
     {
         return ['postLoad'];
     }
 
-    public function __construct(ObjectManager $manager)
+    public function __construct(ObjectManager $manager, Reader $reader)
     {
         $this->manager = $manager;
+        $this->reader = $reader;
     }
 
     private function getNullableEmbeddables(ClassMetadata $metadata, $prefix = NULL)
@@ -53,7 +52,12 @@ class Listener implements Subscriber
                     )
                 );
 
-                if (isset($this->embeddables[$metadata->getName()][$field])) {
+                $annotation = $this->reader->getPropertyAnnotation(
+                    $metadata->getReflectionProperty($field),
+                    NullableAnnotation::class
+                    );
+
+                if ($annotation !== NULL) {
                     $nullables[] = $prefixedField;
                 }
             }
