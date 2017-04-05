@@ -7,9 +7,6 @@
 parameters:
 	ssl: on
 
-	annotations:
-	    enum: Consistence\Doctrine\Enum\EnumAnnotation
-
 php:
     date.timezone: Europe/Prague
     # zlib.output_compression: yes
@@ -57,6 +54,11 @@ dibi:
     database: %database.name%
     charset: utf8
 
+annotations:
+    aliases:
+        enum: Consistence\Doctrine\Enum\EnumAnnotation
+
+
 extensions:
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
@@ -65,9 +67,9 @@ extensions:
     migrations: Zenify\DoctrineMigrations\DI\MigrationsExtension
     console: Kdyby\Console\DI\ConsoleExtension
     events: Kdyby\Events\DI\EventsExtension
-    annotations: Kdyby\Annotations\DI\AnnotationsExtension
+    - Kdyby\Annotations\DI\AnnotationsExtension
     doctrine: Kdyby\Doctrine\DI\OrmExtension
-
+    annotations: Model\Infrastructure\YamlAnnotationsExtension
 
 services:
 
@@ -135,17 +137,9 @@ services:
     - Model\Payment\QR\QRGenerator
     - Model\Skautis\Mapper
 
-
-    yamlReader:
-        class: Fmasa\DoctrineYamlAnnotations\YamlReader
-        arguments: { aliases: %annotations% }
-        autowired: false
-
-    - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@yamlReader)
-
+    - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@annotations.reader)
     - class: Model\Infrastructure\EnumListener
       tags: [kdyby.subscriber]
-
     - class: Model\Infrastructure\NullableEmbeddables\Listener
       tags: [kdyby.subscriber]
 
