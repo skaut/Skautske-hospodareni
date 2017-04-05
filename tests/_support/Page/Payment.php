@@ -34,7 +34,7 @@ class Payment
 
 		$date = (new \DateTime())->modify("+ $daysToNextWorkday days")->format('j');
 
-        $button = "(//td[text()='$date'])[last()]"; // Tlačítko v datepickeru
+        $button = "(//td[text()='$date' and not(contains(@class, 'disabled'))])[last()]"; // Tlačítko v datepickeru
         $I->waitForElementVisible($button);
         $I->click($button);
         $I->waitForElementNotVisible($button);
