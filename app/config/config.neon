@@ -136,9 +136,8 @@ services:
     - Model\Skautis\Mapper
 
 
-    # TODO opensource as separate package
     yamlReader:
-        class: Model\Infrastructure\YamlReader()
+        class: Fmasa\DoctrineYamlAnnotations\YamlReader
         arguments: { aliases: %annotations% }
         autowired: false
 
