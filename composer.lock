@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "660c0301fbba0fc021001924c0445889",
+    "content-hash": "f9b150c2761d4eb9d11714ef5c5e59f4",
     "packages": [
         {
             "name": "arachne/container-adapter",
@@ -1023,6 +1023,49 @@
                 "orm"
             ],
             "time": "2016-12-18T15:42:34+00:00"
+        },
+        {
+            "name": "fmasa/doctrine-yaml-annotations",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fmasa/doctrine-yaml-annotations.git",
+                "reference": "701a2539e9dbec0fdd26b97d9091ccf6a2689b65"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fmasa/doctrine-yaml-annotations/zipball/701a2539e9dbec0fdd26b97d9091ccf6a2689b65",
+                "reference": "701a2539e9dbec0fdd26b97d9091ccf6a2689b65",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "^2.5",
+                "php": "^7.0",
+                "symfony/yaml": "^3.2"
+            },
+            "require-dev": {
+                "phpunit/phpcov": "^4.0",
+                "phpunit/phpunit": "^6.0",
+                "satooshi/php-coveralls": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fmasa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "František Maša",
+                    "email": "frantisekmasa1@gmail.com"
+                }
+            ],
+            "description": "Custom annotations for YAML mapping",
+            "time": "2017-04-02T12:44:40+00:00"
         },
         {
             "name": "foowie/dependentselectbox",
