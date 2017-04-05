@@ -8,6 +8,7 @@ use Model\Mail\MailerNotFoundException;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\MailingService;
+use Model\Payment\PaymentNotFoundException;
 use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\UI\Form;
@@ -293,7 +294,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("Payment:detail", ["id" => $values->oid]);
     }
 
-    public function handleCancel($pid): void
+    public function handleCancel(int $pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "danger");
@@ -303,10 +304,11 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Platba pro zrušení nebyla nalezena!", "danger");
             $this->redirect("this");
         }
-        if ($this->model->cancelPayment($pid)) {
-            $this->flashMessage("Platba byla zrušena.");
-        } else {
-            $this->flashMessage("Platbu se nepodařilo zrušit!", "danger");
+
+        try {
+            $this->model->cancelPayment($pid);
+        } catch (PaymentNotFoundException $e) {
+            $this->flashMessage("Platba nenalezena!", "danger");
         }
         $this->redirect("this");
     }

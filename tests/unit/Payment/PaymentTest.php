@@ -48,4 +48,32 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertSame(29, $payment->getGroupId());
     }
 
+    public function testCancel()
+    {
+        $time = new DateTimeImmutable();
+        $payment = $this->createPayment();
+        $payment->cancel($time);
+        $this->assertSame(State::get(State::CANCELED), $payment->getState());
+        $this->assertSame($time, $payment->getClosedAt());
+    }
+
+    private function createPayment(): Payment
+    {
+        $group = m::mock(Group::class);
+        $group->shouldReceive("getId")->andReturn(29);
+
+        return new Payment(
+            $group,
+            "Jan novák",
+            "test@gmail.com",
+            500,
+            new DateTimeImmutable(),
+            454545,
+            666,
+            454,
+            "Some note"
+        );
+
+    }
+
 }
