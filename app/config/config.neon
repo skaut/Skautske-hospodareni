@@ -57,6 +57,7 @@ dibi:
 annotations:
     aliases:
         enum: Consistence\Doctrine\Enum\EnumAnnotation
+        nullable: Model\Infrastructure\NullableEmbeddables\NullableAnnotation
 
 
 extensions:
@@ -141,6 +142,7 @@ services:
     - class: Model\Infrastructure\EnumListener
       tags: [kdyby.subscriber]
     - class: Model\Infrastructure\NullableEmbeddables\Listener
+      arguments: { reader: @annotations.reader }
       tags: [kdyby.subscriber]
 
     nette.mailer:

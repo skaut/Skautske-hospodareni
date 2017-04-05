@@ -42,6 +42,8 @@ Model\Payment\Payment:
         transaction:
             class: Model\Payment\Payment\Transaction
             columnPrefix: false
+            annotations:
+                nullable: {}
 
     manyToOne:
         group:
