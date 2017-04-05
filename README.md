@@ -41,8 +41,7 @@ Stačí přidat tento řádek do souboru `/etc/hosts`:
 ```
 
 ### Databáze
-Při prvním spuštění je třeba vytvořit schéma . Pro práci s databází lze využít přibalený adminer
-na adrese `http://hospodareni.loc/adminer.php`. Při používání Dockeru se lze přihlásit
+Při prvním spuštění je třeba vytvořit schéma . Při používání Dockeru se lze přihlásit
 jako uživatel **root** bez hesla.
 
 Změny v databázi jsou verzované, stačí tedy spustit příkaz:
