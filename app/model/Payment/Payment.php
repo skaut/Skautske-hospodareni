@@ -91,14 +91,11 @@ class Payment
 		$this->state = State::get(State::SENT);
 	}
 
-    /**
-     * @throws \Exception
-     */
-    private function checkNotClosed(): void
+	public function cancel(DateTimeImmutable $time)
     {
-        if ($this->closedAt !== NULL) {
-            throw new \Exception("Already closed!"); // todo: replace with custom exception
-        }
+        $this->checkNotClosed();
+        $this->state = State::get(State::CANCELED);
+        $this->closedAt = $time;
     }
 
     /**
@@ -183,5 +180,15 @@ class Payment
 		$state = $this->state;
 		return $state->equalsValue(State::COMPLETED) || $state->equalsValue(State::CANCELED);
 	}
+
+    /**
+     * @throws \Exception
+     */
+    private function checkNotClosed(): void
+    {
+        if ($this->closedAt !== NULL) {
+            throw new \Exception("Already closed!"); // todo: replace with custom exception
+        }
+    }
 
 }

@@ -116,13 +116,12 @@ class PaymentService
         return $this->table->update($pid, $arr);
     }
 
-    /**
-     * @param int $pid
-     * @return bool
-     */
-    public function cancelPayment($pid): bool
+    public function cancelPayment(int $pid): void
     {
-        return $this->update($pid, ["state" => "canceled", "dateClosed" => date("Y-m-d H:i:s")]);
+        $payment = $this->payments->find($pid);
+        $payment->cancel(new \DateTimeImmutable());
+
+        $this->payments->save($payment);
     }
 
     /**
