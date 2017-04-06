@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\PaymentModule\Components\MassAddForm;
+use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\BankService;
 use Model\DTO\Payment\Group;
 use Model\Mail\MailerNotFoundException;
@@ -40,6 +42,9 @@ class PaymentPresenter extends BasePresenter
     /** @var MailingService */
     private $mailing;
 
+    /** @var IMassAddFormFactory */
+    private $massAddFormFactory;
+
     private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
@@ -47,13 +52,15 @@ class PaymentPresenter extends BasePresenter
         PaymentService $paymentService,
         BankService $bankService,
         UnitService $unitService,
-        MailingService $mailing
+        MailingService $mailing,
+        IMassAddFormFactory $massAddFormFactory
     )
     {
         parent::__construct($paymentService);
         $this->bank = $bankService;
         $this->unitService = $unitService;
         $this->mailing = $mailing;
+        $this->massAddFormFactory = $massAddFormFactory;
     }
 
     protected function startup(): void
@@ -149,24 +156,24 @@ class PaymentPresenter extends BasePresenter
 
         $group = $this->model->getGroup($id);
 
-        if($group === NULL || !$this->hasAccessToGroup($group)) {
+        $this->id = $id;
+
+        if($group === NULL || !$this->hasAccessToGroup($group) || !$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na přehled osob", "danger");
             $this->redirect("Payment:detail", ["id" => $id]); // redirect elsewhere?
         }
 
-        $this->template->detail = $group;
-        $this->template->list = $list = $this->model->getPersons($this->aid, $id); //@todo:?nahradit aid za array_keys($this->editUnits) ??
-
+        $list = $this->model->getPersons($this->aid, $id); //@todo:?nahradit aid za array_keys($this->editUnits) ??
 
         $form = $this['massAddForm'];
-        $form['oid']->setDefaultValue($id);
+        /* @var $form MassAddForm */
 
         foreach ($list as $p) {
-            $form->addSelect($p['ID'] . '_email', NULL, $p['emails'])
-                ->setPrompt("")
-                ->setDefaultValue(key($p['emails']))
-                ->setAttribute('class', 'form-control');
+            $form->addPerson($p["ID"], $p["emails"], $p["DisplayName"]);
         }
+
+        $this->template->id = $this->id;
+        $this->template->showForm = !empty($list);
     }
 
     public function actionRepayment(int $id): void
@@ -217,81 +224,6 @@ class PaymentPresenter extends BasePresenter
 
         $this->template->participants = $participantsWithRepayment;
         $this->template->payments = $payments;
-    }
-
-    public function createComponentMassAddForm($name): Form
-    {
-        $form = $this->prepareForm($this, $name);
-        $form->addHidden("oid");
-        $form->addText("defaultAmount", "Částka:")
-            ->setAttribute('class', 'form-control input-sm');
-        $form->addDatePicker('defaultMaturity', "Splatnost:")
-        ->setAttribute('class', 'form-control input-sm');
-        $form->addText("defaultKs", "KS:")
-            ->setMaxLength(4);
-        $form->addText("defaultNote", "Poznámka:")
-            ->setAttribute('class', 'form-control input-sm');
-        $form->addSubmit('send', 'Přidat vybrané')
-            ->setAttribute("class", "btn btn-primary btn-large");
-
-        $form->onSubmit[] = function (Form $form): void {
-            $this->massAddFormSubmitted($form);
-        };
-
-        return $form;
-    }
-
-    private function massAddFormSubmitted(Form $form): void
-    {
-        $values = $form->getValues();
-        $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
-        $vals = $form->getHttpData()['vals'];
-
-        if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "danger");
-            $this->redirect("Payment:detail", ["id" => $values->oid]);
-        }
-        //$list = $this->model->getPersons($this->aid, $values->oid);
-
-        if (empty($checkboxs)) {
-            $form->addError("Nebyla vybrána žádná osoba k přidání!");
-            return;
-        }
-
-        foreach ($checkboxs as $pid) {
-            $pid = substr($pid, 2);
-            $tmpAmount = $vals[$pid]['amount'];
-            $tmpMaturity = $vals[$pid]['maturity'];
-            $tmpKS = $vals[$pid]['ks'];
-            $tmpNote = $vals[$pid]['note'];
-
-            $name = $this->noEmpty($vals[$pid]['name']);
-            $amount = $tmpAmount == "" ? $this->noEmpty($values['defaultAmount']) : $tmpAmount;
-            if ($amount === NULL) {
-                $form->addError("Musí být vyplněna částka."); //[$uid . '_' . $p['ID'] . '_amount']
-                return;
-            }
-
-            if ($tmpMaturity != "") {
-                $maturity = date("Y-m-d", strtotime($tmpMaturity));
-            } else {
-                if ($values['defaultMaturity'] instanceof \DateTime) {
-                    $maturity = date("Y-m-d", strtotime($values['defaultMaturity']));
-                } else {
-                    $form->addError("Musí být vyplněná splatnost."); //[$uid . '_' . $p['ID'] . '_amount']
-                    return;
-                }
-            }
-            $email = $this->noEmpty($vals[$pid]['email']);
-            $vs = $this->noEmpty($vals[$pid]['vs']);
-            $ks = $tmpKS == "" ? $this->noEmpty($values['defaultKs']) : $tmpKS;
-            $note = $tmpNote == "" ? $this->noEmpty($values['defaultNote']) : $tmpNote;
-
-            $this->model->createPayment($values->oid, $name, $email, $amount, $maturity, $pid, $vs, $ks, $note);
-        }
-
-        $this->flashMessage("Platby byly přidány");
-        $this->redirect("Payment:detail", ["id" => $values->oid]);
     }
 
     public function handleCancel(int $pid): void
@@ -629,6 +561,11 @@ class PaymentPresenter extends BasePresenter
         };
         $this->redrawControl('pairForm');
         return $form;
+    }
+
+    protected function createComponentMassAddForm(): MassAddForm
+    {
+        return $this->massAddFormFactory->create($this->id);
     }
 
     /**

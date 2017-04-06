@@ -85,20 +85,7 @@ class PaymentService
         return $result;
     }
 
-    /**
-     *
-     * @param int $groupId
-     * @param string $name
-     * @param string $email
-     * @param float $amount
-     * @param string $maturity
-     * @param int $personId
-     * @param int $vs
-     * @param int $ks
-     * @param string $note
-     * @return bool
-     */
-    public function createPayment(int $groupId, $name, $email, $amount, $dueDate, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL): void
+    public function createPayment(int $groupId, string $name, ?string $email, float $amount, \DateTimeImmutable $dueDate, ?int $personId, ?int $vs, ?int $ks, string $note): void
     {
         $group = $this->groups->find($groupId);
 

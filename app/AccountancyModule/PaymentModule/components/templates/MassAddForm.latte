@@ -1,0 +1,37 @@
+{form form}
+    <ul class="errors" n:if="$form->hasErrors()">
+        <li n:foreach="$form->errors as $error">{$error}</li>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed">
+        <tr>
+            <th><input type="checkbox" id='reg-all-p' onclick="jqCheckAll2(this, 'dependent-checkbox')"/></th>
+            <th>Jméno</th>
+            <th>Email</th>
+            <th>Částka</th>
+            <th>Splatnost</th>
+            <th>VS</th>
+            <th>KS</th>
+            <th>Poznámka</th>
+        </tr>
+        <tr>
+            <td colspan="3"><b>Výchozí hodnoty</b> se uloží u záznamů, kde nebude hodnota vyplněna.</td>
+            <td>{input amount, class=>"input-sm form-control"}</td>
+            <td>{input dueDate, class=>"input-sm form-control date"}</td>
+            <td></td>
+            <td>{input constantSymbol, class=>"input-sm form-control"}</td>
+            <td>{input note, class=>"input-sm form-control"}</td>
+        </tr>
+        <tr n:foreach="$form['persons']->getComponents() as $container">
+            <td class="dependent-checkbox">{input $container["selected"]}</td>
+            <td>{input $container["name"], class=>"input-sm form-control"}</td>
+            <td>{input $container["email"], class=>"input-sm form-control"}</td>
+            <td>{input $container["amount"], class=>"input-sm form-control"}</td>
+            <td>{input $container["dueDate"], class=>"input-sm form-control date"}</td>
+            <td>{input $container["variableSymbol"], class=>"input-sm form-control"}</td>
+            <td>{input $container["constantSymbol"], class=>"input-sm form-control"}</td>
+            <td>{input $container["note"], class=>"input-sm form-control"}</td>
+        </tr>
+    </table>
+
+    {input send}
+{/form}

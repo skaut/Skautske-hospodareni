@@ -18,7 +18,7 @@ class Payment
     /** @var string */
     private $name;
 
-    /** @var string */
+    /** @var string|NULL */
     private $email;
 
     /** @var int|NULL */
@@ -51,7 +51,7 @@ class Payment
     public function __construct(
         Group $group,
         string $name,
-        string $email,
+        ?string $email,
         float $amount,
         DateTimeImmutable $dueDate,
         ?int $variableSymbol,
@@ -123,10 +123,7 @@ class Payment
         return $this->name;
     }
 
-    /**
-     * @return string
-     */
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -183,12 +180,12 @@ class Payment
     }
 
     /**
-     * @throws \Exception
+     * @throws PaymentClosedException
      */
     private function checkNotClosed(): void
     {
         if ($this->closedAt !== NULL) {
-            throw new PaymentClosedException("Already closed!"); // todo: replace with custom exception
+            throw new PaymentClosedException("Already closed!");
         }
     }
 

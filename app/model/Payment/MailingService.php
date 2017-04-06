@@ -124,6 +124,7 @@ class MailingService
             FALSE,
             State::get(State::PREPARING),
             NULL,
+            NULL,
             NULL
         );
 
