@@ -19,7 +19,7 @@ class PaymentFactory
             $payment->getVariableSymbol(),
             $payment->getConstantSymbol(),
             $payment->getNote(),
-            $payment->isFinished(),
+            $payment->isClosed(),
             $payment->getState(),
             $payment->getTransaction(),
             $payment->getClosedAt()

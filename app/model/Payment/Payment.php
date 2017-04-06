@@ -176,10 +176,10 @@ class Payment
         return $this->state;
     }
 
-    public function isFinished(): bool
+    public function isClosed(): bool
     {
         $state = $this->state;
-        return $state->equalsValue(State::COMPLETED) || $state->equalsValue(State::CANCELED);
+        return in_array($state->getValue(), [State::COMPLETED, State::CANCELED], TRUE);
     }
 
     /**
@@ -188,7 +188,7 @@ class Payment
     private function checkNotClosed(): void
     {
         if ($this->closedAt !== NULL) {
-            throw new PaymentFinishedException("Already closed!"); // todo: replace with custom exception
+            throw new PaymentClosedException("Already closed!"); // todo: replace with custom exception
         }
     }
 

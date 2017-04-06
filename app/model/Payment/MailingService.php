@@ -89,7 +89,7 @@ class MailingService
             try {
                 $this->sendForPayment($payment, $group, $bankAccount, $user);
                 $sent++;
-            } catch(InvalidEmailException | PaymentFinishedException $e) {}
+            } catch(InvalidEmailException | PaymentClosedException $e) {}
         }
 
         return $sent;
@@ -145,8 +145,8 @@ class MailingService
 
     private function sendForPayment(Payment $paymentRow, Group $group, ?string $bankAccount, User $user) : void
     {
-        if($paymentRow->isFinished()) {
-            throw new PaymentFinishedException();
+        if($paymentRow->isClosed()) {
+            throw new PaymentClosedException();
         }
 
         $this->send($group, PaymentFactory::create($paymentRow), $bankAccount, $user);

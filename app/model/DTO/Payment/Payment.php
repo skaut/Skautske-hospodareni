@@ -16,7 +16,7 @@ use Nette\SmartObject;
  * @property-read int|NULL $variableSymbol
  * @property-read int|NULL $constantSymbol
  * @property-read string $note
- * @property-read bool $finished
+ * @property-read bool $closed
  * @property-read State $state
  * @property-read Transaction $transaction
  * @property-read DateTimeImmutable|NULL $closedAt
@@ -51,7 +51,7 @@ class Payment
     private $note;
 
     /** @var bool */
-    private $finished;
+    private $closed;
 
     /** @var State */
     private $state;
@@ -63,7 +63,7 @@ class Payment
     private $closedAt;
 
     public function __construct(
-    	int $id,
+        int $id,
         string $name,
         float $amount,
         ?string $email,
@@ -71,10 +71,10 @@ class Payment
         ?int $variableSymbol,
         ?int $constantSymbol,
         string $note,
-    bool $finished,
-    State $state,
-    ?Transaction $transaction,
-    ?DateTimeImmutable $closedAt
+        bool $closed,
+        State $state,
+        ?Transaction $transaction,
+        ?DateTimeImmutable $closedAt
     )
     {
         $this->id = $id;
@@ -85,7 +85,7 @@ class Payment
         $this->variableSymbol = $variableSymbol;
         $this->constantSymbol = $constantSymbol;
         $this->note = $note;
-        $this->finished = $finished;
+        $this->closed = $closed;
         $this->state = $state;
         $this->transaction = $transaction;
         $this->closedAt = $closedAt;
@@ -115,7 +115,7 @@ class Payment
     /**
      * @return NULL|string
      */
-    public function getEmail() : ?string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -131,7 +131,7 @@ class Payment
     /**
      * @return int|NULL
      */
-    public function getVariableSymbol() : ?int
+    public function getVariableSymbol(): ?int
     {
         return $this->variableSymbol;
     }
@@ -139,7 +139,7 @@ class Payment
     /**
      * @return int|NULL
      */
-    public function getConstantSymbol() : ?int
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
@@ -152,9 +152,9 @@ class Payment
         return $this->note;
     }
 
-    public function isFinished(): bool
+    public function isClosed(): bool
     {
-        return $this->finished;
+        return $this->closed;
     }
 
     public function getState(): State
