@@ -8,12 +8,12 @@ use Model\Payment\PaymentNotFoundException;
 interface IPaymentRepository
 {
 
-	/**
+    /**
 	 * @param int $id
 	 * @return Payment
 	 * @throws PaymentNotFoundException
 	 */
-	public function find(int $id): Payment;
+    public function find(int $id): Payment;
 
     /**
      * @param int $groupId

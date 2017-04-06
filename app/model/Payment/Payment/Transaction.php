@@ -11,7 +11,7 @@ use Nette\SmartObject;
 class Transaction
 {
 
-	use SmartObject;
+    use SmartObject;
 
     /** @var int */
     private $id;

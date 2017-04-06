@@ -48,7 +48,7 @@ class MailingService
     public function __construct(
         IGroupRepository $groups,
         IMailerFactory $mailerFactory,
-		IPaymentRepository $payments,
+    IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts,
         TemplateFactory $templateFactory,
         IUserRepository $users,
@@ -152,10 +152,10 @@ class MailingService
         $this->send($group, PaymentFactory::create($paymentRow), $bankAccount, $user);
 
         if($paymentRow->getState()->equalsValue(State::SENT)) {
-        	return;
-		}
+            return;
+        }
 
-		$paymentRow->markSent();
+        $paymentRow->markSent();
     }
 
     private function send(Group $group, PaymentDTO $payment, ?string $bankAccount, User $user) : void

@@ -81,12 +81,12 @@ class Payment
     }
 
     public function markSent(): void
-	{
-		$this->checkNotClosed();
-		$this->state = State::get(State::SENT);
-	}
+    {
+        $this->checkNotClosed();
+        $this->state = State::get(State::SENT);
+    }
 
-	public function cancel(DateTimeImmutable $time): void
+    public function cancel(DateTimeImmutable $time): void
     {
         $this->checkNotClosed();
         $this->state = State::get(State::CANCELED);
@@ -107,7 +107,7 @@ class Payment
         return $this->id;
     }
 
-	/**
+    /**
 	 * @return int
 	 */
     public function getGroupId(): int
@@ -177,10 +177,10 @@ class Payment
     }
 
     public function isFinished(): bool
-	{
-		$state = $this->state;
-		return $state->equalsValue(State::COMPLETED) || $state->equalsValue(State::CANCELED);
-	}
+    {
+        $state = $this->state;
+        return $state->equalsValue(State::COMPLETED) || $state->equalsValue(State::CANCELED);
+    }
 
     /**
      * @throws \Exception

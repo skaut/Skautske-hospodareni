@@ -16,39 +16,39 @@ class PaymentRepository implements IPaymentRepository
     private $em;
 
     private const STATE_ORDER = [
-    	State::PREPARING,
-		State::SENT,
-		State::COMPLETED,
-		State::CANCELED,
-	];
+        State::PREPARING,
+        State::SENT,
+        State::COMPLETED,
+        State::CANCELED,
+    ];
 
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
 
-	public function find(int $id): Payment
-	{
-		$payment = $this->em->find(Payment::class, $id);
+    public function find(int $id): Payment
+    {
+        $payment = $this->em->find(Payment::class, $id);
 
-		if(! $payment instanceof Payment) {
-			throw new PaymentNotFoundException();
-		}
+        if (!$payment instanceof Payment) {
+            throw new PaymentNotFoundException();
+        }
 
-		return $payment;
-	}
+        return $payment;
+    }
 
-	public function findByGroup(int $groupId): array
+    public function findByGroup(int $groupId): array
     {
         return $this->em->createQueryBuilder()
             ->select('p')
             ->from(Payment::class, 'p')
             ->join('p.group', 'g')
             ->where('g.id = :groupId')
-			->orderBy('FIELD (g.state, :states)')
+            ->orderBy('FIELD (g.state, :states)')
             ->setParameter('groupId', $groupId)
-			->setParameter('states', self::STATE_ORDER, Connection::PARAM_STR_ARRAY)
-			->getQuery()->getResult();
+            ->setParameter('states', self::STATE_ORDER, Connection::PARAM_STR_ARRAY)
+            ->getQuery()->getResult();
     }
 
     public function save(Payment $payment): void
@@ -58,15 +58,15 @@ class PaymentRepository implements IPaymentRepository
 
     public function saveMany(array $payments): void
     {
-        if(empty($payments)) {
+        if (empty($payments)) {
             return;
         }
 
-        $filtered = ArrayType::filterValuesByCallback($payments, function($payment) {
+        $filtered = ArrayType::filterValuesByCallback($payments, function ($payment) {
             return $payment instanceof Payment;
         });
 
-        if(count($filtered) !== count($payments)) {
+        if (count($filtered) !== count($payments)) {
             throw new \InvalidArgumentException("Expected array of payments");
         }
 
