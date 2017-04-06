@@ -93,6 +93,12 @@ class Payment
         $this->closedAt = $time;
     }
 
+    public function updateVariableSymbol(int $variableSymbol): void
+    {
+        $this->checkNotClosed();
+        $this->variableSymbol = $variableSymbol;
+    }
+
     /**
      * @return int
      */

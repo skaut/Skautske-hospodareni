@@ -86,6 +86,23 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment->complete($time);
     }
 
+    public function testUpdateVariableSymbol()
+    {
+        $payment = $this->createPayment();
+        $payment->updateVariableSymbol(789789);
+        $this->assertSame(789789, $payment->getVariableSymbol());
+    }
+
+    public function testUpdateVariableForClosedPaymentThrowsException()
+    {
+        $payment = $this->createPayment();
+        $payment->cancel(new DateTimeImmutable());
+
+        $this->expectException(PaymentFinishedException::class);
+
+        $payment->updateVariableSymbol(789789);
+    }
+
     private function createPayment(): Payment
     {
         $group = m::mock(Group::class);

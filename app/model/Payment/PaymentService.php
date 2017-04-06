@@ -6,6 +6,7 @@ use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
 use Model\Payment\Payment;
+use Model\Payment\Payment\State;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
@@ -582,15 +583,19 @@ class PaymentService
     public function generateVs(int $gid): int
     {
         $nextVS = $this->getNextVS($gid);
-        $payments = $this->groups->getAll($gid);
-        $cnt = 0;
+        $payments = $this->payments->findByGroup($gid);
+
+        $payments = array_filter($payments, function(Payment $p) {
+            return $p->getVariableSymbol() === NULL && $p->getState()->equalsValue(State::PREPARING);
+        });
+
         foreach ($payments as $payment) {
-            if (empty($payment->vs) && $payment->state == "preparing") {
-                $this->update($payment->id, ["vs" => ++$nextVS]);
-                $cnt++;
-            }
+            $payment->updateVariableSymbol($nextVS++);
         }
-        return $cnt;
+
+        $this->payments->saveMany($payments);
+
+        return count($payments);
     }
 
 
