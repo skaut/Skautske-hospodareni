@@ -2,10 +2,8 @@
 <h2 n:block="title">Seznam členů bez platby</h2>
 {include ../ActionMenu.latte}
 
-{dump $list}
-{dump $detail}
 
-<a n:href="Payment:detail $detail->id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
+<a n:href="Payment:detail $id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
 
 <div>
     <div n:if="$unitPairs" class="dropdown" style="float: left; margin-right: 7px;">
@@ -13,51 +11,14 @@
             <i class="glyphicon glyphicon-random hidden-xs hidden-sm"></i> Jednotka <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-            <li n:foreach="$unitPairs as $id=>$label"><a n:href="this aid=>$id">{$label}</a></li>
+            <li n:foreach="$unitPairs as $unitId=>$label"><a n:href="this aid=>$unitId">{$label}</a></li>
         </ul>
     </div>
     <h3>{$unitPairs[$aid]}</h3>
 </div>
 
-{if !empty($list)}
-
-    {form massAddForm}
-        <ul class="errors" n:if="$form->hasErrors()">
-            <li n:foreach="$form->errors as $error">{$error}</li>
-        </ul>
-        <table class="table table-bordered table-striped table-condensed">
-            <tr>
-                <th><input type="checkbox" id='reg-all-p' onclick="jqCheckAll(this.id, 'ch')"/></th>
-                <th>Jméno</th>
-                <th>Email</th>
-                <th>Částka</th>
-                <th>Splatnost</th>
-                <th>VS</th>
-                <th>KS</th>
-                <th>Poznámka</th>
-            </tr>
-            <tr>
-                <td colspan="3"><b>Výchozí hodnoty</b> se uloží u záznamů, kde nebude hodnota vyplněna.</td>
-                <td>{input defaultAmount, value=>$detail->defaultAmount}</td>
-                <td>{input defaultMaturity, value=> $detail->dueDate !== NULL ? $detail->dueDate->format('d.m.Y') : NULL}</td>
-                <td> </td>
-                <td>{input defaultKs, value=>$detail->constantSymbol, class=>"input-sm form-control"}</td>
-                <td>{input defaultNote}</td>
-            </tr>
-            <tr n:foreach="$list as $p">
-                <td><input type=checkbox name="ch[]" value="p_{$p['ID']}"></td>
-                <td><input type=text name="vals[{$p['ID']}][name]" class="form-control" value="{$p['DisplayName']}"></td>
-                <td>{input $p['ID'].'_email', name=>"vals[{$p['ID']}][email]"}</td>
-                <td><input type=text name="vals[{$p['ID']}][amount]" class="form-control input-sm"></td>
-                <td><input type=text name="vals[{$p['ID']}][maturity]" class="form-control input-sm"></td>
-                <td><input type=text name="vals[{$p['ID']}][vs]" class="form-control input-sm"></td>
-                <td><input type=text name="vals[{$p['ID']}][ks]" class="form-control input-sm"></td>
-                <td><input type=text name="vals[{$p['ID']}][note]" class="form-control input-sm"></td>
-            </tr>
-        </table>
-
-        {input send}
-    {/form}
+{if $showForm}
+    {control massAddForm}
 {else}
     <p class="well">Nejsou dostupné žádné osoby, které by neměli založenou platbu</p>
 {/if}

@@ -20,6 +20,7 @@ use Nette\SmartObject;
  * @property-read State $state
  * @property-read Transaction $transaction
  * @property-read DateTimeImmutable|NULL $closedAt
+ * @property-read int|NULL $personId
  */
 class Payment
 {
@@ -62,6 +63,9 @@ class Payment
     /** @var DateTimeImmutable|NULL */
     private $closedAt;
 
+    /** @var int|NULL */
+    private $personId;
+
     public function __construct(
         int $id,
         string $name,
@@ -74,7 +78,8 @@ class Payment
         bool $closed,
         State $state,
         ?Transaction $transaction,
-        ?DateTimeImmutable $closedAt
+        ?DateTimeImmutable $closedAt,
+        ?int $personId
     )
     {
         $this->id = $id;
@@ -89,6 +94,7 @@ class Payment
         $this->state = $state;
         $this->transaction = $transaction;
         $this->closedAt = $closedAt;
+        $this->personId = $personId;
     }
 
     public function getId(): int
@@ -170,6 +176,11 @@ class Payment
     public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
+    }
+
+    public function getPersonId()
+    {
+        return $this->personId;
     }
 
 }

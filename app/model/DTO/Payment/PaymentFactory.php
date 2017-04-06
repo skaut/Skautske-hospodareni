@@ -22,7 +22,8 @@ class PaymentFactory
             $payment->isClosed(),
             $payment->getState(),
             $payment->getTransaction(),
-            $payment->getClosedAt()
+            $payment->getClosedAt(),
+            $payment->getPersonId()
         );
     }
 
