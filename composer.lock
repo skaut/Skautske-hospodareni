@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f9b150c2761d4eb9d11714ef5c5e59f4",
+    "content-hash": "a5e282358c7f3f27c86060ec07f07a9c",
     "packages": [
         {
             "name": "arachne/container-adapter",
@@ -2772,33 +2772,33 @@
         },
         {
             "name": "nextras/forms",
-            "version": "v1.6.2",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextras/forms.git",
-                "reference": "2c42d31cfd46acebb9eedd15cc16b9568a352c5f"
+                "reference": "e2de1c3a8573bb8ea2c6122bd19bebef7a6f01a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextras/forms/zipball/2c42d31cfd46acebb9eedd15cc16b9568a352c5f",
-                "reference": "2c42d31cfd46acebb9eedd15cc16b9568a352c5f",
+                "url": "https://api.github.com/repos/nextras/forms/zipball/e2de1c3a8573bb8ea2c6122bd19bebef7a6f01a0",
+                "reference": "e2de1c3a8573bb8ea2c6122bd19bebef7a6f01a0",
                 "shasum": ""
             },
             "require": {
-                "nette/application": "~2.2",
-                "nette/component-model": "~2.2",
-                "nette/forms": "~2.2",
-                "nette/utils": "~2.2",
-                "php": ">=5.4"
+                "latte/latte": "~2.4",
+                "nette/application": "~2.4",
+                "nette/component-model": "~2.3",
+                "nette/forms": "~2.4",
+                "nette/utils": "~2.4",
+                "php": ">=5.6"
             },
             "require-dev": {
-                "latte/latte": "~2.2",
                 "nette/tester": "~1.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6-dev"
+                    "dev-master": "2.0-dev"
                 }
             },
             "autoload": {
@@ -2808,30 +2808,20 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD-3-Clause",
-                "GPL-2.0",
-                "GPL-3.0"
+                "MIT"
             ],
             "authors": [
                 {
-                    "name": "David Grudl",
-                    "homepage": "http://davidgrudl.com"
-                },
-                {
                     "name": "Nextras Community",
                     "homepage": "https://github.com/nextras/forms/graphs/contributors"
-                },
-                {
-                    "name": "Jan Škrášek",
-                    "homepage": "http://jan.skrasek.com"
                 }
             ],
-            "description": "Extra form components for Nette Framework.",
+            "description": "Form components for Nette Framework.",
             "keywords": [
                 "form",
                 "nette"
             ],
-            "time": "2016-07-12T11:15:27+00:00"
+            "time": "2016-10-05T23:03:39+00:00"
         },
         {
             "name": "nextras/mail-panel",
