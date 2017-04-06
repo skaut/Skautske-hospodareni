@@ -309,7 +309,7 @@ class PaymentPresenter extends BasePresenter
             $this->model->cancelPayment($pid);
         } catch (PaymentNotFoundException $e) {
             $this->flashMessage("Platba nenalezena!", "danger");
-        } catch(\Model\Payment\PaymentFinishedException $e) {
+        } catch(\Model\Payment\PaymentClosedException $e) {
             $this->flashMessage("Tato platba už je uzavřená", "danger");
         }
         $this->redirect("this");
@@ -400,7 +400,7 @@ class PaymentPresenter extends BasePresenter
         try {
             $this->model->completePayment($pid);
             $this->flashMessage("Platba byla zaplacena.");
-        } catch(\Model\Payment\PaymentFinishedException $e) {
+        } catch(\Model\Payment\PaymentClosedException $e) {
             $this->flashMessage("Tato platba už je uzavřená", "danger");
         }
 

@@ -112,7 +112,7 @@ class BankService extends BaseService
         }
 
         $payments = ArrayType::filterValuesByCallback($payments, function(Payment $payment) {
-            return !$payment->isFinished() && $payment->getVariableSymbol() !== NULL;
+            return !$payment->isClosed() && $payment->getVariableSymbol() !== NULL;
         });
 
         if(empty($payments)) {

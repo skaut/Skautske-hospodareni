@@ -63,7 +63,7 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment = $this->createPayment();
         $payment->cancel($time);
 
-        $this->expectException(PaymentFinishedException::class);
+        $this->expectException(PaymentClosedException::class);
         $payment->cancel($time);
     }
 
@@ -82,7 +82,7 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment = $this->createPayment();
         $payment->cancel($time);
 
-        $this->expectException(PaymentFinishedException::class);
+        $this->expectException(PaymentClosedException::class);
         $payment->complete($time);
     }
 
@@ -98,7 +98,7 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment = $this->createPayment();
         $payment->cancel(new DateTimeImmutable());
 
-        $this->expectException(PaymentFinishedException::class);
+        $this->expectException(PaymentClosedException::class);
 
         $payment->updateVariableSymbol(789789);
     }
