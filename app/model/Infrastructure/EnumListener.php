@@ -22,7 +22,7 @@ class EnumListener implements Subscriber
         $this->listener = $listener;
     }
 
-    public function postLoad(LifecycleEventArgs $args)
+    public function postLoad(LifecycleEventArgs $args): void
     {
         $this->listener->postLoad($args);
     }
