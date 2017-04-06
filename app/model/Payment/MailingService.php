@@ -122,7 +122,9 @@ class MailingService
             $group->getConstantSymbol(),
             'obsah poznámky',
             FALSE,
-            State::get(State::PREPARING)
+            State::get(State::PREPARING),
+            NULL,
+            NULL
         );
 
         $this->send($group, $payment, $bankAccount, $user);

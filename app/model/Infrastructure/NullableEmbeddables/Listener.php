@@ -67,11 +67,7 @@ class Listener implements Subscriber
         return $this->embeddablesTree[$metadata->getName()];
     }
 
-    /**
-     * @param string $class
-     * @return ReflectionClass
-     */
-    private function getReflection($class)
+    private function getReflection(string $class): ReflectionClass
     {
         if (!isset($this->reflections[$class])) {
             $this->reflections[$class] = new ReflectionClass($class);
@@ -79,7 +75,7 @@ class Listener implements Subscriber
         return $this->reflections[$class];
     }
 
-    private function clearEmbeddableIfNecessary($object, $field)
+    private function clearEmbeddableIfNecessary($object, string $field): void
     {
         if (!$object || $object instanceof Proxy) {
             return;
@@ -101,7 +97,7 @@ class Listener implements Subscriber
         }
     }
 
-    public function postLoad(LifecycleEventArgs $args)
+    public function postLoad(LifecycleEventArgs $args): void
     {
         $object = $args->getObject();
         $className = get_class($object);

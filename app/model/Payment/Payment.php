@@ -86,7 +86,7 @@ class Payment
 		$this->state = State::get(State::SENT);
 	}
 
-	public function cancel(DateTimeImmutable $time)
+	public function cancel(DateTimeImmutable $time): void
     {
         $this->checkNotClosed();
         $this->state = State::get(State::CANCELED);
