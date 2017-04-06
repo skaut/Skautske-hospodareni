@@ -2,6 +2,7 @@
 
 namespace Model\Payment\Repositories;
 
+use Consistence\Type\ArrayType\ArrayType;
 use Doctrine\DBAL\Connection;
 use Kdyby\Doctrine\EntityManager;
 use Model\Payment\Payment;
@@ -54,5 +55,23 @@ class PaymentRepository implements IPaymentRepository
     {
         $this->em->persist($payment)->flush();
     }
+
+    public function saveMany(array $payments): void
+    {
+        if(empty($payments)) {
+            return;
+        }
+
+        $filtered = ArrayType::filterValuesByCallback($payments, function($payment) {
+            return $payment instanceof Payment;
+        });
+
+        if(count($filtered) !== count($payments)) {
+            throw new \InvalidArgumentException("Expected array of payments");
+        }
+
+        $this->em->persist($filtered)->flush();
+    }
+
 
 }

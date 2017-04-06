@@ -2,7 +2,13 @@
 
 namespace Model;
 
+use Consistence\Type\ArrayType\ArrayType;
+use Consistence\Type\ArrayType\KeyValuePair;
 use Model\Bank\Fio\FioClient;
+use Model\Payment\Payment;
+use Model\Payment\Payment\Transaction;
+use Model\Bank\Fio\Transaction as BankTransaction;
+use Model\Payment\Repositories\IPaymentRepository;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Model\Payment\Repositories\IGroupRepository;
@@ -22,16 +28,25 @@ class BankService extends BaseService
     /** @var IGroupRepository */
     private $groups;
 
+    /** @var IPaymentRepository */
+    private $payments;
+
     /** @var BankTable */
     private $table;
 
-    public function __construct(BankTable $table, IGroupRepository $groups, FioClient $bank, IStorage $storage)
+    public function __construct(
+        BankTable $table,
+        IGroupRepository $groups,
+        FioClient $bank,
+        IPaymentRepository $payments,
+        IStorage $storage)
     {
         parent::__construct();
 
         $this->table = $table;
         $this->groups = $groups;
         $this->bank = $bank;
+        $this->payments = $payments;
         $this->cache = new Cache($storage, __CLASS__);
     }
 
@@ -47,26 +62,23 @@ class BankService extends BaseService
 
     /**
      * Completes payments on bank account
-     * @param PaymentService $ps
      * @param int $unitId
      * @param int $groupId
      * @param int|NULL $daysBack
-     * @return int|FALSE
+     * @return int
      */
-    public function pairPayments(PaymentService $ps, $unitId, $groupId, $daysBack = NULL)
+    public function pairPayments(int $unitId, int $groupId, ?int $daysBack): int
     {
         $bakInfo = $this->getInfo($unitId);
         if (!isset($bakInfo->token)) {
-            return FALSE;
+            return 0;
         }
 
-        $payments = $ps->getAll($groupId, FALSE);
-
-        $autoPairing = !$daysBack;
+        $autoPairing = $daysBack === NULL;
         $group = $this->groups->find($groupId);
         if ($autoPairing) {
-            $lastPairing = $group->getLastPairing() ?: $group->getCreatedAt();
-            if ($lastPairing) {
+            $lastPairing = $group->getLastPairing() ?? $group->getCreatedAt();
+            if ($lastPairing !== NULL) {
                 $daysBack = $lastPairing->diff(new \DateTime())->days + 3;
             } else {
                 $daysBack = $bakInfo->daysback;
@@ -79,7 +91,7 @@ class BankService extends BaseService
             $bakInfo->token
         );
 
-        $result = $this->markPaymentsAsComplete($ps, $transactions, $payments);
+        $result = $this->markPaymentsAsComplete($transactions, $this->payments->findByGroup($groupId));
 
         if ($autoPairing) {
             $group->updateLastPairing(new \DateTimeImmutable());
@@ -89,48 +101,50 @@ class BankService extends BaseService
     }
 
     /**
-     * @param PaymentService $ps
-     * @param array $transactions
-     * @param array $payments
-     * @return int|FALSE
+     * @param BankTransaction[] $transactions
+     * @param Payment[] $payments
+     * @return int
      */
-    private function markPaymentsAsComplete(PaymentService $ps, array $transactions, array $payments)
+    private function markPaymentsAsComplete(array $transactions, array $payments): int
     {
-        if (!$transactions) {
-            return FALSE;
+        if (empty($transactions)) {
+            return 0;
         }
 
-        /**
-         * We'll need payments indexed by VS
-         */
-        $paymentsWithVS = [];
-        foreach ($payments as $payment) {
-            if ($payment['vs']) {
-                $paymentsWithVS[$payment['vs']] = $payment;
-            }
+        $payments = ArrayType::filterValuesByCallback($payments, function(Payment $payment) {
+            return !$payment->isFinished() && $payment->getVariableSymbol() !== NULL;
+        });
+
+        if(empty($payments)) {
+            return 0;
         }
 
-        $cnt = 0;
+        $paymentsWithVS = ArrayType::mapByCallback($payments, function(KeyValuePair $pair) {
+            $value = $pair->getValue(); /* @var $value Payment */
+            return new KeyValuePair($value->getVariableSymbol(), $value);
+        });
+
+        $paired = [];
+        $now = new \DateTimeImmutable();
         foreach ($transactions as $transaction) {
+            $vs = $transaction->getVariableSymbol();
 
-            // Skip transactions w/o variable symbol
-            if (!$transaction->getVariableSymbol()) {
+            /* @var $paymentsWithVS Payment[] */
+            if ($vs === NULL || !isset($paymentsWithVS[$vs])) {
                 continue;
             }
 
-            $payment = isset($paymentsWithVS[$transaction->getVariableSymbol()])
-                ? $paymentsWithVS[$transaction->getVariableSymbol()]
-                : NULL;
+            $payment = $paymentsWithVS[$vs];
 
-            if ($payment && $payment['amount'] == $transaction->getAmount()) {
-                $cnt += $ps->completePayment(
-                    $payment->id,
-                    $transaction->getId(),
-                    $transaction->getBankAccount());
+            if ($payment->getAmount() === $transaction->getAmount()) {
+                $payment->complete($now, new Transaction($transaction->getId(), $transaction->getBankAccount()));
+                $paired[] = $payment;
             }
         }
 
-        return $cnt;
+        $this->payments->saveMany($paired);
+
+        return count($paired);
     }
 
     /**

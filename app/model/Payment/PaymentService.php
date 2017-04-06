@@ -124,15 +124,12 @@ class PaymentService
         $this->payments->save($payment);
     }
 
-    /**
-     * @param int $pid
-     * @param int|NULL $transactionId
-     * @param string|NULL $paidFrom
-     * @return bool
-     */
-    public function completePayment($pid, $transactionId = NULL, $paidFrom = NULL): bool
+    public function completePayment(int $id): void
     {
-        return $this->update($pid, ["state" => "completed", "dateClosed" => date("Y-m-d H:i:s"), "transactionId" => $transactionId, "paidFrom" => $paidFrom]);
+        $payment = $this->payments->find($id);
+        $payment->complete(new \DateTimeImmutable());
+
+        $this->payments->save($payment);
     }
 
     /**

@@ -57,6 +57,35 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertSame($time, $payment->getClosedAt());
     }
 
+    public function testCancelClosedPayment()
+    {
+        $time = new DateTimeImmutable();
+        $payment = $this->createPayment();
+        $payment->cancel($time);
+
+        $this->expectException(PaymentFinishedException::class);
+        $payment->cancel($time);
+    }
+
+    public function testCompletePayment()
+    {
+        $time = new DateTimeImmutable();
+        $payment = $this->createPayment();
+        $payment->complete($time);
+        $this->assertSame(State::get(State::COMPLETED), $payment->getState());
+        $this->assertSame($time, $payment->getClosedAt());
+    }
+
+    public function testCompleteClosedPayment()
+    {
+        $time = new DateTimeImmutable();
+        $payment = $this->createPayment();
+        $payment->cancel($time);
+
+        $this->expectException(PaymentFinishedException::class);
+        $payment->complete($time);
+    }
+
     private function createPayment(): Payment
     {
         $group = m::mock(Group::class);
