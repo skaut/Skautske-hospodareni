@@ -53,18 +53,18 @@ class PaymentService
         return $this->table->get($unitId, $paymentId);
     }
 
-	/**
+    /**
 	 * @param int $groupId
 	 * @return DTO\Payment[]
 	 */
     public function findByGroup(int $groupId): array
-	{
-		$payments = $this->payments->findByGroup($groupId);
+    {
+        $payments = $this->payments->findByGroup($groupId);
 
-		return array_map(function(Payment $payment) {
-			return DTO\PaymentFactory::create($payment);
-		}, $payments);
-	}
+        return array_map(function(Payment $payment) {
+               return DTO\PaymentFactory::create($payment);
+        }, $payments);
+    }
 
     /**
      *

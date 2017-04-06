@@ -112,8 +112,8 @@ class PaymentPresenter extends BasePresenter
         $this->template->summarize = $this->model->summarizeByState($id);
         $this->template->now = new \DateTimeImmutable();
         $paymentsForSendEmail = array_filter($payments, function($p) {
-			return strlen($p->email) > 4 && $p->state == "preparing";
-		});
+            return strlen($p->email) > 4 && $p->state == "preparing";
+        });
         $this->template->isGroupSendActive = ($group->getState() === 'open') && count($paymentsForSendEmail) > 0;
         $this->template->canPair = isset($this->bankInfo->token);
     }

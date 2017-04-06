@@ -24,10 +24,10 @@ use Nette\SmartObject;
 class Payment
 {
 
-	use SmartObject;
+    use SmartObject;
 
-	/** @var int */
-	private $id;
+    /** @var int */
+    private $id;
 
     /** @var string */
     private $name;
@@ -71,13 +71,13 @@ class Payment
         ?int $variableSymbol,
         ?int $constantSymbol,
         string $note,
-		bool $finished,
-		State $state,
-		?Transaction $transaction,
-		?DateTimeImmutable $closedAt
+    bool $finished,
+    State $state,
+    ?Transaction $transaction,
+    ?DateTimeImmutable $closedAt
     )
     {
-    	$this->id = $id;
+        $this->id = $id;
         $this->name = $name;
         $this->amount = $amount;
         $this->email = $email;
@@ -91,10 +91,10 @@ class Payment
         $this->closedAt = $closedAt;
     }
 
-	public function getId(): int
-	{
-		return $this->id;
-	}
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
     /**
      * @return string
@@ -152,24 +152,24 @@ class Payment
         return $this->note;
     }
 
-	public function isFinished(): bool
-	{
-		return $this->finished;
-	}
+    public function isFinished(): bool
+    {
+        return $this->finished;
+    }
 
-	public function getState(): State
-	{
-		return $this->state;
-	}
+    public function getState(): State
+    {
+        return $this->state;
+    }
 
-	public function getTransaction(): ?Transaction
-	{
-		return $this->transaction;
-	}
+    public function getTransaction(): ?Transaction
+    {
+        return $this->transaction;
+    }
 
-	public function getClosedAt(): ?DateTimeImmutable
-	{
-		return $this->closedAt;
-	}
+    public function getClosedAt(): ?DateTimeImmutable
+    {
+        return $this->closedAt;
+    }
 
 }
