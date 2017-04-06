@@ -7,7 +7,7 @@ use Nette;
 class Transaction extends Nette\Object
 {
 
-    /** @var string */
+    /** @var int */
     private $id;
 
     /** @var \DateTime */
@@ -43,14 +43,14 @@ class Transaction extends Nette\Object
      * @param NULL|string $note
      */
     public function __construct(
-        $id,
+        int $id,
         \DateTime $date,
-        $amount,
-        $bankAccount,
-        $name,
-        $variableSymbol,
-        $constantSymbol,
-        $note)
+        float $amount,
+        string $bankAccount,
+        string $name,
+        ?int $variableSymbol,
+        ?int $constantSymbol,
+        ?string $note)
     {
         $this->id = $id;
         $this->date = $date;
@@ -62,10 +62,7 @@ class Transaction extends Nette\Object
         $this->note = $note;
     }
 
-    /**
-     * @return string
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -78,50 +75,32 @@ class Transaction extends Nette\Object
         return $this->date;
     }
 
-    /**
-     * @return float
-     */
-    public function getAmount()
+    public function getAmount(): float
     {
         return $this->amount;
     }
 
-    /**
-     * @return string
-     */
-    public function getBankAccount()
+    public function getBankAccount(): string
     {
         return $this->bankAccount;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return int|NULL
-     */
-    public function getVariableSymbol()
+    public function getVariableSymbol(): ?int
     {
         return $this->variableSymbol;
     }
 
-    /**
-     * @return int|NULL
-     */
-    public function getConstantSymbol()
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    /**
-     * @return NULL|string
-     */
-    public function getNote()
+    public function getNote(): ?string
     {
         return $this->note;
     }

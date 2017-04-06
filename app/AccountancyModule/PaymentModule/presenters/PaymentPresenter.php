@@ -309,6 +309,8 @@ class PaymentPresenter extends BasePresenter
             $this->model->cancelPayment($pid);
         } catch (PaymentNotFoundException $e) {
             $this->flashMessage("Platba nenalezena!", "danger");
+        } catch(\Model\Payment\PaymentFinishedException $e) {
+            $this->flashMessage("Tato platba už je uzavřená", "danger");
         }
         $this->redirect("this");
     }
@@ -388,17 +390,20 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleComplete($pid): void
+    public function handleComplete(int $pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k uzavření platby!", "danger");
             $this->redirect("this");
         }
-        if ($this->model->completePayment($pid)) {
+
+        try {
+            $this->model->completePayment($pid);
             $this->flashMessage("Platba byla zaplacena.");
-        } else {
-            $this->flashMessage("Platbu se nepodařilo uzavřít!", "danger");
+        } catch(\Model\Payment\PaymentFinishedException $e) {
+            $this->flashMessage("Tato platba už je uzavřená", "danger");
         }
+
         $this->redirect("this");
     }
 
@@ -637,7 +642,7 @@ class PaymentPresenter extends BasePresenter
             $this->redraw('pairForm');
         }
         try {
-            $pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $groupId, $days);
+            $pairsCnt = $this->bank->pairPayments($this->aid, $groupId, $days);
         } catch (\Model\BankTimeoutException $exc) {
             $this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
         } catch (\Model\BankTimeLimitException $exc) {

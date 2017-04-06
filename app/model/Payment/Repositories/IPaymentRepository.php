@@ -23,4 +23,9 @@ interface IPaymentRepository
 
     public function save(Payment $payment): void;
 
+    /**
+     * @param Payment[] $payments
+     */
+    public function saveMany(array $payments): void;
+
 }

@@ -76,12 +76,7 @@ class Payment
     {
         $this->checkNotClosed();
         $this->transaction = $transaction;
-        $this->closedAt = $time;
-    }
-
-    public function close(DateTimeImmutable $time)
-    {
-        $this->checkNotClosed();
+        $this->state = State::get(State::COMPLETED);
         $this->closedAt = $time;
     }
 
@@ -187,7 +182,7 @@ class Payment
     private function checkNotClosed(): void
     {
         if ($this->closedAt !== NULL) {
-            throw new \Exception("Already closed!"); // todo: replace with custom exception
+            throw new PaymentFinishedException("Already closed!"); // todo: replace with custom exception
         }
     }
 
