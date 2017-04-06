@@ -24,7 +24,7 @@
         "dibi/dibi": "3.0.*",
         "phpoffice/phpexcel": "1.8.*",
         "mpdf/mpdf": "dev-development#042f2d2",
-        "nextras/forms": "1.6.*",
+        "nextras/forms": "^2.0",
         "foowie/dependentselectbox": "dev-master",
         "heureka/bank-account-validator": "1.1.*",
         "nextras/mail-panel": "^2.3",
