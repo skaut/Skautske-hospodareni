@@ -17,6 +17,8 @@ class RegistrationPresenter extends BasePresenter
     /** @var int */
     private $id;
 
+    private const STS_PRICE = 200;
+
     public function __construct(IMassAddFormFactory $massAddFormFactory, PaymentService $payments)
     {
         parent::__construct($payments);
@@ -54,11 +56,14 @@ class RegistrationPresenter extends BasePresenter
         /* @var $form MassAddForm */
 
         foreach ($list as $p) {
+            $stsCount = intdiv((int)$p['AmountServices'], self::STS_PRICE);
+
             $form->addPerson(
                 $p["ID_Person"],
                 $p["emails"],
                 $p["Person"],
-                (float)$p["AmountTotal"]
+                (float)$p["AmountTotal"],
+                $stsCount !== 0 ? "{$stsCount}x STS" : ""
             );
         }
 
