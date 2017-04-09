@@ -64,7 +64,7 @@ class MassAddForm extends Control
         return $form;
     }
 
-    public function addPerson(int $id, array $emails, string $name, ?float $amount = NULL): void
+    public function addPerson(int $id, array $emails, string $name, ?float $amount = NULL, string $note = ""): void
     {
         $form = $this["form"]; /* @var $form BaseForm */
         $persons = $form["persons"]; /* @var $persons BaseContainer */
@@ -108,6 +108,7 @@ class MassAddForm extends Control
             ->addRule($form::MAX_LENGTH, "Maximální délka konstantního symbolu je %d", 4);
 
         $container->addText("note", "Poznámka:")
+            ->setDefaultValue($note)
             ->setRequired(FALSE)
             ->setAttribute('class', 'input-small');
     }
