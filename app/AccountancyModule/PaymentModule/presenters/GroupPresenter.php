@@ -182,7 +182,7 @@ class GroupPresenter extends BasePresenter
 
         if ($v->gid != "") {//EDIT
             $groupId = $v->gid;
-            $this->model->updateGroupV2(
+            $this->model->updateGroup(
                 $groupId,
                 $v->label,
                 $v->amount ? (float)$v->amount : NULL,

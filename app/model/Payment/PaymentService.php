@@ -203,7 +203,7 @@ class PaymentService
         return $group->getId();
     }
 
-    public function updateGroupV2(
+    public function updateGroup(
         int $id,
         string $name,
         ?float $defaultAmount,
