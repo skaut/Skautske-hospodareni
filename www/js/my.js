@@ -48,6 +48,12 @@ function jqCheckAll(id, name) {
     $("input[name^=" + name + "][type='checkbox']").prop('checked', $('#' + id).is(':checked'));
 }
 
+function jqCheckAll2(el, className)
+{
+    var selector = "." + className + " input[type='checkbox']";
+    $(selector).prop('checked', $(el).is(':checked'));
+}
+
 /**
  * checkboxIds - ID vsech zavyslich ceckboxů
  * dependentButtonClass - zavislé prvky mají třídu

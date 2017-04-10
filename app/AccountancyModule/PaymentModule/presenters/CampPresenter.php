@@ -2,10 +2,10 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
-use Nette\Application\UI\Form;
+use App\AccountancyModule\PaymentModule\Components\MassAddForm;
+use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
+use Model\DTO\Payment\Payment;
+use Model\PaymentService;
 
 class CampPresenter extends BasePresenter
 {
@@ -14,6 +14,18 @@ class CampPresenter extends BasePresenter
 
     /** @var \Model\EventEntity */
     protected $campService;
+
+    /** @var IMassAddFormFactory */
+    private $massAddFormFactory;
+
+    /** @var int */
+    private $id;
+
+    public function __construct(PaymentService $paymentService, IMassAddFormFactory $massAddFormFactory)
+    {
+        parent::__construct($paymentService);
+        $this->massAddFormFactory = $massAddFormFactory;
+    }
 
     protected function startup() : void
     {
@@ -24,9 +36,10 @@ class CampPresenter extends BasePresenter
 
     public function actionMassAdd(int $id) : void
     {
+        $this->id = $id;
         $group = $this->model->getGroup($id);
 
-        if($group === NULL || !in_array($group->getUnitId(), array_keys($this->readUnits), TRUE)) {
+        if($group === NULL || !$this->isEditable) {
             $this->flashMessage("Neoprávněný přístup ke skupině.", "danger");
             $this->redirect("Payment:default");
         }
@@ -36,105 +49,37 @@ class CampPresenter extends BasePresenter
             $this->redirect("Default:");
         }
 
-        //ověření přístupu
-        $this->template->detail = $group;
-
         $participants = $this->campService->participants->getAll($group->getSkautisId());
-        $paymentPersonIds = array_flip(array_filter(array_map(function ($a) {
-            return $a->personId;
-        }, $this->model->getAll($id))));
-        $form = $this['campForm'];
-        $form['oid']->setDefaultValue($id);
-        $list = [];
+
+        $paymentPersonIds = array_map(function(Payment $payment) {
+            return $payment->getPersonId();
+        }, $this->model->findByGroup($id));
+
+        $paymentPersonIds = array_flip(array_filter($paymentPersonIds));
+
+        $form = $this['massAddForm'];
+        /* @var $form MassAddForm */
+
+        $participants = array_filter($participants, function($p) use($paymentPersonIds) {
+            return !isset($paymentPersonIds[$p->ID_Person]);
+        });
+
         foreach ($participants as $p) {
-            if (array_key_exists($p->ID_Person, $paymentPersonIds)) {
-                continue;
-            }
-            $list[] = $p;
-            $emails = $this->model->getPersonEmails($p->ID_Person);
-            $form->addSelect($p->ID_Person . '_email', NULL, $emails)
-                ->setPrompt("")
-                ->setDefaultValue(key($emails))
-                ->setAttribute('class', 'input-xlarge');
+            $form->addPerson(
+                $p->ID_Person,
+                $this->model->getPersonEmails($p->ID_Person),
+                $p->Person,
+                $p->payment === 0 ? NULL : (float)$p->payment
+            );
         }
-        $this->template->list = $list;
+
+        $this->template->id = $id;
+        $this->template->showForm = !empty($participants);
     }
 
-    protected function createComponentCampForm($name) : Form
+    protected function createComponentMassAddForm(): MassAddForm
     {
-        $form = $this->prepareForm($this, $name);
-        $form->addHidden("oid");
-        $form->addText("defaultAmount", "Částka:")
-            ->setAttribute('class', 'input-mini');
-        $form->addDatePicker('defaultMaturity', "Splatnost:")
-            ->setAttribute('class', 'input-small');
-        $form->addText("defaultKs", "KS:")
-            ->setMaxLength(4)
-            ->setAttribute('class', 'input-mini');
-        $form->addText("defaultNote", "Poznámka:")
-            ->setAttribute('class', 'input-small');
-        $form->addSubmit('send', 'Přidat vybrané')
-            ->setAttribute("class", "btn btn-primary btn-large");
-
-        $form->onSubmit[] = function(Form $form) : void {
-            $this->campFormSubmitted($form);
-        };
-
-        return $form;
-    }
-
-    private function campFormSubmitted(Form $form) : void
-    {
-        $values = $form->getValues();
-        $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
-        $vals = $form->getHttpData()['vals'];
-
-        if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění pro práci s účastníky akce", "danger");
-            $this->redirect("Payment:detail", ["id" => $values->oid]);
-        }
-
-        foreach ($checkboxs as $pid) {
-            $pid = substr($pid, 2);
-            $tmpAmount = $vals[$pid]['amount'];
-            $tmpMaturity = $vals[$pid]['maturity'];
-            $tmpKS = $vals[$pid]['ks'];
-            $tmpNote = $vals[$pid]['note'];
-
-            $name = $this->noEmpty($vals[$pid]['name']);
-            $amount = $tmpAmount == "" ? $this->noEmpty($values['defaultAmount']) : $tmpAmount;
-
-            if ($amount === NULL) {
-                $form->addError("Musí být vyplněna částka."); //[$uid . '_' . $p['ID'] . '_amount']
-                return;
-            }
-
-            if ($tmpMaturity != "") {
-                $matArr = preg_split('#[\. ]+#', $tmpMaturity);
-                if (count($matArr) == 3) {
-                    $maturity = date("Y-m-d", strtotime($matArr[2] . "-" . $matArr[1] . "-" . $matArr[0]));
-                } else {
-                    $this->flashMessage("Nepodařilo se nastavit splatnost pro $name", "danger");
-                    continue;
-                }
-            } else {
-                if ($values['defaultMaturity'] instanceof \DateTime) {
-                    $maturity = date("Y-m-d", strtotime($values['defaultMaturity']));
-                } else {
-                    $form->addError("Musí být vyplněná splatnost."); //[$uid . '_' . $p['ID'] . '_amount']
-                    return;
-                }
-            }
-            $email = $this->noEmpty($vals[$pid]['email']);
-            $vs = $this->noEmpty($vals[$pid]['vs']);
-            $ks = $tmpKS == "" ? $this->noEmpty($values['defaultKs']) : $tmpKS;
-            $note = $tmpNote == "" ? $this->noEmpty($values['defaultNote']) : $tmpNote;
-
-            $this->model->createPayment($values->oid, $name, $email, $amount, $maturity, $pid, $vs, $ks, $note);
-        }
-
-        $this->flashMessage("Platby byly přidány");
-        $this->redirect("Payment:detail", ["id" => $values->oid]);
+        return $this->massAddFormFactory->create($this->id);
     }
 
 }

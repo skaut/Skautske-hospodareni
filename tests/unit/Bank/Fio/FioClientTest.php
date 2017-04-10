@@ -35,20 +35,20 @@ class FioClientTest extends \Codeception\Test\Unit
         /* @var $transactions Transaction[] */
         $this->assertCount(2, $transactions);
 
-        $this->assertSame('9786224406', $transactions[0]->getId());
+        $this->assertSame(9786224406, $transactions[0]->getId());
         $this->assertSame('2016-06-01', $transactions[0]->getDate()->format('Y-m-d'));
         $this->assertEquals(2700.00, $transactions[0]->getAmount());
         $this->assertSame('123456789/0800', $transactions[0]->getBankAccount());
         $this->assertSame('Peter Parker', $transactions[0]->getName());
-        $this->assertSame('1113', $transactions[0]->getVariableSymbol());
+        $this->assertSame(1113, $transactions[0]->getVariableSymbol());
         $this->assertNull($transactions[0]->getConstantSymbol());
 
-        $this->assertSame('9787642472', $transactions[1]->getId());
+        $this->assertSame(9787642472, $transactions[1]->getId());
         $this->assertSame('2016-06-08', $transactions[1]->getDate()->format('Y-m-d'));
         $this->assertEquals(2000.00, $transactions[1]->getAmount());
         $this->assertSame('111111111/3030', $transactions[1]->getBankAccount());
         $this->assertSame('Peter Black', $transactions[1]->getName());
-        $this->assertSame('123', $transactions[1]->getVariableSymbol());
+        $this->assertSame(123, $transactions[1]->getVariableSymbol());
         $this->assertNull($transactions[1]->getConstantSymbol());
     }
 

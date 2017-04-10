@@ -10,7 +10,7 @@ class InvalidEmailException extends \Exception
 {
 }
 
-class PaymentFinishedException extends \Exception
+class PaymentClosedException extends \Exception
 {
 }
 
@@ -23,5 +23,9 @@ class UserNotFoundException extends \Exception
 }
 
 class EmailNotSetException extends \Exception
+{
+}
+
+class PaymentNotFoundException extends \Exception
 {
 }
