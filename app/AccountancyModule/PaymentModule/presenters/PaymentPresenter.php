@@ -454,7 +454,7 @@ class PaymentPresenter extends BasePresenter
             return;
         }
         if ($v->pid != "") {//EDIT
-            if ($this->model->update($v->pid, ['state' => 'preparing', 'name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => $v->note])) {
+            if ($this->model->update($v->pid, ['state' => 'preparing', 'name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => (string)$v->note])) {
                 $this->flashMessage("Platba byla upravena");
             } else {
                 $this->flashMessage("Platbu se nepodařilo založit", "danger");
