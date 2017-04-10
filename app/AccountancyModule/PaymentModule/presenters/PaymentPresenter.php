@@ -2,12 +2,15 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\PaymentModule\Components\MassAddForm;
+use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\BankService;
 use Model\DTO\Payment\Group;
 use Model\Mail\MailerNotFoundException;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\MailingService;
+use Model\Payment\PaymentNotFoundException;
 use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\UI\Form;
@@ -39,6 +42,9 @@ class PaymentPresenter extends BasePresenter
     /** @var MailingService */
     private $mailing;
 
+    /** @var IMassAddFormFactory */
+    private $massAddFormFactory;
+
     private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
@@ -46,13 +52,15 @@ class PaymentPresenter extends BasePresenter
         PaymentService $paymentService,
         BankService $bankService,
         UnitService $unitService,
-        MailingService $mailing
+        MailingService $mailing,
+        IMassAddFormFactory $massAddFormFactory
     )
     {
         parent::__construct($paymentService);
         $this->bank = $bankService;
         $this->unitService = $unitService;
         $this->mailing = $mailing;
+        $this->massAddFormFactory = $massAddFormFactory;
     }
 
     protected function startup(): void
@@ -107,9 +115,12 @@ class PaymentPresenter extends BasePresenter
             'vs' => $nextVS !== NULL ? (string)$nextVS : "",
         ]);
 
-        $this->template->payments = $payments = $this->model->getAll($id);
+        $this->template->payments = $payments = $this->model->findByGroup($id);
         $this->template->summarize = $this->model->summarizeByState($id);
-        $paymentsForSendEmail = array_filter($payments, create_function('$p', 'return strlen($p->email)>4 && $p->state == "preparing";'));
+        $this->template->now = new \DateTimeImmutable();
+        $paymentsForSendEmail = array_filter($payments, function($p) {
+            return strlen($p->email) > 4 && $p->state == "preparing";
+        });
         $this->template->isGroupSendActive = ($group->getState() === 'open') && count($paymentsForSendEmail) > 0;
         $this->template->canPair = isset($this->bankInfo->token);
     }
@@ -145,24 +156,24 @@ class PaymentPresenter extends BasePresenter
 
         $group = $this->model->getGroup($id);
 
-        if($group === NULL || !$this->hasAccessToGroup($group)) {
+        $this->id = $id;
+
+        if($group === NULL || !$this->hasAccessToGroup($group) || !$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na přehled osob", "danger");
             $this->redirect("Payment:detail", ["id" => $id]); // redirect elsewhere?
         }
 
-        $this->template->detail = $group;
-        $this->template->list = $list = $this->model->getPersons($this->aid, $id); //@todo:?nahradit aid za array_keys($this->editUnits) ??
-
+        $list = $this->model->getPersons($this->aid, $id); //@todo:?nahradit aid za array_keys($this->editUnits) ??
 
         $form = $this['massAddForm'];
-        $form['oid']->setDefaultValue($id);
+        /* @var $form MassAddForm */
 
         foreach ($list as $p) {
-            $form->addSelect($p['ID'] . '_email', NULL, $p['emails'])
-                ->setPrompt("")
-                ->setDefaultValue(key($p['emails']))
-                ->setAttribute('class', 'form-control');
+            $form->addPerson($p["ID"], $p["emails"], $p["DisplayName"]);
         }
+
+        $this->template->id = $this->id;
+        $this->template->showForm = !empty($list);
     }
 
     public function actionRepayment(int $id): void
@@ -215,82 +226,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->payments = $payments;
     }
 
-    public function createComponentMassAddForm($name): Form
-    {
-        $form = $this->prepareForm($this, $name);
-        $form->addHidden("oid");
-        $form->addText("defaultAmount", "Částka:")
-            ->setAttribute('class', 'form-control input-sm');
-        $form->addDatePicker('defaultMaturity', "Splatnost:")
-        ->setAttribute('class', 'form-control input-sm');
-        $form->addText("defaultKs", "KS:")
-            ->setMaxLength(4);
-        $form->addText("defaultNote", "Poznámka:")
-            ->setAttribute('class', 'form-control input-sm');
-        $form->addSubmit('send', 'Přidat vybrané')
-            ->setAttribute("class", "btn btn-primary btn-large");
-
-        $form->onSubmit[] = function (Form $form): void {
-            $this->massAddFormSubmitted($form);
-        };
-
-        return $form;
-    }
-
-    private function massAddFormSubmitted(Form $form): void
-    {
-        $values = $form->getValues();
-        $checkboxs = $form->getHttpData($form::DATA_TEXT, 'ch[]');
-        $vals = $form->getHttpData()['vals'];
-
-        if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění pro práci s registrací jednotky", "danger");
-            $this->redirect("Payment:detail", ["id" => $values->oid]);
-        }
-        //$list = $this->model->getPersons($this->aid, $values->oid);
-
-        if (empty($checkboxs)) {
-            $form->addError("Nebyla vybrána žádná osoba k přidání!");
-            return;
-        }
-
-        foreach ($checkboxs as $pid) {
-            $pid = substr($pid, 2);
-            $tmpAmount = $vals[$pid]['amount'];
-            $tmpMaturity = $vals[$pid]['maturity'];
-            $tmpKS = $vals[$pid]['ks'];
-            $tmpNote = $vals[$pid]['note'];
-
-            $name = $this->noEmpty($vals[$pid]['name']);
-            $amount = $tmpAmount == "" ? $this->noEmpty($values['defaultAmount']) : $tmpAmount;
-            if ($amount === NULL) {
-                $form->addError("Musí být vyplněna částka."); //[$uid . '_' . $p['ID'] . '_amount']
-                return;
-            }
-
-            if ($tmpMaturity != "") {
-                $maturity = date("Y-m-d", strtotime($tmpMaturity));
-            } else {
-                if ($values['defaultMaturity'] instanceof \DateTime) {
-                    $maturity = date("Y-m-d", strtotime($values['defaultMaturity']));
-                } else {
-                    $form->addError("Musí být vyplněná splatnost."); //[$uid . '_' . $p['ID'] . '_amount']
-                    return;
-                }
-            }
-            $email = $this->noEmpty($vals[$pid]['email']);
-            $vs = $this->noEmpty($vals[$pid]['vs']);
-            $ks = $tmpKS == "" ? $this->noEmpty($values['defaultKs']) : $tmpKS;
-            $note = $tmpNote == "" ? $this->noEmpty($values['defaultNote']) : $tmpNote;
-
-            $this->model->createPayment($values->oid, $name, $email, $amount, $maturity, $pid, $vs, $ks, $note);
-        }
-
-        $this->flashMessage("Platby byly přidány");
-        $this->redirect("Payment:detail", ["id" => $values->oid]);
-    }
-
-    public function handleCancel($pid): void
+    public function handleCancel(int $pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "danger");
@@ -300,10 +236,13 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Platba pro zrušení nebyla nalezena!", "danger");
             $this->redirect("this");
         }
-        if ($this->model->cancelPayment($pid)) {
-            $this->flashMessage("Platba byla zrušena.");
-        } else {
-            $this->flashMessage("Platbu se nepodařilo zrušit!", "danger");
+
+        try {
+            $this->model->cancelPayment($pid);
+        } catch (PaymentNotFoundException $e) {
+            $this->flashMessage("Platba nenalezena!", "danger");
+        } catch(\Model\Payment\PaymentClosedException $e) {
+            $this->flashMessage("Tato platba už je uzavřená", "danger");
         }
         $this->redirect("this");
     }
@@ -383,17 +322,20 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleComplete($pid): void
+    public function handleComplete(int $pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k uzavření platby!", "danger");
             $this->redirect("this");
         }
-        if ($this->model->completePayment($pid)) {
+
+        try {
+            $this->model->completePayment($pid);
             $this->flashMessage("Platba byla zaplacena.");
-        } else {
-            $this->flashMessage("Platbu se nepodařilo uzavřít!", "danger");
+        } catch(\Model\Payment\PaymentClosedException $e) {
+            $this->flashMessage("Tato platba už je uzavřená", "danger");
         }
+
         $this->redirect("this");
     }
 
@@ -518,11 +460,18 @@ class PaymentPresenter extends BasePresenter
                 $this->flashMessage("Platbu se nepodařilo založit", "danger");
             }
         } else {//ADD
-            if ($this->model->createPayment($v->oid, $v->name, $v->email, $v->amount, $v->maturity, NULL, $v->vs, $v->ks, $v->note)) {
-                $this->flashMessage("Platba byla přidána");
-            } else {
-                $this->flashMessage("Platbu se nepodařilo založit", "danger");
-            }
+            $this->model->createPayment(
+                (int)$v->oid,
+                $v->name,
+                $v->email,
+                (float)$v->amount,
+                \DateTimeImmutable::createFromMutable($v->maturity),
+                NULL,
+                (int)$v->vs,
+                $v->ks !== NULL ? (int)$v->ks : NULL,
+                (string)$v->note
+            );
+            $this->flashMessage("Platba byla přidána");
         }
         $this->redirect("detail", ["id" => $v->oid]);
     }
@@ -614,6 +563,11 @@ class PaymentPresenter extends BasePresenter
         return $form;
     }
 
+    protected function createComponentMassAddForm(): MassAddForm
+    {
+        return $this->massAddFormFactory->create($this->id);
+    }
+
     /**
      * @param int $groupId
      * @param int|NULL $days
@@ -625,7 +579,7 @@ class PaymentPresenter extends BasePresenter
             $this->redraw('pairForm');
         }
         try {
-            $pairsCnt = $this->bank->pairPayments($this->model, $this->aid, $groupId, $days);
+            $pairsCnt = $this->bank->pairPayments($this->aid, $groupId, $days);
         } catch (\Model\BankTimeoutException $exc) {
             $this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
         } catch (\Model\BankTimeLimitException $exc) {

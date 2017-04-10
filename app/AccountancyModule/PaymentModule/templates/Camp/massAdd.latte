@@ -1,52 +1,13 @@
 {block #content}
 <h2 n:block="title">Účastníci bez založené platby</h2>
 {include ../ActionMenu.latte}
-{dump $list}
-{dump $detail}
 {var $stsPrice = 250}
-<a n:href="Payment:detail $detail->id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
+<a n:href="Payment:detail $id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
 
 <h3>{$unitPairs[$aid]}</h3>
 
-{if !empty($list)}
-    {form campForm}
-        <ul class="errors" n:if="$form->hasErrors()">
-            <li n:foreach="$form->errors as $error">{$error}</li>
-        </ul>
-        <table class="table table-bordered table-striped table-condensed">
-            <tr>
-                <th><input type="checkbox" id='reg-all-p' onclick="jqCheckAll(this.id, 'ch')"/></th>
-                <th>Jméno</th>
-                <th>Email</th>
-                <th>Částka</th>
-                <th>Splatnost</th>
-                <th>VS</th>
-                <th>KS</th>
-                <th>Poznámka</th>
-            </tr>
-            <tr>
-                <td colspan="3"><b>Výchozí hodnoty</b> se uloží u záznamů, kde nebude hodnota vyplněna.</td>
-                <td class='col-xs-1'>{input defaultAmount, value=>$detail->defaultAmount, class=>"form-control input-sm"}</td>
-                <td>{input defaultMaturity, value=>$detail->dueDate !== NULL ? $detail->dueDate->format('d.m.Y') : NULL, class=>"form-control input-sm date"}</td>
-                <td class='col-xs-1'>&nbsp;</td>
-                <td class='col-xs-1'>{input defaultKs, value=>$detail->constantSymbol, class=>"form-control input-sm"}</td>
-                <td>{input defaultNote, class=>"form-control input-sm"}</td>
-            </tr>
-            {dump $list}
-            <tr n:foreach="$list as $p">
-                <td><input type=checkbox name="ch[]" value="p_{$p->ID_Person}" class="form-control input-sm"></td>
-                <td title="{$p->Category}"><input type=text name="vals[{$p->ID_Person}][name]" value="{$p->Person}" class="form-control input-sm"></td>
-                <td>{input $p->ID_Person.'_email', name=>"vals[{$p->ID_Person}][email]", class=>"form-control input-sm"}</td>
-                <td class='col-xs-1'><input type=text name="vals[{$p->ID_Person}][amount]" value="{if $p->payment != 0}{$p->payment|number:0:',':''}{/if}" class="form-control input-sm"></td>
-                <td><input type=text name="vals[{$p->ID_Person}][maturity]" class="form-control input-sm"></td>
-                <td class='col-xs-1'><input type=text name="vals[{$p->ID_Person}][vs]" {if $maxVS !== NULL}value="{= ++$maxVS}" {/if}class="form-control input-sm"></td>
-                <td class='col-xs-1'><input type=text name="vals[{$p->ID_Person}][ks]" class="form-control input-sm"></td>
-                <td><input type=text name="vals[{$p->ID_Person}][note]" class="form-control input-sm"></td>
-            </tr>
-        </table>
-
-        {input send}
-    {/form}
+{if $showForm}
+    {control massAddForm}
 {else}
     <p class="well">Nejsou dostupní žádní účastníci, kteří by neměli založenou platbu.</p>
 {/if}

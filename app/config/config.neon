@@ -6,6 +6,7 @@
 #
 parameters:
 	ssl: on
+
 php:
     date.timezone: Europe/Prague
     # zlib.output_compression: yes
@@ -41,7 +42,10 @@ doctrine:
         Model: yaml(%appDir%/model/Infrastructure/mapping/Model)
     types:
         datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
-
+        string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
+    dql:
+        string:
+            field: DoctrineExtensions\Query\Mysql\Field
 dibi:
     driver: mysqli
     host: %database.host%
@@ -49,6 +53,12 @@ dibi:
     password: %database.password%
     database: %database.name%
     charset: utf8
+
+annotations:
+    aliases:
+        enum: Consistence\Doctrine\Enum\EnumAnnotation
+        nullable: Model\Infrastructure\NullableEmbeddables\NullableAnnotation
+
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
@@ -58,9 +68,9 @@ extensions:
     migrations: Zenify\DoctrineMigrations\DI\MigrationsExtension
     console: Kdyby\Console\DI\ConsoleExtension
     events: Kdyby\Events\DI\EventsExtension
-    annotations: Kdyby\Annotations\DI\AnnotationsExtension
+    - Kdyby\Annotations\DI\AnnotationsExtension
     doctrine: Kdyby\Doctrine\DI\OrmExtension
-
+    annotations: Model\Infrastructure\YamlAnnotationsExtension
 
 services:
 
@@ -105,6 +115,7 @@ services:
     - Model\Travel\Repositories\VehicleRepository
     - Model\Payment\Repositories\BankAccountRepository
     - Model\Payment\Repositories\GroupRepository
+    - Model\Payment\Repositories\PaymentRepository
     - Model\Payment\Repositories\UserRepository
 
     # Factories
@@ -126,6 +137,13 @@ services:
     - Model\Services\PdfRenderer
     - Model\Payment\QR\QRGenerator
     - Model\Skautis\Mapper
+
+    - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@annotations.reader)
+    - class: Model\Infrastructure\EnumListener
+      tags: [kdyby.subscriber]
+    - class: Model\Infrastructure\NullableEmbeddables\Listener
+      arguments: { reader: @annotations.reader }
+      tags: [kdyby.subscriber]
 
     nette.mailer:
         class: Nette\Mail\IMailer

@@ -38,7 +38,7 @@
                     <a n:href="Journal: $group->unitId" class="btn btn-primary" ><i class="glyphicon glyphicon-book hidden-xs"></i> Časopisy</a>
                 {/if}
                 <a n:if="$group->type === 'camp'" n:href="Camp:massAdd $group->id" class="btn btn-primary" ><i class="glyphicon glyphicon-plus-sign hidden-xs"></i> Přidat z účastníků</a>
-                <a n:href="massAdd $group->id" class="btn btn-primary">Hromadné přidání <sup style="color:red;">BETA</sup></a>
+                <a n:href="massAdd $group->id" class="btn btn-primary">Hromadné přidání</a>
                 <div class="btn-group">
                     <a class="btn dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#">
                         <i class="glyphicon glyphicon-envelope"></i> Email <span class="caret"></span>
@@ -101,20 +101,28 @@
                     <td>{input send}</td>
                 </tr>
                 {if !empty($payments)}
-                    <tr n:foreach="$payments as $l" {if in_array($l->state, $notFinalStates) && $l->maturity->getTimestamp() < time()}class="danger" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}>
+                    <tr n:foreach="$payments as $l" {if !$l->closed && $l->dueDate < $now}class="danger" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}>
                         <td>{$l->name}</td>
                         <td>{if $l->email == null}&nbsp;{else}{$l->email}{/if}</td>
                         <td class="r">{$l->amount|num}</td>
-                        <td {if $l->vs == null}class="warning" title="Bez VS nebude možné automaticky párovat platby">&nbsp;{else}class="r">{$l->vs}{/if}</td>
-                        <td class="r hidden-xs">{if $l->ks == null}&nbsp;{else}{$l->ks}{/if}</td>
-                        <td class="r">{$l->maturity|date:'j.n.Y'}</td>
-                        <td>{$l->stateLabel|paymentStateLabel|noescape}</td>
-                        <td n:if="$isEditable" class="r nowrap">{if in_array($l->state, $notFinalStates)}
+                        {if $l->variableSymbol === NULL}
+                            <td class="warning" title="Bez VS nebude možné automaticky párovat platby">&nbsp;</td>
+                        {else}
+                            <td class="r">{$l->variableSymbol}</td>
+                        {/if}
+
+                        <td class="r hidden-xs">{$l->constantSymbol ?? '&nbsp;'|noescape}</td>
+                        <td class="r">{$l->dueDate|date:'j.n.Y'}</td>
+                        <td>{$l->state|paymentStateLabel|noescape}</td>
+                        <td n:if="$isEditable" class="r nowrap">
+                        {if !$l->closed}
                             <a n:href="edit $l->id" class="btn btn-sm btn-primary" title="Upravit platbu"><i class="glyphicon glyphicon-edit"></i></a>
-                            <a n:href="send! $l->id" class="btn btn-sm btn-primary{if $l->email == ""} disabled" title="Není uveden email{else}" title="Odeslat email o platbě{/if}" ><i class="glyphicon glyphicon-envelope"></i></a> 
+                            <a n:href="send! $l->id" class="btn btn-sm btn-primary{if $l->email == ""} disabled" title="Není uveden email{else}" title="Odeslat email o platbě{/if}" ><i class="glyphicon glyphicon-envelope"></i></a>
                             <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="glyphicon glyphicon-check"></i></a> 
                             <a n:href="cancel! $l->id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete zrušit platbu?');" title="Zrušit"><i class="glyphicon glyphicon-remove"></i></a>
-                        {elseif $l->dateClosed !== NULL} <span title="Datum uzavření platby">{$l->dateClosed|date:'j.n.Y'}</span> {if $l->transactionId}<span title="Číslo platby na účtu">({$l->transactionId})</span>{/if}
+                        {elseif $l->closed}
+                                <span title="Datum uzavření platby">{$l->closedAt|date:'j.n.Y'}</span>
+                                {if $l->transaction !== NULL}<span title="Číslo platby na účtu">({$l->transaction->id})</span>{/if}
                         {else}&nbsp;{/if}
                     </td>
                 </tr>

@@ -2,12 +2,14 @@
 
 namespace Model;
 
-use Dibi\Row;
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
+use Model\Payment\Payment;
+use Model\Payment\Payment\State;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
+use Model\Payment\Repositories\IPaymentRepository;
 use Skautis\Skautis;
 
 /**
@@ -25,6 +27,9 @@ class PaymentService
     /** @var IGroupRepository */
     private $groups;
 
+    /** @var IPaymentRepository */
+    private $payments;
+
     /** @var IBankAccountRepository */
     private $bankAccounts;
 
@@ -32,18 +37,33 @@ class PaymentService
         PaymentTable $table,
         Skautis $skautis,
         IGroupRepository $groups,
+        IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts
     )
     {
         $this->table = $table;
         $this->skautis = $skautis;
         $this->groups = $groups;
+        $this->payments = $payments;
         $this->bankAccounts = $bankAccounts;
     }
 
     public function get($unitId, $paymentId)
     {
         return $this->table->get($unitId, $paymentId);
+    }
+
+    /**
+	 * @param int $groupId
+	 * @return DTO\Payment[]
+	 */
+    public function findByGroup(int $groupId): array
+    {
+        $payments = $this->payments->findByGroup($groupId);
+
+        return array_map(function(Payment $payment) {
+               return DTO\PaymentFactory::create($payment);
+        }, $payments);
     }
 
     /**
@@ -65,32 +85,13 @@ class PaymentService
         return $result;
     }
 
-    /**
-     *
-     * @param int $groupId
-     * @param string $name
-     * @param string $email
-     * @param float $amount
-     * @param string $maturity
-     * @param int $personId
-     * @param int $vs
-     * @param int $ks
-     * @param string $note
-     * @return bool
-     */
-    public function createPayment($groupId, $name, $email, $amount, $maturity, $personId = NULL, $vs = NULL, $ks = NULL, $note = NULL): bool
+    public function createPayment(int $groupId, string $name, ?string $email, float $amount, \DateTimeImmutable $dueDate, ?int $personId, ?int $vs, ?int $ks, string $note): void
     {
-        return $this->table->createPayment([
-            'groupId' => $groupId,
-            'name' => $name,
-            'email' => $email,
-            'personId' => $personId,
-            'amount' => $amount != "" ? $amount : NULL,
-            'maturity' => $maturity,
-            'vs' => $vs != "" ? $vs : NULL,
-            'ks' => $ks != "" ? $ks : NULL,
-            'note' => $note,
-        ]);
+        $group = $this->groups->find($groupId);
+
+        $payment = new Payment($group, $name, $email, $amount, $dueDate, $vs, $ks, $personId, $note);
+
+        $this->payments->save($payment);
     }
 
     /**
@@ -103,24 +104,20 @@ class PaymentService
         return $this->table->update($pid, $arr);
     }
 
-    /**
-     * @param int $pid
-     * @return bool
-     */
-    public function cancelPayment($pid): bool
+    public function cancelPayment(int $pid): void
     {
-        return $this->update($pid, ["state" => "canceled", "dateClosed" => date("Y-m-d H:i:s")]);
+        $payment = $this->payments->find($pid);
+        $payment->cancel(new \DateTimeImmutable());
+
+        $this->payments->save($payment);
     }
 
-    /**
-     * @param int $pid
-     * @param int|NULL $transactionId
-     * @param string|NULL $paidFrom
-     * @return bool
-     */
-    public function completePayment($pid, $transactionId = NULL, $paidFrom = NULL): bool
+    public function completePayment(int $id): void
     {
-        return $this->update($pid, ["state" => "completed", "dateClosed" => date("Y-m-d H:i:s"), "transactionId" => $transactionId, "paidFrom" => $paidFrom]);
+        $payment = $this->payments->find($id);
+        $payment->complete(new \DateTimeImmutable());
+
+        $this->payments->save($payment);
     }
 
     /**
@@ -206,7 +203,7 @@ class PaymentService
         return $group->getId();
     }
 
-    public function updateGroupV2(
+    public function updateGroup(
         int $id,
         string $name,
         ?float $defaultAmount,
@@ -573,15 +570,19 @@ class PaymentService
     public function generateVs(int $gid): int
     {
         $nextVS = $this->getNextVS($gid);
-        $payments = $this->groups->getAll($gid);
-        $cnt = 0;
+        $payments = $this->payments->findByGroup($gid);
+
+        $payments = array_filter($payments, function(Payment $p) {
+            return $p->getVariableSymbol() === NULL && $p->getState()->equalsValue(State::PREPARING);
+        });
+
         foreach ($payments as $payment) {
-            if (empty($payment->vs) && $payment->state == "preparing") {
-                $this->update($payment->id, ["vs" => ++$nextVS]);
-                $cnt++;
-            }
+            $payment->updateVariableSymbol($nextVS++);
         }
-        return $cnt;
+
+        $this->payments->saveMany($payments);
+
+        return count($payments);
     }
 
 

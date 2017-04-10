@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f13c13736d888ea3e069852cf079fa44",
+    "content-hash": "a5e282358c7f3f27c86060ec07f07a9c",
     "packages": [
         {
             "name": "arachne/container-adapter",
@@ -111,6 +111,68 @@
             ],
             "abandoned": "symplify/symfony-event-dispatcher",
             "time": "2016-10-08T10:39:52+00:00"
+        },
+        {
+            "name": "beberlei/DoctrineExtensions",
+            "version": "v1.0.15",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/beberlei/DoctrineExtensions.git",
+                "reference": "47f6683377740ce69546726cfb55cadc1dfb69a0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/beberlei/DoctrineExtensions/zipball/47f6683377740ce69546726cfb55cadc1dfb69a0",
+                "reference": "47f6683377740ce69546726cfb55cadc1dfb69a0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "doctrine/orm": "~2.1",
+                "nesbot/carbon": "*",
+                "phpunit/phpunit": "~4.5",
+                "symfony/yaml": "~2.6",
+                "zf1/zend-date": "~1.12",
+                "zf1/zend-registry": "~1.12"
+            },
+            "suggest": {
+                "nesbot/carbon": "Alternative to DateTime",
+                "zf1/zend-date": "Alternative to DateTime"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DoctrineExtensions\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Steve Lacey",
+                    "email": "steve@stevelacey.net"
+                }
+            ],
+            "description": "A set of extensions to Doctrine 2 that add support for additional query functions available in MySQL and Oracle.",
+            "keywords": [
+                "database",
+                "doctrine",
+                "orm"
+            ],
+            "time": "2017-03-27T05:57:42+00:00"
         },
         {
             "name": "consistence/consistence",
@@ -961,6 +1023,49 @@
                 "orm"
             ],
             "time": "2016-12-18T15:42:34+00:00"
+        },
+        {
+            "name": "fmasa/doctrine-yaml-annotations",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fmasa/doctrine-yaml-annotations.git",
+                "reference": "701a2539e9dbec0fdd26b97d9091ccf6a2689b65"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fmasa/doctrine-yaml-annotations/zipball/701a2539e9dbec0fdd26b97d9091ccf6a2689b65",
+                "reference": "701a2539e9dbec0fdd26b97d9091ccf6a2689b65",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "^2.5",
+                "php": "^7.0",
+                "symfony/yaml": "^3.2"
+            },
+            "require-dev": {
+                "phpunit/phpcov": "^4.0",
+                "phpunit/phpunit": "^6.0",
+                "satooshi/php-coveralls": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fmasa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "František Maša",
+                    "email": "frantisekmasa1@gmail.com"
+                }
+            ],
+            "description": "Custom annotations for YAML mapping",
+            "time": "2017-04-02T12:44:40+00:00"
         },
         {
             "name": "foowie/dependentselectbox",
@@ -2667,33 +2772,33 @@
         },
         {
             "name": "nextras/forms",
-            "version": "v1.6.2",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextras/forms.git",
-                "reference": "2c42d31cfd46acebb9eedd15cc16b9568a352c5f"
+                "reference": "e2de1c3a8573bb8ea2c6122bd19bebef7a6f01a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextras/forms/zipball/2c42d31cfd46acebb9eedd15cc16b9568a352c5f",
-                "reference": "2c42d31cfd46acebb9eedd15cc16b9568a352c5f",
+                "url": "https://api.github.com/repos/nextras/forms/zipball/e2de1c3a8573bb8ea2c6122bd19bebef7a6f01a0",
+                "reference": "e2de1c3a8573bb8ea2c6122bd19bebef7a6f01a0",
                 "shasum": ""
             },
             "require": {
-                "nette/application": "~2.2",
-                "nette/component-model": "~2.2",
-                "nette/forms": "~2.2",
-                "nette/utils": "~2.2",
-                "php": ">=5.4"
+                "latte/latte": "~2.4",
+                "nette/application": "~2.4",
+                "nette/component-model": "~2.3",
+                "nette/forms": "~2.4",
+                "nette/utils": "~2.4",
+                "php": ">=5.6"
             },
             "require-dev": {
-                "latte/latte": "~2.2",
                 "nette/tester": "~1.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6-dev"
+                    "dev-master": "2.0-dev"
                 }
             },
             "autoload": {
@@ -2703,30 +2808,20 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD-3-Clause",
-                "GPL-2.0",
-                "GPL-3.0"
+                "MIT"
             ],
             "authors": [
                 {
-                    "name": "David Grudl",
-                    "homepage": "http://davidgrudl.com"
-                },
-                {
                     "name": "Nextras Community",
                     "homepage": "https://github.com/nextras/forms/graphs/contributors"
-                },
-                {
-                    "name": "Jan Škrášek",
-                    "homepage": "http://jan.skrasek.com"
                 }
             ],
-            "description": "Extra form components for Nette Framework.",
+            "description": "Form components for Nette Framework.",
             "keywords": [
                 "form",
                 "nette"
             ],
-            "time": "2016-07-12T11:15:27+00:00"
+            "time": "2016-10-05T23:03:39+00:00"
         },
         {
             "name": "nextras/mail-panel",

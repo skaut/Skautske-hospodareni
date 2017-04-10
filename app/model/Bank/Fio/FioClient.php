@@ -67,11 +67,11 @@ class FioClient extends Nette\Object
                 $transactions[] = new Transaction(
                     (string)$this->getValue($transaction, self::ID),
                     \DateTime::createFromFormat('Y-m-dO', $this->getValue($transaction, self::DATE)),
-                    $this->getValue($transaction, self::AMOUNT),
+                    $this->getFloatValue($transaction, self::AMOUNT),
                     $bankAccount,
                     $this->getValue($transaction, self::NAME) ?: $this->getValue($transaction, self::USER),
-                    $this->getValue($transaction, self::VARIABLE_SYMBOL),
-                    $this->getValue($transaction, self::CONSTANT_SYMBOL),
+                    $this->getIntValue($transaction, self::VARIABLE_SYMBOL),
+                    $this->getIntValue($transaction, self::CONSTANT_SYMBOL),
                     $this->getValue($transaction, self::NOTE)
                 );
             }
@@ -90,6 +90,18 @@ class FioClient extends Nette\Object
         return isset($transaction[$column])
             ? $transaction[$column]['value']
             : NULL;
+    }
+
+    private function getIntValue(array $transaction, string $column): ?int
+    {
+        $value = $this->getValue($transaction, $column);
+        return $value !== NULL ? (int)$value : NULL;
+    }
+
+    private function getFloatValue(array $transaction, string $column): ?float
+    {
+        $value = $this->getValue($transaction, $column);
+        return $value !== NULL ? (float)$value : NULL;
     }
 
     /**
