@@ -19,6 +19,7 @@ use Nette\SmartObject;
  * @property-read string $emailTemplate
  * @property-read int|NULL $smtpId
  * @property-read string $note
+ * @property-read Summary[] $stats
  */
 class Group
 {
@@ -64,6 +65,9 @@ class Group
     /** @var string */
     private $note;
 
+    /** @var Summary[] */
+    private $stats;
+
     public function __construct(
         int $id,
         ?string $type,
@@ -77,7 +81,8 @@ class Group
         string $state,
         string $emailTemplate,
         ?int $smtpId,
-        string $note)
+        string $note,
+        array $stats)
     {
         $this->id = $id;
         $this->type = $type;
@@ -92,6 +97,7 @@ class Group
         $this->emailTemplate = $emailTemplate;
         $this->smtpId = $smtpId;
         $this->note = $note;
+        $this->stats = $stats;
     }
 
 
@@ -185,6 +191,14 @@ class Group
     public function getNote(): string
     {
         return $this->note;
+    }
+
+    /**
+     * @return Summary[]
+     */
+    public function getStats(): array
+    {
+        return $this->stats;
     }
 
 }

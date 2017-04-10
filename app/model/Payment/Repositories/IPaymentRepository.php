@@ -4,6 +4,7 @@ namespace Model\Payment\Repositories;
 
 use Model\Payment\Payment;
 use Model\Payment\PaymentNotFoundException;
+use Model\Payment\Summary;
 
 interface IPaymentRepository
 {
@@ -20,6 +21,12 @@ interface IPaymentRepository
      * @return Payment[]
      */
     public function findByGroup(int $groupId): array;
+
+    /**
+     * @param int[] $groupIds
+     * @return Summary[][]
+     */
+    public function summarizeGroups(array $groupIds): array;
 
     public function save(Payment $payment): void;
 

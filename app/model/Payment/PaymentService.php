@@ -10,6 +10,7 @@ use Model\Payment\Payment\State;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
+use Model\Payment\Summary;
 use Skautis\Skautis;
 
 /**
@@ -66,25 +67,6 @@ class PaymentService
         }, $payments);
     }
 
-    /**
-     *
-     * @param int|array $pa_groupIds
-     * @param bool $useHierarchy
-     * @return array
-     */
-    public function getAll($pa_groupIds, $useHierarchy = FALSE)
-    {
-        $result = $this->table->getAllPayments(is_array($pa_groupIds) ? $pa_groupIds : [$pa_groupIds]);
-        if ($useHierarchy) {
-            $tmp = [];
-            foreach ($result as $v) {//roztrizeni podle událostí
-                $tmp[$v->groupId][] = $v;
-            }
-            $result = $tmp;
-        }
-        return $result;
-    }
-
     public function createPayment(int $groupId, string $name, ?string $email, float $amount, \DateTimeImmutable $dueDate, ?int $personId, ?int $vs, ?int $ks, string $note): void
     {
         $group = $this->groups->find($groupId);
@@ -130,16 +112,6 @@ class PaymentService
     }
 
     /**
-     * spočte částky v jednotlivých stavech platby
-     * @param int $pa_groupId
-     * @return array
-     */
-    public function summarizeByState($pa_groupId)
-    {
-        return $this->table->summarizeByState($pa_groupId);
-    }
-
-    /**
      * číslo účtu jednotky ze skautisu
      * @param int $unitId
      * @return string|NULL
@@ -168,9 +140,18 @@ class PaymentService
     {
         $groups = $this->groups->findByUnits($unitIds, $onlyOpen);
 
-        return array_map(function(Group $group) {
+        return array_map(function (Group $group) {
             return DTO\GroupFactory::create($group);
         }, $groups);
+    }
+
+    /**
+     * @param int[] $groupIds
+     * @return Summary[][]
+     */
+    public function getGroupSummaries(array $groupIds): array
+    {
+        return $this->payments->summarizeGroups($groupIds);
     }
 
     public function createGroup(
