@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use Model\DTO\Payment\Payment;
+use Model\Payment\Payment\State;
 use Nette\Application\UI\Form;
 
 /**
@@ -108,24 +110,13 @@ class GroupPresenter extends BasePresenter
             "gid" => $id,
         ]);
 
-        $disableNextVs = FALSE;
-        $payments = $this->model->getAll($dto->getId());
-        // pouze nezrušené platby
-        $payments = array_filter($payments, function ($obj) {
-            return $obj->state != "canceled";
-        });
-        if (count($payments) > 0) {
-            $vss = array_map(function ($obj) {
-                return $obj->vs;
-            }, $payments);
-            if (max($vss) != "") {
-                $disableNextVs = TRUE;
-            }
-        } else {
-            $disableNextVs = TRUE;
-        }
+        $payments = $this->model->findByGroup($dto->getId());
 
-        if ($disableNextVs) {
+        $withVs = array_filter($payments, function(Payment $payment) {
+            return !$payment->getState()->equalsValue(State::CANCELED) && $payment->getVariableSymbol() !== NULL;
+        });
+
+        if(!empty($withVs)) {
             $form["nextVs"]->setDisabled(TRUE);
         }
 
