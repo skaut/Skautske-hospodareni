@@ -133,9 +133,9 @@ class GroupPresenter extends BasePresenter
         $this->template->linkBack = $this->link("Payment:detail", ["id" => $id]);
     }
 
-    protected function createComponentGroupForm($name): Form
+    protected function createComponentGroupForm(): Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = $this->formFactory->create();
         $form->addSelect("sisId");
         $form->addText("label", "Název")
             ->setAttribute("class", "form-control")
@@ -156,8 +156,8 @@ class GroupPresenter extends BasePresenter
             ->setMaxLength(10)
             ->addCondition(Form::FILLED)
             ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
-        $form->addSelect("smtp", "Odesílací email", $this->mail->getPairs($this->aid))
-            ->setPrompt('Vyberte email');
+        $form->addSelect("smtp", "Email odesílatele", $this->mail->getPairs($this->aid))
+            ->setPrompt("Vyberte email");
         $form->addTextArea("email_info", "Informační email")
             ->setAttribute("class", "form-control")
             ->setDefaultValue($this->getDefaultEmail('info'));
