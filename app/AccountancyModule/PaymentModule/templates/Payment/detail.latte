@@ -22,7 +22,7 @@
                 </td>
             </tr>
             <tr n:foreach="$summarize as $name=>$r">
-                <th class="l">{$name}&nbsp;({$r->count}): </th>
+                <th class="l">{$name|paymentState:TRUE}&nbsp;({$r->count}): </th>
                 <td class="r">{if $r->amount != null}{$r->amount|num} Kč{else}&nbsp;{/if}</td>
             </tr>
         </table>

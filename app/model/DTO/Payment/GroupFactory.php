@@ -7,7 +7,12 @@ use Model\Payment\Group as GroupEntity;
 class GroupFactory
 {
 
-    public static function create(GroupEntity $group): Group
+    /**
+     * @param GroupEntity $group
+     * @param Summary[] $stats
+     * @return Group
+     */
+    public static function create(GroupEntity $group, array $stats = []): Group
     {
         return new Group(
             $group->getId(),
@@ -22,7 +27,8 @@ class GroupFactory
             $group->getState(),
             $group->getEmailTemplate(),
             $group->getSmtpId(),
-            $group->getNote()
+            $group->getNote(),
+            $stats
         );
     }
 

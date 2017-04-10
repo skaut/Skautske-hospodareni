@@ -4,12 +4,16 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
+use Consistence\Type\ArrayType\ArrayType;
+use Consistence\Type\ArrayType\KeyValuePair;
 use Model\BankService;
 use Model\DTO\Payment\Group;
+use Model\DTO\Payment\Payment;
 use Model\Mail\MailerNotFoundException;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\MailingService;
+use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
 use Model\PaymentService;
 use Model\UnitService;
@@ -77,14 +81,12 @@ class PaymentPresenter extends BasePresenter
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
 
-        $summarizations = [];
-        foreach($groups as $group) {
-            $summarizations[$group->getId()] = $this->model->summarizeByState($group->getId());
-        }
+        $groupIds = array_map(function(Group $group) {
+            return $group->getId();
+        }, $groups);
 
         $this->template->groups = $groups;
-        $this->template->summarizations = $summarizations;
-        $this->template->payments = $this->model->getAll(array_keys($groups));
+        $this->template->summarizations = $this->model->getGroupSummaries($groupIds);
     }
 
     public function actionDetail($id): void
@@ -116,7 +118,7 @@ class PaymentPresenter extends BasePresenter
         ]);
 
         $this->template->payments = $payments = $this->model->findByGroup($id);
-        $this->template->summarize = $this->model->summarizeByState($id);
+        $this->template->summarize = $this->model->getGroupSummaries([$id])[$id];
         $this->template->now = new \DateTimeImmutable();
         $paymentsForSendEmail = array_filter($payments, function($p) {
             return strlen($p->email) > 4 && $p->state == "preparing";
@@ -192,10 +194,12 @@ class PaymentPresenter extends BasePresenter
             "gid" => $group->getId(),
             "accountFrom" => $accountFrom,
         ]);
+
+        /* @var $payments Payment[] */
         $payments = [];
-        foreach ($this->model->getAll($id) as $p) {
-            if ($p->state == "completed" && $p->personId != NULL) {
-                $payments[$p->personId] = $p;
+        foreach ($this->model->findByGroup($id) as $p) {
+            if ($p->getState()->equalsValue(State::COMPLETED) && $p->getPersonId() !== NULL) {
+                $payments[$p->getPersonId()] = $p;
             }
         }
         $participantsWithRepayment = array_filter($campService->participants->getAll($group->getSkautisId()), function ($p) {
@@ -215,7 +219,7 @@ class PaymentPresenter extends BasePresenter
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
                 ->setRequired("Zadejte částku vratky u " . $p->Person)
                 ->addRule(Form::NUMERIC, "Vratka musí být číslo!");
-            $account = isset($payments[$p->ID_Person]->paidFrom) ? $payments[$p->ID_Person]->paidFrom : "";
+            $account = $payments[$p->ID_Person]->getTransaction()->getBankAccount() ?? "";
             $form->addText($pid . "_account")
                 ->setDefaultValue($account)
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
