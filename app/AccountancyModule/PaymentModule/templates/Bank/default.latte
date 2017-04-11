@@ -1,5 +1,5 @@
 {define #noEmpty $val}
-{php echo $val == "" ? "&nbsp;" : $val;}
+{php echo $val === "" || $val === NULL ? "&nbsp;" : $val;}
 {/define}
 
 {block #content}
@@ -43,11 +43,11 @@
             <tr n:foreach="$transactions as $t">
                 <td>{$t->date|date:'j.n.Y'}</td>
                 <td class="r">{$t->amount}</td>
-                <td class="r">{include #noEmpty val=>$t->bankAccount}</td>
-                <td>{include #noEmpty val=>$t->name}</td>
-                <td class="r">{include #noEmpty val=>$t->constantSymbol}</td>
-                <td class="r">{include #noEmpty val=>$t->variableSymbol}</td>
-                <td>{include #noEmpty val=>$t->note}</td>
+                <td class="r">{include #noEmpty $t->bankAccount}</td>
+                <td>{include #noEmpty $t->name}</td>
+                <td class="r">{include #noEmpty $t->constantSymbol}</td>
+                <td class="r">{include #noEmpty $t->variableSymbol}</td>
+                <td>{include #noEmpty $t->note}</td>
             </tr>
         </table>
     {else}
