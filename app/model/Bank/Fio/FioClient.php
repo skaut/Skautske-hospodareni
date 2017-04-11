@@ -62,14 +62,16 @@ class FioClient extends Nette\Object
 
                 $bankAccount = $bankAccount
                     ? $bankAccount . '/' . $this->getValue($transaction, self::BANK_ID)
-                    : NULL;
+                    : "";
+
+                $name = $this->getValue($transaction, self::NAME) ?? $this->getValue($transaction, self::USER);
 
                 $transactions[] = new Transaction(
                     (string)$this->getValue($transaction, self::ID),
                     \DateTime::createFromFormat('Y-m-dO', $this->getValue($transaction, self::DATE)),
                     $this->getFloatValue($transaction, self::AMOUNT),
                     $bankAccount,
-                    $this->getValue($transaction, self::NAME) ?: $this->getValue($transaction, self::USER),
+                    $name ?? "",
                     $this->getIntValue($transaction, self::VARIABLE_SYMBOL),
                     $this->getIntValue($transaction, self::CONSTANT_SYMBOL),
                     $this->getValue($transaction, self::NOTE)
