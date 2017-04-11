@@ -5,7 +5,10 @@
 # http://nette.org/security-warning
 #
 parameters:
-	ssl: on
+    ssl: on
+
+    slack:
+        url: "https://hooks.slack.com/services/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"
 
 php:
     date.timezone: Europe/Prague
@@ -59,6 +62,13 @@ annotations:
         enum: Consistence\Doctrine\Enum\EnumAnnotation
         nullable: Model\Infrastructure\NullableEmbeddables\NullableAnnotation
 
+monolog:
+
+    name: hskauting
+
+    handlers:
+        slackWebhook:
+            class: Monolog\Handler\SlackWebhookHandler(%slack.url%)
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
@@ -66,6 +76,7 @@ extensions:
     - Arachne\ContainerAdapter\DI\ContainerAdapterExtension
     - Arachne\EventDispatcher\DI\EventDispatcherExtension
     migrations: Zenify\DoctrineMigrations\DI\MigrationsExtension
+    monolog: Kdyby\Monolog\DI\MonologExtension
     console: Kdyby\Console\DI\ConsoleExtension
     events: Kdyby\Events\DI\EventsExtension
     - Kdyby\Annotations\DI\AnnotationsExtension

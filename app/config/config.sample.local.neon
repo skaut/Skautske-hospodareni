@@ -6,6 +6,9 @@ skautis:
     applicationId: 48104fe2-b447-47f5-9a26-051c710da74e
     testMode: true
 
+    slack:
+        url: null # Disable logging to slack
+
 parameters:
     sendEmail: FALSE
 
