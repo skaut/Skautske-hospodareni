@@ -45,7 +45,7 @@ class PaymentRepository implements IPaymentRepository
             ->from(Payment::class, 'p')
             ->join('p.group', 'g')
             ->where('g.id = :groupId')
-            ->orderBy('FIELD (g.state, :states)')
+            ->orderBy('FIELD (p.state, :states)')
             ->setParameter('groupId', $groupId)
             ->setParameter('states', self::STATE_ORDER, Connection::PARAM_STR_ARRAY)
             ->getQuery()->getResult();
