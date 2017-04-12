@@ -231,6 +231,11 @@ class PaymentService
         $this->groups->save($group);
     }
 
+    public function getMaxVariableSymbol(int $groupId): ?int
+    {
+        return $this->payments->getMaxVariableSymbol($groupId);
+    }
+
     /**
      * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby
      * @param int $groupId
