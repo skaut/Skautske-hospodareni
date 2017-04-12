@@ -25,8 +25,6 @@ use Nette\Mail\SmtpException;
 class PaymentPresenter extends BasePresenter
 {
 
-    protected $notFinalStates;
-
     /**
      *
      * @var BankService
@@ -70,7 +68,6 @@ class PaymentPresenter extends BasePresenter
     {
         parent::startup();
         //Kontrola ověření přístupu
-        $this->template->notFinalStates = $this->notFinalStates = $this->model->getNonFinalStates();
         $this->readUnits = $this->unitService->getReadUnits($this->user);
         $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
