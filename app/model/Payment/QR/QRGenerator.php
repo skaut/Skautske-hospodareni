@@ -2,7 +2,7 @@
 
 namespace Model\Payment\QR;
 
-use Model\DTO\Payment\Payment;
+use Model\Payment\Mailing\Payment;
 use Model\Payment\InvalidBankAccountException;
 
 class QRGenerator implements IQRGenerator

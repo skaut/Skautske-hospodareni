@@ -3,8 +3,7 @@
 namespace Model\Payment;
 
 use DateTimeImmutable;
-use Model\DTO\Payment\Payment as PaymentDTO;
-use Model\DTO\Payment\PaymentFactory;
+use Model\Payment\Mailing\Payment as MailPayment;
 use Model\Mail\IMailerFactory;
 use Model\MailTable;
 use Model\Payment\Payment\State;
@@ -112,20 +111,14 @@ class MailingService
             throw new EmailNotSetException();
         }
 
-        $payment = new PaymentDTO(
-            1,
-            'Testovací účel',
+        $payment = new MailPayment(
+            "Testovací účel",
             $group->getDefaultAmount() ?? rand(50, 1000),
             $user->getEmail(),
             $group->getDueDate() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
             $group->getConstantSymbol(),
-            'obsah poznámky',
-            FALSE,
-            State::get(State::PREPARING),
-            NULL,
-            NULL,
-            NULL
+            "obsah poznámky"
         );
 
         $this->send($group, $payment, $bankAccount, $user);
@@ -150,7 +143,7 @@ class MailingService
             throw new PaymentClosedException();
         }
 
-        $this->send($group, PaymentFactory::create($paymentRow), $bankAccount, $user);
+        $this->send($group, $this->createPayment($paymentRow), $bankAccount, $user);
 
         if($paymentRow->getState()->equalsValue(State::SENT)) {
             return;
@@ -159,7 +152,7 @@ class MailingService
         $paymentRow->markSent();
     }
 
-    private function send(Group $group, PaymentDTO $payment, ?string $bankAccount, User $user) : void
+    private function send(Group $group, MailPayment $payment, ?string $bankAccount, User $user) : void
     {
         $email = $payment->getEmail();
         if ($email === NULL || !Validators::isEmail($email)) {
@@ -202,6 +195,19 @@ class MailingService
 
         $smtp = $this->smtps->get($group->getSmtpId());
         $this->mailerFactory->create($smtp->toArray())->send($mail);
+    }
+
+    private function createPayment(Payment $payment): MailPayment
+    {
+        return new MailPayment(
+                $payment->getName(),
+                $payment->getAmount(),
+                $payment->getEmail(),
+                $payment->getDueDate(),
+                $payment->getVariableSymbol(),
+                $payment->getConstantSymbol(),
+                $payment->getNote()
+        );
     }
 
 }
