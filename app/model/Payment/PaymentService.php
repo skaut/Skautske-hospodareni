@@ -246,12 +246,12 @@ class PaymentService
      * @param int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
      * @return array[] array($personId => array(...))
      */
-    public function getPersons($unitId, $groupId = NULL)
+    public function getPersons($unitId, ?int $groupId = NULL)
     {
         $result = [];
         $persons = $this->skautis->org->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => TRUE]);
         if ($groupId !== NULL) {
-            $payments_personIds = $this->table->getActivePaymentIds($groupId);
+            $payments_personIds = $this->getPersonsWithActivePayment($groupId);
             if (is_array($persons)) {
                 $persons = array_filter($persons, function ($v) use ($payments_personIds) {
                     return !in_array($v->ID, $payments_personIds);
@@ -338,9 +338,9 @@ class PaymentService
                 return strcmp($a->Person, $b->Person);
             });
 
-            $payments_personIds = $this->table->getActivePaymentIds($groupId);
-            $persons = array_filter($persons, function ($v) use ($payments_personIds) {
-                return !in_array($v->ID_Person, $payments_personIds);
+            $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
+            $persons = array_filter($persons, function ($v) use ($personsWithPayment) {
+                return !in_array($v->ID_Person, $personsWithPayment);
             });
 
             foreach ($persons as $p) {
@@ -571,5 +571,22 @@ class PaymentService
         return count($payments);
     }
 
+    /**
+     * @param int $groupId
+     * @return int[]
+     */
+    private function getPersonsWithActivePayment(int $groupId): array
+    {
+        $payments = $this->payments->findByGroup($groupId);
+
+        $payments = array_filter($payments, function(Payment $payment) {
+            return $payment->getPersonId() !== NULL && !$payment->getState()->equalsValue(State::CANCELED);
+        });
+
+        return array_map(function(Payment $payment) {
+            return $payment->getPersonId();
+        }, $payments);
+
+    }
 
 }
