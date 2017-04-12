@@ -161,8 +161,7 @@ class PaymentService
 
     public function createGroup(
         int $unitId,
-        ?string $oType,
-        ?int $sisId,
+        Group\SkautisObject $object,
         string $label,
         ?\DateTime $maturity,
         ?int $ks,
@@ -173,9 +172,8 @@ class PaymentService
     ): int
     {
         $group = new Group(
-            $oType,
             $unitId,
-            $sisId,
+            $object,
             $label,
             $amount ? $amount : NULL,
             $maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,

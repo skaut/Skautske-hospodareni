@@ -9,15 +9,9 @@ Model\Payment\Group:
             generator: { strategy: AUTO }
 
     fields:
-        type:
-            type: string
-            column: groupType
         unitId:
             type: integer
             column: unitId
-        skautisId:
-            type: integer
-            column: sisId
         name:
             type: string
             nullable: true
@@ -55,3 +49,10 @@ Model\Payment\Group:
         smtpId:
             type: integer
             nullable: true
+
+    embedded:
+        object:
+            class: Model\Payment\Group\SkautisObject
+            columnPrefix: false
+            annotations:
+                nullable: {}

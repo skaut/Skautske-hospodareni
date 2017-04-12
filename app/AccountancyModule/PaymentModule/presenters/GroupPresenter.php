@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use Model\Payment\Group\SkautisObject;
+use Model\Payment\Group\Type;
 use Nette\Application\UI\Form;
 
 /**
@@ -188,10 +190,13 @@ class GroupPresenter extends BasePresenter
 
             $this->flashMessage('Skupina byla upravena');
         } else {//ADD
+            $type = Type::isValidValue($v->type) ? Type::get($v->type) : NULL;
+
+            $object = $type !== NULL ? new SkautisObject((int)$v->sisId, $type) : NULL;
+
             $groupId = $this->model->createGroup(
                 $this->aid,
-                $v->type != "" ? $v->type : NULL,
-                isset($v->sisId) ? (int)$v->sisId : NULL,
+                $object,
                 $v->label,
                 $v->maturity,
                 $v->ks ? (int)$v->ks : NULL,
