@@ -14,15 +14,6 @@ class PaymentTable extends BaseTable
     const PAYMENT_STATE_SEND = "send";
 
     /**
-     * @param int $pa_groupId
-     * @return array
-     */
-    public function getActivePaymentIds($pa_groupId)
-    {
-        return $this->connection->fetchPairs("SELECT id, personId FROM [" . self::TABLE_PA_PAYMENT . "] WHERE groupId=%i ", $pa_groupId, " AND state != 'canceled'");
-    }
-
-    /**
      * @param int $paymentId
      * @param array $arr
      * @param bool $notClosed
