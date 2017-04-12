@@ -450,23 +450,30 @@ class PaymentPresenter extends BasePresenter
             $form['maturity']->addError("Musíte vyplnit splatnost");
             return;
         }
-        if ($v->pid != "") {//EDIT
-            if ($this->model->update($v->pid, ['state' => 'preparing', 'name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => (string)$v->note])) {
-                $this->flashMessage("Platba byla upravena");
-            } else {
-                $this->flashMessage("Platbu se nepodařilo založit", "danger");
-            }
+
+        $id = $v->pid != "" ? (int)$v->pid : NULL;
+        $name = $v->name;
+        $email = $v->email;
+        $amount = (float)$v->amount;
+        $dueDate = \DateTimeImmutable::createFromMutable($v->maturity);
+        $variableSymbol = $v->vs !== "" ? (int)$v->vs : NULL;
+        $constantSymbol = $v->ks !=="" ? (int)$v->ks : NULL;
+        $note = (string)$v->note;
+
+        if ($id !== NULL) {//EDIT
+            $this->model->update($id, $name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+            $this->flashMessage("Platba byla upravena");
         } else {//ADD
             $this->model->createPayment(
                 (int)$v->oid,
-                $v->name,
-                $v->email,
-                (float)$v->amount,
-                \DateTimeImmutable::createFromMutable($v->maturity),
+                $name,
+                $email,
+                $amount,
+                $dueDate,
                 NULL,
-                (int)$v->vs,
-                $v->ks !== NULL ? (int)$v->ks : NULL,
-                (string)$v->note
+                $variableSymbol,
+                $constantSymbol,
+                $note
             );
             $this->flashMessage("Platba byla přidána");
         }

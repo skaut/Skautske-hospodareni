@@ -10,33 +10,6 @@ use Dibi\Row;
 class PaymentTable extends BaseTable
 {
 
-    const PAYMENT_STATE_PREPARING = "preparing";
-    const PAYMENT_STATE_SEND = "send";
-
-    /**
-     * @param int $paymentId
-     * @param array $arr
-     * @param bool $notClosed
-     * @return bool
-     */
-    public function update($paymentId, $arr, $notClosed = TRUE): bool
-    {
-        $q = $this->connection->update(self::TABLE_PA_PAYMENT, $arr)->where("id=%i", $paymentId);
-        if ($notClosed) {
-            $q->where("state in %in", $this->getNonFinalStates());
-        }
-        return (bool)$q->execute();
-    }
-
-    /**
-     * seznam stavů, které jsou nedokončené
-     * @return array
-     */
-    private function getNonFinalStates()
-    {
-        return [self::PAYMENT_STATE_PREPARING, self::PAYMENT_STATE_SEND];
-    }
-
     /**
      * @param string $groupType
      * @param int $sisId

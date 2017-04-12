@@ -103,6 +103,48 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment->updateVariableSymbol(789789);
     }
 
+    public function testUpdate()
+    {
+        $payment = $this->createPayment();
+
+        $name = "František Maša";
+        $amount = 300;
+        $email = "franta@gmail.com";
+        $dueDate = new DateTimeImmutable();
+        $variableSymbol = 789;
+        $constantSymbol = 123;
+        $note = "Never pays!";
+
+        $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+
+        $this->assertSame($name, $payment->getName());
+        $this->assertSame($email, $payment->getEmail());
+        $this->assertSame((float)$amount, $payment->getAmount());
+        $this->assertSame($dueDate, $payment->getDueDate());
+        $this->assertSame($variableSymbol, $payment->getVariableSymbol());
+        $this->assertSame($constantSymbol, $payment->getConstantSymbol());
+        $this->assertSame($note, $payment->getNote());
+    }
+
+    public function testCannotUpdateClosedPayment()
+    {
+        $payment = $this->createPayment();
+
+        $name = "František Maša";
+        $amount = 300;
+        $email = "franta@gmail.com";
+        $dueDate = new DateTimeImmutable();
+        $variableSymbol = 789;
+        $constantSymbol = 123;
+        $note = "Never pays!";
+
+        $payment->complete(new DateTimeImmutable());
+
+        $this->expectException(PaymentClosedException::class);
+
+        $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+    }
+
     private function createPayment(): Payment
     {
         $group = m::mock(Group::class);
