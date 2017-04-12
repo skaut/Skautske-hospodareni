@@ -141,7 +141,6 @@ services:
     - Model\EventTable
     - Model\MailTable
     - Model\ParticipantTable
-    - Model\PaymentTable
     - Model\Skautis\ObjectTable
     - Model\TravelTable
 

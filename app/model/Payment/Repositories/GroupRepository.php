@@ -7,6 +7,7 @@ namespace Model\Payment\Repositories;
 use Kdyby\Doctrine\Connection;
 use Kdyby\Doctrine\EntityManager;
 use Model\Payment\Group;
+use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFoundException;
 
 class GroupRepository implements IGroupRepository
@@ -53,6 +54,29 @@ class GroupRepository implements IGroupRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findBySkautisObject(Group\SkautisObject $object): array
+    {
+        return $this->em->createQueryBuilder()
+            ->select("g")
+            ->from(Group::class, "g")
+            ->where("g.object.id = :skautisId")
+            ->andWhere("g.object.type = :type")
+            ->setParameter("skautisId", $object->getId())
+            ->setParameter("type", $object->getType())
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByType(Type $type): array
+    {
+        return $this->em->createQueryBuilder()
+            ->select("g")
+            ->from(Group::class, "g")
+            ->where("g.object.type = :type")
+            ->setParameter("type", $type->getValue())
+            ->getQuery()
+            ->getResult();
+    }
 
     public function save(Group $group): void
     {
