@@ -108,5 +108,17 @@ class PaymentRepository implements IPaymentRepository
         $this->em->persist($filtered)->flush();
     }
 
+    public function getMaxVariableSymbol(int $groupId): ?int
+    {
+        return $this->em->createQueryBuilder()
+            ->select("MAX(p.variableSymbol)")
+            ->from(Payment::class, "p")
+            ->where("IDENTITY(p.group) = :groupId")
+            ->andWhere("p.state != :state")
+            ->setParameter("groupId", $groupId)
+            ->setParameter("state", State::CANCELED)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
 }

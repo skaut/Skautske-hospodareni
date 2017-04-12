@@ -29,3 +29,7 @@ class EmailNotSetException extends \Exception
 class PaymentNotFoundException extends \Exception
 {
 }
+
+class MissingVariableSymbolException extends \Exception
+{
+}
