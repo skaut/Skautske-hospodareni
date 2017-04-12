@@ -4,8 +4,7 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
-use Consistence\Type\ArrayType\ArrayType;
-use Consistence\Type\ArrayType\KeyValuePair;
+use Consistence\Time\TimeFormat;
 use Model\BankService;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
@@ -127,28 +126,29 @@ class PaymentPresenter extends BasePresenter
         $this->template->canPair = isset($this->bankInfo->token);
     }
 
-    public function renderEdit($pid): void
+    public function renderEdit(int $pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
             $this->redirect("Payment:default");
         }
-        $payment = $this->model->get(array_keys($this->editUnits), $pid);
+
+        $payment = $this->model->findPayment($pid);
         $form = $this['paymentForm'];
         $form['send']->caption = "Upravit";
         $form->setDefaults([
-            'name' => $payment->name,
-            'email' => $payment->email,
-            'amount' => $payment->amount,
-            'maturity' => $payment->maturity,
-            'vs' => $payment->vs,
-            'ks' => $payment->ks,
-            'note' => $payment->note,
-            'oid' => $payment->groupId,
-            'pid' => $payment->id,
+            'name' => $payment->getName(),
+            'email' => $payment->getEmail(),
+            'amount' => $payment->getAmount(),
+            'maturity' => TimeFormat::createDateTimeFromDateTimeInterface($payment->getDueDate()),
+            'vs' => $payment->getVariableSymbol(),
+            'ks' => $payment->getConstantSymbol(),
+            'note' => $payment->getNote(),
+            'oid' => $payment->getGroupId(),
+            'pid' => $pid,
         ]);
 
-        $this->template->linkBack = $this->link("detail", ["id" => $payment->groupId]);
+        $this->template->linkBack = $this->link("detail", ["id" => $payment->getGroupId()]);
     }
 
     public function actionMassAdd(int $id): void
@@ -234,10 +234,6 @@ class PaymentPresenter extends BasePresenter
     {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "danger");
-            $this->redirect("this");
-        }
-        if (!$this->model->get(array_keys($this->editUnits), $pid)) {
-            $this->flashMessage("Platba pro zrušení nebyla nalezena!", "danger");
             $this->redirect("this");
         }
 
