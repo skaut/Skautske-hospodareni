@@ -7,6 +7,7 @@ use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
+use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
@@ -52,6 +53,15 @@ class PaymentService
     public function get($unitId, $paymentId)
     {
         return $this->table->get($unitId, $paymentId);
+    }
+
+    public function findPayment(int $id): ?DTO\Payment
+    {
+        try {
+            return DTO\PaymentFactory::create($this->payments->find($id));
+        } catch(PaymentNotFoundException $e) {
+            return NULL;
+        }
     }
 
     /**
