@@ -246,25 +246,24 @@ class PaymentService
      * @param int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
      * @return array[] array($personId => array(...))
      */
-    public function getPersons($unitId, ?int $groupId = NULL)
+    public function getPersons($unitId, int $groupId)
     {
-        $result = [];
         $persons = $this->skautis->org->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => TRUE]);
-        if ($groupId !== NULL) {
-            $payments_personIds = $this->getPersonsWithActivePayment($groupId);
-            if (is_array($persons)) {
-                $persons = array_filter($persons, function ($v) use ($payments_personIds) {
-                    return !in_array($v->ID, $payments_personIds);
-                });
-            }
+
+        if(!is_array($persons) || empty($persons)) {
+            return [];
         }
 
-        if (is_array($persons)) {
-            foreach ($persons as $p) {
-                $result[$p->ID] = (array)$p;
-                $result[$p->ID]['emails'] = $this->getPersonEmails($p->ID);
+        $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
+
+        $result = [];
+        foreach($persons as $person) {
+            if(in_array($person->ID, $personsWithPayment)) {
+                continue;
             }
+            $result[$person->ID] = array_merge((array)$person, ["emails" => $this->getPersonEmails($person->ID)]);
         }
+
         return $result;
     }
 

@@ -502,7 +502,6 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění pro práci s platbami jednotky", "danger");
             $this->redirect("Payment:default", ["id" => $values->gid]);
         }
-        //$list = $this->model->getPersons($this->aid, $values->oid);
 
         $accountFrom = $values->accountFrom;
         $ids = array_keys(array_filter((array)$values, function ($val) {
