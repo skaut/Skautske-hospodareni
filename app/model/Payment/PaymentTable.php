@@ -48,21 +48,6 @@ class PaymentTable extends BaseTable
     }
 
     /**
-     * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby
-     * @param int $groupId
-     * @return int
-     */
-    public function getNextVS($groupId) {
-        $maxPaymentVs = $this->connection->fetchSingle("SELECT MAX(vs) FROM [" . self::TABLE_PA_PAYMENT . "] WHERE groupId=%i", $groupId, " AND state != 'canceled'");
-        if(!is_null($maxPaymentVs) && !empty($maxPaymentVs)) {
-            $maxPaymentVs = ++$maxPaymentVs;
-        } else {
-            $maxPaymentVs = $this->connection->fetchSingle("SELECT nextVs FROM [" . self::TABLE_PA_GROUP . "] WHERE id = %i", $groupId);
-        }
-        return $maxPaymentVs;
-    }
-
-    /**
      * vrací seznam id táborů se založenou aktivní skupinou
      */
     public function getCampIds(): array

@@ -5,6 +5,7 @@ namespace Model;
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFoundException;
+use Model\Payment\MissingVariableSymbolException;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
@@ -235,9 +236,17 @@ class PaymentService
      * @param int $groupId
      * @return int
      */
-    public function getNextVS($groupId)
+    public function getNextVS(int $groupId): ?int
     {
-        return $this->table->getNextVS($groupId);
+        $maxVs = $this->payments->getMaxVariableSymbol($groupId);
+
+        if($maxVs !== NULL) {
+            return $maxVs + 1;
+        }
+
+        $group = $this->groups->find($groupId);
+
+        return $group->getNextVariableSymbol();
     }
 
     /**
@@ -552,9 +561,19 @@ class PaymentService
     }
 
 
+    /**
+     * @param int $gid
+     * @return int
+     * @throws MissingVariableSymbolException
+     */
     public function generateVs(int $gid): int
     {
         $nextVS = $this->getNextVS($gid);
+
+        if($nextVS === NULL) {
+            throw new MissingVariableSymbolException();
+        }
+
         $payments = $this->payments->findByGroup($gid);
 
         $payments = array_filter($payments, function(Payment $p) {
