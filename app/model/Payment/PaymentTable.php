@@ -32,7 +32,7 @@ class PaymentTable extends BaseTable
      * seznam stavů, které jsou nedokončené
      * @return array
      */
-    public function getNonFinalStates()
+    private function getNonFinalStates()
     {
         return [self::PAYMENT_STATE_PREPARING, self::PAYMENT_STATE_SEND];
     }

@@ -109,15 +109,6 @@ class PaymentService
     }
 
     /**
-     * seznam stavů, které jsou nedokončené
-     * @return array
-     */
-    public function getNonFinalStates()
-    {
-        return $this->table->getNonFinalStates();
-    }
-
-    /**
      * číslo účtu jednotky ze skautisu
      * @param int $unitId
      * @return string|NULL
