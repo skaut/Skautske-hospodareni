@@ -216,7 +216,10 @@ class PaymentPresenter extends BasePresenter
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
                 ->setRequired("Zadejte částku vratky u " . $p->Person)
                 ->addRule(Form::NUMERIC, "Vratka musí být číslo!");
-            $account = $payments[$p->ID_Person]->getTransaction()->getBankAccount() ?? "";
+
+            $transaction = $payments[$p->ID_Person]->getTransaction();
+            $account = $transaction !== NULL ? $transaction->getBankAccount() : "";
+            
             $form->addText($pid . "_account")
                 ->setDefaultValue($account)
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
