@@ -13,18 +13,6 @@ class PaymentTable extends BaseTable
     const PAYMENT_STATE_PREPARING = "preparing";
     const PAYMENT_STATE_SEND = "send";
 
-    /**
-     * @param int|int[] $unitId
-     * @param int $paymentId
-     * @return Row
-     */
-    public function get($unitId, $paymentId)
-    {
-        return $this->connection->fetch("SELECT p.*, g.email_info, g.state as groupState, g.unitId FROM [" . self::TABLE_PA_PAYMENT . "] p"
-            . " LEFT JOIN [" . self::TABLE_PA_GROUP . "] g ON g.id = p.groupId"
-            . " WHERE g.unitId IN %in", !is_array($unitId) ? [$unitId] : $unitId, " AND p.id=%i ", $paymentId);
-    }
-
     public function getSimple(int $paymentId) : Row
     {
         return $this->connection->select('*')

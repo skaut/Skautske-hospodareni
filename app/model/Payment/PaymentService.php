@@ -50,9 +50,13 @@ class PaymentService
         $this->bankAccounts = $bankAccounts;
     }
 
-    public function get($unitId, $paymentId)
+    public function findPayment(int $id): ?DTO\Payment
     {
-        return $this->table->get($unitId, $paymentId);
+        try {
+            return DTO\PaymentFactory::create($this->payments->find($id));
+        } catch(PaymentNotFoundException $e) {
+            return NULL;
+        }
     }
 
     /**
