@@ -4,6 +4,7 @@ namespace Model;
 
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
+use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFoundException;
 use Model\Payment\MissingVariableSymbolException;
 use Model\Payment\Payment;
@@ -21,9 +22,6 @@ use Skautis\Skautis;
 class PaymentService
 {
 
-    /** @var PaymentTable */
-    private $table;
-
     /** @var Skautis */
     private $skautis;
 
@@ -37,14 +35,12 @@ class PaymentService
     private $bankAccounts;
 
     public function __construct(
-        PaymentTable $table,
         Skautis $skautis,
         IGroupRepository $groups,
         IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts
     )
     {
-        $this->table = $table;
         $this->skautis = $skautis;
         $this->groups = $groups;
         $this->payments = $payments;
@@ -318,7 +314,12 @@ class PaymentService
 
         if ($data != new \stdClass()) { // Skautis returns empty object when no registration is found
             $registration = $data[0];
-            if (!$this->table->getGroupsBySisId('registration', $registration->ID)) {
+
+            $groups = $this->groups->findBySkautisObject(
+                new Group\SkautisObject($registration->ID, Type::get(Type::REGISTRATION))
+            );
+
+            if(empty($groups)) {
                 return (array)$registration;
             }
         }
@@ -420,18 +421,16 @@ class PaymentService
         return $this->skautis->event->{"EventCampDetail"}(["ID" => $campId]);
     }
 
-    public function getGroupByCampId($campId)
-    {
-        $g = $this->table->getGroupsBySisId('camp', $campId);
-        return empty($g) ? FALSE : $g[0];
-    }
-
     /**
      * vrací seznam id táborů se založenou aktivní skupinou
      */
     public function getCampIds()
     {
-        return $this->table->getCampIds();
+        $groups = $this->groups->findByType(Type::get(Type::CAMP));
+
+        return array_map(function(Group $group) {
+            return $group->getObject()->getId();
+        }, $groups);
     }
 
     /* Repayments */
