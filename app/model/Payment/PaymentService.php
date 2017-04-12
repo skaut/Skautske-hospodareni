@@ -55,15 +55,6 @@ class PaymentService
         return $this->table->get($unitId, $paymentId);
     }
 
-    public function findPayment(int $id): ?DTO\Payment
-    {
-        try {
-            return DTO\PaymentFactory::create($this->payments->find($id));
-        } catch(PaymentNotFoundException $e) {
-            return NULL;
-        }
-    }
-
     /**
 	 * @param int $groupId
 	 * @return DTO\Payment[]
