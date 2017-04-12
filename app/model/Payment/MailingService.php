@@ -3,11 +3,11 @@
 namespace Model\Payment;
 
 use DateTimeImmutable;
+use Model\Payment\Mailing\IQRGenerator;
 use Model\Payment\Mailing\Payment as MailPayment;
 use Model\Mail\IMailerFactory;
 use Model\MailTable;
 use Model\Payment\Payment\State;
-use Model\Payment\QR\IQRGenerator;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
