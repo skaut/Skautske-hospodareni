@@ -156,7 +156,7 @@ class PaymentService
      */
     public function getGroupSummaries(array $groupIds): array
     {
-        return $this->payments->summarizeGroups($groupIds);
+        return $this->payments->summarizeByGroup($groupIds);
     }
 
     public function createGroup(

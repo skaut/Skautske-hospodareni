@@ -39,7 +39,7 @@ class PaymentRepository implements IPaymentRepository
         return $payment;
     }
 
-    public function summarizeGroups(array $groupIds): array
+    public function summarizeByGroup(array $groupIds): array
     {
         $states = [State::PREPARING, State::SENT, State::CANCELED];
 

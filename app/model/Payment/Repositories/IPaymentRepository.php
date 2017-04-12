@@ -26,7 +26,7 @@ interface IPaymentRepository
      * @param int[] $groupIds
      * @return Summary[][]
      */
-    public function summarizeGroups(array $groupIds): array;
+    public function summarizeByGroup(array $groupIds): array;
 
     public function save(Payment $payment): void;
 
