@@ -1,9 +1,8 @@
 <?php
 
-namespace Model\Payment\QR;
+namespace Model\Payment\Mailing;
 
 use Model\Payment\InvalidBankAccountException;
-use Model\Payment\Mailing\Payment;
 
 interface IQRGenerator
 {
