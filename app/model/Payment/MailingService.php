@@ -47,7 +47,7 @@ class MailingService
     public function __construct(
         IGroupRepository $groups,
         IMailerFactory $mailerFactory,
-    IPaymentRepository $payments,
+        IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts,
         TemplateFactory $templateFactory,
         IUserRepository $users,
