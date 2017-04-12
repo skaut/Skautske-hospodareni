@@ -157,7 +157,7 @@ class PaymentService
 
     public function createGroup(
         int $unitId,
-        Group\SkautisObject $object,
+        ?Group\SkautisObject $object,
         string $label,
         ?\DateTime $maturity,
         ?int $ks,
