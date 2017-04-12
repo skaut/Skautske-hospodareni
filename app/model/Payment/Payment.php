@@ -61,14 +61,39 @@ class Payment
     )
     {
         $this->group = $group;
+        $this->personId = $personId;
+        $this->state = State::get(State::PREPARING);
+        $this->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+    }
+
+    /**
+     * @param string $name
+     * @param null|string $email
+     * @param float $amount
+     * @param DateTimeImmutable $dueDate
+     * @param int|null $variableSymbol
+     * @param int|null $constantSymbol
+     * @param string $note
+     * @throws PaymentClosedException
+     */
+    public function update(
+        string $name,
+        ?string $email,
+        float $amount,
+        DateTimeImmutable $dueDate,
+        ?int $variableSymbol,
+        ?int $constantSymbol,
+        string $note
+    ): void
+    {
+        $this->checkNotClosed();
+
         $this->name = $name;
         $this->email = $email;
         $this->amount = $amount;
         $this->dueDate = $dueDate;
         $this->variableSymbol = $variableSymbol;
         $this->constantSymbol = $constantSymbol;
-        $this->personId = $personId;
-        $this->state = State::get(State::PREPARING);
         $this->note = $note;
     }
 

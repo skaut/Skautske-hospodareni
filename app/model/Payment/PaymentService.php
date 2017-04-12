@@ -82,14 +82,22 @@ class PaymentService
         $this->payments->save($payment);
     }
 
-    /**
-     * @param int $pid
-     * @param array $arr
-     * @return bool
-     */
-    public function update($pid, $arr): bool
+    public function update(
+        int $id,
+        string $name,
+        string $email,
+        float $amount,
+        \DateTimeImmutable $dueDate,
+        ?int $variableSymbol,
+        ?int $constantSymbol,
+        string $note
+    ): void
     {
-        return $this->table->update($pid, $arr);
+        $payment = $this->payments->find($id);
+
+        $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+
+        $this->payments->save($payment);
     }
 
     public function cancelPayment(int $pid): void
