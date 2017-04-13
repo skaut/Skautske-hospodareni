@@ -190,8 +190,10 @@ class MailingService
             $parameters['%qrcode%'] = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $file . '"/>';
         }
 
+        $body = str_replace(array_keys($parameters), array_values($parameters), $body);
+
         $template = $this->templateFactory->create('payment.base', [
-            'body' => str_replace(array_keys($parameters), array_values($parameters), $body),
+            'body' => nl2br($body, FALSE),
         ]);
 
         $mail = (new Message())
