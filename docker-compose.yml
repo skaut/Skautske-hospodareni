@@ -8,8 +8,6 @@ services:
             - www:/var/www
             - .:/var/www/html
             - /var/www/html/nette-temp
-        ports:
-            - 80:80
         environment:
             DEVELOPMENT_MACHINE: 'true'
         networks:
@@ -25,8 +23,6 @@ services:
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
             MYSQL_DATABASE: hskauting
-        ports:
-            - 3306:3306
         networks:
             main:
                 aliases:

@@ -18,3 +18,7 @@ deployment.*
 .wercker*
 tests/_output/*
 tests/_support/_generated/*
+
+docker-compose.*.yml
+!docker-compose.yml
+!docker-compose.override.yml
