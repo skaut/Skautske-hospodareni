@@ -1,0 +1,9 @@
+version: "2"
+
+services:
+    app:
+        ports:
+            - 80:80
+    mysql:
+        ports:
+            - 3306:3306
