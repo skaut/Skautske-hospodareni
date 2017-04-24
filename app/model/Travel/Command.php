@@ -2,6 +2,8 @@
 
 namespace Model\Travel;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Model\Travel\Command\Travel;
 
 class Command
 {
@@ -11,5 +13,8 @@ class Command
 
     /** @var Vehicle */
     private $vehicle;
+
+    /** @var ArrayCollection|Travel[] */
+    private $travels;
 
 }
