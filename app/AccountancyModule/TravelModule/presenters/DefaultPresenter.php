@@ -210,7 +210,7 @@ class DefaultPresenter extends BasePresenter
             ->addRule(Form::FILLED, "Musíte vyplnit účel cesty.");
         $form->addCheckboxList("type", "Prostředek*", $vehicleTypes)
             ->addRule(Form::FILLED, "Vyberte alespoň jeden dopravní prostředek.");
-        $form->addSelect("contract_id", "Smlouva/Řidič*", $contracts)
+        $form->addSelect("contract_id", "Smlouva/Řidič", $contracts)
             ->setPrompt("Vyberte smlouvu")
             ->setAttribute("class", "form-control");
         $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
