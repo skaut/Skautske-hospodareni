@@ -202,7 +202,7 @@ class DefaultPresenter extends BasePresenter
             return $v->label;
         }, $vehicleTypes);
 
-        $form = $this->prepareForm($this, $name);
+        $form = $this->formFactory->create();
         $form->addText("unit", "Jednotka")->setDefaultValue($this->unit->SortName)->setOmitted()->getControlPrototype()->DISABLED("DISABLED");
         $form->addText("purpose", "Účel cesty*")
             ->setMaxLength(64)
