@@ -214,15 +214,26 @@ class DefaultPresenter extends BasePresenter
             ->setPrompt("Vyberte smlouvu")
             ->setAttribute("class", "form-control");
         $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
+            ->setOption("id", "vehicleId")
             ->setPrompt("Vyberte vozidlo")
             ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)->addRule(Form::FILLED, "Musíte vyplnit typ vozidla.");
+            ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)
+            ->setRequired("Musíte vyplnit typ vozidla.")
+            ->toggle("vehicleId", FALSE);
         $form->addText("fuel_price", "Cena paliva za 1l*")
+            ->setOption("id", "fuelPrice")
             ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)->addRule(Form::FILLED, "Musíte vyplnit cenu paliva.")->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
+            ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)
+            ->setRequired("Musíte vyplnit cenu paliva.")
+            ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.")
+            ->toggle("fuelPrice", FALSE);
         $form->addText("amortization", "Opotřebení*")
+            ->setOption("id", "amortization")
             ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)->addRule(Form::FILLED, "Musíte vyplnit opotřebení.")->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.");
+            ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)
+            ->setRequired("Musíte vyplnit opotřebení.")
+            ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.")
+            ->toggle("amortization", FALSE);
 
         $form->addText("place", "Místo")
             ->setMaxLength(64)
