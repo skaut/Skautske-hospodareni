@@ -292,9 +292,10 @@ class TravelService extends BaseService
     /**
      * @param int $commandId
      */
-    public function deleteCommand($commandId): void
+    public function deleteCommand(int $commandId): void
     {
-        $this->table->delete($commandId);
+        $command = $this->commands->find($commandId);
+        $this->commands->remove($command);
     }
 
     public function getCommandTypes($commandId)
