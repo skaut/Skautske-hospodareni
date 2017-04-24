@@ -169,7 +169,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleRemoveCommand($commandId) : void
+    public function handleRemoveCommand(int $commandId) : void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo upravovat záznam.", "danger");

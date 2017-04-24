@@ -9,10 +9,14 @@ Model\Travel\Command:
             generator: { strategy: AUTO }
 
     fields:
-        deleted:
-            type: boolean
 
     manyToOne:
         vehicle:
             targetEntity: Model\Travel\Vehicle
             nullable: true
+
+    oneToMany:
+        travels:
+            targetEntity: Model\Travel\Command\Travel
+            mappedBy: command
+            cascade: [PERSIST, REMOVE]

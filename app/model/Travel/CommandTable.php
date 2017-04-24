@@ -20,7 +20,7 @@ class CommandTable extends BaseTable
     {
         return $this->connection->fetch("SELECT com.*, c.type as vehicle_type, c.registration as vehicle_spz, c.consumption as vehicle_consumption, com.place
             FROM [" . self::TABLE_TC_COMMANDS . "] as com
-            LEFT JOIN [" . self::TABLE_TC_VEHICLE . "] as c ON (com.vehicle_id = c.id) WHERE com.id=%i AND com.deleted=0", $commandId);
+            LEFT JOIN [" . self::TABLE_TC_VEHICLE . "] as c ON (com.vehicle_id = c.id) WHERE com.id=%i", $commandId);
     }
 
     public function add($v)
@@ -43,7 +43,6 @@ class CommandTable extends BaseTable
             ->leftJoin(self::TABLE_TC_CONTRACTS . " AS con ON (com.contract_id = con.id)")
             ->leftJoin(self::TABLE_TC_VEHICLE . " AS c ON (com.vehicle_id = c.id) ")
             ->where("com.unit_id=%i", $unitId)
-            ->where("com.deleted=0")
             ->where("(con.deleted=0 OR con.deleted IS NULL)")
             ->orderBy("closed, id desc");
         if ($returnQuery) {
@@ -80,13 +79,7 @@ class CommandTable extends BaseTable
     {
         $this->connection->update(self::TABLE_TC_COMMANDS, ["id" => $commandId, "closed" => $state])
             ->where("id=%i", $commandId)
-            ->where("deleted = 0")
             ->execute();
-    }
-
-    public function delete($commandId): void
-    {
-        $this->connection->query("UPDATE [" . self::TABLE_TC_COMMANDS . "] SET deleted=1 WHERE id = %i AND deleted=0 LIMIT 1", $commandId);
     }
 
     public function updateTypes($commandId, $commandTypes)
