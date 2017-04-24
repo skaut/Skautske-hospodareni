@@ -1,0 +1,26 @@
+Model\Travel\Command\Travel:
+
+    type: entity
+    table: tc_travels
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        startPlace:
+            type: string
+        endPlace:
+            type: string
+        distance:
+            type: float
+
+    manyToOne:
+        command:
+            targetEntity: Model\Travel\Command
+            inversedBy: travels
+            joinColumn:
+                name: command_id
+                referencedColumnName: id
+
