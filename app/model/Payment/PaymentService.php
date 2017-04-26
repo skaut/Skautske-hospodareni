@@ -2,14 +2,19 @@
 
 namespace Model;
 
+use DateTimeImmutable;
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
+use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFoundException;
+use Model\Payment\MissingVariableSymbolException;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
+use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
+use Model\Payment\Summary;
 use Skautis\Skautis;
 
 /**
@@ -17,9 +22,6 @@ use Skautis\Skautis;
  */
 class PaymentService
 {
-
-    /** @var PaymentTable */
-    private $table;
 
     /** @var Skautis */
     private $skautis;
@@ -34,23 +36,25 @@ class PaymentService
     private $bankAccounts;
 
     public function __construct(
-        PaymentTable $table,
         Skautis $skautis,
         IGroupRepository $groups,
         IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts
     )
     {
-        $this->table = $table;
         $this->skautis = $skautis;
         $this->groups = $groups;
         $this->payments = $payments;
         $this->bankAccounts = $bankAccounts;
     }
 
-    public function get($unitId, $paymentId)
+    public function findPayment(int $id): ?DTO\Payment
     {
-        return $this->table->get($unitId, $paymentId);
+        try {
+            return DTO\PaymentFactory::create($this->payments->find($id));
+        } catch(PaymentNotFoundException $e) {
+            return NULL;
+        }
     }
 
     /**
@@ -66,26 +70,7 @@ class PaymentService
         }, $payments);
     }
 
-    /**
-     *
-     * @param int|array $pa_groupIds
-     * @param bool $useHierarchy
-     * @return array
-     */
-    public function getAll($pa_groupIds, $useHierarchy = FALSE)
-    {
-        $result = $this->table->getAllPayments(is_array($pa_groupIds) ? $pa_groupIds : [$pa_groupIds]);
-        if ($useHierarchy) {
-            $tmp = [];
-            foreach ($result as $v) {//roztrizeni podle událostí
-                $tmp[$v->groupId][] = $v;
-            }
-            $result = $tmp;
-        }
-        return $result;
-    }
-
-    public function createPayment(int $groupId, string $name, ?string $email, float $amount, \DateTimeImmutable $dueDate, ?int $personId, ?int $vs, ?int $ks, string $note): void
+    public function createPayment(int $groupId, string $name, ?string $email, float $amount, DateTimeImmutable $dueDate, ?int $personId, ?int $vs, ?int $ks, string $note): void
     {
         $group = $this->groups->find($groupId);
 
@@ -94,20 +79,28 @@ class PaymentService
         $this->payments->save($payment);
     }
 
-    /**
-     * @param int $pid
-     * @param array $arr
-     * @return bool
-     */
-    public function update($pid, $arr): bool
+    public function update(
+        int $id,
+        string $name,
+        string $email,
+        float $amount,
+        DateTimeImmutable $dueDate,
+        ?int $variableSymbol,
+        ?int $constantSymbol,
+        string $note
+    ): void
     {
-        return $this->table->update($pid, $arr);
+        $payment = $this->payments->find($id);
+
+        $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+
+        $this->payments->save($payment);
     }
 
     public function cancelPayment(int $pid): void
     {
         $payment = $this->payments->find($pid);
-        $payment->cancel(new \DateTimeImmutable());
+        $payment->cancel(new DateTimeImmutable());
 
         $this->payments->save($payment);
     }
@@ -115,28 +108,9 @@ class PaymentService
     public function completePayment(int $id): void
     {
         $payment = $this->payments->find($id);
-        $payment->complete(new \DateTimeImmutable());
+        $payment->complete(new DateTimeImmutable());
 
         $this->payments->save($payment);
-    }
-
-    /**
-     * seznam stavů, které jsou nedokončené
-     * @return array
-     */
-    public function getNonFinalStates()
-    {
-        return $this->table->getNonFinalStates();
-    }
-
-    /**
-     * spočte částky v jednotlivých stavech platby
-     * @param int $pa_groupId
-     * @return array
-     */
-    public function summarizeByState($pa_groupId)
-    {
-        return $this->table->summarizeByState($pa_groupId);
     }
 
     /**
@@ -168,36 +142,35 @@ class PaymentService
     {
         $groups = $this->groups->findByUnits($unitIds, $onlyOpen);
 
-        return array_map(function(Group $group) {
+        return array_map(function (Group $group) {
             return DTO\GroupFactory::create($group);
         }, $groups);
     }
 
+    /**
+     * @param int[] $groupIds
+     * @return Summary[][]
+     */
+    public function getGroupSummaries(array $groupIds): array
+    {
+        return $this->payments->summarizeByGroup($groupIds);
+    }
+
     public function createGroup(
         int $unitId,
-        ?string $oType,
-        ?int $sisId,
+        ?Group\SkautisEntity $skautisEntity,
         string $label,
-        ?\DateTime $maturity,
+        ?DateTimeImmutable $dueDate,
         ?int $ks,
         ?int $nextVS,
         ?float $amount,
-        string $email_info,
+        string $emailTemplate,
         ?int $smtpId
     ): int
     {
-        $group = new Group(
-            $oType,
-            $unitId,
-            $sisId,
-            $label,
-            $amount ? $amount : NULL,
-            $maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
-            $ks,
-            $nextVS,
-            new \DateTimeImmutable(),
-            $email_info,
-            $smtpId);
+        $now = new DateTimeImmutable();
+        $amount = $amount !== 0.0 ? $amount : NULL;
+        $group = new Group($unitId, $skautisEntity, $label, $amount, $dueDate, $ks, $nextVS, $now, $emailTemplate, $smtpId);
 
         $this->groups->save($group);
         return $group->getId();
@@ -207,7 +180,7 @@ class PaymentService
         int $id,
         string $name,
         ?float $defaultAmount,
-        ?\DateTimeImmutable $dueDate,
+        ?DateTimeImmutable $dueDate,
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
         string $emailTemplate,
@@ -244,14 +217,27 @@ class PaymentService
         $this->groups->save($group);
     }
 
+    public function getMaxVariableSymbol(int $groupId): ?int
+    {
+        return $this->payments->getMaxVariableSymbol($groupId);
+    }
+
     /**
      * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby
      * @param int $groupId
      * @return int
      */
-    public function getNextVS($groupId)
+    public function getNextVS(int $groupId): ?int
     {
-        return $this->table->getNextVS($groupId);
+        $maxVs = $this->payments->getMaxVariableSymbol($groupId);
+
+        if($maxVs !== NULL) {
+            return $maxVs + 1;
+        }
+
+        $group = $this->groups->find($groupId);
+
+        return $group->getNextVariableSymbol();
     }
 
     /**
@@ -260,25 +246,24 @@ class PaymentService
      * @param int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
      * @return array[] array($personId => array(...))
      */
-    public function getPersons($unitId, $groupId = NULL)
+    public function getPersons($unitId, int $groupId)
     {
-        $result = [];
         $persons = $this->skautis->org->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => TRUE]);
-        if ($groupId !== NULL) {
-            $payments_personIds = $this->table->getActivePaymentIds($groupId);
-            if (is_array($persons)) {
-                $persons = array_filter($persons, function ($v) use ($payments_personIds) {
-                    return !in_array($v->ID, $payments_personIds);
-                });
-            }
+
+        if(!is_array($persons) || empty($persons)) {
+            return [];
         }
 
-        if (is_array($persons)) {
-            foreach ($persons as $p) {
-                $result[$p->ID] = (array)$p;
-                $result[$p->ID]['emails'] = $this->getPersonEmails($p->ID);
+        $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
+
+        $result = [];
+        foreach($persons as $person) {
+            if(in_array($person->ID, $personsWithPayment)) {
+                continue;
             }
+            $result[$person->ID] = array_merge((array)$person, ["emails" => $this->getPersonEmails($person->ID)]);
         }
+
         return $result;
     }
 
@@ -322,7 +307,12 @@ class PaymentService
 
         if ($data != new \stdClass()) { // Skautis returns empty object when no registration is found
             $registration = $data[0];
-            if (!$this->table->getGroupsBySisId('registration', $registration->ID)) {
+
+            $groups = $this->groups->findBySkautisEntity(
+                new Group\SkautisEntity($registration->ID, Type::get(Type::REGISTRATION))
+            );
+
+            if(empty($groups)) {
                 return (array)$registration;
             }
         }
@@ -352,9 +342,9 @@ class PaymentService
                 return strcmp($a->Person, $b->Person);
             });
 
-            $payments_personIds = $this->table->getActivePaymentIds($groupId);
-            $persons = array_filter($persons, function ($v) use ($payments_personIds) {
-                return !in_array($v->ID_Person, $payments_personIds);
+            $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
+            $persons = array_filter($persons, function ($v) use ($personsWithPayment) {
+                return !in_array($v->ID_Person, $personsWithPayment);
             });
 
             foreach ($persons as $p) {
@@ -424,18 +414,16 @@ class PaymentService
         return $this->skautis->event->{"EventCampDetail"}(["ID" => $campId]);
     }
 
-    public function getGroupByCampId($campId)
-    {
-        $g = $this->table->getGroupsBySisId('camp', $campId);
-        return empty($g) ? FALSE : $g[0];
-    }
-
     /**
      * vrací seznam id táborů se založenou aktivní skupinou
      */
     public function getCampIds()
     {
-        return $this->table->getCampIds();
+        $groups = $this->groups->findBySkautisEntityType(Type::get(Type::CAMP));
+
+        return array_map(function(Group $group) {
+            return $group->getObject()->getId();
+        }, $groups);
     }
 
     /* Repayments */
@@ -567,9 +555,19 @@ class PaymentService
     }
 
 
+    /**
+     * @param int $gid
+     * @return int
+     * @throws MissingVariableSymbolException
+     */
     public function generateVs(int $gid): int
     {
         $nextVS = $this->getNextVS($gid);
+
+        if($nextVS === NULL) {
+            throw new MissingVariableSymbolException();
+        }
+
         $payments = $this->payments->findByGroup($gid);
 
         $payments = array_filter($payments, function(Payment $p) {
@@ -585,5 +583,22 @@ class PaymentService
         return count($payments);
     }
 
+    /**
+     * @param int $groupId
+     * @return int[]
+     */
+    private function getPersonsWithActivePayment(int $groupId): array
+    {
+        $payments = $this->payments->findByGroup($groupId);
+
+        $payments = array_filter($payments, function(Payment $payment) {
+            return $payment->getPersonId() !== NULL && !$payment->getState()->equalsValue(State::CANCELED);
+        });
+
+        return array_map(function(Payment $payment) {
+            return $payment->getPersonId();
+        }, $payments);
+
+    }
 
 }

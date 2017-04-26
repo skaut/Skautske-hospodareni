@@ -1,0 +1,15 @@
+Model\Payment\Group\SkautisEntity:
+
+    type: embeddable
+
+    fields:
+        id:
+            type: integer
+            column: sisId
+            nullable: true
+        type:
+            type: string_enum
+            column: groupType
+            nullable: true
+            annotations:
+                enum: { class: Model\Payment\Group\Type }

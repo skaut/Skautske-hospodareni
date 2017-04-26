@@ -19,6 +19,7 @@ use Nette\SmartObject;
  * @property-read string $emailTemplate
  * @property-read int|NULL $smtpId
  * @property-read string $note
+ * @property-read Summary[] $stats
  */
 class Group
 {

@@ -23,7 +23,8 @@ class PaymentFactory
             $payment->getState(),
             $payment->getTransaction(),
             $payment->getClosedAt(),
-            $payment->getPersonId()
+            $payment->getPersonId(),
+            $payment->getGroupId()
         );
     }
 

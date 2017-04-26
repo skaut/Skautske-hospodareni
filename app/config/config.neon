@@ -141,12 +141,11 @@ services:
     - Model\EventTable
     - Model\MailTable
     - Model\ParticipantTable
-    - Model\PaymentTable
     - Model\Skautis\ObjectTable
     - Model\TravelTable
 
     - Model\Services\PdfRenderer
-    - Model\Payment\QR\QRGenerator
+    - Model\Payment\Mailing\QRGenerator
     - Model\Skautis\Mapper
 
     - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@annotations.reader)
