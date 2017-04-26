@@ -36,7 +36,7 @@ interface IGroupRepository
      * @param Type $type
      * @return Group[]
      */
-    public function findByType(Type $type): array;
+    public function findBySkautisEntityType(Type $type): array;
 
     /**
      * @param Group $group

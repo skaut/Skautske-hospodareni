@@ -426,7 +426,7 @@ class PaymentService
      */
     public function getCampIds()
     {
-        $groups = $this->groups->findByType(Type::get(Type::CAMP));
+        $groups = $this->groups->findBySkautisEntityType(Type::get(Type::CAMP));
 
         return array_map(function(Group $group) {
             return $group->getObject()->getId();
