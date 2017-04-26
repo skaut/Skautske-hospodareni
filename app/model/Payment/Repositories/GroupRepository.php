@@ -67,7 +67,7 @@ class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
-    public function findByType(Type $type): array
+    public function findBySkautisEntityType(Type $type): array
     {
         return $this->em->createQueryBuilder()
             ->select("g")
