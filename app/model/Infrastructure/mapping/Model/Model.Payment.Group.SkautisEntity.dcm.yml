@@ -1,4 +1,4 @@
-Model\Payment\Group\SkautisObject:
+Model\Payment\Group\SkautisEntity:
 
     type: embeddable
 

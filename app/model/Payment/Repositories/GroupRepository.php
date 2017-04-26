@@ -54,7 +54,7 @@ class GroupRepository implements IGroupRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findBySkautisObject(Group\SkautisObject $object): array
+    public function findBySkautisEntity(Group\SkautisEntity $object): array
     {
         return $this->em->createQueryBuilder()
             ->select("g")

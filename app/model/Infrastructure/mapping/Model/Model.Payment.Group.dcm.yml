@@ -52,7 +52,7 @@ Model\Payment\Group:
 
     embedded:
         object:
-            class: Model\Payment\Group\SkautisObject
+            class: Model\Payment\Group\SkautisEntity
             columnPrefix: false
             annotations:
                 nullable: {}

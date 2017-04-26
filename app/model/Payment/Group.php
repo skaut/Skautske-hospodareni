@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-use Model\Payment\Group\SkautisObject;
+use Model\Payment\Group\SkautisEntity;
 
 class Group
 {
@@ -15,7 +15,7 @@ class Group
     /** @var int */
     private $unitId;
 
-    /** @var SkautisObject|NULL */
+    /** @var SkautisEntity|NULL */
     private $object;
 
     /** @var string|NULL */
@@ -56,7 +56,7 @@ class Group
 
     public function __construct(
         int $unitId,
-        ?SkautisObject $object,
+        ?SkautisEntity $object,
         string $name,
         ?float $defaultAmount,
         ?\DateTimeImmutable $dueDate,
@@ -132,7 +132,7 @@ class Group
         return $this->unitId;
     }
 
-    public function getObject(): ?SkautisObject
+    public function getObject(): ?SkautisEntity
     {
         return $this->object;
     }
