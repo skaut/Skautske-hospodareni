@@ -17,7 +17,7 @@ build:
             code: composer install --no-interaction
         - script:
             name: static analysis (phpstan)
-            code: php -d memory_limit=512M vendor/bin/phpstan analyse -l 1 -c phpstan.neon app
+            code: php -d memory_limit=512M vendor/bin/phpstan analyse -l 2 -c phpstan.neon app
         - script:
             name: run unit tests
             code: vendor/bin/codecept run unit

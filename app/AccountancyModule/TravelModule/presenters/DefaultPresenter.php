@@ -112,7 +112,7 @@ class DefaultPresenter extends BasePresenter
             $this->redirect("default");
         }
         $template = $this->template;
-        $template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
+
         $template->setFile(dirname(__FILE__) . '/../templates/Default/ex.command.latte');
         $template->command = $command = $this->travelService->getCommand($commandId);
         $template->contract = $this->travelService->getContract($command->contract_id);

@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\PaymentModule;
 
 use Consistence\Enum\InvalidEnumValueException;
+use Model\EventEntity;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Nette\Application\UI\Form;
@@ -19,7 +20,7 @@ class GroupPresenter extends BasePresenter
     /** @var \Model\MailService */
     private $mail;
 
-    /** @var \Model\EventService */
+    /** @var EventEntity */
     private $camp;
 
     public function __construct(\Model\PaymentService $paymentService, \Model\MailService $mailService)

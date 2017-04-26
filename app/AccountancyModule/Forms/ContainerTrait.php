@@ -4,6 +4,8 @@ namespace App\Forms;
 
 use DependentSelectBox\DependentSelectBox;
 use DependentSelectBox\JsonDependentSelectBox;
+use Nette\Application\UI\Form;
+use Nette\InvalidStateException;
 use Nextras\Forms\Controls\DatePicker;
 
 trait ContainerTrait
@@ -35,8 +37,12 @@ trait ContainerTrait
 
     private function checkPresenter() : void
     {
-        /* @var $form \Nette\Application\UI\Form */
         $form = $this->getForm(TRUE);
+
+        if(! $form instanceof Form) {
+            throw new InvalidStateException("This trait can only be used on UI Form or container");
+        }
+
         $form->getPresenter(TRUE);
     }
 

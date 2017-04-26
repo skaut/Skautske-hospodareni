@@ -274,7 +274,7 @@ trait ParticipantTrait
      */
     protected function createComponentFormAddParticipantNew($name) : Form
     {
-        $aid = $this->presenter->aid;
+        $aid = $this->aid;
         $form = $this->prepareForm($this, $name);
         $form->addText("firstName", "Jméno*")
             ->addRule(Form::FILLED, "Musíš vyplnit křestní jméno.");
