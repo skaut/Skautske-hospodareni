@@ -47,9 +47,9 @@ class GroupPresenter extends BasePresenter
             foreach (array_diff_key($allCamps, (array)$this->model->getCampIds()) as $id => $c) {
                 $camps[$id] = $c['DisplayName'];
             }
-            $this['groupForm']['sisId']->caption = "Tábor";
+            $this['groupForm']['skautisEntityId']->caption = "Tábor";
             $this['groupForm']['type']->setDefaultValue("camp");
-            $this['groupForm']['sisId']
+            $this['groupForm']['skautisEntityId']
                 ->addRule(Form::FILLED, "Vyberte tábor kterého se skupina týká!")
                 ->setPrompt("Vyberte tábor")
                 ->setHtmlId("camp-select")
@@ -62,15 +62,15 @@ class GroupPresenter extends BasePresenter
             }
             $this['groupForm']['type']->setDefaultValue("registration");
             unset($this['groupForm']['amount']);
-            unset($this['groupForm']['sisId']);
-            $this['groupForm']->addHidden("sisId", $reg['ID']);
+            unset($this['groupForm']['skautisEntityId']);
+            $this['groupForm']->addHidden("skautisEntityId", $reg['ID']);
             $this['groupForm']->setDefaults([
                 "label" => "Registrace " . $reg['Year'], $reg['Year'] . "-01-15",
             ]);
             $this->template->nadpis = "Založení skupiny plateb pro registraci";
 
         } else {//obecná skupina
-            unset($this['groupForm']['sisId']);
+            unset($this['groupForm']['skautisEntityId']);
             $this->template->nadpis = "Založení skupiny plateb";
         }
 
@@ -88,7 +88,7 @@ class GroupPresenter extends BasePresenter
         }
 
         $form = $this['groupForm'];
-        unset($form['sisId']);
+        unset($form['skautisEntityId']);
         $form['send']->caption = "Upravit skupinu";
 
         $group = $this->model->getGroup($id);
@@ -102,12 +102,12 @@ class GroupPresenter extends BasePresenter
         $form->setDefaults([
             "label" => $dto->getName(),
             "amount" => $dto->getDefaultAmount(),
-            "maturity" => $dto->getDueDate() ? $dto->getDueDate()->format(\DateTime::ISO8601) : NULL,
-            "ks" => $dto->getConstantSymbol(),
+            "dueDate" => $dto->getDueDate() ? $dto->getDueDate()->format(\DateTime::ISO8601) : NULL,
+            "constantSymbol" => $dto->getConstantSymbol(),
             "nextVs" => $dto->getNextVariableSymbol(),
             "smtp" => $dto->getSmtpId(),
-            "email_info" => $dto->getEmailTemplate(),
-            "gid" => $id,
+            "emailTemplate" => $dto->getEmailTemplate(),
+            "groupId" => $id,
         ]);
 
         $existsPaymentWithVS = $this->model->getMaxVariableSymbol($dto->getId()) !== NULL;
@@ -123,7 +123,7 @@ class GroupPresenter extends BasePresenter
     protected function createComponentGroupForm(): Form
     {
         $form = $this->formFactory->create();
-        $form->addSelect("sisId");
+        $form->addSelect("skautisEntityId");
         $form->addText("label", "Název")
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Musíte zadat název skupiny")
@@ -132,9 +132,9 @@ class GroupPresenter extends BasePresenter
             ->setAttribute("class", "form-control")
             ->addCondition(Form::FILLED)
             ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
-        $form->addDatePicker("maturity", "Výchozí splatnost")
+        $form->addDatePicker("dueDate", "Výchozí splatnost")
             ->setAttribute("class", "form-control");
-        $form->addText("ks", "KS")
+        $form->addText("constantSymbol", "KS")
             ->setMaxLength(4)
             ->setAttribute("class", "form-control")
             ->addCondition(Form::FILLED)
@@ -145,11 +145,11 @@ class GroupPresenter extends BasePresenter
             ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addSelect("smtp", "Email odesílatele", $this->mail->getPairs($this->aid))
             ->setPrompt("Vyberte email");
-        $form->addTextArea("email_info", "Informační email")
+        $form->addTextArea("emailTemplate", "Informační email")
             ->setAttribute("class", "form-control")
             ->setDefaultValue($this->getDefaultEmail('info'));
         $form->addHidden("type");
-        $form->addHidden("gid");
+        $form->addHidden("groupId");
         $form->addSubmit('send', "Založit skupinu")->setAttribute("class", "btn btn-primary");
 
         $form->onSubmit[] = function (Form $form): void {
@@ -166,36 +166,36 @@ class GroupPresenter extends BasePresenter
         }
         $v = $form->getValues();
 
-        if ($v['maturity'] !== NULL && $v['maturity']->format("N") > 5) {
-            $form['maturity']->addError("Splatnost nemůže být nastavena na víkend.");
+        if ($v['dueDate'] !== NULL && $v['dueDate']->format("N") > 5) {
+            $form['dueDate']->addError("Splatnost nemůže být nastavena na víkend.");
             return;
         }
 
         //nastavení pro táborové skupiny
         if (isset($v->camp)) {
-            $v->sisId = $v->camp;
+            $v->skautisEntityId = $v->camp;
         }
 
-        if ($v->gid != "") {//EDIT
-            $groupId = $v->gid;
+        if ($v->groupId != "") {//EDIT
+            $groupId = $v->groupId;
             $this->model->updateGroup(
                 $groupId,
                 $v->label,
                 $v->amount ? (float)$v->amount : NULL,
-                $v->maturity ? \DateTimeImmutable::createFromMutable($v->maturity) : NULL,
-                $v->ks ? (int)$v->ks : NULL,
+                $v->dueDate ? \DateTimeImmutable::createFromMutable($v->dueDate) : NULL,
+                $v->constantSymbol ? (int)$v->constantSymbol : NULL,
                 $v->nextVs ? (int)$v->nextVs : NULL,
-                $v->email_info,
+                $v->emailTemplate,
                 $v->smtp);
 
             $this->flashMessage('Skupina byla upravena');
         } else {//ADD
             $type = Type::isValidValue($v->type) ? Type::get($v->type) : NULL;
 
-            $object = $type !== NULL ? new SkautisEntity((int)$v->sisId, $type) : NULL;
+            $object = $type !== NULL ? new SkautisEntity((int)$v->skautisEntityId, $type) : NULL;
 
-            $dueDate = $v->maturity !== NULL
-                     ? \DateTimeImmutable::createFromMutable($v->maturity)
+            $dueDate = $v->dueDate !== NULL
+                     ? \DateTimeImmutable::createFromMutable($v->dueDate)
                      : NULL;
 
             $groupId = $this->model->createGroup(
@@ -203,10 +203,10 @@ class GroupPresenter extends BasePresenter
                 $object,
                 $v->label,
                 $dueDate,
-                $v->ks ? (int)$v->ks : NULL,
+                $v->constantSymbol ? (int)$v->constantSymbol : NULL,
                 $v->nextVs ? (int)$v->nextVs : NULL,
                 isset($v->amount) ? (float)$v->amount : NULL,
-                $v->email_info,
+                $v->emailTemplate,
                 $v->smtp);
 
             $this->flashMessage('Skupina byla založena');
