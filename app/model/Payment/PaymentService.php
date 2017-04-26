@@ -70,7 +70,7 @@ class PaymentService
         }, $payments);
     }
 
-    public function createPayment(int $groupId, string $name, ?string $email, float $amount, \DateTimeImmutable $dueDate, ?int $personId, ?int $vs, ?int $ks, string $note): void
+    public function createPayment(int $groupId, string $name, ?string $email, float $amount, DateTimeImmutable $dueDate, ?int $personId, ?int $vs, ?int $ks, string $note): void
     {
         $group = $this->groups->find($groupId);
 
@@ -84,7 +84,7 @@ class PaymentService
         string $name,
         string $email,
         float $amount,
-        \DateTimeImmutable $dueDate,
+        DateTimeImmutable $dueDate,
         ?int $variableSymbol,
         ?int $constantSymbol,
         string $note
@@ -100,7 +100,7 @@ class PaymentService
     public function cancelPayment(int $pid): void
     {
         $payment = $this->payments->find($pid);
-        $payment->cancel(new \DateTimeImmutable());
+        $payment->cancel(new DateTimeImmutable());
 
         $this->payments->save($payment);
     }
@@ -108,7 +108,7 @@ class PaymentService
     public function completePayment(int $id): void
     {
         $payment = $this->payments->find($id);
-        $payment->complete(new \DateTimeImmutable());
+        $payment->complete(new DateTimeImmutable());
 
         $this->payments->save($payment);
     }
@@ -180,7 +180,7 @@ class PaymentService
         int $id,
         string $name,
         ?float $defaultAmount,
-        ?\DateTimeImmutable $dueDate,
+        ?DateTimeImmutable $dueDate,
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
         string $emailTemplate,
