@@ -4,12 +4,15 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
+use Consistence\Time\TimeFormat;
 use Model\BankService;
 use Model\DTO\Payment\Group;
+use Model\DTO\Payment\Payment;
 use Model\Mail\MailerNotFoundException;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\MailingService;
+use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
 use Model\PaymentService;
 use Model\UnitService;
@@ -21,8 +24,6 @@ use Nette\Mail\SmtpException;
  */
 class PaymentPresenter extends BasePresenter
 {
-
-    protected $notFinalStates;
 
     /**
      *
@@ -67,7 +68,6 @@ class PaymentPresenter extends BasePresenter
     {
         parent::startup();
         //Kontrola ověření přístupu
-        $this->template->notFinalStates = $this->notFinalStates = $this->model->getNonFinalStates();
         $this->readUnits = $this->unitService->getReadUnits($this->user);
         $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
@@ -77,14 +77,12 @@ class PaymentPresenter extends BasePresenter
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
 
-        $summarizations = [];
-        foreach($groups as $group) {
-            $summarizations[$group->getId()] = $this->model->summarizeByState($group->getId());
-        }
+        $groupIds = array_map(function(Group $group) {
+            return $group->getId();
+        }, $groups);
 
         $this->template->groups = $groups;
-        $this->template->summarizations = $summarizations;
-        $this->template->payments = $this->model->getAll(array_keys($groups));
+        $this->template->summarizations = $this->model->getGroupSummaries($groupIds);
     }
 
     public function actionDetail($id): void
@@ -116,7 +114,7 @@ class PaymentPresenter extends BasePresenter
         ]);
 
         $this->template->payments = $payments = $this->model->findByGroup($id);
-        $this->template->summarize = $this->model->summarizeByState($id);
+        $this->template->summarize = $this->model->getGroupSummaries([$id])[$id];
         $this->template->now = new \DateTimeImmutable();
         $paymentsForSendEmail = array_filter($payments, function($p) {
             return strlen($p->email) > 4 && $p->state == "preparing";
@@ -125,28 +123,29 @@ class PaymentPresenter extends BasePresenter
         $this->template->canPair = isset($this->bankInfo->token);
     }
 
-    public function renderEdit($pid): void
+    public function renderEdit(int $pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
             $this->redirect("Payment:default");
         }
-        $payment = $this->model->get(array_keys($this->editUnits), $pid);
+
+        $payment = $this->model->findPayment($pid);
         $form = $this['paymentForm'];
         $form['send']->caption = "Upravit";
         $form->setDefaults([
-            'name' => $payment->name,
-            'email' => $payment->email,
-            'amount' => $payment->amount,
-            'maturity' => $payment->maturity,
-            'vs' => $payment->vs,
-            'ks' => $payment->ks,
-            'note' => $payment->note,
-            'oid' => $payment->groupId,
-            'pid' => $payment->id,
+            'name' => $payment->getName(),
+            'email' => $payment->getEmail(),
+            'amount' => $payment->getAmount(),
+            'maturity' => TimeFormat::createDateTimeFromDateTimeInterface($payment->getDueDate()),
+            'vs' => $payment->getVariableSymbol(),
+            'ks' => $payment->getConstantSymbol(),
+            'note' => $payment->getNote(),
+            'oid' => $payment->getGroupId(),
+            'pid' => $pid,
         ]);
 
-        $this->template->linkBack = $this->link("detail", ["id" => $payment->groupId]);
+        $this->template->linkBack = $this->link("detail", ["id" => $payment->getGroupId()]);
     }
 
     public function actionMassAdd(int $id): void
@@ -192,10 +191,12 @@ class PaymentPresenter extends BasePresenter
             "gid" => $group->getId(),
             "accountFrom" => $accountFrom,
         ]);
+
+        /* @var $payments Payment[] */
         $payments = [];
-        foreach ($this->model->getAll($id) as $p) {
-            if ($p->state == "completed" && $p->personId != NULL) {
-                $payments[$p->personId] = $p;
+        foreach ($this->model->findByGroup($id) as $p) {
+            if ($p->getState()->equalsValue(State::COMPLETED) && $p->getPersonId() !== NULL) {
+                $payments[$p->getPersonId()] = $p;
             }
         }
         $participantsWithRepayment = array_filter($campService->participants->getAll($group->getSkautisId()), function ($p) {
@@ -215,7 +216,10 @@ class PaymentPresenter extends BasePresenter
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
                 ->setRequired("Zadejte částku vratky u " . $p->Person)
                 ->addRule(Form::NUMERIC, "Vratka musí být číslo!");
-            $account = isset($payments[$p->ID_Person]->paidFrom) ? $payments[$p->ID_Person]->paidFrom : "";
+
+            $transaction = $payments[$p->ID_Person]->getTransaction();
+            $account = $transaction !== NULL ? $transaction->getBankAccount() : "";
+            
             $form->addText($pid . "_account")
                 ->setDefaultValue($account)
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
@@ -230,10 +234,6 @@ class PaymentPresenter extends BasePresenter
     {
         if (!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "danger");
-            $this->redirect("this");
-        }
-        if (!$this->model->get(array_keys($this->editUnits), $pid)) {
-            $this->flashMessage("Platba pro zrušení nebyla nalezena!", "danger");
             $this->redirect("this");
         }
 
@@ -453,23 +453,30 @@ class PaymentPresenter extends BasePresenter
             $form['maturity']->addError("Musíte vyplnit splatnost");
             return;
         }
-        if ($v->pid != "") {//EDIT
-            if ($this->model->update($v->pid, ['state' => 'preparing', 'name' => $v->name, 'email' => $v->email, 'amount' => $v->amount, 'maturity' => $v->maturity, 'vs' => $v->vs, 'ks' => $v->ks, 'note' => (string)$v->note])) {
-                $this->flashMessage("Platba byla upravena");
-            } else {
-                $this->flashMessage("Platbu se nepodařilo založit", "danger");
-            }
+
+        $id = $v->pid != "" ? (int)$v->pid : NULL;
+        $name = $v->name;
+        $email = $v->email;
+        $amount = (float)$v->amount;
+        $dueDate = \DateTimeImmutable::createFromMutable($v->maturity);
+        $variableSymbol = $v->vs !== "" ? (int)$v->vs : NULL;
+        $constantSymbol = $v->ks !== "" ? (int)$v->ks : NULL;
+        $note = (string)$v->note;
+
+        if ($id !== NULL) {//EDIT
+            $this->model->update($id, $name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+            $this->flashMessage("Platba byla upravena");
         } else {//ADD
             $this->model->createPayment(
                 (int)$v->oid,
-                $v->name,
-                $v->email,
-                (float)$v->amount,
-                \DateTimeImmutable::createFromMutable($v->maturity),
+                $name,
+                $email,
+                $amount,
+                $dueDate,
                 NULL,
-                (int)$v->vs,
-                $v->ks !== NULL ? (int)$v->ks : NULL,
-                (string)$v->note
+                $variableSymbol,
+                $constantSymbol,
+                $note
             );
             $this->flashMessage("Platba byla přidána");
         }
@@ -502,7 +509,6 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění pro práci s platbami jednotky", "danger");
             $this->redirect("Payment:default", ["id" => $values->gid]);
         }
-        //$list = $this->model->getPersons($this->aid, $values->oid);
 
         $accountFrom = $values->accountFrom;
         $ids = array_keys(array_filter((array)$values, function ($val) {

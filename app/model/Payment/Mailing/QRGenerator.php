@@ -1,8 +1,7 @@
 <?php
 
-namespace Model\Payment\QR;
+namespace Model\Payment\Mailing;
 
-use Model\DTO\Payment\Payment;
 use Model\Payment\InvalidBankAccountException;
 
 class QRGenerator implements IQRGenerator

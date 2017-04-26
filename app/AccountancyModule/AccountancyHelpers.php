@@ -74,17 +74,22 @@ abstract class AccountancyHelpers extends Object
         return '<span class="label label-success" title="Uzavřeno dne: ' . $s->format("j.n.Y H:i:s") . '">Uzavřený</span>';
     }
 
+    public static function paymentState($state, bool $plural): string
+    {
+        $labels = [
+            State::PREPARING => ["Připravena", "Připravené"],
+            State::COMPLETED => ["Dokončena", "Dokončené"],
+            State::SENT => ["Odeslána", "Odeslané"],
+            State::CANCELED => ["Zrušena", "Zrušené"],
+        ];
+
+        return $labels[$state][$plural ? 1 : 0] ?? $state;
+    }
+
     public static function paymentStateLabel($s): string
     {
         if ($s instanceof State) {
-            $labels = [
-                State::PREPARING => 'Připravena',
-                State::COMPLETED => 'Dokončena',
-                State::SENT => 'Odeslána',
-                State::CANCELED => 'Zrušena',
-            ];
-
-            $s = $labels[$s->getValue()] ?? $s->getValue();
+            $s = self::paymentState($s->getValue(), FALSE);
         }
         $long = $s;
         $short = mb_substr($s, 0, 5) . ".";

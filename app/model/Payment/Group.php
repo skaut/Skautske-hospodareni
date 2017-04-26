@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Model\Payment\Group\SkautisEntity;
+
 class Group
 {
 
     /** @var int */
     private $id;
 
-    /** @var string */
-    private $type;
-
     /** @var int */
     private $unitId;
 
-    /** @var int */
-    private $skautisId;
+    /** @var SkautisEntity|NULL */
+    private $object;
 
     /** @var string|NULL */
     private $name;
@@ -56,9 +55,8 @@ class Group
     const STATE_CLOSED = 'closed';
 
     public function __construct(
-        ?string $type,
         int $unitId,
-        ?int $skautisId,
+        ?SkautisEntity $object,
         string $name,
         ?float $defaultAmount,
         ?\DateTimeImmutable $dueDate,
@@ -69,9 +67,8 @@ class Group
         ?int $smtpId
     )
     {
-        $this->type = $type;
         $this->unitId = $unitId;
-        $this->skautisId = $skautisId;
+        $this->object = $object;
         $this->name = $name;
         $this->defaultAmount = $defaultAmount;
         $this->dueDate = $dueDate;
@@ -128,14 +125,6 @@ class Group
     }
 
     /**
-     * @return string|NULL
-     */
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    /**
      * @return int
      */
     public function getUnitId(): int
@@ -143,12 +132,9 @@ class Group
         return $this->unitId;
     }
 
-    /**
-     * @return int|NULL
-     */
-    public function getSkautisId(): ?int
+    public function getObject(): ?SkautisEntity
     {
-        return $this->skautisId;
+        return $this->object;
     }
 
     /**

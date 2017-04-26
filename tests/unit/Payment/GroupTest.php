@@ -13,7 +13,6 @@ class GroupTest extends \Codeception\Test\Unit
         $createdAt = new DateTimeImmutable();
 
         $group = new Group(
-            NULL,
             20,
             NULL,
             "Skupina 01",
@@ -26,9 +25,8 @@ class GroupTest extends \Codeception\Test\Unit
             NULL
         );
 
-        $this->assertNull($group->getType());
         $this->assertSame(20, $group->getUnitId());
-        $this->assertNull($group->getSkautisId());
+        $this->assertNull($group->getObject());
         $this->assertSame("Skupina 01", $group->getName());
         $this->assertSame(200.2, $group->getDefaultAmount());
         $this->assertSame($dueDate, $group->getDueDate());
@@ -57,9 +55,8 @@ class GroupTest extends \Codeception\Test\Unit
             20
         );
 
-        $this->assertNull($group->getType());
         $this->assertSame(20, $group->getUnitId());
-        $this->assertNull($group->getSkautisId());
+        $this->assertNull($group->getObject());
         $this->assertSame("Skupina Jiná", $group->getName());
         $this->assertSame(120.0, $group->getDefaultAmount());
         $this->assertNull($group->getDueDate());
@@ -96,7 +93,6 @@ class GroupTest extends \Codeception\Test\Unit
     private function createGroup(?DateTimeImmutable $dueDate = NULL, ?DateTimeImmutable $createdAt = NULL): Group
     {
         return new Group(
-            NULL,
             20,
             NULL,
             "Skupina 01",
