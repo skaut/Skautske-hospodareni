@@ -20,18 +20,6 @@ class ExportService extends BaseService
         $this->units = $units;
     }
 
-    /**
-     * donastavuje helpery a zdrojový file do šablony
-     * @param Template $template
-     * @param string $fileName
-     * @return Template
-     */
-    protected function setTemplate(Template $template, string $fileName): void
-    {
-        $template->setFile($fileName);
-        $template->getLatte()->addFilter(NULL, '\App\AccountancyModule\AccountancyHelpers::loader');
-    }
-
     public function getNewPage()
     {
         return '<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />';
@@ -47,7 +35,7 @@ class ExportService extends BaseService
      */
     public function getParticipants(Template $template, $aid, EventEntity $service, $type = "general")
     {
-        $this->setTemplate($template, dirname(__FILE__) . "/templates/participant" . ($type == "camp" ? "Camp" : "") . ".latte");
+        $template->setFile(__DIR__ . "/templates/participant" . ($type === "camp" ? "Camp" : "") . ".latte");
         $template->list = $service->participants->getAll($aid);
         $template->info = $service->event->get($aid);
         return $template;
@@ -62,7 +50,7 @@ class ExportService extends BaseService
      */
     public function getCashbook(Template $template, $aid, EventEntity $service)
     {
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/cashbook.latte');
+        $template->setFile(__DIR__."/templates/cashbook.latte");
         $template->list = $service->chits->getAll($aid);
         $template->info = $service->event->get($aid);
         return $template;
@@ -77,7 +65,7 @@ class ExportService extends BaseService
      */
     public function getChitlist(Template $template, $aid, EventEntity $service)
     {
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/chitlist.latte');
+        $template->setFile(__DIR__ . "/templates/chitlist.latte");
         $template->list = array_filter($service->chits->getAll($aid), function ($c) {
             return $c->ctype == "out";
         });
@@ -103,7 +91,8 @@ class ExportService extends BaseService
         foreach ($eventService->chits->getAll($aid) as $chit) {
             $categories[$chit->ctype][$chit->cshort]->price += $chit->price;
         }
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/eventReport.latte');
+
+        $template->setFile(__DIR__ . "/templates/eventReport.latte");
         $participants = $eventService->participants->getAll($aid);
         $template->participantsCnt = count($participants);
         $template->personsDays = $eventService->participants->getPersonsDays($participants);
@@ -126,7 +115,7 @@ class ExportService extends BaseService
         $income = [];
         $outcome = [];
         $activeHpd = FALSE;
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/chits.latte');
+        $template->setFile(__DIR__ . "/templates/chits.latte");
 
         foreach ($chits as $c) {
             if ($c->cshort == "hpd") {
@@ -178,7 +167,8 @@ class ExportService extends BaseService
             $categories[$c->IsRevenue ? "in" : "out"][$c->ID] = $c;
         }
 
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/campReport.latte');
+        $template->setFile(__DIR__."/templates/campReport.latte");
+
         $participants = $campService->participants->getAll($aid);
         $template->participantsCnt = count($participants);
         $template->personsDays = $campService->participants->getPersonsDays($participants);

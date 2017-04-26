@@ -159,6 +159,10 @@ services:
         class: Nette\Mail\IMailer
         factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
 
+    nette.latteFactory:
+        setup:
+            - addFilter(null, App\AccountancyModule\AccountancyHelpers::process)
+
     - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
 includes:
 	- components.neon

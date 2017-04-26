@@ -84,7 +84,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
                 $this->redirect(":Default:");
             }
         }
-        $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
+
         \DependentSelectBox\JsonDependentSelectBox::tryJsonResponse($this /* (presenter) */);
     }
 
