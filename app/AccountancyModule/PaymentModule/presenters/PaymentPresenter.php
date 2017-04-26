@@ -460,7 +460,7 @@ class PaymentPresenter extends BasePresenter
         $amount = (float)$v->amount;
         $dueDate = \DateTimeImmutable::createFromMutable($v->maturity);
         $variableSymbol = $v->vs !== "" ? (int)$v->vs : NULL;
-        $constantSymbol = $v->ks !=="" ? (int)$v->ks : NULL;
+        $constantSymbol = $v->ks !== "" ? (int)$v->ks : NULL;
         $note = (string)$v->note;
 
         if ($id !== NULL) {//EDIT
