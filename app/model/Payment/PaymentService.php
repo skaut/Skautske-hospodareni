@@ -160,7 +160,7 @@ class PaymentService
         int $unitId,
         ?Group\SkautisEntity $skautisEntity,
         string $label,
-        DateTimeImmutable $dueDate,
+        ?DateTimeImmutable $dueDate,
         ?int $ks,
         ?int $nextVS,
         ?float $amount,
