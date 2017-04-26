@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use Consistence\Enum\InvalidEnumValueException;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Nette\Application\UI\Form;
@@ -126,22 +127,22 @@ class GroupPresenter extends BasePresenter
         $form->addSelect("skautisEntityId");
         $form->addText("label", "Název")
             ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte zadat název skupiny")
+            ->setRequired("Musíte zadat název skupiny")
             ->setHtmlId("group-name-input");
         $form->addText("amount", "Výchozí částka")
             ->setAttribute("class", "form-control")
-            ->addCondition(Form::FILLED)
+            ->setRequired(FALSE)
             ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
         $form->addDatePicker("dueDate", "Výchozí splatnost")
             ->setAttribute("class", "form-control");
         $form->addText("constantSymbol", "KS")
             ->setMaxLength(4)
             ->setAttribute("class", "form-control")
-            ->addCondition(Form::FILLED)
+            ->setRequired(FALSE)
             ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
         $form->addText("nextVs", "Další VS:")
             ->setMaxLength(10)
-            ->addCondition(Form::FILLED)
+            ->setRequired(FALSE)
             ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addSelect("smtp", "Email odesílatele", $this->mail->getPairs($this->aid))
             ->setPrompt("Vyberte email");
@@ -152,7 +153,7 @@ class GroupPresenter extends BasePresenter
         $form->addHidden("groupId");
         $form->addSubmit('send', "Založit skupinu")->setAttribute("class", "btn btn-primary");
 
-        $form->onSubmit[] = function (Form $form): void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->groupFormSubmitted($form);
         };
         return $form;
@@ -166,52 +167,51 @@ class GroupPresenter extends BasePresenter
         }
         $v = $form->getValues();
 
-        if ($v['dueDate'] !== NULL && $v['dueDate']->format("N") > 5) {
-            $form['dueDate']->addError("Splatnost nemůže být nastavena na víkend.");
+
+        $dueDate = $v->dueDate !== NULL
+            ? \DateTimeImmutable::createFromMutable($v->dueDate)
+            : NULL;
+
+        if ($dueDate !== NULL && $dueDate->format("N") > 5) {
+            $form["dueDate"]->addError("Splatnost nemůže být nastavena na víkend.");
             return;
         }
 
-        //nastavení pro táborové skupiny
-        if (isset($v->camp)) {
-            $v->skautisEntityId = $v->camp;
-        }
+        $groupId = $v->groupId !== "" ? (int)$v->groupId : NULL;
+        $label = $v->label;
+        $amount = $v->amount !== "" ? $v->amount : NULL;
+        $constantSymbol = $v->constantSymbol !== "" ? $v->constantSymbol : NULL;
+        $emailTemplate = $v->emailTemplate;
+        $nextVs = $v->nextVs !== "" ? $v->nextVs : NULL;
+        $smtpId = $v->smtp;
 
-        if ($v->groupId != "") {//EDIT
-            $groupId = $v->groupId;
+        if ($groupId !== NULL) {//EDIT
             $this->model->updateGroup(
-                $groupId,
-                $v->label,
-                $v->amount ? (float)$v->amount : NULL,
-                $v->dueDate ? \DateTimeImmutable::createFromMutable($v->dueDate) : NULL,
-                $v->constantSymbol ? (int)$v->constantSymbol : NULL,
-                $v->nextVs ? (int)$v->nextVs : NULL,
-                $v->emailTemplate,
-                $v->smtp);
+                $groupId, $label, $amount, $dueDate, $constantSymbol, $nextVs, $emailTemplate, $smtpId
+            );
 
             $this->flashMessage('Skupina byla upravena');
         } else {//ADD
-            $type = Type::isValidValue($v->type) ? Type::get($v->type) : NULL;
-
-            $object = $type !== NULL ? new SkautisEntity((int)$v->skautisEntityId, $type) : NULL;
-
-            $dueDate = $v->dueDate !== NULL
-                     ? \DateTimeImmutable::createFromMutable($v->dueDate)
-                     : NULL;
+            $entity = isset($v->skautisEntityId)
+                    ? $this->createSkautisEntity($v->type, (int)$v->skautisEntityId)
+                    : NULL;
 
             $groupId = $this->model->createGroup(
-                $this->aid,
-                $object,
-                $v->label,
-                $dueDate,
-                $v->constantSymbol ? (int)$v->constantSymbol : NULL,
-                $v->nextVs ? (int)$v->nextVs : NULL,
-                isset($v->amount) ? (float)$v->amount : NULL,
-                $v->emailTemplate,
-                $v->smtp);
+                $this->aid, $entity, $label, $dueDate, $constantSymbol, $nextVs, $amount, $emailTemplate, $smtpId
+            );
 
             $this->flashMessage('Skupina byla založena');
         }
         $this->redirect('Payment:detail', ['id' => $groupId]);
+    }
+
+    private function createSkautisEntity(string $type, int $id): ?SkautisEntity
+    {
+        try {
+            return new SkautisEntity($id, Type::get($type));
+        } catch (InvalidEnumValueException $e) {
+            return NULL;
+        }
     }
 
     private function getDefaultEmail(string $name) : string
