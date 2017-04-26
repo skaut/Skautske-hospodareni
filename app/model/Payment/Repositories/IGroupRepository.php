@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\Repositories;
 
 use Model\Payment\Group;
-use Model\Payment\Group\SkautisObject;
+use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFoundException;
 
@@ -27,10 +27,10 @@ interface IGroupRepository
     public function findByUnits(array $unitIds, bool $openOnly): array;
 
     /**
-     * @param SkautisObject $object
+     * @param SkautisEntity $object
      * @return Group[]
      */
-    public function findBySkautisObject(SkautisObject $object): array;
+    public function findBySkautisEntity(SkautisEntity $object): array;
 
     /**
      * @param Type $type

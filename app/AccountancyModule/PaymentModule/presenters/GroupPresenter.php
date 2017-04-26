@@ -2,7 +2,7 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
-use Model\Payment\Group\SkautisObject;
+use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Nette\Application\UI\Form;
 
@@ -192,7 +192,7 @@ class GroupPresenter extends BasePresenter
         } else {//ADD
             $type = Type::isValidValue($v->type) ? Type::get($v->type) : NULL;
 
-            $object = $type !== NULL ? new SkautisObject((int)$v->sisId, $type) : NULL;
+            $object = $type !== NULL ? new SkautisEntity((int)$v->sisId, $type) : NULL;
 
             $groupId = $this->model->createGroup(
                 $this->aid,

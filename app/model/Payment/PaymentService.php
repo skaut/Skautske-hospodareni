@@ -157,7 +157,7 @@ class PaymentService
 
     public function createGroup(
         int $unitId,
-        ?Group\SkautisObject $object,
+        ?Group\SkautisEntity $skautisEntity,
         string $label,
         ?\DateTime $maturity,
         ?int $ks,
@@ -169,7 +169,7 @@ class PaymentService
     {
         $group = new Group(
             $unitId,
-            $object,
+            $skautisEntity,
             $label,
             $amount ? $amount : NULL,
             $maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
@@ -315,8 +315,8 @@ class PaymentService
         if ($data != new \stdClass()) { // Skautis returns empty object when no registration is found
             $registration = $data[0];
 
-            $groups = $this->groups->findBySkautisObject(
-                new Group\SkautisObject($registration->ID, Type::get(Type::REGISTRATION))
+            $groups = $this->groups->findBySkautisEntity(
+                new Group\SkautisEntity($registration->ID, Type::get(Type::REGISTRATION))
             );
 
             if(empty($groups)) {

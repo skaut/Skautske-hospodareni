@@ -2,7 +2,7 @@
 
 namespace Model\Payment\Group;
 
-final class SkautisObject
+final class SkautisEntity
 {
 
     /** @var int */
