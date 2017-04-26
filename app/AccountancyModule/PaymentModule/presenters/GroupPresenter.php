@@ -194,11 +194,15 @@ class GroupPresenter extends BasePresenter
 
             $object = $type !== NULL ? new SkautisEntity((int)$v->sisId, $type) : NULL;
 
+            $dueDate = $v->maturity !== NULL
+                     ? \DateTimeImmutable::createFromMutable($v->maturity)
+                     : NULL;
+
             $groupId = $this->model->createGroup(
                 $this->aid,
                 $object,
                 $v->label,
-                $v->maturity,
+                $dueDate,
                 $v->ks ? (int)$v->ks : NULL,
                 $v->nextVs ? (int)$v->nextVs : NULL,
                 isset($v->amount) ? (float)$v->amount : NULL,

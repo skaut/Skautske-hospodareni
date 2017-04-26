@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use DateTimeImmutable;
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
 use Model\Payment\Group\Type;
@@ -159,25 +160,17 @@ class PaymentService
         int $unitId,
         ?Group\SkautisEntity $skautisEntity,
         string $label,
-        ?\DateTime $maturity,
+        DateTimeImmutable $dueDate,
         ?int $ks,
         ?int $nextVS,
         ?float $amount,
-        string $email_info,
+        string $emailTemplate,
         ?int $smtpId
     ): int
     {
-        $group = new Group(
-            $unitId,
-            $skautisEntity,
-            $label,
-            $amount ? $amount : NULL,
-            $maturity ? \DateTimeImmutable::createFromMutable($maturity) : NULL,
-            $ks,
-            $nextVS,
-            new \DateTimeImmutable(),
-            $email_info,
-            $smtpId);
+        $now = new DateTimeImmutable();
+        $amount = $amount !== 0.0 ? $amount : NULL;
+        $group = new Group($unitId, $skautisEntity, $label, $amount, $dueDate, $ks, $nextVS, $now, $emailTemplate, $smtpId);
 
         $this->groups->save($group);
         return $group->getId();
