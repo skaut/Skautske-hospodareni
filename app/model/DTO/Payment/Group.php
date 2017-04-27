@@ -3,6 +3,7 @@
 namespace Model\DTO\Payment;
 
 use DateTimeImmutable;
+use Model\Payment\Group\EmailTemplate;
 use Nette\SmartObject;
 
 /**
@@ -16,7 +17,7 @@ use Nette\SmartObject;
  * @property-read int|NULL $constantSymbol
  * @property-read int|NULL $nextVariableSymbol
  * @property-read string $state
- * @property-read string $emailTemplate
+ * @property-read EmailTemplate $emailTemplate
  * @property-read int|NULL $smtpId
  * @property-read string $note
  * @property-read Summary[] $stats
@@ -56,7 +57,7 @@ class Group
     /** @var string */
     private $state;
 
-    /** @var string */
+    /** @var EmailTemplate */
     private $emailTemplate;
 
     /** @var int|NULL */
@@ -76,7 +77,7 @@ class Group
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
         string $state,
-        string $emailTemplate,
+        EmailTemplate $emailTemplate,
         ?int $smtpId,
         string $note)
     {
@@ -167,10 +168,7 @@ class Group
         return $this->state;
     }
 
-    /**
-     * @return string
-     */
-    public function getEmailTemplate(): string
+    public function getEmailTemplate(): EmailTemplate
     {
         return $this->emailTemplate;
     }

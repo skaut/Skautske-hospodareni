@@ -3,6 +3,7 @@
 namespace Model\Payment;
 
 use DateTimeImmutable;
+use Model\Payment\Group\EmailTemplate;
 
 class GroupTest extends \Codeception\Test\Unit
 {
@@ -11,7 +12,7 @@ class GroupTest extends \Codeception\Test\Unit
     {
         $dueDate = new DateTimeImmutable();
         $createdAt = new DateTimeImmutable();
-
+        $emailTemplate = new EmailTemplate("subject", "mail body");
         $group = new Group(
             20,
             NULL,
@@ -21,7 +22,7 @@ class GroupTest extends \Codeception\Test\Unit
             203,
             666,
             $createdAt,
-            "Email",
+            $emailTemplate,
             NULL
         );
 
@@ -33,7 +34,7 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertSame(203, $group->getConstantSymbol());
         $this->assertSame(666, $group->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
-        $this->assertSame("Email", $group->getEmailTemplate());
+        $this->assertSame($emailTemplate, $group->getEmailTemplate());
         $this->assertNull($group->getSmtpId());
         $this->assertSame($group::STATE_OPEN, $group->getState());
         $this->assertSame("", $group->getNote());
@@ -45,13 +46,15 @@ class GroupTest extends \Codeception\Test\Unit
         $createdAt = new DateTimeImmutable();
         $group = $this->createGroup($dueDate, $createdAt);
 
+        $emailTemplate = new EmailTemplate("subject2", "body2");
+
         $group->update(
             "Skupina Jiná",
             120.0,
             NULL,
             NULL,
             NULL,
-            "Email2",
+            $emailTemplate,
             20
         );
 
@@ -63,7 +66,7 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertNull($group->getConstantSymbol());
         $this->assertNull($group->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
-        $this->assertSame("Email2", $group->getEmailTemplate());
+        $this->assertSame($emailTemplate, $group->getEmailTemplate());
         $this->assertSame(20, $group->getSmtpId());
     }
 
@@ -101,7 +104,7 @@ class GroupTest extends \Codeception\Test\Unit
             203,
             666,
             $createdAt ?? new DateTimeImmutable(),
-            "Email",
+            new EmailTemplate("Email subject", "Email body"),
             NULL
         );
     }
