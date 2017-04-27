@@ -3,7 +3,6 @@
 namespace Model\Payment;
 
 use DateTimeImmutable;
-use Model\Payment\Mailing\IQRGenerator;
 use Model\Payment\Mailing\Payment as MailPayment;
 use Model\Mail\IMailerFactory;
 use Model\MailTable;
@@ -14,7 +13,6 @@ use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Repositories\IUserRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
-use Nette\Utils\Strings;
 use Nette\Utils\Validators;
 
 class MailingService
@@ -41,9 +39,6 @@ class MailingService
     /** @var MailTable */
     private $smtps;
 
-    /** @var IQRGenerator */
-    private $qr;
-
     public function __construct(
         IGroupRepository $groups,
         IMailerFactory $mailerFactory,
@@ -51,8 +46,7 @@ class MailingService
         IBankAccountRepository $bankAccounts,
         TemplateFactory $templateFactory,
         IUserRepository $users,
-        MailTable $smtps,
-        IQRGenerator $qr
+        MailTable $smtps
     )
     {
         $this->groups = $groups;
@@ -62,7 +56,6 @@ class MailingService
         $this->templateFactory = $templateFactory;
         $this->users = $users;
         $this->smtps = $smtps;
-        $this->qr = $qr;
     }
 
     public function sendEmail(int $paymentId, int $userId): void
@@ -159,40 +152,16 @@ class MailingService
             throw new InvalidEmailException();
         }
 
-        $body = $group->getEmailTemplate();
-
-        $accountRequired = Strings::contains($body, '%qrcode') || Strings::contains($body, '%account');
-        if($bankAccount === NULL && $accountRequired) {
-            throw new InvalidBankAccountException('Bank account required for email.');
-        }
-
-        $parameters = [
-            '%account%' => $bankAccount,
-            '%name%' => $payment->getName(),
-            '%groupname%' => $group->getName(),
-            '%amount%' => $payment->getAmount(),
-            '%maturity%' => $payment->getDueDate()->format('j.n.Y'),
-            '%vs%' => $payment->getVariableSymbol(),
-            '%ks%' => $payment->getConstantSymbol(),
-            '%note%' => $payment->getNote(),
-            '%user%' => $user->getName(),
-        ];
-
-        if (Strings::contains($body, '%qrcode')) {
-            $file = $this->qr->generate($bankAccount, $payment);
-            $parameters['%qrcode%'] = '<img alt="QR platbu se nepodařilo zobrazit" src="' . $file . '"/>';
-        }
-
-        $body = str_replace(array_keys($parameters), array_values($parameters), $body);
+        $emailTemplate = $group->getEmailTemplate()->evaluate($group, $payment, $bankAccount, $user->getName());
 
         $template = $this->templateFactory->create('payment.base', [
-            'body' => nl2br($body, FALSE),
+            'body' => nl2br($emailTemplate->getBody(), FALSE),
         ]);
 
         $mail = (new Message())
             ->addTo($payment->getEmail())
             ->setFrom('platby@skauting.cz') // There must be something, but gmail overwrites it :(
-            ->setSubject('Informace o platbě')
+            ->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);
 
         $smtp = $this->smtps->get($group->getSmtpId());
