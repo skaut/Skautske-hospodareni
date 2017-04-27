@@ -3,9 +3,12 @@
 namespace App\AccountancyModule\PaymentModule;
 
 use Consistence\Enum\InvalidEnumValueException;
+use Model\EventEntity;
+use Model\MailService;
 use Model\Payment\Group\EmailTemplate;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
+use Model\PaymentService;
 use Nette\Application\UI\Form;
 
 /**
@@ -14,26 +17,21 @@ use Nette\Application\UI\Form;
 class GroupPresenter extends BasePresenter
 {
 
-    /** @var \Model\PaymentService */
+    /** @var PaymentService */
     protected $model;
 
-    /** @var \Model\MailService */
+    /** @var MailService */
     private $mail;
 
-    /** @var \Model\EventService */
+    /** @var EventEntity */
     private $camp;
 
-    public function __construct(\Model\PaymentService $paymentService, \Model\MailService $mailService)
+    public function __construct(PaymentService $paymentService, MailService $mailService, EventEntity $camp)
     {
         parent::__construct($paymentService);
         $this->model = $paymentService;
         $this->mail = $mailService;
-    }
-
-    protected function startup(): void
-    {
-        parent::startup();
-        $this->camp = $this->context->getService("campService");
+        $this->camp = $camp;
     }
 
     public function actionDefault($type = NULL): void
