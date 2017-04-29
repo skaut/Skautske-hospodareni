@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Model\Payment\Group\EmailTemplate;
 use Model\Payment\Group\SkautisEntity;
 
 class Group
@@ -42,7 +43,7 @@ class Group
     /** @var \DateTimeImmutable|NULL */
     private $lastPairing;
 
-    /** @var string */
+    /** @var EmailTemplate */
     private $emailTemplate;
 
     /** @var int|NULL */
@@ -63,7 +64,7 @@ class Group
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
         \DateTimeImmutable $createdAt,
-        string $emailTemplate,
+        EmailTemplate $emailTemplate,
         ?int $smtpId
     )
     {
@@ -85,7 +86,7 @@ class Group
         ?\DateTimeImmutable $dueDate,
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
-        string $emailTemplate,
+        EmailTemplate $emailTemplate,
         ?int $smtpId) : void
     {
         $this->name = $name;
@@ -193,10 +194,7 @@ class Group
         return $this->createdAt;
     }
 
-    /**
-     * @return string
-     */
-    public function getEmailTemplate(): string
+    public function getEmailTemplate(): EmailTemplate
     {
         return $this->emailTemplate;
     }

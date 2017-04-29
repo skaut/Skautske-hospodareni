@@ -43,9 +43,6 @@ Model\Payment\Group:
         lastPairing:
             type: datetime_immutable
             nullable: true
-        emailTemplate:
-            type: text
-            column: email_info
         smtpId:
             type: integer
             nullable: true
@@ -56,3 +53,5 @@ Model\Payment\Group:
             columnPrefix: false
             annotations:
                 nullable: {}
+        emailTemplate:
+            class: Model\Payment\Group\EmailTemplate
