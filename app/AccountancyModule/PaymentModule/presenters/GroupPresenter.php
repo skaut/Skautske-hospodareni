@@ -3,8 +3,12 @@
 namespace App\AccountancyModule\PaymentModule;
 
 use Consistence\Enum\InvalidEnumValueException;
+use Model\EventEntity;
+use Model\MailService;
+use Model\Payment\Group\EmailTemplate;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
+use Model\PaymentService;
 use Nette\Application\UI\Form;
 
 /**
@@ -13,26 +17,21 @@ use Nette\Application\UI\Form;
 class GroupPresenter extends BasePresenter
 {
 
-    /** @var \Model\PaymentService */
+    /** @var PaymentService */
     protected $model;
 
-    /** @var \Model\MailService */
+    /** @var MailService */
     private $mail;
 
-    /** @var \Model\EventService */
+    /** @var EventEntity */
     private $camp;
 
-    public function __construct(\Model\PaymentService $paymentService, \Model\MailService $mailService)
+    public function __construct(PaymentService $paymentService, MailService $mailService, EventEntity $camp)
     {
         parent::__construct($paymentService);
         $this->model = $paymentService;
         $this->mail = $mailService;
-    }
-
-    protected function startup(): void
-    {
-        parent::startup();
-        $this->camp = $this->context->getService("campService");
+        $this->camp = $camp;
     }
 
     public function actionDefault($type = NULL): void
@@ -107,7 +106,8 @@ class GroupPresenter extends BasePresenter
             "constantSymbol" => $dto->getConstantSymbol(),
             "nextVs" => $dto->getNextVariableSymbol(),
             "smtp" => $dto->getSmtpId(),
-            "emailTemplate" => $dto->getEmailTemplate(),
+            "emailSubject" => $dto->getEmailTemplate()->getSubject(),
+            "emailBody" => $dto->getEmailTemplate()->getBody(),
             "groupId" => $id,
         ]);
 
@@ -146,7 +146,8 @@ class GroupPresenter extends BasePresenter
             ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addSelect("smtp", "Email odesílatele", $this->mail->getPairs($this->aid))
             ->setPrompt("Vyberte email");
-        $form->addTextArea("emailTemplate", "Informační email")
+        $form->addText("emailSubject", "Předmět emailu");
+        $form->addTextArea("emailBody", "Informační email")
             ->setAttribute("class", "form-control")
             ->setDefaultValue($this->getDefaultEmail('info'));
         $form->addHidden("type");
@@ -181,9 +182,10 @@ class GroupPresenter extends BasePresenter
         $label = $v->label;
         $amount = $v->amount !== "" ? $v->amount : NULL;
         $constantSymbol = $v->constantSymbol !== "" ? $v->constantSymbol : NULL;
-        $emailTemplate = $v->emailTemplate;
         $nextVs = $v->nextVs !== "" ? $v->nextVs : NULL;
         $smtpId = $v->smtp;
+
+        $emailTemplate = new EmailTemplate($v->emailSubject, $v->emailBody);
 
         if ($groupId !== NULL) {//EDIT
             $this->model->updateGroup(

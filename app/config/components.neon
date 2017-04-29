@@ -1,4 +1,7 @@
 services:
-	- implement: App\AccountancyModule\EventModule\Factories\IFunctionsFactory
-	  arguments: { eventEntity: @eventService }
-	- App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory
+    - implement: App\AccountancyModule\EventModule\Factories\IFunctionsFactory
+      arguments: { eventEntity: @eventService }
+    - App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory
+
+    # Presenters
+    - App\AccountancyModule\PaymentModule\GroupPresenter(camp: @campService)

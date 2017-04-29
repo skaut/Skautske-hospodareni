@@ -145,7 +145,6 @@ services:
     - Model\TravelTable
 
     - Model\Services\PdfRenderer
-    - Model\Payment\Mailing\QRGenerator
     - Model\Skautis\Mapper
 
     - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@annotations.reader)

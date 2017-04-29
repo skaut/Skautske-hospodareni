@@ -164,7 +164,7 @@ class PaymentService
         ?int $ks,
         ?int $nextVS,
         ?float $amount,
-        string $emailTemplate,
+        Group\EmailTemplate $emailTemplate,
         ?int $smtpId
     ): int
     {
@@ -183,7 +183,7 @@ class PaymentService
         ?DateTimeImmutable $dueDate,
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
-        string $emailTemplate,
+        Group\EmailTemplate $emailTemplate,
         ?int $smtpId): void
     {
         $group = $this->groups->find($id);
