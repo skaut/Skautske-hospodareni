@@ -225,29 +225,39 @@ class TravelService extends BaseService
         return $res;
     }
 
-    public function addCommand($cmd)
+    public function addCommand(
+        int $unitId,
+        ?int $contractId,
+        int $vehicleId,
+        string $purpose,
+        string $place,
+        string $passengers,
+        float $fuelPrice,
+        float $amortization,
+        string $note,
+        array $types
+    ): void
     {
-        $contractId = $cmd["contract_id"];
         $contract = $contractId !== NULL
-                  ? $this->contracts->find((int)$cmd["contract_id"])
+                  ? $this->contracts->find($contractId)
                   : NULL;
 
-        $vehicle = $this->vehicles->get((int)$cmd["vehicle_id"]);
+        $vehicle = $this->vehicles->get($vehicleId);
 
         $command = new Command(
-            $cmd["unit_id"],
+            $unitId,
             $vehicle,
             $contract,
-            $cmd["purpose"],
-            $cmd["place"],
-            $cmd["passengers"],
-            (float)$cmd["fuel_price"],
-            (float)$cmd["amortization"],
-            $cmd["note"]
+            $purpose,
+            $place,
+            $passengers,
+            $fuelPrice,
+            $amortization,
+            $note
         );
+
         $this->commands->save($command);
-        $this->table->updateTypes($command->getId(), $cmd["type"]);
-        return $command->getId();
+        $this->table->updateTypes($command->getId(), $types);
     }
 
     public function updateCommand($v, $unit, $id)

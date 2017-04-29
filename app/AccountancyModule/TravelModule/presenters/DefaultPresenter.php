@@ -267,9 +267,18 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage("Nemáte právo založit cestovní příkaz.", "danger");
             $this->redirect("default");
         }
-        $v->unit_id = $this->unit->ID;
-
-        $this->travelService->addCommand($v);
+        $this->travelService->addCommand(
+            $this->unit->ID,
+            isset($v->contract_id) ? (int)$v->contract_id : NULL,
+            $v->vehicle_id,
+            $v->purpose,
+            $v->place,
+            $v->passengers,
+            (float)$v->fuel_price,
+            (float)$v->amortization,
+            $v->note,
+            $v->type
+        );
         $this->flashMessage("Cestovní příkaz byl založen.");
         $this->redirect("this");
     }
