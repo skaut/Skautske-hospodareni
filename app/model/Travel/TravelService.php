@@ -75,14 +75,9 @@ class TravelService extends BaseService
      * @param int $vehicleId - ID vozidla
      * @return Vehicle
      */
-    public function getVehicle(int $vehicleId)
+    public function getVehicle(int $vehicleId): Vehicle
     {
-        $cacheId = __FUNCTION__ . "_" . $vehicleId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->vehicles->get($vehicleId);
-            $this->saveSes($cacheId, $res);
-        }
-        return $res;
+        return $this->vehicles->get($vehicleId);
     }
 
     public function getVehiclesPairs($unitId)
