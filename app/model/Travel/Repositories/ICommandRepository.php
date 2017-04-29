@@ -20,4 +20,6 @@ interface ICommandRepository
 
     public function remove(Command $command): void;
 
+    public function save(Command $command): void;
+
 }

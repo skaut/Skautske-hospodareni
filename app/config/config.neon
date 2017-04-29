@@ -123,6 +123,7 @@ services:
 
     # Repositories
     - Model\Travel\Repositories\CommandRepository
+    - Model\Travel\Repositories\ContractRepository
     - Model\Travel\Repositories\VehicleRepository
     - Model\Payment\Repositories\BankAccountRepository
     - Model\Payment\Repositories\GroupRepository

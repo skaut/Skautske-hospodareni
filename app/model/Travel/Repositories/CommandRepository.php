@@ -44,4 +44,10 @@ class CommandRepository implements ICommandRepository
         $this->em->remove($command)->flush();
     }
 
+    public function save(Command $command): void
+    {
+        $this->em->persist($command);
+        $this->em->flush();
+    }
+
 }

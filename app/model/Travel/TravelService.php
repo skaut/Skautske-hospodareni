@@ -3,7 +3,9 @@
 namespace Model;
 
 use Dibi\Row;
+use Model\Travel\Command;
 use Model\Travel\Repositories\ICommandRepository;
+use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 
@@ -29,12 +31,16 @@ class TravelService extends BaseService
     /** @var ICommandRepository */
     private $commands;
 
+    /** @var IContractRepository */
+    private $contracts;
+
     public function __construct(
         CommandTable $table,
         TravelTable $tableTravel,
         ContractTable $tableContract,
         IVehicleRepository $vehicles,
-        ICommandRepository $commands
+        ICommandRepository $commands,
+        IContractRepository $contracts
     )
     {
         parent::__construct();
@@ -43,6 +49,7 @@ class TravelService extends BaseService
         $this->tableContract = $tableContract;
         $this->vehicles = $vehicles;
         $this->commands = $commands;
+        $this->contracts = $contracts;
     }
 
     public function isContractAccessible($contractId, $unit)
@@ -220,13 +227,27 @@ class TravelService extends BaseService
 
     public function addCommand($cmd)
     {
-        $types = $cmd["type"];
-        unset($cmd["type"]);
-        $cmd->fuel_price = (float)$cmd->fuel_price;
-        $cmd->amortization = (float)$cmd->amortization;
-        $insertedId = $this->table->add($cmd);
-        $this->table->updateTypes($insertedId, $types);
-        return $insertedId;
+        $contractId = $cmd["contract_id"];
+        $contract = $contractId !== NULL
+                  ? $this->contracts->find((int)$cmd["contract_id"])
+                  : NULL;
+
+        $vehicle = $this->vehicles->get((int)$cmd["vehicle_id"]);
+
+        $command = new Command(
+            $cmd["unit_id"],
+            $vehicle,
+            $contract,
+            $cmd["purpose"],
+            $cmd["place"],
+            $cmd["passengers"],
+            (float)$cmd["fuel_price"],
+            (float)$cmd["amortization"],
+            $cmd["note"]
+        );
+        $this->commands->save($command);
+        $this->table->updateTypes($command->getId(), $cmd["type"]);
+        return $command->getId();
     }
 
     public function updateCommand($v, $unit, $id)

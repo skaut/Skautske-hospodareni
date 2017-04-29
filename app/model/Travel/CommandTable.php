@@ -23,11 +23,6 @@ class CommandTable extends BaseTable
             LEFT JOIN [" . self::TABLE_TC_VEHICLE . "] as c ON (com.vehicle_id = c.id) WHERE com.id=%i", $commandId);
     }
 
-    public function add($v)
-    {
-        return $this->connection->insert(self::TABLE_TC_COMMANDS, $v)->execute(\dibi::IDENTIFIER);
-    }
-
     public function update($v, $id)
     {
         return $this->connection->query("UPDATE [" . self::TABLE_TC_COMMANDS . "] SET", $v, "WHERE id=%s", $id);
