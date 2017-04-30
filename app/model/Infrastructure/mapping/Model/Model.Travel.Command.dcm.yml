@@ -23,7 +23,10 @@ Model\Travel\Command:
             type: float
         note:
             type: string
-
+        closedAt:
+            type: datetime_immutable
+            nullable: true
+            column: closed
 
     manyToOne:
         vehicle:

@@ -48,4 +48,27 @@ class Travel
         $this->command = $command;
     }
 
+    public function getAmount(): float
+    {
+        if($this->transportType->hasFuel()) {
+            throw new WrongVehicleTypeException("Can't get amount from travel with fueled vehicle");
+        }
+
+        return $this->distance;
+    }
+
+    public function getDistance(): float
+    {
+        if(!$this->transportType->hasFuel()) {
+            throw new WrongVehicleTypeException("Can't get distance from travel with non-fueled vehicle");
+        }
+
+        return $this->distance;
+    }
+
+    public function getTransportType(): TransportType
+    {
+        return $this->transportType;
+    }
+
 }

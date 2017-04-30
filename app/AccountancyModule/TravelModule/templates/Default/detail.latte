@@ -7,10 +7,10 @@
 <div class="row">
     <div class="well well-sm">
         <a n:href="editCommand $command->id" n:if="$isEditable" class="fancybox fancybox.ajax btn btn-sm btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit</a>
-        <a n:href="removeCommand! $command->id" n:if="is_null($command->closed)" title="Smazat" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon glyphicon-remove"></i> Smazat</a>
+        <a n:href="removeCommand! $command->id" n:if="$command->closedAt === NULL" title="Smazat" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon glyphicon-remove"></i> Smazat</a>
         <a n:href="closeCommand! $command->id" n:if="$isEditable" class="btn btn-sm btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
-        <a n:href="openCommand! $command->id" n:if="!is_null($command->closed)" class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
-        {if !is_null($command->contract_id)}
+        <a n:href="openCommand! $command->id" n:if="$command->closedAt !== NULL" class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
+        {if $command->contractId !== NULL}
             <a n:href="Contract:detail $contract->id" class="btn btn-sm btn-primary hidden-xs"><i class="glyphicon glyphicon-zoom-in"></i> Smlouva</a>
         {/if}
         <a n:href="print $command->id" class="btn btn-sm btn-info hidden-xs"><i class="glyphicon glyphicon-print"></i> Vytisknout cestovní příkaz</a>
@@ -20,23 +20,23 @@
     <div class="col-sm-4">
         <h3>Příkaz</h3>
         <b>Účel cesty:</b> {$command->purpose}<br />
-        {if $command->place != ""}<b>Místo:</b> {$command->place}<br />{/if}
-        {if $command->passengers != ""}<b>Spolucestující:</b> {$command->passengers}<br />{/if}
-        {if $command->note != ""}<b>Poznámka:</b>{$command->note}{/if}
+        {if $command->place !== ""}<b>Místo:</b> {$command->place}<br />{/if}
+        {if $command->passengers !== ""}<b>Spolucestující:</b> {$command->passengers}<br />{/if}
+        {if $command->note !== ""}<b>Poznámka:</b>{$command->note}{/if}
     </div>
     <div class="col-sm-4">
         <h3>Prostředek</h3>
         <b>Typ:</b> {foreach $types as $t} {$t}{if !$iterator->isLast()}, {/if} {/foreach}<br />
-        {ifset $command->vehicle_type}<b>Vozidlo:</b> <a n:href="Vehicle:detail $command->vehicle_id">{$command->vehicle_type} ({$command->vehicle_spz})</a><br />{/ifset}
-        {ifset $command->vehicle_consumption}<b>&#0216; spotřeba dle t.p.:</b> {$command->vehicle_consumption|number:2} l/100 km<br />{/ifset}
-        {if $command->fuel_price != 0}<b>Cena paliva:</b> {$command->fuel_price|price} l/Kč<br />{/if}
-        <b>Opotřebení:</b> {$command->amortization|number:2} Kč/km<br />
-        {var $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}
+        {ifset $vehicle}<b>Vozidlo:</b> <a n:href="Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a><br />{/ifset}
+        {ifset $vehicle}<b>&#0216; spotřeba dle t.p.:</b> {$vehicle->consumption|number:2} l/100 km<br />{/ifset}
+        {if $command->fuelPrice != 0}<b>Cena paliva:</b> {$command->fuelPrice|price} l/Kč<br />{/if}
+        <b>Opotřebení:</b> {$command->amortizationPerKm|number:2} Kč/km<br />
+        {var $sazba = round($command->amortizationPerKm + $command->fuelPrice * $vehicle->consumption / 100, 2)}
         <b>Sazba náhrady:</b> <b>{= $sazba}</b> Kč/km<br />
         {var $sum = 0}
 
     </div>
-        {if !is_null($command->contract_id)}
+        {if !is_null($command->contractId)}
     <div class="col-sm-4 hidden-xs">
         <h3>Řidič</h3>
         <b>Jméno:</b> {$contract->driver_name}<br />

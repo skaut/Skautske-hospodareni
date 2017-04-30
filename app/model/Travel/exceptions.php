@@ -13,3 +13,7 @@ class CommandNotFoundException extends \Exception
 class ContractNotFoundException extends \Exception
 {
 }
+
+class WrongVehicleTypeException extends \Exception
+{
+}

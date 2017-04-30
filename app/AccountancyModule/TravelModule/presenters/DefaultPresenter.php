@@ -59,13 +59,16 @@ class DefaultPresenter extends BasePresenter
         $this['formAddTravel']->setDefaults(["command_id" => $id]);
     }
 
-    public function renderDetail($id) : void
+    public function renderDetail(int $id): void
     {
-        $this->template->command = $command = $this->travelService->getCommand($id);
-        $this->template->contract = $contract = $this->travelService->getContract($command->contract_id);
-        $this->template->isEditable = $this->isEditable = ($this->unit->ID == $command->unit_id && $command->closed == NULL) ? TRUE : FALSE;
-        $this->template->travels = $this->travelService->getTravels($command->id);
-        $this->template->types = $this->travelService->getCommandTypes($command->id);
+        $this->template->command = $command = $this->travelService->getCommandDetail($id);
+        $this->template->vehicle = $command->getVehicleId() !== NULL
+                                 ? $this->travelService->getVehicle($command->getVehicleId())
+                                 : NULL;
+        $this->template->contract = $contract = $this->travelService->getContract($command->getContractId());
+        $this->template->isEditable = $this->isEditable = $this->unit->ID === $command->getUnitId() && $command->getClosedAt() === NULL;
+        $this->template->travels = $this->travelService->getTravels($command->getId());
+        $this->template->types = $this->travelService->getCommandTypes($command->getId());
     }
 
     public function actionEditCommand($commandId) : void

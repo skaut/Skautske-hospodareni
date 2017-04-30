@@ -3,6 +3,7 @@
 namespace Model;
 
 use Dibi\Row;
+use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
@@ -230,6 +231,12 @@ class TravelService extends BaseService
     }
 
     /**     COMMANDS    */
+
+    /**
+     * @param $commandId
+     * @return Row|FALSE|mixed
+     * @deprecated use getCommandDetail
+     */
     public function getCommand($commandId)
     {
         $cacheId = __FUNCTION__ . "_" . $commandId;
@@ -238,6 +245,11 @@ class TravelService extends BaseService
             $this->saveSes($cacheId, $res);
         }
         return $res;
+    }
+
+    public function getCommandDetail(int $id): DTO\Command
+    {
+        return DTO\CommandFactory::create($this->commands->find($id));
     }
 
     public function addCommand(
