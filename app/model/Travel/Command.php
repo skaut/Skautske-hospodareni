@@ -58,6 +58,18 @@ class Command
         $this->travels = new ArrayCollection();
     }
 
+    public function createTravel(
+        \DateTimeImmutable $date,
+        float $distanceOrAmount,
+        TransportType $type,
+        string $startPlace,
+        string $endPlace): void
+    {
+        $this->travels->add(
+            new Travel($date, $distanceOrAmount, $type, $startPlace, $endPlace, $this)
+        );
+    }
+
     public function getId(): int
     {
         return $this->id;

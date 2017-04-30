@@ -7,6 +7,7 @@ use Model\Travel\Command;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
+use Model\Travel\TransportType;
 use Model\Travel\Vehicle;
 
 /**
@@ -140,7 +141,26 @@ class TravelService extends BaseService
 
     public function addTravel($data)
     {
-        return $this->tableTravel->add($data);
+        $command = $this->commands->find((int)$data["command_id"]);
+
+        $types = $this->tableTravel->getTypes();
+
+        $type = $types[$data["type"]] ?? NULL;
+
+        if($type === NULL) {
+            throw new \InvalidArgumentException("Type {$data['type']} not find");
+        }
+
+        $transportType = new TransportType($type["type"], (bool)$type["hasFuel"]);
+        $command->createTravel(
+            new \DateTimeImmutable(),
+            $data["distance"],
+            $transportType,
+            $data["start_place"],
+            $data["end_place"]
+        );
+
+        $this->commands->save($command);
     }
 
     public function updateTravel($data, $tId)

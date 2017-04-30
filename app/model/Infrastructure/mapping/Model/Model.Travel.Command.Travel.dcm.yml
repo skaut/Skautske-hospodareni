@@ -15,6 +15,9 @@ Model\Travel\Command\Travel:
             type: string
         distance:
             type: float
+        date:
+            type: datetime_immutable
+            column: start_date
 
     manyToOne:
         command:
@@ -24,3 +27,7 @@ Model\Travel\Command\Travel:
                 name: command_id
                 referencedColumnName: id
 
+    embedded:
+        transportType:
+            class: Model\Travel\TransportType
+            columnPrefix: false
