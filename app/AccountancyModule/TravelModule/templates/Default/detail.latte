@@ -48,13 +48,11 @@
         {var $sum = 0}
 
     </div>
-        {if !is_null($command->contractId)}
-    <div class="col-sm-4 hidden-xs">
+    <div n:if="$command->contractId !== NULL" class="col-sm-4 hidden-xs">
         <h3>Řidič</h3>
         <b>Jméno:</b> {$contract->driver_name}<br />
         <b>Bydliště:</b> {$contract->driver_address}
     </div>
-    {/if}
 </div>
 <div class="row">
     <h3>Provedené cesty</h3>
