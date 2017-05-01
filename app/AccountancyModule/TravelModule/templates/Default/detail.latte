@@ -11,7 +11,6 @@
             <span class="glyphicon glyphicon-edit"></span>
             Upravit
         </a>
-        {*<a n:href="editCommand $command->id" class="fancybox fancybox.ajax btn btn-sm btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit</a>*}
         <a n:href="removeCommand! $command->id" title="Smazat" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon glyphicon-remove"></i> Smazat</a>
         <a n:href="closeCommand! $command->id" class="btn btn-sm btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
         <a n:href="openCommand! $command->id" class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
