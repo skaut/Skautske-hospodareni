@@ -33,12 +33,18 @@
     <div class="col-sm-4">
         <h3>Prostředek</h3>
         <b>Typ:</b> {foreach $types as $t} {$t}{if !$iterator->isLast()}, {/if} {/foreach}<br />
-        {ifset $vehicle}<b>Vozidlo:</b> <a n:href="Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a><br />{/ifset}
-        {ifset $vehicle}<b>&#0216; spotřeba dle t.p.:</b> {$vehicle->consumption|number:2} l/100 km<br />{/ifset}
-        {if $command->fuelPrice != 0}<b>Cena paliva:</b> {$command->fuelPrice|price} l/Kč<br />{/if}
-        <b>Opotřebení:</b> {$command->amortizationPerKm|number:2} Kč/km<br />
-        {var $sazba = round($command->amortizationPerKm + $command->fuelPrice * $vehicle->consumption / 100, 2)}
-        <b>Sazba náhrady:</b> <b>{= $sazba}</b> Kč/km<br />
+        {ifset $vehicle}
+            <b>Vozidlo:</b>
+            <a n:href="Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a>
+            <br/>
+            <b>&#0216; spotřeba dle t.p.:</b> {$vehicle->consumption|number:2} l/100 km<br/>
+            <b>Cena paliva:</b> {$command->fuelPrice|price} l/Kč<br/>
+            <b>Opotřebení:</b> {$command->amortizationPerKm|number:2} Kč/km<br/>
+            {var $sazba = round($command->amortizationPerKm + $command->fuelPrice * $vehicle->consumption / 100, 2)}
+            <b>Sazba náhrady:</b> <b>{= $sazba}</b> Kč/km<br/>
+        {else}
+            {var $sazba = 0}
+        {/ifset}
         {var $sum = 0}
 
     </div>

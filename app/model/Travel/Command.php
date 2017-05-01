@@ -14,7 +14,7 @@ class Command
     /** @var int */
     private $unitId;
 
-    /** @var Vehicle */
+    /** @var Vehicle|NULL */
     private $vehicle;
 
     /** @var Contract|NULL */
@@ -45,7 +45,7 @@ class Command
     private $travels;
 
     public function __construct(
-        int $unitId, Vehicle $vehicle, ?Contract $contract, string $purpose,
+        int $unitId, ?Vehicle $vehicle, ?Contract $contract, string $purpose,
         string $place, string $passengers, float $fuelPrice, float $amortization, string $note
     )
     {
@@ -99,7 +99,9 @@ class Command
 
     private function calculateFuelPrice(): float
     {
-        return $this->getDistance() / 100 * $this->vehicle->getConsumption();
+        return $this->vehicle === NULL
+            ? 0
+            : $this->getDistance() / 100 * $this->vehicle->getConsumption();
     }
 
     public function getId(): int
@@ -112,9 +114,11 @@ class Command
         return $this->unitId;
     }
 
-    public function getVehicleId(): int
+    public function getVehicleId(): ?int
     {
-        return $this->vehicle->getId();
+        return $this->vehicle !== NULL
+            ? $this->vehicle->getId()
+            : NULL;
     }
 
     public function getContractId(): ?int

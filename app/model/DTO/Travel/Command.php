@@ -7,7 +7,7 @@ use Nette\SmartObject;
 /**
  * @property-read int                       $id
  * @property-read int                       $unitId
- * @property-read int                       $vehicleId
+ * @property-read int|NULL                  $vehicleId
  * @property-read int|NULL                  $contractId
  * @property-read string                    $purpose
  * @property-read string                    $place
@@ -29,7 +29,7 @@ class Command
     /** @var int */
     private $unitId;
 
-    /** @var int */
+    /** @var int|NULL */
     private $vehicleId;
 
     /** @var int|NULL */
@@ -62,7 +62,7 @@ class Command
     public function __construct(
         int $id,
         int $unitId,
-        int $vehicleId,
+        ?int $vehicleId,
         ?int $contractId,
         string $purpose,
         string $place,
@@ -98,7 +98,7 @@ class Command
         return $this->unitId;
     }
 
-    public function getVehicleId(): int
+    public function getVehicleId(): ?int
     {
         return $this->vehicleId;
     }

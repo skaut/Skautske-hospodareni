@@ -260,7 +260,7 @@ class TravelService extends BaseService
     public function addCommand(
         int $unitId,
         ?int $contractId,
-        int $vehicleId,
+        ?int $vehicleId,
         string $purpose,
         string $place,
         string $passengers,
@@ -274,7 +274,9 @@ class TravelService extends BaseService
                   ? $this->contracts->find($contractId)
                   : NULL;
 
-        $vehicle = $this->vehicles->get($vehicleId);
+        $vehicle = $vehicleId !== NULL
+            ? $this->vehicles->get($vehicleId)
+            : NULL;
 
         $command = new Command(
             $unitId,
