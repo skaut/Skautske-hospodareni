@@ -40,6 +40,10 @@ class Travel
         Command $command
     )
     {
+        if($this->distance <= 0) {
+            throw new \InvalidArgumentException("Distance can't be negative");
+        }
+
         $this->date = $date;
         $this->distance = $distance;
         $this->transportType = $transportType;
