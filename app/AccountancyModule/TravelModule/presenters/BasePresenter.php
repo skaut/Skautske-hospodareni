@@ -23,4 +23,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         throw new NotImplementedException("todo");
     }
 
+    protected function getUnitId(): int
+    {
+        return $this->unit->ID;
+    }
+
 }

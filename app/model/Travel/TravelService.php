@@ -5,6 +5,7 @@ namespace Model;
 use Dibi\Row;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
+use Model\Travel\CommandNotFoundException;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
@@ -247,9 +248,13 @@ class TravelService extends BaseService
         return $res;
     }
 
-    public function getCommandDetail(int $id): DTO\Command
+    public function getCommandDetail(int $id): ?DTO\Command
     {
-        return DTO\CommandFactory::create($this->commands->find($id));
+        try {
+            return DTO\CommandFactory::create($this->commands->find($id));
+        } catch (CommandNotFoundException $e) {
+            return NULL;
+        }
     }
 
     public function addCommand(

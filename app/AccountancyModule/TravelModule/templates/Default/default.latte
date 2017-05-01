@@ -5,14 +5,12 @@
 
 <div class="row">
     <div class="span12">
-        <div class="well well-sm">
-            <button type="button" data-toggle="collapse" data-target="#createCommand" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit cestovní příkaz</button>
-            <div class="collapse" id="createCommand">
-                <br />
-                {control formCreateCommand}
-            </div>
+        <div class="panel">
+        <a n:href="Command:" class="btn btn-primary">
+            <span class="glyphicon glyphicon-plus-sign"></span>
+            Založit cestovní příkaz
+        </a>
         </div>
-
         <table n:if="!empty($list)" class="table table-bordered table-striped table-condensed">
             <tr>
                 <th>&nbsp;</th>
