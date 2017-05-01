@@ -4,6 +4,7 @@ namespace App\AccountancyModule\TravelModule\Components;
 
 use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseForm;
+use Model\Travel\Driver;
 use Model\TravelService;
 use Nette\Application\UI\Control;
 use Nette\InvalidStateException;
@@ -72,6 +73,13 @@ class CommandForm extends Control
         $form->addSelect("contract_id", "Smlouva/Řidič", $contracts)
             ->setPrompt("Vyberte smlouvu")
             ->setAttribute("class", "form-control");
+
+        if($this->commandId === NULL) {
+            $form->addText("driverName", "Jméno řidiče");
+            $form->addText("driverContact", "Kontakt na řidiče");
+            $form->addText("driverAddress", "Adresa řidiče");
+        }
+
         $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
             ->setOption("id", "vehicle_id")
             ->setPrompt("Vyberte vozidlo")
@@ -124,9 +132,14 @@ class CommandForm extends Control
 
     private function createCommand(ArrayHash $values): void
     {
+        $driver = isset($values->contract_id)
+            ? NULL
+            : new Driver($values->driverName, $values->driverContact, $values->driverAddress);
+
         $this->model->addCommand(
             $this->unitId,
             isset($values->contract_id) ? (int)$values->contract_id : NULL,
+            $driver,
             $values->vehicle_id,
             $values->purpose,
             $values->place,

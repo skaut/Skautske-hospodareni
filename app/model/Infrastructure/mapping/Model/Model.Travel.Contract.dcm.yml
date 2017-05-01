@@ -9,3 +9,9 @@ Model\Travel\Contract:
             generator: { strategy: AUTO }
 
     fields:
+        driverName:
+            type: string
+        driverContact:
+            type: string
+        driverAddress:
+            type: string

@@ -17,8 +17,8 @@ class Command
     /** @var Vehicle|NULL */
     private $vehicle;
 
-    /** @var Contract|NULL */
-    private $contract;
+    /** @var Driver */
+    private $driver;
 
     /** @var string */
     private $purpose;
@@ -45,13 +45,13 @@ class Command
     private $travels;
 
     public function __construct(
-        int $unitId, ?Vehicle $vehicle, ?Contract $contract, string $purpose,
+        int $unitId, ?Vehicle $vehicle, Driver $driver, string $purpose,
         string $place, string $passengers, float $fuelPrice, float $amortization, string $note
     )
     {
         $this->unitId = $unitId;
         $this->vehicle = $vehicle;
-        $this->contract = $contract;
+        $this->driver = $driver;
         $this->purpose = $purpose;
         $this->place = $place;
         $this->passengers = $passengers;
@@ -123,7 +123,7 @@ class Command
 
     public function getContractId(): ?int
     {
-        return $this->contract !== NULL ? $this->contract->getId() : NULL;
+        return $this->driver->getContractId();
     }
 
     public function getPurpose(): string

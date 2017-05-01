@@ -28,12 +28,14 @@ Model\Travel\Command:
             nullable: true
             column: closed
 
+    embedded:
+        driver:
+            class: Model\Travel\Driver
+            columnPrefix: false
+
     manyToOne:
         vehicle:
             targetEntity: Model\Travel\Vehicle
-            nullable: true
-        contract:
-            targetEntity: Model\Travel\Contract
             nullable: true
 
     oneToMany:

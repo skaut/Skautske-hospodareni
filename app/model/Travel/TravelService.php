@@ -2,6 +2,8 @@
 
 namespace Model;
 
+use Consistence\Type\ArrayType\ArrayType;
+use Consistence\Type\ArrayType\KeyValuePair;
 use Dibi\Row;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
@@ -305,9 +307,25 @@ class TravelService extends BaseService
         return $status || $this->table->updateTypes($id, $types);
     }
 
-    public function getAllCommands($unitId)
+    /**
+     * @param int[] $ids
+     * @return DTO\Vehicle[]
+     */
+    public function findVehiclesByIds(array $ids): array
     {
-        return $this->table->getAll($unitId);
+        return ArrayType::mapByCallback(
+            $this->vehicles->findByIds($ids),
+            function(KeyValuePair $pair) {
+                return new KeyValuePair($pair->getKey(), DTO\VehicleFactory::create($pair->getValue()));
+            }
+        );
+    }
+
+    public function getAllCommands(int $unitId)
+    {
+        return array_map(function(Command $command) {
+            return DTO\CommandFactory::create($command);
+        }, $this->commands->findByUnit($unitId));
     }
 
     public function getCommandsCount(int $vehicleId): int
