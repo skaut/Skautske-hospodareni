@@ -40,7 +40,7 @@ class Travel
         Command $command
     )
     {
-        if($this->distance <= 0) {
+        if($distance <= 0) {
             throw new \InvalidArgumentException("Distance can't be negative");
         }
 
