@@ -184,6 +184,15 @@ class TravelService extends BaseService
         return $this->tableTravel->getTypes($pairs);
     }
 
+    /**
+     * @param int[] $commandIds
+     * @return string[]
+     */
+    public function getTypes(array $commandIds): array
+    {
+        return $this->table->getTypes($commandIds);
+    }
+
     /**     CONTRACTS    */
     public function getContract($contractId)
     {

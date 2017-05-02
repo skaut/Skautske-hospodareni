@@ -41,6 +41,14 @@ class CommandTable extends BaseTable
         return $q->fetchAll();
     }
 
+    public function getTypes(array $commandIds): array
+    {
+        return $this->connection->select("com.id as comId, (SELECT GROUP_CONCAT(tt.label SEPARATOR ', ') FROM " . self::TABLE_TC_COMMAND_TYPES . " ct LEFT JOIN " . self::TABLE_TC_TRAVEL_TYPES . " tt ON (ct.typeId = tt.type) WHERE commandId = com.id) as types")
+            ->from(self::TABLE_TC_COMMANDS . " AS com")
+            ->where("com.id IN %in", $commandIds)
+            ->fetchPairs("comId", "types");
+    }
+
     /**
      * @param int $unitId
      * @param int $contractId

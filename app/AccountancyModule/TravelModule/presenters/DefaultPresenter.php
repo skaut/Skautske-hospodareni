@@ -50,8 +50,13 @@ class DefaultPresenter extends BasePresenter
             return $command->getVehicleId();
         }, $commands);
 
+        $commandIds = array_map(function(Command $command) {
+            return $command->getId();
+        }, $commands);
+
         $this->template->list = $commands;
         $this->template->vehicles = $this->travelService->findVehiclesByIds(array_unique(array_filter($vehicleIds)));
+        $this->template->types = $this->travelService->getTypes($commandIds);
     }
 
     public function actionDetail($id) : void
