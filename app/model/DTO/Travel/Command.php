@@ -18,6 +18,7 @@ use Nette\SmartObject;
  * @property-read string                    $note
  * @property-read \DateTimeImmutable|NULL   $closedAt
  * @property-read float                     $total
+ * @property-read \DateTimeImmutable|NULL   $firstTravelDate
  */
 class Command
 {
@@ -60,6 +61,9 @@ class Command
     /** @var \DateTimeImmutable|NULL */
     private $closedAt;
 
+    /** @var \DateTimeImmutable|NULL */
+    private $firstTravelDate;
+
     public function __construct(
         int $id,
         int $unitId,
@@ -72,7 +76,8 @@ class Command
         float $amortizationPerKm,
         string $note,
         ?\DateTimeImmutable $closedAt,
-        float $total
+        float $total,
+        ?\DateTimeImmutable $firstTravelDate
     )
     {
         $this->id = $id;
@@ -87,6 +92,7 @@ class Command
         $this->note = $note;
         $this->total = $total;
         $this->closedAt = $closedAt;
+        $this->firstTravelDate = $firstTravelDate;
     }
 
     public function getId(): int
@@ -147,6 +153,11 @@ class Command
     public function getTotal(): float
     {
         return $this->total;
+    }
+
+    public function getFirstTravelDate(): ?\DateTimeImmutable
+    {
+        return $this->firstTravelDate;
     }
 
 }

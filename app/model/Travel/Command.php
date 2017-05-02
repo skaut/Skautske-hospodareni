@@ -191,4 +191,18 @@ class Command
         return $this->closedAt;
     }
 
+    public function getFirstTravelDate(): ?\DateTimeImmutable
+    {
+        if($this->travels->isEmpty()) {
+            return NULL;
+        }
+
+        return min(
+            $this->travels->map(function(Travel $travel) {
+                return $travel->getDate();
+            })->toArray()
+        );
+    }
+
+
 }

@@ -21,7 +21,8 @@ class CommandFactory
             $command->getAmortization(),
             $command->getNote(),
             $command->getClosedAt(),
-            $command->calculateTotal()
+            $command->calculateTotal(),
+            $command->getFirstTravelDate()
         );
     }
 

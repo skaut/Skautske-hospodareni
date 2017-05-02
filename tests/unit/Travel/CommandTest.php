@@ -44,6 +44,19 @@ class CommandTest extends \Codeception\Test\Unit
         );
     }
 
+    public function testGetFirstTravelDate(): void
+    {
+        $command = $this->createCommand();
+
+        $date = new \DateTimeImmutable();
+
+        $command->createTravel($date->modify("+ 1 day"), 200, new TransportType("vau", TRUE), "Brno", "Praha");
+        $command->createTravel($date, 220, new TransportType("vau", TRUE), "Praha", "Brno");
+        $command->createTravel($date->modify("+ 3 days"), 500, new TransportType("bus", FALSE), "Brno", "Praha");
+
+        $this->assertSame($date, $command->getFirstTravelDate());
+    }
+
     public function testUpdateMethod(): void
     {
         $command = $this->createCommand();

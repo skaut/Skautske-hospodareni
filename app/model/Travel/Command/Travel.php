@@ -52,6 +52,11 @@ class Travel
         $this->command = $command;
     }
 
+    public function getDate(): DateTimeImmutable
+    {
+        return $this->date;
+    }
+
     public function getAmount(): float
     {
         if($this->transportType->hasFuel()) {
