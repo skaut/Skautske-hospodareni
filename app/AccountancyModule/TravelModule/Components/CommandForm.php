@@ -136,29 +136,6 @@ class CommandForm extends Control
         return $form;
     }
 
-    private function createCommand(ArrayHash $values): void
-    {
-        $driver = isset($values->contract_id)
-            ? NULL
-            : new Driver($values->driverName, $values->driverContact, $values->driverAddress);
-
-        $this->model->addCommand(
-            $this->unitId,
-            isset($values->contract_id) ? (int)$values->contract_id : NULL,
-            $driver,
-            $values->vehicle_id,
-            $values->purpose,
-            $values->place,
-            $values->passengers,
-            (float)$values->fuel_price,
-            (float)$values->amortization,
-            $values->note,
-            $values->type
-        );
-
-        $this->presenter->flashMessage("Cestovní příkaz byl založen.");
-    }
-
     private function loadDefaultValues(BaseForm $form): void
     {
         $command = $this->model->getCommandDetail($this->commandId);
@@ -197,6 +174,29 @@ class CommandForm extends Control
             } catch (\Model\Travel\VehicleNotFoundException $exc) {
             }
         }
+    }
+
+    private function createCommand(ArrayHash $values): void
+    {
+        $driver = isset($values->contract_id)
+            ? NULL
+            : new Driver($values->driverName, $values->driverContact, $values->driverAddress);
+
+        $this->model->addCommand(
+            $this->unitId,
+            isset($values->contract_id) ? (int)$values->contract_id : NULL,
+            $driver,
+            $values->vehicle_id,
+            $values->purpose,
+            $values->place,
+            $values->passengers,
+            (float)$values->fuel_price,
+            (float)$values->amortization,
+            $values->note,
+            $values->type
+        );
+
+        $this->presenter->flashMessage("Cestovní příkaz byl založen.");
     }
 
     private function updateCommand(ArrayHash $values): void
