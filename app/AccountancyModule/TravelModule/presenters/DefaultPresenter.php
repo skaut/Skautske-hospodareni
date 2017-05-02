@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use Model\DTO\Travel\Command;
 use Model\Services\PdfRenderer;
 use Model\TravelService;
 use Nette\Application\UI\Form;
@@ -43,7 +44,14 @@ class DefaultPresenter extends BasePresenter
 
     public function renderDefault() : void
     {
-        $this->template->list = $this->travelService->getAllCommands($this->unit->ID);
+        $commands = $this->travelService->getAllCommands($this->getUnitId());
+
+        $vehicleIds = array_map(function (Command $command) {
+            return $command->getVehicleId();
+        }, $commands);
+
+        $this->template->list = $commands;
+        $this->template->vehicles = $this->travelService->findVehiclesByIds(array_unique(array_filter($vehicleIds)));
     }
 
     public function actionDetail($id) : void
@@ -65,7 +73,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->vehicle = $command->getVehicleId() !== NULL
                                  ? $this->travelService->getVehicle($command->getVehicleId())
                                  : NULL;
-        $this->template->contract = $contract = $this->travelService->getContract($command->getContractId());
+        $this->template->contract = $contract = $this->travelService->getContract($command->getDriver()->getContractId());
         $this->template->isEditable = $this->isEditable = $this->unit->ID === $command->getUnitId() && $command->getClosedAt() === NULL;
         $this->template->travels = $this->travelService->getTravels($command->getId());
         $this->template->types = $this->travelService->getCommandTypes($command->getId());

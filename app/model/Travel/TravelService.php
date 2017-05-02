@@ -8,6 +8,7 @@ use Dibi\Row;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
+use Model\Travel\Driver;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
@@ -262,6 +263,7 @@ class TravelService extends BaseService
     public function addCommand(
         int $unitId,
         ?int $contractId,
+        ?Driver $driver,
         ?int $vehicleId,
         string $purpose,
         string $place,
@@ -272,9 +274,15 @@ class TravelService extends BaseService
         array $types
     ): void
     {
-        $contract = $contractId !== NULL
-                  ? $this->contracts->find($contractId)
-                  : NULL;
+        if(($driver === NULL && $contractId === NULL)
+            || ($driver !== NULL && $contractId !== NULL)) {
+            throw new \InvalidArgumentException("Either driver or contract must be specified");
+        }
+
+        if($contractId !== NULL) {
+            $driver = Driver::fromContract($this->contracts->find($contractId));
+        }
+
 
         $vehicle = $vehicleId !== NULL
             ? $this->vehicles->get($vehicleId)
@@ -283,7 +291,7 @@ class TravelService extends BaseService
         $command = new Command(
             $unitId,
             $vehicle,
-            $contract,
+            $driver,
             $purpose,
             $place,
             $passengers,

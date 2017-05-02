@@ -121,9 +121,9 @@ class Command
             : NULL;
     }
 
-    public function getContractId(): ?int
+    public function getDriver(): Driver
     {
-        return $this->driver->getContractId();
+        return $this->driver;
     }
 
     public function getPurpose(): string

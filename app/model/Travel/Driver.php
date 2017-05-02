@@ -2,8 +2,18 @@
 
 namespace Model\Travel;
 
+use Nette\SmartObject;
+
+/**
+ * @property-read string    $name
+ * @property-read string    $contact
+ * @property-read string    $address
+ * @property-read int|NULL  $contractId
+ */
 class Driver
 {
+
+    use SmartObject;
 
     /** @var string */
     private $name;

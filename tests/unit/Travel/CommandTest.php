@@ -18,7 +18,6 @@ class CommandTest extends \Codeception\Test\Unit
         $this->assertSame(2, $command->getUnitId());
         $this->assertSame(6, $command->getVehicleId());
         $this->assertSame($driver, $command->getDriver());
-        $this->assertNull($command->getContractId());
         $this->assertSame($place, $command->getPlace());
         $this->assertSame("", $command->getPassengers());
         $this->assertSame(31.20, $command->getFuelPrice());

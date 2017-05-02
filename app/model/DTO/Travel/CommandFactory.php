@@ -13,7 +13,7 @@ class CommandFactory
             $command->getId(),
             $command->getUnitId(),
             $command->getVehicleId(),
-            $command->getContractId(),
+            $command->getDriver(),
             $command->getPurpose(),
             $command->getPlace(),
             $command->getPassengers(),

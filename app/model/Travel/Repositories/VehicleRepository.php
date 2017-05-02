@@ -4,6 +4,7 @@ namespace Model\Travel\Repositories;
 
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
+use Doctrine\DBAL\Connection;
 use Kdyby\Doctrine\EntityManager;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
@@ -33,6 +34,21 @@ class VehicleRepository implements IVehicleRepository
         }
 
         return $vehicle;
+    }
+
+    public function findByIds(array $ids): array
+    {
+        if(empty($ids)) {
+            return [];
+        }
+
+        return $this->em->createQueryBuilder()
+            ->select("v")
+            ->from(Vehicle::class, "v", "v.id")
+            ->where("v.id IN (:ids)")
+            ->setParameter("ids", $ids, Connection::PARAM_INT_ARRAY)
+            ->getQuery()
+            ->getResult();
     }
 
     /**

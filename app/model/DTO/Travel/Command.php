@@ -2,13 +2,14 @@
 
 namespace Model\DTO\Travel;
 
+use Model\Travel\Driver;
 use Nette\SmartObject;
 
 /**
  * @property-read int                       $id
  * @property-read int                       $unitId
  * @property-read int|NULL                  $vehicleId
- * @property-read int|NULL                  $contractId
+ * @property-read Driver                    $driver
  * @property-read string                    $purpose
  * @property-read string                    $place
  * @property-read string                    $passengers
@@ -32,8 +33,8 @@ class Command
     /** @var int|NULL */
     private $vehicleId;
 
-    /** @var int|NULL */
-    private $contractId;
+    /** @var Driver */
+    private $driver;
 
     /** @var string */
     private $purpose;
@@ -63,7 +64,7 @@ class Command
         int $id,
         int $unitId,
         ?int $vehicleId,
-        ?int $contractId,
+        Driver $driver,
         string $purpose,
         string $place,
         string $passengers,
@@ -77,7 +78,7 @@ class Command
         $this->id = $id;
         $this->unitId = $unitId;
         $this->vehicleId = $vehicleId;
-        $this->contractId = $contractId;
+        $this->driver = $driver;
         $this->purpose = $purpose;
         $this->place = $place;
         $this->passengers = $passengers;
@@ -103,9 +104,9 @@ class Command
         return $this->vehicleId;
     }
 
-    public function getContractId(): ?int
+    public function getDriver(): Driver
     {
-        return $this->contractId;
+        return $this->driver;
     }
 
     public function getPurpose(): string

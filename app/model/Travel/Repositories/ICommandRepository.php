@@ -5,6 +5,7 @@ namespace Model\Travel\Repositories;
 
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
+use Model\Travel\Vehicle;
 
 interface ICommandRepository
 {
@@ -15,6 +16,12 @@ interface ICommandRepository
      * @throws CommandNotFoundException
      */
     public function find(int $id): Command;
+
+    /**
+     * @param int $unitId
+     * @return Vehicle[]
+     */
+    public function findByUnit(int $unitId): array;
 
     public function countByVehicle(int $vehicleId): int;
 

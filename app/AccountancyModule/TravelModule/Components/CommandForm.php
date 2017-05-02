@@ -70,15 +70,21 @@ class CommandForm extends Control
             ->addRule($form::FILLED, "Musíte vyplnit účel cesty.");
         $form->addCheckboxList("type", "Prostředek*", $transportTypes)
             ->addRule($form::FILLED, "Vyberte alespoň jeden dopravní prostředek.");
+
         $form->addSelect("contract_id", "Smlouva/Řidič", $contracts)
             ->setPrompt("Vyberte smlouvu")
-            ->setAttribute("class", "form-control");
+            ->setAttribute("class", "form-control")
+            ->addCondition($form::FILLED)
+            ->toggle("driverName", FALSE)
+            ->toggle("driverContact", FALSE)
+            ->toggle("driverAddress", FALSE);
 
-        if($this->commandId === NULL) {
-            $form->addText("driverName", "Jméno řidiče");
-            $form->addText("driverContact", "Kontakt na řidiče");
-            $form->addText("driverAddress", "Adresa řidiče");
-        }
+        $form->addText("driverName", "Jméno řidiče")
+            ->setOption("id", "driverName");
+        $form->addText("driverContact", "Kontakt na řidiče")
+            ->setOption("id", "driverContact");
+        $form->addText("driverAddress", "Adresa řidiče")
+            ->setOption("id", "driverAddress");
 
         $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
             ->setOption("id", "vehicle_id")
@@ -162,7 +168,7 @@ class CommandForm extends Control
         }
 
         $form->setDefaults([
-            "contract_id" => $command->getContractId(),
+            "contract_id" => $command->getDriver()->getContractId(),
             "purpose" => $command->getPurpose(),
             "place" => $command->getPlace(),
             "passengers" => $command->getPassengers(),
