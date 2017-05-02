@@ -41,9 +41,14 @@ class Driver
             $contract->getDriverContact(),
             $contract->getDriverAddress()
         );
-        $driver->contractId = $contract->getId();
+        $driver->setContractId($contract->getId());
 
         return $driver;
+    }
+
+    private function setContractId(int $contractId): void
+    {
+        $this->contractId = $contractId;
     }
 
     public function getName(): string
