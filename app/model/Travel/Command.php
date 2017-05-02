@@ -101,7 +101,8 @@ class Command
                 return !$travel->getTransportType()->hasFuel() ? $travel->getAmount() : 0;
             })->toArray()
         );
-        return $amount + $this->calculateFuelPrice() + $this->calculateAmortization();
+
+        return $amount + $this->calculateFuelPrice();
     }
 
     private function getDistance(): float
@@ -122,7 +123,7 @@ class Command
     {
         return $this->vehicle === NULL
             ? 0
-            : $this->getDistance() / 100 * $this->vehicle->getConsumption();
+            : $this->getDistance() / 100 * $this->vehicle->getConsumption() * $this->fuelPrice;
     }
 
     public function getId(): int
