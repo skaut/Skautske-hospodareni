@@ -23,11 +23,6 @@ class CommandTable extends BaseTable
             LEFT JOIN [" . self::TABLE_TC_VEHICLE . "] as c ON (com.vehicle_id = c.id) WHERE com.id=%i", $commandId);
     }
 
-    public function update($v, $id)
-    {
-        return $this->connection->query("UPDATE [" . self::TABLE_TC_COMMANDS . "] SET", $v, "WHERE id=%s", $id);
-    }
-
     public function getAll($unitId, $returnQuery = FALSE)
     {
         $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.registration as vehicle_spz, com.place")

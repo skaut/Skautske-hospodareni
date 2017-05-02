@@ -61,6 +61,27 @@ class Command
         $this->travels = new ArrayCollection();
     }
 
+    public function update(
+        ?Vehicle $vehicle,
+        Driver $driver,
+        string $purpose,
+        string $place,
+        string $passengers,
+        float $fuelPrice,
+        float $amortization,
+        string $note
+    ): void
+    {
+        $this->vehicle = $vehicle;
+        $this->driver = $driver;
+        $this->purpose = $purpose;
+        $this->place = $place;
+        $this->passengers = $passengers;
+        $this->fuelPrice = $fuelPrice;
+        $this->amortization = $amortization;
+        $this->note = $note;
+    }
+
     public function createTravel(
         \DateTimeImmutable $date,
         float $distanceOrAmount,

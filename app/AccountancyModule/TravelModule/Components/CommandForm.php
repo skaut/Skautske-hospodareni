@@ -167,10 +167,8 @@ class CommandForm extends Control
         if (!in_array($vehicleId, $vehicles->getItems())) {
             try {
                 $vehicle = $this->model->getVehicle($vehicleId);
-                $vehicles->setItems(array_merge(
-                    [$vehicle->getId() => $vehicle->getLabel()],
-                    $vehicles->getItems()
-                ));
+                $vehicles->setItems([$vehicle->getId() => $vehicle->getLabel()] + $vehicles->getItems());
+                $vehicles->setDefaultValue($vehicleId);
             } catch (\Model\Travel\VehicleNotFoundException $exc) {
             }
         }
@@ -178,14 +176,10 @@ class CommandForm extends Control
 
     private function createCommand(ArrayHash $values): void
     {
-        $driver = isset($values->contract_id)
-            ? NULL
-            : new Driver($values->driverName, $values->driverContact, $values->driverAddress);
-
         $this->model->addCommand(
             $this->unitId,
             isset($values->contract_id) ? (int)$values->contract_id : NULL,
-            $driver,
+            $this->createDriver($values),
             $values->vehicle_id,
             $values->purpose,
             $values->place,
@@ -201,11 +195,28 @@ class CommandForm extends Control
 
     private function updateCommand(ArrayHash $values): void
     {
-        if ($this->model->updateCommand($values, (object)["ID" => $this->unitId], $this->commandId)) {
-            $this->presenter->flashMessage("Cestovní příkaz byl upraven.");
-        } else {
-            $this->presenter->flashMessage("Cestovní příkaz se nepodařilo upravit.", "danger");
-        }
+        $this->model->updateCommand(
+            $this->commandId,
+            isset($values->contract_id) ? (int)$values->contract_id : NULL,
+            $this->createDriver($values),
+            $values->vehicle_id,
+            $values->purpose,
+            $values->place,
+            $values->passengers,
+            (float)$values->fuel_price,
+            (float)$values->amortization,
+            $values->note,
+            $values->type
+        );
+
+        $this->presenter->flashMessage("Cestovní příkaz byl upraven.");
+    }
+
+    private function createDriver(ArrayHash $values): ?Driver
+    {
+        return isset($values->contract_id)
+            ? NULL
+            : new Driver($values->driverName, $values->driverContact, $values->driverAddress);
     }
 
 }

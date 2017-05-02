@@ -8,6 +8,7 @@ use Dibi\Row;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
+use Model\Travel\Contract;
 use Model\Travel\Driver;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
@@ -274,16 +275,6 @@ class TravelService extends BaseService
         array $types
     ): void
     {
-        if(($driver === NULL && $contractId === NULL)
-            || ($driver !== NULL && $contractId !== NULL)) {
-            throw new \InvalidArgumentException("Either driver or contract must be specified");
-        }
-
-        if($contractId !== NULL) {
-            $driver = Driver::fromContract($this->contracts->find($contractId));
-        }
-
-
         $vehicle = $vehicleId !== NULL
             ? $this->vehicles->get($vehicleId)
             : NULL;
@@ -291,7 +282,7 @@ class TravelService extends BaseService
         $command = new Command(
             $unitId,
             $vehicle,
-            $driver,
+            $this->selectDriver($driver, $contractId),
             $purpose,
             $place,
             $passengers,
@@ -304,15 +295,38 @@ class TravelService extends BaseService
         $this->table->updateTypes($command->getId(), $types);
     }
 
-    public function updateCommand($v, $unit, $id)
+    public function updateCommand(
+        int $id,
+        ?int $contractId,
+        ?Driver $driver,
+        ?int $vehicleId,
+        string $purpose,
+        string $place,
+        string $passengers,
+        float $fuelPrice,
+        float $amortization,
+        string $note,
+        array $types
+    )
     {
-        if (!$this->isContractAccessible($v['contract_id'], $unit)) {
-            return FALSE; //neoprávěný přístup
-        }
-        $types = $v["type"];
-        unset($v["type"]);
-        $status = $this->table->update($v, $id);
-        return $status || $this->table->updateTypes($id, $types);
+        $command = $this->commands->find($id);
+
+        $vehicle = $vehicleId !== NULL
+            ? $this->vehicles->get($vehicleId)
+            : NULL;
+
+        $command->update(
+            $vehicle,
+            $this->selectDriver($driver, $contractId),
+            $purpose,
+            $place,
+            $passengers,
+            $fuelPrice,
+            $amortization,
+            $note
+        );
+
+        $this->table->updateTypes($id, $types);
     }
 
     /**
@@ -392,6 +406,19 @@ class TravelService extends BaseService
     public function getCommandTypes($commandId)
     {
         return $this->table->getCommandTypes($commandId);
+    }
+
+    private function selectDriver(?Driver $driver, ?int $contractId): Driver
+    {
+        if (($driver === NULL && $contractId === NULL)
+            || ($driver !== NULL && $contractId !== NULL)
+        ) {
+            throw new \InvalidArgumentException("Either driver or contract must be specified");
+        }
+
+        return $contractId === NULL
+            ? $driver
+            : Driver::fromContract($this->contracts->find($contractId));
     }
 
 }
