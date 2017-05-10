@@ -69,15 +69,21 @@ class CommandForm extends Control
             ->setAttribute("class", "form-control")
             ->addRule($form::FILLED, "Musíte vyplnit účel cesty.");
         $form->addCheckboxList("type", "Prostředek*", $transportTypes)
-            ->addRule($form::FILLED, "Vyberte alespoň jeden dopravní prostředek.");
+            ->setRequired("Vyberte alespoň jeden dopravní prostředek.");
 
         $form->addSelect("contract_id", "Smlouva/Řidič", $contracts)
             ->setPrompt("Vyberte smlouvu")
             ->setAttribute("class", "form-control")
-            ->addCondition($form::FILLED)
-            ->toggle("driverName", FALSE)
-            ->toggle("driverContact", FALSE)
-            ->toggle("driverAddress", FALSE);
+            ->setOption("id", "contractId")
+            ->addCondition($form::BLANK)
+            ->addConditionOn($form["type"], $form::IS_NOT_IN, $vehiclesWithFuel)
+            ->toggle("driverName")
+            ->toggle("driverContact")
+            ->toggle("driverAddress")
+            ->endCondition()
+            ->endCondition()
+            ->addConditionOn($form["type"], $form::IS_NOT_IN, $vehiclesWithFuel)
+            ->toggle("contractId");
 
         $form->addText("driverName", "Jméno řidiče")
             ->setOption("id", "driverName");
