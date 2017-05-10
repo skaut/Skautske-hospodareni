@@ -13,7 +13,7 @@ use Model\Travel\Driver;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
-use Model\Travel\TransportType;
+use Model\Travel\Command\TransportType;
 use Model\Travel\Vehicle;
 
 /**

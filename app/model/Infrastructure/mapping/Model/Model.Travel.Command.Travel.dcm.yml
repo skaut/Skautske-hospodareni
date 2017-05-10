@@ -29,5 +29,5 @@ Model\Travel\Command\Travel:
 
     embedded:
         transportType:
-            class: Model\Travel\TransportType
+            class: Model\Travel\Command\TransportType
             columnPrefix: false

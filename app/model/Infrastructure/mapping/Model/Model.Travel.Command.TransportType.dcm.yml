@@ -1,4 +1,4 @@
-Model\Travel\TransportType:
+Model\Travel\Command\TransportType:
 
     type: embeddable
 

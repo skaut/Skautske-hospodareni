@@ -3,6 +3,7 @@
 namespace Model\Travel;
 
 use Mockery as m;
+use Model\Travel\Command\TransportType;
 
 class CommandTest extends \Codeception\Test\Unit
 {

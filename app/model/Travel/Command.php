@@ -3,6 +3,7 @@
 namespace Model\Travel;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Model\Travel\Command\TransportType;
 use Model\Travel\Command\Travel;
 
 class Command

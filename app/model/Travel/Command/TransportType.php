@@ -1,6 +1,6 @@
 <?php
 
-namespace Model\Travel;
+namespace Model\Travel\Command;
 
 class TransportType
 {

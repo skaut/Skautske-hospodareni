@@ -4,7 +4,6 @@ namespace Model\Travel\Command;
 
 use DateTimeImmutable;
 use Model\Travel\Command;
-use Model\Travel\TransportType;
 use Model\Travel\WrongVehicleTypeException;
 
 class Travel
