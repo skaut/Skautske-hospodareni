@@ -9,6 +9,7 @@ use Model\TravelService;
 use Nette\Application\UI\Control;
 use Nette\InvalidStateException;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Html;
 
 class CommandForm extends Control
 {
@@ -59,60 +60,26 @@ class CommandForm extends Control
         }, array_filter($transportTypes, function ($v) {
             return $v->hasFuel;
         }));
+
+        $vehiclesWithFuel = array_values($vehiclesWithFuel);
+
         $transportTypes = array_map(function ($v) {
             return $v->label;
         }, $transportTypes);
 
         $form = $this->formFactory->create();
+
+        $form->addGroup();
         $form->addText("purpose", "Účel cesty*")
             ->setMaxLength(64)
             ->setAttribute("class", "form-control")
             ->addRule($form::FILLED, "Musíte vyplnit účel cesty.");
-        $form->addCheckboxList("type", "Prostředek*", $transportTypes)
-            ->setRequired("Vyberte alespoň jeden dopravní prostředek.");
-
-        $form->addSelect("contract_id", "Smlouva/Řidič", $contracts)
-            ->setPrompt("Vyberte smlouvu")
-            ->setAttribute("class", "form-control")
-            ->setOption("id", "contractId")
-            ->addCondition($form::BLANK)
-            ->addConditionOn($form["type"], $form::IS_NOT_IN, $vehiclesWithFuel)
-            ->toggle("driverName")
-            ->toggle("driverContact")
-            ->toggle("driverAddress")
-            ->endCondition()
-            ->endCondition()
-            ->addConditionOn($form["type"], $form::IS_NOT_IN, $vehiclesWithFuel)
-            ->toggle("contractId");
-
-        $form->addText("driverName", "Jméno řidiče")
-            ->setOption("id", "driverName");
-        $form->addText("driverContact", "Kontakt na řidiče")
-            ->setOption("id", "driverContact");
-        $form->addText("driverAddress", "Adresa řidiče")
-            ->setOption("id", "driverAddress");
-
-        $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
-            ->setOption("id", "vehicle_id")
-            ->setPrompt("Vyberte vozidlo")
-            ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], $form::IS_IN, $vehiclesWithFuel)
-            ->setRequired("Musíte vyplnit typ vozidla.")
-            ->toggle("vehicle_id", FALSE);
-        $form->addText("fuel_price", "Cena paliva za 1l*")
-            ->setOption("id", "fuel_price")
-            ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], $form::IS_IN, $vehiclesWithFuel)
-            ->setRequired("Musíte vyplnit cenu paliva.")
-            ->addRule($form::FLOAT, "Musíte zadat desetinné číslo.")
-            ->toggle("fuel_price", FALSE);
-        $form->addText("amortization", "Opotřebení*")
-            ->setOption("id", "amortization")
-            ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], $form::IS_IN, $vehiclesWithFuel)
-            ->setRequired("Musíte vyplnit opotřebení.")
-            ->addRule($form::FLOAT, "Musíte zadat desetinné číslo.")
-            ->toggle("amortization", FALSE);
+        $form->addMultiSelect("type", "Prostředek*", $transportTypes)
+            ->setAttribute("class", "combobox")
+            ->setRequired("Vyberte alespoň jeden dopravní prostředek.")
+            ->addCondition($form::IS_IN, $vehiclesWithFuel)
+            ->toggle("vehicle")
+            ->toggle("driver");
 
         $form->addText("place", "Místo")
             ->setMaxLength(64)
@@ -124,6 +91,53 @@ class CommandForm extends Control
             ->setMaxLength(64)
             ->setAttribute("class", "form-control");
 
+        $form->addGroup("Řidič")->setOption("container", Html::el("fieldset")->setAttribute("id", "driver"));
+        $driver = $form->addContainer("driver");
+
+        $form->addSelect("contract_id", "Smlouva", $contracts)
+            ->setPrompt("Bez smlouvy")
+            ->setAttribute("class", "form-control")
+            ->setOption("id", "contractId")
+            ->addCondition($form::BLANK)
+            ->addConditionOn($form["type"], $form::IS_IN, $vehiclesWithFuel)
+            ->toggle("driverName")
+            ->toggle("driverContact")
+            ->toggle("driverAddress")
+            ->endCondition()
+            ->endCondition()
+            ->addConditionOn($form["type"], $form::IS_IN, $vehiclesWithFuel)
+            ->toggle("contractId");
+
+        $driver->addText("name", "Jméno řidiče")
+            ->setOption("id", "driverName");
+        $driver->addText("contact", "Kontakt na řidiče")
+            ->setOption("id", "driverContact");
+        $driver->addText("address", "Adresa řidiče")
+            ->setOption("id", "driverAddress");
+
+        $form->addGroup("Vozidlo")->setOption("container", Html::el("fieldset")->setAttribute("id", "vehicle"));
+        $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
+            ->setOption("id", "vehicle_id")
+            ->setPrompt("Vyberte vozidlo")
+            ->setAttribute("class", "form-control")
+            ->addConditionOn($form['type'], $form::IS_IN, $vehiclesWithFuel)
+            ->setRequired("Musíte vyplnit typ vozidla.");
+
+        $form->addText("fuel_price", "Cena paliva za 1l*")
+            ->setOption("id", "fuel_price")
+            ->setAttribute("class", "form-control")
+            ->addConditionOn($form['type'], $form::IS_IN, $vehiclesWithFuel)
+            ->setRequired("Musíte vyplnit cenu paliva.")
+            ->addRule($form::FLOAT, "Musíte zadat desetinné číslo.");
+
+        $form->addText("amortization", "Opotřebení*")
+            ->setOption("id", "amortization")
+            ->setAttribute("class", "form-control")
+            ->addConditionOn($form['type'], $form::IS_IN, $vehiclesWithFuel)
+            ->setRequired("Musíte vyplnit opotřebení.")
+            ->addRule($form::FLOAT, "Musíte zadat desetinné číslo.");
+
+        $form->setCurrentGroup();
         $form->addSubmit("send", $this->commandId !== NULL ? "Upravit" : "Založit");
 
         $form->onSuccess[] = function (BaseForm $form) {
@@ -222,7 +236,7 @@ class CommandForm extends Control
     {
         return isset($values->contract_id)
             ? NULL
-            : new Driver($values->driverName, $values->driverContact, $values->driverAddress);
+            : new Driver($values->driver->name, $values->driver->contact, $values->driver->address);
     }
 
 }
