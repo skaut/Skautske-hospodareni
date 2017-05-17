@@ -90,19 +90,31 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
             $this->redirect("default");
         }
-        $template = $this->template;
-        $template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
-        $template->setFile(dirname(__FILE__) . '/../templates/Default/ex.command.latte');
-        $template->command = $command = $this->travelService->getCommand($commandId);
-        $template->contract = $this->travelService->getContract($command->contract_id);
-        $template->travels = $travels = $this->travelService->getTravels($command->id);
-        $template->types = $this->travelService->getCommandTypes($command->id);
-        if (!empty($travels)) {
-            $template->end = end($travels);
-            $template->start = reset($travels);
+
+        $command = $this->travelService->getCommandDetail($commandId);
+        $travels = $this->travelService->getTravels($commandId);
+        $vehicleId = $command->getVehicleId();
+
+        /* @var $template \Nette\Bridges\ApplicationLatte\Template */
+        $template = $this->getTemplateFactory()->createTemplate();
+        $template->setParameters([
+            "command" => $command,
+            "travels" => $travels,
+            "types" => $this->travelService->getCommandTypes($commandId),
+            "vehicle" => $vehicleId !== NULL ? $this->travelService->findVehicle($vehicleId) : NULL,
+        ]);
+
+        if (count($travels) !== 0) {
+            $template->setParameters([
+                "start" => $travels[0],
+                "end" => array_slice($travels, -1)[0],
+            ]);
         }
 
-        $this->pdf->render($template, 'cestovni-prikaz.pdf');
+        $template->getLatte()->addFilter(NULL, "\\App\\AccountancyModule\\AccountancyHelpers::loader");
+        $template->setFile(__DIR__ . '/../templates/Default/ex.command.latte');
+
+        $this->pdf->render((string)$template, 'cestovni-prikaz.pdf');
         $this->terminate();
     }
 

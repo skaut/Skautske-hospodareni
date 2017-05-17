@@ -19,6 +19,8 @@ use Nette\SmartObject;
  * @property-read \DateTimeImmutable|NULL   $closedAt
  * @property-read float                     $total
  * @property-read \DateTimeImmutable|NULL   $firstTravelDate
+ * @property-read float                     $pricePerKm
+ * @property-read float                     $fuelPricePerKm
  */
 class Command
 {
@@ -64,6 +66,12 @@ class Command
     /** @var \DateTimeImmutable|NULL */
     private $firstTravelDate;
 
+    /** @var float */
+    private $pricePerKm;
+
+    /** @var float */
+    private $fuelPricePerKm;
+
     public function __construct(
         int $id,
         int $unitId,
@@ -77,7 +85,9 @@ class Command
         string $note,
         ?\DateTimeImmutable $closedAt,
         float $total,
-        ?\DateTimeImmutable $firstTravelDate
+        ?\DateTimeImmutable $firstTravelDate,
+        float $pricePerKm,
+        float $fuelPricePerKm
     )
     {
         $this->id = $id;
@@ -93,6 +103,8 @@ class Command
         $this->total = $total;
         $this->closedAt = $closedAt;
         $this->firstTravelDate = $firstTravelDate;
+        $this->pricePerKm = $pricePerKm;
+        $this->fuelPricePerKm = $fuelPricePerKm;
     }
 
     public function getId(): int
@@ -158,6 +170,16 @@ class Command
     public function getFirstTravelDate(): ?\DateTimeImmutable
     {
         return $this->firstTravelDate;
+    }
+
+    public function getPricePerKm(): float
+    {
+        return $this->pricePerKm;
+    }
+
+    public function getFuelPricePerKm(): float
+    {
+        return $this->fuelPricePerKm;
     }
 
 }

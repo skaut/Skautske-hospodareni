@@ -39,10 +39,10 @@ class CommandTest extends \Codeception\Test\Unit
         $command->createTravel($date, 220, new TransportType("vau", TRUE), "Praha", "Brno");
         $command->createTravel($date, 500, new TransportType("bus", FALSE), "Brno", "Praha");
 
-        $this->assertSame(
-            (200 + 220) * (6 * 31.20 / 100) + 500,
-            $command->calculateTotal()
-        );
+        $expectedPricePerKm = 6 / 100 * 31.20 + 5;
+        $this->assertSame(31.20 * 6 / 100, $command->getFuelPricePerKm());
+        $this->assertSame($expectedPricePerKm, $command->getPricePerKm());
+        $this->assertSame(420 * $expectedPricePerKm + 500, $command->calculateTotal());
     }
 
     public function testGetFirstTravelDate(): void

@@ -15,6 +15,7 @@ use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Command\TransportType;
 use Model\Travel\Vehicle;
+use Model\Travel\VehicleNotFoundException;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -85,6 +86,15 @@ class TravelService extends BaseService
     public function getVehicle(int $vehicleId): Vehicle
     {
         return $this->vehicles->get($vehicleId);
+    }
+
+    public function findVehicle(int $id): ?Vehicle
+    {
+        try {
+            return $this->vehicles->get($id);
+        } catch(VehicleNotFoundException $e) {
+            return NULL;
+        }
     }
 
     public function getVehiclesPairs($unitId)
@@ -334,6 +344,8 @@ class TravelService extends BaseService
             $amortization,
             $note
         );
+
+        $this->commands->save($command);
 
         $this->table->updateTypes($id, $types);
     }

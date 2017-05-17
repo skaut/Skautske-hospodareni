@@ -103,7 +103,7 @@ class Command
             })->toArray()
         );
 
-        return $amount + $this->calculateFuelPrice();
+        return $amount + $this->getDistance() * $this->getPricePerKm();
     }
 
     private function getDistance(): float
@@ -115,16 +115,22 @@ class Command
         );
     }
 
+    public function getPricePerKm(): float
+    {
+        return $this->getFuelPricePerKm() + $this->amortization;
+    }
+
+    public function getFuelPricePerKm(): float
+    {
+        if($this->vehicle === NULL) {
+            return 0;
+        }
+        return $this->vehicle->getConsumption() * $this->fuelPrice / 100;
+    }
+
     public function calculateAmortization(): float
     {
         return $this->getDistance() * $this->amortization;
-    }
-
-    private function calculateFuelPrice(): float
-    {
-        return $this->vehicle === NULL
-            ? 0
-            : $this->getDistance() / 100 * $this->vehicle->getConsumption() * $this->fuelPrice;
     }
 
     public function getId(): int

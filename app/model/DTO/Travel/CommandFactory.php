@@ -22,7 +22,9 @@ class CommandFactory
             $command->getNote(),
             $command->getClosedAt(),
             $command->calculateTotal(),
-            $command->getFirstTravelDate()
+            $command->getFirstTravelDate(),
+            $command->getPricePerKm(),
+            $command->getFuelPricePerKm()
         );
     }
 

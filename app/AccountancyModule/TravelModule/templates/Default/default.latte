@@ -32,7 +32,7 @@
                 <td>{$types[$item->id]}</td>
                 <td><a n:if="$item->vehicleId !== NULL" n:href="Vehicle:detail $item->vehicleId">{$vehicles[$item->vehicleId]->getLabel()}</a></td>
                 <td n:inner-if="$item->firstTravelDate !== NULL">{$item->firstTravelDate|date:'j. n. Y'}</td>
-                <td>{$item->total|price} {* TODO add amortization *}</td>
+                <td>{$item->total|price}</td>
                 <td class="hidden-xs hidden-sm">{$item->note}</td>
                 <td>{$item->closedAt|commandState|noescape}</td>
             </tr>
