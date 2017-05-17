@@ -10,7 +10,7 @@ use Nette\SmartObject;
  * @property-read string    $address
  * @property-read int|NULL  $contractId
  */
-class Driver
+final class Passenger
 {
 
     use SmartObject;
@@ -34,9 +34,9 @@ class Driver
         $this->address = $address;
     }
 
-    public static function fromContract(Contract $contract): Driver
+    public static function fromContract(Contract $contract): Passenger
     {
-        $driver = new Driver(
+        $driver = new Passenger(
             $contract->getDriverName(),
             $contract->getDriverContact(),
             $contract->getDriverAddress()

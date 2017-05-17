@@ -15,8 +15,9 @@ Model\Travel\Command:
             type: string
         place:
             type: string
-        passengers:
+        fellowPassengers:
             type: string
+            column: passengers
         fuelPrice:
             type: float
         amortization:
@@ -29,8 +30,8 @@ Model\Travel\Command:
             column: closed
 
     embedded:
-        driver:
-            class: Model\Travel\Driver
+        passenger:
+            class: Model\Travel\Passenger
             columnPrefix: false
 
     manyToOne:

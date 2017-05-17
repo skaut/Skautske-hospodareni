@@ -2,17 +2,17 @@
 
 namespace Model\DTO\Travel;
 
-use Model\Travel\Driver;
+use Model\Travel\Passenger;
 use Nette\SmartObject;
 
 /**
  * @property-read int                       $id
  * @property-read int                       $unitId
  * @property-read int|NULL                  $vehicleId
- * @property-read Driver                    $driver
+ * @property-read Passenger                 $passenger
  * @property-read string                    $purpose
  * @property-read string                    $place
- * @property-read string                    $passengers
+ * @property-read string                    $fellowPassengers
  * @property-read float                     $fuelPrice
  * @property-read float                     $amortizationPerKm
  * @property-read string                    $note
@@ -34,8 +34,8 @@ class Command
     /** @var int|NULL */
     private $vehicleId;
 
-    /** @var Driver */
-    private $driver;
+    /** @var Passenger */
+    private $passenger;
 
     /** @var string */
     private $purpose;
@@ -44,7 +44,7 @@ class Command
     private $place;
 
     /** @var string */
-    private $passengers;
+    private $fellowPassengers;
 
     /** @var float */
     private $fuelPrice;
@@ -68,10 +68,10 @@ class Command
         int $id,
         int $unitId,
         ?int $vehicleId,
-        Driver $driver,
+        Passenger $passenger,
         string $purpose,
         string $place,
-        string $passengers,
+        string $fellowPassengers,
         float $fuelPrice,
         float $amortizationPerKm,
         string $note,
@@ -83,10 +83,10 @@ class Command
         $this->id = $id;
         $this->unitId = $unitId;
         $this->vehicleId = $vehicleId;
-        $this->driver = $driver;
+        $this->passenger = $passenger;
         $this->purpose = $purpose;
         $this->place = $place;
-        $this->passengers = $passengers;
+        $this->fellowPassengers = $fellowPassengers;
         $this->fuelPrice = $fuelPrice;
         $this->amortizationPerKm = $amortizationPerKm;
         $this->note = $note;
@@ -110,9 +110,9 @@ class Command
         return $this->vehicleId;
     }
 
-    public function getDriver(): Driver
+    public function getPassenger(): Passenger
     {
-        return $this->driver;
+        return $this->passenger;
     }
 
     public function getPurpose(): string
@@ -125,9 +125,9 @@ class Command
         return $this->place;
     }
 
-    public function getPassengers(): string
+    public function getFellowPassengers(): string
     {
-        return $this->passengers;
+        return $this->fellowPassengers;
     }
 
     public function getFuelPrice(): float

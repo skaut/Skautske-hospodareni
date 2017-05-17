@@ -4,7 +4,7 @@ namespace App\AccountancyModule\TravelModule\Components;
 
 use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseForm;
-use Model\Travel\Driver;
+use Model\Travel\Passenger;
 use Model\TravelService;
 use Nette\Application\UI\Control;
 use Nette\InvalidStateException;
@@ -78,42 +78,36 @@ class CommandForm extends Control
             ->setAttribute("class", "combobox")
             ->setRequired("Vyberte alespoň jeden dopravní prostředek.")
             ->addCondition($form::IS_IN, $vehiclesWithFuel)
-            ->toggle("vehicle")
-            ->toggle("driver");
+            ->toggle("vehicle");
 
         $form->addText("place", "Místo")
             ->setMaxLength(64)
             ->setAttribute("class", "form-control");
-        $form->addText("passengers", "Spolucestující")
+        $form->addText("fellowPassengers", "Spolucestující")
             ->setMaxLength(64)
             ->setAttribute("class", "form-control");
         $form->addText("note", "Poznámka")
             ->setMaxLength(64)
             ->setAttribute("class", "form-control");
 
-        $form->addGroup("Řidič")->setOption("container", Html::el("fieldset")->setAttribute("id", "driver"));
-        $driver = $form->addContainer("driver");
+        $form->addGroup("Cestující");
+        $passenger = $form->addContainer("passenger");
 
         $form->addSelect("contract_id", "Smlouva", $contracts)
             ->setPrompt("Bez smlouvy")
             ->setAttribute("class", "form-control")
             ->setOption("id", "contractId")
             ->addCondition($form::BLANK)
-            ->addConditionOn($form["type"], $form::IS_IN, $vehiclesWithFuel)
-            ->toggle("driverName")
-            ->toggle("driverContact")
-            ->toggle("driverAddress")
-            ->endCondition()
-            ->endCondition()
-            ->addConditionOn($form["type"], $form::IS_IN, $vehiclesWithFuel)
-            ->toggle("contractId");
+            ->toggle("passengerName")
+            ->toggle("passengerContact")
+            ->toggle("passengerAddress");
 
-        $driver->addText("name", "Jméno řidiče")
-            ->setOption("id", "driverName");
-        $driver->addText("contact", "Kontakt na řidiče")
-            ->setOption("id", "driverContact");
-        $driver->addText("address", "Adresa řidiče")
-            ->setOption("id", "driverAddress");
+        $passenger->addText("name", "Jméno cestujícího")
+            ->setOption("id", "passengerName");
+        $passenger->addText("contact", "Kontakt na cestujícího")
+            ->setOption("id", "passengerContact");
+        $passenger->addText("address", "Adresa cestujícího")
+            ->setOption("id", "passengerAddress");
 
         $form->addGroup("Vozidlo")->setOption("container", Html::el("fieldset")->setAttribute("id", "vehicle"));
         $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
@@ -165,10 +159,10 @@ class CommandForm extends Control
         }
 
         $form->setDefaults([
-            "contract_id" => $command->getDriver()->getContractId(),
+            "contract_id" => $command->getPassenger()->getContractId(),
             "purpose" => $command->getPurpose(),
             "place" => $command->getPlace(),
-            "passengers" => $command->getPassengers(),
+            "fellowPassengers" => $command->getFellowPassengers(),
             "fuel_price" => $command->getFuelPrice(),
             "amortization" => $command->getAmortizationPerKm(),
             "note" => $command->getNote(),
@@ -199,11 +193,11 @@ class CommandForm extends Control
         $this->model->addCommand(
             $this->unitId,
             isset($values->contract_id) ? (int)$values->contract_id : NULL,
-            $this->createDriver($values),
+            $this->createPassenger($values),
             $values->vehicle_id,
             $values->purpose,
             $values->place,
-            $values->passengers,
+            $values->fellowPassengers,
             (float)$values->fuel_price,
             (float)$values->amortization,
             $values->note,
@@ -218,11 +212,11 @@ class CommandForm extends Control
         $this->model->updateCommand(
             $this->commandId,
             isset($values->contract_id) ? (int)$values->contract_id : NULL,
-            $this->createDriver($values),
+            $this->createPassenger($values),
             $values->vehicle_id,
             $values->purpose,
             $values->place,
-            $values->passengers,
+            $values->fellowPassengers,
             (float)$values->fuel_price,
             (float)$values->amortization,
             $values->note,
@@ -232,11 +226,11 @@ class CommandForm extends Control
         $this->presenter->flashMessage("Cestovní příkaz byl upraven.");
     }
 
-    private function createDriver(ArrayHash $values): ?Driver
+    private function createPassenger(ArrayHash $values): ?Passenger
     {
         return isset($values->contract_id)
             ? NULL
-            : new Driver($values->driver->name, $values->driver->contact, $values->driver->address);
+            : new Passenger($values->passenger->name, $values->passenger->contact, $values->passenger->address);
     }
 
 }

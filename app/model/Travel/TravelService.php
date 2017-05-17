@@ -9,7 +9,7 @@ use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
 use Model\Travel\Contract;
-use Model\Travel\Driver;
+use Model\Travel\Passenger;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
@@ -273,7 +273,7 @@ class TravelService extends BaseService
     public function addCommand(
         int $unitId,
         ?int $contractId,
-        ?Driver $driver,
+        ?Passenger $passenger,
         ?int $vehicleId,
         string $purpose,
         string $place,
@@ -291,7 +291,7 @@ class TravelService extends BaseService
         $command = new Command(
             $unitId,
             $vehicle,
-            $this->selectDriver($driver, $contractId),
+            $this->selectPassenger($passenger, $contractId),
             $purpose,
             $place,
             $passengers,
@@ -307,7 +307,7 @@ class TravelService extends BaseService
     public function updateCommand(
         int $id,
         ?int $contractId,
-        ?Driver $driver,
+        ?Passenger $passenger,
         ?int $vehicleId,
         string $purpose,
         string $place,
@@ -326,7 +326,7 @@ class TravelService extends BaseService
 
         $command->update(
             $vehicle,
-            $this->selectDriver($driver, $contractId),
+            $this->selectPassenger($passenger, $contractId),
             $purpose,
             $place,
             $passengers,
@@ -417,17 +417,17 @@ class TravelService extends BaseService
         return $this->table->getCommandTypes($commandId);
     }
 
-    private function selectDriver(?Driver $driver, ?int $contractId): Driver
+    private function selectPassenger(?Passenger $passenger, ?int $contractId): Passenger
     {
-        if (($driver === NULL && $contractId === NULL)
-            || ($driver !== NULL && $contractId !== NULL)
+        if (($passenger === NULL && $contractId === NULL)
+            || ($passenger !== NULL && $contractId !== NULL)
         ) {
-            throw new \InvalidArgumentException("Either driver or contract must be specified");
+            throw new \InvalidArgumentException("Either passenger or contract must be specified");
         }
 
         return $contractId === NULL
-            ? $driver
-            : Driver::fromContract($this->contracts->find($contractId));
+            ? $passenger
+            : Passenger::fromContract($this->contracts->find($contractId));
     }
 
 }

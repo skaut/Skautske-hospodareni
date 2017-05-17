@@ -1,4 +1,4 @@
-Model\Travel\Driver:
+Model\Travel\Passenger:
 
     type: embeddable
 

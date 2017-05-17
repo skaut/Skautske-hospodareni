@@ -12,16 +12,16 @@ class CommandTest extends \Codeception\Test\Unit
     {
         $vehicle = $this->mockVehicle();
         $vehicle->shouldReceive("getId")->andReturn(6);
-        $driver = new Driver("Frantisek Masa", "---", "Brno");
+        $driver = new Passenger("Frantisek Masa", "---", "Brno");
         $purpose = "Cesta na střediskovku";
         $command = new Command(2, $vehicle, $driver, $purpose, "Brno", "", 31.20, 5, "");
 
         $this->assertSame(2, $command->getUnitId());
         $this->assertSame(6, $command->getVehicleId());
-        $this->assertSame($driver, $command->getDriver());
+        $this->assertSame($driver, $command->getPassenger());
         $this->assertSame($purpose, $command->getPurpose());
         $this->assertSame("Brno", $command->getPlace());
-        $this->assertSame("", $command->getPassengers());
+        $this->assertSame("", $command->getFellowPassengers());
         $this->assertSame(31.20, $command->getFuelPrice());
         $this->assertSame(5.0, $command->getAmortization());
         $this->assertSame("", $command->getNote());
@@ -63,7 +63,7 @@ class CommandTest extends \Codeception\Test\Unit
         $command = $this->createCommand();
         $vehicle = $this->mockVehicle();
         $vehicle->shouldReceive('getId')->andReturn(5);
-        $driver = new Driver("Stig", "000000000", "Neznámá");
+        $driver = new Passenger("Stig", "000000000", "Neznámá");
         $purpose = "Akce";
         $place = "Praha";
         $fuelPrice = 30.0;
@@ -74,10 +74,10 @@ class CommandTest extends \Codeception\Test\Unit
         $command->update($vehicle, $driver, $purpose, $place, $passengers, $fuelPrice, $amortizationPerKm, $note);
 
         $this->assertSame(5, $command->getVehicleId());
-        $this->assertSame($driver, $command->getDriver());
+        $this->assertSame($driver, $command->getPassenger());
         $this->assertSame($purpose, $command->getPurpose());
         $this->assertSame($place, $command->getPlace());
-        $this->assertSame($passengers, $command->getPassengers());
+        $this->assertSame($passengers, $command->getFellowPassengers());
         $this->assertSame($fuelPrice, $command->getFuelPrice());
         $this->assertSame($amortizationPerKm, $command->getAmortization());
         $this->assertSame($note, $command->getNote());
@@ -93,7 +93,7 @@ class CommandTest extends \Codeception\Test\Unit
         return new Command(
             10,
             $vehicle ?? $this->mockVehicle(),
-                new Driver("Frantisek Masa", "777777777", "Brno"),
+                new Passenger("Frantisek Masa", "777777777", "Brno"),
                 "Cesta na střediskovku",
                 "Brno",
                 "",

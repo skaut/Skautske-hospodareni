@@ -18,8 +18,8 @@ class Command
     /** @var Vehicle|NULL */
     private $vehicle;
 
-    /** @var Driver */
-    private $driver;
+    /** @var Passenger */
+    private $passenger;
 
     /** @var string */
     private $purpose;
@@ -28,7 +28,7 @@ class Command
     private $place;
 
     /** @var string */
-    private $passengers;
+    private $fellowPassengers;
 
     /** @var float */
     private $fuelPrice;
@@ -46,16 +46,16 @@ class Command
     private $travels;
 
     public function __construct(
-        int $unitId, ?Vehicle $vehicle, Driver $driver, string $purpose,
-        string $place, string $passengers, float $fuelPrice, float $amortization, string $note
+        int $unitId, ?Vehicle $vehicle, Passenger $passenger, string $purpose,
+        string $place, string $fellowPassengers, float $fuelPrice, float $amortization, string $note
     )
     {
         $this->unitId = $unitId;
         $this->vehicle = $vehicle;
-        $this->driver = $driver;
+        $this->passenger = $passenger;
         $this->purpose = $purpose;
         $this->place = $place;
-        $this->passengers = $passengers;
+        $this->fellowPassengers = $fellowPassengers;
         $this->fuelPrice = $fuelPrice;
         $this->amortization = $amortization;
         $this->note = $note;
@@ -64,7 +64,7 @@ class Command
 
     public function update(
         ?Vehicle $vehicle,
-        Driver $driver,
+        Passenger $driver,
         string $purpose,
         string $place,
         string $passengers,
@@ -74,10 +74,10 @@ class Command
     ): void
     {
         $this->vehicle = $vehicle;
-        $this->driver = $driver;
+        $this->passenger = $driver;
         $this->purpose = $purpose;
         $this->place = $place;
-        $this->passengers = $passengers;
+        $this->fellowPassengers = $passengers;
         $this->fuelPrice = $fuelPrice;
         $this->amortization = $amortization;
         $this->note = $note;
@@ -144,9 +144,9 @@ class Command
             : NULL;
     }
 
-    public function getDriver(): Driver
+    public function getPassenger(): Passenger
     {
-        return $this->driver;
+        return $this->passenger;
     }
 
     public function getPurpose(): string
@@ -159,9 +159,9 @@ class Command
         return $this->place;
     }
 
-    public function getPassengers(): string
+    public function getFellowPassengers(): string
     {
-        return $this->passengers;
+        return $this->fellowPassengers;
     }
 
     public function getFuelPrice(): float

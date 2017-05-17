@@ -15,7 +15,7 @@
         <a n:href="closeCommand! $command->id" class="btn btn-sm btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
         <a n:href="openCommand! $command->id" class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
         {/if}
-        {if $command->driver->contractId !== NULL}
+        {if $command->passenger->contractId !== NULL}
             <a n:href="Contract:detail $contract->id" class="btn btn-sm btn-primary hidden-xs"><i class="glyphicon glyphicon-zoom-in"></i> Smlouva</a>
         {/if}
         <a n:href="print $command->id" class="btn btn-sm btn-info hidden-xs"><i class="glyphicon glyphicon-print"></i> Vytisknout cestovní příkaz</a>
@@ -26,7 +26,7 @@
         <h3>Příkaz</h3>
         <b>Účel cesty:</b> {$command->purpose}<br />
         {if $command->place !== ""}<b>Místo:</b> {$command->place}<br />{/if}
-        {if $command->passengers !== ""}<b>Spolucestující:</b> {$command->passengers}<br />{/if}
+        {if $command->fellowPassengers !== ""}<b>Spolucestující:</b> {$command->fellowPassengers}<br />{/if}
         {if $command->note !== ""}<b>Poznámka:</b>{$command->note}{/if}
     </div>
     <div class="col-sm-4">
@@ -47,7 +47,7 @@
         {var $sum = 0}
 
     </div>
-    <div n:if="$command->driver->contractId !== NULL" class="col-sm-4 hidden-xs">
+    <div n:if="$command->passenger->contractId !== NULL" class="col-sm-4 hidden-xs">
         <h3>Řidič</h3>
         <b>Jméno:</b> {$contract->driver_name}<br />
         <b>Bydliště:</b> {$contract->driver_address}

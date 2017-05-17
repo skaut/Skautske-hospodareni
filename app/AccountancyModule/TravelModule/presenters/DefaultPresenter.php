@@ -78,7 +78,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->vehicle = $command->getVehicleId() !== NULL
                                  ? $this->travelService->getVehicle($command->getVehicleId())
                                  : NULL;
-        $this->template->contract = $contract = $this->travelService->getContract($command->getDriver()->getContractId());
+        $this->template->contract = $contract = $this->travelService->getContract($command->getPassenger()->getContractId());
         $this->template->isEditable = $this->isEditable = $this->unit->ID === $command->getUnitId() && $command->getClosedAt() === NULL;
         $this->template->travels = $this->travelService->getTravels($command->getId());
         $this->template->types = $this->travelService->getCommandTypes($command->getId());
