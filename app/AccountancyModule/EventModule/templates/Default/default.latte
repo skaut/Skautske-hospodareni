@@ -30,7 +30,7 @@
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th n:if="reset($list)['accessDelete']" class="hidden-xs hidden-sm">&nbsp;</th>
+                            <th class="hidden-xs hidden-sm">&nbsp;</th>
                             <th><a n:href="this name" n:tag-if="$sort != 'name'">Název</a></th>
                             <th><a n:href="this start" n:tag-if="$sort != 'start'">Od</a></th>
                             <th><a n:href="this end" n:tag-if="$sort != 'end'">Do</a></th>
@@ -44,7 +44,9 @@
                     </thead>
                     <tbody>
                         <tr n:foreach="$list as $i">
-                            <td class="hidden-xs hidden-sm" n:if="$i['accessDelete']"><a n:href="cancel! $i['ID']" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-sm" title="Zrušit akci"><i class="glyphicon glyphicon-remove"></i></a></td>
+                            <td class="hidden-xs hidden-sm">
+                                <a n:if="$i['accessDelete']" n:href="cancel! $i['ID']" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-sm" title="Zrušit akci"><i class="glyphicon glyphicon-remove"></i></a>
+                            </td>
                             <td>
                                 <a n:tag-if="$i['accessDetail']" n:href="Event: $i['ID']">{$i['DisplayName']}</a>
                             </td>
