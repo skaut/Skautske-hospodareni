@@ -5,6 +5,8 @@ namespace Model\Travel;
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\Travel\Command\TransportType;
 use Model\Travel\Command\Travel;
+use Model\Utils\MoneyFactory;
+use Money\Money;
 
 class Command
 {
@@ -30,10 +32,10 @@ class Command
     /** @var string */
     private $fellowPassengers;
 
-    /** @var float */
+    /** @var Money */
     private $fuelPrice;
 
-    /** @var float */
+    /** @var Money */
     private $amortization;
 
     /** @var string */
@@ -47,7 +49,7 @@ class Command
 
     public function __construct(
         int $unitId, ?Vehicle $vehicle, Passenger $passenger, string $purpose,
-        string $place, string $fellowPassengers, float $fuelPrice, float $amortization, string $note
+        string $place, string $fellowPassengers, Money $fuelPrice, Money $amortization, string $note
     )
     {
         $this->unitId = $unitId;
@@ -68,8 +70,8 @@ class Command
         string $purpose,
         string $place,
         string $passengers,
-        float $fuelPrice,
-        float $amortization,
+        Money $fuelPrice,
+        Money $amortization,
         string $note
     ): void
     {
@@ -95,7 +97,7 @@ class Command
         );
     }
 
-    public function calculateTotal(): float
+    public function calculateTotal(): Money
     {
         $amount = array_sum(
             $this->travels->map(function(Travel $travel) {
@@ -103,7 +105,10 @@ class Command
             })->toArray()
         );
 
-        return $amount + $this->getDistance() * $this->getPricePerKm();
+        $amount = MoneyFactory::fromFloat($amount);
+        $amount = $amount->add($this->getVehiclePrice());
+
+        return $amount;
     }
 
     private function getDistance(): float
@@ -115,22 +120,40 @@ class Command
         );
     }
 
-    public function getPricePerKm(): float
+    /**
+     * Rounded price per km - do not use for calculation
+     * @return Money
+     */
+    public function getPricePerKm(): Money
     {
-        return $this->getFuelPricePerKm() + $this->amortization;
+        $distance = $this->getDistance();
+        return $distance !== 0.0 ? $this->getVehiclePrice()->divide($this->getDistance()) : Money::CZK(0);
     }
 
-    public function getFuelPricePerKm(): float
+    private function getVehiclePrice(): Money
     {
         if($this->vehicle === NULL) {
-            return 0;
+            return Money::CZK(0);
         }
-        return $this->vehicle->getConsumption() * $this->fuelPrice / 100;
+
+        $distance = array_sum(
+            $this->travels->map(function (Travel $travel) {
+                return $travel->getTransportType()->hasFuel() ? $travel->getDistance() : 0;
+            })->toArray()
+        );
+
+        $fuelPrice = $this->fuelPrice->multiply($distance * $this->vehicle->getConsumption() / 100);
+
+        return $this->amortization->multiply($distance)->add($fuelPrice);
     }
 
-    public function calculateAmortization(): float
+    public function getFuelPricePerKm(): Money
     {
-        return $this->getDistance() * $this->amortization;
+        if($this->vehicle === NULL) {
+            return Money::CZK(0);
+        }
+
+        return $this->fuelPrice->multiply($this->vehicle->getConsumption() / 100);
     }
 
     public function getId(): int
@@ -170,12 +193,12 @@ class Command
         return $this->fellowPassengers;
     }
 
-    public function getFuelPrice(): float
+    public function getFuelPrice(): Money
     {
         return $this->fuelPrice;
     }
 
-    public function getAmortization(): float
+    public function getAmortization(): Money
     {
         return $this->amortization;
     }

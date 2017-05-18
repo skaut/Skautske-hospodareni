@@ -16,6 +16,7 @@ use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Command\TransportType;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
+use Money\Money;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -288,8 +289,8 @@ class TravelService extends BaseService
         string $purpose,
         string $place,
         string $passengers,
-        float $fuelPrice,
-        float $amortization,
+        Money $fuelPrice,
+        Money $amortization,
         string $note,
         array $types
     ): void
@@ -322,8 +323,8 @@ class TravelService extends BaseService
         string $purpose,
         string $place,
         string $passengers,
-        float $fuelPrice,
-        float $amortization,
+        Money $fuelPrice,
+        Money $amortization,
         string $note,
         array $types
     )

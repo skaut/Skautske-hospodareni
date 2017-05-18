@@ -4,6 +4,8 @@ namespace Model\Travel;
 
 use Mockery as m;
 use Model\Travel\Command\TransportType;
+use Model\Utils\MoneyFactory;
+use Money\Money;
 
 class CommandTest extends \Codeception\Test\Unit
 {
@@ -14,7 +16,7 @@ class CommandTest extends \Codeception\Test\Unit
         $vehicle->shouldReceive("getId")->andReturn(6);
         $driver = new Passenger("Frantisek Masa", "---", "Brno");
         $purpose = "Cesta na střediskovku";
-        $command = new Command(2, $vehicle, $driver, $purpose, "Brno", "", 31.20, 5, "");
+        $command = new Command(2, $vehicle, $driver, $purpose, "Brno", "", Money::CZK(3120), Money::CZK(500), "");
 
         $this->assertSame(2, $command->getUnitId());
         $this->assertSame(6, $command->getVehicleId());
@@ -22,8 +24,8 @@ class CommandTest extends \Codeception\Test\Unit
         $this->assertSame($purpose, $command->getPurpose());
         $this->assertSame("Brno", $command->getPlace());
         $this->assertSame("", $command->getFellowPassengers());
-        $this->assertSame(31.20, $command->getFuelPrice());
-        $this->assertSame(5.0, $command->getAmortization());
+        $this->assertEquals(Money::CZK(3120), $command->getFuelPrice());
+        $this->assertEquals(Money::CZK(500), $command->getAmortization());
         $this->assertSame("", $command->getNote());
     }
 
@@ -40,9 +42,9 @@ class CommandTest extends \Codeception\Test\Unit
         $command->createTravel($date, 500, new TransportType("bus", FALSE), "Brno", "Praha");
 
         $expectedPricePerKm = 6 / 100 * 31.20 + 5;
-        $this->assertSame(31.20 * 6 / 100, $command->getFuelPricePerKm());
-        $this->assertSame($expectedPricePerKm, $command->getPricePerKm());
-        $this->assertSame(420 * $expectedPricePerKm + 500, $command->calculateTotal());
+        $this->assertEquals(MoneyFactory::fromFloat(31.20 * 6 / 100), $command->getFuelPricePerKm());
+        $this->assertEquals(MoneyFactory::fromFloat($expectedPricePerKm), $command->getPricePerKm());
+        $this->assertEquals(MoneyFactory::fromFloat($expectedPricePerKm * 420)->add(Money::CZK(50000)), $command->calculateTotal());
     }
 
     public function testGetFirstTravelDate(): void
@@ -66,9 +68,9 @@ class CommandTest extends \Codeception\Test\Unit
         $driver = new Passenger("Stig", "000000000", "Neznámá");
         $purpose = "Akce";
         $place = "Praha";
-        $fuelPrice = 30.0;
+        $fuelPrice = Money::CZK(3000);
         $passengers = "Frantisek Masa";
-        $amortizationPerKm = 3.0;
+        $amortizationPerKm = Money::CZK(300);
         $note = "Nothing";
 
         $command->update($vehicle, $driver, $purpose, $place, $passengers, $fuelPrice, $amortizationPerKm, $note);
@@ -78,8 +80,8 @@ class CommandTest extends \Codeception\Test\Unit
         $this->assertSame($purpose, $command->getPurpose());
         $this->assertSame($place, $command->getPlace());
         $this->assertSame($passengers, $command->getFellowPassengers());
-        $this->assertSame($fuelPrice, $command->getFuelPrice());
-        $this->assertSame($amortizationPerKm, $command->getAmortization());
+        $this->assertEquals($fuelPrice, $command->getFuelPrice());
+        $this->assertEquals($amortizationPerKm, $command->getAmortization());
         $this->assertSame($note, $command->getNote());
     }
 
@@ -97,8 +99,8 @@ class CommandTest extends \Codeception\Test\Unit
                 "Cesta na střediskovku",
                 "Brno",
                 "",
-                31.20,
-                5,
+                Money::CZK(3120),
+                Money::CZK(500),
                 ""
         );
     }

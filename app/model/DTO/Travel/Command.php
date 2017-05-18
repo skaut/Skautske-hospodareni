@@ -3,6 +3,7 @@
 namespace Model\DTO\Travel;
 
 use Model\Travel\Passenger;
+use Money\Money;
 use Nette\SmartObject;
 
 /**
@@ -13,14 +14,14 @@ use Nette\SmartObject;
  * @property-read string                    $purpose
  * @property-read string                    $place
  * @property-read string                    $fellowPassengers
- * @property-read float                     $fuelPrice
- * @property-read float                     $amortizationPerKm
+ * @property-read Money                     $fuelPrice
+ * @property-read Money                     $amortizationPerKm
  * @property-read string                    $note
  * @property-read \DateTimeImmutable|NULL   $closedAt
- * @property-read float                     $total
+ * @property-read Money                     $total
  * @property-read \DateTimeImmutable|NULL   $firstTravelDate
- * @property-read float                     $pricePerKm
- * @property-read float                     $fuelPricePerKm
+ * @property-read Money                     $pricePerKm
+ * @property-read Money                     $fuelPricePerKm
  */
 class Command
 {
@@ -57,7 +58,7 @@ class Command
     /** @var string */
     private $note;
 
-    /** @var float */
+    /** @var Money */
     private $total;
 
     /** @var \DateTimeImmutable|NULL */
@@ -66,10 +67,10 @@ class Command
     /** @var \DateTimeImmutable|NULL */
     private $firstTravelDate;
 
-    /** @var float */
+    /** @var Money */
     private $pricePerKm;
 
-    /** @var float */
+    /** @var Money */
     private $fuelPricePerKm;
 
     public function __construct(
@@ -80,14 +81,14 @@ class Command
         string $purpose,
         string $place,
         string $fellowPassengers,
-        float $fuelPrice,
-        float $amortizationPerKm,
+        Money $fuelPrice,
+        Money $amortizationPerKm,
         string $note,
         ?\DateTimeImmutable $closedAt,
-        float $total,
+        Money $total,
         ?\DateTimeImmutable $firstTravelDate,
-        float $pricePerKm,
-        float $fuelPricePerKm
+        Money $pricePerKm,
+        Money $fuelPricePerKm
     )
     {
         $this->id = $id;
@@ -142,12 +143,12 @@ class Command
         return $this->fellowPassengers;
     }
 
-    public function getFuelPrice(): float
+    public function getFuelPrice(): Money
     {
         return $this->fuelPrice;
     }
 
-    public function getAmortizationPerKm(): float
+    public function getAmortizationPerKm(): Money
     {
         return $this->amortizationPerKm;
     }
@@ -162,7 +163,7 @@ class Command
         return $this->closedAt;
     }
 
-    public function getTotal(): float
+    public function getTotal(): Money
     {
         return $this->total;
     }
@@ -172,12 +173,12 @@ class Command
         return $this->firstTravelDate;
     }
 
-    public function getPricePerKm(): float
+    public function getPricePerKm(): Money
     {
         return $this->pricePerKm;
     }
 
-    public function getFuelPricePerKm(): float
+    public function getFuelPricePerKm(): Money
     {
         return $this->fuelPricePerKm;
     }

@@ -100,11 +100,11 @@
                     <div style="font-size: 0.9em;padding-bottom: 4px;">
                         <div style="font: 16px bold; text-align: center;">Vyúčtování pracovní cesty</div>
                         {if $vehicle !== NULL}
-                            <div class="fl" style="width: 130px; padding-left: 5px;">Cena paliva: <b>{$command->fuelPrice}</b> Kč/l</div>
+                            <div class="fl" style="width: 130px; padding-left: 5px;">Cena paliva: <b>{$command->fuelPrice|price}</b> Kč/l</div>
                             <div class="fl" style="width: 175px;">Spotřeba dle t.p.: <b>{$vehicle->consumption}</b> l/100km</div>
-                            <div class="fl" style="width: 120px;">Cena PHM 1 km: {= $price1phm = round($command->fuelPricePerKm, 2)}</div>
-                            <div class="fl" style="width: 115px;">Opotřebení: {$command->amortizationPerKm} Kč/km</div>
-                            <div class="fl" style="width: 155px;">Sazba náhrady: <b>{= $sazba = $command->pricePerKm}</b> Kč/km</div>
+                            <div class="fl" style="width: 120px;">Cena PHM 1 km: {$command->fuelPricePerKm|price}</div>
+                            <div class="fl" style="width: 115px;">Opotřebení: {$command->amortizationPerKm|price} Kč/km</div>
+                            <div class="fl" style="width: 155px;">Sazba náhrady: <b>{$command->pricePerKm|price}</b> Kč/km</div>
                         {/if}
                     </div>
                     <table class="bordered travels">
@@ -125,7 +125,7 @@
                     <td>{$t->end_place}</td>
                     <td>{$t->type}</td>
                     {if $t->fuel == 1}
-                    <td>{$sazba}</td>
+                    <td>{$command->pricePerKm}</td>
                     <td>{$t->distance}</td>
                     {else}
                         <td>&nbsp;</td>
@@ -133,7 +133,7 @@
                     {/if}
                     <td>
                         {if $t->fuel}
-                            {$sazba * $t->distance|price}
+                            {$this->pricePerKm->multiply($t->distance)|price}{* TODO: Fix rounding error - $pricePerKm is already rounded *}
                         {else}
                             {$t->distance|price}
                         {/if}

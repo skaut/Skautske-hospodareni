@@ -6,6 +6,7 @@ use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseForm;
 use Model\Travel\Passenger;
 use Model\TravelService;
+use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Control;
 use Nette\InvalidStateException;
 use Nette\Utils\ArrayHash;
@@ -163,8 +164,8 @@ class CommandForm extends Control
             "purpose" => $command->getPurpose(),
             "place" => $command->getPlace(),
             "fellowPassengers" => $command->getFellowPassengers(),
-            "fuel_price" => $command->getFuelPrice(),
-            "amortization" => $command->getAmortizationPerKm(),
+            "fuel_price" => MoneyFactory::toFloat($command->getFuelPrice()),
+            "amortization" => MoneyFactory::toFloat($command->getAmortizationPerKm()),
             "note" => $command->getNote(),
             "type" => array_keys($this->model->getCommandTypes($this->commandId)),
         ]);
@@ -198,8 +199,8 @@ class CommandForm extends Control
             $values->purpose,
             $values->place,
             $values->fellowPassengers,
-            (float)$values->fuel_price,
-            (float)$values->amortization,
+            MoneyFactory::fromFloat((float)$values->fuel_price),
+            MoneyFactory::fromFloat((float)$values->amortization),
             $values->note,
             $values->type
         );
@@ -217,8 +218,8 @@ class CommandForm extends Control
             $values->purpose,
             $values->place,
             $values->fellowPassengers,
-            (float)$values->fuel_price,
-            (float)$values->amortization,
+            MoneyFactory::fromFloat((float)$values->fuel_price),
+            MoneyFactory::fromFloat((float)$values->amortization),
             $values->note,
             $values->type
         );

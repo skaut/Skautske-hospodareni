@@ -19,9 +19,9 @@ Model\Travel\Command:
             type: string
             column: passengers
         fuelPrice:
-            type: float
+            type: money
         amortization:
-            type: float
+            type: money
         note:
             type: string
         closedAt:

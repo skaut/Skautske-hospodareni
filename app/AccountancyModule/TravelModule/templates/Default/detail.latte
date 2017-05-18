@@ -37,14 +37,10 @@
             <a n:href="Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a>
             <br/>
             <b>&#0216; spotřeba dle t.p.:</b> {$vehicle->consumption|number:2} l/100 km<br/>
-            <b>Cena paliva:</b> {$command->fuelPrice|price} l/Kč<br/>
-            <b>Opotřebení:</b> {$command->amortizationPerKm|number:2} Kč/km<br/>
-            {var $sazba = round($command->amortizationPerKm + $command->fuelPrice * $vehicle->consumption / 100, 2)}
-            <b>Sazba náhrady:</b> <b>{= $sazba}</b> Kč/km<br/>
-        {else}
-            {var $sazba = 0}
+            <b>Cena paliva:</b> {$command->fuelPrice|price} Kč/l<br/>
+            <b>Opotřebení:</b> {$command->amortizationPerKm|price} Kč/km<br/>
+            <b>Sazba náhrady:</b> <b>{$command->pricePerKm|price}</b> Kč/km<br/>
         {/ifset}
-        {var $sum = 0}
 
     </div>
     <div n:if="$command->passenger->contractId !== NULL" class="col-sm-4 hidden-xs">
@@ -95,16 +91,16 @@
                     <td>{$t->distance}</td>
                     <td>
                         {if $t->fuel}
-                            {$sazba * $t->distance|price} {php $sum += $sazba * $t->distance}
+                            {$command->pricePerKm->multiply($t->distance)|price}
                         {else}
-                            {$t->distance|price} {php $sum += $t->distance}
+                            {$t->distance|price}
                         {/if}
                     </td>
                 </tr>
                 <tr>
                     <th n:if="$isEditable">&nbsp;</th>
                     <th colspan="5" class="r">Celkem: </th>
-                    <th>{$sum|price}&nbsp;Kč</th>
+                    <th>{$command->total|price}&nbsp;Kč</th>
                 </tr>
             {/if}
         </table>
