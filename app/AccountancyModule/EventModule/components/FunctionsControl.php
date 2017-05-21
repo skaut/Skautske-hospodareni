@@ -83,11 +83,10 @@ class FunctionsControl extends Control
         $form = $this->formFactory->create();
         $personsOlderThan = $this->getPersonsOlderThan([15, 18]);
 
-        $form->addSelect("leader", "Vedoucí*", $personsOlderThan[18])
+        $form->addSelect("leader", "Vedoucí", $personsOlderThan[18])
             ->setPrompt("")
             ->setAttribute("class", "combobox")
-            ->setAttribute("data-autocomplete")
-            ->setRequired("Musíte vyplnit vedoucího akce");
+            ->setAttribute("data-autocomplete");
 
         $form->addSelect("assistant", "Zástupce", $personsOlderThan[18])
             ->setPrompt("")

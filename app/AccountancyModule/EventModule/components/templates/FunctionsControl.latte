@@ -13,7 +13,7 @@
                 <form n:name="form" class="form-horizontal panel-body">
                     <div n:foreach="$form->errors as $error" class="alert alert-danger">{$error}</div>
                     <div class="form-group">
-                        <div class="col-sm-3 control-label"><label n:name="leader" class="required"/></div>
+                        <div class="col-sm-3 control-label">{label leader}</div>
                         <div class="col-sm-9">
                             {input leader}
                             <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm fn-info" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"></i>
