@@ -78,105 +78,33 @@ class FunctionsControl extends Control
         $this->reload();
     }
 
-    private function createForm(int $functionId, int $minimalAge) : Form
-    {
-        $form = $this->formFactory->create(TRUE);
-
-        $functions = $this->events->getFunctions($this->eventId);
-        $combo = $this->members->getCombobox(FALSE, $minimalAge);
-
-        $selectedPerson = array_key_exists($functions[$functionId]->ID_Person, $combo)
-            ? $functions[$functionId]->ID_Person
-            : NULL;
-
-        $form->addSelect("person", NULL, $combo)
-            ->setPrompt("")
-            ->setDefaultValue($selectedPerson)
-            ->setAttribute('class', 'combobox')
-            ->setAttribute('data-autocomplete');
-        $form->addSubmit('send', 'Nastavit')
-            ->setAttribute("class", "btn btn-sm btn-primary ajax");
-
-        $form->onSuccess[] = function ($form, $values) use ($functionId) {
-            if (!$this->canEdit()) {
-                $this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
-            }
-            try {
-                $this->events->setFunction($this->eventId, $values->person, $functionId);
-                $this->handleCloseEditation();
-                $this->reload('Funkce uložena.', 'success');
-                return;
-            } catch (PermissionException $exc) {
-                $this->reload($exc->getMessage(), 'danger');
-            } catch (LeaderNotAdultException $e) {
-                $this->reload('Vedoucí akce musí být dosplělá osoba.', 'danger');
-            } catch (AssistantNotAdultException $e) {
-                $this->reload('Zástupce musí být dosplělá osoba.', 'danger');
-            }
-            $this->reload('Nepodařilo se upravit funkci', 'danger');
-        };
-        return $form;
-    }
-
-    public function handleRemoveFunction($functionId) : void
-    {
-        if (!$this->canEdit()) {
-            $this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
-        }
-
-        if (!$this->events->setFunction($this->eventId, NULL, $functionId)) {
-            $this->reload('Funkci se nepodařilo odebrat', 'danger');
-        }
-        $this->reload();
-    }
-
-    protected function createComponentLeaderForm() : Form
-    {
-        return $this->createForm(0, 18);
-    }
-
-    protected function createComponentAssistantForm() : Form
-    {
-        return $this->createForm(1, 18);
-    }
-
-    protected function createComponentAccountantForm() : Form
-    {
-        return $this->createForm(2, 15);
-    }
-
-    protected function createComponentMedicForm() : Form
-    {
-        return $this->createForm(3, 15);
-    }
-
-    protected function createComponentForm()
+    protected function createComponentForm(): BaseForm
     {
         $form = $this->formFactory->create();
         $personsOlderThan = $this->getPersonsOlderThan([15, 18]);
 
-        $form->addSelect("leader", "Vedoucí akce", $personsOlderThan[18])
+        $form->addSelect("leader", "Vedoucí*", $personsOlderThan[18])
             ->setPrompt("")
             ->setAttribute("class", "combobox")
             ->setAttribute("data-autocomplete")
             ->setRequired("Musíte vyplnit vedoucího akce");
 
-        $form->addSelect("assistant", "Zástupce vedoucího akce", $personsOlderThan[18])
+        $form->addSelect("assistant", "Zástupce", $personsOlderThan[18])
             ->setPrompt("")
             ->setAttribute("class", "combobox")
             ->setAttribute("data-autocomplete");
 
-        $form->addSelect("accountant", "Hospodář akce", $personsOlderThan[15])
+        $form->addSelect("accountant", "Hospodář", $personsOlderThan[15])
             ->setPrompt("")
             ->setAttribute("class", "combobox")
             ->setAttribute("data-autocomplete");
 
-        $form->addSelect("medic", "Zdravotník akce", $personsOlderThan[15])
+        $form->addSelect("medic", "Zdravotník", $personsOlderThan[15])
             ->setPrompt("")
             ->setAttribute("class", "combobox")
             ->setAttribute("data-autocomplete");
 
-        $form->addSubmit("send", "Uložit")
+        $form->addSubmit("save", "Uložit")
             ->setAttribute("class", "btn btn-sm btn-primary ajax");
 
         $this->setDefaultValues($form);
