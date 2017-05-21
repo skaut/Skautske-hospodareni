@@ -2,8 +2,8 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use App\AccountancyModule\EventModule\Components\Functions;
-use App\AccountancyModule\EventModule\Factories\IFunctionsFactory;
+use App\AccountancyModule\EventModule\Components\FunctionsControl;
+use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -23,7 +23,7 @@ class EventPresenter extends BasePresenter
     /** @var MemberService */
     private $memberService;
 
-    /** @var IFunctionsFactory */
+    /** @var IFunctionsControlFactory */
     private $functionsFactory;
 
     /** @var PdfRenderer */
@@ -33,7 +33,7 @@ class EventPresenter extends BasePresenter
     public function __construct(
         ExportService $exportService,
         MemberService $memberService,
-        IFunctionsFactory $functionsFactory,
+        IFunctionsControlFactory $functionsFactory,
         PdfRenderer $pdf
     )
     {
@@ -203,7 +203,7 @@ class EventPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentFunctions() : Functions
+    protected function createComponentFunctions() : FunctionsControl
     {
         return $this->functionsFactory->create($this->aid);
     }

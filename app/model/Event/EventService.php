@@ -4,6 +4,7 @@ namespace Model;
 
 use Dibi\Connection;
 use Model\Event\AssistantNotAdultException;
+use Model\Event\Functions;
 use Model\Event\LeaderNotAdultException;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
@@ -88,6 +89,18 @@ class EventService extends MutableBaseService
         return $this->skautis->event->{"EventFunctionAll" . $this->typeName}(["ID_Event" . $this->typeName => $unitId]);
     }
 
+    public function getSelectedFunctions(int $eventId): Functions
+    {
+        $data = $this->getFunctions($eventId);
+
+        return new Functions(
+            $data[0]->ID_Person,
+            $data[1]->ID_Person,
+            $data[2]->ID_Person,
+            $data[3]->ID_Person
+        );
+    }
+
     /**
      * vrátí data funkcí připravená pro update
      * @param int $ID_Event
@@ -128,6 +141,32 @@ class EventService extends MutableBaseService
             }
         }
         return FALSE;
+    }
+
+    public function updateFunctions(int $eventId, Functions $functions): void
+    {
+        $query = [
+            "ID" => $eventId,
+            "ID_PersonLeader" => $functions->getLeaderId(),
+            "ID_PersonAssistant" => $functions->getAssistantId(),
+            "ID_PersonEconomist" => $functions->getAccountantId(),
+            "ID_PersonMedic" => $functions->getMedicId(),
+        ];
+
+        $method = "Event{$this->typeName}UpdateFunction";
+
+        try {
+
+            $this->skautis->event->$method($query);
+        } catch (WsdlException $e) {
+            if (strpos($e->getMessage(), 'EventFunction_LeaderMustBeAdult') != FALSE) {
+                throw new LeaderNotAdultException;
+            }
+            if (strpos($e->getMessage(), 'EventFunction_AssistantMustBeAdult') !== FALSE) {
+                throw new AssistantNotAdultException;
+            }
+            throw $e;
+        }
     }
 
     /**
