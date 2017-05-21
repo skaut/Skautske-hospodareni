@@ -28,17 +28,13 @@ class Functions extends Control
     /** @var MemberService */
     private $members;
 
-    /** @persistent */
+    /**
+     * @persistent
+     * @var bool
+     */
     public $editation = FALSE;
 
-    /**
-     * FunctionsForm constructor.
-     * @param int $eventId
-     * @param FormFactory $formFactory
-     * @param EventEntity $eventEntity
-     * @param MemberService $members
-     */
-    public function __construct($eventId, FormFactory $formFactory, EventEntity $eventEntity, MemberService $members)
+    public function __construct(int $eventId, FormFactory $formFactory, EventEntity $eventEntity, MemberService $members)
     {
         parent::__construct();
         $this->eventId = $eventId;
@@ -47,9 +43,9 @@ class Functions extends Control
         $this->members = $members;
     }
 
-    private function reload($message = NULL, $type = NULL) : void
+    private function reload(?string $message = NULL, ?string $type = NULL) : void
     {
-        if ($message) {
+        if ($message !== NULL) {
             $this->presenter->flashMessage($message, $type);
         }
         if ($this->presenter->isAjax()) {
@@ -59,9 +55,6 @@ class Functions extends Control
         }
     }
 
-    /**
-     * @return bool
-     */
     private function canEdit() : bool
     {
         /* @var $presenter EventPresenter */
@@ -81,12 +74,7 @@ class Functions extends Control
         $this->reload();
     }
 
-    /**
-     * @param string $functionId
-     * @param int $minimalAge
-     * @return Form
-     */
-    private function createForm($functionId, $minimalAge) : Form
+    private function createForm(int $functionId, int $minimalAge) : Form
     {
         $form = $this->formFactory->create(TRUE);
 
