@@ -7,77 +7,89 @@
     {dump $event}
     {dump $funkce}
 
-    <div class="row wipeBox">
+    <div class="row event-dashboard">
         <div class="col-md-3" n:if="$accessDetailEvent">
-            <h3>Základní údaje</h3>
-            <table class="myTable table table-bordered table-condensed">
-                <tr>
-                    <th>Pořadatel</th>
-                    <td>{$event->Unit}</td>
-                </tr>
-                <tr n:ifset="$event->UnitEducative">
-                    <th>Oddíl/Družina</th>
-                    <td>{$event->UnitEducative}</td>
-                </tr>
-                <tr>
-                    <th>Od</th>
-                    <td>{$event->StartDate|date:"j. n. Y"}</td>
-                </tr>
-                <tr>
-                    <th>Do</th>
-                    <td>{$event->EndDate|date:"j. n. Y"}</td>
-                </tr>
-                <tr>
-                    <th>Místo</th>
-                    <td>{$event->Location}</td>
-                </tr>
-                <tr class="hidden-xs hidden-sm">
-                    <th>Typ</th>
-                    <td>{$event->EventGeneralType}</td>
-                </tr>
-                <tr class="hidden-xs hidden-sm">
-                    <th>Rozsah</th>
-                    <td>{$event->EventGeneralScope}</td>
-                </tr>
-                <tr>
-                    <th>Stav</th>
-                    <td {if $event->ID_EventGeneralState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->ID_EventGeneralState|eventStateLabel|noescape}</td>
-                </tr>
-                <tr>
-                    <th>Prefix <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů platná."/></th>
-                    <td>{$event->prefix}</td>
-                </tr>
-            </table>
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4>Základní údaje</h4></div>
+                <table class="table table-bordered table-condensed  panel-body">
+                    <tr>
+                        <th>Pořadatel</th>
+                        <td>{$event->Unit}</td>
+                    </tr>
+                    <tr n:ifset="$event->UnitEducative">
+                        <th>Oddíl/Družina</th>
+                        <td>{$event->UnitEducative}</td>
+                    </tr>
+                    <tr>
+                        <th>Od</th>
+                        <td>{$event->StartDate|date:"j. n. Y"}</td>
+                    </tr>
+                    <tr>
+                        <th>Do</th>
+                        <td>{$event->EndDate|date:"j. n. Y"}</td>
+                    </tr>
+                    <tr>
+                        <th>Místo</th>
+                        <td>{$event->Location}</td>
+                    </tr>
+                    <tr class="hidden-xs hidden-sm">
+                        <th>Typ</th>
+                        <td>{$event->EventGeneralType}</td>
+                    </tr>
+                    <tr class="hidden-xs hidden-sm">
+                        <th>Rozsah</th>
+                        <td>{$event->EventGeneralScope}</td>
+                    </tr>
+                    <tr>
+                        <th>Stav</th>
+                        <td {if $event->ID_EventGeneralState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->ID_EventGeneralState|eventStateLabel|noescape}</td>
+                    </tr>
+                    <tr>
+                        <th>Prefix <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip"
+                                      title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů platná."/>
+                        </th>
+                        <td>{$event->prefix}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
         <div class='col-md-3'>
-            <h3>Statistiky</h3>
-            {if $event->IsStatisticAutoComputed}
-                <table class="table table-bordered table-condensed">
-                    <tr>
-                        <th>Počet dnů</th>
-                        <td>{$event->TotalDays}</td>
-                    </tr>
-                    <tr>
-                        <th>Počet účastníků</th>
-                        <td>{$event->TotalParticipants}</td>
-                    </tr>
-                    <tr>
-                        <th>Osobodnů/dětodnů</th>
-                        <td>{$event->PersonDays}/{$event->ChildDays}</td>
-                    </tr>
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4>Statistiky</h4></div>
+                {if $event->IsStatisticAutoComputed}
+                    <table class="table table-bordered table-condensed panel-body">
+                        <tr>
+                            <th>Počet dnů</th>
+                            <td>{$event->TotalDays}</td>
+                        </tr>
+                        <tr>
+                            <th>Počet účastníků</th>
+                            <td>{$event->TotalParticipants}</td>
+                        </tr>
+                        <tr>
+                            <th>Osobodnů/dětodnů</th>
+                            <td>{$event->PersonDays}/{$event->ChildDays ?? "-"}</td>
+                        </tr>
 
-                    <tr><th colspan='2'>Účastníci podle věku</th></tr>
-                    <tr n:foreach="$statistic as $item">
-                        <th>{$item->ParticipantCategory}</th>
-                        <td>{$item->Count}</td>
-                    </tr>
-                </table>
-            {else}
-                <a n:href='activateStatistic!' class='btn btn-primary'>Aktivovat dopočítávání statistik</a>
-            {/if}
+                        <tr>
+                            <th colspan='2'>Účastníci podle věku</th>
+                        </tr>
+                        <tr n:foreach="$statistic as $item">
+                            <th>{$item->ParticipantCategory}</th>
+                            <td>{$item->Count}</td>
+                        </tr>
+                    </table>
+                {else}
+                    <div class="panel-body">
+                        <a n:href='activateStatistic!' class='btn btn-primary'>Aktivovat dopočítávání statistik</a>
+                    </div>
+                {/if}
+            </div>
         </div>
+        <div class="col-md-6">
         {control functions}
+        </div>
 </div>
 
 <div class="row">

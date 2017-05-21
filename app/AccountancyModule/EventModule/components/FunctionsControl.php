@@ -109,7 +109,7 @@ class FunctionsControl extends Control
 
         $this->setDefaultValues($form);
 
-        $form->onSuccess[] = function ($form, ArrayHash $values) { $this->formSubmitted($values); };
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) { $this->formSubmitted($form, $values); };
         return $form;
     }
 
@@ -121,7 +121,7 @@ class FunctionsControl extends Control
         $this->template->render();
     }
 
-    private function formSubmitted(ArrayHash $values): void
+    private function formSubmitted(BaseForm $form, ArrayHash $values): void
     {
         if (!$this->canEdit()) {
             $this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
@@ -134,11 +134,14 @@ class FunctionsControl extends Control
             $this->reload('Funkce uloženy.', 'success');
             return;
         } catch (PermissionException $exc) {
+            $form->addError($exc->getMessage());
             $this->reload($exc->getMessage(), 'danger');
         } catch (LeaderNotAdultException $e) {
-            $this->reload('Vedoucí akce musí být dosplělá osoba.', 'danger');
+            $form->addError('Vedoucí akce musí být dosplělá osoba.');
+            $this->reload();
         } catch (AssistantNotAdultException $e) {
-            $this->reload('Zástupce musí být dosplělá osoba.', 'danger');
+            $form->addError('Zástupce musí být dosplělá osoba.');
+            $this->reload();
         }
         $this->reload('Nepodařilo se upravit funkce', 'danger');
     }
