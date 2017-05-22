@@ -2,7 +2,6 @@
 
 namespace App\AccountancyModule\EventModule\Components;
 
-use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseForm;
 use App\IAuthorizator;
 use Model\Event\AssistantNotAdultException;
@@ -23,9 +22,6 @@ class FunctionsControl extends Control
     /** @var int */
     private $eventId;
 
-    /** @var FormFactory */
-    private $formFactory;
-
     /** @var EventService */
     private $events;
 
@@ -41,13 +37,10 @@ class FunctionsControl extends Control
      */
     public $editation = FALSE;
 
-    public function __construct(
-        int $eventId, FormFactory $formFactory, EventEntity $eventEntity, MemberService $members, IAuthorizator $authorizator
-    )
+    public function __construct(int $eventId, EventEntity $eventEntity, MemberService $members, IAuthorizator $authorizator)
     {
         parent::__construct();
         $this->eventId = $eventId;
-        $this->formFactory = $formFactory;
         $this->events = $eventEntity->event;
         $this->members = $members;
         $this->authorizator = $authorizator;
@@ -84,7 +77,7 @@ class FunctionsControl extends Control
 
     protected function createComponentForm(): BaseForm
     {
-        $form = $this->formFactory->create();
+        $form = new BaseForm();
         $personsOlderThan = $this->getPersonsOlderThan([15, 18]);
 
         $form->addSelect("leader", "Vedoucí", $personsOlderThan[18])
