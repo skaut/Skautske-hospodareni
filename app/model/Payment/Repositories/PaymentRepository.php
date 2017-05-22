@@ -41,7 +41,7 @@ class PaymentRepository implements IPaymentRepository
 
     public function summarizeByGroup(array $groupIds): array
     {
-        $states = [State::PREPARING, State::SENT, State::CANCELED];
+        $states = [State::PREPARING, State::SENT, State::COMPLETED];
 
         $res = $this->em->createQueryBuilder()
             ->select("IDENTITY(p.group) as groupId, p.state as state, SUM(p.amount) as amount, COUNT(p.id) as number")
@@ -60,7 +60,7 @@ class PaymentRepository implements IPaymentRepository
         foreach($res as $row) {
             $id = (int)$row["groupId"];
             $amounts[$id][$row["state"]] += (float)$row["amount"];
-            $counts[$id][$row["state"]]++;
+            $counts[$id][$row["state"]] = (int)$row["number"];
         }
 
         $summaries = array_fill_keys($groupIds, []);
