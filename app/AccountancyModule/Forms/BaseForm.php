@@ -2,7 +2,7 @@
 
 namespace App\Forms;
 
-use Nette;
+use App\FormRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\CsrfProtection;
 
@@ -13,9 +13,10 @@ class BaseForm extends Form
     /** @var CsrfProtection */
     private $protection;
 
-    public function __construct(Nette\ComponentModel\IContainer $parent = NULL, $name = NULL)
+    public function __construct(bool $inline = FALSE)
     {
-        parent::__construct($parent, $name);
+        parent::__construct(NULL, NULL);
+        $this->setRenderer(new FormRenderer($inline));
         $this->protection = parent::addProtection('Vypršela platnost formuláře, zkus to ještě jednou.');
     }
 

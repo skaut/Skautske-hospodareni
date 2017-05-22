@@ -59,9 +59,9 @@ class OfflinePresenter extends BasePresenter
      * @param string $name
      * @return Form
      */
-    protected function createComponentFormOut($name) : BaseForm
+    protected function createComponentFormOut() : BaseForm
     {
-        $form = new BaseForm(NULL, $name);
+        $form = new BaseForm();
         $form->getElementPrototype()->class[] = "offline";
         $form->addDatePicker("date", "Ze dne:", 15)
             ->addRule(Form::FILLED, 'Zadejte datum')
@@ -91,9 +91,9 @@ class OfflinePresenter extends BasePresenter
         return $form;
     }
 
-    protected function createComponentFormIn($name) : BaseForm
+    protected function createComponentFormIn() : BaseForm
     {
-        $form = new BaseForm(NULL, $name);
+        $form = new BaseForm();
         $form->getElementPrototype()->class[] = "offline";
         $form->addDatePicker("date", "Ze dne:", 15)
             ->addRule(Form::FILLED, 'Zadejte datum')

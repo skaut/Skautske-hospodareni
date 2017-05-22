@@ -5,15 +5,15 @@ namespace App\AccountancyModule\Factories;
 use App\Forms\BaseForm;
 use App\FormRenderer;
 
+/**
+ * @deprecated use new BaseForm($inline) directly
+ */
 class FormFactory
 {
 
-    public function create($inline = FALSE) : BaseForm
+    public function create(bool $inline = FALSE) : BaseForm
     {
-        $form = new BaseForm();
-        $form->setRenderer(new FormRenderer($inline));
-
-        return $form;
+        return new BaseForm($inline);
     }
 
 }

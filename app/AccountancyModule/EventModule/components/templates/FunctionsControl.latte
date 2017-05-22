@@ -1,0 +1,70 @@
+{snippet functions}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                {if $editation}
+                    <a n:href="closeEditation!" class="ajax lead close pull-right">&times;</a>
+                {elseif $canEdit}
+                <a n:href="edit!" class="btn btn-primary btn-sm ajax pull-right"><i
+                            class="glyphicon glyphicon-pencil"></i> Upravit funkce</a>
+                {/if}
+                <h4>Vedení akce</h4>
+            </div>
+            {if $editation}
+                <form n:name="form" class="form-horizontal panel-body">
+                    <div n:foreach="$form->errors as $error" class="alert alert-danger">{$error}</div>
+                    <div class="form-group">
+                        <div class="col-sm-3 control-label">{label leader}</div>
+                        <div class="col-sm-9">
+                            {input leader}
+                            <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm fn-info" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3 control-label">{label assistant}</div>
+                        <div class="col-sm-9">
+                            {input assistant}
+                            <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm fn-info" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3 control-label">{label accountant}</div>
+                        <div class="col-sm-9">
+                            {input accountant}
+                            <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm fn-info" rel="tooltip" title="Osoba, registrovaná ve SkautISu"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3 control-label">{label medic}</div>
+                        <div class="col-sm-9">
+                            {input medic}
+                            <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm fn-info" rel="tooltip" title="Osoba, registrovaná ve SkautISu"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            {input save}
+                        </div>
+                    </div>
+                </form>
+            {else}
+                <table class="panel-body table table-bordered">
+                    <tr>
+                        <th>Vedoucí akce</th>
+                        <td>{$functions[0]->ID_Person !== NULL ? $functions[0]->Person : "-"}</td>
+                    </tr>
+                    <tr>
+                        <th>Zástupce vedoucího</th>
+                        <td>{$functions[1]->ID_Person !== NULL ? $functions[1]->Person : "-"}</td>
+                    </tr>
+                    <tr>
+                        <th>Hospodář</th>
+                        <td>{$functions[2]->ID_Person !== NULL ? $functions[2]->Person : "-"}</td>
+                    </tr>
+                    <tr>
+                        <th>Zdravotník</th>
+                        <td>{$functions[3]->ID_Person !== NULL ? $functions[3]->Person : "-"}</td>
+                    </tr>
+                </table>
+            {/if}
+        </div>
+{/snippet}

@@ -1,5 +1,5 @@
 services:
-    - implement: App\AccountancyModule\EventModule\Factories\IFunctionsFactory
+    - implement: App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory
       arguments: { eventEntity: @eventService }
     - App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory
 
