@@ -120,6 +120,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
             'bootstrap-datetimepicker.css',
             'typeaheadjs.css',
             'offline.css',
+            'font-awesome.css',
+            'datagrid.css',
+            'datagrid-spinners.css',
             'site.css'
         ]);
         return $control;
@@ -148,6 +151,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
             'my.js',
             'nextras.datetimepicker.init.js',
             'ie10-viewport-bug-workaround.js', // IE10 viewport hack for Surface/desktop Windows 8 bug
+            'datagrid.js',
+            'datagrid-spinners.js',
         ]);
         return new JavaScriptLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
     }

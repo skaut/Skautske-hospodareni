@@ -131,6 +131,7 @@ services:
 
     # Factories
     - Model\Services\TemplateFactory
+    - App\AccountancyModule\Factories\GridFactory
 
     # Tables
     - Model\BankTable

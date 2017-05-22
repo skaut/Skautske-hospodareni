@@ -39,7 +39,7 @@ abstract class AccountancyHelpers extends Object
         } elseif ($s == "closed") {
             return '<span class="label label-success">Uzavřeno</span>';
         } else {
-            return '<span class="label label-inverse">Zrušeno</span>';
+            return '<span class="label label-default">Zrušeno</span>';
         }
         //draft, closed, cancelled
     }
@@ -60,7 +60,7 @@ abstract class AccountancyHelpers extends Object
             case "real":
                 return '<span class="label label-success">Skutečnost odevzdána</span>';
             default:
-                return '<span class="label label-inverse">Zrušený</span>';
+                return '<span class="label label-default">Zrušený</span>';
         }
     }
 
@@ -215,7 +215,7 @@ abstract class AccountancyHelpers extends Object
             case 'closed':
                 return '<span class="label label-warning">Uzavřená</span>';
             case 'canceled':
-                return '<span class="label label-inverse">Zrušená</span>';
+                return '<span class="label label-default">Zrušená</span>';
             default:
                 return '<span class="label">Neznámý</span>';
         }
