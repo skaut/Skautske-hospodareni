@@ -71,7 +71,8 @@ $list array() - pole paragonů
                     <tbody>
                     {var $balance => 0}
                     {foreach $list as $item}
-                        {php $balance += $item->ctype == 'in' ? $item->price : (-$item->price);}
+                        {var $isIncome = $item->ctype == 'in'}
+                        {php $balance += $isIncome ? $item->price : (-$item->price);}
                         <tr{if $balance < 0} class="alert alert-error"{/if}>
                             <td class="nowrap">
                                 <input type="checkbox" class="hidden-xs hidden-sm" name="chits[]" value={$item->id} />
@@ -84,8 +85,8 @@ $list array() - pole paragonů
                             <td title="{$item->purpose}">{$item->purpose|truncate:"30"}</td>
                             <td class="hidden-xs hidden-sm" title="{$item->clabel}">{$item->cshort}</td>
                             <td class="hidden-xs hidden-sm">{$item->recipient}</td>
-                            <td class="r">{$item->ctype == 'in' ? $item->price: ''|price}</td>{* ! je tady kvuli &nbsp;*}
-                            <td class="r">{$item->ctype != 'in' ? $item->price: ''|price}</td>{* ! je tady kvuli &nbsp;*}
+                            <td class="r"{if $isIncome}  title="{$item->priceText}"{/if}>{$isIncome ? $item->price: ''|price}</td>
+                            <td class="r"{if !$isIncome} title="{$item->priceText}"{/if}>{$isIncome ? '': $item->price|price}</td>
                             <td class="r">{$balance|price}</td>
                         </tr>
                         {/foreach}
