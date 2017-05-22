@@ -121,6 +121,8 @@ services:
 
     # Model
 
+    - App\Authorizator
+
     # Repositories
     - Model\Travel\Repositories\CommandRepository
     - Model\Travel\Repositories\VehicleRepository

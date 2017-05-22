@@ -3,7 +3,7 @@
             <div class="panel-heading">
                 {if $editation}
                     <a n:href="closeEditation!" class="ajax lead close pull-right">&times;</a>
-                {else}
+                {elseif $canEdit}
                 <a n:href="edit!" class="btn btn-primary btn-sm ajax pull-right"><i
                             class="glyphicon glyphicon-pencil"></i> Upravit funkce</a>
                 {/if}

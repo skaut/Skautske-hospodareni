@@ -2,9 +2,9 @@
 
 namespace App\AccountancyModule\EventModule\Components;
 
-use App\AccountancyModule\EventModule\EventPresenter;
 use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseForm;
+use App\IAuthorizator;
 use Model\Event\AssistantNotAdultException;
 use Model\Event\Functions;
 use Model\Event\LeaderNotAdultException;
@@ -32,19 +32,25 @@ class FunctionsControl extends Control
     /** @var MemberService */
     private $members;
 
+    /** @var IAuthorizator */
+    private $authorizator;
+
     /**
      * @persistent
      * @var bool
      */
     public $editation = FALSE;
 
-    public function __construct(int $eventId, FormFactory $formFactory, EventEntity $eventEntity, MemberService $members)
+    public function __construct(
+        int $eventId, FormFactory $formFactory, EventEntity $eventEntity, MemberService $members, IAuthorizator $authorizator
+    )
     {
         parent::__construct();
         $this->eventId = $eventId;
         $this->formFactory = $formFactory;
         $this->events = $eventEntity->event;
         $this->members = $members;
+        $this->authorizator = $authorizator;
     }
 
     private function reload(?string $message = NULL, ?string $type = NULL) : void
@@ -61,9 +67,7 @@ class FunctionsControl extends Control
 
     private function canEdit() : bool
     {
-        /* @var $presenter EventPresenter */
-        $presenter = $this->getPresenter();
-        return $presenter->isAllowed('EV_EventGeneral_UPDATE_Function');
+        return $this->authorizator->isAllowed(IAuthorizator::EVENT_RESOURCE, $this->eventId, "EV_EventGeneral_UPDATE_Function");
     }
 
     public function handleEdit() : void
@@ -117,6 +121,7 @@ class FunctionsControl extends Control
         $this->template->setFile(__DIR__ . '/templates/FunctionsControl.latte');
         $this->template->functions = $this->events->getFunctions($this->eventId);
         $this->template->editation = $this->editation;
+        $this->template->canEdit = $this->canEdit();
         $this->template->render();
     }
 
