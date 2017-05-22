@@ -2,8 +2,11 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use Nette\Application\UI\Form;
+use App\AccountancyModule\Factories\GridFactory;
 use MyValidators;
+use Nette\Application\UI\Form;
+use Ublaboo\DataGrid\DataGrid;
+
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -18,13 +21,17 @@ class DefaultPresenter extends BasePresenter
     /** @var \Model\ExcelService */
     protected $excelService;
 
-    public function __construct(\Model\ExcelService $excel)
+    /** @var GridFactory */
+    protected $gridFactory;
+
+    public function __construct(\Model\ExcelService $excel, GridFactory $gf)
     {
         parent::__construct();
         $this->excelService = $excel;
+        $this->gridFactory = $gf;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
@@ -37,33 +44,52 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function renderDefault(string $sort = 'start') : void
+    public function createComponentEventGrid($name)
     {
         //filtrovani zobrazených položek
         $year = $this->ses->year ?? date('Y');
         $state = $this->ses->state ?? NULL;
-
         $list = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
             $localAvaibleActions = $this->userService->actionVerify(self::STable, $value['ID']);
             $list[$key]['accessDelete'] = $this->isAllowed("EV_EventGeneral_DELETE", $localAvaibleActions);
             $list[$key]['accessDetail'] = $this->isAllowed("EV_EventGeneral_DETAIL", $localAvaibleActions);
         }
-        $this->sortEvents($list, $sort);
 
-        $this->template->list = $list;
-        if ($year) {
-            $this['formFilter']['year']->setDefaultValue($year);
-        }
-        if ($state) {
-            $this['formFilter']['state']->setDefaultValue($state);
-        }
+        $grid = $this->gridFactory->create($this, $name);
+        $grid->setPrimaryKey("ID");
+        $grid->setDataSource($list);
+        $grid->addColumnLink('DisplayName', 'Název', 'Event:default', NULL, ['aid' => 'ID'])->setSortable()->setFilterText();
+        $grid->addColumnDateTime('StartDate', 'Od')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnDateTime('EndDate', 'Do')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnText('prefix', 'Prefix')->setSortable();
+        $grid->addColumnStatus('ID_EventGeneralState', 'Prefix')
+            ->setCaret(FALSE)
+            ->addOption("draft", 'Rozpracováno')->setClass('btn-warning')->endOption()
+            ->addOption("closed", 'Uzavřeno')->setClass('btn-success')->endOption()
+            ->addOption("cancelled", 'Zrušeno')->setClass('btn-invert')->endOption();
+        
+        $grid->addAction('delete', '', 'cancel!', ['aid' => 'ID'])
+            ->setIcon('trash')
+            ->setTitle('Smazat')
+            ->setClass('btn btn-xs btn-danger ajax')
+            ->setConfirm('Opravdu chcete zrušit akci %s?', 'DisplayName');
 
-        $this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
-        $this->template->sort = $sort;
+        $grid->allowRowsAction('delete', function ($item) {
+            if (!array_key_exists("accessDelete", $item)) {
+                return TRUE;
+            }
+            return $item['accessDelete'];
+        });
+
     }
 
-    private function sortEvents(&$list, $param) : void
+    public function renderDefault(): void
+    {
+        $this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
+    }
+
+    private function sortEvents(&$list, $param): void
     {
         switch ($param) {
             case 'name':
@@ -104,7 +130,7 @@ class DefaultPresenter extends BasePresenter
         uasort($list, $fnc);
     }
 
-    public function handleChangeYear(?int $year) : void
+    public function handleChangeYear(?int $year): void
     {
         $this->ses->year = $year;
         if ($this->isAjax()) {
@@ -114,7 +140,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function handleChangeState(?string $state) : void
+    public function handleChangeState(?string $state): void
     {
         $this->ses->state = $state;
         if ($this->isAjax()) {
@@ -128,7 +154,7 @@ class DefaultPresenter extends BasePresenter
      * zruší akci
      * @param type $aid
      */
-    public function handleCancel(int $aid) : void
+    public function handleCancel(int $aid): void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Cancel")) {
             $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
@@ -144,7 +170,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentFormFilter(string $name) : Form
+    protected function createComponentFormFilter(string $name): Form
     {
         $states = array_merge(["all" => "Nezrušené"], $this->eventService->event->getStates());
         $years = ["all" => "Všechny"];
@@ -157,7 +183,7 @@ class DefaultPresenter extends BasePresenter
         $form->addSubmit('send', 'Hledat')
             ->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function(Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formFilterSubmitted($form);
         };
 
@@ -177,7 +203,7 @@ class DefaultPresenter extends BasePresenter
         return $item == NULL ? FALSE : TRUE;
     }
 
-    protected function createComponentFormCreate($name) : Form
+    protected function createComponentFormCreate($name): Form
     {
         $scopes = $this->eventService->event->getScopes();
         $types = $this->eventService->event->getTypes();
@@ -206,14 +232,14 @@ class DefaultPresenter extends BasePresenter
         $form->addSubmit('send', 'Založit novou akci')
             ->setAttribute("class", "btn btn-primary btn-large");
 
-        $form->onSuccess[] = function(Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formCreateSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formCreateSubmitted(Form $form) : void
+    private function formCreateSubmitted(Form $form): void
     {
         if (!$this->isAllowed("EV_EventGeneral_INSERT")) {
             $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
@@ -238,19 +264,19 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentFormExportSummary($name) : Form
+    protected function createComponentFormExportSummary($name): Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('send', 'Souhrn vybraných');
 
-        $form->onSuccess[] = function(Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formExportSummarySubmitted($form);
         };
 
         return $form;
     }
 
-    private function formExportSummarySubmitted(Form $form) : void
+    private function formExportSummarySubmitted(Form $form): void
     {
         $values = $form->getHttpData($form::DATA_TEXT, 'sel[]');
         $this->excelService->getEventSummaries($values, $this->eventService);

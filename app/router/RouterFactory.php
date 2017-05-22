@@ -104,7 +104,7 @@ class RouterFactory
             'action' => 'default',
         ]);
 
-        $router[] = new Route($prefix . '[<presenter>][/<action>]', [
+        $router[] = new Route($prefix . '/[<presenter>][/<action>]', [
             'presenter' => 'Default',
             'action' => 'default',
         ]);
