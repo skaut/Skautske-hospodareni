@@ -6,57 +6,97 @@
 
 {dump $event}
 
-<div class="row">
-    <div class="col-sm-6" n:if="$accessDetail">
-        <h3>Základní údaje</h3>
-        <table class="myTable table table-bordered table-condensed">
-            <tr>
-                <th>Jednotka</th>
-                <td>{$event->Unit}</td>
-            </tr>
-            <tr n:if="isset($troops) && $troops != NULL">
-                <th>Oddíly</th>
-                <td>{foreach $troops as $t}{$t->DisplayName}{if !$iterator->isLast()}, {/if}{/foreach}</td>
-            </tr>
 
-            <tr>
-                <th>Od</th>
-                <td>{$event->StartDate|date:"j. n. Y"}</td>
-            </tr>
-            <tr>
-                <th>Do</th>
-                <td>{$event->EndDate|date:"j. n. Y"}</td>
-            </tr>
-            <tr>
-                <th>Místo</th>
-                <td>{$event->Location}</td>
-            </tr>
-            <tr>
-                <th>Stav</th>
-                <td {if $event->ID_EventCampState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->ID_EventCampState|campStateLabel|noescape}</td>
-            </tr>
-            <tr>
-                <th>Prefix <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů aktivní."/></th>
-                <td>{$event->prefix} <a n:if="$accessDetail" href="#editPrefix" class="btn btn-primary btn-xs hidden-xs" data-toggle="modal"><i class="glyphicon glyphicon-pencil"></i></a></td>
-            </tr>
-        </table>
+
+<div class="row event-dashboard">
+    <div class="col-md-4" n:if="$accessDetail">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Základní údaje</h4></div>
+            <table class="table table-bordered table-condensed">
+                <tr>
+                    <th>Jednotka</th>
+                    <td>{$event->Unit}</td>
+                </tr>
+                <tr n:if="isset($troops) && $troops != NULL">
+                    <th>Oddíly</th>
+                    <td>{foreach $troops as $t}{$t->DisplayName}{if !$iterator->isLast()}, {/if}{/foreach}</td>
+                </tr>
+
+                <tr>
+                    <th>Od</th>
+                    <td>{$event->StartDate|date:"j. n. Y"}</td>
+                </tr>
+                <tr>
+                    <th>Do</th>
+                    <td>{$event->EndDate|date:"j. n. Y"}</td>
+                </tr>
+                <tr>
+                    <th>Místo</th>
+                    <td>{$event->Location}</td>
+                </tr>
+                <tr>
+                    <th>Stav</th>
+                    <td {if $event->ID_EventCampState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->ID_EventCampState|campStateLabel|noescape}</td>
+                </tr>
+                <tr>
+                    <th>Prefix <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů aktivní."/></th>
+                    <td>{$event->prefix} <a n:if="$accessDetail" href="#editPrefix" class="btn btn-primary btn-xs hidden-xs" data-toggle="modal"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                </tr>
+            </table>
+        </div>
     </div>
 
-    <div class="col-sm-6" n:if="is_array($funkce)">
-        <h3>Vedení tábora</h3>
-        <table class="myTable table table-bordered table-condensed">
-            <tr>
-                <th>Funkce</th>
-                <th>Příjmení a jméno</th>
-            </tr>
-            <tr n:foreach="$funkce as $f">
-                <td><i>{$f->EventFunctionType}</i></td>
-                <td>{ifset $f->ID_Person}{$f->Person}{/ifset}</td>
-            </tr>
-        </table>
+
+    <div class='col-md-3' n:if="$accessDetail">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Statistiky</h4></div>
+            <table class="table table-bordered table-condensed panel-body">
+                <tr>
+                    <th>Počet dnů</th>
+                    <td>{$event->TotalDays}</td>
+                </tr>
+                <tr>
+                    <th>Počet dospělých</th>
+                    <td>{$event->RealAdult}</td>
+                </tr>
+                <tr>
+                    <th>Počet dětí</th>
+                    <td>{$event->RealChild}</td>
+                </tr>
+                <tr>
+                    <th>Počet celkem</th>
+                    <td>{$event->RealCount}</td>
+                </tr>
+                <tr>
+                    <th>Osobodnů</th>
+                    <td>{$event->RealPersonDays ?? "-"}</td>
+                </tr>
+                <tr>
+                    <th>Dětodnů</th>
+                    <td>{$event->RealChildDays ?? "-"}</td>
+                </tr>
+            </table>
+
+        </div>
     </div>
 
+    <div class="col-md-5" n:if="is_array($funkce)">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Vedení tábora</h4></div>
+            <table class="table table-bordered table-condensed">
+                <tr>
+                    <th>Funkce</th>
+                    <th>Příjmení a jméno</th>
+                </tr>
+                <tr n:foreach="$funkce as $f">
+                    <td><i>{$f->EventFunctionType}</i></td>
+                    <td>{ifset $f->ID_Person}{$f->Person}{/ifset}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>
+
 <div class="row">
     <div class="col-sm-6">
         <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info btn-sm"><i class="glyphicon glyphicon-print"></i> Záverečná zpráva</a><br />
