@@ -85,8 +85,13 @@ $list array() - pole paragonů
                             <td title="{$item->purpose}">{$item->purpose|truncate:"30"}</td>
                             <td class="hidden-xs hidden-sm" title="{$item->clabel}">{$item->cshort}</td>
                             <td class="hidden-xs hidden-sm">{$item->recipient}</td>
-                            <td class="r"{if $isIncome}  title="{$item->priceText}"{/if}>{$isIncome ? $item->price: ''|price}</td>
-                            <td class="r"{if !$isIncome} title="{$item->priceText}"{/if}>{$isIncome ? '': $item->price|price}</td>
+                            {if $isIncome}
+                                <td class="r" title="{$item->priceText}">{$item->price|price}</td>
+                                <td class="r">&nbsp;</td>
+                            {else}
+                                <td class="r">&nbsp;</td>
+                                <td class="r" title="{$item->priceText}">{$item->price|price}</td>
+                            {/if}
                             <td class="r">{$balance|price}</td>
                         </tr>
                         {/foreach}
