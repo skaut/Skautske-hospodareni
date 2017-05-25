@@ -4,6 +4,7 @@ namespace Model\Travel;
 
 use Mockery as m;
 use Model\Travel\Command\TransportType;
+use Model\Travel\Command\TravelDetails;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 
@@ -37,9 +38,9 @@ class CommandTest extends \Codeception\Test\Unit
         $command = $this->createCommand($vehicle);
 
         $date = new \DateTimeImmutable();
-        $command->createTravel($date, 200, new TransportType("vau", TRUE), "Brno", "Praha");
-        $command->createTravel($date, 220, new TransportType("vau", TRUE), "Praha", "Brno");
-        $command->createTravel($date, 500, new TransportType("bus", FALSE), "Brno", "Praha");
+        $command->addVehicleTravel(200, new TravelDetails($date,"vau", "Brno", "Praha"));
+        $command->addVehicleTravel(220, new TravelDetails($date, "vau", "Praha", "Brno"));
+        $command->addTransportTravel(Money::CZK(50000), new TravelDetails($date, "bus", "Brno", "Praha"));
 
         $expectedPricePerKm = 6 / 100 * 31.20 + 5;
         $this->assertEquals(MoneyFactory::fromFloat(31.20 * 6 / 100), $command->getFuelPricePerKm());
@@ -53,9 +54,9 @@ class CommandTest extends \Codeception\Test\Unit
 
         $date = new \DateTimeImmutable();
 
-        $command->createTravel($date->modify("+ 1 day"), 200, new TransportType("vau", TRUE), "Brno", "Praha");
-        $command->createTravel($date, 220, new TransportType("vau", TRUE), "Praha", "Brno");
-        $command->createTravel($date->modify("+ 3 days"), 500, new TransportType("bus", FALSE), "Brno", "Praha");
+        $command->addVehicleTravel(200, new TravelDetails($date->modify("+ 1 day"), "vau", "Brno", "Praha"));
+        $command->addVehicleTravel(220, new TravelDetails($date, "vau", "Praha", "Brno"));
+        $command->addTransportTravel(Money::CZK(50000), new TravelDetails($date->modify("+ 3 days"), "bus", "Brno", "Praha"));
 
         $this->assertSame($date, $command->getFirstTravelDate());
     }

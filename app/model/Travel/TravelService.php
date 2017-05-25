@@ -16,6 +16,7 @@ use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Command\TransportType;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
+use Model\Utils\MoneyFactory;
 use Money\Money;
 
 /**
@@ -156,26 +157,23 @@ class TravelService extends BaseService
         return $this->tableTravel->getAll($commandId);
     }
 
-    public function addTravel($data)
+    public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice): void
     {
-        $command = $this->commands->find((int)$data["command_id"]);
-
+        $command = $this->commands->find($commandId);
         $types = $this->tableTravel->getTypes();
+        $typeEntity = $types[$type] ?? NULL;
 
-        $type = $types[$data["type"]] ?? NULL;
-
-        if($type === NULL) {
-            throw new \InvalidArgumentException("Type {$data['type']} not find");
+        if($typeEntity === NULL) {
+            throw new \InvalidArgumentException("Type $type not found");
         }
 
-        $transportType = new TransportType($type["type"], (bool)$type["hasFuel"]);
-        $command->createTravel(
-            new \DateTimeImmutable(),
-            $data["distance"],
-            $transportType,
-            $data["start_place"],
-            $data["end_place"]
-        );
+        $details = new Command\TravelDetails($date, $type, $startPlace, $endPlace);
+
+        if($typeEntity["hasFuel"]) {
+            $command->addVehicleTravel($distanceOrPrice, $details);
+        } else {
+            $command->addTransportTravel(MoneyFactory::fromFloat($distanceOrPrice), $details);
+        }
 
         $this->commands->save($command);
     }

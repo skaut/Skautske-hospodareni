@@ -2,81 +2,42 @@
 
 namespace Model\Travel\Command;
 
-use DateTimeImmutable;
 use Model\Travel\Command;
-use Model\Travel\WrongVehicleTypeException;
 
-class Travel
+abstract class Travel
 {
 
-    /** @var int */
+    /** @var int|NULL */
     private $id;
 
-    /** @var DateTimeImmutable */
-    private $date;
-
-    /** @var float */
-    private $distance;
-
-    /** @var TransportType */
-    private $transportType;
-
-    /** @var string */
-    private $startPlace;
-
-    /** @var string */
-    private $endPlace;
-
-    /** @var Command @internal */
+    /**
+     * @internal - for mapping only
+     * @var Command
+     */
     private $command;
 
-    public function __construct(
-        DateTimeImmutable $date,
-        float $distance,
-        TransportType $transportType,
-        string $startPlace,
-        string $endPlace,
-        Command $command
-    )
-    {
-        if($distance <= 0) {
-            throw new \InvalidArgumentException("Distance can't be negative");
-        }
+    /** @var TravelDetails */
+    protected $details;
 
-        $this->date = $date;
-        $this->distance = $distance;
-        $this->transportType = $transportType;
-        $this->startPlace = $startPlace;
-        $this->endPlace = $endPlace;
+    protected function __construct(Command $command, TravelDetails $details)
+    {
         $this->command = $command;
+        $this->setDetails($details);
     }
 
-    public function getDate(): DateTimeImmutable
+    protected function setDetails(TravelDetails $details)
     {
-        return $this->date;
+        $this->details = $details;
     }
 
-    public function getAmount(): float
+    public function getId(): ?int
     {
-        if($this->transportType->hasFuel()) {
-            throw new WrongVehicleTypeException("Can't get amount from travel with fueled vehicle");
-        }
-
-        return $this->distance;
+        return $this->id;
     }
 
-    public function getDistance(): float
+    public function getDetails(): TravelDetails
     {
-        if(!$this->transportType->hasFuel()) {
-            throw new WrongVehicleTypeException("Can't get distance from travel with non-fueled vehicle");
-        }
-
-        return $this->distance;
-    }
-
-    public function getTransportType(): TransportType
-    {
-        return $this->transportType;
+        return $this->details;
     }
 
 }

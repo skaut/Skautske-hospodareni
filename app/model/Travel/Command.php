@@ -2,9 +2,13 @@
 
 namespace Model\Travel;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\TransportType;
 use Model\Travel\Command\Travel;
+use Model\Travel\Command\TravelDetails;
+use Model\Travel\Command\VehicleTravel;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 
@@ -41,10 +45,10 @@ class Command
     /** @var string */
     private $note;
 
-    /** @var \DateTimeImmutable|NULL */
+    /** @var DateTimeImmutable|NULL */
     private $closedAt;
 
-    /** @var ArrayCollection|Travel[] */
+    /** @var ArrayCollection|TransportTravel[] */
     private $travels;
 
     public function __construct(
@@ -86,37 +90,55 @@ class Command
     }
 
     public function createTravel(
-        \DateTimeImmutable $date,
+        DateTimeImmutable $date,
         float $distanceOrAmount,
         TransportType $type,
         string $startPlace,
         string $endPlace): void
     {
-        $this->travels->add(
-            new Travel($date, $distanceOrAmount, $type, $startPlace, $endPlace, $this)
-        );
+        $details = new TravelDetails($date, $type->getShortcut(), $startPlace, $endPlace, $type->getShortcut());
+
+        if($type->hasFuel()) {
+            $this->addVehicleTravel($distanceOrAmount, $details);
+            return;
+        }
+        $this->addTransportTravel(MoneyFactory::fromFloat($distanceOrAmount), $details);
+    }
+
+    public function addVehicleTravel(float $distance, TravelDetails $details): void
+    {
+        $this->travels->add(new VehicleTravel($distance, $details, $this));
+    }
+
+    public function addTransportTravel(Money $price, TravelDetails $details): void
+    {
+        $this->travels->add(new TransportTravel($price, $details, $this));
     }
 
     public function calculateTotal(): Money
     {
-        $amount = array_sum(
-            $this->travels->map(function(Travel $travel) {
-                return !$travel->getTransportType()->hasFuel() ? $travel->getAmount() : 0;
-            })->toArray()
-        );
-
-        $amount = MoneyFactory::fromFloat($amount);
-        $amount = $amount->add($this->getVehiclePrice());
-
-        return $amount;
+        return $this->getTransportPrice()
+                    ->add($this->getVehiclePrice());
     }
 
     private function getDistance(): float
     {
-        return array_sum(
-            $this->travels->map(function(Travel $travel) {
-                return $travel->getTransportType()->hasFuel() ? $travel->getDistance() : 0;
-            })->toArray()
+        $distances = $this->travels
+                    ->filter(function(Travel $t) { return $t instanceof VehicleTravel; })
+                    ->map(function(VehicleTravel $t) { return $t->getDistance(); })
+                    ->toArray();
+
+        return array_sum($distances);
+    }
+
+    private function getTransportPrice(): Money
+    {
+        $prices = $this->travels->filter(function(Travel $t) { return $t instanceof TransportTravel; })->toArray();
+
+        return array_reduce(
+            $prices,
+            function(Money $total, TransportTravel $travel) { return $total->add($travel->getPrice()); },
+            Money::CZK(0)
         );
     }
 
@@ -136,12 +158,7 @@ class Command
             return Money::CZK(0);
         }
 
-        $distance = array_sum(
-            $this->travels->map(function (Travel $travel) {
-                return $travel->getTransportType()->hasFuel() ? $travel->getDistance() : 0;
-            })->toArray()
-        );
-
+        $distance = $this->getDistance();
         $fuelPrice = $this->fuelPrice->multiply($distance * $this->vehicle->getConsumption() / 100);
 
         return $this->amortization->multiply($distance)->add($fuelPrice);
@@ -208,31 +225,16 @@ class Command
         return $this->note;
     }
 
-    /**
-     * @return Travel[]
-     */
-    public function getTravels(): array
-    {
-        return $this->travels->toArray();
-    }
-
-    public function getClosedAt(): ?\DateTimeImmutable
+    public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
     }
 
-    public function getFirstTravelDate(): ?\DateTimeImmutable
+    public function getFirstTravelDate(): ?DateTimeImmutable
     {
-        if($this->travels->isEmpty()) {
-            return NULL;
-        }
-
-        return min(
-            $this->travels->map(function(Travel $travel) {
-                return $travel->getDate();
-            })->toArray()
-        );
+        return $this->travels->isEmpty()
+            ? NULL
+            : min($this->travels->map(function(Travel $travel) { return $travel->getDetails()->getDate(); })->toArray());
     }
-
 
 }

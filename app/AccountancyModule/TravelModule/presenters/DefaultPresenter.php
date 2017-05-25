@@ -209,7 +209,13 @@ class DefaultPresenter extends BasePresenter
         }
         $v['distance'] = round(str_replace(",", ".", $v['distance']), 2);
 
-        $this->travelService->addTravel($v);
+        $this->travelService->addTravel(
+            (int)$v->command_id,
+            $v->type,
+            \DateTimeImmutable::createFromMutable($v->start_date),
+            $v->start_place,
+            $v->end_place,
+            $v->distance);
         $this->flashMessage("Cesta byla přidána.");
         $this->redirect("this");
     }
