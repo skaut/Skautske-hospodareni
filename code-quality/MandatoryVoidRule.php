@@ -24,7 +24,8 @@ class MandatoryVoidRule implements \PHPStan\Rules\Rule
             return [];
         }
 
-        $method = new ReflectionMethod($scope->getClass(), $node->name);
+        $class = $scope->getClassReflection()->getName();
+        $method = new ReflectionMethod($class, $node->name);
 
         if($method->isAbstract()) {
             return [];
@@ -35,7 +36,7 @@ class MandatoryVoidRule implements \PHPStan\Rules\Rule
             return [
                 sprintf(
                     'Void method %s::%s() doesn\'t use :void return type.',
-                    $scope->getClass(),
+                    $class,
                     $node->name
                 ),
             ];
