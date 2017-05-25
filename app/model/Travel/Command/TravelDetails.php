@@ -2,10 +2,21 @@
 
 namespace Model\Travel\Command;
 
+use DateTimeImmutable;
+use Nette\SmartObject;
+
+/**
+ * @property-read DateTimeImmutable $date
+ * @property-read string $transportType
+ * @property-read string $startPlace
+ * @property-read string $endPlace
+ */
 class TravelDetails
 {
 
-    /** @var \DateTimeImmutable */
+    use SmartObject;
+
+    /** @var DateTimeImmutable */
     private $date;
 
     /** @var string */
@@ -17,7 +28,7 @@ class TravelDetails
     /** @var string */
     private $endPlace;
 
-    public function __construct(\DateTimeImmutable $date, string $transportType, string $startPlace, string $endPlace)
+    public function __construct(DateTimeImmutable $date, string $transportType, string $startPlace, string $endPlace)
     {
         $this->date = $date;
         $this->transportType = $transportType;
@@ -25,7 +36,7 @@ class TravelDetails
         $this->endPlace = $endPlace;
     }
 
-    public function getDate(): \DateTimeImmutable
+    public function getDate(): DateTimeImmutable
     {
         return $this->date;
     }

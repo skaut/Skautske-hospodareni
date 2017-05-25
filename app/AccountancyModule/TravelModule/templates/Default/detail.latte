@@ -84,17 +84,13 @@
                         <a n:href="editTravel $t->id" class="fancybox fancybox.ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
                         <a n:href="removeTravel! $t->id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="glyphicon glyphicon-remove"></i></a>
                     </td>
-                    <td>{$t->typeLabel}</td>
-                    <td>{$t->start_date|date:"j. n. Y"}</td>
-                    <td>{$t->start_place}</td>
-                    <td>{$t->end_place}</td>
-                    <td>{$t->distance}</td>
+                    <td>{$types[$t->details->transportType]}</td>
+                    <td>{$t->details->date|date:"j. n. Y"}</td>
+                    <td>{$t->details->startPlace}</td>
+                    <td>{$t->details->endPlace}</td>
+                    <td>{if $t->distance !== NULL}{$t->distance}{else}{$t->price|price}{/if}</td>
                     <td>
-                        {if $t->fuel}
-                            {$command->pricePerKm->multiply($t->distance)|price}
-                        {else}
-                            {$t->distance|price}
-                        {/if}
+                        {$t->price|price}
                     </td>
                 </tr>
                 <tr>

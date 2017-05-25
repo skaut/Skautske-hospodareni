@@ -152,9 +152,16 @@ class TravelService extends BaseService
         return $this->tableTravel->get($commandId);
     }
 
-    public function getTravels($commandId)
+    /**
+     * @param int $commandId
+     * @return DTO\Command\Travel[]
+     * @throws CommandNotFoundException
+     */
+    public function getTravels(int $commandId): array
     {
-        return $this->tableTravel->getAll($commandId);
+        return DTO\Command\TravelListFactory::create(
+            $this->commands->find($commandId)
+        );
     }
 
     public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice): void

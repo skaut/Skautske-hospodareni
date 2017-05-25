@@ -121,6 +121,11 @@ class Command
                     ->add($this->getVehiclePrice());
     }
 
+    public function getPriceFor(VehicleTravel $travel): Money
+    {
+        return MoneyFactory::fromFloat($travel->getDistance() * $this->getPricePerKmMultiplier());
+    }
+
     private function getDistance(): float
     {
         $distances = $this->travels
@@ -159,9 +164,19 @@ class Command
         }
 
         $distance = $this->getDistance();
+
         $fuelPrice = $this->fuelPrice->multiply($distance * $this->vehicle->getConsumption() / 100);
 
-        return $this->amortization->multiply($distance)->add($fuelPrice);
+        return $this->amortization
+                    ->multiply($distance)
+                    ->add($fuelPrice);
+    }
+
+    private function getPricePerKmMultiplier(): float
+    {
+        return $this->vehicle === NULL
+            ? 0
+            : MoneyFactory::toFloat($this->amortization) + MoneyFactory::toFloat($this->fuelPrice) * $this->vehicle->getConsumption() / 100;
     }
 
     public function getFuelPricePerKm(): Money
@@ -228,6 +243,11 @@ class Command
     public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
+    }
+
+    public function getTravels(): array
+    {
+        return $this->travels->toArray();
     }
 
     public function getFirstTravelDate(): ?DateTimeImmutable

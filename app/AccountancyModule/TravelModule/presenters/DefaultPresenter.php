@@ -84,7 +84,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->types = $this->travelService->getCommandTypes($command->getId());
     }
 
-    public function actionPrint($commandId) : void
+    public function actionPrint(int $commandId) : void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
