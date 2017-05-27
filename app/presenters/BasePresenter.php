@@ -28,6 +28,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     /** @var FormFactory */
     protected $formFactory;
+    
+    /** @var string */
+    private $wwwDir;
+
+    /** @var string */
+    private $appDir;
 
     public function injectUserService(\Model\UserService $u): void
     {
@@ -48,8 +54,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     {
         parent::startup();
 
+        $this->wwwDir = $this->context->getParameters()["wwwDir"];
+        $this->appDir = $this->context->getParameters()["appDir"];
+
         //adresář s částmi šablon pro použití ve více modulech
-        $this->template->templateBlockDir = APP_DIR . "/templateBlocks/";
+        $this->template->templateBlockDir = $this->wwwDir . "/templateBlocks/";
 
         $this->template->backlink = $backlink = $this->getParameter("backlink");
         if ($this->user->isLoggedIn() && $backlink !== NULL) {
@@ -106,8 +115,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     protected function createComponentCss(): CssLoader
     {
-        $files = new WebLoader\FileCollection(WWW_DIR . '/css');
-        $compiler = WebLoader\Compiler::createCssCompiler($files, WWW_DIR . '/webtemp');
+        $files = new WebLoader\FileCollection($this->wwwDir . '/css');
+        $compiler = WebLoader\Compiler::createCssCompiler($files, $this->wwwDir . '/webtemp');
 
         $control = new CssLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
         $control->setMedia('screen');
@@ -127,8 +136,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     protected function createComponentJs(): JavaScriptLoader
     {
-        $files = new WebLoader\FileCollection(WWW_DIR . '/js');
-        $compiler = WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/webtemp');
+        $files = new WebLoader\FileCollection($this->wwwDir . '/js');
+        $compiler = WebLoader\Compiler::createJsCompiler($files, $this->wwwDir . '/webtemp');
         $files->addFiles([
             'jquery-v1.11.1.js',
             'jquery-ui-1.10.0.custom.min.js',

@@ -88,7 +88,7 @@ services:
 
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory
-    - \Model\PaymentService
+    - \Model\PaymentService(%tempDir%)
     - Model\MailService
     - Model\Payment\MailingService
     - Model\Bank\Http\Curl
