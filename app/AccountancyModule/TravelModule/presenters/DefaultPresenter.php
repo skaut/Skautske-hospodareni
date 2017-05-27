@@ -81,6 +81,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->contract = $contract = $this->travelService->getContract($command->getPassenger()->getContractId());
         $this->template->isEditable = $this->isEditable = $this->unit->ID === $command->getUnitId() && $command->getClosedAt() === NULL;
         $this->template->travels = $this->travelService->getTravels($command->getId());
+        $this->template->allTypes = $this->travelService->getTravelTypes(TRUE); // TODO: Use $types once https://github.com/skaut/Skautske-hospodareni/issues/259 is fixed
         $this->template->types = $this->travelService->getCommandTypes($command->getId());
     }
 
