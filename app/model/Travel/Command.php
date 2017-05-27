@@ -5,7 +5,6 @@ namespace Model\Travel;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\Travel\Command\TransportTravel;
-use Model\Travel\Command\TransportType;
 use Model\Travel\Command\Travel;
 use Model\Travel\Command\TravelDetails;
 use Model\Travel\Command\VehicleTravel;
@@ -87,22 +86,6 @@ class Command
         $this->fuelPrice = $fuelPrice;
         $this->amortization = $amortization;
         $this->note = $note;
-    }
-
-    public function createTravel(
-        DateTimeImmutable $date,
-        float $distanceOrAmount,
-        TransportType $type,
-        string $startPlace,
-        string $endPlace): void
-    {
-        $details = new TravelDetails($date, $type->getShortcut(), $startPlace, $endPlace, $type->getShortcut());
-
-        if($type->hasFuel()) {
-            $this->addVehicleTravel($distanceOrAmount, $details);
-            return;
-        }
-        $this->addTransportTravel(MoneyFactory::fromFloat($distanceOrAmount), $details);
     }
 
     public function addVehicleTravel(float $distance, TravelDetails $details): void

@@ -3,7 +3,6 @@
 namespace Model\Travel;
 
 use Mockery as m;
-use Model\Travel\Command\TransportType;
 use Model\Travel\Command\TravelDetails;
 use Model\Utils\MoneyFactory;
 use Money\Money;
