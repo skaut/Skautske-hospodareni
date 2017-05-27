@@ -4,6 +4,7 @@ namespace Model\Infrastructure\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\DecimalType;
+use Money\Currency;
 use Money\Money;
 
 class MoneyType extends DecimalType
@@ -11,6 +12,7 @@ class MoneyType extends DecimalType
 
     public const NAME = "money";
     private const SUBUNITS = "100";
+    private const CURRENCY = "CZK";
 
     public function getName(): string
     {
@@ -20,7 +22,7 @@ class MoneyType extends DecimalType
     public function convertToPHPValue($value, AbstractPlatform $platform): Money
     {
         $stringValue = parent::convertToPHPValue($value, $platform);
-        return Money::CZK(bcmul($stringValue, self::SUBUNITS));
+        return new Money(bcmul($stringValue, self::SUBUNITS), new Currency(self::CURRENCY));
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string

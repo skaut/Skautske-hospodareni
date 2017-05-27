@@ -126,7 +126,7 @@ class Command
         return array_reduce(
             $prices,
             function(Money $total, TransportTravel $travel) { return $total->add($travel->getPrice()); },
-            Money::CZK(0)
+            MoneyFactory::zero()
         );
     }
 
@@ -137,13 +137,15 @@ class Command
     public function getPricePerKm(): Money
     {
         $distance = $this->getDistance();
-        return $distance !== 0.0 ? $this->getVehiclePrice()->divide($this->getDistance()) : Money::CZK(0);
+        return $distance !== 0.0
+            ? $this->getVehiclePrice()->divide($this->getDistance())
+            : MoneyFactory::zero();
     }
 
     private function getVehiclePrice(): Money
     {
         if($this->vehicle === NULL) {
-            return Money::CZK(0);
+            return MoneyFactory::zero();
         }
 
         $distance = $this->getDistance();
@@ -165,7 +167,7 @@ class Command
     public function getFuelPricePerKm(): Money
     {
         if($this->vehicle === NULL) {
-            return Money::CZK(0);
+            return MoneyFactory::zero();
         }
 
         return $this->fuelPrice->multiply($this->vehicle->getConsumption() / 100);
