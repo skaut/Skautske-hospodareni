@@ -25,7 +25,7 @@ abstract class Travel
         $this->setDetails($details);
     }
 
-    protected function setDetails(TravelDetails $details)
+    protected function setDetails(TravelDetails $details): void
     {
         $this->details = $details;
     }

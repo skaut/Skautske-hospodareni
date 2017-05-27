@@ -330,7 +330,7 @@ class TravelService extends BaseService
         Money $amortization,
         string $note,
         array $types
-    )
+    ): void
     {
         $command = $this->commands->find($id);
 
