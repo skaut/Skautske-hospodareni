@@ -78,7 +78,7 @@ class CommandForm extends Control
         $form->addMultiSelect("type", "Prostředek*", $transportTypes)
             ->setAttribute("class", "combobox")
             ->setRequired("Vyberte alespoň jeden dopravní prostředek.")
-            ->addCondition($form::IS_IN, $vehiclesWithFuel)
+            ->addCondition([\MyValidators::class, "hasSelectedAny"], $vehiclesWithFuel)
             ->toggle("vehicle");
 
         $form->addText("place", "Místo")
@@ -115,20 +115,20 @@ class CommandForm extends Control
             ->setOption("id", "vehicle_id")
             ->setPrompt("Vyberte vozidlo")
             ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], $form::IS_IN, $vehiclesWithFuel)
+            ->addConditionOn($form['type'], [\MyValidators::class, "hasSelectedAny"], $vehiclesWithFuel)
             ->setRequired("Musíte vyplnit typ vozidla.");
 
         $form->addText("fuel_price", "Cena paliva za 1l*")
             ->setOption("id", "fuel_price")
             ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], $form::IS_IN, $vehiclesWithFuel)
+            ->addConditionOn($form['type'], [\MyValidators::class, "hasSelectedAny"], $vehiclesWithFuel)
             ->setRequired("Musíte vyplnit cenu paliva.")
             ->addRule($form::FLOAT, "Musíte zadat desetinné číslo.");
 
         $form->addText("amortization", "Opotřebení*")
             ->setOption("id", "amortization")
             ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], $form::IS_IN, $vehiclesWithFuel)
+            ->addConditionOn($form['type'], [\MyValidators::class, "hasSelectedAny"], $vehiclesWithFuel)
             ->setRequired("Musíte vyplnit opotřebení.")
             ->addRule($form::FLOAT, "Musíte zadat desetinné číslo.");
 

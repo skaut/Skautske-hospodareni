@@ -1,14 +1,14 @@
 <?php
 
 use Nextras\Forms\Controls\DatePicker;
+use Nette\Forms\Controls\MultiChoiceControl;
 
-/**
- *
- * @author Sin
- */
+
 class MyValidators
 {
-    public static function isValidDate($control /*, $arg]*/) : bool
+    use \Nette\StaticClass;
+
+    public static function isValidDate($control) : bool
     {
         return $control->value === NULL ? FALSE : TRUE;
     }
@@ -17,4 +17,10 @@ class MyValidators
     {
         return $start <= $end->getValue();
     }
+
+    public static function hasSelectedAny(MultiChoiceControl $control, array $values): bool
+    {
+        return count(array_intersect($control->getValue(), $values)) !== 0;
+    }
+
 }
