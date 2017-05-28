@@ -9,6 +9,30 @@ Model\Travel\Command:
             generator: { strategy: AUTO }
 
     fields:
+        unitId:
+            type: integer
+        purpose:
+            type: string
+        place:
+            type: string
+        fellowPassengers:
+            type: string
+            column: passengers
+        fuelPrice:
+            type: money
+        amortization:
+            type: money
+        note:
+            type: string
+        closedAt:
+            type: datetime_immutable
+            nullable: true
+            column: closed
+
+    embedded:
+        passenger:
+            class: Model\Travel\Passenger
+            columnPrefix: false
 
     manyToOne:
         vehicle:

@@ -16,6 +16,12 @@ interface IVehicleRepository
     public function get(int $id);
 
     /**
+     * @param int[] $ids
+     * @return Vehicle[]
+     */
+    public function findByIds(array $ids): array;
+
+    /**
      * @param $unitId
      * @return Vehicle[]
      */

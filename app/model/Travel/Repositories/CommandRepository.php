@@ -5,6 +5,7 @@ namespace Model\Travel\Repositories;
 use Kdyby\Doctrine\EntityManager;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
+use Model\Travel\Vehicle;
 
 class CommandRepository implements ICommandRepository
 {
@@ -28,6 +29,11 @@ class CommandRepository implements ICommandRepository
         return $command;
     }
 
+    public function findByUnit(int $unitId): array
+    {
+        return $this->em->getRepository(Command::class)->findBy(["unitId" => $unitId]);
+    }
+
     public function countByVehicle(int $vehicleId): int
     {
         return $this->em->getRepository(Command::class)
@@ -42,6 +48,12 @@ class CommandRepository implements ICommandRepository
     public function remove(Command $command): void
     {
         $this->em->remove($command)->flush();
+    }
+
+    public function save(Command $command): void
+    {
+        $this->em->persist($command);
+        $this->em->flush();
     }
 
 }

@@ -4,6 +4,10 @@
     }
 }
 
+.main-panel {
+    margin-top: 30px;
+}
+
 .fail {
     background-color: #ff0000;
 }

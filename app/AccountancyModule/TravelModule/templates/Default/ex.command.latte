@@ -25,14 +25,14 @@
             </div>
             <div style="float: left;width: 430px;height: 76px;">
                 <div style="text-align: center;font: 23px bold;padding: 5px 0 10px;">Cestovní příkaz</div>
-                <b>1.</b> Příjmení, jméno: <span style="font-size: 15px;font-weight: bold;">{$contract->driver_name}</span><br />
-                <b>2.</b> Bydliště: <b>{$contract->driver_address}</b><br />
+                <b>1.</b> Příjmení, jméno: <span style="font-size: 15px;font-weight: bold;">{$command->passenger->name}</span><br />
+                <b>2.</b> Bydliště: <b>{$command->passenger->address}</b><br />
             </div>
             <div style="float: left;width: 140px;line-height: 2em;padding-top: 5px;">
                 Útvar: <br />
-                Telefon: {$contract->driver_contact}
+                Telefon: {$command->passenger->contact}
             </div>
-        </div>
+        </div>fr
         <div style="border-bottom: 2px solid #000000;"><!--    SEKCE 2    -->
             <table style="width: 100%;" class="bordered">
                 <tr>
@@ -42,16 +42,16 @@
                     <td class="c">Konec cesty</td>
                 </tr>
                 <tr>
-                    <td>{ifset $start}{$start->start_place} {$start->start_date|date:"j. n. Y"}{/ifset}</td>
+                    <td>{ifset $start}{$start->details->startPlace} {$start->details->date|date:"j. n. Y"}{/ifset}</td>
                     <td>{$command->purpose}</td>
                     <td>{$command->place}</td>
-                    <td>{ifset $end}{$end->end_place} {$end->start_date|date:"j. n. Y"}{/ifset}</td>
+                    <td>{ifset $end}{$end->details->endPlace} {$end->details->date|date:"j. n. Y"}{/ifset}</td>
                 </tr>
             </table>
         </div>
         <div class="sekce"><!--    SEKCE 3    -->
-            <b>3.</b> Spolucestující: {$command->passengers} <br />
-            <b>4.</b> Určený dopr. prostředek: {foreach $types as $t} {$t}{if !$iterator->isLast()}, {/if} {/foreach} {if $command->vehicle_type != ""} ({$command->vehicle_type} {ifset $command->vehicle_spz} {$command->vehicle_spz}{/ifset}){/if} <br />
+            <b>3.</b> Spolucestující: {$command->fellowPassengers} <br />
+            <b>4.</b> Určený dopr. prostředek: {$types|implode:", "} {if $vehicle !== NULL}– {$vehicle->label}{/if} <br />
             <b>5.</b> Předpokládaná část výdajů Kč: ----- <br />
             <b>6.</b> Povolená záloha Kč: ----- <br />
             <div style="width: 50%;font-size: 11px;float:left;text-align: center;margin-top: 8px;">.................................................................................................<br />podpis pokladníka</div>
@@ -99,12 +99,12 @@
         <div class="sekce" style=" padding: 0 auto 0 0;"><!--    SEKCE 6    -->
                     <div style="font-size: 0.9em;padding-bottom: 4px;">
                         <div style="font: 16px bold; text-align: center;">Vyúčtování pracovní cesty</div>
-                        {if $command->fuel_price != 0}
-                            <div class="fl" style="width: 130px; padding-left: 5px;">Cena paliva: <b>{$command->fuel_price}</b> Kč/l</div>
-                            <div class="fl" style="width: 175px;">Spotřeba dle t.p.: <b>{$command->vehicle_consumption}</b> l/100km</div>
-                            <div class="fl" style="width: 120px;">Cena PHM 1 km: {= $price1phm = round($command->fuel_price * $command->vehicle_consumption/100, 2)}</div>
-                            <div class="fl" style="width: 115px;">Opotřebení: {$command->amortization} Kč/km</div>
-                            <div class="fl" style="width: 155px;">Sazba náhrady: <b>{= $sazba = $command->amortization + $price1phm}</b> Kč/km</div>
+                        {if $vehicle !== NULL}
+                            <div class="fl" style="width: 130px; padding-left: 5px;">Cena paliva: <b>{$command->fuelPrice|price}</b> Kč/l</div>
+                            <div class="fl" style="width: 175px;">Spotřeba dle t.p.: <b>{$vehicle->consumption}</b> l/100km</div>
+                            <div class="fl" style="width: 120px;">Cena PHM 1 km: {$command->fuelPricePerKm|price}</div>
+                            <div class="fl" style="width: 115px;">Opotřebení: {$command->amortizationPerKm|price} Kč/km</div>
+                            <div class="fl" style="width: 155px;">Sazba náhrady: <b>{$command->pricePerKm|price}</b> Kč/km</div>
                         {/if}
                     </div>
                     <table class="bordered travels">
@@ -119,33 +119,25 @@
                     <th>Upraveno</th>
                 </tr>
             {if !empty($travels)}
-                {var $sum = 0}
                 <tr n:foreach="$travels as $t">
-                    <td>{$t->start_date|date:"j. n. Y"}</td>
-                    <td>{$t->start_place}</td>
-                    <td>{$t->end_place}</td>
-                    <td>{$t->type}</td>
-                    {if $t->fuel == 1}
-                    <td>{$sazba}</td>
+                    <td>{$t->details->date|date:"j. n. Y"}</td>
+                    <td>{$t->details->startPlace}</td>
+                    <td>{$t->details->endPlace}</td>
+                    <td>{$t->details->transportType}</td>
+                    {if $t->distance !== NULL}
+                    <td>{$command->pricePerKm|price}</td>
                     <td>{$t->distance}</td>
                     {else}
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                     {/if}
-                    <td>
-                        {if $t->fuel}
-                            {$sazba * $t->distance|price} {php $sum += $sazba * $t->distance}
-                        {else}
-                            {$t->distance|price} {php $sum += $t->distance}
-                        {/if}
-                        
-                    </td>
+                    <td>{$t->price|price}</td>
                     <td></td>
                 </tr>
                 <tr>
                     <td colspan="3" rowspan="3" style='vertical-align: bottom;'>K vyúčtování připojuji .......... dokladů.</td>
                     <td colspan="3">Celkem</td>
-                    <td>{$sum|price}</td>
+                    <td>{$command->total|price}</td>
                     <td></td>
                 </tr>
                 <tr>
@@ -155,7 +147,7 @@
                 </tr>
                 <tr>
                     <td colspan="3">Doplatek - přeplatek</td>
-                    <td>{$sum|price}</td>
+                    <td>{$command->total|price}</td>
                     <td></td>
                 </tr>
                 {/if}

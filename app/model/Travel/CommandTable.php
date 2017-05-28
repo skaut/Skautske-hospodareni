@@ -23,16 +23,6 @@ class CommandTable extends BaseTable
             LEFT JOIN [" . self::TABLE_TC_VEHICLE . "] as c ON (com.vehicle_id = c.id) WHERE com.id=%i", $commandId);
     }
 
-    public function add($v)
-    {
-        return $this->connection->insert(self::TABLE_TC_COMMANDS, $v)->execute(\dibi::IDENTIFIER);
-    }
-
-    public function update($v, $id)
-    {
-        return $this->connection->query("UPDATE [" . self::TABLE_TC_COMMANDS . "] SET", $v, "WHERE id=%s", $id);
-    }
-
     public function getAll($unitId, $returnQuery = FALSE)
     {
         $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.registration as vehicle_spz, com.place")
@@ -49,6 +39,14 @@ class CommandTable extends BaseTable
             return $q;
         }
         return $q->fetchAll();
+    }
+
+    public function getTypes(array $commandIds): array
+    {
+        return $this->connection->select("com.id as comId, (SELECT GROUP_CONCAT(tt.label SEPARATOR ', ') FROM " . self::TABLE_TC_COMMAND_TYPES . " ct LEFT JOIN " . self::TABLE_TC_TRAVEL_TYPES . " tt ON (ct.typeId = tt.type) WHERE commandId = com.id) as types")
+            ->from(self::TABLE_TC_COMMANDS . " AS com")
+            ->where("com.id IN %in", $commandIds)
+            ->fetchPairs("comId", "types");
     }
 
     /**

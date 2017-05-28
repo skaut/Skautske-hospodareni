@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6f0189eff2e158b770f624b2b633f92c",
+    "content-hash": "a9af16c84c2636890e08e80471fc499f",
     "packages": [
         {
             "name": "arachne/container-adapter",
@@ -1814,6 +1814,84 @@
                 "twig"
             ],
             "time": "2017-01-19T11:06:59+00:00"
+        },
+        {
+            "name": "moneyphp/money",
+            "version": "v3.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/moneyphp/money.git",
+                "reference": "2bd76fb0ba281bd90150a747bb7a8415c7e241f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/moneyphp/money/zipball/2bd76fb0ba281bd90150a747bb7a8415c7e241f3",
+                "reference": "2bd76fb0ba281bd90150a747bb7a8415c7e241f3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "cache/taggable-cache": "^0.4.0",
+                "ext-bcmath": "*",
+                "ext-gmp": "*",
+                "ext-intl": "*",
+                "florianv/swap": "^3.0",
+                "henrikbjorn/phpspec-code-coverage": "^2.0.2",
+                "moneyphp/iso-currencies": "^3.0",
+                "php-http/message": "^1.4",
+                "php-http/mock-client": "^0.3.3",
+                "phpspec/phpspec": "^2.5",
+                "phpunit/phpunit": "^4.5",
+                "psr/cache": "^1.0",
+                "sllh/php-cs-fixer-styleci-bridge": "^2.1"
+            },
+            "suggest": {
+                "ext-bcmath": "Calculate without integer limits",
+                "ext-gmp": "Calculate without integer limits",
+                "ext-intl": "Format Money objects with intl",
+                "florianv/swap": "Exchange rates library for PHP",
+                "psr/cache-implementation": "Used for Currency caching"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Money\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mathias Verraes",
+                    "email": "mathias@verraes.net",
+                    "homepage": "http://verraes.net"
+                },
+                {
+                    "name": "Frederik Bosch",
+                    "email": "f.bosch@genkgo.nl"
+                },
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagi-kazar@gmail.com"
+                }
+            ],
+            "description": "PHP implementation of Fowler's Money pattern",
+            "homepage": "http://verraes.net/2011/04/fowler-money-pattern-in-php/",
+            "keywords": [
+                "Value Object",
+                "money",
+                "vo"
+            ],
+            "time": "2017-04-26T12:54:44+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -4603,12 +4681,12 @@
             "version": "0.9.9",
             "source": {
                 "type": "git",
-                "url": "https://github.com/padraic/mockery.git",
+                "url": "https://github.com/mockery/mockery.git",
                 "reference": "6fdb61243844dc924071d3404bb23994ea0b6856"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/6fdb61243844dc924071d3404bb23994ea0b6856",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/6fdb61243844dc924071d3404bb23994ea0b6856",
                 "reference": "6fdb61243844dc924071d3404bb23994ea0b6856",
                 "shasum": ""
             },
@@ -4967,16 +5045,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.6.4",
+            "version": "0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "55ee8b0c451546ac069c2c4130ce505c4a4cf409"
+                "reference": "8da03c084b2c8e4a92d48f6926f6191c2c7783ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/55ee8b0c451546ac069c2c4130ce505c4a4cf409",
-                "reference": "55ee8b0c451546ac069c2c4130ce505c4a4cf409",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/8da03c084b2c8e4a92d48f6926f6191c2c7783ad",
+                "reference": "8da03c084b2c8e4a92d48f6926f6191c2c7783ad",
                 "shasum": ""
             },
             "require": {
@@ -4992,11 +5070,11 @@
             },
             "require-dev": {
                 "consistence/coding-standard": "~0.13.0",
-                "jakub-onderka/php-parallel-lint": "^0.9",
-                "phing/phing": "^2.13.0",
-                "phpunit/phpunit": "^5.6",
+                "jakub-onderka/php-parallel-lint": "^0.9.2",
+                "phing/phing": "^2.16.0",
+                "phpunit/phpunit": "^6.0.7",
                 "satooshi/php-coveralls": "^1.0",
-                "slevomat/coding-standard": "dev-2.0-dev#2b8e2b0992f31205e4c1d2fb5c39af05274c7c4d"
+                "slevomat/coding-standard": "^2.0"
             },
             "bin": [
                 "bin/phpstan"
@@ -5004,7 +5082,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.6-dev"
+                    "dev-master": "0.7-dev"
                 }
             },
             "autoload": {
@@ -5017,68 +5095,26 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2017-02-20T20:45:32+00:00"
+            "time": "2017-05-14T20:37:59+00:00"
         },
         {
             "name": "phpstan/phpstan-dibi",
-            "version": "0.6",
+            "version": "0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-dibi.git",
-                "reference": "89ff5ff155d438c0dc4d1996ecfad1b68a6876cf"
+                "reference": "d5b047a578cbe6b0c4822987fd52c43a5d4fdc9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-dibi/zipball/89ff5ff155d438c0dc4d1996ecfad1b68a6876cf",
-                "reference": "89ff5ff155d438c0dc4d1996ecfad1b68a6876cf",
+                "url": "https://api.github.com/repos/phpstan/phpstan-dibi/zipball/d5b047a578cbe6b0c4822987fd52c43a5d4fdc9d",
+                "reference": "d5b047a578cbe6b0c4822987fd52c43a5d4fdc9d",
                 "shasum": ""
             },
             "require": {
                 "dibi/dibi": "~3.0",
                 "php": "~7.0",
-                "phpstan/phpstan": "^0.6"
-            },
-            "require-dev": {
-                "consistence/coding-standard": "~0.12.0",
-                "phing/phing": "^2.13.0",
-                "phpunit/phpunit": "^5.3",
-                "satooshi/php-coveralls": "^1.0",
-                "slevomat/coding-standard": "dev-php7#961090ac32"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "PHPStan\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Dibi class reflection extension for PHPStan",
-            "time": "2017-01-15T22:31:17+00:00"
-        },
-        {
-            "name": "phpstan/phpstan-nette",
-            "version": "0.6.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpstan-nette.git",
-                "reference": "295e25d6bda17b06d8b94d55fb735599a2cdefb1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-nette/zipball/295e25d6bda17b06d8b94d55fb735599a2cdefb1",
-                "reference": "295e25d6bda17b06d8b94d55fb735599a2cdefb1",
-                "shasum": ""
-            },
-            "require": {
-                "nette/component-model": "^2.3.0 || ^3.0.0",
-                "nette/di": "^2.3.0 || ^3.0.0",
-                "nette/forms": "^2.3.0 || ^3.0.0",
-                "nette/utils": "^2.3.0 || ^3.0.0",
-                "php": "~7.0",
-                "phpstan/phpstan": "^0.6"
+                "phpstan/phpstan": "^0.7"
             },
             "require-dev": {
                 "consistence/coding-standard": "~0.13.0",
@@ -5089,6 +5125,59 @@
                 "slevomat/coding-standard": "^2.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Dibi class reflection extension for PHPStan",
+            "time": "2017-05-08T11:59:23+00:00"
+        },
+        {
+            "name": "phpstan/phpstan-nette",
+            "version": "0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan-nette.git",
+                "reference": "aea27d521725a8899e18ace4afe6ee9df9ea27ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan-nette/zipball/aea27d521725a8899e18ace4afe6ee9df9ea27ab",
+                "reference": "aea27d521725a8899e18ace4afe6ee9df9ea27ab",
+                "shasum": ""
+            },
+            "require": {
+                "nette/component-model": "^2.3.0 || ^3.0.0",
+                "nette/di": "^2.3.0 || ^3.0.0",
+                "nette/forms": "^2.3.0 || ^3.0.0",
+                "nette/utils": "^2.3.0 || ^3.0.0",
+                "php": "~7.0",
+                "phpstan/phpstan": "^0.7"
+            },
+            "require-dev": {
+                "consistence/coding-standard": "~0.13.0",
+                "jakub-onderka/php-parallel-lint": "^0.9.2",
+                "phing/phing": "^2.13.0",
+                "phpunit/phpunit": "^5.3",
+                "satooshi/php-coveralls": "^1.0",
+                "slevomat/coding-standard": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.7-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "PHPStan\\": "src/"
@@ -5099,7 +5188,7 @@
                 "MIT"
             ],
             "description": "Nette Framework class reflection extension for PHPStan",
-            "time": "2017-03-12T11:29:16+00:00"
+            "time": "2017-05-08T11:30:43+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

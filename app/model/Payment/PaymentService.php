@@ -23,6 +23,9 @@ use Skautis\Skautis;
 class PaymentService
 {
 
+    /** @var string */
+    private $tempDir;
+
     /** @var Skautis */
     private $skautis;
 
@@ -36,12 +39,14 @@ class PaymentService
     private $bankAccounts;
 
     public function __construct(
+        string $tempDir,
         Skautis $skautis,
         IGroupRepository $groups,
         IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts
     )
     {
+        $this->tempDir = $tempDir;
         $this->skautis = $skautis;
         $this->groups = $groups;
         $this->payments = $payments;
@@ -457,7 +462,7 @@ class PaymentService
     public function sendFioPaymentRequest($stringToRequest, $token)
     {
         $curl = curl_init();
-        $file = tempnam(WWW_DIR . "/../temp/", "XML"); // Vytvoření dočasného souboru s náhodným jménem v systémové temp složce.
+        $file = tempnam($this->tempDir, "XML"); // Vytvoření dočasného souboru s náhodným jménem v systémové temp složce.
         file_put_contents($file, $stringToRequest); // Do souboru se uloží XML string s vygenerovanými příkazy k úhradě.
 
         $this->curl_custom_postfields($curl, [

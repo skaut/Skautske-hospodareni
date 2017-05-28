@@ -6,11 +6,16 @@
 {dump $command}
 <div class="row">
     <div class="well well-sm">
-        <a n:href="editCommand $command->id" n:if="$isEditable" class="fancybox fancybox.ajax btn btn-sm btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit</a>
-        <a n:href="removeCommand! $command->id" n:if="is_null($command->closed)" title="Smazat" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon glyphicon-remove"></i> Smazat</a>
-        <a n:href="closeCommand! $command->id" n:if="$isEditable" class="btn btn-sm btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
-        <a n:href="openCommand! $command->id" n:if="!is_null($command->closed)" class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
-        {if !is_null($command->contract_id)}
+        {if $isEditable}
+        <a n:href="Command:edit $command->id" class="btn btn-sm btn-primary">
+            <span class="glyphicon glyphicon-edit"></span>
+            Upravit
+        </a>
+        <a n:href="removeCommand! $command->id" title="Smazat" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon glyphicon-remove"></i> Smazat</a>
+        <a n:href="closeCommand! $command->id" class="btn btn-sm btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
+        <a n:href="openCommand! $command->id" class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
+        {/if}
+        {if $command->passenger->contractId !== NULL}
             <a n:href="Contract:detail $contract->id" class="btn btn-sm btn-primary hidden-xs"><i class="glyphicon glyphicon-zoom-in"></i> Smlouva</a>
         {/if}
         <a n:href="print $command->id" class="btn btn-sm btn-info hidden-xs"><i class="glyphicon glyphicon-print"></i> Vytisknout cestovní příkaz</a>
@@ -20,29 +25,29 @@
     <div class="col-sm-4">
         <h3>Příkaz</h3>
         <b>Účel cesty:</b> {$command->purpose}<br />
-        {if $command->place != ""}<b>Místo:</b> {$command->place}<br />{/if}
-        {if $command->passengers != ""}<b>Spolucestující:</b> {$command->passengers}<br />{/if}
-        {if $command->note != ""}<b>Poznámka:</b>{$command->note}{/if}
+        {if $command->place !== ""}<b>Místo:</b> {$command->place}<br />{/if}
+        {if $command->fellowPassengers !== ""}<b>Spolucestující:</b> {$command->fellowPassengers}<br />{/if}
+        {if $command->note !== ""}<b>Poznámka:</b>{$command->note}{/if}
     </div>
     <div class="col-sm-4">
         <h3>Prostředek</h3>
         <b>Typ:</b> {foreach $types as $t} {$t}{if !$iterator->isLast()}, {/if} {/foreach}<br />
-        {ifset $command->vehicle_type}<b>Vozidlo:</b> <a n:href="Vehicle:detail $command->vehicle_id">{$command->vehicle_type} ({$command->vehicle_spz})</a><br />{/ifset}
-        {ifset $command->vehicle_consumption}<b>&#0216; spotřeba dle t.p.:</b> {$command->vehicle_consumption|number:2} l/100 km<br />{/ifset}
-        {if $command->fuel_price != 0}<b>Cena paliva:</b> {$command->fuel_price|price} l/Kč<br />{/if}
-        <b>Opotřebení:</b> {$command->amortization|number:2} Kč/km<br />
-        {var $sazba = round($command->amortization + ($command->fuel_price * $command->vehicle_consumption /100), 2)}
-        <b>Sazba náhrady:</b> <b>{= $sazba}</b> Kč/km<br />
-        {var $sum = 0}
+        {ifset $vehicle}
+            <b>Vozidlo:</b>
+            <a n:href="Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a>
+            <br/>
+            <b>&#0216; spotřeba dle t.p.:</b> {$vehicle->consumption|number:2} l/100 km<br/>
+            <b>Cena paliva:</b> {$command->fuelPrice|price} Kč/l<br/>
+            <b>Opotřebení:</b> {$command->amortizationPerKm|price} Kč/km<br/>
+            <b>Sazba náhrady:</b> <b>{$command->pricePerKm|price}</b> Kč/km<br/>
+        {/ifset}
 
     </div>
-        {if !is_null($command->contract_id)}
-    <div class="col-sm-4 hidden-xs">
+    <div n:if="$command->passenger->contractId !== NULL" class="col-sm-4 hidden-xs">
         <h3>Řidič</h3>
         <b>Jméno:</b> {$contract->driver_name}<br />
         <b>Bydliště:</b> {$contract->driver_address}
     </div>
-    {/if}
 </div>
 <div class="row">
     <h3>Provedené cesty</h3>
@@ -79,23 +84,19 @@
                         <a n:href="editTravel $t->id" class="fancybox fancybox.ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
                         <a n:href="removeTravel! $t->id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="glyphicon glyphicon-remove"></i></a>
                     </td>
-                    <td>{$t->typeLabel}</td>
-                    <td>{$t->start_date|date:"j. n. Y"}</td>
-                    <td>{$t->start_place}</td>
-                    <td>{$t->end_place}</td>
-                    <td>{$t->distance}</td>
+                    <td>{$allTypes[$t->details->transportType]}</td>
+                    <td>{$t->details->date|date:"j. n. Y"}</td>
+                    <td>{$t->details->startPlace}</td>
+                    <td>{$t->details->endPlace}</td>
+                    <td>{if $t->distance !== NULL}{$t->distance}{else}{$t->price|price}{/if}</td>
                     <td>
-                        {if $t->fuel}
-                            {$sazba * $t->distance|price} {php $sum += $sazba * $t->distance}
-                        {else}
-                            {$t->distance|price} {php $sum += $t->distance}
-                        {/if}
+                        {$t->price|price}
                     </td>
                 </tr>
                 <tr>
                     <th n:if="$isEditable">&nbsp;</th>
                     <th colspan="5" class="r">Celkem: </th>
-                    <th>{$sum|price}&nbsp;Kč</th>
+                    <th>{$command->total|price}&nbsp;Kč</th>
                 </tr>
             {/if}
         </table>

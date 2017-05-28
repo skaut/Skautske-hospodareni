@@ -1,0 +1,17 @@
+Model\Travel\Contract:
+
+    type: entity
+    table: tc_contracts
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        driverName:
+            type: string
+        driverContact:
+            type: string
+        driverAddress:
+            type: string

@@ -4,22 +4,40 @@ namespace Model\Travel\Command;
 
 use Model\Travel\Command;
 
-class Travel
+abstract class Travel
 {
 
-    /** @var int */
+    /** @var int|NULL */
     private $id;
 
-    /** @var string */
-    private $startPlace;
-
-    /** @var string */
-    private $endPlace;
-
-    /** @var float */
-    private $distance;
-
-    /** @var Command @internal */
+    /**
+     * @internal - for mapping only
+     * @var Command
+     */
     private $command;
+
+    /** @var TravelDetails */
+    protected $details;
+
+    protected function __construct(Command $command, TravelDetails $details)
+    {
+        $this->command = $command;
+        $this->setDetails($details);
+    }
+
+    protected function setDetails(TravelDetails $details): void
+    {
+        $this->details = $details;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getDetails(): TravelDetails
+    {
+        return $this->details;
+    }
 
 }

@@ -42,8 +42,12 @@ class Listener implements Subscriber
         if (!isset($this->embeddablesTree[$metadata->getName()])) {
             $nullables = [];
             foreach ($metadata->embeddedClasses as $field => $embeddable) {
-                $prefixedField = $prefix !== NULL ? $prefix . '.' . $field : $field;
 
+                if(strpos($field, ".") !== FALSE) {
+                    continue;
+                }
+
+                $prefixedField = $prefix !== NULL ? $prefix . '.' . $field : $field;
                 $nullables = array_merge(
                     $nullables,
                     $this->getNullableEmbeddables(

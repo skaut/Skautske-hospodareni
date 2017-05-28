@@ -5,18 +5,16 @@
 
 <div class="row">
     <div class="span12">
-        <div class="well well-sm">
-            <button type="button" data-toggle="collapse" data-target="#createCommand" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit cestovní příkaz</button>
-            <div class="collapse" id="createCommand">
-                <br />
-                {control formCreateCommand}
-            </div>
+        <div class="panel">
+        <a n:href="Command:" class="btn btn-primary">
+            <span class="glyphicon glyphicon-plus-sign"></span>
+            Založit cestovní příkaz
+        </a>
         </div>
-
         <table n:if="!empty($list)" class="table table-bordered table-striped table-condensed">
             <tr>
                 <th>&nbsp;</th>
-                <th>Řidič</th>
+                <th>Cestující</th>
                 <th>Účel cesty</th>
                 <th>Prostředek</th>
                 <th>Vozidlo</th>
@@ -29,14 +27,14 @@
                 <td class="r nowrap">
                     <a n:href="detail $item->id" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-zoom-in hidden-xs hidden-sm"></i> Detail</a>
                 </td>
-                <td>{$item->driver_name}</td>
+                <td><a n:tag-if="$item->passenger->contractId !== NULL" n:href="Contract:detail $item->passenger->contractId">{$item->passenger->name}</a></td>
                 <td>{$item->purpose}</td>
-                <td>{$item->types}</td>
-                <td><a n:if="$item->vehicle_id !== NULL" n:href="Vehicle:detail $item->vehicle_id">{$item->vehicle_type} {ifset $item->vehicle_spz}({$item->vehicle_spz}){/ifset}</a></td>
-                <td>{$item->start_date|date:'j. n. Y'}</td>
-                <td>{$item->price|price}</td>
+                <td>{$types[$item->id]}</td>
+                <td><a n:if="$item->vehicleId !== NULL" n:href="Vehicle:detail $item->vehicleId">{$vehicles[$item->vehicleId]->getLabel()}</a></td>
+                <td n:inner-if="$item->firstTravelDate !== NULL">{$item->firstTravelDate|date:'j. n. Y'}</td>
+                <td>{$item->total|price}</td>
                 <td class="hidden-xs hidden-sm">{$item->note}</td>
-                <td>{$item->closed|commandState|noescape}</td>
+                <td>{$item->closedAt|commandState|noescape}</td>
             </tr>
         </table>
     </div>

@@ -1,0 +1,8 @@
+Model\Travel\Command\VehicleTravel:
+
+    type: entity
+    table: tc_travels
+
+    fields:
+        distance:
+            type: float

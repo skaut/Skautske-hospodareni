@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use Model\DTO\Travel\Command;
 use Model\Services\PdfRenderer;
 use Model\TravelService;
 use Nette\Application\UI\Form;
@@ -43,7 +44,19 @@ class DefaultPresenter extends BasePresenter
 
     public function renderDefault() : void
     {
-        $this->template->list = $this->travelService->getAllCommands($this->unit->ID);
+        $commands = $this->travelService->getAllCommands($this->getUnitId());
+
+        $vehicleIds = array_map(function (Command $command) {
+            return $command->getVehicleId();
+        }, $commands);
+
+        $commandIds = array_map(function(Command $command) {
+            return $command->getId();
+        }, $commands);
+
+        $this->template->list = $commands;
+        $this->template->vehicles = $this->travelService->findVehiclesByIds(array_unique(array_filter($vehicleIds)));
+        $this->template->types = $this->travelService->getTypes($commandIds);
     }
 
     public function actionDetail($id) : void
@@ -59,71 +72,50 @@ class DefaultPresenter extends BasePresenter
         $this['formAddTravel']->setDefaults(["command_id" => $id]);
     }
 
-    public function renderDetail($id) : void
+    public function renderDetail(int $id): void
     {
-        $this->template->command = $command = $this->travelService->getCommand($id);
-        $this->template->contract = $contract = $this->travelService->getContract($command->contract_id);
-        $this->template->isEditable = $this->isEditable = ($this->unit->ID == $command->unit_id && $command->closed == NULL) ? TRUE : FALSE;
-        $this->template->travels = $this->travelService->getTravels($command->id);
-        $this->template->types = $this->travelService->getCommandTypes($command->id);
+        $this->template->command = $command = $this->travelService->getCommandDetail($id);
+        $this->template->vehicle = $command->getVehicleId() !== NULL
+                                 ? $this->travelService->getVehicle($command->getVehicleId())
+                                 : NULL;
+        $this->template->contract = $contract = $this->travelService->getContract($command->getPassenger()->getContractId());
+        $this->template->isEditable = $this->isEditable = $this->unit->ID === $command->getUnitId() && $command->getClosedAt() === NULL;
+        $this->template->travels = $this->travelService->getTravels($command->getId());
+        $this->template->allTypes = $this->travelService->getTravelTypes(TRUE); // TODO: Use $types once https://github.com/skaut/Skautske-hospodareni/issues/259 is fixed
+        $this->template->types = $this->travelService->getCommandTypes($command->getId());
     }
 
-    public function actionEditCommand($commandId) : void
-    {
-        if (!$this->isCommandAccessible($commandId)) {
-            $this->flashMessage("Nemáte oprávnění upravovat záznam!", "danger");
-            $this->redirect("default");
-        }
-        if (!$this->isCommandEditable($commandId)) {
-            $this->flashMessage("Záznam nelze upravovat", "warning");
-            $this->redirect("default");
-        }
-        $this['formEditCommand']['type']->setItems($this->travelService->getTravelTypes(TRUE));
-        $this['formEditCommand']->setDefaults(["command_id" => $commandId]);
-    }
-
-    public function renderEditCommand($commandId) : void
-    {
-        $defaults = $this->travelService->getCommand($commandId);
-        $defaults["type"] = array_keys($this->travelService->getCommandTypes($commandId));
-        $defaults['id'] = $commandId;
-        $form = $this['formEditCommand'];
-
-        $index = 'vehicle_id';
-        // If command uses archived vehicle, add it to select
-        $items = $form[$index]->items;
-        if (!in_array($defaults[$index], $items)) {
-            try {
-                $vehicle = $this->travelService->getVehicle((int)$defaults[$index]);
-                $form[$index]->setItems([$vehicle->getId() => $vehicle->getLabel()] + $items);
-            } catch (\Model\Travel\VehicleNotFoundException $exc) {
-
-            }
-        }
-
-        $form->setDefaults($defaults);
-        $this->template->form = $form;
-    }
-
-    public function actionPrint($commandId) : void
+    public function actionPrint(int $commandId) : void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
             $this->redirect("default");
         }
-        $template = $this->template;
-        $template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
-        $template->setFile(dirname(__FILE__) . '/../templates/Default/ex.command.latte');
-        $template->command = $command = $this->travelService->getCommand($commandId);
-        $template->contract = $this->travelService->getContract($command->contract_id);
-        $template->travels = $travels = $this->travelService->getTravels($command->id);
-        $template->types = $this->travelService->getCommandTypes($command->id);
-        if (!empty($travels)) {
-            $template->end = end($travels);
-            $template->start = reset($travels);
+
+        $command = $this->travelService->getCommandDetail($commandId);
+        $travels = $this->travelService->getTravels($commandId);
+        $vehicleId = $command->getVehicleId();
+
+        /* @var $template \Nette\Bridges\ApplicationLatte\Template */
+        $template = $this->getTemplateFactory()->createTemplate();
+        $template->setParameters([
+            "command" => $command,
+            "travels" => $travels,
+            "types" => $this->travelService->getCommandTypes($commandId),
+            "vehicle" => $vehicleId !== NULL ? $this->travelService->findVehicle($vehicleId) : NULL,
+        ]);
+
+        if (count($travels) !== 0) {
+            $template->setParameters([
+                "start" => $travels[0],
+                "end" => array_slice($travels, -1)[0],
+            ]);
         }
 
-        $this->pdf->render($template, 'cestovni-prikaz.pdf');
+        $template->getLatte()->addFilter(NULL, "\\App\\AccountancyModule\\AccountancyHelpers::loader");
+        $template->setFile(__DIR__ . '/../templates/Default/ex.command.latte');
+
+        $this->pdf->render((string)$template, 'cestovni-prikaz.pdf');
         $this->terminate();
     }
 
@@ -181,130 +173,6 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("default");
     }
 
-    private function makeCommandForm($name) : Form
-    {
-        $contracts = $this->travelService->getAllContractsPairs($this->unit->ID);
-        $vehicles = $this->travelService->getVehiclesPairs($this->unit->ID);
-
-        if (!empty($contracts["past"])) {
-            $contracts = ["platné" => $contracts["valid"], "ukončené" => $contracts["past"]];
-        } else {
-            $contracts = $contracts["valid"];
-        }
-
-        $vehicleTypes = $this->travelService->getTravelTypes();
-        $vehiclesWithFuel = array_map(function ($v) {
-            return $v->type;
-        }, array_filter($vehicleTypes, function ($v) {
-            return $v->hasFuel;
-        }));
-        $vehicleTypes = array_map(function ($v) {
-            return $v->label;
-        }, $vehicleTypes);
-
-        $form = $this->formFactory->create();
-        $form->addText("unit", "Jednotka")->setDefaultValue($this->unit->SortName)->setOmitted()->getControlPrototype()->DISABLED("DISABLED");
-        $form->addText("purpose", "Účel cesty*")
-            ->setMaxLength(64)
-            ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit účel cesty.");
-        $form->addCheckboxList("type", "Prostředek*", $vehicleTypes)
-            ->addRule(Form::FILLED, "Vyberte alespoň jeden dopravní prostředek.");
-        $form->addSelect("contract_id", "Smlouva/Řidič", $contracts)
-            ->setPrompt("Vyberte smlouvu")
-            ->setAttribute("class", "form-control");
-        $form->addSelect("vehicle_id", "Vozidlo*", $vehicles)
-            ->setOption("id", "vehicleId")
-            ->setPrompt("Vyberte vozidlo")
-            ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)
-            ->setRequired("Musíte vyplnit typ vozidla.")
-            ->toggle("vehicleId", FALSE);
-        $form->addText("fuel_price", "Cena paliva za 1l*")
-            ->setOption("id", "fuelPrice")
-            ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)
-            ->setRequired("Musíte vyplnit cenu paliva.")
-            ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.")
-            ->toggle("fuelPrice", FALSE);
-        $form->addText("amortization", "Opotřebení*")
-            ->setOption("id", "amortization")
-            ->setAttribute("class", "form-control")
-            ->addConditionOn($form['type'], Form::IS_IN, $vehiclesWithFuel)
-            ->setRequired("Musíte vyplnit opotřebení.")
-            ->addRule(Form::FLOAT, "Musíte zadat desetinné číslo.")
-            ->toggle("amortization", FALSE);
-
-        $form->addText("place", "Místo")
-            ->setMaxLength(64)
-            ->setAttribute("class", "form-control");
-        $form->addText("passengers", "Spolucestující")
-            ->setMaxLength(64)
-            ->setAttribute("class", "form-control");
-        $form->addText("note", "Poznámka")
-            ->setMaxLength(64)
-            ->setAttribute("class", "form-control");
-        $form->onSuccess[] = [$this, $name . 'Submitted'];
-        return $form;
-    }
-
-    protected function createComponentFormCreateCommand($name) : Form
-    {
-        $form = $this->makeCommandForm($name);
-        $form->addSubmit('send', 'Založit')
-            ->setAttribute("class", "btn btn-primary");
-        return $form;
-    }
-
-    /**
-     * @param Form $form
-     * @TODO refactor to private
-     */
-    public function formCreateCommandSubmitted(Form $form) : void
-    {
-        $v = $form->getValues();
-        if (isset($v->contract_id) && !$this->isContractAccessible($v->contract_id)) {
-            $this->flashMessage("Nemáte právo založit cestovní příkaz.", "danger");
-            $this->redirect("default");
-        }
-        $v->unit_id = $this->unit->ID;
-
-        $this->travelService->addCommand($v);
-        $this->flashMessage("Cestovní příkaz byl založen.");
-        $this->redirect("this");
-    }
-
-    protected function createComponentFormEditCommand($name) : Form
-    {
-        $form = $this->makeCommandForm($name);
-        $form->addSubmit('send', 'Upravit')
-            ->setAttribute("class", "btn btn-primary");
-        $form->addHidden("id");
-        return $form;
-    }
-
-    /**
-     * @param Form $form
-     * @TODO refactor to private
-     */
-    public function formEditCommandSubmitted(Form $form) : void
-    {
-        $v = $form->getValues();
-        $id = $v['id'];
-        unset($v['id']);
-
-        if (!$this->isCommandEditable($id)) {
-            $this->flashMessage("Nemáte právo upravovat cestovní příkaz.", "danger");
-            $this->redirect("default");
-        }
-        if ($this->travelService->updateCommand($v, $this->unit, $id)) {
-            $this->flashMessage("Cestovní příkaz byl upraven.");
-        } else {
-            $this->flashMessage("Cestovní příkaz se nepodařilo upravit.", "danger");
-        }
-        $this->redirect("detail", ["id" => $id]);
-    }
-
     protected function createComponentFormAddTravel($name) : Form
     {
         $form = $this->prepareForm($this, $name);
@@ -342,7 +210,13 @@ class DefaultPresenter extends BasePresenter
         }
         $v['distance'] = round(str_replace(",", ".", $v['distance']), 2);
 
-        $this->travelService->addTravel($v);
+        $this->travelService->addTravel(
+            (int)$v->command_id,
+            $v->type,
+            \DateTimeImmutable::createFromMutable($v->start_date),
+            $v->start_place,
+            $v->end_place,
+            $v->distance);
         $this->flashMessage("Cesta byla přidána.");
         $this->redirect("this");
     }

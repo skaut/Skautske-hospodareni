@@ -36,15 +36,16 @@
         "vasek-purchart/doctrine-date-time-immutable-types": "^0.4.0",
         "beberlei/DoctrineExtensions": "^1.0",
         "fmasa/doctrine-yaml-annotations": "^1.0",
-        "kdyby/monolog": "^1.2"
+        "kdyby/monolog": "^1.2",
+        "moneyphp/money": "^3.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",
         "codeception/codeception": "^2.2",
         "codeception/mockery-module": "^0.2.2",
-        "phpstan/phpstan": "^0.6.4",
-        "phpstan/phpstan-nette": "^0.6.3",
-        "phpstan/phpstan-dibi": "^0.6.0"
+        "phpstan/phpstan": "^0.7.0",
+        "phpstan/phpstan-nette": "^0.7.0",
+        "phpstan/phpstan-dibi": "^0.7.0"
     },
     "repositories": [
         {
@@ -54,6 +55,9 @@
     ],
     "autoload-dev": {
         "classmap": ["code-quality/"]
+    },
+    "scripts": {
+        "static-analysis": "php -d memory_limit=512M vendor/bin/phpstan analyse -l 1 -c phpstan.neon app --no-progress"
     },
     "minimum-stability": "RC"
 }

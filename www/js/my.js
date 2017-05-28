@@ -42,6 +42,15 @@ $(document).ready(function () {
         e.stopPropagation();
     });
 
+    Nette.validators.MyValidators_hasSelectedAny = function (elem, args, val) {
+        for(var i = 0; i < args.length; i++) {
+            if(val.indexOf(args[i]) > -1) {
+                return true;
+            }
+        }
+        return false;
+    };
+
 });
 
 function jqCheckAll(id, name) {

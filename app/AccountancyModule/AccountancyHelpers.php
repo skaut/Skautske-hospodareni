@@ -4,6 +4,7 @@ namespace App\AccountancyModule;
 
 use DateTimeInterface;
 use Model\Payment\Payment\State;
+use Money\Money;
 use Nette\Object;
 
 /**
@@ -108,6 +109,10 @@ abstract class AccountancyHelpers extends Object
             return ' '; //je tam nedělitelná mezera
         }
         $decimals = $full ? 2 : 0;
+
+        if($price instanceof Money) {
+            $price = (float)$price->getAmount() / 100;
+        }
 
         return number_format((float)$price, $decimals, ",", " "); //nedělitelná mezera
     }
