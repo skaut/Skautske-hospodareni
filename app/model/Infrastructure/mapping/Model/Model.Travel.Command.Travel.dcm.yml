@@ -22,6 +22,7 @@ Model\Travel\Command\Travel:
             joinColumn:
                 name: command_id
                 referencedColumnName: id
+            inversedBy: travels
 
     embedded:
         details:
