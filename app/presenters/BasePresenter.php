@@ -58,7 +58,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->appDir = $this->context->getParameters()["appDir"];
 
         //adresář s částmi šablon pro použití ve více modulech
-        $this->template->templateBlockDir = $this->wwwDir . "/templateBlocks/";
+        $this->template->templateBlockDir = $this->appDir . "/templateBlocks/";
 
         $this->template->backlink = $backlink = $this->getParameter("backlink");
         if ($this->user->isLoggedIn() && $backlink !== NULL) {
