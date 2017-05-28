@@ -14,16 +14,10 @@ use WebLoader\Nette\JavaScriptLoader;
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
 
-    /**
-     *
-     * @var \Model\UserService
-     */
+    /** @var \Model\UserService */
     protected $userService;
 
-    /**
-     *
-     * @var \Model\UnitService
-     */
+    /** @var \Model\UnitService */
     protected $unitService;
 
     /** @var FormFactory */
