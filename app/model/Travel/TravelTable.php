@@ -24,16 +24,6 @@ class TravelTable extends BaseTable
         return $this->connection->update(self::TABLE_TC_TRAVELS, $data)->where("id=%i", $tId)->limit(1)->execute();
     }
 
-    public function delete($travelId)
-    {
-        return $this->connection->query("DELETE FROM [" . self::TABLE_TC_TRAVELS . "] WHERE id = %i", $travelId, "LIMIT 1");
-    }
-
-    public function deleteAll($commandId)
-    {
-        return $this->connection->query("DELETE FROM [" . self::TABLE_TC_TRAVELS . "] WHERE command_id = %i", $commandId);
-    }
-
     public function getTypes($pairs = FALSE)
     {
         if ($pairs) {

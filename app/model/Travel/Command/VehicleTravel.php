@@ -10,9 +10,9 @@ class VehicleTravel extends Travel
     /** @var float */
     private $distance;
 
-    public function __construct(float $distance, TravelDetails $details, Command $command)
+    public function __construct(int $id, float $distance, TravelDetails $details, Command $command)
     {
-        parent::__construct($command, $details);
+        parent::__construct($id, $command, $details);
         $this->distance = $distance;
     }
 

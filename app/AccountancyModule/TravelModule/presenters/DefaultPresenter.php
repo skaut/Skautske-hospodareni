@@ -143,21 +143,16 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleRemoveTravel($travelId) : void
+    public function handleRemoveTravel(int $commandId, int $travelId): void
     {
-        $travel = $this->travelService->getTravel($travelId);
-        $command = $this->travelService->getCommand($travel->command_id);
-        if (!$this->isCommandEditable($command->id)) {
-            $this->flashMessage("Nemáte právo upravovat záznam.", "danger");
+        if(!$this->isCommandEditable($commandId)) {
+            $this->flashMessage("Nemáte oprávnění smazat cestu.", "danger");
             $this->redirect("default");
         }
-        $contract = $this->travelService->getContract($command->contract_id);
-        if ($this->unit->ID == $contract->unit_id && $command->closed == NULL) {
-            $this->travelService->deleteTravel($travelId);
-            $this->flashMessage("Cesta z \"$travel->start_place\" do \"$travel->end_place\" byla smazána.");
-        } else {
-            $this->flashMessage("Nemáte oprávnění smazat cestu.", "danger");
-        }
+
+        $this->travelService->removeTravel($commandId, $travelId);
+        $this->flashMessage("Cesta byla smazána.");
+
         $this->redirect("this");
     }
 

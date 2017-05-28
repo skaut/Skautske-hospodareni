@@ -85,6 +85,17 @@ class CommandTest extends \Codeception\Test\Unit
         $this->assertSame($note, $command->getNote());
     }
 
+    public function testRemoveVehicleTravel()
+    {
+        $command = $this->createCommand();
+        $command->addVehicleTravel(206, new TravelDetails(new \DateTimeImmutable(), "auv", "Brno", "Praha"));
+        $command->addVehicleTravel(206, new TravelDetails(new \DateTimeImmutable(), "auv", "Brno", "Praha"));
+        $command->removeTravel(0);
+        $this->assertSame(1, $command->getTravelCount());
+        $command->removeTravel(1);
+        $this->assertSame(0, $command->getTravelCount());
+    }
+
     private function mockVehicle(): m\MockInterface
     {
         return m::mock(Vehicle::class);

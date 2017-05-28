@@ -188,9 +188,12 @@ class TravelService extends BaseService
         return $this->tableTravel->update($data, $tId);
     }
 
-    public function deleteTravel($travelId)
+    public function removeTravel(int $commandId, int $travelId): void
     {
-        return $this->tableTravel->delete($travelId);
+        $command = $this->commands->find($commandId);
+        $command->removeTravel($travelId);
+
+        $this->commands->save($command);
     }
 
     public function getTravelTypes($pairs = FALSE)

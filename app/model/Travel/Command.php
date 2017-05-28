@@ -50,6 +50,9 @@ class Command
     /** @var ArrayCollection|TransportTravel[] */
     private $travels;
 
+    /** @var int */
+    private $nextTravelId = 0;
+
     public function __construct(
         int $unitId, ?Vehicle $vehicle, Passenger $passenger, string $purpose,
         string $place, string $fellowPassengers, Money $fuelPrice, Money $amortization, string $note
@@ -90,12 +93,19 @@ class Command
 
     public function addVehicleTravel(float $distance, TravelDetails $details): void
     {
-        $this->travels->add(new VehicleTravel($distance, $details, $this));
+        $id = $this->getTravelId();
+        $this->travels->set($id, new VehicleTravel($id, $distance, $details, $this));
     }
 
     public function addTransportTravel(Money $price, TravelDetails $details): void
     {
-        $this->travels->add(new TransportTravel($price, $details, $this));
+        $id = $this->getTravelId();
+        $this->travels->set($id, new TransportTravel($id, $price, $details, $this));
+    }
+
+    public function removeTravel(int $id): void
+    {
+        $this->travels->remove($id);
     }
 
     public function calculateTotal(): Money
@@ -240,6 +250,16 @@ class Command
         return $this->travels->isEmpty()
             ? NULL
             : min($this->travels->map(function(Travel $travel) { return $travel->getDetails()->getDate(); })->toArray());
+    }
+
+    public function getTravelCount(): int
+    {
+        return $this->travels->count();
+    }
+
+    private function getTravelId(): int
+    {
+        return $this->nextTravelId++;
     }
 
 }

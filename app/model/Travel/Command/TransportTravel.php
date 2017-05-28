@@ -11,11 +11,12 @@ class TransportTravel extends Travel
     /** @var Money */
     private $price;
 
-    public function __construct(Money $price, TravelDetails $details, Command $command)
+    public function __construct(int $id, Money $price, TravelDetails $details, Command $command)
     {
-        parent::__construct($command, $details);
+        parent::__construct($id, $command, $details);
         $this->price = $price;
     }
+
 
     public function getPrice(): Money
     {
