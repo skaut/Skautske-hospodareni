@@ -17,3 +17,7 @@ class ContractNotFoundException extends \Exception
 class WrongVehicleTypeException extends \Exception
 {
 }
+
+class TravelNotFoundException extends \Exception
+{
+}

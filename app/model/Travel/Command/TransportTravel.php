@@ -17,6 +17,15 @@ class TransportTravel extends Travel
         $this->price = $price;
     }
 
+    public function update(Money $price, TravelDetails $details): void
+    {
+        if( ! $price->isPositive()) {
+            throw new \InvalidArgumentException("Price must be positive");
+        }
+
+        $this->price = $price;
+        $this->setDetails($details);
+    }
 
     public function getPrice(): Money
     {

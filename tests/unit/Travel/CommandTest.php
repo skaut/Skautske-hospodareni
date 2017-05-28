@@ -85,6 +85,94 @@ class CommandTest extends \Codeception\Test\Unit
         $this->assertSame($note, $command->getNote());
     }
 
+    public function testUpdateVehicleTravel(): void
+    {
+        $command = $this->createCommand();
+        $command->addVehicleTravel(200, $this->getDetails());
+
+        $distance = (float)220;
+        $details = new TravelDetails(new \DateTimeImmutable(), "mov", "Praha", "Brno");
+
+        $command->updateVehicleTravel(0, $distance, $details);
+
+        /* @var $travel \Model\Travel\Command\VehicleTravel */
+        $travel = $command->getTravels()[0];
+
+        $this->assertSame($distance, $travel->getDistance());
+        $this->assertSame($details, $travel->getDetails());
+    }
+
+    public function testUpdateTransportTravel(): void
+    {
+        $command = $this->createCommand();
+        $command->addTransportTravel(MoneyFactory::fromFloat(200), $this->getDetails());
+
+        $price = MoneyFactory::fromFloat(320);
+        $details = new TravelDetails(new \DateTimeImmutable(), "mov", "Praha", "Brno");
+
+        $command->updateTransportTravel(0, $price, $details);
+
+        /* @var $travel \Model\Travel\Command\TransportTravel */
+        $travel = $command->getTravels()[0];
+
+        $this->assertSame($price, $travel->getPrice());
+        $this->assertSame($details, $travel->getDetails());
+    }
+
+    public function testUpdateNonexistentVehicleTravelThrowsException(): void
+    {
+        $command = $this->createCommand();
+
+        $this->expectException(TravelNotFoundException::class);
+
+        $command->updateVehicleTravel(20, 200, $this->getDetails());
+    }
+
+    public function testUpdateNonexistentTransportTravelThrowsException(): void
+    {
+        $command = $this->createCommand();
+
+        $this->expectException(TravelNotFoundException::class);
+
+        $command->updateTransportTravel(20, MoneyFactory::fromFloat(200), $this->getDetails());
+    }
+
+    public function testUpdateVehicleTravelToTransportTravel()
+    {
+        $command = $this->createCommand();
+        $command->addVehicleTravel(200, $this->getDetails());
+
+        $price = MoneyFactory::fromFloat(200);
+        $details = new TravelDetails(new \DateTimeImmutable(), "mov", "Praha", "Brno");
+
+        $command->updateTransportTravel(0, $price, $details);
+
+        /* @var $travel \Model\Travel\Command\TransportTravel */
+        $travel = $command->getTravels()[0];
+
+        $this->assertSame($price, $travel->getPrice());
+        $this->assertSame($details, $travel->getDetails());
+        $this->assertSame(1, $command->getTravelCount());
+    }
+
+    public function testUpdateTransportTravelToVehicleTravel()
+    {
+        $command = $this->createCommand();
+        $command->addTransportTravel(MoneyFactory::fromFloat(200), $this->getDetails());
+
+        $distance = 20;
+        $details = new TravelDetails(new \DateTimeImmutable(), "mov", "Praha", "Brno");
+
+        $command->updateVehicleTravel(0, $distance, $details);
+
+        /* @var $travel \Model\Travel\Command\VehicleTravel */
+        $travel = $command->getTravels()[0];
+
+        $this->assertSame((float)$distance, $travel->getDistance());
+        $this->assertSame($details, $travel->getDetails());
+        $this->assertSame(1, $command->getTravelCount());
+    }
+
     public function testRemoveVehicleTravel()
     {
         $command = $this->createCommand();
@@ -114,6 +202,11 @@ class CommandTest extends \Codeception\Test\Unit
                 Money::CZK(500),
                 ""
         );
+    }
+
+    private function getDetails(): TravelDetails
+    {
+        return new TravelDetails(new \DateTimeImmutable(), "auv", "Brno", "Praha");
     }
 
 }

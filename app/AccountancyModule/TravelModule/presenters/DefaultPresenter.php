@@ -2,9 +2,12 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use App\Forms\BaseForm;
 use Model\DTO\Travel\Command;
 use Model\Services\PdfRenderer;
+use Model\Travel\Command\TravelDetails;
 use Model\TravelService;
+use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
 
 /**
@@ -220,40 +223,47 @@ class DefaultPresenter extends BasePresenter
      * EDIT TRAVEL
      */
 
-    public function actionEditTravel($travelId) : void
+    public function actionEditTravel(int $commandId, int $travelId) : void
     {
-        $travel = $this->travelService->getTravel($travelId);
-        if (!$this->isCommandAccessible($travel->command_id)) {
-            $this->flashMessage("Nemáte oprávnění upravovat záznam!", "danger");
-            $this->redirect("default");
-        }
-        if (!$this->isCommandEditable($travel->command_id)) {
+        $travel = $this->travelService->getTravel($commandId, $travelId);
+
+        if (!$this->isCommandEditable($commandId) || $travel === NULL) {
             $this->flashMessage("Záznam nelze upravovat", "warning");
             $this->redirect("default");
         }
         $form = $this['formEditTravel'];
-        $form['type']->setItems($this->travelService->getCommandTypes($travel->command_id));
-        $form->setDefaults($travel);
+        $form['type']->setItems($this->travelService->getCommandTypes($commandId));
+
+        $form->setDefaults([
+            "commandId" => $commandId,
+            "id" => $travelId,
+            "type" => $travel->getDetails()->getTransportType(),
+            "date" => $travel->getDetails()->getDate()->format("d-m-Y"),
+            "startPlace" => $travel->getDetails()->getStartPlace(),
+            "endPlace" => $travel->getDetails()->getEndPlace(),
+            "distanceOrPrice" => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
+        ]);
+
         $this->template->form = $form;
     }
 
-    protected function createComponentFormEditTravel($name) : Form
+    protected function createComponentFormEditTravel() : Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
 
-        $form->addHidden("command_id");
+        $form->addHidden("commandId");
         $form->addHidden("id");
         $form->addSelect("type", "Prostředek");
-        $form->addDatePicker("start_date", "Datum cesty")
+        $form->addDatePicker("date", "Datum cesty")
             ->setAttribute("class", "form-control input-sm date")
             ->addRule(Form::FILLED, "Musíte vyplnit datum cesty.");
-        $form->addText("start_place", "Z*")
+        $form->addText("startPlace", "Z*")
             ->setAttribute("class", "form-control input-sm date")
             ->addRule(Form::FILLED, "Musíte vyplnit místo počátku cesty.");
-        $form->addText("end_place", "Do*")
+        $form->addText("endPlace", "Do*")
             ->setAttribute("class", "form-control input-sm date")
             ->addRule(Form::FILLED, "Musíte vyplnit místo konce cesty.");
-        $form->addText("distance", "Vzdálenost*")
+        $form->addText("distanceOrPrice", "Vzdálenost*")
             ->setAttribute("class", "form-control input-sm date")
             ->addRule(Form::FILLED, "Musíte vyplnit vzdálenost.");
         $form->addSubmit('send', 'Upravit')
@@ -266,23 +276,26 @@ class DefaultPresenter extends BasePresenter
         return $form;
     }
 
-    private function formEditTravelSubmitted(Form $form) : void
+    private function formEditTravelSubmitted(Form $form): void
     {
         $v = $form->getValues();
-        $tid = $v->id;
-        $oldTravel = $this->travelService->getTravel($tid);
-        if (!$this->isCommandEditable($oldTravel['command_id'])) {
+
+        $commandId = (int)$v->commandId;
+
+        if (!$this->isCommandEditable($commandId)) {
             $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
             $this->redirect("default");
         }
-        $data = [];
-        $keys = ["start_date", "start_place", "end_place", "distance", "type"];
-        foreach ($keys as $k) {
-            $data[$k] = $k == "distance" ? str_replace(",", ".", $v[$k]) : $v[$k];
-        }
-        $this->travelService->updateTravel($data, $tid);
+
+        $this->travelService->updateTravel(
+            $commandId,
+            (int)$v->id,
+            (float)$v->distanceOrPrice,
+            new TravelDetails(\DateTimeImmutable::createFromMutable($v->date), $v->type, $v->startPlace, $v->endPlace)
+        );
+
         $this->flashMessage("Cesta byla upravena.");
-        $this->redirect("detail", ["id" => $oldTravel['command_id']]);
+        $this->redirect("detail", [$v->commandId]);
     }
 
 }
