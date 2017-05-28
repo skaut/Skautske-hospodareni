@@ -2,15 +2,14 @@
 
 namespace App\AccountancyModule\Factories;
 
-use Nette\Application\UI\Control;
 use Ublaboo\DataGrid\DataGrid;
 
-class GridFactory extends Control
+class GridFactory
 {
 
-    public function create($parent, $name): DataGrid
+    public function create(): DataGrid
     {
-        $grid = new DataGrid($parent, $name);
+        $grid = new DataGrid();
         $grid->setDefaultPerPage(20);
 
         $translator = new \Ublaboo\DataGrid\Localization\SimpleTranslator([

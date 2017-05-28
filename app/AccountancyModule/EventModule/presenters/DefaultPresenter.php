@@ -44,7 +44,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function createComponentEventGrid($name)
+    protected function createComponentEventGrid()
     {
         //filtrovani zobrazených položek
         $year = $this->ses->year ?? date('Y');
@@ -56,7 +56,7 @@ class DefaultPresenter extends BasePresenter
             $list[$key]['accessDetail'] = $this->isAllowed("EV_EventGeneral_DETAIL", $localAvaibleActions);
         }
 
-        $grid = $this->gridFactory->create($this, $name);
+        $grid = $this->gridFactory->create();
         $grid->setPrimaryKey("ID");
         $grid->setDataSource($list);
         $grid->addColumnLink('DisplayName', 'Název', 'Event:default', NULL, ['aid' => 'ID'])->setSortable()->setFilterText();
@@ -81,6 +81,7 @@ class DefaultPresenter extends BasePresenter
             }
             return $item['accessDelete'];
         });
+        return $grid;
 
     }
 
