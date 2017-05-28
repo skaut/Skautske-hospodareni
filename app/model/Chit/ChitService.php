@@ -13,6 +13,9 @@ use Skautis\Skautis;
 class ChitService extends MutableBaseService
 {
 
+    const CHIT_UNDEFINED_OUT = 8;
+    const CHIT_UNDEFINED_IN = 12;
+
     /** @var Mapper */
     private $skautisMapper;
 
@@ -157,7 +160,7 @@ class ChitService extends MutableBaseService
      */
     public function update($chitId, $val): bool
     {
-        $changeAbleData = ["date", "num", "recipient", "purpose", "price", "category"];
+        $changeAbleData = ["eventId", "date", "num", "recipient", "purpose", "price", "category"];
 
         if (!is_array($val) && !($val instanceof \ArrayAccess)) {
             throw new \Nette\InvalidArgumentException("Values nejsou ve správném formátu");
@@ -225,9 +228,13 @@ class ChitService extends MutableBaseService
             if (is_null($skautisEventId)) {
                 throw new \InvalidArgumentException("Neplatný vstup \$skautisEventId=NULL pro " . __FUNCTION__);
             }
-            $res = [];
+            //přidání kategorií k táborům
+            $res = [//8 a 12 jsou ID použitá i u výprav
+                self::CHIT_UNDEFINED_OUT => (object)["ID" => self::CHIT_UNDEFINED_OUT, "IsRevenue" => FALSE, "EventCampStatementType"=> "Neurčeno", "Ammount" => 0],
+                self::CHIT_UNDEFINED_IN  => (object)["ID" => self::CHIT_UNDEFINED_IN,  "IsRevenue" => TRUE,  "EventCampStatementType"=> "Neurčeno", "Ammount" => 0],
+            ];
             foreach ($this->skautis->event->EventCampStatementAll(["ID_EventCamp" => $skautisEventId, "IsEstimate" => $isEstimate]) as $i) { //prepisuje na tvar s klíčem jako ID
-                if ($isEstimate == FALSE && $i->ID_EventCampStatementType == 15) {
+                if ($isEstimate == FALSE && $i->ID_EventCampStatementType == 15) { //15 == Rezerva
                     continue;
                 }
                 $res[$i->ID] = $i;
@@ -431,6 +438,16 @@ class ChitService extends MutableBaseService
         return $this->table->lockEvent($oid, $userId);
     }
 
+    public function moveChit($chitId, $chitType, $originEventType, $newEventId, $newEventType): void
+    {
+        $toUpdate = ["eventId" => $this->getLocalId($newEventId, $newEventType)];
+        //pokud nejsou obe kniny od výprav, tak nastav kategorii na neurčitou kategorii
+        if($originEventType !== $newEventType || $originEventType !== "general") {
+            $toUpdate["category"] = $chitType === "out" ? self::CHIT_UNDEFINED_OUT : self::CHIT_UNDEFINED_IN;
+        }
+        $this->update($chitId, $toUpdate);
+    }
+
     /**
      * nastavuje kategorie z rozpočtu
      * @param int $chitId
@@ -456,9 +473,9 @@ class ChitService extends MutableBaseService
         return $this->skautisMapper->getSkautisId($localEventId, $this->type);
     }
 
-    private function getLocalId(int $skautisEventId): int
+    private function getLocalId(int $skautisEventId, string $type = NULL): int
     {
-        return $this->skautisMapper->getLocalId($skautisEventId, $this->type);
+        return $this->skautisMapper->getLocalId($skautisEventId, $type ?? $this->type);
     }
 
 }
