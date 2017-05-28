@@ -1,9 +1,0 @@
-Model\Travel\Command\TransportType:
-
-    type: embeddable
-
-    fields:
-        hasFuel: { type: boolean }
-        shortcut:
-            type: string
-            column: type
