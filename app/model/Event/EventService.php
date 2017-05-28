@@ -56,6 +56,7 @@ class EventService extends MutableBaseService
      * spojuje data ze skautisu s daty z db
      * @param int $ID
      * @return \stdClass
+     * @throws \Skautis\Wsdl\PermissionException
      */
     public function get($ID)
     {

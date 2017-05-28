@@ -1,11 +1,11 @@
 <?php
 
-use Nette\Application\UI\Form;
-use Nette\Forms\Controls\SubmitButton;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
+use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SubmitButton;
 
 trait CashbookTrait
 {
@@ -41,7 +41,7 @@ trait CashbookTrait
         $this->memberService = $members;
     }
 
-    public function renderEdit(int $id, int $aid) : void
+    public function renderEdit(int $id, int $aid): void
     {
         $this->editableOnly();
         $this->isChitEditable($id);
@@ -64,27 +64,27 @@ trait CashbookTrait
         $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
     }
 
-    public function actionExport(int $aid) : void
+    public function actionExport(int $aid): void
     {
         $template = $this->exportService->getCashbook($this->createTemplate(), $aid, $this->entityService);
         $this->pdf->render($template, 'pokladni-kniha.pdf');
         $this->terminate();
     }
 
-    public function actionExportChitlist(int $aid) : void
+    public function actionExportChitlist(int $aid): void
     {
         $template = $this->exportService->getChitlist($this->createTemplate(), $aid, $this->entityService);
         $this->pdf->render($template, 'seznam-dokladu.pdf');
         $this->terminate();
     }
 
-    public function actionExportExcel(int $aid) : void
+    public function actionExportExcel(int $aid): void
     {
         $this->excelService->getCashbook($this->entityService, $this->event);
         $this->terminate();
     }
 
-    public function actionPrint(int $id, int $aid) : void
+    public function actionPrint(int $id, int $aid): void
     {
         $chits = [$this->entityService->chits->get($id)];
         $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $chits);
@@ -92,7 +92,7 @@ trait CashbookTrait
         $this->terminate();
     }
 
-    public function handleRemove(int $id, int $actionId) : void
+    public function handleRemove(int $id, int $actionId): void
     {
         $this->editableOnly();
         $this->isChitEditable($id);
@@ -111,21 +111,22 @@ trait CashbookTrait
         }
     }
 
-    protected function createComponentFormMass($name) : Form
+    protected function createComponentFormMass($name): Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new \App\Forms\BaseForm();
         $form->addSubmit('massPrintSend')
-            ->onClick[] = function(SubmitButton $button) : void {
-                $this->massPrintSubmitted($button);
-            };
+            ->onClick[] = function (SubmitButton $button): void {
+            $this->massPrintSubmitted($button);
+        };
         $form->addSubmit('massExportSend')
-            ->onClick[] = function(SubmitButton $button) : void {
-                $this->massExportSubmitted($button);
-            };
+            ->onClick[] = function (SubmitButton $button): void {
+            $this->massExportSubmitted($button);
+        };
+
         return $form;
     }
 
-    private function massPrintSubmitted(SubmitButton $button) : void
+    private function massPrintSubmitted(SubmitButton $button): void
     {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $chits);
@@ -133,7 +134,7 @@ trait CashbookTrait
         $this->terminate();
     }
 
-    private function massExportSubmitted(SubmitButton $button) : void
+    private function massExportSubmitted(SubmitButton $button): void
     {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
         $this->excelService->getChitsExport($chits);
@@ -141,12 +142,12 @@ trait CashbookTrait
     }
 
     //FORM CASHBOOK
-    public function getCategoriesByType(Form $form) : array
+    public function getCategoriesByType(Form $form): array
     {
         return $this->entityService->chits->getCategoriesPairs($form["type"]->getValue(), $this->aid);
     }
 
-    protected function createComponentCashbookForm(string $name) : Form
+    protected function createComponentCashbookForm(string $name): Form
     {
         $form = $this->prepareForm($this, $name);
         $form->addDatePicker("date", "Ze dne:")
@@ -179,7 +180,7 @@ trait CashbookTrait
         $form->addHidden("pid");
         $form->addSubmit('send', 'Uložit')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = function(Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->cashbookFormSubmitted($form);
         };
         return $form;
@@ -189,7 +190,7 @@ trait CashbookTrait
      * přidává paragony všech kategorií
      * @param Form $form
      */
-    private function cashbookFormSubmitted(Form $form) : void
+    private function cashbookFormSubmitted(Form $form): void
     {
         if ($form["send"]->isSubmittedBy()) {
             $this->editableOnly();
@@ -227,7 +228,7 @@ trait CashbookTrait
      * @param int $chitId
      * @throws \Nette\Application\AbortException
      */
-    private function isChitEditable(int $chitId) : void
+    private function isChitEditable(int $chitId): void
     {
         $chit = $this->entityService->chits->get($chitId);
         if ($chit !== FALSE && is_null($chit->lock)) {
@@ -246,7 +247,7 @@ trait CashbookTrait
         $this->template->object = $this->event;
         try {
             $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
-        } catch(\Skautis\Wsdl\WsdlException $e) {
+        } catch (\Skautis\Wsdl\WsdlException $e) {
             $this->template->autoCompleter = [];
         }
     }
