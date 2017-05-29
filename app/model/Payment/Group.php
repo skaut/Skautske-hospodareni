@@ -229,4 +229,9 @@ class Group
         return $this->note;
     }
 
+    public function isOpen(): bool
+    {
+        $this->state === self::STATE_OPEN;
+    }
+
 }

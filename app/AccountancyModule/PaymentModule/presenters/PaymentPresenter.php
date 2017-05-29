@@ -4,6 +4,7 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
+use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use Consistence\Time\TimeFormat;
 use Model\BankService;
 use Model\DTO\Payment\Group;
@@ -46,18 +47,19 @@ class PaymentPresenter extends BasePresenter
     /** @var IMassAddFormFactory */
     private $massAddFormFactory;
 
+    /** @var IPairButtonFactory */
+    private $pairButtonFactory;
+
     private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
-    private const BANK_TIMEOUT_MESSAGE = "Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.";
-    private const BANK_TIME_LIMIT_MESSAGE = "Mezi dotazy na bankovnictví musí být prodleva 1 minuta!";
-    private const CANT_PAIR_MESSAGE = "Nemáte oprávnění párovat platby";
 
     public function __construct(
         PaymentService $paymentService,
         BankService $bankService,
         UnitService $unitService,
         MailingService $mailing,
-        IMassAddFormFactory $massAddFormFactory
+        IMassAddFormFactory $massAddFormFactory,
+        IPairButtonFactory $pairButtonFactory
     )
     {
         parent::__construct($paymentService);
@@ -65,6 +67,7 @@ class PaymentPresenter extends BasePresenter
         $this->unitService = $unitService;
         $this->mailing = $mailing;
         $this->massAddFormFactory = $massAddFormFactory;
+        $this->pairButtonFactory = $pairButtonFactory;
     }
 
     protected function startup(): void
@@ -75,29 +78,7 @@ class PaymentPresenter extends BasePresenter
         $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
 
-    public function handlePairAll(): void
-    {
-        if($this->isEditable === FALSE) {
-            $this->flashMessage(self::CANT_PAIR_MESSAGE, "danger");
-            $this->redirect("this");
-        }
-
-        try {
-            $pairedCount = $this->bank->pairAllGroups($this->aid);
-        } catch (\Model\BankTimeoutException $exc) {
-            $this->flashMessage(self::BANK_TIMEOUT_MESSAGE, 'danger');
-        } catch (\Model\BankTimeLimitException $exc) {
-            $this->flashMessage(self::BANK_TIME_LIMIT_MESSAGE, 'danger');
-        }
-
-        if (isset($pairedCount) && $pairedCount > 0) {
-            $this->flashMessage("Platby byly spárovány ($pairedCount)");
-        } else {
-            $this->flashMessage("Žádné platby nebyly spárovány");
-        }
-    }
-
-    public function renderDefault(int $onlyOpen = 1): void
+    public function actionDefault(int $onlyOpen = 1): void
     {
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
@@ -106,6 +87,8 @@ class PaymentPresenter extends BasePresenter
             return $group->getId();
         }, $groups);
 
+        $this["pairButton"]->setGroups($groupIds);
+
         $this->template->groups = $groups;
         $this->template->summarizations = $this->model->getGroupSummaries($groupIds);
     }
@@ -113,6 +96,10 @@ class PaymentPresenter extends BasePresenter
     public function actionDetail($id): void
     {
         $this->id = $id;
+        if($this->isEditable) {
+            $this["pairButton"]->setGroups([$id], $this->aid);
+        }
+
         $this->bankInfo = $this->bank->getInfo($this->aid);
     }
 
@@ -145,7 +132,6 @@ class PaymentPresenter extends BasePresenter
             return strlen($p->email) > 4 && $p->state == "preparing";
         });
         $this->template->isGroupSendActive = ($group->getState() === 'open') && count($paymentsForSendEmail) > 0;
-        $this->template->canPair = isset($this->bankInfo->token);
     }
 
     public function renderEdit(int $pid): void
@@ -364,11 +350,6 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handlePairPayments($gid): void
-    {
-        $this->pairPairments($gid);
-    }
-
     public function handleGenerateVs(int $gid): void
     {
         $group = $this->model->getGroup($gid);
@@ -574,67 +555,14 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentPairForm(): Form
+    protected function createComponentPairButton()
     {
-        $form = $this->formFactory->create(TRUE);
-
-        $days = $this->bankInfo->daysback ?? 0;
-
-        $form->addText('days', 'Počet dní', 2, 2)
-            ->setDefaultValue($days)
-            ->setRequired('Musíte vyplnit počet dní')
-            ->addRule($form::MIN, 'Musíte zadat alespoň počet dní z nastavení: %d', $days)
-            ->setType('number');
-        $form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
-
-        $form->onSuccess[] = function ($form, $values): void {
-            $this->pairPairments($this->id, $values->days);
-        };
-        $this->redrawControl('pairForm');
-        return $form;
+        return $this->pairButtonFactory->create($this->aid);
     }
 
     protected function createComponentMassAddForm(): MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
-    }
-
-    /**
-     * @param int $groupId
-     * @param int|NULL $days
-     */
-    private function pairPairments($groupId, $days = NULL): void
-    {
-        if (!$this->isEditable) {
-            $this->flashMessage(self::CANT_PAIR_MESSAGE, "danger");
-            $this->redraw('pairForm');
-        }
-        try {
-            $pairsCnt = $this->bank->pairPayments($this->aid, $groupId, $days);
-        } catch (\Model\BankTimeoutException $exc) {
-            $this->flashMessage(self::BANK_TIMEOUT_MESSAGE, 'danger');
-        } catch (\Model\BankTimeLimitException $exc) {
-            $this->flashMessage(self::BANK_TIME_LIMIT_MESSAGE, 'danger');
-        }
-
-        if (isset($pairsCnt) && $pairsCnt > 0) {
-            $this->flashMessage("Podařilo se spárovat platby ($pairsCnt)");
-        } else {
-            $this->flashMessage("Žádné platby nebyly spárovány");
-        }
-        $this->redraw('pairForm');
-    }
-
-    /**
-     * @param string $snippet
-     */
-    private function redraw($snippet): void
-    {
-        if ($this->isAjax()) {
-            $this->redrawControl($snippet);
-        } else {
-            $this->redirect('this');
-        }
     }
 
     private function smtpError(SmtpException $e): void

@@ -13,7 +13,10 @@ final class Authorizator implements IAuthorizator
     /** @var array[] */
     private $resources;
 
-    private const EVENT = "EV_EventGeneral";
+    private const RESOURCE_NAMES = [
+        Event::class => "EV_EventGeneral",
+        Unit::class => "OU_Unit",
+    ];
 
     private const AVAILABLE_RESOURCES = [
         Event::class,
@@ -45,10 +48,7 @@ final class Authorizator implements IAuthorizator
     private function loadResource(string $resource, int $id): array
     {
         try {
-            if ($resource === Event::class) {
-                return $this->userService->actionVerify(self::EVENT, $id);
-            }
-            throw new \InvalidArgumentException("Unknown resource $resource");
+            return $this->userService->actionVerify(self::RESOURCE_NAMES[$resource], $id);
         } catch (\Skautis\Wsdl\PermissionException $exc) {
             return [];
         }

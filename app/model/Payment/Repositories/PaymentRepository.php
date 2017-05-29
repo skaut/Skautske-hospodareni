@@ -2,6 +2,7 @@
 
 namespace Model\Payment\Repositories;
 
+use Assert\Assert;
 use Consistence\Type\ArrayType\ArrayType;
 use Doctrine\DBAL\Connection;
 use Kdyby\Doctrine\EntityManager;
@@ -9,6 +10,7 @@ use Model\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Summary;
+use Model\Utils\Arrays;
 
 class PaymentRepository implements IPaymentRepository
 {
@@ -81,6 +83,12 @@ class PaymentRepository implements IPaymentRepository
 
     public function findByMultipleGroups(array $groupIds): array
     {
+        Assert::thatAll($groupIds)->integer();
+
+        if(empty($groupIds)) {
+            return [];
+        }
+
         $result = $this->em->createQueryBuilder()
             ->select('p')
             ->from(Payment::class, 'p')
@@ -90,14 +98,7 @@ class PaymentRepository implements IPaymentRepository
             ->setParameter('states', self::STATE_ORDER, Connection::PARAM_STR_ARRAY)
             ->getQuery()->getResult();
 
-        $groupedPayments = array_fill_keys($groupIds, []);
-
-        foreach($result as $payment) {
-            /* @var $payment Payment */
-            $groupedPayments[$payment->getGroupId()][] = $payment;
-        }
-
-        return $groupedPayments;
+        return Arrays::groupBy($result, function(Payment $p) { return $p->getGroupId(); }) + array_fill_keys($groupIds, []);
     }
 
     public function save(Payment $payment): void
