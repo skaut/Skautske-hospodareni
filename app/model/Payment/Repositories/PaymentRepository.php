@@ -76,14 +76,28 @@ class PaymentRepository implements IPaymentRepository
 
     public function findByGroup(int $groupId): array
     {
-        return $this->em->createQueryBuilder()
+        return $this->findByMultipleGroups([$groupId])[$groupId];
+    }
+
+    public function findByMultipleGroups(array $groupIds): array
+    {
+        $result = $this->em->createQueryBuilder()
             ->select('p')
             ->from(Payment::class, 'p')
-            ->where('IDENTITY(p.group) = :groupId')
+            ->where('IDENTITY(p.group) IN (:groupId)')
             ->orderBy('FIELD (p.state, :states)')
-            ->setParameter('groupId', $groupId)
+            ->setParameter('groupId', $groupIds, Connection::PARAM_INT_ARRAY)
             ->setParameter('states', self::STATE_ORDER, Connection::PARAM_STR_ARRAY)
             ->getQuery()->getResult();
+
+        $groupedPayments = array_fill_keys($groupIds, []);
+
+        foreach($result as $payment) {
+            /* @var $payment Payment */
+            $groupedPayments[$payment->getGroupId()][] = $payment;
+        }
+
+        return $groupedPayments;
     }
 
     public function save(Payment $payment): void

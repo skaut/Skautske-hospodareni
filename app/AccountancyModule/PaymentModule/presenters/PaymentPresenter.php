@@ -48,6 +48,9 @@ class PaymentPresenter extends BasePresenter
 
     private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
+    private const BANK_TIMEOUT_MESSAGE = "Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.";
+    private const BANK_TIME_LIMIT_MESSAGE = "Mezi dotazy na bankovnictví musí být prodleva 1 minuta!";
+    private const CANT_PAIR_MESSAGE = "Nemáte oprávnění párovat platby";
 
     public function __construct(
         PaymentService $paymentService,
@@ -70,6 +73,28 @@ class PaymentPresenter extends BasePresenter
         //Kontrola ověření přístupu
         $this->readUnits = $this->unitService->getReadUnits($this->user);
         $this->editUnits = $this->unitService->getEditUnits($this->user);
+    }
+
+    public function handlePairAll(): void
+    {
+        if($this->isEditable === FALSE) {
+            $this->flashMessage(self::CANT_PAIR_MESSAGE, "danger");
+            $this->redirect("this");
+        }
+
+        try {
+            $pairedCount = $this->bank->pairAllGroups($this->aid);
+        } catch (\Model\BankTimeoutException $exc) {
+            $this->flashMessage(self::BANK_TIMEOUT_MESSAGE, 'danger');
+        } catch (\Model\BankTimeLimitException $exc) {
+            $this->flashMessage(self::BANK_TIME_LIMIT_MESSAGE, 'danger');
+        }
+
+        if (isset($pairedCount) && $pairedCount > 0) {
+            $this->flashMessage("Platby byly spárovány ($pairedCount)");
+        } else {
+            $this->flashMessage("Žádné platby nebyly spárovány");
+        }
     }
 
     public function renderDefault(int $onlyOpen = 1): void
@@ -581,15 +606,15 @@ class PaymentPresenter extends BasePresenter
     private function pairPairments($groupId, $days = NULL): void
     {
         if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění párovat platby!", "danger");
+            $this->flashMessage(self::CANT_PAIR_MESSAGE, "danger");
             $this->redraw('pairForm');
         }
         try {
             $pairsCnt = $this->bank->pairPayments($this->aid, $groupId, $days);
         } catch (\Model\BankTimeoutException $exc) {
-            $this->flashMessage("Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.", 'danger');
+            $this->flashMessage(self::BANK_TIMEOUT_MESSAGE, 'danger');
         } catch (\Model\BankTimeLimitException $exc) {
-            $this->flashMessage("Mezi dotazy na bankovnictví musí být prodleva 1 minuta!", 'danger');
+            $this->flashMessage(self::BANK_TIME_LIMIT_MESSAGE, 'danger');
         }
 
         if (isset($pairsCnt) && $pairsCnt > 0) {

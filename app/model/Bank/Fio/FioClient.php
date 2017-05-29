@@ -38,12 +38,12 @@ class FioClient extends Nette\Object
     }
 
     /**
-     * @param \DateTime $since
-     * @param \DateTime $until
+     * @param \DateTimeInterface $since
+     * @param \DateTimeInterface $until
      * @param string $token
      * @return Transaction[]
      */
-    public function getTransactions(\DateTime $since, \DateTime $until, $token)
+    public function getTransactions(\DateTimeInterface $since, \DateTimeInterface $until, $token): array
     {
         $url = strtr(self::FIO_URL, [
             ':token' => $token,

@@ -5,6 +5,7 @@ namespace Model;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use Model\Bank\Fio\FioClient;
+use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\Payment\Transaction;
 use Model\Bank\Fio\Transaction as BankTransaction;
@@ -100,6 +101,39 @@ class BankService extends BaseService
         return $result;
     }
 
+    public function pairAllGroups(int $unitId): int
+    {
+        $groups = $this->groups->findByUnits([$unitId], TRUE);
+
+        if(empty($groups)) {
+            return 0;
+        }
+
+        $groupIds = array_map(function(Group $g) { return $g->getId(); }, $groups);
+        $payments = $this->payments->findByMultipleGroups($groupIds);
+        $payments = array_reduce($payments, "array_merge", []);
+
+        if(empty($payments)) {
+            return 0;
+        }
+
+        $bankInfo = $this->getInfo($unitId);
+        $pairings = array_map(function (Group $g) { return $g->getLastPairing() ?? $g->getCreatedAt(); }, $groups);
+        $pairings = array_filter($pairings);
+        $pairSince = !empty($pairings) ? min($pairings) : new \DateTime(" - {$bankInfo->daysBack} days");
+        $transactions = $this->bank->getTransactions($pairSince, new \DateTime(), $bankInfo->token);
+
+        $pairedPaymentsCount = $this->markPaymentsAsComplete($transactions, $payments);
+
+        $now = new \DateTimeImmutable();
+        foreach($groups as $group) {
+            $group->updateLastPairing($now);
+            $this->groups->save($group);
+        }
+
+        return $pairedPaymentsCount;
+    }
+
     /**
      * @param BankTransaction[] $transactions
      * @param Payment[] $payments
@@ -107,38 +141,37 @@ class BankService extends BaseService
      */
     private function markPaymentsAsComplete(array $transactions, array $payments): int
     {
-        if (empty($transactions)) {
+        $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
+
+        if (empty($transactions) || empty($payments)) {
             return 0;
         }
 
-        $payments = ArrayType::filterValuesByCallback($payments, function(Payment $payment) {
-            return !$payment->isClosed() && $payment->getVariableSymbol() !== NULL;
-        });
+        $paymentsByVS = [];
+        foreach($payments as $payment) {
+            $vs = $payment->getVariableSymbol();
+            if(!isset($paymentsByVS[$vs])) {
+                $paymentsByVS[$vs] = [];
+            }
 
-        if(empty($payments)) {
-            return 0;
+            $paymentsByVS[$vs][] = $payment;
         }
-
-        $paymentsWithVS = ArrayType::mapByCallback($payments, function(KeyValuePair $pair) {
-            $value = $pair->getValue(); /* @var $value Payment */
-            return new KeyValuePair($value->getVariableSymbol(), $value);
-        });
 
         $paired = [];
         $now = new \DateTimeImmutable();
         foreach ($transactions as $transaction) {
             $vs = $transaction->getVariableSymbol();
 
-            /* @var $paymentsWithVS Payment[] */
-            if ($vs === NULL || !isset($paymentsWithVS[$vs])) {
+            /* @var $paymentsByVS Payment[][] */
+            if ($vs === NULL || !isset($paymentsByVS[$vs])) {
                 continue;
             }
 
-            $payment = $paymentsWithVS[$vs];
-
-            if ($payment->getAmount() === $transaction->getAmount()) {
-                $payment->complete($now, new Transaction($transaction->getId(), $transaction->getBankAccount()));
-                $paired[] = $payment;
+            foreach($paymentsByVS[$vs] as $payment) {
+                if ($payment->getAmount() === $transaction->getAmount()) {
+                    $payment->complete($now, new Transaction($transaction->getId(), $transaction->getBankAccount()));
+                    $paired[] = $payment;
+                }
             }
         }
 
