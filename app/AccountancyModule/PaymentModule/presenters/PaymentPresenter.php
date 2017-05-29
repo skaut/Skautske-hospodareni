@@ -83,27 +83,21 @@ class PaymentPresenter extends BasePresenter
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
 
-        $groupIds = array_map(function(Group $group) {
-            return $group->getId();
-        }, $groups);
+        $groupIds = [];
+        $unitIds = [];
+        foreach($groups as $group) {
+            $groupIds[] = $group->getId();
+            $unitIds[] = $group->getUnitId();
+        }
 
         $this["pairButton"]->setGroups($groupIds);
 
         $this->template->groups = $groups;
         $this->template->summarizations = $this->model->getGroupSummaries($groupIds);
+        $this->template->canPairUnit = $this->bank->checkCanPair($unitIds);
     }
 
-    public function actionDetail($id): void
-    {
-        $this->id = $id;
-        if($this->isEditable) {
-            $this["pairButton"]->setGroups([$id], $this->aid);
-        }
-
-        $this->bankInfo = $this->bank->getInfo($this->aid);
-    }
-
-    public function renderDetail(int $id): void
+    public function actionDetail(int $id): void
     {
         $group = $this->model->getGroup($id);
 
@@ -111,6 +105,13 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění zobrazit detail plateb", "warning");
             $this->redirect("Payment:default");
         }
+
+        $this->id = $id;
+        if ($this->isEditable) {
+            $this["pairButton"]->setGroups([$id], $group->getUnitId());
+        }
+
+        $this->bankInfo = $this->bank->getInfo($this->aid);
 
         $this->template->units = $this->readUnits;
         $this->template->group = $group;

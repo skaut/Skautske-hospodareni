@@ -39,7 +39,12 @@
             <tr n:foreach="$groups as $g">
                 <td><a n:href="Payment:detail $g->id">{$g->name}</a></td>
                 <td n:foreach="$summarizations[$g->id] as $s" class="r">{if $s->count > 0}{$s->amount|num} ({$s->count}){else} {/if}</td>
-                <td>{$g->state|groupState|noescape}</td>
+                <td>
+                    {$g->state|groupState|noescape}
+                    <div class="pull-right text-success" title="Lze párovat s bankou" n:if="$canPairUnit[$g->unitId] === TRUE">
+                        <span class="glyphicon glyphicon-resize-small"></span>
+                    </div>
+                </td>
             </tr> 
         </table>
     {else}

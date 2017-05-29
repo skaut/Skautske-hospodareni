@@ -62,6 +62,20 @@ class BankService extends BaseService
     }
 
     /**
+     * @param int[] $unitIds
+     * @return bool[]
+     */
+    public function checkCanPair(array $unitIds): array
+    {
+        $units = [];
+        foreach($unitIds as $id) {
+            $units[$id] = isset($this->getInfo($id)->token);
+        }
+
+        return $units;
+    }
+
+    /**
      * Completes payments from info on bank account(s)
      * @param int[] $groupIds
      * @param int|null $daysBack
