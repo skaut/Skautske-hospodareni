@@ -181,7 +181,7 @@ trait CashbookTrait
             ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = function(Form $form) : void {
                 $this->cashbookFormSubmitted($form);
-                };
+        };
         return $form;
     }
 
