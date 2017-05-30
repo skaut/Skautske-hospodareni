@@ -5,6 +5,8 @@ namespace Model;
 class ExcelService extends BaseService
 {
 
+    private const ADULT_AGE = 18;
+
     protected function getNewFile(): \PHPExcel
     {
         $objPHPExcel = new \PHPExcel();

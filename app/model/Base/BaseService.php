@@ -3,19 +3,16 @@
 namespace Model;
 
 use Nette;
-use Nette\Security\User;
 use Skautis\Skautis;
 
 /**
  * @author Hána František <sinacek@gmail.com>
+ * @deprecated Don't inherit from this service
  */
 abstract class BaseService extends Nette\Object
 {
 
     //konstanty pro Event a Camp
-    const LEADER = 0; //ID v poli funkcí
-    const ASSISTANT = 1; //ID v poli funkcí
-    const ECONOMIST = 2; //ID v poli funkcí
     const TYPE_CAMP = "camp";
     const TYPE_GENERAL = "general";
     const TYPE_UNIT = "unit";
@@ -23,22 +20,12 @@ abstract class BaseService extends Nette\Object
     const ACCESS_READ = 'read';
     const ACCESS_EDIT = 'edit';
 
-    /**
-     * věková hranice pro dítě
-     */
-    const ADULT_AGE = 18;
 
     /**
      * slouží pro komunikaci se skautISem
      * @var Skautis|NULL
      */
     protected $skautis;
-
-    /**
-     * používat lokální úložiště?
-     * @var bool
-     */
-    private $useCache = TRUE;
 
     /**
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
@@ -59,10 +46,7 @@ abstract class BaseService extends Nette\Object
      */
     protected function saveSes($id, $val)
     {
-        if ($this->useCache) {
-            self::$storage[$id] = $val;
-        }
-        return $val;
+        return self::$storage[$id] = $val;
     }
 
     /**
@@ -72,7 +56,7 @@ abstract class BaseService extends Nette\Object
      */
     protected function loadSes($id)
     {
-        if ($this->useCache && array_key_exists($id, self::$storage)) {
+        if (array_key_exists($id, self::$storage)) {
             return self::$storage[$id];
         }
         return FALSE;
