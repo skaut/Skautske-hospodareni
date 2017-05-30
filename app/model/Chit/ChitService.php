@@ -15,6 +15,7 @@ class ChitService extends MutableBaseService
 
     const CHIT_UNDEFINED_OUT = 8;
     const CHIT_UNDEFINED_IN = 12;
+    const SKAUTIS_BUDGET_RESERVE = 15;
 
     /** @var Mapper */
     private $skautisMapper;
@@ -230,11 +231,11 @@ class ChitService extends MutableBaseService
             }
             //přidání kategorií k táborům
             $res = [//8 a 12 jsou ID použitá i u výprav
-                self::CHIT_UNDEFINED_OUT => (object)["ID" => self::CHIT_UNDEFINED_OUT, "IsRevenue" => FALSE, "EventCampStatementType"=> "Neurčeno", "Ammount" => 0],
-                self::CHIT_UNDEFINED_IN  => (object)["ID" => self::CHIT_UNDEFINED_IN,  "IsRevenue" => TRUE,  "EventCampStatementType"=> "Neurčeno", "Ammount" => 0],
+                self::CHIT_UNDEFINED_OUT => (object)["ID" => self::CHIT_UNDEFINED_OUT, "IsRevenue" => FALSE, "EventCampStatementType" => "Neurčeno", "Ammount" => 0],
+                self::CHIT_UNDEFINED_IN => (object)["ID" => self::CHIT_UNDEFINED_IN, "IsRevenue" => TRUE, "EventCampStatementType" => "Neurčeno", "Ammount" => 0],
             ];
             foreach ($this->skautis->event->EventCampStatementAll(["ID_EventCamp" => $skautisEventId, "IsEstimate" => $isEstimate]) as $i) { //prepisuje na tvar s klíčem jako ID
-                if ($isEstimate == FALSE && $i->ID_EventCampStatementType == 15) { //15 == Rezerva
+                if ($isEstimate == FALSE && $i->ID_EventCampStatementType == self::SKAUTIS_BUDGET_RESERVE) {
                     continue;
                 }
                 $res[$i->ID] = $i;
@@ -368,7 +369,7 @@ class ChitService extends MutableBaseService
             if ($ammount != $sumSkautis[$catId]->Ammount) {
                 if ($repair) { //má se kategorie opravit?
                     $this->updateCategory($skautisEventId, $catId, $ammount);
-                } elseif($toRepair !== NULL) {
+                } elseif ($toRepair !== NULL) {
                     $toRepair[$catId] = $ammount; //seznam ID vadných kategorií a jejich částek
                 }
             }
