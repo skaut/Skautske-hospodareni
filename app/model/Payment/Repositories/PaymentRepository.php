@@ -92,9 +92,9 @@ class PaymentRepository implements IPaymentRepository
         $result = $this->em->createQueryBuilder()
             ->select('p')
             ->from(Payment::class, 'p')
-            ->where('IDENTITY(p.group) IN (:groupId)')
+            ->where('IDENTITY(p.group) IN (:groupIds)')
             ->orderBy('FIELD (p.state, :states)')
-            ->setParameter('groupId', $groupIds, Connection::PARAM_INT_ARRAY)
+            ->setParameter('groupIds', $groupIds, Connection::PARAM_INT_ARRAY)
             ->setParameter('states', self::STATE_ORDER, Connection::PARAM_STR_ARRAY)
             ->getQuery()->getResult();
 
