@@ -184,6 +184,18 @@ class CommandTest extends \Codeception\Test\Unit
         $this->assertSame(0, $command->getTravelCount());
     }
 
+    public function TestGetUsedTransportTypes(): void
+    {
+        $command = $this->createCommand();
+        $date = new \DateTimeImmutable();
+
+        $command->addVehicleTravel(200, new TravelDetails($date, "mov", "Brno", "Praha"));
+        $command->addVehicleTravel(200, new TravelDetails($date, "auv", "Brno", "Praha"));
+        $command->addTransportTravel(MoneyFactory::fromFloat(200), new TravelDetails($date, "a", "Brno", "Praha"));
+
+        $this->assertEquals(["mov", "auv", "a"], $command->getUsedTransportTypes());
+    }
+
     private function mockVehicle(): m\MockInterface
     {
         return m::mock(Vehicle::class);

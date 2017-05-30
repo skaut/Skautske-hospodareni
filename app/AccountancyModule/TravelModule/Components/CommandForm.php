@@ -4,6 +4,7 @@ namespace App\AccountancyModule\TravelModule\Components;
 
 use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseForm;
+use Dibi\Row;
 use Model\Travel\Passenger;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
@@ -27,6 +28,9 @@ class CommandForm extends Control
     /** @var FormFactory */
     private $formFactory;
 
+    /** @var Row[] */
+    private $transportTypes;
+
     /** @var callable[] */
     public $onSuccess = [];
 
@@ -37,6 +41,7 @@ class CommandForm extends Control
         $this->commandId = $commandId;
         $this->model = $model;
         $this->formFactory = $formFactory;
+        $this->transportTypes = $this->model->getTravelTypes();
     }
 
     public function render(): void
@@ -55,18 +60,8 @@ class CommandForm extends Control
             $contracts = $contracts["valid"];
         }
 
-        $transportTypes = $this->model->getTravelTypes();
-        $vehiclesWithFuel = array_map(function ($v) {
-            return $v->type;
-        }, array_filter($transportTypes, function ($v) {
-            return $v->hasFuel;
-        }));
-
-        $vehiclesWithFuel = array_values($vehiclesWithFuel);
-
-        $transportTypes = array_map(function ($v) {
-            return $v->label;
-        }, $transportTypes);
+        $vehiclesWithFuel = array_filter($this->transportTypes, function ($t) { return $t->hasFuel; });
+        $vehiclesWithFuel = array_map(function($t) { return $t->type; }, $vehiclesWithFuel);
 
         $form = $this->formFactory->create();
 
@@ -75,7 +70,7 @@ class CommandForm extends Control
             ->setMaxLength(64)
             ->setAttribute("class", "form-control")
             ->addRule($form::FILLED, "Musíte vyplnit účel cesty.");
-        $form->addMultiSelect("type", "Prostředek*", $transportTypes)
+        $form->addMultiSelect("type", "Prostředek*", $this->prepareTranportTypeOptions())
             ->setAttribute("class", "combobox")
             ->setRequired("Vyberte alespoň jeden dopravní prostředek.")
             ->addCondition([\MyValidators::class, "hasSelectedAny"], $vehiclesWithFuel)
@@ -159,6 +154,13 @@ class CommandForm extends Control
             throw new InvalidStateException("Travel command #{$this->commandId} not found");
         }
 
+        $usedTypes = $this->model->getUsedTransportTypes($this->commandId);
+
+        if(!empty($usedTypes)) {
+            $form["type"]->setItems($this->prepareTranportTypeOptions($usedTypes));
+            $form["type"]->setRequired(FALSE); // Even when nothing is selected, used types persist, so it's ok
+        }
+
         $form->setDefaults([
             "contract_id" => $command->getPassenger()->getContractId(),
             "purpose" => $command->getPurpose(),
@@ -225,6 +227,20 @@ class CommandForm extends Control
         );
 
         $this->presenter->flashMessage("Cestovní příkaz byl upraven.");
+    }
+
+    private function prepareTranportTypeOptions(array $disabledValues = []): array
+    {
+        $options = [];
+        foreach($this->transportTypes as $value => $type) {
+            $option = Html::el("option")
+                ->setAttribute("value", $value)
+                ->setHtml($type->label)
+                ->setAttribute("disabled", in_array($value, $disabledValues, TRUE));
+            $options[$value] = $option;
+        }
+
+        return $options;
     }
 
     private function createPassenger(ArrayHash $values): ?Passenger

@@ -271,6 +271,17 @@ class TravelService extends BaseService
         }
     }
 
+    /**
+     * @param int $commandId
+     * @return string[]
+     */
+    public function getUsedTransportTypes(int $commandId): array
+    {
+        $command = $this->commands->find($commandId);
+
+        return $command->getUsedTransportTypes();
+    }
+
     public function addCommand(
         int $unitId,
         ?int $contractId,
@@ -337,6 +348,12 @@ class TravelService extends BaseService
         );
 
         $this->commands->save($command);
+
+        foreach($command->getUsedTransportTypes() as $type) {
+            if(!in_array($type, $types, TRUE)) {
+                $types[] = $type;
+            }
+        }
 
         $this->table->updateTypes($id, $types);
     }
