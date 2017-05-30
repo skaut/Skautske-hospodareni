@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Factories\GridFactory;
+use Model\ExcelService;
 use MyValidators;
 use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
@@ -18,13 +19,13 @@ class DefaultPresenter extends BasePresenter
 
     public $ses;
 
-    /** @var \Model\ExcelService */
-    protected $excelService;
+    /** @var ExcelService */
+    private $excelService;
 
     /** @var GridFactory */
-    protected $gridFactory;
+    private $gridFactory;
 
-    public function __construct(\Model\ExcelService $excel, GridFactory $gf)
+    public function __construct(ExcelService $excel, GridFactory $gf)
     {
         parent::__construct();
         $this->excelService = $excel;
