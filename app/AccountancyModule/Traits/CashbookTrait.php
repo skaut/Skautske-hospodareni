@@ -1,5 +1,6 @@
 <?php
 
+use App\Forms\BaseForm;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
@@ -113,7 +114,7 @@ trait CashbookTrait
 
     protected function createComponentFormMass($name): Form
     {
-        $form = new \App\Forms\BaseForm();
+        $form = new BaseForm();
         $form->addSubmit('massPrintSend')
             ->onClick[] = function (SubmitButton $button): void {
             $this->massPrintSubmitted($button);
@@ -209,7 +210,6 @@ trait CashbookTrait
         } else {
             throw new \InvalidArgumentException("Origin event ID '" . $newEventId . "' doesn't exists!");
         }
-
 
         //@TODO: zkontrolovat oprávnění na obě akce
 

@@ -4,6 +4,8 @@ namespace App;
 
 use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseForm;
+use Model\UnitService;
+use Model\UserService;
 use Nette;
 use Nette\Application\UI\Control;
 use Skautis\Wsdl\AuthenticationException;
@@ -14,10 +16,10 @@ use WebLoader\Nette\JavaScriptLoader;
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
 
-    /** @var \Model\UserService */
+    /** @var UserService */
     protected $userService;
 
-    /** @var \Model\UnitService */
+    /** @var UnitService */
     protected $unitService;
 
     /** @var FormFactory */
@@ -29,12 +31,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var string */
     private $appDir;
 
-    public function injectUserService(\Model\UserService $u): void
+    public function injectUserService(UserService $u): void
     {
         $this->userService = $u;
     }
 
-    public function injectUnitService(\Model\UnitService $u): void
+    public function injectUnitService(UnitService $u): void
     {
         $this->unitService = $u;
     }
