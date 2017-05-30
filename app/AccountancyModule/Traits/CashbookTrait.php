@@ -213,16 +213,12 @@ trait CashbookTrait
 
         //@TODO: zkontrolovat oprávnění na obě akce
 
-        foreach ($chits as $chitId) {
-            $chit = $this->entityService->chits->get($chitId);
-            $this->entityService->chits->moveChit(
-                $chit['id'],
-                $chit['ctype'],
-                $originType,
-                $newEventId,
-                $newType
-            );
-        }
+        $this->entityService->chits->moveChit(
+            $chits,
+            $originType,
+            $newEventId,
+            $newType
+        );
     }
 
     //FORM CASHBOOK

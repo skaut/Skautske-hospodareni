@@ -439,14 +439,17 @@ class ChitService extends MutableBaseService
         return $this->table->lockEvent($oid, $userId);
     }
 
-    public function moveChit($chitId, $chitType, $originEventType, $newEventId, $newEventType): void
+    public function moveChits(array $chits, string $originEventType, int $newEventId, string $newEventType): void
     {
-        $toUpdate = ["eventId" => $this->getLocalId($newEventId, $newEventType)];
-        //pokud nejsou obe kniny od výprav, tak nastav kategorii na neurčitou kategorii
-        if($originEventType !== $newEventType || $originEventType !== "general") {
-            $toUpdate["category"] = $chitType === "out" ? self::CHIT_UNDEFINED_OUT : self::CHIT_UNDEFINED_IN;
+        foreach ($chits as $chitId) {
+            $toUpdate = ["eventId" => $this->getLocalId($newEventId, $newEventType)];
+            //pokud nejsou obe knihy od výprav, tak nastav kategorii na neurčitou kategorii
+            if ($originEventType !== $newEventType || $originEventType !== "general") {
+                $chit = $this->get($chitId);
+                $toUpdate["category"] = $chit['ctype'] === "out" ? self::CHIT_UNDEFINED_OUT : self::CHIT_UNDEFINED_IN;
+            }
+            $this->update($chitId, $toUpdate);
         }
-        $this->update($chitId, $toUpdate);
     }
 
     /**
