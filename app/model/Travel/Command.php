@@ -50,6 +50,9 @@ class Command
     /** @var ArrayCollection|TransportTravel[] */
     private $travels;
 
+    /** @var int */
+    private $nextTravelId = 0;
+
     public function __construct(
         int $unitId, ?Vehicle $vehicle, Passenger $passenger, string $purpose,
         string $place, string $fellowPassengers, Money $fuelPrice, Money $amortization, string $note
@@ -90,12 +93,56 @@ class Command
 
     public function addVehicleTravel(float $distance, TravelDetails $details): void
     {
-        $this->travels->add(new VehicleTravel($distance, $details, $this));
+        $id = $this->getTravelId();
+        $this->travels->set($id, new VehicleTravel($id, $distance, $details, $this));
+    }
+
+    /**
+     * @param int $id
+     * @param float $distance
+     * @param TravelDetails $details
+     * @throws TravelNotFoundException
+     */
+    public function updateVehicleTravel(int $id, float $distance, TravelDetails $details): void
+    {
+        $travel = $this->getTravel($id);
+
+        if( ! $travel instanceof VehicleTravel) {
+            $this->removeTravel($id);
+            $this->addVehicleTravel($distance, $details);
+            return;
+        }
+
+        $travel->update($distance, $details);
     }
 
     public function addTransportTravel(Money $price, TravelDetails $details): void
     {
-        $this->travels->add(new TransportTravel($price, $details, $this));
+        $id = $this->getTravelId();
+        $this->travels->set($id, new TransportTravel($id, $price, $details, $this));
+    }
+
+    /**
+     * @param int $id
+     * @param Money $price
+     * @param TravelDetails $details
+     * @throws TravelNotFoundException
+     */
+    public function updateTransportTravel(int $id, Money $price, TravelDetails $details): void
+    {
+        $travel = $this->getTravel($id);
+        if( ! $travel instanceof TransportTravel) {
+            $this->removeTravel($id);
+            $this->addTransportTravel($price, $details);
+            return;
+        }
+
+        $travel->update($price, $details);
+    }
+
+    public function removeTravel(int $id): void
+    {
+        $this->travels->remove($id);
     }
 
     public function calculateTotal(): Money
@@ -230,9 +277,14 @@ class Command
         return $this->closedAt;
     }
 
+    /**
+     * Only for reading
+     * @internal
+     * @return Travel[]
+     */
     public function getTravels(): array
     {
-        return $this->travels->toArray();
+        return $this->travels->getValues();
     }
 
     public function getFirstTravelDate(): ?DateTimeImmutable
@@ -240,6 +292,32 @@ class Command
         return $this->travels->isEmpty()
             ? NULL
             : min($this->travels->map(function(Travel $travel) { return $travel->getDetails()->getDate(); })->toArray());
+    }
+
+    public function getTravelCount(): int
+    {
+        return $this->travels->count();
+    }
+
+    /**
+     * @param int $id
+     * @throws TravelNotFoundException
+     * @return Travel
+     */
+    private function getTravel(int $id): Travel
+    {
+        $travel = $this->travels->get($id);
+
+        if ($travel === NULL) {
+            throw new TravelNotFoundException("Travel #$id not found");
+        }
+
+        return $travel;
+    }
+
+    private function getTravelId(): int
+    {
+        return $this->nextTravelId++;
     }
 
 }

@@ -81,8 +81,8 @@
             {if !empty($travels)}
                 <tr n:foreach="$travels as $t">
                     <td n:if="$isEditable" class='nowrap'>
-                        <a n:href="editTravel $t->id" class="fancybox fancybox.ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                        <a n:href="removeTravel! $t->id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="glyphicon glyphicon-remove"></i></a>
+                        <a n:href="editTravel $command->id, $t->id" class="fancybox fancybox.ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
+                        <a n:href="removeTravel! $command->id, $t->id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="glyphicon glyphicon-remove"></i></a>
                     </td>
                     <td>{$allTypes[$t->details->transportType]}</td>
                     <td>{$t->details->date|date:"j. n. Y"}</td>

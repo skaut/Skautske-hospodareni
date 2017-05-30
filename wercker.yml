@@ -40,6 +40,9 @@ build:
             name: run database migrations
             code: php www/index.php migrations:migrate --no-interaction
         - script:
+            name: validate Doctrine mapping
+            code: php www/index.php orm:validate-schema --skip-sync
+        - script:
             name: configure /etc/hosts (hospodareni.loc)
             code: echo "127.0.0.1 hospodareni.loc" >> /etc/hosts
         - script:
