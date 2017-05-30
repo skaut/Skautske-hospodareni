@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Repositories;
 
+use Assert\Assert;
 use Kdyby\Doctrine\Connection;
 use Kdyby\Doctrine\EntityManager;
 use Model\Payment\Group;
@@ -36,6 +37,25 @@ class GroupRepository implements IGroupRepository
         }
 
         return $group;
+    }
+
+    public function findByIds(array $ids): array
+    {
+        Assert::thatAll($ids)->integer();
+
+        $groups = $this->em->createQueryBuilder()
+            ->select("g")
+            ->from(Group::class, "g", "g.id")
+            ->where("g.id IN (:ids)")
+            ->setParameter("ids", $ids, Connection::PARAM_INT_ARRAY)
+            ->getQuery()
+            ->getResult();
+
+        if(count($ids) !== count($groups)) {
+            throw new GroupNotFoundException("Groups with id " . implode(", ", array_diff($ids, array_keys($groups))));
+        }
+
+        return $groups;
     }
 
     public function findByUnits(array $unitIds, bool $openOnly): array

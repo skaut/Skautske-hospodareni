@@ -24,6 +24,12 @@ interface IPaymentRepository
 
     /**
      * @param int[] $groupIds
+     * @return Payment[][]
+     */
+    public function findByMultipleGroups(array $groupIds): array;
+
+    /**
+     * @param int[] $groupIds
      * @return Summary[][]
      */
     public function summarizeByGroup(array $groupIds): array;

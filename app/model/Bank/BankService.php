@@ -2,13 +2,14 @@
 
 namespace Model;
 
-use Consistence\Type\ArrayType\ArrayType;
-use Consistence\Type\ArrayType\KeyValuePair;
+use Assert\Assert;
 use Model\Bank\Fio\FioClient;
+use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\Payment\Transaction;
 use Model\Bank\Fio\Transaction as BankTransaction;
 use Model\Payment\Repositories\IPaymentRepository;
+use Model\Utils\Arrays;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Model\Payment\Repositories\IGroupRepository;
@@ -61,90 +62,149 @@ class BankService extends BaseService
     }
 
     /**
-     * Completes payments on bank account
-     * @param int $unitId
-     * @param int $groupId
-     * @param int|NULL $daysBack
-     * @return int
+     * @param int[] $unitIds
+     * @return bool[]
      */
-    public function pairPayments(int $unitId, int $groupId, ?int $daysBack): int
+    public function checkCanPair(array $unitIds): array
     {
-        $bakInfo = $this->getInfo($unitId);
-        if (!isset($bakInfo->token)) {
+        $units = [];
+        foreach($unitIds as $id) {
+            $units[$id] = isset($this->getInfo($id)->token);
+        }
+
+        return $units;
+    }
+
+    /**
+     * Completes payments from info on bank account(s)
+     * @param int[] $groupIds
+     * @param int|null $daysBack
+     * @return int number of paired payments
+     */
+    public function pairAllGroups(array $groupIds, ?int $daysBack = NULL): int
+    {
+        Assert::thatAll($groupIds)->integer();
+        Assert::that($daysBack)->nullOr()->min(1);
+
+        $groups = $this->groups->findByIds($groupIds);
+        $paymentsByGroup = $this->payments->findByMultipleGroups($groupIds);
+
+        $tokens = [];
+        $groupsByToken = [];
+        $paymentsByToken = [];
+        $sinceFallback = [];
+
+        foreach($groups as $id => $group) {
+            $unitId = $group->getUnitId();
+            $payments = $paymentsByGroup[$group->getId()];
+            $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
+
+            if (empty($payments)) {
+                continue;
+            }
+
+            if(isset($tokens[$unitId])) {
+                $token = $tokens[$unitId];
+            } else {
+                $bankInfo = $this->getInfo($unitId);
+                if(!isset($bankInfo->token)) {
+                    continue;
+                }
+
+                $token = $tokens[$unitId] = $bankInfo["token"];
+                $sinceFallback[$token] = new \DateTimeImmutable("- {$bankInfo->daysback} days");
+                $groupsByToken[$token] = [];
+                $paymentsByToken[$token] = [];
+            }
+
+            $groupsByToken[$token][] = $group;
+            $paymentsByToken[$token] = array_merge($paymentsByToken[$token], $paymentsByGroup[$id]);
+        }
+
+        if(empty($tokens)) {
             return 0;
         }
 
-        $autoPairing = $daysBack === NULL;
-        $group = $this->groups->find($groupId);
-        if ($autoPairing) {
-            $lastPairing = $group->getLastPairing() ?? $group->getCreatedAt();
-            if ($lastPairing !== NULL) {
-                $daysBack = $lastPairing->diff(new \DateTime())->days + 3;
+        $pairedPayments = [];
+        $now = new \DateTimeImmutable();
+        foreach($tokens as $token) {
+            if($daysBack === NULL) {
+                $paired = $this->autoPair($token, $groupsByToken[$token], $paymentsByToken[$token], $sinceFallback[$token], $now);
             } else {
-                $daysBack = $bakInfo->daysback;
+                $paired = $this->pair($token, $paymentsByToken[$token], $now->modify("- $daysBack days"), $now);
+            }
+            $pairedPayments = array_merge($pairedPayments, $paired);
+        }
+
+        $this->payments->saveMany($pairedPayments);
+
+        if($daysBack === NULL) {
+            foreach (Arrays::ungroup($groupsByToken) as $group) {
+                /* @var $group Group */
+                $group->updateLastPairing($now);
+                $this->groups->save($group);
             }
         }
 
-        $transactions = $this->bank->getTransactions(
-            (new \DateTime())->modify("- $daysBack days"),
-            new \DateTime(),
-            $bakInfo->token
-        );
+        return count($pairedPayments);
+    }
 
-        $result = $this->markPaymentsAsComplete($transactions, $this->payments->findByGroup($groupId));
+    /**
+     * @param string $token
+     * @param Group[] $groups
+     * @param Payment[] $payments
+     * @param \DateTimeImmutable $fallbackSince
+     * @param \DateTimeImmutable $until
+     * @return Payment[]
+     */
+    private function autoPair(string $token, array $groups, array $payments, \DateTimeImmutable $fallbackSince, \DateTimeImmutable $until): array
+    {
+        $furthestPairing = min(array_map(function (Group $g) {
+            return $g->getLastPairing() ?? $g->getCreatedAt();
+        }, $groups));
+        return $this->pair($token, $payments, $furthestPairing ?? $fallbackSince, $until);
+    }
 
-        if ($autoPairing) {
-            $group->updateLastPairing(new \DateTimeImmutable());
-            $this->groups->save($group);
-        }
-        return $result;
+    /**
+     * @param string $token
+     * @param Payment[] $payments
+     * @param \DateTimeImmutable $since
+     * @param \DateTimeImmutable $until
+     * @return Payment[]
+     */
+    private function pair(string $token, array $payments, \DateTimeImmutable $since, \DateTimeImmutable $until): array
+    {
+        $transactions = $this->bank->getTransactions($since, $until, $token);
+        return $this->markPaymentsAsComplete($transactions, $payments);
     }
 
     /**
      * @param BankTransaction[] $transactions
      * @param Payment[] $payments
-     * @return int
+     * @return Payment[]
      */
-    private function markPaymentsAsComplete(array $transactions, array $payments): int
+    private function markPaymentsAsComplete(array $transactions, array $payments): array
     {
-        if (empty($transactions)) {
-            return 0;
-        }
+        $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
+        $paymentsByVS = Arrays::groupBy($payments, function(Payment $p) { return $p->getVariableSymbol(); });
 
-        $payments = ArrayType::filterValuesByCallback($payments, function(Payment $payment) {
-            return !$payment->isClosed() && $payment->getVariableSymbol() !== NULL;
-        });
-
-        if(empty($payments)) {
-            return 0;
-        }
-
-        $paymentsWithVS = ArrayType::mapByCallback($payments, function(KeyValuePair $pair) {
-            $value = $pair->getValue(); /* @var $value Payment */
-            return new KeyValuePair($value->getVariableSymbol(), $value);
+        $transactions = array_filter($transactions, function(BankTransaction $t) use($paymentsByVS) {
+            return $t->getVariableSymbol() !== NULL && isset($paymentsByVS[$t->getVariableSymbol()]);
         });
 
         $paired = [];
         $now = new \DateTimeImmutable();
         foreach ($transactions as $transaction) {
-            $vs = $transaction->getVariableSymbol();
-
-            /* @var $paymentsWithVS Payment[] */
-            if ($vs === NULL || !isset($paymentsWithVS[$vs])) {
-                continue;
-            }
-
-            $payment = $paymentsWithVS[$vs];
-
-            if ($payment->getAmount() === $transaction->getAmount()) {
-                $payment->complete($now, new Transaction($transaction->getId(), $transaction->getBankAccount()));
-                $paired[] = $payment;
+            foreach($paymentsByVS[$transaction->getVariableSymbol()] as $payment) {
+                /* @var $payment Payment */
+                if ($payment->getAmount() === $transaction->getAmount()) {
+                    $payment->complete($now, new Transaction($transaction->getId(), $transaction->getBankAccount()));
+                    $paired[] = $payment;
+                }
             }
         }
 
-        $this->payments->saveMany($paired);
-
-        return count($paired);
+        return $paired;
     }
 
     /**
