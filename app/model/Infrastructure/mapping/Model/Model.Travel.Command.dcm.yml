@@ -28,6 +28,8 @@ Model\Travel\Command:
             type: datetime_immutable
             nullable: true
             column: closed
+        nextTravelId:
+            type: integer
 
     embedded:
         passenger:
@@ -42,5 +44,7 @@ Model\Travel\Command:
     oneToMany:
         travels:
             targetEntity: Model\Travel\Command\Travel
+            indexBy: id
             mappedBy: command
             cascade: [PERSIST, REMOVE]
+            orphanRemoval: true

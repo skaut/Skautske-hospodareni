@@ -7,7 +7,7 @@ use Model\Travel\Command;
 abstract class Travel
 {
 
-    /** @var int|NULL */
+    /** @var int */
     private $id;
 
     /**
@@ -19,8 +19,9 @@ abstract class Travel
     /** @var TravelDetails */
     protected $details;
 
-    protected function __construct(Command $command, TravelDetails $details)
+    protected function __construct(int $id, Command $command, TravelDetails $details)
     {
+        $this->id = $id;
         $this->command = $command;
         $this->setDetails($details);
     }
@@ -30,12 +31,13 @@ abstract class Travel
         $this->details = $details;
     }
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
     public function getDetails(): TravelDetails
+
     {
         return $this->details;
     }

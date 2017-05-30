@@ -5,9 +5,8 @@ Model\Travel\Command\Travel:
     table: tc_travels
 
     id:
-        id:
-            type: integer
-            generator: { strategy: AUTO }
+        command: { associationKey: true }
+        id: { type: integer }
 
     discriminatorColumn:
         name: has_fuel
