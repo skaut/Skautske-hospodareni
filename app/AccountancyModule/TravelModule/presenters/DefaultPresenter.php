@@ -39,10 +39,11 @@ class DefaultPresenter extends BasePresenter
         return $this->travelService->isContractAccessible($contractId, $this->unit);
     }
 
-    protected function isCommandEditable($id) : bool
+    private function isCommandEditable(int $id) : bool
     {
-        $this->template->command = $command = $this->travelService->getCommand($id);
-        return ($this->isCommandAccessible($id) && $command->closed == NULL) ? TRUE : FALSE;
+        $command = $this->travelService->getCommandDetail($id);
+
+        return $this->isCommandAccessible($id) && $command->getClosedAt() === NULL;
     }
 
     public function renderDefault() : void
@@ -202,14 +203,16 @@ class DefaultPresenter extends BasePresenter
     private function formAddTravelSubmitted(Form $form) : void
     {
         $v = $form->getValues();
-        if (!$this->isCommandEditable($v['command_id'])) {
+        $commandId = (int)$v->command_id;
+
+        if (!$this->isCommandEditable($commandId)) {
             $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
             $this->redirect("default");
         }
         $v['distance'] = round(str_replace(",", ".", $v['distance']), 2);
 
         $this->travelService->addTravel(
-            (int)$v->command_id,
+            $commandId,
             $v->type,
             \DateTimeImmutable::createFromMutable($v->start_date),
             $v->start_place,
