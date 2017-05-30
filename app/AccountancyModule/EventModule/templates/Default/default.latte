@@ -2,8 +2,6 @@
 {block #content}
 <h2>Seznam akcí</h2>
 
-{dump $list}
-
 {snippet events}
     <div class="row">
         <div class="well well-sm">
@@ -25,50 +23,7 @@
         </div>
     </div>
     <div class="row">
-        {if !empty($list)}
-            {form formExportSummary}
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="hidden-xs hidden-sm">&nbsp;</th>
-                            <th><a n:href="this name" n:tag-if="$sort != 'name'">Název</a></th>
-                            <th><a n:href="this start" n:tag-if="$sort != 'start'">Od</a></th>
-                            <th><a n:href="this end" n:tag-if="$sort != 'end'">Do</a></th>
-                            <th><a n:href="this prefix" n:tag-if="$sort != 'prefix'">Prefix</a></th>
-                            <th><a n:href="this state" n:tag-if="$sort != 'state'">Stav</a></th>
-                            <th class="hidden-xs hidden-sm">
-                                {input send class=>"btn btn-info btn-sm selDependend"}
-                                <input type="checkbox" id="sel-all" name="sel" onclick="jqCheckAll(this.id, 'sel')" />
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr n:foreach="$list as $i">
-                            <td class="hidden-xs hidden-sm">
-                                <a n:if="$i['accessDelete']" n:href="cancel! $i['ID']" onclick="return confirm('Opravdu chcete zrušit akci?')" class="btn btn-danger btn-sm" title="Zrušit akci"><i class="glyphicon glyphicon-remove"></i></a>
-                            </td>
-                            <td>
-                                <a n:tag-if="$i['accessDetail']" n:href="Event: $i['ID']">{$i['DisplayName']}</a>
-                            </td>
-                            <td>{$i['StartDate']|date:"j.n.Y"}</td>
-                            <td>{$i['EndDate']|date:"j.n.Y"}</td>
-                            <td>{$i['prefix']}</td>
-                            <td>{$i['ID_EventGeneralState']|eventStateLabel|noescape}</td>
-                            <td n:inner-if="$i['accessDetail']" class="hidden-xs hidden-sm">
-                                <div class="btn-group" role="group">
-                                    <a n:href="Event:  $i['ID']" class="btn btn-default btn-sm" title="Základní informace o akci"><i class="glyphicon glyphicon-briefcase"></i></a>
-                                    <a n:href="Participant: $i['ID']" class="btn btn-default btn-sm" title="Účastníci akce"><i class="glyphicon glyphicon-user"></i></a>
-                                    <a n:href="Cashbook: $i['ID']" class="btn btn-default btn-sm" title="Pokladní kniha"><i class="glyphicon glyphicon-shopping-cart"></i></a>
-                                </div>
-                                <input type='checkbox' name='sel[]' value='{$i['ID']}'/>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            {/form}
-        {else}
-            <p class="alert">Nemáte žádné akce.</p>
-        {/if}
+        {control eventGrid}
     </div>
 {/snippet}
 

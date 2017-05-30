@@ -115,13 +115,13 @@ trait CashbookTrait
     {
         $form = $this->prepareForm($this, $name);
         $form->addSubmit('massPrintSend')
-            ->onClick[] = function(SubmitButton $button) : void {
-                $this->massPrintSubmitted($button);
-            };
+                ->onClick[] = function(SubmitButton $button) : void {
+                    $this->massPrintSubmitted($button);
+                };
         $form->addSubmit('massExportSend')
-            ->onClick[] = function(SubmitButton $button) : void {
-                $this->massExportSubmitted($button);
-            };
+                ->onClick[] = function(SubmitButton $button) : void {
+                    $this->massExportSubmitted($button);
+                };
         return $form;
     }
 
@@ -180,7 +180,7 @@ trait CashbookTrait
         $form->addSubmit('send', 'Uložit')
             ->setAttribute("class", "btn btn-primary");
         $form->onSuccess[] = function(Form $form) : void {
-            $this->cashbookFormSubmitted($form);
+                $this->cashbookFormSubmitted($form);
         };
         return $form;
     }
@@ -189,7 +189,7 @@ trait CashbookTrait
      * přidává paragony všech kategorií
      * @param Form $form
      */
-    private function cashbookFormSubmitted(Form $form) : void
+    private function cashbookFormSubmitted(Form $form): void
     {
         if ($form["send"]->isSubmittedBy()) {
             $this->editableOnly();
