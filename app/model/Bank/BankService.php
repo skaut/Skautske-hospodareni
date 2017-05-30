@@ -188,7 +188,7 @@ class BankService extends BaseService
         $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
         $paymentsByVS = Arrays::groupBy($payments, function(Payment $p) { return $p->getVariableSymbol(); });
 
-        $transactions = array_filter($transactions, function(BankTransaction $t) {
+        $transactions = array_filter($transactions, function(BankTransaction $t) use($paymentsByVS) {
             return $t->getVariableSymbol() !== NULL && isset($paymentsByVS[$t->getVariableSymbol()]);
         });
 

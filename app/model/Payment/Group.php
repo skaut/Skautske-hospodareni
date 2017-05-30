@@ -231,7 +231,7 @@ class Group
 
     public function isOpen(): bool
     {
-        $this->state === self::STATE_OPEN;
+        return $this->state === self::STATE_OPEN;
     }
 
 }
