@@ -69,14 +69,6 @@ class TravelService extends BaseService
         return FALSE;
     }
 
-    public function isCommandAccessible($commandId, $unit)
-    {
-        if (($command = $this->getCommand($commandId))) {
-            return $command->unit_id == $unit->ID ? TRUE : FALSE;
-        }
-        return FALSE;
-    }
-
     /**     VEHICLES    */
 
     /**
@@ -268,22 +260,7 @@ class TravelService extends BaseService
         return $this->tableContract->delete($contractId);
     }
 
-    /**     COMMANDS    */
-
-    /**
-     * @param $commandId
-     * @return Row|FALSE|mixed
-     * @deprecated use getCommandDetail
-     */
-    public function getCommand($commandId)
-    {
-        $cacheId = __FUNCTION__ . "_" . $commandId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->table->get($commandId);
-            $this->saveSes($cacheId, $res);
-        }
-        return $res;
-    }
+    /*     COMMANDS    */
 
     public function getCommandDetail(int $id): ?DTO\Command
     {

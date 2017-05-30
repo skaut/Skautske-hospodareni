@@ -29,9 +29,11 @@ class DefaultPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    protected function isCommandAccessible($commandId) : bool
+    protected function isCommandAccessible(int $commandId): bool
     {
-        return $this->travelService->isCommandAccessible($commandId, $this->unit);
+        $command = $this->travelService->getCommandDetail($commandId);
+
+        return $command !== NULL && $command->getUnitId() === $this->getUnitId();
     }
 
     protected function isContractAccessible($contractId) : bool
@@ -63,7 +65,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->types = $this->travelService->getTypes($commandIds);
     }
 
-    public function actionDetail($id) : void
+    public function actionDetail(int $id) : void
     {
         if ($id == NULL) {
             $this->redirect("default");
@@ -123,7 +125,7 @@ class DefaultPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function handleCloseCommand($commandId) : void
+    public function handleCloseCommand(int $commandId) : void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo uzavřít cestovní příkaz.", "danger");
@@ -135,7 +137,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleOpenCommand($commandId) : void
+    public function handleOpenCommand(int $commandId) : void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo otevřít cestovní příkaz.", "danger");
