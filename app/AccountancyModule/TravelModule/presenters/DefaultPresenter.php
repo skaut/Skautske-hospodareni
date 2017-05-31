@@ -29,16 +29,11 @@ class DefaultPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    protected function isCommandAccessible(int $commandId): bool
+    private function isCommandAccessible(int $commandId): bool
     {
         $command = $this->travelService->getCommandDetail($commandId);
 
         return $command !== NULL && $command->getUnitId() === $this->getUnitId();
-    }
-
-    protected function isContractAccessible($contractId) : bool
-    {
-        return $this->travelService->isContractAccessible($contractId, $this->unit);
     }
 
     private function isCommandEditable(int $id) : bool
