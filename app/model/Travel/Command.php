@@ -315,6 +315,16 @@ class Command
         return $travel;
     }
 
+    /**
+     * Returns all transport types that have at least one travel
+     * @return string[]
+     */
+    public function getUsedTransportTypes(): array
+    {
+        $types = $this->travels->map(function (Travel $travel) { return $travel->getDetails()->getTransportType(); });
+        return array_unique($types->toArray());
+    }
+
     private function getTravelId(): int
     {
         return $this->nextTravelId++;

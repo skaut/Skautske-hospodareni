@@ -29,20 +29,18 @@ class DefaultPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    protected function isCommandAccessible($commandId) : bool
+    private function isCommandAccessible(int $commandId): bool
     {
-        return $this->travelService->isCommandAccessible($commandId, $this->unit);
+        $command = $this->travelService->getCommandDetail($commandId);
+
+        return $command !== NULL && $command->getUnitId() === $this->getUnitId();
     }
 
-    protected function isContractAccessible($contractId) : bool
+    private function isCommandEditable(int $id) : bool
     {
-        return $this->travelService->isContractAccessible($contractId, $this->unit);
-    }
+        $command = $this->travelService->getCommandDetail($id);
 
-    protected function isCommandEditable($id) : bool
-    {
-        $this->template->command = $command = $this->travelService->getCommand($id);
-        return ($this->isCommandAccessible($id) && $command->closed == NULL) ? TRUE : FALSE;
+        return $this->isCommandAccessible($id) && $command->getClosedAt() === NULL;
     }
 
     public function renderDefault() : void
@@ -62,7 +60,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->types = $this->travelService->getTypes($commandIds);
     }
 
-    public function actionDetail($id) : void
+    public function actionDetail(int $id) : void
     {
         if ($id == NULL) {
             $this->redirect("default");
@@ -122,7 +120,7 @@ class DefaultPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function handleCloseCommand($commandId) : void
+    public function handleCloseCommand(int $commandId) : void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo uzavřít cestovní příkaz.", "danger");
@@ -134,7 +132,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleOpenCommand($commandId) : void
+    public function handleOpenCommand(int $commandId) : void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo otevřít cestovní příkaz.", "danger");
@@ -202,14 +200,16 @@ class DefaultPresenter extends BasePresenter
     private function formAddTravelSubmitted(Form $form) : void
     {
         $v = $form->getValues();
-        if (!$this->isCommandEditable($v['command_id'])) {
+        $commandId = (int)$v->command_id;
+
+        if (!$this->isCommandEditable($commandId)) {
             $this->flashMessage("Nelze upravovat cestovní příkaz.", "danger");
             $this->redirect("default");
         }
         $v['distance'] = round(str_replace(",", ".", $v['distance']), 2);
 
         $this->travelService->addTravel(
-            (int)$v->command_id,
+            $commandId,
             $v->type,
             \DateTimeImmutable::createFromMutable($v->start_date),
             $v->start_place,

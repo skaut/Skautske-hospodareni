@@ -69,14 +69,6 @@ class TravelService extends BaseService
         return FALSE;
     }
 
-    public function isCommandAccessible($commandId, $unit)
-    {
-        if (($command = $this->getCommand($commandId))) {
-            return $command->unit_id == $unit->ID ? TRUE : FALSE;
-        }
-        return FALSE;
-    }
-
     /**     VEHICLES    */
 
     /**
@@ -268,22 +260,7 @@ class TravelService extends BaseService
         return $this->tableContract->delete($contractId);
     }
 
-    /**     COMMANDS    */
-
-    /**
-     * @param $commandId
-     * @return Row|FALSE|mixed
-     * @deprecated use getCommandDetail
-     */
-    public function getCommand($commandId)
-    {
-        $cacheId = __FUNCTION__ . "_" . $commandId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->table->get($commandId);
-            $this->saveSes($cacheId, $res);
-        }
-        return $res;
-    }
+    /*     COMMANDS    */
 
     public function getCommandDetail(int $id): ?DTO\Command
     {
@@ -292,6 +269,17 @@ class TravelService extends BaseService
         } catch (CommandNotFoundException $e) {
             return NULL;
         }
+    }
+
+    /**
+     * @param int $commandId
+     * @return string[]
+     */
+    public function getUsedTransportTypes(int $commandId): array
+    {
+        $command = $this->commands->find($commandId);
+
+        return $command->getUsedTransportTypes();
     }
 
     public function addCommand(
@@ -360,6 +348,12 @@ class TravelService extends BaseService
         );
 
         $this->commands->save($command);
+
+        foreach($command->getUsedTransportTypes() as $type) {
+            if(!in_array($type, $types, TRUE)) {
+                $types[] = $type;
+            }
+        }
 
         $this->table->updateTypes($id, $types);
     }
