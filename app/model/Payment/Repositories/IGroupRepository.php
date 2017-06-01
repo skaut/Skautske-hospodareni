@@ -20,6 +20,12 @@ interface IGroupRepository
     public function find(int $id): Group;
 
     /**
+     * @param int[] $ids
+     * @return Group[]
+     */
+    public function findByIds(array $ids): array;
+
+    /**
      * @param int[] $unitIds
      * @param bool $openOnly
      * @return Group[]

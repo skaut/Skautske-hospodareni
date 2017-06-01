@@ -125,7 +125,6 @@ trait CashbookTrait
         };
 
         $form = $this->addMassMove($form);
-
         return $form;
     }
 
@@ -252,8 +251,9 @@ trait CashbookTrait
         $form->addHidden("pid");
         $form->addSubmit('send', 'Uložit')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = function (Form $form): void {
-            $this->cashbookFormSubmitted($form);
+        $form->onSuccess[] = function(Form $form) : void {
+                $this->cashbookFormSubmitted($form);
+
         };
         return $form;
     }

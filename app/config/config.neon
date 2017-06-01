@@ -122,7 +122,7 @@ services:
 
     # Model
 
-    - App\Authorizator
+    - App\AccountancyModule\Auth\Authorizator
 
     # Repositories
     - Model\Travel\Repositories\CommandRepository
@@ -135,6 +135,7 @@ services:
 
     # Factories
     - Model\Services\TemplateFactory
+    - App\AccountancyModule\Factories\GridFactory
 
     # Tables
     - Model\BankTable

@@ -2,8 +2,9 @@
 
 namespace App\AccountancyModule\EventModule\Components;
 
+use App\AccountancyModule\Auth\Event;
 use App\Forms\BaseForm;
-use App\IAuthorizator;
+use App\AccountancyModule\Auth\IAuthorizator;
 use Model\Event\AssistantNotAdultException;
 use Model\Event\Functions;
 use Model\Event\LeaderNotAdultException;
@@ -60,7 +61,7 @@ class FunctionsControl extends Control
 
     private function canEdit() : bool
     {
-        return $this->authorizator->isAllowed(IAuthorizator::EVENT_RESOURCE, $this->eventId, "EV_EventGeneral_UPDATE_Function");
+        return $this->authorizator->isAllowed(Event::UPDATE_FUNCTION, $this->eventId);
     }
 
     public function handleEdit() : void

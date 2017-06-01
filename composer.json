@@ -37,7 +37,9 @@
         "beberlei/DoctrineExtensions": "^1.0",
         "fmasa/doctrine-yaml-annotations": "^1.0",
         "kdyby/monolog": "^1.2",
-        "moneyphp/money": "^3.0"
+        "moneyphp/money": "^3.0",
+        "ublaboo/datagrid": "^5.2",
+        "beberlei/assert": "^2.7"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

@@ -12,6 +12,7 @@ use Model\Travel\Passenger;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
+use Model\Travel\TravelNotFoundException;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 use Model\Utils\MoneyFactory;
@@ -64,14 +65,6 @@ class TravelService extends BaseService
     {
         if (($contract = $this->getContract($contractId))) {
             return $contract->unit_id == $unit->ID ? TRUE : FALSE;
-        }
-        return FALSE;
-    }
-
-    public function isCommandAccessible($commandId, $unit)
-    {
-        if (($command = $this->getCommand($commandId))) {
-            return $command->unit_id == $unit->ID ? TRUE : FALSE;
         }
         return FALSE;
     }
@@ -145,9 +138,11 @@ class TravelService extends BaseService
     }
 
     /**     TRAVELS    */
-    public function getTravel($commandId)
+    public function getTravel(int $commandId, int $travelId): ?DTO\Command\Travel
     {
-        return $this->tableTravel->get($commandId);
+        $command = $this->commands->find($commandId);
+
+        return DTO\Command\TravelFactory::create($command, $travelId);
     }
 
     /**
@@ -157,7 +152,7 @@ class TravelService extends BaseService
      */
     public function getTravels(int $commandId): array
     {
-        return DTO\Command\TravelListFactory::create(
+        return DTO\Command\TravelFactory::createList(
             $this->commands->find($commandId)
         );
     }
@@ -165,16 +160,10 @@ class TravelService extends BaseService
     public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice): void
     {
         $command = $this->commands->find($commandId);
-        $types = $this->tableTravel->getTypes();
-        $typeEntity = $types[$type] ?? NULL;
-
-        if($typeEntity === NULL) {
-            throw new \InvalidArgumentException("Type $type not found");
-        }
 
         $details = new Command\TravelDetails($date, $type, $startPlace, $endPlace);
 
-        if($typeEntity["hasFuel"]) {
+        if($this->hasFuel($type)) {
             $command->addVehicleTravel($distanceOrPrice, $details);
         } else {
             $command->addTransportTravel(MoneyFactory::fromFloat($distanceOrPrice), $details);
@@ -183,14 +172,27 @@ class TravelService extends BaseService
         $this->commands->save($command);
     }
 
-    public function updateTravel($data, $tId)
+    public function updateTravel(int $commandId, int $travelId, float $distanceOrPrice, Command\TravelDetails $details): void
     {
-        return $this->tableTravel->update($data, $tId);
+        $command = $this->commands->find($commandId);
+
+        try {
+            if ($this->hasFuel($details->getTransportType())) {
+                $command->updateVehicleTravel($travelId, $distanceOrPrice, $details);
+            } else {
+                $command->updateTransportTravel($travelId, MoneyFactory::fromFloat($distanceOrPrice), $details);
+            }
+            $this->commands->save($command);
+        } catch(TravelNotFoundException $e) {
+        }
     }
 
-    public function deleteTravel($travelId)
+    public function removeTravel(int $commandId, int $travelId): void
     {
-        return $this->tableTravel->delete($travelId);
+        $command = $this->commands->find($commandId);
+        $command->removeTravel($travelId);
+
+        $this->commands->save($command);
     }
 
     public function getTravelTypes($pairs = FALSE)
@@ -258,22 +260,7 @@ class TravelService extends BaseService
         return $this->tableContract->delete($contractId);
     }
 
-    /**     COMMANDS    */
-
-    /**
-     * @param $commandId
-     * @return Row|FALSE|mixed
-     * @deprecated use getCommandDetail
-     */
-    public function getCommand($commandId)
-    {
-        $cacheId = __FUNCTION__ . "_" . $commandId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->table->get($commandId);
-            $this->saveSes($cacheId, $res);
-        }
-        return $res;
-    }
+    /*     COMMANDS    */
 
     public function getCommandDetail(int $id): ?DTO\Command
     {
@@ -282,6 +269,17 @@ class TravelService extends BaseService
         } catch (CommandNotFoundException $e) {
             return NULL;
         }
+    }
+
+    /**
+     * @param int $commandId
+     * @return string[]
+     */
+    public function getUsedTransportTypes(int $commandId): array
+    {
+        $command = $this->commands->find($commandId);
+
+        return $command->getUsedTransportTypes();
     }
 
     public function addCommand(
@@ -350,6 +348,12 @@ class TravelService extends BaseService
         );
 
         $this->commands->save($command);
+
+        foreach($command->getUsedTransportTypes() as $type) {
+            if(!in_array($type, $types, TRUE)) {
+                $types[] = $type;
+            }
+        }
 
         $this->table->updateTypes($id, $types);
     }
@@ -444,6 +448,17 @@ class TravelService extends BaseService
         return $contractId === NULL
             ? $passenger
             : Passenger::fromContract($this->contracts->find($contractId));
+    }
+
+    private function hasFuel(string $type): bool
+    {
+        $type = $this->tableTravel->getTypes()[$type] ?? NULL;
+
+        if ($type === NULL) {
+            throw new \InvalidArgumentException("Type $type not found");
+        }
+
+        return $type["hasFuel"];
     }
 
 }

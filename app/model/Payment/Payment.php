@@ -204,6 +204,11 @@ class Payment
         return in_array($state->getValue(), [State::COMPLETED, State::CANCELED], TRUE);
     }
 
+    public function canBePaired(): bool
+    {
+        return !$this->isClosed() && $this->variableSymbol !== NULL;
+    }
+
     /**
      * @throws PaymentClosedException
      */
