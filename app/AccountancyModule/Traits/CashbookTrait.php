@@ -115,12 +115,12 @@ trait CashbookTrait
     protected function createComponentFormMass($name): Form
     {
         $form = new BaseForm();
-        $form->addSubmit('massPrintSend')
-            ->onClick[] = function (SubmitButton $button): void {
+        $btn = $form->addSubmit('massPrintSend');
+        $btn->onClick[] = function (SubmitButton $button): void {
             $this->massPrintSubmitted($button);
         };
-        $form->addSubmit('massExportSend')
-            ->onClick[] = function (SubmitButton $button): void {
+        $btn = $form->addSubmit('massExportSend');
+        $btn->onClick[] = function (SubmitButton $button): void {
             $this->massExportSubmitted($button);
         };
 
@@ -175,8 +175,8 @@ trait CashbookTrait
         unset($allItems[$eventType == "general" ? 'Výpravy' : 'Tábory'][$eventType . "_" . $this->aid]);
 
         $form->addSelect('newEventId', 'Nová pokladní kniha:', $allItems)->setPrompt('Zvolte knihu');
-        $form->addSubmit('massMoveChitsSend')
-            ->onClick[] = function (SubmitButton $button): void {
+        $btn = $form->addSubmit('massMoveChitsSend');
+        $btn->onClick[] = function (SubmitButton $button): void {
             $this->massMoveChitsSubmitted($button);
         };
         return $form;
@@ -251,8 +251,8 @@ trait CashbookTrait
         $form->addHidden("pid");
         $form->addSubmit('send', 'Uložit')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = function(Form $form) : void {
-                $this->cashbookFormSubmitted($form);
+        $form->onSuccess[] = function (Form $form): void {
+            $this->cashbookFormSubmitted($form);
 
         };
         return $form;
