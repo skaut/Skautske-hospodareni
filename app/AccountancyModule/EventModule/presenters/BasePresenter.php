@@ -32,7 +32,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
                 $this->template->isEditable = $this->isEditable = array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions);
             } catch (\Skautis\Wsdl\PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
-                $this->redirect("Event:");
+                $this->redirect("Default:");
             }
         } else {
             $this->availableActions = $this->userService->actionVerify(self::STable); //zjistení událostí nevázaných na konretnní akci
