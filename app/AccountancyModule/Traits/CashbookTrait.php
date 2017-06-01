@@ -146,19 +146,19 @@ trait CashbookTrait
 
     /**
      * Vrací pole ID => Název pro výpravy i tábory
-     * @param string $eventType
+     * @param string $eventType "general" or "camp"
      * @param array $states
      * @return array
      */
     private function getListOfEvents(string $eventType, array $states = NULL): array
     {
-        $eventService = $this->context->getService($eventType . "Service")->event;
+        $eventService = $this->context->getService(($eventType === "general" ? "event" : $eventType) . "Service")->event;
         $rawArr = $eventService->getAll(date("Y"), NULL);
         $resultArray = [];
         if (!empty($rawArr)) {
             foreach ($rawArr as $item) {
-                if ($states === NULL || in_array($item['ID_Event' . ucfirst($eventType === "event" ? "general": $eventType) . 'State'], $states)) {
-                    $resultArray[$item['ID']] = $item['DisplayName'];
+                if ($states === NULL || in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
+                    $resultArray[$eventType . "_" . $item['ID']] = $item['DisplayName'];
                 }
             }
         }
@@ -167,58 +167,50 @@ trait CashbookTrait
 
     private function addMassMove(Form $form): Form
     {
-
         $allItems = [
-            'Výpravy' => $this->getListOfEvents("event", ["draft"]),
+            'Výpravy' => $this->getListOfEvents("general", ["draft"]),
             'Tábory' => $this->getListOfEvents("camp", ["draft", "approvedParent", "approvedLeader"]),
         ];
+        #remove current event/camp from selectbox
+        $eventType = $this->entityService->chits->type;
+        unset($allItems[$eventType == "general" ? 'Výpravy' : 'Tábory'][$eventType . "_" . $this->aid]);
 
         $form->addSelect('newEventId', 'Nová pokladní kniha:', $allItems)->setPrompt('Zvolte knihu');
         $form->addSubmit('massMoveChitsSend')
             ->onClick[] = function (SubmitButton $button): void {
             $this->massMoveChitsSubmitted($button);
         };
-
         return $form;
     }
 
     private function massMoveChitsSubmitted(SubmitButton $button): void
     {
         $form = $button->getForm();
-
         $chits = $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]');
         if (empty($chits)) {
             $form->addError("Nebyly vybrány žádné paragony!");
             return;
         }
-        $newEventId = $form['newEventId']->getValue();
+        $eventKey = $form['newEventId']->getValue();
 
-        $allEvents = $this->getListOfEvents("event");
-        $allCamps = $this->getListOfEvents("camp");
-        if (array_key_exists($newEventId, $allEvents)) {
-            $newType = "general";
-        } elseif (array_key_exists($newEventId, $allCamps)) {
-            $newType = "camp";
-        } else {
-            throw new \InvalidArgumentException("New event ID '" . $newEventId . "' doesn't exists!");
+        if ($eventKey === NULL) {
+            $form->addError("Nebyla vybrána žádná cílová pokladní kniha!");
+            return;
         }
+        list($newType, $newEventId) = explode("_", $eventKey, 2);
 
-        if (array_key_exists($this->aid, $allEvents)) {
-            $originType = "general";
-        } elseif (array_key_exists($this->aid, $allCamps)) {
-            $originType = "camp";
-        } else {
-            throw new \InvalidArgumentException("Origin event ID '" . $newEventId . "' doesn't exists!");
-        }
+        $originType = $this->entityService->chits->type;
 
         //@TODO: zkontrolovat oprávnění na obě akce
 
-        $this->entityService->chits->moveChit(
+        $this->entityService->chits->moveChits(
             $chits,
+            $this->aid,
             $originType,
             $newEventId,
             $newType
         );
+        $this->redirect("this");
     }
 
     //FORM CASHBOOK

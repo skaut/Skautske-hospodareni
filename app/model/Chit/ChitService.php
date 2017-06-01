@@ -183,14 +183,20 @@ class ChitService extends MutableBaseService
                 $toChange[$name] = $val[$name];
             }
         }
+
         $ret = $this->table->update($chitId, $toChange);
+        if(array_key_exists('eventId', $toChange)) {
+            $chit['eventId'] = $toChange['eventId'];
+        }
+        if(array_key_exists('category', $toChange)) {
+            $chit['category'] = $toChange['category'];
+        }
+
         //category update
         if ($this->type == self::TYPE_CAMP) {
             $skautisEventId = $this->getSkautisId($chit->eventId);
-            //@TODO: zkontrolovat proč to je tady 2x
-            $this->updateCategory($skautisEventId, $chit->category);
-            if (isset($val["category"])) {
-                $this->updateCategory($skautisEventId, $val["category"]);
+            if($skautisEventId !== 0) {
+                $this->updateCategory($skautisEventId, $chit->category);
             }
         }
         return $ret;
@@ -439,13 +445,16 @@ class ChitService extends MutableBaseService
         return $this->table->lockEvent($oid, $userId);
     }
 
-    public function moveChits(array $chits, string $originEventType, int $newEventId, string $newEventType): void
+    public function moveChits(array $chits, int $originEventId, string $originEventType, int $newEventId, string $newEventType): void
     {
         foreach ($chits as $chitId) {
             $toUpdate = ["eventId" => $this->getLocalId($newEventId, $newEventType)];
+            $chit = $this->get($chitId);
+            if($this->getLocalId($originEventId, $originEventType) !== $chit['eventId']) {
+                throw new \InvalidArgumentException("Zvolený doklad ($chitId) nenáleží původní akci ($originEventId)");
+            }
             //pokud nejsou obe knihy od výprav, tak nastav kategorii na neurčitou kategorii
             if ($originEventType !== $newEventType || $originEventType !== "general") {
-                $chit = $this->get($chitId);
                 $toUpdate["category"] = $chit['ctype'] === "out" ? self::CHIT_UNDEFINED_OUT : self::CHIT_UNDEFINED_IN;
             }
             $this->update($chitId, $toUpdate);
