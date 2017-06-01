@@ -43,6 +43,7 @@ $(document).ready(function () {
     });
 
     Nette.validators.MyValidators_hasSelectedAny = function (elem, args, val) {
+        args = Object.keys(args);
         for(var i = 0; i < args.length; i++) {
             if(val.indexOf(args[i]) > -1) {
                 return true;
