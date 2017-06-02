@@ -64,12 +64,8 @@ class DefaultPresenter extends BasePresenter
         $grid->addColumnDateTime('StartDate', 'Od')->setFormat('d.m.Y')->setSortable();
         $grid->addColumnDateTime('EndDate', 'Do')->setFormat('d.m.Y')->setSortable();
         $grid->addColumnText('prefix', 'Prefix')->setSortable();
-        $grid->addColumnStatus('ID_EventGeneralState', 'Prefix')
-            ->setCaret(FALSE)
-            ->addOption("draft", 'Rozpracováno')->setClass('btn-warning')->endOption()
-            ->addOption("closed", 'Uzavřeno')->setClass('btn-success')->endOption()
-            ->addOption("cancelled", 'Zrušeno')->setClass('btn-invert')->endOption();
-        
+        $grid->addColumnText('state', 'Stav');
+
         $grid->addAction('delete', '', 'cancel!', ['aid' => 'ID'])
             ->setIcon('trash')
             ->setTitle('Smazat')
@@ -82,6 +78,8 @@ class DefaultPresenter extends BasePresenter
             }
             return $item['accessDelete'];
         });
+
+        $grid->setTemplateFile(__DIR__."/../templates/eventsGrid.latte");
         return $grid;
 
     }
@@ -89,47 +87,6 @@ class DefaultPresenter extends BasePresenter
     public function renderDefault(): void
     {
         $this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
-    }
-
-    private function sortEvents(&$list, $param): void
-    {
-        switch ($param) {
-            case 'name':
-                $fnc = function ($a, $b) {
-                    return strcasecmp($a['DisplayName'], $b['DisplayName']);
-                };
-                break;
-            case 'end':
-                $fnc = function ($a, $b) {
-                    $aTime = strtotime($a['EndDate']);
-                    $bTime = strtotime($b['EndDate']);
-                    if ($aTime == $bTime) {
-                        return strcasecmp($a['DisplayName'], $b['DisplayName']);
-                    }
-                    return $aTime > $bTime;
-                };
-                break;
-            case 'prefix':
-                $fnc = function ($a, $b) {
-                    return strcasecmp($a['prefix'], $b['prefix']);
-                };
-                break;
-            case 'state':
-                $fnc = function ($a, $b) {
-                    return strcasecmp($a['ID_EventGeneralState'], $b['ID_EventGeneralState']);
-                };
-                break;
-            default:
-                $fnc = function ($a, $b) {
-                    $aTime = strtotime($a['StartDate']);
-                    $bTime = strtotime($b['StartDate']);
-                    if ($aTime == $bTime) {
-                        return strcasecmp($a['DisplayName'], $b['DisplayName']);
-                    }
-                    return $aTime > $bTime;
-                };
-        }
-        uasort($list, $fnc);
     }
 
     public function handleChangeYear(?int $year): void
