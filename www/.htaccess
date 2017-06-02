@@ -2,23 +2,31 @@
 Options -Indexes
 AddType text/cache-manifest .manifest
 
-# mod_rewrite
-<IfModule mod_rewrite.c>
-	RewriteEngine On
-	# RewriteBase /
+# Do not send referrer outside of app
+Header always add Referrer-Policy "strict-origin"
+# Enable browser XSS filter
+Header always set X-Xss-Protection "1; mode=block"
+# Use content-type passed by server
+Header always set X-Content-Type-Options "nosniff"
 
-    # www.h.skauting.cz -> https://h.skauting.cz
-	RewriteCond %{HTTP_HOST} ^www\.(h\.skauting\.cz)$ [NC]
-	RewriteRule ^(.*)$ https://h.skauting.cz%{REQUEST_URI} [L,R=301]
+<If "%{HTTP_HOST} == 'h.skauting.cz'">
+    # Use HSTS for ~3 months
+    Header always set Strict-Transport-Security "max-age=7884000"
+</If>
 
-    # http -> https
-	RewriteCond %{HTTP_HOST} ^h\.skauting\.cz$ [NC]
-	RewriteCond %{HTTPS} off
-	RewriteRule ^(.*)$ https://h.skauting.cz%{REQUEST_URI} [L,R=301]
+RewriteEngine On
+
+# www.h.skauting.cz -> https://h.skauting.cz
+RewriteCond %{HTTP_HOST} ^www\.(h\.skauting\.cz)$ [NC]
+RewriteRule ^(.*)$ https://h.skauting.cz%{REQUEST_URI} [L,R=301]
+
+# http -> https
+RewriteCond %{HTTP_HOST} ^h\.skauting\.cz$ [NC]
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://h.skauting.cz%{REQUEST_URI} [L,R=301]
 
 
-	# front controller
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule !\.(pdf|js|ico|gif|jpg|png|css|rar|zip|tar\.gz)$ index.php [L]
-</IfModule>
+# front controller
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule !\.(pdf|js|ico|gif|jpg|png|css|rar|zip|tar\.gz)$ index.php [L]
