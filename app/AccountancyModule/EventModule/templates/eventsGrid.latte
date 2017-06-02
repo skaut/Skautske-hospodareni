@@ -1,0 +1,13 @@
+{extends $original_template}
+
+{define col-state}
+    {var $state = $item["ID_EventGeneralState"]}
+
+    {if $state === "draft"}
+        <span class="label label-warning">Rozpracováno</span>
+    {elseif $state === "closed"}
+        <span class="label label-success">Uzavřeno</span>
+    {elseif $state === "cancelled"}
+        <span class="label label-default">Zrušeno</span>
+    {/if}
+{/define}

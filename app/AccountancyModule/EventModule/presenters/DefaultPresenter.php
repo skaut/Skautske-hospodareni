@@ -64,12 +64,8 @@ class DefaultPresenter extends BasePresenter
         $grid->addColumnDateTime('StartDate', 'Od')->setFormat('d.m.Y')->setSortable();
         $grid->addColumnDateTime('EndDate', 'Do')->setFormat('d.m.Y')->setSortable();
         $grid->addColumnText('prefix', 'Prefix')->setSortable();
-        $grid->addColumnStatus('ID_EventGeneralState', 'Prefix')
-            ->setCaret(FALSE)
-            ->addOption("draft", 'Rozpracováno')->setClass('btn-warning')->endOption()
-            ->addOption("closed", 'Uzavřeno')->setClass('btn-success')->endOption()
-            ->addOption("cancelled", 'Zrušeno')->setClass('btn-invert')->endOption();
-        
+        $grid->addColumnText('state', 'Stav');
+
         $grid->addAction('delete', '', 'cancel!', ['aid' => 'ID'])
             ->setIcon('trash')
             ->setTitle('Smazat')
@@ -82,6 +78,8 @@ class DefaultPresenter extends BasePresenter
             }
             return $item['accessDelete'];
         });
+
+        $grid->setTemplateFile(__DIR__."/../templates/eventsGrid.latte");
         return $grid;
 
     }
