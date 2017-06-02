@@ -2,6 +2,18 @@
 Options -Indexes
 AddType text/cache-manifest .manifest
 
+# Do not send referrer outside of app
+Header always add Referrer-Policy "strict-origin"
+# Enable browser XSS filter
+Header always set X-Xss-Protection "1; mode=block"
+# Use content-type passed by server
+Header always set X-Content-Type-Options "nosniff"
+
+<If "%{HTTP_HOST} == 'h.skauting.cz'">
+    # Use HSTS for ~3 months
+    Header always set Strict-Transport-Security "max-age=7884000"
+</If>
+
 # mod_rewrite
 <IfModule mod_rewrite.c>
 	RewriteEngine On
