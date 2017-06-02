@@ -89,47 +89,6 @@ class DefaultPresenter extends BasePresenter
         $this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
     }
 
-    private function sortEvents(&$list, $param): void
-    {
-        switch ($param) {
-            case 'name':
-                $fnc = function ($a, $b) {
-                    return strcasecmp($a['DisplayName'], $b['DisplayName']);
-                };
-                break;
-            case 'end':
-                $fnc = function ($a, $b) {
-                    $aTime = strtotime($a['EndDate']);
-                    $bTime = strtotime($b['EndDate']);
-                    if ($aTime == $bTime) {
-                        return strcasecmp($a['DisplayName'], $b['DisplayName']);
-                    }
-                    return $aTime > $bTime;
-                };
-                break;
-            case 'prefix':
-                $fnc = function ($a, $b) {
-                    return strcasecmp($a['prefix'], $b['prefix']);
-                };
-                break;
-            case 'state':
-                $fnc = function ($a, $b) {
-                    return strcasecmp($a['ID_EventGeneralState'], $b['ID_EventGeneralState']);
-                };
-                break;
-            default:
-                $fnc = function ($a, $b) {
-                    $aTime = strtotime($a['StartDate']);
-                    $bTime = strtotime($b['StartDate']);
-                    if ($aTime == $bTime) {
-                        return strcasecmp($a['DisplayName'], $b['DisplayName']);
-                    }
-                    return $aTime > $bTime;
-                };
-        }
-        uasort($list, $fnc);
-    }
-
     public function handleChangeYear(?int $year): void
     {
         $this->ses->year = $year;
