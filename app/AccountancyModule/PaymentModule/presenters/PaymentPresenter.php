@@ -129,10 +129,12 @@ class PaymentPresenter extends BasePresenter
         $this->template->payments = $payments = $this->model->findByGroup($id);
         $this->template->summarize = $this->model->getGroupSummaries([$id])[$id];
         $this->template->now = new \DateTimeImmutable();
-        $paymentsForSendEmail = array_filter($payments, function($p) {
-            return strlen($p->email) > 4 && $p->state == "preparing";
+
+        $paymentsForSendEmail = array_filter($payments, function(Payment $p) {
+            return $p->getEmail() !== NULL && $p->getState()->equalsValue(State::PREPARING);
         });
-        $this->template->isGroupSendActive = ($group->getState() === 'open') && count($paymentsForSendEmail) > 0;
+
+        $this->template->isGroupSendActive = $group->getState() === 'open' && !empty($paymentsForSendEmail);
     }
 
     public function renderEdit(int $pid): void
@@ -463,7 +465,7 @@ class PaymentPresenter extends BasePresenter
 
         $id = $v->pid != "" ? (int)$v->pid : NULL;
         $name = $v->name;
-        $email = $v->email;
+        $email = $v->email !== "" ? $v->email : NULL;
         $amount = (float)$v->amount;
         $dueDate = \DateTimeImmutable::createFromMutable($v->maturity);
         $variableSymbol = $v->vs !== "" ? (int)$v->vs : NULL;

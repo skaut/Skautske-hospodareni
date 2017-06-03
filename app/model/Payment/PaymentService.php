@@ -87,7 +87,7 @@ class PaymentService
     public function update(
         int $id,
         string $name,
-        string $email,
+        ?string $email,
         float $amount,
         DateTimeImmutable $dueDate,
         ?int $variableSymbol,
