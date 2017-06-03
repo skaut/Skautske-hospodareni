@@ -201,7 +201,16 @@ trait CashbookTrait
 
         $originType = $this->entityService->chits->type;
 
-        //@TODO: zkontrolovat oprávnění na obě akce
+        if($newType == ChitService::EVENT_TYPE_GENERAL) {
+            $newEventAccessible = $this->userService->IsEventEditable($newEventId);
+        } else {
+            $newEventAccessible = $this->userService->IsCampEditable($newEventId);
+        }
+
+        if(!$this->isEditable  || !$newEventAccessible) {
+            $this->flashMessage("Nemáte oprávnění k původní nebo nové pokladní knize!", "danger");
+            $this->redirect("this");
+        }
 
         $this->entityService->chits->moveChits(
             $chits,

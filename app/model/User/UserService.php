@@ -2,13 +2,16 @@
 
 namespace Model;
 
-use \Nette\Utils\Strings;
+use Nette\Utils\Strings;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  */
 class UserService extends BaseService
 {
+
+    const SKAUTIS_CAMP_PREFIX = "EV_EventCamp";
+    const SKAUTIS_GENERAL_PREFIX = "EV_EventGeneral";
 
     /**
      * varcí ID role aktuálně přihlášeného uživatele
@@ -151,6 +154,18 @@ class UserService extends BaseService
     public function getSkautisUrl()
     {
         return $this->skautis->getConfig()->getBaseUrl();
+    }
+
+    public function IsEventEditable(int $id): bool
+    {
+        return $this->actionVerify(self::SKAUTIS_GENERAL_PREFIX, $id, self::SKAUTIS_GENERAL_PREFIX. "_UPDATE");
+    }
+
+    public function IsCampEditable(int $id): bool
+    {
+        $actions = $this->actionVerify(self::SKAUTIS_CAMP_PREFIX, $id);
+        return(array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE_Real", $actions) ||
+            array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE_RealTotalCostBeforeEnd", $actions));
     }
 
 }
