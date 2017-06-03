@@ -1,6 +1,7 @@
 <?php
 
 use App\Forms\BaseForm;
+use Model\ChitService;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
@@ -151,7 +152,7 @@ trait CashbookTrait
      */
     private function getListOfEvents(string $eventType, array $states = NULL): array
     {
-        $eventService = $this->context->getService(($eventType === "general" ? "event" : $eventType) . "Service")->event;
+        $eventService = $this->context->getService(($eventType === ChitService::EVENT_TYPE_GENERAL ? "event" : $eventType) . "Service")->event;
         $rawArr = $eventService->getAll(date("Y"), NULL);
         $resultArray = [];
         if (!empty($rawArr)) {
@@ -167,12 +168,12 @@ trait CashbookTrait
     private function addMassMove(Form $form): Form
     {
         $allItems = [
-            'Výpravy' => $this->getListOfEvents("general", ["draft"]),
-            'Tábory' => $this->getListOfEvents("camp", ["draft", "approvedParent", "approvedLeader"]),
+            'Výpravy' => $this->getListOfEvents(ChitService::EVENT_TYPE_GENERAL, ["draft"]),
+            'Tábory' => $this->getListOfEvents(ChitService::EVENT_TYPE_CAMP, ["draft", "approvedParent", "approvedLeader"]),
         ];
         #remove current event/camp from selectbox
         $eventType = $this->entityService->chits->type;
-        unset($allItems[$eventType == "general" ? 'Výpravy' : 'Tábory'][$eventType . "_" . $this->aid]);
+        unset($allItems[$eventType == ChitService::EVENT_TYPE_GENERAL ? 'Výpravy' : 'Tábory'][$eventType . "_" . $this->aid]);
 
         $form->addSelect('newEventId', 'Nová pokladní kniha:', $allItems)->setPrompt('Zvolte knihu');
         $btn = $form->addSubmit('massMoveChitsSend');

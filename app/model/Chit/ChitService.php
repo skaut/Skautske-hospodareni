@@ -16,6 +16,8 @@ class ChitService extends MutableBaseService
     const CHIT_UNDEFINED_OUT = 8;
     const CHIT_UNDEFINED_IN = 12;
     const SKAUTIS_BUDGET_RESERVE = 15;
+    const EVENT_TYPE_CAMP  = "camp";
+    const EVENT_TYPE_GENERAL = "general";
 
     /** @var Mapper */
     private $skautisMapper;
