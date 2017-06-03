@@ -463,7 +463,7 @@ class PaymentPresenter extends BasePresenter
 
         $id = $v->pid != "" ? (int)$v->pid : NULL;
         $name = $v->name;
-        $email = $v->email;
+        $email = $v->email !== "" ? $v->email : NULL;
         $amount = (float)$v->amount;
         $dueDate = \DateTimeImmutable::createFromMutable($v->maturity);
         $variableSymbol = $v->vs !== "" ? (int)$v->vs : NULL;
