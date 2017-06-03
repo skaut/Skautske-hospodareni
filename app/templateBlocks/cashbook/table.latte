@@ -107,6 +107,23 @@ $list array() - pole paragonů
                         </tr>
                     <tbody>
                 </table>
+
+
+                <div id="maasMoveModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="massMoveLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
+                                <h3>Hromadný přesun dokladů</h3>
+                            </div>
+                            <div class="modal-body">
+                                {input newEventId class => "form-control input-sm"}<br />
+                                {input massMoveChitsSend class => "btn btn-primary"}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             {/form}
         </div>
 

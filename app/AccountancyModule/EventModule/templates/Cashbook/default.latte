@@ -5,6 +5,6 @@
 {include ../ActionMenu.latte}
 
 <div n:snippet="paragony">
-    {include $templateBlockDir.'cashbook/table.latte'}
+    {include $templateBlockDir.'cashbook/table.latte', smallIcons=>'<a href="#maasMoveModal" title="Přesunout vybrané" role="button" data-toggle="modal" class="btn btn-info btn-xs allDependend hidden-xs"><i class="glyphicon glyphicon-step-forward"></i></a>'}
     {include $templateBlockDir.'cashbook/js.latte'}
 </div>

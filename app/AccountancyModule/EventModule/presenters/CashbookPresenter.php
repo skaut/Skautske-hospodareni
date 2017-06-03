@@ -2,9 +2,6 @@
 
 namespace App\AccountancyModule\EventModule;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class CashbookPresenter extends BasePresenter
 {
 
