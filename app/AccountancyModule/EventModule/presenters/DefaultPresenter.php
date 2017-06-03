@@ -3,7 +3,6 @@
 namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Factories\GridFactory;
-use App\Forms\BaseForm;
 use Model\ExcelService;
 use MyValidators;
 use Nette\Application\UI\Form;
@@ -73,8 +72,8 @@ class DefaultPresenter extends BasePresenter
             ->setClass('btn btn-xs btn-danger ajax')
             ->setConfirm('Opravdu chcete zrušit akci %s?', 'DisplayName');
 
-        $grid->addExportCallback('Souhrn akcí', function($data_source, $grid) {
-            $this->excelService->getEventSummaries(array_keys($data_source), $this->eventService);
+        $grid->addExportCallback('Souhrn akcí', function (array $dataSource, DataGrid $grid) {
+            $this->excelService->getEventSummaries(array_keys($dataSource), $this->eventService);
         }, TRUE)->setAjax(FALSE);
 
         $grid->allowRowsAction('delete', function ($item) {
@@ -84,7 +83,7 @@ class DefaultPresenter extends BasePresenter
             return $item['accessDelete'];
         });
 
-        $grid->setTemplateFile(__DIR__."/../templates/eventsGrid.latte");
+        $grid->setTemplateFile(__DIR__ . "/../templates/eventsGrid.latte");
         return $grid;
 
     }
