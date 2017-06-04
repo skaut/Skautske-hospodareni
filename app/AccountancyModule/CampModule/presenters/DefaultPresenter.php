@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\Factories\GridFactory;
 use Nette\Application\UI\Form;
 
 /**
@@ -13,6 +14,16 @@ class DefaultPresenter extends BasePresenter
     public $ses;
 
     const DEFAULT_STATE = "approvedParent"; //filtrovani zobrazených položek
+
+    /** @var GridFactory */
+    private $gridFactory;
+
+    public function __construct(GridFactory $gf)
+    {
+        parent::__construct();
+        $this->gridFactory = $gf;
+    }
+
 
     protected function startup() : void
     {
@@ -27,23 +38,38 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function renderDefault() : void
+    protected function createComponentCampGrid()
     {
         //filtrovani zobrazených položek
-        $year = isset($this->ses->year) ? $this->ses->year : date("Y");
-        $state = isset($this->ses->state) ? $this->ses->state : NULL;
-
+        $year = $this->ses->year ?? date('Y');
+        $state = $this->ses->state ?? NULL;
         $list = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $value['accessDetail'] = $this->userService->actionVerify(self::STable, $value['ID'], self::STable . "_DETAIL");
-            $list[$key] = $value;
+            $list[$key]['accessDetail'] = $this->userService->actionVerify(self::STable, $value['ID'], self::STable . "_DETAIL");
         }
-        $this->template->list = $list;
-        if ($year) {
-            $this['formFilter']['year']->setDefaultValue($year);
+
+        $grid = $this->gridFactory->create();
+        $grid->setPrimaryKey("ID");
+        $grid->setDataSource($list);
+        $grid->addColumnLink('DisplayName', 'Název', 'Detail:default', NULL, ['aid' => 'ID'])->setSortable()->setFilterText();
+        $grid->addColumnDateTime('StartDate', 'Od')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnDateTime('EndDate', 'Do')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnText('Location', 'Místo konání')->setSortable()->setFilterText();
+        $grid->addColumnText('state', 'Stav');
+
+        $grid->setTemplateFile(__DIR__ . "/../templates/campsGrid.latte");
+        return $grid;
+
+    }
+
+
+    public function renderDefault() : void
+    {
+        if ($this->ses->year !== NULL) {
+            $this['formFilter']['year']->setDefaultValue($this->ses->year);
         }
-        if ($state) {
-            $this['formFilter']['state']->setDefaultValue($state);
+        if ($this->ses->state !== NULL) {
+            $this['formFilter']['state']->setDefaultValue($this->ses->state);
         }
     }
 

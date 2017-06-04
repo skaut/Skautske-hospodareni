@@ -164,8 +164,11 @@ class UserService extends BaseService
     public function IsCampEditable(int $id): bool
     {
         $actions = $this->actionVerify(self::SKAUTIS_CAMP_PREFIX, $id);
-        return(array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE_Real", $actions) ||
-            array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE_RealTotalCostBeforeEnd", $actions));
+        return(
+            array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE", $actions) ||
+            array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE_Real", $actions) ||
+            array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE_RealTotalCostBeforeEnd", $actions)
+        );
     }
 
 }
