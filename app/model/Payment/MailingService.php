@@ -66,6 +66,7 @@ class MailingService
         $user = $this->users->find($userId);
 
         $this->sendForPayment($payment, $group, $bankAccount, $user);
+        $this->payments->save($payment);
     }
 
     public function sendEmailForGroup(int $groupId, int $userId) : int
@@ -83,6 +84,8 @@ class MailingService
                 $sent++;
             } catch(InvalidEmailException | PaymentClosedException $e) {}
         }
+
+        $this->payments->saveMany($payments);
 
         return $sent;
     }
