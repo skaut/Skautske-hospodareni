@@ -21,6 +21,7 @@
                     <th>Název</th>
                     <th>Od</th>
                     <th>Do</th>
+                    <th>Místo konání</th>
                     <th>Stav</th>
                 </tr>
             </thead>
@@ -29,6 +30,7 @@
                     <td><a n:tag-if="$i['accessDetail']" n:href="Detail: $i['ID']">{$i['DisplayName']}</a></td>
                     <td>{$i['StartDate']|date:"d.m.Y"}</td>
                     <td>{$i['EndDate']|date:"d.m.Y"}</td>
+                    <td>{$i['Location']}</td>
                     <td>{$i['ID_EventCampState']|campStateLabel|noescape}</td>
                 </tr>
             </tbody>

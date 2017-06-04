@@ -72,6 +72,10 @@ class DefaultPresenter extends BasePresenter
             ->setClass('btn btn-xs btn-danger ajax')
             ->setConfirm('Opravdu chcete zrušit akci %s?', 'DisplayName');
 
+        $grid->addExportCallback('Souhrn akcí', function (array $dataSource, DataGrid $grid) {
+            $this->excelService->getEventSummaries(array_keys($dataSource), $this->eventService);
+        }, TRUE)->setAjax(FALSE);
+
         $grid->allowRowsAction('delete', function ($item) {
             if (!array_key_exists("accessDelete", $item)) {
                 return TRUE;
@@ -79,7 +83,7 @@ class DefaultPresenter extends BasePresenter
             return $item['accessDelete'];
         });
 
-        $grid->setTemplateFile(__DIR__."/../templates/eventsGrid.latte");
+        $grid->setTemplateFile(__DIR__ . "/../templates/eventsGrid.latte");
         return $grid;
 
     }
@@ -111,7 +115,7 @@ class DefaultPresenter extends BasePresenter
 
     /**
      * zruší akci
-     * @param type $aid
+     * @param int $aid
      */
     public function handleCancel(int $aid): void
     {
@@ -221,24 +225,6 @@ class DefaultPresenter extends BasePresenter
             $this->redirect("Event:", ["aid" => $id]);
         }
         $this->redirect("this");
-    }
-
-    protected function createComponentFormExportSummary($name): Form
-    {
-        $form = $this->prepareForm($this, $name);
-        $form->addSubmit('send', 'Souhrn vybraných');
-
-        $form->onSuccess[] = function (Form $form): void {
-            $this->formExportSummarySubmitted($form);
-        };
-
-        return $form;
-    }
-
-    private function formExportSummarySubmitted(Form $form): void
-    {
-        $values = $form->getHttpData($form::DATA_TEXT, 'sel[]');
-        $this->excelService->getEventSummaries($values, $this->eventService);
     }
 
 }
