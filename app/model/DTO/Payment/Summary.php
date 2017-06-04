@@ -1,12 +1,13 @@
 <?php
 
-namespace Model\Payment;
+namespace Model\DTO\Payment;
 
 use Nette\SmartObject;
 
 /**
  * @property-read int $count
  * @property-read float $amount
+ * @property-read float $percentage
  */
 class Summary
 {
@@ -19,10 +20,14 @@ class Summary
     /** @var float */
     private $amount;
 
-    public function __construct(int $count, float $amount)
+    /** @var float */
+    private $percentage;
+
+    public function __construct(int $count, float $amount, float $percentage)
     {
         $this->count = $count;
         $this->amount = $amount;
+        $this->percentage = $percentage;
     }
 
     public function getCount(): int
@@ -33,6 +38,11 @@ class Summary
     public function getAmount(): float
     {
         return $this->amount;
+    }
+
+    public function getPercentage(): float
+    {
+        return $this->percentage;
     }
 
 }
