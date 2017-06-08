@@ -51,17 +51,13 @@ class CampPresenter extends BasePresenter
 
         $participants = $this->campService->participants->getAll($group->getSkautisId());
 
-        $paymentPersonIds = array_map(function(Payment $payment) {
-            return $payment->getPersonId();
-        }, $this->model->findByGroup($id));
-
-        $paymentPersonIds = array_flip(array_filter($paymentPersonIds));
-
         $form = $this['massAddForm'];
         /* @var $form MassAddForm */
 
-        $participants = array_filter($participants, function($p) use($paymentPersonIds) {
-            return !isset($paymentPersonIds[$p->ID_Person]);
+        $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
+
+        $participants = array_filter($participants, function($p) use($personsWithPayment) {
+            return !in_array($p->ID_Person, $personsWithPayment, TRUE);
         });
 
         foreach ($participants as $p) {
