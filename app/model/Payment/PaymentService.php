@@ -592,7 +592,7 @@ class PaymentService
      * @param int $groupId
      * @return int[]
      */
-    private function getPersonsWithActivePayment(int $groupId): array
+    public function getPersonsWithActivePayment(int $groupId): array
     {
         $payments = $this->payments->findByGroup($groupId);
 
@@ -600,9 +600,7 @@ class PaymentService
             return $payment->getPersonId() !== NULL && !$payment->getState()->equalsValue(State::CANCELED);
         });
 
-        return array_map(function(Payment $payment) {
-            return $payment->getPersonId();
-        }, $payments);
+        return array_map(function(Payment $p) { return $p->getPersonId(); }, $payments);
 
     }
 
