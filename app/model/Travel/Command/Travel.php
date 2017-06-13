@@ -37,7 +37,6 @@ abstract class Travel
     }
 
     public function getDetails(): TravelDetails
-
     {
         return $this->details;
     }
