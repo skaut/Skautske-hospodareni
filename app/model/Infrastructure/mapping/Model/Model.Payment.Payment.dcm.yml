@@ -38,6 +38,9 @@ Model\Payment\Payment:
             type: string_enum
             annotations:
                 enum: { class: Model\Payment\Payment\State }
+        closedAt:
+            type: datetime_immutable
+            column: dateClosed
 
     embedded:
         transaction:
