@@ -12,6 +12,7 @@ use Model\DTO\Payment\Payment;
 use Model\Mail\MailerNotFoundException;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
+use Model\Payment\InvalidEmailException;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
@@ -282,6 +283,8 @@ class PaymentPresenter extends BasePresenter
             $this->smtpError($e);
         } catch (InvalidBankAccountException $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+        } catch (InvalidEmailException $e) {
+            $this->flashMessage('Platba nemá vyplněný email', 'danger');
         }
 
         $this->redirect('this');
