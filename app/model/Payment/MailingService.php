@@ -58,6 +58,13 @@ class MailingService
         $this->smtps = $smtps;
     }
 
+    /**
+     * Sends email to single payment address
+     * @param int $paymentId
+     * @param int $userId
+     * @throws InvalidEmailException
+     * @throws PaymentNotFoundException
+     */
     public function sendEmail(int $paymentId, int $userId): void
     {
         $payment = $this->payments->find($paymentId);
@@ -139,6 +146,11 @@ class MailingService
             throw new PaymentClosedException();
         }
 
+        $email = $paymentRow->getEmail();
+        if ($email === NULL || !Validators::isEmail($email)) {
+            throw new InvalidEmailException();
+        }
+
         $this->send($group, $this->createPayment($paymentRow), $bankAccount, $user);
 
         if($paymentRow->getState()->equalsValue(State::SENT)) {
@@ -150,11 +162,6 @@ class MailingService
 
     private function send(Group $group, MailPayment $payment, ?string $bankAccount, User $user) : void
     {
-        $email = $payment->getEmail();
-        if ($email === NULL || !Validators::isEmail($email)) {
-            throw new InvalidEmailException();
-        }
-
         $emailTemplate = $group->getEmailTemplate()->evaluate($group, $payment, $bankAccount, $user->getName());
 
         $template = $this->templateFactory->create('payment.base', [
