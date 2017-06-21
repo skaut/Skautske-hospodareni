@@ -47,7 +47,8 @@
         "codeception/mockery-module": "^0.2.2",
         "phpstan/phpstan": "^0.7.0",
         "phpstan/phpstan-nette": "^0.7.0",
-        "phpstan/phpstan-dibi": "^0.7.0"
+        "phpstan/phpstan-dibi": "^0.7.0",
+        "captbaritone/mailcatcher-codeception-module": "^1.2"
     },
     "repositories": [
         {

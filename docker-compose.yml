@@ -37,6 +37,18 @@ services:
                     - phantom
         command: phantomjs --webdriver=4444 --ssl-protocol=any --ignore-ssl-errors=true
 
+    smtp:
+        container_name: hskauting.smtp
+        image: tophfr/mailcatcher
+        environment:
+            SMTP_HOST: smtp-hospodareni.loc
+        networks:
+            main:
+                aliases:
+                    - smtp-hospodareni.loc
+        ports:
+            - 1080:1080
+
 volumes:
     mysql:
     www:
