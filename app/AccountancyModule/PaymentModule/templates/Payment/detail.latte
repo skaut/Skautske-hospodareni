@@ -107,7 +107,7 @@
                         <td n:if="$isEditable" class="r nowrap">
                         {if !$l->closed}
                             <a n:href="edit $l->id" class="btn btn-sm btn-primary" title="Upravit platbu"><i class="glyphicon glyphicon-edit"></i></a>
-                            <a n:href="send! $l->id" class="btn btn-sm btn-primary{if $l->email == ""} disabled" title="Není uveden email{else}" title="Odeslat email o platbě{/if}" ><i class="glyphicon glyphicon-envelope"></i></a>
+                            <a n:href="send! $l->id" n:class="btn, btn-sm, btn-primary, 'ui--sendEmail-'.$iterator->counter, $l->email === NULL ? disabled" title="{$l->email === NULL ? 'Není uveden email' : 'Odeslat email o platbě'}"><i class="glyphicon glyphicon-envelope"></i></a>
                             <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="glyphicon glyphicon-check"></i></a> 
                             <a n:href="cancel! $l->id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete zrušit platbu?');" title="Zrušit"><i class="glyphicon glyphicon-remove"></i></a>
                         {elseif $l->closed}

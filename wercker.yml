@@ -7,6 +7,11 @@ services:
       env:
         MYSQL_ALLOW_EMPTY_PASSWORD: yes
         MYSQL_DATABASE: hskauting
+    - name: smtp-hospodareni.loc
+      id: tophfr/mailcatcher
+      env:
+        SMTP_HOST: smtp-hospodareni.loc
+
 build:
     steps:
         - script:
@@ -47,6 +52,9 @@ build:
             code: echo "127.0.0.1 hospodareni.loc" >> /etc/hosts
         - script:
             name: configure /etc/hosts (phantom)
+            code: echo "127.0.0.1 phantom" >> /etc/hosts
+        - script:
+            name: configure /etc/hosts (smtp-hospodareni.loc)
             code: echo "127.0.0.1 phantom" >> /etc/hosts
         - script:
             name: Make everything accessible
