@@ -28,6 +28,8 @@ $I->see('Zatím zde nejsou žádné platby.');
 
 $page = new \Page\Payment($I);
 
+$I->wantTo('create payments');
+
 $I->amGoingTo('add first payment');
 $page->addPayment('Testovací platba 1', NULL, 500);
 
@@ -37,11 +39,15 @@ $page->addPayment('Testovací platba 2', NULL, 500);
 $I->amGoingTo('add third payment');
 $page->addPayment('Testovací platba 3', 'frantisekmasa1@gmail.com', 300);
 
+$I->wantTo('complete payment');
+
 $I->amGoingTo('mark second payment as complete');
 $I->click('(//*[@title="Zaplaceno"])[2]');
 
 $I->canSeeNumberOfElements('(//*[text()="Připravena"])', 2);
 $I->see('Dokončena');
+
+$I->wantTo('send payment email');
 
 $I->amGoingTo('send third payment');
 $I->click('//a[contains(@class, \'ui--sendEmail-2\')]');
@@ -53,7 +59,7 @@ $page->seeNumberOfPaymentsWithState("Dokončena", 1);
 
 $I->seeEmailCount(1);
 
-$I->amGoingTo('close and reopen group');
+$I->wantTo('close and reopen group');
 $I->click('Uzavřít');
 $I->waitForText('Znovu otevřít');
 $I->click('Znovu otevřít');
