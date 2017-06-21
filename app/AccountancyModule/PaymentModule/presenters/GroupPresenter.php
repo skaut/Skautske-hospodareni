@@ -145,7 +145,8 @@ class GroupPresenter extends BasePresenter
             ->setRequired(FALSE)
             ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
         $form->addSelect("smtp", "Email odesílatele", $this->mail->getPairs($this->aid))
-            ->setPrompt("Vyberte email");
+            ->setPrompt("Vyberte email")
+            ->setAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
         $form->addText("emailSubject", "Předmět emailu");
         $form->addTextArea("emailBody", "Informační email")
             ->setAttribute("class", "form-control")

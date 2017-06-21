@@ -13,8 +13,14 @@ modules:
             browser: phantomjs
             host: phantom
             window_size: 1366x768
-modules:
-    enabled:
-        - PhpBrowser:
-            url: http://hospodareni.loc
+
         - \Helper\Acceptance
+
+        - MailCatcher:
+            url: 'http://smtp-hospodareni.loc'
+            port: 80
+
+        - Db:
+            dsn: 'mysql:host=mysql;dbname=hskauting'
+            user: 'root'
+            password: ''

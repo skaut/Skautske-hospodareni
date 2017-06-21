@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "94d86572f51eb90c12ff5c8489c2b8d2",
+    "content-hash": "c9afe4af23194bfffc96a451447a2471",
     "packages": [
         {
             "name": "arachne/container-adapter",
@@ -109,7 +109,7 @@
                 "nette",
                 "symfony"
             ],
-            "abandoned": "symplify/symfony-event-dispatcher",
+            "abandoned": "contributte/event-dispatcher",
             "time": "2016-10-08T10:39:52+00:00"
         },
         {
@@ -4611,6 +4611,39 @@
                 "parser"
             ],
             "time": "2016-10-30T11:50:56+00:00"
+        },
+        {
+            "name": "captbaritone/mailcatcher-codeception-module",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/captbaritone/codeception-mailcatcher-module.git",
+                "reference": "75ba9aa803d81780ee7e9b5c36bb5b8f9139d972"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/captbaritone/codeception-mailcatcher-module/zipball/75ba9aa803d81780ee7e9b5c36bb5b8f9139d972",
+                "reference": "75ba9aa803d81780ee7e9b5c36bb5b8f9139d972",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Codeception\\Module\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Jordan Eldredge",
+                    "email": "jordan@jordaneldredge.com"
+                }
+            ],
+            "description": "Test emails in your Codeception acceptance tests",
+            "time": "2016-08-16T21:35:06+00:00"
         },
         {
             "name": "codeception/codeception",

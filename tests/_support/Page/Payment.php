@@ -18,9 +18,32 @@ class Payment
         $this->tester->fillField("(//table//input)[1]", $name);
     }
 
+    public function fillEmail(string $name)
+    {
+        $this->tester->fillField("(//table//input)[2]", $name);
+    }
+
     public function fillAmount($amount)
     {
         $this->tester->fillField("(//table//input)[3]", $amount);
+    }
+
+    public function addPayment(string $name, ?string $email, float $amount): void
+    {
+        $this->fillName($name);
+
+        if($email !== NULL) {
+            $this->fillEmail($email);
+        }
+
+        $this->fillAmount($amount);
+        $this->selectNextWorkdayForDueDate();
+        $this->submitPayment();
+    }
+
+    public function seeNumberOfPaymentsWithState(string $state, int $count)
+    {
+        $this->tester->seeNumberOfElements("(//*[text()='$state'])", $count);
     }
 
     public function selectNextWorkdayForDueDate()

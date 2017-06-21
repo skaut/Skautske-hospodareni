@@ -7,7 +7,7 @@ skautis:
     testMode: true
 
 parameters:
-    sendEmail: FALSE
+    sendEmail: true
 
     database:
         host: mysql
