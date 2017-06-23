@@ -23,6 +23,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var string */
     private $appDir;
 
+    /** @var int */
+    private $unitId;
+
     /** @var WebLoader\LoaderFactory */
     private $webLoader;
 
@@ -106,18 +109,29 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         return $control;
     }
 
-
     protected function createComponentJs(): WebLoader\JavaScriptLoader
     {
         return $this->webLoader->createJavaScriptLoader('default');
     }
-
 
     protected function updateUserAccess(): void
     {
         /* @var $identity \Nette\Security\Identity */
         $identity = $this->user->getIdentity();
         $identity->access = $this->userService->getAccessArrays($this->unitService);
+    }
+
+    /**
+     * Returns OFFICIAL unit ID
+     * @return int
+     */
+    protected function getUnitId(): int
+    {
+        if($this->unitId === NULL) {
+            $this->unitId = $this->unitService->getOficialUnit()->ID;
+        }
+
+        return $this->unitId;
     }
 
 }
