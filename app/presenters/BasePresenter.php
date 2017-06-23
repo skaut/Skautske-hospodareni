@@ -43,7 +43,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->unitService = $u;
     }
 
-
     protected function startup(): void
     {
         parent::startup();
@@ -98,8 +97,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->updateUserAccess();
         $this->redirect("this");
     }
-
-
 
     protected function createComponentCss(): WebLoader\CssLoader
     {
