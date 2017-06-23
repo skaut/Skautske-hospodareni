@@ -39,10 +39,20 @@ class BankAccount
     )
     {
         $this->unitId = $unitId;
+        $this->update($name, $number, $token);
+        $this->createdAt = $createdAt;
+    }
+
+    public function allowForSubunits(): void
+    {
+        $this->allowedForSubunits = TRUE;
+    }
+
+    public function update(string $name, AccountNumber $number, ?string $token): void
+    {
         $this->name = $name;
         $this->number = $number;
-        $this->token = $number->getBankCode() === self::FIO_BANK_CODE ? $token : NULL;
-        $this->createdAt = $createdAt;
+        $this->token = ($number->getBankCode() !== self::FIO_BANK_CODE || $token === '') ? NULL : $token;
     }
 
     public function getId(): int

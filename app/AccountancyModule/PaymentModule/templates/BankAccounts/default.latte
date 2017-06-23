@@ -1,18 +1,25 @@
 {block title}Bankovní účty{/block}
 {block content}
-<div class="panel panel-default">
-    <div class="panel-heading">Přidat účet</div>
-    <div class="panel-body">
-        {control form}
-    </div>
-</div>
-
+<a n:href="new" class="btn btn-success pull-right">Přidat účet</a>
 <h1>Bankovní účty</h1>
-<div class="panel panel-default" n:foreach="$accounts as $account">
-    <div class="panel-heading">{$account->getName()}</div>
-    <div class="panel-body">
-        <ul>
-            <li>Číslo účtu: {$account->getNumber()}</li>
-        </ul>
-    </div>
-</div>
+
+<ul class="list-group">
+    <li class="list-group-item" n:foreach="$accounts as $account">
+        <div class="pull-right">
+            <div class="col-md-9">
+                {if $account->isAllowedForSubunits()}
+                    <a href="#" class="btn btn-sm btn-success disabled"><i class="fa fa-check"></i> Účet zpřístupněn</a>
+                {else}
+                    <a n:href="allowForSubunits! $account->getId()" class="btn btn-sm btn-success">Zpřístupnit oddílům</a>
+                {/if}
+            </div>
+            <div class="col-md-3">
+                <a n:href="edit $account->getId()" class="btn btn-default btn-sm" title="Upravit účet"><i class="fa fa-pencil"></i></a>
+            </div>
+        </div>
+        <div><strong>{$account->getName()}</strong> ({$account->getNumber()})
+            <span class="label label-success" n:if="$account->getToken() !== NULL"><i class="fa fa-check"></i> párování</span></div>
+        <div class="small">Přidáno {$account->getCreatedAt()|date:'j.n. Y'}</div>
+        <div class="clearfix"></div>
+    </li>
+</ul>

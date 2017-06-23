@@ -3,6 +3,8 @@
 namespace Model\Payment\BankAccount;
 
 
+use Model\Payment\InvalidBankAccountNumberException;
+
 class AccountNumber
 {
 
@@ -15,10 +17,13 @@ class AccountNumber
     /** @var string */
     private $bankCode;
 
+    /**
+     * @throws InvalidBankAccountNumberException
+     */
     public function __construct(?string $prefix, string $number, string $bankCode, IAccountNumberValidator $validator)
     {
         if(!$validator->validate($prefix, $number, $bankCode)) {
-            throw new \InvalidArgumentException("Invalid bank account number");
+            throw new InvalidBankAccountNumberException("Invalid bank account number");
         }
         $this->prefix = $prefix === '' ? NULL : $prefix;
         $this->number = $number;

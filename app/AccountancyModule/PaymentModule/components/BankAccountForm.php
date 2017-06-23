@@ -4,6 +4,7 @@ namespace App\AccountancyModule\PaymentModule\Factories;
 
 use App\Forms\BaseForm;
 use Model\Payment\BankAccountService;
+use Model\Payment\InvalidBankAccountNumberException;
 use Nette\Application\UI\Control;
 use Nette\ArrayHash;
 
@@ -19,6 +20,7 @@ class BankAccountForm extends Control
 
     public function __construct(?int $id, BankAccountService $model)
     {
+        parent::__construct();
         $this->id = $id;
         $this->model = $model;
     }
@@ -47,22 +49,56 @@ class BankAccountForm extends Control
 
         $form->addSubmit('send', 'Uložit');
 
-        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) {
-            $this->model->addBankAccount(
-                $this->getPresenter()->getUnitId(),
-                $values->name,
-                $values->prefix,
-                $values->number,
-                $values->bankCode,
-                $values->token
-            );
+        if($this->id !== NULL) {
+            $account = $this->model->find($this->id);
+            $form->setDefaults([
+                'name'      => $account->getName(),
+                'prefix'    => $account->getNumber()->getPrefix(),
+                'number'    => $account->getNumber()->getNumber(),
+                'bankCode'  => $account->getNumber()->getBankCode(),
+                'token'     => $account->getToken(),
+            ]);
+        }
 
-            $this->presenter->flashMessage('Bankovní účet byl uložen');
-            $this->redirect('this');
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) {
+            $this->formSucceeded($form, $values);
         };
 
         return $form;
     }
+
+
+    private function formSucceeded(BaseForm $form, ArrayHash $values): void
+    {
+        try {
+            if ($this->id !== NULL) {
+                $this->model->updateBankAccount(
+                    $this->id,
+                    $values->name,
+                    $values->prefix,
+                    $values->number,
+                    $values->bankCode,
+                    $values->token
+                );
+            } else {
+                $this->model->addBankAccount(
+                    $this->getPresenter()->getUnitId(),
+                    $values->name,
+                    $values->prefix,
+                    $values->number,
+                    $values->bankCode,
+                    $values->token
+                );
+
+            }
+
+            $this->presenter->flashMessage('Bankovní účet byl uložen');
+            $this->presenter->redirect('BankAccounts:default');
+        } catch(InvalidBankAccountNumberException $e) {
+            $form->addError('Neplatné číslo účtu');
+        }
+    }
+
 
     public function render()
     {

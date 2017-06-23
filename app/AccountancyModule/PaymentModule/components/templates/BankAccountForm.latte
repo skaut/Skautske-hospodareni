@@ -1,4 +1,7 @@
 <form n:name="form" class="form-horizontal">
+    {if !empty($form->errors)}
+        <div n:foreach="$form->errors as $error" class="alert alert-danger">{$error}</div>
+    {/if}
     <div class="form-group required">
         <div class="col-sm-3 control-label">
             {label name /}

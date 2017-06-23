@@ -25,6 +25,9 @@ class BankAccountService
     }
 
 
+    /**
+     * @throws InvalidBankAccountNumberException
+     */
     public function addBankAccount(int $unitId, string $name, string $prefix, string $number, string $bankCode, ?string $token): void
     {
         $accountNumber = new AccountNumber($prefix, $number, $bankCode, $this->numberValidator);
@@ -35,7 +38,45 @@ class BankAccountService
 
 
     /**
-     * @param int $unitId
+     * @throws BankAccountNotFoundException
+     * @throws InvalidBankAccountNumberException
+     */
+    public function updateBankAccount(int $id, string $name, string $prefix, string $number, string $bankCode, ?string $token): void
+    {
+        $account = $this->bankAccounts->find($id);
+
+        $accountNumber = new AccountNumber($prefix, $number, $bankCode, $this->numberValidator);
+        $account->update($name, $accountNumber, $token);
+
+        $this->bankAccounts->save($account);
+    }
+
+
+    /**
+     * @param int $id
+     * @throws BankAccountNotFoundException
+     */
+    public function allowForSubunits(int $id): void
+    {
+        $account = $this->bankAccounts->find($id);
+
+        $account->allowForSubunits();
+
+        $this->bankAccounts->save($account);
+    }
+
+
+    public function find(int $id): ?BankAccountDTO
+    {
+        try {
+            return BankAccountFactory::create($this->bankAccounts->find($id));
+        } catch(BankAccountNotFoundException $e) {
+            return NULL;
+        }
+    }
+
+
+    /**
      * @return BankAccountDTO[]
      */
     public function findByUnit(int $unitId): array
