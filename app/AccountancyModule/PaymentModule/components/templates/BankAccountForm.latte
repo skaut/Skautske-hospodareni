@@ -1,0 +1,37 @@
+<form n:name="form" class="form-horizontal">
+    <div class="form-group required">
+        <div class="col-sm-3 control-label">
+            {label name /}
+        </div>
+        <div class="col-sm-9">
+            {input name class => form-control}
+        </div>
+    </div>
+    <div class="form-group required">
+        <div class="col-sm-3 control-label">
+            <label>Číslo účtu</label>
+        </div>
+        <div class="col-sm-9">
+            <div class="input-group">
+                {input prefix class => form-control}
+                <span class="input-group-addon" id="basic-addon2">-</span>
+                {input number class => form-control}
+                <span class="input-group-addon" id="basic-addon2">/</span>
+                {input bankCode class => form-control}
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3 control-label">
+            <label>{label token}</label>
+        </div>
+        <div class="col-sm-9">
+            {input token class => form-control}
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+            {input send class => 'btn btn-primary', id => submitButton}
+        </div>
+    </div>
+</form>

@@ -7,6 +7,8 @@ use Model\Payment\BankAccount\AccountNumber;
 class BankAccount
 {
 
+    private const FIO_BANK_CODE = '2010';
+
     /** @var int */
     private $id;
 
@@ -39,7 +41,7 @@ class BankAccount
         $this->unitId = $unitId;
         $this->name = $name;
         $this->number = $number;
-        $this->token = $token;
+        $this->token = $number->getBankCode() === self::FIO_BANK_CODE ? $token : NULL;
         $this->createdAt = $createdAt;
     }
 

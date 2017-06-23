@@ -37,10 +37,13 @@ class BankAccountForm extends Control
             ->setRequired('Musíte vyplnit číslo účtu')
             ->addRule($form::INTEGER, 'Neplatné číslo účtu')
             ->addRule($form::MAX_LENGTH, 'Maximální délka čísla účtu je %d znaků', 10);
+
         $form->addText('bankCode')
             ->setRequired('Musíte vyplnit kód banky')
+            ->addRule($form::INTEGER, 'Neplatný kód banky')
             ->addRule($form::LENGTH, 'Kód banky má délku %d znaky', 4);
-        $form->addText('token', 'Token pro párování plateb');
+
+        $form->addText('token', 'Token pro párování plateb (FIO)');
 
         $form->addSubmit('send', 'Uložit');
 
@@ -63,7 +66,8 @@ class BankAccountForm extends Control
 
     public function render()
     {
-        $this['form']->render();
+        $this->template->setFile(__DIR__ . '/templates/BankAccountForm.latte');
+        $this->template->render();
     }
 
 }
