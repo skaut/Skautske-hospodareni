@@ -6,15 +6,16 @@
 <ul class="list-group">
     <li class="list-group-item" n:foreach="$accounts as $account">
         <div class="pull-right">
-            <div class="col-md-9">
+            <div class="col-md-7">
                 {if $account->isAllowedForSubunits()}
                     <a href="#" class="btn btn-sm btn-success disabled"><i class="fa fa-check"></i> Účet zpřístupněn</a>
                 {else}
                     <a n:href="allowForSubunits! $account->getId()" class="btn btn-sm btn-success">Zpřístupnit oddílům</a>
                 {/if}
             </div>
-            <div class="col-md-3">
+            <div class="col-md-5">
                 <a n:href="edit $account->getId()" class="btn btn-default btn-sm" title="Upravit účet"><i class="fa fa-pencil"></i></a>
+                <a n:href="remove! $account->getId()" class="btn btn-sm btn-default" data-confirm="Opravdu chcete smazat účet"><i class="fa fa-times"></i></a>
             </div>
         </div>
         <div><strong>{$account->getName()}</strong> ({$account->getNumber()})

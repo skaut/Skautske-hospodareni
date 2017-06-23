@@ -53,6 +53,16 @@ class BankAccountService
 
 
     /**
+     * @throws BankAccountNotFoundException
+     */
+    public function removeBankAccount(int $id): void
+    {
+        $account = $this->bankAccounts->find($id);
+        $this->bankAccounts->remove($account);
+    }
+
+
+    /**
      * @param int $id
      * @throws BankAccountNotFoundException
      */

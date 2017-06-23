@@ -15,12 +15,16 @@ interface IBankAccountRepository
      */
     public function find(int $id): BankAccount;
 
+
     public function save(BankAccount $account): void;
+
 
     /**
      * @param int $unitId
      * @return BankAccount[]
      */
     public function findByUnit(int $unitId): array;
+
+    public function remove(BankAccount $account): void;
 
 }

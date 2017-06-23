@@ -39,4 +39,11 @@ class BankAccountRepository implements IBankAccountRepository
         return $this->entityManager->getRepository(BankAccount::class)->findBy(['unitId' => $unitId]);
     }
 
+
+    public function remove(BankAccount $account): void
+    {
+        $this->entityManager->remove($account);
+        $this->entityManager->flush();
+    }
+
 }

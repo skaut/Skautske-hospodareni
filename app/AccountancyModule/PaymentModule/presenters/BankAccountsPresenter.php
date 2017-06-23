@@ -39,6 +39,16 @@ class BankAccountsPresenter extends BasePresenter
     }
 
 
+    public function handleRemove(int $id): void
+    {
+        try {
+            $this->accounts->removeBankAccount($id);
+            $this->flashMessage('Bankovní účet byl odstraněn', 'success');
+        } catch(BankAccountNotFoundException $e) {
+        }
+        $this->redirect('this');
+    }
+
     public function actionEdit(int $id): void
     {
         if($this->accounts->find($id) === NULL) {
