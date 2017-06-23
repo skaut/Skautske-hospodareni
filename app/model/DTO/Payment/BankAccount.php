@@ -1,6 +1,6 @@
 <?php
 
-namespace Model\Payment;
+namespace Model\DTO\Payment;
 
 use Model\Payment\BankAccount\AccountNumber;
 
@@ -26,21 +26,25 @@ class BankAccount
     private $createdAt;
 
     /** @var bool */
-    private $allowedForSubunits = FALSE;
+    private $allowedForSubunits;
 
     public function __construct(
+        int $id,
         int $unitId,
         string $name,
         AccountNumber $number,
         ?string $token,
-        \DateTimeImmutable $createdAt
+        \DateTimeImmutable $createdAt,
+        bool $allowedForSubunits
     )
     {
+        $this->id = $id;
         $this->unitId = $unitId;
         $this->name = $name;
         $this->number = $number;
         $this->token = $token;
         $this->createdAt = $createdAt;
+        $this->allowedForSubunits = $allowedForSubunits;
     }
 
     public function getId(): int

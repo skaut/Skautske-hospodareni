@@ -2,40 +2,41 @@
 
 namespace Model\Payment\Repositories;
 
+use Doctrine\ORM\EntityManager;
 use Model\Payment\BankAccount;
-use Model\UnitService;
-use Skautis\Skautis;
+use Model\Payment\BankAccountNotFoundException;
 
 class BankAccountRepository implements IBankAccountRepository
 {
 
-    /** @var Skautis */
-    private $skautis;
+    /** @var EntityManager */
+    private $entityManager;
 
-    /** @var UnitService */
-    private $units;
-
-    public function __construct(Skautis $skautis, UnitService $units)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->skautis = $skautis;
-        $this->units = $units;
+        $this->entityManager = $entityManager;
     }
 
-    public function findByUnit(int $unitSkautisId) : array
+    public function find(int $id): BankAccount
     {
-        $unitId = $this->units->getOficialUnit($unitSkautisId)->ID;
+        $account = $this->entityManager->find(BankAccount::class, $id);
 
-        $accounts = $this->skautis->org->AccountAll([
-            'ID_Unit' => $unitId,
-            'IsValid' => TRUE,
-        ]);
-
-        $result = [];
-        foreach($accounts as $account) {
-            $result[] = new BankAccount($account->DisplayName, (bool)$account->IsMain);
+        if($account === NULL) {
+            throw new BankAccountNotFoundException();
         }
 
-        return $result;
+        return $account;
+    }
+
+    public function save(BankAccount $account): void
+    {
+        $this->entityManager->persist($account);
+        $this->entityManager->flush();
+    }
+
+    public function findByUnit(int $unitId): array
+    {
+        return $this->entityManager->getRepository(BankAccount::class)->findBy(['unitId' => $unitId]);
     }
 
 }

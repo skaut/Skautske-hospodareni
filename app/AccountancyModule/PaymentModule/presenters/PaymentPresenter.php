@@ -200,14 +200,16 @@ class PaymentPresenter extends BasePresenter
     public function actionRepayment(int $id): void
     {
         $campService = $this->context->getService("campService");
-        $accountFrom = $this->model->getBankAccount($this->aid);
-
         $group = $this->model->getGroup($id);
 
         if($group === NULL || !$this->hasAccessToGroup($group)) {
             $this->flashMessage('K této skupině nemáte přístup');
             $this->redirect('Payment:default');
         }
+
+        $accountFrom = $group->getBankAccountId() !== NULL ?
+            $this->bankAccounts->find($group->getBankAccountId())
+            : NULL;
 
         $this['repaymentForm']->setDefaults([
             "gid" => $group->getId(),

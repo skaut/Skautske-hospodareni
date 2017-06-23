@@ -131,13 +131,7 @@ class MailingService
 
     private function getBankAccount(int $unitId) : ?string
     {
-        $accounts = $this->bankAccounts->findByUnit($unitId);
-        foreach($accounts as $account) {
-            if($account->isMain()) {
-                return $account->getNumber();
-            }
-        }
-        return NULL;
+        return NULL; // TODO: replace with bank account for group
     }
 
     private function sendForPayment(Payment $paymentRow, Group $group, ?string $bankAccount, User $user) : void

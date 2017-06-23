@@ -119,22 +119,6 @@ class PaymentService
     }
 
     /**
-     * číslo účtu jednotky ze skautisu
-     * @param int $unitId
-     * @return string|NULL
-     */
-    public function getBankAccount(int $unitId): ?string
-    {
-        $accounts = $this->bankAccounts->findByUnit($unitId);
-
-        if (empty($accounts)) {
-            return NULL;
-        }
-
-        return $accounts[0]->getNumber();
-    }
-
-    /**
      * GROUP
      */
 

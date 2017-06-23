@@ -33,3 +33,7 @@ class PaymentNotFoundException extends \Exception
 class MissingVariableSymbolException extends \Exception
 {
 }
+
+class BankAccountNotFoundException extends \Exception
+{
+}
