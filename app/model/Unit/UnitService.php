@@ -13,7 +13,7 @@ use Skautis;
 class UnitService
 {
 
-    protected $oficialUnits = ["stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka"];
+    public const OFFICIAL_UNIT_TYPES = ["stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka"];
 
     /** @var Skautis\Skautis */
     private $skautis;
@@ -71,7 +71,7 @@ class UnitService
     public function getOficialUnit($unitId = NULL)
     {
         $unit = $this->getDetail($unitId);
-        if (!in_array($unit->ID_UnitType, $this->oficialUnits)) {
+        if (!in_array($unit->ID_UnitType, self::OFFICIAL_UNIT_TYPES)) {
             $parent = $unit->ID_UnitParent;
             $unit = $this->getOficialUnit($parent);
         }

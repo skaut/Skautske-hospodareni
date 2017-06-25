@@ -35,10 +35,11 @@ class BankAccount
         string $name,
         AccountNumber $number,
         ?string $token,
-        \DateTimeImmutable $createdAt
+        \DateTimeImmutable $createdAt,
+        IUnitResolver $unitResolver
     )
     {
-        $this->unitId = $unitId;
+        $this->unitId = $unitResolver->getOfficialUnitId($unitId);
         $this->update($name, $number, $token);
         $this->createdAt = $createdAt;
     }

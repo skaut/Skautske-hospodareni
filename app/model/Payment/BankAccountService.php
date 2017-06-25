@@ -18,10 +18,15 @@ class BankAccountService
     /** @var IAccountNumberValidator */
     private $numberValidator;
 
-    public function __construct(IBankAccountRepository $bankAccounts, IAccountNumberValidator $numberValidator)
+    /** @var IUnitResolver */
+    private $unitResolver;
+
+
+    public function __construct(IBankAccountRepository $bankAccounts, IAccountNumberValidator $numberValidator, IUnitResolver $unitResolver)
     {
         $this->bankAccounts = $bankAccounts;
         $this->numberValidator = $numberValidator;
+        $this->unitResolver = $unitResolver;
     }
 
 
@@ -31,7 +36,7 @@ class BankAccountService
     public function addBankAccount(int $unitId, string $name, string $prefix, string $number, string $bankCode, ?string $token): void
     {
         $accountNumber = new AccountNumber($prefix, $number, $bankCode, $this->numberValidator);
-        $account = new BankAccount($unitId, $name, $accountNumber, $token, new DateTimeImmutable());
+        $account = new BankAccount($unitId, $name, $accountNumber, $token, new DateTimeImmutable(), $this->unitResolver);
 
         $this->bankAccounts->save($account);
     }
@@ -91,7 +96,11 @@ class BankAccountService
      */
     public function findByUnit(int $unitId): array
     {
-        $accounts = $this->bankAccounts->findByUnit($unitId);
+        $accounts = $this->bankAccounts->findByUnit($this->unitResolver->getOfficialUnitId($unitId));
+        $accounts = array_filter($accounts, function (BankAccount $a ) use($unitId){
+            return $a->getUnitId() === $unitId || $a->isAllowedForSubunits();
+        });
+
         return array_map(function (BankAccount $a) { return BankAccountFactory::create($a); }, $accounts);
     }
 

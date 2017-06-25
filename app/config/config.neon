@@ -97,6 +97,7 @@ services:
 
     - Model\Payment\BankAccountService
     - BankAccountValidator\Czech
+    - Model\Skautis\UnitResolver
     - Model\Payment\BankAccount\HeurekaAccountNumberValidator()
 
     - Model\MailService
