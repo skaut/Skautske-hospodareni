@@ -98,6 +98,13 @@ class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
+
+    public function findByBankAccount(int $bankAccountId): array
+    {
+        return $this->em->getRepository(Group::class)->findBy(['bankAccountId' => $bankAccountId]);
+    }
+
+
     public function save(Group $group): void
     {
         $this->em->persist($group);

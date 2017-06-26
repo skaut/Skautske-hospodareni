@@ -11,6 +11,7 @@ use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccount\IAccountNumberValidator;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\Repositories\IBankAccountRepository;
+use Model\Payment\Repositories\IGroupRepository;
 use Nette\Caching\Cache;
 
 class BankAccountService
@@ -18,6 +19,9 @@ class BankAccountService
 
     /** @var IBankAccountRepository */
     private $bankAccounts;
+
+    /** @var IGroupRepository */
+    private $groups;
 
     /** @var IAccountNumberValidator */
     private $numberValidator;
@@ -33,6 +37,7 @@ class BankAccountService
 
     public function __construct(
         IBankAccountRepository $bankAccounts,
+        IGroupRepository $groups,
         IAccountNumberValidator $numberValidator,
         IUnitResolver $unitResolver,
         IFioClient $fio,
@@ -40,6 +45,7 @@ class BankAccountService
     )
     {
         $this->bankAccounts = $bankAccounts;
+        $this->groups = $groups;
         $this->numberValidator = $numberValidator;
         $this->unitResolver = $unitResolver;
         $this->fio = $fio;
@@ -81,6 +87,14 @@ class BankAccountService
     public function removeBankAccount(int $id): void
     {
         $account = $this->bankAccounts->find($id);
+
+        $groups = $this->groups->findByBankAccount($id);
+
+        foreach($groups as $group) {
+            $group->changeBankAccount(NULL);
+            $this->groups->save($group);
+        }
+
         $this->bankAccounts->remove($account);
         $this->cleanFioCache($id);
     }
