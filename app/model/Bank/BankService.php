@@ -52,7 +52,6 @@ class BankService
         $this->groups = $groups;
         $this->bank = $bank;
         $this->payments = $payments;
-        $this->cache = new Cache($storage, __CLASS__);
         $this->bankAccounts = $bankAccounts;
     }
 
