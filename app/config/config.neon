@@ -95,7 +95,8 @@ services:
     - App\RouterFactory
     - \Model\PaymentService(%tempDir%)
 
-    - Model\Payment\BankAccountService
+    - class: Model\Payment\BankAccountService
+      arguments: { fioCache: @fio.cache }
     - BankAccountValidator\Czech
     - Model\Skautis\UnitResolver
     - Model\Payment\BankAccount\HeurekaAccountNumberValidator()

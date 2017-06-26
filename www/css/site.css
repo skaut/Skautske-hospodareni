@@ -312,6 +312,10 @@ footer {
     padding-right: 10px;
 }
 
+.back {
+    margin: 0 15px 0 0;
+}
+
 .button-bar {
     padding-bottom: 20px;
 }

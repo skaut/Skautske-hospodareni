@@ -2,12 +2,16 @@
 
 namespace Model\Payment;
 
+use Assert\Assert;
 use DateTimeImmutable;
+use Model\Bank\Fio\Transaction;
 use Model\DTO\Payment\BankAccount as BankAccountDTO;
 use Model\DTO\Payment\BankAccountFactory;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccount\IAccountNumberValidator;
+use Model\Payment\Fio\IFioClient;
 use Model\Payment\Repositories\IBankAccountRepository;
+use Nette\Caching\Cache;
 
 class BankAccountService
 {
@@ -21,12 +25,25 @@ class BankAccountService
     /** @var IUnitResolver */
     private $unitResolver;
 
+    /** @var IFioClient */
+    private $fio;
 
-    public function __construct(IBankAccountRepository $bankAccounts, IAccountNumberValidator $numberValidator, IUnitResolver $unitResolver)
+    /** @var Cache */
+    private $fioCache;
+
+    public function __construct(
+        IBankAccountRepository $bankAccounts,
+        IAccountNumberValidator $numberValidator,
+        IUnitResolver $unitResolver,
+        IFioClient $fio,
+        Cache $fioCache
+    )
     {
         $this->bankAccounts = $bankAccounts;
         $this->numberValidator = $numberValidator;
         $this->unitResolver = $unitResolver;
+        $this->fio = $fio;
+        $this->fioCache = $fioCache;
     }
 
 
@@ -54,6 +71,7 @@ class BankAccountService
         $account->update($name, $accountNumber, $token);
 
         $this->bankAccounts->save($account);
+        $this->cleanFioCache($id);
     }
 
 
@@ -64,6 +82,7 @@ class BankAccountService
     {
         $account = $this->bankAccounts->find($id);
         $this->bankAccounts->remove($account);
+        $this->cleanFioCache($id);
     }
 
 
@@ -102,6 +121,25 @@ class BankAccountService
         });
 
         return array_map(function (BankAccount $a) { return BankAccountFactory::create($a); }, $accounts);
+    }
+
+
+    /**
+     * @return Transaction[]
+     * @throws TokenNotSetException
+     */
+    public function getTransactions(int $bankAccountId, int $daysBack): array
+    {
+        Assert::that($daysBack)->greaterThan(0);
+        $account = $this->bankAccounts->find($bankAccountId);
+        $now = new DateTimeImmutable();
+        return $this->fio->getTransactions($now->modify("- $daysBack days"), $now, $account);
+    }
+
+
+    private function cleanFioCache(int $bankAccountId): void
+    {
+        $this->fioCache->clean([Cache::TAGS => 'fio/' . $bankAccountId]);
     }
 
 }

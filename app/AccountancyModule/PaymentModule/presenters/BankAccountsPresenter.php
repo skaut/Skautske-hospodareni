@@ -6,6 +6,8 @@ use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;
 use Model\Payment\BankAccountNotFoundException;
 use Model\Payment\BankAccountService;
+use Model\Payment\TokenNotSetException;
+use Model\PaymentService;
 use Nette\Application\BadRequestException;
 
 class BankAccountsPresenter extends BasePresenter
@@ -62,6 +64,24 @@ class BankAccountsPresenter extends BasePresenter
     public function renderDefault(): void
     {
         $this->template->accounts = $this->accounts->findByUnit($this->getUnitId());
+    }
+
+
+    public function renderDetail(int $id): void
+    {
+        $account = $this->accounts->find($id);
+
+        if($account === NULL) {
+            throw new BadRequestException('Bankovní účet neexistuje');
+        }
+
+        $this->template->account = $account;
+
+        try {
+            $this->template->transactions = $this->accounts->getTransactions($id, 60);
+        } catch(TokenNotSetException $e) {
+            $this->template->transactions = NULL;
+        }
     }
 
 
