@@ -41,3 +41,7 @@ class BankAccountNotFoundException extends \Exception
 class InvalidBankAccountNumberException extends \Exception
 {
 }
+
+class TokenNotSetException extends \Exception
+{
+}

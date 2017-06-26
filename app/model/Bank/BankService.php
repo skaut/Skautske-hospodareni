@@ -3,8 +3,8 @@
 namespace Model;
 
 use Assert\Assert;
-use Model\Bank\Fio\FioClient;
 use Model\Payment\Group;
+use Model\Payment\Fio\IFioClient;
 use Model\Payment\Payment;
 use Model\Payment\Payment\Transaction;
 use Model\Bank\Fio\Transaction as BankTransaction;
@@ -21,7 +21,7 @@ use Model\Payment\Repositories\IGroupRepository;
 class BankService
 {
 
-    /** @var FioClient */
+    /** @var IFioClient */
     private $bank;
 
     /** @var Cache */
@@ -42,7 +42,7 @@ class BankService
     public function __construct(
         BankTable $table,
         IGroupRepository $groups,
-        FioClient $bank,
+        IFioClient $bank,
         IPaymentRepository $payments,
         IStorage $storage,
         IBankAccountRepository $bankAccounts
@@ -115,7 +115,7 @@ class BankService
 
             $pairSince = $daysBack === NULL ? $this->resolveLastPairing($groups) : new \DateTimeImmutable("- $daysBack days");
 
-            $transactions = $this->bank->getTransactions($pairSince, $now, $bankAccount->getToken());
+            $transactions = $this->bank->getTransactions($pairSince, $now, $bankAccount);
             $paired = $this->markPaymentsAsComplete($transactions, $payments);
 
             $this->payments->saveMany($paired);
@@ -183,15 +183,11 @@ class BankService
     }
 
     /**
-     * @deprecated Use FioClient::getTransactions()
+     * @deprecated Use IFioClient::getTransactions()
      */
     public function getTransactionsFio($token, $daysBack = 14)
     {
-        return $this->bank->getTransactions(
-            (new \DateTime())->modify("- $daysBack days"),
-            new \DateTime(),
-            $token
-        );
+        return [];
     }
 
 }

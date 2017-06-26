@@ -102,8 +102,15 @@ services:
 
     - Model\MailService
     - Model\Payment\MailingService
+
     - Model\Bank\Http\Curl
-    - Model\Bank\Fio\FioClient
+    fio.client:
+        class: Model\Bank\Fio\FioClient
+        autowired: false
+    fio.cache: Nette\Caching\Cache
+    - Model\Payment\Fio\CachingClientDecorator(@fio.client, @fio.cache)
+
+
     - Model\BankService
     router: @App\RouterFactory::createRouter
     #connection:

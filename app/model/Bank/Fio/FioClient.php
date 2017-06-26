@@ -3,11 +3,14 @@
 namespace Model\Bank\Fio;
 
 use Model\Bank\Http\IClient;
+use Model\Payment\BankAccount;
+use Model\Payment\Fio\IFioClient;
+use Model\Payment\TokenNotSetException;
 use Nette;
 use Model\BankTimeLimitException;
 use Model\BankTimeoutException;
 
-class FioClient extends Nette\Object
+class FioClient extends Nette\Object implements IFioClient
 {
 
     const ID = 'column22';
@@ -37,16 +40,14 @@ class FioClient extends Nette\Object
         $this->http = $http;
     }
 
-    /**
-     * @param \DateTimeInterface $since
-     * @param \DateTimeInterface $until
-     * @param string $token
-     * @return Transaction[]
-     */
-    public function getTransactions(\DateTimeInterface $since, \DateTimeInterface $until, $token): array
+    public function getTransactions(\DateTimeInterface $since, \DateTimeInterface $until, BankAccount $account): array
     {
+        if($account->getToken() === NULL) {
+            throw new TokenNotSetException();
+        }
+
         $url = strtr(self::FIO_URL, [
-            ':token' => $token,
+            ':token' => $account->getToken(),
             ':since' => $since->format('Y-m-d'),
             ':until' => $until->format('Y-m-d')
         ]);
