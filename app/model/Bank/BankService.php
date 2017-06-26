@@ -33,16 +33,12 @@ class BankService
     /** @var IPaymentRepository */
     private $payments;
 
-    /** @var BankTable */
-    private $table;
-
     /** @var IBankAccountRepository */
     private $bankAccounts;
 
     public const DAYS_BACK_DEFAULT = 60;
 
     public function __construct(
-        BankTable $table,
         IGroupRepository $groups,
         IFioClient $bank,
         IPaymentRepository $payments,
@@ -50,21 +46,10 @@ class BankService
         IBankAccountRepository $bankAccounts
     )
     {
-        $this->table = $table;
         $this->groups = $groups;
         $this->bank = $bank;
         $this->payments = $payments;
         $this->bankAccounts = $bankAccounts;
-    }
-
-    public function setToken($unitId, $token, $daysback = 14)
-    {
-        return $token !== "" ? $this->table->setToken($unitId, $token, $daysback) : $this->table->removeToken($unitId);
-    }
-
-    public function getInfo($unitId)
-    {
-        return $this->table->getInfo($unitId);
     }
 
 

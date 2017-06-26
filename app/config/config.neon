@@ -169,7 +169,6 @@ services:
     - App\AccountancyModule\Factories\GridFactory
 
     # Tables
-    - Model\BankTable
     - Model\BudgetTable
     - Model\ChitTable
     - Model\CommandTable

@@ -8,7 +8,6 @@ use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\Forms\BaseForm;
 use Consistence\Time\TimeFormat;
-use Model\BankService;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\Mail\MailerNotFoundException;
@@ -30,20 +29,12 @@ use Nette\Mail\SmtpException;
 class PaymentPresenter extends BasePresenter
 {
 
-    /**
-     *
-     * @var BankService
-     */
-    protected $bank;
     protected $readUnits;
     protected $editUnits;
     protected $unitService;
 
     /** @var int */
     private $id;
-
-    /** @var object */
-    private $bankInfo;
 
     /** @var MailingService */
     private $mailing;
@@ -62,7 +53,6 @@ class PaymentPresenter extends BasePresenter
 
     public function __construct(
         PaymentService $paymentService,
-        BankService $bankService,
         UnitService $unitService,
         MailingService $mailing,
         BankAccountService $bankAccounts,
@@ -71,7 +61,6 @@ class PaymentPresenter extends BasePresenter
     )
     {
         parent::__construct($paymentService);
-        $this->bank = $bankService;
         $this->unitService = $unitService;
         $this->mailing = $mailing;
         $this->bankAccounts = $bankAccounts;
@@ -129,8 +118,6 @@ class PaymentPresenter extends BasePresenter
         if ($this->isEditable) {
             $this["pairButton"]->setGroups([$id], $group->getUnitId());
         }
-
-        $this->bankInfo = $this->bank->getInfo($this->aid);
 
         $this->template->units = $this->readUnits;
         $this->template->group = $group;
@@ -571,12 +558,16 @@ class PaymentPresenter extends BasePresenter
             }
         }
         $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $date = NULL);
-        if (!($bankInfo = $this->bank->getInfo($this->aid))) {
+
+        $bankAccountId = $this->model->getGroup((int) $values->gid)->getBankAccountId();
+        $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
+
+        if ($bankAccount === NULL || $bankAccount->getToken() === NULL) {
             $this->flashMessage("Není zadán API token z banky!", "danger");
             $this->redirect("this");
         }
 
-        $resultXML = $this->model->sendFioPaymentRequest($dataToRequest, $bankInfo->token);
+        $resultXML = $this->model->sendFioPaymentRequest($dataToRequest, $bankAccount->getToken());
         $result = (new \SimpleXMLElement($resultXML));
 
         if ($result->result->errorCode == 0) {//OK
