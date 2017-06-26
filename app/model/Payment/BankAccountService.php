@@ -111,6 +111,20 @@ class BankAccountService
 
 
     /**
+     * @param int[] $ids
+     * @return BankAccountDTO[]
+     * @throws BankAccountNotFoundException
+     */
+    public function findByIds(array $ids): array
+    {
+        Assert::thatAll($ids)->integer();
+        $accounts = $this->bankAccounts->findByIds($ids);
+
+        return array_map(function(BankAccount $a) { return BankAccountFactory::create($a); }, $accounts);
+    }
+
+
+    /**
      * @return BankAccountDTO[]
      */
     public function findByUnit(int $unitId): array
@@ -136,7 +150,9 @@ class BankAccountService
         return $this->fio->getTransactions($now->modify("- $daysBack days"), $now, $account);
     }
 
-
+    /**
+     * Cleans cached transactions for account
+     */
     private function cleanFioCache(int $bankAccountId): void
     {
         $this->fioCache->clean([Cache::TAGS => 'fio/' . $bankAccountId]);

@@ -39,6 +39,8 @@ class BankService
     /** @var IBankAccountRepository */
     private $bankAccounts;
 
+    public const DAYS_BACK_DEFAULT = 60;
+
     public function __construct(
         BankTable $table,
         IGroupRepository $groups,
@@ -65,19 +67,6 @@ class BankService
         return $this->table->getInfo($unitId);
     }
 
-    /**
-     * @param int[] $unitIds
-     * @return bool[]
-     */
-    public function checkCanPair(array $unitIds): array
-    {
-        $units = [];
-        foreach($unitIds as $id) {
-            $units[$id] = isset($this->getInfo($id)->token);
-        }
-
-        return $units;
-    }
 
     /**
      * Completes payments from info on bank account(s)
@@ -150,7 +139,7 @@ class BankService
             return $g->getLastPairing();
         }, $groups);
         $lastPairings = array_filter($lastPairings);
-        return !empty($lastPairings) ? min($lastPairings) : new \DateTimeImmutable('- 90 days'); // Fallback to 3 months
+        return !empty($lastPairings) ? min($lastPairings) : new \DateTimeImmutable('- ' . self::DAYS_BACK_DEFAULT . ' days');
     }
 
     /**
@@ -180,14 +169,6 @@ class BankService
         }
 
         return $paired;
-    }
-
-    /**
-     * @deprecated Use IFioClient::getTransactions()
-     */
-    public function getTransactionsFio($token, $daysBack = 14)
-    {
-        return [];
     }
 
 }

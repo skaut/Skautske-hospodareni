@@ -7,6 +7,6 @@ use App\AccountancyModule\PaymentModule\Components\PairButton;
 interface IPairButtonFactory
 {
 
-    public function create(int $unitId): PairButton;
+    public function create(): PairButton;
 
 }

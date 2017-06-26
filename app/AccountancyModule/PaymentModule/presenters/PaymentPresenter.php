@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
+use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\Forms\BaseForm;
@@ -11,6 +12,7 @@ use Model\BankService;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\Mail\MailerNotFoundException;
+use Model\Payment\BankAccountService;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\InvalidEmailException;
@@ -46,6 +48,9 @@ class PaymentPresenter extends BasePresenter
     /** @var MailingService */
     private $mailing;
 
+    /** @var BankAccountService */
+    private $bankAccounts;
+
     /** @var IMassAddFormFactory */
     private $massAddFormFactory;
 
@@ -60,6 +65,7 @@ class PaymentPresenter extends BasePresenter
         BankService $bankService,
         UnitService $unitService,
         MailingService $mailing,
+        BankAccountService $bankAccounts,
         IMassAddFormFactory $massAddFormFactory,
         IPairButtonFactory $pairButtonFactory
     )
@@ -68,6 +74,7 @@ class PaymentPresenter extends BasePresenter
         $this->bank = $bankService;
         $this->unitService = $unitService;
         $this->mailing = $mailing;
+        $this->bankAccounts = $bankAccounts;
         $this->massAddFormFactory = $massAddFormFactory;
         $this->pairButtonFactory = $pairButtonFactory;
     }
@@ -87,16 +94,26 @@ class PaymentPresenter extends BasePresenter
 
         $groupIds = [];
         $unitIds = [];
+        $bankAccountIds = [];
         foreach($groups as $group) {
             $groupIds[] = $group->getId();
             $unitIds[] = $group->getUnitId();
+            $bankAccountIds[] = $group->getBankAccountId();
+        }
+
+        $bankAccounts = $this->bankAccounts->findByIds(array_filter(array_unique($bankAccountIds)));
+
+        $groupsPairingSupport = [];
+        foreach($groups as $group) {
+            $accountId = $group->getBankAccountId();
+            $groupsPairingSupport[$group->getId()] = $accountId !== NULL && $bankAccounts[$accountId]->getToken() !== NULL;
         }
 
         $this["pairButton"]->setGroups($groupIds);
 
         $this->template->groups = $groups;
         $this->template->summarizations = $this->model->getGroupSummaries($groupIds);
-        $this->template->canPairUnit = $this->bank->checkCanPair($unitIds);
+        $this->template->groupsPairingSupport = $groupsPairingSupport;
     }
 
     public function actionDetail(int $id): void
@@ -570,9 +587,9 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentPairButton()
+    protected function createComponentPairButton(): PairButton
     {
-        return $this->pairButtonFactory->create($this->aid);
+        return $this->pairButtonFactory->create();
     }
 
     protected function createComponentMassAddForm(): MassAddForm

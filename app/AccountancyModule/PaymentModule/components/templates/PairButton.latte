@@ -1,5 +1,5 @@
-<div class="btn-group"
-     {if !$canPair}title="Není nastaven token pro komunikaci s Fio." rel="tooltip"{/if}>
+{var $errorMessage = $groupsCount > 1 ? 'Žádná ze skupin plateb nemá nastavený účet pro párování s FIO' : 'Skupina nemá nastavený účet pro párování s FIO'}
+<div class="btn-group" {if !$canPair}title="{$errorMessage}" rel="tooltip"{/if}>
     <a n:href="pair!" n:class="!$canPair ? disabled, btn, btn-primary">
         <i class="glyphicon glyphicon-resize-small"></i> Párovat platby
     </a>

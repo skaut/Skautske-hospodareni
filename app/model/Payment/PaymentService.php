@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Assert\Assert;
 use DateTimeImmutable;
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
@@ -135,6 +136,20 @@ class PaymentService
             return DTO\GroupFactory::create($group);
         }, $groups);
     }
+
+
+    /**
+     * @param int[] $ids
+     * @return DTO\Group[]
+     */
+    public function findGroupsByIds(array $ids): array
+    {
+        Assert::thatAll($ids)->integer();
+        $groups = $this->groups->findByIds($ids);
+
+        return array_map(function (Group $g) { return DTO\GroupFactory::create($g); }, $groups);
+    }
+
 
     /**
      * @param int[] $groupIds
@@ -594,7 +609,6 @@ class PaymentService
         });
 
         return array_map(function(Payment $p) { return $p->getPersonId(); }, $payments);
-
     }
 
 }

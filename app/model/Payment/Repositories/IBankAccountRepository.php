@@ -16,6 +16,14 @@ interface IBankAccountRepository
     public function find(int $id): BankAccount;
 
 
+    /**
+     * @param int[] $ids
+     * @return BankAccount[]
+     * @throws BankAccountNotFoundException
+     */
+    public function findByIds(array $ids): array;
+
+
     public function save(BankAccount $account): void;
 
 
@@ -24,6 +32,7 @@ interface IBankAccountRepository
      * @return BankAccount[]
      */
     public function findByUnit(int $unitId): array;
+
 
     public function remove(BankAccount $account): void;
 
