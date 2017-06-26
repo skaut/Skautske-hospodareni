@@ -2,18 +2,25 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use Model\PaymentService;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
 class JournalPresenter extends BasePresenter
 {
 
-    public function __construct(\Model\PaymentService $paymentService)
+    /** @var PaymentService */
+    private $model;
+
+    public function __construct(PaymentService $model)
     {
-        parent::__construct($paymentService);
+        parent::__construct();
+        $this->model = $model;
     }
 
-    public function renderDefault(int $aid, $year = NULL) : void
+
+    public function renderDefault(int $aid, $year = NULL): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přistupovat ke správě emailů", "danger");

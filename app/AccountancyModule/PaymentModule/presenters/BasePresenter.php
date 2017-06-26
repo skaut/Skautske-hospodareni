@@ -1,32 +1,22 @@
 <?php
 
 namespace App\AccountancyModule\PaymentModule;
-use App\AccountancyModule\Auth\Unit;
-use Model\PaymentService;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BasePresenter extends \App\AccountancyModule\BasePresenter
+abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
 
     /** @persistent */
     public $aid;
 
-    /**
-     *
-     * @var PaymentService
-     */
-    protected $model;
+    /** @var bool */
+    protected $isReadable;
 
     /** @var int[] */
     private $editableUnits;
 
-    public function __construct(PaymentService $paymentService)
-    {
-        parent::__construct();
-        $this->model = $paymentService;
-    }
 
     protected function startup(): void
     {

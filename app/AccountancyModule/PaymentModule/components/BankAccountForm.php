@@ -100,7 +100,7 @@ class BankAccountForm extends Control
     }
 
 
-    public function render()
+    public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/BankAccountForm.latte');
         $this->template->render();

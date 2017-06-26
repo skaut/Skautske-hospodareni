@@ -36,6 +36,9 @@ class PaymentPresenter extends BasePresenter
     /** @var int */
     private $id;
 
+    /** @var PaymentService */
+    private $model;
+
     /** @var MailingService */
     private $mailing;
 
@@ -52,7 +55,7 @@ class PaymentPresenter extends BasePresenter
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
     public function __construct(
-        PaymentService $paymentService,
+        PaymentService $model,
         UnitService $unitService,
         MailingService $mailing,
         BankAccountService $bankAccounts,
@@ -60,7 +63,8 @@ class PaymentPresenter extends BasePresenter
         IPairButtonFactory $pairButtonFactory
     )
     {
-        parent::__construct($paymentService);
+        parent::__construct();
+        $this->model = $model;
         $this->unitService = $unitService;
         $this->mailing = $mailing;
         $this->bankAccounts = $bankAccounts;

@@ -22,7 +22,7 @@ class GroupPresenter extends BasePresenter
 {
 
     /** @var PaymentService */
-    protected $model;
+    private $model;
 
     /** @var MailService */
     private $mail;
@@ -35,13 +35,13 @@ class GroupPresenter extends BasePresenter
 
     public function __construct(
         BankAccountService $bankAccounts,
-        PaymentService $payments,
+        PaymentService $model,
         MailService $mailService,
         EventEntity $camp
     )
     {
-        parent::__construct($payments);
-        $this->model = $payments;
+        parent::__construct();
+        $this->model = $model;
         $this->mail = $mailService;
         $this->camp = $camp;
         $this->bankAccounts = $bankAccounts;

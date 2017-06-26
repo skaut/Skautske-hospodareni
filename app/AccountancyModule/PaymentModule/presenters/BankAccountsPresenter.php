@@ -25,6 +25,7 @@ class BankAccountsPresenter extends BasePresenter
 
     public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts)
     {
+        parent::__construct();
         $this->formFactory = $formFactory;
         $this->accounts = $accounts;
     }

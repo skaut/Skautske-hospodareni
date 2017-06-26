@@ -11,8 +11,6 @@ use Model\Bank\Fio\Transaction as BankTransaction;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Utils\Arrays;
-use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
 use Model\Payment\Repositories\IGroupRepository;
 
 /**
@@ -23,9 +21,6 @@ class BankService
 
     /** @var IFioClient */
     private $bank;
-
-    /** @var Cache */
-    protected $cache;
 
     /** @var IGroupRepository */
     private $groups;
@@ -42,7 +37,6 @@ class BankService
         IGroupRepository $groups,
         IFioClient $bank,
         IPaymentRepository $payments,
-        IStorage $storage,
         IBankAccountRepository $bankAccounts
     )
     {
