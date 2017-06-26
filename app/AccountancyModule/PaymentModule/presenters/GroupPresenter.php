@@ -4,8 +4,11 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\Forms\BaseForm;
 use Consistence\Enum\InvalidEnumValueException;
+use Consistence\Type\ArrayType\ArrayType;
+use Model\DTO\Payment\BankAccount;
 use Model\EventEntity;
 use Model\MailService;
+use Model\Payment\BankAccountService;
 use Model\Payment\Group\EmailTemplate;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
@@ -27,12 +30,21 @@ class GroupPresenter extends BasePresenter
     /** @var EventEntity */
     private $camp;
 
-    public function __construct(PaymentService $paymentService, MailService $mailService, EventEntity $camp)
+    /** @var BankAccountService */
+    private $bankAccounts;
+
+    public function __construct(
+        BankAccountService $bankAccounts,
+        PaymentService $paymentService,
+        MailService $mailService,
+        EventEntity $camp
+    )
     {
         parent::__construct($paymentService);
         $this->model = $paymentService;
         $this->mail = $mailService;
         $this->camp = $camp;
+        $this->bankAccounts = $bankAccounts;
     }
 
     public function actionDefault($type = NULL): void
@@ -93,7 +105,7 @@ class GroupPresenter extends BasePresenter
 
         $group = $this->model->getGroup($id);
 
-        if ($group === NULL || $group->getUnitId() !== $this->aid) {
+        if ($group === NULL || $group->getUnitId() !== $this->getCurrentUnitId()) {
             $this->flashMessage("Skupina nebyla nalezena", "warning");
             $this->redirect("Payment:default");
         }
@@ -109,6 +121,7 @@ class GroupPresenter extends BasePresenter
             "emailSubject" => $dto->getEmailTemplate()->getSubject(),
             "emailBody" => $dto->getEmailTemplate()->getBody(),
             "groupId" => $id,
+            'bankAccount' => $dto->getBankAccountId(),
         ]);
 
         $existsPaymentWithVS = $this->model->getMaxVariableSymbol($dto->getId()) !== NULL;
@@ -124,6 +137,9 @@ class GroupPresenter extends BasePresenter
     protected function createComponentGroupForm(): Form
     {
         $form = new BaseForm();
+
+        $unitId = $this->getCurrentUnitId();
+
         $form->addSelect("skautisEntityId");
         $form->addText("label", "Název")
             ->setAttribute("class", "form-control")
@@ -144,7 +160,16 @@ class GroupPresenter extends BasePresenter
             ->setMaxLength(10)
             ->setRequired(FALSE)
             ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
-        $form->addSelect("smtp", "Email odesílatele", $this->mail->getPairs($this->aid))
+
+        $bankAccounts = $this->bankAccounts->findByUnit($unitId);
+        $bankAccountItems = [];
+        foreach($bankAccounts as $bankAccount) {
+            $bankAccountItems[$bankAccount->getId()] = $bankAccount->getName();
+        }
+
+        $form->addSelect('bankAccount', 'Bankovní účet', $bankAccountItems)
+            ->setPrompt('Vyberte bankovní účet');
+        $form->addSelect("smtp", "Email odesílatele", $this->mail->getPairs($unitId))
             ->setPrompt("Vyberte email")
             ->setAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
         $form->addText("emailSubject", "Předmět emailu");
@@ -190,7 +215,15 @@ class GroupPresenter extends BasePresenter
 
         if ($groupId !== NULL) {//EDIT
             $this->model->updateGroup(
-                $groupId, $label, $amount, $dueDate, $constantSymbol, $nextVs, $emailTemplate, $smtpId
+                $groupId,
+                $label,
+                $amount,
+                $dueDate,
+                $constantSymbol,
+                $nextVs,
+                $emailTemplate,
+                $smtpId,
+                $v->bankAccount
             );
 
             $this->flashMessage('Skupina byla upravena');
@@ -200,7 +233,16 @@ class GroupPresenter extends BasePresenter
                     : NULL;
 
             $groupId = $this->model->createGroup(
-                $this->aid, $entity, $label, $dueDate, $constantSymbol, $nextVs, $amount, $emailTemplate, $smtpId
+                $this->getCurrentUnitId(),
+                $entity,
+                $label,
+                $dueDate,
+                $constantSymbol,
+                $nextVs,
+                $amount,
+                $emailTemplate,
+                $smtpId,
+                $v->bankAccount
             );
 
             $this->flashMessage('Skupina byla založena');

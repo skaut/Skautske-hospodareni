@@ -72,4 +72,13 @@ abstract class BasePresenter extends \App\BasePresenter
         return array_key_exists($action, $avaibleActions == NULL ? $this->availableActions : $avaibleActions);
     }
 
+    /**
+     * Returns current unit ID (e.g oddíl)
+     * @return int
+     */
+    public function getCurrentUnitId(): int
+    {
+        return $this->aid;
+    }
+
 }

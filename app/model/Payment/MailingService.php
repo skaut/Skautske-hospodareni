@@ -69,25 +69,22 @@ class MailingService
     {
         $payment = $this->payments->find($paymentId);
         $group = $this->groups->find($payment->getGroupId());
-        $bankAccount = $this->getBankAccount($group->getUnitId());
         $user = $this->users->find($userId);
 
-        $this->sendForPayment($payment, $group, $bankAccount, $user);
+        $this->sendForPayment($payment, $group, $user);
         $this->payments->save($payment);
     }
 
     public function sendEmailForGroup(int $groupId, int $userId) : int
     {
         $group = $this->groups->find($groupId);
-        $bankAccount = $this->getBankAccount($group->getUnitId());
-
         $payments = $this->payments->findByGroup($groupId);
         $user = $this->users->find($userId);
 
         $sent = 0;
         foreach($payments as $payment) {
             try {
-                $this->sendForPayment($payment, $group, $bankAccount, $user);
+                $this->sendForPayment($payment, $group, $user);
                 $sent++;
             } catch(InvalidEmailException | PaymentClosedException $e) {}
         }
@@ -106,8 +103,6 @@ class MailingService
     public function sendTestMail(int $groupId, int $userId): string
     {
         $group = $this->groups->find($groupId);
-        $bankAccount = $this->getBankAccount($group->getUnitId());
-
         $user = $this->users->find($userId);
 
         if($user->getEmail() === NULL) {
@@ -124,17 +119,13 @@ class MailingService
             "obsah poznámky"
         );
 
-        $this->send($group, $payment, $bankAccount, $user);
+        $this->send($group, $payment, $user);
 
         return $user->getEmail();
     }
 
-    private function getBankAccount(int $unitId) : ?string
-    {
-        return NULL; // TODO: replace with bank account for group
-    }
 
-    private function sendForPayment(Payment $paymentRow, Group $group, ?string $bankAccount, User $user) : void
+    private function sendForPayment(Payment $paymentRow, Group $group, User $user) : void
     {
         if($paymentRow->isClosed()) {
             throw new PaymentClosedException();
@@ -145,7 +136,7 @@ class MailingService
             throw new InvalidEmailException();
         }
 
-        $this->send($group, $this->createPayment($paymentRow), $bankAccount, $user);
+        $this->send($group, $this->createPayment($paymentRow), $user);
 
         if($paymentRow->getState()->equalsValue(State::SENT)) {
             return;
@@ -154,9 +145,14 @@ class MailingService
         $paymentRow->markSent();
     }
 
-    private function send(Group $group, MailPayment $payment, ?string $bankAccount, User $user) : void
+    private function send(Group $group, MailPayment $payment, User $user) : void
     {
-        $emailTemplate = $group->getEmailTemplate()->evaluate($group, $payment, $bankAccount, $user->getName());
+        $bankAccount = $group->getBankAccountId() !== NULL
+            ? $this->bankAccounts->find($group->getBankAccountId())
+            : NULL;
+
+        $emailTemplate = $group->getEmailTemplate()
+            ->evaluate($group, $payment, $bankAccount !== NULL ? $bankAccount->getNumber() : NULL, $user->getName());
 
         $template = $this->templateFactory->create('payment.base', [
             'body' => nl2br($emailTemplate->getBody(), FALSE),
