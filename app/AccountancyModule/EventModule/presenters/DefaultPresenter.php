@@ -91,6 +91,7 @@ class DefaultPresenter extends BasePresenter
     public function renderDefault(): void
     {
         $this['formFilter']['state']->setDefaultValue($this->ses->state);
+        $this['formFilter']['year']->setDefaultValue($this->ses->year);
         $this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
     }
 
