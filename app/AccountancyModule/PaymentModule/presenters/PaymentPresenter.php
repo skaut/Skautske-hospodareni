@@ -138,7 +138,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->isGroupSendActive = $group->getState() === 'open' && !empty($paymentsForSendEmail);
     }
 
-    public function renderEdit(int $pid): void
+    public function actionEdit(int $pid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
@@ -146,6 +146,12 @@ class PaymentPresenter extends BasePresenter
         }
 
         $payment = $this->model->findPayment($pid);
+
+        if($payment === NULL || $payment->isClosed()) {
+            $this->flashMessage('Platba nenalezena', 'warning');
+            $this->redirect('Payment:default');
+        }
+
         $form = $this['paymentForm'];
         $form['send']->caption = "Upravit";
         $form->setDefaults([
