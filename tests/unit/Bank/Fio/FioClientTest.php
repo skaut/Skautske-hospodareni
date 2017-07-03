@@ -6,8 +6,11 @@ use Mockery as m;
 
 use Model\Bank\Fio\FioClient;
 use Model\Bank\Fio\Transaction;
+use Model\Bank\Http\IClient;
 use Model\Bank\Http\Response;
 use DateTime;
+use Model\Payment\BankAccount;
+use Model\Payment\TokenNotSetException;
 
 class FioClientTest extends \Codeception\Test\Unit
 {
@@ -30,7 +33,7 @@ class FioClientTest extends \Codeception\Test\Unit
 
         $fio = new FioClient($client);
 
-        $transactions = $fio->getTransactions($since, $until, $token);
+        $transactions = $fio->getTransactions($since, $until, m::mock(BankAccount::class, ['getToken' => $token]));
 
         /* @var $transactions Transaction[] */
         $this->assertCount(2, $transactions);
@@ -52,13 +55,13 @@ class FioClientTest extends \Codeception\Test\Unit
         $this->assertNull($transactions[1]->getConstantSymbol());
     }
 
-    public function testTimeOut()
+    public function testTimeOutThrowsException()
     {
         $since = new DateTime('- 5 days');
         $until = new DateTime();
         $token = 'test-token';
 
-        $client = m::mock('Model\Bank\Http\IClient');
+        $client = m::mock(IClient::class);
         $client->shouldReceive('get')
             ->withAnyArgs()
             ->andReturn(new Response(NULL, NULL, TRUE));
@@ -66,16 +69,16 @@ class FioClientTest extends \Codeception\Test\Unit
         $fio = new FioClient($client);
 
         $this->expectException(\Model\BankTimeoutException::class);
-        $fio->getTransactions($since, $until, $token);
+        $fio->getTransactions($since, $until, m::mock(BankAccount::class, ['getToken' => $token]));
     }
 
-    public function testOverloadedApi()
+    public function testOverloadedApiThrowsException()
     {
         $since = new DateTime('- 5 days');
         $until = new DateTime();
         $token = 'test-token';
 
-        $client = m::mock('Model\Bank\Http\IClient');
+        $client = m::mock(IClient::class);
         $client->shouldReceive('get')
             ->withAnyArgs()
             ->andReturn(new Response(409, NULL, FALSE));
@@ -83,7 +86,16 @@ class FioClientTest extends \Codeception\Test\Unit
         $this->expectException(\Model\BankTimeLimitException::class);
         $fio = new FioClient($client);
 
-        $fio->getTransactions($since, $until, $token);
+        $fio->getTransactions($since, $until, m::mock(BankAccount::class, ['getToken' => $token]));
+    }
+
+    public function testBankAccountWithoutTokenThrowsException()
+    {
+        $fio = new FioClient(m::mock(IClient::class));
+
+        $this->expectException(TokenNotSetException::class);
+
+        $fio->getTransactions(new DateTime(), new DateTime(), m::mock(BankAccount::class, ['getToken' => NULL]));
     }
 
     private function buildUrl($token, DateTime $since, DateTime $until)

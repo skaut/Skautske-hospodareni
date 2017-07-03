@@ -4,6 +4,7 @@ namespace Model\Payment;
 
 use DateTimeImmutable;
 use Model\Payment\Group\EmailTemplate;
+use Mockery as m;
 
 class GroupTest extends \Codeception\Test\Unit
 {
@@ -23,7 +24,8 @@ class GroupTest extends \Codeception\Test\Unit
             666,
             $createdAt,
             $emailTemplate,
-            NULL
+            NULL,
+            m::mock(BankAccount::class, ['getId' => 23])
         );
 
         $this->assertSame(20, $group->getUnitId());
@@ -38,6 +40,7 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertNull($group->getSmtpId());
         $this->assertSame($group::STATE_OPEN, $group->getState());
         $this->assertSame("", $group->getNote());
+        $this->assertSame(23, $group->getBankAccountId());
     }
 
     public function testUpdate()
@@ -55,7 +58,8 @@ class GroupTest extends \Codeception\Test\Unit
             NULL,
             NULL,
             $emailTemplate,
-            20
+            20,
+            m::mock(BankAccount::class, ['getId' => 33])
         );
 
         $this->assertSame(20, $group->getUnitId());
@@ -68,6 +72,7 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertSame($createdAt, $group->getCreatedAt());
         $this->assertSame($emailTemplate, $group->getEmailTemplate());
         $this->assertSame(20, $group->getSmtpId());
+        $this->assertSame(33, $group->getBankAccountId());
     }
 
     public function testClose()
@@ -105,6 +110,7 @@ class GroupTest extends \Codeception\Test\Unit
             666,
             $createdAt ?? new DateTimeImmutable(),
             new EmailTemplate("Email subject", "Email body"),
+            NULL,
             NULL
         );
     }
