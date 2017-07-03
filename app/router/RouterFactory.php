@@ -169,7 +169,15 @@ class RouterFactory
 
         $prefix = 'platby';
 
-        $router[] = new Route($prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]', 'Default:default');
+        $router[] = new Route($prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]', [
+            'presenter' => [
+                Route::VALUE => 'Default',
+                Route::FILTER_TABLE => [
+                    'bankovni-ucty' => 'BankAccounts',
+                ],
+            ],
+            'action' => 'default',
+        ]);
 
         $router[] = new Route($prefix . '[/<presenter>][/<action>]', [
             'presenter' => 'Default',
