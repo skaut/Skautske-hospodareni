@@ -2,12 +2,13 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\Auth\IAuthorizator;
+use App\AccountancyModule\Auth\Unit;
 use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;
 use Model\Payment\BankAccountNotFoundException;
 use Model\Payment\BankAccountService;
 use Model\Payment\TokenNotSetException;
-use Model\PaymentService;
 use Nette\Application\BadRequestException;
 
 class BankAccountsPresenter extends BasePresenter
@@ -19,19 +20,27 @@ class BankAccountsPresenter extends BasePresenter
     /** @var BankAccountService */
     private $accounts;
 
+    /** @var IAuthorizator */
+    private $authorizator;
+
     /** @var int */
     private $id;
 
 
-    public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts)
+    public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts, IAuthorizator $authorizator)
     {
         parent::__construct();
         $this->formFactory = $formFactory;
         $this->accounts = $accounts;
+        $this->authorizator = $authorizator;
     }
 
     public function handleAllowForSubunits(int $id): void
     {
+        if (!$this->canEdit()) {
+            $this->noAccess();
+        }
+
         try {
             $this->accounts->allowForSubunits($id);
             $this->flashMessage('Bankovní účet zpřístupněn', 'success');
@@ -44,6 +53,10 @@ class BankAccountsPresenter extends BasePresenter
 
     public function handleRemove(int $id): void
     {
+        if (!$this->canEdit()) {
+            $this->noAccess();
+        }
+
         try {
             $this->accounts->removeBankAccount($id);
             $this->flashMessage('Bankovní účet byl odstraněn', 'success');
@@ -55,6 +68,10 @@ class BankAccountsPresenter extends BasePresenter
 
     public function handleImport(): void
     {
+        if (!$this->canEdit()) {
+            $this->noAccess();
+        }
+
         try {
             $this->accounts->importFromSkautis($this->getUnitId());
             $this->flashMessage('Účty byly importovány', 'success');
@@ -68,7 +85,11 @@ class BankAccountsPresenter extends BasePresenter
 
     public function actionEdit(int $id): void
     {
-        if($this->accounts->find($id) === NULL) {
+        if (!$this->canEdit()) {
+            $this->noAccess();
+        }
+
+        if ($this->accounts->find($id) === NULL) {
             throw new BadRequestException('Bankovní účet neexistuje');
         }
 
@@ -78,7 +99,8 @@ class BankAccountsPresenter extends BasePresenter
 
     public function renderDefault(): void
     {
-        $this->template->accounts = $this->accounts->findByUnit($this->getUnitId());
+        $this->template->accounts = $this->accounts->findByUnit($this->getCurrentUnitId());
+        $this->template->canEdit = $this->canEdit();
     }
 
 
@@ -88,6 +110,10 @@ class BankAccountsPresenter extends BasePresenter
 
         if($account === NULL) {
             throw new BadRequestException('Bankovní účet neexistuje');
+        }
+
+        if(!$this->canEdit() && !$account->isAllowedForSubunits()) {
+            $this->noAccess();
         }
 
         $this->template->account = $account;
@@ -103,6 +129,18 @@ class BankAccountsPresenter extends BasePresenter
     protected function createComponentForm(): BankAccountForm
     {
         return $this->formFactory->create($this->id);
+    }
+
+
+    private function noAccess(): void
+    {
+        $this->flashMessage('Na tuto stránku nemáte přistup', 'danger');
+        $this->redirect(403, 'default');
+    }
+
+    private function canEdit(): bool
+    {
+        return $this->authorizator->isAllowed(Unit::EDIT, $this->getUnitId());
     }
 
 }

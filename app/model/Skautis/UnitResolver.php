@@ -26,7 +26,7 @@ final class UnitResolver implements IUnitResolver
 
         if (!in_array($unit->ID_UnitType, UnitService::OFFICIAL_UNIT_TYPES)) {
             $parent = $unit->ID_UnitParent;
-            $unit = $this->getOfficialUnitId($parent);
+            return $this->getOfficialUnitId($parent);
         }
 
         return $unit->ID;

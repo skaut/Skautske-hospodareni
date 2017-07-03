@@ -1,6 +1,6 @@
 {block title}Bankovní účty{/block}
 {block content}
-<div class="pull-right">
+<div class="pull-right" n:if="$canEdit">
     <a n:href="new" class="btn btn-success">Přidat účet</a>
     <a n:href="import!" class="btn btn-default">Načíst ze Skautisu</a>
 </div>
@@ -9,6 +9,7 @@
 <ul class="list-group">
     <li class="list-group-item" n:foreach="$accounts as $account">
         <div class="pull-right">
+            {if $canEdit}
             <div class="col-md-6">
                 {if $account->isAllowedForSubunits()}
                     <a href="#" class="btn btn-sm btn-success disabled"><i class="fa fa-check"></i> Účet zpřístupněn</a>
@@ -17,10 +18,13 @@
                 {/if}
             </div>
             <div class="col-md-6">
-                <a n:href="detail $account->getId()" class="btn btn-sm btn-default" title="Detail"><i class="fa fa-search"></i></a>
+                {include detail $account}
                 <a n:href="edit $account->getId()" class="btn btn-default btn-sm" title="Upravit účet"><i class="fa fa-pencil"></i></a>
                 <a n:href="remove! $account->getId()" class="btn btn-sm btn-default" data-confirm="Opravdu chcete smazat účet"><i class="fa fa-times"></i></a>
             </div>
+            {else}
+                {include detail $account}
+            {/if}
         </div>
         <div><strong>{$account->getName()}</strong> ({$account->getNumber()})
             <span class="label label-success" n:if="$account->getToken() !== NULL"><i class="fa fa-check"></i> párování</span></div>
@@ -28,3 +32,7 @@
         <div class="clearfix"></div>
     </li>
 </ul>
+
+{define detail $account}
+    <a n:href="detail $account->getId()" class="btn btn-sm btn-default" title="Detail"><i class="fa fa-search"></i></a>
+{/define}
