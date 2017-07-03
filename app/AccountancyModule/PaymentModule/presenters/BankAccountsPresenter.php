@@ -52,6 +52,20 @@ class BankAccountsPresenter extends BasePresenter
         $this->redirect('this');
     }
 
+
+    public function handleImport(): void
+    {
+        try {
+            $this->accounts->importFromSkautis($this->getUnitId());
+            $this->flashMessage('Účty byly importovány', 'success');
+        } catch (BankAccountNotFoundException $e) {
+            $this->flashMessage('Nenalezeny žádné účty', 'warning');
+        }
+
+        $this->redirect('this');
+    }
+
+
     public function actionEdit(int $id): void
     {
         if($this->accounts->find($id) === NULL) {

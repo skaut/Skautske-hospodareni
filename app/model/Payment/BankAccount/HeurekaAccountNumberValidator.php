@@ -15,7 +15,7 @@ class HeurekaAccountNumberValidator implements IAccountNumberValidator
         $this->heurekaValidator = $heurekaValidator;
     }
 
-    public function validate(string $prefix, string $number, string $bankCode): bool
+    public function validate(?string $prefix, string $number, string $bankCode): bool
     {
         return $this->heurekaValidator->validate([
             $prefix,

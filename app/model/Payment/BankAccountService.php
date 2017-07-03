@@ -9,6 +9,7 @@ use Model\DTO\Payment\BankAccount as BankAccountDTO;
 use Model\DTO\Payment\BankAccountFactory;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccount\IAccountNumberValidator;
+use Model\Payment\BankAccount\IBankAccountImporter;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
@@ -32,6 +33,9 @@ class BankAccountService
     /** @var IFioClient */
     private $fio;
 
+    /** @var IBankAccountImporter */
+    private $importer;
+
     /** @var Cache */
     private $fioCache;
 
@@ -41,6 +45,7 @@ class BankAccountService
         IAccountNumberValidator $numberValidator,
         IUnitResolver $unitResolver,
         IFioClient $fio,
+        IBankAccountImporter $importer,
         Cache $fioCache
     )
     {
@@ -49,6 +54,7 @@ class BankAccountService
         $this->numberValidator = $numberValidator;
         $this->unitResolver = $unitResolver;
         $this->fio = $fio;
+        $this->importer = $importer;
         $this->fioCache = $fioCache;
     }
 
@@ -163,6 +169,43 @@ class BankAccountService
         $now = new DateTimeImmutable();
         return $this->fio->getTransactions($now->modify("- $daysBack days"), $now, $account);
     }
+
+
+    /**
+     * @throws BankAccountNotFoundException when no bank accounts were imported
+     */
+    public function importFromSkautis(int $unitId): void
+    {
+        $now = new DateTimeImmutable();
+        $numbers = $this->getImportableBankAccounts($unitId);
+
+        if(count($numbers) === 0) {
+            throw new BankAccountNotFoundException();
+        }
+
+        $i = 1;
+        foreach($numbers as $number) {
+            $this->bankAccounts->save(
+                new BankAccount($unitId, 'Importovaný účet (' . $i++ . ')', $number, NULL, $now, $this->unitResolver)
+            );
+        }
+    }
+
+
+    /**
+     * @return AccountNumber[]
+     */
+    private function getImportableBankAccounts(int $unitId): array
+    {
+        $unitId = $this->unitResolver->getOfficialUnitId($unitId);
+        $accounts = $this->bankAccounts->findByUnit($unitId);
+        $numbers = array_map(function(BankAccount $a) { return (string) $a->getNumber(); }, $accounts);
+
+        $imported = $this->importer->import($unitId);
+
+        return array_filter($imported, function(AccountNumber $n) use ($numbers) { return ! in_array((string) $n, $numbers, TRUE); });
+    }
+
 
     /**
      * Cleans cached transactions for account

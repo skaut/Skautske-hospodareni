@@ -100,6 +100,7 @@ services:
     - BankAccountValidator\Czech
     - Model\Skautis\UnitResolver
     - Model\Payment\BankAccount\HeurekaAccountNumberValidator()
+    - Model\Skautis\BankAccountImporter
 
     - Model\MailService
     - Model\Payment\MailingService
