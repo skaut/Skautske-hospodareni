@@ -6,6 +6,7 @@ use BankAccountValidator\Czech;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccount\IAccountNumberValidator;
 use Model\Payment\BankAccount\IBankAccountImporter;
+use Model\Payment\InvalidBankAccountNumberException;
 use Skautis\Skautis;
 
 
@@ -42,8 +43,12 @@ class BankAccountImporter implements IBankAccountImporter
 
         $result = [];
         foreach ($accounts as $account) {
-            $number = $this->parser->parseNumber($account->DisplayName);
-            $result[] = new AccountNumber($number[0], $number[1], $number[2], $this->numberValidator);
+            try {
+                $number = $this->parser->parseNumber($account->DisplayName);
+                $result[] = new AccountNumber($number[0], $number[1], $number[2], $this->numberValidator);
+            } catch (InvalidBankAccountNumberException $e) {
+                // Skip invalid bank accounts
+            }
         }
         return $result;
     }
