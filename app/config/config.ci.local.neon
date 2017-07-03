@@ -10,7 +10,7 @@ parameters:
     sendEmail: true
 
     database:
-        host: mysql
+        host: mysql-test
         user: root
         password:
         name: hskauting

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5726e797c177180d69f4467bfe0b98de",
+    "content-hash": "108d910cd1828b1e793bdcb835cb13c3",
     "packages": [
         {
             "name": "arachne/container-adapter",
@@ -1206,7 +1206,7 @@
             "support": {
                 "source": "https://github.com/fmasa/dependentselectbox/tree/master"
             },
-            "time": "2017-03-24 20:26:06"
+            "time": "2017-03-24T20:26:06+00:00"
         },
         {
             "name": "heureka/bank-account-validator",
@@ -2232,7 +2232,7 @@
                 "php",
                 "utf-8"
             ],
-            "time": "2017-02-01 18:49:59"
+            "time": "2017-02-01T18:49:59+00:00"
         },
         {
             "name": "natxet/CssMin",
@@ -3757,7 +3757,7 @@
                 "nette",
                 "skautis"
             ],
-            "time": "2015-09-04 09:19:52"
+            "time": "2015-09-04T09:19:52+00:00"
         },
         {
             "name": "skautis/skautis",
@@ -3815,7 +3815,7 @@
                 "soap",
                 "wsdl"
             ],
-            "time": "2017-03-07 09:02:13"
+            "time": "2017-03-07T09:02:13+00:00"
         },
         {
             "name": "symfony/console",
@@ -4789,6 +4789,57 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "arachne/codeception",
+            "version": "v0.7.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Arachne/Codeception.git",
+                "reference": "42fddff45a4d483cfe2a70c90598f4b032c1aad9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Arachne/Codeception/zipball/42fddff45a4d483cfe2a70c90598f4b032c1aad9",
+                "reference": "42fddff45a4d483cfe2a70c90598f4b032c1aad9",
+                "shasum": ""
+            },
+            "require": {
+                "codeception/codeception": "^2.2.0",
+                "nette/bootstrap": "^2.3.0",
+                "nette/di": "^2.3.0",
+                "nette/http": "^2.3.0",
+                "php": "^5.5.0|^7.0.0"
+            },
+            "require-dev": {
+                "enumag/application": "^0.3.16",
+                "latte/latte": "^2.3.0",
+                "tracy/tracy": "^2.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Arachne\\Codeception\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jáchym Toušek",
+                    "email": "enumag@gmail.com",
+                    "homepage": "http://enumag.cz"
+                }
+            ],
+            "description": "Integration of Nette framework to Codeception.",
+            "keywords": [
+                "arachne",
+                "codeception",
+                "nette"
+            ],
+            "time": "2017-01-27T10:54:43+00:00"
+        },
         {
             "name": "behat/gherkin",
             "version": "v4.4.5",

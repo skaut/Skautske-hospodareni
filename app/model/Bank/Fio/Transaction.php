@@ -31,17 +31,6 @@ class Transaction extends Nette\Object
     /** @var string|NULL */
     private $note;
 
-    /**
-     * Transaction constructor.
-     * @param string $id
-     * @param \DateTime $date
-     * @param float $amount
-     * @param string $bankAccount
-     * @param string $name
-     * @param int|NULL $variableSymbol
-     * @param int|NULL $constantSymbol
-     * @param NULL|string $note
-     */
     public function __construct(
         int $id,
         \DateTime $date,

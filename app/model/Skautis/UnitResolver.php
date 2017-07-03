@@ -35,7 +35,7 @@ final class UnitResolver implements IUnitResolver
 
     public function getDetail(int $unitId): \stdClass
     {
-        return $this->units->call('UnitDetail', ["ID" => $unitId]);
+        return $this->units->call('UnitDetail', [ ["ID" => $unitId] ]);
     }
 
 }
