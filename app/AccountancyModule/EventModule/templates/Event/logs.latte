@@ -4,4 +4,7 @@
     <h2>{$event->DisplayName}</h2>
     {include ../ActionMenu.latte}
 
-{dump $logs}
+    <h2>Logy akce</h2>
+    {foreach $logs as $log}
+        {$log->date->format("Y/m/d H:i:s")} {$log->getDescription()} <br />
+    {/foreach}

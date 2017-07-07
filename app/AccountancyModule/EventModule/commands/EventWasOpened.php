@@ -7,7 +7,7 @@ class EventWasOpened
     /** @var array Skautis detail of event */
     private $event;
 
-    /** @var stdClass Skautis user detail */
+    /** @var array Skautis user detail */
     private $user;
 
     public function __construct(array $event, \stdClass $user)

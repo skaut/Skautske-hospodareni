@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Model\DTO\Logger\LogFactory;
 use Model\Logger\Log;
 use Model\Logger\Repositories\ILoggerRepository;
 
@@ -26,7 +27,10 @@ class LoggerService
 
     public function findAllByObjectId($objectId): array
     {
-        return $this->logs->findAllByObjectId($objectId);
+
+        return array_map(function(Log $log) {
+            return LogFactory::create($log);
+        }, $this->logs->findAllByObjectId($objectId));
     }
 
 

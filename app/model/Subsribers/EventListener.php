@@ -11,12 +11,12 @@ class EventListener
 
     private $loggerService;
 
-    function __construct(LoggerService $ls)
+    public function __construct(LoggerService $ls)
     {
         $this->loggerService = $ls;
     }
 
-    public function handleClosed(EventWasClosed $e)
+    public function handleClosed(EventWasClosed $e): void
     {
         $this->loggerService->log(
             $e->getEvent()["ID_Unit"],
@@ -26,7 +26,7 @@ class EventListener
         );
     }
 
-    public function handleOpened(EventWasOpened $e)
+    public function handleOpened(EventWasOpened $e): void
     {
         $this->loggerService->log(
             $e->getEvent()["ID_Unit"],

@@ -1,6 +1,6 @@
 <?php
 
-namespace Model\DTO\Payment;
+namespace Model\DTO\Logger;
 
 use DateTimeImmutable;
 use Nette\SmartObject;
@@ -45,6 +45,31 @@ class Log
         $this->userId = $userId;
         $this->description = $description;
         $this->objectId = $objectId;
+    }
+
+    public function getUnitId(): int
+    {
+        return $this->unitId;
+    }
+
+    public function getDate(): \DateTimeImmutable
+    {
+        return $this->date;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getObjectId(): ?int
+    {
+        return $this->objectId;
     }
 
 }

@@ -32,4 +32,29 @@ class Log
         $this->objectId = $objectId;
     }
 
+    public function getUnitId(): int
+    {
+        return $this->unitId;
+    }
+
+    public function getDate(): \DateTimeImmutable
+    {
+        return $this->date;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getObjectId(): ?int
+    {
+        return $this->objectId;
+    }
+
 }
