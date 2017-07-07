@@ -2,7 +2,9 @@
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\Factories\GridFactory;
 use Nette\Application\UI\Form;
+use Ublaboo\DataGrid\DataGrid;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -14,7 +16,17 @@ class DefaultPresenter extends BasePresenter
 
     const DEFAULT_STATE = "approvedParent"; //filtrovani zobrazených položek
 
-    protected function startup() : void
+    /** @var GridFactory */
+    private $gridFactory;
+
+    public function __construct(GridFactory $gf)
+    {
+        parent::__construct();
+        $this->gridFactory = $gf;
+    }
+
+
+    protected function startup(): void
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
@@ -27,27 +39,41 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function renderDefault() : void
+    protected function createComponentCampGrid(): DataGrid
     {
         //filtrovani zobrazených položek
-        $year = isset($this->ses->year) ? $this->ses->year : date("Y");
-        $state = isset($this->ses->state) ? $this->ses->state : NULL;
-
+        $year = $this->ses->year ?? date('Y');
+        $state = $this->ses->state ?? NULL;
         $list = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $value['accessDetail'] = $this->userService->actionVerify(self::STable, $value['ID'], self::STable . "_DETAIL");
-            $list[$key] = $value;
+            $list[$key]['accessDetail'] = $this->userService->actionVerify(self::STable, $value['ID'], self::STable . "_DETAIL");
         }
-        $this->template->list = $list;
-        if ($year) {
-            $this['formFilter']['year']->setDefaultValue($year);
+
+        $grid = $this->gridFactory->create();
+        $grid->setPrimaryKey("ID");
+        $grid->setDataSource($list);
+        $grid->addColumnLink('DisplayName', 'Název', 'Detail:default', NULL, ['aid' => 'ID'])->setSortable()->setFilterText();
+        $grid->addColumnDateTime('StartDate', 'Od')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnDateTime('EndDate', 'Do')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnText('Location', 'Místo konání')->setSortable()->setFilterText();
+        $grid->addColumnText('state', 'Stav');
+
+        $grid->setTemplateFile(__DIR__ . "/../templates/campsGrid.latte");
+        return $grid;
+    }
+
+
+    public function renderDefault(): void
+    {
+        if ($this->ses->year !== NULL) {
+            $this['formFilter']['year']->setDefaultValue($this->ses->year);
         }
-        if ($state) {
-            $this['formFilter']['state']->setDefaultValue($state);
+        if ($this->ses->state !== NULL) {
+            $this['formFilter']['state']->setDefaultValue($this->ses->state);
         }
     }
 
-    public function handleChangeYear(?int $year) : void
+    public function handleChangeYear(?int $year): void
     {
         $this->ses->year = $year;
         if ($this->isAjax()) {
@@ -57,7 +83,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function handleChangeState($state) : void
+    public function handleChangeState($state): void
     {
         $this->ses->state = $state;
         if ($this->isAjax()) {
@@ -67,7 +93,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentFormFilter($name) : Form
+    protected function createComponentFormFilter($name): Form
     {
         $states = array_merge(["all" => "Nezrušené"], $this->eventService->event->getStates());
         $years = ["all" => "Všechny"];
@@ -80,14 +106,14 @@ class DefaultPresenter extends BasePresenter
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = function(Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formFilterSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formFilterSubmitted(Form $form) : void
+    private function formFilterSubmitted(Form $form): void
     {
         $v = $form->getValues();
         $this->ses->year = $v['year'];

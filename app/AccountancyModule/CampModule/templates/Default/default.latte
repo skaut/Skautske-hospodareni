@@ -4,40 +4,14 @@
 <h2>Tábory</h2>
 <div class="row">
     <div class="span">
-
-{dump $list}
-
     {snippet camps}
         {form formFilter class=>"ajax filter form-inline"}
         {label year /}{input year onchange=>"changeYear(this.value)", class=>"form-control"}
         {label state /}{input state onchange=>"changeState(this.value)", class=>"form-control"}
         {input send}
         {/form}
-        
-        {if !empty($list)}
-        <table class="myTable table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Název</th>
-                    <th>Od</th>
-                    <th>Do</th>
-                    <th>Místo konání</th>
-                    <th>Stav</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr n:foreach="$list as $i">
-                    <td><a n:tag-if="$i['accessDetail']" n:href="Detail: $i['ID']">{$i['DisplayName']}</a></td>
-                    <td>{$i['StartDate']|date:"d.m.Y"}</td>
-                    <td>{$i['EndDate']|date:"d.m.Y"}</td>
-                    <td>{$i['Location']}</td>
-                    <td>{$i['ID_EventCampState']|campStateLabel|noescape}</td>
-                </tr>
-            </tbody>
-        </table>
-        {else}
-        <p class="alert alert-info" role='alert'>Nemáte žádné tábory.</p>
-        {/if}
+
+        {control campGrid}
     {/snippet}
     </div>
 </div>

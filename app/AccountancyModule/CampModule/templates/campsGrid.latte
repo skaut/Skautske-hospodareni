@@ -1,0 +1,18 @@
+{extends $original_template}
+
+{define col-state}
+    {var $state = $item["ID_EventCampState"]}
+
+    {if $state === "draft"}
+        <span class="label label-warning">Rozpracováno</span>
+    {elseif $state === "approvedParent"}
+        <span class="label label-info">Schválený střediskem</span>
+    {elseif $state === "approvedLeader"}
+        <span class="label label-info">Schválený vedoucím</span>
+    {elseif $state === "real"}
+        <span class="label label-success">Skutečnost odevzdána</span>
+    {else}
+        <span class="label label-default">Zrušený</span>
+    {/if}
+
+{/define}
