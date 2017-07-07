@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\EventModule\Commands\ChitWasUpdated;
+
 class CashbookPresenter extends BasePresenter
 {
 

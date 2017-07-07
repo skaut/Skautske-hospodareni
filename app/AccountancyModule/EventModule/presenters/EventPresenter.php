@@ -2,12 +2,14 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\EventModule\Commands\ChitWasUpdated;
 use App\AccountancyModule\EventModule\Commands\EventWasClosed;
 use App\AccountancyModule\EventModule\Commands\EventWasOpened;
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use eGen\MessageBus\Bus\EventBus;
 use Model\ExportService;
+use Model\Logger\Log\Type;
 use Model\MemberService;
 use App\Forms\BaseForm;
 use Model\Services\PdfRenderer;
@@ -33,16 +35,11 @@ class EventPresenter extends BasePresenter
     /** @var PdfRenderer */
     private $pdf;
 
-    /** @var EventBus */
-    private $eventBus;
-
-
     public function __construct(
         ExportService $exportService,
         MemberService $memberService,
         IFunctionsControlFactory $functionsFactory,
-        PdfRenderer $pdf,
-        EventBus $eventBus
+        PdfRenderer $pdf
     )
     {
         parent::__construct();
@@ -50,7 +47,6 @@ class EventPresenter extends BasePresenter
         $this->memberService = $memberService;
         $this->functionsFactory = $functionsFactory;
         $this->pdf = $pdf;
-        $this->eventBus = $eventBus;
     }
 
     public function renderDefault(int $aid): void
@@ -88,7 +84,7 @@ class EventPresenter extends BasePresenter
 
     public function renderLogs(int $aid): void
     {
-        $this->template->logs = $this->loggerService->findAllByObjectId($this->event->localId);
+        $this->template->logs = $this->loggerService->findAllByTypeId(Type::get(Type::OBJECT), $this->event->localId);
     }
 
     public function handleOpen(int $aid): void

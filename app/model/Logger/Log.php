@@ -2,6 +2,8 @@
 
 namespace Model\Logger;
 
+use Model\Logger\Log\Type;
+
 class Log
 {
 
@@ -20,16 +22,20 @@ class Log
     /** @var string */
     private $description;
 
-    /** @var int|NULL */
-    private $objectId;
+    /** @var  Type */
+    private $type;
 
-    public function __construct(int $unitId, int $userId, string $desc, ?int $objectId = NULL)
+    /** @var int|NULL */
+    private $typeId;
+
+    public function __construct(int $unitId, int $userId, string $desc, Type $type, ?int $typeId = NULL)
     {
         $this->unitId = $unitId;
         $this->date = new \DateTimeImmutable();
         $this->userId = $userId;
         $this->description = $desc;
-        $this->objectId = $objectId;
+        $this->type = $type;
+        $this->typeId = $typeId;
     }
 
     public function getUnitId(): int
@@ -52,9 +58,14 @@ class Log
         return $this->description;
     }
 
-    public function getObjectId(): ?int
+    public function getType(): Type
     {
-        return $this->objectId;
+        return $this->type;
+    }
+
+    public function getTypeId(): ?int
+    {
+        return $this->typeId;
     }
 
 }

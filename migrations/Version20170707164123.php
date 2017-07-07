@@ -16,11 +16,11 @@ CREATE TABLE `log` (
   `date` datetime NOT NULL,
   `userId` int(10) unsigned NOT NULL,
   `description` text CHARACTER SET utf8 COLLATE utf8_czech_ci NOT NULL,
-  `objectId` int(11) DEFAULT NULL,
+  `type` enum('object','payment') CHARACTER SET utf8 COLLATE utf8_czech_ci NOT NULL,
+  `typeId` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `unitId` (`unitId`),
-  KEY `objectId` (`objectId`),
-  CONSTRAINT `log_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `ac_object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `typeId` (`typeId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
         ");
 

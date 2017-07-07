@@ -5,6 +5,7 @@ namespace Model\Logger\Repositories;
 
 use Doctrine\ORM\EntityManager;
 use Model\Logger\Log;
+use Model\Logger\Log\Type;
 
 class LoggerRepository implements ILoggerRepository
 {
@@ -18,17 +19,22 @@ class LoggerRepository implements ILoggerRepository
     }
 
     /**
-     * @param int $objectId
-     * @return Log[]
+     * @param Type $type
+     * @param int $typeId
+     * @return array|Log[]
      */
-    public function findAllByObjectId(int $objectId): array
+    public function findAllByTypeId(Type $type, int $typeId): array
     {
+
+
         $result = $this->em->createQueryBuilder()
             ->select('l')
             ->from(Log::class, 'l')
-            ->where("l.objectId = :objectId")
+            ->where("l.typeId = :typeId")
+            ->andWhere("l.type = :type")
             ->orderBy('l.date', 'DESC')
-            ->setParameter('objectId', $objectId)
+            ->setParameter('typeId', $typeId)
+            ->setParameter('type', $type)
             ->getQuery()->getResult();
         return $result;
     }

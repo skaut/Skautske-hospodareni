@@ -19,7 +19,12 @@ Model\Logger\Log:
             column: userId
         description:
             type: string
-        objectId:
+        type:
+            type: string_enum
+            column: type
+            annotations:
+                enum: { class: Model\Logger\Log\Type }
+        typeId:
             type: integer
             nullable: true
-            column: objectId
+            column: typeId

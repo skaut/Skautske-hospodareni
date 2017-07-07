@@ -2,6 +2,7 @@
 
 namespace App;
 
+use eGen\MessageBus\Bus\EventBus;
 use Model\LoggerService;
 use Model\UnitService;
 use Model\UserService;
@@ -18,6 +19,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var UnitService */
     protected $unitService;
 
+    /** @var EventBus */
+    protected $eventBus;
+    
     /** @var string */
     private $wwwDir;
 
@@ -53,6 +57,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     public function injectLoggerService(LoggerService $loggerService): void
     {
         $this->loggerService = $loggerService;
+    }
+
+    public function injectEventBus(EventBus $eventBus): void
+    {
+        $this->eventBus = $eventBus;
     }
 
     protected function startup(): void

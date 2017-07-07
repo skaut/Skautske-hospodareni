@@ -1,5 +1,7 @@
 <?php
 
+use App\AccountancyModule\EventModule\Commands\ChitWasRemoved;
+use App\AccountancyModule\EventModule\Commands\ChitWasUpdated;
 use App\Forms\BaseForm;
 use Model\ChitService;
 use Model\ExcelService;
@@ -97,8 +99,10 @@ trait CashbookTrait
     {
         $this->editableOnly();
         $this->isChitEditable($id);
+        $chit = $this->entityService->chits->get($id);
 
         if ($this->entityService->chits->delete($id, $actionId)) {
+            $this->eventBus->handle(new ChitWasRemoved((array)$this->event, $this->userService->getUserDetail(), (array)$chit));
             $this->flashMessage("Paragon byl smazán");
         } else {
             $this->flashMessage("Paragon se nepodařilo smazat");
@@ -284,6 +288,7 @@ trait CashbookTrait
                     unset($values['id']);
                     $this->isChitEditable($chitId);
                     if ($this->entityService->chits->update($chitId, $values)) {
+                        $this->eventBus->handle(new ChitWasUpdated((array)$this->event, $this->userService->getUserDetail(), (array)$this->entityService->chits->get($chitId)));
                         $this->flashMessage("Paragon byl upraven.");
                     } else {
                         $this->flashMessage("Paragon se nepodařilo upravit.", "danger");

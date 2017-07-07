@@ -15,7 +15,8 @@ class LogFactory
             $log->getDate(),
             $log->getUserId(),
             $log->getDescription(),
-            $log->getObjectId()
+            $log->getType(),
+            $log->getTypeId()
         );
     }
 

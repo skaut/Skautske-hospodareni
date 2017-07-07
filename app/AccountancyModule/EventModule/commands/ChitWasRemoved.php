@@ -2,6 +2,6 @@
 
 namespace App\AccountancyModule\EventModule\Commands;
 
-class EventWasClosed extends BaseBusEvent
+class ChitWasRemoved extends BaseChit
 {
 }

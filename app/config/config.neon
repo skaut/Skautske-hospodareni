@@ -164,6 +164,9 @@ services:
     - class: App\Model\Subscribers\EventListener
       tags: [eventBus.subscriber]
 
+    - class: App\Model\Subscribers\ChitListener
+      tags: [eventBus.subscriber]
+
     - Model\Services\PdfRenderer
     - Model\Skautis\Mapper
 
