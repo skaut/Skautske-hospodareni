@@ -17,12 +17,25 @@ class LoggerRepository implements ILoggerRepository
         $this->em = $em;
     }
 
+    /**
+     * @param int $objectId
+     * @return Log[]
+     */
+    public function findAllByObjectId(int $objectId): array
+    {
+        $result = $this->em->createQueryBuilder()
+            ->select('l')
+            ->from(Log::class, 'l')
+            ->where("l.objectId = :objectId")
+            ->orderBy('l.date', 'DESC')
+            ->setParameter('objectId', $objectId)
+            ->getQuery()->getResult();
+        return $result;
+    }
 
-    //    public function findAllByUnit(int $unitId): array
-    //    {
-    //
-    //    }
-
+    /**
+     * @param Log $log
+     */
     public function save(Log $log): void
     {
         $this->em->persist($log)->flush();

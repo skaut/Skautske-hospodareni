@@ -1,0 +1,7 @@
+{block #title}{$event->DisplayName} - základní informace{/block}
+
+    {block #content}
+    <h2>{$event->DisplayName}</h2>
+    {include ../ActionMenu.latte}
+
+{dump $logs}

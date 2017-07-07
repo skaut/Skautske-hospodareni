@@ -24,5 +24,10 @@ class LoggerService
         $this->logs->save(new Log($unitId, $userId, $description, $objectId));
     }
 
+    public function findAllByObjectId($objectId): array
+    {
+        return $this->logs->findAllByObjectId($objectId);
+    }
+
 
 }

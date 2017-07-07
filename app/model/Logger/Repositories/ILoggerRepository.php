@@ -8,7 +8,7 @@ use Model\Logger\Log;
 interface ILoggerRepository
 {
 
-    //public function findAllByUnit(int $unitId): array;
+    public function findAllByObjectId(int $objectId): array;
 
     public function save(Log $log): void;
 

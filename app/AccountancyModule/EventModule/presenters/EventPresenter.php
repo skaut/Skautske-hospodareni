@@ -2,8 +2,11 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\EventModule\Commands\EventWasClosed;
+use App\AccountancyModule\EventModule\Commands\EventWasOpened;
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
+use eGen\MessageBus\Bus\EventBus;
 use Model\ExportService;
 use Model\MemberService;
 use App\Forms\BaseForm;
@@ -30,12 +33,16 @@ class EventPresenter extends BasePresenter
     /** @var PdfRenderer */
     private $pdf;
 
+    /** @var EventBus */
+    private $eventBus;
+
 
     public function __construct(
         ExportService $exportService,
         MemberService $memberService,
         IFunctionsControlFactory $functionsFactory,
-        PdfRenderer $pdf
+        PdfRenderer $pdf,
+        EventBus $eventBus
     )
     {
         parent::__construct();
@@ -43,6 +50,7 @@ class EventPresenter extends BasePresenter
         $this->memberService = $memberService;
         $this->functionsFactory = $functionsFactory;
         $this->pdf = $pdf;
+        $this->eventBus = $eventBus;
     }
 
     public function renderDefault(int $aid): void
@@ -78,6 +86,11 @@ class EventPresenter extends BasePresenter
         }
     }
 
+    public function renderLogs(int $aid): void
+    {
+        $this->template->logs = $this->loggerService->findAllByObjectId($this->event->localId);
+    }
+
     public function handleOpen(int $aid): void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Open")) {
@@ -85,12 +98,7 @@ class EventPresenter extends BasePresenter
             $this->redirect("this");
         }
         $this->eventService->event->open($aid);
-        $this->loggerService->log(
-            $this->event->ID_Unit,
-            $this->user->getId(),
-            "Uživatel '" . $this->userService->getUserDetail()->Person . "' otevřel akci '" . $this->event->DisplayName . "'.",
-            $this->event->localId
-        );
+        $this->eventBus->handle(new EventWasOpened((array)$this->event, $this->userService->getUserDetail()));
         $this->flashMessage("Akce byla znovu otevřena.");
         $this->redirect("this");
     }
@@ -104,12 +112,7 @@ class EventPresenter extends BasePresenter
 
         if ($this->eventService->event->isCloseable($aid)) {
             $this->eventService->event->close($aid);
-            $this->loggerService->log(
-                $this->event->ID_Unit,
-                $this->user->getId(),
-                "Uživatel '" . $this->userService->getUserDetail()->Person . "' uzavřel akci '" . $this->event->DisplayName . "'.",
-                $this->event->localId
-            );
+            $this->eventBus->handle(new EventWasClosed((array)$this->event, $this->userService->getUserDetail()));
             $this->flashMessage("Akce byla uzavřena.");
         } else {
             $this->flashMessage("Před uzavřením akce musí být vyplněn vedoucí akce", "danger");

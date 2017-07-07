@@ -161,6 +161,9 @@ services:
     - class: Model\Payment\Subscribers\PaymentSubscriber
       tags: [eventBus.subscriber]
 
+    - class: App\Model\Subscribers\EventListener
+      tags: [eventBus.subscriber]
+
     - Model\Services\PdfRenderer
     - Model\Skautis\Mapper
 
@@ -173,6 +176,7 @@ services:
         factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
 
     - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
+
 
 includes:
     - model/doctrine.neon
