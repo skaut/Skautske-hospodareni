@@ -1,0 +1,25 @@
+Model\Logger\Log:
+
+    type: entity
+    table: log
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        date:
+            type: datetime_immutable
+        unitId:
+            type: integer
+            column: unitId
+        userId:
+            type: integer
+            column: userId
+        description:
+            type: string
+        objectId:
+            type: integer
+            nullable: true
+            column: objectId

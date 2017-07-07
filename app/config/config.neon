@@ -109,6 +109,7 @@ services:
     - \Model\ExportService
     - \Model\ExcelService
     - \Model\BudgetService
+    - \Model\LoggerService
 
     # Factories
     - Model\IChitServiceFactory
@@ -129,6 +130,7 @@ services:
     - Model\Payment\Repositories\GroupRepository
     - Model\Payment\Repositories\PaymentRepository
     - Model\Payment\Repositories\UserRepository
+    - Model\Logger\Repositories\LoggerRepository
     # Skautis
     - Model\Skautis\UnitRepository(@skautis.org)
 
