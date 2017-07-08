@@ -81,13 +81,13 @@ class ParticipantPresenter extends BasePresenter
                 break;
             default:
                 $this->payload->message = 'Error';
-                $this->terminate();
+                $this->sendPayload();
                 break;
         }
         $this->eventService->participants->update($sisdata['ID'], $data);
 
         $this->payload->message = 'Success';
-        $this->terminate();
+        $this->sendPayload();
     }
 
     public function handleActivateAutocomputedParticipants($aid) : void

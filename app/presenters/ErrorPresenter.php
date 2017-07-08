@@ -45,7 +45,7 @@ class ErrorPresenter extends \Nette\Application\UI\Presenter
 
         if ($this->isAjax()) { // AJAX request? Note this error in payload.
             $this->payload->error = TRUE;
-            $this->terminate();
+            $this->sendPayload();
         }
     }
 
