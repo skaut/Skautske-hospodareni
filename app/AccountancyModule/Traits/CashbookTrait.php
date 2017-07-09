@@ -1,7 +1,7 @@
 <?php
 
-use App\AccountancyModule\EventModule\Commands\ChitWasRemoved;
-use App\AccountancyModule\EventModule\Commands\ChitWasUpdated;
+use Model\Chit\Events\ChitWasRemoved;
+use Model\Chit\Events\ChitWasUpdated;
 use App\Forms\BaseForm;
 use Model\ChitService;
 use Model\ExcelService;

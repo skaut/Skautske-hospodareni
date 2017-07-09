@@ -1,31 +1,31 @@
 <?php
 
-namespace App\AccountancyModule\EventModule\Commands;
+namespace Model\Chit\Events;
 
 class BaseChit
 {
     /** @var int */
-    protected $unitId;
+    private $unitId;
 
     /** @var int */
-    protected $userId;
+    private $userId;
 
     /** @var string */
-    protected $userName;
+    private $userName;
 
     /** @var int */
-    protected $chitId;
+    private $chitId;
 
     /** @var int */
-    protected $localId;
+    private $eventId;
 
-    public function __construct(int $unitId, int $userId, string $userName, int $chitId, int $localId)
+    public function __construct(int $unitId, int $userId, string $userName, int $chitId, int $eventId)
     {
         $this->unitId = $unitId;
         $this->userId = $userId;
         $this->userName = $userName;
         $this->chitId = $chitId;
-        $this->localId = $localId;
+        $this->eventId = $eventId;
     }
 
     public function getUnitId(): int
@@ -48,8 +48,8 @@ class BaseChit
         return $this->chitId;
     }
 
-    public function getLocalId(): int
+    public function getEventId(): int
     {
-        return $this->localId;
+        return $this->eventId;
     }
 }

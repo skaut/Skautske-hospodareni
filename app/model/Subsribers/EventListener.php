@@ -2,8 +2,8 @@
 
 namespace App\Model\Subscribers;
 
-use App\AccountancyModule\EventModule\Commands\EventWasClosed;
-use App\AccountancyModule\EventModule\Commands\EventWasOpened;
+use Model\Events\Events\EventWasClosed;
+use Model\Events\Events\EventWasOpened;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
 
@@ -11,30 +11,30 @@ class EventListener
 {
     private $loggerService;
 
-    public function __construct(LoggerService $ls)
+    public function __construct(LoggerService $logger)
     {
-        $this->loggerService = $ls;
+        $this->loggerService = $logger;
     }
 
-    public function handleClosed(EventWasClosed $e): void
+    public function handleClosed(EventWasClosed $event): void
     {
         $this->loggerService->log(
-            $e->getUnitId(),
-            $e->getUserId(),
-            "Uživatel '" . $e->getUserName() . "' uzavřel akci '" . $e->getEventName() . "'.",
+            $event->getUnitId(),
+            $event->getUserId(),
+            "Uživatel '" . $event->getUserName() . "' uzavřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ").",
             Type::get(Type::OBJECT),
-            $e->getLocalId()
+            $event->getLocalId()
         );
     }
 
-    public function handleOpened(EventWasOpened $e): void
+    public function handleOpened(EventWasOpened $event): void
     {
         $this->loggerService->log(
-            $e->getUnitId(),
-            $e->getUserId(),
-            "Uživatel '" . $e->getUserName() . "' otevřel akci '" . $e->getEventName() . "'.",
+            $event->getUnitId(),
+            $event->getUserId(),
+            "Uživatel '" . $event->getUserName() . "' otevřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ").",
             Type::get(Type::OBJECT),
-            $e->getLocalId()
+            $event->getLocalId()
         );
     }
 

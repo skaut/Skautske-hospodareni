@@ -1,30 +1,30 @@
 <?php
 
-namespace App\AccountancyModule\EventModule\Commands;
+namespace Model\Events\Events;
 
 class BaseEvent
 {
     /** @var int */
-    protected $unitId;
+    private $unitId;
 
     /** @var int */
-    protected $userId;
+    private $userId;
 
     /** @var string */
-    protected $userName;
+    private $userName;
 
     /** @var int */
-    protected $localId;
+    private $eventId;
 
     /** @var string */
-    protected $eventName;
+    private $eventName;
 
-    public function __construct(int $unitId, int $userId, string $userName, int $localId, $eventName)
+    public function __construct(int $unitId, int $userId, string $userName, int $eventId, string $eventName)
     {
         $this->unitId = $unitId;
         $this->userId = $userId;
         $this->userName = $userName;
-        $this->localId = $localId;
+        $this->eventId = $eventId;
         $this->eventName = $eventName;
     }
 
@@ -43,9 +43,9 @@ class BaseEvent
         return $this->userName;
     }
 
-    public function getLocalId(): int
+    public function getEventId(): int
     {
-        return $this->localId;
+        return $this->eventId;
     }
 
     public function getEventName(): string

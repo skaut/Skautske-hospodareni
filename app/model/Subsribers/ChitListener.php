@@ -2,8 +2,8 @@
 
 namespace App\Model\Subscribers;
 
-use App\AccountancyModule\EventModule\Commands\ChitWasRemoved;
-use App\AccountancyModule\EventModule\Commands\ChitWasUpdated;
+use Model\Chit\Events\ChitWasRemoved;
+use Model\Chit\Events\ChitWasUpdated;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
 
@@ -16,25 +16,25 @@ class ChitListener
         $this->loggerService = $ls;
     }
 
-    public function handleUpdate(ChitWasUpdated $ch): void
+    public function handleUpdate(ChitWasUpdated $chit): void
     {
         $this->loggerService->log(
-            $ch->getUnitId(),
-            $ch->getUserId(),
-            "Uživatel '" . $ch->getUserUserName() . "' upravil paragon (ID=" . $ch->getChitId() . ").",
+            $chit->getUnitId(),
+            $chit->getUserId(),
+            "Uživatel '" . $chit->getUserUserName() . "' upravil paragon (ID=" . $chit->getChitId() . ").",
             Type::get(Type::OBJECT),
-            $ch->getLocalId()
+            $chit->getLocalId()
         );
     }
 
-    public function handleRemove(ChitWasRemoved $ch): void
+    public function handleRemove(ChitWasRemoved $chit): void
     {
         $this->loggerService->log(
-            $ch->getUnitId(),
-            $ch->getUserId(),
-            "Uživatel '" . $ch->getUserUserName() . "' odebral paragon (ID=" . $ch->getChitId() . ", účel=" . $ch->getChitPurpose() . ").",
+            $chit->getUnitId(),
+            $chit->getUserId(),
+            "Uživatel '" . $chit->getUserUserName() . "' odebral paragon (ID=" . $chit->getChitId() . ", účel=" . $chit->getChitPurpose() . ").",
             Type::get(Type::OBJECT),
-            $ch->getLocalId()
+            $chit->getLocalId()
         );
     }
 

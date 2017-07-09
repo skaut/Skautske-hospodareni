@@ -2,8 +2,8 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use App\AccountancyModule\EventModule\Commands\EventWasClosed;
-use App\AccountancyModule\EventModule\Commands\EventWasOpened;
+use Model\Events\Events\EventWasClosed;
+use Model\Events\Events\EventWasOpened;
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use Model\ExportService;
@@ -14,10 +14,6 @@ use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- * akce
- */
 class EventPresenter extends BasePresenter
 {
 

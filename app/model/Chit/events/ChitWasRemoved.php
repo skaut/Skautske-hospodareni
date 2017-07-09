@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AccountancyModule\EventModule\Commands;
+namespace Model\Chit\Events;
 
 class ChitWasRemoved extends BaseChit
 {
