@@ -99,10 +99,11 @@ trait CashbookTrait
     {
         $this->editableOnly();
         $this->isChitEditable($id);
-        $chit = $this->entityService->chits->get($id);
 
         if ($this->entityService->chits->delete($id, $actionId)) {
-            $this->eventBus->handle(new ChitWasRemoved((array)$this->event, $this->userService->getUserDetail(), (array)$chit));
+            $chit = $this->entityService->chits->get($id);
+            $user = $this->userService->getUserDetail();
+            $this->eventBus->handle(new ChitWasRemoved($this->event->ID_Unit, $user->ID, $user->Person, $id, $this->event->localId, $chit->purpose));
             $this->flashMessage("Paragon byl smazán");
         } else {
             $this->flashMessage("Paragon se nepodařilo smazat");
@@ -210,7 +211,7 @@ trait CashbookTrait
             $newEventAccessible = $this->userService->isCampEditable($newEventId);
         }
 
-        if(!$this->isEditable  || !$newEventAccessible) {
+        if (!$this->isEditable || !$newEventAccessible) {
             $this->flashMessage("Nemáte oprávnění k původní nebo nové pokladní knize!", "danger");
             $this->redirect("this");
         }
@@ -288,7 +289,8 @@ trait CashbookTrait
                     unset($values['id']);
                     $this->isChitEditable($chitId);
                     if ($this->entityService->chits->update($chitId, $values)) {
-                        $this->eventBus->handle(new ChitWasUpdated((array)$this->event, $this->userService->getUserDetail(), (array)$this->entityService->chits->get($chitId)));
+                        $user = $this->userService->getUserDetail();
+                        $this->eventBus->handle(new ChitWasUpdated($this->event->ID_Unit, $user->ID, $user->Person, $chitId, $this->event->localId));
                         $this->flashMessage("Paragon byl upraven.");
                     } else {
                         $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
@@ -357,5 +359,4 @@ trait CashbookTrait
             "category" => $chit->category,
         ]);
     }
-
 }

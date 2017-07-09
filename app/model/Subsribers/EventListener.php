@@ -9,7 +9,6 @@ use Model\LoggerService;
 
 class EventListener
 {
-
     private $loggerService;
 
     public function __construct(LoggerService $ls)
@@ -20,22 +19,22 @@ class EventListener
     public function handleClosed(EventWasClosed $e): void
     {
         $this->loggerService->log(
-            $e->getEvent()["ID_Unit"],
-            $e->getUser()["ID"],
-            "Uživatel '" . $e->getUser()["Person"] . "' uzavřel akci '" . $e->getEvent()["DisplayName"] . "'.",
+            $e->getUnitId(),
+            $e->getUserId(),
+            "Uživatel '" . $e->getUserName() . "' uzavřel akci '" . $e->getEventName() . "'.",
             Type::get(Type::OBJECT),
-            $e->getEvent()["localId"]
+            $e->getLocalId()
         );
     }
 
     public function handleOpened(EventWasOpened $e): void
     {
         $this->loggerService->log(
-            $e->getEvent()["ID_Unit"],
-            $e->getUser()["ID"],
-            "Uživatel '" . $e->getUser()["Person"] . "' otevřel akci '" . $e->getEvent()["DisplayName"] . "'.",
+            $e->getUnitId(),
+            $e->getUserId(),
+            "Uživatel '" . $e->getUserName() . "' otevřel akci '" . $e->getEventName() . "'.",
             Type::get(Type::OBJECT),
-            $e->getEvent()["localId"]
+            $e->getLocalId()
         );
     }
 

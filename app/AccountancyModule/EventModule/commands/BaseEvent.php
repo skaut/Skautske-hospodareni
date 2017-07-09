@@ -2,7 +2,7 @@
 
 namespace App\AccountancyModule\EventModule\Commands;
 
-class BaseChit
+class BaseEvent
 {
     /** @var int */
     protected $unitId;
@@ -14,18 +14,18 @@ class BaseChit
     protected $userName;
 
     /** @var int */
-    protected $chitId;
-
-    /** @var int */
     protected $localId;
 
-    public function __construct(int $unitId, int $userId, string $userName, int $chitId, int $localId)
+    /** @var string */
+    protected $eventName;
+
+    public function __construct(int $unitId, int $userId, string $userName, int $localId, $eventName)
     {
         $this->unitId = $unitId;
         $this->userId = $userId;
         $this->userName = $userName;
-        $this->chitId = $chitId;
         $this->localId = $localId;
+        $this->eventName = $eventName;
     }
 
     public function getUnitId(): int
@@ -43,13 +43,14 @@ class BaseChit
         return $this->userName;
     }
 
-    public function getChitId(): array
-    {
-        return $this->chitId;
-    }
-
     public function getLocalId(): int
     {
         return $this->localId;
     }
+
+    public function getEventName(): string
+    {
+        return $this->eventName;
+    }
+
 }

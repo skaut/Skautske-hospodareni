@@ -9,7 +9,6 @@ use Model\LoggerService;
 
 class ChitListener
 {
-
     private $loggerService;
 
     public function __construct(LoggerService $ls)
@@ -20,22 +19,22 @@ class ChitListener
     public function handleUpdate(ChitWasUpdated $ch): void
     {
         $this->loggerService->log(
-            $ch->getEvent()["ID_Unit"],
-            $ch->getUser()["ID"],
-            "Uživatel '" . $ch->getUser()["Person"] . "' upravil paragon (ID=" . $ch->getChit()["id"] . ").",
+            $ch->getUnitId(),
+            $ch->getUserId(),
+            "Uživatel '" . $ch->getUserUserName() . "' upravil paragon (ID=" . $ch->getChitId() . ").",
             Type::get(Type::OBJECT),
-            $ch->getEvent()["localId"]
+            $ch->getLocalId()
         );
     }
 
     public function handleRemove(ChitWasRemoved $ch): void
     {
         $this->loggerService->log(
-            $ch->getEvent()["ID_Unit"],
-            $ch->getUser()["ID"],
-            "Uživatel '" . $ch->getUser()["Person"] . "' odebral paragon (ID=" . $ch->getChit()["id"] . ", účel=".$ch->getChit()["purpose"].").",
+            $ch->getUnitId(),
+            $ch->getUserId(),
+            "Uživatel '" . $ch->getUserUserName() . "' odebral paragon (ID=" . $ch->getChitId() . ", účel=" . $ch->getChitPurpose() . ").",
             Type::get(Type::OBJECT),
-            $ch->getEvent()["localId"]
+            $ch->getLocalId()
         );
     }
 

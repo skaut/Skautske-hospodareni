@@ -2,12 +2,10 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use App\AccountancyModule\EventModule\Commands\ChitWasUpdated;
 use App\AccountancyModule\EventModule\Commands\EventWasClosed;
 use App\AccountancyModule\EventModule\Commands\EventWasOpened;
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
-use eGen\MessageBus\Bus\EventBus;
 use Model\ExportService;
 use Model\Logger\Log\Type;
 use Model\MemberService;
@@ -94,7 +92,10 @@ class EventPresenter extends BasePresenter
             $this->redirect("this");
         }
         $this->eventService->event->open($aid);
-        $this->eventBus->handle(new EventWasOpened((array)$this->event, $this->userService->getUserDetail()));
+        $user = $this->userService->getUserDetail();
+        $this->eventBus->handle(new EventWasOpened(
+            $this->event->ID_Unit, $user->ID, $user->Person, $this->event->localId, $this->event->DisplayName
+        ));
         $this->flashMessage("Akce byla znovu otevřena.");
         $this->redirect("this");
     }
@@ -108,7 +109,10 @@ class EventPresenter extends BasePresenter
 
         if ($this->eventService->event->isCloseable($aid)) {
             $this->eventService->event->close($aid);
-            $this->eventBus->handle(new EventWasClosed((array)$this->event, $this->userService->getUserDetail()));
+            $user = $this->userService->getUserDetail();
+            $this->eventBus->handle(new EventWasClosed(
+                $this->event->ID_Unit, $user->ID, $user->Person, $this->event->localId, $this->event->DisplayName
+            ));
             $this->flashMessage("Akce byla uzavřena.");
         } else {
             $this->flashMessage("Před uzavřením akce musí být vyplněn vedoucí akce", "danger");
