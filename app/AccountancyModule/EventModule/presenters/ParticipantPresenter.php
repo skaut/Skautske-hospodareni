@@ -89,7 +89,7 @@ class ParticipantPresenter extends BasePresenter
             $this->eventService->participants->update($id, $arr);
         }
         $this->payload->message = 'Success';
-        $this->terminate();
+        $this->sendPayload();
     }
 
 }
