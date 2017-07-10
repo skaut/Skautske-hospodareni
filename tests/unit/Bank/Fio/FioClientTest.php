@@ -11,6 +11,7 @@ use Model\Bank\Http\Response;
 use DateTime;
 use Model\Payment\BankAccount;
 use Model\Payment\TokenNotSetException;
+use Psr\Log\NullLogger;
 
 class FioClientTest extends \Codeception\Test\Unit
 {
@@ -31,7 +32,7 @@ class FioClientTest extends \Codeception\Test\Unit
             ->with($expectedUrl, 3)
             ->andReturn(new Response(200, file_get_contents(__DIR__ . '/response.json'), FALSE));
 
-        $fio = new FioClient($client);
+        $fio = new FioClient($client, new NullLogger());
 
         $transactions = $fio->getTransactions($since, $until, m::mock(BankAccount::class, ['getToken' => $token]));
 
@@ -66,7 +67,7 @@ class FioClientTest extends \Codeception\Test\Unit
             ->withAnyArgs()
             ->andReturn(new Response(NULL, NULL, TRUE));
 
-        $fio = new FioClient($client);
+        $fio = new FioClient($client, new NullLogger());
 
         $this->expectException(\Model\BankTimeoutException::class);
         $fio->getTransactions($since, $until, m::mock(BankAccount::class, ['getToken' => $token]));
@@ -84,14 +85,14 @@ class FioClientTest extends \Codeception\Test\Unit
             ->andReturn(new Response(409, NULL, FALSE));
 
         $this->expectException(\Model\BankTimeLimitException::class);
-        $fio = new FioClient($client);
+        $fio = new FioClient($client, new NullLogger());
 
         $fio->getTransactions($since, $until, m::mock(BankAccount::class, ['getToken' => $token]));
     }
 
     public function testBankAccountWithoutTokenThrowsException()
     {
-        $fio = new FioClient(m::mock(IClient::class));
+        $fio = new FioClient(m::mock(IClient::class), new NullLogger());
 
         $this->expectException(TokenNotSetException::class);
 

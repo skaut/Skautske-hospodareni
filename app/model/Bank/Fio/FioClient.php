@@ -9,6 +9,7 @@ use Model\Payment\TokenNotSetException;
 use Nette;
 use Model\BankTimeLimitException;
 use Model\BankTimeoutException;
+use Psr\Log\LoggerInterface;
 
 class FioClient extends Nette\Object implements IFioClient
 {
@@ -31,14 +32,16 @@ class FioClient extends Nette\Object implements IFioClient
     /** @var IClient */
     private $http;
 
-    /**
-     * FioClient constructor.
-     * @param IClient $http
-     */
-    public function __construct(IClient $http)
+    /** @var LoggerInterface */
+    private $logger;
+
+
+    public function __construct(IClient $http, LoggerInterface $logger)
     {
         $this->http = $http;
+        $this->logger = $logger;
     }
+
 
     public function getTransactions(\DateTimeInterface $since, \DateTimeInterface $until, BankAccount $account): array
     {
@@ -120,6 +123,7 @@ class FioClient extends Nette\Object implements IFioClient
             throw new BankTimeoutException();
         }
         if ($response->getCode() == 409) {
+            $this->logger->error('FIO API limit exceeded');
             throw new BankTimeLimitException();
         }
         return json_decode($response->getBody(), TRUE);
