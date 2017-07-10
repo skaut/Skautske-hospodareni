@@ -39,7 +39,8 @@
         "kdyby/monolog": "^1.2",
         "moneyphp/money": "^3.0",
         "ublaboo/datagrid": "^5.2",
-        "beberlei/assert": "^2.7"
+        "beberlei/assert": "^2.7",
+        "fmasa/doctrine-nullable-embeddables": "^0.1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

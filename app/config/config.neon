@@ -61,7 +61,7 @@ dibi:
 annotations:
     aliases:
         enum: Consistence\Doctrine\Enum\EnumAnnotation
-        nullable: Model\Infrastructure\NullableEmbeddables\NullableAnnotation
+        nullable: Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable
 
 monolog:
 
@@ -155,7 +155,7 @@ services:
     - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@annotations.reader)
     - class: Model\Infrastructure\EnumListener
       tags: [kdyby.subscriber]
-    - class: Model\Infrastructure\NullableEmbeddables\Listener
+    - class: Fmasa\DoctrineNullableEmbeddables\Subscriber
       arguments: { reader: @annotations.reader }
       tags: [kdyby.subscriber]
 
