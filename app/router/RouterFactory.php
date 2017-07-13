@@ -21,6 +21,7 @@ class RouterFactory
 
         $router[] = new Route('app.manifest', 'Offline:manifest');
         $router[] = new Route('o-projektu', 'Default:about');
+        $router[] = new Route('changelog', 'Default:changelog');
         $router[] = new Route('sign/<action>[/back-<backlink>]', [
             'presenter' => 'Auth',
             'action' => 'default',
