@@ -24,12 +24,17 @@
 {block #content}
 <h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
-{dump $isEditable}
 <div class="row alert alert-danger" n:if="!$isConsistent">
     <h4 class="alert-heading">Nekonzistentní data!</h4>
     <p>
         Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu.
-        {if $isEditable}Chcete sjednotit částky podle paragonů? <a n:href="convert! $aid" class="btn btn-xs btn-primary">Ano</a>{/if}
+        {if $isEditable}
+            {if $isAllowUpdateStatement}
+                Chcete sjednotit částky podle paragonů? <a n:href="convert! $aid" class="btn btn-xs btn-primary">Ano</a>
+            {else}
+                Není nemáte oprávnění pro úpravu částek v rozpočtu uvedených ve skautisu.
+            {/if}
+        {/if}
     </p>
 </div>
 
