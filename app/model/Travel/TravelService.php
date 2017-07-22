@@ -85,7 +85,7 @@ class TravelService extends BaseService
     {
         try {
             return $this->vehicles->get($id);
-        } catch(VehicleNotFoundException $e) {
+        } catch (VehicleNotFoundException $e) {
             return NULL;
         }
     }
@@ -152,9 +152,14 @@ class TravelService extends BaseService
      */
     public function getTravels(int $commandId): array
     {
-        return DTO\Command\TravelFactory::createList(
+        $travels = DTO\Command\TravelFactory::createList(
             $this->commands->find($commandId)
         );
+        usort($travels, function ($a, $b) {
+            return $a->getDetails()->getDate() <= $b->getDetails()->getDate();
+        });
+
+        return $travels;
     }
 
     public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice): void
@@ -163,7 +168,7 @@ class TravelService extends BaseService
 
         $details = new Command\TravelDetails($date, $type, $startPlace, $endPlace);
 
-        if($this->hasFuel($type)) {
+        if ($this->hasFuel($type)) {
             $command->addVehicleTravel($distanceOrPrice, $details);
         } else {
             $command->addTransportTravel(MoneyFactory::fromFloat($distanceOrPrice), $details);
@@ -183,7 +188,7 @@ class TravelService extends BaseService
                 $command->updateTransportTravel($travelId, MoneyFactory::fromFloat($distanceOrPrice), $details);
             }
             $this->commands->save($command);
-        } catch(TravelNotFoundException $e) {
+        } catch (TravelNotFoundException $e) {
         }
     }
 
@@ -349,8 +354,8 @@ class TravelService extends BaseService
 
         $this->commands->save($command);
 
-        foreach($command->getUsedTransportTypes() as $type) {
-            if(!in_array($type, $types, TRUE)) {
+        foreach ($command->getUsedTransportTypes() as $type) {
+            if (!in_array($type, $types, TRUE)) {
                 $types[] = $type;
             }
         }
@@ -366,7 +371,7 @@ class TravelService extends BaseService
     {
         return ArrayType::mapByCallback(
             $this->vehicles->findByIds($ids),
-            function(KeyValuePair $pair) {
+            function (KeyValuePair $pair) {
                 return new KeyValuePair($pair->getKey(), DTO\VehicleFactory::create($pair->getValue()));
             }
         );
@@ -374,7 +379,7 @@ class TravelService extends BaseService
 
     public function getAllCommands(int $unitId)
     {
-        return array_map(function(Command $command) {
+        return array_map(function (Command $command) {
             return DTO\CommandFactory::create($command);
         }, $this->commands->findByUnit($unitId));
     }
