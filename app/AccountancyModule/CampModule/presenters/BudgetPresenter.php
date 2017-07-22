@@ -24,7 +24,7 @@ class BudgetPresenter extends BasePresenter
         $this->template->toRepair = $toRepair;
         $this->template->dataEstimate = $this->eventService->chits->getCategories($aid, TRUE);
         $this->template->dataReal = $this->eventService->chits->getCategories($aid, FALSE);
-        $this->template->isAllowUpdateStatement = in_array("EV_EventCampStatement_UPDATE_EventCamp", $this->availableActions);
+        $this->template->isUpdateStatementAllowed = in_array("EV_EventCampStatement_UPDATE_EventCamp", $this->availableActions);
         if ($this->isAjax()) {
             $this->redrawControl("contentSnip");
         }
