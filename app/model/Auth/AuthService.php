@@ -2,11 +2,23 @@
 
 namespace Model;
 
+use Skautis\Skautis;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class AuthService extends BaseService
+class AuthService
 {
+
+    /** @var Skautis */
+    private $skautis;
+
+
+    public function __construct(Skautis $skautis)
+    {
+        $this->skautis = $skautis;
+    }
+
 
     /**
      * vrací přihlašovací url
