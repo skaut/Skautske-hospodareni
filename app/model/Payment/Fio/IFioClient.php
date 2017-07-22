@@ -2,7 +2,7 @@
 
 namespace Model\Payment\Fio;
 
-use DateTimeInterface;
+use DateTimeImmutable;
 use Model\Bank\Fio\Transaction;
 use Model\BankTimeLimitException;
 use Model\BankTimeoutException;
@@ -19,6 +19,6 @@ interface IFioClient
      * @throws BankTimeoutException
      * @throws BankTimeLimitException
      */
-    public function getTransactions(DateTimeInterface $since, DateTimeInterface $until, BankAccount $account): array;
+    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array;
 
 }

@@ -105,9 +105,10 @@ services:
     - Model\MailService
     - Model\Payment\MailingService
 
-    - Model\Bank\Http\Curl
     fio.client:
         class: Model\Bank\Fio\FioClient
+        arguments:
+            - GuzzleHttp\Client({ timeout: 3 })
         autowired: false
     fio.cache: Nette\Caching\Cache
     - Model\Payment\Fio\CachingClientDecorator(@fio.client, @fio.cache)

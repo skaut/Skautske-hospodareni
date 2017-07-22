@@ -43,7 +43,8 @@
         "fmasa/doctrine-nullable-embeddables": "^0.1.0",
         "tedivm/jshrink": "^1.2",
         "joseki/webloader-filters": "^1.1",
-        "lookyman/nette-proxy": "^1.2"
+        "lookyman/nette-proxy": "^1.2",
+        "mhujer/fio-api-php": "^3.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

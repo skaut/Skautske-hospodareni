@@ -2,7 +2,7 @@
 
 namespace Model\Payment;
 
-use DateTimeInterface;
+use DateTimeImmutable;
 use Model\Bank\Fio\Transaction;
 use Model\Payment\Fio\IFioClient;
 
@@ -18,7 +18,7 @@ class FioClientStub implements IFioClient
     }
 
 
-    public function getTransactions(DateTimeInterface $since, DateTimeInterface $until, BankAccount $account): array
+    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
         return $this->transactions;
     }

@@ -2,6 +2,7 @@
 
 namespace Model\Payment\Fio;
 
+use DateTimeImmutable;
 use Model\Payment\BankAccount;
 use Nette\Caching\Cache;
 
@@ -22,7 +23,7 @@ class CachingClientDecorator implements IFioClient
     }
 
 
-    public function getTransactions(\DateTimeInterface $since, \DateTimeInterface $until, BankAccount $account): array
+    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
         $key = sprintf("%s-%s-%s", $account->getId(), $since->format('d-m-Y'), $until->format('d-m-y'));
         return $this->cache->load($key, function(array $dependencies = NULL) use($since, $until, $account) {
