@@ -77,7 +77,7 @@ trait ParticipantTrait
         $this->template->participants = $participants;
 
         $this->template->unit = $unit = $this->unitService->getDetail($this->uid);
-        $this->template->uparrent = $this->unitService->getParrent($unit->ID);
+        $this->template->uparrent = $this->unitService->getDetail($unit->ID_UnitParent);
         $this->template->uchildrens = $this->unitService->getChild($unit->ID);
         $this->template->sort = $sort;
         $this->template->useRegNums = $regNums;

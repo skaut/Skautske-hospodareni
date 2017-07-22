@@ -13,7 +13,7 @@ class JournalPresenter extends BasePresenter
         parent::__construct($paymentService);
     }
 
-    public function renderDefault($aid, $year = NULL) : void
+    public function renderDefault(int $aid, $year = NULL) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přistupovat ke správě emailů", "danger");

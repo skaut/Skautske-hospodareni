@@ -124,7 +124,9 @@ services:
 
     - App\AccountancyModule\Auth\Authorizator
 
-    # Repositories
+    ####################################################
+    #                 Repositories                     #
+    ####################################################
     - Model\Travel\Repositories\CommandRepository
     - Model\Travel\Repositories\ContractRepository
     - Model\Travel\Repositories\VehicleRepository
@@ -132,6 +134,16 @@ services:
     - Model\Payment\Repositories\GroupRepository
     - Model\Payment\Repositories\PaymentRepository
     - Model\Payment\Repositories\UserRepository
+    # Skautis
+    - Model\Skautis\UnitRepository(@skautis.org)
+
+
+
+    ####################################################
+    #                    Skautis                       #
+    ####################################################
+    skautis.org: Model\Skautis\WebserviceFactory::createUnits
+
 
     # Factories
     - Model\Services\TemplateFactory

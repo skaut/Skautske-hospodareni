@@ -12,13 +12,14 @@ use Skautis\Skautis;
 abstract class BaseService extends Nette\Object
 {
 
+    public const ACCESS_READ = 'read';
+    public const ACCESS_EDIT = 'edit';
+
     //konstanty pro Event a Camp
     const TYPE_CAMP = "camp";
     const TYPE_GENERAL = "general";
     const TYPE_UNIT = "unit";
     //konstanty pro uživatelskou identitu
-    const ACCESS_READ = 'read';
-    const ACCESS_EDIT = 'edit';
 
 
     /**
