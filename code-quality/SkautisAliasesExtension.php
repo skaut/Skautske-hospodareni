@@ -8,7 +8,7 @@ use PHPStan\Type\ObjectType;
 use Skautis\Skautis;
 use Skautis\Wsdl\WebServiceInterface;
 
-class SkautisWebserviceAliasesExtension implements PropertiesClassReflectionExtension
+class SkautisAliasesExtension implements PropertiesClassReflectionExtension
 {
 
     private const ALIASES = [
