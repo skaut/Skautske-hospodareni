@@ -2,11 +2,28 @@
 
 namespace Model;
 
+use Skautis\User;
+use Skautis\Wsdl\WebServiceInterface;
+
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class MemberService extends BaseService
+class MemberService
 {
+
+    /** @var WebServiceInterface @todo Create anticorruption layer */
+    private $organizationWebservice;
+
+    /** @var User */
+    private $skautisUser;
+
+
+    public function __construct(WebServiceInterface $organizationWebservice, User $skautisUser)
+    {
+        $this->organizationWebservice = $organizationWebservice;
+        $this->skautisUser = $skautisUser;
+    }
+
 
     /**
      * vrací seznam všech osob
@@ -16,9 +33,12 @@ class MemberService extends BaseService
      */
     public function getAll($unitId = NULL, $onlyDirectMember = TRUE, $participants = NULL)
     {
-        $unitId = $unitId === NULL ? $this->skautis->getUser()->getUnitId() : $unitId;
+        if($unitId === NULL) {
+            trigger_error('Use UnitService::getUnitId() to obtain current unit id', E_USER_DEPRECATED);
+            $unitId = $this->skautisUser->getUnitId();
+        }
 
-        $all = $this->skautis->org->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => (bool)$onlyDirectMember]);
+        $all = $this->organizationWebservice->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => (bool)$onlyDirectMember]);
         $ret = [];
 
         if (empty($participants)) {
@@ -47,7 +67,7 @@ class MemberService extends BaseService
      */
     public function getAC($OnlyDirectMember = FALSE, $adultOnly = FALSE)
     {
-        return array_values($this->getPairs($this->skautis->org->PersonAll(["OnlyDirectMember" => $OnlyDirectMember]), $adultOnly));
+        return array_values($this->getPairs($this->organizationWebservice->PersonAll(["OnlyDirectMember" => $OnlyDirectMember]), $adultOnly));
     }
 
     /**
@@ -57,7 +77,7 @@ class MemberService extends BaseService
      */
     public function getCombobox($OnlyDirectMember = FALSE, $ageLimit = NULL)
     {
-        return $this->getPairs($this->skautis->org->PersonAll(["OnlyDirectMember" => $OnlyDirectMember]), $ageLimit);
+        return $this->getPairs($this->organizationWebservice->PersonAll(["OnlyDirectMember" => $OnlyDirectMember]), $ageLimit);
     }
 
     /**

@@ -106,7 +106,7 @@ services:
         class: Model\EventEntity("Camp")
     unitAccountService:
         class: Model\EventEntity("Unit")
-    - \Model\MemberService
+    - Model\MemberService(@skautis.org)
     - \Model\UnitService
     - \Model\UserService
     - \Model\TravelService
