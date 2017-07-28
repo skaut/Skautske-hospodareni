@@ -76,7 +76,7 @@ class EventService extends MutableBaseService
             }
             return $res;
         } catch (\Skautis\Exception $e) {
-            throw new \Skautis\Wsdl\PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e->getCode());
+            throw new \Skautis\Wsdl\PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e instanceof \Exception ? $e->getCode() : 0);
         }
     }
 
