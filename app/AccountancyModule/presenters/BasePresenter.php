@@ -2,12 +2,10 @@
 
 namespace App\AccountancyModule;
 
-use Nette\NotImplementedException;
-
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BasePresenter extends \App\BasePresenter
+abstract class BasePresenter extends \App\BasePresenter
 {
 
     /**
@@ -62,11 +60,6 @@ class BasePresenter extends \App\BasePresenter
         }
     }
 
-
-    protected function editableOnly() : void
-    {
-        throw new NotImplementedException("Implementují jednotlivé moduly");
-    }
 
     public function flashMessage($message, $type = 'info') : \stdClass
     {
