@@ -35,9 +35,9 @@ class AcceptanceTester extends \Codeception\Actor
         $I->amOnPage('/');
         $I->click('Přihlásit se');
         $I->see('přihlášení');
-        $I->fillField('Uživatelské jméno:', self::LOGIN);
-        $I->fillField('Heslo:', self::PASSWORD);
-        $I->click('Přihlásit');
+        $I->fillField('(//input)[9]', self::LOGIN);
+        $I->fillField('(//input)[10]', self::PASSWORD);
+        $I->click('//button');
         $I->waitForText('Seznam akcí');
 
         $I->saveSessionSnapshot('login');
