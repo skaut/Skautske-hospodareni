@@ -177,12 +177,12 @@ class UserService extends BaseService
         return $this->skautis->getConfig()->getBaseUrl();
     }
 
-    public function IsEventEditable(int $id): bool
+    public function isEventEditable(int $id): bool
     {
         return (bool) $this->actionVerify(self::SKAUTIS_GENERAL_PREFIX, $id, self::SKAUTIS_GENERAL_PREFIX. "_UPDATE");
     }
 
-    public function IsCampEditable(int $id): bool
+    public function isCampEditable(int $id): bool
     {
         $actions = $this->actionVerify(self::SKAUTIS_CAMP_PREFIX, $id);
         return(

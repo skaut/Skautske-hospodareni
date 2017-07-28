@@ -202,9 +202,9 @@ trait CashbookTrait
         $originType = $this->entityService->chits->type;
 
         if($newType == ChitService::EVENT_TYPE_GENERAL) {
-            $newEventAccessible = $this->userService->IsEventEditable($newEventId);
+            $newEventAccessible = $this->userService->isEventEditable($newEventId);
         } else {
-            $newEventAccessible = $this->userService->IsCampEditable($newEventId);
+            $newEventAccessible = $this->userService->isCampEditable($newEventId);
         }
 
         if(!$this->isEditable  || !$newEventAccessible) {
