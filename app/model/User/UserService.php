@@ -94,7 +94,7 @@ class UserService extends BaseService
     }
 
     /**
-     *
+     * @deprecated Use UserService::getAvailableActions and search
      * @param string $table - tabulka v DB skautisu
      * @param int|NULL $id - např. ID_EventGeneral, NULL = oveření nad celou tabulkou
      * @param string $ID_Action - id ověřované akce - např EV_EventGeneral_UPDATE
@@ -123,6 +123,29 @@ class UserService extends BaseService
             return $tmp;
         }
         return $res;
+    }
+
+    /**
+     * Returns available actions for given resource
+     * @param string $table
+     * @param int|null $id
+     * @return string[]
+     */
+    public function getAvailableActions(string $table, ?int $id): array
+    {
+        $result = $this->skautis->user->ActionVerify([
+            "ID" => $id,
+            "ID_Table" => $table,
+            "ID_Action" => NULL,
+        ]);
+
+        if(!is_array($result)) {
+            return [];
+        }
+
+        return array_map(function (\stdClass $value) {
+            return (string)$value->ID;
+        }, $result);
     }
 
     public function getAccessArrays(UnitService $us)
@@ -159,7 +182,7 @@ class UserService extends BaseService
 
     public function IsEventEditable(int $id): bool
     {
-        return $this->actionVerify(self::SKAUTIS_GENERAL_PREFIX, $id, self::SKAUTIS_GENERAL_PREFIX. "_UPDATE");
+        return (bool) $this->actionVerify(self::SKAUTIS_GENERAL_PREFIX, $id, self::SKAUTIS_GENERAL_PREFIX. "_UPDATE");
     }
 
     public function IsCampEditable(int $id): bool
