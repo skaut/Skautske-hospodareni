@@ -12,3 +12,5 @@ includes:
 services:
 	- class: MandatoryVoidRule
 	  tags: [ phpstan.rules.rule ]
+	- class: SkautisWebserviceAliasesExtension
+	  tags: [ phpstan.broker.propertiesClassReflectionExtension ]
