@@ -2,10 +2,9 @@
 
 namespace Model\Travel\Repositories;
 
-use Kdyby\Doctrine\EntityManager;
+use Doctrine\ORM\EntityManager;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
-use Model\Travel\Vehicle;
 
 class CommandRepository implements ICommandRepository
 {
@@ -47,7 +46,8 @@ class CommandRepository implements ICommandRepository
 
     public function remove(Command $command): void
     {
-        $this->em->remove($command)->flush();
+        $this->em->remove($command);
+        $this->em->flush();
     }
 
     public function save(Command $command): void

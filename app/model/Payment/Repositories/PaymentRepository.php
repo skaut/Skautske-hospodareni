@@ -5,7 +5,7 @@ namespace Model\Payment\Repositories;
 use Assert\Assert;
 use Consistence\Type\ArrayType\ArrayType;
 use Doctrine\DBAL\Connection;
-use Kdyby\Doctrine\EntityManager;
+use Doctrine\ORM\EntityManager;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
@@ -103,7 +103,8 @@ class PaymentRepository implements IPaymentRepository
 
     public function save(Payment $payment): void
     {
-        $this->em->persist($payment)->flush();
+        $this->em->persist($payment);
+        $this->em->flush();
     }
 
     public function saveMany(array $payments): void
@@ -120,7 +121,8 @@ class PaymentRepository implements IPaymentRepository
             throw new \InvalidArgumentException("Expected array of payments");
         }
 
-        $this->em->persist($filtered)->flush();
+        $this->em->persist($filtered);
+        $this->em->flush();
     }
 
     public function getMaxVariableSymbol(int $groupId): ?int

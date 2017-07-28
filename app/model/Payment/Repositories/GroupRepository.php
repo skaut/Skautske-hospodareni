@@ -6,7 +6,7 @@ namespace Model\Payment\Repositories;
 
 use Assert\Assert;
 use Kdyby\Doctrine\Connection;
-use Kdyby\Doctrine\EntityManager;
+use Doctrine\ORM\EntityManager;
 use Model\Payment\Group;
 use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFoundException;
@@ -100,7 +100,8 @@ class GroupRepository implements IGroupRepository
 
     public function save(Group $group): void
     {
-        $this->em->persist($group)->flush();
+        $this->em->persist($group);
+        $this->em->flush();
     }
 
 }
