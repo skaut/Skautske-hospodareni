@@ -12,7 +12,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     const STable = "EV_EventGeneral";
 
-    /** @var array */
+    /** @var \stdClass */
     protected $event;
 
     /** @var EventEntity */
