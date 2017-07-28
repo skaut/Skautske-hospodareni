@@ -32,6 +32,8 @@ class BasePresenter extends \App\BasePresenter
      * @var array
      */
     protected $availableActions;
+
+    /** @var bool */
     public $isCamp;
 
     protected function startup() : void
@@ -59,10 +61,6 @@ class BasePresenter extends \App\BasePresenter
         }
     }
 
-    protected function beforeRender() : void
-    {
-        parent::beforeRender();
-    }
 
     protected function editableOnly() : void
     {

@@ -42,7 +42,7 @@ class ChitPresenter extends BasePresenter
     public function actionDefault($year = NULL) : void
     {
         $this->info = [];
-        foreach ($this->user->getIdentity()->access['edit'] as $ik => $iu) {
+        foreach ($this->unitService->getReadUnits($this->getUser()) as $ik => $iu) {
             $this->info['unit'][$ik] = (array)$iu;
         }
         $eventService = $this->context->getService("eventService");

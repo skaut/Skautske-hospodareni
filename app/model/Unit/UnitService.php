@@ -119,10 +119,14 @@ class UnitService
         return $this->getUnits($user, BaseService::ACCESS_EDIT);
     }
 
-    private function getUnits(User $user, string $accessType)
+
+    public function getUnits(User $user, string $accessType)
     {
+        /* @var $identity \Nette\Security\Identity */
+        $identity = $user->getIdentity();
+
         $res = [];
-        foreach ($user->getIdentity()->access[$accessType] as $uId => $u) {
+        foreach ($identity->access[$accessType] as $uId => $u) {
             $res[$uId] = $u->DisplayName;
         }
         return $res;
