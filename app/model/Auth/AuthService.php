@@ -48,12 +48,4 @@ class AuthService
         return $this->skautis->getLogoutUrl();
     }
 
-    /**
-     * prodlouží dobu přihlášení do skautisu
-     */
-    public function updateLogoutTime(): void
-    {
-        $this->skautis->updateLogoutTime();
-    }
-
 }
