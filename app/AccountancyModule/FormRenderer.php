@@ -24,7 +24,7 @@ use Nette\Utils\Html;
  */
 class FormRenderer extends DefaultFormRenderer
 {
-    /** @var Controls\Button */
+    /** @var Controls\Button|NULL */
     public $primaryButton = NULL;
 
     /** @var bool */

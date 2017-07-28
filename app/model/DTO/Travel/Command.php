@@ -49,10 +49,10 @@ class Command
     /** @var string */
     private $fellowPassengers;
 
-    /** @var float */
+    /** @var Money */
     private $fuelPrice;
 
-    /** @var float */
+    /** @var Money */
     private $amortizationPerKm;
 
     /** @var string */

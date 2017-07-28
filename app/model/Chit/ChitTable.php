@@ -125,9 +125,9 @@ class ChitTable extends BaseTable
      * @param string $eId - camp/general
      * @return int
      */
-    public function getTotalInCategory($categoryId, $eId)
+    public function getTotalInCategory($categoryId, $eId): int
     {
-        return $this->connection->fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND eventId=%i", $eId, " GROUP BY eventId");
+        return (int)$this->connection->fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND eventId=%i", $eId, " GROUP BY eventId");
     }
 
     /**

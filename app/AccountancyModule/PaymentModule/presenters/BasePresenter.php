@@ -1,6 +1,7 @@
 <?php
 
 namespace App\AccountancyModule\PaymentModule;
+use App\AccountancyModule\Auth\Unit;
 use Model\PaymentService;
 
 /**
@@ -32,7 +33,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         parent::startup();
 
         $this->aid = $this->aid ?? $this->unitService->getUnitId();
-        $this->availableActions = $this->userService->actionVerify("OU_Unit", $this->aid);
+
+        $availableActions = $this->userService->getAvailableActions("OU_Unit", $this->aid);
+        $this->availableActions = array_fill_keys($availableActions, TRUE);
 
         $user = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);

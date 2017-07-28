@@ -28,6 +28,7 @@ class BasePresenter extends \App\BasePresenter
     protected $isEditable;
 
     /**
+     * @deprecated Use Authorizator::isAllowed()
      * pole dostupných událostí s indexi podle SkautISu
      * @var array
      */

@@ -105,14 +105,14 @@ class EventService extends MutableBaseService
     /**
      * vrátí data funkcí připravená pro update
      * @param int $ID_Event
-     * @return string[]
+     * @return int[]
      */
-    protected function getPreparedFunctions($ID_Event)
+    private function getPreparedFunctions($ID_Event)
     {
         $data = $this->getFunctions($ID_Event);
         $query = ["ID" => $ID_Event];
         for ($i = 0; $i <= 3; $i++) {
-            $query[self::$ID_Functions[$i]] = $data[$i]->ID_Person;
+            $query[self::$ID_Functions[$i]] = (int)$data[$i]->ID_Person;
         }
         return $query;
     }

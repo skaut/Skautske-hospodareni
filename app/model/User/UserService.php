@@ -131,7 +131,7 @@ class UserService extends BaseService
      * @param int|null $id
      * @return string[]
      */
-    public function getAvailableActions(string $table, ?int $id): array
+    public function getAvailableActions(string $table, ?int $id = NULL): array
     {
         $result = $this->skautis->user->ActionVerify([
             "ID" => $id,
