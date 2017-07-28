@@ -171,6 +171,10 @@ services:
       arguments: { reader: @annotations.reader }
       tags: [kdyby.subscriber]
 
+    nette.latteFactory:
+        setup:
+            - addFilter(null, [App\AccountancyModule\AccountancyHelpers, loader])
+
     nette.mailer:
         class: Nette\Mail\IMailer
         factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)

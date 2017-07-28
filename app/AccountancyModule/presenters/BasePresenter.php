@@ -62,7 +62,6 @@ class BasePresenter extends \App\BasePresenter
     protected function beforeRender() : void
     {
         parent::beforeRender();
-        $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
     }
 
     protected function editableOnly() : void
