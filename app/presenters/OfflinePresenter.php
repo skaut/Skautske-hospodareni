@@ -73,7 +73,7 @@ class OfflinePresenter extends BasePresenter
     {
         $form = new BaseForm();
         $form->getElementPrototype()->class[] = "offline";
-        $form->addDatePicker("date", "Ze dne:", 15)
+        $form->addDatePicker("date", "Ze dne:")
             ->addRule(Form::FILLED, 'Zadejte datum')
             ->getControlPrototype()->class("input-medium");
         //@TODO kontrola platneho data, problem s componentou
@@ -105,7 +105,7 @@ class OfflinePresenter extends BasePresenter
     {
         $form = new BaseForm();
         $form->getElementPrototype()->class[] = "offline";
-        $form->addDatePicker("date", "Ze dne:", 15)
+        $form->addDatePicker("date", "Ze dne:")
             ->addRule(Form::FILLED, 'Zadejte datum')
             ->getControlPrototype()->class("input-medium");
         $form->addText("recipient", "Přijato od:")
