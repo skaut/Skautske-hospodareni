@@ -39,8 +39,6 @@ final class Authorizator implements IAuthorizator
 
 
     /**
-     * @param string $resource
-     * @param int $id
      * @return string[]
      */
     private function getResource(string $resource, int $id): array
@@ -52,8 +50,6 @@ final class Authorizator implements IAuthorizator
     }
 
     /**
-     * @param string $resource
-     * @param int $id
      * @return string[]
      */
     private function loadResource(string $resource, int $id): array

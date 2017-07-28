@@ -127,8 +127,6 @@ class UserService extends BaseService
 
     /**
      * Returns available actions for given resource
-     * @param string $table
-     * @param int|null $id
      * @return string[]
      */
     public function getAvailableActions(string $table, ?int $id = NULL): array
@@ -173,9 +171,8 @@ class UserService extends BaseService
 
     /**
      * vrací adresu skautisu např.: https://is.skaut.cz/
-     * @return string
      */
-    public function getSkautisUrl()
+    public function getSkautisUrl(): string
     {
         return $this->skautis->getConfig()->getBaseUrl();
     }
