@@ -156,7 +156,7 @@ class TravelService extends BaseService
             $this->commands->find($commandId)
         );
         usort($travels, function ($a, $b) {
-            return $a->getDetails()->getDate() <= $b->getDetails()->getDate();
+            return $a->getDetails()->getDate() >= $b->getDetails()->getDate();
         });
 
         return $travels;
