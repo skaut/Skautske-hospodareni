@@ -61,16 +61,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
 
     /**
-     *
-     * @param string $v
-     * @return bool
-     */
-    protected function noEmpty($v)
-    {
-        return $v == "" ? NULL : $v;
-    }
-
-    /**
      * @return int[]
      */
     protected function getEditableUnits(): array
