@@ -7,3 +7,4 @@ services:
 
     # Presenters
     - App\AccountancyModule\PaymentModule\GroupPresenter(camp: @campService)
+    - App\OfflinePresenter(eventService: @eventService)

@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Forms\BaseForm;
+use Model\EventEntity;
 use Nette\Application\UI\Form;
 
 /**
@@ -11,12 +12,21 @@ use Nette\Application\UI\Form;
 class OfflinePresenter extends BasePresenter
 {
 
+    /** @var EventEntity */
+    private $eventService;
+
+    public function __construct(EventEntity $eventService)
+    {
+        parent::__construct();
+        $this->eventService = $eventService;
+    }
+
     public function actionSync() : void
     {
         if (!$this->user->isLoggedIn()) {
             $this->redirect(":Default:", ["backlink" => $this->storeRequest('+ 3 days')]);
         }
-        $this->template->list = $this->context->eventService->event->getAll(date("Y"), "draft");
+        $this->template->list = $this->eventService->event->getAll(date("Y"), "draft");
     }
 
     public function handleSynchronize($aid) : void
@@ -31,7 +41,7 @@ class OfflinePresenter extends BasePresenter
 
     public function actionManifest() : void
     {
-        $this->context->httpResponse->setContentType('Context-Type:', 'text/cache-manifest');
+        $this->getHttpResponse()->setContentType('Context-Type:', 'text/cache-manifest');
 
         @$cssFile = reset($this['css']->getCompiler()->generate());
         $this->template->css = "webtemp/" . $cssFile->file . "?" . $cssFile->lastModified; //name
@@ -41,14 +51,14 @@ class OfflinePresenter extends BasePresenter
 
     public function actionOut() : void
     {
-        $this['formOut']['category']->setItems($this->context->getService("eventService")->chits->getCategoriesPairs('out'));
+        $this['formOut']['category']->setItems($this->eventService->chits->getCategoriesPairs('out'));
         $this->template->setFile(dirname(__FILE__) . '/../templates/Offline/form.latte');
         $this->template->form = $this['formOut'];
     }
 
     public function actionIn() : void
     {
-        $this['formIn']['category']->setItems($this->context->getService("eventService")->chits->getCategoriesPairs('in'));
+        $this['formIn']['category']->setItems($this->eventService->chits->getCategoriesPairs('in'));
         $this->template->setFile(dirname(__FILE__) . '/../templates/Offline/form.latte');
         $this->template->form = $this['formIn'];
     }
