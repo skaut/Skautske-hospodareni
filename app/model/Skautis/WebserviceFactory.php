@@ -13,7 +13,7 @@ final class WebserviceFactory
 
     use StaticClass;
 
-    public static function createUnits(Skautis $skautis): CacheDecorator
+    public static function createOrganizationUnit(Skautis $skautis): CacheDecorator
     {
         return self::createWebservice($skautis, 'org');
     }

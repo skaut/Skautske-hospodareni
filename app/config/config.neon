@@ -142,7 +142,7 @@ services:
     ####################################################
     #                    Skautis                       #
     ####################################################
-    skautis.org: Model\Skautis\WebserviceFactory::createUnits
+    skautis.org: Model\Skautis\WebserviceFactory::createOrganizationUnit
 
 
     # Factories
