@@ -55,7 +55,7 @@ class UserService extends BaseService
 
     /**
      * informace o aktuálně přihlášené roli
-     * @return boolean
+     * @return \stdClass|NULL
      */
     public function getActualRole()
     {
@@ -64,7 +64,8 @@ class UserService extends BaseService
                 return $r;
             }
         }
-        return FALSE;
+
+        return NULL;
     }
 
     /**
@@ -127,7 +128,7 @@ class UserService extends BaseService
     public function getAccessArrays(UnitService $us)
     {
         $r = $this->getActualRole();
-        if (isset($r->Key)) {
+        if ($r !== NULL && isset($r->Key)) {
             $unitIds = Strings::endsWith($r->Key, "Stredisko") || Strings::endsWith($r->Key, "Oddil") ? $us->getAllUnder($r->ID_Unit) : [$r->ID_Unit => $us->getDetail($r->ID_Unit)];
             if (Strings::startsWith($r->Key, "cinovnik")) {
                 return [
