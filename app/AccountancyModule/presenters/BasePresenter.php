@@ -2,12 +2,10 @@
 
 namespace App\AccountancyModule;
 
-use Nette\NotImplementedException;
-
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BasePresenter extends \App\BasePresenter
+abstract class BasePresenter extends \App\BasePresenter
 {
 
     /**
@@ -28,10 +26,13 @@ class BasePresenter extends \App\BasePresenter
     protected $isEditable;
 
     /**
+     * @deprecated Use Authorizator::isAllowed()
      * pole dostupných událostí s indexi podle SkautISu
      * @var array
      */
     protected $availableActions;
+
+    /** @var bool */
     public $isCamp;
 
     protected function startup() : void
@@ -59,16 +60,6 @@ class BasePresenter extends \App\BasePresenter
         }
     }
 
-    protected function beforeRender() : void
-    {
-        parent::beforeRender();
-        $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
-    }
-
-    protected function editableOnly() : void
-    {
-        throw new NotImplementedException("Implementují jednotlivé moduly");
-    }
 
     public function flashMessage($message, $type = 'info') : \stdClass
     {

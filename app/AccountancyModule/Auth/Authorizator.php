@@ -33,10 +33,14 @@ final class Authorizator implements IAuthorizator
         if(count($action) !== 2 || !in_array($action[0], self::AVAILABLE_RESOURCES)) {
             throw new \InvalidArgumentException("Unknown action");
         }
-        return isset($this->getResource($action[0], $resourceId)[$action[1]]);
+
+        return in_array($action[1], $this->getResource($action[0], $resourceId), TRUE);
     }
 
 
+    /**
+     * @return string[]
+     */
     private function getResource(string $resource, int $id): array
     {
         if(!isset($this->resources[$resource][$id])) {
@@ -45,10 +49,13 @@ final class Authorizator implements IAuthorizator
         return $this->resources[$resource][$id];
     }
 
+    /**
+     * @return string[]
+     */
     private function loadResource(string $resource, int $id): array
     {
         try {
-            return $this->userService->actionVerify(self::RESOURCE_NAMES[$resource], $id);
+            return $this->userService->getAvailableActions(self::RESOURCE_NAMES[$resource], $id);
         } catch (\Skautis\Wsdl\PermissionException $exc) {
             return [];
         }

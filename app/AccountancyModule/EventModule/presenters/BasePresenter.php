@@ -12,7 +12,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     const STable = "EV_EventGeneral";
 
-    /** @var array */
+    /** @var \stdClass */
     protected $event;
 
     /** @var EventEntity */
@@ -25,18 +25,21 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->isCamp = $this->template->isCamp = FALSE;
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
 
+        $availableActions = [];
         if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
             try {
                 $this->template->event = $this->event = $this->eventService->event->get($this->aid);
-                $this->availableActions = $this->userService->actionVerify(self::STable, $this->aid);
+                $availableActions = $this->userService->getAvailableActions(self::STable, $this->aid);
                 $this->template->isEditable = $this->isEditable = array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions);
             } catch (\Skautis\Wsdl\PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Default:");
             }
         } else {
-            $this->availableActions = $this->userService->actionVerify(self::STable); //zjistení událostí nevázaných na konretnní akci
+            $availableActions = $this->userService->getAvailableActions(self::STable); //zjistení událostí nevázaných na konretnní akci
         }
+
+        $this->availableActions = array_fill_keys($availableActions, TRUE);
     }
 
     protected function editableOnly() : void

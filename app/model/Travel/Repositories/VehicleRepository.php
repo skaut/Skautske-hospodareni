@@ -5,7 +5,7 @@ namespace Model\Travel\Repositories;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use Doctrine\DBAL\Connection;
-use Kdyby\Doctrine\EntityManager;
+use Doctrine\ORM\EntityManager;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 
@@ -94,7 +94,8 @@ class VehicleRepository implements IVehicleRepository
 
     public function save(Vehicle $vehicle): void
     {
-        $this->em->persist($vehicle)->flush();
+        $this->em->persist($vehicle);
+        $this->em->flush();
     }
 
     /**
@@ -105,7 +106,8 @@ class VehicleRepository implements IVehicleRepository
     public function remove($vehicleId): bool
     {
         try {
-            $this->em->remove($this->get($vehicleId))->flush();
+            $this->em->remove($this->get($vehicleId));
+            $this->em->flush();
             return TRUE;
         } catch (VehicleNotFoundException $e) {
             return FALSE;

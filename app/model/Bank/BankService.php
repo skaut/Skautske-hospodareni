@@ -17,7 +17,7 @@ use Model\Payment\Repositories\IGroupRepository;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class BankService extends BaseService
+class BankService
 {
 
     /** @var FioClient */
@@ -42,8 +42,6 @@ class BankService extends BaseService
         IPaymentRepository $payments,
         IStorage $storage)
     {
-        parent::__construct();
-
         $this->table = $table;
         $this->groups = $groups;
         $this->bank = $bank;

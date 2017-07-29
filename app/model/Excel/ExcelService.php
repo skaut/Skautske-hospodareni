@@ -2,7 +2,7 @@
 
 namespace Model;
 
-class ExcelService extends BaseService
+class ExcelService
 {
 
     private const ADULT_AGE = 18;

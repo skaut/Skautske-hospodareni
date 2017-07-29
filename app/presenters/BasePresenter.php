@@ -89,7 +89,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
                 $this->redirect(":Default:");
             }
         }
-        $this->template->getLatte()->addFilter(NULL, "\App\AccountancyModule\AccountancyHelpers::loader");
+
         \DependentSelectBox\JsonDependentSelectBox::tryJsonResponse($this /* (presenter) */);
     }
 
@@ -164,7 +164,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     protected function updateUserAccess(): void
     {
-        $this->user->getIdentity()->access = $this->userService->getAccessArrays($this->unitService);
+        /* @var $identity \Nette\Security\Identity */
+        $identity = $this->user->getIdentity();
+        $identity->access = $this->userService->getAccessArrays($this->unitService);
     }
 
 }

@@ -352,7 +352,7 @@ class ChitService extends MutableBaseService
     public function updateCategory($skautisEventId, $categoryId, $ammout = NULL): void
     {
         if ($ammout === NULL) {
-            $ammout = (int)$this->table->getTotalInCategory($categoryId, $this->getLocalId($skautisEventId));
+            $ammout = $this->table->getTotalInCategory($categoryId, $this->getLocalId($skautisEventId));
         }
         $this->skautis->event->EventCampStatementUpdate([
             "ID" => $categoryId,

@@ -106,7 +106,7 @@ services:
         class: Model\EventEntity("Camp")
     unitAccountService:
         class: Model\EventEntity("Unit")
-    - \Model\MemberService
+    - Model\MemberService(@skautis.org)
     - \Model\UnitService
     - \Model\UserService
     - \Model\TravelService
@@ -124,7 +124,9 @@ services:
 
     - App\AccountancyModule\Auth\Authorizator
 
-    # Repositories
+    ####################################################
+    #                 Repositories                     #
+    ####################################################
     - Model\Travel\Repositories\CommandRepository
     - Model\Travel\Repositories\ContractRepository
     - Model\Travel\Repositories\VehicleRepository
@@ -132,6 +134,16 @@ services:
     - Model\Payment\Repositories\GroupRepository
     - Model\Payment\Repositories\PaymentRepository
     - Model\Payment\Repositories\UserRepository
+    # Skautis
+    - Model\Skautis\UnitRepository(@skautis.org)
+
+
+
+    ####################################################
+    #                    Skautis                       #
+    ####################################################
+    skautis.org: Model\Skautis\WebserviceFactory::createOrganizationUnit
+
 
     # Factories
     - Model\Services\TemplateFactory
@@ -158,6 +170,10 @@ services:
     - class: Fmasa\DoctrineNullableEmbeddables\Subscriber
       arguments: { reader: @annotations.reader }
       tags: [kdyby.subscriber]
+
+    nette.latteFactory:
+        setup:
+            - addFilter(null, [App\AccountancyModule\AccountancyHelpers, loader])
 
     nette.mailer:
         class: Nette\Mail\IMailer

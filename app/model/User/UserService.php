@@ -55,7 +55,7 @@ class UserService extends BaseService
 
     /**
      * informace o aktuálně přihlášené roli
-     * @return boolean
+     * @return \stdClass|NULL
      */
     public function getActualRole()
     {
@@ -64,7 +64,8 @@ class UserService extends BaseService
                 return $r;
             }
         }
-        return FALSE;
+
+        return NULL;
     }
 
     /**
@@ -93,7 +94,7 @@ class UserService extends BaseService
     }
 
     /**
-     *
+     * @deprecated Use UserService::getAvailableActions and search
      * @param string $table - tabulka v DB skautisu
      * @param int|NULL $id - např. ID_EventGeneral, NULL = oveření nad celou tabulkou
      * @param string $ID_Action - id ověřované akce - např EV_EventGeneral_UPDATE
@@ -124,10 +125,31 @@ class UserService extends BaseService
         return $res;
     }
 
+    /**
+     * Returns available actions for given resource
+     * @return string[]
+     */
+    public function getAvailableActions(string $table, ?int $id = NULL): array
+    {
+        $result = $this->skautis->user->ActionVerify([
+            "ID" => $id,
+            "ID_Table" => $table,
+            "ID_Action" => NULL,
+        ]);
+
+        if(!is_array($result)) {
+            return [];
+        }
+
+        return array_map(function (\stdClass $value) {
+            return (string)$value->ID;
+        }, $result);
+    }
+
     public function getAccessArrays(UnitService $us)
     {
         $r = $this->getActualRole();
-        if (isset($r->Key)) {
+        if ($r !== NULL && isset($r->Key)) {
             $unitIds = Strings::endsWith($r->Key, "Stredisko") || Strings::endsWith($r->Key, "Oddil") ? $us->getAllUnder($r->ID_Unit) : [$r->ID_Unit => $us->getDetail($r->ID_Unit)];
             if (Strings::startsWith($r->Key, "cinovnik")) {
                 return [
@@ -149,19 +171,18 @@ class UserService extends BaseService
 
     /**
      * vrací adresu skautisu např.: https://is.skaut.cz/
-     * @return string
      */
-    public function getSkautisUrl()
+    public function getSkautisUrl(): string
     {
         return $this->skautis->getConfig()->getBaseUrl();
     }
 
-    public function IsEventEditable(int $id): bool
+    public function isEventEditable(int $id): bool
     {
-        return $this->actionVerify(self::SKAUTIS_GENERAL_PREFIX, $id, self::SKAUTIS_GENERAL_PREFIX. "_UPDATE");
+        return (bool) $this->actionVerify(self::SKAUTIS_GENERAL_PREFIX, $id, self::SKAUTIS_GENERAL_PREFIX. "_UPDATE");
     }
 
-    public function IsCampEditable(int $id): bool
+    public function isCampEditable(int $id): bool
     {
         $actions = $this->actionVerify(self::SKAUTIS_CAMP_PREFIX, $id);
         return(

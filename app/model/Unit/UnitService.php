@@ -2,20 +2,35 @@
 
 namespace Model;
 
+use Model\Unit\Repositories\IUnitRepository;
 use Nette\Security\User;
 use Skautis;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class UnitService extends BaseService
+class UnitService
 {
 
     protected $oficialUnits = ["stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka"];
 
-    public function getUnitId()
+    /** @var Skautis\Skautis */
+    private $skautis;
+
+    /** @var IUnitRepository */
+    private $units;
+
+
+    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units)
     {
-        return $this->skautis->getUser()->getUnitId();
+        $this->skautis = $skautis;
+        $this->units = $units;
+    }
+
+
+    public function getUnitId(): int
+    {
+        return (int) $this->skautis->getUser()->getUnitId();
     }
 
     /**
@@ -29,39 +44,22 @@ class UnitService extends BaseService
         if ($unitId === NULL) {
             $unitId = $this->getUnitId();
         }
+
         try {
-            $cacheId = __FUNCTION__ . $unitId;
-            if (!($res = $this->loadSes($cacheId))) {
-                $res = $this->saveSes($cacheId, $this->skautis->org->UnitDetail(["ID" => $unitId]));
-            }
-            return $res;
+            return $this->units->find($unitId);
         } catch (Skautis\Exception $exc) {
             throw new \Nette\Application\BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
         }
     }
 
-    /**
-     * vrací nadřízenou jednotku
-     * @param int $ID_Unit
-     * @return \stdClass
-     */
-    public function getParrent($ID_Unit)
-    {
-        $ret = $this->skautis->org->UnitAll(["ID_UnitChild" => $ID_Unit]);
-        if (is_array($ret)) {
-            return $ret[0];
-        }
-        return $ret;
-    }
 
     /**
      * nalezne podřízené jednotky
-     * @param int $ID_Unit
      * @return \stdClass[]
      */
-    public function getChild($ID_Unit)
+    public function getChild(int $parentId)
     {
-        return $this->skautis->org->UnitAll(["ID_UnitParent" => $ID_Unit]);
+        return $this->units->findByParent($parentId);
     }
 
     /**
@@ -95,7 +93,7 @@ class UnitService extends BaseService
         $data = $self ? [$ID_Unit => $this->getDetail($ID_Unit)] : [];
         foreach ($this->getChild($ID_Unit) as $u) {
             $data[$u->ID] = $u;
-            $data = $data + $this->{__FUNCTION__}($u->ID, FALSE);
+            $data = $data + $this->getAllUnder($u->ID, FALSE);
         }
         return $data;
     }
@@ -108,7 +106,7 @@ class UnitService extends BaseService
      */
     public function getReadUnits(User $user): array
     {
-        return $this->getUnits($user, self::ACCESS_READ);
+        return $this->getUnits($user, BaseService::ACCESS_READ);
     }
 
     /**
@@ -118,13 +116,17 @@ class UnitService extends BaseService
      */
     public function getEditUnits(User $user): array
     {
-        return $this->getUnits($user, self::ACCESS_EDIT);
+        return $this->getUnits($user, BaseService::ACCESS_EDIT);
     }
 
-    private function getUnits(User $user, string $accessType)
+
+    public function getUnits(User $user, string $accessType)
     {
+        /* @var $identity \Nette\Security\Identity */
+        $identity = $user->getIdentity();
+
         $res = [];
-        foreach ($user->getIdentity()->access[$accessType] as $uId => $u) {
+        foreach ($identity->access[$accessType] as $uId => $u) {
             $res[$uId] = $u->DisplayName;
         }
         return $res;

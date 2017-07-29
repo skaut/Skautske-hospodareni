@@ -2,9 +2,6 @@
 
 namespace App\AccountancyModule\UnitAccountModule;
 
-use Nette\Application\Routers\Route,
-    Nette\Application\Routers\RouteList,
-    Sinacek\MyRoute;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -15,23 +12,36 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     /** @persistent */
     public $aid;
     protected $year;
+
+    /** @var bool */
     protected $isReadable;
 
     protected function startup() : void
     {
         parent::startup();
-        $this->isCamp = $this->template->isCamp = FALSE;
-        $this->template->aid = $this->aid = (is_null($this->aid) ? $this->unitService->getUnitId() : $this->aid);
-        $this->template->year = $this->year = $this->getParameter("year", date("Y"));
+        $this->isCamp = FALSE;
+        $this->aid = $this->aid ?? $this->unitService->getUnitId();
+        $this->year = $this->getParameter("year", date("Y"));
 
-        //$this->availableActions = $this->userService->actionVerify("OU_Unit", $this->aid);
-        $this->template->isReadable = $this->isReadable = key_exists($this->aid, $this->user->getIdentity()->access['read']);
-        $this->template->isEditable = $this->isEditable = key_exists($this->aid, $this->user->getIdentity()->access['edit']);
+        $user = $this->getUser();
+        $readableUnits = $this->unitService->getReadUnits($user);
+
+        $this->isReadable = $isReadable = isset($readableUnits[$this->aid]);
+        $this->isEditable = array_key_exists($this->aid, $this->unitService->getEditUnits($user));
 
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro zobrazení stránky", "warning");
             $this->redirect(":Accountancy:Default:", ["aid" => NULL]);
         }
+    }
+
+    protected function beforeRender(): void
+    {
+        parent::beforeRender();
+        $this->template->year = $this->year;
+        $this->template->isCamp = $this->isCamp;
+        $this->template->isEditable = $this->isEditable;
+        $this->template->aid = $this->aid;
     }
 
     protected function editableOnly() : void

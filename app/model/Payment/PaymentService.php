@@ -377,12 +377,16 @@ class PaymentService
      * @param int $year
      * @return array | NULL - format array("add" => [], "remove" => [])
      */
-    public function getJournalChangesAfterRegistration($unitId, $year)
+    public function getJournalChangesAfterRegistration($unitId, $year): array
     {
+        $changes = ["add" => [], "remove" => []];
+
         $registrations = $this->skautis->org->UnitRegistrationAll(["ID_Unit" => $unitId, "Year" => $year]);
+
         if (!is_array($registrations) || count($registrations) < 1) {
-            return NULL;
+            return $changes;
         }
+
         $registrationId = reset($registrations)->ID;
         $registration = $this->getPersonFromRegistration($registrationId, FALSE);
 
@@ -398,7 +402,6 @@ class PaymentService
             $personIdsWithJournal[$journal->ID_Person] = TRUE;
         }
 
-        $changes = ["add" => [], "remove" => []];
         foreach ($registration as $p) {
             $isRegustredWithJournal = $regCategories[$p->ID_RegistrationCategory];
             $hasPersonJournal = array_key_exists($p->ID_Person, $personIdsWithJournal);
@@ -408,7 +411,7 @@ class PaymentService
                 $changes["add"][] = $p->Person;
             }
         }
-        return ($changes);
+        return $changes;
     }
 
     /**

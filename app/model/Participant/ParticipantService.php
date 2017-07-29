@@ -3,6 +3,7 @@
 namespace Model;
 
 use Nette\Caching\IStorage;
+use Nette\Utils\ArrayHash;
 use Skautis\Skautis;
 
 /**
@@ -26,15 +27,15 @@ class   ParticipantService extends MutableBaseService
      */
     const PAYMENT = "Note";
 
-    public function get($participantId)
+    public function get($participantId): ArrayHash
     {
-        $data = \Nette\Utils\ArrayHash::from($this->skautis->event->{"Participant" . $this->typeName . "Detail"}(["ID" => $participantId]));
+        $data = ArrayHash::from($this->skautis->event->{"Participant" . $this->typeName . "Detail"}(["ID" => $participantId]));
         $detail = $this->table->get($participantId);
         if ($detail === FALSE) {//u akcí to v tabulce nic nenajde
             $data->payment = isset($data->{self::PAYMENT}) ? (int)$data->{self::PAYMENT} : 0;
         }
         $this->setPersonName($data);
-        //$data->days = $data->Days;
+
         return $data;
     }
 

@@ -8,7 +8,7 @@ use Nette\Bridges\ApplicationLatte\Template;
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-class ExportService extends BaseService
+class ExportService
 {
 
     /** @var UnitService */
@@ -16,7 +16,6 @@ class ExportService extends BaseService
 
     public function __construct(UnitService $units)
     {
-        parent::__construct();
         $this->units = $units;
     }
 
