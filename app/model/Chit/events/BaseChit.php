@@ -43,7 +43,7 @@ class BaseChit
         return $this->userName;
     }
 
-    public function getChitId(): array
+    public function getChitId(): int
     {
         return $this->chitId;
     }
