@@ -2,13 +2,13 @@
 
 namespace App\AccountancyModule\PaymentModule\Factories;
 
+use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use Model\Payment\BankAccountService;
 use Model\Payment\InvalidBankAccountNumberException;
-use Nette\Application\UI\Control;
 use Nette\ArrayHash;
 
-class BankAccountForm extends Control
+class BankAccountForm extends BaseControl
 {
 
     /** @var int|NULL */
