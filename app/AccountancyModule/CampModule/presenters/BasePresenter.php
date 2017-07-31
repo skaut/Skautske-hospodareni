@@ -32,7 +32,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
                 $availableActions = $this->userService->getAvailableActions(self::STable, $this->aid);
 
-                $this->template->isEditable = $this->isEditable = $this->isAllowed(self::STable . "_UPDATE_Real");
+                $this->template->isEditable = $this->isEditable = $this->isAllowed(self::STable . "_UPDATE_Real", $availableActions);
             } catch (PermissionException $exc) {
                 $this->flashMessage($exc->getMessage(), "danger");
                 $this->redirect("Default:");
