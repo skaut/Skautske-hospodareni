@@ -6,6 +6,7 @@ use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use Dibi\Row;
 use Model\DTO\Travel as DTO;
+use Model\DTO\Travel\Command\Travel as TravelDTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
 use Model\Travel\Passenger;
@@ -155,8 +156,8 @@ class TravelService extends BaseService
         $travels = DTO\Command\TravelFactory::createList(
             $this->commands->find($commandId)
         );
-        usort($travels, function ($a, $b) {
-            return $a->getDetails()->getDate() <= $b->getDetails()->getDate();
+        usort($travels, function (TravelDTO $a, TravelDTO $b) {
+            return $a->getDetails()->getDate() <=> $b->getDetails()->getDate();
         });
 
         return $travels;
