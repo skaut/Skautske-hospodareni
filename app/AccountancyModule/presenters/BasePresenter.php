@@ -30,7 +30,7 @@ abstract class BasePresenter extends \App\BasePresenter
      * pole dostupných událostí s indexi podle SkautISu
      * @var array
      */
-    protected $availableActions;
+    protected $availableActions = [];
 
     /** @var bool */
     public $isCamp;
