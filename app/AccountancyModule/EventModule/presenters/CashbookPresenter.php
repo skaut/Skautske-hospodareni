@@ -42,7 +42,7 @@ class CashbookPresenter extends BasePresenter
         $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);
         $func = $this->eventService->event->getFunctions($this->aid);
         $date = $this->eventService->event->get($aid)->StartDate;
-        $hospodar = ($func[2]->ID_Person != NULL) ? $func[2]->Person : ""; //$func[0]->Person
+        $hospodar = ($func[2]->ID_Person != NULL) ? $func[2]->Person : "";
         $category = $this->eventService->chits->getParticipantIncomeCategory();
 
         $values = ["date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category];

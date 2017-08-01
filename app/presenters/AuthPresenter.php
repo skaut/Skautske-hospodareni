@@ -97,7 +97,6 @@ class AuthPresenter extends BasePresenter
             $this->presenter->flashMessage("Odhlášení ze skautisu se nezdařilo", "danger");
         }
         $this->redirect(":Default:");
-        //$this->redirectUrl($this->service->getLogoutUrl());
     }
 
 }

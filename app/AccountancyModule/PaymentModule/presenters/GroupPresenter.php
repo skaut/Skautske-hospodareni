@@ -75,7 +75,6 @@ class GroupPresenter extends BasePresenter
             $this->template->nadpis = "Založení skupiny plateb";
         }
 
-        //$this->template->registration = $this->model->getNewestOpenRegistration();
         $this->template->linkBack = $this->link("Default:");
     }
 

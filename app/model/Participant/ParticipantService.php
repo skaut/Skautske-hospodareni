@@ -47,7 +47,6 @@ class   ParticipantService extends MutableBaseService
      */
     public function getAll($ID_Event)
     {
-        //$this->enableDaysAutocount($ID);
         $cacheId = __FUNCTION__ . $ID_Event;
         if (!($participants = $this->loadSes($cacheId))) {
             $participants = (array)$this->skautis->event->{"Participant" . $this->typeName . "All"}(["ID_Event" . $this->typeName => $ID_Event]);
