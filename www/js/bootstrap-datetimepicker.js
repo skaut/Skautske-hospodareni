@@ -1358,10 +1358,13 @@
 			}
 		},
 		validParts:       function (type) {
+			var temp; // Because JShrink ...
 			if (type == "standard") {
-				return /hh?|HH?|p|P|ii?|ss?|dd?|DD?|mm?|MM?|yy(?:yy)?/g;
+				temp = /hh?|HH?|p|P|ii?|ss?|dd?|DD?|mm?|MM?|yy(?:yy)?/g
+				return temp;
 			} else if (type == "php") {
-				return /[dDjlNwzFmMnStyYaABgGhHis]/g;
+				temp = /[dDjlNwzFmMnStyYaABgGhHis]/g;
+				return temp;
 			} else {
 				throw new Error("Invalid format type.");
 			}
