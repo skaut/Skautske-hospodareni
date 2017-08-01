@@ -44,16 +44,10 @@ class EventPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    public function renderDefault(int $aid, bool $funcEdit = FALSE) : void
+    public function renderDefault(int $aid) : void
     {
         if ($aid == NULL) {
             $this->redirect("Default:");
-        }
-        //nastavení dat do formuláře pro editaci
-        $func = FALSE;
-
-        if ($this->isAllowed("EV_EventFunction_ALL_EventGeneral")) {
-            $func = $this->eventService->event->getFunctions($aid);
         }
 
         $accessEditBase = $this->isAllowed("EV_EventGeneral_UPDATE");
@@ -72,10 +66,7 @@ class EventPresenter extends BasePresenter
             ]);
         }
 
-        $this->template->funkce = $func;
-        $this->template->funcEdit = $funcEdit;
         $this->template->statistic = $this->eventService->participants->getEventStatistic($this->aid);
-        $this->template->accessFunctionUpdate = $this->isAllowed("EV_EventGeneral_UPDATE_Function");
         $this->template->accessEditBase = $accessEditBase;
         $this->template->accessCloseEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Close");
         $this->template->accessOpenEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Open");
