@@ -9,9 +9,7 @@ use Model\UserService;
 use Nette;
 use Nette\Application\UI\Control;
 use Skautis\Wsdl\AuthenticationException;
-use WebLoader;
-use WebLoader\Nette\CssLoader;
-use WebLoader\Nette\JavaScriptLoader;
+use WebLoader\Nette as WebLoader;
 
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
@@ -30,6 +28,16 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     /** @var string */
     private $appDir;
+
+    /** @var WebLoader\LoaderFactory */
+    private $webLoader;
+
+
+    public function injectWebLoader(WebLoader\LoaderFactory $webLoader): void
+    {
+        $this->webLoader = $webLoader;
+    }
+
 
     public function injectUserService(UserService $u): void
     {
@@ -109,58 +117,21 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         return $form;
     }
 
-    protected function createComponentCss(): CssLoader
-    {
-        $files = new WebLoader\FileCollection($this->wwwDir . '/css');
-        $compiler = WebLoader\Compiler::createCssCompiler($files, $this->wwwDir . '/webtemp');
 
-        $control = new CssLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
+    protected function createComponentCss(): WebLoader\CssLoader
+    {
+        $control = $this->webLoader->createCssLoader('default');
         $control->setMedia('screen');
-        $files->addFiles([
-            'fancybox/fancybox.css',
-            'bootstrap.min.css',
-            'bootstrap-select.css',
-            'bootstrap-theme.min.css',
-            'jquery-ui-1.10.0.custom.css',
-            'bootstrap-datetimepicker.css',
-            'typeaheadjs.css',
-            'offline.css',
-            'font-awesome.css',
-            'datagrid.css',
-            'datagrid-spinners.css',
-            'site.css'
-        ]);
+
         return $control;
     }
 
-    protected function createComponentJs(): JavaScriptLoader
+
+    protected function createComponentJs(): WebLoader\JavaScriptLoader
     {
-        $files = new WebLoader\FileCollection($this->wwwDir . '/js');
-        $compiler = WebLoader\Compiler::createJsCompiler($files, $this->wwwDir . '/webtemp');
-        $files->addFiles([
-            'jquery-v1.11.1.js',
-            'jquery-ui-1.10.0.custom.min.js',
-            'bootstrap-datetimepicker.js',
-            'bootstrap-datetimepicker.cs.js',
-            'jquery.placeholder.min.js',//IE 8, 9 placeholders bugfix
-            'bootstrap-select.js',
-            'nette.ajax.js',
-            'netteForms.js',
-            'nextras.netteForms.js',
-            'dependentselectbox.ajax.js',
-            'jquery.nette.dependentselectbox.js',
-            'bootstrap.js',
-            'bootstrap3-typeahead.min.js',
-            'jquery.fancybox.pack.js',
-            'offline.js',
-            'my.js',
-            'nextras.datetimepicker.init.js',
-            'ie10-viewport-bug-workaround.js', // IE10 viewport hack for Surface/desktop Windows 8 bug
-            'datagrid.js',
-            'datagrid-spinners.js',
-        ]);
-        return new JavaScriptLoader($compiler, $this->context->getByType('Nette\Http\Request')->getUrl()->baseUrl . 'webtemp');
+        return $this->webLoader->createJavaScriptLoader('default');
     }
+
 
     protected function updateUserAccess(): void
     {

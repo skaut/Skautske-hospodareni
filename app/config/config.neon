@@ -83,6 +83,7 @@ extensions:
     - Kdyby\Annotations\DI\AnnotationsExtension
     doctrine: Kdyby\Doctrine\DI\OrmExtension
     annotations: Model\Infrastructure\YamlAnnotationsExtension
+    webloader: WebLoader\Nette\Extension
 
 services:
 
@@ -180,5 +181,7 @@ services:
         factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
 
     - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
+
 includes:
-	- components.neon
+    - components.neon
+    - webloader.neon

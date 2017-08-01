@@ -1,0 +1,40 @@
+webloader:
+    css:
+        default:
+            files:
+                - fancybox/fancybox.css
+                - bootstrap.min.css
+                - bootstrap-select.css
+                - bootstrap-theme.min.css
+                - jquery-ui-1.10.0.custom.css
+                - bootstrap-datetimepicker.css
+                - typeaheadjs.css
+                - offline.css
+                - font-awesome.css
+                - datagrid.css
+                - datagrid-spinners.css
+                - site.css
+
+    js:
+        default:
+            files:
+                - jquery-v1.11.1.js
+                - jquery-ui-1.10.0.custom.min.js
+                - bootstrap-datetimepicker.js
+                - bootstrap-datetimepicker.cs.js
+                - jquery.placeholder.min.js # IE 8, 9 placeholders bugfix
+                - bootstrap-select.js
+                - nette.ajax.js
+                - netteForms.js
+                - nextras.netteForms.js
+                - dependentselectbox.ajax.js
+                - jquery.nette.dependentselectbox.js
+                - bootstrap.js
+                - bootstrap3-typeahead.min.js
+                - jquery.fancybox.pack.js
+                - offline.js
+                - my.js
+                - nextras.datetimepicker.init.js
+                - ie10-viewport-bug-workaround.js # IE10 viewport hack for Surface/desktop Windows 8 bug
+                - datagrid.js
+                - datagrid-spinners.js
