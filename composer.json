@@ -40,7 +40,9 @@
         "moneyphp/money": "^3.0",
         "ublaboo/datagrid": "^5.2",
         "beberlei/assert": "^2.7",
-        "fmasa/doctrine-nullable-embeddables": "^0.1.0"
+        "fmasa/doctrine-nullable-embeddables": "^0.1.0",
+        "tedivm/jshrink": "^1.2",
+        "joseki/webloader-filters": "^1.1"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

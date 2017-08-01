@@ -14,6 +14,8 @@ webloader:
                 - datagrid.css
                 - datagrid-spinners.css
                 - site.css
+            filters:
+                - @webloader.cssMinFilter
 
     js:
         default:
@@ -38,3 +40,9 @@ webloader:
                 - ie10-viewport-bug-workaround.js # IE10 viewport hack for Surface/desktop Windows 8 bug
                 - datagrid.js
                 - datagrid-spinners.js
+            filters:
+                - @webloader.jsMinFilter
+
+services:
+    webloader.cssMinFilter: Joseki\Webloader\CssMinFilter
+    webloader.jsMinFilter: App\AccountancyModule\Helpers\JSMinificationFilter
