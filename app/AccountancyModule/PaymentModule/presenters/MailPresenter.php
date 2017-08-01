@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\Forms\BaseForm;
 use Nette\Application\UI\Form;
 
 /**
@@ -48,9 +49,9 @@ class MailPresenter extends BasePresenter
         $this->model->removeSmtp($this->aid, $id);
     }
 
-    protected function createComponentFormCreate($name) : Form
+    protected function createComponentFormCreate() : Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addText("host", "Host")
             ->addRule(Form::FILLED, "Musíte vyplnit pole host.")
             ->getControlPrototype()->placeholder("např. smtp.gmail.com");

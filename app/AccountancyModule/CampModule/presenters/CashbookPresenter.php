@@ -2,7 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
-use Nette\Application\UI\Form;
+use App\Forms\BaseForm;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -56,21 +56,21 @@ class CashbookPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentFormImportHpd(string $name) : Form
+    protected function createComponentFormImportHpd(): BaseForm
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addRadioList("cat", "Kategorie:", ["child" => "Od dětí a roverů", "adult" => "Od dospělých"])
-            ->addRule(Form::FILLED, "Musíte vyplnit kategorii.")
+            ->addRule($form::FILLED, "Musíte vyplnit kategorii.")
             ->setDefaultValue("child");
         $form->addRadioList("isAccount", "Placeno:", ["N" => "Hotově", "Y" => "Přes účet"])
-            ->addRule(Form::FILLED, "Musíte vyplnit způsob platby.")
+            ->addRule($form::FILLED, "Musíte vyplnit způsob platby.")
             ->setDefaultValue("N");
         $form->addHidden("aid", $this->aid);
 
         $form->addSubmit('send', 'Importovat')
             ->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function(Form $form) : void {
+        $form->onSuccess[] = function(BaseForm $form) : void {
             $this->formImportHpdSubmitted($form);
         };
 
@@ -79,7 +79,7 @@ class CashbookPresenter extends BasePresenter
         return $form;
     }
 
-    private function formImportHpdSubmitted(Form $form) : void
+    private function formImportHpdSubmitted(BaseForm $form) : void
     {
         $this->editableOnly();
         $values = $form->getValues();

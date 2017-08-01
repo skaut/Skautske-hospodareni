@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\CampModule;
 
 use App\AccountancyModule\Factories\GridFactory;
+use App\Forms\BaseForm;
 use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
 
@@ -101,7 +102,7 @@ class DefaultPresenter extends BasePresenter
             $years[$y] = $y;
         }
 
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')

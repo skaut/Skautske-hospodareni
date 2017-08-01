@@ -169,9 +169,9 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("default");
     }
 
-    protected function createComponentFormAddTravel($name) : Form
+    protected function createComponentFormAddTravel() : Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->getElementPrototype()->class("form-inline");
         $form->addHidden("command_id");
         $form->addSelect("type");

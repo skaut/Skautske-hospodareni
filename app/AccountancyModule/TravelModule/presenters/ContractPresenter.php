@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use App\Forms\BaseForm;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Model\TravelService;
@@ -78,9 +79,9 @@ class ContractPresenter extends BasePresenter
         $this->redirect("default");
     }
 
-    protected function createComponentFormCreateContract(string $name) : Form
+    protected function createComponentFormCreateContract() : Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addText("driver_name", "Jméno a příjmení řidiče*")
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Musíte vyplnit jméno řidiče.");

@@ -2,12 +2,9 @@
 
 namespace App;
 
-use App\AccountancyModule\Factories\FormFactory;
-use App\Forms\BaseForm;
 use Model\UnitService;
 use Model\UserService;
 use Nette;
-use Nette\Application\UI\Control;
 use Skautis\Wsdl\AuthenticationException;
 use WebLoader;
 use WebLoader\Nette\CssLoader;
@@ -21,9 +18,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     /** @var UnitService */
     protected $unitService;
-
-    /** @var FormFactory */
-    protected $formFactory;
     
     /** @var string */
     private $wwwDir;
@@ -41,10 +35,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->unitService = $u;
     }
 
-    public function injectFormFactory(FormFactory $formFactory): void
-    {
-        $this->formFactory = $formFactory;
-    }
 
     protected function startup(): void
     {
@@ -101,13 +91,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->redirect("this");
     }
 
-    /* @deprecated Use $this->formFactory directly */
-    protected function prepareForm(Control $parent = NULL, string $name = NULL): BaseForm
-    {
-        $form = $this->formFactory->create();
-        $this->addComponent($form, $name);
-        return $form;
-    }
 
     protected function createComponentCss(): CssLoader
     {

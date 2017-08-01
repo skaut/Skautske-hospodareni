@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
+use App\Forms\BaseForm;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
@@ -73,7 +74,7 @@ class DetailPresenter extends BasePresenter
 
     protected function createComponentFormEdit($name) : Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addText("prefix", "Prefix")
             ->setMaxLength(6);
         $form->addHidden("aid");

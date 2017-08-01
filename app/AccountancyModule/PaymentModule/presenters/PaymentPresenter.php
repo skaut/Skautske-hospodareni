@@ -5,6 +5,7 @@ namespace App\AccountancyModule\PaymentModule;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
+use App\Forms\BaseForm;
 use Consistence\Time\TimeFormat;
 use Model\BankService;
 use Model\DTO\Payment\Group;
@@ -422,9 +423,9 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function createComponentPaymentForm($name): Form
+    protected function createComponentPaymentForm(): Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addText("name", "Název/účel")
             ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, "Musíte zadat název platby");
@@ -501,9 +502,9 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("detail", ["id" => $v->oid]);
     }
 
-    protected function createComponentRepaymentForm($name): Form
+    protected function createComponentRepaymentForm(): Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addHidden("gid");
         $form->addText("accountFrom", "Z účtu:")
             ->addRule(Form::FILLED, "Zadejte číslo účtu ze kterého se mají peníze poslat");

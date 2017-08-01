@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use App\Forms\BaseForm;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 use Nette\Application\BadRequestException;
@@ -83,9 +84,9 @@ class VehiclePresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    protected function createComponentFormCreateVehicle($name) : Form
+    protected function createComponentFormCreateVehicle() : Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addText("type", "Typ*")
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Musíte vyplnit typ.");

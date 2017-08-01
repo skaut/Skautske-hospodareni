@@ -6,7 +6,6 @@ use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
-use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 
 trait CashbookTrait
@@ -113,7 +112,7 @@ trait CashbookTrait
         }
     }
 
-    protected function createComponentFormMass($name): Form
+    protected function createComponentFormMass(): BaseForm
     {
         $form = new BaseForm();
         $btn = $form->addSubmit('massPrintSend');
@@ -131,7 +130,7 @@ trait CashbookTrait
 
     private function massPrintSubmitted(SubmitButton $button): void
     {
-        $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
+        $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(BaseForm::DATA_TEXT, 'chits[]'));
         $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
@@ -139,7 +138,7 @@ trait CashbookTrait
 
     private function massExportSubmitted(SubmitButton $button): void
     {
-        $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]'));
+        $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(BaseForm::DATA_TEXT, 'chits[]'));
         $this->excelService->getChitsExport($chits);
         $this->terminate();
     }
@@ -165,7 +164,7 @@ trait CashbookTrait
         return $resultArray;
     }
 
-    private function addMassMove(Form $form): Form
+    private function addMassMove(BaseForm $form): BaseForm
     {
         $allItems = [
             'Výpravy' => $this->getListOfEvents(ChitService::EVENT_TYPE_GENERAL, ["draft"]),
@@ -186,7 +185,7 @@ trait CashbookTrait
     private function massMoveChitsSubmitted(SubmitButton $button): void
     {
         $form = $button->getForm();
-        $chits = $button->getForm()->getHttpData(Form::DATA_TEXT, 'chits[]');
+        $chits = $button->getForm()->getHttpData(BaseForm::DATA_TEXT, 'chits[]');
         if (empty($chits)) {
             $form->addError("Nebyly vybrány žádné paragony!");
             return;
@@ -223,16 +222,18 @@ trait CashbookTrait
     }
 
     //FORM CASHBOOK
-    public function getCategoriesByType(Form $form): array
+    public function getCategoriesByType(BaseForm $form): array
     {
         return $this->entityService->chits->getCategoriesPairs($form["type"]->getValue(), $this->aid);
     }
 
-    protected function createComponentCashbookForm(string $name): Form
+    protected function createComponentCashbookForm(string $name): BaseForm
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
+        $this->addComponent($form, $name); // necessary for JSelect
+
         $form->addDatePicker("date", "Ze dne:")
-            ->addRule(Form::FILLED, 'Zadejte datum')
+            ->addRule($form::FILLED, 'Zadejte datum')
             ->getControlPrototype()->class("form-control input-sm required")->placeholder("Datum");
         $form->addText("num", "Číslo d.:")
             ->setMaxLength(5)
@@ -240,13 +241,13 @@ trait CashbookTrait
             ->class("form-control input-sm");
         $form->addText("purpose", "Účel výplaty:")
             ->setMaxLength(40)
-            ->addRule(Form::FILLED, 'Zadejte účel výplaty')
+            ->addRule($form::FILLED, 'Zadejte účel výplaty')
             ->getControlPrototype()->placeholder("Účel")
             ->class("form-control input-sm required");
         $form->addSelect("type", "Typ", ["in" => "Příjmy", "out" => "Výdaje"])
             ->setAttribute("size", "2")
             ->setDefaultValue("out")
-            ->addRule(Form::FILLED, "Vyberte typ");
+            ->addRule($form::FILLED, "Vyberte typ");
         $form->addJSelect("category", "Kategorie", $form["type"], [$this, "getCategoriesByType"])
             ->setAttribute("class", "form-control input-sm");
         $form->addText("recipient", "Vyplaceno komu:")
@@ -261,7 +262,7 @@ trait CashbookTrait
         $form->addHidden("pid");
         $form->addSubmit('send', 'Uložit')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = function (Form $form): void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $this->cashbookFormSubmitted($form);
 
         };
@@ -270,9 +271,8 @@ trait CashbookTrait
 
     /**
      * přidává paragony všech kategorií
-     * @param Form $form
      */
-    private function cashbookFormSubmitted(Form $form): void
+    private function cashbookFormSubmitted(BaseForm $form): void
     {
         if ($form["send"]->isSubmittedBy()) {
             $this->editableOnly();

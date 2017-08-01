@@ -4,6 +4,7 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
+use App\Forms\BaseForm;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -150,7 +151,7 @@ class EventPresenter extends BasePresenter
 
     protected function createComponentFormEdit($name) : Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
 
         $form->addText("name", "Název akce");
         $form->addDatePicker("start", "Od")
