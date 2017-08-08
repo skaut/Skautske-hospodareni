@@ -2,10 +2,15 @@
 
 namespace Model\Unit\Repositories;
 
+use Model\Unit\Unit;
+
 interface IUnitRepository
 {
 
-    public function findByParent(int $parentId);
+    /**
+     * @return Unit[]
+     */
+    public function findByParent(int $parentId): array;
 
     public function find(int $id);
 

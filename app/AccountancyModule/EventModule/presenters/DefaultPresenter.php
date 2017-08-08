@@ -176,7 +176,7 @@ class DefaultPresenter extends BasePresenter
         $tmpId = $this->unitService->getUnitId();
         $units = [$tmpId => $this->unitService->getDetail($tmpId)->SortName];
         foreach ($this->unitService->getChild($tmpId) as $u) {
-            $units[$u->ID] = "» " . $u->SortName;
+            $units[$u->getId()] = "» " . $u->getSortName();
         }
 
         $form = new BaseForm();

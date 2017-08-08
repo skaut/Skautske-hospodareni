@@ -3,6 +3,7 @@
 namespace Model;
 
 use Model\Unit\Repositories\IUnitRepository;
+use Model\Unit\Unit;
 use Nette\Security\User;
 use Skautis;
 
@@ -55,7 +56,7 @@ class UnitService
 
     /**
      * nalezne podřízené jednotky
-     * @return \stdClass[]
+     * @return Unit[]
      */
     public function getChild(int $parentId)
     {
@@ -92,8 +93,8 @@ class UnitService
     {
         $data = $self ? [$ID_Unit => $this->getDetail($ID_Unit)] : [];
         foreach ($this->getChild($ID_Unit) as $u) {
-            $data[$u->ID] = $u;
-            $data = $data + $this->getAllUnder($u->ID, FALSE);
+            $data[$u->getId()] = $u;
+            $data = $data + $this->getAllUnder($u->getId(), FALSE);
         }
         return $data;
     }
@@ -127,7 +128,7 @@ class UnitService
 
         $res = [];
         foreach ($identity->access[$accessType] as $uId => $u) {
-            $res[$uId] = $u->DisplayName;
+            $res[$uId] = $u instanceof Unit ? $u->getDisplayName() : $u->DisplayName;
         }
         return $res;
     }
