@@ -16,6 +16,9 @@ class Vehicle extends Nette\Object
     /** @var int */
     private $unitId;
 
+    /** @var int|NULL */
+    private $subunitId;
+
     /** @var string */
     private $registration;
 
@@ -35,10 +38,11 @@ class Vehicle extends Nette\Object
      * @param string $registration
      * @param float $consumption
      */
-    public function __construct($type, $unitId, $registration, $consumption)
+    public function __construct($type, $unitId, ?int $subunitId, $registration, $consumption)
     {
         $this->type = $type;
         $this->unitId = $unitId;
+        $this->subunitId = $subunitId;
         $this->registration = $registration;
         $this->consumption = $consumption;
     }
@@ -62,6 +66,11 @@ class Vehicle extends Nette\Object
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getSubunitId(): ?int
+    {
+        return $this->subunitId;
     }
 
     /**

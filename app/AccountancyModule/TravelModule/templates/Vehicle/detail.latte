@@ -27,6 +27,10 @@
                 <th>Průměrná spotřeba</th>
                 <td>{$vehicle->consumption|number:2} l/100 km</td>
             </tr>
+            <tr n:ifset="$subunitName">
+                <th>Oddíl</th>
+                <td>{$subunitName}</td>
+            </tr>
         </table>
     </div>
     <div class='col-sm-6'>

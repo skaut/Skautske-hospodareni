@@ -105,12 +105,10 @@ class TravelService extends BaseService
         return $this->vehicles->getAll($unitId);
     }
 
-    /**
-     * @param array $data
-     */
-    public function addVehicle($data): void
+
+    public function createVehicle(string $type, int $unitId, int $subunitId, string $registration, float $consumption): void
     {
-        $vehicle = new Vehicle($data['type'], $data['unit_id'], $data['registration'], $data['consumption']);
+        $vehicle = new Vehicle($type, $unitId, $subunitId, $registration, $consumption);
         $this->vehicles->save($vehicle);
     }
 

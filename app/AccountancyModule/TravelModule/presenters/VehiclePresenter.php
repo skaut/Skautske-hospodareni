@@ -7,6 +7,7 @@ use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\ArrayHash;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -51,7 +52,13 @@ class VehiclePresenter extends BasePresenter
 
     public function actionDetail(int $id) : void
     {
-        $this->template->vehicle = $this->getVehicle($id);
+        $vehicle = $this->getVehicle($id);
+        $this->template->vehicle = $vehicle;
+
+        if($vehicle->getSubunitId() !== NULL) {
+            $this->template->subunitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
+        }
+
         $this->template->canDelete = $this->travelService->getCommandsCount($id) === 0;
     }
 
@@ -97,22 +104,47 @@ class VehiclePresenter extends BasePresenter
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Musíte vyplnit průměrnou spotřebu.")
             ->addRule(Form::FLOAT, "Průměrná spotřeba musí být číslo!");
+        $form->addSelect('subunitId', 'Oddíl', $this->getSubunitPairs())
+            ->setAttribute('class', 'form-control')
+            ->setPrompt('Žádný')
+            ->setRequired(FALSE);
         $form->addSubmit("send", "Založit");
 
-        $form->onSuccess[] = function(Form $form) : void {
-            $this->formCreateVehicleSubmitted($form);
+        $form->onSuccess[] = function(Form $form, ArrayHash $values) : void {
+            $this->formCreateVehicleSubmitted($values);
         };
 
         return $form;
     }
 
-    private function formCreateVehicleSubmitted(Form $form) : void
+
+    /**
+     * @return string[]
+     */
+    private function getSubunitPairs(): array
     {
-        $v = $form->getValues();
-        $v['unit_id'] = $this->unit->ID;
-        $v['consumption'] = str_replace(",", ".", $v['consumption']);
-        $this->travelService->addVehicle($v);
-        $this->flashMessage("Záznam o vozidle byl založen.");
+        $subUnits = $this->unitService->getChild($this->getUnitId());
+
+        $pairs = [];
+        foreach($subUnits as $subUnit) {
+            $pairs[$subUnit->getId()] = $subUnit->getSortName();
+        }
+
+        return $pairs;
+    }
+
+
+    private function formCreateVehicleSubmitted(ArrayHash $values): void
+    {
+        $this->travelService->createVehicle(
+            $values->type,
+            $this->getUnitId(),
+            $values->subunitId,
+            $values->registration,
+            $values->consumption
+        );
+
+        $this->flashMessage("Vozidlo bylo vytvořeno");
         $this->redirect("this");
     }
 

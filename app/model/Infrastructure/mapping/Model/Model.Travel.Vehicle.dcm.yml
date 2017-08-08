@@ -13,6 +13,9 @@ Model\Travel\Vehicle:
             type: string
         unitId:
             type: integer
+        subunitId:
+            type: integer
+            nullable: true
         registration:
             type: string
         consumption:
