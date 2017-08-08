@@ -70,6 +70,9 @@ monolog:
     handlers:
         slackWebhook:
             class: Monolog\Handler\SlackWebhookHandler(%slack.url%)
+proxy:
+    default: off
+    proxyDir: %tempDir%/proxies
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
@@ -83,6 +86,7 @@ extensions:
     - Kdyby\Annotations\DI\AnnotationsExtension
     doctrine: Kdyby\Doctrine\DI\OrmExtension
     annotations: Model\Infrastructure\YamlAnnotationsExtension
+    proxy: Lookyman\Nette\Proxy\DI\ProxyExtension
     webloader: WebLoader\Nette\Extension
 
 services:
@@ -143,8 +147,9 @@ services:
     ####################################################
     #                    Skautis                       #
     ####################################################
-    skautis.org: Model\Skautis\WebserviceFactory::createOrganizationUnit
-
+    skautis.org:
+        factory: Model\Skautis\WebserviceFactory::createOrganizationUnit
+        tags: [lookyman.lazy]
 
     # Factories
     - Model\Services\TemplateFactory
