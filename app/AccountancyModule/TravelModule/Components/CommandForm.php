@@ -165,6 +165,11 @@ class CommandForm extends Control
             "amortization" => MoneyFactory::toFloat($command->getAmortizationPerKm()),
             "note" => $command->getNote(),
             "type" => array_keys($this->model->getCommandTypes($this->commandId)),
+            'passenger' => [
+                'name' => $command->getPassenger()->getName(),
+                'contact' => $command->getPassenger()->getContact(),
+                'address' => $command->getPassenger()->getAddress(),
+            ],
         ]);
 
         $vehicleId = $command->getVehicleId();
