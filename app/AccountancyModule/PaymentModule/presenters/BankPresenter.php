@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\Forms\BaseForm;
 use Nette\Application\UI\Form;
 
 /**
@@ -40,9 +41,9 @@ class BankPresenter extends BasePresenter
         }
     }
 
-    public function createComponentTokenForm($name) : Form
+    public function createComponentTokenForm() : Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addText("token", "API Token");
         $form->addText("daysback", "Počet dní kontrolovaných nazpět")
             ->setDefaultValue(14);

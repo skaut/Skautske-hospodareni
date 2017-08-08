@@ -2,13 +2,9 @@
 
 use Nette\Application\UI\Form;
 use App\Forms\BaseForm;
-use App\AccountancyModule\Factories\FormFactory;
 use Nette\Forms\Controls\SubmitButton;
 use Model\Services\PdfRenderer;
 
-/**
- * @property-read FormFactory $formFactory
- */
 trait ParticipantTrait
 {
 
@@ -178,9 +174,9 @@ trait ParticipantTrait
         }
     }
 
-    public function createComponentFormMassList($name) : Form
+    public function createComponentFormMassList() : Form
     {
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addSubmit('send')
             ->onClick[] = function(SubmitButton $button) : void {
                 $this->formMassListSubmitted($button);
@@ -203,7 +199,7 @@ trait ParticipantTrait
 
     public function createComponentFormMassParticipants() : BaseForm
     {
-        $form = $this->formFactory->create();
+        $form = new BaseForm();
 
         $editCon = $form->addContainer("edit");
         $editCon->addText("days", "Dní");
@@ -272,10 +268,10 @@ trait ParticipantTrait
      * @param string $name
      * @return Form
      */
-    protected function createComponentFormAddParticipantNew($name) : Form
+    protected function createComponentFormAddParticipantNew() : Form
     {
         $aid = $this->aid;
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addText("firstName", "Jméno*")
             ->addRule(Form::FILLED, "Musíš vyplnit křestní jméno.");
         $form->addText("lastName", "Příjmení*")

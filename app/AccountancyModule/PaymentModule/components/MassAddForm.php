@@ -2,7 +2,6 @@
 
 namespace App\AccountancyModule\PaymentModule\Components;
 
-use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseContainer;
 use App\Forms\BaseForm;
 use Model\PaymentService;
@@ -14,24 +13,20 @@ class MassAddForm extends Control
     /** @var int */
     private $groupId;
 
-    /** @var FormFactory */
-    private $formFactory;
-
     /** @var PaymentService */
     private $payments;
 
-    public function __construct(int $groupId, FormFactory $formFactory, PaymentService $payments)
+    public function __construct(int $groupId, PaymentService $payments)
     {
         parent::__construct();
         $this->groupId = $groupId;
-        $this->formFactory = $formFactory;
         $this->payments = $payments;
     }
 
 
     protected function createComponentForm(): BaseForm
     {
-        $form = $this->formFactory->create();
+        $form = new BaseForm();
 
         $form->addText("amount", "Částka:")
             ->setAttribute('class', 'input-mini');

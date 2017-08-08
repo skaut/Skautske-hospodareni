@@ -120,7 +120,6 @@ services:
     - \Model\BudgetService
 
     # Factories
-    - App\AccountancyModule\Factories\FormFactory
     - Model\IChitServiceFactory
     - Model\IEventServiceFactory
     - Model\IParticipantServiceFactory

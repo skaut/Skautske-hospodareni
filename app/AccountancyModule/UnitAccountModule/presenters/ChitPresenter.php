@@ -2,7 +2,8 @@
 
 namespace App\AccountancyModule\UnitAccountModule;
 
-use Nette\Application\UI\Form;
+use App\Forms\BaseForm;
+use Model\BudgetService;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -16,13 +17,10 @@ class ChitPresenter extends BasePresenter
     /** @persistent */
     public $onlyUnlocked = 1;
 
-    /**
-     *
-     * @var \Model\BudgetService
-     */
-    protected $budgetService;
+    /** @var BudgetService */
+    private $budgetService;
 
-    public function __construct(\Model\BudgetService $bs)
+    public function __construct(BudgetService $bs)
     {
         parent::__construct();
         $this->budgetService = $bs;
@@ -142,10 +140,10 @@ class ChitPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentBudgetCategoryForm($name) : Form
+    protected function createComponentBudgetCategoryForm(): BaseForm
     {
         $categories = $this->budgetService->getCategoriesLeaf($this->aid);
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         foreach ($this->chits as $chType) {
             foreach ($chType as $chGrp) {
                 foreach ($chGrp as $ch) {
@@ -163,7 +161,7 @@ class ChitPresenter extends BasePresenter
             }
         }
 
-        $form->onSubmit[] = function(Form $form) : void {
+        $form->onSubmit[] = function(BaseForm $form) : void {
             $this->budgetCategoryFormSubmitted($form);
         };
 
@@ -172,7 +170,7 @@ class ChitPresenter extends BasePresenter
         return $form;
     }
 
-    private function budgetCategoryFormSubmitted(Form $form) : void
+    private function budgetCategoryFormSubmitted(BaseForm $form): void
     {
         $v = $form->values;
         foreach ($this->chits as $chType) {
@@ -189,9 +187,7 @@ class ChitPresenter extends BasePresenter
 
     private function accessChitControl($chit, $service, $type)
     {
-        //dump($type);dump($chit);die();
         return array_key_exists($service->chits->getSkautisId($chit->eventId), $this->info[$type]);
-        //return array_key_exists($chit->id, $this->chits[$type][$this->context->{$type . "Service"}->chits->getSkautisId($chit->eventId)]);
     }
 
 }

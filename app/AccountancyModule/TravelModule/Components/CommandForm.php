@@ -2,7 +2,6 @@
 
 namespace App\AccountancyModule\TravelModule\Components;
 
-use App\AccountancyModule\Factories\FormFactory;
 use App\Forms\BaseForm;
 use Dibi\Row;
 use Model\Travel\Passenger;
@@ -25,22 +24,18 @@ class CommandForm extends Control
     /** @var TravelService */
     private $model;
 
-    /** @var FormFactory */
-    private $formFactory;
-
     /** @var Row[] */
     private $transportTypes;
 
     /** @var callable[] */
     public $onSuccess = [];
 
-    public function __construct(int $unitId, ?int $commandId, TravelService $model, FormFactory $formFactory)
+    public function __construct(int $unitId, ?int $commandId, TravelService $model)
     {
         parent::__construct();
         $this->unitId = $unitId;
         $this->commandId = $commandId;
         $this->model = $model;
-        $this->formFactory = $formFactory;
         $this->transportTypes = $this->model->getTravelTypes();
     }
 
@@ -63,7 +58,7 @@ class CommandForm extends Control
         $vehiclesWithFuel = array_filter($this->transportTypes, function ($t) { return $t->hasFuel; });
         $vehiclesWithFuel = array_map(function($t) { return $t->type; }, $vehiclesWithFuel);
 
-        $form = $this->formFactory->create();
+        $form = new BaseForm();
 
         $form->addGroup();
         $form->addText("purpose", "Účel cesty*")

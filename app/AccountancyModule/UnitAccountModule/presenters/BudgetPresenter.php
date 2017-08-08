@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\UnitAccountModule;
 
+use App\Forms\BaseForm;
 use Nette\Application\UI\Form;
 
 /**
@@ -34,7 +35,9 @@ class BudgetPresenter extends BasePresenter
 
     protected function createComponentAddCategoryForm($name) : Form
     {
-        $form = $this->prepareForm($this, $name); // required for full running
+        $form = new BaseForm();
+        $this->addComponent($form, $name); // required addJSelect (TODO: add late attach to addJSelect)
+
         $form->addText("label", "Název")
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Vyplňte název kategorie");

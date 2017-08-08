@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Factories\GridFactory;
+use App\Forms\BaseForm;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
@@ -135,14 +136,14 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentFormFilter(string $name): Form
+    protected function createComponentFormFilter(): Form
     {
         $states = array_merge(["all" => "Nezrušené"], $this->eventService->event->getStates());
         $years = ["all" => "Všechny"];
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
         }
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addSelect("state", "Stav", $states);
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
@@ -168,7 +169,7 @@ class DefaultPresenter extends BasePresenter
         return $item == NULL ? FALSE : TRUE;
     }
 
-    protected function createComponentFormCreate($name): Form
+    protected function createComponentFormCreate(): Form
     {
         $scopes = $this->eventService->event->getScopes();
         $types = $this->eventService->event->getTypes();
@@ -178,7 +179,7 @@ class DefaultPresenter extends BasePresenter
             $units[$u->ID] = "» " . $u->SortName;
         }
 
-        $form = $this->prepareForm($this, $name);
+        $form = new BaseForm();
         $form->addText("name", "Název akce*")
             ->addRule(Form::FILLED, "Musíte vyplnit název akce");
         $form->addDatePicker("start", "Od*")

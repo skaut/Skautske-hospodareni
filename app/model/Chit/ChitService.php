@@ -119,7 +119,7 @@ class ChitService extends MutableBaseService
             "price" => $this->solveString($val['price']),
             "priceText" => str_replace(",", ".", $val['price']),
             "category" => $val['category'],
-            "num" => isset($val['num']) ? $val['num'] : "", //$val['num'] != "" ? str_pad((int) $val['num'],5,"0",STR_PAD_LEFT) : null
+            "num" => isset($val['num']) ? $val['num'] : "",
         ];
 
         $ret = $this->table->add($values);

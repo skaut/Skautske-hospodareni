@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\Forms\BaseForm;
 use Consistence\Enum\InvalidEnumValueException;
 use Model\EventEntity;
 use Model\MailService;
@@ -74,7 +75,6 @@ class GroupPresenter extends BasePresenter
             $this->template->nadpis = "Založení skupiny plateb";
         }
 
-        //$this->template->registration = $this->model->getNewestOpenRegistration();
         $this->template->linkBack = $this->link("Default:");
     }
 
@@ -123,7 +123,7 @@ class GroupPresenter extends BasePresenter
 
     protected function createComponentGroupForm(): Form
     {
-        $form = $this->formFactory->create();
+        $form = new BaseForm();
         $form->addSelect("skautisEntityId");
         $form->addText("label", "Název")
             ->setAttribute("class", "form-control")
