@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4da2cef5d26e897b7f7445a9e7510222",
+    "content-hash": "5726e797c177180d69f4467bfe0b98de",
     "packages": [
         {
             "name": "arachne/container-adapter",
@@ -1960,6 +1960,58 @@
                 "twig"
             ],
             "time": "2017-01-19T11:06:59+00:00"
+        },
+        {
+            "name": "lookyman/nette-proxy",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lookyman/nette-proxy.git",
+                "reference": "1d9176dfa9be71d5b2ed83c3db4a3414a91103da"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lookyman/nette-proxy/zipball/1d9176dfa9be71d5b2ed83c3db4a3414a91103da",
+                "reference": "1d9176dfa9be71d5b2ed83c3db4a3414a91103da",
+                "shasum": ""
+            },
+            "require": {
+                "nette/di": "^2.4",
+                "nette/php-generator": "^2.6|^3.0",
+                "ocramius/proxy-manager": "^2.0"
+            },
+            "require-dev": {
+                "kdyby/console": "^2.6",
+                "nette/bootstrap": "^2.4",
+                "phpunit/phpunit": "^5.6"
+            },
+            "suggest": {
+                "kdyby/console": "For pre-generating proxies via a command"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Lookyman\\Nette\\Proxy\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lukáš Unger",
+                    "email": "looky.msc@gmail.com",
+                    "homepage": "https://lookyman.net"
+                }
+            ],
+            "description": "Integration of Proxy Manager into Nette Framework",
+            "keywords": [
+                "lazy",
+                "nette",
+                "proxy"
+            ],
+            "time": "2017-05-15T13:57:57+00:00"
         },
         {
             "name": "moneyphp/money",
