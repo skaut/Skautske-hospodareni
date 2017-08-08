@@ -401,13 +401,13 @@ class TravelService extends BaseService
 
     /**
      * vraci všechny přikazy navazane na vozidlo
-     * @param int $unitId
-     * @param int $vehicleId
-     * @return Row[]
+     * @return DTO\Command[]
      */
-    public function getAllCommandsByVehicle($unitId, $vehicleId)
+    public function getAllCommandsByVehicle(int $vehicleId)
     {
-        return $this->table->getAllByVehicle($unitId, $vehicleId);
+        return array_map(function (Command $command) {
+            return DTO\CommandFactory::create($command);
+        }, $this->commands->findByVehicle($vehicleId));
     }
 
     /**

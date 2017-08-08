@@ -61,12 +61,6 @@ class CommandTable extends BaseTable
             ->fetchAll();
     }
 
-    public function getAllByVehicle($unitId, $vehicleId)
-    {
-        return $this->getAll($unitId, TRUE)
-            ->where("com.vehicle_id=", $vehicleId)
-            ->fetchAll();
-    }
 
     /**
      * uzavírání/otevírání cestovních příkazů

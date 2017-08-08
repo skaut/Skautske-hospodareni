@@ -62,9 +62,9 @@ class VehiclePresenter extends BasePresenter
         $this->template->canDelete = $this->travelService->getCommandsCount($id) === 0;
     }
 
-    public function renderDetail($id) : void
+    public function renderDetail(int $id) : void
     {
-        $this->template->commands = $this->travelService->getAllCommandsByVehicle($this->unit->ID, $id);
+        $this->template->commands = $this->travelService->getAllCommandsByVehicle($id);
     }
 
     public function handleRemove($vehicleId) : void
