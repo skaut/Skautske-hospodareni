@@ -113,17 +113,10 @@ class Vehicle extends Nette\Object
         return $this->archived;
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
-    {
-        $label = $this->type . ' (' . $this->registration . ')';
-        if ($this->archived) {
-            $label .= ' [archivované]';
-        }
 
-        return $label;
+    public function getLabel(): string
+    {
+        return $this->type . ' (' . $this->registration . ')';
     }
 
 }

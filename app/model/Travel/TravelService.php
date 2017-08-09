@@ -376,7 +376,11 @@ class TravelService extends BaseService
         );
     }
 
-    public function getAllCommands(int $unitId)
+
+    /**
+     * @return DTO\Command[]
+     */
+    public function getAllCommands(int $unitId): array
     {
         return array_map(function (Command $command) {
             return DTO\CommandFactory::create($command);

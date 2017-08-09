@@ -3,39 +3,14 @@
     <h2>Cestovní příkazy <span class="hidden-xs hidden-sm">jednotky {$unit->DisplayName}</span></h2>
 {include ../menu.latte}
 
-<div class="row">
-    <div class="span12">
-        <div class="panel">
-        <a n:href="Command:" class="btn btn-primary">
-            <span class="glyphicon glyphicon-plus-sign"></span>
-            Založit cestovní příkaz
-        </a>
-        </div>
-        <table n:if="!empty($list)" class="table table-bordered table-striped table-condensed">
-            <tr>
-                <th>&nbsp;</th>
-                <th>Cestující</th>
-                <th>Účel cesty</th>
-                <th>Prostředek</th>
-                <th>Vozidlo</th>
-                <th>První jízda</th>
-                <th>Cena</th>
-                <th class="hidden-xs hidden-sm">Poznámka</th>
-                <th>Stav</th>
-            </tr>
-            <tr n:foreach="$list as $item">
-                <td class="r nowrap">
-                    <a n:href="detail $item->id" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-zoom-in hidden-xs hidden-sm"></i> Detail</a>
-                </td>
-                <td><a n:tag-if="$item->passenger->contractId !== NULL" n:href="Contract:detail $item->passenger->contractId">{$item->passenger->name}</a></td>
-                <td>{$item->purpose}</td>
-                <td>{$types[$item->id]}</td>
-                <td><a n:if="$item->vehicleId !== NULL" n:href="Vehicle:detail $item->vehicleId">{$vehicles[$item->vehicleId]->getLabel()}</a></td>
-                <td n:inner-if="$item->firstTravelDate !== NULL">{$item->firstTravelDate|date:'j. n. Y'}</td>
-                <td>{$item->total|price}</td>
-                <td class="hidden-xs hidden-sm">{$item->note}</td>
-                <td>{$item->closedAt|commandState|noescape}</td>
-            </tr>
-        </table>
-    </div>
+
+<div class="button-bar">
+    <a n:href="Command:" class="btn btn-primary pull-right">
+        <span class="glyphicon glyphicon-plus-sign"></span>
+        Založit cestovní příkaz
+    </a>
+    <div class="clearfix"></div>
 </div>
+{snippet}
+    {control grid}
+{/snippet}

@@ -4,6 +4,7 @@ services:
     - App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory
     - App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory
     - App\AccountancyModule\TravelModule\Factories\ICommandFormFactory
+    - App\AccountancyModule\TravelModule\Factories\ICommandGridFactory
 
     # Presenters
     - App\AccountancyModule\PaymentModule\GroupPresenter(camp: @campService)

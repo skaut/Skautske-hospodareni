@@ -2,8 +2,9 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use App\AccountancyModule\TravelModule\Components\CommandGrid;
+use App\AccountancyModule\TravelModule\Factories\ICommandGridFactory;
 use App\Forms\BaseForm;
-use Model\DTO\Travel\Command;
 use Model\Services\PdfRenderer;
 use Model\Travel\Command\TravelDetails;
 use Model\TravelService;
@@ -22,11 +23,15 @@ class DefaultPresenter extends BasePresenter
     /** @var PdfRenderer */
     private $pdf;
 
-    public function __construct(TravelService $travelService, PdfRenderer $pdf)
+    /** @var ICommandGridFactory */
+    private $gridFactory;
+
+    public function __construct(TravelService $travelService, PdfRenderer $pdf, ICommandGridFactory $gridFactory)
     {
         parent::__construct();
         $this->travelService = $travelService;
         $this->pdf = $pdf;
+        $this->gridFactory = $gridFactory;
     }
 
     private function isCommandAccessible(int $commandId): bool
@@ -43,22 +48,6 @@ class DefaultPresenter extends BasePresenter
         return $this->isCommandAccessible($id) && $command->getClosedAt() === NULL;
     }
 
-    public function renderDefault() : void
-    {
-        $commands = $this->travelService->getAllCommands($this->getUnitId());
-
-        $vehicleIds = array_map(function (Command $command) {
-            return $command->getVehicleId();
-        }, $commands);
-
-        $commandIds = array_map(function(Command $command) {
-            return $command->getId();
-        }, $commands);
-
-        $this->template->list = $commands;
-        $this->template->vehicles = $this->travelService->findVehiclesByIds(array_unique(array_filter($vehicleIds)));
-        $this->template->types = $this->travelService->getTypes($commandIds);
-    }
 
     public function actionDetail(int $id) : void
     {
@@ -274,6 +263,11 @@ class DefaultPresenter extends BasePresenter
         };
 
         return $form;
+    }
+
+    protected function createComponentGrid(): CommandGrid
+    {
+        return $this->gridFactory->create($this->getUnitId());
     }
 
     private function formEditTravelSubmitted(Form $form): void
