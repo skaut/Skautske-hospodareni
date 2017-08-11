@@ -33,7 +33,8 @@ class CommandGrid extends Control
 
     public function render()
     {
-        $this['grid']->render();
+        $this->template->setFile(__DIR__.'/templates/CommandGrid.latte');
+        $this->template->render();
     }
 
 
@@ -66,7 +67,7 @@ class CommandGrid extends Control
         $grid->onRender[] = function(DataGrid $grid) use ($commandIds, $vehicleIds) {
             $grid->template->types = $this->travel->getTypes($commandIds);
             $grid->template->vehicles = $this->travel->findVehiclesByIds($vehicleIds);
-            $grid->setTemplateFile(__DIR__ . "/templates/CommandGrid.latte");
+            $grid->setTemplateFile(__DIR__ . "/templates/CommandGrid.columns.latte");
         };
 
         return $grid;
