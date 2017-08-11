@@ -5,6 +5,7 @@ services:
     - App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory
     - App\AccountancyModule\TravelModule\Factories\ICommandFormFactory
     - App\AccountancyModule\TravelModule\Factories\ICommandGridFactory
+    - App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory
 
     # Presenters
     - App\AccountancyModule\PaymentModule\GroupPresenter(camp: @campService)

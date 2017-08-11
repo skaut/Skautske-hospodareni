@@ -1,12 +1,16 @@
 {block #title}Vozidla jednotky {$unit->DisplayName}{/block}
 
 {block #content}
-<h2>Vozidla<span class="hidden-xs hidden-sm"> jednotky {$unit->DisplayName}</span></h2>
 {include ../menu.latte}
+<div class="row button-bar">
+    <button type="button" data-toggle="collapse" data-target="#createVehicle" class="btn btn-primary pull-right"><i
+                class="glyphicon glyphicon-plus-sign"></i> Založit nové vozidlo
+    </button>
+    <h2>Vozidla <span class="hidden-xs hidden-sm label label-default">{$unit->DisplayName}</span></h2>
+</div>
 
 <div class="row">
     <div class="well well-sm">
-        <button type="button" data-toggle="collapse" data-target="#createVehicle" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit nové vozidlo</button>
         <div class="collapse" id="createVehicle">
             <br />
             {control formCreateVehicle}
@@ -14,20 +18,5 @@
     </div>
 </div>
 <div class="row">
-    <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
-        <tr>
-            <th>&nbsp;</th>
-            <th>Typ</th>
-            <th>SPZ</th>
-            <th>&#0216; spotřeba (l/100 km)</th>
-        </tr>
-        <tr n:foreach="$list as $i">
-            <td>
-                <a n:href="detail $i->id" class="btn btn-primary"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
-            </td>
-            <td><a n:href="Vehicle:detail $i->id">{$i->type}</a></td>
-            <td>{$i->registration}</td>
-            <td>{$i->consumption}</td>
-        </tr>
-    </table>
+    {control grid}
 </div>

@@ -4,46 +4,33 @@
 namespace App\AccountancyModule\TravelModule\Components;
 
 
-use App\AccountancyModule\Factories\GridFactory;
+use App\AccountancyModule\Factories\BaseGridControl;
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\DTO\Travel\Command;
 use Model\TravelService;
-use Nette\Application\UI\Control;
 use Ublaboo\DataGrid\DataGrid;
 
-class CommandGrid extends Control
+class CommandGrid extends BaseGridControl
 {
 
     /** @var int */
     private $unitId;
 
-    /** @var GridFactory */
-    private $factory;
-
     /** @var TravelService */
     private $travel;
 
 
-    public function __construct(int $unitId, GridFactory $factory, TravelService $travel)
+    public function __construct(int $unitId, TravelService $travel)
     {
         parent::__construct();
         $this->unitId = $unitId;
-        $this->factory = $factory;
         $this->travel = $travel;
-    }
-
-
-    public function render(): void
-    {
-        $this->redrawControl('main');
-        $this->template->setFile(__DIR__.'/templates/CommandGrid.latte');
-        $this->template->render();
     }
 
 
     protected function createComponentGrid(): DataGrid
     {
-        $grid = $this->factory->create();
+        $grid = $this->createGrid();
 
         $grid->setPrimaryKey("id");
 
@@ -78,7 +65,7 @@ class CommandGrid extends Control
         $grid->onRender[] = function(DataGrid $grid) use ($commandIds, $vehicleIds) {
             $grid->template->types = $this->travel->getTypes($commandIds);
             $grid->template->vehicles = $this->travel->findVehiclesByIds($vehicleIds);
-            $grid->setTemplateFile(__DIR__ . "/templates/CommandGrid.columns.latte");
+            $grid->setTemplateFile(__DIR__ . "/templates/CommandGrid.latte");
         };
 
         return $grid;

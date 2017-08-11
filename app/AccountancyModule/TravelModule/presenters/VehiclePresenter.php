@@ -2,12 +2,16 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use App\AccountancyModule\TravelModule\Components\VehicleGrid;
+use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 use App\Forms\BaseForm;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
+use Model\TravelService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\ArrayHash;
+
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -15,19 +19,19 @@ use Nette\ArrayHash;
 class VehiclePresenter extends BasePresenter
 {
 
-    /** @var \Model\TravelService */
-    protected $travelService;
+    /** @var TravelService */
+    private $travelService;
 
-    public function __construct(\Model\TravelService $ts)
+    /** @var IVehicleGridFactory */
+    private $gridFactory;
+
+    public function __construct(TravelService $travelService, IVehicleGridFactory $gridFactory)
     {
         parent::__construct();
-        $this->travelService = $ts;
+        $this->travelService = $travelService;
+        $this->gridFactory = $gridFactory;
     }
 
-    public function renderDefault() : void
-    {
-        $this->template->list = $this->travelService->getAllVehicles($this->unit->ID);
-    }
 
     /**
      * @param string $id
@@ -90,6 +94,13 @@ class VehiclePresenter extends BasePresenter
 
         $this->redirect('this');
     }
+
+
+    protected function createComponentGrid(): VehicleGrid
+    {
+        return $this->gridFactory->create($this->getUnitId());
+    }
+
 
     protected function createComponentFormCreateVehicle() : Form
     {
