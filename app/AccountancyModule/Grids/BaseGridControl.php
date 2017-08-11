@@ -20,7 +20,10 @@ abstract class BaseGridControl extends Control
 
     protected function createGrid(): DataGrid
     {
-        return (new GridFactory())->create();
+        $grid = (new GridFactory())->create();
+        $grid->setRememberState(FALSE); // It's mostly WTF
+
+        return $grid;
     }
 
 }
