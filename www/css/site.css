@@ -315,3 +315,7 @@ footer {
 .button-bar {
     padding-bottom: 20px;
 }
+
+.button-bar .btn {
+    margin-top: 20px;
+}

@@ -1,8 +1,11 @@
 {extends $original_template}
 
 {define col-driver}
+    {$item->passenger->name}
     {var $contractId = $item->passenger->contractId}
-    <a n:tag-if="$contractId !== NULL" href="{plink Contract:detail $contractId}">{$item->passenger->name}</a>
+    {if $contractId !== NULL}
+        (<a n:tag-if="$contractId !== NULL" href="{plink Contract:detail $contractId}">smlouva</a>)
+    {/if}
 {/define}
 
 {define col-types}

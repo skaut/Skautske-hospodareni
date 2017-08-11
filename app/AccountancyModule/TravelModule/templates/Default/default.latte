@@ -1,16 +1,15 @@
 {block #title}Cestovní příkazy jednotky {$unit->DisplayName}{/block}
 {block #content}
-    <h2>Cestovní příkazy <span class="hidden-xs hidden-sm">jednotky {$unit->DisplayName}</span></h2>
+
 {include ../menu.latte}
+ <div class="row button-bar">
+     <a n:href="Command:" class="btn btn-primary pull-right">
+         <span class="glyphicon glyphicon-plus-sign"></span>
+         Založit cestovní příkaz
+     </a>
+     <h2>Cestovní příkazy <span class="hidden-xs hidden-sm label label-default">{$unit->DisplayName}</span></h2>
+ </div>
 
-
-<div class="button-bar">
-    <a n:href="Command:" class="btn btn-primary pull-right">
-        <span class="glyphicon glyphicon-plus-sign"></span>
-        Založit cestovní příkaz
-    </a>
-    <div class="clearfix"></div>
-</div>
-{snippet}
+<div class="row">
     {control grid}
-{/snippet}
+</div>
