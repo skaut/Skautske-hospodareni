@@ -24,7 +24,8 @@ class CommandFactory
             $command->calculateTotal(),
             $command->getFirstTravelDate(),
             $command->getPricePerKm(),
-            $command->getFuelPricePerKm()
+            $command->getFuelPricePerKm(),
+            $command->getClosedAt() !== NULL ? Command::STATE_CLOSED : Command::STATE_IN_PROGRESS
         );
     }
 

@@ -5,6 +5,8 @@ namespace App\AccountancyModule\TravelModule\Components;
 
 
 use App\AccountancyModule\Factories\GridFactory;
+use Doctrine\Common\Collections\ArrayCollection;
+use Model\DTO\Travel\Command;
 use Model\TravelService;
 use Nette\Application\UI\Control;
 use Ublaboo\DataGrid\DataGrid;
@@ -31,8 +33,9 @@ class CommandGrid extends Control
     }
 
 
-    public function render()
+    public function render(): void
     {
+        $this->redrawControl('main');
         $this->template->setFile(__DIR__.'/templates/CommandGrid.latte');
         $this->template->render();
     }
@@ -51,14 +54,22 @@ class CommandGrid extends Control
         $grid->addColumnDateTime('firstTravelDate', 'První jízda')->setSortable();
         $grid->addColumnText('total', 'Cena')->setSortable();
         $grid->addColumnText('note', 'Poznámka');
-        $grid->addColumnText('state', 'Stav')->setSortable();
+        $grid->addColumnText('state', 'Stav')
+            ->setSortable()
+            ->setFilterSelect([
+                Command::STATE_IN_PROGRESS => 'Rozpracovaný',
+                Command::STATE_CLOSED => 'Uzavřený',
+             ])->setPrompt('-');
+
         $grid->addColumnText('action', '');
 
         $grid->setPagination(FALSE);
 
+        $grid->setDefaultFilter(['state' => Command::STATE_IN_PROGRESS], FALSE);
+
         $commands = $this->travel->getAllCommands($this->unitId);
 
-        $grid->setDataSource($commands);
+        $grid->setDataSource(new ArrayCollection($commands));
 
         $commandIds = array_column($commands, 'id');
         $vehicleIds = array_column($commands, 'vehicleId');
