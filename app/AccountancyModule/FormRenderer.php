@@ -98,14 +98,14 @@ class FormRenderer extends DefaultFormRenderer
     }
 
 
-    public function renderLabel(Nette\Forms\IControl $control) : string
+    public function renderLabel(Nette\Forms\IControl $control) : Html
     {
         $this->controlsInit();
         return parent::renderLabel($control);
     }
 
 
-    public function renderControl(Nette\Forms\IControl $control) : string
+    public function renderControl(Nette\Forms\IControl $control) : Html
     {
         $this->controlsInit();
         return parent::renderControl($control);

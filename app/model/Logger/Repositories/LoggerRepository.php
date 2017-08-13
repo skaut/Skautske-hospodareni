@@ -44,7 +44,8 @@ class LoggerRepository implements ILoggerRepository
      */
     public function save(Log $log): void
     {
-        $this->em->persist($log)->flush();
+        $this->em->persist($log);
+        $this->em->flush();
     }
 
 

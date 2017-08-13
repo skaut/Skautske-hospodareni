@@ -21,9 +21,9 @@ class ChitListener
         $this->loggerService->log(
             $chit->getUnitId(),
             $chit->getUserId(),
-            "Uživatel '" . $chit->getUserUserName() . "' upravil paragon (ID=" . $chit->getChitId() . ").",
+            "Uživatel '" . $chit->getUserName() . "' upravil paragon (ID=" . $chit->getChitId() . ").",
             Type::get(Type::OBJECT),
-            $chit->getLocalId()
+            $chit->getEventId()
         );
     }
 
@@ -32,9 +32,9 @@ class ChitListener
         $this->loggerService->log(
             $chit->getUnitId(),
             $chit->getUserId(),
-            "Uživatel '" . $chit->getUserUserName() . "' odebral paragon (ID=" . $chit->getChitId() . ", účel=" . $chit->getChitPurpose() . ").",
+            "Uživatel '" . $chit->getUserName() . "' odebral paragon (ID=" . $chit->getChitId() . ", účel=" . $chit->getChitPurpose() . ").",
             Type::get(Type::OBJECT),
-            $chit->getLocalId()
+            $chit->getEventId()
         );
     }
 

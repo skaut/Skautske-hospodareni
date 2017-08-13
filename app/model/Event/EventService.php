@@ -3,9 +3,13 @@
 namespace Model;
 
 use Dibi\Connection;
+use eGen\MessageBus\Bus\EventBus;
 use Model\Event\AssistantNotAdultException;
 use Model\Event\Functions;
 use Model\Event\LeaderNotAdultException;
+use Model\Event\Repositories\IEventRepository;
+use Model\Events\Events\EventWasClosed;
+use Model\Events\Events\EventWasOpened;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
@@ -25,12 +29,28 @@ class EventService extends MutableBaseService
     /** @var Connection */
     private $connection;
 
-    public function __construct(string $name, EventTable $table, Skautis $skautis, IStorage $cacheStorage, Connection $connection)
+    /** @var IEventRepository */
+    private $eventRepository;
+
+    /** @var  EventBus */
+    private $eventBus;
+
+    public function __construct(
+        string $name,
+        EventTable $table,
+        Skautis $skautis,
+        IStorage $cacheStorage,
+        Connection $connection,
+        IEventRepository $eventRepository,
+        EventBus $eventBus
+    )
     {
         parent::__construct($name, $skautis, $cacheStorage);
         /** @var EventTable */
         $this->table = $table;
         $this->connection = $connection;
+        $this->eventRepository = $eventRepository;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -318,7 +338,7 @@ class EventService extends MutableBaseService
      * @param string $msg
      * @return bool
      */
-    public function cancel($ID, $chitService, $msg = NULL) : bool
+    public function cancel($ID, $chitService, $msg = NULL): bool
     {
         $ret = $this->skautis->event->{"Event" . $this->typeName . "UpdateCancel"}([
             "ID" => $ID,
@@ -331,27 +351,32 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * znovu otevřít
-     * @param int $ID
+     * znovu otevřít akci
      */
-    public function open($ID): void
+    public function open(int $id): void
     {
-        $this->skautis->event->{"Event" . $this->typeName . "UpdateOpen"}(
-            [
-                "ID" => $ID,
-            ], "event" . $this->typeName);
+        if($this->type != "general") {
+            throw new \RuntimeException("Camp can't be opened!");
+        }
+        $event = $this->eventRepository->find($id);
+        $this->eventRepository->open($event);
+
+        $this->eventBus->handle(new EventWasOpened($event->getId(), $event->getUnitId(), $event->getDisplayName()));
     }
 
     /**
      * uzavře
      * @param int $ID - ID akce
      */
-    public function close($ID): void
+    public function close($id): void
     {
-        $this->skautis->event->{"Event" . $this->typeName . "UpdateClose"}(
-            [
-                "ID" => $ID,
-            ], "event" . $this->typeName);
+        if($this->type != "general") {
+            throw new \RuntimeException("Camp can't be closed!");
+        }
+        $event = $this->eventRepository->find($id);
+        $this->eventRepository->close($event);
+
+        $this->eventBus->handle(new EventWasClosed($event->getId(), $event->getUnitId(), $event->getDisplayName()));
     }
 
     /**

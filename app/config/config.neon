@@ -133,6 +133,7 @@ services:
     - Model\Logger\Repositories\LoggerRepository
     # Skautis
     - Model\Skautis\UnitRepository(@skautis.org)
+    - Model\Skautis\EventRepository(@skautis.event)
 
 
 
@@ -141,6 +142,9 @@ services:
     ####################################################
     skautis.org:
         factory: Model\Skautis\WebserviceFactory::createOrganizationUnit
+        tags: [lookyman.lazy]
+    skautis.event:
+        factory: Model\Skautis\WebserviceFactory::createEvent
         tags: [lookyman.lazy]
 
     # Factories

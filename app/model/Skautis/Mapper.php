@@ -14,7 +14,9 @@ class Mapper
     /** @var ObjectTable */
     private $table;
 
-    public const UNIT = 'Unit';
+    public const UNIT = 'unit';
+    public const EVENT = 'general';
+    public const CAMP = 'camp';
 
     /**
      * UnitMapper constructor.

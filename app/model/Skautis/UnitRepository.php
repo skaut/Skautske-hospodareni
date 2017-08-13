@@ -20,7 +20,6 @@ final class UnitRepository implements IUnitRepository
         $this->webService = $webService;
     }
 
-
     public function findByParent(int $parentId): array
     {
         $units = $this->webService->call('UnitAll', [
@@ -29,13 +28,12 @@ final class UnitRepository implements IUnitRepository
             ],
         ]);
 
-        if(is_object($units)) { // API returns empty object when there are no results
+        if (is_object($units)) { // API returns empty object when there are no results
             return [];
         }
 
         return array_map([$this, 'createUnit'], $units);
     }
-
 
     public function find(int $id, bool $returnDTO = FALSE)
     {
@@ -53,7 +51,6 @@ final class UnitRepository implements IUnitRepository
             ? $this->createUnit($unit)
             : $unit;
     }
-
 
     private function createUnit(\stdClass $unit): Unit
     {

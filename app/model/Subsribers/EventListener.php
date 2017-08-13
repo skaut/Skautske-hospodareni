@@ -6,35 +6,45 @@ use Model\Events\Events\EventWasClosed;
 use Model\Events\Events\EventWasOpened;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
+use Model\UserService;
 
 class EventListener
 {
+    /** @var LoggerService */
     private $loggerService;
 
-    public function __construct(LoggerService $logger)
+    /** @var UserService */
+    private $userService;
+
+    public function __construct(LoggerService $logger, UserService $userService)
     {
         $this->loggerService = $logger;
-    }
-
-    public function handleClosed(EventWasClosed $event): void
-    {
-        $this->loggerService->log(
-            $event->getUnitId(),
-            $event->getUserId(),
-            "Uživatel '" . $event->getUserName() . "' uzavřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ").",
-            Type::get(Type::OBJECT),
-            $event->getLocalId()
-        );
+        $this->userService = $userService;
     }
 
     public function handleOpened(EventWasOpened $event): void
     {
+        $user = $this->userService->getUserDetail();
         $this->loggerService->log(
             $event->getUnitId(),
-            $event->getUserId(),
-            "Uživatel '" . $event->getUserName() . "' otevřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ").",
+            $user->ID,
+            "Uživatel '" . $user->Person . "' otevřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ").",
             Type::get(Type::OBJECT),
-            $event->getLocalId()
+            $event->getEventId()
+        );
+    }
+
+
+    public function handleClosed(EventWasClosed $event): void
+    {
+        $user = $this->userService->getUserDetail();
+
+        $this->loggerService->log(
+            $event->getUnitId(),
+            $user->ID,
+            "Uživatel '" . $user->Person . "' uzavřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ").",
+            Type::get(Type::OBJECT),
+            $event->getEventId()
         );
     }
 
