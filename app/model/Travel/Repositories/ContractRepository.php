@@ -28,6 +28,11 @@ final class ContractRepository implements IContractRepository
         return $contract;
     }
 
+    public function findByUnit(int $unitId): array
+    {
+        return $this->em->getRepository(Contract::class)->findBy(['unitId' => $unitId]);
+    }
+
     public function remove(Contract $contract): void
     {
         $this->em->remove($contract);

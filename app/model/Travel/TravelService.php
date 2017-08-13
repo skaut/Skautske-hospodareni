@@ -237,31 +237,48 @@ class TravelService extends BaseService
         return $res;
     }
 
-    public function getAllContracts($unitId)
+    /**
+     * @param int $unitId
+     * @return DTO\Contract[]
+     */
+    public function getAllContracts($unitId): array
     {
-        return $this->tableContract->getAll($unitId);
+        return array_map(
+            [DTO\ContractFactory::class, 'create'],
+            $this->contracts->findByUnit($unitId)
+        );
     }
 
-    public function getAllContractsPairs($unitId)
+    /**
+     * @return string[]
+     */
+    public function getAllContractsPairs(int $unitId): array
     {
-        $data = $this->getAllContracts($unitId);
-        $res = ["valid" => [], "past" => []];
+        $contracts = $this->contracts->findByUnit($unitId);
 
-        foreach ($data as $i) {
-            if (is_null($i->end)) {
-                $res["valid"][$i->id] = $i->driver_name;
-            } else {
-                if ($i->end->format("U") > time()) {
-                    $res["valid"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
-                } else {
-                    if ($i->end->format("Y") < date("Y") - 1) {#skoncila uz predloni
-                        continue;
-                    }
-                    $res["past"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
-                }
+        $result = ["valid" => [], "past" => []];
+
+        $now = new \DateTimeImmutable();
+
+        foreach($contracts as $contract) {
+            $name = $contract->getDriverName();
+
+            if($contract->getUnitRepresentative() !== '') {
+                $name = $contract->getUnitRepresentative() . ' <=> ' . $name;
+            }
+
+            if($contract->getSince() !== NULL) {
+                $name .= ' (platná do' . $contract->getSince()->format('j.n.Y') . ')';
+            }
+
+            if($contract->getSince() === NULL || $contract->getSince() > $now) {
+                $result['valid'][$contract->getId()] = $name;
+            } elseif($now->diff($contract->getSince())->y === 0) {
+                $result['pas'][$contract->getId()] = $name;
             }
         }
-        return $res;
+
+        return $result;
     }
 
     public function addContract($values)

@@ -14,11 +14,6 @@ class ContractTable extends BaseTable
         return $this->connection->fetch("SELECT * FROM [" . self::TABLE_TC_CONTRACTS . "] WHERE id=%i AND deleted=0", $id, " LIMIT 1");
     }
 
-    public function getAll($unitId)
-    {
-        return $this->connection->fetchAll("SELECT * FROM [" . self::TABLE_TC_CONTRACTS . "] WHERE unit_id=%i AND deleted=0", $unitId, " ORDER BY start DESC");
-    }
-
     public function add($values)
     {
         return $this->connection->query("INSERT INTO [" . self::TABLE_TC_CONTRACTS . "] ", $values);

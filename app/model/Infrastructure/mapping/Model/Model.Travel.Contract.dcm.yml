@@ -9,6 +9,19 @@ Model\Travel\Contract:
             generator: { strategy: AUTO }
 
     fields:
+        unitId:
+            type: integer
+        unitRepresentative:
+            type: string
+            column: unit_person
+        since:
+            type: datetime_immutable
+            column: start
+            nullable: true
+        until:
+            type: datetime_immutable
+            column: end
+            nullable: true
         driverName:
             type: string
         driverContact:

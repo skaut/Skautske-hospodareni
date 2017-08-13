@@ -111,7 +111,6 @@ class FormRenderer extends DefaultFormRenderer
         return parent::renderControl($control);
     }
 
-
     private function controlsInit(): void
     {
         if ($this->controlsInit) {

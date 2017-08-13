@@ -84,16 +84,16 @@ class ContractPresenter extends BasePresenter
         $form = new BaseForm();
         $form->addText("driver_name", "Jméno a příjmení řidiče*")
             ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit jméno řidiče.");
+            ->setRequired("Musíte vyplnit jméno řidiče.");
         $form->addText("driver_address", "Bydliště řidiče*")
             ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit bydliště řidiče.");
+            ->setRequired("Musíte vyplnit bydliště řidiče.");
         $form->addDatePicker("driver_birthday", "Datum narození řidiče*")
             ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit datum narození řidiče.");
+            ->setRequired("Musíte vyplnit datum narození řidiče.");
         $form->addText("driver_contact", "Telefon na řidiče (9cifer)*")
             ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit telefon na řidiče.")
+            ->setRequired("Musíte vyplnit telefon na řidiče.")
             ->addRule(Form::NUMERIC, "Telefon musí být číslo.");
 
         $form->addText("unit_person", "Zástupce jednotky")
@@ -113,6 +113,8 @@ class ContractPresenter extends BasePresenter
 
     private function formCreateContractSubmitted(Form $form) : void
     {
+
+
         $v = $form->getValues();
         $v['end'] = isset($v['end']) ? $v['end'] : NULL;
         $v->unit_id = $this->unit->ID;
