@@ -67,7 +67,7 @@ class ContractPresenter extends BasePresenter
         $this->pdf->render($template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
     }
 
-    public function handleDelete($contractId) : void
+    public function handleDelete(int $contractId) : void
     {
         $commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contractId);
         if (!empty($commands)) {

@@ -9,6 +9,7 @@ use Model\DTO\Travel as DTO;
 use Model\DTO\Travel\Command\Travel as TravelDTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
+use Model\Travel\ContractNotFoundException;
 use Model\Travel\Passenger;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
@@ -271,9 +272,13 @@ class TravelService extends BaseService
         return $this->tableContract->add($values);
     }
 
-    public function deleteContract($contractId)
+    public function deleteContract(int $contractId): void
     {
-        return $this->tableContract->delete($contractId);
+        try {
+            $contract = $this->contracts->find($contractId);
+            $this->contracts->remove($contract);
+        } catch (ContractNotFoundException $e) {
+        }
     }
 
     /*     COMMANDS    */

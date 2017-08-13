@@ -15,4 +15,6 @@ interface IContractRepository
      */
     public function find(int $id): Contract;
 
+    public function remove(Contract $contract): void;
+
 }

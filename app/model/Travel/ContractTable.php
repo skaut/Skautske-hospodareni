@@ -24,9 +24,4 @@ class ContractTable extends BaseTable
         return $this->connection->query("INSERT INTO [" . self::TABLE_TC_CONTRACTS . "] ", $values);
     }
 
-    public function delete($contractId)
-    {
-        return $this->connection->query("UPDATE [" . self::TABLE_TC_CONTRACTS . "] SET deleted=1 WHERE id = %i AND deleted=0 LIMIT 1", $contractId);
-    }
-
 }

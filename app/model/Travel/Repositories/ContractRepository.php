@@ -28,4 +28,11 @@ final class ContractRepository implements IContractRepository
         return $contract;
     }
 
+    public function remove(Contract $contract): void
+    {
+        $this->em->remove($contract);
+        $this->em->flush();
+    }
+
+
 }
