@@ -12,6 +12,10 @@ interface IUnitRepository
      */
     public function findByParent(int $parentId): array;
 
-    public function find(int $id);
+
+    /**
+     * @return \stdClass|Unit
+     */
+    public function find(int $id, bool $returnDTO = FALSE);
 
 }

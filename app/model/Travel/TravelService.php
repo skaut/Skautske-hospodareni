@@ -16,6 +16,7 @@ use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\TravelNotFoundException;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
+use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 
@@ -44,13 +45,17 @@ class TravelService extends BaseService
     /** @var IContractRepository */
     private $contracts;
 
+    /** @var IUnitRepository */
+    private $units;
+
     public function __construct(
         CommandTable $table,
         TravelTable $tableTravel,
         ContractTable $tableContract,
         IVehicleRepository $vehicles,
         ICommandRepository $commands,
-        IContractRepository $contracts
+        IContractRepository $contracts,
+        IUnitRepository $units
     )
     {
         parent::__construct();
@@ -60,6 +65,7 @@ class TravelService extends BaseService
         $this->vehicles = $vehicles;
         $this->commands = $commands;
         $this->contracts = $contracts;
+        $this->units = $units;
     }
 
     public function isContractAccessible($contractId, $unit)
@@ -106,9 +112,13 @@ class TravelService extends BaseService
     }
 
 
-    public function createVehicle(string $type, int $unitId, int $subunitId, string $registration, float $consumption): void
+    public function createVehicle(string $type, int $unitId, ?int $subunitId, string $registration, float $consumption): void
     {
-        $vehicle = new Vehicle($type, $unitId, $subunitId, $registration, $consumption);
+        $subunit = $subunitId !== NULL
+            ? $this->units->find($subunitId, TRUE)
+            : NULL;
+
+        $vehicle = new Vehicle($type, $unitId, $subunit, $registration, $consumption);
         $this->vehicles->save($vehicle);
     }
 

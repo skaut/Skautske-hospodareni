@@ -2,6 +2,7 @@
 
 namespace Model\Travel;
 
+use Model\Unit\Unit;
 use Nette;
 
 class Vehicle extends Nette\Object
@@ -38,11 +39,11 @@ class Vehicle extends Nette\Object
      * @param string $registration
      * @param float $consumption
      */
-    public function __construct($type, $unitId, ?int $subunitId, $registration, $consumption)
+    public function __construct($type, $unitId, ?Unit $subunit, $registration, $consumption)
     {
         $this->type = $type;
         $this->unitId = $unitId;
-        $this->subunitId = $subunitId;
+        $this->subunitId = $subunit !== NULL ? $subunit->getId() : NULL;
         $this->registration = $registration;
         $this->consumption = $consumption;
     }

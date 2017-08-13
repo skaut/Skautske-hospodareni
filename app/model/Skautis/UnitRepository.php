@@ -4,9 +4,11 @@ namespace Model\Skautis;
 
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
+use Model\Unit\UnitNotFoundException;
+use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 
-class UnitRepository implements IUnitRepository
+final class UnitRepository implements IUnitRepository
 {
 
     /** @var WebServiceInterface */
@@ -31,20 +33,31 @@ class UnitRepository implements IUnitRepository
             return [];
         }
 
-        return array_map(function(\stdClass $unit) {
-            return new Unit($unit->ID, $unit->SortName, $unit->DisplayName);
-        }, $units);
+        return array_map([$this, 'createUnit'], $units);
     }
 
 
-    public function find(int $id)
+    public function find(int $id, bool $returnDTO = FALSE)
     {
-        return $this->webService->call('UnitDetail', [
-            [
-                'ID' => $id,
-            ],
-        ]);
+        try {
+            $unit = $this->webService->call('UnitDetail', [
+                [
+                    'ID' => $id,
+                ],
+            ]);
+        } catch (PermissionException $e) { // Unit doesn't exist or user has no access to it
+            throw new UnitNotFoundException('', 0, $e);
+        }
+
+        return $returnDTO
+            ? $this->createUnit($unit)
+            : $unit;
     }
 
+
+    private function createUnit(\stdClass $unit): Unit
+    {
+        return new Unit($unit->ID, $unit->SortName, $unit->DisplayName);
+    }
 
 }
