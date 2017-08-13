@@ -10,7 +10,7 @@
                 onclick='return confirm("Opravdu chcete smazat smlouvu?");'>
             <i class="glyphicon glyphicon-remove"></i> Smazat
         </a>
-        {var $justDriver = $contract->unit_person == '' || is_null($contract->start) || is_null($contract->end)}
+        {var $justDriver = $contract->unitRepresentative === '' || $contract->since === NULL || $contract->until === NULL}
         <a n:href="print $contract->id" n:class="$justDriver ? disabled, btn, btn-info"><i
                     class="glyphicon glyphicon-print"></i> Vytisknout</a>
     </div>
@@ -28,19 +28,19 @@
         <table class="table table-bordered table-striped">
             <tr>
                 <th>Vykonavatel/Řidič</th>
-                <td>{$contract->driver_name}</td>
+                <td>{$contract->driverName}</td>
             </tr>
-            <tr n:if="$contract->unit_person != ''">
+            <tr n:if="$contract->unitRepresentative !== ''">
                 <th>Zástupce jednotky</th>
-                <td>{$contract->unit_person}</td>
+                <td>{$contract->unitRepresentative}</td>
             </tr>
-            <tr n:if="!is_null($contract->start)">
+            <tr n:if="$contract->since !== NULL">
                 <th>Začátek platnosti</th>
-                <td>{$contract->start|date:"j. n. Y"}</td>
+                <td>{$contract->since|date:"j. n. Y"}</td>
             </tr>
-            <tr n:if="!is_null($contract->end)">
+            <tr n:if="$contract->until !== NULL">
                 <th>Konec platnosti</th>
-                <td>{$contract->end|date:"j. n. Y"}</td>
+                <td>{$contract->until|date:"j. n. Y"}</td>
             </tr>
         </table>
     </div>

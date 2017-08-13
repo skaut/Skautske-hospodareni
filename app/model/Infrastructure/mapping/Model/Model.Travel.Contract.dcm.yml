@@ -28,3 +28,8 @@ Model\Travel\Contract:
             type: string
         driverAddress:
             type: string
+        driverBirthday:
+            type: datetime_immutable
+        templateVersion:
+            type: integer
+            column: template

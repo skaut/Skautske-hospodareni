@@ -18,7 +18,7 @@
         <a n:href="openCommand! $command->id"  class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
         {/if}
         {if $command->passenger->contractId !== NULL}
-            <a n:href="Contract:detail $contract->id" class="btn btn-sm btn-primary hidden-xs"><i class="glyphicon glyphicon-zoom-in"></i> Smlouva</a>
+            <a n:href="Contract:detail $command->passenger->contractId" class="btn btn-sm btn-primary hidden-xs"><i class="glyphicon glyphicon-zoom-in"></i> Smlouva</a>
         {/if}
         <a n:href="print $command->id" class="btn btn-sm btn-info hidden-xs"><i class="glyphicon glyphicon-print"></i> Vytisknout cestovní příkaz</a>
     </div>
@@ -47,8 +47,8 @@
     </div>
     <div n:if="$command->passenger->contractId !== NULL" class="col-sm-4 hidden-xs">
         <h3>Cestující</h3>
-        <b>Jméno:</b> {$contract->driver_name}<br />
-        <b>Bydliště:</b> {$contract->driver_address}
+        <b>Jméno:</b> {$command->passenger->name}<br />
+        <b>Bydliště:</b> {$command->passenger->address}
     </div>
 </div>
 <div class="row">
@@ -86,7 +86,7 @@
                         <a n:href="editTravel $command->id, $t->id" class="fancybox fancybox.ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
                         <a n:href="removeTravel! $command->id, $t->id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="glyphicon glyphicon-remove"></i></a>
                     </td>
-                    <td>{$allTypes[$t->details->transportType]}</td>
+                    <td>{$types[$t->details->transportType]}</td>
                     <td>{$t->details->date|date:"j. n. Y"}</td>
                     <td>{$t->details->startPlace}</td>
                     <td>{$t->details->endPlace}</td>

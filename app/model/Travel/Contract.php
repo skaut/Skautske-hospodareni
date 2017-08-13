@@ -29,6 +29,13 @@ class Contract
     /** @var string */
     private $driverAddress;
 
+    /** @var \DateTimeImmutable */
+    private $driverBirthday;
+
+    /** @var int */
+    private $templateVersion;
+
+
     public function getId(): int
     {
         return $this->id;
@@ -67,6 +74,16 @@ class Contract
     public function getDriverAddress(): string
     {
         return $this->driverAddress;
+    }
+
+    public function getDriverBirthday(): \DateTimeImmutable
+    {
+        return $this->driverBirthday;
+    }
+
+    public function getTemplateVersion(): int
+    {
+        return $this->templateVersion;
     }
 
 }

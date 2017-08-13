@@ -26,33 +26,30 @@ class ContractPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    protected function isContractAccessible($contractId) : bool
-    {
-        return $this->travelService->isContractAccessible($contractId, $this->unit);
-    }
-
     public function renderDefault() : void
     {
         $this->template->list = $this->travelService->getAllContracts($this->unit->ID);
     }
 
-    public function renderDetail($id) : void
+    public function actionDetail(int $id): void
     {
-        if (!$this->isContractAccessible($id)) {
+        $contract = $this->travelService->getContract($id);
+
+        if ($contract === NULL || $contract->getUnitId() !== $this->getUnitId()) {
             $this->flashMessage("Nemáte oprávnění k cestovnímu příkazu.", "danger");
             $this->redirect("default");
         }
-        $this->template->contract = $contract = $this->travelService->getContract($id);
-        $this->template->commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contract->id);
+        $this->template->contract = $contract;
+        $this->template->commands = $this->travelService->getAllCommandsByContract($this->getUnitId(), $contract->getUnitId());
     }
 
     public function actionPrint($contractId) : void
     {
         $template = $this->template;
         $template->contract = $contract = $this->travelService->getContract($contractId);
-        $template->unit = $this->unitService->getDetail($contract->unit_id);
+        $template->unit = $this->unitService->getDetail($contract->getUnitId());
 
-        switch ($contract->template) {
+        switch ($contract->getTemplateVersion()) {
             case 1:
                 $templateName = 'ex.contract.old.latte';
                 break;
@@ -60,8 +57,9 @@ class ContractPresenter extends BasePresenter
                 $templateName = 'ex.contract.noz.latte';
                 break;
             default:
-                throw new \Exception("Neznámá šablona pro " . $contract->template);
+                throw new \Exception("Neznámá šablona pro " . $contract->getTemplateVersion());
         }
+
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
 
         $this->pdf->render($template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');

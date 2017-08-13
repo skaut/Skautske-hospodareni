@@ -69,14 +69,6 @@ class TravelService extends BaseService
         $this->units = $units;
     }
 
-    public function isContractAccessible($contractId, $unit)
-    {
-        if (($contract = $this->getContract($contractId))) {
-            return $contract->unit_id == $unit->ID ? TRUE : FALSE;
-        }
-        return FALSE;
-    }
-
     /**     VEHICLES    */
 
     /**
@@ -227,14 +219,15 @@ class TravelService extends BaseService
     }
 
     /**     CONTRACTS    */
-    public function getContract($contractId)
+    public function getContract(int $contractId): ?DTO\Contract
     {
-        $cacheId = __FUNCTION__ . "_" . $contractId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->tableContract->get($contractId);
-            $this->saveSes($cacheId, $res);
+        try {
+            return DTO\ContractFactory::create(
+                $this->contracts->find($contractId)
+            );
+        } catch (ContractNotFoundException $e) {
+            return NULL;
         }
-        return $res;
     }
 
     /**

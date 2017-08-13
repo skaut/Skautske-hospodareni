@@ -16,9 +16,14 @@ final class ContractFactory
         return new Contract(
             $contract->getId(),
             $contract->getDriverName(),
+            $contract->getDriverContact(),
+            $contract->getDriverAddress(),
+            $contract->getDriverBirthday(),
+            $contract->getUnitId(),
             $contract->getUnitRepresentative(),
             $contract->getSince(),
-            $contract->getUntil()
+            $contract->getUntil(),
+            $contract->getTemplateVersion()
         );
     }
 
