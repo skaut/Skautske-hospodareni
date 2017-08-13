@@ -8,7 +8,7 @@ use Nette;
 class Vehicle extends Nette\Object
 {
 
-    /** @var int|NULL */
+    /** @var int */
     private $id;
 
     /** @var string */
@@ -32,14 +32,8 @@ class Vehicle extends Nette\Object
     /** @var bool */
     private $archived = FALSE;
 
-    /**
-     * Vehicle constructor.
-     * @param string $type
-     * @param int $unitId
-     * @param string $registration
-     * @param float $consumption
-     */
-    public function __construct($type, $unitId, ?Unit $subunit, $registration, $consumption)
+
+    public function __construct(string $type, int $unitId, ?Unit $subunit, string $registration, float $consumption)
     {
         $this->type = $type;
         $this->unitId = $unitId;
@@ -53,63 +47,50 @@ class Vehicle extends Nette\Object
         $this->archived = TRUE;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return int|NULL
-     */
-    public function getId()
+
+    public function getId(): int
     {
         return $this->id;
     }
+
 
     public function getSubunitId(): ?int
     {
         return $this->subunitId;
     }
 
-    /**
-     * @return int
-     */
-    public function getUnitId()
+
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    /**
-     * @return string
-     */
-    public function getRegistration()
+
+    public function getRegistration(): string
     {
         return $this->registration;
     }
 
-    /**
-     * @return float
-     */
-    public function getConsumption()
+
+    public function getConsumption(): float
     {
         return $this->consumption;
     }
 
-    /**
-     * @return NULL|string
-     */
-    public function getNote()
+
+    public function getNote(): ?string
     {
         return $this->note;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isArchived()
+
+    public function isArchived(): bool
     {
         return $this->archived;
     }
