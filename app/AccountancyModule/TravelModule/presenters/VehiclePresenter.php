@@ -2,11 +2,16 @@
 
 namespace App\AccountancyModule\TravelModule;
 
+use App\AccountancyModule\TravelModule\Components\VehicleGrid;
+use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 use App\Forms\BaseForm;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
+use Model\TravelService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\ArrayHash;
+
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -14,19 +19,19 @@ use Nette\Application\UI\Form;
 class VehiclePresenter extends BasePresenter
 {
 
-    /** @var \Model\TravelService */
-    protected $travelService;
+    /** @var TravelService */
+    private $travelService;
 
-    public function __construct(\Model\TravelService $ts)
+    /** @var IVehicleGridFactory */
+    private $gridFactory;
+
+    public function __construct(TravelService $travelService, IVehicleGridFactory $gridFactory)
     {
         parent::__construct();
-        $this->travelService = $ts;
+        $this->travelService = $travelService;
+        $this->gridFactory = $gridFactory;
     }
 
-    public function renderDefault() : void
-    {
-        $this->template->list = $this->travelService->getAllVehicles($this->unit->ID);
-    }
 
     /**
      * @param string $id
@@ -51,13 +56,19 @@ class VehiclePresenter extends BasePresenter
 
     public function actionDetail(int $id) : void
     {
-        $this->template->vehicle = $this->getVehicle($id);
+        $vehicle = $this->getVehicle($id);
+        $this->template->vehicle = $vehicle;
+
+        if($vehicle->getSubunitId() !== NULL) {
+            $this->template->subunitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
+        }
+
         $this->template->canDelete = $this->travelService->getCommandsCount($id) === 0;
     }
 
-    public function renderDetail($id) : void
+    public function renderDetail(int $id) : void
     {
-        $this->template->commands = $this->travelService->getAllCommandsByVehicle($this->unit->ID, $id);
+        $this->template->commands = $this->travelService->getAllCommandsByVehicle($id);
     }
 
     public function handleRemove($vehicleId) : void
@@ -84,6 +95,13 @@ class VehiclePresenter extends BasePresenter
         $this->redirect('this');
     }
 
+
+    protected function createComponentGrid(): VehicleGrid
+    {
+        return $this->gridFactory->create($this->getUnitId());
+    }
+
+
     protected function createComponentFormCreateVehicle() : Form
     {
         $form = new BaseForm();
@@ -93,26 +111,51 @@ class VehiclePresenter extends BasePresenter
         $form->addText("registration", "SPZ*")
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Musíte vyplnit SPZ.");
-        $form->addText("consumption", "Průměrná spotřeba*")
+        $form->addText("consumption", "Harmonizovaná spotřeba*")
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Musíte vyplnit průměrnou spotřebu.")
             ->addRule(Form::FLOAT, "Průměrná spotřeba musí být číslo!");
+        $form->addSelect('subunitId', 'Oddíl', $this->getSubunitPairs())
+            ->setAttribute('class', 'form-control')
+            ->setPrompt('Žádný')
+            ->setRequired(FALSE);
         $form->addSubmit("send", "Založit");
 
-        $form->onSuccess[] = function(Form $form) : void {
-            $this->formCreateVehicleSubmitted($form);
+        $form->onSuccess[] = function(Form $form, ArrayHash $values) : void {
+            $this->formCreateVehicleSubmitted($values);
         };
 
         return $form;
     }
 
-    private function formCreateVehicleSubmitted(Form $form) : void
+
+    /**
+     * @return string[]
+     */
+    private function getSubunitPairs(): array
     {
-        $v = $form->getValues();
-        $v['unit_id'] = $this->unit->ID;
-        $v['consumption'] = str_replace(",", ".", $v['consumption']);
-        $this->travelService->addVehicle($v);
-        $this->flashMessage("Záznam o vozidle byl založen.");
+        $subUnits = $this->unitService->getChild($this->getUnitId());
+
+        $pairs = [];
+        foreach($subUnits as $subUnit) {
+            $pairs[$subUnit->getId()] = $subUnit->getSortName();
+        }
+
+        return $pairs;
+    }
+
+
+    private function formCreateVehicleSubmitted(ArrayHash $values): void
+    {
+        $this->travelService->createVehicle(
+            $values->type,
+            $this->getUnitId(),
+            $values->subunitId,
+            $values->registration,
+            $values->consumption
+        );
+
+        $this->flashMessage("Vozidlo bylo vytvořeno");
         $this->redirect("this");
     }
 

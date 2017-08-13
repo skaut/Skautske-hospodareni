@@ -1,33 +1,104 @@
 {block #title}Vozidla jednotky {$unit->DisplayName}{/block}
 
 {block #content}
-<h2>Vozidla<span class="hidden-xs hidden-sm"> jednotky {$unit->DisplayName}</span></h2>
 {include ../menu.latte}
+<div class="row button-bar">
+    <button type="button" data-toggle="collapse" data-target="#createVehicle" class="btn btn-primary pull-right"><i
+                class="glyphicon glyphicon-plus-sign"></i> Založit nové vozidlo
+    </button>
+    <h2>Vozidla <span class="hidden-xs hidden-sm label label-default">{$unit->DisplayName}</span></h2>
+</div>
 
 <div class="row">
     <div class="well well-sm">
-        <button type="button" data-toggle="collapse" data-target="#createVehicle" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit nové vozidlo</button>
         <div class="collapse" id="createVehicle">
-            <br />
-            {control formCreateVehicle}
+            <form n:name="formCreateVehicle" class="form-horizontal">
+                <div class="form-group required">
+                    <div class="col-sm-3 control-label">{label type}</div>
+                    <div class="col-sm-9">
+                        {input type}
+                    </div>
+                </div>
+                <div class="form-group required">
+                    <div class="col-sm-3 control-label">{label registration}</div>
+                    <div class="col-sm-9">
+                        {input registration}
+                    </div>
+                </div>
+                <div class="form-group required">
+                    <div class="col-sm-3 control-label">{label consumption}</div>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            {input consumption}
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="button" data-toggle="modal" data-target="#consumptionModal"><i class="fa fa-question-circle"></i></button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group required">
+                    <div class="col-sm-3 control-label">{label subunitId}</div>
+                    <div class="col-sm-9">
+                        {input subunitId}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3 control-label"></div>
+                    <div class="col-sm-9">{input send class => [btn, btn-primary]}</div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 <div class="row">
-    <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
-        <tr>
-            <th>&nbsp;</th>
-            <th>Typ</th>
-            <th>SPZ</th>
-            <th>&#0216; spotřeba (l/100 km)</th>
-        </tr>
-        <tr n:foreach="$list as $i">
-            <td>
-                <a n:href="detail $i->id" class="btn btn-primary"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
-            </td>
-            <td><a n:href="Vehicle:detail $i->id">{$i->type}</a></td>
-            <td>{$i->registration}</td>
-            <td>{$i->consumption}</td>
-        </tr>
-    </table>
+    {control grid}
 </div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="consumptionModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Harmonizovaná spotřeba</h4>
+            </div>
+            <div class="modal-body">
+                <p>Harmonizovaná spotřeba se určuje podle technického průkazu.</p>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Počet údajů o spotřebě v TP</th>
+                        <th>Norma ES</th>
+                        <th>Harmonizovaná spotřeba</th>
+                    </tr>
+                    <tr>
+                        <td>žádný</td>
+                        <td></td>
+                        <td>údaj z TP vozidla shodného typu</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">1 nebo 2</td>
+                        <td>normy <strong>bez uvedené</strong> kombinované spotřeby</td>
+                        <td>artimetický průměr</td>
+                    </tr>
+                    <tr>
+                        <td>normy <strong>s uvedenou</strong> kombinovanou spotřebou</td>
+                        <td>třetí údaj</td>
+                    </tr>
+                    <tr>
+                        <td>norma neuvedena</td>
+                        <td>aritmetický průměr</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td></td>
+                        <td>aritmetický průměr</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="text-right small">Zdroj: <a href="https://krizovatka.skaut.cz/dokumenty/file/305-smernice-k-proplaceni-cestovnich-nahrad">Směrnice k proplácení cestovních náhrad</a></div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

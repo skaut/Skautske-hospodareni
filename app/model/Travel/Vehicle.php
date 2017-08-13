@@ -2,12 +2,13 @@
 
 namespace Model\Travel;
 
+use Model\Unit\Unit;
 use Nette;
 
 class Vehicle extends Nette\Object
 {
 
-    /** @var int|NULL */
+    /** @var int */
     private $id;
 
     /** @var string */
@@ -15,6 +16,9 @@ class Vehicle extends Nette\Object
 
     /** @var int */
     private $unitId;
+
+    /** @var int|NULL */
+    private $subunitId;
 
     /** @var string */
     private $registration;
@@ -28,17 +32,20 @@ class Vehicle extends Nette\Object
     /** @var bool */
     private $archived = FALSE;
 
-    /**
-     * Vehicle constructor.
-     * @param string $type
-     * @param int $unitId
-     * @param string $registration
-     * @param float $consumption
-     */
-    public function __construct($type, $unitId, $registration, $consumption)
+
+    public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption)
     {
         $this->type = $type;
-        $this->unitId = $unitId;
+        $this->unitId = $unit->getId();
+
+        if($subunit !== NULL) {
+            if( ! $subunit->isSubunitOf($unit)) {
+                throw new \InvalidArgumentException("Unit #{$subunit->getId()} is not child of #{$unit->getId()}");
+            }
+
+            $this->subunitId = $subunit->getId();
+        }
+
         $this->registration = $registration;
         $this->consumption = $consumption;
     }
@@ -48,73 +55,58 @@ class Vehicle extends Nette\Object
         $this->archived = TRUE;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return int|NULL
-     */
-    public function getId()
+
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return int
-     */
-    public function getUnitId()
+
+    public function getSubunitId(): ?int
+    {
+        return $this->subunitId;
+    }
+
+
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    /**
-     * @return string
-     */
-    public function getRegistration()
+
+    public function getRegistration(): string
     {
         return $this->registration;
     }
 
-    /**
-     * @return float
-     */
-    public function getConsumption()
+
+    public function getConsumption(): float
     {
         return $this->consumption;
     }
 
-    /**
-     * @return NULL|string
-     */
-    public function getNote()
+
+    public function getNote(): ?string
     {
         return $this->note;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isArchived()
+
+    public function isArchived(): bool
     {
         return $this->archived;
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
-    {
-        $label = $this->type . ' (' . $this->registration . ')';
-        if ($this->archived) {
-            $label .= ' [archivované]';
-        }
 
-        return $label;
+    public function getLabel(): string
+    {
+        return $this->type . ' (' . $this->registration . ')';
     }
 
 }

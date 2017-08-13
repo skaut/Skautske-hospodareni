@@ -16,6 +16,7 @@ use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\TravelNotFoundException;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
+use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 
@@ -44,13 +45,17 @@ class TravelService extends BaseService
     /** @var IContractRepository */
     private $contracts;
 
+    /** @var IUnitRepository */
+    private $units;
+
     public function __construct(
         CommandTable $table,
         TravelTable $tableTravel,
         ContractTable $tableContract,
         IVehicleRepository $vehicles,
         ICommandRepository $commands,
-        IContractRepository $contracts
+        IContractRepository $contracts,
+        IUnitRepository $units
     )
     {
         parent::__construct();
@@ -60,6 +65,7 @@ class TravelService extends BaseService
         $this->vehicles = $vehicles;
         $this->commands = $commands;
         $this->contracts = $contracts;
+        $this->units = $units;
     }
 
     public function isContractAccessible($contractId, $unit)
@@ -105,12 +111,16 @@ class TravelService extends BaseService
         return $this->vehicles->getAll($unitId);
     }
 
-    /**
-     * @param array $data
-     */
-    public function addVehicle($data): void
+
+    public function createVehicle(string $type, int $unitId, ?int $subunitId, string $registration, float $consumption): void
     {
-        $vehicle = new Vehicle($data['type'], $data['unit_id'], $data['registration'], $data['consumption']);
+        $unit = $this->units->find($unitId, TRUE);
+
+        $subunit = $subunitId !== NULL
+            ? $this->units->find($subunitId, TRUE)
+            : NULL;
+
+        $vehicle = new Vehicle($type, $unit, $subunit, $registration, $consumption);
         $this->vehicles->save($vehicle);
     }
 
@@ -378,7 +388,11 @@ class TravelService extends BaseService
         );
     }
 
-    public function getAllCommands(int $unitId)
+
+    /**
+     * @return DTO\Command[]
+     */
+    public function getAllCommands(int $unitId): array
     {
         return array_map(function (Command $command) {
             return DTO\CommandFactory::create($command);
@@ -403,13 +417,13 @@ class TravelService extends BaseService
 
     /**
      * vraci všechny přikazy navazane na vozidlo
-     * @param int $unitId
-     * @param int $vehicleId
-     * @return Row[]
+     * @return DTO\Command[]
      */
-    public function getAllCommandsByVehicle($unitId, $vehicleId)
+    public function getAllCommandsByVehicle(int $vehicleId)
     {
-        return $this->table->getAllByVehicle($unitId, $vehicleId);
+        return array_map(function (Command $command) {
+            return DTO\CommandFactory::create($command);
+        }, $this->commands->findByVehicle($vehicleId));
     }
 
     /**

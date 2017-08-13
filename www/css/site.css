@@ -311,3 +311,11 @@ footer {
 .dropdown-form label {
     padding-right: 10px;
 }
+
+.button-bar {
+    padding-bottom: 20px;
+}
+
+.button-bar .btn {
+    margin-top: 20px;
+}

@@ -7,7 +7,6 @@ services:
         volumes:
             - www:/var/www
             - .:/var/www/html
-            - /var/www/html/nette-temp
         environment:
             DEVELOPMENT_MACHINE: 'true'
         networks:

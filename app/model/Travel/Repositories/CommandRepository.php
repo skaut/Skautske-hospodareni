@@ -33,6 +33,12 @@ class CommandRepository implements ICommandRepository
         return $this->em->getRepository(Command::class)->findBy(["unitId" => $unitId]);
     }
 
+    public function findByVehicle(int $vehicleId): array
+    {
+        return $this->em->getRepository(Command::class)->findBy(["vehicle" => $vehicleId]);
+    }
+
+
     public function countByVehicle(int $vehicleId): int
     {
         return $this->em->getRepository(Command::class)

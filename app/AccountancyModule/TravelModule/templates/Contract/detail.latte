@@ -1,14 +1,22 @@
 {block #title}Smlouva o proplácení cestovních náhrad{/block}
 
 {block #content}
-<h2 class="hidden-xs hidden-sm">Smlouva o proplácení cestovních náhrad</h2>
 {include ../menu.latte}
 
-<div class="row hidden-xs well well-sm">
-    <a n:if='empty($commands)' n:href="delete! $contract->id" class="btn btn-danger" onclick='return confirm("Opravdu chcete smazat smlouvu?");'><i class="glyphicon glyphicon-remove"></i> Smazat</a>
-    {var $justDriver = $contract->unit_person == '' || is_null($contract->start) || is_null($contract->end)}
-    <a n:href="print $contract->id" class="btn btn-info{if $justDriver} disabled{/if}"><i class="glyphicon glyphicon-print"></i> Vytisknout</a>
+<div class="row button-bar">
+    <div class="hidden-xs pull-right">
+        {var $canDelete}
+        <a n:if="empty($commands)" n:href="delete! $contract->id" class="disabled btn btn-danger"
+                onclick='return confirm("Opravdu chcete smazat smlouvu?");'>
+            <i class="glyphicon glyphicon-remove"></i> Smazat
+        </a>
+        {var $justDriver = $contract->unit_person == '' || is_null($contract->start) || is_null($contract->end)}
+        <a n:href="print $contract->id" n:class="$justDriver ? disabled, btn, btn-info"><i
+                    class="glyphicon glyphicon-print"></i> Vytisknout</a>
+    </div>
+    <h2 class="hidden-xs hidden-sm">Smlouva o proplácení cestovních náhrad</h2>
 </div>
+
 <div n:if="!empty($commands)" class="row hidden-sm alert alert-info">
     Smazat smlouvu lze jen pokud nemá přidružené cestovní příkazy.
 </div>

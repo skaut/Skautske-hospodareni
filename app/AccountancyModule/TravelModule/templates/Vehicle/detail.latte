@@ -1,15 +1,21 @@
 {block #title}{$vehicle->label}{/block}
 
 {block #content}
-<h2>{$vehicle->label}</h2>
 {include ../menu.latte}
-<div class="well well-sm">
-{if $vehicle->archived}
-    <div class="alert alert-warning">Toto vozidlo je archivované.</div>
-{else}
-    <a n:href="archive! $vehicle->id" class="btn btn-primary"><span class="glyphicon glyphicon-trash"></span> Archivovat</a>    
-{/if}
-    <a n:href="remove! $vehicle->id" class="btn btn-danger hidden-xs hidden-sm{if !$canDelete} disabled{/if}" {if !$canDelete} title="Nelze mazat vozidla s cestovními příkazy"{/if} onclick="return confirm('Opravdu chcete vozidlo smazat?');"><i class="glyphicon glyphicon-remove"></i></a>
+<div class="button-bar">
+    <div class="pull-right">
+        {if $vehicle->archived}
+            <div class="alert alert-warning">Toto vozidlo je archivované.</div>
+        {else}
+            <a n:href="archive! $vehicle->id" class="btn btn-primary"><span class="glyphicon glyphicon-trash"></span>
+                Archivovat</a>
+        {/if}
+        <a n:href="remove! $vehicle->id"
+                class="btn btn-danger hidden-xs hidden-sm{if !$canDelete} disabled{/if}" {if !$canDelete} title="Nelze mazat vozidla s cestovními příkazy"{/if}
+                onclick="return confirm('Opravdu chcete vozidlo smazat?');"><i
+                    class="glyphicon glyphicon-remove"></i></a>
+    </div>
+    <h2>{$vehicle->label}</h2>
 </div>
 <div class="row">
     <div class='col-sm-6'>
@@ -27,6 +33,10 @@
                 <th>Průměrná spotřeba</th>
                 <td>{$vehicle->consumption|number:2} l/100 km</td>
             </tr>
+            <tr n:ifset="$subunitName">
+                <th>Oddíl</th>
+                <td>{$subunitName}</td>
+            </tr>
         </table>
     </div>
     <div class='col-sm-6'>
@@ -41,9 +51,9 @@
             </tr>
             <tr n:foreach="$commands as $c">
                 <td><a n:href="Default:detail $c->id" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-zoom-in"></i>Detail</a></td>
-                <td>{$c->driver_name}</td>
+                <td>{$c->passenger->name}</td>
                 <td>{$c->purpose}</td>
-                <td>{$c->closed|commandState|noescape}</td>
+                <td>{$c->closedAt|commandState|noescape}</td>
             </tr>
         </table>
         {else}

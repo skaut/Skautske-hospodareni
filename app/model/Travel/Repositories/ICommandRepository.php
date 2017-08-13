@@ -23,6 +23,13 @@ interface ICommandRepository
      */
     public function findByUnit(int $unitId): array;
 
+
+    /**
+     * @return Command[]
+     */
+    public function findByVehicle(int $vehicleId): array;
+
+
     public function countByVehicle(int $vehicleId): int;
 
     public function remove(Command $command): void;

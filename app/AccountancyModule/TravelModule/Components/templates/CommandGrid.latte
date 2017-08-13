@@ -1,0 +1,33 @@
+{extends $original_template}
+
+{define col-driver}
+    {$item->passenger->name}
+    {var $contractId = $item->passenger->contractId}
+    {if $contractId !== NULL}
+        (<a n:tag-if="$contractId !== NULL" href="{plink Contract:detail $contractId}">smlouva</a>)
+    {/if}
+{/define}
+
+{define col-types}
+    {$types[$item->id]}
+{/define}
+
+{define col-vehicle}
+    {var $vehicleId = $item->vehicleId}
+    <a n:if="$vehicleId !== NULL" href="{plink Vehicle:detail $vehicleId}">
+        {var $vehicle = $vehicles[$vehicleId]}
+        {$vehicle->label} <i n:if="$vehicle->archived" class="fa fa-trash"></i>
+    </a>
+{/define}
+
+{define col-total}
+    {if ! $item->total->isZero()}{$item->total|price}{else}-{/if}
+{/define}
+
+{define col-state}
+    {$item->closedAt|commandState|noescape}
+{/define}
+
+{define col-action}
+    <a href="{plink Default:detail $item->id}" class="btn btn-sm btn-default"><i class="fa fa-search"></i></a>
+{/define}

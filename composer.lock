@@ -4468,16 +4468,16 @@
         },
         {
             "name": "ublaboo/datagrid",
-            "version": "v5.2.4",
+            "version": "v5.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ublaboo/datagrid.git",
-                "reference": "a4d5253cbad44214d55b0e8368a4676ccd794b85"
+                "reference": "1af91681bd7ca2743f4bb486dd83c69d6fd02343"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ublaboo/datagrid/zipball/a4d5253cbad44214d55b0e8368a4676ccd794b85",
-                "reference": "a4d5253cbad44214d55b0e8368a4676ccd794b85",
+                "url": "https://api.github.com/repos/ublaboo/datagrid/zipball/1af91681bd7ca2743f4bb486dd83c69d6fd02343",
+                "reference": "1af91681bd7ca2743f4bb486dd83c69d6fd02343",
                 "shasum": ""
             },
             "require": {
@@ -4515,13 +4515,13 @@
                 }
             ],
             "description": "DataGrid for Nette Framework: filtering, sorting, pagination, tree view, table view, translator, etc",
-            "homepage": "http://ublaboo.paveljanda.com/datagrid",
+            "homepage": "https://ublaboo.org/datagrid",
             "keywords": [
                 "datagrid",
                 "grid",
                 "nette"
             ],
-            "time": "2017-04-24T20:04:54+00:00"
+            "time": "2017-07-19T13:32:24+00:00"
         },
         {
             "name": "ublaboo/responses",
@@ -4784,7 +4784,7 @@
                 }
             ],
             "description": "Implementation of Doctrine Migrations to Nette",
-            "abandoned": "robmorgan/phinx",
+            "abandoned": "nettrine/migrations",
             "time": "2016-09-23T19:04:56+00:00"
         }
     ],

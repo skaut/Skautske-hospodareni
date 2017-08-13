@@ -22,11 +22,15 @@ use Nette\SmartObject;
  * @property-read \DateTimeImmutable|NULL   $firstTravelDate
  * @property-read Money                     $pricePerKm
  * @property-read Money                     $fuelPricePerKm
+ * @property-read string                    $state
  */
 class Command
 {
 
     use SmartObject;
+
+    public const STATE_CLOSED = 'closed';
+    public const STATE_IN_PROGRESS = 'in_progress';
 
     /** @var int */
     private $id;
@@ -73,6 +77,9 @@ class Command
     /** @var Money */
     private $fuelPricePerKm;
 
+    /** @var string */
+    private $state;
+
     public function __construct(
         int $id,
         int $unitId,
@@ -88,7 +95,8 @@ class Command
         Money $total,
         ?\DateTimeImmutable $firstTravelDate,
         Money $pricePerKm,
-        Money $fuelPricePerKm
+        Money $fuelPricePerKm,
+        string $state
     )
     {
         $this->id = $id;
@@ -106,6 +114,7 @@ class Command
         $this->firstTravelDate = $firstTravelDate;
         $this->pricePerKm = $pricePerKm;
         $this->fuelPricePerKm = $fuelPricePerKm;
+        $this->state = $state;
     }
 
     public function getId(): int
@@ -181,6 +190,11 @@ class Command
     public function getFuelPricePerKm(): Money
     {
         return $this->fuelPricePerKm;
+    }
+
+    public function getState(): string
+    {
+        return $this->state;
     }
 
 }

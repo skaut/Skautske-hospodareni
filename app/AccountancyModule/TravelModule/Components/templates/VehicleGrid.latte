@@ -1,0 +1,9 @@
+{extends $original_template}
+
+{define col-action}
+    <a href="{plink Vehicle:detail $item->id}" class="btn btn-sm btn-default"><i class="fa fa-search"></i></a>
+{/define}
+
+{define col-subunit}
+    {$units[$item->subunitId] ?? '-'}
+{/define}
