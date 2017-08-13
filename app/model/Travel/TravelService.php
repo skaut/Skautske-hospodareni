@@ -114,11 +114,13 @@ class TravelService extends BaseService
 
     public function createVehicle(string $type, int $unitId, ?int $subunitId, string $registration, float $consumption): void
     {
+        $unit = $this->units->find($unitId, TRUE);
+
         $subunit = $subunitId !== NULL
             ? $this->units->find($subunitId, TRUE)
             : NULL;
 
-        $vehicle = new Vehicle($type, $unitId, $subunit, $registration, $consumption);
+        $vehicle = new Vehicle($type, $unit, $subunit, $registration, $consumption);
         $this->vehicles->save($vehicle);
     }
 

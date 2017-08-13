@@ -33,11 +33,19 @@ class Vehicle extends Nette\Object
     private $archived = FALSE;
 
 
-    public function __construct(string $type, int $unitId, ?Unit $subunit, string $registration, float $consumption)
+    public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption)
     {
         $this->type = $type;
-        $this->unitId = $unitId;
-        $this->subunitId = $subunit !== NULL ? $subunit->getId() : NULL;
+        $this->unitId = $unit->getId();
+
+        if($subunit !== NULL) {
+            if( ! $subunit->isSubunitOf($unit)) {
+                throw new \InvalidArgumentException("Unit #{$subunit->getId()} is not child of #{$unit->getId()}");
+            }
+
+            $this->subunitId = $subunit->getId();
+        }
+
         $this->registration = $registration;
         $this->consumption = $consumption;
     }
