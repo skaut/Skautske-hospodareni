@@ -3,15 +3,13 @@
 
 namespace Model\DTO\Travel;
 
+use Model\Travel\Contract\Passenger;
 use Nette\SmartObject;
 
 
 /**
  * @property-read int                       $id
- * @property-read string                    $driverName
- * @property-read string                    $driverContact
- * @property-read string                    $driverAddress
- * @property-read \DateTimeImmutable        $driverBirthday
+ * @property-read Passenger                 $passenger
  * @property-read int                       $unitId
  * @property-read string                    $unitRepresentative
  * @property-read \DateTimeImmutable|NULL   $since
@@ -26,17 +24,8 @@ class Contract
     /** @var int */
     private $id;
 
-    /** @var string */
-    private $driverName;
-
-    /** @var string */
-    private $driverContact;
-
-    /** @var string */
-    private $driverAddress;
-
-    /** @var \DateTimeImmutable */
-    private $driverBirthday;
+    /** @var Passenger */
+    private $passenger;
 
     /** @var int */
     private $unitId;
@@ -55,10 +44,7 @@ class Contract
 
     public function __construct(
         int $id,
-        string $driverName,
-        string $driverContact,
-        string $driverAddress,
-        \DateTimeImmutable $driverBirthday,
+        Passenger $passenger,
         int $unitId,
         string $unitRepresentative,
         ?\DateTimeImmutable $since,
@@ -67,10 +53,7 @@ class Contract
     )
     {
         $this->id = $id;
-        $this->driverName = $driverName;
-        $this->driverContact = $driverContact;
-        $this->driverAddress = $driverAddress;
-        $this->driverBirthday = $driverBirthday;
+        $this->passenger = $passenger;
         $this->unitId = $unitId;
         $this->unitRepresentative = $unitRepresentative;
         $this->since = $since;
@@ -83,24 +66,9 @@ class Contract
         return $this->id;
     }
 
-    public function getDriverName(): string
+    public function getPassenger(): Passenger
     {
-        return $this->driverName;
-    }
-
-    public function getDriverContact(): string
-    {
-        return $this->driverContact;
-    }
-
-    public function getDriverAddress(): string
-    {
-        return $this->driverAddress;
-    }
-
-    public function getDriverBirthday(): \DateTimeImmutable
-    {
-        return $this->driverBirthday;
+        return $this->passenger;
     }
 
     public function getUnitId(): int

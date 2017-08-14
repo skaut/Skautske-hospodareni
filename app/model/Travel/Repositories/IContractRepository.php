@@ -20,6 +20,8 @@ interface IContractRepository
      */
     public function findByUnit(int $unitId): array;
 
+    public function save(Contract $contract): void;
+
     public function remove(Contract $contract): void;
 
 }

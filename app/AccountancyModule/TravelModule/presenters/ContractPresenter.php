@@ -4,6 +4,7 @@ namespace App\AccountancyModule\TravelModule;
 
 use App\Forms\BaseForm;
 use Model\Services\PdfRenderer;
+use Model\Travel\Contract\Passenger;
 use Nette\Application\UI\Form;
 use Model\TravelService;
 
@@ -80,23 +81,26 @@ class ContractPresenter extends BasePresenter
     protected function createComponentFormCreateContract() : Form
     {
         $form = new BaseForm();
-        $form->addText("driver_name", "Jméno a příjmení řidiče*")
+        $form->addText("passengerName", "Jméno a příjmení řidiče*")
             ->setAttribute("class", "form-control")
             ->setRequired("Musíte vyplnit jméno řidiče.");
-        $form->addText("driver_address", "Bydliště řidiče*")
+        $form->addText("passengerAddress", "Bydliště řidiče*")
             ->setAttribute("class", "form-control")
             ->setRequired("Musíte vyplnit bydliště řidiče.");
-        $form->addDatePicker("driver_birthday", "Datum narození řidiče*")
+        $form->addDatePicker("passengerBirthday", "Datum narození řidiče*")
             ->setAttribute("class", "form-control")
             ->setRequired("Musíte vyplnit datum narození řidiče.");
-        $form->addText("driver_contact", "Telefon na řidiče (9cifer)*")
+        $form->addText("passengerContact", "Telefon na řidiče (9cifer)*")
             ->setAttribute("class", "form-control")
             ->setRequired("Musíte vyplnit telefon na řidiče.")
             ->addRule(Form::NUMERIC, "Telefon musí být číslo.");
 
-        $form->addText("unit_person", "Zástupce jednotky")
+        $form->addText("unitRepresentative", "Zástupce jednotky")
+            ->setRequired('Musíte vyplnit zástupce jednotky')
             ->setAttribute("class", "form-control");
         $form->addDatePicker("start", "Platnost od")
+            ->setDefaultValue((new \DateTimeImmutable())->format('Y-m-d'))
+            ->setRequired('Musíte vyplnit od kdy smlouva platí')
             ->setAttribute("class", "form-control");
 
         $form->addSubmit('send', 'Založit smlouvu')
@@ -109,18 +113,22 @@ class ContractPresenter extends BasePresenter
         return $form;
     }
 
-    private function formCreateContractSubmitted(Form $form) : void
+    private function formCreateContractSubmitted(Form $form): void
     {
-
-
         $v = $form->getValues();
-        $v['end'] = isset($v['end']) ? $v['end'] : NULL;
-        $v->unit_id = $this->unit->ID;
-        if ($this->travelService->addContract($v)) {
-            $this->flashMessage("Smlouva byla založena.");
-        } else {
-            $this->flashMessage("Smlouvu se nepodazřilo založit.", "danger");
-        }
+
+        $since = \DateTimeImmutable::createFromMutable($v->start);
+
+        $passenger = new Passenger(
+            $v->passengerName,
+            $v->passengerContact,
+            $v->passengerAddress,
+            \DateTimeImmutable::createFromMutable($v->passengerBirthday)
+        );
+        
+        $this->travelService->createContract($this->getUnitId(), $v->unitRepresentative, $since, $passenger);
+        $this->flashMessage("Smlouva byla založena.");
+
         $this->redirect("this");
     }
 

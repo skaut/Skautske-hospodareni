@@ -9,6 +9,7 @@ use Model\DTO\Travel as DTO;
 use Model\DTO\Travel\Command\Travel as TravelDTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
+use Model\Travel\Contract;
 use Model\Travel\ContractNotFoundException;
 use Model\Travel\Passenger;
 use Model\Travel\Repositories\ICommandRepository;
@@ -25,7 +26,7 @@ use Money\Money;
  * @author Hána František <sinacek@gmail.com>
  * správa cestovních příkazů
  */
-class TravelService extends BaseService
+class TravelService
 {
 
     /** @var CommandTable */
@@ -33,9 +34,6 @@ class TravelService extends BaseService
 
     /** @var TravelTable */
     private $tableTravel;
-
-    /** @var ContractTable */
-    private $tableContract;
 
     /** @var IVehicleRepository */
     private $vehicles;
@@ -52,17 +50,14 @@ class TravelService extends BaseService
     public function __construct(
         CommandTable $table,
         TravelTable $tableTravel,
-        ContractTable $tableContract,
         IVehicleRepository $vehicles,
         ICommandRepository $commands,
         IContractRepository $contracts,
         IUnitRepository $units
     )
     {
-        parent::__construct();
         $this->table = $table;
         $this->tableTravel = $tableTravel;
-        $this->tableContract = $tableContract;
         $this->vehicles = $vehicles;
         $this->commands = $commands;
         $this->contracts = $contracts;
@@ -243,7 +238,7 @@ class TravelService extends BaseService
     }
 
     /**
-     * @return string[]
+     * @return string[][]
      */
     public function getAllContractsPairs(int $unitId): array
     {
@@ -254,7 +249,7 @@ class TravelService extends BaseService
         $now = new \DateTimeImmutable();
 
         foreach($contracts as $contract) {
-            $name = $contract->getDriverName();
+            $name = $contract->getPassenger()->getName();
 
             if($contract->getUnitRepresentative() !== '') {
                 $name = $contract->getUnitRepresentative() . ' <=> ' . $name;
@@ -274,12 +269,13 @@ class TravelService extends BaseService
         return $result;
     }
 
-    public function addContract($values)
+    public function createContract(int $unitId, string $unitRepresentative, \DateTimeImmutable $since, Contract\Passenger $passenger): void
     {
-        if (!$values['end'] && !is_null($values["start"])) {
-            $values['end'] = date("Y-m-d", strtotime("+ 3 years", $values["start"]->getTimestamp()));
-        } //nastavuje platnost smlouvy na 3 roky
-        return $this->tableContract->add($values);
+        $unit = $this->units->find($unitId, TRUE);
+
+        $contract = new Contract($unit, $unitRepresentative, $since, $passenger);
+
+        $this->contracts->save($contract);
     }
 
     public function deleteContract(int $contractId): void

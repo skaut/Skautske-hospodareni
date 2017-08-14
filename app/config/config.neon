@@ -159,7 +159,6 @@ services:
     - Model\BudgetTable
     - Model\ChitTable
     - Model\CommandTable
-    - Model\ContractTable
     - Model\EventTable
     - Model\MailTable
     - Model\ParticipantTable

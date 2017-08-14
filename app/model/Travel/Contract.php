@@ -2,6 +2,9 @@
 
 namespace Model\Travel;
 
+use Model\Unit\Unit;
+use Model\Travel\Contract\Passenger as ContractPassenger;
+
 class Contract
 {
 
@@ -20,21 +23,21 @@ class Contract
     /** @var \DateTimeImmutable|NULL */
     private $until;
 
-    /** @var string */
-    private $driverName;
-
-    /** @var string */
-    private $driverContact;
-
-    /** @var string */
-    private $driverAddress;
-
-    /** @var \DateTimeImmutable */
-    private $driverBirthday;
+    /** @var ContractPassenger */
+    private $passenger;
 
     /** @var int */
-    private $templateVersion;
+    private $templateVersion = 2;
 
+
+    public function __construct(Unit $unit, string $unitRepresentative, \DateTimeImmutable $since, ContractPassenger $passenger)
+    {
+        $this->unitId = $unit->getId();
+        $this->unitRepresentative = $unitRepresentative;
+        $this->since = $since->setTime(0,0,0);
+        $this->until = $this->since->modify('+ 3 years');
+        $this->passenger = $passenger;
+    }
 
     public function getId(): int
     {
@@ -61,24 +64,9 @@ class Contract
         return $this->until;
     }
 
-    public function getDriverName(): string
+    public function getPassenger(): ContractPassenger
     {
-        return $this->driverName;
-    }
-
-    public function getDriverContact(): string
-    {
-        return $this->driverContact;
-    }
-
-    public function getDriverAddress(): string
-    {
-        return $this->driverAddress;
-    }
-
-    public function getDriverBirthday(): \DateTimeImmutable
-    {
-        return $this->driverBirthday;
+        return $this->passenger;
     }
 
     public function getTemplateVersion(): int

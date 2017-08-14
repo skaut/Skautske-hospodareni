@@ -28,7 +28,7 @@
         <table class="table table-bordered table-striped">
             <tr>
                 <th>Vykonavatel/Řidič</th>
-                <td>{$contract->driverName}</td>
+                <td>{$contract->passenger->name}</td>
             </tr>
             <tr n:if="$contract->unitRepresentative !== ''">
                 <th>Zástupce jednotky</th>

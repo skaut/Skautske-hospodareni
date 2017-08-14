@@ -33,6 +33,12 @@ final class ContractRepository implements IContractRepository
         return $this->em->getRepository(Contract::class)->findBy(['unitId' => $unitId]);
     }
 
+    public function save(Contract $contract): void
+    {
+        $this->em->persist($contract);
+        $this->em->flush($contract);
+    }
+
     public function remove(Contract $contract): void
     {
         $this->em->remove($contract);

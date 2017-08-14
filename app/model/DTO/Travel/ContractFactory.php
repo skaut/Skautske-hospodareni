@@ -15,10 +15,7 @@ final class ContractFactory
     {
         return new Contract(
             $contract->getId(),
-            $contract->getDriverName(),
-            $contract->getDriverContact(),
-            $contract->getDriverAddress(),
-            $contract->getDriverBirthday(),
+            $contract->getPassenger(),
             $contract->getUnitId(),
             $contract->getUnitRepresentative(),
             $contract->getSince(),

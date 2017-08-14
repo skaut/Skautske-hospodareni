@@ -36,14 +36,16 @@ final class Passenger
 
     public static function fromContract(Contract $contract): Passenger
     {
-        $driver = new Passenger(
-            $contract->getDriverName(),
-            $contract->getDriverContact(),
-            $contract->getDriverAddress()
-        );
-        $driver->setContractId($contract->getId());
+        $contractPassenger = $contract->getPassenger();
 
-        return $driver;
+        $passenger = new Passenger(
+            $contractPassenger->getName(),
+            $contractPassenger->getContact(),
+            $contractPassenger->getAddress()
+        );
+        $passenger->setContractId($contract->getId());
+
+        return $passenger;
     }
 
     private function setContractId(int $contractId): void
