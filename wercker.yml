@@ -64,7 +64,7 @@ build:
             code: chown www-data:www-data . -R && chmod 777 . -R
         - script:
             name: acceptance testing
-            code: vendor/bin/codecept run --env=ci acceptance
+            code: vendor/bin/codecept run --env=ci acceptance -vv
         - script:
             name: test coding standard
             code: vendor/bin/phpcs app --standard=ruleset.xml
