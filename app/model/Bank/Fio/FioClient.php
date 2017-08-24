@@ -36,27 +36,45 @@ class FioClient implements IFioClient
 
     public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
-        if($account->getToken() === NULL) {
+        $token = $account->getToken();
+
+        if($token === NULL) {
             throw new TokenNotSetException();
         }
 
-        $api = new Downloader($account->getToken(), $this->client);
+        $transactions = $this->loadTransactionsFromApi(DateTime::from($since), DateTime::from($until), $token);
+        $transactions = array_map([$this, 'createTransactionDTO'], $transactions);
+
+        return array_reverse($transactions); // DESC sort
+    }
+
+    private function createTransactionDTO(ApiTransaction $transaction): Transaction
+    {
+        return new Transaction(
+            (string)$transaction->getId(),
+            \DateTimeImmutable::createFromMutable($transaction->getDate()),
+            $transaction->getAmount(),
+            $transaction->getSenderAccountNumber() . '/' . $transaction->getSenderBankCode(),
+            $transaction->getUserIdentity() ?? $transaction->getPerformedBy() ?? '',
+            $transaction->getVariableSymbol() !== NULL ? (int)$transaction->getVariableSymbol() : NULL,
+            $transaction->getConstantSymbol() !== NULL ? (int)$transaction->getConstantSymbol() : NULL,
+            $transaction->getComment()
+        );
+    }
+
+    /**
+     * @return ApiTransaction[]
+     * @throws BankTimeLimitException
+     * @throws BankTimeoutException
+     */
+    private function loadTransactionsFromApi(DateTime $since, DateTime $until, string $token): array
+    {
+        $api = new Downloader($token, $this->client);
 
         try {
-            return array_map(function (ApiTransaction $t) {
-                return new Transaction(
-                    (string)$t->getId(),
-                    \DateTimeImmutable::createFromMutable($t->getDate()),
-                    $t->getAmount(),
-                    $t->getSenderAccountNumber() . '/' . $t->getSenderBankCode(),
-                    $t->getUserIdentity() ?? $t->getPerformedBy() ?? '',
-                    $t->getVariableSymbol() !== NULL ? (int)$t->getVariableSymbol() : NULL,
-                    $t->getConstantSymbol() !== NULL ? (int)$t->getConstantSymbol() : NULL,
-                    $t->getComment()
-                );
-            }, $api->downloadFromTo(DateTime::from($since), DateTime::from($until))->getTransactions());
+            return $api->downloadFromTo($since, $until)->getTransactions();
         } catch (TooGreedyException $e) {
-            throw new BankTimeLimitException();
+            throw new BankTimeLimitException('', 0, $e);
         } catch (BadResponseException | InternalErrorException $e) {
             throw new BankTimeoutException("There was an error when connecting to FIO", $e->getCode(), $e);
         }
