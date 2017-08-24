@@ -14,7 +14,6 @@ use Model\Payment\Fio\IFioClient;
 use Model\Payment\TokenNotSetException;
 use Model\BankTimeLimitException;
 use Model\BankTimeoutException;
-use Nette\Utils\DateTime;
 use Psr\Log\LoggerInterface;
 
 class FioClient implements IFioClient
@@ -36,13 +35,11 @@ class FioClient implements IFioClient
 
     public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
-        $token = $account->getToken();
-
-        if($token === NULL) {
+        if($account->getToken() === NULL) {
             throw new TokenNotSetException();
         }
 
-        $transactions = $this->loadTransactionsFromApi(DateTime::from($since), DateTime::from($until), $token);
+        $transactions = $this->loadTransactionsFromApi($since, $until, $account);
         $transactions = array_map([$this, 'createTransactionDTO'], $transactions);
 
         return array_reverse($transactions); // DESC sort
@@ -51,8 +48,8 @@ class FioClient implements IFioClient
     private function createTransactionDTO(ApiTransaction $transaction): Transaction
     {
         return new Transaction(
-            (string)$transaction->getId(),
-            \DateTimeImmutable::createFromMutable($transaction->getDate()),
+            $transaction->getId(),
+            $transaction->getDate(),
             $transaction->getAmount(),
             $transaction->getSenderAccountNumber() . '/' . $transaction->getSenderBankCode(),
             $transaction->getUserIdentity() ?? $transaction->getPerformedBy() ?? '',
@@ -67,13 +64,14 @@ class FioClient implements IFioClient
      * @throws BankTimeLimitException
      * @throws BankTimeoutException
      */
-    private function loadTransactionsFromApi(DateTime $since, DateTime $until, string $token): array
+    private function loadTransactionsFromApi(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
-        $api = new Downloader($token, $this->client);
+        $api = new Downloader($account->getToken(), $this->client);
 
         try {
             return $api->downloadFromTo($since, $until)->getTransactions();
         } catch (TooGreedyException $e) {
+            $this->logger->error("Bank account #{$account->getId()} hit API limit");
             throw new BankTimeLimitException('', 0, $e);
         } catch (BadResponseException | InternalErrorException $e) {
             throw new BankTimeoutException("There was an error when connecting to FIO", $e->getCode(), $e);
