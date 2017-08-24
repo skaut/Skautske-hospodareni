@@ -1,9 +1,7 @@
 <?php
 
-use Doctrine\DBAL\Migrations\Configuration\Configuration;
-use Doctrine\DBAL\Migrations\Migration;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Migrations\OutputWriter;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\SchemaTool;
 
 abstract class IntegrationTest extends Codeception\Test\Unit
 {
@@ -11,32 +9,29 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     /** @var IntegrationTester */
     protected $tester;
 
+    /** @var \Doctrine\ORM\Mapping\ClassMetadata[] */
+    private $metadata;
+
+    /** @var SchemaTool */
+    private $schemaTool;
+
+    protected function getTestedEntites(): array
+    {
+        return [];
+    }
 
     protected function _before()
     {
-        $this->clearTables();
-        $config = $this->tester->grabService(Configuration::class);
-        $config->setOutputWriter(new OutputWriter());
-        $migration = new Migration($config);
-        $migration->migrate();
+        $em = $this->tester->grabService(EntityManager::class);
+        $this->metadata = array_map([$em, 'getClassMetadata'], $this->getTestedEntites());
+        $this->schemaTool = new SchemaTool($em);
+        $this->schemaTool->dropSchema($this->metadata);
+        $this->schemaTool->createSchema($this->metadata);
     }
 
-    private function clearTables(): void
+    protected function _after()
     {
-        $connection = $this->tester->grabService(Connection::class);
-
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
-
-        $schema = $connection->getSchemaManager();
-        foreach ($schema->listTableNames() as $table) {
-            $connection->executeQuery('DROP TABLE ' . $table);
-        }
-
-        foreach($schema->listViews() as $view) {
-            $connection->executeQuery('DROP VIEW ' . $view->getName());
-        }
-
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1');
+        $this->schemaTool->dropSchema($this->metadata);
     }
 
 }
