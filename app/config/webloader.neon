@@ -1,4 +1,7 @@
 webloader:
+
+    debugger: false
+
     css:
         default:
             files:
