@@ -59,6 +59,9 @@ class BankAccountRepository implements IBankAccountRepository
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByUnit(int $unitId): array
     {
         return $this->entityManager->getRepository(BankAccount::class)->findBy(['unitId' => $unitId]);
