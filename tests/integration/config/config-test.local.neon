@@ -1,6 +1,0 @@
-parameters:
-    database:
-        host: mysql-test
-        user: root
-        password:
-        name: hskauting

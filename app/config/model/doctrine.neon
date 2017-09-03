@@ -1,0 +1,37 @@
+extensions:
+    - Arachne\ContainerAdapter\DI\ContainerAdapterExtension
+    - Arachne\EventDispatcher\DI\EventDispatcherExtension
+    migrations: Zenify\DoctrineMigrations\DI\MigrationsExtension
+    events: Kdyby\Events\DI\EventsExtension
+    - Kdyby\Annotations\DI\AnnotationsExtension
+    doctrine: Kdyby\Doctrine\DI\OrmExtension
+    annotations: Model\Infrastructure\YamlAnnotationsExtension
+
+doctrine:
+    host: %database.host%
+    user: %database.user%
+    password: %database.password%
+    dbname: %database.name%
+    metadata:
+        Model: yaml(%appDir%/model/Infrastructure/mapping/Model)
+    types:
+        datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
+        string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
+        money: Model\Infrastructure\Types\MoneyType
+    dql:
+        string:
+            field: DoctrineExtensions\Query\Mysql\Field
+
+
+annotations:
+    aliases:
+        enum: Consistence\Doctrine\Enum\EnumAnnotation
+        nullable: Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable
+
+services:
+    - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@annotations.reader)
+    - class: Model\Infrastructure\EnumListener
+      tags: [kdyby.subscriber]
+    - class: Fmasa\DoctrineNullableEmbeddables\Subscriber
+      arguments: { reader: @annotations.reader }
+      tags: [kdyby.subscriber]
