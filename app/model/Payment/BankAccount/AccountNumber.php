@@ -3,6 +3,8 @@
 namespace Model\Payment\BankAccount;
 
 
+use BankAccountValidator\Czech;
+use Model\Payment\InvalidBankAccountException;
 use Model\Payment\InvalidBankAccountNumberException;
 
 class AccountNumber
@@ -20,14 +22,32 @@ class AccountNumber
     /**
      * @throws InvalidBankAccountNumberException
      */
-    public function __construct(?string $prefix, string $number, string $bankCode, IAccountNumberValidator $validator)
+    public function __construct(?string $prefix, string $number, string $bankCode)
     {
-        if(!$validator->validate($prefix, $number, $bankCode)) {
-            throw new InvalidBankAccountNumberException("Invalid bank account number");
+        $validator = new Czech();
+
+        if(!$validator->validate([$prefix, $number, $bankCode])) {
+            throw self::invalidNumber();
         }
+
         $this->prefix = $prefix === '' ? NULL : $prefix;
         $this->number = $number;
         $this->bankCode = $bankCode;
+    }
+
+    /**
+     * @throws InvalidBankAccountException
+     */
+    public static function fromString(string $number): self
+    {
+        $parser = new Czech();
+        $number = $parser->parseNumber($number);
+
+        if($number[1] === NULL || $number[2] === NULL) {
+            throw self::invalidNumber();
+        }
+
+        return new self(...$number);
     }
 
     public function getPrefix(): ?string
@@ -52,6 +72,11 @@ class AccountNumber
         return $this->prefix !== NULL
             ? $this->prefix . "-" . $withoutPrefix
             : $withoutPrefix;
+    }
+
+    private static function invalidNumber(): InvalidBankAccountNumberException
+    {
+        return new InvalidBankAccountNumberException("Invalid bank account number");
     }
 
 }

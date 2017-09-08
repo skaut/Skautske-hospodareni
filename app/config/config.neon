@@ -71,9 +71,7 @@ services:
 
     - class: Model\Payment\BankAccountService
       arguments: { fioCache: @fio.cache }
-    - BankAccountValidator\Czech
     - Model\Skautis\UnitResolver
-    - Model\Payment\BankAccount\HeurekaAccountNumberValidator()
     - Model\Skautis\BankAccountImporter
 
     - Model\MailService

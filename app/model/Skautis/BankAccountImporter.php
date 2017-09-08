@@ -2,9 +2,7 @@
 
 namespace Model\Skautis;
 
-use BankAccountValidator\Czech;
 use Model\Payment\BankAccount\AccountNumber;
-use Model\Payment\BankAccount\IAccountNumberValidator;
 use Model\Payment\BankAccount\IBankAccountImporter;
 use Model\Payment\InvalidBankAccountNumberException;
 use Skautis\Skautis;
@@ -16,18 +14,10 @@ class BankAccountImporter implements IBankAccountImporter
     /** @var Skautis */
     private $skautis;
 
-    /** @var IAccountNumberValidator */
-    private $numberValidator;
 
-    /** @var Czech */
-    private $parser;
-
-
-    public function __construct(Skautis $skautis, IAccountNumberValidator $numberValidator, Czech $parser)
+    public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;
-        $this->numberValidator = $numberValidator;
-        $this->parser = $parser;
     }
 
 
@@ -44,8 +34,7 @@ class BankAccountImporter implements IBankAccountImporter
         $result = [];
         foreach ($accounts as $account) {
             try {
-                $number = $this->parser->parseNumber($account->DisplayName);
-                $result[] = new AccountNumber($number[0], $number[1], $number[2], $this->numberValidator);
+                $result[] = AccountNumber::fromString($account->DisplayName);
             } catch (InvalidBankAccountNumberException $e) {
                 // Skip invalid bank accounts
             }

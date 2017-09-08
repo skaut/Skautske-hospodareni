@@ -8,7 +8,6 @@ use Model\Bank\Fio\Transaction;
 use Model\DTO\Payment\BankAccount as BankAccountDTO;
 use Model\DTO\Payment\BankAccountFactory;
 use Model\Payment\BankAccount\AccountNumber;
-use Model\Payment\BankAccount\IAccountNumberValidator;
 use Model\Payment\BankAccount\IBankAccountImporter;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\Repositories\IBankAccountRepository;
@@ -23,9 +22,6 @@ class BankAccountService
 
     /** @var IGroupRepository */
     private $groups;
-
-    /** @var IAccountNumberValidator */
-    private $numberValidator;
 
     /** @var IUnitResolver */
     private $unitResolver;
@@ -42,7 +38,6 @@ class BankAccountService
     public function __construct(
         IBankAccountRepository $bankAccounts,
         IGroupRepository $groups,
-        IAccountNumberValidator $numberValidator,
         IUnitResolver $unitResolver,
         IFioClient $fio,
         IBankAccountImporter $importer,
@@ -51,7 +46,6 @@ class BankAccountService
     {
         $this->bankAccounts = $bankAccounts;
         $this->groups = $groups;
-        $this->numberValidator = $numberValidator;
         $this->unitResolver = $unitResolver;
         $this->fio = $fio;
         $this->importer = $importer;
@@ -64,7 +58,7 @@ class BankAccountService
      */
     public function addBankAccount(int $unitId, string $name, string $prefix, string $number, string $bankCode, ?string $token): void
     {
-        $accountNumber = new AccountNumber($prefix, $number, $bankCode, $this->numberValidator);
+        $accountNumber = new AccountNumber($prefix, $number, $bankCode);
         $account = new BankAccount($unitId, $name, $accountNumber, $token, new DateTimeImmutable(), $this->unitResolver);
 
         $this->bankAccounts->save($account);
@@ -79,7 +73,7 @@ class BankAccountService
     {
         $account = $this->bankAccounts->find($id);
 
-        $accountNumber = new AccountNumber($prefix, $number, $bankCode, $this->numberValidator);
+        $accountNumber = new AccountNumber($prefix, $number, $bankCode);
         $account->update($name, $accountNumber, $token);
 
         $this->bankAccounts->save($account);

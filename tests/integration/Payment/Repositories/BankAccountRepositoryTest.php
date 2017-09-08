@@ -7,7 +7,6 @@ namespace Model\Payment\Repositories;
 use Doctrine\ORM\EntityManager;
 use Model\Payment\BankAccount;
 use Mockery as m;
-use Model\Payment\BankAccount\IAccountNumberValidator;
 use Model\Payment\BankAccountNotFoundException;
 use Model\Payment\IUnitResolver;
 
@@ -156,7 +155,7 @@ class BankAccountRepositoryTest extends \IntegrationTest
         return new BankAccount(
             1,
             'Hlavní',
-            new BankAccount\AccountNumber(NULL, '2000942144', '2010', m::mock(IAccountNumberValidator::class, ['validate' => TRUE])),
+            new BankAccount\AccountNumber(NULL, '2000942144', '2010'),
             'test-token',
             $createdAt ?? new \DateTimeImmutable(),
             m::mock(IUnitResolver::class, ['getOfficialUnitId' => $unitId])

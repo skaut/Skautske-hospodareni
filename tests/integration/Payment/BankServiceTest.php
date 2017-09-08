@@ -7,7 +7,6 @@ use Mockery as m;
 use Model\Bank\Fio\Transaction;
 use Model\BankService;
 use Model\Payment\BankAccount;
-use Model\Payment\BankAccount\IAccountNumberValidator;
 use Model\Payment\FioClientStub;
 use Model\Payment\Group;
 use Model\Payment\IUnitResolver;
@@ -58,12 +57,11 @@ class BankServiceTest extends \IntegrationTest
     public function testPairGroups()
     {
         $I = $this->tester;
-        $numberValidator  = m::mock(IAccountNumberValidator::class, ['validate' => TRUE]);
 
         $bankAccount = new BankAccount(
             1,
             'Hlavní',
-            new BankAccount\AccountNumber(NULL, '2000942144', '2010', $numberValidator),
+            new BankAccount\AccountNumber(NULL, '2000942144', '2010'),
             'test-token',
             new \DateTimeImmutable(),
             m::mock(IUnitResolver::class, ['getOfficialUnitId' => 1])
