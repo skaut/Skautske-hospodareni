@@ -4,6 +4,7 @@ namespace App\AccountancyModule\PaymentModule\Factories;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
+use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
 use Model\Payment\InvalidBankAccountNumberException;
 use Nette\ArrayHash;
@@ -74,18 +75,14 @@ class BankAccountForm extends BaseControl
                 $this->model->updateBankAccount(
                     $this->id,
                     $values->name,
-                    $values->prefix,
-                    $values->number,
-                    $values->bankCode,
+                    new AccountNumber($values->prefix, $values->number, $values->bankCode),
                     $values->token
                 );
             } else {
                 $this->model->addBankAccount(
                     $this->getPresenter()->getUnitId(),
                     $values->name,
-                    $values->prefix,
-                    $values->number,
-                    $values->bankCode,
+                    new AccountNumber($values->prefix, $values->number, $values->bankCode),
                     $values->token
                 );
 

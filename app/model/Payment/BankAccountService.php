@@ -52,14 +52,9 @@ class BankAccountService
         $this->fioCache = $fioCache;
     }
 
-
-    /**
-     * @throws InvalidBankAccountNumberException
-     */
-    public function addBankAccount(int $unitId, string $name, string $prefix, string $number, string $bankCode, ?string $token): void
+    public function addBankAccount(int $unitId, string $name, AccountNumber $number, ?string $token): void
     {
-        $accountNumber = new AccountNumber($prefix, $number, $bankCode);
-        $account = new BankAccount($unitId, $name, $accountNumber, $token, new DateTimeImmutable(), $this->unitResolver);
+        $account = new BankAccount($unitId, $name, $number, $token, new DateTimeImmutable(), $this->unitResolver);
 
         $this->bankAccounts->save($account);
     }
@@ -67,14 +62,12 @@ class BankAccountService
 
     /**
      * @throws BankAccountNotFoundException
-     * @throws InvalidBankAccountNumberException
      */
-    public function updateBankAccount(int $id, string $name, string $prefix, string $number, string $bankCode, ?string $token): void
+    public function updateBankAccount(int $id, string $name, AccountNumber $number, ?string $token): void
     {
         $account = $this->bankAccounts->find($id);
 
-        $accountNumber = new AccountNumber($prefix, $number, $bankCode);
-        $account->update($name, $accountNumber, $token);
+        $account->update($name, $number, $token);
 
         $this->bankAccounts->save($account);
         $this->cleanFioCache($id);
