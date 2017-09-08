@@ -106,6 +106,22 @@ class BankAccountService
         $this->bankAccounts->save($account);
     }
 
+    public function disallowForSubunits(int $id): void
+    {
+        $account = $this->bankAccounts->find($id);
+
+        $account->disallowForSubunits();
+
+        foreach($this->groups->findByBankAccount($id) as $group) {
+            if($group->getUnitId() !== $account->getUnitId()) {
+                $group->removeBankAccount();
+                $this->groups->save($group);
+            }
+        }
+
+        $this->bankAccounts->save($account);
+    }
+
 
     public function find(int $id): ?BankAccountDTO
     {

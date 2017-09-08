@@ -12,9 +12,9 @@
             {if $canEdit}
             <div class="col-md-6">
                 {if $account->isAllowedForSubunits()}
-                    <a href="#" class="btn btn-sm btn-success disabled"><i class="fa fa-check"></i> Účet zpřístupněn</a>
+                    <a n:href="disallowForSubunits! $account->getId()" class="btn btn-sm btn-success"><i class="fa fa-check"></i> Účet zpřístupněn</a>
                 {else}
-                    <a n:href="allowForSubunits! $account->getId()" class="btn btn-sm btn-success">Zpřístupnit oddílům</a>
+                    <a n:href="allowForSubunits! $account->getId()" class="btn btn-sm btn-default">Zpřístupnit oddílům</a>
                 {/if}
             </div>
             <div class="col-md-6">

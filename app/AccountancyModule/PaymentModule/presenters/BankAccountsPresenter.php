@@ -6,6 +6,7 @@ use App\AccountancyModule\Auth\IAuthorizator;
 use App\AccountancyModule\Auth\Unit;
 use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;
+use Model\DTO\Payment\BankAccount;
 use Model\Payment\BankAccountNotFoundException;
 use Model\Payment\BankAccountService;
 use Model\Payment\TokenNotSetException;
@@ -19,6 +20,9 @@ class BankAccountsPresenter extends BasePresenter
 
     /** @var BankAccountService */
     private $accounts;
+
+    /** @var int[] */
+    private $accountIds = [];
 
     /** @var IAuthorizator */
     private $authorizator;
@@ -37,7 +41,7 @@ class BankAccountsPresenter extends BasePresenter
 
     public function handleAllowForSubunits(int $id): void
     {
-        if (!$this->canEdit()) {
+        if (!$this->canEdit() || !in_array($id, $this->accountIds, TRUE)) {
             $this->noAccess();
         }
 
@@ -50,6 +54,20 @@ class BankAccountsPresenter extends BasePresenter
         $this->redirect('this');
     }
 
+    public function handleDisallowForSubunits(int $id): void
+    {
+        if (!$this->canEdit() || !in_array($id, $this->accountIds, TRUE)) {
+            $this->noAccess();
+        }
+
+        try {
+            $this->accounts->disallowForSubunits($id);
+            $this->flashMessage('Bankovní účet znepřístupněn', 'success');
+        } catch (BankAccountNotFoundException $e) {
+            $this->flashMessage('Bankovní účet neexistuje', 'danger');
+        }
+        $this->redirect('this');
+    }
 
     public function handleRemove(int $id): void
     {
@@ -96,10 +114,12 @@ class BankAccountsPresenter extends BasePresenter
         $this->id = $id;
     }
 
-
-    public function renderDefault(): void
+    public function actionDefault(): void
     {
-        $this->template->accounts = $this->accounts->findByUnit($this->getCurrentUnitId());
+        $accounts = $this->accounts->findByUnit($this->getCurrentUnitId());
+        $this->accountIds = array_map(function (BankAccount $a) { return $a->getId(); }, $accounts);
+
+        $this->template->accounts = $accounts;
         $this->template->canEdit = $this->canEdit();
     }
 

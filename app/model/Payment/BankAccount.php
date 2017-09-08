@@ -49,6 +49,11 @@ class BankAccount
         $this->allowedForSubunits = TRUE;
     }
 
+    public function disallowForSubunits(): void
+    {
+        $this->allowedForSubunits = FALSE;
+    }
+
     public function update(string $name, AccountNumber $number, ?string $token): void
     {
         $this->name = $name;
