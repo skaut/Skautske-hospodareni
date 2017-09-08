@@ -36,7 +36,7 @@ class BankServiceTest extends \IntegrationTest
 
     protected function _before()
     {
-        $this->tester->useConfigFiles(['Payment/bank.service.neon']);
+        $this->tester->useConfigFiles(['Payment/BankServiceTest.neon']);
         parent::_before();
         $this->bankService = $this->tester->grabService(BankService::class);
         $this->payments = $this->tester->grabService(IPaymentRepository::class);
