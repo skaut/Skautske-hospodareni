@@ -42,8 +42,7 @@ class BankAccountForm extends BaseControl
 
         $form->addText('bankCode')
             ->setRequired('Musíte vyplnit kód banky')
-            ->addRule($form::INTEGER, 'Neplatný kód banky')
-            ->addRule($form::LENGTH, 'Kód banky má délku %d znaky', 4);
+            ->addRule($form::PATTERN, 'Kod banky musí být 4 číslice', '[0-9]{4}');
 
         $form->addText('token', 'Token pro párování plateb (FIO)');
 
