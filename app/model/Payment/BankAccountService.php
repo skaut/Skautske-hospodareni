@@ -84,7 +84,7 @@ class BankAccountService
         $groups = $this->groups->findByBankAccount($id);
 
         foreach($groups as $group) {
-            $group->changeBankAccount(NULL);
+            $group->removeBankAccount();
             $this->groups->save($group);
         }
 

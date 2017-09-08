@@ -25,7 +25,7 @@ class GroupTest extends \Codeception\Test\Unit
             $createdAt,
             $emailTemplate,
             NULL,
-            m::mock(BankAccount::class, ['getId' => 23])
+            m::mock(BankAccount::class, ['getId' => 23, 'getUnitId' => 20])
         );
 
         $this->assertSame(20, $group->getUnitId());
@@ -59,7 +59,7 @@ class GroupTest extends \Codeception\Test\Unit
             NULL,
             $emailTemplate,
             20,
-            m::mock(BankAccount::class, ['getId' => 33])
+            m::mock(BankAccount::class, ['getId' => 33, 'getUnitId' => 20])
         );
 
         $this->assertSame(20, $group->getUnitId());
@@ -98,7 +98,20 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertSame($note, $group->getNote());
     }
 
-    private function createGroup(?DateTimeImmutable $dueDate = NULL, ?DateTimeImmutable $createdAt = NULL): Group
+    public function testRemoveBankAccount()
+    {
+        $group = $this->createGroup(
+            NULL,
+            NULL,
+            m::mock(BankAccount::class, ['getId' => 10, 'getUnitId' => 20])
+        );
+
+        $group->removeBankAccount();
+
+        $this->assertNull($group->getBankAccountId());
+    }
+
+    private function createGroup(?DateTimeImmutable $dueDate = NULL, ?DateTimeImmutable $createdAt = NULL, BankAccount $bankAccount = NULL): Group
     {
         return new Group(
             20,
@@ -111,7 +124,7 @@ class GroupTest extends \Codeception\Test\Unit
             $createdAt ?? new DateTimeImmutable(),
             new EmailTemplate("Email subject", "Email body"),
             NULL,
-            NULL
+            $bankAccount
         );
     }
 

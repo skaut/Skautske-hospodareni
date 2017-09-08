@@ -123,10 +123,9 @@ class Group
         $this->note = $note;
     }
 
-
-    public function changeBankAccount(?BankAccount $bankAccount): void
+    public function removeBankAccount(): void
     {
-        $this->bankAccountId = $bankAccount !== NULL ? $bankAccount->getId() : NULL;
+        $this->bankAccountId = NULL;
     }
 
 
@@ -250,6 +249,20 @@ class Group
     public function isOpen(): bool
     {
         return $this->state === self::STATE_OPEN;
+    }
+
+    private function changeBankAccount(?BankAccount $bankAccount): void
+    {
+        if($bankAccount === NULL) {
+            $this->bankAccountId = NULL;
+            return;
+        }
+
+        if($bankAccount->getUnitId() !== $this->unitId && !$bankAccount->isAllowedForSubunits()) {
+            throw new \InvalidArgumentException("Unit owning this group has no acces to this bank account");
+        }
+
+        $this->bankAccountId = $bankAccount->getId();
     }
 
 }
