@@ -27,6 +27,17 @@ services:
                 aliases:
                     - mysql
 
+    mysql-test:
+        container_name: hskauting.mysql-test
+        image: mysql:5.7
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+            MYSQL_DATABASE: hskauting
+        networks:
+            main:
+                aliases:
+                    - mysql-test
+
     phantom:
         container_name: hskauting.phantom
         image: davert/phantomjs-env

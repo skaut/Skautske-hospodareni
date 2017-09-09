@@ -1,0 +1,12 @@
+
+services:
+    - Model\Payment\BankAccountService
+    - Model\Payment\FioClientStub
+    - Model\Payment\Repositories\GroupRepository
+    - Model\Payment\Repositories\BankAccountRepository
+    - Model\Payment\UnitResolverStub(10)
+    - Model\Payment\BankAccountImporterStub
+    - Nette\Caching\Cache
+
+includes:
+    - ../config/doctrine.neon

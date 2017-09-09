@@ -3,32 +3,33 @@
 namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\Forms\BaseForm;
-use Dibi\Row;
 use Model\BankService;
+use Model\DTO\Payment\Group;
+use Model\Payment\BankAccountService;
+use Model\PaymentService;
 use Nette\Application\UI\Control;
 
 class PairButton extends Control
 {
 
-    /** @var int */
-    private $unitId;
-
     /** @var BankService */
     private $model;
 
-    /** @var Row|NULL */
-    private $bankInfo;
+    /** @var PaymentService */
+    private $payments;
+
+    /** @var BankAccountService */
+    private $bankAccounts;
 
     /** @var int[] */
     private $groupIds = [];
 
-    public function __construct(int $unitId, BankService $model)
+    public function __construct(PaymentService $payments, BankService $model, BankAccountService $bankAccounts)
     {
         parent::__construct();
-        $this->unitId = $unitId;
         $this->model = $model;
-
-        $this->bankInfo = $this->model->getInfo($unitId);
+        $this->payments = $payments;
+        $this->bankAccounts = $bankAccounts;
     }
 
     public function handlePair(): void
@@ -37,22 +38,19 @@ class PairButton extends Control
     }
 
     /**
-     * Select groups to pair and related unit
+     * Select groups to pair
      * @param int[] $groupIds
      * @param int|NULL $unitId
      */
-    public function setGroups(array $groupIds, ?int $unitId = NULL): void
+    public function setGroups(array $groupIds): void
     {
         $this->groupIds = $groupIds;
-        $this->unitId = $unitId;
-        if($unitId !== NULL) {
-            $this->bankInfo = $this->model->getInfo($unitId);
-        }
     }
 
     public function render(): void
     {
-        $this->template->canPair = ($this->unitId === NULL && !empty($this->groupIds)) || isset($this->bankInfo->token);
+        $this->template->canPair = $this->canPair();
+        $this->template->groupsCount = count($this->groupIds);
         $this->template->setFile(__DIR__."/templates/PairButton.latte");
         $this->template->render();
     }
@@ -61,12 +59,10 @@ class PairButton extends Control
     {
         $form = new BaseForm(TRUE);
 
-        $days = $this->bankInfo->daysback ?? 0;
-
         $form->addText('days', 'Počet dní', 2, 2)
-            ->setDefaultValue($days)
+            ->setDefaultValue(BankService::DAYS_BACK_DEFAULT)
             ->setRequired('Musíte vyplnit počet dní')
-            ->addRule($form::MIN, 'Musíte zadat alespoň počet dní z nastavení: %d', $days)
+            ->addRule($form::MIN, 'Musíte zadat alespoň kladný počet dní', 1)
             ->setType('number');
         $form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
 
@@ -75,6 +71,28 @@ class PairButton extends Control
         };
         $this->redrawControl('form');
         return $form;
+    }
+
+
+    private function canPair(): bool
+    {
+        if(empty($this->groupIds)) {
+            return FALSE;
+        }
+
+        $groups = $this->payments->findGroupsByIds($this->groupIds);
+        $bankAccountIds = array_map(function (Group $g) { return $g->getBankAccountId(); }, $groups);
+        $bankAccountIds = array_filter($bankAccountIds);
+
+        $bankAccounts = $this->bankAccounts->findByIds($bankAccountIds);
+
+        foreach($bankAccounts as $account) {
+            if($account->getToken() !== NULL) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
     }
 
 

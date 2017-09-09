@@ -17,7 +17,7 @@
                 </ul>
             </span>
 
-            <a n:href="Bank:" class="btn btn-primary"><i class="glyphicon glyphicon-piggy-bank"></i> Bankovní účet</a>
+            <a n:href="BankAccounts:" class="btn btn-primary"><i class="glyphicon glyphicon-piggy-bank"></i> Bankovní účty</a>
             <a n:href="Mail:" class="btn btn-primary"><i class="glyphicon glyphicon-envelope"></i> Emaily</a>
 
             <div class="pull-right">
@@ -41,7 +41,7 @@
                 <td n:foreach="$summarizations[$g->id] as $s" class="r">{if $s->count > 0}{$s->amount|num} ({$s->count}){else} {/if}</td>
                 <td>
                     {$g->state|groupState|noescape}
-                    <div class="pull-right text-success" title="Lze párovat s bankou" n:if="$canPairUnit[$g->unitId] === TRUE">
+                    <div class="pull-right text-success" title="Lze párovat s bankou" n:if="$groupsPairingSupport[$g->id] === TRUE">
                         <span class="glyphicon glyphicon-resize-small"></span>
                     </div>
                 </td>

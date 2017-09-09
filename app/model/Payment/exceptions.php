@@ -33,3 +33,15 @@ class PaymentNotFoundException extends \Exception
 class MissingVariableSymbolException extends \Exception
 {
 }
+
+class BankAccountNotFoundException extends \Exception
+{
+}
+
+class InvalidBankAccountNumberException extends \Exception
+{
+}
+
+class TokenNotSetException extends \Exception
+{
+}

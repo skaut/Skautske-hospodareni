@@ -66,6 +66,9 @@ class Group
     /** @var string */
     private $note;
 
+    /** @var int|NULL */
+    private $bankAccountId;
+
     public function __construct(
         int $id,
         ?string $type,
@@ -79,7 +82,8 @@ class Group
         string $state,
         EmailTemplate $emailTemplate,
         ?int $smtpId,
-        string $note)
+        string $note,
+        ?int $bankAccountId)
     {
         $this->id = $id;
         $this->type = $type;
@@ -94,6 +98,7 @@ class Group
         $this->emailTemplate = $emailTemplate;
         $this->smtpId = $smtpId;
         $this->note = $note;
+        $this->bankAccountId = $bankAccountId;
     }
 
 
@@ -184,6 +189,11 @@ class Group
     public function getNote(): string
     {
         return $this->note;
+    }
+
+    public function getBankAccountId(): ?int
+    {
+        return $this->bankAccountId;
     }
 
 }

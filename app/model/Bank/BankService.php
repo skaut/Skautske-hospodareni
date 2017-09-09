@@ -3,15 +3,14 @@
 namespace Model;
 
 use Assert\Assert;
-use Model\Bank\Fio\FioClient;
 use Model\Payment\Group;
+use Model\Payment\Fio\IFioClient;
 use Model\Payment\Payment;
 use Model\Payment\Payment\Transaction;
 use Model\Bank\Fio\Transaction as BankTransaction;
+use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Utils\Arrays;
-use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
 use Model\Payment\Repositories\IGroupRepository;
 
 /**
@@ -20,11 +19,8 @@ use Model\Payment\Repositories\IGroupRepository;
 class BankService
 {
 
-    /** @var FioClient */
+    /** @var IFioClient */
     private $bank;
-
-    /** @var Cache */
-    protected $cache;
 
     /** @var IGroupRepository */
     private $groups;
@@ -32,46 +28,24 @@ class BankService
     /** @var IPaymentRepository */
     private $payments;
 
-    /** @var BankTable */
-    private $table;
+    /** @var IBankAccountRepository */
+    private $bankAccounts;
+
+    public const DAYS_BACK_DEFAULT = 60;
 
     public function __construct(
-        BankTable $table,
         IGroupRepository $groups,
-        FioClient $bank,
+        IFioClient $bank,
         IPaymentRepository $payments,
-        IStorage $storage)
+        IBankAccountRepository $bankAccounts
+    )
     {
-        $this->table = $table;
         $this->groups = $groups;
         $this->bank = $bank;
         $this->payments = $payments;
-        $this->cache = new Cache($storage, __CLASS__);
+        $this->bankAccounts = $bankAccounts;
     }
 
-    public function setToken($unitId, $token, $daysback = 14)
-    {
-        return $token !== "" ? $this->table->setToken($unitId, $token, $daysback) : $this->table->removeToken($unitId);
-    }
-
-    public function getInfo($unitId)
-    {
-        return $this->table->getInfo($unitId);
-    }
-
-    /**
-     * @param int[] $unitIds
-     * @return bool[]
-     */
-    public function checkCanPair(array $unitIds): array
-    {
-        $units = [];
-        foreach($unitIds as $id) {
-            $units[$id] = isset($this->getInfo($id)->token);
-        }
-
-        return $units;
-    }
 
     /**
      * Completes payments from info on bank account(s)
@@ -84,96 +58,67 @@ class BankService
         Assert::thatAll($groupIds)->integer();
         Assert::that($daysBack)->nullOr()->min(1);
 
-        $groups = $this->groups->findByIds($groupIds);
+        /* @var $groupsByAccount Group[][] */
+        $foundGroups = $this->groups->findByIds($groupIds);
+        $groupsByAccount = Arrays::groupBy($foundGroups, function (Group $g) { return $g->getBankAccountId(); }, TRUE);
+
         $paymentsByGroup = $this->payments->findByMultipleGroups($groupIds);
+        $now = new \DateTimeImmutable();
+        $pairedCount = 0;
 
-        $tokens = [];
-        $groupsByToken = [];
-        $paymentsByToken = [];
-        $sinceFallback = [];
+        foreach($groupsByAccount as $bankAccountId => $groups) {
+            $bankAccount = $this->bankAccounts->find($bankAccountId);
 
-        foreach($groups as $id => $group) {
-            $unitId = $group->getUnitId();
-            $payments = $paymentsByGroup[$group->getId()];
-            $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
-
-            if (empty($payments)) {
+            if($bankAccount->getToken() === NULL) {
                 continue;
             }
 
-            if(isset($tokens[$unitId])) {
-                $token = $tokens[$unitId];
-            } else {
-                $bankInfo = $this->getInfo($unitId);
-                if(!isset($bankInfo->token)) {
-                    continue;
-                }
+            $payments = array_map(function (Group $g) use ($paymentsByGroup) { return $paymentsByGroup[$g->getId()]; }, $groups);
+            $payments = array_merge(...$payments);
+            $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
 
-                $token = $tokens[$unitId] = $bankInfo["token"];
-                $sinceFallback[$token] = new \DateTimeImmutable("- {$bankInfo->daysback} days");
-                $groupsByToken[$token] = [];
-                $paymentsByToken[$token] = [];
+            if(empty($payments)) {
+                continue;
             }
 
-            $groupsByToken[$token][] = $group;
-            $paymentsByToken[$token] = array_merge($paymentsByToken[$token], $paymentsByGroup[$id]);
-        }
+            $pairSince = $daysBack === NULL ? $this->resolveLastPairing($groups) : new \DateTimeImmutable("- $daysBack days");
 
-        if(empty($tokens)) {
-            return 0;
-        }
+            $transactions = $this->bank->getTransactions($pairSince, $now, $bankAccount);
+            $paired = $this->markPaymentsAsComplete($transactions, $payments);
 
-        $pairedPayments = [];
-        $now = new \DateTimeImmutable();
-        foreach($tokens as $token) {
+            $this->payments->saveMany($paired);
+            $pairedCount += count($paired);
+
             if($daysBack === NULL) {
-                $paired = $this->autoPair($token, $groupsByToken[$token], $paymentsByToken[$token], $sinceFallback[$token], $now);
-            } else {
-                $paired = $this->pair($token, $paymentsByToken[$token], $now->modify("- $daysBack days"), $now);
-            }
-            $pairedPayments = array_merge($pairedPayments, $paired);
-        }
-
-        $this->payments->saveMany($pairedPayments);
-
-        if($daysBack === NULL) {
-            foreach (Arrays::ungroup($groupsByToken) as $group) {
-                /* @var $group Group */
-                $group->updateLastPairing($now);
-                $this->groups->save($group);
+                $this->updateLastPairing($groups, $now);
             }
         }
 
-        return count($pairedPayments);
+        return $pairedCount;
     }
 
     /**
-     * @param string $token
      * @param Group[] $groups
-     * @param Payment[] $payments
-     * @param \DateTimeImmutable $fallbackSince
-     * @param \DateTimeImmutable $until
-     * @return Payment[]
      */
-    private function autoPair(string $token, array $groups, array $payments, \DateTimeImmutable $fallbackSince, \DateTimeImmutable $until): array
+    private function updateLastPairing(array $groups, \DateTimeImmutable $time): void
     {
-        $furthestPairing = min(array_map(function (Group $g) {
-            return $g->getLastPairing() ?? $g->getCreatedAt();
-        }, $groups));
-        return $this->pair($token, $payments, $furthestPairing ?? $fallbackSince, $until);
+        foreach($groups as $group) {
+            $group->updateLastPairing($time);
+            $this->groups->save($group);
+        }
     }
 
     /**
-     * @param string $token
-     * @param Payment[] $payments
-     * @param \DateTimeImmutable $since
-     * @param \DateTimeImmutable $until
-     * @return Payment[]
+     * @param Group[] $groups
+     * @return \DateTimeImmutable
      */
-    private function pair(string $token, array $payments, \DateTimeImmutable $since, \DateTimeImmutable $until): array
+    private function resolveLastPairing(array $groups): \DateTimeImmutable
     {
-        $transactions = $this->bank->getTransactions($since, $until, $token);
-        return $this->markPaymentsAsComplete($transactions, $payments);
+        $lastPairings = array_map(function (Group $g) {
+            return $g->getLastPairing();
+        }, $groups);
+        $lastPairings = array_filter($lastPairings);
+        return !empty($lastPairings) ? min($lastPairings) : new \DateTimeImmutable('- ' . self::DAYS_BACK_DEFAULT . ' days');
     }
 
     /**
@@ -203,18 +148,6 @@ class BankService
         }
 
         return $paired;
-    }
-
-    /**
-     * @deprecated Use FioClient::getTransactions()
-     */
-    public function getTransactionsFio($token, $daysBack = 14)
-    {
-        return $this->bank->getTransactions(
-            (new \DateTime())->modify("- $daysBack days"),
-            new \DateTime(),
-            $token
-        );
     }
 
 }

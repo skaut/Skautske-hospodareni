@@ -44,6 +44,14 @@ interface IGroupRepository
      */
     public function findBySkautisEntityType(Type $type): array;
 
+
+    /**
+     * @param int $bankAccountId
+     * @return Group[]
+     */
+    public function findByBankAccount(int $bankAccountId): array;
+
+
     /**
      * @param Group $group
      */

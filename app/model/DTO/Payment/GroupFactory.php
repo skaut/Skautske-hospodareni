@@ -29,7 +29,8 @@ class GroupFactory
             $group->getState(),
             $group->getEmailTemplate(),
             $group->getSmtpId(),
-            $group->getNote()
+            $group->getNote(),
+            $group->getBankAccountId()
         );
     }
 

@@ -46,6 +46,9 @@ Model\Payment\Group:
         smtpId:
             type: integer
             nullable: true
+        bankAccountId:
+            type: integer
+            nullable: true
 
     embedded:
         object:

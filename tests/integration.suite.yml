@@ -1,0 +1,16 @@
+class_name: IntegrationTester
+modules:
+    enabled:
+        - \Helper\Integration
+
+        - Arachne\Codeception\Module\NetteDIModule:
+            tempDir: ../_temp/integration
+            appDir: ../../app
+            configFiles:
+                - config/doctrine.neon
+            newContainerForEachTest: true
+            removeDefaultExtensions: true
+        - Db:
+            dsn: 'mysql:host=mysql-test;dbname=hskauting;charset=utf8'
+            user: 'root'
+            password: ''

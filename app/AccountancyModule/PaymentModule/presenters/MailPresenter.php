@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\PaymentModule;
 
 use App\Forms\BaseForm;
+use Model\MailService;
 use Nette\Application\UI\Form;
 
 /**
@@ -11,16 +12,16 @@ use Nette\Application\UI\Form;
 class MailPresenter extends BasePresenter
 {
 
-    /** @var \Model\MailService */
-    protected $model;
+    /** @var MailService */
+    private $model;
 
-    public function __construct(\Model\PaymentService $paymentService, \Model\MailService $mailService)
+    public function __construct(MailService $model)
     {
-        parent::__construct($paymentService);
-        $this->model = $mailService;
+        parent::__construct();
+        $this->model = $model;
     }
 
-    public function renderDefault($aid) : void
+    public function renderDefault(int $aid) : void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přistupovat ke správě emailů", "danger");

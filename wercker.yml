@@ -1,7 +1,7 @@
 box: fmasa/lebeda:7.1-ci
 
 services:
-    - name: mysql
+    - name: mysql-test
       id: mysql
       tag: 5.7
       env:
@@ -26,6 +26,9 @@ build:
         - script:
             name: run unit tests
             code: vendor/bin/codecept run unit
+        - script:
+            name: run integration tests
+            code: vendor/bin/codecept run integration
         - appnific/expandenv:
             input_file: app/config/config.ci.local.neon
             output_file: app/config/config.local.neon
@@ -61,7 +64,7 @@ build:
             code: chown www-data:www-data . -R && chmod 777 . -R
         - script:
             name: acceptance testing
-            code: vendor/bin/codecept run --env=ci acceptance
+            code: vendor/bin/codecept run --env=ci acceptance -vv
         - script:
             name: test coding standard
             code: vendor/bin/phpcs app --standard=ruleset.xml

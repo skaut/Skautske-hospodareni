@@ -13,6 +13,17 @@ $I->haveInDatabase('pa_smtp', [
     'created' => '2017-06-15 00:00:00',
 ]);
 
+$I->haveInDatabase('pa_bank_account', [
+    'name' => 'Acceptance',
+    'unit_id' => 27266,
+    'token' => NULL,
+    'created_at' => '2017-08-24 00:00:00',
+    'allowed_for_subunits' => 1,
+    'number_prefix' => NULL,
+    'number_number' => '2000942144',
+    'number_bank_code' => '2010',
+]);
+
 $I->login();
 $I->click('Platby');
 $I->waitForText('Přehled plateb');
@@ -22,6 +33,9 @@ $I->click('Obecná');
 $I->fillField('Název', 'Jaráky');
 $I->click('//option[text()="Vyberte email"]');
 $I->click('//option[text()="test@hospodareni.loc"]');
+
+$I->click('//option[text()="Vyberte bankovní účet"]');
+$I->click('//option[text()="Acceptance"]');
 $I->click('Založit skupinu');
 
 $I->see('Zatím zde nejsou žádné platby.');

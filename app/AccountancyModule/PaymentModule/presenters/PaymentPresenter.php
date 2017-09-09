@@ -3,14 +3,15 @@
 namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
+use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\Forms\BaseForm;
 use Consistence\Time\TimeFormat;
-use Model\BankService;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\Mail\MailerNotFoundException;
+use Model\Payment\BankAccountService;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\InvalidEmailException;
@@ -28,11 +29,6 @@ use Nette\Mail\SmtpException;
 class PaymentPresenter extends BasePresenter
 {
 
-    /**
-     *
-     * @var BankService
-     */
-    protected $bank;
     protected $readUnits;
     protected $editUnits;
     protected $unitService;
@@ -40,11 +36,14 @@ class PaymentPresenter extends BasePresenter
     /** @var int */
     private $id;
 
-    /** @var object */
-    private $bankInfo;
+    /** @var PaymentService */
+    private $model;
 
     /** @var MailingService */
     private $mailing;
+
+    /** @var BankAccountService */
+    private $bankAccounts;
 
     /** @var IMassAddFormFactory */
     private $massAddFormFactory;
@@ -56,18 +55,19 @@ class PaymentPresenter extends BasePresenter
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
     public function __construct(
-        PaymentService $paymentService,
-        BankService $bankService,
+        PaymentService $model,
         UnitService $unitService,
         MailingService $mailing,
+        BankAccountService $bankAccounts,
         IMassAddFormFactory $massAddFormFactory,
         IPairButtonFactory $pairButtonFactory
     )
     {
-        parent::__construct($paymentService);
-        $this->bank = $bankService;
+        parent::__construct();
+        $this->model = $model;
         $this->unitService = $unitService;
         $this->mailing = $mailing;
+        $this->bankAccounts = $bankAccounts;
         $this->massAddFormFactory = $massAddFormFactory;
         $this->pairButtonFactory = $pairButtonFactory;
     }
@@ -87,16 +87,26 @@ class PaymentPresenter extends BasePresenter
 
         $groupIds = [];
         $unitIds = [];
+        $bankAccountIds = [];
         foreach($groups as $group) {
             $groupIds[] = $group->getId();
             $unitIds[] = $group->getUnitId();
+            $bankAccountIds[] = $group->getBankAccountId();
+        }
+
+        $bankAccounts = $this->bankAccounts->findByIds(array_filter(array_unique($bankAccountIds)));
+
+        $groupsPairingSupport = [];
+        foreach($groups as $group) {
+            $accountId = $group->getBankAccountId();
+            $groupsPairingSupport[$group->getId()] = $accountId !== NULL && $bankAccounts[$accountId]->getToken() !== NULL;
         }
 
         $this["pairButton"]->setGroups($groupIds);
 
         $this->template->groups = $groups;
         $this->template->summarizations = $this->model->getGroupSummaries($groupIds);
-        $this->template->canPairUnit = $this->bank->checkCanPair($unitIds);
+        $this->template->groupsPairingSupport = $groupsPairingSupport;
     }
 
     public function actionDetail(int $id): void
@@ -112,8 +122,6 @@ class PaymentPresenter extends BasePresenter
         if ($this->isEditable) {
             $this["pairButton"]->setGroups([$id], $group->getUnitId());
         }
-
-        $this->bankInfo = $this->bank->getInfo($this->aid);
 
         $this->template->units = $this->readUnits;
         $this->template->group = $group;
@@ -200,14 +208,16 @@ class PaymentPresenter extends BasePresenter
     public function actionRepayment(int $id): void
     {
         $campService = $this->context->getService("campService");
-        $accountFrom = $this->model->getBankAccount($this->aid);
-
         $group = $this->model->getGroup($id);
 
         if($group === NULL || !$this->hasAccessToGroup($group)) {
             $this->flashMessage('K této skupině nemáte přístup');
             $this->redirect('Payment:default');
         }
+
+        $accountFrom = $group->getBankAccountId() !== NULL ?
+            $this->bankAccounts->find($group->getBankAccountId())
+            : NULL;
 
         $this['repaymentForm']->setDefaults([
             "gid" => $group->getId(),
@@ -552,12 +562,16 @@ class PaymentPresenter extends BasePresenter
             }
         }
         $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $date = NULL);
-        if (!($bankInfo = $this->bank->getInfo($this->aid))) {
+
+        $bankAccountId = $this->model->getGroup((int) $values->gid)->getBankAccountId();
+        $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
+
+        if ($bankAccount === NULL || $bankAccount->getToken() === NULL) {
             $this->flashMessage("Není zadán API token z banky!", "danger");
             $this->redirect("this");
         }
 
-        $resultXML = $this->model->sendFioPaymentRequest($dataToRequest, $bankInfo->token);
+        $resultXML = $this->model->sendFioPaymentRequest($dataToRequest, $bankAccount->getToken());
         $result = (new \SimpleXMLElement($resultXML));
 
         if ($result->result->errorCode == 0) {//OK
@@ -568,9 +582,9 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentPairButton()
+    protected function createComponentPairButton(): PairButton
     {
-        return $this->pairButtonFactory->create($this->aid);
+        return $this->pairButtonFactory->create();
     }
 
     protected function createComponentMassAddForm(): MassAddForm

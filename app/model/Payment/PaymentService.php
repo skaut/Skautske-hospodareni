@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Assert\Assert;
 use DateTimeImmutable;
 use Model\DTO\Payment as DTO;
 use Model\Payment\Group;
@@ -119,22 +120,6 @@ class PaymentService
     }
 
     /**
-     * číslo účtu jednotky ze skautisu
-     * @param int $unitId
-     * @return string|NULL
-     */
-    public function getBankAccount(int $unitId): ?string
-    {
-        $accounts = $this->bankAccounts->findByUnit($unitId);
-
-        if (empty($accounts)) {
-            return NULL;
-        }
-
-        return $accounts[0]->getNumber();
-    }
-
-    /**
      * GROUP
      */
 
@@ -151,6 +136,20 @@ class PaymentService
             return DTO\GroupFactory::create($group);
         }, $groups);
     }
+
+
+    /**
+     * @param int[] $ids
+     * @return DTO\Group[]
+     */
+    public function findGroupsByIds(array $ids): array
+    {
+        Assert::thatAll($ids)->integer();
+        $groups = $this->groups->findByIds($ids);
+
+        return array_map(function (Group $g) { return DTO\GroupFactory::create($g); }, $groups);
+    }
+
 
     /**
      * @param int[] $groupIds
@@ -170,12 +169,15 @@ class PaymentService
         ?int $nextVS,
         ?float $amount,
         Group\EmailTemplate $emailTemplate,
-        ?int $smtpId
+        ?int $smtpId,
+        ?int $bankAccountId
     ): int
     {
         $now = new DateTimeImmutable();
         $amount = $amount !== 0.0 ? $amount : NULL;
-        $group = new Group($unitId, $skautisEntity, $label, $amount, $dueDate, $ks, $nextVS, $now, $emailTemplate, $smtpId);
+        $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
+
+        $group = new Group($unitId, $skautisEntity, $label, $amount, $dueDate, $ks, $nextVS, $now, $emailTemplate, $smtpId, $bankAccount);
 
         $this->groups->save($group);
         return $group->getId();
@@ -189,11 +191,14 @@ class PaymentService
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
         Group\EmailTemplate $emailTemplate,
-        ?int $smtpId): void
+        ?int $smtpId,
+        ?int $bankAccountId
+    ): void
     {
         $group = $this->groups->find($id);
+        $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
 
-        $group->update($name, $defaultAmount, $dueDate, $constantSymbol, $nextVariableSymbol, $emailTemplate, $smtpId);
+        $group->update($name, $defaultAmount, $dueDate, $constantSymbol, $nextVariableSymbol, $emailTemplate, $smtpId, $bankAccount);
 
         $this->groups->save($group);
     }
@@ -604,7 +609,6 @@ class PaymentService
         });
 
         return array_map(function(Payment $p) { return $p->getPersonId(); }, $payments);
-
     }
 
 }

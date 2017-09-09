@@ -7,10 +7,10 @@ use Nette;
 class Transaction extends Nette\Object
 {
 
-    /** @var int */
+    /** @var string */
     private $id;
 
-    /** @var \DateTime */
+    /** @var \DateTimeImmutable */
     private $date;
 
     /** @var float */
@@ -31,20 +31,9 @@ class Transaction extends Nette\Object
     /** @var string|NULL */
     private $note;
 
-    /**
-     * Transaction constructor.
-     * @param string $id
-     * @param \DateTime $date
-     * @param float $amount
-     * @param string $bankAccount
-     * @param string $name
-     * @param int|NULL $variableSymbol
-     * @param int|NULL $constantSymbol
-     * @param NULL|string $note
-     */
     public function __construct(
-        int $id,
-        \DateTime $date,
+        string $id,
+        \DateTimeImmutable $date,
         float $amount,
         string $bankAccount,
         string $name,
@@ -62,15 +51,13 @@ class Transaction extends Nette\Object
         $this->note = $note;
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDate()
+
+    public function getDate(): \DateTimeImmutable
     {
         return $this->date;
     }

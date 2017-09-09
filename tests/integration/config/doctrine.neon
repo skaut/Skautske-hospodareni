@@ -1,0 +1,16 @@
+parameters:
+    database:
+        host: mysql-test
+        user: root
+        password:
+        name: hskauting
+
+services:
+    - Nette\Caching\Storages\FileStorage(%tempDir%)
+    - Nette\Caching\Storages\SQLiteJournal(':memory:')
+
+extensions:
+    console: Kdyby\Console\DI\ConsoleExtension
+
+includes:
+    - ../../../app/config/model/doctrine.neon

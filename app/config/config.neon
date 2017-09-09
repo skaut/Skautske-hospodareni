@@ -36,20 +36,6 @@ tracy:
 console:
     url: https://h.skauting.cz
 
-doctrine:
-    host: %database.host%
-    user: %database.user%
-    password: %database.password%
-    dbname: %database.name%
-    metadata:
-        Model: yaml(%appDir%/model/Infrastructure/mapping/Model)
-    types:
-        datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
-        string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
-        money: Model\Infrastructure\Types\MoneyType
-    dql:
-        string:
-            field: DoctrineExtensions\Query\Mysql\Field
 dibi:
     driver: mysqli
     host: %database.host%
@@ -57,11 +43,6 @@ dibi:
     password: %database.password%
     database: %database.name%
     charset: utf8
-
-annotations:
-    aliases:
-        enum: Consistence\Doctrine\Enum\EnumAnnotation
-        nullable: Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable
 
 monolog:
 
@@ -77,15 +58,8 @@ proxy:
 extensions:
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
-    - Arachne\ContainerAdapter\DI\ContainerAdapterExtension
-    - Arachne\EventDispatcher\DI\EventDispatcherExtension
-    migrations: Zenify\DoctrineMigrations\DI\MigrationsExtension
     monolog: Kdyby\Monolog\DI\MonologExtension
     console: Kdyby\Console\DI\ConsoleExtension
-    events: Kdyby\Events\DI\EventsExtension
-    - Kdyby\Annotations\DI\AnnotationsExtension
-    doctrine: Kdyby\Doctrine\DI\OrmExtension
-    annotations: Model\Infrastructure\YamlAnnotationsExtension
     proxy: Lookyman\Nette\Proxy\DI\ProxyExtension
     webloader: WebLoader\Nette\Extension
 
@@ -94,10 +68,24 @@ services:
     #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory
     - \Model\PaymentService(%tempDir%)
+
+    - class: Model\Payment\BankAccountService
+      arguments: { fioCache: @fio.cache }
+    - Model\Skautis\UnitResolver
+    - Model\Skautis\BankAccountImporter
+
     - Model\MailService
     - Model\Payment\MailingService
-    - Model\Bank\Http\Curl
-    - Model\Bank\Fio\FioClient
+
+    fio.client:
+        class: Model\Bank\Fio\FioClient
+        autowired: false
+    fio.cache: Nette\Caching\Cache
+    - Model\Payment\Fio\CachingClientDecorator(@fio.client, @fio.cache)
+    - class: Model\Bank\Fio\DownloaderFactory
+      arguments:
+          - GuzzleHttp\Client({ timeout: 3 })
+
     - Model\BankService
     router: @App\RouterFactory::createRouter
     #connection:
@@ -155,7 +143,6 @@ services:
     - App\AccountancyModule\Factories\GridFactory
 
     # Tables
-    - Model\BankTable
     - Model\BudgetTable
     - Model\ChitTable
     - Model\CommandTable
@@ -169,13 +156,6 @@ services:
     - Model\Services\PdfRenderer
     - Model\Skautis\Mapper
 
-    - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@annotations.reader)
-    - class: Model\Infrastructure\EnumListener
-      tags: [kdyby.subscriber]
-    - class: Fmasa\DoctrineNullableEmbeddables\Subscriber
-      arguments: { reader: @annotations.reader }
-      tags: [kdyby.subscriber]
-
     nette.latteFactory:
         setup:
             - addFilter(null, [App\AccountancyModule\AccountancyHelpers, loader])
@@ -187,5 +167,6 @@ services:
     - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
 
 includes:
+    - model/doctrine.neon
     - components.neon
     - webloader.neon

@@ -52,6 +52,12 @@ $(document).ready(function () {
         return false;
     };
 
+    $('[data-confirm]').click(function(e) {
+        if(!confirm($(this).data('confirm'))) {
+            e.preventDefault();
+        }
+    });
+
 });
 
 function jqCheckAll(id, name) {

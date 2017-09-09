@@ -11,6 +11,9 @@ class RegistrationPresenter extends BasePresenter
 
     protected $readUnits;
 
+    /** @var PaymentService */
+    private $model;
+
     /** @var IMassAddFormFactory */
     private $massAddFormFactory;
 
@@ -19,9 +22,10 @@ class RegistrationPresenter extends BasePresenter
 
     private const STS_PRICE = 200;
 
-    public function __construct(IMassAddFormFactory $massAddFormFactory, PaymentService $payments)
+    public function __construct(IMassAddFormFactory $massAddFormFactory, PaymentService $model)
     {
-        parent::__construct($payments);
+        parent::__construct();
+        $this->model = $model;
         $this->massAddFormFactory = $massAddFormFactory;
     }
 

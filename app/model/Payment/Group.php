@@ -52,6 +52,9 @@ class Group
     /** @var string */
     private $note = '';
 
+    /** @var int|NULL */
+    private $bankAccountId;
+
     const STATE_OPEN = 'open';
     const STATE_CLOSED = 'closed';
 
@@ -65,7 +68,8 @@ class Group
         ?int $nextVariableSymbol,
         \DateTimeImmutable $createdAt,
         EmailTemplate $emailTemplate,
-        ?int $smtpId
+        ?int $smtpId,
+        ?BankAccount $bankAccount
     )
     {
         $this->unitId = $unitId;
@@ -78,6 +82,7 @@ class Group
         $this->createdAt = $createdAt;
         $this->emailTemplate = $emailTemplate;
         $this->smtpId = $smtpId;
+        $this->changeBankAccount($bankAccount);
     }
 
     public function update(
@@ -87,7 +92,8 @@ class Group
         ?int $constantSymbol,
         ?int $nextVariableSymbol,
         EmailTemplate $emailTemplate,
-        ?int $smtpId) : void
+        ?int $smtpId,
+        ?BankAccount $bankAccount) : void
     {
         $this->name = $name;
         $this->defaultAmount = $defaultAmount;
@@ -96,6 +102,7 @@ class Group
         $this->nextVariableSymbol = $nextVariableSymbol;
         $this->emailTemplate = $emailTemplate;
         $this->smtpId = $smtpId;
+        $this->changeBankAccount($bankAccount);
     }
 
     public function open(string $note): void
@@ -114,6 +121,11 @@ class Group
         }
         $this->state = self::STATE_CLOSED;
         $this->note = $note;
+    }
+
+    public function removeBankAccount(): void
+    {
+        $this->bankAccountId = NULL;
     }
 
 
@@ -229,9 +241,28 @@ class Group
         return $this->note;
     }
 
+    public function getBankAccountId(): ?int
+    {
+        return $this->bankAccountId;
+    }
+
     public function isOpen(): bool
     {
         return $this->state === self::STATE_OPEN;
+    }
+
+    private function changeBankAccount(?BankAccount $bankAccount): void
+    {
+        if($bankAccount === NULL) {
+            $this->bankAccountId = NULL;
+            return;
+        }
+
+        if($bankAccount->getUnitId() !== $this->unitId && !$bankAccount->isAllowedForSubunits()) {
+            throw new \InvalidArgumentException("Unit owning this group has no acces to this bank account");
+        }
+
+        $this->bankAccountId = $bankAccount->getId();
     }
 
 }

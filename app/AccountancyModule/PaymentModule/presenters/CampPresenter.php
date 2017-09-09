@@ -12,6 +12,9 @@ class CampPresenter extends BasePresenter
 
     protected $readUnits;
 
+    /** @var PaymentService */
+    private $model;
+
     /** @var \Model\EventEntity */
     protected $campService;
 
@@ -21,9 +24,10 @@ class CampPresenter extends BasePresenter
     /** @var int */
     private $id;
 
-    public function __construct(PaymentService $paymentService, IMassAddFormFactory $massAddFormFactory)
+    public function __construct(PaymentService $model, IMassAddFormFactory $massAddFormFactory)
     {
-        parent::__construct($paymentService);
+        parent::__construct();
+        $this->model = $model;
         $this->massAddFormFactory = $massAddFormFactory;
     }
 

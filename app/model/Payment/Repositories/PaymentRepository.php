@@ -3,7 +3,6 @@
 namespace Model\Payment\Repositories;
 
 use Assert\Assert;
-use Consistence\Type\ArrayType\ArrayType;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Model\Payment\Payment;
@@ -113,15 +112,11 @@ class PaymentRepository implements IPaymentRepository
             return;
         }
 
-        $filtered = ArrayType::filterValuesByCallback($payments, function ($payment) {
-            return $payment instanceof Payment;
-        });
+        Assert::thatAll($payments)->isInstanceOf(Payment::class);
 
-        if (count($filtered) !== count($payments)) {
-            throw new \InvalidArgumentException("Expected array of payments");
+        foreach($payments as $payment) {
+            $this->em->persist($payment);
         }
-
-        $this->em->persist($filtered);
         $this->em->flush();
     }
 

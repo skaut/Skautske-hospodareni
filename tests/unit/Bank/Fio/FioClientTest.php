@@ -1,101 +1,112 @@
 <?php
 
-namespace Bank\Fio;
+namespace Model\Bank\Fio;
 
+use FioApi\Account;
+use FioApi\Downloader;
+use FioApi\Exceptions\InternalErrorException;
+use FioApi\Exceptions\TooGreedyException;
+use FioApi\TransactionList;
+use GuzzleHttp\Exception\TransferException;
 use Mockery as m;
 
-use Model\Bank\Fio\FioClient;
-use Model\Bank\Fio\Transaction;
-use Model\Bank\Http\Response;
-use DateTime;
+use Model\BankTimeLimitException;
+use Model\BankTimeoutException;
+use Model\Payment\BankAccount;
+use Model\Payment\TokenNotSetException;
+use Psr\Log\NullLogger;
 
 class FioClientTest extends \Codeception\Test\Unit
 {
-    /**
-     * @var \UnitTester
-     */
-    protected $tester;
 
-    public function testGetTransactions()
+    public function testBankAccountWithoutTokenThrowsException()
     {
-        $since = new DateTime('- 5 days');
-        $until = new DateTime();
-        $token = 'test-token';
+        $factory = m::mock(IDownloaderFactory::class);
+        $fio = new FioClient($factory, new NullLogger());
 
-        $expectedUrl = $this->buildUrl($token, $since, $until);
-        $client = m::mock('Model\Bank\Http\IClient');
-        $client->shouldReceive('get')
-            ->with($expectedUrl, 3)
-            ->andReturn(new Response(200, file_get_contents(__DIR__ . '/response.json'), FALSE));
+        $this->expectException(TokenNotSetException::class);
 
-        $fio = new FioClient($client);
-
-        $transactions = $fio->getTransactions($since, $until, $token);
-
-        /* @var $transactions Transaction[] */
-        $this->assertCount(2, $transactions);
-
-        $this->assertSame(9786224406, $transactions[0]->getId());
-        $this->assertSame('2016-06-01', $transactions[0]->getDate()->format('Y-m-d'));
-        $this->assertEquals(2700.00, $transactions[0]->getAmount());
-        $this->assertSame('123456789/0800', $transactions[0]->getBankAccount());
-        $this->assertSame('Peter Parker', $transactions[0]->getName());
-        $this->assertSame(1113, $transactions[0]->getVariableSymbol());
-        $this->assertNull($transactions[0]->getConstantSymbol());
-
-        $this->assertSame(9787642472, $transactions[1]->getId());
-        $this->assertSame('2016-06-08', $transactions[1]->getDate()->format('Y-m-d'));
-        $this->assertEquals(2000.00, $transactions[1]->getAmount());
-        $this->assertSame('111111111/3030', $transactions[1]->getBankAccount());
-        $this->assertSame('Peter Black', $transactions[1]->getName());
-        $this->assertSame(123, $transactions[1]->getVariableSymbol());
-        $this->assertNull($transactions[1]->getConstantSymbol());
+        $fio->getTransactions(
+            new \DateTimeImmutable(),
+            new \DateTimeImmutable(),
+            $this->mockAccount(NULL)
+        );
     }
 
-    public function testTimeOut()
+    public function testTooGreedyExceptionResultsInLimitException()
     {
-        $since = new DateTime('- 5 days');
-        $until = new DateTime();
-        $token = 'test-token';
+        $since = new \DateTimeImmutable();
+        $until = new \DateTimeImmutable();
 
-        $client = m::mock('Model\Bank\Http\IClient');
-        $client->shouldReceive('get')
-            ->withAnyArgs()
-            ->andReturn(new Response(NULL, NULL, TRUE));
+        $downloader = m::mock(Downloader::class);
+        $downloader->shouldReceive('downloadFromTo')
+            ->with($since, $until)
+            ->once()
+            ->andThrow(TooGreedyException::class);
 
-        $fio = new FioClient($client);
+        $factory = $this->buildDownloaderFactory($downloader);
+        $fio = new FioClient($factory, new NullLogger());
 
-        $this->expectException(\Model\BankTimeoutException::class);
-        $fio->getTransactions($since, $until, $token);
+        $this->expectException(BankTimeLimitException::class);
+
+        $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    public function testOverloadedApi()
+    public function tesGeneralApiErrorExceptionResultsInTimeoutException()
     {
-        $since = new DateTime('- 5 days');
-        $until = new DateTime();
-        $token = 'test-token';
+        $since = new \DateTimeImmutable();
+        $until = new \DateTimeImmutable();
 
-        $client = m::mock('Model\Bank\Http\IClient');
-        $client->shouldReceive('get')
-            ->withAnyArgs()
-            ->andReturn(new Response(409, NULL, FALSE));
+        $downloader = m::mock(Downloader::class);
+        $downloader->shouldReceive('downloadFromTo')
+            ->with($since, $until)
+            ->once()
+            ->andThrow(TransferException::class);
 
-        $this->expectException(\Model\BankTimeLimitException::class);
-        $fio = new FioClient($client);
+        $factory = $this->buildDownloaderFactory($downloader);
+        $fio = new FioClient($factory, new NullLogger());
 
-        $fio->getTransactions($since, $until, $token);
+        $this->expectException(BankTimeoutException::class);
+
+        $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    private function buildUrl($token, DateTime $since, DateTime $until)
+    public function testInternalErrorResultsInTimeoutException()
     {
-        $sinceString = $since->format('Y-m-d');
-        $untilString = $until->format('Y-m-d');
-        return "https://www.fio.cz/ib_api/rest/periods/$token/$sinceString/$untilString/transactions.json";
+        $since = new \DateTimeImmutable();
+        $until = new \DateTimeImmutable();
+
+        $downloader = m::mock(Downloader::class);
+        $downloader->shouldReceive('downloadFromTo')
+            ->with($since, $until)
+            ->once()
+            ->andThrow(InternalErrorException::class);
+
+        $factory = $this->buildDownloaderFactory($downloader);
+        $fio = new FioClient($factory, new NullLogger());
+
+        $this->expectException(BankTimeoutException::class);
+
+        $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    protected function _after()
+    private function mockAccount(?string $token = 'token'): BankAccount
     {
-        m::close();
+        return m::mock(BankAccount::class, [
+            'getId' => 10,
+            'getToken' => $token,
+        ]);
+    }
+
+    private function buildDownloaderFactory(Downloader $downloader): IDownloaderFactory
+    {
+        $factory = m::mock(IDownloaderFactory::class);
+        $factory->shouldReceive('create')
+            ->once()
+            ->with('token')
+            ->andReturn($downloader);
+
+        return $factory;
     }
 
 }

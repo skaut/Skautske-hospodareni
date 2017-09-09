@@ -2,126 +2,78 @@
 
 namespace Model\Bank\Fio;
 
-use Model\Bank\Http\IClient;
-use Nette;
+use DateTimeImmutable;
+use FioApi\Exceptions\InternalErrorException;
+use FioApi\Exceptions\TooGreedyException;
+use FioApi\Transaction as ApiTransaction;
+use GuzzleHttp\Exception\TransferException;
+use Model\Payment\BankAccount;
+use Model\Payment\Fio\IFioClient;
+use Model\Payment\TokenNotSetException;
 use Model\BankTimeLimitException;
 use Model\BankTimeoutException;
+use Psr\Log\LoggerInterface;
 
-class FioClient extends Nette\Object
+class FioClient implements IFioClient
 {
 
-    const ID = 'column22';
-    const DATE = 'column0';
-    const AMOUNT = 'column1';
-    const ACCOUNT = 'column2';
-    const BANK_ID = 'column3';
-    const NAME = 'column7';
-    const USER = 'column10';
-    const VARIABLE_SYMBOL = 'column5';
-    const CONSTANT_SYMBOL = 'column4';
-    const NOTE = 'column16';
+    /** @var IDownloaderFactory */
+    private $downloaderFactory;
+
+    /** @var LoggerInterface */
+    private $logger;
 
 
-    const REQUEST_TIMEOUT = 3;
-    const FIO_URL = 'https://www.fio.cz/ib_api/rest/periods/:token/:since/:until/transactions.json';
-
-    /** @var IClient */
-    private $http;
-
-    /**
-     * FioClient constructor.
-     * @param IClient $http
-     */
-    public function __construct(IClient $http)
+    public function __construct(IDownloaderFactory $downloaderFactory, LoggerInterface $logger)
     {
-        $this->http = $http;
+        $this->downloaderFactory = $downloaderFactory;
+        $this->logger = $logger;
     }
 
-    /**
-     * @param \DateTimeInterface $since
-     * @param \DateTimeInterface $until
-     * @param string $token
-     * @return Transaction[]
-     */
-    public function getTransactions(\DateTimeInterface $since, \DateTimeInterface $until, $token): array
+
+    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
-        $url = strtr(self::FIO_URL, [
-            ':token' => $token,
-            ':since' => $since->format('Y-m-d'),
-            ':until' => $until->format('Y-m-d')
-        ]);
-
-        $response = $this->performRequest($url);
-        $transactions = [];
-
-        $transactionList = $response['accountStatement']['transactionList'];
-
-        if ($transactionList !== NULL) {
-            foreach ($transactionList['transaction'] as $transaction) {
-                $bankAccount = $this->getValue($transaction, self::ACCOUNT);
-
-                $bankAccount = $bankAccount
-                    ? $bankAccount . '/' . $this->getValue($transaction, self::BANK_ID)
-                    : "";
-
-                $name = $this->getValue($transaction, self::NAME) ?? $this->getValue($transaction, self::USER);
-
-                $transactions[] = new Transaction(
-                    (string)$this->getValue($transaction, self::ID),
-                    \DateTime::createFromFormat('Y-m-dO', $this->getValue($transaction, self::DATE)),
-                    $this->getFloatValue($transaction, self::AMOUNT),
-                    $bankAccount,
-                    $name ?? "",
-                    $this->getIntValue($transaction, self::VARIABLE_SYMBOL),
-                    $this->getIntValue($transaction, self::CONSTANT_SYMBOL),
-                    $this->getValue($transaction, self::NOTE)
-                );
-            }
+        if($account->getToken() === NULL) {
+            throw new TokenNotSetException();
         }
 
-        return $transactions;
+        $transactions = $this->loadTransactionsFromApi($since, $until, $account);
+        $transactions = array_map([$this, 'createTransactionDTO'], $transactions);
+
+        return array_reverse($transactions); // DESC sort
+    }
+
+    private function createTransactionDTO(ApiTransaction $transaction): Transaction
+    {
+        return new Transaction(
+            $transaction->getId(),
+            $transaction->getDate(),
+            $transaction->getAmount(),
+            $transaction->getSenderAccountNumber() . '/' . $transaction->getSenderBankCode(),
+            $transaction->getUserIdentity() ?? $transaction->getPerformedBy() ?? '',
+            $transaction->getVariableSymbol() !== NULL ? (int)$transaction->getVariableSymbol() : NULL,
+            $transaction->getConstantSymbol() !== NULL ? (int)$transaction->getConstantSymbol() : NULL,
+            $transaction->getComment()
+        );
     }
 
     /**
-     * @param array $transaction
-     * @param $column
-     * @return mixed
-     */
-    private function getValue(array $transaction, $column)
-    {
-        return isset($transaction[$column])
-            ? $transaction[$column]['value']
-            : NULL;
-    }
-
-    private function getIntValue(array $transaction, string $column): ?int
-    {
-        $value = $this->getValue($transaction, $column);
-        return $value !== NULL ? (int)$value : NULL;
-    }
-
-    private function getFloatValue(array $transaction, string $column): ?float
-    {
-        $value = $this->getValue($transaction, $column);
-        return $value !== NULL ? (float)$value : NULL;
-    }
-
-    /**
-     * @param string $url
-     * @return array
+     * @return ApiTransaction[]
      * @throws BankTimeLimitException
      * @throws BankTimeoutException
      */
-    private function performRequest($url)
+    private function loadTransactionsFromApi(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
-        $response = $this->http->get($url, self::REQUEST_TIMEOUT);
-        if ($response->isTimeout()) {
-            throw new BankTimeoutException();
+        $api = $this->downloaderFactory->create($account->getToken());
+
+        try {
+            return $api->downloadFromTo($since, $until)->getTransactions();
+        } catch (TooGreedyException $e) {
+            $this->logger->error("Bank account #{$account->getId()} hit API limit");
+            throw new BankTimeLimitException('', 0, $e);
+        } catch (TransferException | InternalErrorException $e) {
+            throw new BankTimeoutException("There was an error when connecting to FIO", $e->getCode(), $e);
         }
-        if ($response->getCode() == 409) {
-            throw new BankTimeLimitException();
-        }
-        return json_decode($response->getBody(), TRUE);
     }
 
 }

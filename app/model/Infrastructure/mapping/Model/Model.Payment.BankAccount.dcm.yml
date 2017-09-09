@@ -1,0 +1,21 @@
+Model\Payment\BankAccount:
+
+    type: entity
+    table: pa_bank_account
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        unitId: { type: integer }
+        name: { type: string }
+        token:
+            type: string
+            nullable: true
+        createdAt: { type: datetime_immutable }
+        allowedForSubunits: { type: boolean }
+
+    embedded:
+        number: { class: Model\Payment\BankAccount\AccountNumber }
