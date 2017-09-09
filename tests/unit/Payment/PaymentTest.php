@@ -99,8 +99,20 @@ class PaymentTest extends \Codeception\Test\Unit
     public function testUpdateVariableSymbol()
     {
         $payment = $this->createPayment();
+        $payment->extractEventsToDispatch(); // Clear events collection
+
+        $variableSymbol = 789789;
+
         $payment->updateVariableSymbol(789789);
-        $this->assertSame(789789, $payment->getVariableSymbol());
+        $this->assertSame($variableSymbol, $payment->getVariableSymbol());
+
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+        /* @var $event PaymentVariableSymbolWasChanged */
+        $event = $events[0];
+        $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
+        $this->assertSame(29, $event->getGroupId());
+        $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
     public function testUpdateVariableForClosedPaymentThrowsException()

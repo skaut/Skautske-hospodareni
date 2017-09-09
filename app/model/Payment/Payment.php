@@ -118,6 +118,11 @@ class Payment extends AbstractAggregate
     public function updateVariableSymbol(int $variableSymbol): void
     {
         $this->checkNotClosed();
+
+        if($this->variableSymbol !== $variableSymbol) {
+            $this->raise(new PaymentVariableSymbolWasChanged($this->group->getId(), $variableSymbol));
+        }
+
         $this->variableSymbol = $variableSymbol;
     }
 
