@@ -44,8 +44,10 @@ dibi:
     database: %database.name%
     charset: utf8
 
-monolog:
+messageBus:
+    eventBus:
 
+monolog:
     name: hskauting
 
     handlers:
@@ -58,6 +60,7 @@ proxy:
 extensions:
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
+    messageBus: eGen\MessageBus\DI\MessageBusExtension
     monolog: Kdyby\Monolog\DI\MonologExtension
     console: Kdyby\Console\DI\ConsoleExtension
     proxy: Lookyman\Nette\Proxy\DI\ProxyExtension
