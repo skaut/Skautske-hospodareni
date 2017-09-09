@@ -21,9 +21,9 @@
 </div>
 <div class="bc">a</div>
 <div class="osoby">
-    <b>Jméno a příjmení:</b> {$contract->driver_name}<br />
-    <b>Bydliště:</b> {$contract->driver_address}<br />
-    <b>Datum narození:</b> {$contract->driver_birthday|date:"j. n. Y"}
+    <b>Jméno a příjmení:</b> {$contract->passenger->name}<br />
+    <b>Bydliště:</b> {$contract->passenger->address}<br />
+    <b>Datum narození:</b> {$contract->passenger->birthday|date:"j. n. Y"}
 </div><br />
 se dohodli na této smlouvě dle § 51 Občanského zákoníku takto:<br />
 <div class="bc">I.</div>
@@ -38,7 +38,7 @@ Smlouva vstupuje v platnost dnem podpisu obou smluvních stran a uzavírá se na
 
 
 <div style="width: 52%;float: left;">
-    V .................................. dne {$contract->start|date:"j. n. Y"} <br /><br /><br /><br />
+    V .................................. dne {$contract->since|date:"j. n. Y"} <br /><br /><br /><br />
     ..................................................................<br />
     Junák
 </div>

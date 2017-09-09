@@ -9,6 +9,8 @@ use Model\DTO\Travel as DTO;
 use Model\DTO\Travel\Command\Travel as TravelDTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
+use Model\Travel\Contract;
+use Model\Travel\ContractNotFoundException;
 use Model\Travel\Passenger;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
@@ -24,7 +26,7 @@ use Money\Money;
  * @author Hána František <sinacek@gmail.com>
  * správa cestovních příkazů
  */
-class TravelService extends BaseService
+class TravelService
 {
 
     /** @var CommandTable */
@@ -32,9 +34,6 @@ class TravelService extends BaseService
 
     /** @var TravelTable */
     private $tableTravel;
-
-    /** @var ContractTable */
-    private $tableContract;
 
     /** @var IVehicleRepository */
     private $vehicles;
@@ -51,29 +50,18 @@ class TravelService extends BaseService
     public function __construct(
         CommandTable $table,
         TravelTable $tableTravel,
-        ContractTable $tableContract,
         IVehicleRepository $vehicles,
         ICommandRepository $commands,
         IContractRepository $contracts,
         IUnitRepository $units
     )
     {
-        parent::__construct();
         $this->table = $table;
         $this->tableTravel = $tableTravel;
-        $this->tableContract = $tableContract;
         $this->vehicles = $vehicles;
         $this->commands = $commands;
         $this->contracts = $contracts;
         $this->units = $units;
-    }
-
-    public function isContractAccessible($contractId, $unit)
-    {
-        if (($contract = $this->getContract($contractId))) {
-            return $contract->unit_id == $unit->ID ? TRUE : FALSE;
-        }
-        return FALSE;
     }
 
     /**     VEHICLES    */
@@ -226,54 +214,77 @@ class TravelService extends BaseService
     }
 
     /**     CONTRACTS    */
-    public function getContract($contractId)
+    public function getContract(int $contractId): ?DTO\Contract
     {
-        $cacheId = __FUNCTION__ . "_" . $contractId;
-        if (!($res = $this->loadSes($cacheId))) {
-            $res = $this->tableContract->get($contractId);
-            $this->saveSes($cacheId, $res);
+        try {
+            return DTO\ContractFactory::create(
+                $this->contracts->find($contractId)
+            );
+        } catch (ContractNotFoundException $e) {
+            return NULL;
         }
-        return $res;
     }
 
-    public function getAllContracts($unitId)
+    /**
+     * @param int $unitId
+     * @return DTO\Contract[]
+     */
+    public function getAllContracts($unitId): array
     {
-        return $this->tableContract->getAll($unitId);
+        return array_map(
+            [DTO\ContractFactory::class, 'create'],
+            $this->contracts->findByUnit($unitId)
+        );
     }
 
-    public function getAllContractsPairs($unitId)
+    /**
+     * @return string[][]
+     */
+    public function getAllContractsPairs(int $unitId): array
     {
-        $data = $this->getAllContracts($unitId);
-        $res = ["valid" => [], "past" => []];
+        $contracts = $this->contracts->findByUnit($unitId);
 
-        foreach ($data as $i) {
-            if (is_null($i->end)) {
-                $res["valid"][$i->id] = $i->driver_name;
-            } else {
-                if ($i->end->format("U") > time()) {
-                    $res["valid"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
-                } else {
-                    if ($i->end->format("Y") < date("Y") - 1) {#skoncila uz predloni
-                        continue;
-                    }
-                    $res["past"][$i->id] = $i->unit_person . " <=> " . $i->driver_name . " (platná do " . $i->end->format("j.n.Y") . ")";
-                }
+        $result = ["valid" => [], "past" => []];
+
+        $now = new \DateTimeImmutable();
+
+        foreach($contracts as $contract) {
+            $name = $contract->getPassenger()->getName();
+
+            if($contract->getUnitRepresentative() !== '') {
+                $name = $contract->getUnitRepresentative() . ' <=> ' . $name;
+            }
+
+            if($contract->getSince() !== NULL) {
+                $name .= ' (platná do' . $contract->getSince()->format('j.n.Y') . ')';
+            }
+
+            if($contract->getSince() === NULL || $contract->getSince() > $now) {
+                $result['valid'][$contract->getId()] = $name;
+            } elseif($now->diff($contract->getSince())->y === 0) {
+                $result['pas'][$contract->getId()] = $name;
             }
         }
-        return $res;
+
+        return $result;
     }
 
-    public function addContract($values)
+    public function createContract(int $unitId, string $unitRepresentative, \DateTimeImmutable $since, Contract\Passenger $passenger): void
     {
-        if (!$values['end'] && !is_null($values["start"])) {
-            $values['end'] = date("Y-m-d", strtotime("+ 3 years", $values["start"]->getTimestamp()));
-        } //nastavuje platnost smlouvy na 3 roky
-        return $this->tableContract->add($values);
+        $unit = $this->units->find($unitId, TRUE);
+
+        $contract = new Contract($unit, $unitRepresentative, $since, $passenger);
+
+        $this->contracts->save($contract);
     }
 
-    public function deleteContract($contractId)
+    public function deleteContract(int $contractId): void
     {
-        return $this->tableContract->delete($contractId);
+        try {
+            $contract = $this->contracts->find($contractId);
+            $this->contracts->remove($contract);
+        } catch (ContractNotFoundException $e) {
+        }
     }
 
     /*     COMMANDS    */

@@ -33,10 +33,10 @@
                 <a n:href="detail $c->id" class="btn btn-primary btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
                 <a n:href="detail $c->id" class="btn btn-primary btn-sm visible-xs visible-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
             </td>
-            <td>{$c->driver_name}</td>
-            <td>{$c->unit_person}</td>
-            <td>{$c->start|date:"j. n. Y"}</td>
-            <td>{$c->end|date:"j. n. Y"}</td>
+            <td>{$c->passenger->name}</td>
+            <td>{$c->unitRepresentative}</td>
+            <td>{$c->since|date:"j. n. Y"}</td>
+            <td>{$c->until|date:"j. n. Y"}</td>
         </tr>
     </table>
 </div>

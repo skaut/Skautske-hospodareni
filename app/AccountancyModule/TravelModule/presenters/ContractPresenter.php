@@ -4,6 +4,7 @@ namespace App\AccountancyModule\TravelModule;
 
 use App\Forms\BaseForm;
 use Model\Services\PdfRenderer;
+use Model\Travel\Contract\Passenger;
 use Nette\Application\UI\Form;
 use Model\TravelService;
 
@@ -26,33 +27,30 @@ class ContractPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    protected function isContractAccessible($contractId) : bool
-    {
-        return $this->travelService->isContractAccessible($contractId, $this->unit);
-    }
-
     public function renderDefault() : void
     {
         $this->template->list = $this->travelService->getAllContracts($this->unit->ID);
     }
 
-    public function renderDetail($id) : void
+    public function actionDetail(int $id): void
     {
-        if (!$this->isContractAccessible($id)) {
+        $contract = $this->travelService->getContract($id);
+
+        if ($contract === NULL || $contract->getUnitId() !== $this->getUnitId()) {
             $this->flashMessage("Nemáte oprávnění k cestovnímu příkazu.", "danger");
             $this->redirect("default");
         }
-        $this->template->contract = $contract = $this->travelService->getContract($id);
-        $this->template->commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contract->id);
+        $this->template->contract = $contract;
+        $this->template->commands = $this->travelService->getAllCommandsByContract($this->getUnitId(), $contract->getUnitId());
     }
 
     public function actionPrint($contractId) : void
     {
         $template = $this->template;
         $template->contract = $contract = $this->travelService->getContract($contractId);
-        $template->unit = $this->unitService->getDetail($contract->unit_id);
+        $template->unit = $this->unitService->getDetail($contract->getUnitId());
 
-        switch ($contract->template) {
+        switch ($contract->getTemplateVersion()) {
             case 1:
                 $templateName = 'ex.contract.old.latte';
                 break;
@@ -60,14 +58,15 @@ class ContractPresenter extends BasePresenter
                 $templateName = 'ex.contract.noz.latte';
                 break;
             default:
-                throw new \Exception("Neznámá šablona pro " . $contract->template);
+                throw new \Exception("Neznámá šablona pro " . $contract->getTemplateVersion());
         }
+
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
 
         $this->pdf->render($template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
     }
 
-    public function handleDelete($contractId) : void
+    public function handleDelete(int $contractId) : void
     {
         $commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contractId);
         if (!empty($commands)) {
@@ -82,23 +81,26 @@ class ContractPresenter extends BasePresenter
     protected function createComponentFormCreateContract() : Form
     {
         $form = new BaseForm();
-        $form->addText("driver_name", "Jméno a příjmení řidiče*")
+        $form->addText("passengerName", "Jméno a příjmení řidiče*")
             ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit jméno řidiče.");
-        $form->addText("driver_address", "Bydliště řidiče*")
+            ->setRequired("Musíte vyplnit jméno řidiče.");
+        $form->addText("passengerAddress", "Bydliště řidiče*")
             ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit bydliště řidiče.");
-        $form->addDatePicker("driver_birthday", "Datum narození řidiče*")
+            ->setRequired("Musíte vyplnit bydliště řidiče.");
+        $form->addDatePicker("passengerBirthday", "Datum narození řidiče*")
             ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit datum narození řidiče.");
-        $form->addText("driver_contact", "Telefon na řidiče (9cifer)*")
+            ->setRequired("Musíte vyplnit datum narození řidiče.");
+        $form->addText("passengerContact", "Telefon na řidiče (9cifer)*")
             ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit telefon na řidiče.")
+            ->setRequired("Musíte vyplnit telefon na řidiče.")
             ->addRule(Form::NUMERIC, "Telefon musí být číslo.");
 
-        $form->addText("unit_person", "Zástupce jednotky")
+        $form->addText("unitRepresentative", "Zástupce jednotky")
+            ->setRequired('Musíte vyplnit zástupce jednotky')
             ->setAttribute("class", "form-control");
         $form->addDatePicker("start", "Platnost od")
+            ->setDefaultValue((new \DateTimeImmutable())->format('Y-m-d'))
+            ->setRequired('Musíte vyplnit od kdy smlouva platí')
             ->setAttribute("class", "form-control");
 
         $form->addSubmit('send', 'Založit smlouvu')
@@ -111,16 +113,22 @@ class ContractPresenter extends BasePresenter
         return $form;
     }
 
-    private function formCreateContractSubmitted(Form $form) : void
+    private function formCreateContractSubmitted(Form $form): void
     {
         $v = $form->getValues();
-        $v['end'] = isset($v['end']) ? $v['end'] : NULL;
-        $v->unit_id = $this->unit->ID;
-        if ($this->travelService->addContract($v)) {
-            $this->flashMessage("Smlouva byla založena.");
-        } else {
-            $this->flashMessage("Smlouvu se nepodazřilo založit.", "danger");
-        }
+
+        $since = \DateTimeImmutable::createFromMutable($v->start);
+
+        $passenger = new Passenger(
+            $v->passengerName,
+            $v->passengerContact,
+            $v->passengerAddress,
+            \DateTimeImmutable::createFromMutable($v->passengerBirthday)
+        );
+        
+        $this->travelService->createContract($this->getUnitId(), $v->unitRepresentative, $since, $passenger);
+        $this->flashMessage("Smlouva byla založena.");
+
         $this->redirect("this");
     }
 

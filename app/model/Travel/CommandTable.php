@@ -11,18 +11,6 @@ use Dibi\Row;
 class CommandTable extends BaseTable
 {
 
-    /**
-     * vrací konkretní příkaz
-     * @param int $commandId - id příkazu
-     * @return Row
-     */
-    public function get($commandId)
-    {
-        return $this->connection->fetch("SELECT com.*, c.type as vehicle_type, c.registration as vehicle_spz, c.consumption as vehicle_consumption, com.place
-            FROM [" . self::TABLE_TC_COMMANDS . "] as com
-            LEFT JOIN [" . self::TABLE_TC_VEHICLE . "] as c ON (com.vehicle_id = c.id) WHERE com.id=%i", $commandId);
-    }
-
     public function getAll($unitId, $returnQuery = FALSE)
     {
         $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.registration as vehicle_spz, com.place")
