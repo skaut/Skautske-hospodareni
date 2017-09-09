@@ -3,10 +3,12 @@
 namespace Model\Payment;
 
 use DateTimeImmutable;
+use Model\Common\AbstractAggregate;
+use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
 
-class Payment
+class Payment extends AbstractAggregate
 {
 
     /** @var int */
@@ -64,6 +66,7 @@ class Payment
         $this->personId = $personId;
         $this->state = State::get(State::PREPARING);
         $this->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+        $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
     }
 
     /**

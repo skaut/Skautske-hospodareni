@@ -155,6 +155,10 @@ services:
     - Model\Skautis\ObjectTable
     - Model\TravelTable
 
+
+    - class: Model\Payment\Subscribers\PaymentSubscriber
+      tags: [eventBus.subscriber]
+
     - Model\Services\PdfRenderer
     - Model\Skautis\Mapper
 

@@ -220,6 +220,11 @@ class Group
         $this->lastPairing = $at;
     }
 
+    public function invalidateLastPairing(): void
+    {
+        $this->lastPairing = NULL;
+    }
+
     /**
      * @return \DateTimeImmutable|NULL
      */

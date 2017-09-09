@@ -4,6 +4,7 @@ namespace Model\Payment;
 
 use DateTimeImmutable;
 use Mockery as m;
+use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 
 class PaymentTest extends \Codeception\Test\Unit
@@ -46,6 +47,14 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertSame($note, $payment->getNote());
         $this->assertSame(State::get(State::PREPARING), $payment->getState());
         $this->assertSame(29, $payment->getGroupId());
+
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+        /* @var $event PaymentWasCreated */
+        $event = $events[0];
+        $this->assertInstanceOf(PaymentWasCreated::class, $event);
+        $this->assertSame(29, $event->getGroupId());
+        $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
     public function testCancel()
