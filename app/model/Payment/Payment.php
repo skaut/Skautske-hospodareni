@@ -126,25 +126,16 @@ class Payment extends AbstractAggregate
         $this->variableSymbol = $variableSymbol;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-	 * @return int
-	 */
     public function getGroupId(): int
     {
         return $this->group->getId();
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
