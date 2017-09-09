@@ -4,6 +4,7 @@ namespace Model\Payment;
 
 use DateTimeImmutable;
 use Mockery as m;
+use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 
@@ -115,6 +116,7 @@ class PaymentTest extends \Codeception\Test\Unit
     public function testUpdate()
     {
         $payment = $this->createPayment();
+        $payment->extractEventsToDispatch(); // Clear events collection
 
         $name = "František Maša";
         $amount = 300;
@@ -133,6 +135,15 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
         $this->assertSame($constantSymbol, $payment->getConstantSymbol());
         $this->assertSame($note, $payment->getNote());
+
+
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+        /* @var $event PaymentVariableSymbolWasChanged */
+        $event = $events[0];
+        $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
+        $this->assertSame(29, $event->getGroupId());
+        $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
     public function testCannotUpdateClosedPayment()
