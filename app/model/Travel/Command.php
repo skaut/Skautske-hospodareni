@@ -91,6 +91,20 @@ class Command
         $this->note = $note;
     }
 
+    public function close(DateTimeImmutable $time): void
+    {
+        if($this->closedAt !== NULL) {
+            return;
+        }
+
+        $this->closedAt = $time;
+    }
+
+    public function open(): void
+    {
+        $this->closedAt = NULL;
+    }
+
     public function addVehicleTravel(float $distance, TravelDetails $details): void
     {
         $id = $this->getTravelId();

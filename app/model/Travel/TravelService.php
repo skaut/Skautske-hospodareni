@@ -439,19 +439,23 @@ class TravelService
 
     /**
      * uzavře cestovní příkaz a nastavi cas uzavření
-     * @param int $commandId
      */
-    public function closeCommand($commandId): void
+    public function closeCommand(int $commandId): void
     {
-        $this->table->changeState($commandId, date("Y-m-d H:i:s"));
+        $command = $this->commands->find($commandId);
+
+        $command->close(new \DateTimeImmutable());
+
+        $this->commands->save($command);
     }
 
-    /**
-     * @param int $commandId
-     */
-    public function openCommand($commandId): void
+    public function openCommand(int $commandId): void
     {
-        $this->table->changeState($commandId, NULL);
+        $command = $this->commands->find($commandId);
+
+        $command->open();
+
+        $this->commands->save($command);
     }
 
     /**
