@@ -184,7 +184,7 @@ class CommandTest extends \Codeception\Test\Unit
         $this->assertSame(0, $command->getTravelCount());
     }
 
-    public function TestGetUsedTransportTypes(): void
+    public function testGetUsedTransportTypes(): void
     {
         $command = $this->createCommand();
         $date = new \DateTimeImmutable();
@@ -194,6 +194,36 @@ class CommandTest extends \Codeception\Test\Unit
         $command->addTransportTravel(MoneyFactory::fromFloat(200), new TravelDetails($date, "a", "Brno", "Praha"));
 
         $this->assertEquals(["mov", "auv", "a"], $command->getUsedTransportTypes());
+    }
+
+    public function testCloseCommand()
+    {
+        $command = $this->createCommand();
+        $now = new \DateTimeImmutable();
+        $command->close($now);
+
+        $this->assertSame($now, $command->getClosedAt());
+    }
+
+    public function testReopenCommand()
+    {
+        $command = $this->createCommand();
+        $command->close(new \DateTimeImmutable());
+
+        $command->open();
+
+        $this->assertNull($command->getClosedAt());
+    }
+
+    public function testClosingClosedCommandDoesntChangeClosedTime()
+    {
+        $command = $this->createCommand();
+        $closedAt = new \DateTimeImmutable();
+        $command->close($closedAt);
+
+        $command->close($closedAt->modify('+ 1 day'));
+
+        $this->assertSame($closedAt, $command->getClosedAt());
     }
 
     private function mockVehicle(): m\MockInterface

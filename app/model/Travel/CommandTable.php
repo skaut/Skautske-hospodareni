@@ -50,17 +50,6 @@ class CommandTable extends BaseTable
     }
 
 
-    /**
-     * uzavírání/otevírání cestovních příkazů
-     * @param int $commandId
-     * @param string|NULL $state
-     */
-    public function changeState($commandId, $state): void
-    {
-        $this->connection->update(self::TABLE_TC_COMMANDS, ["id" => $commandId, "closed" => $state])
-            ->where("id=%i", $commandId)
-            ->execute();
-    }
 
     public function updateTypes($commandId, $commandTypes)
     {
