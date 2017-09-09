@@ -9,6 +9,11 @@ use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Repositories\IGroupRepository;
 
+/**
+ * When payment VS is changed, there is a risk that bank payment with that VS won't be loaded on next pairing because
+ * paring mechanism only checks new payments since 'last pairing'.
+ * When 'last pairing' is invalidated, all bank payments will be loaded
+ */
 class PaymentSubscriber
 {
 
