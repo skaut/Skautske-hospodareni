@@ -8,7 +8,6 @@ use Doctrine\ORM\EntityManager;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
-use Model\Payment\Summary;
 use Model\Utils\Arrays;
 
 class PaymentRepository implements IPaymentRepository
@@ -38,41 +37,6 @@ class PaymentRepository implements IPaymentRepository
         }
 
         return $payment;
-    }
-
-    public function summarizeByGroup(array $groupIds): array
-    {
-        $states = [State::PREPARING, State::SENT, State::COMPLETED];
-
-        $res = $this->em->createQueryBuilder()
-            ->select("IDENTITY(p.group) as groupId, p.state as state, SUM(p.amount) as amount, COUNT(p.id) as number")
-            ->from(Payment::class, "p")
-            ->where("IDENTITY(p.group) IN (:ids)")
-            ->groupBy("groupId, state")
-            ->having("state IN (:states)")
-            ->setParameter("ids", $groupIds, Connection::PARAM_STR_ARRAY)
-            ->setParameter("states", $states, Connection::PARAM_STR_ARRAY)
-            ->getQuery()
-            ->getResult();
-
-        $amounts = array_fill_keys($groupIds, array_fill_keys($states, 0));
-        $counts = array_fill_keys($groupIds, array_fill_keys($states, 0));
-
-        foreach($res as $row) {
-            $id = (int)$row["groupId"];
-            $amounts[$id][$row["state"]] += (float)$row["amount"];
-            $counts[$id][$row["state"]] = (int)$row["number"];
-        }
-
-        $summaries = array_fill_keys($groupIds, []);
-
-        foreach($groupIds as $id) {
-            foreach($states as $state) {
-                $summaries[$id][$state] = new Summary($counts[$id][$state], $amounts[$id][$state]);
-            }
-        }
-
-        return $summaries;
     }
 
     public function findByGroup(int $groupId): array

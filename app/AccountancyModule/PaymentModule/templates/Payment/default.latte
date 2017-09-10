@@ -31,14 +31,30 @@
         <table class="table table-bordered table-striped">
             <tr>
                 <th>Název</th>
-                <th>Připravené</th>
-                <th>Odeslané</th>
-                <th>Dokončené</th>
+                <th class="text-success">Dokončené</th>
+                <th class="text-danger">Po splatnosti</th>
+                <th class="text-info">Odeslané</th>
                 <th>Stav</th>
             </tr>
             <tr n:foreach="$groups as $g">
-                <td><a n:href="Payment:detail $g->id">{$g->name}</a></td>
-                <td n:foreach="$summarizations[$g->id] as $s" class="r">{if $s->count > 0}{$s->amount|num} ({$s->count}){else} {/if}</td>
+                <td>
+                    <div><a n:href="Payment:detail $g->id">{$g->name}</a></div>
+                </td>
+                <td colspan="3">
+                    {var $sum = $summarizations[$g->id]}
+                        {var $bars = ["completed" => "success", "overdue" => "danger", "send" => "info"]}
+                        {var $labels = ["completed" => "Dokončené", "overdue" => "Po splatnosti", "send" => "Odeslané"]}
+                        <div class="progress" style="margin: 7px" n:inner-foreach="$bars as $key => $style">
+                            {var $sum = $summarizations[$g->id][$key]}
+                            <div n:if="$sum->amount > 0" class="progress-bar progress-bar-{$style}" role="progressbar"
+                                 aria-valuenow="{$sum->percentage}"
+                                 aria-valuemin="0" aria-valuemax="100" style="width:{$sum->percentage|noescape}%"
+                                 title="{$labels[$key]}: {$sum->amount|price} Kč ({$sum->count})" rel="tooltip">
+                                 {$sum->amount|price} Kč ({$sum->count})
+                            </div>
+                        </div>
+
+                </td>
                 <td>
                     {$g->state|groupState|noescape}
                     <div class="pull-right text-success" title="Lze párovat s bankou" n:if="$groupsPairingSupport[$g->id] === TRUE">

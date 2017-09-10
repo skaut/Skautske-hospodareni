@@ -137,7 +137,7 @@ class PaymentPresenter extends BasePresenter
         ]);
 
         $this->template->payments = $payments = $this->model->findByGroup($id);
-        $this->template->summarize = $this->model->getGroupSummaries([$id])[$id];
+        $this->template->summarize = $this->model->getGroupSummaries([$id], FALSE)[$id];
         $this->template->now = new \DateTimeImmutable();
 
         $paymentsForSendEmail = array_filter($payments, function(Payment $p) {

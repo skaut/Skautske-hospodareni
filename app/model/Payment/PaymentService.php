@@ -15,7 +15,6 @@ use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
-use Model\Payment\Summary;
 use Skautis\Skautis;
 
 /**
@@ -153,11 +152,29 @@ class PaymentService
 
     /**
      * @param int[] $groupIds
-     * @return Summary[][]
+     * @param bool $separateOvedue Exclude overdue payments to special summary
+     * @return DTO\Summary[][]
      */
-    public function getGroupSummaries(array $groupIds): array
+    public function getGroupSummaries(array $groupIds, bool $separateOvedue = TRUE): array
     {
-        return $this->payments->summarizeByGroup($groupIds);
+        Assert::thatAll($groupIds)->integer();
+
+        $now = new DateTimeImmutable();
+
+        /* @var $builders DTO\SummaryBuilder[] */
+        $builders = [];
+        foreach($groupIds as $id) {
+            $builders[$id] = new DTO\SummaryBuilder($now, $separateOvedue);
+        }
+
+        $groupPayments = $this->payments->findByMultipleGroups($groupIds);
+        foreach($groupPayments as $groupId => $payments) {
+            foreach($payments as $payment) {
+                $builders[$groupId]->addPayment($payment);
+            }
+        }
+
+        return array_map(function(DTO\SummaryBuilder $b) { return $b->build(); }, $builders);
     }
 
     public function createGroup(
