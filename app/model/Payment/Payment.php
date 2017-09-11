@@ -3,10 +3,13 @@
 namespace Model\Payment;
 
 use DateTimeImmutable;
+use Model\Common\AbstractAggregate;
+use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
+use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
 
-class Payment
+class Payment extends AbstractAggregate
 {
 
     /** @var int */
@@ -63,17 +66,12 @@ class Payment
         $this->group = $group;
         $this->personId = $personId;
         $this->state = State::get(State::PREPARING);
-        $this->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+        $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
+        $this->variableSymbol = $variableSymbol;
+        $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
     }
 
     /**
-     * @param string $name
-     * @param null|string $email
-     * @param float $amount
-     * @param DateTimeImmutable $dueDate
-     * @param int|null $variableSymbol
-     * @param int|null $constantSymbol
-     * @param string $note
      * @throws PaymentClosedException
      */
     public function update(
@@ -87,14 +85,13 @@ class Payment
     ): void
     {
         $this->checkNotClosed();
+        $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
 
-        $this->name = $name;
-        $this->email = $email;
-        $this->amount = $amount;
-        $this->dueDate = $dueDate;
+        if ($this->variableSymbol !== $variableSymbol) {
+            $this->raise(new PaymentVariableSymbolWasChanged($this->group->getId(), $variableSymbol));
+        }
+
         $this->variableSymbol = $variableSymbol;
-        $this->constantSymbol = $constantSymbol;
-        $this->note = $note;
     }
 
     public function complete(DateTimeImmutable $time, ?Transaction $transaction = NULL): void
@@ -121,28 +118,24 @@ class Payment
     public function updateVariableSymbol(int $variableSymbol): void
     {
         $this->checkNotClosed();
+
+        if($this->variableSymbol !== $variableSymbol) {
+            $this->raise(new PaymentVariableSymbolWasChanged($this->group->getId(), $variableSymbol));
+        }
+
         $this->variableSymbol = $variableSymbol;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-	 * @return int
-	 */
     public function getGroupId(): int
     {
         return $this->group->getId();
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
@@ -217,6 +210,23 @@ class Payment
         if ($this->closedAt !== NULL) {
             throw new PaymentClosedException("Already closed!");
         }
+    }
+
+    private function updateDetails(
+        string $name,
+        ?string $email,
+        float $amount,
+        DateTimeImmutable $dueDate,
+        ?int $constantSymbol,
+        string $note
+    ): void
+    {
+        $this->name = $name;
+        $this->email = $email;
+        $this->amount = $amount;
+        $this->dueDate = $dueDate;
+        $this->constantSymbol = $constantSymbol;
+        $this->note = $note;
     }
 
 }

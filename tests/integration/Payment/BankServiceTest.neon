@@ -6,5 +6,6 @@ services:
     - Model\Payment\Repositories\GroupRepository
     - Model\Payment\Repositories\BankAccountRepository
 
+    - eGen\MessageBus\Bus\EventBus
 includes:
     - ../config/doctrine.neon

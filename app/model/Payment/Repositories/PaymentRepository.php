@@ -4,18 +4,15 @@ namespace Model\Payment\Repositories;
 
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManager;
+use Model\Infrastructure\Repositories\AbstractRepository;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Summary;
 use Model\Utils\Arrays;
 
-class PaymentRepository implements IPaymentRepository
+final class PaymentRepository extends AbstractRepository implements IPaymentRepository
 {
-
-    /** @var EntityManager */
-    private $em;
 
     private const STATE_ORDER = [
         State::PREPARING,
@@ -24,14 +21,10 @@ class PaymentRepository implements IPaymentRepository
         State::CANCELED,
     ];
 
-    public function __construct(EntityManager $em)
-    {
-        $this->em = $em;
-    }
 
     public function find(int $id): Payment
     {
-        $payment = $this->em->find(Payment::class, $id);
+        $payment = $this->getEntityManager()->find(Payment::class, $id);
 
         if (!$payment instanceof Payment) {
             throw new PaymentNotFoundException();
@@ -44,7 +37,7 @@ class PaymentRepository implements IPaymentRepository
     {
         $states = [State::PREPARING, State::SENT, State::COMPLETED];
 
-        $res = $this->em->createQueryBuilder()
+        $res = $this->getEntityManager()->createQueryBuilder()
             ->select("IDENTITY(p.group) as groupId, p.state as state, SUM(p.amount) as amount, COUNT(p.id) as number")
             ->from(Payment::class, "p")
             ->where("IDENTITY(p.group) IN (:ids)")
@@ -88,7 +81,7 @@ class PaymentRepository implements IPaymentRepository
             return [];
         }
 
-        $result = $this->em->createQueryBuilder()
+        $result = $this->getEntityManager()->createQueryBuilder()
             ->select('p')
             ->from(Payment::class, 'p')
             ->where('IDENTITY(p.group) IN (:groupIds)')
@@ -102,8 +95,7 @@ class PaymentRepository implements IPaymentRepository
 
     public function save(Payment $payment): void
     {
-        $this->em->persist($payment);
-        $this->em->flush();
+        $this->saveAndDispatchEvents($payment);
     }
 
     public function saveMany(array $payments): void
@@ -115,14 +107,13 @@ class PaymentRepository implements IPaymentRepository
         Assert::thatAll($payments)->isInstanceOf(Payment::class);
 
         foreach($payments as $payment) {
-            $this->em->persist($payment);
+            $this->saveAndDispatchEvents($payment);
         }
-        $this->em->flush();
     }
 
     public function getMaxVariableSymbol(int $groupId): ?int
     {
-        return $this->em->createQueryBuilder()
+        return $this->getEntityManager()->createQueryBuilder()
             ->select("MAX(p.variableSymbol)")
             ->from(Payment::class, "p")
             ->where("IDENTITY(p.group) = :groupId")

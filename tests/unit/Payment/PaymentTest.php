@@ -4,6 +4,8 @@ namespace Model\Payment;
 
 use DateTimeImmutable;
 use Mockery as m;
+use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
+use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 
 class PaymentTest extends \Codeception\Test\Unit
@@ -46,6 +48,14 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertSame($note, $payment->getNote());
         $this->assertSame(State::get(State::PREPARING), $payment->getState());
         $this->assertSame(29, $payment->getGroupId());
+
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+        /* @var $event PaymentWasCreated */
+        $event = $events[0];
+        $this->assertInstanceOf(PaymentWasCreated::class, $event);
+        $this->assertSame(29, $event->getGroupId());
+        $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
     public function testCancel()
@@ -89,8 +99,20 @@ class PaymentTest extends \Codeception\Test\Unit
     public function testUpdateVariableSymbol()
     {
         $payment = $this->createPayment();
+        $payment->extractEventsToDispatch(); // Clear events collection
+
+        $variableSymbol = 789789;
+
         $payment->updateVariableSymbol(789789);
-        $this->assertSame(789789, $payment->getVariableSymbol());
+        $this->assertSame($variableSymbol, $payment->getVariableSymbol());
+
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+        /* @var $event PaymentVariableSymbolWasChanged */
+        $event = $events[0];
+        $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
+        $this->assertSame(29, $event->getGroupId());
+        $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
     public function testUpdateVariableForClosedPaymentThrowsException()
@@ -106,6 +128,7 @@ class PaymentTest extends \Codeception\Test\Unit
     public function testUpdate()
     {
         $payment = $this->createPayment();
+        $payment->extractEventsToDispatch(); // Clear events collection
 
         $name = "František Maša";
         $amount = 300;
@@ -124,6 +147,15 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
         $this->assertSame($constantSymbol, $payment->getConstantSymbol());
         $this->assertSame($note, $payment->getNote());
+
+
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+        /* @var $event PaymentVariableSymbolWasChanged */
+        $event = $events[0];
+        $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
+        $this->assertSame(29, $event->getGroupId());
+        $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
     public function testCannotUpdateClosedPayment()
