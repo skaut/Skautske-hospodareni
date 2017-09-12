@@ -8,6 +8,7 @@ use Model\Travel\Passenger;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Control;
+use Nette\Forms\Controls\SelectBox;
 use Nette\InvalidStateException;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Html;
@@ -46,14 +47,7 @@ class CommandForm extends Control
 
     protected function createComponentForm(): BaseForm
     {
-        $contracts = $this->model->getAllContractsPairs($this->unitId);
         $vehicles = $this->model->getVehiclesPairs($this->unitId);
-
-        if (!empty($contracts["past"])) {
-            $contracts = ["platné" => $contracts["valid"], "ukončené" => $contracts["past"]];
-        } else {
-            $contracts = $contracts["valid"];
-        }
 
         $vehiclesWithFuel = array_filter($this->transportTypes, function ($t) { return $t->hasFuel; });
         $vehiclesWithFuel = array_map(function($t) { return $t->type; }, $vehiclesWithFuel);
@@ -84,7 +78,7 @@ class CommandForm extends Control
         $form->addGroup("Cestující");
         $passenger = $form->addContainer("passenger");
 
-        $form->addSelect("contract_id", "Smlouva", $contracts)
+        $form->addSelect("contract_id", "Smlouva", $this->prepareContracts())
             ->setPrompt("Bez smlouvy")
             ->setAttribute("class", "form-control")
             ->setOption("id", "contractId")
@@ -154,6 +148,15 @@ class CommandForm extends Control
         if(!empty($usedTypes)) {
             $form["type"]->setItems($this->prepareTranportTypeOptions($usedTypes));
             $form["type"]->setRequired(FALSE); // Even when nothing is selected, used types persist, so it's ok
+        }
+
+        $contractId = $command->getPassenger()->getContractId();
+
+        /* @var $contracts SelectBox */
+        $contracts = $form['contract_id'];
+
+        if($contractId !== NULL && ! isset($contracts->getItems()[$contractId])) {
+            $contracts->setItems($this->prepareContracts($contractId)); // Prepare list with missing contract
         }
 
         $form->setDefaults([
@@ -241,6 +244,20 @@ class CommandForm extends Control
         }
 
         return $options;
+    }
+
+    private function prepareContracts(?int $includeContractId = NULL): array
+    {
+        $contracts = $this->model->getAllContractsPairs(
+            $this->unitId,
+            $includeContractId
+        );
+
+        if (!empty($contracts["past"])) {
+            return ["platné" => $contracts["valid"], "ukončené" => $contracts["past"]];
+        }
+
+        return $contracts["valid"];
     }
 
     private function createPassenger(ArrayHash $values): ?Passenger

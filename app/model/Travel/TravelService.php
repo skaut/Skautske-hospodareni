@@ -240,7 +240,7 @@ class TravelService
     /**
      * @return string[][]
      */
-    public function getAllContractsPairs(int $unitId): array
+    public function getAllContractsPairs(int $unitId, ?int $includeContractId): array
     {
         $contracts = $this->contracts->findByUnit($unitId);
 
@@ -259,10 +259,10 @@ class TravelService
                 $name .= ' (platná do' . $contract->getSince()->format('j.n.Y') . ')';
             }
 
-            if($contract->getSince() === NULL || $contract->getSince() > $now) {
+            if($contract->getUntil() === NULL || $contract->getUntil() > $now) {
                 $result['valid'][$contract->getId()] = $name;
-            } elseif($now->diff($contract->getSince())->y === 0) {
-                $result['pas'][$contract->getId()] = $name;
+            } elseif($now->diff($contract->getUntil())->y === 0 || $contract->getId() === $includeContractId) {
+                $result['past'][$contract->getId()] = $name;
             }
         }
 
