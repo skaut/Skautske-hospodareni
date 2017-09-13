@@ -255,8 +255,8 @@ class TravelService
                 $name = $contract->getUnitRepresentative() . ' <=> ' . $name;
             }
 
-            if($contract->getSince() !== NULL) {
-                $name .= ' (platná do' . $contract->getSince()->format('j.n.Y') . ')';
+            if($contract->getUntil() !== NULL) {
+                $name .= ' (platná do ' . $contract->getUntil()->format('j.n.Y') . ')';
             }
 
             if($contract->getUntil() === NULL || $contract->getUntil() > $now) {
