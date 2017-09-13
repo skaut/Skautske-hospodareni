@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Skautske hospodareni" basedir="." default="main">
+    <target name="main" description="Dummy main target">
+        <echo>Main doesn't do anything, you need to specify a build task!</echo>
+        <echo>Use 'phing -l' to get a list of valid build targets.</echo>
+    </target>
+
+    <target name="tests-unit">
+        <exec command="vendor/bin/codecept run unit" passthru="true" />
+    </target>
+
+    <target name="tests-integration">
+        <exec command="vendor/bin/codecept run integration" passthru="true" />
+    </target>
+
+    <target name="tests-acceptance">
+        <exec command="vendor/bin/codecept run acceptance" passthru="true" />
+    </target>
+    <target name="tests">
+        <phingcall target="tests-unit" />
+        <phingcall target="tests-integration" />
+        <phingcall target="tests-acceptance" />
+    </target>
+
+    <target name="static-analysis">
+        <exec command="php -d memory_limit=512M vendor/bin/phpstan analyse -l 3 -c phpstan.neon app --no-progress" />
+    </target>
+
+    <target name="coding-standard">
+        <exec command="vendor/bin/phpcs app --standard=ruleset.xml" passthru="true" />
+    </target>
+</project>

@@ -22,13 +22,13 @@ build:
             code: composer install --no-interaction
         - script:
             name: static analysis (phpstan)
-            code: composer static-analysis
+            code: phing static-analysis
         - script:
             name: run unit tests
-            code: vendor/bin/codecept run unit
+            code: phing tests-unit
         - script:
             name: run integration tests
-            code: vendor/bin/codecept run integration
+            code: phing tests-integration
         - appnific/expandenv:
             input_file: app/config/config.ci.local.neon
             output_file: app/config/config.local.neon
@@ -64,7 +64,7 @@ build:
             code: chown www-data:www-data . -R && chmod 777 . -R
         - script:
             name: acceptance testing
-            code: vendor/bin/codecept run --env=ci acceptance -vv
+            code: phing tests-acceptance
         - script:
             name: test coding standard
-            code: vendor/bin/phpcs app --standard=ruleset.xml
+            code: phing coding-standard
