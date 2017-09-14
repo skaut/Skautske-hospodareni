@@ -66,5 +66,8 @@
     "autoload-dev": {
         "classmap": ["code-quality/"]
     },
+    "scripts": {
+        "static-analysis": "php -d memory_limit=512M vendor/bin/phpstan analyse -l 3 -c phpstan.neon app --no-progress"
+    },
     "minimum-stability": "RC"
 }
