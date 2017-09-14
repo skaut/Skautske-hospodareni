@@ -17,21 +17,15 @@ build:
         - script:
             name: add Github token
             code: composer config -g github-oauth.github.com $GITHUB_OAUTH_TOKEN
-        - script:
-            name: install composer dependencies
-            code: composer install --no-interaction
-        - script:
-            name: static analysis (phpstan)
-            code: composer static-analysis
-        - script:
-            name: run unit tests
-            code: vendor/bin/codecept run unit
-        - script:
-            name: run integration tests
-            code: vendor/bin/codecept run integration
+
         - appnific/expandenv:
             input_file: app/config/config.ci.local.neon
             output_file: app/config/config.local.neon
+
+        - script:
+            name: build tarball
+            code: phing
+
         - script:
             name: start phantomjs
             code: phantomjs --webdriver=4444 --ignore-ssl-errors=true --ssl-protocol=any &
@@ -48,9 +42,6 @@ build:
             name: run database migrations
             code: php www/index.php migrations:migrate --no-interaction
         - script:
-            name: validate Doctrine mapping
-            code: php www/index.php orm:validate-schema --skip-sync
-        - script:
             name: configure /etc/hosts (hospodareni.loc)
             code: echo "127.0.0.1 hospodareni.loc" >> /etc/hosts
         - script:
@@ -64,7 +55,4 @@ build:
             code: chown www-data:www-data . -R && chmod 777 . -R
         - script:
             name: acceptance testing
-            code: vendor/bin/codecept run --env=ci acceptance -vv
-        - script:
-            name: test coding standard
-            code: vendor/bin/phpcs app --standard=ruleset.xml
+            code: phing tests-acceptance

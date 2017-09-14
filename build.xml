@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Skautske hospodareni" basedir="." default="main">
+
+    <target name="main" description="Runs tests and prepares deployable tarball">
+        <exec command="composer install" passthru="true" />
+        <phingcall target="static-analysis" />
+        <phingcall target="coding-standard" />
+        <exec command="php www/index.php orm:validate-schema --skip-sync" />
+        <phingcall target="tests" />
+        <phingcall target="prepare-tarball" />
+    </target>
+
+    <target name="prepare-tarball" description="Prepares deployable tarball with everything built">
+        <exec command="composer install
+                        --no-interaction
+                        --optimize-autoloader
+                        --classmap-authoritative
+                        --no-dev"
+        passthru="true" />
+
+        <delete includeemptydirs="true">
+            <fileset dir=".">
+                <!-- Temp files -->
+                <include name="nette-temp/**" />
+                <exclude name="nette-temp/.htaccess" />
+
+                <!-- Logs -->
+                <include name="nette-log/**" />
+                <exclude name="nette-log/.htaccess" />
+
+                <!-- Webloader -->
+                <include name="www/webtemp/**" />
+                <exclude name="www/webtemp/.gitignore" />
+            </fileset>
+        </delete>
+
+        <!-- Generate proxies -->
+        <exec command="php www/index.php orm:generate-proxies" passthru="true" />
+        <exec command="php www/index.php lookyman:nette-proxy:generate" passthru="true" />
+
+        <tar destfile="nette-temp/build.tar.gz" compression="gzip">
+            <fileset dir=".">
+                <include name="app/**" />
+                <include name="nette-log/**" />
+                <include name="nette-temp/**" />
+                <include name="vendor/**" />
+                <include name="www/**" />
+                <exclude name="**/.gitignore" />
+            </fileset>
+        </tar>
+    </target>
+
+    <target name="tests-unit">
+        <exec command="vendor/bin/codecept run unit" passthru="true" />
+    </target>
+
+    <target name="tests-integration">
+        <exec command="vendor/bin/codecept run integration" passthru="true" />
+    </target>
+
+    <target name="tests-acceptance">
+        <exec command="vendor/bin/codecept run acceptance" passthru="true" />
+    </target>
+    <target name="tests">
+        <phingcall target="tests-unit" />
+        <phingcall target="tests-integration" />
+    </target>
+
+    <target name="static-analysis">
+        <exec command="php -d memory_limit=512M vendor/bin/phpstan analyse -l 3 -c phpstan.neon app --no-progress" />
+    </target>
+
+    <target name="coding-standard">
+        <exec command="vendor/bin/phpcs app --standard=ruleset.xml" passthru="true" />
+    </target>
+</project>
