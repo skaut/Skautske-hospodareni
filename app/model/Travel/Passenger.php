@@ -34,6 +34,11 @@ final class Passenger
         $this->address = $address;
     }
 
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
     public static function fromContract(Contract $contract): Passenger
     {
         $contractPassenger = $contract->getPassenger();

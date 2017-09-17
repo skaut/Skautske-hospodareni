@@ -35,7 +35,7 @@ class CommandGrid extends BaseGridControl
         $grid->setPrimaryKey("id");
 
         $grid->addColumnText('purpose', 'Účel cesty')->setSortable()->setFilterText();
-        $grid->addColumnText('driver', 'Cestující')->setSortable()->setFilterText();
+        $grid->addColumnText('passenger', 'Cestující')->setSortable()->setFilterText();
         $grid->addColumnText('types', 'Prostředek');
         $grid->addColumnText('vehicle', 'Vozidlo');
         $grid->addColumnDateTime('firstTravelDate', 'První jízda')->setSortable();
