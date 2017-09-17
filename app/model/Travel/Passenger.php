@@ -33,7 +33,11 @@ final class Passenger
         $this->contact = $contact;
         $this->address = $address;
     }
-
+    
+    /**
+     * nezbytné pro řazení v Gridu cestovních příkazů
+     * @return string
+     */
     public function __toString(): string
     {
         return $this->name;
