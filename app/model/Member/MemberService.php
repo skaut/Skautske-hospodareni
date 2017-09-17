@@ -5,9 +5,6 @@ namespace Model;
 use Skautis\User;
 use Skautis\Wsdl\WebServiceInterface;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class MemberService
 {
 

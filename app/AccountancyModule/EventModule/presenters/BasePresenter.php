@@ -4,9 +4,6 @@ namespace App\AccountancyModule\EventModule;
 
 use Model\EventEntity;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
 

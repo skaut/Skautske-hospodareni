@@ -9,10 +9,6 @@ use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
 use MyValidators;
 
-
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class DefaultPresenter extends BasePresenter
 {
 

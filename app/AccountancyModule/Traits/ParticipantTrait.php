@@ -19,22 +19,13 @@ trait ParticipantTrait
     protected $isAllowParticipantUpdate;
     protected $isAllowParticipantDelete;
 
-    /**
-     *
-     * @var \Model\MemberService
-     */
+    /** @var \Model\MemberService */
     protected $memberService;
 
-    /**
-     *
-     * @var \Model\ExportService
-     */
+    /** @var \Model\ExportService */
     protected $exportService;
 
-    /**
-     *
-     * @var \Model\ExcelService
-     */
+    /** @var \Model\ExcelService */
     protected $excelService;
 
     /** @var PdfRenderer */
