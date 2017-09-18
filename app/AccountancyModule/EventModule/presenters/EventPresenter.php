@@ -149,11 +149,12 @@ class EventPresenter extends BasePresenter
         $this->terminate();
     }
 
-    protected function createComponentFormEdit($name) : Form
+    protected function createComponentFormEdit() : Form
     {
         $form = new BaseForm();
 
-        $form->addText("name", "Název akce");
+        $form->addText("name", "Název akce")
+            ->setRequired('Musíte zadat název akce');
         $form->addDatePicker("start", "Od")
             ->setRequired('Musíte zadat datum začátku akce');
         $form->addDatePicker("end", "Do")
