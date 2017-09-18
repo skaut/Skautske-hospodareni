@@ -1,6 +1,6 @@
 {extends $original_template}
 
-{define col-driver}
+{define col-passenger}
     {$item->passenger->name}
     {var $contractId = $item->passenger->contractId}
     {if $contractId !== NULL}
