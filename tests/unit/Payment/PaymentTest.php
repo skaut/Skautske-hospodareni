@@ -14,9 +14,7 @@ class PaymentTest extends \Codeception\Test\Unit
 
     public function testCreate(): void
     {
-        $group = m::mock(Group::class);
-        $group->shouldReceive("getId")->andReturn(29);
-
+        $groupId = 29;
         $name = "Jan novák";
         $email = "test@gmail.com";
         $dueDate = new DateTimeImmutable();
@@ -27,7 +25,7 @@ class PaymentTest extends \Codeception\Test\Unit
         $note = 'Something';
 
         $payment = new Payment(
-            $group,
+            $this->mockGroup($groupId),
             $name,
             $email,
             $amount,
@@ -47,7 +45,7 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertSame($personId, $payment->getPersonId());
         $this->assertSame($note, $payment->getNote());
         $this->assertSame(State::get(State::PREPARING), $payment->getState());
-        $this->assertSame(29, $payment->getGroupId());
+        $this->assertSame($groupId, $payment->getGroupId());
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -56,6 +54,40 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertInstanceOf(PaymentWasCreated::class, $event);
         $this->assertSame(29, $event->getGroupId());
         $this->assertSame($variableSymbol, $event->getVariableSymbol());
+    }
+
+    public function testCantCreatePaymentWithNegativeAmount()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Payment(
+            $this->mockGroup(10),
+            'František Maša',
+            'frantisekmasa1@gmail.com',
+            -500,
+            new DateTimeImmutable(),
+            NULL,
+            NULL,
+            NULL,
+            ''
+        );
+    }
+
+    public function testCantCreatePaymentWithZeroAmount()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Payment(
+            $this->mockGroup(10),
+            'František Maša',
+            'frantisekmasa1@gmail.com',
+            0,
+            new DateTimeImmutable(),
+            NULL,
+            NULL,
+            NULL,
+            ''
+        );
     }
 
     public function testCancel()
@@ -179,11 +211,8 @@ class PaymentTest extends \Codeception\Test\Unit
 
     private function createPayment(): Payment
     {
-        $group = m::mock(Group::class);
-        $group->shouldReceive("getId")->andReturn(29);
-
         return new Payment(
-            $group,
+            $this->mockGroup(29),
             "Jan novák",
             "test@gmail.com",
             500,
@@ -193,7 +222,14 @@ class PaymentTest extends \Codeception\Test\Unit
             454,
             "Some note"
         );
+    }
 
+    private function mockGroup(int $id): Group
+    {
+        $group = m::mock(Group::class);
+        $group->shouldReceive("getId")->andReturn($id);
+
+        return $group;
     }
 
 }

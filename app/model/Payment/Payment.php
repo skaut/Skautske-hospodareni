@@ -63,6 +63,10 @@ class Payment extends AbstractAggregate
         string $note
     )
     {
+        if($amount <= 0) {
+            throw new \InvalidArgumentException('Payment amount must be larger than 0');
+        }
+
         $this->group = $group;
         $this->personId = $personId;
         $this->state = State::get(State::PREPARING);

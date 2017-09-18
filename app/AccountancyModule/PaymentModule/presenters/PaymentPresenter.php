@@ -442,7 +442,8 @@ class PaymentPresenter extends BasePresenter
         $form->addText("amount", "Částka")
             ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, "Musíte vyplnit částku")
-            ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo");
+            ->addRule(Form::FLOAT, "Částka musí být zadaná jako číslo")
+            ->addRule(Form::MIN, 'Částka musí být větší než 0', 0.01);
         $form->addText("email", "Email")
             ->setAttribute('class', 'form-control')
             ->addCondition(Form::FILLED)
