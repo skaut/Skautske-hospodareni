@@ -7,6 +7,7 @@ Menu pro pohyb mezi částmi akce
             <li {ifCurrent Event: $aid}class='active'{/ifCurrent}><a n:href="Event: $aid"><i class="glyphicon glyphicon-briefcase hidden-xs hidden-sm"></i> Základní<span class="hidden-xs hidden-sm"> údaje</span></a></li>
             <li {ifCurrent Participant:default $aid}class='active'{/ifCurrent}><a n:href="Participant:default $aid"><i class="glyphicon glyphicon-user hidden-xs hidden-sm"></i> Účastníci</a></li>
             <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}><a n:href="Cashbook:default $aid"><i class="glyphicon glyphicon-shopping-cart hidden-xs hidden-sm"></i> Pokladní kniha</a></li>
+            <li {ifCurrent Event:logs $aid}class='active'{/ifCurrent}><a n:href="Event:logs $aid"><i class="glyphicon glyphicon-list-alt hidden-xs hidden-sm"></i> Logy</a></li>
         </ul>
     </div>
 </div>

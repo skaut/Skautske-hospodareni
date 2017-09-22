@@ -109,6 +109,7 @@ services:
     - \Model\ExportService
     - \Model\ExcelService
     - \Model\BudgetService
+    - \Model\LoggerService
 
     # Factories
     - Model\IChitServiceFactory
@@ -129,8 +130,10 @@ services:
     - Model\Payment\Repositories\GroupRepository
     - Model\Payment\Repositories\PaymentRepository
     - Model\Payment\Repositories\UserRepository
+    - Model\Logger\Repositories\LoggerRepository
     # Skautis
     - Model\Skautis\UnitRepository(@skautis.org)
+    - Model\Skautis\EventRepository(@skautis.event)
 
 
 
@@ -139,6 +142,9 @@ services:
     ####################################################
     skautis.org:
         factory: Model\Skautis\WebserviceFactory::createOrganizationUnit
+        tags: [lookyman.lazy]
+    skautis.event:
+        factory: Model\Skautis\WebserviceFactory::createEvent
         tags: [lookyman.lazy]
 
     # Factories
@@ -159,6 +165,12 @@ services:
     - class: Model\Payment\Subscribers\PaymentSubscriber
       tags: [eventBus.subscriber]
 
+    - class: App\Model\Subscribers\EventListener
+      tags: [eventBus.subscriber]
+
+    - class: App\Model\Subscribers\ChitListener
+      tags: [eventBus.subscriber]
+
     - Model\Services\PdfRenderer
     - Model\Skautis\Mapper
 
@@ -171,6 +183,7 @@ services:
         factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
 
     - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
+
 
 includes:
     - model/doctrine.neon

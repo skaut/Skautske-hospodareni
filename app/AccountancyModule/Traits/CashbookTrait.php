@@ -1,5 +1,7 @@
 <?php
 
+use Model\Chit\Events\ChitWasRemoved;
+use Model\Chit\Events\ChitWasUpdated;
 use App\Forms\BaseForm;
 use Model\ChitService;
 use Model\ExcelService;
@@ -206,7 +208,7 @@ trait CashbookTrait
             $newEventAccessible = $this->userService->isCampEditable($newEventId);
         }
 
-        if(!$this->isEditable  || !$newEventAccessible) {
+        if (!$this->isEditable || !$newEventAccessible) {
             $this->flashMessage("Nemáte oprávnění k původní nebo nové pokladní knize!", "danger");
             $this->redirect("this");
         }
@@ -283,7 +285,8 @@ trait CashbookTrait
                     $chitId = $values['pid'];
                     unset($values['id']);
                     $this->isChitEditable($chitId);
-                    if ($this->entityService->chits->update($chitId, $values)) {
+                    if ($this->entityService->chits->update($chitId, $values)
+                    ) {
                         $this->flashMessage("Paragon byl upraven.");
                     } else {
                         $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
@@ -352,5 +355,4 @@ trait CashbookTrait
             "category" => $chit->category,
         ]);
     }
-
 }

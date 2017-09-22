@@ -1,0 +1,30 @@
+Model\Logger\Log:
+
+    type: entity
+    table: log
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        date:
+            type: datetime_immutable
+        unitId:
+            type: integer
+            column: unitId
+        userId:
+            type: integer
+            column: userId
+        description:
+            type: string
+        type:
+            type: string_enum
+            column: type
+            annotations:
+                enum: { class: Model\Logger\Log\Type }
+        typeId:
+            type: integer
+            nullable: true
+            column: typeId

@@ -1,0 +1,16 @@
+<?php
+
+namespace Model\Logger\Repositories;
+
+
+use Model\Logger\Log;
+use Model\Logger\Log\Type;
+
+interface ILoggerRepository
+{
+
+    public function findAllByTypeId(Type $type, int $typeId): array;
+
+    public function save(Log $log): void;
+
+}

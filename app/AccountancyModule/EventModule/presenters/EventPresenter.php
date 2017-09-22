@@ -4,17 +4,14 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
+use Model\ExportService;
+use Model\Logger\Log\Type;
+use Model\MemberService;
 use App\Forms\BaseForm;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
-use Model\MemberService;
-use Model\ExportService;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- * akce
- */
 class EventPresenter extends BasePresenter
 {
 
@@ -30,7 +27,6 @@ class EventPresenter extends BasePresenter
     /** @var PdfRenderer */
     private $pdf;
 
-
     public function __construct(
         ExportService $exportService,
         MemberService $memberService,
@@ -45,7 +41,7 @@ class EventPresenter extends BasePresenter
         $this->pdf = $pdf;
     }
 
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $aid): void
     {
         if ($aid == NULL) {
             $this->redirect("Default:");
@@ -78,23 +74,30 @@ class EventPresenter extends BasePresenter
         }
     }
 
-    public function handleOpen(int $aid) : void
+    public function renderLogs(int $aid): void
+    {
+        $this->template->logs = $this->loggerService->findAllByTypeId(Type::get(Type::OBJECT), $this->event->localId);
+    }
+
+    public function handleOpen(int $aid): void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Open")) {
             $this->flashMessage("Nemáte právo otevřít akci", "warning");
             $this->redirect("this");
         }
         $this->eventService->event->open($aid);
+
         $this->flashMessage("Akce byla znovu otevřena.");
         $this->redirect("this");
     }
 
-    public function handleClose(int $aid) : void
+    public function handleClose(int $aid): void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Close")) {
             $this->flashMessage("Nemáte právo akci uzavřít", "warning");
             $this->redirect("this");
         }
+
         if ($this->eventService->event->isCloseable($aid)) {
             $this->eventService->event->close($aid);
             $this->flashMessage("Akce byla uzavřena.");
@@ -104,14 +107,14 @@ class EventPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleActivateStatistic() : void
+    public function handleActivateStatistic(): void
     {
         $this->eventService->participants->activateEventStatistic($this->aid);
         //flash message?
         $this->redirect('this', ["aid" => $this->aid]);
     }
 
-    public function actionPrintAll(int $aid) : void
+    public function actionPrintAll(int $aid): void
     {
         $chits = (array)$this->eventService->chits->getAll($this->aid);
 
@@ -124,7 +127,7 @@ class EventPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function handleRemoveFunction($aid, $fid) : void
+    public function handleRemoveFunction($aid, $fid): void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE_Function")) {
             $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
@@ -168,14 +171,14 @@ class EventPresenter extends BasePresenter
         $form->addHidden("aid");
         $form->addSubmit('send', 'Upravit')
             ->setAttribute("class", "btn btn-primary")
-            ->onClick[] = function(SubmitButton $button) : void {
+            ->onClick[] = function (SubmitButton $button): void {
                 $this->formEditSubmitted($button);
             };
 
         return $form;
     }
 
-    private function formEditSubmitted(SubmitButton $button) : void
+    private function formEditSubmitted(SubmitButton $button): void
     {
         if (!$this->isAllowed("EV_EventGeneral_UPDATE")) {
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
@@ -196,7 +199,7 @@ class EventPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentFunctions() : FunctionsControl
+    protected function createComponentFunctions(): FunctionsControl
     {
         return $this->functionsFactory->create($this->aid);
     }

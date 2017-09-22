@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Model\LoggerService;
 use Model\UnitService;
 use Model\UserService;
 use Nette;
@@ -16,7 +17,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     /** @var UnitService */
     protected $unitService;
-    
+
     /** @var string */
     private $wwwDir;
 
@@ -28,6 +29,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     /** @var WebLoader\LoaderFactory */
     private $webLoader;
+
+    /** @var LoggerService */
+    protected $loggerService;
 
 
     public function injectWebLoader(WebLoader\LoaderFactory $webLoader): void
@@ -44,6 +48,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     public function injectUnitService(UnitService $u): void
     {
         $this->unitService = $u;
+    }
+
+    public function injectLoggerService(LoggerService $loggerService): void
+    {
+        $this->loggerService = $loggerService;
     }
 
     protected function startup(): void

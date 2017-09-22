@@ -86,7 +86,6 @@ class DefaultPresenter extends BasePresenter
 
         $grid->setTemplateFile(__DIR__ . "/../templates/eventsGrid.latte");
         return $grid;
-
     }
 
     public function renderDefault(): void

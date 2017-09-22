@@ -7,7 +7,6 @@ use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
 /**
- * @author Hána František <sinacek@gmail.com>
  * Třída pro odvozování tříd, které jsou přispůsobiltené parametry v konstruktoru
  * $longName a $name chci sjednotit - prověřit, jestli to ma stale skautis ruzně
  */

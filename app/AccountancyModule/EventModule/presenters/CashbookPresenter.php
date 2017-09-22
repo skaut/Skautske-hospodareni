@@ -7,7 +7,7 @@ class CashbookPresenter extends BasePresenter
 
     use \CashbookTrait;
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         if (!$this->aid) {
@@ -21,7 +21,7 @@ class CashbookPresenter extends BasePresenter
         $this->template->missingCategories = FALSE;
     }
 
-    public function renderDefault($aid, $pid = NULL, $dp = FALSE) : void
+    public function renderDefault($aid, $pid = NULL, $dp = FALSE): void
     {
         if ($pid !== NULL) {
             $this->editChit($pid);
@@ -36,7 +36,7 @@ class CashbookPresenter extends BasePresenter
         }
     }
 
-    public function actionImportHpd($aid) : void
+    public function actionImportHpd($aid): void
     {
         $this->editableOnly();
         $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);

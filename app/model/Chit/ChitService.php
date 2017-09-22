@@ -3,20 +3,18 @@
 namespace Model;
 
 use Dibi\Row;
+use eGen\MessageBus\Bus\EventBus;
 use Model\Skautis\Mapper;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class ChitService extends MutableBaseService
 {
 
     const CHIT_UNDEFINED_OUT = 8;
     const CHIT_UNDEFINED_IN = 12;
     const SKAUTIS_BUDGET_RESERVE = 15;
-    const EVENT_TYPE_CAMP  = "camp";
+    const EVENT_TYPE_CAMP = "camp";
     const EVENT_TYPE_GENERAL = "general";
 
     /** @var Mapper */
@@ -25,11 +23,22 @@ class ChitService extends MutableBaseService
     /** @var ChitTable */
     private $table;
 
-    public function __construct(string $name, ChitTable $table, Skautis $skautIS, IStorage $cacheStorage, Mapper $skautisMapper)
+    /** @var EventBus */
+    private $eventBus;
+
+    public function __construct(
+        string $name,
+        ChitTable $table,
+        Skautis $skautIS,
+        IStorage $cacheStorage,
+        Mapper $skautisMapper,
+        EventBus $eventBus
+    )
     {
         parent::__construct($name, $skautIS, $cacheStorage);
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -187,20 +196,21 @@ class ChitService extends MutableBaseService
         }
 
         $ret = $this->table->update($chitId, $toChange);
-        if(array_key_exists('eventId', $toChange)) {
+        if (array_key_exists('eventId', $toChange)) {
             $chit['eventId'] = $toChange['eventId'];
         }
-        if(array_key_exists('category', $toChange)) {
+        if (array_key_exists('category', $toChange)) {
             $chit['category'] = $toChange['category'];
         }
 
         //category update
         if ($this->type == self::TYPE_CAMP) {
             $skautisEventId = $this->getSkautisId($chit->eventId);
-            if($skautisEventId !== 0) {
+            if ($skautisEventId !== 0) {
                 $this->updateCategory($skautisEventId, $chit->category);
             }
         }
+
         return $ret;
     }
 
@@ -212,6 +222,9 @@ class ChitService extends MutableBaseService
      */
     public function delete($chitId, $skautisEventId): bool
     {
+        //TBD
+        // $this->eventBus->handle(new ChitWasRemoved($this->event->ID_Unit, $user->ID, $user->Person, $id, $this->event->localId, $chit->purpose));
+
         return $this->table->delete($chitId, $this->getLocalId($skautisEventId));
     }
 
@@ -453,7 +466,7 @@ class ChitService extends MutableBaseService
         foreach ($chits as $chitId) {
             $toUpdate = ["eventId" => $this->getLocalId($newEventId, $newEventType)];
             $chit = $this->get($chitId);
-            if($this->getLocalId($originEventId, $originEventType) !== $chit['eventId']) {
+            if ($this->getLocalId($originEventId, $originEventType) !== $chit['eventId']) {
                 throw new \InvalidArgumentException("Zvolený doklad ($chitId) nenáleží původní akci ($originEventId)");
             }
             //pokud nejsou obe knihy od výprav, tak nastav kategorii na neurčitou kategorii
