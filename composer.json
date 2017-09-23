@@ -45,7 +45,8 @@
         "joseki/webloader-filters": "^1.1",
         "lookyman/nette-proxy": "^1.2",
         "mhujer/fio-api-php": "^4.0",
-        "egen/message-bus": "^1.1"
+        "egen/message-bus": "^1.1",
+        "fmasa/auto-di": "^1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

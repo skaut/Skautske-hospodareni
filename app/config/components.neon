@@ -1,13 +1,14 @@
+autoDI:
+    services:
+        - implement: App\AccountancyModule\**\I*Factory
+
 services:
     - implement: App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory
       arguments: { eventEntity: @eventService }
-    - App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory
-    - App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory
-    - App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory
-    - App\AccountancyModule\TravelModule\Factories\ICommandFormFactory
-    - App\AccountancyModule\TravelModule\Factories\ICommandGridFactory
-    - App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory
 
     # Presenters
     - App\AccountancyModule\PaymentModule\GroupPresenter(camp: @campService)
     - App\OfflinePresenter(eventService: @eventService)
+
+    # Factories
+    - App\AccountancyModule\Factories\GridFactory

@@ -8,7 +8,7 @@ use Model\Logger\Log\Type;
 use Model\LoggerService;
 use Model\UserService;
 
-class EventListener
+class EventSubscriber
 {
     /** @var LoggerService */
     private $loggerService;
