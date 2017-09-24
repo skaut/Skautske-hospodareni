@@ -16,6 +16,8 @@ use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Summary;
+use Model\Services\Language;
+use Nette\Utils\Strings;
 use Skautis\Skautis;
 
 /**
@@ -276,7 +278,7 @@ class PaymentService
         }
 
         usort($result, function (DTO\Person $one, DTO\Person $two) {
-            return $one->getName() <=> $two->getName();
+            return Language::compare($one->getName(), $two->getName());
         });
 
         return $result;
