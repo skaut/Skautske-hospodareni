@@ -374,10 +374,16 @@ class PaymentService
 
     public function getPersonFromRegistration($registrationId, $includeChild = TRUE)
     {
-        return ($this->skautis->org->PersonRegistrationAll([
+        $persons = $this->skautis->org->PersonRegistrationAll([
             'ID_UnitRegistration' => $registrationId,
             'IncludeChild' => $includeChild,
-        ]));
+        ]);
+
+        usort($persons, function ($one, $two) {
+            return Language::compare($one->Person, $two->Person);
+        });
+
+        return $persons;
     }
 
     /**
