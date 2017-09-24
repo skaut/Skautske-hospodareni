@@ -192,17 +192,17 @@ class PaymentPresenter extends BasePresenter
             $this->redirect("Payment:detail", ["id" => $id]); // redirect elsewhere?
         }
 
-        $list = $this->model->getPersons($this->aid, $id); //@todo:?nahradit aid za array_keys($this->editUnits) ??
-
         $form = $this['massAddForm'];
         /* @var $form MassAddForm */
 
+        $list = $this->model->getPersons($this->aid, $id);
+
         foreach ($list as $p) {
-            $form->addPerson($p["ID"], $p["emails"], $p["DisplayName"]);
+            $form->addPerson($p->getId(), $p->getEmails(), $p->getName());
         }
 
         $this->template->id = $this->id;
-        $this->template->showForm = !empty($list);
+        $this->template->showForm = count($list) !== 0;
     }
 
     public function actionRepayment(int $id): void

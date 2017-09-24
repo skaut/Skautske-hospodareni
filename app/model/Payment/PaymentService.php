@@ -254,7 +254,7 @@ class PaymentService
      * seznam osob z dané jednotky
      * @param int $unitId
      * @param int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
-     * @return array[] array($personId => array(...))
+     * @return DTO\Person[]
      */
     public function getPersons($unitId, int $groupId)
     {
@@ -271,10 +271,13 @@ class PaymentService
             if(in_array($person->ID, $personsWithPayment)) {
                 continue;
             }
-            $result[$person->ID] = array_merge((array)$person, ["emails" => $this->getPersonEmails($person->ID)]);
+
+            $result[] = new DTO\Person($person->ID, $person->DisplayName, $this->getPersonEmails($person->ID));
         }
 
-        usort($result, function(array $person1, array $person2) { return $person1['DisplayName'] <=> $person2['DisplayName']; });
+        usort($result, function (DTO\Person $one, DTO\Person $two) {
+            return $one->getName() <=> $two->getName();
+        });
 
         return $result;
     }
