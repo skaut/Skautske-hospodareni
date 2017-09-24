@@ -4,114 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fbed9777838e26ba7214b8ab3d81817",
+    "content-hash": "cb504bb28b4ac6194277a698bd10835e",
     "packages": [
-        {
-            "name": "arachne/container-adapter",
-            "version": "v0.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Arachne/ContainerAdapter.git",
-                "reference": "860df1eecf0a48ebd34fb18d0cc793a77b485742"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Arachne/ContainerAdapter/zipball/860df1eecf0a48ebd34fb18d0cc793a77b485742",
-                "reference": "860df1eecf0a48ebd34fb18d0cc793a77b485742",
-                "shasum": ""
-            },
-            "require": {
-                "nette/di": "^2.3.0",
-                "php": "^5.5.0|^7.0.0",
-                "symfony/dependency-injection": "^3.0.0"
-            },
-            "require-dev": {
-                "arachne/codeception": "^0.7.3",
-                "codeception/codeception": "^2.2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Arachne\\ContainerAdapter\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jáchym Toušek",
-                    "email": "enumag@gmail.com",
-                    "homepage": "http://enumag.cz"
-                }
-            ],
-            "description": "Wrapper for Nette DIC which implements ContainerInterface from Symfony.",
-            "keywords": [
-                "arachne",
-                "dependency injection",
-                "nette",
-                "symfony"
-            ],
-            "time": "2017-03-09T21:33:14+00:00"
-        },
-        {
-            "name": "arachne/event-dispatcher",
-            "version": "v0.1.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DeprecatedPackages/ArachneEventDispatcher.git",
-                "reference": "17bc674481d83cc22f25d39b50cef8c0392f439f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DeprecatedPackages/ArachneEventDispatcher/zipball/17bc674481d83cc22f25d39b50cef8c0392f439f",
-                "reference": "17bc674481d83cc22f25d39b50cef8c0392f439f",
-                "shasum": ""
-            },
-            "require": {
-                "arachne/container-adapter": "^0.1.0|^0.2.0",
-                "nette/di": "^2.3.0",
-                "nette/utils": "^2.3.0",
-                "php": "^5.4.0|^7.0.0",
-                "symfony/event-dispatcher": "^2.8.0|^3.0.0"
-            },
-            "require-dev": {
-                "arachne/codeception": "^0.7.3",
-                "codeception/codeception": "~2.2.0",
-                "kdyby/console": "^2.6.1",
-                "kdyby/events": "^3.0.0",
-                "nette/application": "^2.3.0",
-                "nette/di": "~2.3.0|^2.4.3@dev",
-                "php": "^5.5.0|^7.0.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Arachne\\EventDispatcher\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jáchym Toušek",
-                    "email": "enumag@gmail.com",
-                    "homepage": "http://enumag.cz"
-                }
-            ],
-            "description": "Integration of symfony/event-dispatcher to Nette framework.",
-            "keywords": [
-                "arachne",
-                "events",
-                "nette",
-                "symfony"
-            ],
-            "abandoned": "contributte/event-dispatcher",
-            "time": "2016-10-08T10:39:52+00:00"
-        },
         {
             "name": "beberlei/DoctrineExtensions",
             "version": "v1.0.17",
@@ -1307,7 +1201,7 @@
             "support": {
                 "source": "https://github.com/fmasa/dependentselectbox/tree/master"
             },
-            "time": "2017-03-25 16:55:16"
+            "time": "2017-03-25T16:55:16+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -2481,7 +2375,7 @@
                 "php",
                 "utf-8"
             ],
-            "time": "2017-02-01 18:49:59"
+            "time": "2017-02-01T18:49:59+00:00"
         },
         {
             "name": "natxet/CssMin",
@@ -3582,6 +3476,55 @@
             "time": "2017-08-20T17:32:29+00:00"
         },
         {
+            "name": "nettrine/migrations",
+            "version": "v0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nettrine/migrations.git",
+                "reference": "e3f4857a1eab1e010171472516df1c675819c716"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nettrine/migrations/zipball/e3f4857a1eab1e010171472516df1c675819c716",
+                "reference": "e3f4857a1eab1e010171472516df1c675819c716",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/migrations": "^1.5.0",
+                "nette/di": "^2.4.9",
+                "php": ">=5.6",
+                "symfony/console": "^3.3.6"
+            },
+            "require-dev": {
+                "ninjify/nunjuck": "~0.1.4",
+                "ninjify/qa": "~0.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Nettrine\\Migrations\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Milan Felix Šulc",
+                    "homepage": "https://f3l1x.io"
+                }
+            ],
+            "description": "Migrations",
+            "homepage": "https://github.com/nettrine/migrations",
+            "keywords": [
+                "doctrine",
+                "migrations",
+                "nette"
+            ],
+            "time": "2017-08-17T13:29:53+00:00"
+        },
+        {
             "name": "nextras/forms",
             "version": "v2.0.3",
             "source": {
@@ -3920,55 +3863,6 @@
             "time": "2015-05-01T07:00:55+00:00"
         },
         {
-            "name": "psr/container",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/container.git",
-                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
-                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Container\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
-                }
-            ],
-            "description": "Common Container Interface (PHP FIG PSR-11)",
-            "homepage": "https://github.com/php-fig/container",
-            "keywords": [
-                "PSR-11",
-                "container",
-                "container-interface",
-                "container-interop",
-                "psr"
-            ],
-            "time": "2017-02-14T16:28:37+00:00"
-        },
-        {
             "name": "psr/http-message",
             "version": "1.0.1",
             "source": {
@@ -4234,7 +4128,7 @@
                 "nette",
                 "skautis"
             ],
-            "time": "2017-04-12 10:01:52"
+            "time": "2017-04-12T10:01:52+00:00"
         },
         {
             "name": "skautis/skautis",
@@ -4292,7 +4186,7 @@
                 "soap",
                 "wsdl"
             ],
-            "time": "2017-04-08 14:04:00"
+            "time": "2017-04-08T14:04:00+00:00"
         },
         {
             "name": "symfony/console",
@@ -4417,139 +4311,6 @@
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
             "time": "2017-09-01T13:23:39+00:00"
-        },
-        {
-            "name": "symfony/dependency-injection",
-            "version": "v3.3.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "e593f06dd90a81c7b70ac1c49862a061b0ec06d2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/e593f06dd90a81c7b70ac1c49862a061b0ec06d2",
-                "reference": "e593f06dd90a81c7b70ac1c49862a061b0ec06d2",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.5.9|>=7.0.8",
-                "psr/container": "^1.0"
-            },
-            "conflict": {
-                "symfony/config": "<3.3.1",
-                "symfony/finder": "<3.3",
-                "symfony/yaml": "<3.3"
-            },
-            "provide": {
-                "psr/container-implementation": "1.0"
-            },
-            "require-dev": {
-                "symfony/config": "~3.3",
-                "symfony/expression-language": "~2.8|~3.0",
-                "symfony/yaml": "~3.3"
-            },
-            "suggest": {
-                "symfony/config": "",
-                "symfony/expression-language": "For using expressions in service container configuration",
-                "symfony/finder": "For using double-star glob patterns or when GLOB_BRACE portability is required",
-                "symfony/proxy-manager-bridge": "Generate service proxies to lazy load them",
-                "symfony/yaml": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.3-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\DependencyInjection\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony DependencyInjection Component",
-            "homepage": "https://symfony.com",
-            "time": "2017-09-05T20:39:38+00:00"
-        },
-        {
-            "name": "symfony/event-dispatcher",
-            "version": "v3.3.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "54ca9520a00386f83bca145819ad3b619aaa2485"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/54ca9520a00386f83bca145819ad3b619aaa2485",
-                "reference": "54ca9520a00386f83bca145819ad3b619aaa2485",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.5.9|>=7.0.8"
-            },
-            "conflict": {
-                "symfony/dependency-injection": "<3.3"
-            },
-            "require-dev": {
-                "psr/log": "~1.0",
-                "symfony/config": "~2.8|~3.0",
-                "symfony/dependency-injection": "~3.3",
-                "symfony/expression-language": "~2.8|~3.0",
-                "symfony/stopwatch": "~2.8|~3.0"
-            },
-            "suggest": {
-                "symfony/dependency-injection": "",
-                "symfony/http-kernel": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.3-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\EventDispatcher\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony EventDispatcher Component",
-            "homepage": "https://symfony.com",
-            "time": "2017-07-29T21:54:42+00:00"
         },
         {
             "name": "symfony/inflector",
@@ -5231,57 +4992,6 @@
                 "zf2"
             ],
             "time": "2017-07-11T19:17:22+00:00"
-        },
-        {
-            "name": "zenify/doctrine-migrations",
-            "version": "v3.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Zenify/DoctrineMigrations.git",
-                "reference": "9bc9b9409ee97b8d0686ec9246491fbe43e6fbd5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Zenify/DoctrineMigrations/zipball/9bc9b9409ee97b8d0686ec9246491fbe43e6fbd5",
-                "reference": "9bc9b9409ee97b8d0686ec9246491fbe43e6fbd5",
-                "shasum": ""
-            },
-            "require": {
-                "arachne/event-dispatcher": "^0.1",
-                "doctrine/migrations": "^1.4",
-                "nette/di": "^2.3",
-                "php": "^5.6|^7.0",
-                "symfony/console": "^2.7|^3.0",
-                "symfony/event-dispatcher": "^2.7|^3.0"
-            },
-            "require-dev": {
-                "kdyby/console": "^2.4",
-                "kdyby/doctrine": "^3.1",
-                "kdyby/events": "^3.0",
-                "nette/bootstrap": "^2.3",
-                "nette/reflection": "^2.3",
-                "phpunit/phpunit": "^5.4",
-                "tracy/tracy": "^2.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Zenify\\DoctrineMigrations\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tomáš Votruba",
-                    "homepage": "http://tomasvotruba.cz"
-                }
-            ],
-            "description": "Implementation of Doctrine Migrations to Nette",
-            "abandoned": "nettrine/migrations",
-            "time": "2016-09-23T19:04:56+00:00"
         }
     ],
     "packages-dev": [
@@ -7516,6 +7226,69 @@
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
             "time": "2017-09-11T15:55:22+00:00"
+        },
+        {
+            "name": "symfony/event-dispatcher",
+            "version": "v3.3.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/event-dispatcher.git",
+                "reference": "54ca9520a00386f83bca145819ad3b619aaa2485"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/54ca9520a00386f83bca145819ad3b619aaa2485",
+                "reference": "54ca9520a00386f83bca145819ad3b619aaa2485",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.5.9|>=7.0.8"
+            },
+            "conflict": {
+                "symfony/dependency-injection": "<3.3"
+            },
+            "require-dev": {
+                "psr/log": "~1.0",
+                "symfony/config": "~2.8|~3.0",
+                "symfony/dependency-injection": "~3.3",
+                "symfony/expression-language": "~2.8|~3.0",
+                "symfony/stopwatch": "~2.8|~3.0"
+            },
+            "suggest": {
+                "symfony/dependency-injection": "",
+                "symfony/http-kernel": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\EventDispatcher\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony EventDispatcher Component",
+            "homepage": "https://symfony.com",
+            "time": "2017-07-29T21:54:42+00:00"
         },
         {
             "name": "symfony/finder",
