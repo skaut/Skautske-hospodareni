@@ -274,6 +274,8 @@ class PaymentService
             $result[$person->ID] = array_merge((array)$person, ["emails" => $this->getPersonEmails($person->ID)]);
         }
 
+        usort($result, function(array $person1, array $person2) { return $person1['DisplayName'] <=> $person2['DisplayName']; });
+
         return $result;
     }
 
