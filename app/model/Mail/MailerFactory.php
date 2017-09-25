@@ -8,7 +8,7 @@ use Nette\Mail\SmtpMailer;
 class MailerFactory implements IMailerFactory
 {
 
-    /** @var IMailer|NULL $debugMailer */
+    /** @var IMailer */
     private $debugMailer;
 
     /** @var bool */

@@ -28,7 +28,6 @@
         "foowie/dependentselectbox": "dev-master",
         "heureka/bank-account-validator": "1.1.*",
         "nextras/mail-panel": "^2.3",
-        "zenify/doctrine-migrations": "^3.0",
         "kdyby/console": "^2.6",
         "consistence/consistence": "^0.22.0",
         "kdyby/doctrine": "^3.1",
@@ -45,7 +44,9 @@
         "joseki/webloader-filters": "^1.1",
         "lookyman/nette-proxy": "^1.2",
         "mhujer/fio-api-php": "^4.0",
-        "egen/message-bus": "^1.1"
+        "egen/message-bus": "^1.1",
+        "fmasa/auto-di": "^1.0",
+        "nettrine/migrations": "^0.1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

@@ -7,8 +7,10 @@ use Model\Chit\Events\ChitWasUpdated;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
 
-class ChitListener
+class ChitSubscriber
 {
+
+    /** @var LoggerService */
     private $loggerService;
 
     public function __construct(LoggerService $ls)
@@ -37,6 +39,5 @@ class ChitListener
             $chit->getEventId()
         );
     }
-
 
 }

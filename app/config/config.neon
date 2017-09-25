@@ -1,9 +1,3 @@
-#
-# SECURITY WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
-#
-# If you don't protect this directory from direct web access, anybody will be able to see your passwords.
-# http://nette.org/security-warning
-#
 parameters:
     ssl: on
 
@@ -58,6 +52,7 @@ proxy:
     proxyDir: %tempDir%/proxies
 
 extensions:
+    autoDI: Fmasa\AutoDI\DI\AutoDIExtension
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
     messageBus: eGen\MessageBus\DI\MessageBusExtension
@@ -66,19 +61,38 @@ extensions:
     proxy: Lookyman\Nette\Proxy\DI\ProxyExtension
     webloader: WebLoader\Nette\Extension
 
+autoDI:
+    services:
+        # Main model facades
+        - class: Model\**Service
+          exclude: 'Model\{Event,Chit,Participant}Service' # mutable services
+
+        # Aggregate repositories
+        - class: Model\**\Repositories\*Repository
+
+        # Old dibi DAOs - deprecated
+        - class: Model\*Table
+
+        # Domain event subscribers
+        - class: Model\*\Subscribers\*Subscriber
+          tags: [eventBus.subscriber]
+
+        # Skautis communication related services
+        - class: Model\Skautis\**
+          exclude: Model\Skautis\WebserviceFactory
+
+        # Factories for mutable services
+        - implement: 'Model\I{Event,Chit,Participant}ServiceFactory'
+
+        # Utility services
+        - class: Model\Services\**
+
 services:
-
-    #router: Nette\Application\Routers\SimpleRouter('App:Default:default')
     - App\RouterFactory
-    - \Model\PaymentService(%tempDir%)
 
-    - class: Model\Payment\BankAccountService
-      arguments: { fioCache: @fio.cache }
-    - Model\Skautis\UnitResolver
-    - Model\Skautis\BankAccountImporter
-
-    - Model\MailService
-    - Model\Payment\MailingService
+    - Model\PaymentService(%tempDir%)
+    - Model\Payment\BankAccountService(fioCache: @fio.cache)
+    - Model\MemberService(@skautis.org)
 
     fio.client:
         class: Model\Bank\Fio\FioClient
@@ -89,57 +103,20 @@ services:
       arguments:
           - GuzzleHttp\Client({ timeout: 3 })
 
-    - Model\BankService
     router: @App\RouterFactory::createRouter
-    #connection:
-    #    class: \Dibi\Connection
-    #    factory: dibi::connect(%database%)
-    #    run: TRUE
-    - \Model\AuthService
-    eventService:
-        class: Model\EventEntity("General")
-    campService:
-        class: Model\EventEntity("Camp")
-    unitAccountService:
-        class: Model\EventEntity("Unit")
-    - Model\MemberService(@skautis.org)
-    - \Model\UnitService
-    - \Model\UserService
-    - \Model\TravelService
-    - \Model\ExportService
-    - \Model\ExcelService
-    - \Model\BudgetService
-    - \Model\LoggerService
 
-    # Factories
-    - Model\IChitServiceFactory
-    - Model\IEventServiceFactory
-    - Model\IParticipantServiceFactory
+    eventService: Model\EventEntity("General")
+    campService: Model\EventEntity("Camp")
+    unitAccountService: Model\EventEntity("Unit")
 
     # Model
-
     - App\AccountancyModule\Auth\Authorizator
 
-    ####################################################
-    #                 Repositories                     #
-    ####################################################
-    - Model\Travel\Repositories\CommandRepository
-    - Model\Travel\Repositories\ContractRepository
-    - Model\Travel\Repositories\VehicleRepository
-    - Model\Payment\Repositories\BankAccountRepository
-    - Model\Payment\Repositories\GroupRepository
-    - Model\Payment\Repositories\PaymentRepository
-    - Model\Payment\Repositories\UserRepository
-    - Model\Logger\Repositories\LoggerRepository
-    # Skautis
+    # Skautis repositories
     - Model\Skautis\UnitRepository(@skautis.org)
     - Model\Skautis\EventRepository(@skautis.event)
 
-
-
-    ####################################################
-    #                    Skautis                       #
-    ####################################################
+    # Skautis webservices
     skautis.org:
         factory: Model\Skautis\WebserviceFactory::createOrganizationUnit
         tags: [lookyman.lazy]
@@ -147,43 +124,13 @@ services:
         factory: Model\Skautis\WebserviceFactory::createEvent
         tags: [lookyman.lazy]
 
-    # Factories
-    - Model\Services\TemplateFactory
-    - App\AccountancyModule\Factories\GridFactory
-
-    # Tables
-    - Model\BudgetTable
-    - Model\ChitTable
-    - Model\CommandTable
-    - Model\EventTable
-    - Model\MailTable
-    - Model\ParticipantTable
-    - Model\Skautis\ObjectTable
-    - Model\TravelTable
-
-
-    - class: Model\Payment\Subscribers\PaymentSubscriber
-      tags: [eventBus.subscriber]
-
-    - class: App\Model\Subscribers\EventListener
-      tags: [eventBus.subscriber]
-
-    - class: App\Model\Subscribers\ChitListener
-      tags: [eventBus.subscriber]
-
-    - Model\Services\PdfRenderer
-    - Model\Skautis\Mapper
-
     nette.latteFactory:
         setup:
             - addFilter(null, [App\AccountancyModule\AccountancyHelpers, loader])
 
-    nette.mailer:
-        class: Nette\Mail\IMailer
-        factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
+    nette.mailer: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
 
     - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
-
 
 includes:
     - model/doctrine.neon
