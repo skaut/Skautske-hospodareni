@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Model\Services\Language;
 use Nette\Caching\IStorage;
 use Nette\Utils\ArrayHash;
 use Skautis\Skautis;
@@ -75,6 +76,11 @@ class   ParticipantService extends MutableBaseService
         if (!is_array($participants)) {//pokud je prázdná třída stdClass
             return [];
         }
+
+        usort($participants, function ($one, $two): int {
+            return Language::compare($one->Person, $two->Person);
+        });
+
         return $participants;
     }
 

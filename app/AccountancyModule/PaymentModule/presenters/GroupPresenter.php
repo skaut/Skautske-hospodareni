@@ -206,7 +206,7 @@ class GroupPresenter extends BasePresenter
 
         $groupId = $v->groupId !== "" ? (int)$v->groupId : NULL;
         $label = $v->label;
-        $amount = $v->amount !== "" ? $v->amount : NULL;
+        $amount = (isset($v->amount) && $v->amount !== "") ? $v->amount : NULL;
         $constantSymbol = $v->constantSymbol !== "" ? $v->constantSymbol : NULL;
         $nextVs = $v->nextVs !== "" ? $v->nextVs : NULL;
         $smtpId = $v->smtp;

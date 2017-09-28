@@ -16,6 +16,8 @@ use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Summary;
+use Model\Services\Language;
+use Nette\Utils\Strings;
 use Skautis\Skautis;
 
 /**
@@ -254,7 +256,7 @@ class PaymentService
      * seznam osob z dané jednotky
      * @param int $unitId
      * @param int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
-     * @return array[] array($personId => array(...))
+     * @return DTO\Person[]
      */
     public function getPersons($unitId, int $groupId)
     {
@@ -271,8 +273,13 @@ class PaymentService
             if(in_array($person->ID, $personsWithPayment)) {
                 continue;
             }
-            $result[$person->ID] = array_merge((array)$person, ["emails" => $this->getPersonEmails($person->ID)]);
+
+            $result[] = new DTO\Person($person->ID, $person->DisplayName, $this->getPersonEmails($person->ID));
         }
+
+        usort($result, function (DTO\Person $one, DTO\Person $two) {
+            return Language::compare($one->getName(), $two->getName());
+        });
 
         return $result;
     }
@@ -367,10 +374,16 @@ class PaymentService
 
     public function getPersonFromRegistration($registrationId, $includeChild = TRUE)
     {
-        return ($this->skautis->org->PersonRegistrationAll([
+        $persons = $this->skautis->org->PersonRegistrationAll([
             'ID_UnitRegistration' => $registrationId,
             'IncludeChild' => $includeChild,
-        ]));
+        ]);
+
+        usort($persons, function ($one, $two) {
+            return Language::compare($one->Person, $two->Person);
+        });
+
+        return $persons;
     }
 
     /**
