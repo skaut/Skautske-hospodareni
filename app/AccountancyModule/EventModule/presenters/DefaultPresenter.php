@@ -73,9 +73,9 @@ class DefaultPresenter extends BasePresenter
             ->setClass('btn btn-xs btn-danger ajax')
             ->setConfirm('Opravdu chcete zrušit akci %s?', 'DisplayName');
 
-        $grid->addExportCallback('Souhrn akcí', function (array $dataSource, DataGrid $grid) {
-            $this->excelService->getEventSummaries(array_keys($dataSource), $this->eventService);
-        }, TRUE)->setAjax(FALSE);
+        $grid->addGroupAction('Souhrn akcí')->onSelect[] = function(array $ids) {
+            $this->redirect('exportEvents!', ['ids' => $ids]);
+        };
 
         $grid->allowRowsAction('delete', function ($item) {
             if (!array_key_exists("accessDelete", $item)) {
@@ -93,6 +93,12 @@ class DefaultPresenter extends BasePresenter
         $this['formFilter']['state']->setDefaultValue($this->ses->state);
         $this['formFilter']['year']->setDefaultValue($this->ses->year);
         $this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
+    }
+
+    public function handleExportEvents(array $ids): void
+    {
+        $ids = array_map('intval', $ids);
+        $this->excelService->getEventSummaries($ids, $this->eventService);
     }
 
     public function handleChangeYear(?int $year): void
