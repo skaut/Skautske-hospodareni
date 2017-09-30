@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Subscribers;
+namespace Model\Logger\Subscribers;
 
 use Model\Events\Events\EventWasClosed;
 use Model\Events\Events\EventWasOpened;
