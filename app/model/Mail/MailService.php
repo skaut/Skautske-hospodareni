@@ -2,9 +2,13 @@
 
 namespace Model;
 
+use Model\DTO\Payment\Mail;
 use Model\DTO\Payment\MailFactory;
 use Model\Mail\IMailerFactory;
 use Model\Payment\EmailNotSetException;
+use Model\Payment\MailCredentials;
+use Model\Payment\MailCredentialsNotFound;
+use Model\Payment\Repositories\IMailCredentialsRepository;
 use Model\Payment\Repositories\IUserRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
@@ -31,12 +35,16 @@ class MailService
     /** @var TemplateFactory */
     private $templateFactory;
 
+    /** @var IMailCredentialsRepository */
+    private $credentials;
+
     public function __construct(
         MailTable $table,
         UnitService $units,
         IUserRepository $users,
         IMailerFactory $mailerFactory,
-        TemplateFactory $templateFactory
+        TemplateFactory $templateFactory,
+        IMailCredentialsRepository $credentials
     )
     {
         $this->table = $table;
@@ -44,23 +52,34 @@ class MailService
         $this->users = $users;
         $this->mailerFactory = $mailerFactory;
         $this->templateFactory = $templateFactory;
+        $this->credentials = $credentials;
     }
 
-    public function get($id)
+    public function get(int $id): ?Mail
     {
-        $row = $this->table->get($id);
-        return $row !== FALSE ? MailFactory::create($row) : NULL;
+        try {
+            return MailFactory::create(
+                $this->credentials->find($id)
+            );
+        } catch (MailCredentialsNotFound $e) {
+            return NULL;
+        }
     }
 
     public function getAll(int $unitId) : array
     {
-        $mails = $this->table->getAll($this->getUnitIds($unitId));
+        $mails = $this->findForUnit($unitId);
         return array_map([MailFactory::class, 'create'], $mails);
     }
 
     public function getPairs(int $unitId) : array
     {
-        return $this->table->getPairs($this->getUnitIds($unitId));
+        $pairs = [];
+        foreach($this->findForUnit($unitId) as $credentials) {
+            $pairs[$credentials->getId()] = $credentials->getUsername();
+        }
+
+        return $pairs;
     }
 
     /**
@@ -75,12 +94,12 @@ class MailService
      */
     public function addSmtp(int $unitId, string $host, string $username, string $password, string $secure, int $userId): void
     {
-        $this->trySendViaSmtp([
-            'host' => $host,
-            'username' => $username,
-            'password' => $password,
-            'secure' => $secure,
-        ], $userId);
+//        $this->trySendViaSmtp([
+//            'host' => $host,
+//            'username' => $username,
+//            'password' => $password,
+//            'secure' => $secure,
+//        ], $userId);
 
         $this->table->addSmtp($unitId, $host, $username, $password, $secure);
     }
@@ -92,11 +111,14 @@ class MailService
 
     /**
      * @param int $unitId
-     * @return int[]
+     * @return MailCredentials[]
      */
-    private function getUnitIds(int $unitId) : array
+    private function findForUnit(int $unitId): array
     {
-        return [$unitId, $this->units->getOficialUnit($unitId)->ID];
+        $units = [$unitId, $this->units->getOficialUnit($unitId)->ID];
+        $byUnit = $this->credentials->findByUnits($units);
+
+        return array_merge(...$byUnit);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Model\Mail;
 
+use Model\Payment\MailCredentials;
 use Nette\Mail\IMailer;
 use Nette\Mail\SmtpMailer;
 
@@ -20,11 +21,18 @@ class MailerFactory implements IMailerFactory
         $this->enabled = $enabled;
     }
 
-    public function create(array $credentials): IMailer
+    public function create(MailCredentials $credentials): IMailer
     {
-        return $this->enabled
-            ? new SmtpMailer($credentials)
-            : $this->debugMailer;
+        if( ! $this->enabled) {
+            return $this->debugMailer;
+        }
+
+        return new SmtpMailer([
+            'host' => $credentials->getHost(),
+            'username' => $credentials->getUsername(),
+            'password' => $credentials->getPassword(),
+            'secure' => $credentials->getProtocol()->getValue(),
+        ]);
     }
 
 }

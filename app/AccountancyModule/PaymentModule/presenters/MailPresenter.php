@@ -39,7 +39,7 @@ class MailPresenter extends BasePresenter
         }
     }
 
-    public function handleRemove($id) : void
+    public function handleRemove(int $id) : void
     {
         $mail = $this->model->get($id);
 

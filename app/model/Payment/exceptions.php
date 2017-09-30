@@ -45,3 +45,7 @@ class InvalidBankAccountNumberException extends \Exception
 class TokenNotSetException extends \Exception
 {
 }
+
+class MailCredentialsNotFound extends \Exception
+{
+}

@@ -1,17 +1,21 @@
 <?php
 
-
 namespace Model\DTO\Payment;
 
-
-use Dibi\Row;
+use Model\Payment\MailCredentials;
 
 class MailFactory
 {
 
-    public static function create(Row $row) : Mail
+    public static function create(MailCredentials $credentials) : Mail
     {
-        return new Mail($row->id, $row->unitId, $row->username, $row->host, $row->secure);
+        return new Mail(
+            $credentials->getId(),
+            $credentials->getUnitId(),
+            $credentials->getUsername(),
+            $credentials->getHost(),
+            $credentials->getProtocol()->getValue()
+        );
     }
 
 }
