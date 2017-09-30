@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Subscribers;
+namespace Model\Logger\Subscribers;
 
 use Model\Chit\Events\ChitWasRemoved;
 use Model\Chit\Events\ChitWasUpdated;
