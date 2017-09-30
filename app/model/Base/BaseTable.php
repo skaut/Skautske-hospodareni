@@ -12,6 +12,7 @@ class BaseTable
 
     const TABLE_CHIT = 'ac_chits';
     const TABLE_CATEGORY = 'ac_chitsCategory';
+    const TABLE_CATEGORY_OBJECT = 'ac_chitsCategory_object';
     const TABLE_CHIT_VIEW = 'ac_chitsView';
     const TABLE_CAMP_PARTICIPANT = 'ac_camp_participants';
     const TABLE_OBJECT = 'ac_object';

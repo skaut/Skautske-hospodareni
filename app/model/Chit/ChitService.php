@@ -5,6 +5,7 @@ namespace Model;
 use Dibi\Row;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Skautis\Mapper;
+use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
@@ -16,6 +17,7 @@ class ChitService extends MutableBaseService
     const SKAUTIS_BUDGET_RESERVE = 15;
     const EVENT_TYPE_CAMP = "camp";
     const EVENT_TYPE_GENERAL = "general";
+    const EVENT_TYPE_UNIT = "unit";
 
     /** @var Mapper */
     private $skautisMapper;
@@ -263,7 +265,7 @@ class ChitService extends MutableBaseService
             }
             return $res;
         } else {
-            return $this->table->getGeneralCategories();
+            return $this->table->getCategoriesPairsByType($this->type);
         }
     }
 
@@ -275,7 +277,7 @@ class ChitService extends MutableBaseService
     public function getCategoriesPairs($typeInOut = NULL, $skautisEventId = NULL): array
     {
         $cacheId = __METHOD__ . $this->type . $skautisEventId . "_" . $typeInOut;
-        if ($this->type == self::TYPE_CAMP) {
+        if ($this->type == self::EVENT_TYPE_CAMP) {
             if (is_null($skautisEventId)) {
                 throw new \InvalidArgumentException("Neplatný vstup \$skautisEventId=NULL pro " . __FUNCTION__);
             }
@@ -289,18 +291,11 @@ class ChitService extends MutableBaseService
                     }
                 }
                 $categories = ["in" => $in, "out" => $out];
-
                 $this->saveSes($cacheId, $categories);
             }
             return is_null($typeInOut) ? $categories : $categories[$typeInOut];
         } else {
-            if (($res = $this->cache->load($cacheId)) == NULL) {
-                $res = $this->table->getGeneralCategoriesPairs($typeInOut);
-                $this->cache->save($cacheId, $res, [
-                    \Nette\Caching\Cache::EXPIRE => '+ 2 days',
-                ]);
-            }
-            return $res;
+            return $this->table->getCategoriesPairsByType($this->type, $typeInOut);
         }
     }
 
