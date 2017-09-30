@@ -5,9 +5,6 @@ namespace Model;
 use Model\Skautis\Mapper;
 use Skautis\Skautis;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class BudgetService extends BaseService
 {
 

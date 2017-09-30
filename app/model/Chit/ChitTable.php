@@ -99,14 +99,13 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * vrací seznam kategorií
+     * vrací seznam kategorií obecné akce
      * @param string $type
      * @return array
      */
-    public function getGeneralCategoriesPairs($type = NULL)
+    public function getGeneralCategoriesPairs(?string $type = NULL)
     {
-        return $this->connection->fetchPairs("SELECT id, label FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type, "ORDER BY orderby DESC"
-        );
+        return $this->connection->fetchPairs("SELECT id, label FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type, "ORDER BY orderby DESC");
     }
 
     /**
@@ -114,7 +113,7 @@ class ChitTable extends BaseTable
      * @param string $type in|out
      * @return array
      */
-    public function getGeneralCategories($type = NULL)
+    public function getGeneralCategories(?string $type = NULL)
     {
         return $this->connection->fetchAll("SELECT * FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
     }
@@ -122,10 +121,10 @@ class ChitTable extends BaseTable
     /**
      * celková cena v dané kategorii
      * @param int $categoryId
-     * @param string $eId - camp/general
+     * @param int $eId - camp/general
      * @return int
      */
-    public function getTotalInCategory($categoryId, $eId): int
+    public function getTotalInCategory(int $categoryId, int $eId): int
     {
         return (int)$this->connection->fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND eventId=%i", $eId, " GROUP BY eventId");
     }
@@ -135,7 +134,7 @@ class ChitTable extends BaseTable
      * @param int $localEventId
      * @return bool
      */
-    public function eventIsInMinus($localEventId)
+    public function eventIsInMinus(int $localEventId)
     {
         $data = $this->connection->fetchAll("SELECT cat.type, SUM(ch.price) as sum FROM [" . self::TABLE_CHIT . "] as ch
             LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.id) 
