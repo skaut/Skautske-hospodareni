@@ -75,7 +75,9 @@ class DefaultPresenter extends BasePresenter
             $this['formFilter']['state']->setDefaultValue($this->ses->state);
         }
     }
-    public function actionCampSummary() {
+
+    public function actionCampSummary()
+    {
         $this->excelService->getCampsSummary(array_keys($this->eventService->event->getAll($this->ses->year, $this->ses->state)), $this->eventService, $this->unitService);
     }
 

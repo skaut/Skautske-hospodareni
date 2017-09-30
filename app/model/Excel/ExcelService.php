@@ -73,11 +73,7 @@ class ExcelService
         foreach ($campsIds as $aid) {
             $camp = $service->event->get($aid);
             $data[$aid] = $camp;
-            $data[$aid]["troops"] = "";
-            $data[$aid]["troops"] = implode(", ", array_map(function($troop) {
-                return $troop->DisplayName;
-            }, $unitService->getCampTroops($camp)));
-            //$data[$aid]['parStatistic'] = $service->participants->getEventStatistic($aid);
+            $data[$aid]['troops'] = implode(', ', array_column($unitService->getCampTroops($camp), 'DisplayName'));
             $data[$aid]['chits'] = $service->chits->getAll($aid);
             $data[$aid]['func'] = $service->event->getFunctions($aid);
             $participants = $service->participants->getAll($aid);
@@ -279,7 +275,7 @@ class ExcelService
         $sheet->setTitle('Přehled akcí');
     }
 
-    protected function setSheetCamps(&$sheet, $data): void
+    protected function setSheetCamps(\PHPExcel_Worksheet $sheet, array $data): void
     {
         $firstElement = reset($data);
 
