@@ -6,6 +6,7 @@ use Model\DTO\Payment\Mail;
 use Model\DTO\Payment\MailFactory;
 use Model\Mail\IMailerFactory;
 use Model\Payment\EmailNotSetException;
+use Model\Payment\IUnitResolver;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 use Model\Payment\Repositories\IMailCredentialsRepository;
@@ -23,9 +24,6 @@ class MailService
     /** @var MailTable */
     private $table;
 
-    /** @var UnitService */
-    private $units;
-
     /** @var IUserRepository */
     private $users;
 
@@ -38,21 +36,24 @@ class MailService
     /** @var IMailCredentialsRepository */
     private $credentials;
 
+    /** @var IUnitResolver */
+    private $unitResolver;
+
     public function __construct(
         MailTable $table,
-        UnitService $units,
         IUserRepository $users,
         IMailerFactory $mailerFactory,
         TemplateFactory $templateFactory,
-        IMailCredentialsRepository $credentials
+        IMailCredentialsRepository $credentials,
+        IUnitResolver $unitResolver
     )
     {
         $this->table = $table;
-        $this->units = $units;
         $this->users = $users;
         $this->mailerFactory = $mailerFactory;
         $this->templateFactory = $templateFactory;
         $this->credentials = $credentials;
+        $this->unitResolver = $unitResolver;
     }
 
     public function get(int $id): ?Mail
@@ -115,7 +116,7 @@ class MailService
      */
     private function findForUnit(int $unitId): array
     {
-        $units = [$unitId, $this->units->getOficialUnit($unitId)->ID];
+        $units = [$unitId, $this->unitResolver->getOfficialUnitId($unitId)];
         $byUnit = $this->credentials->findByUnits($units);
 
         return array_merge(...$byUnit);
