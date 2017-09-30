@@ -6,8 +6,7 @@ parameters:
         name: hskauting
 
 services:
-    - Nette\Caching\Storages\FileStorage(%tempDir%)
-    - Nette\Caching\Storages\SQLiteJournal(':memory:')
+    - Nette\Caching\Storages\DevNullStorage
 
 extensions:
     console: Kdyby\Console\DI\ConsoleExtension
