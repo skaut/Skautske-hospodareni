@@ -3,6 +3,7 @@
 namespace PHPSTORM_META {
 
     use Nette\DI\Container;
+    use Doctrine\ORM\EntityManager;
 
     override(Container::getByType(0),
         map([
@@ -16,4 +17,9 @@ namespace PHPSTORM_META {
         ])
     );
 
+    override(EntityManager::find(0),
+        map([
+            '' => '@',
+        ])
+    );
 }
