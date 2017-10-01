@@ -1,0 +1,30 @@
+<?php
+
+namespace Model\Payment\Handlers\MailCredentials;
+
+use Model\Payment\Commands\RemoveMailCredentials;
+use Model\Payment\MailCredentialsNotFound;
+use Model\Payment\Repositories\IMailCredentialsRepository;
+
+class RemoveMailCredentialsHandler
+{
+
+    /** @var IMailCredentialsRepository */
+    private $credentials;
+
+    public function __construct(IMailCredentialsRepository $credentials)
+    {
+        $this->credentials = $credentials;
+    }
+
+    public function handle(RemoveMailCredentials $command): void
+    {
+        try {
+            $credentials = $this->credentials->find($command->getId());
+            $this->credentials->remove($credentials);
+        } catch (MailCredentialsNotFound $e) {
+            // fail silently
+        }
+    }
+
+}

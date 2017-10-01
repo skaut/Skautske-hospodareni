@@ -5,6 +5,7 @@ namespace App\AccountancyModule\PaymentModule;
 use App\Forms\BaseForm;
 use Model\MailService;
 use Model\Payment\Commands\CreateMailCredentials;
+use Model\Payment\Commands\RemoveMailCredentials;
 use Model\Payment\MailCredentials\MailProtocol;
 use Nette\Application\UI\Form;
 
@@ -49,7 +50,8 @@ class MailPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění mazat smtp", "danger");
             $this->redirect("Payment:default");
         }
-        $this->model->removeCredentials($id);
+
+        $this->commandBus->handle(new RemoveMailCredentials($id));
     }
 
     protected function createComponentFormCreate() : Form

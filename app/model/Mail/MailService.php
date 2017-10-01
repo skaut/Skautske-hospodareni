@@ -54,16 +54,6 @@ class MailService
         return $pairs;
     }
 
-    public function removeCredentials(int $id): void
-    {
-        try {
-            $credentials = $this->credentials->find($id);
-            $this->credentials->remove($credentials);
-        } catch (MailCredentialsNotFound $e) {
-            // fail silently
-        }
-    }
-
     /**
      * @param int $unitId
      * @return MailCredentials[]
