@@ -114,6 +114,24 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
         }
     }
 
+    public function testRemove()
+    {
+        $this->tester->haveInDatabase('pa_smtp', [
+            'host' => 'smtp.seznam.cz',
+            'username' => 'mail2',
+            'password' => 'pass',
+            'unitId' => 663,
+            'secure' => 'tls',
+            'created' => '2017-01-01 00:00:00',
+        ]);
+
+        $credentials = $this->repository->find(1);
+
+        $this->repository->remove($credentials);
+
+        $this->tester->dontSeeInDatabase('pa_smtp', ['id' => 1]);
+    }
+
     public function findByUnitsWithEmptyIdsReturnsEmptyArray()
     {
         $this->assertSame([], $this->repository->findByUnits([]));

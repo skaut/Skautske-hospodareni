@@ -19,4 +19,6 @@ interface IMailCredentialsRepository
      */
     public function findByUnits(array $unitIds): array;
 
+    public function remove(MailCredentials $credentials): void;
+
 }

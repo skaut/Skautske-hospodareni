@@ -47,7 +47,7 @@ class MailPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění mazat smtp", "danger");
             $this->redirect("Payment:default");
         }
-        $this->model->removeSmtp($this->aid, $id);
+        $this->model->removeCredentials($id);
     }
 
     protected function createComponentFormCreate() : Form

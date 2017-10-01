@@ -27,9 +27,4 @@ class MailTable extends BaseTable
         ])->execute();
     }
 
-    public function removeSmtp($unitId, $id): void
-    {
-        $this->connection->query("DELETE FROM [" . self::TABLE_PA_SMTP . "] WHERE unitId=%i", $unitId, " AND id=%i", $id, " LIMIT 1");
-    }
-
 }

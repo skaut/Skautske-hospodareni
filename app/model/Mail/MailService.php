@@ -105,9 +105,14 @@ class MailService
         $this->table->addSmtp($unitId, $host, $username, $password, $secure);
     }
 
-    public function removeSmtp($unitId, $id): void
+    public function removeCredentials(int $id): void
     {
-        $this->table->removeSmtp($unitId, $id);
+        try {
+            $credentials = $this->credentials->find($id);
+            $this->credentials->remove($credentials);
+        } catch (MailCredentialsNotFound $e) {
+            // fail silently
+        }
     }
 
     /**

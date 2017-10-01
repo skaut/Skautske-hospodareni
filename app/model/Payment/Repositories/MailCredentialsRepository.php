@@ -46,4 +46,10 @@ class MailCredentialsRepository implements IMailCredentialsRepository
         return $byUnit;
     }
 
+    public function remove(MailCredentials $credentials): void
+    {
+        $this->entityManager->remove($credentials);
+        $this->entityManager->flush();
+    }
+
 }
