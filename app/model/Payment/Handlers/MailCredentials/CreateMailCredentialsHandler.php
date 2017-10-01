@@ -67,7 +67,7 @@ class CreateMailCredentialsHandler
             throw new EmailNotSetException();
         }
 
-        $template = $this->templateFactory->create('smtpAdded', [
+        $template = $this->templateFactory->create(TemplateFactory::SMTP_CREDENTIALS_ADDED, [
             'host' => $credentials->getHost(),
             'username' => $credentials->getUsername(),
             'protocol' => $credentials->getProtocol()->getValue(),
