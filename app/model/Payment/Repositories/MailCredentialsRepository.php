@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 
-class MailCredentialsRepository implements IMailCredentialsRepository
+final class MailCredentialsRepository implements IMailCredentialsRepository
 {
 
     /** @var EntityManager */
