@@ -21,4 +21,6 @@ interface IMailCredentialsRepository
 
     public function remove(MailCredentials $credentials): void;
 
+    public function save(MailCredentials $credentials): void;
+
 }

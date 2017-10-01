@@ -132,6 +132,30 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
         $this->tester->dontSeeInDatabase('pa_smtp', ['id' => 1]);
     }
 
+    public function testSave()
+    {
+        $credentials = new MailCredentials(
+            663,
+            'smtp.seznam.cz',
+            'mail2',
+            'pass',
+            MailCredentials\MailProtocol::get(MailCredentials\MailProtocol::TLS),
+            new \DateTimeImmutable('2017-01-01 00:00:00')
+        );
+
+        $this->repository->save($credentials);
+
+        $this->tester->seeInDatabase('pa_smtp', [
+            'id' => 1,
+            'host' => 'smtp.seznam.cz',
+            'username' => 'mail2',
+            'password' => 'pass',
+            'unitId' => 663,
+            'secure' => 'tls',
+            'created' => '2017-01-01 00:00:00',
+        ]);
+    }
+
     public function findByUnitsWithEmptyIdsReturnsEmptyArray()
     {
         $this->assertSame([], $this->repository->findByUnits([]));

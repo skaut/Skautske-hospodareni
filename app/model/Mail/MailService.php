@@ -4,16 +4,10 @@ namespace Model;
 
 use Model\DTO\Payment\Mail;
 use Model\DTO\Payment\MailFactory;
-use Model\Mail\IMailerFactory;
-use Model\Payment\EmailNotSetException;
 use Model\Payment\IUnitResolver;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 use Model\Payment\Repositories\IMailCredentialsRepository;
-use Model\Payment\Repositories\IUserRepository;
-use Model\Services\TemplateFactory;
-use Nette\Mail\Message;
-use Nette\Mail\SmtpException;
 
 /**
  * @author Hána František
@@ -21,37 +15,14 @@ use Nette\Mail\SmtpException;
 class MailService
 {
 
-    /** @var MailTable */
-    private $table;
-
-    /** @var IUserRepository */
-    private $users;
-
-    /** @var IMailerFactory */
-    private $mailerFactory;
-
-    /** @var TemplateFactory */
-    private $templateFactory;
-
     /** @var IMailCredentialsRepository */
     private $credentials;
 
     /** @var IUnitResolver */
     private $unitResolver;
 
-    public function __construct(
-        MailTable $table,
-        IUserRepository $users,
-        IMailerFactory $mailerFactory,
-        TemplateFactory $templateFactory,
-        IMailCredentialsRepository $credentials,
-        IUnitResolver $unitResolver
-    )
+    public function __construct(IMailCredentialsRepository $credentials, IUnitResolver $unitResolver)
     {
-        $this->table = $table;
-        $this->users = $users;
-        $this->mailerFactory = $mailerFactory;
-        $this->templateFactory = $templateFactory;
         $this->credentials = $credentials;
         $this->unitResolver = $unitResolver;
     }
@@ -83,28 +54,6 @@ class MailService
         return $pairs;
     }
 
-    /**
-     * @param int $unitId
-     * @param string $host
-     * @param string $username
-     * @param string $password
-     * @param string $secure
-     * @param int $userId
-     * @throws EmailNotSetException
-     * @throws SmtpException
-     */
-    public function addSmtp(int $unitId, string $host, string $username, string $password, string $secure, int $userId): void
-    {
-//        $this->trySendViaSmtp([
-//            'host' => $host,
-//            'username' => $username,
-//            'password' => $password,
-//            'secure' => $secure,
-//        ], $userId);
-
-        $this->table->addSmtp($unitId, $host, $username, $password, $secure);
-    }
-
     public function removeCredentials(int $id): void
     {
         try {
@@ -125,34 +74,6 @@ class MailService
         $byUnit = $this->credentials->findByUnits($units);
 
         return array_merge(...$byUnit);
-    }
-
-    /**
-     * Send test email to user who tries to add SMTP
-     * @param array $credentials
-     * @param int $userId
-     * @throws EmailNotSetException
-     * @throws SmtpException
-     */
-    private function trySendViaSmtp(array $credentials, int $userId): void
-    {
-        $mailer = $this->mailerFactory->create($credentials);
-
-        $user = $this->users->find($userId);
-        if ($user->getEmail() === NULL) {
-            throw new EmailNotSetException();
-        }
-
-        unset($credentials['password']);
-        $template = $this->templateFactory->create(TemplateFactory::EMAILS_DIRECTORY . '/smtpAdded.latte', $credentials);
-
-        $mail = new Message();
-        $mail->setSubject('Nový email v Hospodaření')
-            ->setFrom('platby@skauting.cz', 'Skautské Hospodaření')// email gets rewritten on SMTP
-            ->addTo($user->getEmail(), $user->getName())
-            ->setHtmlBody($template);
-
-        $mailer->send($mail);
     }
 
 }

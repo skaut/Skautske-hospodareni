@@ -52,4 +52,10 @@ class MailCredentialsRepository implements IMailCredentialsRepository
         $this->entityManager->flush();
     }
 
+    public function save(MailCredentials $credentials): void
+    {
+        $this->entityManager->persist($credentials);
+        $this->entityManager->flush();
+    }
+
 }
