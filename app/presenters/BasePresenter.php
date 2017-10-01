@@ -2,6 +2,7 @@
 
 namespace App;
 
+use eGen\MessageBus\Bus\CommandBus;
 use Model\LoggerService;
 use Model\UnitService;
 use Model\UserService;
@@ -33,6 +34,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var LoggerService */
     protected $loggerService;
 
+    /** @var CommandBus */
+    protected $commandBus;
 
     public function injectWebLoader(WebLoader\LoaderFactory $webLoader): void
     {
@@ -53,6 +56,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     public function injectLoggerService(LoggerService $loggerService): void
     {
         $this->loggerService = $loggerService;
+    }
+
+    public function injectCommandBus(CommandBus $commandBus): void
+    {
+        $this->commandBus = $commandBus;
     }
 
     protected function startup(): void
