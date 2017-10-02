@@ -31,7 +31,7 @@ class UnitService
 
     public function getUnitId(): int
     {
-        return (int) $this->skautis->getUser()->getUnitId();
+        return (int)$this->skautis->getUser()->getUnitId();
     }
 
     /**
@@ -131,6 +131,25 @@ class UnitService
             $res[$uId] = $u instanceof Unit ? $u->getDisplayName() : $u->DisplayName;
         }
         return $res;
+    }
+
+    /**
+     * load camp troops
+     * @param \stdClass $camp
+     * @return array
+     */
+    public function getCampTroops(\stdClass $camp)
+    {
+        if (!isset($camp->ID_UnitArray->string)) {
+            return [];
+        }
+
+        $troopIds = $camp->ID_UnitArray->string;
+        $troopIds = is_array($troopIds) ? $troopIds : [$troopIds];
+
+        return array_map(function ($id) {
+            return $this->getDetail($id);
+        }, $troopIds);
     }
 
 }

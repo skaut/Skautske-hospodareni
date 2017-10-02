@@ -43,7 +43,7 @@ class ExcelService
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
     }
 
-    public function getEventSummaries($eventIds, EventEntity $service): void
+    public function getEventSummaries(array $eventIds, EventEntity $service): void
     {
         $objPHPExcel = $this->getNewFile();
 
@@ -63,6 +63,29 @@ class ExcelService
         $sheetChit = $objPHPExcel->setActiveSheetIndex(1);
         $this->setSheetChits($sheetChit, $data);
         $this->send($objPHPExcel, "Souhrn-akcí-" . date("Y_n_j"));
+    }
+
+    public function getCampsSummary(array $campsIds, EventEntity $service, UnitService $unitService): void
+    {
+        $objPHPExcel = $this->getNewFile();
+
+        $data = [];
+        foreach ($campsIds as $aid) {
+            $camp = $service->event->get($aid);
+            $data[$aid] = $camp;
+            $data[$aid]['troops'] = implode(', ', array_column($unitService->getCampTroops($camp), 'DisplayName'));
+            $data[$aid]['chits'] = $service->chits->getAll($aid);
+            $data[$aid]['func'] = $service->event->getFunctions($aid);
+            $participants = $service->participants->getAll($aid);
+            $data[$aid]['participantsCnt'] = count($participants);
+            $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
+        }
+        $sheetCamps = $objPHPExcel->setActiveSheetIndex(0);
+        $this->setSheetCamps($sheetCamps, $data);
+        $objPHPExcel->createSheet(1);
+        $sheetChit = $objPHPExcel->setActiveSheetIndex(1);
+        $this->setSheetChits($sheetChit, $data);
+        $this->send($objPHPExcel, "Souhrn-táborů-" . date("Y_n_j"));
     }
 
     public function getChitsExport($chits): void
@@ -250,6 +273,53 @@ class ExcelService
         $sheet->getStyle('A1:S1')->getFont()->setBold(TRUE);
         $sheet->setAutoFilter('A1:S' . ($rowCnt - 1));
         $sheet->setTitle('Přehled akcí');
+    }
+
+    protected function setSheetCamps(\PHPExcel_Worksheet $sheet, array $data): void
+    {
+        $firstElement = reset($data);
+
+        $sheet->setCellValue('A1', "Pořadatel")
+            ->setCellValue('B1', "Název akce")
+            ->setCellValue('C1', "Oddíly")
+            ->setCellValue('D1', "Místo konání")
+            ->setCellValue('E1', "Vedoucí akce")
+            ->setCellValue('F1', "Hospodář akce")
+            ->setCellValue('G1', "Od")
+            ->setCellValue('H1', "Do")
+            ->setCellValue('I1', "Počet dnů")
+            ->setCellValue('J1', "Počet účastníků")
+            ->setCellValue('K1', "Počet dospělých")
+            ->setCellValue('L1', "Počet dětí")
+            ->setCellValue('M1', "Osobodnů")
+            ->setCellValue('N1', "Dětodnů");
+
+        $rowCnt = 2;
+        foreach ($data as $row) {
+            $sheet->setCellValue('A' . $rowCnt, $row->Unit)
+                ->setCellValue('B' . $rowCnt, $row->DisplayName)
+                ->setCellValue('C' . $rowCnt, $row->troops)
+                ->setCellValue('D' . $rowCnt, $row->Location)
+                ->setCellValue('E' . $rowCnt, $row->func[0]->Person ?? "")
+                ->setCellValue('F' . $rowCnt, $row->func[3]->Person ?? "")
+                ->setCellValue('G' . $rowCnt, date("d.m.Y", strtotime($row->StartDate)))
+                ->setCellValue('H' . $rowCnt, date("d.m.Y", strtotime($row->EndDate)))
+                ->setCellValue('I' . $rowCnt, $row->TotalDays)
+                ->setCellValue('J' . $rowCnt, $row->RealCount)
+                ->setCellValue('K' . $rowCnt, $row->RealAdult)
+                ->setCellValue('L' . $rowCnt, $row->RealChild)
+                ->setCellValue('M' . $rowCnt, $row->RealPersonDays)
+                ->setCellValue('N' . $rowCnt, $row->RealChildDays);
+            $rowCnt++;
+        }
+
+        //format
+        foreach (range('A', 'N') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(TRUE);
+        }
+        $sheet->getStyle('A1:N1')->getFont()->setBold(TRUE);
+        $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
+        $sheet->setTitle('Přehled táborů');
     }
 
     protected function setSheetChits(&$sheet, $data): void

@@ -4,12 +4,10 @@ namespace App\AccountancyModule\CampModule;
 
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
+use Model\ExcelService;
 use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class DefaultPresenter extends BasePresenter
 {
 
@@ -17,12 +15,16 @@ class DefaultPresenter extends BasePresenter
 
     const DEFAULT_STATE = "approvedParent"; //filtrovani zobrazených položek
 
+    /** @var ExcelService */
+    private $excelService;
+
     /** @var GridFactory */
     private $gridFactory;
 
-    public function __construct(GridFactory $gf)
+    public function __construct(ExcelService $excel, GridFactory $gf)
     {
         parent::__construct();
+        $this->excelService = $excel;
         $this->gridFactory = $gf;
     }
 
@@ -72,6 +74,11 @@ class DefaultPresenter extends BasePresenter
         if ($this->ses->state !== NULL) {
             $this['formFilter']['state']->setDefaultValue($this->ses->state);
         }
+    }
+
+    public function actionCampSummary()
+    {
+        $this->excelService->getCampsSummary(array_keys($this->eventService->event->getAll($this->ses->year, $this->ses->state)), $this->eventService, $this->unitService);
     }
 
     public function handleChangeYear(?int $year): void
