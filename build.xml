@@ -7,7 +7,6 @@
         <phingcall target="coding-standard"/>
         <exec command="php www/index.php orm:validate-schema --skip-sync"/>
         <phingcall target="tests"/>
-        <phingcall target="prepare-tarball"/>
     </target>
 
     <target name="prepare-tarball" description="Prepares deployable tarball with everything built">
