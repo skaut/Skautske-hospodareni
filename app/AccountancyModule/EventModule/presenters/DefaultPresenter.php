@@ -174,15 +174,22 @@ class DefaultPresenter extends BasePresenter
         return $item == NULL ? FALSE : TRUE;
     }
 
+    /**
+     * @throws \Nette\Application\BadRequestException
+     */
     protected function createComponentFormCreate(): Form
     {
         $scopes = $this->eventService->event->getScopes();
         $types = $this->eventService->event->getTypes();
-        $tmpId = $this->unitService->getUnitId();
-        $units = [$tmpId => $this->unitService->getDetail($tmpId)->SortName];
-        foreach ($this->unitService->getChild($tmpId) as $u) {
-            $units[$u->getId()] = "» " . $u->getSortName();
-        }
+        $unitId = $this->unitService->getUnitId();
+
+        $subunits = $this->unitService->getSubunitPairs($unitId);
+        $subunits = array_map(function(string $name) { return '» ' . $name; }, $subunits);
+
+        $units = [
+            $unitId => $this->unitService->getDetailV2($unitId)->getSortName(),
+        ];
+        $units += $subunits;
 
         $form = new BaseForm();
         $form->addText("name", "Název akce*")
