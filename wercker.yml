@@ -23,7 +23,7 @@ build:
             output_file: app/config/config.local.neon
 
         - script:
-            name: build tarball
+            name: run tests, phpstan and codesniffer
             code: phing
 
         - script:

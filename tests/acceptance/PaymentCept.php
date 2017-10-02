@@ -24,7 +24,7 @@ $I->haveInDatabase('pa_bank_account', [
     'number_bank_code' => '2010',
 ]);
 
-$I->login();
+$I->login($I::UNIT_LEADER_ROLE);
 $I->click('Platby');
 $I->waitForText('Přehled plateb');
 $I->click('Založit skupinu plateb');

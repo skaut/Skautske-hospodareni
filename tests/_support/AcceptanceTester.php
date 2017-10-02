@@ -24,7 +24,12 @@ class AcceptanceTester extends \Codeception\Actor
 
     private const PASSWORD = 'chtelbysprachy1';
 
-    public function login() : void
+    public const UNIT_LEADER_ROLE = '621.66 - Středisko: vedoucí/admin';
+
+    /**
+     * @throws Exception
+     */
+    public function login(string $role) : void
     {
         $I = $this;
 
@@ -39,6 +44,10 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('(//input)[10]', self::PASSWORD);
         $I->click('//button');
         $I->waitForText('Seznam akcí');
+
+        $I->click("//select[contains(@class, 'roleSelect')]");
+        $I->click("//option[text()='$role']");
+        $I->waitForText($role);
 
         $I->saveSessionSnapshot('login');
     }
