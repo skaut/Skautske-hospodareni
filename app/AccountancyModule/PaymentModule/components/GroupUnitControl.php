@@ -49,6 +49,12 @@ class GroupUnitControl extends BaseControl
         $this->redrawControl();
     }
 
+    public function handleCancel(): void
+    {
+        $this->editation = FALSE;
+        $this->redrawControl();
+    }
+
     /**
      * @throws \Nette\Application\BadRequestException
      */
