@@ -151,14 +151,9 @@ class TravelService
      */
     public function getTravels(int $commandId): array
     {
-        $travels = DTO\Command\TravelFactory::createList(
+        return DTO\Command\TravelFactory::createList(
             $this->commands->find($commandId)
         );
-        usort($travels, function (TravelDTO $a, TravelDTO $b) {
-            return $a->getDetails()->getDate() <=> $b->getDetails()->getDate();
-        });
-
-        return $travels;
     }
 
     public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice): void
