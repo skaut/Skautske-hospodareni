@@ -2,8 +2,10 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
+use App\AccountancyModule\PaymentModule\Factories\IGroupUnitControlFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\Forms\BaseForm;
@@ -51,6 +53,9 @@ class PaymentPresenter extends BasePresenter
     /** @var IPairButtonFactory */
     private $pairButtonFactory;
 
+    /** @var IGroupUnitControlFactory */
+    private $unitControlFactory;
+
     private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
@@ -60,7 +65,8 @@ class PaymentPresenter extends BasePresenter
         MailingService $mailing,
         BankAccountService $bankAccounts,
         IMassAddFormFactory $massAddFormFactory,
-        IPairButtonFactory $pairButtonFactory
+        IPairButtonFactory $pairButtonFactory,
+        IGroupUnitControlFactory $unitControlFactory
     )
     {
         parent::__construct();
@@ -70,6 +76,7 @@ class PaymentPresenter extends BasePresenter
         $this->bankAccounts = $bankAccounts;
         $this->massAddFormFactory = $massAddFormFactory;
         $this->pairButtonFactory = $pairButtonFactory;
+        $this->unitControlFactory = $unitControlFactory;
     }
 
     protected function startup(): void
@@ -123,7 +130,6 @@ class PaymentPresenter extends BasePresenter
             $this["pairButton"]->setGroups([$id], $group->getUnitId());
         }
 
-        $this->template->units = $this->readUnits;
         $this->template->group = $group;
 
         $this->template->nextVS = $nextVS = $this->model->getNextVS($group->getId());
@@ -591,6 +597,11 @@ class PaymentPresenter extends BasePresenter
     protected function createComponentMassAddForm(): MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
+    }
+
+    protected function createComponentUnit(): GroupUnitControl
+    {
+        return $this->unitControlFactory->create($this->id);
     }
 
     private function smtpError(SmtpException $e): void

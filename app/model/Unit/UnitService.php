@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Model\Payment\IUnitResolver;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Nette\Security\User;
@@ -21,11 +22,15 @@ class UnitService
     /** @var IUnitRepository */
     private $units;
 
+    /** @var IUnitResolver */
+    private $unitResolver;
 
-    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units)
+
+    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver)
     {
         $this->skautis = $skautis;
         $this->units = $units;
+        $this->unitResolver = $unitResolver;
     }
 
 
@@ -53,6 +58,11 @@ class UnitService
         } catch (Skautis\Exception $exc) {
             throw new \Nette\Application\BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
         }
+    }
+
+    public function getOfficialUnitId(int $unitId): int
+    {
+        return $this->unitResolver->getOfficialUnitId($unitId);
     }
 
     /**

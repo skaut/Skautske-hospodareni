@@ -1,0 +1,10 @@
+<div n:snippet="unit">
+    {if $editation}
+        <form n:name="form" class="form-inline">
+            <select n:name="unitId" class="form-control input-sm" />
+            <button class="btn btn-sm btn-default ajax" n:name="save"><i class="fa fa-check"></i></button>
+        </form>
+    {else}
+    {$unitName} <a n:if="$canEdit" n:href="edit!" class="btn btn-xs btn-default ajax"><i class="fa fa-pencil"></i></a>
+    {/if}
+</div>

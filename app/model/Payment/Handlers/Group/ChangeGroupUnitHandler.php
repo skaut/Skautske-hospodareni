@@ -28,6 +28,7 @@ class ChangeGroupUnitHandler
 
     /**
      * @throws \Model\Payment\GroupNotFoundException
+     * @throws \Model\Payment\BankAccountNotFoundException
      */
     public function handle(ChangeGroupUnit $command): void
     {
