@@ -76,7 +76,7 @@ class BankAccountServiceTest extends \IntegrationTest
         return new BankAccount(
             5, // official id is resolved to 10
             'Název',
-            new BankAccount\AccountNumber(NULL, '2000942144', '2010'),
+            \Helpers::createAccountNumber(),
             NULL,
             new \DateTimeImmutable(),
             $this->unitResolver

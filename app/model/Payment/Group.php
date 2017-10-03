@@ -6,6 +6,7 @@ namespace Model\Payment;
 
 use Model\Payment\Group\EmailTemplate;
 use Model\Payment\Group\SkautisEntity;
+use Model\Payment\Repositories\IBankAccountRepository;
 
 class Group
 {
@@ -126,6 +127,41 @@ class Group
     public function removeBankAccount(): void
     {
         $this->bankAccountId = NULL;
+    }
+
+    /**
+     * @throws BankAccountNotFoundException
+     */
+    public function changeUnit(int $unitId, IUnitResolver $unitResolver, IBankAccountRepository $bankAccountRepository): void
+    {
+        if($this->bankAccountId === NULL) {
+            $this->unitId = $unitId;
+            return;
+        }
+
+        $currentOfficialUnit = $unitResolver->getOfficialUnitId($this->unitId);
+        $newOfficialUnit = $unitResolver->getOfficialUnitId($unitId);
+
+        // different official unit
+        if($currentOfficialUnit !== $newOfficialUnit) {
+            $this->unitId = $unitId;
+            $this->bankAccountId = NULL;
+            return;
+        }
+
+        // unit -> official unit
+        if($unitId === $newOfficialUnit) {
+            $this->unitId = $unitId;
+            return;
+        }
+
+        $bankAccount = $bankAccountRepository->find($this->bankAccountId);
+
+        if( ! $bankAccount->isAllowedForSubunits()) {
+            $this->bankAccountId = NULL;
+        }
+
+        $this->unitId = $unitId;
     }
 
 
