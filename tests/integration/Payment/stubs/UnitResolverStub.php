@@ -10,14 +10,17 @@ class UnitResolverStub implements IUnitResolver
     /** @var int */
     private $id;
 
-    public function __construct(int $id)
-    {
-        $this->id = $id;
-    }
+    /** @var int[] */
+    private $officialUnits = [];
 
     public function getOfficialUnitId(int $unitId): int
     {
-        return $this->id;
+        return $this->officialUnits[$unitId];
+    }
+
+    public function setOfficialUnits(array $officialUnits): void
+    {
+        $this->officialUnits = $officialUnits;
     }
 
 }

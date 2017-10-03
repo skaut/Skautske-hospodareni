@@ -2,13 +2,12 @@
 <h2 n:block="title">{$group->name}</h2>
 {include ../ActionMenu.latte}
 {dump $group}
-{dump $units}
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-5">
         <table class="table table-bordered table-striped">
             <tr>
                 <th class="l">Vlastník:</th>
-                <td>{$units[$group->unitId]}</td>
+                <td>{control unit}</td>
             </tr>
             <tr n:if="!is_null($group->state)">
                 <th class="l">Stav skupiny:</th>

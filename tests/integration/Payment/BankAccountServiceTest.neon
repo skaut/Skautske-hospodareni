@@ -4,7 +4,7 @@ services:
     - Model\Payment\FioClientStub
     - Model\Payment\Repositories\GroupRepository
     - Model\Payment\Repositories\BankAccountRepository
-    - Model\Payment\UnitResolverStub(10)
+    - Model\Payment\UnitResolverStub
     - Model\Payment\BankAccountImporterStub
     - Nette\Caching\Cache
 

@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Model\Payment\IUnitResolver;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Nette\Security\User;
@@ -21,11 +22,15 @@ class UnitService
     /** @var IUnitRepository */
     private $units;
 
+    /** @var IUnitResolver */
+    private $unitResolver;
 
-    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units)
+
+    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver)
     {
         $this->skautis = $skautis;
         $this->units = $units;
+        $this->unitResolver = $unitResolver;
     }
 
 
@@ -35,6 +40,8 @@ class UnitService
     }
 
     /**
+     * @deprecated Use UnitService::getDetailV2()
+     *
      * vrací detail jednotky
      * @param int|NULL $unitId
      * @return \stdClass
@@ -53,6 +60,22 @@ class UnitService
         }
     }
 
+    public function getOfficialUnitId(int $unitId): int
+    {
+        return $this->unitResolver->getOfficialUnitId($unitId);
+    }
+
+    /**
+     * @throws \Nette\Application\BadRequestException
+     */
+    public function getDetailV2(int $unitId): Unit
+    {
+        try {
+            return $this->units->find($unitId, TRUE);
+        } catch (Skautis\Exception $exc) {
+            throw new \Nette\Application\BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
+        }
+    }
 
     /**
      * nalezne podřízené jednotky
@@ -61,6 +84,21 @@ class UnitService
     public function getChild(int $parentId)
     {
         return $this->units->findByParent($parentId);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getSubunitPairs(int $parentId): array
+    {
+        $subUnits = $this->units->findByParent($parentId);
+
+        $pairs = [];
+        foreach ($subUnits as $subUnit) {
+            $pairs[$subUnit->getId()] = $subUnit->getSortName();
+        }
+
+        return $pairs;
     }
 
     /**
@@ -89,10 +127,10 @@ class UnitService
         return "IČO " . $unit->IC . " " . $unit->FullDisplayName . ", " . $unit->Street . ", " . $unit->City . ", " . $unit->Postcode;
     }
 
-    public function getAllUnder($ID_Unit, $self = TRUE)
+    public function getAllUnder(int $ID_Unit, $self = TRUE)
     {
         $data = $self ? [$ID_Unit => $this->getDetail($ID_Unit)] : [];
-        foreach ($this->getChild($ID_Unit) as $u) {
+        foreach ($this->units->findByParent($ID_Unit) as $u) {
             $data[$u->getId()] = $u;
             $data = $data + $this->getAllUnder($u->getId(), FALSE);
         }

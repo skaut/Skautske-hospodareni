@@ -1,0 +1,10 @@
+services:
+    - Model\Payment\Repositories\BankAccountRepository
+    - Model\Payment\Repositories\GroupRepository
+    - Model\Payment\UnitResolverStub
+
+    - class: Model\Payment\Handlers\Group\ChangeGroupUnitHandler
+      tags: [commandBus.handler]
+
+includes:
+    - ../../../config/doctrine.neon

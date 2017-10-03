@@ -10,6 +10,7 @@ use Model\Payment\Group;
 use Model\Payment\IUnitResolver;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
+use Model\Payment\UnitResolverStub;
 
 class BankAccountServiceTest extends \IntegrationTest
 {
@@ -23,6 +24,9 @@ class BankAccountServiceTest extends \IntegrationTest
     /** @var IGroupRepository */
     private $groups;
 
+    /** @var UnitResolverStub */
+    private $unitResolver;
+
 
     protected function _before()
     {
@@ -31,6 +35,7 @@ class BankAccountServiceTest extends \IntegrationTest
         $this->bankAccountService = $this->tester->grabService(BankAccountService::class);
         $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
         $this->groups = $this->tester->grabService(IGroupRepository::class);
+        $this->unitResolver = $this->tester->grabService(UnitResolverStub::class);
     }
 
     public function getTestedEntites(): array
@@ -43,6 +48,10 @@ class BankAccountServiceTest extends \IntegrationTest
 
     public function testDisallowingBankAccountForSubunitsCascadesToGroups()
     {
+        $this->unitResolver->setOfficialUnits([
+            5 => 10,
+            10 => 10,
+        ]);
         $bankAccount = $this->createBankAccount();
         $bankAccount->allowForSubunits();
         $this->bankAccounts->save($bankAccount);
@@ -67,10 +76,10 @@ class BankAccountServiceTest extends \IntegrationTest
         return new BankAccount(
             5, // official id is resolved to 10
             'Název',
-            new BankAccount\AccountNumber(NULL, '2000942144', '2010'),
+            \Helpers::createAccountNumber(),
             NULL,
             new \DateTimeImmutable(),
-            $this->tester->grabService(IUnitResolver::class)
+            $this->unitResolver
         );
     }
 

@@ -39,6 +39,7 @@ dibi:
     charset: utf8
 
 messageBus:
+    commandBus:
     eventBus:
 
 monolog:
@@ -86,6 +87,10 @@ autoDI:
 
         # Utility services
         - class: Model\Services\**
+
+        # Command handlers
+        - class: Model\**\Handlers\**Handler
+          tags: [commandBus.handler]
 
 services:
     - App\RouterFactory

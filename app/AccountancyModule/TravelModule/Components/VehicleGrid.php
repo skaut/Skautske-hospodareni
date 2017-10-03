@@ -37,7 +37,7 @@ class VehicleGrid extends BaseGridControl
         $grid->addColumnText('registration', 'SPZ');
         $grid->addColumnText('consumption', '	Ø spotřeba (l/100 km)');
 
-        $units = $this->getSubunits();
+        $units = $this->units->getSubunitPairs($this->unitId);
 
         $grid->addColumnText('subunit', 'Oddíl')
             ->setFilterSelect($units, 'subunitId')->setPrompt('-');
@@ -53,20 +53,6 @@ class VehicleGrid extends BaseGridControl
         };
 
         return $grid;
-    }
-
-
-    /**
-     * @return string[]
-     */
-    private function getSubunits(): array
-    {
-        $units = [];
-        foreach($this->units->getChild($this->unitId) as $unit) {
-            $units[$unit->getId()] = $unit->getSortName();
-        }
-
-        return $units;
     }
 
 }

@@ -115,7 +115,7 @@ class VehiclePresenter extends BasePresenter
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Musíte vyplnit průměrnou spotřebu.")
             ->addRule(Form::FLOAT, "Průměrná spotřeba musí být číslo!");
-        $form->addSelect('subunitId', 'Oddíl', $this->getSubunitPairs())
+        $form->addSelect('subunitId', 'Oddíl', $this->unitService->getSubunitPairs($this->getUnitId()))
             ->setAttribute('class', 'form-control')
             ->setPrompt('Žádný')
             ->setRequired(FALSE);
@@ -127,23 +127,6 @@ class VehiclePresenter extends BasePresenter
 
         return $form;
     }
-
-
-    /**
-     * @return string[]
-     */
-    private function getSubunitPairs(): array
-    {
-        $subUnits = $this->unitService->getChild($this->getUnitId());
-
-        $pairs = [];
-        foreach($subUnits as $subUnit) {
-            $pairs[$subUnit->getId()] = $subUnit->getSortName();
-        }
-
-        return $pairs;
-    }
-
 
     private function formCreateVehicleSubmitted(ArrayHash $values): void
     {
