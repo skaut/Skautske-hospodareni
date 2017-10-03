@@ -15,9 +15,17 @@ class TravelFactory
      */
     public static function createList(Command $command): array
     {
-        return array_map(function(Command\Travel $travel) use ($command) {
+        $dtos = array_map(function(Command\Travel $travel) use ($command) {
             return self::createSingle($travel, $command);
         }, $command->getTravels());
+
+        usort($dtos, function (Travel $a, Travel $b) {
+            $result = $a->getDetails()->getDate() <=> $b->getDetails()->getDate();
+
+            return $result === 0 ? $a->getId() <=> $b->getId() : $result;
+        });
+
+        return $dtos;
     }
 
     public static function create(Command $command, int $travelId): ?Travel
