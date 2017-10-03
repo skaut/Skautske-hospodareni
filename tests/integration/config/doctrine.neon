@@ -11,6 +11,11 @@ services:
 extensions:
     console: Kdyby\Console\DI\ConsoleExtension
     decorator: Nette\DI\Extensions\DecoratorExtension # default extension in Nette DI
+    messageBus: eGen\MessageBus\DI\MessageBusExtension
+
+messageBus:
+    commandBus:
+    eventBus:
 
 includes:
     - ../../../app/config/model/doctrine.neon
