@@ -2,9 +2,6 @@
 
 namespace Model;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class BudgetTable extends BaseTable
 {
 

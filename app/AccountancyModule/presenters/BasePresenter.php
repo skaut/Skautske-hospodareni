@@ -32,8 +32,8 @@ abstract class BasePresenter extends \App\BasePresenter
      */
     protected $availableActions = [];
 
-    /** @var bool */
-    public $isCamp;
+    /** @var string camp, event, unit */
+    public $type;
 
     protected function startup() : void
     {

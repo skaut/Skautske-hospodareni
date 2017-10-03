@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use Model\ChitService;
 use Model\EventEntity;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
@@ -19,7 +20,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     {
         parent::startup();
         $this->eventService = $this->context->getService("eventService");
-        $this->isCamp = $this->template->isCamp = FALSE;
+        $this->type = ChitService::EVENT_TYPE_GENERAL;
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
 
         $availableActions = [];

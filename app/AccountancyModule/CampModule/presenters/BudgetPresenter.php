@@ -2,9 +2,6 @@
 
 namespace App\AccountancyModule\CampModule;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class BudgetPresenter extends BasePresenter
 {
 
@@ -17,7 +14,7 @@ class BudgetPresenter extends BasePresenter
         }
     }
 
-    public function renderDefault($aid) : void
+    public function renderDefault(int $aid) : void
     {
         $toRepair = [];
         $this->template->isConsistent = $this->eventService->chits->isConsistent($aid, FALSE, $toRepair);

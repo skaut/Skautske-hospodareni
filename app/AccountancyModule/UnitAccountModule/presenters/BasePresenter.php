@@ -19,7 +19,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->isCamp = FALSE;
+        $this->type = "unit";
         $this->aid = $this->aid ?? $this->unitService->getUnitId();
         $this->year = $this->getParameter("year", date("Y"));
 
@@ -39,7 +39,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     {
         parent::beforeRender();
         $this->template->year = $this->year;
-        $this->template->isCamp = $this->isCamp;
         $this->template->isEditable = $this->isEditable;
         $this->template->aid = $this->aid;
     }
