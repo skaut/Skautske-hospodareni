@@ -5,6 +5,7 @@ namespace Model;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Services\TemplateFactory;
 use Nette\Bridges\ApplicationLatte\Template;
 
 /**
@@ -19,13 +20,18 @@ class ExportService
     /** @var ICategoryRepository */
     private $categories;
 
-    public function __construct(UnitService $units, ICategoryRepository $categories)
+    /** @var TemplateFactory */
+    private $templateFactory;
+
+    public function __construct(UnitService $units, ICategoryRepository $categories, TemplateFactory $templateFactory)
     {
         $this->units = $units;
         $this->categories = $categories;
+        $this->templateFactory = $templateFactory;
     }
 
     /**
+     * @deprecated use TemplateFactory
      * donastavuje helpery a zdrojový file do šablony
      * @param Template $template
      * @param string $fileName
@@ -89,7 +95,7 @@ class ExportService
         return $template;
     }
 
-    public function getEventReport(Template $template, $aid, EventEntity $eventService): Template
+    public function getEventReport(int $aid, EventEntity $eventService): string
     {
         $categories = $this->categories->findByObjectType(ObjectType::get(ObjectType::EVENT));
 
@@ -122,19 +128,18 @@ class ExportService
         }
 
         $participants = $eventService->participants->getAll($aid);
-        $template->participantsCnt = count($participants);
-        $template->personsDays = $eventService->participants->getPersonsDays($participants);
-        $template->a = $eventService->event->get($aid);
-        $template->chits = $sums;
-        $template->func = $eventService->event->getFunctions($aid);
 
-        $template->incomes = $sums[Operation::INCOME];
-        $template->expenses = $sums[Operation::EXPENSE];
-        $template->totalIncome = $totalIncome;
-        $template->totalExpense = $totalExpense;
-
-        $this->setTemplate($template, __DIR__ . '/templates/eventReport.latte');
-        return $template;
+        return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
+            'participantsCnt' => count($participants),
+            'personsDays' => $eventService->participants->getPersonsDays($participants),
+            'a' => $eventService->event->get($aid),
+            'chits' => $sums,
+            'func' => $eventService->event->getFunctions($aid),
+            'incomes' => $sums[Operation::INCOME],
+            'expenses' => $sums[Operation::EXPENSE],
+            'totalIncome' => $totalIncome,
+            'totalExpense' => $totalExpense,
+        ]);
     }
 
     /**

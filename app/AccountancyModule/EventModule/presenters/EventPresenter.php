@@ -118,7 +118,7 @@ class EventPresenter extends BasePresenter
     {
         $chits = (array)$this->eventService->chits->getAll($this->aid);
 
-        $template = (string)$this->exportService->getEventReport($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
+        $template = (string)$this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= (string)$this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= (string)$this->exportService->getCashbook($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= (string)$this->exportService->getChits($this->createTemplate(), $aid, $this->eventService, $chits);
@@ -146,7 +146,7 @@ class EventPresenter extends BasePresenter
             $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
             $this->redirect("default", ["aid" => $aid]);
         }
-        $template = $this->exportService->getEventReport($this->createTemplate(), $aid, $this->eventService);
+        $template = $this->exportService->getEventReport($aid, $this->eventService);
 
         $this->pdf->render($template, 'report.pdf');
         $this->terminate();
