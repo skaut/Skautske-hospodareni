@@ -93,17 +93,14 @@ class ExportService
     {
         $categories = $this->categories->findByObjectType(ObjectType::get(ObjectType::EVENT));
 
-        $indexedCategories = [];
         $sums = [
             Operation::INCOME => [],
             Operation::EXPENSE => [],
         ];
 
-
         foreach ($categories as $category) {
-            $indexedCategories[$category->getId()] = $category;
             $operation = $category->getOperationType()->getValue();
-            $sums[$operation][$category->getId()] = [
+            $sums[$operation][] = [
                 'amount' => 0,
                 'label' => $category->getName(),
             ];
@@ -114,13 +111,26 @@ class ExportService
             $sums[$chit->ctype][$chit->category]['amount'] += $chit->price;
         }
 
-        $this->setTemplate($template, __DIR__ . '/templates/eventReport.latte');
+        $totalIncome = 0;
+        foreach($sums[Operation::INCOME] as $income) {
+            $totalIncome += $income['amount'];
+        }
+
+        $totalExpense = 0;
+        foreach($sums[Operation::EXPENSE] as $expense) {
+            $totalExpense += $expense['amount'];
+        }
+
         $participants = $eventService->participants->getAll($aid);
         $template->participantsCnt = count($participants);
         $template->personsDays = $eventService->participants->getPersonsDays($participants);
         $template->a = $eventService->event->get($aid);
         $template->chits = $sums;
         $template->func = $eventService->event->getFunctions($aid);
+        $template->totalIncome = $totalIncome;
+        $template->totalExpense = $totalExpense;
+
+        $this->setTemplate($template, __DIR__ . '/templates/eventReport.latte');
         return $template;
     }
 

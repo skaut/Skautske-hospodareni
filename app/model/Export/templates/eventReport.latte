@@ -69,8 +69,6 @@ $chits - paragony akce
 {var $cntIn = count($chits['in'])}
 {var $cntOut = count($chits['out'])}
 {var $iter = max($cntIn, $cntOut)}
-{var $totalIn = 0}
-{var $totalOut = 0}
 
     {for $i = 0; $i < $iter; $i++}
     <tr>
@@ -78,7 +76,6 @@ $chits - paragony akce
             {php $in = current($chits['in'])}
         <td>{$in['label']}</td>
         <td>{$in['amount']|price}</td>
-            {php $totalIn += $in['amount']}
             {php next($chits['in'])}
         {else}
         <td>&nbsp;</td><td>&nbsp;</td>
@@ -87,7 +84,6 @@ $chits - paragony akce
             {php $out = current($chits['out'])}
         <td>{$out['label']}</td>
         <td>{$out['amount']|price}</td>
-            {php $totalOut += $out['amount']}
             {php next($chits['out'])}
         {else}
         <td>&nbsp;</td><td>&nbsp;</td>
@@ -97,9 +93,9 @@ $chits - paragony akce
 
     <tr>
         <td>Celkem</td>
-        <td><b>{$totalIn|price}</b></td>
+        <td><b>{$totalIncome|price}</b></td>
         <td>Celkem</td>
-        <td><b>{$totalOut|price}</b></td>
+        <td><b>{$totalExpense|price}</b></td>
     </tr>
 </table>
 
