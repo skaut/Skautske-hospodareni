@@ -117,15 +117,13 @@ class ExportService
             $sums[$chit->ctype][$chit->category]['amount'] += $chit->price;
         }
 
-        $totalIncome = 0;
-        foreach($sums[Operation::INCOME] as $income) {
-            $totalIncome += $income['amount'];
-        }
+        $totalIncome = array_sum(
+            array_column($sums[Operation::INCOME], 'amount')
+        );
 
-        $totalExpense = 0;
-        foreach($sums[Operation::EXPENSE] as $expense) {
-            $totalExpense += $expense['amount'];
-        }
+        $totalExpense = array_sum(
+            array_column($sums[Operation::EXPENSE], 'amount')
+        );
 
         $participants = $eventService->participants->getAll($aid);
 
