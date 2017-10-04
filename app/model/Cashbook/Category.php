@@ -33,9 +33,24 @@ class Category
         $this->types = new ArrayCollection();
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getShortcut(): string
+    {
+        return $this->shortcut;
+    }
+
+    public function getOperationType(): Operation
+    {
+        return $this->operationType;
     }
 
 }
