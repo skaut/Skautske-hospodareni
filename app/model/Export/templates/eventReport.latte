@@ -65,28 +65,22 @@ $chits - paragony akce
         <th style="width: 20%;text-align: right;">Kč</th>
     </tr>
 
-
-{var $cntIn = count($chits['in'])}
-{var $cntOut = count($chits['out'])}
-{var $iter = max($cntIn, $cntOut)}
-
-    {for $i = 0; $i < $iter; $i++}
+    {var $rowsCount = max(count($incomes), count($expenses))}
+    {for $i = 0; $i < $rowsCount; $i++}
     <tr>
-        {if $i < $cntIn}
-            {php $in = current($chits['in'])}
-        <td>{$in['label']}</td>
-        <td>{$in['amount']|price}</td>
-            {php next($chits['in'])}
+        {if $i < count($incomes)}
+            {var $income = $incomes[$i]}
+            <td>{$income['label']}</td>
+            <td>{$income['amount']|price}</td>
         {else}
-        <td>&nbsp;</td><td>&nbsp;</td>
+            <td>&nbsp;</td><td>&nbsp;</td>
         {/if}
-        {if $i < $cntOut}
-            {php $out = current($chits['out'])}
-        <td>{$out['label']}</td>
-        <td>{$out['amount']|price}</td>
-            {php next($chits['out'])}
+        {if $i < count($expenses)}
+            {var $expense = $expenses[$i]}
+            <td>{$expense['label']}</td>
+            <td>{$expense['amount']|price}</td>
         {else}
-        <td>&nbsp;</td><td>&nbsp;</td>
+            <td>&nbsp;</td><td>&nbsp;</td>
         {/if}
     </tr>
     {/for}

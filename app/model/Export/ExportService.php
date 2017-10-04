@@ -127,6 +127,9 @@ class ExportService
         $template->a = $eventService->event->get($aid);
         $template->chits = $sums;
         $template->func = $eventService->event->getFunctions($aid);
+
+        $template->incomes = $sums[Operation::INCOME];
+        $template->expenses = $sums[Operation::EXPENSE];
         $template->totalIncome = $totalIncome;
         $template->totalExpense = $totalExpense;
 
