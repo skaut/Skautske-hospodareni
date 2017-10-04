@@ -32,7 +32,7 @@ class TemplateFactory
     {
         $template = new Template($this->getEngine());
 
-        $template->setFile(__DIR__ . '/../emails/' . $file . '.latte');
+        $template->setFile($file);
         $template->setParameters($parameters);
 
         return (string)$template;
