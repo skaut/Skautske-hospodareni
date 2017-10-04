@@ -5,6 +5,7 @@ namespace Model;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Event\Repositories\IEventRepository;
 use Model\Services\TemplateFactory;
 use Nette\Bridges\ApplicationLatte\Template;
 
@@ -23,11 +24,20 @@ class ExportService
     /** @var TemplateFactory */
     private $templateFactory;
 
-    public function __construct(UnitService $units, ICategoryRepository $categories, TemplateFactory $templateFactory)
+    /** @var IEventRepository */
+    private $events;
+
+    public function __construct(
+        UnitService $units,
+        ICategoryRepository $categories,
+        TemplateFactory $templateFactory,
+        IEventRepository $events
+    )
     {
         $this->units = $units;
         $this->categories = $categories;
         $this->templateFactory = $templateFactory;
+        $this->events = $events;
     }
 
     /**
@@ -95,7 +105,10 @@ class ExportService
         return $template;
     }
 
-    public function getEventReport(int $aid, EventEntity $eventService): string
+    /**
+     * @throws Event\EventNotFoundException
+     */
+    public function getEventReport(int $skautisEventId, EventEntity $eventService): string
     {
         $categories = $this->categories->findByObjectType(ObjectType::get(ObjectType::EVENT));
 
@@ -113,7 +126,7 @@ class ExportService
         }
 
         //rozpočítává paragony do jednotlivých skupin
-        foreach ($eventService->chits->getAll($aid) as $chit) {
+        foreach ($eventService->chits->getAll($skautisEventId) as $chit) {
             $sums[$chit->ctype][$chit->category]['amount'] += $chit->price;
         }
 
@@ -125,14 +138,14 @@ class ExportService
             array_column($sums[Operation::EXPENSE], 'amount')
         );
 
-        $participants = $eventService->participants->getAll($aid);
+        $participants = $eventService->participants->getAll($skautisEventId);
 
         return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
             'participantsCnt' => count($participants),
             'personsDays' => $eventService->participants->getPersonsDays($participants),
-            'a' => $eventService->event->get($aid),
+            'event' => $this->events->find($skautisEventId),
             'chits' => $sums,
-            'func' => $eventService->event->getFunctions($aid),
+            'func' => $eventService->event->getFunctions($skautisEventId),
             'incomes' => $sums[Operation::INCOME],
             'expenses' => $sums[Operation::EXPENSE],
             'totalIncome' => $totalIncome,
