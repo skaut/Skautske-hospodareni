@@ -1,0 +1,24 @@
+Model\Cashbook\Category\ObjectType:
+
+    type: entity
+
+    table: ac_chitsCategory_object
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        type:
+            type: string_enum
+            column: objectTypeId
+            annotations:
+                enum: { class: Model\Cashbook\ObjectType }
+
+    manyToOne:
+        category:
+            targetEntity: Model\Cashbook\Category
+            joinColumn:
+                name: categoryId
+                nullable: false
