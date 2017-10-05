@@ -11,6 +11,8 @@ use Skautis\Wsdl\WebServiceInterface;
 final class EventRepository implements IEventRepository
 {
 
+    private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
+
     /** @var WebServiceInterface */
     private $webService;
 
@@ -53,7 +55,13 @@ final class EventRepository implements IEventRepository
             $this->mapper->getLocalId($skautisEvent->ID, Mapper::EVENT),
             $skautisEvent->DisplayName,
             $skautisEvent->ID_Unit,
-            $skautisEvent->ID_EventGeneralState
+            $skautisEvent->Unit,
+            $skautisEvent->ID_EventGeneralState,
+            \DateTimeImmutable::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->StartDate),
+            \DateTimeImmutable::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->EndDate),
+            $skautisEvent->TotalDays,
+            $skautisEvent->Location,
+            $skautisEvent->RegistrationNumber
         );
     }
 

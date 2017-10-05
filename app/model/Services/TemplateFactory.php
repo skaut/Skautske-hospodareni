@@ -9,6 +9,8 @@ use Nette\Bridges\ApplicationLatte\ILatteFactory;
 class TemplateFactory
 {
 
+    public const EMAILS_DIRECTORY = __DIR__ . '/../emails';
+
     /** @var ILatteFactory */
     private $latteFactory;
 
@@ -32,7 +34,7 @@ class TemplateFactory
     {
         $template = new Template($this->getEngine());
 
-        $template->setFile(__DIR__ . '/../emails/' . $file . '.latte');
+        $template->setFile($file);
         $template->setParameters($parameters);
 
         return (string)$template;

@@ -69,6 +69,9 @@ autoDI:
           exclude: 'Model\{Event,Chit,Participant}Service' # mutable services
 
         # Aggregate repositories
+        - class: Model\Infrastructure\Repositories\**Repository
+
+        # Old repository namespaces - deprecated
         - class: Model\**\Repositories\*Repository
 
         # Old dibi DAOs - deprecated

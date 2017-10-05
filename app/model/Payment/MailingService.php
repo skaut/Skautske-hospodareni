@@ -154,7 +154,7 @@ class MailingService
         $emailTemplate = $group->getEmailTemplate()
             ->evaluate($group, $payment, $bankAccount !== NULL ? $bankAccount->getNumber() : NULL, $user->getName());
 
-        $template = $this->templateFactory->create('payment.base', [
+        $template = $this->templateFactory->create(TemplateFactory::EMAILS_DIRECTORY . '/payment.base.latte', [
             'body' => nl2br($emailTemplate->getBody(), FALSE),
         ]);
 

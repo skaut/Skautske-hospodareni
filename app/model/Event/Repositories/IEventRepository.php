@@ -3,10 +3,15 @@
 namespace Model\Event\Repositories;
 
 use Model\Event\Event;
+use Model\Event\EventNotFoundException;
 
 interface IEventRepository
 {
 
+    /**
+     * @throws EventNotFoundException
+     * @return Event
+     */
     public function find(int $skautisId): Event;
 
     public function open(Event $event): void;

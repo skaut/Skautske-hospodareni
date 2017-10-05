@@ -1,5 +1,5 @@
 {* souhrná zpráva z akce
-$a - informace o akci
+$event - informace o akci
 $func - seznam funkcí na akci
 $participantsCnt - účastníci akce
 $personsDays - počet osobodní
@@ -19,9 +19,9 @@ $chits - paragony akce
 </style>
 <div class="totalReport">
 
-    <h1>{$a->DisplayName}</h1>
+    <h1>{$event->displayName}</h1>
 <h3>Pořadatel</h3>
-{$a->Unit} - Ev. číslo: {$a->RegistrationNumber}
+{$event->unitName} - Ev. číslo: {$event->registrationNumber}
 
 <br />
 
@@ -39,10 +39,10 @@ $chits - paragony akce
         <th>Místo konání</th>
     </tr>
     <tr>
-        <th>{$a->StartDate|date:"j.n.Y"}</th>
-        <th>{$a->EndDate|date:"j.n.Y"}</th>
-        <th>{$a->TotalDays}</th>
-        <th>{!= trim($a->Location) ? $a->Location : "&nbsp;"|stripHtml}</th>
+        <th>{$event->startDate|date:"j.n.Y"}</th>
+        <th>{$event->endDate|date:"j.n.Y"}</th>
+        <th>{$event->totalDays}</th>
+        <th>{= trim($event->location) !== '' ? $event->location : "&nbsp;"|stripHtml}</th>
     </tr>
 </table>
 
@@ -65,42 +65,31 @@ $chits - paragony akce
         <th style="width: 20%;text-align: right;">Kč</th>
     </tr>
 
-{?
-$cntIn = count($chits['in']);
-$cntOut = count($chits['out']);
-$iter = max($cntIn, $cntOut);
-$totalIn = 0;
-$totalOut = 0;
-}
-
-    {for $i = 0; $i < $iter; $i++}
+    {var $rowsCount = max(count($incomes), count($expenses))}
+    {for $i = 0; $i < $rowsCount; $i++}
     <tr>
-        {if $i < $cntIn}
-            {php $in = current($chits['in'])}
-        <td>{$in->label}</td>
-        <td>{$in->price|price}</td>
-            {php $totalIn += $in->price}
-            {php next($chits['in'])}
+        {if $i < count($incomes)}
+            {var $income = $incomes[$i]}
+            <td>{$income['label']}</td>
+            <td>{$income['amount']|price}</td>
         {else}
-        <td>&nbsp;</td><td>&nbsp;</td>
+            <td>&nbsp;</td><td>&nbsp;</td>
         {/if}
-        {if $i < $cntOut}
-            {php $out = current($chits['out'])}
-        <td>{$out->label}</td>
-        <td>{$out->price|price}</td>
-            {php $totalOut += $out->price}
-            {php next($chits['out'])}
+        {if $i < count($expenses)}
+            {var $expense = $expenses[$i]}
+            <td>{$expense['label']}</td>
+            <td>{$expense['amount']|price}</td>
         {else}
-        <td>&nbsp;</td><td>&nbsp;</td>
+            <td>&nbsp;</td><td>&nbsp;</td>
         {/if}
     </tr>
     {/for}
 
     <tr>
         <td>Celkem</td>
-        <td><b>{$totalIn|price}</b></td>
+        <td><b>{$totalIncome|price}</b></td>
         <td>Celkem</td>
-        <td><b>{$totalOut|price}</b></td>
+        <td><b>{$totalExpense|price}</b></td>
     </tr>
 </table>
 

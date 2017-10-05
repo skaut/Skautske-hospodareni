@@ -2,7 +2,11 @@
 
 namespace Model;
 
-use \Nette\ArrayHash;
+use Model\Cashbook\ObjectType;
+use Model\Cashbook\Operation;
+use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Event\Repositories\IEventRepository;
+use Model\Services\TemplateFactory;
 use Nette\Bridges\ApplicationLatte\Template;
 
 /**
@@ -14,12 +18,30 @@ class ExportService
     /** @var UnitService */
     private $units;
 
-    public function __construct(UnitService $units)
+    /** @var ICategoryRepository */
+    private $categories;
+
+    /** @var TemplateFactory */
+    private $templateFactory;
+
+    /** @var IEventRepository */
+    private $events;
+
+    public function __construct(
+        UnitService $units,
+        ICategoryRepository $categories,
+        TemplateFactory $templateFactory,
+        IEventRepository $events
+    )
     {
         $this->units = $units;
+        $this->categories = $categories;
+        $this->templateFactory = $templateFactory;
+        $this->events = $events;
     }
 
     /**
+     * @deprecated use TemplateFactory
      * donastavuje helpery a zdrojový file do šablony
      * @param Template $template
      * @param string $fileName
@@ -84,32 +106,51 @@ class ExportService
     }
 
     /**
-     * @param Template $template
-     * @param int $aid
-     * @param EventEntity $eventService
-     * @return Template
+     * @throws Event\EventNotFoundException
      */
-    public function getEventReport(Template $template, $aid, EventEntity $eventService)
+    public function getEventReport(int $skautisEventId, EventEntity $eventService): string
     {
-        $categories = [];
-        //inicializuje pole s kategorií s částkami na 0
-        foreach (ArrayHash::from($eventService->chits->getCategories($aid)) as $c) {
-            $categories[$c->type][$c->short] = $c;
-            $categories[$c->type][$c->short]->price = 0;
+        $categories = $this->categories->findByObjectType(ObjectType::get(ObjectType::EVENT));
+
+        $sums = [
+            Operation::INCOME => [],
+            Operation::EXPENSE => [],
+        ];
+
+        foreach ($categories as $category) {
+            $operation = $category->getOperationType()->getValue();
+            $sums[$operation][] = [
+                'amount' => 0,
+                'label' => $category->getName(),
+            ];
         }
 
         //rozpočítává paragony do jednotlivých skupin
-        foreach ($eventService->chits->getAll($aid) as $chit) {
-            $categories[$chit->ctype][$chit->cshort]->price += $chit->price;
+        foreach ($eventService->chits->getAll($skautisEventId) as $chit) {
+            $sums[$chit->ctype][$chit->category]['amount'] += $chit->price;
         }
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/eventReport.latte');
-        $participants = $eventService->participants->getAll($aid);
-        $template->participantsCnt = count($participants);
-        $template->personsDays = $eventService->participants->getPersonsDays($participants);
-        $template->a = $eventService->event->get($aid);
-        $template->chits = $categories;
-        $template->func = $eventService->event->getFunctions($aid);
-        return $template;
+
+        $totalIncome = array_sum(
+            array_column($sums[Operation::INCOME], 'amount')
+        );
+
+        $totalExpense = array_sum(
+            array_column($sums[Operation::EXPENSE], 'amount')
+        );
+
+        $participants = $eventService->participants->getAll($skautisEventId);
+
+        return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
+            'participantsCnt' => count($participants),
+            'personsDays' => $eventService->participants->getPersonsDays($participants),
+            'event' => $this->events->find($skautisEventId),
+            'chits' => $sums,
+            'func' => $eventService->event->getFunctions($skautisEventId),
+            'incomes' => $sums[Operation::INCOME],
+            'expenses' => $sums[Operation::EXPENSE],
+            'totalIncome' => $totalIncome,
+            'totalExpense' => $totalExpense,
+        ]);
     }
 
     /**
@@ -185,6 +226,22 @@ class ExportService
         $template->chits = $categories;
         $template->func = $campService->event->getFunctions($aid);
         return $template;
+    }
+
+    private function getCategories(ObjectType $type): array
+    {
+        $categories = $this->categories->findByObjectType($type);
+        $result = [
+            Operation::INCOME => [],
+            Operation::EXPENSE => [],
+        ];
+
+        foreach($categories as $category) {
+            $operation = $category->getOperationType()->getValue();
+            $result[$operation][$category->getShortcut()] = 0;
+        }
+
+        return $categories;
     }
 
 }

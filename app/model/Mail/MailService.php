@@ -116,7 +116,7 @@ class MailService
         }
 
         unset($credentials['password']);
-        $template = $this->templateFactory->create('smtpAdded', $credentials);
+        $template = $this->templateFactory->create(TemplateFactory::EMAILS_DIRECTORY . '/smtpAdded.latte', $credentials);
 
         $mail = new Message();
         $mail->setSubject('Nový email v Hospodaření')

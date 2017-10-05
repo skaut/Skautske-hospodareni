@@ -1,3 +1,6 @@
+parameters:
+    mappingDir: %appDir%/model/Infrastructure/mapping
+
 extensions:
     migrations: Nettrine\Migrations\DI\MigrationsExtension
     events: Kdyby\Events\DI\EventsExtension
@@ -11,7 +14,8 @@ doctrine:
     password: %database.password%
     dbname: %database.name%
     metadata:
-        Model: yaml(%appDir%/model/Infrastructure/mapping/Model)
+        Model\Cashbook: yaml(%mappingDir%/Cashbook)
+        Model: yaml(%mappingDir%/Model)
     types:
         datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType

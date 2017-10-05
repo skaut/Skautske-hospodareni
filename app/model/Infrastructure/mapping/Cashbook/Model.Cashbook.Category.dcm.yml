@@ -1,0 +1,34 @@
+Model\Cashbook\Category:
+
+    type: entity
+
+    table: ac_chitsCategory
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+
+    fields:
+        name:
+            type: string
+            column: label
+        shortcut:
+            type: string
+            column: short
+        operationType:
+            type: string_enum
+            annotations:
+                enum: { class: Model\Cashbook\Operation }
+            column: type
+        priority:
+            type: integer
+            column: orderby
+        deleted:
+            type: boolean
+
+    oneToMany:
+        types:
+            targetEntity: Model\Cashbook\Category\ObjectType
+            mappedBy: category
