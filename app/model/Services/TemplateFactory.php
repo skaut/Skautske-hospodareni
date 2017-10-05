@@ -9,6 +9,8 @@ use Nette\Bridges\ApplicationLatte\ILatteFactory;
 class TemplateFactory
 {
 
+    public const EMAILS_DIRECTORY = __DIR__ . '/../emails';
+
     /** @var ILatteFactory */
     private $latteFactory;
 

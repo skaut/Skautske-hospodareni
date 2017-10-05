@@ -18,8 +18,6 @@ use Nette\Utils\Validators;
 class MailingService
 {
 
-    private const TEMPLATES_DIRECTORY = __DIR__ . '/../emails';
-
     /** @var IGroupRepository */
     private $groups;
 
@@ -156,7 +154,7 @@ class MailingService
         $emailTemplate = $group->getEmailTemplate()
             ->evaluate($group, $payment, $bankAccount !== NULL ? $bankAccount->getNumber() : NULL, $user->getName());
 
-        $template = $this->templateFactory->create(self::TEMPLATES_DIRECTORY . '/payment.base.latte', [
+        $template = $this->templateFactory->create(TemplateFactory::EMAILS_DIRECTORY . '/payment.base.latte', [
             'body' => nl2br($emailTemplate->getBody(), FALSE),
         ]);
 
