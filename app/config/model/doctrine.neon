@@ -15,7 +15,9 @@ doctrine:
     dbname: %database.name%
     metadata:
         Model\Cashbook: yaml(%mappingDir%/Cashbook)
-        Model: yaml(%mappingDir%/Model)
+        Model\Logger: yaml(%mappingDir%/Logger)
+        Model\Payment: yaml(%mappingDir%/Payment)
+        Model\Travel: yaml(%mappingDir%/Travel)
     types:
         datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType

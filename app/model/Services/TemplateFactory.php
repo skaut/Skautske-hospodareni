@@ -9,7 +9,8 @@ use Nette\Bridges\ApplicationLatte\ILatteFactory;
 class TemplateFactory
 {
 
-    public const EMAILS_DIRECTORY = __DIR__ . '/../emails';
+    public const SMTP_CREDENTIALS_ADDED = __DIR__ . '/../emails/smtpAdded.latte';
+    public const PAYMENT_DETAILS = __DIR__ . '/../emails/payment.base.latte';
 
     /** @var ILatteFactory */
     private $latteFactory;

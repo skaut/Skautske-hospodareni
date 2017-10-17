@@ -4,6 +4,9 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\Forms\BaseForm;
 use Model\MailService;
+use Model\Payment\Commands\CreateMailCredentials;
+use Model\Payment\Commands\RemoveMailCredentials;
+use Model\Payment\MailCredentials\MailProtocol;
 use Nette\Application\UI\Form;
 
 /**
@@ -39,7 +42,7 @@ class MailPresenter extends BasePresenter
         }
     }
 
-    public function handleRemove($id) : void
+    public function handleRemove(int $id) : void
     {
         $mail = $this->model->get($id);
 
@@ -47,7 +50,8 @@ class MailPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění mazat smtp", "danger");
             $this->redirect("Payment:default");
         }
-        $this->model->removeSmtp($this->aid, $id);
+
+        $this->commandBus->handle(new RemoveMailCredentials($id));
     }
 
     protected function createComponentFormCreate() : Form
@@ -61,7 +65,10 @@ class MailPresenter extends BasePresenter
             ->getControlPrototype()->placeholder("např. platby@stredisko.cz");
         $form->addText("password", "Heslo")
             ->addRule(Form::FILLED, "Musíte vyplnit heslo.");
-        $form->addSelect("secure", "Zabezpečení", ["ssl" => "ssl", "tsl" => "tsl"]);
+        $form->addSelect("secure", "Zabezpečení", [
+            MailProtocol::SSL => "ssl",
+            MailProtocol::TLS  => "tls"
+        ]);
         $form->addSubmit('send', 'Založit')
             ->setAttribute("class", "btn btn-primary");
 
@@ -82,14 +89,17 @@ class MailPresenter extends BasePresenter
 
         $userId = $this->user->getId();
         try {
-            $this->model->addSmtp(
+            $this->commandBus->handle(
+                new CreateMailCredentials(
                     $this->aid,
                     $v->host,
                     $v->username,
                     $v->password,
-                    $v->secure,
+                    MailProtocol::get($v->secure),
                     $userId
+                )
             );
+
             $this->flashMessage("SMTP účet byl přidán");
         } catch(\Nette\Mail\SmtpException $e) {
             $this->flashMessage("K SMTP účtu se nepodařilo připojit", "danger");

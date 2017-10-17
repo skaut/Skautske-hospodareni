@@ -5,10 +5,10 @@ namespace Model\Payment;
 use DateTimeImmutable;
 use Model\Payment\Mailing\Payment as MailPayment;
 use Model\Mail\IMailerFactory;
-use Model\MailTable;
 use Model\Payment\Payment\State;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
+use Model\Payment\Repositories\IMailCredentialsRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Repositories\IUserRepository;
 use Model\Services\TemplateFactory;
@@ -36,8 +36,8 @@ class MailingService
     /** @var IUserRepository */
     private $users;
 
-    /** @var MailTable */
-    private $smtps;
+    /** @var IMailCredentialsRepository */
+    private $credentials;
 
     public function __construct(
         IGroupRepository $groups,
@@ -46,7 +46,7 @@ class MailingService
         IBankAccountRepository $bankAccounts,
         TemplateFactory $templateFactory,
         IUserRepository $users,
-        MailTable $smtps
+        IMailCredentialsRepository $credentials
     )
     {
         $this->groups = $groups;
@@ -55,7 +55,7 @@ class MailingService
         $this->bankAccounts = $bankAccounts;
         $this->templateFactory = $templateFactory;
         $this->users = $users;
-        $this->smtps = $smtps;
+        $this->credentials = $credentials;
     }
 
     /**
@@ -154,7 +154,7 @@ class MailingService
         $emailTemplate = $group->getEmailTemplate()
             ->evaluate($group, $payment, $bankAccount !== NULL ? $bankAccount->getNumber() : NULL, $user->getName());
 
-        $template = $this->templateFactory->create(TemplateFactory::EMAILS_DIRECTORY . '/payment.base.latte', [
+        $template = $this->templateFactory->create(TemplateFactory::PAYMENT_DETAILS, [
             'body' => nl2br($emailTemplate->getBody(), FALSE),
         ]);
 
@@ -164,8 +164,8 @@ class MailingService
             ->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);
 
-        $smtp = $this->smtps->get($group->getSmtpId());
-        $this->mailerFactory->create($smtp->toArray())->send($mail);
+        $credentials = $this->credentials->find($group->getSmtpId());
+        $this->mailerFactory->create($credentials)->send($mail);
     }
 
     private function createPayment(Payment $payment): MailPayment
