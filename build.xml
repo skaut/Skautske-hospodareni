@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="Skautske hospodareni" basedir="." default="main">
-
+    <property name="tempDir" value="nette-temp"/>
     <target name="main" description="Runs tests and prepares deployable tarball">
         <exec command="composer install" passthru="true"/>
         <phingcall target="static-analysis"/>
@@ -10,43 +10,165 @@
     </target>
 
     <target name="prepare-tarball" description="Prepares deployable tarball with everything built">
-        <exec command="composer install
-                        --no-interaction
-                        --optimize-autoloader
-                        --classmap-authoritative
-                        --no-dev"
-              passthru="true"/>
+        <exec command="git rev-parse --short HEAD" outputProperty="build.hash"/>
+        <property name="build.dir" value="${tempDir}/builds/${build.hash}"/>
 
-        <delete includeemptydirs="true">
-            <fileset dir=".">
-                <!-- Temp files -->
-                <include name="nette-temp/**"/>
-                <exclude name="nette-temp/.htaccess"/>
-
-                <!-- Logs -->
-                <include name="nette-log/**"/>
-                <exclude name="nette-log/.htaccess"/>
-
-                <!-- Webloader -->
-                <include name="www/webtemp/**"/>
-                <exclude name="www/webtemp/.gitignore"/>
-            </fileset>
-        </delete>
-
-        <!-- Generate proxies -->
-        <exec command="php www/index.php orm:generate-proxies" passthru="true" checkreturn="true"/>
-        <exec command="php www/index.php lookyman:nette-proxy:generate" passthru="true" checkreturn="true"/>
-
-        <tar destfile="nette-temp/build.tar.gz" compression="gzip">
+        <delete dir="${build.dir}"/>
+        <mkdir dir="${build.dir}"/>
+        <copy todir="${build.dir}">
             <fileset dir=".">
                 <include name="app/**"/>
                 <include name="nette-log/**"/>
                 <include name="nette-temp/**"/>
                 <include name="vendor/**"/>
                 <include name="www/**"/>
+                <include name="composer.*"/>
+                <exclude name="app/config/*local.neon"/>
                 <exclude name="**/.gitignore"/>
             </fileset>
+        </copy>
+
+        <property environment="env"/>
+        <property name="config.skautis.applicationId" value="${env.CONFIG_SKAUTIS_APPLICATION_ID}"/>
+        <property name="config.skautis.testMode" value="${env.CONFIG_SKAUTIS_TEST_MODE}"/>
+        <property name="config.database.host" value="${env.CONFIG_DATABASE_HOST}"/>
+        <property name="config.database.user" value="${env.CONFIG_DATABASE_USER}"/>
+        <property name="config.database.password" value="${env.CONFIG_DATABASE_PASSWORD}"/>
+        <property name="config.database.password" value="${env.CONFIG_DATABASE_NAME}"/>
+
+        <copy file="./app/config/config.production.local.neon" tofile="${build.dir}/app/config/config.local.neon">
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+
+        <exec command="composer --working-dir=${build.dir} install
+                        --no-interaction
+                        --optimize-autoloader
+                        --classmap-authoritative
+                        --no-dev"
+              passthru="true"/>
+
+        <delete>
+            <fileset dir="${build.dir}">
+                <!-- Temp files -->
+                <include name="nette-temp/**"/>
+
+                <!-- Logs -->
+                <include name="nette-log/**"/>
+
+                <!-- Webloader -->
+                <include name="www/webtemp/**"/>
+                <exclude name="**/.htaccess"/>
+            </fileset>
+        </delete>
+
+        <tar destfile="${build.dir}.tar.gz" compression="gzip">
+            <fileset dir="${tempDir}/builds">
+                <include name="${build.hash}/**"/>
+            </fileset>
         </tar>
+
+        <delete dir="${build.dir}" />
+    </target>
+
+    <target name="deploy:ssh">
+        <echo message="${comment}..."/>
+        <echo message="`${command}`"/>
+
+        <exec command="ssh ${deploy.ssh.target} -p ${deploy.ssh.port} '${command}'"
+              passthru="true"
+              checkreturn="true" />
+    </target>
+
+    <target name="deploy:copy-tarball">
+        <property name="command" value="scp -P ${port} ${file} '${target}:${toDirectory}'"/>
+        <echo message="Copying files to ${deploy.ssh.target"/>
+        <echo message="${command}"/>
+        <exec command="${command}" passthru="true" checkreturn="true"/>
+    </target>
+
+    <target name="deploy:cleanup">
+        <echo message="Getting previous releases"/>
+
+        <property name="command" value="ssh -p ${deploy.ssh.port} ${deploy.ssh.target} 'ls ${deploy.releasesDir}' | grep -i '^${deploy.releaseHash}$'"/>
+        <echo message="${command}"/>
+        <exec outputProperty="previousReleases" command="${command}" checkreturn="true" passthru="true"/>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Deleting files"/>
+            <property name="command" value="cd ${deploy.releasesDir} &amp;&amp; rm -rf ${previousReleases}"/>
+        </phingcall>
+    </target>
+
+    <target name="deploy">
+
+        <tstamp/>
+
+        <!-- Prepare variables -->
+        <property environment="env"/>
+        <property name="deploy.releasesDir" value="~/releases"/>
+        <exec command="git rev-parse --short HEAD" outputProperty="build.hash"/>
+        <property name="deploy.ssh.host" refid="env.DEPLOY_SSH_HOST"/>
+        <property name="deploy.ssh.username" refid="env.DEPLOY_SSH_USERNAME"/>
+        <property name="deploy.ssh.port" refid="env.DEPLOY_SSH_PORT" fallback="1"/>
+        <property name="deploy.ssh.target" value="${deploy.ssh.username}@${deploy.ssh.host}"/>
+        <property name="deploy.releaseHash" value="${DSTAMP}-${TSTAMP}-${build.hash}"/>
+        <property name="deploy.release" value="${deploy.releasesDir}/${deploy.releaseHash}"/>
+
+        <!-- Build tarball -->
+        <phingcall target="prepare-tarball">
+            <property name="build.hash" value="${deploy.releaseHash}"/>
+        </phingcall>
+
+
+        <phingcall target="deploy:copy-tarball">
+            <property name="target" value="${deploy.ssh.target}"/>
+            <property name="port" value="${deploy.ssh.port}"/>
+            <property name="file" value="${tempDir}/builds/${deploy.releaseHash}.tar.gz"/>
+            <property name="toDirectory" value="${deploy.releasesDir}"/>
+        </phingcall>
+
+
+        <property name="tarball" value="${deploy.release}.tar.gz"/>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Extracting tarball to release directory"/>
+            <property name="command" value="tar -xvzf ${tarball} -C ${deploy.releasesDir}"/>
+        </phingcall>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Removing tarball"/>
+            <property name="command" value="rm ${tarball}"/>
+        </phingcall>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Generating doctrine proxies"/>
+            <property name="command" value="composer generate-orm-proxies -d ${deploy.release}"/>
+        </phingcall>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Generating nette proxies"/>
+            <property name="command" value="composer generate-nette-proxies -d ${deploy.release}"/>
+        </phingcall>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Running database migrations"/>
+            <property name="command" value="composer run-migrations -d ${deploy.release}"/>
+        </phingcall>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Symlinking log"/>
+            <property name="command" value="ln -s nette-log ${deploy.release}/nette-log"/>
+        </phingcall>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Swapping release to ${deploy.releaseHash}"/>
+            <property name="command" value="rm www &amp;&amp; ln -s ${deploy.release}/www www"/>
+        </phingcall>
+
+        <phingcall target="deploy:cleanup"/>
+
     </target>
 
     <target name="tests-unit">
