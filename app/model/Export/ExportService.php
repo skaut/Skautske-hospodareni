@@ -228,20 +228,4 @@ class ExportService
         return $template;
     }
 
-    private function getCategories(ObjectType $type): array
-    {
-        $categories = $this->categories->findByObjectType($type);
-        $result = [
-            Operation::INCOME => [],
-            Operation::EXPENSE => [],
-        ];
-
-        foreach($categories as $category) {
-            $operation = $category->getOperationType()->getValue();
-            $result[$operation][$category->getShortcut()] = 0;
-        }
-
-        return $categories;
-    }
-
 }
