@@ -119,7 +119,7 @@ class ExportService
 
         foreach ($categories as $category) {
             $operation = $category->getOperationType()->getValue();
-            $sums[$operation][] = [
+            $sums[$operation][$category->getId()] = [
                 'amount' => 0,
                 'label' => $category->getName(),
             ];
@@ -146,8 +146,8 @@ class ExportService
             'event' => $this->events->find($skautisEventId),
             'chits' => $sums,
             'func' => $eventService->event->getFunctions($skautisEventId),
-            'incomes' => $sums[Operation::INCOME],
-            'expenses' => $sums[Operation::EXPENSE],
+            'incomes' => array_values($sums[Operation::INCOME]),
+            'expenses' => array_values($sums[Operation::EXPENSE]),
             'totalIncome' => $totalIncome,
             'totalExpense' => $totalExpense,
         ]);
@@ -226,22 +226,6 @@ class ExportService
         $template->chits = $categories;
         $template->func = $campService->event->getFunctions($aid);
         return $template;
-    }
-
-    private function getCategories(ObjectType $type): array
-    {
-        $categories = $this->categories->findByObjectType($type);
-        $result = [
-            Operation::INCOME => [],
-            Operation::EXPENSE => [],
-        ];
-
-        foreach($categories as $category) {
-            $operation = $category->getOperationType()->getValue();
-            $result[$operation][$category->getShortcut()] = 0;
-        }
-
-        return $categories;
     }
 
 }
