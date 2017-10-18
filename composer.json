@@ -64,6 +64,11 @@
             "url": "git@github.com:fmasa/dependentselectbox.git"
         }
     ],
+    "scripts": {
+        "run-migrations": "php www/index.php migrations:migrate --no-interaction",
+        "generate-orm-proxies": "php www/index.php orm:generate-proxies",
+        "generate-nette-proxies": "php www/index.php lookyman:nette-proxy:generate"
+    },
     "autoload-dev": {
         "classmap": ["code-quality/"]
     },

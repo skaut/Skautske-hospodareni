@@ -1,18 +1,19 @@
 box: fmasa/lebeda:7.1-ci
 
-services:
-    - name: mysql-test
-      id: mysql
-      tag: 5.7
-      env:
-        MYSQL_ALLOW_EMPTY_PASSWORD: yes
-        MYSQL_DATABASE: hskauting
-    - name: smtp-hospodareni.loc
-      id: tophfr/mailcatcher
-      env:
-        SMTP_HOST: smtp-hospodareni.loc
-
 build:
+
+    services:
+        - name: mysql-test
+          id: mysql
+          tag: 5.7
+          env:
+            MYSQL_ALLOW_EMPTY_PASSWORD: yes
+            MYSQL_DATABASE: hskauting
+        - name: smtp-hospodareni.loc
+          id: tophfr/mailcatcher
+          env:
+            SMTP_HOST: smtp-hospodareni.loc
+
     steps:
         - script:
             name: add Github token
@@ -56,3 +57,15 @@ build:
         - script:
             name: acceptance testing
             code: phing tests-acceptance
+
+deploy:
+    steps:
+        - add-to-known_hosts:
+            hostname: www.skauting.cz
+
+        - add-ssh-key:
+            keyname: DEPLOY_SSH_KEY
+
+        - script:
+            name: build and deploy tarball
+            code: phing deploy

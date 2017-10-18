@@ -1,0 +1,12 @@
+skautis:
+     applicationId: '${config.skautis.applicationId}'
+     testMode: ${config.skautis.testMode}
+
+parameters:
+    database:
+        host: '${config.database.host}'
+        user: '${config.database.user}'
+        password: '${config.database.password}'
+        name: '${config.database.name}'
+
+    sendEmail: true

@@ -2,6 +2,7 @@ htaccess
 /app/config/config.*.neon
 !/app/config/config.sample.local.neon
 !/app/config/config.ci.local.neon
+!/app/config/config.production.local.neon
 !/vendor/others
 /vendor
 nette-temp/*
