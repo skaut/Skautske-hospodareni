@@ -97,11 +97,11 @@ trait ParticipantTrait
         }
     }
 
-    public function actionExport($aid) : void
+    public function actionExport(int $aid) : void
     {
         $type = $this->eventService->participants->type; //camp vs general
         try {
-            $template = $this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService, $type);
+            $template = $this->exportService->getParticipants($aid, $this->eventService, $type);
             $this->pdf->render($template, 'seznam-ucastniku.pdf', $type == 'camp');
         } catch (\Skautis\Wsdl\PermissionException $ex) {
             $this->flashMessage("Nemáte oprávnění k záznamu osoby! (" . $ex->getMessage() . ")", "danger");

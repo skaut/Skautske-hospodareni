@@ -118,10 +118,10 @@ class EventPresenter extends BasePresenter
     {
         $chits = (array)$this->eventService->chits->getAll($this->aid);
 
-        $template = (string)$this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= (string)$this->exportService->getParticipants($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= (string)$this->exportService->getCashbook($this->createTemplate(), $aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= (string)$this->exportService->getChits($this->createTemplate(), $aid, $this->eventService, $chits);
+        $template = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
+        $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();
+        $template .= $this->exportService->getCashbook($aid, $this->eventService) . $this->exportService->getNewPage();
+        $template .= $this->exportService->getChits($aid, $this->eventService, $chits);
 
         $this->pdf->render($template, 'all.pdf');
         $this->terminate();

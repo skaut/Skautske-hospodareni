@@ -14,6 +14,8 @@ abstract class MutableBaseService extends BaseService
 {
 
     protected $typeName;
+
+    /** @var string */
     public $type;
 
     /** @var Cache */

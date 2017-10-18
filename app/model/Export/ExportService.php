@@ -40,19 +40,6 @@ class ExportService
         $this->events = $events;
     }
 
-    /**
-     * @deprecated use TemplateFactory
-     * donastavuje helpery a zdrojový file do šablony
-     * @param Template $template
-     * @param string $fileName
-     * @return Template
-     */
-    protected function setTemplate(Template $template, string $fileName): void
-    {
-        $template->setFile($fileName);
-        $template->getLatte()->addFilter(NULL, '\App\AccountancyModule\AccountancyHelpers::loader');
-    }
-
     public function getNewPage()
     {
         return '<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />';
@@ -60,49 +47,38 @@ class ExportService
 
     /**
      * vrací seznam účastníků
-     * @param Template $template
-     * @param int $aid - ID akce
-     * @param EventEntity $service
-     * @param string $type
-     * @return Template
      */
-    public function getParticipants(Template $template, $aid, EventEntity $service, $type = "general")
+    public function getParticipants($aid, EventEntity $service, $type = 'general'): string
     {
-        $this->setTemplate($template, dirname(__FILE__) . "/templates/participant" . ($type == "camp" ? "Camp" : "") . ".latte");
-        $template->list = $service->participants->getAll($aid);
-        $template->info = $service->event->get($aid);
-        return $template;
+        $templateFile = __DIR__ . '/templates/participant' . ($type == 'camp' ? 'Camp' : '') . '.latte';
+
+        return $this->templateFactory->create($templateFile, [
+            'list' => $service->participants->getAll($aid),
+            'info' => $service->event->get($aid),
+        ]);
     }
 
     /**
      * vrací pokladní knihu
-     * @param Template $template
-     * @param int $aid - ID akce
-     * @param EventEntity $service
-     * @return Template
      */
-    public function getCashbook(Template $template, $aid, EventEntity $service)
+    public function getCashbook(int $skautisEventId, EventEntity $service): string
     {
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/cashbook.latte');
-        $template->list = $service->chits->getAll($aid);
-        $template->info = $service->event->get($aid);
-        return $template;
+        return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
+            'list' => $service->chits->getAll($skautisEventId),
+            'info' => $service->event->get($skautisEventId),
+        ]);
     }
 
     /**
      * vrací seznam dokladů
-     * @param Template $template
-     * @param int $aid - ID akce
-     * @param EventEntity $service
-     * @return Template
      */
-    public function getChitlist(Template $template, $aid, EventEntity $service)
+    public function getChitlist(int $skautisEventId, EventEntity $service): string
     {
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/chitlist.latte');
-        $template->list = array_filter($service->chits->getAll($aid), function ($c) {
-            return $c->ctype == "out";
-        });
-        return $template;
+        return $this->templateFactory->create(__DIR__ . '/templates/chitlist.latte', [
+            'list' => array_filter($service->chits->getAll($skautisEventId), function ($c) {
+                return $c->ctype == "out";
+            }),
+        ]);
     }
 
     /**
@@ -155,18 +131,12 @@ class ExportService
 
     /**
      * vrací PDF s vybranými paragony
-     * @param Template $template
-     * @param int $aid
-     * @param EventEntity $eventService
-     * @param array $chits
-     * @return Template
      */
-    public function getChits(Template $template, $aid, EventEntity $eventService, array $chits)
+    public function getChits(int $aid, EventEntity $eventService, array $chits): string
     {
         $income = [];
         $outcome = [];
         $activeHpd = FALSE;
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/chits.latte');
 
         foreach ($chits as $c) {
             if ($c->cshort == "hpd") {
@@ -184,48 +154,47 @@ class ExportService
             }
         }
         $event = $eventService->event->get($aid);
+
+        $template = [];
+
         if (in_array($eventService->event->type, ["camp", "general"])) {
-            $template->oficialName = $this->units->getOficialName($event->ID_Unit);
+            $template['oficialName'] = $this->units->getOficialName($event->ID_Unit);
         } elseif ($eventService->event->type == "unit") {
-            $template->oficialName = $this->units->getOficialName($event->ID);
+            $template['oficialName'] = $this->units->getOficialName($event->ID);
         } else {
             throw new \Nette\InvalidArgumentException("Neplatný typ události v ExportService");
         }
         //HPD 
         if ($activeHpd) {
-            $template->totalPayment = $eventService->participants->getTotalPayment($aid);
+            $template['totalPayment'] = $eventService->participants->getTotalPayment($aid);
             $func = $eventService->event->getFunctions($aid);
-            $template->pokladnik = ($func[2]->ID_Person != NULL) ? $func[2]->Person : (($func[0]->ID_Person != NULL) ? $func[0]->Person : "");
-            $template->list = $eventService->participants->getAll($aid);
+            $template['pokladnik'] = ($func[2]->ID_Person != NULL) ? $func[2]->Person : (($func[0]->ID_Person != NULL) ? $func[0]->Person : "");
+            $template['list'] = $eventService->participants->getAll($aid);
         }
 
-        $template->event = $event;
-        $template->income = $income;
-        $template->outcome = $outcome;
-        return $template;
+        $template['event'] = $event;
+        $template['income'] = $income;
+        $template['outcome'] = $outcome;
+
+        return $this->templateFactory->create(__DIR__ . '/templates/chits.latte', $template);
     }
 
-    /**
-     * @param Template $template
-     * @param int $aid
-     * @param EventEntity $campService
-     * @return Template
-     */
-    public function getCampReport(Template $template, $aid, EventEntity $campService)
+    public function getCampReport(int $skautisCampId, EventEntity $campService): string
     {
         $categories = [];
-        foreach ($campService->chits->getCategories($aid) as $c) {
+        foreach ($campService->chits->getCategories($skautisCampId) as $c) {
             $categories[$c->IsRevenue ? "in" : "out"][$c->ID] = $c;
         }
 
-        $this->setTemplate($template, dirname(__FILE__) . '/templates/campReport.latte');
-        $participants = $campService->participants->getAll($aid);
-        $template->participantsCnt = count($participants);
-        $template->personsDays = $campService->participants->getPersonsDays($participants);
-        $template->a = $campService->event->get($aid);
-        $template->chits = $categories;
-        $template->func = $campService->event->getFunctions($aid);
-        return $template;
+        $participants = $campService->participants->getAll($skautisCampId);
+
+        return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
+            'participantsCnt' => count($participants),
+            'personsDays' => $campService->participants->getPersonsDays($participants),
+            'a' => $campService->event->get($skautisCampId),
+            'chits' => $categories,
+            'func' => $campService->event->getFunctions($skautisCampId),
+        ]);
     }
 
 }
