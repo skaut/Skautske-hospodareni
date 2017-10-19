@@ -181,7 +181,7 @@ class ExcelService
         $sheet->setTitle('Seznam účastníků');
     }
 
-    protected function setSheetCashbook(&$sheet, $data, $prefix): void
+    protected function setSheetCashbook(\PHPExcel_Worksheet $sheet, $data, $prefix): void
     {
         $sheet->setCellValue('A1', "Ze dne")
             ->setCellValue('B1', "Číslo dokladu")
