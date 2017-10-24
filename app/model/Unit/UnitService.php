@@ -81,7 +81,7 @@ class UnitService
      * nalezne podřízené jednotky
      * @return Unit[]
      */
-    public function getChild(int $parentId)
+    public function getSubunits(int $parentId): array
     {
         return $this->units->findByParent($parentId);
     }
