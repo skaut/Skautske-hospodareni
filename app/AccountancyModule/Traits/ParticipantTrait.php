@@ -4,6 +4,7 @@ use Nette\Application\UI\Form;
 use App\Forms\BaseForm;
 use Nette\Forms\Controls\SubmitButton;
 use Model\Services\PdfRenderer;
+use Model\UnitService;
 
 trait ParticipantTrait
 {
@@ -27,6 +28,9 @@ trait ParticipantTrait
 
     /** @var \Model\ExcelService */
     protected $excelService;
+
+    /** @var UnitService */
+    protected $unitService;
 
     /** @var PdfRenderer */
     protected $pdf;
@@ -65,7 +69,7 @@ trait ParticipantTrait
 
         $this->template->unit = $unit = $this->unitService->getDetail($this->uid);
         $this->template->uparrent = $this->unitService->getDetail($unit->ID_UnitParent);
-        $this->template->uchildrens = $this->unitService->getChild($unit->ID);
+        $this->template->uchildrens = $this->unitService->getSubunits($unit->ID);
         $this->template->sort = $sort;
         $this->template->useRegNums = $regNums;
     }
