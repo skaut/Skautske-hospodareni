@@ -132,7 +132,8 @@ class BankAccountsPresenter extends BasePresenter
             throw new BadRequestException('Bankovní účet neexistuje');
         }
 
-        if(!$this->canEdit() && !$account->isAllowedForSubunits()) {
+        if(!$this->canEdit()
+            && ( ! $account->isAllowedForSubunits() || ! $this->isSubunitOf($account->getUnitId()))) {
             $this->noAccess();
         }
 
@@ -161,6 +162,20 @@ class BankAccountsPresenter extends BasePresenter
     private function canEdit(): bool
     {
         return $this->authorizator->isAllowed(Unit::EDIT, $this->getUnitId());
+    }
+
+    private function isSubunitOf(int $unitId): bool
+    {
+        $currentUnitId = $this->getCurrentUnitId();
+        $subunits = $this->unitService->getSubunits($unitId);
+
+        foreach($subunits as $subunit) {
+            if($subunit->getId() === $currentUnitId) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
     }
 
 }
