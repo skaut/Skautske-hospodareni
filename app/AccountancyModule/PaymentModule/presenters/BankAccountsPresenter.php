@@ -107,7 +107,13 @@ class BankAccountsPresenter extends BasePresenter
             $this->noAccess();
         }
 
-        if ($this->accounts->find($id) === NULL) {
+        $account = $this->accounts->find($id);
+
+        if( ! $this->canEdit($account->getUnitId())) {
+            $this->noAccess();
+        }
+
+        if ($account === NULL) {
             throw new BadRequestException('Bankovní účet neexistuje');
         }
 
@@ -132,8 +138,7 @@ class BankAccountsPresenter extends BasePresenter
             throw new BadRequestException('Bankovní účet neexistuje');
         }
 
-        if(!$this->canEdit()
-            && ( ! $account->isAllowedForSubunits() || ! $this->isSubunitOf($account->getUnitId()))) {
+        if(!$this->canEdit($account->getUnitId()) && ( ! $account->isAllowedForSubunits() || ! $this->isSubunitOf($account->getUnitId()))) {
             $this->noAccess();
         }
 
@@ -159,9 +164,9 @@ class BankAccountsPresenter extends BasePresenter
         $this->redirect(403, 'default');
     }
 
-    private function canEdit(): bool
+    private function canEdit(int $unitId = NULL): bool
     {
-        return $this->authorizator->isAllowed(Unit::EDIT, $this->getUnitId());
+        return $this->authorizator->isAllowed(Unit::EDIT, $unitId ?? $this->getUnitId());
     }
 
     private function isSubunitOf(int $unitId): bool
