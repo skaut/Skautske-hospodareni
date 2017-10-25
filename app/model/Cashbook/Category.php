@@ -53,4 +53,9 @@ class Category
         return $this->operationType;
     }
 
+    public function isIncome(): bool
+    {
+        return $this->operationType->equalsValue(Operation::INCOME);
+    }
+
 }

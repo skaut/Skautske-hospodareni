@@ -2,10 +2,22 @@
 
 namespace Model;
 
+use Model\Cashbook\ObjectType;
+use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Excel\Builders\CashbookWithCategoriesBuilder;
+
 class ExcelService
 {
 
     private const ADULT_AGE = 18;
+
+    /** @var ICategoryRepository */
+    private $categories;
+
+    public function __construct(ICategoryRepository $categories)
+    {
+        $this->categories = $categories;
+    }
 
     protected function getNewFile(): \PHPExcel
     {
@@ -41,6 +53,16 @@ class ExcelService
         $sheet = $objPHPExcel->setActiveSheetIndex(0);
         $this->setSheetCashbook($sheet, $data, $event->prefix);
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
+    }
+
+    public function getCashbookWithCategories(EventEntity $eventEntity, int $eventId, ObjectType $type): void
+    {
+        $excel = $this->getNewFile();
+        $sheet = $excel->getActiveSheet();
+
+        (new CashbookWithCategoriesBuilder($this->categories))->build($sheet, $eventEntity, $eventId, $type);
+
+        $this->send($excel, 'test');
     }
 
     public function getEventSummaries(array $eventIds, EventEntity $service): void
@@ -423,7 +445,8 @@ class ExcelService
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
 
-        $objWriter = \PHPExcel_IOFactory::createWriter($obj, 'Excel2007');
+        $objWriter = new \PHPExcel_Writer_Excel2007($obj);
+        $objWriter->setPreCalculateFormulas(TRUE);
         $objWriter->save('php://output');
         //exit;
     }
