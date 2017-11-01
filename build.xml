@@ -34,7 +34,7 @@
         <property name="config.database.host" value="${env.CONFIG_DATABASE_HOST}"/>
         <property name="config.database.user" value="${env.CONFIG_DATABASE_USER}"/>
         <property name="config.database.password" value="${env.CONFIG_DATABASE_PASSWORD}"/>
-        <property name="config.database.password" value="${env.CONFIG_DATABASE_NAME}"/>
+        <property name="config.database.name" value="${env.CONFIG_DATABASE_NAME}"/>
 
         <copy file="./app/config/config.production.local.neon" tofile="${build.dir}/app/config/config.local.neon">
             <filterchain>
