@@ -91,9 +91,9 @@
     <target name="deploy:cleanup">
         <echo message="Getting previous releases"/>
 
-        <property name="command" value="ssh -p ${deploy.ssh.port} ${deploy.ssh.target} 'ls ${deploy.releasesDir}' | grep -v '^${deploy.releaseHash}$'"/>
+        <property name="command" value="echo $(ssh -p ${deploy.ssh.port} ${deploy.ssh.target} 'ls ${deploy.releasesDir}' | grep -v '^${deploy.releaseHash}$')"/>
         <echo message="${command}"/>
-        <exec outputProperty="previousReleases" command="${command}" checkreturn="true" passthru="true"/>
+        <exec outputProperty="previousReleases" command="${command}" checkreturn="true"/>
 
         <phingcall target="deploy:ssh">
             <property name="comment" value="Deleting files"/>
