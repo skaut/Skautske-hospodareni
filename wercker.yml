@@ -62,6 +62,11 @@ deploy:
     steps:
         - add-to-known_hosts:
             hostname: www.skauting.cz
+            port: 28
+
+        - add-to-known_hosts:
+            hostname: 81.31.46.138
+            port: 28
 
         - add-ssh-key:
             keyname: DEPLOY_SSH_KEY

@@ -18,6 +18,7 @@
         <copy todir="${build.dir}">
             <fileset dir=".">
                 <include name="app/**"/>
+                <include name="migrations/**"/>
                 <include name="nette-log/**"/>
                 <include name="nette-temp/**"/>
                 <include name="vendor/**"/>
@@ -91,9 +92,9 @@
     <target name="deploy:cleanup">
         <echo message="Getting previous releases"/>
 
-        <property name="command" value="ssh -p ${deploy.ssh.port} ${deploy.ssh.target} 'ls ${deploy.releasesDir}' | grep -v '^${deploy.releaseHash}$'"/>
+        <property name="command" value="echo $(ssh -p ${deploy.ssh.port} ${deploy.ssh.target} 'ls ${deploy.releasesDir}' | grep -v '^${deploy.releaseHash}$')"/>
         <echo message="${command}"/>
-        <exec outputProperty="previousReleases" command="${command}" checkreturn="true" passthru="true"/>
+        <exec outputProperty="previousReleases" command="${command}" checkreturn="true"/>
 
         <phingcall target="deploy:ssh">
             <property name="comment" value="Deleting files"/>
@@ -155,11 +156,6 @@
         <phingcall target="deploy:ssh">
             <property name="comment" value="Running database migrations"/>
             <property name="command" value="composer run-migrations -d ${deploy.release}"/>
-        </phingcall>
-
-        <phingcall target="deploy:ssh">
-            <property name="comment" value="Symlinking log"/>
-            <property name="command" value="ln -s nette-log ${deploy.release}/nette-log"/>
         </phingcall>
 
         <phingcall target="deploy:ssh">
