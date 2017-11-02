@@ -18,6 +18,7 @@
         <copy todir="${build.dir}">
             <fileset dir=".">
                 <include name="app/**"/>
+                <include name="migrations/**"/>
                 <include name="nette-log/**"/>
                 <include name="nette-temp/**"/>
                 <include name="vendor/**"/>
