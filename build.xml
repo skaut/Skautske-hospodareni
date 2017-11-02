@@ -18,6 +18,7 @@
         <copy todir="${build.dir}">
             <fileset dir=".">
                 <include name="app/**"/>
+                <include name="nette-log/**"/>
                 <include name="nette-temp/**"/>
                 <include name="vendor/**"/>
                 <include name="www/**"/>
@@ -154,11 +155,6 @@
         <phingcall target="deploy:ssh">
             <property name="comment" value="Running database migrations"/>
             <property name="command" value="composer run-migrations -d ${deploy.release}"/>
-        </phingcall>
-
-        <phingcall target="deploy:ssh">
-            <property name="comment" value="Symlinking log"/>
-            <property name="command" value="ln -s nette-log ${deploy.release}/nette-log"/>
         </phingcall>
 
         <phingcall target="deploy:ssh">
