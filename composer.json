@@ -65,9 +65,9 @@
         }
     ],
     "scripts": {
-        "run-migrations": "php www/index.php migrations:migrate --no-interaction",
-        "generate-orm-proxies": "php www/index.php orm:generate-proxies",
-        "generate-nette-proxies": "php www/index.php lookyman:nette-proxy:generate"
+        "run-migrations": "php71 www/index.php migrations:migrate --no-interaction",
+        "generate-orm-proxies": "php71 www/index.php orm:generate-proxies",
+        "generate-nette-proxies": "php71 www/index.php lookyman:nette-proxy:generate"
     },
     "autoload-dev": {
         "classmap": ["code-quality/"]
