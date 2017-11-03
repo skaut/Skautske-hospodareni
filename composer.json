@@ -46,7 +46,8 @@
         "mhujer/fio-api-php": "^4.0",
         "egen/message-bus": "^1.1",
         "fmasa/auto-di": "^1.0",
-        "nettrine/migrations": "^0.1.0"
+        "nettrine/migrations": "^0.1.0",
+        "phpoffice/phpspreadsheet": "dev-develop"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",
@@ -72,5 +73,6 @@
     "autoload-dev": {
         "classmap": ["code-quality/"]
     },
-    "minimum-stability": "RC"
+    "prefer-stable": true,
+    "minimum-stability": "dev"
 }

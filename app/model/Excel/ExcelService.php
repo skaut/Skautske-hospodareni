@@ -5,6 +5,8 @@ namespace Model;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICategoryRepository;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExcelService
 {
@@ -27,6 +29,16 @@ class ExcelService
             ->setLastModifiedBy("h.skauting.cz");
 
         return $objPHPExcel;
+    }
+
+    private function getNewFileV2(): Spreadsheet
+    {
+        $sheet = new Spreadsheet();
+        $sheet->getProperties()
+            ->setCreator('h.skauting.cz')
+            ->setLastModifiedBy('h.skauting.cz');
+
+        return $sheet;
     }
 
     public function getParticipants(EventEntity $service, $event, $type = "general"): void
@@ -448,6 +460,27 @@ class ExcelService
         $objWriter = new \PHPExcel_Writer_Excel2007($obj);
         $objWriter->setPreCalculateFormulas(TRUE);
         $objWriter->save('php://output');
+        //exit;
+    }
+
+    private function sendV2(Spreadsheet $sheet, string $filename): void
+    {
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $xls = new Xlsx($sheet);
+        $xls->setPreCalculateFormulas(TRUE);
+        $xls->save('php://output');
         //exit;
     }
 
