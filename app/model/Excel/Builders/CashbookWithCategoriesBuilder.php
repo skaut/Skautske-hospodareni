@@ -14,6 +14,9 @@ class CashbookWithCategoriesBuilder
     /** @var ICategoryRepository */
     private $categories;
 
+    /** @var \PHPExcel_Worksheet */
+    private $sheet;
+
     private const HEADER_ROW = 2;
     private const SUBHEADER_ROW = 3;
     private const CATEGORIES_FIRST_COLUMN = 6;
@@ -25,6 +28,7 @@ class CashbookWithCategoriesBuilder
 
     public function build(\PHPExcel_Worksheet $sheet, EventEntity $eventEntity, int $eventId, ObjectType $type): void
     {
+        $this->sheet = $sheet;
         $sheet->setCellValue('A1', 'Pokladní kniha');
         $sheet->mergeCells('D2:F2');
         $sheet->setCellValue('D2', 'Pokladní kniha');
@@ -37,19 +41,19 @@ class CashbookWithCategoriesBuilder
         $sheet->setCellValue('F3', 'Zůstatek');
 
         [$incomeCategories, $expenseCategories] = $this->getCategories($type);
-        $this->addCategoriesHeader($sheet, self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
+        $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
         $expensesFirstColumn = self::CATEGORIES_FIRST_COLUMN + count($incomeCategories);
-        $this->addCategoriesHeader($sheet, $expensesFirstColumn, 'Výdaje', $expenseCategories);
+        $this->addCategoriesHeader($expensesFirstColumn, 'Výdaje', $expenseCategories);
 
         $chits = $eventEntity->chits->getAll($eventId);
         $categories = array_merge($incomeCategories, $expenseCategories);
-        $this->addChits($sheet, $chits, $categories);
+        $this->addChits($chits, $categories);
 
         $firstChitRow = self::SUBHEADER_ROW + 1;
         $resultRow = self::SUBHEADER_ROW + count($chits) + 1;
 
         for($i = 0; $i < count($categories); $i++) {
-            $this->addColumnSum($sheet, self::CATEGORIES_FIRST_COLUMN + $i, $resultRow, $firstChitRow);
+            $this->addColumnSum(self::CATEGORIES_FIRST_COLUMN + $i, $resultRow, $firstChitRow);
         }
     }
 
@@ -57,19 +61,14 @@ class CashbookWithCategoriesBuilder
      * @param Category[] $categories
      * @throws \PHPExcel_Exception
      */
-    private function addCategoriesHeader(
-        \PHPExcel_Worksheet $sheet,
-        int $startColumn,
-        string $groupName,
-        array $categories
-    ): void
+    private function addCategoriesHeader(int $startColumn, string $groupName, array $categories): void
     {
         $lastColumn = $startColumn + count($categories) - 1;
-        $sheet->mergeCellsByColumnAndRow($startColumn, self::HEADER_ROW, $lastColumn, self::HEADER_ROW);
-        $sheet->setCellValueByColumnAndRow($startColumn, self::HEADER_ROW, $groupName);
+        $this->sheet->mergeCellsByColumnAndRow($startColumn, self::HEADER_ROW, $lastColumn, self::HEADER_ROW);
+        $this->sheet->setCellValueByColumnAndRow($startColumn, self::HEADER_ROW, $groupName);
 
         foreach($categories as $index => $category) {
-            $sheet->setCellValueByColumnAndRow(
+            $this->sheet->setCellValueByColumnAndRow(
                 $startColumn + $index,
                 self::SUBHEADER_ROW,
                 $category->getName()
@@ -81,7 +80,7 @@ class CashbookWithCategoriesBuilder
      * @param Row[] $chits
      * @param Category[] $row
      */
-    private function addChits(\PHPExcel_Worksheet $sheet, array $chits, array $categories): void
+    private function addChits(array $chits, array $categories): void
     {
         $categories = array_map(function (Category $c) { return $c->getId(); }, $categories);
         $categoryColumns = array_flip($categories);
@@ -103,13 +102,13 @@ class CashbookWithCategoriesBuilder
             ];
 
             foreach($cashbookColumns as $column => $value) {
-                $sheet->setCellValue($column . $row, $value);
+                $this->sheet->setCellValue($column . $row, $value);
             }
 
-            $sheet->setCellValueByColumnAndRow($categoryColumns[$chit->category], $row, $chit->price);
+            $this->sheet->setCellValueByColumnAndRow($categoryColumns[$chit->category], $row, $chit->price);
         }
 
-        $sheet->setCellValue('F' . ++$row, $balance);
+        $this->sheet->setCellValue('F' . ++$row, $balance);
     }
 
     /**
@@ -133,10 +132,10 @@ class CashbookWithCategoriesBuilder
         return [$incomeCategories, $expenseCategories];
     }
 
-    private function addColumnSum(\PHPExcel_Worksheet $sheet, int $column, int $resultRow, int $firstRow): void
+    private function addColumnSum(int $column, int $resultRow, int $firstRow): void
     {
         $lastRow = $resultRow - 1;
-        $resultCell = $sheet->getCellByColumnAndRow($column, $resultRow);
+        $resultCell = $this->sheet->getCellByColumnAndRow($column, $resultRow);
         $stringColumn = $resultCell->getColumn();
 
         $resultCell->setValue('=SUM(' . $stringColumn . $firstRow . ':' . $stringColumn . $lastRow . ')');
