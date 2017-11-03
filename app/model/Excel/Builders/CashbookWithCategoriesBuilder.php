@@ -38,7 +38,7 @@ class CashbookWithCategoriesBuilder
 
         [$incomeCategories, $expenseCategories] = $this->getCategories($type);
         $this->addCategoriesHeader($sheet, self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
-        $expensesFirstColumn = self::CATEGORIES_FIRST_COLUMN + 1 + count($incomeCategories);
+        $expensesFirstColumn = self::CATEGORIES_FIRST_COLUMN + count($incomeCategories);
         $this->addCategoriesHeader($sheet, $expensesFirstColumn, 'Výdaje', $expenseCategories);
 
         $chits = $eventEntity->chits->getAll($eventId);
@@ -64,7 +64,7 @@ class CashbookWithCategoriesBuilder
         array $categories
     ): void
     {
-        $lastColumn = $startColumn + count($categories);
+        $lastColumn = $startColumn + count($categories) - 1;
         $sheet->mergeCellsByColumnAndRow($startColumn, self::HEADER_ROW, $lastColumn, self::HEADER_ROW);
         $sheet->setCellValueByColumnAndRow($startColumn, self::HEADER_ROW, $groupName);
 
