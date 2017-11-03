@@ -69,12 +69,13 @@ class ExcelService
 
     public function getCashbookWithCategories(EventEntity $eventEntity, int $eventId, ObjectType $type): void
     {
-        $excel = $this->getNewFile();
+        $excel = $this->getNewFileV2();
         $sheet = $excel->getActiveSheet();
 
-        (new CashbookWithCategoriesBuilder($this->categories))->build($sheet, $eventEntity, $eventId, $type);
+        $builder = new CashbookWithCategoriesBuilder($this->categories);
+        $builder->build($sheet, $eventEntity, $eventId, $type);
 
-        $this->send($excel, 'test');
+        $this->sendV2($excel, 'test');
     }
 
     public function getEventSummaries(array $eventIds, EventEntity $service): void

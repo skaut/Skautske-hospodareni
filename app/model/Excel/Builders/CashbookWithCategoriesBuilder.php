@@ -7,6 +7,7 @@ use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICategoryRepository;
 use Model\EventEntity;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CashbookWithCategoriesBuilder
 {
@@ -14,7 +15,7 @@ class CashbookWithCategoriesBuilder
     /** @var ICategoryRepository */
     private $categories;
 
-    /** @var \PHPExcel_Worksheet */
+    /** @var Worksheet */
     private $sheet;
 
     private const HEADER_ROW = 2;
@@ -26,7 +27,7 @@ class CashbookWithCategoriesBuilder
         $this->categories = $categories;
     }
 
-    public function build(\PHPExcel_Worksheet $sheet, EventEntity $eventEntity, int $eventId, ObjectType $type): void
+    public function build(Worksheet $sheet, EventEntity $eventEntity, int $eventId, ObjectType $type): void
     {
         $this->sheet = $sheet;
         $sheet->setCellValue('A1', 'Pokladní kniha');
