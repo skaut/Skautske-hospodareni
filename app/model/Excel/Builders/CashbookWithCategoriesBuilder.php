@@ -7,6 +7,7 @@ use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICategoryRepository;
 use Model\EventEntity;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CashbookWithCategoriesBuilder
@@ -56,6 +57,8 @@ class CashbookWithCategoriesBuilder
         for($i = 0; $i < count($categories); $i++) {
             $this->addColumnSum(self::CATEGORIES_FIRST_COLUMN + $i, $resultRow, $firstChitRow);
         }
+
+        $this->addStyles(count($chits), count($categories));
     }
 
     /**
@@ -140,6 +143,35 @@ class CashbookWithCategoriesBuilder
         $stringColumn = $resultCell->getColumn();
 
         $resultCell->setValue('=SUM(' . $stringColumn . $firstRow . ':' . $stringColumn . $lastRow . ')');
+    }
+
+    private function addStyles(int $chitsCount, int $categoriesCount): void
+    {
+        $sheet = $this->sheet;
+        $sheet->mergeCellsByColumnAndRow(0, 2, 2, 2);
+
+        $lastRow = self::SUBHEADER_ROW + $chitsCount + 1;
+        $lastColumn = self::CATEGORIES_FIRST_COLUMN + $categoriesCount - 1;
+
+        $wholeTable = $sheet->getStyleByColumnAndRow(0, self::HEADER_ROW, $lastColumn, $lastRow);
+
+        // Inner and outer borders
+        $wholeTable->getBorders()->applyFromArray([
+            'inside' => [
+                'borderStyle' => Border::BORDER_THIN,
+            ],
+            'outline' => [
+                'borderStyle' => Border::BORDER_MEDIUM,
+            ],
+        ]);
+
+        $headers = $sheet->getStyleByColumnAndRow(0, self::HEADER_ROW, $lastColumn, self::SUBHEADER_ROW);
+
+        $headers->getBorders()
+            ->getOutline()
+            ->setBorderStyle(Border::BORDER_MEDIUM);
+
+        $headers->getAlignment()->setHorizontal('center');
     }
 
 }
