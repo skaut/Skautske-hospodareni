@@ -7,7 +7,9 @@ use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICategoryRepository;
 use Model\EventEntity;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\ColumnDimension;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CashbookWithCategoriesBuilder
@@ -21,7 +23,12 @@ class CashbookWithCategoriesBuilder
 
     private const HEADER_ROW = 2;
     private const SUBHEADER_ROW = 3;
-    private const CATEGORIES_FIRST_COLUMN = 6;
+    private const CATEGORIES_FIRST_COLUMN = 7;
+
+    private const FONT_SIZE = 8;
+
+    // Coefficient for minimal size of column
+    private const COLUMN_WIDTH_COEFFICIENT = 1.1;
 
     public function __construct(ICategoryRepository $categories)
     {
@@ -31,16 +38,15 @@ class CashbookWithCategoriesBuilder
     public function build(Worksheet $sheet, EventEntity $eventEntity, int $eventId, ObjectType $type): void
     {
         $this->sheet = $sheet;
-        $sheet->setCellValue('A1', 'Pokladní kniha');
-        $sheet->mergeCells('D2:F2');
-        $sheet->setCellValue('D2', 'Pokladní kniha');
+        $sheet->mergeCells('E2:G2');
+        $sheet->setCellValue('E2', 'Pokladní kniha');
 
-        $sheet->setCellValue('A3', 'Dne');
-        $sheet->setCellValue('B3', 'Dokl.');
-        $sheet->setCellValue('C3', 'Účel platby');
-        $sheet->setCellValue('D3', 'Příjem');
-        $sheet->setCellValue('E3', 'Výdaj');
-        $sheet->setCellValue('F3', 'Zůstatek');
+        $sheet->setCellValue('B3', 'Dne');
+        $sheet->setCellValue('C3', 'Dokl.');
+        $sheet->setCellValue('D3', 'Účel platby');
+        $sheet->setCellValue('E3', 'Příjem');
+        $sheet->setCellValue('F3', 'Výdaj');
+        $sheet->setCellValue('G3', 'Zůstatek');
 
         [$incomeCategories, $expenseCategories] = $this->getCategories($type);
         $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
@@ -58,7 +64,10 @@ class CashbookWithCategoriesBuilder
             $this->addColumnSum(self::CATEGORIES_FIRST_COLUMN + $i, $resultRow, $firstChitRow);
         }
 
-        $this->addStyles(count($chits), count($categories));
+        $this->addColumnSum(4, $resultRow, $firstChitRow);
+        $this->addColumnSum(5, $resultRow, $firstChitRow);
+
+        $this->addStyles(count($chits), count($categories), count($incomeCategories));
     }
 
     /**
@@ -72,9 +81,16 @@ class CashbookWithCategoriesBuilder
         $this->sheet->setCellValueByColumnAndRow($startColumn, self::HEADER_ROW, $groupName);
 
         foreach($categories as $index => $category) {
-            $this->sheet->setCellValueByColumnAndRow(
-                $startColumn + $index,
-                self::SUBHEADER_ROW,
+            $column = $startColumn + $index;
+
+            $cell = $this->sheet->getCellByColumnAndRow($column, self::SUBHEADER_ROW);
+            $cell->setValue($category->getName());
+            $cell->getStyle()
+                ->getAlignment()
+                ->setWrapText(TRUE);
+
+            $this->guessColumnWidth(
+                $this->sheet->getColumnDimensionByColumn($column),
                 $category->getName()
             );
         }
@@ -93,26 +109,31 @@ class CashbookWithCategoriesBuilder
         }, $categoryColumns);
 
         $row = self::SUBHEADER_ROW + 1;
+        $index = 1;
+
         $balance = 0;
         foreach ($chits as $chit) {
             $balance += $chit->ctype === 'in' ? $chit->price : -$chit->price;
+
             $cashbookColumns = [
-                'A' => $chit->date->format('d.m.'),
-                'B' => $chit->num,
-                'C' => $chit->purpose,
-                'D' => $chit->ctype === 'in' ? $chit->price : '',
-                'E' => $chit->ctype === 'out' ? $chit->price : '',
-                'F' => $balance,
+                $index++,
+                $chit->date->format('d.m.'),
+                $chit->num,
+                $chit->purpose,
+                $chit->ctype === 'in' ? $chit->price : '',
+                $chit->ctype === 'out' ? $chit->price : '',
+                $balance,
             ];
 
             foreach($cashbookColumns as $column => $value) {
-                $this->sheet->setCellValue($column . $row, $value);
+                $this->sheet->setCellValueByColumnAndRow($column, $row, $value);
             }
 
             $this->sheet->setCellValueByColumnAndRow($categoryColumns[$chit->category], $row, $chit->price);
+            $row++;
         }
 
-        $this->sheet->setCellValue('F' . ++$row, $balance);
+        $this->sheet->setCellValueByColumnAndRow(6, $row, $balance);
     }
 
     /**
@@ -145,13 +166,33 @@ class CashbookWithCategoriesBuilder
         $resultCell->setValue('=SUM(' . $stringColumn . $firstRow . ':' . $stringColumn . $lastRow . ')');
     }
 
-    private function addStyles(int $chitsCount, int $categoriesCount): void
+    private function addStyles(int $chitsCount, int $categoriesCount, int $incomeCategoriesCount): void
     {
         $sheet = $this->sheet;
-        $sheet->mergeCellsByColumnAndRow(0, 2, 2, 2);
+
+        $sheet->mergeCellsByColumnAndRow(0, 2, 3, 2);
 
         $lastRow = self::SUBHEADER_ROW + $chitsCount + 1;
         $lastColumn = self::CATEGORIES_FIRST_COLUMN + $categoriesCount - 1;
+
+        $sheet->getRowDimension(self::SUBHEADER_ROW)->setRowHeight(40);
+
+        $sheet->getStyleByColumnAndRow(0, 0, 0, $lastRow)
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $sheet->getColumnDimensionByColumn(0)->setAutoSize(TRUE);
+        $sheet->getColumnDimensionByColumn(1)->setAutoSize(TRUE);
+        $sheet->getColumnDimensionByColumn(2)->setAutoSize(TRUE);
+        $sheet->getColumnDimensionByColumn(3)->setAutoSize(TRUE);
+        $sheet->getColumnDimensionByColumn(4)->setAutoSize(TRUE);
+        $sheet->getColumnDimensionByColumn(5)->setAutoSize(TRUE);
+        $sheet->getColumnDimensionByColumn(6)->setAutoSize(TRUE);
+
+        $header = $sheet->getStyleByColumnAndRow(0, self::HEADER_ROW, $lastColumn, self::HEADER_ROW);
+
+        $header->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $header->getFont()->setBold(TRUE);
 
         $wholeTable = $sheet->getStyleByColumnAndRow(0, self::HEADER_ROW, $lastColumn, $lastRow);
 
@@ -165,6 +206,28 @@ class CashbookWithCategoriesBuilder
             ],
         ]);
 
+        $lastRowStyle = $sheet->getStyleByColumnAndRow(0, $lastRow, $lastColumn, $lastRow);
+        $lastRowStyle->getFont()->setBold(TRUE);
+        $lastRowStyle->getBorders()->getTop()->setBorderStyle(Border::BORDER_MEDIUM);
+
+        $sheet->getStyleByColumnAndRow(0, 1, $lastColumn, $lastRow)
+            ->getFont()
+            ->setSize(self::FONT_SIZE);
+
+        $separatedColumns = [
+            1,
+            self::CATEGORIES_FIRST_COLUMN,
+            self::CATEGORIES_FIRST_COLUMN + $incomeCategoriesCount,
+            4,
+        ];
+
+        foreach($separatedColumns as $column) {
+            $sheet->getStyleByColumnAndRow($column, self::HEADER_ROW, $column, $lastRow)
+                ->getBorders()
+                ->getLeft()
+                ->setBorderStyle(Border::BORDER_MEDIUM);
+        }
+
         $headers = $sheet->getStyleByColumnAndRow(0, self::HEADER_ROW, $lastColumn, self::SUBHEADER_ROW);
 
         $headers->getBorders()
@@ -172,6 +235,21 @@ class CashbookWithCategoriesBuilder
             ->setBorderStyle(Border::BORDER_MEDIUM);
 
         $headers->getAlignment()->setHorizontal('center');
+    }
+
+    private function guessColumnWidth(ColumnDimension $column, string $content): void
+    {
+        $words = explode(' ', $content);
+
+        if(count($words) <= 1) {
+            $column->setAutoSize(TRUE);
+            return;
+        }
+
+        uasort($words, function(string $a, string $b) { return mb_strlen($a) <=> mb_strlen($b); });
+
+        $width = mb_strlen($words[0]) * self::COLUMN_WIDTH_COEFFICIENT;
+        $column->setWidth($width);
     }
 
 }
