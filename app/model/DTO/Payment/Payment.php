@@ -5,6 +5,7 @@ namespace Model\DTO\Payment;
 use DateTimeImmutable;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
+use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
 
 /**
@@ -13,7 +14,7 @@ use Nette\SmartObject;
  * @property-read float $amount
  * @property-read string|NULL $email
  * @property-read DateTimeImmutable $dueDate
- * @property-read int|NULL $variableSymbol
+ * @property-read VariableSymbol|NULL $variableSymbol
  * @property-read int|NULL $constantSymbol
  * @property-read string $note
  * @property-read bool $closed
@@ -43,7 +44,7 @@ class Payment
     /** @var DateTimeImmutable */
     private $dueDate;
 
-    /** @var int|NULL */
+    /** @var VariableSymbol|NULL */
     private $variableSymbol;
 
     /** @var int|NULL */
@@ -76,7 +77,7 @@ class Payment
         float $amount,
         ?string $email,
         DateTimeImmutable $dueDate,
-        ?int $variableSymbol,
+        ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         string $note,
         bool $closed,
@@ -140,10 +141,7 @@ class Payment
         return $this->dueDate;
     }
 
-    /**
-     * @return int|NULL
-     */
-    public function getVariableSymbol(): ?int
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }

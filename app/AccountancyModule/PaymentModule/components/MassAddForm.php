@@ -91,10 +91,8 @@ class MassAddForm extends Control
             ->setAttribute('class', 'input-small')
             ->setRequired(FALSE);
 
-        $container->addText("variableSymbol", "VS:")
-            ->setRequired(FALSE)
-            ->addRule($form::INTEGER)
-            ->addRule($form::MAX_LENGTH, "Maximální délka konstantního symbolu je %d", 10);
+        $container->addVariableSymbol("variableSymbol", "VS:")
+            ->setRequired(FALSE);
 
         $container->addText("constantSymbol", "KS:")
             ->setAttribute('class', 'input-mini')
@@ -145,7 +143,7 @@ class MassAddForm extends Control
                 $this->floatOrNull($person->amount) ?? (float)$values->amount,
                 \DateTimeImmutable::createFromMutable($person->dueDate ?? $values->dueDate),
                 $person->id,
-                $this->intOrNull($person->variableSymbol),
+                $person->variableSymbol,
                 $this->intOrNull($person->constantSymbol) ?? $this->intOrNull($values->constantSymbol),
                 $person->note
                 );

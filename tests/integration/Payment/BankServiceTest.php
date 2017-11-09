@@ -14,6 +14,7 @@ use Model\Payment\Payment;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
+use Model\Payment\VariableSymbol;
 use Nette\Utils\Random;
 
 class BankServiceTest extends \IntegrationTest
@@ -99,7 +100,7 @@ class BankServiceTest extends \IntegrationTest
             NULL,
             $amount,
             new \DateTimeImmutable(),
-            $variableSymbol,
+            $variableSymbol === NULL ? NULL : new VariableSymbol($variableSymbol),
             NULL,
             NULL,
             ''

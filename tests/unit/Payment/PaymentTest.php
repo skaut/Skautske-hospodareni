@@ -19,7 +19,7 @@ class PaymentTest extends \Codeception\Test\Unit
         $email = "test@gmail.com";
         $dueDate = new DateTimeImmutable();
         $amount = 450;
-        $variableSymbol = 454545;
+        $variableSymbol = new VariableSymbol('454545');
         $constantSymbol = 666;
         $personId = 2;
         $note = 'Something';
@@ -133,9 +133,9 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment = $this->createPayment();
         $payment->extractEventsToDispatch(); // Clear events collection
 
-        $variableSymbol = 789789;
+        $variableSymbol = new VariableSymbol('789789');
 
-        $payment->updateVariableSymbol(789789);
+        $payment->updateVariableSymbol($variableSymbol);
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
 
         $events = $payment->extractEventsToDispatch();
@@ -154,7 +154,7 @@ class PaymentTest extends \Codeception\Test\Unit
 
         $this->expectException(PaymentClosedException::class);
 
-        $payment->updateVariableSymbol(789789);
+        $payment->updateVariableSymbol(new VariableSymbol('789789'));
     }
 
     public function testUpdate()
@@ -166,7 +166,7 @@ class PaymentTest extends \Codeception\Test\Unit
         $amount = 300;
         $email = "franta@gmail.com";
         $dueDate = new DateTimeImmutable();
-        $variableSymbol = 789;
+        $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
         $note = "Never pays!";
 
@@ -198,7 +198,7 @@ class PaymentTest extends \Codeception\Test\Unit
         $amount = 300;
         $email = "franta@gmail.com";
         $dueDate = new DateTimeImmutable();
-        $variableSymbol = 789;
+        $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
         $note = "Never pays!";
 
@@ -217,7 +217,7 @@ class PaymentTest extends \Codeception\Test\Unit
             "test@gmail.com",
             500,
             new DateTimeImmutable(),
-            454545,
+            new VariableSymbol('454545'),
             666,
             454,
             "Some note"

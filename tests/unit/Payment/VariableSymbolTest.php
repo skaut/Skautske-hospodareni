@@ -79,4 +79,18 @@ class VariableSymbolTest extends \Codeception\Test\Unit
         $this->assertSame('001000', (string) $symbol->increment());
     }
 
+    public function testIntValueWithLeadingZeros()
+    {
+        $variableSymbol = new VariableSymbol('00123');
+
+        $this->assertSame(123, $variableSymbol->toInt());
+    }
+
+    public function testIntValueWithoutLeadingZeros()
+    {
+        $variableSymbol = new VariableSymbol('123');
+
+        $this->assertSame(123, $variableSymbol->toInt());
+    }
+
 }

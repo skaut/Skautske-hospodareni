@@ -5,6 +5,7 @@ namespace Model\Payment\Repositories;
 use Model\Payment\Payment;
 use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Summary;
+use Model\Payment\VariableSymbol;
 
 interface IPaymentRepository
 {
@@ -41,6 +42,6 @@ interface IPaymentRepository
      */
     public function saveMany(array $payments): void;
 
-    public function getMaxVariableSymbol(int $groupId): ?int;
+    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol;
 
 }

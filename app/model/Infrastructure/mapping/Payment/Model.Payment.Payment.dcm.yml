@@ -25,7 +25,7 @@ Model\Payment\Payment:
             type:  datetime_immutable
             column: maturity
         variableSymbol:
-            type: integer
+            type: variable_symbol
             nullable: true
             column: vs
         constantSymbol:

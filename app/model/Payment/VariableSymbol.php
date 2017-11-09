@@ -10,9 +10,11 @@ final class VariableSymbol
     /** @var string */
     private $value;
 
+    public const PATTERN = '^[0-9]{1,10}$';
+
     public function __construct(string $value)
     {
-        if( ! Strings::match($value, '/^[0-9]{1,10}$/')) {
+        if( ! Strings::match($value, '/' . self::PATTERN . '/')) {
             throw new \InvalidArgumentException("Invalid variable symbol '$value'");
         }
         $this->value = $value;
@@ -27,9 +29,14 @@ final class VariableSymbol
         return new VariableSymbol($prefixedValue);
     }
 
-    public function equals(VariableSymbol $other)
+    public function equals(VariableSymbol $other): bool
     {
-        return (int) $other->value === (int) $this->value;
+        return $other->toInt() === $this->toInt();
+    }
+
+    public function toInt(): int
+    {
+        return (int) $this->value;
     }
 
     public function __toString(): string

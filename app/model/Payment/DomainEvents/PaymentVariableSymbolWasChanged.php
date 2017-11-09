@@ -1,8 +1,8 @@
 <?php
 
-
 namespace Model\Payment\DomainEvents;
 
+use Model\Payment\VariableSymbol;
 
 final class PaymentVariableSymbolWasChanged
 {
@@ -10,11 +10,11 @@ final class PaymentVariableSymbolWasChanged
     /** @var int */
     private $groupId;
 
-    /** @var int|NULL */
+    /** @var VariableSymbol|NULL */
     private $variableSymbol;
 
 
-    public function __construct(int $groupId, ?int $variableSymbol)
+    public function __construct(int $groupId, ?VariableSymbol $variableSymbol)
     {
         $this->groupId = $groupId;
         $this->variableSymbol = $variableSymbol;
@@ -25,7 +25,7 @@ final class PaymentVariableSymbolWasChanged
         return $this->groupId;
     }
 
-    public function getVariableSymbol(): ?int
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }
