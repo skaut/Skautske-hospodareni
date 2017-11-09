@@ -248,7 +248,7 @@ class PaymentService
 
         $group = $this->groups->find($groupId);
 
-        return new VariableSymbol($group->getNextVariableSymbol());
+        return $group->getNextVariableSymbol();
     }
 
     /**

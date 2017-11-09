@@ -14,6 +14,7 @@ class GroupTest extends \Codeception\Test\Unit
         $dueDate = new DateTimeImmutable();
         $createdAt = new DateTimeImmutable();
         $emailTemplate = new EmailTemplate("subject", "mail body");
+        $variableSymbol = new VariableSymbol('666');
         $group = new Group(
             20,
             NULL,
@@ -21,7 +22,7 @@ class GroupTest extends \Codeception\Test\Unit
             200.2,
             $dueDate,
             203,
-            666,
+            $variableSymbol,
             $createdAt,
             $emailTemplate,
             NULL,
@@ -34,7 +35,7 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertSame(200.2, $group->getDefaultAmount());
         $this->assertSame($dueDate, $group->getDueDate());
         $this->assertSame(203, $group->getConstantSymbol());
-        $this->assertSame(666, $group->getNextVariableSymbol());
+        $this->assertSame($variableSymbol, $group->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
         $this->assertSame($emailTemplate, $group->getEmailTemplate());
         $this->assertNull($group->getSmtpId());
@@ -120,7 +121,7 @@ class GroupTest extends \Codeception\Test\Unit
             200.2,
             $dueDate ?? new DateTimeImmutable(),
             203,
-            666,
+            new VariableSymbol('666'),
             $createdAt ?? new DateTimeImmutable(),
             new EmailTemplate("Email subject", "Email body"),
             NULL,

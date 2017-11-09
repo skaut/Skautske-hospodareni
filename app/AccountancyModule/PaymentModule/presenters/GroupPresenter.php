@@ -156,10 +156,8 @@ class GroupPresenter extends BasePresenter
             ->setAttribute("class", "form-control")
             ->setRequired(FALSE)
             ->addRule(Form::INTEGER, "Konstantní symbol musí být číslo");
-        $form->addText("nextVs", "Další VS:")
-            ->setMaxLength(10)
-            ->setRequired(FALSE)
-            ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
+        $form->addVariableSymbol("nextVs", "Další VS:")
+            ->setRequired(FALSE);
 
         $bankAccounts = $this->bankAccounts->findByUnit($unitId);
         $bankAccountItems = [];

@@ -18,7 +18,11 @@ class VariableSymbolType extends StringType
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?VariableSymbol
     {
-        return $value !== NULL ? new VariableSymbol($value) : NULL;
+        if ($value === NULL || $value === '') {
+            return NULL;
+        }
+
+        return new VariableSymbol($value);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
