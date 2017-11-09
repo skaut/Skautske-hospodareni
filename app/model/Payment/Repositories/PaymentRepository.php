@@ -114,8 +114,8 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
 
     public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
     {
-        return $this->getEntityManager()->createQueryBuilder()
-            ->select("MAX(p.variableSymbol)")
+        $result = $this->getEntityManager()->createQueryBuilder()
+            ->select("MAX(p.variableSymbol) as vs")
             ->from(Payment::class, "p")
             ->where("IDENTITY(p.group) = :groupId")
             ->andWhere("p.state != :state")
@@ -123,6 +123,10 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
             ->setParameter("state", State::CANCELED)
             ->getQuery()
             ->getSingleScalarResult();
+
+        return $result !== NULL
+            ? new VariableSymbol($result)
+            : NULL;
     }
 
 }
