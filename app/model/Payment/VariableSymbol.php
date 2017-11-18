@@ -24,11 +24,9 @@ final class VariableSymbol
 
     public function increment(): self
     {
-        $numericValue = (int)$this->value + 1;
-        $length = strlen($this->value);
-        $prefixedValue = str_pad($numericValue, $length, '0', STR_PAD_LEFT);
-
-        return new VariableSymbol($prefixedValue);
+        return new VariableSymbol(
+            (string)($this->toInt()+ 1)
+        );
     }
 
     public static function areEqual(?VariableSymbol $first, ?VariableSymbol $second): bool
