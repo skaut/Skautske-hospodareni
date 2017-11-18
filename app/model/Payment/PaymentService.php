@@ -16,6 +16,7 @@ use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Summary;
+use Model\Payment\VariableSymbol;
 use Model\Services\Language;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
@@ -78,7 +79,7 @@ class PaymentService
         }, $payments);
     }
 
-    public function createPayment(int $groupId, string $name, ?string $email, float $amount, DateTimeImmutable $dueDate, ?int $personId, ?int $vs, ?int $ks, string $note): void
+    public function createPayment(int $groupId, string $name, ?string $email, float $amount, DateTimeImmutable $dueDate, ?int $personId, ?VariableSymbol $vs, ?int $ks, string $note): void
     {
         $group = $this->groups->find($groupId);
 
@@ -93,7 +94,7 @@ class PaymentService
         ?string $email,
         float $amount,
         DateTimeImmutable $dueDate,
-        ?int $variableSymbol,
+        ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         string $note
     ): void
@@ -229,22 +230,20 @@ class PaymentService
         $this->groups->save($group);
     }
 
-    public function getMaxVariableSymbol(int $groupId): ?int
+    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
     {
         return $this->payments->getMaxVariableSymbol($groupId);
     }
 
     /**
      * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby
-     * @param int $groupId
-     * @return int
      */
-    public function getNextVS(int $groupId): ?int
+    public function getNextVS(int $groupId): ?VariableSymbol
     {
         $maxVs = $this->payments->getMaxVariableSymbol($groupId);
 
         if($maxVs !== NULL) {
-            return $maxVs + 1;
+            return $maxVs->increment();
         }
 
         $group = $this->groups->find($groupId);
@@ -601,7 +600,8 @@ class PaymentService
         });
 
         foreach ($payments as $payment) {
-            $payment->updateVariableSymbol($nextVS++);
+            $payment->updateVariableSymbol($nextVS);
+            $nextVs = $nextVS->increment();
         }
 
         $this->payments->saveMany($payments);

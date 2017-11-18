@@ -32,7 +32,7 @@ class Group
     /** @var int|NULL */
     private $constantSymbol;
 
-    /** @var int|NULL */
+    /** @var VariableSymbol|NULL */
     private $nextVariableSymbol;
 
     /** @var string */
@@ -66,7 +66,7 @@ class Group
         ?float $defaultAmount,
         ?\DateTimeImmutable $dueDate,
         ?int $constantSymbol,
-        ?int $nextVariableSymbol,
+        ?VariableSymbol $nextVariableSymbol,
         \DateTimeImmutable $createdAt,
         EmailTemplate $emailTemplate,
         ?int $smtpId,
@@ -91,7 +91,7 @@ class Group
         ?float $defaultAmount,
         ?\DateTimeImmutable $dueDate,
         ?int $constantSymbol,
-        ?int $nextVariableSymbol,
+        ?VariableSymbol $nextVariableSymbol,
         EmailTemplate $emailTemplate,
         ?int $smtpId,
         ?BankAccount $bankAccount) : void
@@ -218,10 +218,7 @@ class Group
         return $this->constantSymbol;
     }
 
-    /**
-     * @return int|NULL
-     */
-    public function getNextVariableSymbol(): ?int
+    public function getNextVariableSymbol(): ?VariableSymbol
     {
         return $this->nextVariableSymbol;
     }

@@ -33,7 +33,7 @@ class Payment extends AbstractAggregate
     /** @var DateTimeImmutable */
     private $dueDate;
 
-    /** @var int|NULL */
+    /** @var VariableSymbol|NULL */
     private $variableSymbol;
 
     /** @var int|NULL */
@@ -57,7 +57,7 @@ class Payment extends AbstractAggregate
         ?string $email,
         float $amount,
         DateTimeImmutable $dueDate,
-        ?int $variableSymbol,
+        ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         ?int $personId,
         string $note
@@ -83,7 +83,7 @@ class Payment extends AbstractAggregate
         ?string $email,
         float $amount,
         DateTimeImmutable $dueDate,
-        ?int $variableSymbol,
+        ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         string $note
     ): void
@@ -119,11 +119,11 @@ class Payment extends AbstractAggregate
         $this->closedAt = $time;
     }
 
-    public function updateVariableSymbol(int $variableSymbol): void
+    public function updateVariableSymbol(VariableSymbol $variableSymbol): void
     {
         $this->checkNotClosed();
 
-        if($this->variableSymbol !== $variableSymbol) {
+        if( ! VariableSymbol::areEqual($variableSymbol, $this->variableSymbol)) {
             $this->raise(new PaymentVariableSymbolWasChanged($this->group->getId(), $variableSymbol));
         }
 
@@ -165,7 +165,7 @@ class Payment extends AbstractAggregate
         return $this->dueDate;
     }
 
-    public function getVariableSymbol()
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }

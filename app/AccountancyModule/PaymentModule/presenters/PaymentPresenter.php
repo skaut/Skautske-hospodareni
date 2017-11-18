@@ -456,11 +456,10 @@ class PaymentPresenter extends BasePresenter
             ->addRule(Form::EMAIL, "Zadaný email nemá platný formát");
         $form->addDatePicker("maturity", "Splatnost")
             ->setAttribute('class', 'form-control');
-        $form->addText("vs", "VS")
-            ->setMaxLength(10)
+        $form->addVariableSymbol("vs", "VS")
+            ->setRequired(FALSE)
             ->setAttribute('class', 'form-control')
-            ->addCondition(Form::FILLED)
-            ->addRule(Form::INTEGER, "Variabilní symbol musí být číslo");
+            ->addCondition(Form::FILLED);
         $form->addText("ks", "KS")
             ->setMaxLength(4)
             ->setAttribute('class', 'form-control')
@@ -495,7 +494,7 @@ class PaymentPresenter extends BasePresenter
         $email = $v->email !== "" ? $v->email : NULL;
         $amount = (float)$v->amount;
         $dueDate = \DateTimeImmutable::createFromMutable($v->maturity);
-        $variableSymbol = $v->vs !== "" ? (int)$v->vs : NULL;
+        $variableSymbol = $v->vs;
         $constantSymbol = $v->ks !== "" ? (int)$v->ks : NULL;
         $note = (string)$v->note;
 

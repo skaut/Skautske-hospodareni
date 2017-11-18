@@ -129,7 +129,7 @@ class BankService
     private function markPaymentsAsComplete(array $transactions, array $payments): array
     {
         $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
-        $paymentsByVS = Arrays::groupBy($payments, function(Payment $p) { return $p->getVariableSymbol(); });
+        $paymentsByVS = Arrays::groupBy($payments, function(Payment $p) { return $p->getVariableSymbol()->toInt(); });
 
         $transactions = array_filter($transactions, function(BankTransaction $t) use($paymentsByVS) {
             return $t->getVariableSymbol() !== NULL && isset($paymentsByVS[$t->getVariableSymbol()]);

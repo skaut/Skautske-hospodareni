@@ -9,6 +9,7 @@ use Model\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Summary;
+use Model\Payment\VariableSymbol;
 use Model\Utils\Arrays;
 
 final class PaymentRepository extends AbstractRepository implements IPaymentRepository
@@ -111,10 +112,10 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
         }
     }
 
-    public function getMaxVariableSymbol(int $groupId): ?int
+    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
     {
-        return $this->getEntityManager()->createQueryBuilder()
-            ->select("MAX(p.variableSymbol)")
+        $result = $this->getEntityManager()->createQueryBuilder()
+            ->select("MAX(p.variableSymbol) as vs")
             ->from(Payment::class, "p")
             ->where("IDENTITY(p.group) = :groupId")
             ->andWhere("p.state != :state")
@@ -122,6 +123,10 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
             ->setParameter("state", State::CANCELED)
             ->getQuery()
             ->getSingleScalarResult();
+
+        return $result !== NULL
+            ? new VariableSymbol($result)
+            : NULL;
     }
 
 }

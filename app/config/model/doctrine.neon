@@ -22,6 +22,7 @@ doctrine:
         datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
         money: Model\Infrastructure\Types\MoneyType
+        variable_symbol: Model\Infrastructure\Types\VariableSymbolType
     dql:
         string:
             field: DoctrineExtensions\Query\Mysql\Field

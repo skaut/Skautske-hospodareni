@@ -16,6 +16,11 @@ trait ContainerTrait
         return $this[$name] = new DatePicker($label);
     }
 
+    public function addVariableSymbol(string $name, string $label): VariableSymbolControl
+    {
+        return $this[$name] = new VariableSymbolControl($label);
+    }
+
     public function addContainer($name) : BaseContainer
     {
         $control = new BaseContainer();
