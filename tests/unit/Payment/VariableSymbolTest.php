@@ -24,6 +24,16 @@ class VariableSymbolTest extends \Codeception\Test\Unit
         new VariableSymbol('');
     }
 
+    /**
+     * @dataProvider getVariableSymbolsStartingWithZero
+     */
+    public function testVariableSymbolCantStartWithZero(string $symbol)
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new VariableSymbol($symbol);
+    }
+
 
     /**
      * @dataProvider getNonNumericSymbol
@@ -45,48 +55,26 @@ class VariableSymbolTest extends \Codeception\Test\Unit
         ];
     }
 
-    public function testVariableSymbolWithLeadingZerosEqualsOneWithout()
+    public function getVariableSymbolsStartingWithZero(): array
     {
-        $symbol = new VariableSymbol('000123');
+        return [
+            ['0123'],
+            ['00123'],
+        ];
+    }
+
+    public function testEquals()
+    {
+        $symbol = new VariableSymbol('123');
         $withoutZeros = new VariableSymbol('123');
 
         $this->assertTrue(
             $symbol->equals($withoutZeros),
-            'Variable symbol doesn\'t match variable symbol with same value without leading zeroes');
+            'Variable symbol doesn\'t match other instance with same value'
+        );
     }
 
-    public function testVariableSymbolWithoutLeadingZerosEqualsOneWith()
-    {
-        $symbol = new VariableSymbol('123');
-        $withZeros = new VariableSymbol('00123');
-
-        $this->assertTrue(
-            $symbol->equals($withZeros),
-            'Variable symbol doesn\'t match variable symbol with same value with leading zeroes');
-    }
-
-    public function testIncrementWithLeadingZeros()
-    {
-        $symbol = new VariableSymbol('000123');
-
-        $this->assertSame('000124', (string) $symbol->increment());
-    }
-
-    public function testIncrementWithLeadingZerosOverBase()
-    {
-        $symbol = new VariableSymbol('000999');
-
-        $this->assertSame('001000', (string) $symbol->increment());
-    }
-
-    public function testIntValueWithLeadingZeros()
-    {
-        $variableSymbol = new VariableSymbol('00123');
-
-        $this->assertSame(123, $variableSymbol->toInt());
-    }
-
-    public function testIntValueWithoutLeadingZeros()
+    public function testIntValue()
     {
         $variableSymbol = new VariableSymbol('123');
 
