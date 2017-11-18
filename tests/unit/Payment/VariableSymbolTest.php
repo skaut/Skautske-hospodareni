@@ -63,15 +63,29 @@ class VariableSymbolTest extends \Codeception\Test\Unit
         ];
     }
 
-    public function testEquals()
+    public function testAreEqual()
     {
-        $symbol = new VariableSymbol('123');
-        $withoutZeros = new VariableSymbol('123');
+        $first = new VariableSymbol('123');
+        $second = new VariableSymbol('123');
 
         $this->assertTrue(
-            $symbol->equals($withoutZeros),
+            VariableSymbol::areEqual($second, $first),
             'Variable symbol doesn\'t match other instance with same value'
         );
+    }
+
+    public function areNotEqual(?VariableSymbol $first, ?VariableSymbol $second)
+    {
+        $this->assertFalse(VariableSymbol::areEqual($first, $second));
+    }
+
+    public function getNotEqualPairs(): array
+    {
+        return [
+            [new VariableSymbol('123'), new VariableSymbol('456')],
+            [new VariableSymbol('123'), NULL],
+            [NULL, new VariableSymbol('123')],
+        ];
     }
 
     public function testIntValue()

@@ -31,9 +31,12 @@ final class VariableSymbol
         return new VariableSymbol($prefixedValue);
     }
 
-    public function equals(VariableSymbol $other): bool
+    public static function areEqual(?VariableSymbol $first, ?VariableSymbol $second): bool
     {
-        return $other->toInt() === $this->toInt();
+        $firstInt = $first !== NULL ? $first->toInt() : NULL;
+        $secondInt = $second !== NULL ? $second->toInt() : NULL;
+
+        return $firstInt === $secondInt;
     }
 
     public function toInt(): int

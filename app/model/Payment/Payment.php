@@ -123,7 +123,7 @@ class Payment extends AbstractAggregate
     {
         $this->checkNotClosed();
 
-        if($this->variableSymbol !== $variableSymbol) {
+        if( ! VariableSymbol::areEqual($variableSymbol, $this->variableSymbol)) {
             $this->raise(new PaymentVariableSymbolWasChanged($this->group->getId(), $variableSymbol));
         }
 

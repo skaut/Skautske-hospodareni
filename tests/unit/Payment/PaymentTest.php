@@ -128,15 +128,16 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment->complete($time);
     }
 
-    public function testUpdateVariableSymbol()
+    /**
+     * @dataProvider getVariableSymbolUpdates
+     */
+    public function testUpdateVariableSymbol(?VariableSymbol $old, VariableSymbol $new)
     {
-        $payment = $this->createPayment();
-        $payment->extractEventsToDispatch(); // Clear events collection
+        $payment = $this->createPaymentWithVariableSymbol($old);
+        $payment->extractEventsToDispatch(); // Clear events collection;
 
-        $variableSymbol = new VariableSymbol('789789');
-
-        $payment->updateVariableSymbol($variableSymbol);
-        $this->assertSame($variableSymbol, $payment->getVariableSymbol());
+        $payment->updateVariableSymbol($new);
+        $this->assertSame($new, $payment->getVariableSymbol());
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -144,7 +145,27 @@ class PaymentTest extends \Codeception\Test\Unit
         $event = $events[0];
         $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
         $this->assertSame(29, $event->getGroupId());
-        $this->assertSame($variableSymbol, $event->getVariableSymbol());
+        $this->assertSame($new, $event->getVariableSymbol());
+    }
+
+    public function getVariableSymbolUpdates()
+    {
+        return [
+            [new VariableSymbol('123'), new VariableSymbol('456')],
+            [NULL, new VariableSymbol('456')],
+        ];
+    }
+
+    public function testVariableSymbolUpdateToSameSymbolDoesntRaiseEvent()
+    {
+        $symbol = '12345';
+        $payment = $this->createPaymentWithVariableSymbol(new VariableSymbol($symbol));
+        $payment->extractEventsToDispatch(); // Clear events collection
+
+        $payment->updateVariableSymbol(new VariableSymbol($symbol));
+
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(0, $events);
     }
 
     public function testUpdateVariableForClosedPaymentThrowsException()
@@ -190,6 +211,18 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
+    public function testUpdateWithSameVariableSymbolDoesntThrowException()
+    {
+
+    }
+
+    public function getVariableSymbolChanges(): array
+    {
+        return [
+            [new VariableSymbol('123'), new VariableSymbol('')]
+        ];
+    }
+
     public function testCannotUpdateClosedPayment()
     {
         $payment = $this->createPayment();
@@ -218,6 +251,21 @@ class PaymentTest extends \Codeception\Test\Unit
             500,
             new DateTimeImmutable(),
             new VariableSymbol('454545'),
+            666,
+            454,
+            "Some note"
+        );
+    }
+
+    private function createPaymentWithVariableSymbol(?VariableSymbol $symbol): Payment
+    {
+        return new Payment(
+            $this->mockGroup(29),
+            "Jan novák",
+            "test@gmail.com",
+            500,
+            new DateTimeImmutable(),
+            $symbol,
             666,
             454,
             "Some note"
