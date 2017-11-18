@@ -52,6 +52,8 @@ class BankService
      * @param int[] $groupIds
      * @param int|null $daysBack
      * @return int number of paired payments
+     * @throws BankTimeoutException
+     * @throws BankTimeLimitException
      */
     public function pairAllGroups(array $groupIds, ?int $daysBack = NULL): int
     {

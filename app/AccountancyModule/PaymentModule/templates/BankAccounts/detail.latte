@@ -11,9 +11,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">Transakce za posledních 60 dní</div>
     <div class="panel-body">
-        {if $transactions === NULL}
-            Nemáte vyplněný token pro komunikaci s FIO
-        {elseif !empty($transactions)}
+        {if $transactions !== NULL && count($transactions)) > 0}
             <table class="table table-bordered table-hover table-striped table-responsive">
                 <tr>
                     <th>Datum</th>

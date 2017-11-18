@@ -5,6 +5,8 @@ namespace Model\Payment;
 use Assert\Assert;
 use DateTimeImmutable;
 use Model\Bank\Fio\Transaction;
+use Model\BankTimeLimitException;
+use Model\BankTimeoutException;
 use Model\DTO\Payment\BankAccount as BankAccountDTO;
 use Model\DTO\Payment\BankAccountFactory;
 use Model\Payment\BankAccount\AccountNumber;
@@ -164,6 +166,8 @@ class BankAccountService
     /**
      * @return Transaction[]
      * @throws TokenNotSetException
+     * @throws BankTimeoutException
+     * @throws BankTimeLimitException
      */
     public function getTransactions(int $bankAccountId, int $daysBack): array
     {
