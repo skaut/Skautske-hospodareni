@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use Model\Cashbook\ObjectType;
+
 class CashbookPresenter extends BasePresenter
 {
 
@@ -34,6 +36,18 @@ class CashbookPresenter extends BasePresenter
         if ($this->isAjax()) {
             $this->redrawControl("contentSnip");
         }
+
+        $this->template->cashbookWithCategoriesAllowed = TRUE;
+    }
+
+    public function actionExportExcelWithCategories(int $aid): void
+    {
+        $this->excelService->getCashbookWithCategories(
+            $this->entityService,
+            $aid,
+            ObjectType::get(ObjectType::EVENT)
+        );
+        $this->terminate();
     }
 
     public function actionImportHpd($aid): void
