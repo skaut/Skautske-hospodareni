@@ -63,7 +63,7 @@ class ChitService extends MutableBaseService
      * @param int $skautisEventId
      * @return \stdClass[]
      */
-    public function getAll($skautisEventId, $onlyUnlocked = FALSE)
+    public function getAll($skautisEventId, $onlyUnlocked = FALSE): array
     {
         $list = $this->table->getAll($this->getLocalId($skautisEventId), $onlyUnlocked);
         if (!empty($list) && $this->type == self::TYPE_CAMP) {
