@@ -42,7 +42,9 @@ trait ParticipantTrait
             $this->flashMessage("Nepovolený přístup", "danger");
             $this->redirect("Default:");
         }
-        $this->uid = $this->getParameter("uid", NULL);
+
+        $uid = $this->getParameter('uid', NULL);
+        $this->uid = $uid !== NULL ? (int) $uid : NULL;
     }
 
     protected function beforeRender() : void
@@ -55,7 +57,8 @@ trait ParticipantTrait
     {
         $participants = $this->eventService->participants->getAll($this->aid);
         try {
-            $list = $dp ? [] : $this->memberService->getAll($this->uid, $this->getDirectMemberOnly(), $participants);
+            $unitId = $this->uid ?? $this->unitService->getUnitId();
+            $list = $dp ? [] : $this->memberService->getAll($unitId, $this->getDirectMemberOnly(), $participants);
         } catch (\Skautis\Wsdl\WsdlException $e) {
             if (!$dp && strpos("Timeout expired", $e->getMessage())) {
                 $this->flashMessage("Bylo vypnuto doplňování osob, protože vypršel časový limit!", 'danger');
