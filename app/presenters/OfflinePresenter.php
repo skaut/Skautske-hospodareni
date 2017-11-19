@@ -43,9 +43,10 @@ class OfflinePresenter extends BasePresenter
     {
         $this->getHttpResponse()->setContentType('Context-Type:', 'text/cache-manifest');
 
-        @$cssFile = reset($this['css']->getCompiler()->generate());
+
+        $cssFile = $this['css']->getCompiler()->generate()[0];
         $this->template->css = "webtemp/" . $cssFile->file . "?" . $cssFile->lastModified; //name
-        @$jsFile = reset($this['js']->getCompiler()->generate());
+        $jsFile = $this['js']->getCompiler()->generate()[0];
         $this->template->js = "webtemp/" . $jsFile->file . "?" . $jsFile->lastModified; //name
     }
 
