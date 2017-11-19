@@ -150,12 +150,11 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $this->template->transactions = $this->accounts->getTransactions($id, 60);
         } catch(TokenNotSetException $e) {
-            $this->flashMessage('Nemáte vyplněný token pro komunikaci s FIO', 'warning');
+            $this->template->warningMessage = 'Nemáte vyplněný token pro komunikaci s FIO';
         } catch (BankTimeLimitException $e) {
-            $this->flashMessage(PairButton::TIME_LIMIT_MESSAGE, 'warning');
-            $this->template->transactions = NULL;
+            $this->template->warningMessage = PairButton::TIME_LIMIT_MESSAGE;
         } catch (BankTimeoutException $e) {
-            $this->flashMessage(PairButton::TIMEOUT_MESSAGE, 'error');
+            $this->template->errorMessage = PairButton::TIMEOUT_MESSAGE;
         }
     }
 

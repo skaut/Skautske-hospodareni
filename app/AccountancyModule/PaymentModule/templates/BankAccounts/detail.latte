@@ -11,7 +11,10 @@
 <div class="panel panel-default">
     <div class="panel-heading">Transakce za posledních 60 dní</div>
     <div class="panel-body">
-        {if $transactions !== NULL && count($transactions)) > 0}
+        {if $transactions === NULL}
+            <div class="alert alert-danger" n:ifset="$errorMessage">{$errorMessage}</div>
+            <div class="alert alert-warning" n:ifset="$warningMessage">{$warningMessage}</div>
+        {elseif count($transactions) > 0}
             <table class="table table-bordered table-hover table-striped table-responsive">
                 <tr>
                     <th>Datum</th>
