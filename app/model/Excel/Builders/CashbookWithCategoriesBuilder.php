@@ -38,36 +38,55 @@ class CashbookWithCategoriesBuilder
     public function build(Worksheet $sheet, EventEntity $eventEntity, int $eventId, ObjectType $type): void
     {
         $this->sheet = $sheet;
-        $sheet->mergeCells('E2:G2');
-        $sheet->setCellValue('E2', 'Pokladní kniha');
 
-        $sheet->setCellValue('B3', 'Dne');
-        $sheet->setCellValue('C3', 'Dokl.');
-        $sheet->setCellValue('D3', 'Účel platby');
-        $sheet->setCellValue('E3', 'Příjem');
-        $sheet->setCellValue('F3', 'Výdaj');
-        $sheet->setCellValue('G3', 'Zůstatek');
+        $this->addCashbookHeader();
 
         [$incomeCategories, $expenseCategories] = $this->getCategories($type);
-        $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
         $expensesFirstColumn = self::CATEGORIES_FIRST_COLUMN + count($incomeCategories);
+        $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
         $this->addCategoriesHeader($expensesFirstColumn, 'Výdaje', $expenseCategories);
 
         $chits = $eventEntity->chits->getAll($eventId);
         $categories = array_merge($incomeCategories, $expenseCategories);
+
         $this->addChits($chits, $categories);
+        $this->addSumsRow(count($categories), count($chits));
+        $this->addTableStyles(count($chits), count($categories), count($incomeCategories));
+    }
 
-        $firstChitRow = self::SUBHEADER_ROW + 1;
-        $resultRow = self::SUBHEADER_ROW + count($chits) + 1;
+    private function addCashbookHeader(): void
+    {
+        $this->sheet->mergeCells('E2:G2');
+        $this->sheet->setCellValue('E2', 'Pokladní kniha');
 
-        for($i = 0; $i < count($categories); $i++) {
-            $this->addColumnSum(self::CATEGORIES_FIRST_COLUMN + $i, $resultRow, $firstChitRow);
+        $columns = ['Dne', 'Dokl.', 'Účel platby', 'Příjem', 'Výdaj', 'Zůstatek'];
+        $column = 1;
+
+        foreach($columns as $value) {
+            $this->sheet->setCellValueByColumnAndRow(
+                $column++,
+                self::SUBHEADER_ROW,
+                $value
+            );
         }
+    }
 
-        $this->addColumnSum(4, $resultRow, $firstChitRow);
-        $this->addColumnSum(5, $resultRow, $firstChitRow);
 
-        $this->addStyles(count($chits), count($categories), count($incomeCategories));
+    private function addSumsRow(int $categoriesCount, int $chitsCount): void
+    {
+        $firstChitRow = self::SUBHEADER_ROW + 1;
+        $resultRow = self::SUBHEADER_ROW + $chitsCount;
+
+        $categoriesLastColumn = self::CATEGORIES_FIRST_COLUMN + $categoriesCount;
+
+        $columnsWithSum = array_merge(
+            range(self::CATEGORIES_FIRST_COLUMN, $categoriesLastColumn), // Categories sum
+            [4, 5] // Incomes and expenses sum
+        );
+
+        foreach ($columnsWithSum as $column) {
+            $this->addColumnSum($column, $resultRow, $firstChitRow);
+        }
     }
 
     /**
@@ -166,7 +185,7 @@ class CashbookWithCategoriesBuilder
         $resultCell->setValue('=SUM(' . $stringColumn . $firstRow . ':' . $stringColumn . $lastRow . ')');
     }
 
-    private function addStyles(int $chitsCount, int $categoriesCount, int $incomeCategoriesCount): void
+    private function addTableStyles(int $chitsCount, int $categoriesCount, int $incomeCategoriesCount): void
     {
         $sheet = $this->sheet;
 
