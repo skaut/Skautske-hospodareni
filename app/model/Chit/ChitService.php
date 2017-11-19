@@ -92,12 +92,12 @@ class ChitService extends MutableBaseService
      * vrací pole paragonů s ID zadanými v $list
      * použití - hromadný tisk
      * @param int $skautisEventId
-     * @param int[] $list - pole id
+     * @param int[] $chitIds
      * @return array
      */
-    public function getIn($skautisEventId, $list)
+    public function getIn($skautisEventId, array $chitIds)
     {
-        $ret = $this->table->getIn($this->getLocalId($skautisEventId), (array)$list);
+        $ret = $this->table->getIn($this->getLocalId($skautisEventId), $chitIds);
         if ($this->type == self::TYPE_CAMP) {
             $categories = $this->getCategoriesPairs(NULL, $skautisEventId);
             foreach ($ret as $k => $v) {

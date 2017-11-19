@@ -119,28 +119,31 @@ trait CashbookTrait
         $form = new BaseForm();
         $btn = $form->addSubmit('massPrintSend');
         $btn->onClick[] = function (SubmitButton $button): void {
-            $this->massPrintSubmitted($button);
+            $this->massPrintSubmitted($this->getSelectedChitIds($button->getForm()));
         };
         $btn = $form->addSubmit('massExportSend');
         $btn->onClick[] = function (SubmitButton $button): void {
-            $this->massExportSubmitted($button);
+            $this->massExportSubmitted($this->getSelectedChitIds($button->getForm()));
         };
 
         $form = $this->addMassMove($form);
         return $form;
     }
 
-    private function massPrintSubmitted(SubmitButton $button): void
+    private function massPrintSubmitted(array $chitIds): void
     {
-        $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(BaseForm::DATA_TEXT, 'chits[]'));
+        $chits = $this->entityService->chits->getIn($this->aid, $chitIds);
         $template = $this->exportService->getChits($this->aid, $this->entityService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
 
-    private function massExportSubmitted(SubmitButton $button): void
+    /**
+     * @param int[] $chitIds
+     */
+    private function massExportSubmitted(array $chitIds): void
     {
-        $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(BaseForm::DATA_TEXT, 'chits[]'));
+        $chits = $this->entityService->chits->getIn($this->aid, $chitIds);
         $this->excelService->getChitsExport($chits);
         $this->terminate();
     }
@@ -187,7 +190,7 @@ trait CashbookTrait
     private function massMoveChitsSubmitted(SubmitButton $button): void
     {
         $form = $button->getForm();
-        $chits = $button->getForm()->getHttpData(BaseForm::DATA_TEXT, 'chits[]');
+        $chits = $this->getSelectedChitIds($form);
         if (empty($chits)) {
             $form->addError("Nebyly vybrány žádné paragony!");
             return;
@@ -355,4 +358,15 @@ trait CashbookTrait
             "category" => $chit->category,
         ]);
     }
+
+    /**
+     * @return int[]
+     */
+    private function getSelectedChitIds(\Nette\Forms\Form $form): array
+    {
+        $ids = $form->getHttpData(BaseForm::DATA_TEXT, 'chits[]');
+
+        return array_map('intval', $ids);
+    }
+
 }
