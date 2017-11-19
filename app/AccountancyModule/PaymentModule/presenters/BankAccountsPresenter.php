@@ -4,8 +4,11 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\Auth\IAuthorizator;
 use App\AccountancyModule\Auth\Unit;
+use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;
+use Model\BankTimeLimitException;
+use Model\BankTimeoutException;
 use Model\DTO\Payment\BankAccount;
 use Model\Payment\BankAccountNotFoundException;
 use Model\Payment\BankAccountService;
@@ -143,11 +146,15 @@ class BankAccountsPresenter extends BasePresenter
         }
 
         $this->template->account = $account;
-
+        $this->template->transactions = NULL;
         try {
             $this->template->transactions = $this->accounts->getTransactions($id, 60);
         } catch(TokenNotSetException $e) {
-            $this->template->transactions = NULL;
+            $this->template->warningMessage = 'Nemáte vyplněný token pro komunikaci s FIO';
+        } catch (BankTimeLimitException $e) {
+            $this->template->warningMessage = PairButton::TIME_LIMIT_MESSAGE;
+        } catch (BankTimeoutException $e) {
+            $this->template->errorMessage = PairButton::TIMEOUT_MESSAGE;
         }
     }
 

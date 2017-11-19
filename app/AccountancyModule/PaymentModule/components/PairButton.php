@@ -12,6 +12,9 @@ use Nette\Application\UI\Control;
 class PairButton extends Control
 {
 
+    public const TIMEOUT_MESSAGE = 'Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.';
+    public const TIME_LIMIT_MESSAGE = 'Mezi dotazy na bankovnictví musí být prodleva 1 minuta!';
+
     /** @var BankService */
     private $model;
 
@@ -102,9 +105,9 @@ class PairButton extends Control
         try {
             $pairedCount = $this->model->pairAllGroups($this->groupIds, $daysBack);
         } catch (\Model\BankTimeoutException $exc) {
-            $error = "Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.";
+            $error = self::TIMEOUT_MESSAGE;
         } catch (\Model\BankTimeLimitException $exc) {
-            $error = "Mezi dotazy na bankovnictví musí být prodleva 1 minuta!";
+            $error = self::TIME_LIMIT_MESSAGE;
         }
 
         if ($error !== NULL) {
