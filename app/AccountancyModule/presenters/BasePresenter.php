@@ -62,13 +62,8 @@ abstract class BasePresenter extends \App\BasePresenter
                 $this->redirect(":Default:", ["backlink" => $this->backlink]);
             }
         }
-        try {
-            $this->userService->updateLogoutTime();
-        } catch (\Skautis\Wsdl\AuthenticationException $e) {
-            $this->user->logout();
-            $this->flashMessage("Vypršelo přihlášení do skautisu.");
-            $this->redirect("this");
-        }
+
+        $this->userService->updateLogoutTime();
     }
 
 
