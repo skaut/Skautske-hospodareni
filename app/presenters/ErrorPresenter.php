@@ -2,8 +2,9 @@
 
 namespace App;
 
-use Nette,
-    Tracy\ILogger;
+use App\AccountancyModule\SkautisMaintenanceException;
+use Nette;
+use Tracy\ILogger;
 
 /**
  * Error presenter.
@@ -20,13 +21,12 @@ class ErrorPresenter extends \Nette\Application\UI\Presenter
         $this->logger = $logger;
     }
 
-    /**
-     * @param  Exception
-     * @return void
-     */
     public function renderDefault($exception) : void
     {
-        if ($exception instanceof Nette\Application\BadRequestException) {
+        if ($exception instanceof SkautisMaintenanceException) {
+            $this->flashMessage('Právě probíhá údržba Skautisu. Po tuto dobu není možné Hospodaření používat', 'danger');
+            $this->redirect(':Default:');
+        } elseif ($exception instanceof Nette\Application\BadRequestException) {
             $code = $exception->getCode();
             // load template 403.latte or 404.latte or ... 4xx.latte
             $this->setView(in_array($code, [403, 404, 405, 410, 500]) ? $code : '4xx');
