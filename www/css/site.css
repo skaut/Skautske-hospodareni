@@ -323,3 +323,7 @@ footer {
 .button-bar .btn {
     margin-top: 20px;
 }
+
+.inline-block {
+    display: inline-block;
+}

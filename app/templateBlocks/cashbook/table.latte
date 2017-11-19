@@ -22,7 +22,30 @@ $list array() - pole paragonů
                     {else}
                         <a n:href="export $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout pokladní knihu</a>
                     {/ifset}
-                    <a n:href="exportExcel $aid" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i> Exportovat do excelu</a>
+
+                    {ifset $cashbookWithCategoriesAllowed}
+                        <div class="dropdown inline-block">
+                            <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="excelExportButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i>
+                                Exportovat do excelu
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="excelExportButton">
+                                <li>
+                                    <a class="dropdown-item" n:href="exportExcel $aid">Jednoduchá šablona</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" n:href="exportExcelWithCategories $aid">Šablona s rozepsanými kategoriemi</a>
+                                </li>
+                            </ul>
+                        </div>
+                    {else}
+                        <a n:href="exportExcel $aid" target="_blank" class="btn btn-sm btn-info">
+                            <i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i>
+                            Exportovat do excelu
+                        </a>
+                    {/ifset}
                 {/if}
             </div>
         </div>

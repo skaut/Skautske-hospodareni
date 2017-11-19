@@ -2,10 +2,24 @@
 
 namespace Model;
 
+use Model\Cashbook\ObjectType;
+use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Excel\Builders\CashbookWithCategoriesBuilder;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class ExcelService
 {
 
     private const ADULT_AGE = 18;
+
+    /** @var ICategoryRepository */
+    private $categories;
+
+    public function __construct(ICategoryRepository $categories)
+    {
+        $this->categories = $categories;
+    }
 
     protected function getNewFile(): \PHPExcel
     {
@@ -15,6 +29,16 @@ class ExcelService
             ->setLastModifiedBy("h.skauting.cz");
 
         return $objPHPExcel;
+    }
+
+    private function getNewFileV2(): Spreadsheet
+    {
+        $sheet = new Spreadsheet();
+        $sheet->getProperties()
+            ->setCreator('h.skauting.cz')
+            ->setLastModifiedBy('h.skauting.cz');
+
+        return $sheet;
     }
 
     public function getParticipants(EventEntity $service, $event, $type = "general"): void
@@ -41,6 +65,17 @@ class ExcelService
         $sheet = $objPHPExcel->setActiveSheetIndex(0);
         $this->setSheetCashbook($sheet, $data, $event->prefix);
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
+    }
+
+    public function getCashbookWithCategories(EventEntity $eventEntity, int $eventId, ObjectType $type): void
+    {
+        $excel = $this->getNewFileV2();
+        $sheet = $excel->getActiveSheet();
+
+        $builder = new CashbookWithCategoriesBuilder($this->categories);
+        $builder->build($sheet, $eventEntity, $eventId, $type);
+
+        $this->sendV2($excel, 'test');
     }
 
     public function getEventSummaries(array $eventIds, EventEntity $service): void
@@ -181,7 +216,7 @@ class ExcelService
         $sheet->setTitle('Seznam účastníků');
     }
 
-    protected function setSheetCashbook(&$sheet, $data, $prefix): void
+    protected function setSheetCashbook(\PHPExcel_Worksheet $sheet, $data, $prefix): void
     {
         $sheet->setCellValue('A1', "Ze dne")
             ->setCellValue('B1', "Číslo dokladu")
@@ -423,8 +458,30 @@ class ExcelService
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
 
-        $objWriter = \PHPExcel_IOFactory::createWriter($obj, 'Excel2007');
+        $objWriter = new \PHPExcel_Writer_Excel2007($obj);
+        $objWriter->setPreCalculateFormulas(TRUE);
         $objWriter->save('php://output');
+        //exit;
+    }
+
+    private function sendV2(Spreadsheet $sheet, string $filename): void
+    {
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $xls = new Xlsx($sheet);
+        $xls->setPreCalculateFormulas(TRUE);
+        $xls->save('php://output');
         //exit;
     }
 

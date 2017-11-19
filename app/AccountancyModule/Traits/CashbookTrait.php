@@ -69,14 +69,14 @@ trait CashbookTrait
 
     public function actionExport(int $aid): void
     {
-        $template = $this->exportService->getCashbook($this->createTemplate(), $aid, $this->entityService);
+        $template = $this->exportService->getCashbook($aid, $this->entityService);
         $this->pdf->render($template, 'pokladni-kniha.pdf');
         $this->terminate();
     }
 
     public function actionExportChitlist(int $aid): void
     {
-        $template = $this->exportService->getChitlist($this->createTemplate(), $aid, $this->entityService);
+        $template = $this->exportService->getChitlist($aid, $this->entityService);
         $this->pdf->render($template, 'seznam-dokladu.pdf');
         $this->terminate();
     }
@@ -90,7 +90,7 @@ trait CashbookTrait
     public function actionPrint(int $id, int $aid): void
     {
         $chits = [$this->entityService->chits->get($id)];
-        $template = $this->exportService->getChits($this->createTemplate(), $aid, $this->entityService, $chits);
+        $template = $this->exportService->getChits($aid, $this->entityService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
@@ -133,7 +133,7 @@ trait CashbookTrait
     private function massPrintSubmitted(SubmitButton $button): void
     {
         $chits = $this->entityService->chits->getIn($this->aid, $button->getForm()->getHttpData(BaseForm::DATA_TEXT, 'chits[]'));
-        $template = $this->exportService->getChits($this->createTemplate(), $this->aid, $this->entityService, $chits);
+        $template = $this->exportService->getChits($this->aid, $this->entityService, $chits);
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
