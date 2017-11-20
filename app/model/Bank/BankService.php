@@ -50,7 +50,6 @@ class BankService
     /**
      * Completes payments from info on bank account(s)
      * @param int[] $groupIds
-     * @param int|null $daysBack
      * @return int number of paired payments
      * @throws BankTimeoutException
      * @throws BankTimeLimitException
@@ -112,7 +111,6 @@ class BankService
 
     /**
      * @param Group[] $groups
-     * @return \DateTimeImmutable
      */
     private function resolveLastPairing(array $groups): \DateTimeImmutable
     {

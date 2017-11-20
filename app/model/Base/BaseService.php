@@ -24,7 +24,7 @@ abstract class BaseService extends Nette\Object
 
     /**
      * slouží pro komunikaci se skautISem
-     * @var Skautis|NULL
+     * @var Skautis
      */
     protected $skautis;
 
@@ -34,7 +34,7 @@ abstract class BaseService extends Nette\Object
      */
     private static $storage = [];
 
-    public function __construct(Skautis $skautis = NULL)
+    public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;
     }

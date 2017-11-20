@@ -293,12 +293,11 @@ class EventService extends MutableBaseService
 
     /**
      * zrušit akci
-     * @param int $ID
      * @param ChitService $chitService
      * @param string $msg
      * @return bool
      */
-    public function cancel($ID, $chitService, $msg = NULL): bool
+    public function cancel(int $ID, $chitService, $msg = NULL): bool
     {
         $ret = $this->skautis->event->{"Event" . $this->typeName . "UpdateCancel"}([
             "ID" => $ID,

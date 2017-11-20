@@ -37,7 +37,7 @@ class CashbookPresenter extends BasePresenter
         $this['cashbookForm']['category']->setItems($items);
     }
 
-    public function renderDefault($aid, $pid = NULL, $dp = FALSE) : void
+    public function renderDefault(int $aid, $pid = NULL, $dp = FALSE) : void
     {
         if ($pid !== NULL) {
             $this->editChit($pid);

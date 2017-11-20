@@ -59,7 +59,7 @@ class DetailPresenter extends BasePresenter
         ]);
     }
 
-    public function renderReport($aid) : void
+    public function renderReport(int $aid) : void
     {
         if (!$this->isAllowed("EV_EventFunction_ALL_EventCamp")) {
             $this->flashMessage("Nemáte právo přistupovat k táboru", "warning");

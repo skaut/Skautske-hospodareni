@@ -45,11 +45,11 @@ class AuthPresenter extends BasePresenter
             $this->redirect(":Default:");
         }
         try {
-            $this->authService->setInit([
-                "token" => $post['skautIS_Token'],
-                "roleId" => $post['skautIS_IDRole'],
-                "unitId" => $post['skautIS_IDUnit']
-            ]);
+            $this->authService->setInit(
+                $post['skautIS_Token'],
+                (int) $post['skautIS_IDRole'],
+                (int) $post['skautIS_IDUnit']
+            );
 
             if (!$this->userService->isLoggedIn()) {
                 throw new AuthenticationException("Nemáte platné přihlášení do skautisu");
