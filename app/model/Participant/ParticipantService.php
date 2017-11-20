@@ -110,7 +110,7 @@ class   ParticipantService extends MutableBaseService
     /**
      * vytvoří nového účastníka
      * @param int $ID
-     * @param int $person
+     * @param array $person
      */
     public function addNew($ID, $person): void
     {

@@ -25,7 +25,7 @@ class PdfRenderer
             'margin_bottom' => 10,
         ]);
 
-        @$mpdf->WriteHTML($template, NULL);
+        @$mpdf->WriteHTML($template, 0);
         $mpdf->Output($filename, Destination::INLINE);
     }
 

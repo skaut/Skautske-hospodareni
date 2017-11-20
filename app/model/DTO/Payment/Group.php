@@ -4,6 +4,7 @@ namespace Model\DTO\Payment;
 
 use DateTimeImmutable;
 use Model\Payment\Group\EmailTemplate;
+use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
 
 /**
@@ -15,7 +16,7 @@ use Nette\SmartObject;
  * @property-read float|NULL $defaultAmount
  * @property-read DateTimeImmutable|NULL $dueDate
  * @property-read int|NULL $constantSymbol
- * @property-read int|NULL $nextVariableSymbol
+ * @property-read VariableSymbol|NULL $nextVariableSymbol
  * @property-read string $state
  * @property-read EmailTemplate $emailTemplate
  * @property-read int|NULL $smtpId
@@ -51,7 +52,7 @@ class Group
     /** @var int|NULL */
     private $constantSymbol;
 
-    /** @var int|NULL */
+    /** @var VariableSymbol|NULL */
     private $nextVariableSymbol;
 
     /** @var string */
@@ -78,7 +79,7 @@ class Group
         ?float $defaultAmount,
         ?DateTimeImmutable $dueDate,
         ?int $constantSymbol,
-        ?int $nextVariableSymbol,
+        ?VariableSymbol $nextVariableSymbol,
         string $state,
         EmailTemplate $emailTemplate,
         ?int $smtpId,
@@ -160,10 +161,7 @@ class Group
         return $this->constantSymbol;
     }
 
-    /**
-     * @return int|NULL
-     */
-    public function getNextVariableSymbol() : ?int
+    public function getNextVariableSymbol(): ?VariableSymbol
     {
         return $this->nextVariableSymbol;
     }

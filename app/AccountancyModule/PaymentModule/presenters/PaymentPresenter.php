@@ -87,7 +87,7 @@ class PaymentPresenter extends BasePresenter
         $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
 
-    public function actionDefault(int $onlyOpen = 1): void
+    public function actionDefault(bool $onlyOpen = TRUE): void
     {
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
