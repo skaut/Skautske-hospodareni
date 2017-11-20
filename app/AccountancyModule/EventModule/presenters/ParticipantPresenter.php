@@ -32,6 +32,7 @@ class ParticipantPresenter extends BasePresenter
 
     protected function startup() : void
     {
+        parent::startup();
         $this->traitStartup();
         $this->isAllowRepayment = $this->template->isAllowRepayment = FALSE;
         $this->isAllowIsAccount = $this->template->isAllowIsAccount = FALSE;

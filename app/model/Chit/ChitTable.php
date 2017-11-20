@@ -20,6 +20,7 @@ class ChitTable extends BaseTable
     /**
      * vrací seznam všech paragonů k danému $actionId
      * @param int $localEventId
+     * @return Row[]
      */
     public function getAll($localEventId, $onlyUnlocked): array
     {

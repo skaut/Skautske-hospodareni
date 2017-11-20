@@ -63,7 +63,7 @@ class ContractPresenter extends BasePresenter
 
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
 
-        $this->pdf->render($template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
+        $this->pdf->render( (string)$template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
     }
 
     public function handleDelete(int $contractId) : void

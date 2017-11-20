@@ -28,7 +28,7 @@ class   ParticipantService extends MutableBaseService
      */
     const PAYMENT = "Note";
 
-    public function get($participantId): ArrayHash
+    public function get($participantId): array
     {
         $data = ArrayHash::from($this->skautis->event->{"Participant" . $this->typeName . "Detail"}(["ID" => $participantId]));
         $detail = $this->table->get($participantId);
@@ -37,7 +37,7 @@ class   ParticipantService extends MutableBaseService
         }
         $this->setPersonName($data);
 
-        return $data;
+        return (array) $data;
     }
 
     /**

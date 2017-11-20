@@ -34,11 +34,9 @@ class VehiclePresenter extends BasePresenter
 
 
     /**
-     * @param string $id
-     * @return Vehicle
      * @throws BadRequestException
      */
-    private function getVehicle($id) : Vehicle
+    private function getVehicle(int $id) : Vehicle
     {
         try {
             $vehicle = $this->travelService->getVehicle($id);
@@ -71,7 +69,7 @@ class VehiclePresenter extends BasePresenter
         $this->template->commands = $this->travelService->getAllCommandsByVehicle($id);
     }
 
-    public function handleRemove($vehicleId) : void
+    public function handleRemove(int $vehicleId) : void
     {
         // Check whether vehicle exists and belongs to unit
         $this->getVehicle($vehicleId);

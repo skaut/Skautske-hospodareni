@@ -217,9 +217,9 @@ class BankAccountService
     /**
      * Cleans cached transactions for account
      */
-    private function cleanFioCache(string $token): void
+    private function cleanFioCache(int $bankAccountId): void
     {
-        $this->fioCache->clean([Cache::TAGS => 'fio/' . $token]);
+        $this->fioCache->clean([Cache::TAGS => 'fio/' . $bankAccountId]);
     }
 
 }

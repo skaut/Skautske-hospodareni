@@ -61,7 +61,7 @@ class ChitService extends MutableBaseService
     /**
      * seznam paragonů k akci
      * @param int $skautisEventId
-     * @return \stdClass[]
+     * @return Row[]
      */
     public function getAll($skautisEventId, $onlyUnlocked = FALSE): array
     {

@@ -29,6 +29,9 @@ trait ParticipantTrait
     /** @var \Model\ExcelService */
     protected $excelService;
 
+    /** @var \Model\EventEntity */
+    protected $eventService;
+
     /** @var UnitService */
     protected $unitService;
 
@@ -38,7 +41,7 @@ trait ParticipantTrait
     protected function traitStartup() : void
     {
         parent::startup();
-        if (!$this->aid) {
+        if ($this->aid === NULL) {
             $this->flashMessage("Nepovolený přístup", "danger");
             $this->redirect("Default:");
         }
@@ -243,7 +246,7 @@ trait ParticipantTrait
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
             $oldData = ($type == "camp") ? [] : $this->eventService->participants->get($id);
-            $this->eventService->participants->update($id, array_merge((array)$oldData, $data));
+            $this->eventService->participants->update($id, array_merge($oldData, $data));
         }
         $this->redirect("this");
     }
@@ -268,7 +271,6 @@ trait ParticipantTrait
      */
     protected function createComponentFormAddParticipantNew() : Form
     {
-        $aid = $this->aid;
         $form = new BaseForm();
         $form->addText("firstName", "Jméno*")
             ->addRule(Form::FILLED, "Musíš vyplnit křestní jméno.");
@@ -280,7 +282,6 @@ trait ParticipantTrait
             ->addRule(Form::FILLED, "Musíš vyplnit město.");
         $form->addText("postcode", "PSČ*")
             ->addRule(Form::FILLED, "Musíš vyplnit PSČ.");
-        $form->addHidden("aid", $aid);
         $form->addText("nick", "Přezdívka");
         $form->addText("birthday", "Dat. nar.");
         $form->addSubmit('send', 'Založit účastníka')
@@ -304,7 +305,7 @@ trait ParticipantTrait
             }
         }
         $values = $form->getValues();
-        $aid = $values['aid'];
+
         $person = [
             "firstName" => $values['firstName'],
             "lastName" => $values['lastName'],
@@ -314,7 +315,7 @@ trait ParticipantTrait
             "city" => $values['city'],
             "postcode" => $values['postcode'],
         ];
-        $this->eventService->participants->addNew($aid, $person);
+        $this->eventService->participants->addNew($this->getCurrentUnitId(), $person);
         $this->redirect("this");
     }
 
