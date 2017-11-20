@@ -2,9 +2,8 @@
 
 namespace App\AccountancyModule;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
+use Model\Skautis\SkautisMaintenanceChecker;
+
 abstract class BasePresenter extends \App\BasePresenter
 {
 
@@ -32,12 +31,24 @@ abstract class BasePresenter extends \App\BasePresenter
      */
     protected $availableActions = [];
 
+    /** @var SkautisMaintenanceChecker */
+    private $skautisMaintenanceChecker;
+
     /** @var string camp, event, unit */
     public $type;
+
+    public function injectSkautisMaintenanceChecker(SkautisMaintenanceChecker $checker): void
+    {
+        $this->skautisMaintenanceChecker = $checker;
+    }
 
     protected function startup() : void
     {
         parent::startup();
+
+        if($this->skautisMaintenanceChecker->isMaintenance()) {
+            throw new SkautisMaintenanceException();
+        }
 
         if($this->aid != NULL) { // Persistent parameters aren't auto-casted to int
             $this->aid = (int)$this->aid;
@@ -51,13 +62,8 @@ abstract class BasePresenter extends \App\BasePresenter
                 $this->redirect(":Default:", ["backlink" => $this->backlink]);
             }
         }
-        try {
-            $this->userService->updateLogoutTime();
-        } catch (\Skautis\Wsdl\AuthenticationException $e) {
-            $this->user->logout();
-            $this->flashMessage("Vypršelo přihlášení do skautisu.");
-            $this->redirect("this");
-        }
+
+        $this->userService->updateLogoutTime();
     }
 
 
