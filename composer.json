@@ -53,11 +53,11 @@
         "squizlabs/php_codesniffer": "^2.8",
         "codeception/codeception": "^2.2",
         "codeception/mockery-module": "^0.2.2",
-        "phpstan/phpstan": "^0.7.0",
         "phpstan/phpstan-nette": "^0.7.0",
         "phpstan/phpstan-dibi": "^0.7.0",
         "captbaritone/mailcatcher-codeception-module": "^1.2",
-        "arachne/codeception": "^0.7.6"
+        "arachne/codeception": "^0.7.6",
+        "phpstan/phpstan-shim": "^0.8.5"
     },
     "repositories": [
         {
