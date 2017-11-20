@@ -3,7 +3,6 @@
 namespace Model\Payment\Repositories;
 
 use Assert\Assert;
-use Doctrine\DBAL\Connection;
 use Model\Infrastructure\Repositories\AbstractRepository;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
@@ -44,8 +43,8 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
             ->where("IDENTITY(p.group) IN (:ids)")
             ->groupBy("groupId, state")
             ->having("state IN (:states)")
-            ->setParameter("ids", $groupIds, Connection::PARAM_STR_ARRAY)
-            ->setParameter("states", $states, Connection::PARAM_STR_ARRAY)
+            ->setParameter("ids", $groupIds)
+            ->setParameter("states", $states)
             ->getQuery()
             ->getResult();
 
@@ -87,8 +86,8 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
             ->from(Payment::class, 'p')
             ->where('IDENTITY(p.group) IN (:groupIds)')
             ->orderBy('FIELD (p.state, :states)')
-            ->setParameter('groupIds', $groupIds, Connection::PARAM_INT_ARRAY)
-            ->setParameter('states', self::STATE_ORDER, Connection::PARAM_STR_ARRAY)
+            ->setParameter('groupIds', $groupIds)
+            ->setParameter('states', self::STATE_ORDER)
             ->getQuery()->getResult();
 
         return Arrays::groupBy($result, function(Payment $p) { return $p->getGroupId(); }) + array_fill_keys($groupIds, []);
