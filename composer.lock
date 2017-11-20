@@ -1118,16 +1118,16 @@
         },
         {
             "name": "fmasa/doctrine-yaml-annotations",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fmasa/doctrine-yaml-annotations.git",
-                "reference": "701a2539e9dbec0fdd26b97d9091ccf6a2689b65"
+                "reference": "47d2f007147184ac61d3736d1da82cde346f8cf1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fmasa/doctrine-yaml-annotations/zipball/701a2539e9dbec0fdd26b97d9091ccf6a2689b65",
-                "reference": "701a2539e9dbec0fdd26b97d9091ccf6a2689b65",
+                "url": "https://api.github.com/repos/fmasa/doctrine-yaml-annotations/zipball/47d2f007147184ac61d3736d1da82cde346f8cf1",
+                "reference": "47d2f007147184ac61d3736d1da82cde346f8cf1",
                 "shasum": ""
             },
             "require": {
@@ -1157,7 +1157,7 @@
                 }
             ],
             "description": "Custom annotations for YAML mapping",
-            "time": "2017-04-02T12:44:40+00:00"
+            "time": "2017-11-20T23:15:34+00:00"
         },
         {
             "name": "foowie/dependentselectbox",
