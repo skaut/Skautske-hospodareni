@@ -1,14 +1,13 @@
 <?php
 
-
 namespace Model\Payment\Repositories;
-
 
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\PaymentNotFoundException;
+use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 
 class PaymentRepositoryTest extends \IntegrationTest
@@ -59,7 +58,7 @@ class PaymentRepositoryTest extends \IntegrationTest
             'vs' => '100',
         ];
 
-        $this->addGroupWithId1();
+        $this->addGroupWithId(1);
         $this->addPayments([$data]);
 
         $payment = $this->repository->find(1);
@@ -95,16 +94,81 @@ class PaymentRepositoryTest extends \IntegrationTest
         $payments[3]['vs'] = '0100';
         $payments[4]['vs'] = '1000';
 
-        $this->addGroupWithId1();
+        $this->addGroupWithId(1);
         $this->addPayments($payments);
 
         $this->assertEquals(new VariableSymbol('1000'), $this->repository->getMaxVariableSymbol(1));
     }
 
-    private function addGroupWithId1()
+    public function testSummarizeByGroupReturnsCorrectStats(): void
+    {
+        $payments = [
+            [1, 300, Payment\State::PREPARING],
+            [1, 300, Payment\State::PREPARING],
+            [1, 200, Payment\State::SENT],
+            [1, 200, Payment\State::SENT],
+            [1, 100, Payment\State::COMPLETED],
+            [1, 100, Payment\State::COMPLETED],
+
+            [2, 100, Payment\State::PREPARING],
+            [2, 100, Payment\State::PREPARING],
+            [2, 200, Payment\State::SENT],
+            [2, 200, Payment\State::SENT],
+            [2, 300, Payment\State::COMPLETED],
+            [2, 300, Payment\State::COMPLETED],
+        ];
+
+        $paymentRows = array_map(function(array $payment): array {
+            return [
+                'groupId' => $payment[0],
+                'name' => 'Test',
+                'email' => 'frantisekmasa1@gmail.com',
+                'amount' => $payment[1],
+                'maturity' => '2017-10-29',
+                'note' => '',
+                'state' => $payment[2],
+                'vs' => '100',
+            ];
+        }, $payments);
+
+        $this->addGroupWithId(1);
+        $this->addGroupWithId(2);
+        $this->addPayments($paymentRows);
+
+        $result = $this->repository->summarizeByGroup([1, 2]);
+
+        $this->assertCount(2, $result, 'There should be two items for two groups');
+
+        $expectedSummaries = [
+            1 => [
+                Payment\State::PREPARING => new Summary(2, 600.0),
+                Payment\State::SENT => new Summary(2, 400.0),
+                Payment\State::COMPLETED => new Summary(2, 200.0),
+            ],
+            2 => [
+                Payment\State::PREPARING => new Summary(2, 200.0),
+                Payment\State::SENT => new Summary(2, 400.0),
+                Payment\State::COMPLETED => new Summary(2, 600.0),
+            ],
+        ];
+
+        foreach($expectedSummaries as $groupId => $summaries) {
+            $this->assertCount(3, $result[$groupId], 'There should be 3 items for 3 states');
+            foreach($summaries as $state => $expectedSummary) {
+                $actualSummary = $result[$groupId][$state];
+                /* @var $expectedSummary Summary */
+                /* @var $actualSummary Summary */
+
+                $this->assertSame($expectedSummary->getCount(), $actualSummary->getCount());
+                $this->assertSame($expectedSummary->getAmount(), $actualSummary->getAmount());
+            }
+        }
+    }
+
+    private function addGroupWithId(int $id)
     {
         $this->tester->haveInDatabase('pa_group', [
-            'id' => 1,
+            'id' => $id,
             'label' => 'test',
             'unitId' => 10,
             'state' => Group::STATE_OPEN,

@@ -15,7 +15,7 @@ abstract class BasePresenter extends \App\BasePresenter
 
     /**
      * id volane v url, vetsinou id akce
-     * @var int
+     * @var int|mixed
      */
     protected $aid;
 

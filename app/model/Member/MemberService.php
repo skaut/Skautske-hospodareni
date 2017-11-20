@@ -2,7 +2,6 @@
 
 namespace Model;
 
-use Skautis\User;
 use Skautis\Wsdl\WebServiceInterface;
 
 class MemberService
@@ -11,31 +10,19 @@ class MemberService
     /** @var WebServiceInterface @todo Create anticorruption layer */
     private $organizationWebservice;
 
-    /** @var User */
-    private $skautisUser;
-
-
-    public function __construct(WebServiceInterface $organizationWebservice, User $skautisUser)
+    public function __construct(WebServiceInterface $organizationWebservice)
     {
         $this->organizationWebservice = $organizationWebservice;
-        $this->skautisUser = $skautisUser;
     }
 
 
     /**
      * vrací seznam všech osob
-     * @param int $unitId - ID_Unit
-     * @param bool $onlyDirectMember - pouze přímé členy?
      * @return array
      */
-    public function getAll($unitId = NULL, $onlyDirectMember = TRUE, $participants = NULL)
+    public function getAll(int $unitId, bool $onlyDirectMember, array $participants)
     {
-        if($unitId === NULL) {
-            trigger_error('Use UnitService::getUnitId() to obtain current unit id', E_USER_DEPRECATED);
-            $unitId = $this->skautisUser->getUnitId();
-        }
-
-        $all = $this->organizationWebservice->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => (bool)$onlyDirectMember]);
+        $all = $this->organizationWebservice->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => $onlyDirectMember]);
         $ret = [];
 
         if (empty($participants)) {

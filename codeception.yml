@@ -1,4 +1,10 @@
 actor: Tester
+
+coverage:
+    enabled: true
+    include:
+        - app/*.php
+
 paths:
     tests: tests
     log: tests/_output

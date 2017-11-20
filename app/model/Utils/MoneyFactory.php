@@ -12,7 +12,7 @@ final class MoneyFactory
 
     public static function fromFloat(float $amount): Money
     {
-        return new Money((int) ($amount * 100), new Currency("CZK"));
+        return new Money((int) round($amount * 100), new Currency("CZK"));
     }
 
     public static function toFloat(Money $money): float

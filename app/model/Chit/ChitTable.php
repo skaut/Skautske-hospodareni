@@ -20,9 +20,8 @@ class ChitTable extends BaseTable
     /**
      * vrací seznam všech paragonů k danému $actionId
      * @param int $localEventId
-     * @return array
      */
-    public function getAll($localEventId, $onlyUnlocked)
+    public function getAll($localEventId, $onlyUnlocked): array
     {
         return $this->connection->query("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "]
                 WHERE eventId=%i", $localEventId, " AND deleted=0

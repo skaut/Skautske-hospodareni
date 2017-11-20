@@ -116,7 +116,7 @@ class EventPresenter extends BasePresenter
 
     public function actionPrintAll(int $aid): void
     {
-        $chits = (array)$this->eventService->chits->getAll($this->aid);
+        $chits = $this->eventService->chits->getAll($this->aid);
 
         $template = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();

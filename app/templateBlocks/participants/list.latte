@@ -17,7 +17,7 @@ $isAllowParticipantInsert
                     <ul class="dropdown-menu">
                         <li n:ifset="$uparrent->ID"><a n:href="this $aid, $uparrent->ID">{$uparrent->DisplayName}</a></li>
                         <li><a class="active" style="font-weight: bold" href="#">&minus;&gt;{$unit->DisplayName}</a></li>
-                        <li n:foreach="$uchildrens as $ch"><a n:href="this $aid, $ch->ID">&minus;&minus;&gt; {$ch->DisplayName}</a></li>      
+                        <li n:foreach="$uchildrens as $ch"><a n:href="this $aid, $ch->getId()">&minus;&minus;&gt; {$ch->getDisplayName()}</a></li>
                     </ul>
                 </div>
 
