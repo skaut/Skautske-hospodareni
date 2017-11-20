@@ -8,6 +8,14 @@ use Nette\Utils\Strings;
 class Unit
 {
 
+    private const OFFICIAL_UNIT_TYPES = [
+        'stredisko',
+        'kraj',
+        'okres',
+        'ustredi',
+        'zvlastniJednotka'
+    ];
+    
     /** @var int */
     private $id;
 
@@ -75,7 +83,7 @@ class Unit
 
     public function isOfficial(): bool
     {
-        return in_array($this->type, UnitService::OFFICIAL_UNIT_TYPES, TRUE);
+        return in_array($this->type, self::OFFICIAL_UNIT_TYPES, TRUE);
     }
 
 }
