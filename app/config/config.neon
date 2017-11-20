@@ -66,6 +66,9 @@ autoDI:
         - class: Model\**Service
           exclude: 'Model\{Event,Chit,Participant}Service' # mutable services
 
+        # Domain services
+        - class: Model\*\Services\**
+
         # Aggregate repositories
         - class: Model\Infrastructure\Repositories\**Repository
 

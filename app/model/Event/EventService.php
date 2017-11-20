@@ -32,6 +32,9 @@ class EventService extends MutableBaseService
     /** @var IEventRepository */
     private $eventRepository;
 
+    /** @var UnitService */
+    private $units;
+
     /** @var  EventBus */
     private $eventBus;
 
@@ -42,7 +45,8 @@ class EventService extends MutableBaseService
         IStorage $cacheStorage,
         Connection $connection,
         IEventRepository $eventRepository,
-        EventBus $eventBus
+        EventBus $eventBus,
+        UnitService $units
     )
     {
         parent::__construct($name, $skautis, $cacheStorage);
@@ -51,6 +55,7 @@ class EventService extends MutableBaseService
         $this->connection = $connection;
         $this->eventRepository = $eventRepository;
         $this->eventBus = $eventBus;
+        $this->units = $units;
     }
 
     /**
@@ -87,7 +92,7 @@ class EventService extends MutableBaseService
                 if (in_array($this->type, [self::TYPE_GENERAL, self::TYPE_CAMP])) {
                     $skautisData = (array)$this->skautis->event->{"Event" . $this->typeName . "Detail"}(["ID" => $ID]);
                 } elseif ($this->type == self::TYPE_UNIT) {
-                    $skautisData = (array)$this->skautis->org->{"UnitDetail"}(["ID" => $ID]);
+                    $skautisData = (array) $this->units->getDetail($ID);
                 } else {
                     throw new \InvalidArgumentException("Neplatný typ: " . $this->typeName);
                 }

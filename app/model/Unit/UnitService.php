@@ -14,8 +14,6 @@ use Skautis;
 class UnitService
 {
 
-    public const OFFICIAL_UNIT_TYPES = ["stredisko", "kraj", "okres", "ustredi", "zvlastniJednotka"];
-
     /** @var Skautis\Skautis */
     private $skautis;
 
@@ -43,11 +41,10 @@ class UnitService
      * @deprecated Use UnitService::getDetailV2()
      *
      * vrací detail jednotky
-     * @param int|NULL $unitId
      * @return \stdClass
      * @throws \Nette\Application\BadRequestException
      */
-    public function getDetail($unitId = NULL)
+    public function getDetail(?int $unitId = NULL)
     {
         if ($unitId === NULL) {
             $unitId = $this->getUnitId();
@@ -103,17 +100,14 @@ class UnitService
 
     /**
      * vrací jednotku, která má právní subjektivitu
-     * @param int $unitId
      * @return \stdClass
      */
-    public function getOficialUnit($unitId = NULL)
+    public function getOficialUnit(?int $unitId = NULL)
     {
-        $unit = $this->getDetail($unitId);
-        if (!in_array($unit->ID_UnitType, self::OFFICIAL_UNIT_TYPES)) {
-            $parent = $unit->ID_UnitParent;
-            $unit = $this->getOficialUnit($parent);
-        }
-        return $unit;
+        $unitId = $unitId ?? $this->getUnitId();
+        $officialUnitId = $this->unitResolver->getOfficialUnitId($unitId);
+
+        return $this->getDetail($officialUnitId);
     }
 
     /**

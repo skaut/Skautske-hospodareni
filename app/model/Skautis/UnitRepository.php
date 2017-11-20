@@ -54,7 +54,14 @@ final class UnitRepository implements IUnitRepository
 
     private function createUnit(\stdClass $unit): Unit
     {
-        return new Unit($unit->ID, $unit->SortName, $unit->DisplayName, $unit->RegistrationNumber);
+        return new Unit(
+            $unit->ID,
+            $unit->SortName,
+            $unit->DisplayName,
+            $unit->RegistrationNumber,
+            $unit->ID_UnitType,
+            $unit->ID_UnitParent ?? NULL
+        );
     }
 
 }
