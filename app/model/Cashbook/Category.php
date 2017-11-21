@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Category
 {
 
+    public const EVENT_PARTICIPANTS_INCOME_CATEGORY_ID = 11;
+
     /** @var int */
     private $id;
 

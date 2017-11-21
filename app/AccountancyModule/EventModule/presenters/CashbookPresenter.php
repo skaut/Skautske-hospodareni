@@ -5,6 +5,7 @@ namespace App\AccountancyModule\EventModule;
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\Recipient;
+use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ObjectType;
 
@@ -63,7 +64,6 @@ class CashbookPresenter extends BasePresenter
         $func = $this->eventService->event->getFunctions($this->aid);
         $date = $this->eventService->event->get($aid)->StartDate;
         $accountant = ($func[2]->ID_Person != NULL) ? new Recipient($func[2]->Person): NULL;
-        $category = $this->eventService->chits->getParticipantIncomeCategory();
 
         $cashbookId = $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
 
@@ -75,7 +75,7 @@ class CashbookPresenter extends BasePresenter
                 $accountant,
                 new Amount((string) $totalPayment),
                 'účastnické příspěvky',
-                $category
+                Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID
             )
         );
 

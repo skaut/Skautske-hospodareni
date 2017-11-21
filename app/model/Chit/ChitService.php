@@ -234,6 +234,7 @@ class ChitService extends MutableBaseService
     }
 
     /**
+     * CAMP ONLY
      * vrací ID kategorie pro příjmy od účastníků
      * @param string|NULL $category
      * @throws \Nette\InvalidStateException
@@ -241,31 +242,19 @@ class ChitService extends MutableBaseService
      */
     public function getParticipantIncomeCategory(?int $skautisEventId = NULL, $category = NULL)
     {
-        $cacheId = __FUNCTION__;
-        if ($this->type == self::TYPE_CAMP) {
-            //@TODO: předělat na konstanty
-            $catId = ($category == "adult") ? 3 : 1;
-            foreach ($this->getCategories($skautisEventId) as $k => $val) {
-                if ($val->ID_EventCampStatementType == $catId) {
-                    return $k;
-                }
-            }
-            throw new \Nette\InvalidStateException("Chybí typ pro příjem od účastníků pro skupinu " . $category, 500);
-        } else {
-            if (!($res = $this->loadSes($cacheId))) {
-                foreach ($this->table->getGeneralCategories("in") as $c) {
-                    if ($c->short == "hpd") {
-                        $res = $c->id;
-                        break;
-                    }
-                }
-                $this->saveSes($cacheId, $res);
-            }
-            if (!$res) {
-                throw new \Nette\InvalidStateException("Chybí kategorie paragonů pro příjem od účastníků", 500);
-            }
-            return $res;
+        if ($this->type !== self::TYPE_CAMP) {
+            throw new \InvalidArgumentException('This method is only for camps');
         }
+
+        //@TODO: předělat na konstanty
+        $catId = ($category == "adult") ? 3 : 1;
+        foreach ($this->getCategories($skautisEventId) as $k => $val) {
+            if ($val->ID_EventCampStatementType == $catId) {
+                return $k;
+            }
+        }
+
+        throw new \Nette\InvalidStateException("Chybí typ pro příjem od účastníků pro skupinu " . $category, 500);
     }
 
     /**
