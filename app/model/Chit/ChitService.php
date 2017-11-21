@@ -4,6 +4,7 @@ namespace Model;
 
 use Dibi\Row;
 use eGen\MessageBus\Bus\EventBus;
+use Model\Services\Calculator;
 use Model\Skautis\Mapper;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
@@ -127,7 +128,7 @@ class ChitService extends MutableBaseService
             "date" => $val['date'],
             "recipient" => $val['recipient'],
             "purpose" => $val['purpose'],
-            "price" => $this->solveString($val['price']),
+            "price" => Calculator::calculate($val['price']),
             "priceText" => str_replace(",", ".", $val['price']),
             "category" => $val['category'],
             "num" => isset($val['num']) ? $val['num'] : "",
@@ -189,7 +190,7 @@ class ChitService extends MutableBaseService
             if (isset($val[$name])) {
                 if ($name == 'price') {
                     $toChange['priceText'] = str_replace(",", ".", $val[$name]);
-                    $toChange[$name] = $this->solveString($val[$name]);
+                    $toChange[$name] = Calculator::calculate($val[$name]);
                     continue;
                 }
                 $toChange[$name] = $val[$name];
@@ -393,25 +394,6 @@ class ChitService extends MutableBaseService
     {
         $data = $this->table->eventIsInMinus($this->getLocalId($skautisEventId));
         return @(($data["in"] - $data["out"]) < 0) ? TRUE : FALSE; //@ potlačuje chyby u neexistujicich indexů "in" a "out"
-    }
-
-    /**
-     * vyhodnotí řetězec obsahující čísla, +, *
-     * @param string $str - výraz k výpčtu
-     * @return int
-     */
-    private function solveString($str)
-    {
-        $str = str_replace([" ", ","], ["", "."], $str);
-        preg_match_all('/(?P<cislo>-?[0-9]+([.][0-9]{1,})?)(?P<operace>[\+\*]+)?/', $str, $matches);
-        $maxIndex = count($matches['cislo']);
-        foreach ($matches['operace'] as $index => $op) { //vyřeší operaci násobení
-            if ($op == "*" && $index + 1 <= $maxIndex) {
-                $matches['cislo'][$index + 1] = $matches['cislo'][$index] * $matches['cislo'][$index + 1];
-                $matches['cislo'][$index] = 0;
-            }
-        }
-        return array_sum($matches['cislo']);
     }
 
     /**
