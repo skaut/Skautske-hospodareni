@@ -14,14 +14,11 @@ use Nette\Caching\IStorage;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
 
-
 /**
  * @author Hána František
  */
 class EventService extends MutableBaseService
 {
-
-    protected static $ID_Functions = ["ID_PersonLeader", "ID_PersonAssistant", "ID_PersonEconomist", "ID_PersonMedic"];
 
     /** @var EventTable */
     private $table;
@@ -125,48 +122,6 @@ class EventService extends MutableBaseService
             $data[2]->ID_Person,
             $data[3]->ID_Person
         );
-    }
-
-    /**
-     * vrátí data funkcí připravená pro update
-     * @param int $ID_Event
-     * @return int[]
-     */
-    private function getPreparedFunctions($ID_Event)
-    {
-        $data = $this->getFunctions($ID_Event);
-        $query = ["ID" => $ID_Event];
-        for ($i = 0; $i <= 3; $i++) {
-            $query[self::$ID_Functions[$i]] = (int)$data[$i]->ID_Person;
-        }
-        return $query;
-    }
-
-    /**
-     * nastaví danou funkci
-     * @param int $ID_Event
-     * @param int $ID_Person
-     * @param int $ID_Function
-     * @return bool
-     * @throws LeaderNotAdultException
-     * @throws AssistantNotAdultException
-     */
-    public function setFunction($ID_Event, $ID_Person, $ID_Function)
-    {
-        $query = $this->getPreparedFunctions($ID_Event);
-        $query[self::$ID_Functions[$ID_Function]] = $ID_Person; //nova změna
-
-        try {
-            return (bool)$this->skautis->event->{"Event" . $this->typeName . "UpdateFunction"}($query);
-        } catch (WsdlException $e) {
-            if (strpos($e->getMessage(), 'EventFunction_LeaderMustBeAdult') != FALSE) {
-                throw new LeaderNotAdultException;
-            }
-            if (strpos($e->getMessage(), 'EventFunction_AssistantMustBeAdult') !== FALSE) {
-                throw new AssistantNotAdultException;
-            }
-        }
-        return FALSE;
     }
 
     public function updateFunctions(int $eventId, Functions $functions): void
@@ -338,12 +293,11 @@ class EventService extends MutableBaseService
 
     /**
      * zrušit akci
-     * @param int $ID
      * @param ChitService $chitService
      * @param string $msg
      * @return bool
      */
-    public function cancel($ID, $chitService, $msg = NULL): bool
+    public function cancel(int $ID, $chitService, $msg = NULL): bool
     {
         $ret = $this->skautis->event->{"Event" . $this->typeName . "UpdateCancel"}([
             "ID" => $ID,

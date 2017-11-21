@@ -169,7 +169,7 @@ class PaymentService
         string $label,
         ?DateTimeImmutable $dueDate,
         ?int $ks,
-        ?int $nextVS,
+        ?VariableSymbol $nextVS,
         ?float $amount,
         Group\EmailTemplate $emailTemplate,
         ?int $smtpId,
@@ -192,7 +192,7 @@ class PaymentService
         ?float $defaultAmount,
         ?DateTimeImmutable $dueDate,
         ?int $constantSymbol,
-        ?int $nextVariableSymbol,
+        ?VariableSymbol $nextVariableSymbol,
         Group\EmailTemplate $emailTemplate,
         ?int $smtpId,
         ?int $bankAccountId

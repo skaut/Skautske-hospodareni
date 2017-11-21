@@ -95,7 +95,7 @@ class Event
         return $this->unitName;
     }
 
-    public function isOpen(): string
+    public function isOpen(): bool
     {
         return $this->state === "draft";
     }

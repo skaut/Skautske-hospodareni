@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Payment\Repositories;
 
 use Assert\Assert;
-use Kdyby\Doctrine\Connection;
 use Doctrine\ORM\EntityManager;
 use Model\Payment\Group;
 use Model\Payment\Group\Type;
@@ -47,7 +46,7 @@ class GroupRepository implements IGroupRepository
             ->select("g")
             ->from(Group::class, "g", "g.id")
             ->where("g.id IN (:ids)")
-            ->setParameter("ids", $ids, Connection::PARAM_INT_ARRAY)
+            ->setParameter("ids", $ids)
             ->getQuery()
             ->getResult();
 
@@ -64,7 +63,7 @@ class GroupRepository implements IGroupRepository
             ->select('g')
             ->from(Group::class, 'g')
             ->where('g.unitId IN (:unitIds)')
-            ->setParameter('unitIds', $unitIds, Connection::PARAM_INT_ARRAY);
+            ->setParameter('unitIds', $unitIds);
 
         if($openOnly) {
             $qb->andWhere('g.state = :state')

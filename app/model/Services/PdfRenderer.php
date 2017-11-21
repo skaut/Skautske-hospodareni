@@ -8,6 +8,14 @@ use Mpdf\Output\Destination;
 class PdfRenderer
 {
 
+    /** @var TemplateFactory */
+    private $templateFactory;
+
+    public function __construct(TemplateFactory $templateFactory)
+    {
+        $this->templateFactory = $templateFactory;
+    }
+
     /**
      * Renders PDF to output stream
      * @param string $template
@@ -25,7 +33,7 @@ class PdfRenderer
             'margin_bottom' => 10,
         ]);
 
-        @$mpdf->WriteHTML($template, NULL);
+        @$mpdf->WriteHTML($template, 0);
         $mpdf->Output($filename, Destination::INLINE);
     }
 

@@ -298,7 +298,7 @@ trait CashbookTrait
                     $this->entityService->chits->add($this->aid, $values);
                     $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
                 }
-                if ($this->entityService->chits->eventIsInMinus($this->aid)) {
+                if ($this->entityService->chits->eventIsInMinus($this->getCurrentUnitId())) {
                     $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
                 }
             } catch (InvalidArgumentException $exc) {

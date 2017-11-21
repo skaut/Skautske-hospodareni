@@ -13,7 +13,7 @@
         "nette/http": " ~2.4",
         "nette/mail": " ~2.4",
         "nette/neon": " ~2.4",
-        "nette/robot-loader": " ~2.4",
+        "nette/robot-loader": "3.0.2 as 2.4",
         "nette/security": " ~2.4",
         "nette/utils": " ~2.4",
         "latte/latte": " ~2.4",
@@ -47,15 +47,15 @@
         "egen/message-bus": "^1.1",
         "fmasa/auto-di": "^1.0",
         "nettrine/migrations": "^0.1.0",
-        "phpoffice/phpspreadsheet": "dev-develop"
+        "phpoffice/phpspreadsheet": "dev-develop",
+        "phpstan/phpstan": "^0.8.5",
+        "phpstan/phpstan-dibi": "^0.8.0",
+        "phpstan/phpstan-nette": "^0.8.3"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",
         "codeception/codeception": "^2.2",
         "codeception/mockery-module": "^0.2.2",
-        "phpstan/phpstan": "^0.7.0",
-        "phpstan/phpstan-nette": "^0.7.0",
-        "phpstan/phpstan-dibi": "^0.7.0",
         "captbaritone/mailcatcher-codeception-module": "^1.2",
         "arachne/codeception": "^0.7.6"
     },

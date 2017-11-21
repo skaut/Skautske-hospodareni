@@ -84,7 +84,7 @@ abstract class BasePresenter extends \App\BasePresenter
      */
     public function getCurrentUnitId(): int
     {
-        return $this->aid;
+        return (int) $this->aid;
     }
 
 }

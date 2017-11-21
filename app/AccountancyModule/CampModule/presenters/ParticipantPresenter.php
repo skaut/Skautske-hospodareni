@@ -33,6 +33,7 @@ class ParticipantPresenter extends BasePresenter
 
     protected function startup() : void
     {
+        parent::startup();
         $this->traitStartup();
         $this->isAllowRepayment = $this->template->isAllowRepayment = TRUE;
         $this->isAllowIsAccount = $this->template->isAllowIsAccount = TRUE;
@@ -71,7 +72,7 @@ class ParticipantPresenter extends BasePresenter
             }
         }
         $data = ["actionId" => $aid];
-        $sisdata = (array)$this->eventService->participants->get($id);
+        $sisdata = $this->eventService->participants->get($id);
         switch ($field) {
             case "days":
             case "payment":

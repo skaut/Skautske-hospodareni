@@ -7,6 +7,7 @@ use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICategoryRepository;
 use Model\EventEntity;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\ColumnDimension;
@@ -102,7 +103,7 @@ class CashbookWithCategoriesBuilder
         foreach($categories as $index => $category) {
             $column = $startColumn + $index;
 
-            $cell = $this->sheet->getCellByColumnAndRow($column, self::SUBHEADER_ROW);
+            $cell = $this->getCell($column, self::SUBHEADER_ROW);
             $cell->setValue($category->getName());
             $cell->getStyle()
                 ->getAlignment()
@@ -179,7 +180,7 @@ class CashbookWithCategoriesBuilder
     private function addColumnSum(int $column, int $resultRow, int $firstRow): void
     {
         $lastRow = $resultRow - 1;
-        $resultCell = $this->sheet->getCellByColumnAndRow($column, $resultRow);
+        $resultCell = $this->getCell($column, $resultRow);
         $stringColumn = $resultCell->getColumn();
 
         $resultCell->setValue('=SUM(' . $stringColumn . $firstRow . ':' . $stringColumn . $lastRow . ')');
@@ -269,6 +270,11 @@ class CashbookWithCategoriesBuilder
 
         $width = mb_strlen($words[0]) * self::COLUMN_WIDTH_COEFFICIENT;
         $column->setWidth($width);
+    }
+
+    private function getCell(int $column, int $row): Cell
+    {
+        return $this->sheet->getCellByColumnAndRow((string) $column, (string) $row);
     }
 
 }

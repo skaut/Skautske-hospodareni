@@ -19,31 +19,27 @@ class AuthService
         $this->skautis = $skautis;
     }
 
-
     /**
      * vrací přihlašovací url
      * @param string $backlink
-     * @return string
      */
-    public function getLoginUrl($backlink)
+    public function getLoginUrl($backlink): string
     {
         return $this->skautis->getLoginUrl($backlink);
     }
 
     /**
      * nastavuje základní udaje po prihlášení do SkautISu
-     * @param array $arr
      */
-    public function setInit(array $arr): void
+    public function setInit(string $token, int $roleId, int $unitId): void
     {
-        $this->skautis->getUser()->setLoginData($arr['token'], $arr['roleId'], $arr['unitId']);
+        $this->skautis->getUser()->setLoginData($token, $roleId, $unitId);
     }
 
     /**
      * vrací url pro odhlášení
-     * @return string
      */
-    public function getLogoutUrl()
+    public function getLogoutUrl(): string
     {
         return $this->skautis->getLogoutUrl();
     }

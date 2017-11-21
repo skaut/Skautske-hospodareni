@@ -12,6 +12,7 @@ use Model\Payment\BankAccountService;
 use Model\Payment\Group\EmailTemplate;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
+use Model\Payment\VariableSymbol;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
 
@@ -206,7 +207,6 @@ class GroupPresenter extends BasePresenter
         $label = $v->label;
         $amount = (isset($v->amount) && $v->amount !== "") ? $v->amount : NULL;
         $constantSymbol = $v->constantSymbol !== "" ? $v->constantSymbol : NULL;
-        $nextVs = $v->nextVs !== "" ? $v->nextVs : NULL;
         $smtpId = $v->smtp;
 
         $emailTemplate = new EmailTemplate($v->emailSubject, $v->emailBody);
@@ -218,7 +218,7 @@ class GroupPresenter extends BasePresenter
                 $amount,
                 $dueDate,
                 $constantSymbol,
-                $nextVs,
+                $v->nextVs,
                 $emailTemplate,
                 $smtpId,
                 $v->bankAccount
@@ -236,7 +236,7 @@ class GroupPresenter extends BasePresenter
                 $label,
                 $dueDate,
                 $constantSymbol,
-                $nextVs,
+                $v->nextVs,
                 $amount,
                 $emailTemplate,
                 $smtpId,

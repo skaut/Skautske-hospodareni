@@ -127,19 +127,6 @@ class EventPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function handleRemoveFunction($aid, $fid): void
-    {
-        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Function")) {
-            $this->flashMessage("Nemáte oprávnění upravit vedení akce", "danger");
-            $this->redirect("this");
-        }
-
-        if (!$this->eventService->event->setFunction($this->aid, NULL, $fid)) {
-            $this->flashMessage("Funkci se nepodařilo odebrat", "danger");
-        }
-        $this->redirect("this");
-    }
-
     public function renderReport(int $aid): void
     {
         if (!$this->isAllowed("EV_EventGeneral_DETAIL")) {

@@ -3,7 +3,6 @@
 namespace Model\Payment\Repositories;
 
 use Assert\Assert;
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Model\Payment\BankAccount;
 use Model\Payment\BankAccountNotFoundException;
@@ -41,7 +40,7 @@ class BankAccountRepository implements IBankAccountRepository
             ->select('a')
             ->from(BankAccount::class, 'a', 'a.id')
             ->where('a.id IN (:ids)')
-            ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
 

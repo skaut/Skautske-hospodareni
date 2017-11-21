@@ -13,7 +13,7 @@ class Transaction
 
     use SmartObject;
 
-    /** @var int */
+    /** @var int @todo start using string as does FIO */
     private $id;
 
     /** @var string */

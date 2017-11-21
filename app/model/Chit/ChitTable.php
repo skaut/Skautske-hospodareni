@@ -20,6 +20,7 @@ class ChitTable extends BaseTable
     /**
      * vrací seznam všech paragonů k danému $actionId
      * @param int $localEventId
+     * @return Row[]
      */
     public function getAll($localEventId, $onlyUnlocked): array
     {
@@ -52,6 +53,7 @@ class ChitTable extends BaseTable
     }
 
     /**
+     * @deprecated Seems unused
      * generuje pořadové číslo dokladu
      * @param int $eventId
      * @param array (id_kategorií) $category
@@ -76,13 +78,10 @@ class ChitTable extends BaseTable
 
     /**
      * označí paragon jako smazaný
-     * @param int $chitId
-     * @param int $localEventId
-     * @return bool
      */
-    public function delete($chitId, $localEventId)
+    public function delete(int $chitId, int $localEventId): bool
     {
-        return (bool)$this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
+        return (bool) $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
     }
 
     /**
@@ -128,10 +127,8 @@ class ChitTable extends BaseTable
 
     /**
      * spočítá příjmy a výdaje a ty pak odečte
-     * @param int $localEventId
-     * @return bool
      */
-    public function eventIsInMinus(int $localEventId)
+    public function eventIsInMinus(int $localEventId): bool
     {
         $data = $this->connection->fetchAll("SELECT cat.type, SUM(ch.price) as sum FROM [" . self::TABLE_CHIT . "] as ch
             LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.id) 

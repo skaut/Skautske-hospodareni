@@ -23,9 +23,8 @@ class BaseTable
     const TABLE_TC_COMMAND_TYPES = 'tc_command_types';
     const TABLE_TC_TRAVEL_TYPES = 'tc_travelTypes';
     const TABLE_TC_VEHICLE = 'tc_vehicle';
-    const TABLE_PA_SMTP = 'pa_smtp';
 
-    /** @var \Dibi\Connection */
+    /** @var Connection */
     protected $connection;
 
     public function __construct(Connection $connection)
@@ -35,9 +34,6 @@ class BaseTable
 
     /**
      * vyhleda akci|jednotku a pokud tam není, tak založí její záznam
-     * @param int $skautisEventId
-     * @param string $type
-     * @return int localId
      */
     public function getLocalId(int $skautisEventId, string $type): int
     {

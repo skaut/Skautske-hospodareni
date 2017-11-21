@@ -23,13 +23,13 @@ class CashbookPresenter extends BasePresenter
         $this->template->isEditable = $this->isEditable = ($this->isEditable || $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCostBeforeEnd"));
     }
 
-    public function renderDefault($aid, $pid = NULL, $dp = FALSE) : void
+    public function renderDefault(int $aid, $pid = NULL, $dp = FALSE) : void
     {
         if ($pid !== NULL) {
             $this->editChit($pid);
         }
 
-        $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid);
+        $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->getCurrentUnitId());
 
         $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->missingCategories = FALSE;
@@ -65,7 +65,6 @@ class CashbookPresenter extends BasePresenter
         $form->addRadioList("isAccount", "Placeno:", ["N" => "Hotově", "Y" => "Přes účet"])
             ->addRule($form::FILLED, "Musíte vyplnit způsob platby.")
             ->setDefaultValue("N");
-        $form->addHidden("aid", $this->aid);
 
         $form->addSubmit('send', 'Importovat')
             ->setAttribute("class", "btn btn-primary");
@@ -83,18 +82,19 @@ class CashbookPresenter extends BasePresenter
     {
         $this->editableOnly();
         $values = $form->getValues();
-        $data = ["date" => $this->eventService->event->get($values->aid)->StartDate,
+        $aid = $this->getCurrentUnitId();
+        $data = ["date" => $this->eventService->event->get($aid)->StartDate,
             "recipient" => "",
             "purpose" => "úč. příspěvky " . ($values->isAccount == "Y" ? "- účet" : "- hotovost"),
-            "price" => $this->eventService->participants->getCampTotalPayment($values->aid, $values->cat, $values->isAccount),
-            "category" => $this->eventService->chits->getParticipantIncomeCategory($values->aid, $values->cat)];
+            "price" => $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount),
+            "category" => $this->eventService->chits->getParticipantIncomeCategory($aid, $values->cat)];
 
-        if ($this->eventService->chits->add($values->aid, $data)) {
+        if ($this->eventService->chits->add($aid, $data)) {
             $this->flashMessage("HPD byl importován");
         } else {
             $this->flashMessage("HPD se nepodařilo importovat", "danger");
         }
-        $this->redirect("default", ["aid" => $values->aid]);
+        $this->redirect("default", ["aid" => $aid]);
     }
 
 }

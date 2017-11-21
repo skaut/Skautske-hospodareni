@@ -152,7 +152,7 @@ class MailingService
             : NULL;
 
         $emailTemplate = $group->getEmailTemplate()
-            ->evaluate($group, $payment, $bankAccount !== NULL ? $bankAccount->getNumber() : NULL, $user->getName());
+            ->evaluate($group, $payment, $bankAccount !== NULL ? (string)$bankAccount->getNumber() : NULL, $user->getName());
 
         $template = $this->templateFactory->create(TemplateFactory::PAYMENT_DETAILS, [
             'body' => nl2br($emailTemplate->getBody(), FALSE),
@@ -175,7 +175,7 @@ class MailingService
                 $payment->getAmount(),
                 $payment->getEmail(),
                 $payment->getDueDate(),
-                $payment->getVariableSymbol(),
+                $payment->getVariableSymbol() !== NULL ? $payment->getVariableSymbol()->toInt() : NULL,
                 $payment->getConstantSymbol(),
                 $payment->getNote()
         );

@@ -23,13 +23,13 @@ class CashbookPresenter extends BasePresenter
         $this->template->missingCategories = FALSE;
     }
 
-    public function renderDefault($aid, $pid = NULL, $dp = FALSE): void
+    public function renderDefault(int $aid, $pid = NULL, $dp = FALSE): void
     {
         if ($pid !== NULL) {
             $this->editChit($pid);
         }
 
-        $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->aid); // musi byt v before render aby se vyhodnotila az po handleru
+        $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->getCurrentUnitId()); // musi byt v before render aby se vyhodnotila az po handleru
         $this->template->list = $this->eventService->chits->getAll($aid);
         $this->template->linkImportHPD = $this->link("importHpd", ["aid" => $aid]);
         $this->fillTemplateVariables();
