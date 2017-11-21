@@ -148,26 +148,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * @param int $chitId
-     * @deprecated Seems unused
-     */
-    public function generateNumber($chitId): string
-    {
-        $chit = $this->get($chitId);
-        $categories = $this->getCategoriesPairs(NULL, $this->type == self::TYPE_CAMP ? $this->getSkautisId($chit->eventId) : NULL);
-
-        if (array_key_exists($chit->category, $categories['in'])) {
-            $type = 'in';
-            $res = "1";
-        } else {
-            $type = 'out';
-            $res = "2";
-        }
-        $res .= $this->table->generateNumber($chit->eventId, array_keys($categories[$type]));
-        return $res;
-    }
-
-    /**
      * upravit paragon - staci vyplnit data, ktera se maji zmenit
      * @param int $chitId
      * @param array|\ArrayAccess $val
