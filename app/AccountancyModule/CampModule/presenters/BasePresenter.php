@@ -2,7 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
-use Model\ChitService;
+use Model\Cashbook\ObjectType;
 use Model\EventEntity;
 use Skautis\Wsdl\PermissionException;
 
@@ -23,7 +23,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     {
         parent::startup();
         $this->eventService = $this->context->getService("campService");
-        $this->type = ChitService::EVENT_TYPE_CAMP;
+        $this->type = ObjectType::CAMP;
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
 
         $availableActions = [];

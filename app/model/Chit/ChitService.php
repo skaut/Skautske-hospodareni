@@ -4,9 +4,9 @@ namespace Model;
 
 use Dibi\Row;
 use eGen\MessageBus\Bus\EventBus;
+use Model\Cashbook\ObjectType;
 use Model\Services\Calculator;
 use Model\Skautis\Mapper;
-use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
@@ -16,9 +16,6 @@ class ChitService extends MutableBaseService
     const CHIT_UNDEFINED_OUT = 8;
     const CHIT_UNDEFINED_IN = 12;
     const SKAUTIS_BUDGET_RESERVE = 15;
-    const EVENT_TYPE_CAMP = "camp";
-    const EVENT_TYPE_GENERAL = "general";
-    const EVENT_TYPE_UNIT = "unit";
 
     /** @var Mapper */
     private $skautisMapper;
@@ -253,7 +250,7 @@ class ChitService extends MutableBaseService
     public function getCategoriesPairs($typeInOut = NULL, $skautisEventId = NULL): array
     {
         $cacheId = __METHOD__ . $this->type . $skautisEventId . "_" . $typeInOut;
-        if ($this->type == self::EVENT_TYPE_CAMP) {
+        if ($this->type === ObjectType::CAMP) {
             if (is_null($skautisEventId)) {
                 throw new \InvalidArgumentException("Neplatný vstup \$skautisEventId=NULL pro " . __FUNCTION__);
             }
