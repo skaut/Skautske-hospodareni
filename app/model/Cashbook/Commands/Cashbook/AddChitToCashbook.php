@@ -6,7 +6,11 @@ use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
+use Model\Cashbook\Handlers\Cashbook\AddChitToCashbookHandler;
 
+/**
+ * @see AddChitToCashbookHandler
+ */
 final class AddChitToCashbook
 {
 
