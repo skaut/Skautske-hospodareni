@@ -175,7 +175,7 @@ class MailingService
                 $payment->getAmount(),
                 $payment->getEmail(),
                 $payment->getDueDate(),
-                $payment->getVariableSymbol()->toInt(),
+                $payment->getVariableSymbol() !== NULL ? $payment->getVariableSymbol()->toInt() : NULL,
                 $payment->getConstantSymbol(),
                 $payment->getNote()
         );
