@@ -53,19 +53,6 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * @deprecated Seems unused
-     * generuje pořadové číslo dokladu
-     * @param int $eventId
-     * @param array (id_kategorií) $category
-     * @param int $length - délka čísla
-     * @return string
-     */
-    public function generateNumber($eventId, $category, $length = 3)
-    {
-        return str_pad((int)$this->connection->fetchSingle("SELECT COUNT(*) from ac_chits where eventId=%i and category IN %in", $eventId, $category), $length, "0", STR_PAD_LEFT);
-    }
-
-    /**
      * aktualizuje paragon podle $id
      * @param int $chitId
      * @param array $values

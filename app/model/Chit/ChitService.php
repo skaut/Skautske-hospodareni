@@ -4,8 +4,9 @@ namespace Model;
 
 use Dibi\Row;
 use eGen\MessageBus\Bus\EventBus;
+use Model\Cashbook\ObjectType;
+use Model\Services\Calculator;
 use Model\Skautis\Mapper;
-use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
@@ -15,9 +16,6 @@ class ChitService extends MutableBaseService
     const CHIT_UNDEFINED_OUT = 8;
     const CHIT_UNDEFINED_IN = 12;
     const SKAUTIS_BUDGET_RESERVE = 15;
-    const EVENT_TYPE_CAMP = "camp";
-    const EVENT_TYPE_GENERAL = "general";
-    const EVENT_TYPE_UNIT = "unit";
 
     /** @var Mapper */
     private $skautisMapper;
@@ -127,7 +125,7 @@ class ChitService extends MutableBaseService
             "date" => $val['date'],
             "recipient" => $val['recipient'],
             "purpose" => $val['purpose'],
-            "price" => $this->solveString($val['price']),
+            "price" => Calculator::calculate($val['price']),
             "priceText" => str_replace(",", ".", $val['price']),
             "category" => $val['category'],
             "num" => isset($val['num']) ? $val['num'] : "",
@@ -144,26 +142,6 @@ class ChitService extends MutableBaseService
         }
 
         return (bool)$ret;
-    }
-
-    /**
-     * @param int $chitId
-     * @deprecated Seems unused
-     */
-    public function generateNumber($chitId): string
-    {
-        $chit = $this->get($chitId);
-        $categories = $this->getCategoriesPairs(NULL, $this->type == self::TYPE_CAMP ? $this->getSkautisId($chit->eventId) : NULL);
-
-        if (array_key_exists($chit->category, $categories['in'])) {
-            $type = 'in';
-            $res = "1";
-        } else {
-            $type = 'out';
-            $res = "2";
-        }
-        $res .= $this->table->generateNumber($chit->eventId, array_keys($categories[$type]));
-        return $res;
     }
 
     /**
@@ -189,7 +167,7 @@ class ChitService extends MutableBaseService
             if (isset($val[$name])) {
                 if ($name == 'price') {
                     $toChange['priceText'] = str_replace(",", ".", $val[$name]);
-                    $toChange[$name] = $this->solveString($val[$name]);
+                    $toChange[$name] = Calculator::calculate($val[$name]);
                     continue;
                 }
                 $toChange[$name] = $val[$name];
@@ -272,7 +250,7 @@ class ChitService extends MutableBaseService
     public function getCategoriesPairs($typeInOut = NULL, $skautisEventId = NULL): array
     {
         $cacheId = __METHOD__ . $this->type . $skautisEventId . "_" . $typeInOut;
-        if ($this->type == self::EVENT_TYPE_CAMP) {
+        if ($this->type === ObjectType::CAMP) {
             if (is_null($skautisEventId)) {
                 throw new \InvalidArgumentException("Neplatný vstup \$skautisEventId=NULL pro " . __FUNCTION__);
             }
@@ -396,25 +374,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * vyhodnotí řetězec obsahující čísla, +, *
-     * @param string $str - výraz k výpčtu
-     * @return int
-     */
-    private function solveString($str)
-    {
-        $str = str_replace([" ", ","], ["", "."], $str);
-        preg_match_all('/(?P<cislo>-?[0-9]+([.][0-9]{1,})?)(?P<operace>[\+\*]+)?/', $str, $matches);
-        $maxIndex = count($matches['cislo']);
-        foreach ($matches['operace'] as $index => $op) { //vyřeší operaci násobení
-            if ($op == "*" && $index + 1 <= $maxIndex) {
-                $matches['cislo'][$index + 1] = $matches['cislo'][$index] * $matches['cislo'][$index + 1];
-                $matches['cislo'][$index] = 0;
-            }
-        }
-        return array_sum($matches['cislo']);
-    }
-
-    /**
      * [[ UNUSED ]]
      * uzavře paragon proti editaci, měnit lze jen kategorie z rozpočtu jednotky
      * @param int $oid
@@ -483,7 +442,7 @@ class ChitService extends MutableBaseService
         return $this->table->getBudgetCategoriesSummary(array_keys($categories['in']), 'in') + $this->table->getBudgetCategoriesSummary(array_keys($categories['out']), 'out');
     }
 
-    public function getSkautisId(int $localEventId): ?int
+    private function getSkautisId(int $localEventId): ?int
     {
         return $this->skautisMapper->getSkautisId($localEventId, $this->type);
     }

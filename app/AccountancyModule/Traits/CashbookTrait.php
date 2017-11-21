@@ -1,9 +1,7 @@
 <?php
 
-use Model\Chit\Events\ChitWasRemoved;
-use Model\Chit\Events\ChitWasUpdated;
 use App\Forms\BaseForm;
-use Model\ChitService;
+use Model\Cashbook\ObjectType;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
@@ -156,7 +154,7 @@ trait CashbookTrait
      */
     private function getListOfEvents(string $eventType, array $states = NULL): array
     {
-        $eventService = $this->context->getService(($eventType === ChitService::EVENT_TYPE_GENERAL ? "event" : $eventType) . "Service")->event;
+        $eventService = $this->context->getService(($eventType === ObjectType::EVENT ? "event" : $eventType) . "Service")->event;
         $rawArr = $eventService->getAll(date("Y"), NULL);
         $resultArray = [];
         if (!empty($rawArr)) {
@@ -172,12 +170,12 @@ trait CashbookTrait
     private function addMassMove(BaseForm $form): BaseForm
     {
         $allItems = [
-            'Výpravy' => $this->getListOfEvents(ChitService::EVENT_TYPE_GENERAL, ["draft"]),
-            'Tábory' => $this->getListOfEvents(ChitService::EVENT_TYPE_CAMP, ["draft", "approvedParent", "approvedLeader"]),
+            'Výpravy' => $this->getListOfEvents(ObjectType::EVENT, ["draft"]),
+            'Tábory' => $this->getListOfEvents(ObjectType::CAMP, ["draft", "approvedParent", "approvedLeader"]),
         ];
         #remove current event/camp from selectbox
         $eventType = $this->entityService->chits->type;
-        unset($allItems[$eventType == ChitService::EVENT_TYPE_GENERAL ? 'Výpravy' : 'Tábory'][$eventType . "_" . $this->aid]);
+        unset($allItems[$eventType == ObjectType::EVENT ? 'Výpravy' : 'Tábory'][$eventType . "_" . $this->aid]);
 
         $form->addSelect('newEventId', 'Nová pokladní kniha:', $allItems)->setPrompt('Zvolte knihu');
         $btn = $form->addSubmit('massMoveChitsSend');
@@ -205,7 +203,7 @@ trait CashbookTrait
 
         $originType = $this->entityService->chits->type;
 
-        if($newType == ChitService::EVENT_TYPE_GENERAL) {
+        if($newType === ObjectType::EVENT) {
             $newEventAccessible = $this->userService->isEventEditable($newEventId);
         } else {
             $newEventAccessible = $this->userService->isCampEditable($newEventId);
