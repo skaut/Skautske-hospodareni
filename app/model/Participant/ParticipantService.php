@@ -206,7 +206,7 @@ class   ParticipantService extends MutableBaseService
         });
     }
 
-    public function getCampTotalPayment($campId, $category, $isAccount)
+    public function getCampTotalPayment($campId, $category, $isAccount): float
     {
         $res = 0;
         foreach ($this->getAll($campId) as $p) {

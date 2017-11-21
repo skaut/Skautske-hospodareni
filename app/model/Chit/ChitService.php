@@ -106,44 +106,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * přidat paragon
-     * @param int $skautisEventId
-     * @param array|\ArrayAccess $val - údaje
-     * @throws \Nette\InvalidArgumentException
-     */
-    public function add($skautisEventId, $val): bool
-    {
-        $localEventId = $this->getLocalId($skautisEventId);
-
-        if (!is_array($val) && !($val instanceof \ArrayAccess)) {
-            throw new \Nette\InvalidArgumentException("Values nejsou ve správném formátu");
-        }
-
-        $values = [
-            "eventId" => $localEventId,
-            "date" => $val['date'],
-            "recipient" => $val['recipient'],
-            "purpose" => $val['purpose'],
-            "price" => Calculator::calculate($val['price']),
-            "priceText" => str_replace(",", ".", $val['price']),
-            "category" => $val['category'],
-            "num" => isset($val['num']) ? $val['num'] : "",
-        ];
-
-        $ret = $this->table->add($values);
-
-        if ($this->type == self::TYPE_CAMP) {
-            try {
-                $this->updateCategory($skautisEventId, $val['category']);
-            } catch (\Skautis\Wsdl\PermissionException $ex) {
-
-            }
-        }
-
-        return (bool)$ret;
-    }
-
-    /**
      * upravit paragon - staci vyplnit data, ktera se maji zmenit
      * @param int $chitId
      * @param array|\ArrayAccess $val
@@ -448,6 +410,11 @@ class ChitService extends MutableBaseService
     private function getLocalId(int $skautisEventId, string $type = NULL): int
     {
         return $this->skautisMapper->getLocalId($skautisEventId, $type ?? $this->type);
+    }
+
+    public function getCashbookIdFromSkautisId(int $skautisid): int
+    {
+        return $this->getLocalId($skautisid);
     }
 
 }

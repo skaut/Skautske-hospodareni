@@ -42,17 +42,6 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * přidá paragon do tabulky
-     * @param array $values
-     * @return int
-     */
-    public function add($values)
-    {
-        $this->connection->query("INSERT INTO [" . self::TABLE_CHIT . "] %v", $values);
-        return $this->connection->getInsertId();
-    }
-
-    /**
      * aktualizuje paragon podle $id
      * @param int $chitId
      * @param array $values

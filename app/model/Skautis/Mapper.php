@@ -2,6 +2,8 @@
 
 namespace Model\Skautis;
 
+use Model\Cashbook\ObjectType;
+
 class Mapper
 {
 
@@ -50,6 +52,11 @@ class Mapper
             $this->cache($skautisId, $localId, $type);
         }
         return $this->localIds[$key];
+    }
+
+    public function isCamp(int $localId): bool
+    {
+        return $this->getSkautisId($localId, ObjectType::CAMP) !== NULL;
     }
 
     private function cache(?int $skautisId, ?int $localId, string $type): void

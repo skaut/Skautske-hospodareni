@@ -3,6 +3,9 @@
 namespace App\AccountancyModule\CampModule;
 
 use App\Forms\BaseForm;
+use Cake\Chronos\Date;
+use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -82,18 +85,26 @@ class CashbookPresenter extends BasePresenter
     {
         $this->editableOnly();
         $values = $form->getValues();
-        $aid = $this->getCurrentUnitId();
-        $data = ["date" => $this->eventService->event->get($aid)->StartDate,
-            "recipient" => "",
-            "purpose" => "úč. příspěvky " . ($values->isAccount == "Y" ? "- účet" : "- hotovost"),
-            "price" => $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount),
-            "category" => $this->eventService->chits->getParticipantIncomeCategory($aid, $values->cat)];
 
-        if ($this->eventService->chits->add($aid, $data)) {
-            $this->flashMessage("HPD byl importován");
-        } else {
-            $this->flashMessage("HPD se nepodařilo importovat", "danger");
-        }
+        $aid = $this->getCurrentUnitId();
+        $cashbookId = $this->eventService->chits->getCashbookIdFromSkautisId($aid);
+        $date = $this->eventService->event->get($aid)->StartDate;
+        $amount = $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount);
+        $categoryId = $this->eventService->chits->getParticipantIncomeCategory($aid, $values->cat);
+
+        $this->commandBus->handle(
+            new AddChitToCashbook(
+                $cashbookId,
+                NULL,
+                new Date($date),
+                NULL,
+                new Amount((string) $amount),
+                "úč. příspěvky " . ($values->isAccount == "Y" ? "- účet" : "- hotovost"),
+                $categoryId
+            )
+        );
+
+        $this->flashMessage("HPD byl importován");
         $this->redirect("default", ["aid" => $aid]);
     }
 

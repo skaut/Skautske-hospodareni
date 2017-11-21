@@ -2,6 +2,10 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use Cake\Chronos\Date;
+use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\Recipient;
+use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ObjectType;
 
 class CashbookPresenter extends BasePresenter
@@ -53,19 +57,29 @@ class CashbookPresenter extends BasePresenter
     public function actionImportHpd($aid): void
     {
         $this->editableOnly();
+
+        // @TODO move logic to specific command handler
         $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);
         $func = $this->eventService->event->getFunctions($this->aid);
         $date = $this->eventService->event->get($aid)->StartDate;
-        $hospodar = ($func[2]->ID_Person != NULL) ? $func[2]->Person : "";
+        $accountant = ($func[2]->ID_Person != NULL) ? new Recipient($func[2]->Person): NULL;
         $category = $this->eventService->chits->getParticipantIncomeCategory();
 
-        $values = ["date" => $date, "recipient" => $hospodar, "purpose" => "účastnické příspěvky", "price" => $totalPayment, "category" => $category];
-        $add = $this->eventService->chits->add($this->aid, $values);
-        if ($add) {
-            $this->flashMessage("Účastníci byli importováni");
-        } else {
-            $this->flashMessage("Účastníky se nepodařilo importovat", "danger");
-        }
+        $cashbookId = $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
+
+        $this->commandBus->handle(
+            new AddChitToCashbook(
+                $cashbookId,
+                NULL,
+                new Date($date),
+                $accountant,
+                new Amount((string) $totalPayment),
+                'účastnické příspěvky',
+                $category
+            )
+        );
+
+        $this->flashMessage("Účastníci byli importováni");
         $this->redirect("default", ["aid" => $aid]);
     }
 

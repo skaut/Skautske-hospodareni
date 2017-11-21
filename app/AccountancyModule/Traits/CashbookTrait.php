@@ -1,6 +1,13 @@
 <?php
 
 use App\Forms\BaseForm;
+use Cake\Chronos\Date;
+use eGen\MessageBus\Bus\CommandBus;
+use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\ChitNumber;
+use Model\Cashbook\Cashbook\Recipient;
+use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ObjectType;
 use Model\ExcelService;
 use Model\ExportService;
@@ -28,6 +35,9 @@ trait CashbookTrait
 
     /** @var \Nette\Utils\ArrayHash */
     protected $event;
+
+    /** @var CommandBus */
+    protected $commandBus;
 
     public function injectConstruct(
         PdfRenderer $pdf,
@@ -293,13 +303,26 @@ trait CashbookTrait
                         $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
                     }
                 } else {//ADD
-                    $this->entityService->chits->add($this->aid, $values);
+                    $cashbookId = $this->entityService->chits->getCashbookIdFromSkautisId($this->aid);
+
+                    $this->commandBus->handle(
+                        new AddChitToCashbook(
+                            $cashbookId,
+                            $values->num !== '' ? new ChitNumber($values->num) : NULL,
+                            Date::instance($values->date),
+                            $values->recipient !== '' ? new Recipient($values->recipient) : NULL,
+                            new Amount($values->price),
+                            $values->purpose,
+                            $values->category
+                        )
+                    );
+
                     $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
                 }
                 if ($this->entityService->chits->eventIsInMinus($this->getCurrentUnitId())) {
                     $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
                 }
-            } catch (InvalidArgumentException $exc) {
+            } catch (InvalidArgumentException | CashbookNotFoundException $exc) {
                 $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
             } catch (\Skautis\Wsdl\WsdlException $se) {
                 $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");

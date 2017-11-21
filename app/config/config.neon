@@ -112,6 +112,10 @@ services:
       arguments:
           - GuzzleHttp\Client({ timeout: 3 })
 
+    - class: Model\Cashbook\Subscribers\CampCashbookSubscriber
+      arguments: { eventEntity: @campService }
+      tags: [eventBus.subscriber]
+
     router: @App\RouterFactory::createRouter
 
     eventService: Model\EventEntity("General")

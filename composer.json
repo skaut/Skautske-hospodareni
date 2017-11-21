@@ -47,7 +47,9 @@
         "egen/message-bus": "^1.1",
         "fmasa/auto-di": "^1.0",
         "nettrine/migrations": "^0.1.0",
-        "phpoffice/phpspreadsheet": "dev-develop"
+        "phpoffice/phpspreadsheet": "dev-develop",
+        "cakephp/chronos": "^1.1",
+        "warhuhn/chronos-doctrine": "^1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

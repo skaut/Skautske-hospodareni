@@ -1,0 +1,37 @@
+Model\Cashbook\Cashbook\Chit:
+
+    type: entity
+    table: ac_chits
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        number:
+            type: chit_number
+            nullable: true
+            column: num
+        date: { type: chronos_date }
+        recipient:
+            type: recipient
+            nullable: true
+        categoryId:
+            type: integer
+            column: category
+        purpose:
+            type: string
+
+    embedded:
+        amount:
+            class: Model\Cashbook\Cashbook\Amount
+            columnPrefix: false
+
+    manyToOne:
+        cashbook:
+            targetEntity: Model\Cashbook\Cashbook
+            inversedBy: chits
+            joinColumn:
+                name: eventId
+                referencedColumnName: id
