@@ -27,6 +27,9 @@ final class CampCashbookSubscriber
         $this->cashbooks = $cashbooks;
     }
 
+    /**
+     * Update category total in Skautis for camp cashbook
+     */
     public function chitWasAdded(ChitWasAdded $event): void
     {
         $id = $event->getCashbookId();
