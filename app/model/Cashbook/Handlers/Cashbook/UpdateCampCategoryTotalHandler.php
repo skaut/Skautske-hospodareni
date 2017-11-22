@@ -24,11 +24,16 @@ class UpdateCampCategoryTotalHandler
     public function handle(UpdateCampCategoryTotal $command): void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
+        $categoryId = $command->getCategoryId();
+        $totals = $cashbook->getCategoryTotals();
 
-        $this->updater->updateCategory(
+        if(!isset($totals[$categoryId])) {
+            return;
+        }
+
+        $this->updater->updateCategories(
             $cashbook->getId(),
-            $command->getCategoryId(),
-            $cashbook->getTotalForCategory($command->getCategoryId())
+            [ $categoryId => $totals[$categoryId] ]
         );
     }
 

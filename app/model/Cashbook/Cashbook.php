@@ -37,14 +37,19 @@ class Cashbook extends AbstractAggregate
         $this->raise(new ChitWasAdded($this->id, $categoryId));
     }
 
-    public function getTotalForCategory(int $categoryId): float
+    /**
+     * @return float[] Category totals indexed by category IDs
+     */
+    public function getCategoryTotals(): array
     {
-        $amounts = $this->chits
-            ->filter(function(Chit $c) use ($categoryId) { return $c->getCategoryId() === $categoryId; })
-            ->map(function(Chit $c) { return $c->getAmount()->getValue(); })
-            ->toArray();
+        $totalByCategories = [];
 
-        return array_sum($amounts);
+        foreach($this->chits as $chit) {
+            $categoryId = $chit->getCategoryId();
+            $totalByCategories[$categoryId]  = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->getValue();
+        }
+
+        return $totalByCategories;
     }
 
 }

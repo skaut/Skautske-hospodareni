@@ -8,8 +8,9 @@ interface ICampCategoryUpdater
     /**
      * Updates statistics in Skautis
      * @param int $cashbookId Local camp/cashbook ID
+     * @param float[] $totals Category totals indexed by category ID
      * @throws \InvalidArgumentException
      */
-    public function updateCategory(int $cashbookId, int $categoryId, float $total): void;
+    public function updateCategories(int $cashbookId, array $totals): void;
 
 }
