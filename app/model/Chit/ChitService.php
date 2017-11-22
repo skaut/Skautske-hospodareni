@@ -3,7 +3,9 @@
 namespace Model;
 
 use Dibi\Row;
+use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\EventBus;
+use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\ObjectType;
 use Model\Services\Calculator;
 use Model\Skautis\Mapper;
@@ -23,6 +25,9 @@ class ChitService extends MutableBaseService
     /** @var ChitTable */
     private $table;
 
+    /** @var CommandBus */
+    private $commandBus;
+
     /** @var EventBus */
     private $eventBus;
 
@@ -32,12 +37,14 @@ class ChitService extends MutableBaseService
         Skautis $skautIS,
         IStorage $cacheStorage,
         Mapper $skautisMapper,
+        CommandBus $commandBus,
         EventBus $eventBus
     )
     {
         parent::__construct($name, $skautIS, $cacheStorage);
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
+        $this->commandBus = $commandBus;
         $this->eventBus = $eventBus;
     }
 
@@ -144,10 +151,15 @@ class ChitService extends MutableBaseService
         }
 
         //category update
-        if ($this->type == self::TYPE_CAMP) {
+        if ($this->type === ObjectType::CAMP) {
             $skautisEventId = $this->getSkautisId($chit->eventId);
             if ($skautisEventId !== 0) {
-                $this->updateCategory($skautisEventId, $chit->category);
+                $this->commandBus->handle(
+                    new UpdateCampCategoryTotal(
+                        $this->eventId,
+                        $chit->category
+                    )
+                );
             }
         }
 

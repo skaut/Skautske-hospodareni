@@ -2,10 +2,9 @@
 
 namespace Model\Cashbook\Subscribers;
 
+use eGen\MessageBus\Bus\CommandBus;
+use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\Events\ChitWasAdded;
-use Model\Cashbook\ObjectType;
-use Model\Cashbook\Repositories\ICashbookRepository;
-use Model\EventEntity;
 use Model\Skautis\Mapper;
 
 final class CampCashbookSubscriber
@@ -14,17 +13,13 @@ final class CampCashbookSubscriber
     /** @var Mapper */
     private $mapper;
 
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    /** @var CommandBus */
+    private $commandBus;
 
-    /** @var EventEntity */
-    private $eventEntity;
-
-    public function __construct(Mapper $objects, EventEntity $eventEntity, ICashbookRepository $cashbooks)
+    public function __construct(Mapper $mapper, CommandBus $commandBus)
     {
-        $this->mapper = $objects;
-        $this->eventEntity = $eventEntity;
-        $this->cashbooks = $cashbooks;
+        $this->mapper = $mapper;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -38,15 +33,7 @@ final class CampCashbookSubscriber
             return;
         }
 
-        $cashbook = $this->cashbooks->find($id);
-        $skautisId = $this->mapper->getSkautisId($id, ObjectType::CAMP);
-        $categoryId = $event->getCategoryId();
-
-        $this->eventEntity->chits->updateCategory(
-            $skautisId,
-            $categoryId,
-            $cashbook->getTotalForCategory($categoryId)
-        );
+        $this->commandBus->handle(new UpdateCampCategoryTotal($id, $event->getCategoryId()));
     }
 
 }

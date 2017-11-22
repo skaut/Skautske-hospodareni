@@ -26,6 +26,11 @@ class Cashbook extends AbstractAggregate
         $this->chits = new ArrayCollection();
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function addChit(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, int $categoryId): void
     {
         $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $categoryId);
