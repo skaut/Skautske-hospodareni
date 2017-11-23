@@ -12,11 +12,11 @@ use App\Forms\BaseForm;
 use Consistence\Time\TimeFormat;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
-use Model\Mail\MailerNotFoundException;
 use Model\Payment\BankAccountService;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\InvalidEmailException;
+use Model\Payment\MailCredentialsNotSetException;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
@@ -300,7 +300,7 @@ class PaymentPresenter extends BasePresenter
         try {
             $this->mailing->sendEmail($pid, $this->user->getId());
             $this->flashMessage('Informační email byl odeslán.');
-        } catch (MailerNotFoundException $e) {
+        } catch (MailCredentialsNotSetException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (SmtpException $e) {
             $this->smtpError($e);
@@ -328,7 +328,7 @@ class PaymentPresenter extends BasePresenter
             } else {
                 $this->flashMessage('Nebyl odeslán žádný informační email!', 'danger');
             }
-        } catch (MailerNotFoundException $e) {
+        } catch (MailCredentialsNotSetException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (SmtpException $e) {
             $this->smtpError($e);
@@ -349,7 +349,7 @@ class PaymentPresenter extends BasePresenter
         try {
             $email = $this->mailing->sendTestMail($gid, $this->user->getId());
             $this->flashMessage("Testovací email byl odeslán na $email.");
-        } catch (MailerNotFoundException $e) {
+        } catch (MailCredentialsNotSetException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (SmtpException $e) {
             $this->smtpError($e);

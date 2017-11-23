@@ -60,10 +60,12 @@ class MailingService
 
     /**
      * Sends email to single payment address
+     *
      * @param int $paymentId
      * @param int $userId
      * @throws InvalidEmailException
      * @throws PaymentNotFoundException
+     * @throws MailCredentialsNotSetException
      */
     public function sendEmail(int $paymentId, int $userId): void
     {
@@ -75,6 +77,11 @@ class MailingService
         $this->payments->save($payment);
     }
 
+    /**
+     * @throws GroupNotFoundException
+     * @throws UserNotFoundException
+     * @throws MailCredentialsNotSetException
+     */
     public function sendEmailForGroup(int $groupId, int $userId) : int
     {
         $group = $this->groups->find($groupId);
@@ -99,6 +106,7 @@ class MailingService
      * @param int $userId
      * @return string User's email
      * @throws EmailNotSetException
+     * @throws MailCredentialsNotSetException
      */
     public function sendTestMail(int $groupId, int $userId): string
     {
@@ -125,6 +133,13 @@ class MailingService
     }
 
 
+    /**
+     * @throws InvalidBankAccountException
+     * @throws InvalidEmailException
+     * @throws MailCredentialsNotFound
+     * @throws MailCredentialsNotSetException
+     * @throws PaymentClosedException
+     */
     private function sendForPayment(Payment $paymentRow, Group $group, User $user) : void
     {
         if($paymentRow->isClosed()) {
@@ -145,8 +160,17 @@ class MailingService
         $paymentRow->markSent();
     }
 
+    /**
+     * @throws InvalidBankAccountException
+     * @throws MailCredentialsNotFound
+     * @throws MailCredentialsNotSetException
+     */
     private function send(Group $group, MailPayment $payment, User $user) : void
     {
+        if($group->getSmtpId() === NULL) {
+            throw new MailCredentialsNotSetException();
+        }
+
         $bankAccount = $group->getBankAccountId() !== NULL
             ? $this->bankAccounts->find($group->getBankAccountId())
             : NULL;
