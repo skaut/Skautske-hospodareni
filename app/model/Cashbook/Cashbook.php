@@ -8,7 +8,6 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
-use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\AbstractAggregate;
@@ -33,7 +32,14 @@ class Cashbook extends AbstractAggregate
         return $this->id;
     }
 
-    public function addChit(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, int $categoryId): void
+    public function addChit(
+        ?ChitNumber $number,
+        Date $date,
+        ?Recipient $recipient,
+        Amount $amount,
+        string $purpose,
+        int $categoryId
+    ): void
     {
         $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $categoryId);
         $this->raise(new ChitWasAdded($this->id, $categoryId));
@@ -42,7 +48,15 @@ class Cashbook extends AbstractAggregate
     /**
      * @throws \InvalidArgumentException
      */
-    public function updateChit(int $chitId, ?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, int $categoryId): void
+    public function updateChit(
+        int $chitId,
+        ?ChitNumber $number,
+        Date $date,
+        ?Recipient $recipient,
+        Amount $amount,
+        string $purpose,
+        int $categoryId
+    ): void
     {
         $chit = $this->getChit($chitId);
         $oldCategoryId = $chit->getCategoryId();
