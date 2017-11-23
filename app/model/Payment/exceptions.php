@@ -49,3 +49,7 @@ class TokenNotSetException extends \Exception
 class MailCredentialsNotFound extends \Exception
 {
 }
+
+class MailCredentialsNotSetException extends \Exception
+{
+}
