@@ -8,6 +8,7 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\ObjectType;
 use Model\ExcelService;
 use Model\ExportService;
@@ -291,30 +292,28 @@ trait CashbookTrait
             $this->editableOnly();
             $values = $form->getValues();
 
+            $cashbookId = $this->entityService->chits->getCashbookIdFromSkautisId($this->aid);
+
+            $number = $values->num !== '' ? new ChitNumber($values->num) : NULL;
+            $date = Date::instance($values->date);
+            $recipient = $values->recipient !== '' ? new Recipient($values->recipient) : NULL;
+            $amount = new Amount($values->price);
+            $purpose = $values->purpose;
+            $category = $values->category;
             try {
                 if ($values['pid'] != "") {//EDIT
                     $chitId = $values['pid'];
                     unset($values['id']);
                     $this->isChitEditable($chitId);
-                    if ($this->entityService->chits->update($chitId, $values)
-                    ) {
-                        $this->flashMessage("Paragon byl upraven.");
-                    } else {
-                        $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
-                    }
-                } else {//ADD
-                    $cashbookId = $this->entityService->chits->getCashbookIdFromSkautisId($this->aid);
 
                     $this->commandBus->handle(
-                        new AddChitToCashbook(
-                            $cashbookId,
-                            $values->num !== '' ? new ChitNumber($values->num) : NULL,
-                            Date::instance($values->date),
-                            $values->recipient !== '' ? new Recipient($values->recipient) : NULL,
-                            new Amount($values->price),
-                            $values->purpose,
-                            $values->category
-                        )
+                        new UpdateChit($cashbookId, $chitId, $number, $date, $recipient, $amount, $purpose, $category)
+                    );
+
+                    $this->flashMessage("Paragon byl upraven.");
+                } else {//ADD
+                    $this->commandBus->handle(
+                        new AddChitToCashbook($cashbookId, $number, $date, $recipient, $amount, $purpose, $category)
                     );
 
                     $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");

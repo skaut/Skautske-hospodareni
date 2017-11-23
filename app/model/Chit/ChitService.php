@@ -113,60 +113,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * upravit paragon - staci vyplnit data, ktera se maji zmenit
-     * @param int $chitId
-     * @param array|\ArrayAccess $val
-     */
-    public function update($chitId, $val): bool
-    {
-        $changeAbleData = ["eventId", "date", "num", "recipient", "purpose", "price", "category"];
-
-        if (!is_array($val) && !($val instanceof \ArrayAccess)) {
-            throw new \Nette\InvalidArgumentException("Values nejsou ve správném formátu");
-        }
-        $chit = $this->get($chitId);
-
-        if (isset($val['id'])) {
-            $val['id'] = $chitId;
-        }
-
-        $toChange = [];
-        foreach ($changeAbleData as $name) {
-            if (isset($val[$name])) {
-                if ($name == 'price') {
-                    $toChange['priceText'] = str_replace(",", ".", $val[$name]);
-                    $toChange[$name] = Calculator::calculate($val[$name]);
-                    continue;
-                }
-                $toChange[$name] = $val[$name];
-            }
-        }
-
-        $ret = $this->table->update($chitId, $toChange);
-        if (array_key_exists('eventId', $toChange)) {
-            $chit['eventId'] = $toChange['eventId'];
-        }
-        if (array_key_exists('category', $toChange)) {
-            $chit['category'] = $toChange['category'];
-        }
-
-        //category update
-        if ($this->type === ObjectType::CAMP) {
-            $skautisEventId = $this->getSkautisId($chit->eventId);
-            if ($skautisEventId !== 0) {
-                $this->commandBus->handle(
-                    new UpdateCampCategoryTotal(
-                        $this->eventId,
-                        $chit->category
-                    )
-                );
-            }
-        }
-
-        return $ret;
-    }
-
-    /**
      * smazat paragon
      */
     public function delete(int $chitId, int $skautisEventId): bool
@@ -370,7 +316,8 @@ class ChitService extends MutableBaseService
     public function moveChits(array $chits, int $originEventId, string $originEventType, int $newEventId, string $newEventType): void
     {
         foreach ($chits as $chitId) {
-            $toUpdate = ["eventId" => $this->getLocalId($newEventId, $newEventType)];
+            $cashbookId = $this->getLocalId($newEventId, $newEventType);
+            $toUpdate = ["eventId" => $cashbookId];
             $chit = $this->get($chitId);
             if ($this->getLocalId($originEventId, $originEventType) !== $chit['eventId']) {
                 throw new \InvalidArgumentException("Zvolený doklad ($chitId) nenáleží původní akci ($originEventId)");
@@ -379,7 +326,21 @@ class ChitService extends MutableBaseService
             if ($originEventType !== $newEventType || $originEventType !== "general") {
                 $toUpdate["category"] = $chit['ctype'] === "out" ? self::CHIT_UNDEFINED_OUT : self::CHIT_UNDEFINED_IN;
             }
-            $this->update($chitId, $toUpdate);
+            $this->table->update($chitId, $toUpdate);
+
+            //category update
+            if ($this->type === ObjectType::CAMP) {
+                $skautisEventId = $this->getSkautisId($newEventId);
+                if ($skautisEventId !== NULL) {
+                    $this->commandBus->handle(
+                        new UpdateCampCategoryTotal(
+                            $cashbookId,
+                            $toUpdate['category'] ?? $chit->category
+                        )
+                    );
+                }
+            }
+
         }
     }
 

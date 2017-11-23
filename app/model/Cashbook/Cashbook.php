@@ -8,7 +8,9 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
+use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Events\ChitWasAdded;
+use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\AbstractAggregate;
 
 class Cashbook extends AbstractAggregate
@@ -38,6 +40,19 @@ class Cashbook extends AbstractAggregate
     }
 
     /**
+     * @throws \InvalidArgumentException
+     */
+    public function updateChit(int $chitId, ?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, int $categoryId): void
+    {
+        $chit = $this->getChit($chitId);
+        $oldCategoryId = $chit->getCategoryId();
+
+        $chit->update($number, $date, $recipient, $amount, $purpose, $categoryId);
+
+        $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $categoryId));
+    }
+
+    /**
      * @return float[] Category totals indexed by category IDs
      */
     public function getCategoryTotals(): array
@@ -50,6 +65,17 @@ class Cashbook extends AbstractAggregate
         }
 
         return $totalByCategories;
+    }
+
+    private function getChit(int $id): Chit
+    {
+        foreach($this->chits as $chit) {
+            if($chit->getId() === $id) {
+                return $chit;
+            }
+        }
+
+        throw new \InvalidArgumentException('Chit not found');
     }
 
 }

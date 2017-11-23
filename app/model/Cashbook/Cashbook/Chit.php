@@ -43,12 +43,22 @@ class Chit
     )
     {
         $this->cashbook = $cashbook;
+        $this->update($number, $date, $recipient, $amount, $purpose, $categoryId);
+    }
+
+    public function update(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, int $categoryId): void
+    {
         $this->number = $number;
         $this->date = $date;
         $this->recipient = $recipient;
         $this->amount = $amount;
         $this->categoryId = $categoryId;
         $this->purpose = $purpose;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getAmount(): Amount
