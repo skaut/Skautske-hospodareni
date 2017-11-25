@@ -32,6 +32,12 @@ class Chit
     /** @var int */
     private $categoryId;
 
+    /**
+     * ID of person that locked this
+     * @var int|NULL
+     */
+    private $locked;
+
     public function __construct(
         Cashbook $cashbook,
         ?ChitNumber $number,
@@ -74,6 +80,11 @@ class Chit
     public function getPurpose(): string
     {
         return $this->purpose;
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->locked !== NULL;
     }
 
 }

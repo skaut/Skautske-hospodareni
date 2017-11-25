@@ -62,6 +62,10 @@ class Cashbook extends AbstractAggregate
         $chit = $this->getChit($chitId);
         $oldCategoryId = $chit->getCategoryId();
 
+        if($chit->isLocked()) {
+            throw new ChitLockedException();
+        }
+
         $chit->update($number, $date, $recipient, $amount, $purpose, $categoryId);
 
         $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $categoryId));
@@ -85,6 +89,10 @@ class Cashbook extends AbstractAggregate
     public function removeChit(int $chitId): void
     {
         $chit = $this->getChit($chitId);
+
+        if($chit->isLocked()) {
+            throw new ChitLockedException();
+        }
 
         $this->chits->removeElement($chit);
         $this->raise(new ChitWasRemoved($this->id, $chit->getPurpose()));

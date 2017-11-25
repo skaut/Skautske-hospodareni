@@ -22,6 +22,10 @@ Model\Cashbook\Cashbook\Chit:
             column: category
         purpose:
             type: string
+        locked:
+            column: lock
+            type: integer
+            nullable: true
 
     embedded:
         amount:
