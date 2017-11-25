@@ -28,8 +28,6 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
             return;
         }
 
-        $webService = $this->skautis->getWebService('user');
-
         $campSkautisId = $this->mapper->getSkautisId($cashbookId, ObjectType::CAMP);
         
         if($campSkautisId === NULL) {
@@ -37,7 +35,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
         }
 
         foreach($totals as $categoryId => $total) {
-            $webService->EventCampStatementUpdate([
+            $this->skautis->event->EventCampStatementUpdate([
                 'ID' => $categoryId,
                 'ID_EventCamp' => $campSkautisId,
                 'Ammount' => $total,
