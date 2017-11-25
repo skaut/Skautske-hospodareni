@@ -71,4 +71,9 @@ class Chit
         return $this->categoryId;
     }
 
+    public function getPurpose(): string
+    {
+        return $this->purpose;
+    }
+
 }

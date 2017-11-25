@@ -53,14 +53,6 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * označí paragon jako smazaný
-     */
-    public function delete(int $chitId, int $localEventId): bool
-    {
-        return (bool) $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
-    }
-
-    /**
      * označí paragony z dané akce za smazané
      * @param int $localEventId
      */

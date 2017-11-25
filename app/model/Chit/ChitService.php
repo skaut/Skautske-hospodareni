@@ -7,7 +7,6 @@ use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\ObjectType;
-use Model\Services\Calculator;
 use Model\Skautis\Mapper;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
@@ -110,17 +109,6 @@ class ChitService extends MutableBaseService
             }
         }
         return $ret;
-    }
-
-    /**
-     * smazat paragon
-     */
-    public function delete(int $chitId, int $skautisEventId): bool
-    {
-        //TBD
-        // $this->eventBus->handle(new ChitWasRemoved($this->event->ID_Unit, $user->ID, $user->Person, $id, $this->event->localId, $chit->purpose));
-
-        return $this->table->delete($chitId, $this->getLocalId($skautisEventId));
     }
 
     /**

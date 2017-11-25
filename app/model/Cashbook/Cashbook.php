@@ -9,6 +9,7 @@ use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Events\ChitWasAdded;
+use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\AbstractAggregate;
 
@@ -81,6 +82,14 @@ class Cashbook extends AbstractAggregate
         return $totalByCategories;
     }
 
+    public function removeChit(int $chitId): void
+    {
+        $chit = $this->getChit($chitId);
+
+        $this->chits->removeElement($chit);
+        $this->raise(new ChitWasRemoved($this->id, $chit->getPurpose()));
+    }
+
     private function getChit(int $id): Chit
     {
         foreach($this->chits as $chit) {
@@ -89,7 +98,7 @@ class Cashbook extends AbstractAggregate
             }
         }
 
-        throw new \InvalidArgumentException('Chit not found');
+        throw new ChitNotFoundException();
     }
 
 }
