@@ -220,36 +220,17 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * upraví celkový součet dané kategorie ve skautISu podle zadaných paragonů nebo podle parametru $ammout
-     * @param int $skautisEventId
-     * @param int $categoryId
-     * @param float $ammout
-     */
-    public function updateCategory($skautisEventId, $categoryId, $ammout = NULL): void
-    {
-        if ($ammout === NULL) {
-            $ammout = $this->table->getTotalInCategory($categoryId, $this->getLocalId($skautisEventId));
-        }
-        $this->skautis->event->EventCampStatementUpdate([
-            "ID" => $categoryId,
-            "ID_EventCamp" => $skautisEventId,
-            "Ammount" => $ammout,
-            "IsEstimate" => FALSE
-        ], "eventCampStatement");
-    }
-
-    /**
      * ověřuje konzistentnost dat mezi paragony a SkautISem
      * @param array|NULL $toRepair
      */
     public function isConsistent(int $skautisEventId, bool $repair = FALSE, array &$toRepair = NULL): bool
     {
         $sumSkautis = $this->getCategories($skautisEventId, FALSE);
-
+        $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
         foreach ($this->getCategoriesSum($skautisEventId) as $catId => $ammount) {
             if ($ammount != $sumSkautis[$catId]->Ammount) {
                 if ($repair) { //má se kategorie opravit?
-                    $this->updateCategory($skautisEventId, $catId, $ammount);
+                    $this->commandBus->handle(new UpdateCampCategoryTotal($cashbookId, $catId));
                 } elseif ($toRepair !== NULL) {
                     $toRepair[$catId] = $ammount; //seznam ID vadných kategorií a jejich částek
                 }
