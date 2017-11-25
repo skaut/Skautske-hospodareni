@@ -14,10 +14,10 @@ class BudgetPresenter extends BasePresenter
     /** @var \Model\BudgetService */
     protected $budgetService;
 
-    public function __construct(\Model\BudgetService $bs)
+    public function __construct(\Model\BudgetService $budgetService)
     {
         parent::__construct();
-        $this->budgetService = $bs;
+        $this->budgetService = $budgetService;
     }
 
     public function renderDefault($year = NULL) : void

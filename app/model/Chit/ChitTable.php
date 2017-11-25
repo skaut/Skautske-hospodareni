@@ -109,21 +109,6 @@ class ChitTable extends BaseTable
         return $this->connection->fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE eventId=%i", $localEventId, " AND deleted=0 GROUP BY category");
     }
 
-    /**
-     * @param int $oid
-     * @param int $chitId
-     * @param int $userId
-     */
-    public function lock($oid, $chitId, $userId): void
-    {
-        $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i AND id=%i", $oid, $chitId);
-    }
-
-    public function unlock($oid, $chitId)
-    {
-        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=NULL WHERE eventId=%i AND id=%i", $oid, $chitId);
-    }
-
     public function lockEvent($oid, $userId)
     {
         return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i ", $oid, "AND `lock` IS NULL");

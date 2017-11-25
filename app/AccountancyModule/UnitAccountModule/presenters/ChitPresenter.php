@@ -4,6 +4,10 @@ namespace App\AccountancyModule\UnitAccountModule;
 
 use App\Forms\BaseForm;
 use Model\BudgetService;
+use Model\Cashbook\CashbookService;
+use Model\Cashbook\Commands\Cashbook\LockChit;
+use Model\Cashbook\Commands\Cashbook\UnlockChit;
+use Model\Cashbook\ObjectType;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -20,10 +24,14 @@ class ChitPresenter extends BasePresenter
     /** @var BudgetService */
     private $budgetService;
 
-    public function __construct(BudgetService $bs)
+    /** @var CashbookService */
+    private $cashbookService;
+
+    public function __construct(BudgetService $budgetService, CashbookService $cashbookService)
     {
         parent::__construct();
-        $this->budgetService = $bs;
+        $this->budgetService = $budgetService;
+        $this->cashbookService = $cashbookService;
     }
 
     protected function startup() : void
@@ -111,33 +119,25 @@ class ChitPresenter extends BasePresenter
     }
 
     /**
-     *
-     * @param int $oid - id of object
-     * @param int $id - id of chit
      * @param string $type type of object - camp, unit, event
-     * @param string $act
      */
-    public function handleLock($oid, $id, $type, $act = "lock") : void
+    public function handleLock(int $cashbookId, int $chitId, string $type, string $act = "lock") : void
     {
-        if (!in_array($type, ["event", "camp", "unit"])) {
+        $allowedTypes = ["event", "camp", "unit"];
+
+        if ( ! in_array($type, $allowedTypes, TRUE) || ! $this->accessChitControl($cashbookId, $type)) {
             $this->flashMessage("Neplatný přístup!", "danger");
-        } else {
-            $service = $this->context->getService(($type == "unit" ? "unitAccount" : $type) . "Service");
-            $chit = $service->chits->get($id);
-            if (!$this->accessChitControl($chit, $service, $type)) {
-                $this->flashMessage("Neplatný přístup!", "danger");
-            } elseif (in_array($act, ["lock", "unlock"])) {
-                $service->chits->{$act}($oid, $id, $this->user->id);
-            }
+            $this->redraw();
+            return;
         }
 
-        if ($this->isAjax()) {
-            $this->redrawControl('flash');
-            $this->redrawControl('tableChits');
-            $this->redrawControl();
-        } else {
-            $this->redirect("default");
+        if ($act === 'lock') {
+            $this->commandBus->handle(new LockChit($cashbookId, $chitId, $this->user->getId()));
+        } elseif($act === 'unlock') {
+            $this->commandBus->handle(new UnlockChit($cashbookId, $chitId));
         }
+
+        $this->redraw();
     }
 
     protected function createComponentBudgetCategoryForm(): BaseForm
@@ -185,9 +185,24 @@ class ChitPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    private function accessChitControl($chit, $service, $type)
+    private function redraw(): void
     {
-        return array_key_exists($service->chits->getSkautisId($chit->eventId), $this->info[$type]);
+        if ($this->isAjax()) {
+            $this->redrawControl('flash');
+            $this->redrawControl('tableChits');
+            $this->redrawControl();
+        } else {
+            $this->redirect("default");
+        }
+    }
+
+    private function accessChitControl(int $cashbookId, string $type): bool
+    {
+        // in this presenter 'event' is used instead of 'general' for some reason
+        $cashbookType = ObjectType::get($type === 'event' ? ObjectType::EVENT : $type);
+        $skautisId = $this->cashbookService->getSkautisIdFromCashbookId($cashbookId, $cashbookType);
+
+        return array_key_exists($skautisId, $this->info[$type]);
     }
 
 }

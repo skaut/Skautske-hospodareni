@@ -62,6 +62,16 @@ class Chit
         $this->purpose = $purpose;
     }
 
+    public function lock(int $userId): void
+    {
+        $this->locked = $userId;
+    }
+
+    public function unlock(): void
+    {
+        $this->locked = NULL;
+    }
+
     public function getId(): int
     {
         return $this->id;

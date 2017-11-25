@@ -23,7 +23,7 @@ Model\Cashbook\Cashbook\Chit:
         purpose:
             type: string
         locked:
-            column: lock
+            column: '`lock`'
             type: integer
             nullable: true
 

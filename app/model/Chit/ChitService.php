@@ -269,29 +269,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * [[ UNUSED ]]
-     * uzavře paragon proti editaci, měnit lze jen kategorie z rozpočtu jednotky
-     * @param int $oid
-     * @param int $chitId
-     * @param int $userId
-     */
-    public function lock($oid, $chitId, $userId): void
-    {
-        $this->table->lock($oid, $chitId, $userId);
-    }
-
-    /**
-     * [[ UNUSED ]]
-     * @param int $oid
-     * @param int $chitId
-     * @return \Dibi\Result|int
-     */
-    public function unlock($oid, $chitId)
-    {
-        return $this->table->unlock($oid, $chitId);
-    }
-
-    /**
      * @param int $oid
      * @param int $userId
      * @return \Dibi\Result|int

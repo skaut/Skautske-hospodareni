@@ -98,6 +98,28 @@ class Cashbook extends AbstractAggregate
         $this->raise(new ChitWasRemoved($this->id, $chit->getPurpose()));
     }
 
+    public function lockChit(int $chitId, int $userId): void
+    {
+        $chit = $this->getChit($chitId);
+
+        if($chit->isLocked()) {
+            return;
+        }
+
+        $chit->lock($userId);
+    }
+
+    public function unlockChit(int $chitId): void
+    {
+        $chit = $this->getChit($chitId);
+
+        if ( ! $chit->isLocked()) {
+            return;
+        }
+
+        $chit->unlock();
+    }
+
     private function getChit(int $id): Chit
     {
         foreach($this->chits as $chit) {
