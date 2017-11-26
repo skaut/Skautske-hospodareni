@@ -1,8 +1,8 @@
 <?php
 
-namespace Model\Services;
+namespace Model\Cashbook\Cashbook;
 
-class CalculatorTest extends \Codeception\Test\Unit
+class AmountTest extends \Codeception\Test\Unit
 {
 
     /**
@@ -10,7 +10,8 @@ class CalculatorTest extends \Codeception\Test\Unit
      */
     public function testCalculateSum(string $expression, float $expectedResult): void
     {
-        $this->assertSame($expectedResult, Calculator::calculate($expression));
+        $amount = new Amount($expression);
+        $this->assertSame($expectedResult, $amount->getValue());
     }
 
     /**
@@ -32,7 +33,8 @@ class CalculatorTest extends \Codeception\Test\Unit
      */
     public function testCalculateMultiplication(string $expression, float $expectedResult): void
     {
-        $this->assertSame($expectedResult, Calculator::calculate($expression));
+        $amount = new Amount($expression);
+        $this->assertSame($expectedResult, $amount->getValue());
     }
 
     /**
@@ -53,7 +55,8 @@ class CalculatorTest extends \Codeception\Test\Unit
      */
     public function testCalculateSumsAndMultiplications(string $expression, float $expectedResult): void
     {
-        $this->assertSame($expectedResult, Calculator::calculate($expression));
+        $amount = new Amount($expression);
+        $this->assertSame($expectedResult, $amount->getValue());
     }
 
     /**
