@@ -8,7 +8,6 @@ use eGen\MessageBus\Bus\EventBus;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\ObjectType;
 use Model\Skautis\Mapper;
-use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
 class ChitService extends MutableBaseService
@@ -34,13 +33,12 @@ class ChitService extends MutableBaseService
         string $name,
         ChitTable $table,
         Skautis $skautIS,
-        IStorage $cacheStorage,
         Mapper $skautisMapper,
         CommandBus $commandBus,
         EventBus $eventBus
     )
     {
-        parent::__construct($name, $skautIS, $cacheStorage);
+        parent::__construct($name, $skautIS);
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
         $this->commandBus = $commandBus;

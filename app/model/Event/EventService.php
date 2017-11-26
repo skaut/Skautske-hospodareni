@@ -10,6 +10,7 @@ use Model\Event\LeaderNotAdultException;
 use Model\Event\Repositories\IEventRepository;
 use Model\Events\Events\EventWasClosed;
 use Model\Events\Events\EventWasOpened;
+use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
@@ -22,6 +23,9 @@ class EventService extends MutableBaseService
 
     /** @var EventTable */
     private $table;
+
+    /** @var Cache */
+    private $cache;
 
     /** @var Connection */
     private $connection;
@@ -46,9 +50,10 @@ class EventService extends MutableBaseService
         UnitService $units
     )
     {
-        parent::__construct($name, $skautis, $cacheStorage);
+        parent::__construct($name, $skautis);
         /** @var EventTable */
         $this->table = $table;
+        $this->cache = new Cache($cacheStorage, __CLASS__);
         $this->connection = $connection;
         $this->eventRepository = $eventRepository;
         $this->eventBus = $eventBus;

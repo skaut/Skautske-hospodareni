@@ -2,8 +2,6 @@
 
 namespace Model;
 
-use \Nette\Caching\Cache;
-use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
 /**
@@ -18,16 +16,11 @@ abstract class MutableBaseService extends BaseService
     /** @var string */
     public $type;
 
-    /** @var Cache */
-    protected $cache;
-
-    public function __construct(string $name, Skautis $skautIS, IStorage $cacheStorage)
+    public function __construct(string $name, Skautis $skautIS)
     {
         parent::__construct($skautIS);
         $this->typeName = $name;
         $this->type = strtolower($name);
-        $cache = new Cache($cacheStorage, __CLASS__);
-        $this->cache = $cache;
     }
 
 }
