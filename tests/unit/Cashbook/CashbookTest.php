@@ -53,4 +53,27 @@ class CashbookTest extends \Codeception\Test\Unit
         $this->assertSame($expectedTotals, $totals);
     }
 
+    public function testAddChitRaisesEvent(): void
+    {
+        $cashbook = new Cashbook(10);
+
+        $cashbook->addChit(
+            new Cashbook\ChitNumber('123'),
+            new Date('2017-11-17'),
+            new Cashbook\Recipient('František Maša'),
+            new Cashbook\Amount('100'),
+            'purpose',
+            666
+        );
+
+        $events = $cashbook->extractEventsToDispatch();
+
+        $this->assertCount(1, $events);
+        /* @var $event ChitWasAdded */
+        $event = $events[0];
+        $this->assertInstanceOf(ChitWasAdded::class, $event);
+        $this->assertSame(10, $event->getCashbookId());
+        $this->assertSame(666, $event->getCategoryId());
+    }
+
 }
