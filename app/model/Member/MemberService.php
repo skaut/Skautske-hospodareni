@@ -45,16 +45,6 @@ class MemberService
     }
 
     /**
-     * vytvoří pole jmen pro automatické doplňování
-     * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
-     * @return array
-     */
-    public function getAC($OnlyDirectMember = FALSE, $adultOnly = FALSE)
-    {
-        return array_values($this->getPairs($this->organizationWebservice->PersonAll(["OnlyDirectMember" => $OnlyDirectMember]), $adultOnly));
-    }
-
-    /**
      * vytvoří pole jmen s ID pro combobox
      * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
      * @return array
