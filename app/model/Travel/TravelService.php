@@ -99,10 +99,10 @@ class TravelService
 
     public function createVehicle(string $type, int $unitId, ?int $subunitId, string $registration, float $consumption): void
     {
-        $unit = $this->units->find($unitId, TRUE);
+        $unit = $this->units->find($unitId);
 
         $subunit = $subunitId !== NULL
-            ? $this->units->find($subunitId, TRUE)
+            ? $this->units->find($subunitId)
             : NULL;
 
         $vehicle = new Vehicle($type, $unit, $subunit, $registration, $consumption);
@@ -262,7 +262,7 @@ class TravelService
 
     public function createContract(int $unitId, string $unitRepresentative, \DateTimeImmutable $since, Contract\Passenger $passenger): void
     {
-        $unit = $this->units->find($unitId, TRUE);
+        $unit = $this->units->find($unitId);
 
         $contract = new Contract($unit, $unitRepresentative, $since, $passenger);
 

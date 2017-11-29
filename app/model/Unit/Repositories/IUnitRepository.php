@@ -12,10 +12,11 @@ interface IUnitRepository
      */
     public function findByParent(int $parentId): array;
 
+    public function find(int $id): Unit;
 
     /**
-     * @return \stdClass|Unit
+     * @deprecated Use IUnitRepository::find()
      */
-    public function find(int $id, bool $returnDTO = FALSE);
+    public function findAsStdClass(int $id): \stdClass;
 
 }

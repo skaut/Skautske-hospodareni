@@ -35,10 +35,17 @@ final class UnitRepository implements IUnitRepository
         return array_map([$this, 'createUnit'], $units);
     }
 
-    public function find(int $id, bool $returnDTO = FALSE)
+    public function find(int $id): Unit
+    {
+        return $this->createUnit(
+            $this->findAsStdClass($id)
+        );
+    }
+
+    public function findAsStdClass(int $id): \stdClass
     {
         try {
-            $unit = $this->webService->call('UnitDetail', [
+            return $this->webService->call('UnitDetail', [
                 [
                     'ID' => $id,
                 ],
@@ -46,10 +53,6 @@ final class UnitRepository implements IUnitRepository
         } catch (PermissionException $e) { // Unit doesn't exist or user has no access to it
             throw new UnitNotFoundException('', 0, $e);
         }
-
-        return $returnDTO
-            ? $this->createUnit($unit)
-            : $unit;
     }
 
     private function createUnit(\stdClass $unit): Unit

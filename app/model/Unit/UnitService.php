@@ -41,17 +41,16 @@ class UnitService
      * @deprecated Use UnitService::getDetailV2()
      *
      * vrací detail jednotky
-     * @return \stdClass
      * @throws \Nette\Application\BadRequestException
      */
-    public function getDetail(?int $unitId = NULL)
+    public function getDetail(?int $unitId = NULL): \stdClass
     {
         if ($unitId === NULL) {
             $unitId = $this->getUnitId();
         }
 
         try {
-            return $this->units->find($unitId);
+            return $this->units->findAsStdClass($unitId);
         } catch (Skautis\Exception $exc) {
             throw new \Nette\Application\BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
         }
@@ -68,7 +67,7 @@ class UnitService
     public function getDetailV2(int $unitId): Unit
     {
         try {
-            return $this->units->find($unitId, TRUE);
+            return $this->units->find($unitId);
         } catch (Skautis\Exception $exc) {
             throw new \Nette\Application\BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
         }
