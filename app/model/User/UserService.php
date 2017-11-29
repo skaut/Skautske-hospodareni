@@ -15,9 +15,8 @@ class UserService extends BaseService
 
     /**
      * varcí ID role aktuálně přihlášeného uživatele
-     * @return int|NULL
      */
-    public function getRoleId()
+    public function getRoleId(): ?int
     {
         return $this->skautis->getUser()->getRoleId();
     }
@@ -81,9 +80,8 @@ class UserService extends BaseService
 
     /**
      * kontroluje jestli je přihlášení platné
-     * @return boolean
      */
-    public function isLoggedIn()
+    public function isLoggedIn(): bool
     {
         return $this->skautis->getUser()->isLoggedIn();
     }

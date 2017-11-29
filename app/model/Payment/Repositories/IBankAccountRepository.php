@@ -9,9 +9,7 @@ interface IBankAccountRepository
 {
 
     /**
-     * @param int $id
      * @throws BankAccountNotFoundException
-     * @return BankAccount
      */
     public function find(int $id): BankAccount;
 
@@ -28,7 +26,6 @@ interface IBankAccountRepository
 
 
     /**
-     * @param int $unitId
      * @return BankAccount[]
      */
     public function findByUnit(int $unitId): array;

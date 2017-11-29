@@ -173,9 +173,6 @@ class Group
         return $this->id;
     }
 
-    /**
-     * @return int
-     */
     public function getUnitId(): int
     {
         return $this->unitId;
@@ -186,33 +183,21 @@ class Group
         return $this->object;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return float|NULL
-     */
     public function getDefaultAmount(): ?float
     {
         return $this->defaultAmount;
     }
 
-    /**
-     * @return \DateTimeImmutable|NULL
-     */
     public function getDueDate(): ?\DateTimeImmutable
     {
         return $this->dueDate;
     }
 
-    /**
-     * @return int|NULL
-     */
     public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
@@ -223,17 +208,11 @@ class Group
         return $this->nextVariableSymbol;
     }
 
-    /**
-     * @return string
-     */
     public function getState(): string
     {
         return $this->state;
     }
 
-    /**
-     * @return \DateTimeImmutable|NULL
-     */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -244,10 +223,6 @@ class Group
         return $this->emailTemplate;
     }
 
-    /**
-     * Update last pairing time
-     * @param \DateTimeImmutable $at
-     */
     public function updateLastPairing(\DateTimeImmutable $at): void
     {
         $this->lastPairing = $at;
@@ -258,17 +233,11 @@ class Group
         $this->lastPairing = NULL;
     }
 
-    /**
-     * @return \DateTimeImmutable|NULL
-     */
     public function getLastPairing(): ?\DateTimeImmutable
     {
         return $this->lastPairing;
     }
 
-    /**
-     * @return int|NULL
-     */
     public function getSmtpId() : ?int
     {
         return $this->smtpId;

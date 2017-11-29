@@ -18,10 +18,6 @@ class Mapper
     public const EVENT = 'general';
     public const CAMP = 'camp';
 
-    /**
-     * UnitMapper constructor.
-     * @param ObjectTable $table
-     */
     public function __construct(ObjectTable $table)
     {
         $this->table = $table;
@@ -29,10 +25,6 @@ class Mapper
 
     /**
      * Returns ID representing unit/event in Skautis
-     * @param int $localId
-     * @param string $type
-     * @param string $type
-     * @return int|null
      */
     public function getSkautisId(int $localId, string $type): ?int
     {
@@ -46,9 +38,6 @@ class Mapper
 
     /**
      * Returns ID representing unit/event in hskauting
-     * @param int $skautisId
-     * @param string $type
-     * @return int
      */
     public function getLocalId(int $skautisId, string $type): int
     {
@@ -63,11 +52,6 @@ class Mapper
         return $this->localIds[$key];
     }
 
-    /**
-     * @param int|NULL $skautisId
-     * @param int|null $localId
-     * @param string $type
-     */
     private function cache(?int $skautisId, ?int $localId, string $type): void
     {
         $this->skautisIds[$type . $localId] = $skautisId;

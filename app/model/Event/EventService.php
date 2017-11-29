@@ -250,7 +250,6 @@ class EventService extends MutableBaseService
     /**
      * @param int $skautisId
      * @param string $prefix
-     * @return bool
      */
     public function updatePrefix($skautisId, $prefix): bool
     {
@@ -295,7 +294,6 @@ class EventService extends MutableBaseService
      * zrušit akci
      * @param ChitService $chitService
      * @param string $msg
-     * @return bool
      */
     public function cancel(int $ID, $chitService, $msg = NULL): bool
     {
@@ -341,7 +339,6 @@ class EventService extends MutableBaseService
     /**
      * kontrolu jestli je možné uzavřít
      * @param int $ID
-     * @return bool
      */
     public function isCloseable($ID): bool
     {

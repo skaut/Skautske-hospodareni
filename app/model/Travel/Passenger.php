@@ -36,7 +36,6 @@ final class Passenger
     
     /**
      * nezbytné pro řazení v Gridu cestovních příkazů
-     * @return string
      */
     public function __toString(): string
     {

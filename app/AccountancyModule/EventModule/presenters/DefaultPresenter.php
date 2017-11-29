@@ -119,7 +119,6 @@ class DefaultPresenter extends BasePresenter
 
     /**
      * zruší akci
-     * @param int $aid
      */
     public function handleCancel(int $aid): void
     {

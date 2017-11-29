@@ -20,11 +20,9 @@ class VehicleRepository implements IVehicleRepository
     }
 
     /**
-     * @param int $id
      * @throws VehicleNotFoundException
-     * @return Vehicle
      */
-    public function get(int $id)
+    public function get(int $id): Vehicle
     {
         $vehicle = $this->em->find(Vehicle::class, $id);
 
@@ -100,7 +98,6 @@ class VehicleRepository implements IVehicleRepository
     /**
      * Removes vehicle with specified ID
      * @param $vehicleId
-     * @return bool
      */
     public function remove($vehicleId): bool
     {

@@ -68,8 +68,6 @@ class TravelService
 
     /**
      * vraci detail daného vozidla
-     * @param int $vehicleId - ID vozidla
-     * @return Vehicle
      */
     public function getVehicle(int $vehicleId): Vehicle
     {
@@ -145,7 +143,6 @@ class TravelService
     }
 
     /**
-     * @param int $commandId
      * @return DTO\Command\Travel[]
      * @throws CommandNotFoundException
      */

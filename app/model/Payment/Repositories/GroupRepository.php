@@ -23,8 +23,6 @@ class GroupRepository implements IGroupRepository
     }
 
     /**
-     * @param int $id
-     * @return Group
      * @throws GroupNotFoundException
      */
     public function find(int $id): Group

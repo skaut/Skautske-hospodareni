@@ -13,8 +13,6 @@ interface IGroupRepository
 {
 
     /**
-     * @param int $id
-     * @return Group
      * @throws GroupNotFoundException
      */
     public function find(int $id): Group;
@@ -27,26 +25,22 @@ interface IGroupRepository
 
     /**
      * @param int[] $unitIds
-     * @param bool $openOnly
      * @return Group[]
      */
     public function findByUnits(array $unitIds, bool $openOnly): array;
 
     /**
-     * @param SkautisEntity $object
      * @return Group[]
      */
     public function findBySkautisEntity(SkautisEntity $object): array;
 
     /**
-     * @param Type $type
      * @return Group[]
      */
     public function findBySkautisEntityType(Type $type): array;
 
 
     /**
-     * @param int $bankAccountId
      * @return Group[]
      */
     public function findByBankAccount(int $bankAccountId): array;

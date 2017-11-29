@@ -110,7 +110,6 @@ class ChitService extends MutableBaseService
      * @param int $skautisEventId
      * @param array|\ArrayAccess $val - údaje
      * @throws \Nette\InvalidArgumentException
-     * @return bool
      */
     public function add($skautisEventId, $val): bool
     {
@@ -345,9 +344,8 @@ class ChitService extends MutableBaseService
     /**
      * ověřuje konzistentnost dat mezi paragony a SkautISem
      * @param array|NULL $toRepair
-     * @return boolean
      */
-    public function isConsistent(int $skautisEventId, bool $repair = FALSE, array &$toRepair = NULL)
+    public function isConsistent(int $skautisEventId, bool $repair = FALSE, array &$toRepair = NULL): bool
     {
         $sumSkautis = $this->getCategories($skautisEventId, FALSE);
 

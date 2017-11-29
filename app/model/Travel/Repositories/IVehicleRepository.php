@@ -9,11 +9,9 @@ interface IVehicleRepository
 {
 
     /**
-     * @param int $id
      * @throws VehicleNotFoundException
-     * @return Vehicle
      */
-    public function get(int $id);
+    public function get(int $id): Vehicle;
 
     /**
      * @param int[] $ids
@@ -33,16 +31,12 @@ interface IVehicleRepository
      */
     public function getPairs($unitId);
 
-    /**
-     * @param Vehicle $vehicle
-     */
     public function save(Vehicle $vehicle): void;
 
     /**
      * Removes vehicle with specified ID
      * @param $vehicleId
-     * @return bool
      */
-    public function remove($vehicleId);
+    public function remove($vehicleId): bool;
 
 }

@@ -13,10 +13,6 @@ class ObjectTable
     /** @var Connection */
     private $connection;
 
-    /**
-     * ObjectTable constructor.
-     * @param Connection $connection
-     */
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
@@ -34,7 +30,6 @@ class ObjectTable
      * Vyhleda akci|jednotku a pokud tam není, tak založí její záznam
      * @param int $skautisEventId
      * @param  $type
-     * @return int
      */
     public function getLocalId($skautisEventId, $type): ?int
     {

@@ -11,24 +11,19 @@ interface ICommandRepository
 {
 
     /**
-     * @param int $id
-     * @return Command
      * @throws CommandNotFoundException
      */
     public function find(int $id): Command;
 
     /**
-     * @param int $unitId
      * @return Vehicle[]
      */
     public function findByUnit(int $unitId): array;
-
 
     /**
      * @return Command[]
      */
     public function findByVehicle(int $vehicleId): array;
-
 
     public function countByVehicle(int $vehicleId): int;
 

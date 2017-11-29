@@ -11,14 +11,11 @@ interface IPaymentRepository
 {
 
     /**
-	 * @param int $id
-	 * @return Payment
 	 * @throws PaymentNotFoundException
 	 */
     public function find(int $id): Payment;
 
     /**
-     * @param int $groupId
      * @return Payment[]
      */
     public function findByGroup(int $groupId): array;

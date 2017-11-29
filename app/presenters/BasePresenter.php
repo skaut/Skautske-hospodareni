@@ -129,7 +129,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     /**
      * Returns OFFICIAL unit ID
-     * @return int
      */
     public function getUnitId(): int
     {

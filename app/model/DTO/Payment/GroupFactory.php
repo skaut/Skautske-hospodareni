@@ -9,7 +9,6 @@ class GroupFactory
 
     /**
      * @param GroupEntity $group
-     * @param Summary[] $stats
      * @return Group
      */
     public static function create(GroupEntity $group): Group

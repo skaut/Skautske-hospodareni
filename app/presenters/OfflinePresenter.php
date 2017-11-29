@@ -66,9 +66,7 @@ class OfflinePresenter extends BasePresenter
 
     /**
      * generuje základní Form pro ostatní formuláře
-     * @param Presenter $thisP
      * @param string $name
-     * @return Form
      */
     protected function createComponentFormOut() : BaseForm
     {

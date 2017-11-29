@@ -19,9 +19,7 @@ class LoggerRepository implements ILoggerRepository
     }
 
     /**
-     * @param Type $type
-     * @param int $typeId
-     * @return array|Log[]
+     * @return Log[]
      */
     public function findAllByTypeId(Type $type, int $typeId): array
     {
@@ -39,9 +37,6 @@ class LoggerRepository implements ILoggerRepository
         return $result;
     }
 
-    /**
-     * @param Log $log
-     */
     public function save(Log $log): void
     {
         $this->em->persist($log);

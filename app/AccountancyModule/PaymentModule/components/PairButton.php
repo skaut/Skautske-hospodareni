@@ -43,7 +43,6 @@ class PairButton extends Control
     /**
      * Select groups to pair
      * @param int[] $groupIds
-     * @param int|NULL $unitId
      */
     public function setGroups(array $groupIds): void
     {

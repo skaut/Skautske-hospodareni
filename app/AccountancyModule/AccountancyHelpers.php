@@ -16,16 +16,16 @@ abstract class AccountancyHelpers extends Object
     /**
      * loader na všechny filtry
      * @param string $filter
-     * @return string
      */
     public static function loader($filter, $value): string
     {
-        //dump(func_get_args());die();
         if (method_exists(__CLASS__, $filter)) {
             $args = func_get_args();
             array_shift($args);
             return call_user_func_array([__CLASS__, $filter], $args);
         }
+
+        throw new \RuntimeException('Filter not found');
     }
 
     /*
@@ -99,9 +99,8 @@ abstract class AccountancyHelpers extends Object
 
     /**
      * formátuje číslo na částku
-     * @param float|string $price
+     * @param float|string|Money $price
      * http://prirucka.ujc.cas.cz/?id=786
-     * @return string
      */
     public static function price($price, $full = TRUE): string
     {
@@ -120,7 +119,6 @@ abstract class AccountancyHelpers extends Object
     /**
      * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
      * @param int|float $num
-     * @return string
      */
     public static function num($num): string
     {
@@ -139,7 +137,6 @@ abstract class AccountancyHelpers extends Object
     /**
      * převádí zadané číslo na slovní řetězec
      * @param int $price
-     * @return string
      */
     public static function priceToString($price): string
     {

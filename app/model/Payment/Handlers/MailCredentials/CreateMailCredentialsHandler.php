@@ -53,8 +53,6 @@ class CreateMailCredentialsHandler
 
     /**
      * Send test email to user who tries to add SMTP
-     * @param array $credentials
-     * @param int $userId
      * @throws EmailNotSetException
      * @throws SmtpException
      */

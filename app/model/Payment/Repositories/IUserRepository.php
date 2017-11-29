@@ -9,8 +9,6 @@ interface IUserRepository
 {
 
     /**
-     * @param int $id
-     * @return User
      * @throws UserNotFoundException
      */
     public function find(int $id) : User;
