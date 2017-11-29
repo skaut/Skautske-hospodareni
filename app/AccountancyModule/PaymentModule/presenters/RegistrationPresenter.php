@@ -57,7 +57,7 @@ class RegistrationPresenter extends BasePresenter
         }
 
         $form = $this["massAddForm"];
-        /* @var $form MassAddForm */
+        /** @var MassAddForm $form */
 
         foreach ($list as $p) {
             $stsCount = intdiv((int)$p['AmountServices'], self::STS_PRICE);

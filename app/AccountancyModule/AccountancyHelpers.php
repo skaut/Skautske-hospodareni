@@ -99,7 +99,7 @@ abstract class AccountancyHelpers extends Object
 
     /**
      * formátuje číslo na částku
-     * @param float|string|Money $price
+     * @param float|string|Money|NULL $price
      * http://prirucka.ujc.cas.cz/?id=786
      */
     public static function price($price, $full = TRUE): string

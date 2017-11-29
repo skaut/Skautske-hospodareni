@@ -156,7 +156,7 @@ class FunctionsControl extends Control
         ];
 
         foreach($values as $functionName => $personId) {
-            /* @var $selectbox SelectBox */
+            /** @var SelectBox $selectbox */
             $selectbox = $form[$functionName];
             $selectbox->setDefaultValue(isset($selectbox->getItems()[$personId]) ? $personId : NULL);
         }

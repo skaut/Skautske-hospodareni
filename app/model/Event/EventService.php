@@ -321,16 +321,12 @@ class EventService extends MutableBaseService
         $this->eventBus->handle(new EventWasOpened($event->getId(), $event->getUnitId(), $event->getDisplayName()));
     }
 
-    /**
-     * uzavře
-     * @param int $ID - ID akce
-     */
-    public function close($id): void
+    public function close(int $eventId): void
     {
         if($this->type != "general") {
             throw new \RuntimeException("Camp can't be closed!");
         }
-        $event = $this->eventRepository->find($id);
+        $event = $this->eventRepository->find($eventId);
         $this->eventRepository->close($event);
 
         $this->eventBus->handle(new EventWasClosed($event->getId(), $event->getUnitId(), $event->getDisplayName()));

@@ -118,7 +118,7 @@ class CashbookWithCategoriesBuilder
 
     /**
      * @param Row[] $chits
-     * @param Category[] $row
+     * @param Category[] $categories
      */
     private function addChits(array $chits, array $categories): void
     {

@@ -10,6 +10,9 @@ use Nette;
 use Skautis\Wsdl\AuthenticationException;
 use WebLoader\Nette as WebLoader;
 
+/**
+ * @property-read Nette\Bridges\ApplicationLatte\Template $template
+ */
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
 
@@ -122,7 +125,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     protected function updateUserAccess(): void
     {
-        /* @var $identity \Nette\Security\Identity */
+        /** @var \Nette\Security\Identity $identity */
         $identity = $this->user->getIdentity();
         $identity->access = $this->userService->getAccessArrays($this->unitService);
     }

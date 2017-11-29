@@ -20,23 +20,20 @@ interface IVehicleRepository
     public function findByIds(array $ids): array;
 
     /**
-     * @param $unitId
      * @return Vehicle[]
      */
-    public function getAll($unitId);
+    public function getAll(int $unitId): array;
 
     /**
-     * @param int $unitId
-     * @return array
+     * @return array in format [id => label]
      */
-    public function getPairs($unitId);
+    public function getPairs(int $unitId): array;
 
     public function save(Vehicle $vehicle): void;
 
     /**
      * Removes vehicle with specified ID
-     * @param $vehicleId
      */
-    public function remove($vehicleId): bool;
+    public function remove(int $vehicleId): bool;
 
 }

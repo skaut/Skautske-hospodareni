@@ -153,7 +153,7 @@ class UnitService
 
     public function getUnits(User $user, string $accessType)
     {
-        /* @var $identity \Nette\Security\Identity */
+        /** @var \Nette\Security\Identity $identity */
         $identity = $user->getIdentity();
 
         $res = [];

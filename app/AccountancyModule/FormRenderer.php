@@ -134,7 +134,7 @@ class FormRenderer extends DefaultFormRenderer
                 $control->getControlPrototype()->addClass('form-control');
 
             } elseif ($control instanceof Controls\Checkbox || $control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
-                if ($control->getSeparatorPrototype()->getName() !== NULL) {
+                if ($control->getSeparatorPrototype()->getName() !== '') {
                     $control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
                 } else {
                     $control->getItemLabelPrototype()->addClass($control->getControlPrototype()->type . '-inline');

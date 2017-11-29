@@ -61,8 +61,8 @@ class MassAddForm extends Control
 
     public function addPerson(int $id, array $emails, string $name, ?float $amount = NULL, string $note = ""): void
     {
-        $form = $this["form"]; /* @var $form BaseForm */
-        $persons = $form["persons"]; /* @var $persons BaseContainer */
+        $form = $this["form"]; /** @var BaseForm $form */
+        $persons = $form["persons"]; /** @var BaseContainer $persons */
 
         $container = $persons->addContainer("person{$id}");
 

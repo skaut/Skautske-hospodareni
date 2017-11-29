@@ -44,7 +44,7 @@ class ChitService extends MutableBaseService
     /**
      * vrací jeden paragon
      * @param int $chitId
-     * @return Row
+     * @return Row|FALSE
      */
     public function get($chitId)
     {
@@ -214,7 +214,7 @@ class ChitService extends MutableBaseService
 
     /**
      * seznam všech kategorií pro daný typ
-     * @param int $skautisEventId
+     * @param int|NULL $skautisEventId
      * @param bool $isEstimate - předpoklad?
      * @return array
      */

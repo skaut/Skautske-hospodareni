@@ -59,7 +59,7 @@ class BankService
         Assert::thatAll($groupIds)->integer();
         Assert::that($daysBack)->nullOr()->min(1);
 
-        /* @var $groupsByAccount Group[][] */
+        /** @var Group[][] $groupsByAccount */
         $foundGroups = $this->groups->findByIds($groupIds);
         $groupsByAccount = Arrays::groupBy($foundGroups, function (Group $g) { return $g->getBankAccountId(); }, TRUE);
 
@@ -139,7 +139,7 @@ class BankService
         $now = new \DateTimeImmutable();
         foreach ($transactions as $transaction) {
             foreach($paymentsByVS[$transaction->getVariableSymbol()] as $payment) {
-                /* @var $payment Payment */
+                /** @var Payment $payment */
                 if ($payment->getAmount() === $transaction->getAmount()) {
                     $payment->complete($now, new Transaction((int)$transaction->getId(), $transaction->getBankAccount()));
                     $paired[] = $payment;

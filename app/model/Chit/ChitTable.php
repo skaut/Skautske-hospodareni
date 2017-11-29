@@ -10,7 +10,7 @@ class ChitTable extends BaseTable
     /**
      * vrací konretní paragon
      * @param int $chitId
-     * @return Row
+     * @return Row|FALSE
      */
     public function get($chitId)
     {

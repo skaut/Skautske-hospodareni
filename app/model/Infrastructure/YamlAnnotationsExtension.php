@@ -23,7 +23,7 @@ class YamlAnnotationsExtension extends CompilerExtension
     public function loadConfiguration(): void
     {
         $builder = $this->getContainerBuilder();
-        /* @var $builder \Nette\DI\ContainerBuilder */
+        /** @var \Nette\DI\ContainerBuilder $builder */
 
         $config = Helpers::merge($this->getConfig(), self::DEFAULTS);
 

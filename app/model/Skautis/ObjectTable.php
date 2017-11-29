@@ -20,18 +20,16 @@ class ObjectTable
 
     public function add(int $skautisId, string $type): int
     {
-        return $this->connection->insert(self::TABLE, [
+        return (int) $this->connection->insert(self::TABLE, [
             'skautisId' => $skautisId,
             'type' => $type,
         ])->execute(\dibi::IDENTIFIER);
     }
 
     /**
-     * Vyhleda akci|jednotku a pokud tam není, tak založí její záznam
-     * @param int $skautisEventId
-     * @param  $type
+     * Vyhleda akci|jednotku
      */
-    public function getLocalId($skautisEventId, $type): ?int
+    public function getLocalId(int $skautisEventId, string $type): ?int
     {
         $id = $this->connection->select('id')
             ->from(self::TABLE)

@@ -228,7 +228,7 @@ class   ParticipantService extends MutableBaseService
      */
     public function getPersonsDays($eventIdOrParticipants)
     {
-        if ($eventIdOrParticipants instanceof \Traversable || is_array($eventIdOrParticipants)) {
+        if (is_array($eventIdOrParticipants)) {
             $participants = $eventIdOrParticipants;
         } else {
             $participants = $this->getAll($eventIdOrParticipants);

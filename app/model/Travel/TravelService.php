@@ -83,16 +83,15 @@ class TravelService
         }
     }
 
-    public function getVehiclesPairs($unitId)
+    public function getVehiclesPairs(int $unitId): array
     {
         return $this->vehicles->getPairs($unitId);
     }
 
     /**
-     * @param int $unitId
      * @return Travel\Vehicle[]
      */
-    public function getAllVehicles($unitId)
+    public function getAllVehicles(int $unitId): array
     {
         return $this->vehicles->getAll($unitId);
     }
@@ -110,7 +109,7 @@ class TravelService
         $this->vehicles->save($vehicle);
     }
 
-    public function removeVehicle($vehicleId)
+    public function removeVehicle(int $vehicleId): bool
     {
         if ($this->commands->countByVehicle($vehicleId) > 0) { //nelze mazat vozidlo s navazanými příkazy
             return FALSE;

@@ -390,7 +390,7 @@ class PaymentService
     /**
      * @param int $unitId
      * @param int $year
-     * @return array | NULL - format array("add" => [], "remove" => [])
+     * @return array - format array("add" => [], "remove" => [])
      */
     public function getJournalChangesAfterRegistration($unitId, $year): array
     {
