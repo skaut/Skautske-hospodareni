@@ -83,7 +83,7 @@ class UnitService
     }
 
     /**
-     * @return string[]
+     * @return array<int, string>
      */
     public function getSubunitPairs(int $parentId): array
     {
@@ -118,7 +118,13 @@ class UnitService
         return "IČO " . $unit->IC . " " . $unit->FullDisplayName . ", " . $unit->Street . ", " . $unit->City . ", " . $unit->Postcode;
     }
 
-    public function getAllUnder(int $ID_Unit, $self = TRUE)
+    /**
+     * @param int $ID_Unit
+     * @param bool $self
+     * @return Unit[]|array<int, Unit>
+     * @throws \Nette\Application\BadRequestException
+     */
+    public function getAllUnder(int $ID_Unit, bool $self = TRUE): array
     {
         $data = $self ? [$ID_Unit => $this->getDetail($ID_Unit)] : [];
         foreach ($this->units->findByParent($ID_Unit) as $u) {
@@ -131,8 +137,7 @@ class UnitService
 
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na čtení
-     * @param User $user
-     * @return array
+     * @return array<int, string>
      */
     public function getReadUnits(User $user): array
     {
@@ -141,16 +146,17 @@ class UnitService
 
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
-     * @param User $user
-     * @return array
+     * @return array<int, string>
      */
     public function getEditUnits(User $user): array
     {
         return $this->getUnits($user, BaseService::ACCESS_EDIT);
     }
 
-
-    public function getUnits(User $user, string $accessType)
+    /**
+     * @return array<int, string>
+     */
+    public function getUnits(User $user, string $accessType): array
     {
         /** @var \Nette\Security\Identity $identity */
         $identity = $user->getIdentity();
@@ -164,10 +170,9 @@ class UnitService
 
     /**
      * load camp troops
-     * @param \stdClass $camp
-     * @return array
+     * @return \stdClass[]
      */
-    public function getCampTroops(\stdClass $camp)
+    public function getCampTroops(\stdClass $camp): array
     {
         if (!isset($camp->ID_UnitArray->string)) {
             return [];
