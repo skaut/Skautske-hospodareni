@@ -4,6 +4,7 @@ use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\CommandBus;
 use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\ChitLockedException;
 use Model\Cashbook\ChitNotFoundException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\ChitNumber;
@@ -113,13 +114,14 @@ trait CashbookTrait
     public function handleRemove(int $id, int $actionId): void
     {
         $this->editableOnly();
-        $this->isChitEditable($id);
 
         $cashbookId = $this->entityService->chits->getCashbookIdFromSkautisId($actionId);
 
         try {
             $this->commandBus->handle(new RemoveChitFromCashbook($cashbookId, $id));
             $this->flashMessage('Paragon byl smazán');
+        } catch (ChitLockedException $e) {
+            $this->flashMessage('Nelze smazat zamčený paragon', 'error');
         } catch (CashbookNotFoundException | ChitNotFoundException $e) {
             $this->flashMessage('Paragon se nepodařilo smazat');
         }
@@ -313,7 +315,6 @@ trait CashbookTrait
                 if ($values['pid'] != "") {//EDIT
                     $chitId = $values['pid'];
                     unset($values['id']);
-                    $this->isChitEditable($chitId);
 
                     $this->commandBus->handle(
                         new UpdateChit($cashbookId, $chitId, $number, $date, $recipient, $amount, $purpose, $category)
@@ -332,6 +333,8 @@ trait CashbookTrait
                 }
             } catch (InvalidArgumentException | CashbookNotFoundException $exc) {
                 $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
+            } catch (ChitLockedException $e) {
+                $this->flashMessage('Nelze upravit zamčený paragon', 'error');
             } catch (\Skautis\Wsdl\WsdlException $se) {
                 $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
             }
