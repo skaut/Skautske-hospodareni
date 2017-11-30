@@ -2,7 +2,6 @@
 
 namespace Model\Unit;
 
-use Model\UnitService;
 use Nette\Utils\Strings;
 
 class Unit

@@ -4,6 +4,7 @@ namespace Model\Unit\Services;
 
 use Mockery as m;
 use Model\Unit\Repositories\IUnitRepository;
+use Model\Unit\Unit;
 
 class UnitResolverTest extends \Codeception\Test\Unit
 {
@@ -15,7 +16,7 @@ class UnitResolverTest extends \Codeception\Test\Unit
 
         $repository = m::mock(IUnitRepository::class);
         $repository->shouldReceive('find')
-            ->with(5, TRUE)
+            ->with(5)
             ->andReturn($unit);
 
         $resolver = new UnitResolver($repository);
@@ -34,11 +35,11 @@ class UnitResolverTest extends \Codeception\Test\Unit
 
         $repository = m::mock(IUnitRepository::class);
         $repository->shouldReceive('find')
-            ->with(5, TRUE)
+            ->with(5)
             ->andReturn($unit);
 
         $repository->shouldReceive('find')
-            ->with(10, TRUE)
+            ->with(10)
             ->andReturn($officialParent);
 
         $resolver = new UnitResolver($repository);
