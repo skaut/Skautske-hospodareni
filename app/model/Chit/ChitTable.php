@@ -42,17 +42,6 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * přidá paragon do tabulky
-     * @param array $values
-     * @return int
-     */
-    public function add($values)
-    {
-        $this->connection->query("INSERT INTO [" . self::TABLE_CHIT . "] %v", $values);
-        return $this->connection->getInsertId();
-    }
-
-    /**
      * aktualizuje paragon podle $id
      * @param int $chitId
      * @param array $values
@@ -61,14 +50,6 @@ class ChitTable extends BaseTable
     public function update($chitId, $values): bool
     {
         return (bool)$this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET ", $values, "WHERE id=%i", $chitId);
-    }
-
-    /**
-     * označí paragon jako smazaný
-     */
-    public function delete(int $chitId, int $localEventId): bool
-    {
-        return (bool) $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE id = %i AND eventId = %i LIMIT 1", $chitId, $localEventId);
     }
 
     /**
@@ -126,21 +107,6 @@ class ChitTable extends BaseTable
     public function getTotalInCategories($localEventId): array
     {
         return $this->connection->fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE eventId=%i", $localEventId, " AND deleted=0 GROUP BY category");
-    }
-
-    /**
-     * @param int $oid
-     * @param int $chitId
-     * @param int $userId
-     */
-    public function lock($oid, $chitId, $userId): void
-    {
-        $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=%i ", $userId, " WHERE eventId=%i AND id=%i", $oid, $chitId);
-    }
-
-    public function unlock($oid, $chitId)
-    {
-        return $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET `lock`=NULL WHERE eventId=%i AND id=%i", $oid, $chitId);
     }
 
     public function lockEvent($oid, $userId)

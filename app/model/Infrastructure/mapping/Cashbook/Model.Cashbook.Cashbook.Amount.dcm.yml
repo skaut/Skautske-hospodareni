@@ -1,0 +1,11 @@
+Model\Cashbook\Cashbook\Amount:
+
+    type: embeddable
+
+    fields:
+        expression:
+            type: string
+            column: priceText
+        value:
+            type: float
+            column: price

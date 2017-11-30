@@ -1,0 +1,16 @@
+Model\Cashbook\Cashbook:
+
+    type: entity
+    table: ac_cashbook
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: none }
+
+    oneToMany:
+        chits:
+            targetEntity: Model\Cashbook\Cashbook\Chit
+            mappedBy: cashbook
+            cascade: [PERSIST, REMOVE]
+            orphanRemoval: true

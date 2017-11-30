@@ -23,6 +23,9 @@ doctrine:
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
         money: Model\Infrastructure\Types\MoneyType
         variable_symbol: Model\Infrastructure\Types\VariableSymbolType
+        chit_number: Model\Infrastructure\Types\ChitNumberType
+        recipient: Model\Infrastructure\Types\RecipientType
+        chronos_date: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
     dql:
         string:
             field: DoctrineExtensions\Query\Mysql\Field

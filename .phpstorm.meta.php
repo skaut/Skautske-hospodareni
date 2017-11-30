@@ -2,6 +2,7 @@
 
 namespace PHPSTORM_META {
 
+    use _generated\IntegrationTesterActions;
     use Nette\DI\Container;
     use Doctrine\ORM\EntityManager;
 
@@ -11,7 +12,7 @@ namespace PHPSTORM_META {
         ])
     );
 
-    override(\IntegrationTester::grabService(0),
+    override(IntegrationTesterActions::grabService(0),
         map([
             '' => '@',
         ])

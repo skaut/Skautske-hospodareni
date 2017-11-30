@@ -3,7 +3,6 @@
 namespace Model;
 
 use Model\Services\Language;
-use Nette\Caching\IStorage;
 use Nette\Utils\ArrayHash;
 use Skautis\Skautis;
 
@@ -11,15 +10,15 @@ use Skautis\Skautis;
  * slouží pro obsluhu účastníků
  * @author Hána František <sinacek@gmail.com>
  */
-class   ParticipantService extends MutableBaseService
+class ParticipantService extends MutableBaseService
 {
 
     /** @var ParticipantTable */
     private $table;
 
-    public function __construct(string $name, ParticipantTable $table, Skautis $skautIS, IStorage $cacheStorage)
+    public function __construct(string $name, ParticipantTable $table, Skautis $skautIS)
     {
-        parent::__construct($name, $skautIS, $cacheStorage);
+        parent::__construct($name, $skautIS);
         $this->table = $table;
     }
 
@@ -206,7 +205,7 @@ class   ParticipantService extends MutableBaseService
         });
     }
 
-    public function getCampTotalPayment($campId, $category, $isAccount)
+    public function getCampTotalPayment($campId, $category, $isAccount): float
     {
         $res = 0;
         foreach ($this->getAll($campId) as $p) {

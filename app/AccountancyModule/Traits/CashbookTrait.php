@@ -1,6 +1,17 @@
 <?php
 
 use App\Forms\BaseForm;
+use Cake\Chronos\Date;
+use eGen\MessageBus\Bus\CommandBus;
+use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\ChitLockedException;
+use Model\Cashbook\ChitNotFoundException;
+use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\ChitNumber;
+use Model\Cashbook\Cashbook\Recipient;
+use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Cashbook\Commands\Cashbook\UpdateChit;
+use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
 use Model\Cashbook\ObjectType;
 use Model\ExcelService;
 use Model\ExportService;
@@ -28,6 +39,9 @@ trait CashbookTrait
 
     /** @var \Nette\Utils\ArrayHash */
     protected $event;
+
+    /** @var CommandBus */
+    protected $commandBus;
 
     public function injectConstruct(
         PdfRenderer $pdf,
@@ -93,15 +107,23 @@ trait CashbookTrait
         $this->terminate();
     }
 
+    /**
+     * @param int $id ID of chit
+     * @param int $actionId ID of event, unit or camp
+     */
     public function handleRemove(int $id, int $actionId): void
     {
         $this->editableOnly();
-        $this->isChitEditable($id);
 
-        if ($this->entityService->chits->delete($id, $actionId)) {
-            $this->flashMessage("Paragon byl smazán");
-        } else {
-            $this->flashMessage("Paragon se nepodařilo smazat");
+        $cashbookId = $this->entityService->chits->getCashbookIdFromSkautisId($actionId);
+
+        try {
+            $this->commandBus->handle(new RemoveChitFromCashbook($cashbookId, $id));
+            $this->flashMessage('Paragon byl smazán');
+        } catch (ChitLockedException $e) {
+            $this->flashMessage('Nelze smazat zamčený paragon', 'error');
+        } catch (CashbookNotFoundException | ChitNotFoundException $e) {
+            $this->flashMessage('Paragon se nepodařilo smazat');
         }
 
         if ($this->isAjax()) {
@@ -281,26 +303,38 @@ trait CashbookTrait
             $this->editableOnly();
             $values = $form->getValues();
 
+            $cashbookId = $this->entityService->chits->getCashbookIdFromSkautisId($this->aid);
+
+            $number = $values->num !== '' ? new ChitNumber($values->num) : NULL;
+            $date = Date::instance($values->date);
+            $recipient = $values->recipient !== '' ? new Recipient($values->recipient) : NULL;
+            $amount = new Amount($values->price);
+            $purpose = $values->purpose;
+            $category = $values->category;
             try {
                 if ($values['pid'] != "") {//EDIT
                     $chitId = $values['pid'];
                     unset($values['id']);
-                    $this->isChitEditable($chitId);
-                    if ($this->entityService->chits->update($chitId, $values)
-                    ) {
-                        $this->flashMessage("Paragon byl upraven.");
-                    } else {
-                        $this->flashMessage("Paragon se nepodařilo upravit.", "danger");
-                    }
+
+                    $this->commandBus->handle(
+                        new UpdateChit($cashbookId, $chitId, $number, $date, $recipient, $amount, $purpose, $category)
+                    );
+
+                    $this->flashMessage("Paragon byl upraven.");
                 } else {//ADD
-                    $this->entityService->chits->add($this->aid, $values);
+                    $this->commandBus->handle(
+                        new AddChitToCashbook($cashbookId, $number, $date, $recipient, $amount, $purpose, $category)
+                    );
+
                     $this->flashMessage("Paragon byl úspěšně přidán do seznamu.");
                 }
                 if ($this->entityService->chits->eventIsInMinus($this->getCurrentUnitId())) {
                     $this->flashMessage("Dostali jste se do záporné hodnoty.", "danger");
                 }
-            } catch (InvalidArgumentException $exc) {
+            } catch (InvalidArgumentException | CashbookNotFoundException $exc) {
                 $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
+            } catch (ChitLockedException $e) {
+                $this->flashMessage('Nelze upravit zamčený paragon', 'error');
             } catch (\Skautis\Wsdl\WsdlException $se) {
                 $this->flashMessage("Nepodařilo se upravit záznamy ve skautisu.", "danger");
             }

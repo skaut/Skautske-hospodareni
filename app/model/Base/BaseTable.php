@@ -43,11 +43,6 @@ class BaseTable
         return $ret;
     }
 
-    public function getSkautisId($localId)
-    {
-        return $this->connection->fetchSingle("SELECT skautisId FROM [" . self::TABLE_OBJECT . "] WHERE id=%i LIMIT 1", $localId);
-    }
-
     public function getByEventId($skautisEventId, $type)
     {
         $ret = $this->connection->fetch("SELECT id as localId, prefix FROM  [" . self::TABLE_OBJECT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type);

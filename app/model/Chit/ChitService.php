@@ -3,11 +3,11 @@
 namespace Model;
 
 use Dibi\Row;
+use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\EventBus;
+use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\ObjectType;
-use Model\Services\Calculator;
 use Model\Skautis\Mapper;
-use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
 class ChitService extends MutableBaseService
@@ -23,6 +23,9 @@ class ChitService extends MutableBaseService
     /** @var ChitTable */
     private $table;
 
+    /** @var CommandBus */
+    private $commandBus;
+
     /** @var EventBus */
     private $eventBus;
 
@@ -30,14 +33,15 @@ class ChitService extends MutableBaseService
         string $name,
         ChitTable $table,
         Skautis $skautIS,
-        IStorage $cacheStorage,
         Mapper $skautisMapper,
+        CommandBus $commandBus,
         EventBus $eventBus
     )
     {
-        parent::__construct($name, $skautIS, $cacheStorage);
+        parent::__construct($name, $skautIS);
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
+        $this->commandBus = $commandBus;
         $this->eventBus = $eventBus;
     }
 
@@ -103,104 +107,6 @@ class ChitService extends MutableBaseService
             }
         }
         return $ret;
-    }
-
-    /**
-     * přidat paragon
-     * @param int $skautisEventId
-     * @param array|\ArrayAccess $val - údaje
-     * @throws \Nette\InvalidArgumentException
-     */
-    public function add($skautisEventId, $val): bool
-    {
-        $localEventId = $this->getLocalId($skautisEventId);
-
-        if (!is_array($val) && !($val instanceof \ArrayAccess)) {
-            throw new \Nette\InvalidArgumentException("Values nejsou ve správném formátu");
-        }
-
-        $values = [
-            "eventId" => $localEventId,
-            "date" => $val['date'],
-            "recipient" => $val['recipient'],
-            "purpose" => $val['purpose'],
-            "price" => Calculator::calculate($val['price']),
-            "priceText" => str_replace(",", ".", $val['price']),
-            "category" => $val['category'],
-            "num" => isset($val['num']) ? $val['num'] : "",
-        ];
-
-        $ret = $this->table->add($values);
-
-        if ($this->type == self::TYPE_CAMP) {
-            try {
-                $this->updateCategory($skautisEventId, $val['category']);
-            } catch (\Skautis\Wsdl\PermissionException $ex) {
-
-            }
-        }
-
-        return (bool)$ret;
-    }
-
-    /**
-     * upravit paragon - staci vyplnit data, ktera se maji zmenit
-     * @param int $chitId
-     * @param array|\ArrayAccess $val
-     */
-    public function update($chitId, $val): bool
-    {
-        $changeAbleData = ["eventId", "date", "num", "recipient", "purpose", "price", "category"];
-
-        if (!is_array($val) && !($val instanceof \ArrayAccess)) {
-            throw new \Nette\InvalidArgumentException("Values nejsou ve správném formátu");
-        }
-        $chit = $this->get($chitId);
-
-        if (isset($val['id'])) {
-            $val['id'] = $chitId;
-        }
-
-        $toChange = [];
-        foreach ($changeAbleData as $name) {
-            if (isset($val[$name])) {
-                if ($name == 'price') {
-                    $toChange['priceText'] = str_replace(",", ".", $val[$name]);
-                    $toChange[$name] = Calculator::calculate($val[$name]);
-                    continue;
-                }
-                $toChange[$name] = $val[$name];
-            }
-        }
-
-        $ret = $this->table->update($chitId, $toChange);
-        if (array_key_exists('eventId', $toChange)) {
-            $chit['eventId'] = $toChange['eventId'];
-        }
-        if (array_key_exists('category', $toChange)) {
-            $chit['category'] = $toChange['category'];
-        }
-
-        //category update
-        if ($this->type == self::TYPE_CAMP) {
-            $skautisEventId = $this->getSkautisId($chit->eventId);
-            if ($skautisEventId !== 0) {
-                $this->updateCategory($skautisEventId, $chit->category);
-            }
-        }
-
-        return $ret;
-    }
-
-    /**
-     * smazat paragon
-     */
-    public function delete(int $chitId, int $skautisEventId): bool
-    {
-        //TBD
-        // $this->eventBus->handle(new ChitWasRemoved($this->event->ID_Unit, $user->ID, $user->Person, $id, $this->event->localId, $chit->purpose));
-
-        return $this->table->delete($chitId, $this->getLocalId($skautisEventId));
     }
 
     /**
@@ -272,6 +178,7 @@ class ChitService extends MutableBaseService
     }
 
     /**
+     * CAMP ONLY
      * vrací ID kategorie pro příjmy od účastníků
      * @param string|NULL $category
      * @throws \Nette\InvalidStateException
@@ -279,31 +186,19 @@ class ChitService extends MutableBaseService
      */
     public function getParticipantIncomeCategory(?int $skautisEventId = NULL, $category = NULL)
     {
-        $cacheId = __FUNCTION__;
-        if ($this->type == self::TYPE_CAMP) {
-            //@TODO: předělat na konstanty
-            $catId = ($category == "adult") ? 3 : 1;
-            foreach ($this->getCategories($skautisEventId) as $k => $val) {
-                if ($val->ID_EventCampStatementType == $catId) {
-                    return $k;
-                }
-            }
-            throw new \Nette\InvalidStateException("Chybí typ pro příjem od účastníků pro skupinu " . $category, 500);
-        } else {
-            if (!($res = $this->loadSes($cacheId))) {
-                foreach ($this->table->getGeneralCategories("in") as $c) {
-                    if ($c->short == "hpd") {
-                        $res = $c->id;
-                        break;
-                    }
-                }
-                $this->saveSes($cacheId, $res);
-            }
-            if (!$res) {
-                throw new \Nette\InvalidStateException("Chybí kategorie paragonů pro příjem od účastníků", 500);
-            }
-            return $res;
+        if ($this->type !== self::TYPE_CAMP) {
+            throw new \InvalidArgumentException('This method is only for camps');
         }
+
+        //@TODO: předělat na konstanty
+        $catId = ($category == "adult") ? 3 : 1;
+        foreach ($this->getCategories($skautisEventId) as $k => $val) {
+            if ($val->ID_EventCampStatementType == $catId) {
+                return $k;
+            }
+        }
+
+        throw new \Nette\InvalidStateException("Chybí typ pro příjem od účastníků pro skupinu " . $category, 500);
     }
 
     /**
@@ -323,36 +218,17 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * upraví celkový součet dané kategorie ve skautISu podle zadaných paragonů nebo podle parametru $ammout
-     * @param int $skautisEventId
-     * @param int $categoryId
-     * @param float $ammout
-     */
-    public function updateCategory($skautisEventId, $categoryId, $ammout = NULL): void
-    {
-        if ($ammout === NULL) {
-            $ammout = $this->table->getTotalInCategory($categoryId, $this->getLocalId($skautisEventId));
-        }
-        $this->skautis->event->EventCampStatementUpdate([
-            "ID" => $categoryId,
-            "ID_EventCamp" => $skautisEventId,
-            "Ammount" => $ammout,
-            "IsEstimate" => FALSE
-        ], "eventCampStatement");
-    }
-
-    /**
      * ověřuje konzistentnost dat mezi paragony a SkautISem
      * @param array|NULL $toRepair
      */
     public function isConsistent(int $skautisEventId, bool $repair = FALSE, array &$toRepair = NULL): bool
     {
         $sumSkautis = $this->getCategories($skautisEventId, FALSE);
-
+        $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
         foreach ($this->getCategoriesSum($skautisEventId) as $catId => $ammount) {
             if ($ammount != $sumSkautis[$catId]->Ammount) {
                 if ($repair) { //má se kategorie opravit?
-                    $this->updateCategory($skautisEventId, $catId, $ammount);
+                    $this->commandBus->handle(new UpdateCampCategoryTotal($cashbookId, $catId));
                 } elseif ($toRepair !== NULL) {
                     $toRepair[$catId] = $ammount; //seznam ID vadných kategorií a jejich částek
                 }
@@ -372,29 +248,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * [[ UNUSED ]]
-     * uzavře paragon proti editaci, měnit lze jen kategorie z rozpočtu jednotky
-     * @param int $oid
-     * @param int $chitId
-     * @param int $userId
-     */
-    public function lock($oid, $chitId, $userId): void
-    {
-        $this->table->lock($oid, $chitId, $userId);
-    }
-
-    /**
-     * [[ UNUSED ]]
-     * @param int $oid
-     * @param int $chitId
-     * @return \Dibi\Result|int
-     */
-    public function unlock($oid, $chitId)
-    {
-        return $this->table->unlock($oid, $chitId);
-    }
-
-    /**
      * @param int $oid
      * @param int $userId
      * @return \Dibi\Result|int
@@ -407,7 +260,8 @@ class ChitService extends MutableBaseService
     public function moveChits(array $chits, int $originEventId, string $originEventType, int $newEventId, string $newEventType): void
     {
         foreach ($chits as $chitId) {
-            $toUpdate = ["eventId" => $this->getLocalId($newEventId, $newEventType)];
+            $cashbookId = $this->getLocalId($newEventId, $newEventType);
+            $toUpdate = ["eventId" => $cashbookId];
             $chit = $this->get($chitId);
             if ($this->getLocalId($originEventId, $originEventType) !== $chit['eventId']) {
                 throw new \InvalidArgumentException("Zvolený doklad ($chitId) nenáleží původní akci ($originEventId)");
@@ -416,7 +270,21 @@ class ChitService extends MutableBaseService
             if ($originEventType !== $newEventType || $originEventType !== "general") {
                 $toUpdate["category"] = $chit['ctype'] === "out" ? self::CHIT_UNDEFINED_OUT : self::CHIT_UNDEFINED_IN;
             }
-            $this->update($chitId, $toUpdate);
+            $this->table->update($chitId, $toUpdate);
+
+            //category update
+            if ($this->type === ObjectType::CAMP) {
+                $skautisEventId = $this->getSkautisId($newEventId);
+                if ($skautisEventId !== NULL) {
+                    $this->commandBus->handle(
+                        new UpdateCampCategoryTotal(
+                            $cashbookId,
+                            $toUpdate['category'] ?? $chit->category
+                        )
+                    );
+                }
+            }
+
         }
     }
 
@@ -440,14 +308,19 @@ class ChitService extends MutableBaseService
         return $this->table->getBudgetCategoriesSummary(array_keys($categories['in']), 'in') + $this->table->getBudgetCategoriesSummary(array_keys($categories['out']), 'out');
     }
 
-    private function getSkautisId(int $localEventId): ?int
+    public function getSkautisId(int $localEventId): ?int
     {
         return $this->skautisMapper->getSkautisId($localEventId, $this->type);
     }
 
-    private function getLocalId(int $skautisEventId, string $type = NULL): int
+    public function getLocalId(int $skautisEventId, string $type = NULL): int
     {
         return $this->skautisMapper->getLocalId($skautisEventId, $type ?? $this->type);
+    }
+
+    public function getCashbookIdFromSkautisId(int $skautisid): int
+    {
+        return $this->getLocalId($skautisid);
     }
 
 }

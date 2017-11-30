@@ -2,15 +2,11 @@
 
 namespace Model\Payment\Repositories;
 
-use Doctrine\ORM\EntityManager;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 
 class MailCredentialsRepositoryTest extends \IntegrationTest
 {
-
-    /** @var EntityManager */
-    private $entityManager;
 
     /** @var MailCredentialsRepository */
     private $repository;
@@ -26,7 +22,6 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->entityManager = $this->tester->grabService(EntityManager::class);
         $this->repository = new MailCredentialsRepository($this->entityManager);
     }
 
