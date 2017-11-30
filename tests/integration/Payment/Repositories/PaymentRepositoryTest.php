@@ -2,7 +2,6 @@
 
 namespace Model\Payment\Repositories;
 
-use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Payment\Group;
 use Model\Payment\Payment;
@@ -14,9 +13,6 @@ class PaymentRepositoryTest extends \IntegrationTest
 {
 
     private const TABLE = 'pa_payment';
-
-    /** @var EntityManager */
-    private $entityManager;
 
     /** @var PaymentRepository */
     private $repository;
@@ -33,7 +29,6 @@ class PaymentRepositoryTest extends \IntegrationTest
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->entityManager = $this->tester->grabService(EntityManager::class);
         $this->repository = new PaymentRepository($this->entityManager, new EventBus());
     }
 

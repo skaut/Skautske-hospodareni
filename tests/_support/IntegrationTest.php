@@ -12,6 +12,9 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     /** @var \Doctrine\ORM\Mapping\ClassMetadata[] */
     private $metadata;
 
+    /** @var EntityManager */
+    protected $entityManager;
+
     /** @var SchemaTool */
     private $schemaTool;
 
@@ -22,9 +25,9 @@ abstract class IntegrationTest extends Codeception\Test\Unit
 
     protected function _before()
     {
-        $em = $this->tester->grabService(EntityManager::class);
-        $this->metadata = array_map([$em, 'getClassMetadata'], $this->getTestedEntites());
-        $this->schemaTool = new SchemaTool($em);
+        $this->entityManager = $this->tester->grabService(EntityManager::class);
+        $this->metadata = array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntites());
+        $this->schemaTool = new SchemaTool($this->entityManager);
         $this->schemaTool->dropSchema($this->metadata);
         $this->schemaTool->createSchema($this->metadata);
     }

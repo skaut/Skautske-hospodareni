@@ -1,10 +1,7 @@
 <?php
 
-
 namespace Model\Payment\Repositories;
 
-
-use Doctrine\ORM\EntityManager;
 use Model\Payment\BankAccount;
 use Mockery as m;
 use Model\Payment\BankAccountNotFoundException;
@@ -12,9 +9,6 @@ use Model\Payment\IUnitResolver;
 
 class BankAccountRepositoryTest extends \IntegrationTest
 {
-
-    /** @var EntityManager */
-    private $entityManager;
 
     /** @var BankAccountRepository */
     private $repository;
@@ -30,7 +24,6 @@ class BankAccountRepositoryTest extends \IntegrationTest
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->entityManager = $this->tester->grabService(EntityManager::class);
         $this->repository = new BankAccountRepository($this->entityManager);
     }
 
