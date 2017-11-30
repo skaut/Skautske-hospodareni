@@ -13,12 +13,9 @@ class LoggerService
     /** @var ILoggerRepository */
     private $logs;
 
-
-    public function __construct(
-        ILoggerRepository $lr
-    )
+    public function __construct(ILoggerRepository $logs)
     {
-        $this->logs = $lr;
+        $this->logs = $logs;
     }
 
     public function log(int $unitId, int $userId, string $description, Type $type, ?int $typeId = NULL): void
@@ -32,6 +29,5 @@ class LoggerService
             return LogFactory::create($log);
         }, $this->logs->findAllByTypeId($type, $typeId));
     }
-
 
 }

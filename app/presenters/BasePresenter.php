@@ -3,7 +3,6 @@
 namespace App;
 
 use eGen\MessageBus\Bus\CommandBus;
-use Model\LoggerService;
 use Model\UnitService;
 use Model\UserService;
 use Nette;
@@ -34,9 +33,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var WebLoader\LoaderFactory */
     private $webLoader;
 
-    /** @var LoggerService */
-    protected $loggerService;
-
     /** @var CommandBus */
     protected $commandBus;
 
@@ -44,14 +40,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         WebLoader\LoaderFactory $webLoader,
         UserService $userService,
         UnitService $unitService,
-        LoggerService $loggerService,
         CommandBus $commandBus
     ): void
     {
         $this->webLoader = $webLoader;
         $this->userService = $userService;
         $this->unitService = $unitService;
-        $this->loggerService = $loggerService;
         $this->commandBus = $commandBus;
     }
 

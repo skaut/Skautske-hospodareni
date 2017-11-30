@@ -6,6 +6,7 @@ use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use Model\ExportService;
 use Model\Logger\Log\Type;
+use Model\LoggerService;
 use Model\MemberService;
 use App\Forms\BaseForm;
 use Model\Services\PdfRenderer;
@@ -27,11 +28,15 @@ class EventPresenter extends BasePresenter
     /** @var PdfRenderer */
     private $pdf;
 
+    /** @var LoggerService */
+    private $loggerService;
+
     public function __construct(
         ExportService $exportService,
         MemberService $memberService,
         IFunctionsControlFactory $functionsFactory,
-        PdfRenderer $pdf
+        PdfRenderer $pdf,
+        LoggerService $loggerService
     )
     {
         parent::__construct();
@@ -39,6 +44,7 @@ class EventPresenter extends BasePresenter
         $this->memberService = $memberService;
         $this->functionsFactory = $functionsFactory;
         $this->pdf = $pdf;
+        $this->loggerService = $loggerService;
     }
 
     public function renderDefault(int $aid): void
