@@ -266,8 +266,6 @@ trait ParticipantTrait
 
     /**
      * formulář na přidání nové osoby
-     * @param string $name
-     * @return Form
      */
     protected function createComponentFormAddParticipantNew() : Form
     {

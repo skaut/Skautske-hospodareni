@@ -46,8 +46,6 @@ class ParticipantPresenter extends BasePresenter
 
     /**
      *
-     * @param int|NULL $aid
-     * @param int|NULL $uid
      * @param bool $dp - disabled person
      * @throws \Skautis\Wsdl\WsdlException
      */

@@ -68,8 +68,6 @@ class TravelService
 
     /**
      * vraci detail daného vozidla
-     * @param int $vehicleId - ID vozidla
-     * @return Vehicle
      */
     public function getVehicle(int $vehicleId): Vehicle
     {
@@ -85,16 +83,15 @@ class TravelService
         }
     }
 
-    public function getVehiclesPairs($unitId)
+    public function getVehiclesPairs(int $unitId): array
     {
         return $this->vehicles->getPairs($unitId);
     }
 
     /**
-     * @param int $unitId
      * @return Travel\Vehicle[]
      */
-    public function getAllVehicles($unitId)
+    public function getAllVehicles(int $unitId): array
     {
         return $this->vehicles->getAll($unitId);
     }
@@ -102,17 +99,17 @@ class TravelService
 
     public function createVehicle(string $type, int $unitId, ?int $subunitId, string $registration, float $consumption): void
     {
-        $unit = $this->units->find($unitId, TRUE);
+        $unit = $this->units->find($unitId);
 
         $subunit = $subunitId !== NULL
-            ? $this->units->find($subunitId, TRUE)
+            ? $this->units->find($subunitId)
             : NULL;
 
         $vehicle = new Vehicle($type, $unit, $subunit, $registration, $consumption);
         $this->vehicles->save($vehicle);
     }
 
-    public function removeVehicle($vehicleId)
+    public function removeVehicle(int $vehicleId): bool
     {
         if ($this->commands->countByVehicle($vehicleId) > 0) { //nelze mazat vozidlo s navazanými příkazy
             return FALSE;
@@ -145,7 +142,6 @@ class TravelService
     }
 
     /**
-     * @param int $commandId
      * @return DTO\Command\Travel[]
      * @throws CommandNotFoundException
      */
@@ -266,7 +262,7 @@ class TravelService
 
     public function createContract(int $unitId, string $unitRepresentative, \DateTimeImmutable $since, Contract\Passenger $passenger): void
     {
-        $unit = $this->units->find($unitId, TRUE);
+        $unit = $this->units->find($unitId);
 
         $contract = new Contract($unit, $unitRepresentative, $since, $passenger);
 

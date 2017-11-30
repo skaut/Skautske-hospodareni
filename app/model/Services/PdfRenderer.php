@@ -18,8 +18,6 @@ class PdfRenderer
 
     /**
      * Renders PDF to output stream
-     * @param string $template
-     * @param string $filename
      * @param bool $landscape TRUE for landscape, FALSE for portrait mode
      */
     public function render(string $template, string $filename, bool $landscape = FALSE) : void

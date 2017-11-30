@@ -9,9 +9,7 @@ interface IContractRepository
 {
 
     /**
-     * @param int $id
      * @throws ContractNotFoundException
-     * @return Contract
      */
     public function find(int $id): Contract;
 

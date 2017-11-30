@@ -21,7 +21,6 @@ use Nette\SmartObject;
  * @property-read EmailTemplate $emailTemplate
  * @property-read int|NULL $smtpId
  * @property-read string $note
- * @property-read Summary[] $stats
  */
 class Group
 {
@@ -102,10 +101,6 @@ class Group
         $this->bankAccountId = $bankAccountId;
     }
 
-
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
@@ -116,9 +111,6 @@ class Group
         return $this->type;
     }
 
-    /**
-     * @return int
-     */
     public function getUnitId(): int
     {
         return $this->unitId;
@@ -129,33 +121,21 @@ class Group
         return $this->skautisId;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return float|NULL
-     */
     public function getDefaultAmount() : ?float
     {
         return $this->defaultAmount;
     }
 
-    /**
-     * @return \DateTimeImmutable|NULL
-     */
     public function getDueDate() : ?DateTimeImmutable
     {
         return $this->dueDate;
     }
 
-    /**
-     * @return int|NULL
-     */
     public function getConstantSymbol() : ?int
     {
         return $this->constantSymbol;
@@ -176,9 +156,6 @@ class Group
         return $this->emailTemplate;
     }
 
-    /**
-     * @return string
-     */
     public function getSmtpId(): ?int
     {
         return $this->smtpId;

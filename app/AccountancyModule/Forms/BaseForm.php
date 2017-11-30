@@ -23,7 +23,6 @@ class BaseForm extends Form
     /**
      * @deprecated CSRF protection is auto-enabled for all forms
      * @param string|NULL $message
-     * @return CsrfProtection
      */
     public function addProtection($message = NULL) : CsrfProtection
     {

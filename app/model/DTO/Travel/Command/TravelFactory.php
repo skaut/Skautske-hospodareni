@@ -10,7 +10,6 @@ class TravelFactory
     use StaticClass;
 
     /**
-     * @param Command $command
      * @return Travel[]
      */
     public static function createList(Command $command): array

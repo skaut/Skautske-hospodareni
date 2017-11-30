@@ -18,7 +18,7 @@ final class UnitResolver implements IUnitResolver
 
     public function getOfficialUnitId(int $unitId): int
     {
-        $unit = $this->units->find($unitId, TRUE);
+        $unit = $this->units->find($unitId);
 
         if($unit->isOfficial()) {
             return $unitId;

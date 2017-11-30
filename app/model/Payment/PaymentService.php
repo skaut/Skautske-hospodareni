@@ -67,7 +67,6 @@ class PaymentService
     }
 
     /**
-	 * @param int $groupId
 	 * @return DTO\Payment[]
 	 */
     public function findByGroup(int $groupId): array
@@ -128,7 +127,6 @@ class PaymentService
 
     /**
      * @param int[] $unitIds
-     * @param bool $onlyOpen
      * @return DTO\Group[]
      */
     public function getGroups(array $unitIds, bool $onlyOpen): array
@@ -392,7 +390,7 @@ class PaymentService
     /**
      * @param int $unitId
      * @param int $year
-     * @return array | NULL - format array("add" => [], "remove" => [])
+     * @return array - format array("add" => [], "remove" => [])
      */
     public function getJournalChangesAfterRegistration($unitId, $year): array
     {
@@ -581,8 +579,6 @@ class PaymentService
 
 
     /**
-     * @param int $gid
-     * @return int
      * @throws MissingVariableSymbolException
      */
     public function generateVs(int $gid): int

@@ -9,11 +9,9 @@ interface IVehicleRepository
 {
 
     /**
-     * @param int $id
      * @throws VehicleNotFoundException
-     * @return Vehicle
      */
-    public function get(int $id);
+    public function get(int $id): Vehicle;
 
     /**
      * @param int[] $ids
@@ -22,27 +20,20 @@ interface IVehicleRepository
     public function findByIds(array $ids): array;
 
     /**
-     * @param $unitId
      * @return Vehicle[]
      */
-    public function getAll($unitId);
+    public function getAll(int $unitId): array;
 
     /**
-     * @param int $unitId
-     * @return array
+     * @return array in format [id => label]
      */
-    public function getPairs($unitId);
+    public function getPairs(int $unitId): array;
 
-    /**
-     * @param Vehicle $vehicle
-     */
     public function save(Vehicle $vehicle): void;
 
     /**
      * Removes vehicle with specified ID
-     * @param $vehicleId
-     * @return bool
      */
-    public function remove($vehicleId);
+    public function remove(int $vehicleId): bool;
 
 }

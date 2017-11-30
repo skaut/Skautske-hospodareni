@@ -10,6 +10,7 @@ use Model\Travel\Command\TravelDetails;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
+use Nette\Bridges\ApplicationLatte\Template;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -84,7 +85,7 @@ class DefaultPresenter extends BasePresenter
         $travels = $this->travelService->getTravels($commandId);
         $vehicleId = $command->getVehicleId();
 
-        /* @var $template \Nette\Bridges\ApplicationLatte\Template */
+        /** @var \Nette\Bridges\ApplicationLatte\Template $template */
         $template = $this->getTemplateFactory()->createTemplate();
         $template->setParameters([
             "command" => $command,

@@ -20,11 +20,9 @@ class VehicleRepository implements IVehicleRepository
     }
 
     /**
-     * @param int $id
      * @throws VehicleNotFoundException
-     * @return Vehicle
      */
-    public function get(int $id)
+    public function get(int $id): Vehicle
     {
         $vehicle = $this->em->find(Vehicle::class, $id);
 
@@ -51,10 +49,9 @@ class VehicleRepository implements IVehicleRepository
     }
 
     /**
-     * @param $unitId
      * @return Vehicle[]
      */
-    public function getAll($unitId)
+    public function getAll(int $unitId): array
     {
         $vehicles = $this->em->createQueryBuilder()
             ->select('v')
@@ -72,11 +69,7 @@ class VehicleRepository implements IVehicleRepository
         return $vehicles;
     }
 
-    /**
-     * @param int $unitId
-     * @return array
-     */
-    public function getPairs($unitId)
+    public function getPairs(int $unitId): array
     {
         $vehicles = $this->em->getRepository(Vehicle::class)->findBy([
             'unitId' => $unitId,
@@ -85,7 +78,7 @@ class VehicleRepository implements IVehicleRepository
 
         return ArrayType::mapByCallback($vehicles, function(KeyValuePair $pair) {
             $value = $pair->getValue();
-            /* @var $value Vehicle */
+            /** @var Vehicle $value */
             return new KeyValuePair($value->getId(), $value->getLabel());
         });
 
@@ -97,12 +90,7 @@ class VehicleRepository implements IVehicleRepository
         $this->em->flush();
     }
 
-    /**
-     * Removes vehicle with specified ID
-     * @param $vehicleId
-     * @return bool
-     */
-    public function remove($vehicleId): bool
+    public function remove(int $vehicleId): bool
     {
         try {
             $this->em->remove($this->get($vehicleId));

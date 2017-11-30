@@ -56,7 +56,7 @@ class CampPresenter extends BasePresenter
         $participants = $this->campService->participants->getAll($group->getSkautisId());
 
         $form = $this['massAddForm'];
-        /* @var $form MassAddForm */
+        /** @var MassAddForm $form */
 
         $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
 

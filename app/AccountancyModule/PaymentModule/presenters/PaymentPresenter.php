@@ -199,7 +199,7 @@ class PaymentPresenter extends BasePresenter
         }
 
         $form = $this['massAddForm'];
-        /* @var $form MassAddForm */
+        /** @var MassAddForm $form */
 
         $list = $this->model->getPersons($this->aid, $id);
 
@@ -230,7 +230,7 @@ class PaymentPresenter extends BasePresenter
             "accountFrom" => $accountFrom,
         ]);
 
-        /* @var $payments Payment[] */
+        /** @var Payment[] $payments */
         $payments = [];
         foreach ($this->model->findByGroup($id) as $p) {
             if ($p->getState()->equalsValue(State::COMPLETED) && $p->getPersonId() !== NULL) {

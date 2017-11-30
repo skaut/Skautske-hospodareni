@@ -80,7 +80,6 @@ abstract class BasePresenter extends \App\BasePresenter
 
     /**
      * Returns current unit ID (e.g oddíl)
-     * @return int
      */
     public function getCurrentUnitId(): int
     {

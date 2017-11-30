@@ -152,7 +152,7 @@ class CommandForm extends Control
 
         $contractId = $command->getPassenger()->getContractId();
 
-        /* @var $contracts SelectBox */
+        /** @var SelectBox $contracts */
         $contracts = $form['contract_id'];
 
         if($contractId !== NULL && ! isset($contracts->getItems()[$contractId])) {
@@ -181,7 +181,7 @@ class CommandForm extends Control
             return;
         }
 
-        /* @var $vehicles \Nette\Forms\Controls\SelectBox */
+        /** @var \Nette\Forms\Controls\SelectBox $vehicles */
         $vehicles = $form["vehicle_id"];
 
         if (!in_array($vehicleId, $vehicles->getItems())) {

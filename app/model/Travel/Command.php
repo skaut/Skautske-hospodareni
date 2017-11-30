@@ -193,7 +193,6 @@ class Command
 
     /**
      * Rounded price per km - do not use for calculation
-     * @return Money
      */
     public function getPricePerKm(): Money
     {
@@ -314,9 +313,7 @@ class Command
     }
 
     /**
-     * @param int $id
      * @throws TravelNotFoundException
-     * @return Travel
      */
     private function getTravel(int $id): Travel
     {

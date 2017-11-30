@@ -39,7 +39,7 @@ final class MailCredentialsRepository implements IMailCredentialsRepository
         $credentialsList = $this->entityManager->getRepository(MailCredentials::class)->findBy(['unitId IN' => $unitIds]);
 
         foreach($credentialsList as $credentials) {
-            /* @var $credentials MailCredentials */
+            /** @var MailCredentials $credentials */
             $byUnit[$credentials->getUnitId()][] = $credentials;
         }
 
