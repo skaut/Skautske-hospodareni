@@ -8,6 +8,7 @@ use Model\Cashbook\CashbookService;
 use Model\Cashbook\Commands\Cashbook\LockChit;
 use Model\Cashbook\Commands\Cashbook\UnlockChit;
 use Model\Cashbook\ObjectType;
+use Model\EventEntity;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -108,6 +109,7 @@ class ChitPresenter extends BasePresenter
             $this->flashMessage("Neplatný přístup!", "danger");
         } else {
             $service = $this->context->getService(($type == "unit" ? "unitAccount" : $type) . "Service");
+            /** @var EventEntity $service */
             $service->chits->lockEvent($service->chits->getLocalId($sid), $this->user->id);
         }
 

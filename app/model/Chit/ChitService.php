@@ -313,7 +313,7 @@ class ChitService extends MutableBaseService
         return $this->skautisMapper->getSkautisId($localEventId, $this->type);
     }
 
-    private function getLocalId(int $skautisEventId, string $type = NULL): int
+    public function getLocalId(int $skautisEventId, string $type = NULL): int
     {
         return $this->skautisMapper->getLocalId($skautisEventId, $type ?? $this->type);
     }
