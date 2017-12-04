@@ -85,7 +85,8 @@ class MassAddForm extends Control
             ->addConditionOn($container["selected"], $form::FILLED)
             ->addConditionOn($form["amount"], $form::BLANK)
                 ->setRequired("Musíte vyplnit částku")
-                ->addRule($form::FLOAT, "Částka musí být číslo");
+                ->addRule($form::FLOAT, "Částka musí být číslo")
+                ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01);
 
         $container->addDatePicker('dueDate', "Splatnost:")
             ->setAttribute('class', 'input-small')
