@@ -597,7 +597,7 @@ class PaymentService
 
         foreach ($payments as $payment) {
             $payment->updateVariableSymbol($nextVS);
-            $nextVs = $nextVS->increment();
+            $nextVS = $nextVS->increment();
         }
 
         $this->payments->saveMany($payments);
