@@ -583,9 +583,9 @@ class PaymentService
      */
     public function generateVs(int $gid): int
     {
-        $nextVS = $this->getNextVS($gid);
+        $nextVariableSymbol = $this->getNextVS($gid);
 
-        if($nextVS === NULL) {
+        if($nextVariableSymbol === NULL) {
             throw new MissingVariableSymbolException();
         }
 
@@ -596,8 +596,8 @@ class PaymentService
         });
 
         foreach ($payments as $payment) {
-            $payment->updateVariableSymbol($nextVS);
-            $nextVs = $nextVS->increment();
+            $payment->updateVariableSymbol($nextVariableSymbol);
+            $nextVariableSymbol = $nextVariableSymbol->increment();
         }
 
         $this->payments->saveMany($payments);
