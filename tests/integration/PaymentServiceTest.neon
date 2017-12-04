@@ -1,0 +1,9 @@
+services:
+    - Model\PaymentService(%tempDir%)
+    - Model\Payment\Repositories\PaymentRepository
+    - Model\Payment\Repositories\GroupRepository
+    - Model\Payment\Repositories\BankAccountRepository
+    - Stubs\Skautis
+
+includes:
+    - config/doctrine.neon
