@@ -49,8 +49,42 @@ class Cashbook extends AbstractAggregate
         ICategory $category
     ): void
     {
-        $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $category);
+        $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $this->getChitCategory($category));
         $this->raise(new ChitWasAdded($this->id, $category->getId()));
+    }
+
+    /**
+     * Adds inverse chit for chit in specified cashbook
+     * @throws InvalidCashbookTransferException
+     */
+    public function addInverseChit(Cashbook $cashbook, int $chitId): void
+    {
+        $originalChit = $cashbook->getChit($chitId);
+        $originalCategoryId = $originalChit->getCategoryId();
+
+        if ($this->type->getTransferToCategoryId() === $originalCategoryId) {
+            // chit is transfer TO this cashbook
+            $categoryId = $cashbook->type->getTransferFromCategoryId();
+        } elseif ($this->type->getTransferFromCategoryId() === $originalCategoryId) {
+            // chit is transfer FROM this cashbook
+            $categoryId = $cashbook->type->getTransferToCategoryId();
+        } else {
+            throw new InvalidCashbookTransferException(
+                "Can't create inverse chit to chit with category '$originalCategoryId'"
+            );
+        }
+
+        $this->chits[] = new Chit(
+            $this,
+            NULL,
+            $originalChit->getDate(),
+            $originalChit->getRecipient(),
+            $originalChit->getAmount(),
+            $originalChit->getPurpose(),
+            new Cashbook\Category($categoryId, $originalChit->getCategory()->getOperationType()->getInverseOperation())
+        );
+
+        $this->raise(new ChitWasAdded($this->id, $categoryId));
     }
 
     /**
@@ -74,7 +108,7 @@ class Cashbook extends AbstractAggregate
             throw new ChitLockedException();
         }
 
-        $chit->update($number, $date, $recipient, $amount, $purpose, $category);
+        $chit->update($number, $date, $recipient, $amount, $purpose, $this->getChitCategory($category));
 
         $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $category->getId()));
     }
@@ -160,6 +194,11 @@ class Cashbook extends AbstractAggregate
         }
 
         throw new ChitNotFoundException();
+    }
+
+    private function getChitCategory(ICategory $category): Cashbook\Category
+    {
+        return new Cashbook\Category($category->getId(), $category->getOperationType());
     }
 
 }
