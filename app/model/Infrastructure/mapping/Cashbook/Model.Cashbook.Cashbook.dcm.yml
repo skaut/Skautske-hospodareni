@@ -8,6 +8,12 @@ Model\Cashbook\Cashbook:
             type: integer
             generator: { strategy: none }
 
+    fields:
+        type:
+            type: string_enum
+            annotations:
+                enum: { class: Model\Cashbook\Cashbook\CashbookType }
+
     oneToMany:
         chits:
             targetEntity: Model\Cashbook\Cashbook\Chit

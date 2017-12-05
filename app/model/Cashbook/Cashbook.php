@@ -5,6 +5,7 @@ namespace Model\Cashbook;
 use Cake\Chronos\Date;
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
@@ -16,13 +17,27 @@ use Model\Common\AbstractAggregate;
 class Cashbook extends AbstractAggregate
 {
 
+    /** @var CashbookType */
+    private $type;
+
     /** @var ArrayCollection|Chit[] */
     private $chits;
 
-    public function __construct(int $id)
+    public function __construct(int $id, CashbookType $type)
     {
         $this->id = $id;
+        $this->type = $type;
         $this->chits = new ArrayCollection();
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getType(): CashbookType
+    {
+        return $this->type;
     }
 
     public function addChit(

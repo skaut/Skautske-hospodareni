@@ -4,6 +4,7 @@ namespace Model\Cashbook;
 
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Events\ChitWasRemoved;
@@ -119,7 +120,7 @@ class CashbookIntegrationTest extends \IntegrationTest
 
     private function createCashbookWithChit(): Cashbook
     {
-        $cashbook = new Cashbook(10);
+        $cashbook = new Cashbook(10, CashbookType::get(CashbookType::EVENT));
         $cashbook->addChit(NULL, new Date('2017-11-17'), NULL, new Cashbook\Amount('100'), 'purpose', 666);
         $cashbook->extractEventsToDispatch();
 
@@ -132,7 +133,7 @@ class CashbookIntegrationTest extends \IntegrationTest
 
     public function testLock(): void
     {
-        $cashbook = new Cashbook(11);
+        $cashbook = new Cashbook(11, CashbookType::get(CashbookType::EVENT));
 
         for ($i = 0; $i < 5; $i++) {
             $cashbook->addChit(
