@@ -15,7 +15,7 @@ class CashbookRepository extends AbstractRepository implements ICashbookReposito
         $cashboook = $this->getEntityManager()->find(Cashbook::class, $id);
 
         if($cashboook === NULL) {
-            throw new CashbookNotFoundException();
+            throw new CashbookNotFoundException("Cashbook #$id not found");
         }
 
         return $cashboook;

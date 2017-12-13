@@ -43,6 +43,9 @@ trait CashbookTrait
     /** @var CommandBus */
     protected $commandBus;
 
+    /** @var \Psr\Log\LoggerInterface */
+    protected $logger;
+
     public function injectConstruct(
         PdfRenderer $pdf,
         ExportService $exports,
@@ -333,6 +336,7 @@ trait CashbookTrait
                 }
             } catch (InvalidArgumentException | CashbookNotFoundException $exc) {
                 $this->flashMessage("Paragon se nepodařilo přidat do seznamu.", "danger");
+                $this->logger->error(sprintf("Can't add chit to cashbook (%s: %s)", get_class($exc), $exc->getMessage()));
             } catch (ChitLockedException $e) {
                 $this->flashMessage('Nelze upravit zamčený paragon', 'error');
             } catch (\Skautis\Wsdl\WsdlException $se) {
