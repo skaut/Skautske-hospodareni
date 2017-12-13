@@ -6,6 +6,7 @@ use eGen\MessageBus\Bus\CommandBus;
 use Model\UnitService;
 use Model\UserService;
 use Nette;
+use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
 use WebLoader\Nette as WebLoader;
 
@@ -36,17 +37,22 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var CommandBus */
     protected $commandBus;
 
+    /** @var LoggerInterface */
+    protected $logger;
+
     public function injectAll(
         WebLoader\LoaderFactory $webLoader,
         UserService $userService,
         UnitService $unitService,
-        CommandBus $commandBus
+        CommandBus $commandBus,
+        LoggerInterface $logger
     ): void
     {
         $this->webLoader = $webLoader;
         $this->userService = $userService;
         $this->unitService = $unitService;
         $this->commandBus = $commandBus;
+        $this->logger = $logger;
     }
 
     protected function startup(): void

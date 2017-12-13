@@ -32,25 +32,9 @@ class BaseTable
         $this->connection = $connection;
     }
 
-    /**
-     * vyhleda akci|jednotku a pokud tam není, tak založí její záznam
-     */
-    public function getLocalId(int $skautisEventId, string $type): int
-    {
-        if (!($ret = $this->connection->fetchSingle("SELECT id FROM [" . self::TABLE_OBJECT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type))) {
-            $ret = $this->connection->insert(self::TABLE_OBJECT, ["skautisId" => $skautisEventId, "type" => $type])->execute(\dibi::IDENTIFIER);
-        }
-        return $ret;
-    }
-
     public function getByEventId($skautisEventId, $type)
     {
-        $ret = $this->connection->fetch("SELECT id as localId, prefix FROM  [" . self::TABLE_OBJECT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type);
-        if (!$ret) {
-            $this->getLocalId($skautisEventId, $type);
-            $ret = $this->{__FUNCTION__}($skautisEventId, $type);
-        }
-        return $ret;
+        return $this->connection->fetch("SELECT id as localId, prefix FROM  [" . self::TABLE_OBJECT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type);
     }
 
 }
