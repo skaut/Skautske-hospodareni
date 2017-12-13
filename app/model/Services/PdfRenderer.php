@@ -8,11 +8,15 @@ use Mpdf\Output\Destination;
 class PdfRenderer
 {
 
+    /** @var string */
+    private $tempDir;
+
     /** @var TemplateFactory */
     private $templateFactory;
 
-    public function __construct(TemplateFactory $templateFactory)
+    public function __construct(string $tempDir, TemplateFactory $templateFactory)
     {
+        $this->tempDir = $tempDir;
         $this->templateFactory = $templateFactory;
     }
 
@@ -29,6 +33,7 @@ class PdfRenderer
             'margin_right' => 10,
             'margin_top' => 10,
             'margin_bottom' => 10,
+            'tempDir' => $this->tempDir,
         ]);
 
         @$mpdf->WriteHTML($template, 0);

@@ -99,6 +99,8 @@ autoDI:
 services:
     - App\RouterFactory
 
+    - Model\Services\PdfRenderer(%tempDir%)
+
     - Model\PaymentService(%tempDir%)
     - Model\Payment\BankAccountService(fioCache: @fio.cache)
     - Model\MemberService(@skautis.org)
