@@ -10,6 +10,7 @@ use Model\Event\LeaderNotAdultException;
 use Model\Event\Repositories\IEventRepository;
 use Model\Events\Events\EventWasClosed;
 use Model\Events\Events\EventWasOpened;
+use Model\Skautis\Mapper;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
@@ -36,6 +37,9 @@ class EventService extends MutableBaseService
     /** @var UnitService */
     private $units;
 
+    /** @var Mapper */
+    private $mapper;
+
     /** @var  EventBus */
     private $eventBus;
 
@@ -47,6 +51,7 @@ class EventService extends MutableBaseService
         Connection $connection,
         IEventRepository $eventRepository,
         EventBus $eventBus,
+        Mapper $mapper,
         UnitService $units
     )
     {
@@ -57,6 +62,7 @@ class EventService extends MutableBaseService
         $this->connection = $connection;
         $this->eventRepository = $eventRepository;
         $this->eventBus = $eventBus;
+        $this->mapper = $mapper;
         $this->units = $units;
     }
 
@@ -72,6 +78,7 @@ class EventService extends MutableBaseService
         $ret = [];
         if (is_array($events)) {
             foreach ($events as $e) {
+                $this->mapper->getLocalId($e->ID, $this->type); // called only to create record in ac_object
                 $ret[$e->ID] = (array)$e + (array)$this->table->getByEventId($e->ID, $this->type);
             }
         }
@@ -90,6 +97,7 @@ class EventService extends MutableBaseService
         try {
             $cacheId = __FUNCTION__ . $ID;
             if (!($res = $this->loadSes($cacheId))) {
+                $this->mapper->getLocalId($ID, $this->type); // called only to create record in ac_object
                 $localData = (array)$this->table->getByEventId($ID, $this->type);
                 if (in_array($this->type, [self::TYPE_GENERAL, self::TYPE_CAMP])) {
                     $skautisData = (array)$this->skautis->event->{"Event" . $this->typeName . "Detail"}(["ID" => $ID]);
@@ -258,7 +266,8 @@ class EventService extends MutableBaseService
      */
     public function updatePrefix($skautisId, $prefix): bool
     {
-        return (bool)$this->table->updatePrefix($skautisId, strtolower($this->typeName), $prefix);
+        $localId = $this->mapper->getLocalId($skautisId, strtolower($this->typeName));
+        return $this->table->updatePrefix($localId , $prefix);
     }
 
     /**
@@ -273,7 +282,7 @@ class EventService extends MutableBaseService
         $old = $this->get($ID);
 
         if (isset($data['prefix'])) {
-            $this->updatePrefix($ID, $data['prefix']);
+            $this->updatePrefix((int)$ID, $data['prefix']);
             unset($data['prefix']);
         }
 

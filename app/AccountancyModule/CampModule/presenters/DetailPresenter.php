@@ -97,7 +97,7 @@ class DetailPresenter extends BasePresenter
         }
         $values = $form->getValues();
 
-        if ($this->eventService->event->updatePrefix($values['aid'], $values['prefix'])) {
+        if ($this->eventService->event->updatePrefix((int) $values['aid'], $values['prefix'])) {
             $this->flashMessage("Prefix byl nastaven.");
 
         } else {
