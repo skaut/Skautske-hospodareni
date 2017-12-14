@@ -1,10 +1,12 @@
 <?php
 
-namespace Model\Payment\Repositories;
+declare(strict_types=1);
 
+namespace Model\Skautis\Common\Repositories;
 
-use Model\Payment\User;
-use Model\Payment\UserNotFoundException;
+use Model\Common\Repositories\IUserRepository;
+use Model\Common\User;
+use Model\Common\UserNotFoundException;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 
@@ -19,15 +21,16 @@ class UserRepository implements IUserRepository
         $this->skautis = $skautis;
     }
 
-    public function find(int $id) : User
+    public function find(int $id): User
     {
         try {
             $user = $this->skautis->user->UserDetail(["ID" => $id]);
-            if($user instanceof \stdClass) {
+            if ($user instanceof \stdClass) {
                 $person = $this->skautis->org->PersonDetail(['ID' => $user->ID_Person]);
+
                 return new User($id, $user->Person, $person->Email);
             }
-        } catch(PermissionException $e) {
+        } catch (PermissionException $e) {
 
         }
         throw new UserNotFoundException();

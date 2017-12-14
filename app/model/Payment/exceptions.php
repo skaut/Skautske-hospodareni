@@ -18,10 +18,6 @@ class InvalidBankAccountException extends \Exception
 {
 }
 
-class UserNotFoundException extends \Exception
-{
-}
-
 class EmailNotSetException extends \Exception
 {
 }
