@@ -5,6 +5,7 @@ namespace App\AccountancyModule\TravelModule;
 use App\AccountancyModule\TravelModule\Components\VehicleGrid;
 use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 use App\Forms\BaseForm;
+use Model\Travel\Commands\Vehicle\CreateVehicle;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 use Model\TravelService;
@@ -128,13 +129,15 @@ class VehiclePresenter extends BasePresenter
 
     private function formCreateVehicleSubmitted(ArrayHash $values): void
     {
-        $this->travelService->createVehicle(
-            $values->type,
-            $this->getUnitId(),
-            $values->subunitId,
-            $values->registration,
-            $values->consumption,
-            $this->getUser()->getId()
+        $this->commandBus->handle(
+            new CreateVehicle(
+                $values->type,
+                $this->getUnitId(),
+                $values->subunitId,
+                $values->registration,
+                $values->consumption,
+                $this->getUser()->getId()
+            )
         );
 
         $this->flashMessage("Vozidlo bylo vytvořeno");
