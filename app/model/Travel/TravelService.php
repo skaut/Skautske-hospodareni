@@ -71,13 +71,13 @@ class TravelService
      */
     public function getVehicle(int $vehicleId): Vehicle
     {
-        return $this->vehicles->get($vehicleId);
+        return $this->vehicles->find($vehicleId);
     }
 
     public function findVehicle(int $id): ?Vehicle
     {
         try {
-            return $this->vehicles->get($id);
+            return $this->vehicles->find($id);
         } catch (VehicleNotFoundException $e) {
             return NULL;
         }
@@ -93,7 +93,7 @@ class TravelService
      */
     public function getAllVehicles(int $unitId): array
     {
-        return $this->vehicles->getAll($unitId);
+        return $this->vehicles->findByUnit($unitId);
     }
 
 
@@ -114,7 +114,16 @@ class TravelService
         if ($this->commands->countByVehicle($vehicleId) > 0) { //nelze mazat vozidlo s navazanými příkazy
             return FALSE;
         }
-        return $this->vehicles->remove($vehicleId);
+
+        try {
+            $vehicle = $this->vehicles->find($vehicleId);
+
+            $this->vehicles->remove($vehicle);
+
+            return TRUE;
+        } catch (VehicleNotFoundException $e) {
+            return FALSE;
+        }
     }
 
     /**
@@ -315,7 +324,7 @@ class TravelService
     ): void
     {
         $vehicle = $vehicleId !== NULL
-            ? $this->vehicles->get($vehicleId)
+            ? $this->vehicles->find($vehicleId)
             : NULL;
 
         $command = new Command(
@@ -351,7 +360,7 @@ class TravelService
         $command = $this->commands->find($id);
 
         $vehicle = $vehicleId !== NULL
-            ? $this->vehicles->get($vehicleId)
+            ? $this->vehicles->find($vehicleId)
             : NULL;
 
         $command->update(
