@@ -5,6 +5,7 @@ namespace Model;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use Dibi\Row;
+use Model\Common\Repositories\IUserRepository;
 use Model\DTO\Travel as DTO;
 use Model\DTO\Travel\Command\Travel as TravelDTO;
 use Model\Travel\Command;
@@ -47,13 +48,17 @@ class TravelService
     /** @var IUnitRepository */
     private $units;
 
+    /** @var IUserRepository */
+    private $users;
+
     public function __construct(
         CommandTable $table,
         TravelTable $tableTravel,
         IVehicleRepository $vehicles,
         ICommandRepository $commands,
         IContractRepository $contracts,
-        IUnitRepository $units
+        IUnitRepository $units,
+        IUserRepository $users
     )
     {
         $this->table = $table;
@@ -62,6 +67,7 @@ class TravelService
         $this->commands = $commands;
         $this->contracts = $contracts;
         $this->units = $units;
+        $this->users = $users;
     }
 
     /**     VEHICLES    */
@@ -97,7 +103,14 @@ class TravelService
     }
 
 
-    public function createVehicle(string $type, int $unitId, ?int $subunitId, string $registration, float $consumption): void
+    public function createVehicle(
+        string $type,
+        int $unitId,
+        ?int $subunitId,
+        string $registration,
+        float $consumption,
+        int $userId
+    ): void
     {
         $unit = $this->units->find($unitId);
 
@@ -105,7 +118,11 @@ class TravelService
             ? $this->units->find($subunitId)
             : NULL;
 
-        $vehicle = new Vehicle($type, $unit, $subunit, $registration, $consumption);
+        $user = $this->users->find($userId);
+
+        $metadata = new Vehicle\Metadata(new \DateTimeImmutable(), $user->getName());
+
+        $vehicle = new Vehicle($type, $unit, $subunit, $registration, $consumption, $metadata);
         $this->vehicles->save($vehicle);
     }
 

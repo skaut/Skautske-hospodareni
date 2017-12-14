@@ -2,6 +2,7 @@
 
 namespace Model\Travel;
 
+use Model\Travel\Vehicle\Metadata;
 use Model\Unit\Unit;
 use Nette;
 
@@ -32,8 +33,11 @@ class Vehicle extends Nette\Object
     /** @var bool */
     private $archived = FALSE;
 
+    /** @var Metadata */
+    private $metadata;
 
-    public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption)
+
+    public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption, Metadata $metadata)
     {
         $this->type = $type;
         $this->unitId = $unit->getId();
@@ -48,6 +52,7 @@ class Vehicle extends Nette\Object
 
         $this->registration = $registration;
         $this->consumption = $consumption;
+        $this->metadata = $metadata;
     }
 
     public function archive(): void
@@ -107,6 +112,11 @@ class Vehicle extends Nette\Object
     public function getLabel(): string
     {
         return $this->type . ' (' . $this->registration . ')';
+    }
+
+    public function getMetadata(): Metadata
+    {
+        return $this->metadata;
     }
 
 }

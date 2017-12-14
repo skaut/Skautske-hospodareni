@@ -133,7 +133,8 @@ class VehiclePresenter extends BasePresenter
             $this->getUnitId(),
             $values->subunitId,
             $values->registration,
-            $values->consumption
+            $values->consumption,
+            $this->getUser()->getId()
         );
 
         $this->flashMessage("Vozidlo bylo vytvořeno");
