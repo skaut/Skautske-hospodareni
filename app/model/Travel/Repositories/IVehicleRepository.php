@@ -24,11 +24,6 @@ interface IVehicleRepository
      */
     public function findByUnit(int $unitId): array;
 
-    /**
-     * @return array<int,string> in format [id => label]
-     */
-    public function getPairs(int $unitId): array;
-
     public function save(Vehicle $vehicle): void;
 
     public function remove(Vehicle $vehicle): void;

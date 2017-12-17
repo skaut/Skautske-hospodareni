@@ -2,8 +2,6 @@
 
 namespace Model\Infrastructure\Repositories\Travel;
 
-use Consistence\Type\ArrayType\ArrayType;
-use Consistence\Type\ArrayType\KeyValuePair;
 use Doctrine\ORM\EntityManager;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
@@ -68,21 +66,6 @@ class VehicleRepository implements IVehicleRepository
         }
 
         return $vehicles;
-    }
-
-    public function getPairs(int $unitId): array
-    {
-        $vehicles = $this->em->getRepository(Vehicle::class)->findBy([
-            'unitId' => $unitId,
-            'archived' => FALSE,
-        ]);
-
-        return ArrayType::mapByCallback($vehicles, function(KeyValuePair $pair) {
-            $value = $pair->getValue();
-            /** @var Vehicle $value */
-            return new KeyValuePair($value->getId(), $value->getLabel());
-        });
-
     }
 
     public function save(Vehicle $vehicle): void

@@ -82,9 +82,19 @@ class TravelService
         }
     }
 
+
+    /**
+     * @return array<int,string> in format [id => label]
+     */
     public function getVehiclesPairs(int $unitId): array
     {
-        return $this->vehicles->getPairs($unitId);
+        $pairs = [];
+
+        foreach($this->vehicles->findByUnit($unitId) as $vehicle) {
+            $pairs[$vehicle->getId()] = $vehicle->getLabel();
+        }
+
+        return $pairs;
     }
 
     /**
