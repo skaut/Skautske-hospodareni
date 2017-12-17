@@ -59,29 +59,6 @@ trait CashbookTrait
         $this->memberService = $members;
     }
 
-    public function renderEdit(int $id, int $aid): void
-    {
-        $this->editableOnly();
-        $this->isChitEditable($id);
-
-        $defaults = $this->entityService->chits->get($id);
-        $defaults['id'] = $id;
-        $defaults['price'] = $defaults['priceText'];
-
-        if ($defaults['ctype'] == "out") {
-            $form = $this['formOutEdit'];
-            $form->setDefaults($defaults);
-            $this->template->ctype = $defaults['ctype'];
-        } else {
-            $form = $this['formInEdit'];
-            $form->setDefaults($defaults);
-        }
-        $form['recipient']->setHtmlId("form-edit-recipient");
-        $form['price']->setHtmlId("form-edit-price");
-        $this->template->form = $form;
-        $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
-    }
-
     public function actionExport(int $aid): void
     {
         $template = $this->exportService->getCashbook($aid, $this->entityService);
