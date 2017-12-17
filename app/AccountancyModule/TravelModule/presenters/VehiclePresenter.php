@@ -57,7 +57,7 @@ class VehiclePresenter extends BasePresenter
     {
         $vehicle = $this->getVehicle($id);
         $this->template->vehicle = $vehicle;
-
+        $this->template->vehicleDTO = $this->travelService->getVehicleDTO($id);
         if($vehicle->getSubunitId() !== NULL) {
             $this->template->subunitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
         }

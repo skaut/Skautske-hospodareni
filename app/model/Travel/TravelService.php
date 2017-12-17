@@ -73,6 +73,17 @@ class TravelService
         return $this->vehicles->find($vehicleId);
     }
 
+    public function getVehicleDTO(int $id): ?DTO\Vehicle
+    {
+        try {
+            return DTO\VehicleFactory::create(
+                $this->vehicles->find($id)
+            );
+        } catch (VehicleNotFoundException $e) {
+            return NULL;
+        }
+    }
+
     public function findVehicle(int $id): ?Vehicle
     {
         try {

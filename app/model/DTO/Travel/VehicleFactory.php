@@ -16,7 +16,9 @@ class VehicleFactory
             $vehicle->getLabel(),
             $vehicle->getSubunitId(),
             $vehicle->getConsumption(),
-            $vehicle->isArchived()
+            $vehicle->isArchived(),
+            $vehicle->getMetadata()->getCreatedAt(),
+            $vehicle->getMetadata()->getAuthorName()
         );
     }
 

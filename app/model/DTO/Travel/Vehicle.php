@@ -12,6 +12,8 @@ use Nette\SmartObject;
  * @property-read int|NULL $subunitId
  * @property-read float $consumption
  * @property-read bool $archived
+ * @property-read \DateTimeImmutable $createdAt
+ * @property-read string $authorName
  */
 class Vehicle
 {
@@ -39,6 +41,12 @@ class Vehicle
     /** @var bool */
     private $archived;
 
+    /** @var \DateTimeImmutable */
+    private $createdAt;
+
+    /** @var string */
+    private $authorName;
+
     public function __construct(
         int $id,
         string $type,
@@ -46,7 +54,9 @@ class Vehicle
         string $label,
         ?int $subunitId,
         float $consumption,
-        bool $archived
+        bool $archived,
+        \DateTimeImmutable $createdAt,
+        string $authorName
     )
     {
         $this->id = $id;
@@ -56,6 +66,8 @@ class Vehicle
         $this->subunitId = $subunitId;
         $this->consumption = $consumption;
         $this->archived = $archived;
+        $this->createdAt = $createdAt;
+        $this->authorName = $authorName;
     }
 
     public function getId(): int
@@ -91,6 +103,16 @@ class Vehicle
     public function isArchived(): bool
     {
         return $this->archived;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getAuthorName(): string
+    {
+        return $this->authorName;
     }
 
 }
