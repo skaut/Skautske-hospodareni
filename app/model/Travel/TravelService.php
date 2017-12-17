@@ -98,11 +98,14 @@ class TravelService
     }
 
     /**
-     * @return Travel\Vehicle[]
+     * @return DTO\Vehicle[]
      */
     public function getAllVehicles(int $unitId): array
     {
-        return $this->vehicles->findByUnit($unitId);
+        return array_map(
+            [DTO\VehicleFactory::class, 'create'],
+            $this->vehicles->findByUnit($unitId)
+        );
     }
 
     public function removeVehicle(int $vehicleId): bool
