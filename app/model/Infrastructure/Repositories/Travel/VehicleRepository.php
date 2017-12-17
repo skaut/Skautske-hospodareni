@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Infrastructure\Repositories\Travel;
 
 use Doctrine\ORM\EntityManager;
@@ -61,11 +63,7 @@ class VehicleRepository implements IVehicleRepository
             ->getQuery()
             ->getResult();
 
-        if(empty($vehicles)) {
-            return [];
-        }
-
-        return $vehicles;
+        return array_values($vehicles);
     }
 
     public function save(Vehicle $vehicle): void
