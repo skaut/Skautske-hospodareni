@@ -1,10 +1,11 @@
 <?php
 
-namespace Model\Travel\Repositories;
+namespace Model\Infrastructure\Repositories\Travel;
 
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use Doctrine\ORM\EntityManager;
+use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 
