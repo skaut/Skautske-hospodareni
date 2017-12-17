@@ -66,6 +66,8 @@ class TravelService
     /**     VEHICLES    */
 
     /**
+     * @deprecated Use getVehicleDTO, entities shouldn't be used outside of model
+     *
      * vraci detail daného vozidla
      */
     public function getVehicle(int $vehicleId): Vehicle
