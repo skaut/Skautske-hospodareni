@@ -143,27 +143,3 @@ function onlyWithCheckbox(checkboxNameStart, dependentButtonClass) {
 //        $.post(location.href);
 //    };
 }
-
-function startLoginTimer() {
-    var start = 30;
-    var count = start;
-    var state = "success";
-    var perc;
-    timer();
-    var counter = setInterval(timer, 60000); //1000 will  run it every 1 minute
-    function timer() {
-        count = count - 1;
-        perc = 100 * (count / start);
-        $("#timer .progress-bar").css("width", perc + "%");
-        $("#timer").attr("title", count + " min");
-        if (perc < 33 && state === "success") {
-            state = "danger";
-            $("#timer .progress-bar").addClass("progress-bar-danger").removeClass("progress-bar-success");
-        }
-        if (count <= 0) {
-            $("#timer").addClass("navbar-text").removeAttr("style").html('<span class="label label-danger">Byl jsi odhlášen!</span> ')
-            clearInterval(counter);
-            return;
-        }
-    }
-}
