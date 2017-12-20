@@ -31,9 +31,8 @@
             ga('send', 'pageview');
             {/if}
 
-            function changeRole(id) {
-                window.location.href = {link changeRole! } + "\&roleId=" + id;
-            }
+            document.changeRoleLink = {link changeRole!};
+            document.userLoggedIn = {$user->isLoggedIn()};
         </script>
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -74,9 +73,9 @@
                     {if $user->isLoggedIn()}
                         <div class="navbar-form pull-right" style="padding-left: 4px;width: 300px;">
                             <a n:href=":Auth:logoutSis" class="btn btn-primary btn-sm" style="float:right">Odhlásit se</a>
-                            <select onchange="changeRole(this.value)" class="roleSelect input-sm" style="width: 180px;">
-                                <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{ifset $r->RegistrationNumber}{$r->RegistrationNumber} - {/ifset}{$r->Role}</option>
-                            </select>
+                            <span id="role">
+
+                            </span>
                         </div>
                         <div n:if="$user->isLoggedIn()" id="timer" class="nav pull-right visible-lg" style="width: 100px; margin-top:19px;">
                         </div>

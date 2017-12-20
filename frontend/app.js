@@ -1,11 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import LoginTimer from './components/LoginTimer';
+import RoleSelector from './components/RoleSelector';
 
-const timer = document.getElementById('timer');
-if (timer !== null) {
+const userLoggedIn = document.userLoggedIn;
+
+if (userLoggedIn !== null) {
     ReactDOM.render(
         <LoginTimer/>,
-        timer
+        document.getElementById('timer')
+    );
+
+    ReactDOM.render(
+        <RoleSelector link={document.changeRoleLink}/>,
+        document.getElementById('role')
     );
 }
