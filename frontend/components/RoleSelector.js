@@ -1,7 +1,8 @@
 import { gql } from 'graphql-tag';
+import {graphql} from "react-apollo/index";
 import React from 'react';
 
-export default class RoleSelector extends React.Component {
+class RoleSelector extends React.Component {
 
     constructor(props) {
         super(props);
@@ -16,11 +17,30 @@ export default class RoleSelector extends React.Component {
         );
 
         return (<select onChange={this.handleChange}
-                       className="roleSelect input-sm" style={{width: '180px'}}
+                       className="input-sm roleSelect" style={{width: '180px'}}
                        value={user.activeRoleId || ''}>{options}</select>)
     }
 
     handleChange(event) {
-        window.location.href = document.changeRoleLink + "&roleId=" + event.target.value;
+        this.props.mutate({
+            variables: {
+                roleId: parseInt(event.target.value),
+            }
+        }).then(({ data }) => {
+            console.log('Role changed');
+            location.reload();
+        }).catch((error) => {
+            console.log("Couldn't change role", error);
+            location.reload();
+        });
     }
 }
+
+
+const query = gql`
+    mutation ChangeRole($roleId: Int!) {
+        changeRole(roleId: $roleId)
+    }
+`;
+
+export default graphql(query, {options: {notifyOnNetworkStatusChange: true}})(RoleSelector);

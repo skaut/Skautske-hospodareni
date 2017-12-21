@@ -88,14 +88,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         \DependentSelectBox\JsonDependentSelectBox::tryJsonResponse($this /* (presenter) */);
     }
 
-    //změní přihlášenou roli ve skautISu
-    public function handleChangeRole($roleId): void
-    {
-        $this->userService->updateSkautISRole($roleId);
-        $this->updateUserAccess();
-        $this->redirect("this");
-    }
-
     protected function createComponentCss(): WebLoader\CssLoader
     {
         $control = $this->webLoader->createCssLoader('default');

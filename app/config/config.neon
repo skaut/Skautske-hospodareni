@@ -62,7 +62,9 @@ extensions:
 
 autoDI:
     services:
+        # GraphQL
         - class: App\AccountancyModule\GraphQLModule\Fields\*
+        - class: App\AccountancyModule\GraphQLModule\Mutations\*
 
         # Main model facades
         - class: Model\**Service
