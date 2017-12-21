@@ -1,1 +1,6 @@
-{ "presets": ["react"] }
+{
+  "presets": ["react"],
+  "plugins": [
+    "graphql-tag"
+  ]
+}

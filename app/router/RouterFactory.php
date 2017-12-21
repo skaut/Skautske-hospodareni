@@ -21,7 +21,7 @@ class RouterFactory
 
         $router[] = new Route('app.manifest', 'Offline:manifest');
 
-        $router[] = new Route('roles', 'Accountancy:Roles:default');
+        $router[] = new Route('graphql', 'Accountancy:GraphQL:Default:default');
         $router[] = new Route('o-projektu', 'Default:about');
         $router[] = new Route('changelog', 'Default:changelog');
         $router[] = new Route('sign/<action>[/back-<backlink>]', [

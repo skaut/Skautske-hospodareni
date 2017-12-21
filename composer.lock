@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "67868f47a690520e6516b7384267eb35",
+    "content-hash": "d311f886c5e4868a2239335032a8dcb0",
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",
@@ -5126,6 +5126,49 @@
             ],
             "description": "Doctrine DBAL Types to use Chronos' Immutable DateTime Objects",
             "time": "2017-08-05T13:32:59+00:00"
+        },
+        {
+            "name": "youshido/graphql",
+            "version": "v1.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Youshido/GraphQL.git",
+                "reference": "627de161919059821a5411b9f3d58c26afb81683"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Youshido/GraphQL/zipball/627de161919059821a5411b9f3d58c26afb81683",
+                "reference": "627de161919059821a5411b9f3d58c26afb81683",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5,<8.0-DEV"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Youshido\\GraphQL\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexandr Viniychuk",
+                    "email": "a@viniychuk.com"
+                },
+                {
+                    "name": "Portey Vasil",
+                    "email": "portey@gmail.com"
+                }
+            ],
+            "description": "Pure PHP GraphQL",
+            "time": "2017-10-20T11:25:48+00:00"
         },
         {
             "name": "zendframework/zend-code",

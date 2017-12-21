@@ -49,7 +49,8 @@
         "nettrine/migrations": "^0.1.0",
         "phpoffice/phpspreadsheet": "dev-develop",
         "cakephp/chronos": "^1.1",
-        "warhuhn/chronos-doctrine": "^1.0"
+        "warhuhn/chronos-doctrine": "^1.0",
+        "youshido/graphql": "^1.5"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",
