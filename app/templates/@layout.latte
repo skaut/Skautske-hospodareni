@@ -70,20 +70,7 @@
                             {/if}
                     </ul>
 
-                    {if $user->isLoggedIn()}
-                        <div class="navbar-form pull-right" style="padding-left: 4px;width: 300px;">
-                            <a n:href=":Auth:logoutSis" class="btn btn-primary btn-sm" style="float:right">Odhlásit se</a>
-                            <span id="role">
-
-                            </span>
-                        </div>
-                        <div n:if="$user->isLoggedIn()" id="timer" class="nav pull-right visible-lg" style="width: 100px; margin-top:19px;">
-                        </div>
-                    {else}
-                        <p class="navbar-btn pull-right">
-                            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-sm">Přihlásit se</a>
-                        </p>
-                    {/if}
+                    <div id="user-panel" class="pull-right"></div>
                 </div><!--/.navbar-collapse -->
             </div>
         </nav>

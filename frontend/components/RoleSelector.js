@@ -1,9 +1,7 @@
 import { gql } from 'graphql-tag';
-import { graphql } from 'react-apollo';
 import React from 'react';
-import { ActivityIndicator } from 'react';
 
-class RoleSelector extends React.Component {
+export default class RoleSelector extends React.Component {
 
     constructor(props) {
         super(props);
@@ -11,11 +9,7 @@ class RoleSelector extends React.Component {
     }
 
     render() {
-        if(this.props.data.loading) {
-            return <i className="fa fa-circle-o-notch" style={{color: 'white'}}/>
-        }
-
-        const user = this.props.data.user;
+        const user = this.props.user;
 
         const options = user.roles.map(
             (role) => <option key={role.id} value={role.id}>{role.name}</option>
@@ -27,20 +21,6 @@ class RoleSelector extends React.Component {
     }
 
     handleChange(event) {
-        window.location.href = this.props.link + "&roleId=" + event.target.value;
+        window.location.href = document.changeRoleLink + "&roleId=" + event.target.value;
     }
 }
-
-const query = gql`    
-        query CurrentUser {
-            user {
-                roles {
-                    id,
-                    name
-                }
-                activeRoleId
-            }   
-        }
-`;
-
-export default graphql(query, {options: { notifyOnNetworkStatusChange: true } })(RoleSelector);

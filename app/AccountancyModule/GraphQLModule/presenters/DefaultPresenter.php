@@ -2,14 +2,24 @@
 
 namespace App\AccountancyModule\GraphQLModule;
 
-use App\AccountancyModule\BasePresenter;
 use App\AccountancyModule\GraphQLModule\Schema\UserType;
+use Model\UserService;
+use Nette\Application\UI\Presenter;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
 
-class DefaultPresenter extends BasePresenter
+class DefaultPresenter extends Presenter
 {
+
+    /** @var UserService */
+    private $userService;
+
+    public function __construct(UserService $userService)
+    {
+        parent::__construct();
+        $this->userService = $userService;
+    }
 
     public function renderDefault(): void
     {
@@ -19,6 +29,14 @@ class DefaultPresenter extends BasePresenter
                 'user' => [
                     'type' => new UserType(),
                     'resolve' => function ($source, $args, $info) {
+                        if($this->getUser()->isLoggedIn() === FALSE) {
+                            return [
+                                'loggedIn' => FALSE,
+                                'loginLink' => $this->link(':Auth:logOnSkautIs'),
+                                'roles' => [],
+                            ];
+                        }
+
                         $roles = array_map(function (\stdClass $role) {
                             return [
                                 'id' => $role->ID,
@@ -27,6 +45,8 @@ class DefaultPresenter extends BasePresenter
                         }, $this->userService->getAllSkautisRoles());
 
                         return [
+                            'loggedIn' => TRUE,
+                            'logoutLink' => $this->link(':Auth:logoutSis'),
                             'activeRoleId' => $this->userService->getRoleId(),
                             'roles' => $roles,
                         ];

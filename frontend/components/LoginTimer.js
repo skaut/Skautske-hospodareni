@@ -8,11 +8,14 @@ export default class LoginTimer extends React.Component {
     }
 
     render() {
-        return <div className="progress" style={{height: 7 + 'px'}}>
-            <div style={{width: this.state.percentage + '%'}}
-                 role="progressbar"
-                 className={"progress-bar progress-bar-" + this.state.color}/>
-        </div>
+        return (
+            <div className="nav visible-lg" style={{ width: '100px', marginTop: '12px' }}>
+                <div className="progress" style={{height: 7 + 'px'}}>
+                <div style={{width: this.state.percentage + '%'}}
+                    role="progressbar"
+                    className={"progress-bar progress-bar-" + this.state.color}/>
+                </div>
+            </div>);
     }
 
     componentDidMount() {
