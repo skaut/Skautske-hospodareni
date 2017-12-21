@@ -62,6 +62,8 @@ extensions:
 
 autoDI:
     services:
+        - class: App\AccountancyModule\GraphQLModule\Fields\*
+
         # Main model facades
         - class: Model\**Service
           exclude: 'Model\{Event,Chit,Participant}Service' # mutable services
