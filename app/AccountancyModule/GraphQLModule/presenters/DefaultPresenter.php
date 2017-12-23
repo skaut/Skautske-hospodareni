@@ -1,45 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\GraphQLModule;
 
-use App\AccountancyModule\GraphQLModule\Fields\UserField;
-use App\AccountancyModule\GraphQLModule\Mutations\ChangeRoleMutation;
-use App\AccountancyModule\GraphQLModule\Schema\UserType;
-use Nette\Application\UI\Presenter;
+use Nette\Application\IPresenter;
+use Nette\Application\IResponse;
+use Nette\Application\Request;
+use Nette\Application\Responses\JsonResponse;
+use Nette\Http\IRequest;
 use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
 
-class DefaultPresenter extends Presenter
+final class DefaultPresenter implements IPresenter
 {
 
-    /** @var UserField */
-    private $userField;
+    /** @var FieldInterface[] */
+    private $fields;
 
-    /** @var ChangeRoleMutation */
-    private $changeRoleMutation;
+    /** @var FieldInterface[] */
+    private $mutations;
 
-    public function __construct(UserField $userField, ChangeRoleMutation $changeRoleMutation)
+    /** @var IRequest */
+    private $httpRequest;
+
+    /**
+     * @param FieldInterface[] $fields
+     * @param FieldInterface[] $mutations
+     */
+    public function __construct(
+        array $fields,
+        array $mutations,
+        IRequest $httpRequest
+    )
     {
-        parent::__construct();
-        $this->userField = $userField;
-        $this->changeRoleMutation = $changeRoleMutation;
+        $this->fields = $fields;
+        $this->mutations = $mutations;
+        $this->httpRequest = $httpRequest;
     }
 
-    public function renderDefault(): void
+    public function run(Request $request): IResponse
     {
         $rootQueryType = new ObjectType([
             'name' => 'Root',
-            'fields' => [
-                'user' => $this->userField,
-            ]
+            'fields' => $this->fields,
         ]);
 
         $rootMutationType = new ObjectType([
             'name' => 'RootMutationType',
-            'fields' => [
-                $this->changeRoleMutation,
-            ]
+            'fields' => $this->mutations,
         ]);
 
         $schema = new Schema([
@@ -50,10 +61,11 @@ class DefaultPresenter extends Presenter
 
         $processor = new Processor($schema);
 
-        $request = \json_decode($this->getHttpRequest()->getRawBody(), TRUE);
+        $request = \json_decode($this->httpRequest->getRawBody(), TRUE);
 
         $processor->processPayload($request['query'], $request['variables']);
-        $this->sendJson($processor->getResponseData());
+
+        return new JsonResponse($processor->getResponseData());
     }
 
 }

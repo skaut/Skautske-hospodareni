@@ -54,6 +54,7 @@ extensions:
     autoDI: Fmasa\AutoDI\DI\AutoDIExtension
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
+    - App\AccountancyModule\DI\GraphQLExtension
     messageBus: eGen\MessageBus\DI\MessageBusExtension
     monolog: Kdyby\Monolog\DI\MonologExtension
     console: Kdyby\Console\DI\ConsoleExtension
@@ -64,7 +65,9 @@ autoDI:
     services:
         # GraphQL
         - class: App\AccountancyModule\GraphQLModule\Fields\*
+          tags: [ graphql.field ]
         - class: App\AccountancyModule\GraphQLModule\Mutations\*
+          tags: [ graphql.mutation ]
 
         # Main model facades
         - class: Model\**Service

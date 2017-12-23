@@ -34,6 +34,11 @@ class UserField extends AbstractField
         return new UserType();
     }
 
+    public function getName(): string
+    {
+        return 'user';
+    }
+
     public function resolve($value, array $args, ResolveInfo $info): array
     {
         if ($this->user->isLoggedIn() === FALSE) {
