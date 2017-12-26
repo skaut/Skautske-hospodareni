@@ -90,12 +90,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
                 $this->template->myRole = $this->userService->getRoleId();
             } catch (\Skautis\Wsdl\AuthenticationException $ex) {
                 $this->user->logout(TRUE);
-            } catch (\Skautis\Wsdl\WsdlException $ex) {
-                if ($ex->getMessage() != "Could not connect to host") {
-                    throw $ex;
-                }
-                $this->flashMessage("Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.");
-                $this->redirect(":Default:");
             }
         }
 
