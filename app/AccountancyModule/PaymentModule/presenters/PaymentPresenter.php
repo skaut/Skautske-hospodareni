@@ -225,6 +225,10 @@ class PaymentPresenter extends BasePresenter
             $this->bankAccounts->find($group->getBankAccountId())
             : NULL;
 
+        if($accountFrom !== NULL) {
+            $accountFrom = $accountFrom->getNumber();
+        }
+
         $this['repaymentForm']->setDefaults([
             "gid" => $group->getId(),
             "accountFrom" => $accountFrom,
