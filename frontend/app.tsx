@@ -1,7 +1,7 @@
 import {ApolloClient, HttpLink, InMemoryCache} from 'apollo-client-preset';
 import {ApolloProvider, graphql} from 'react-apollo';
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import UserPanel from "./components/UserPanel";
 
 const client = new ApolloClient({

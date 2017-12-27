@@ -1,11 +1,19 @@
-import React from "react";
+import * as React from "react";
 
-export default class LoginTimer extends React.Component {
+interface LoginTimerState
+{
+    percentage: number,
+    color: string,
+}
 
-    constructor(props) {
+export default class LoginTimer extends React.Component<{}, LoginTimerState> {
+
+    constructor(props: object) {
         super(props);
         this.state = {percentage: 100, color: 'success'};
     }
+
+    timer: number;
 
     render() {
         return (
@@ -19,7 +27,7 @@ export default class LoginTimer extends React.Component {
     }
 
     componentDidMount() {
-        this.timer = setInterval(() => this.tick(), 60 * 1000)
+        this.timer = window.setInterval(() => this.tick(), 60 * 1000)
     }
 
     tick() {

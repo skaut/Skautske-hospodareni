@@ -1,13 +1,23 @@
-import React from "react";
+import * as React from "react";
 import Loader from "./Loader";
 import PrimaryButtonLink from "./basic/PrimaryButtonLink";
 import RoleSelector from "./RoleSelector";
-import {gql} from "graphql-tag";
-import {graphql} from "react-apollo/index";
+import gql from "graphql-tag";
+import {ChildProps, graphql} from "react-apollo/index";
 import LoginTimer from "./LoginTimer";
+import {User} from "./model/types";
 
-class UserPanel extends React.Component
+type UserPanelProps = {
+    data: {
+        loading: boolean;
+        user: User;
+    },
+    mutate?: any
+}
+
+class UserPanel extends React.Component<ChildProps<UserPanelProps, Response>>
 {
+
     render() {
         if (this.props.data.loading) {
             return <Loader/>;
@@ -52,4 +62,14 @@ const query = gql`
     }
 `;
 
-export default graphql(query, {options: {notifyOnNetworkStatusChange: true}})(UserPanel);
+type Response = {
+    data: {
+        user: User;
+    }
+    user: User,
+    mutate?: any;
+}
+
+const wrap = graphql(query, {options: {notifyOnNetworkStatusChange: true}});
+
+export default wrap(UserPanel);
