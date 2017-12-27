@@ -73,7 +73,7 @@ class CreateMailCredentialsHandler
 
         $mail = new Message();
         $mail->setSubject('Nový email v Hospodaření')
-            ->setFrom('platby@skauting.cz', 'Skautské Hospodaření')// email gets rewritten on SMTP
+            ->setFrom($credentials->getUsername(), 'Skautské Hospodaření')// email gets rewritten on SMTP
             ->addTo($user->getEmail(), $user->getName())
             ->setHtmlBody($template);
 

@@ -102,7 +102,7 @@ class MailPresenter extends BasePresenter
 
             $this->flashMessage("SMTP účet byl přidán");
         } catch (\Nette\Mail\SmtpException $e) {
-            $this->flashMessage("K SMTP účtu se nepodařilo připojit", "danger");
+            $this->flashMessage("K SMTP účtu se nepodařilo připojit (" . $e->getMessage() . ")", "danger");
         } catch (\Model\Payment\EmailNotSetException $e) {
             $this->flashMessage('Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!');
         }
