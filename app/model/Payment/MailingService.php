@@ -182,13 +182,14 @@ class MailingService
             'body' => nl2br($emailTemplate->getBody(), FALSE),
         ]);
 
+        $credentials = $this->credentials->find($group->getSmtpId());
+
         $mail = (new Message())
             ->addTo($payment->getEmail())
-            ->setFrom('platby@skauting.cz') // There must be something, but gmail overwrites it :(
+            ->setFrom($credentials->getUsername()) // There must be something, but gmail overwrites it :(
             ->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);
 
-        $credentials = $this->credentials->find($group->getSmtpId());
         $this->mailerFactory->create($credentials)->send($mail);
     }
 
