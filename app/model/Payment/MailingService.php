@@ -186,7 +186,7 @@ class MailingService
 
         $mail = (new Message())
             ->addTo($payment->getEmail())
-            ->setFrom($credentials->getUsername()) // There must be something, but gmail overwrites it :(
+            ->setFrom($credentials->getSender())
             ->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);
 

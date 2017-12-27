@@ -69,6 +69,8 @@ class MailPresenter extends BasePresenter
             MailProtocol::SSL => "ssl",
             MailProtocol::TLS => "tls"
         ]);
+        $form->addText("sender", "Email odesílatele")
+            ->getControlPrototype()->placeholder("např. platby@stredisko.cz");
         $form->addSubmit('send', 'Založit')
             ->setAttribute("class", "btn btn-primary");
 
@@ -96,6 +98,7 @@ class MailPresenter extends BasePresenter
                     $v->username,
                     $v->password,
                     MailProtocol::get($v->secure),
+                    $v->sender,
                     $userId
                 )
             );
