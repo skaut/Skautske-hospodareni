@@ -1,6 +1,7 @@
 {
   "presets": ["react"],
   "plugins": [
-    "graphql-tag"
+    "graphql-tag",
+    "transform-react-inline-elements"
   ]
 }
