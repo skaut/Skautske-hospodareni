@@ -1,7 +1,7 @@
 module.exports = {
-    entry: './frontend/app.tsx',
+    entry: './app.tsx',
     output: {
-        filename: './www/js/bundle.js'
+        filename: '../www/js/bundle.js'
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".jsx"]
@@ -13,3 +13,4 @@ module.exports = {
         ]
     }
 };
+gi

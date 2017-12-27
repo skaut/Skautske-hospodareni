@@ -22,4 +22,4 @@ tests/_support/_generated/*
 docker-compose.*.yml
 !docker-compose.yml
 !docker-compose.override.yml
-node_modules
+frontend/node_modules
