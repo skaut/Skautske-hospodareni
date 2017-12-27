@@ -24,7 +24,7 @@ class MailPresenter extends BasePresenter
         $this->model = $model;
     }
 
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $aid): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přistupovat ke správě emailů", "danger");
@@ -34,7 +34,7 @@ class MailPresenter extends BasePresenter
         $this->template->editableUnits = $this->getEditableUnits();
     }
 
-    public function handleEdit($id) : void
+    public function handleEdit($id): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění měnit smtp", "danger");
@@ -42,7 +42,7 @@ class MailPresenter extends BasePresenter
         }
     }
 
-    public function handleRemove(int $id) : void
+    public function handleRemove(int $id): void
     {
         $mail = $this->model->get($id);
 
@@ -54,7 +54,7 @@ class MailPresenter extends BasePresenter
         $this->commandBus->handle(new RemoveMailCredentials($id));
     }
 
-    protected function createComponentFormCreate() : Form
+    protected function createComponentFormCreate(): Form
     {
         $form = new BaseForm();
         $form->addText("host", "Host")
@@ -67,19 +67,21 @@ class MailPresenter extends BasePresenter
             ->addRule(Form::FILLED, "Musíte vyplnit heslo.");
         $form->addSelect("secure", "Zabezpečení", [
             MailProtocol::SSL => "ssl",
-            MailProtocol::TLS  => "tls"
+            MailProtocol::TLS => "tls"
         ]);
+        $form->addText("sender", "Email odesílatele")
+            ->getControlPrototype()->placeholder("např. platby@stredisko.cz");
         $form->addSubmit('send', 'Založit')
             ->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function(Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formCreateSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formCreateSubmitted(Form $form) : void
+    private function formCreateSubmitted(Form $form): void
     {
         if (!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přidávat smtp", "danger");
@@ -96,14 +98,15 @@ class MailPresenter extends BasePresenter
                     $v->username,
                     $v->password,
                     MailProtocol::get($v->secure),
+                    $v->sender,
                     $userId
                 )
             );
 
             $this->flashMessage("SMTP účet byl přidán");
-        } catch(\Nette\Mail\SmtpException $e) {
-            $this->flashMessage("K SMTP účtu se nepodařilo připojit", "danger");
-        } catch(\Model\Payment\EmailNotSetException $e) {
+        } catch (\Nette\Mail\SmtpException $e) {
+            $this->flashMessage("K SMTP účtu se nepodařilo připojit (" . $e->getMessage() . ")", "danger");
+        } catch (\Model\Payment\EmailNotSetException $e) {
             $this->flashMessage('Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!');
         }
 

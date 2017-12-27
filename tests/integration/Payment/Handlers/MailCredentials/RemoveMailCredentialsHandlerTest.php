@@ -31,6 +31,7 @@ class RemoveMailCredentialsHandlerTest extends \CommandHandlerTest
             'secure' => '',
             'username' => 'test@hospodareni.loc',
             'password' => '',
+            'sender' => 'test@hospodareni.loc',
             'created' => '2017-10-01 00:00:00',
         ]);
 

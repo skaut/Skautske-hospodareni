@@ -22,11 +22,14 @@ final class CreateMailCredentials
     /** @var MailProtocol */
     private $protocol;
 
+    /** @var string */
+    private $sender;
+
     /** @var int */
     private $userId;
 
     public function __construct(
-        int $unitId, string $host, string $username, string $password, MailProtocol $protocol, int $userId
+        int $unitId, string $host, string $username, string $password, MailProtocol $protocol, string $sender, int $userId
     )
     {
         $this->unitId = $unitId;
@@ -34,6 +37,7 @@ final class CreateMailCredentials
         $this->username = $username;
         $this->password = $password;
         $this->protocol = $protocol;
+        $this->sender = $sender;
         $this->userId = $userId;
     }
 
@@ -60,6 +64,11 @@ final class CreateMailCredentials
     public function getProtocol(): MailProtocol
     {
         return $this->protocol;
+    }
+
+    public function getSender(): string
+    {
+        return $this->sender;
     }
 
     public function getUserId(): int

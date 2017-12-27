@@ -43,6 +43,7 @@ class CreateMailCredentialsHandlerTest extends \CommandHandlerTest
             'host' => 'smtp-hospodareni.loc',
             'secure' => '',
             'username' => 'test@hospodareni.loc',
+            'sender' => 'test@hospodareni.loc',
             'password' => '',
         ]);
     }
@@ -73,6 +74,7 @@ class CreateMailCredentialsHandlerTest extends \CommandHandlerTest
             'test@hospodareni.loc',
             '',
             MailProtocol::get(MailProtocol::PLAIN),
+            'test@hospodareni.loc',
             10
         );
     }

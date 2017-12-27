@@ -43,6 +43,7 @@ class CreateMailCredentialsHandler
             $command->getUsername(),
             $command->getPassword(),
             $command->getProtocol(),
+            $command->getSender(),
             new \DateTimeImmutable()
         );
 
@@ -69,11 +70,12 @@ class CreateMailCredentialsHandler
             'host' => $credentials->getHost(),
             'username' => $credentials->getUsername(),
             'protocol' => $credentials->getProtocol()->getValue(),
+            'sender' => $credentials->getSender(),
         ]);
 
         $mail = new Message();
         $mail->setSubject('Nový email v Hospodaření')
-            ->setFrom('platby@skauting.cz', 'Skautské Hospodaření')// email gets rewritten on SMTP
+            ->setFrom($credentials->getSender(), 'Skautské Hospodaření')// email gets rewritten on SMTP
             ->addTo($user->getEmail(), $user->getName())
             ->setHtmlBody($template);
 

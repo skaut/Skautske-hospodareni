@@ -10,6 +10,7 @@ $I->haveInDatabase('pa_smtp', [
     'secure' => '',
     'username' => 'test@hospodareni.loc',
     'password' => '',
+    'sender' => 'test@hospodareni.loc',
     'created' => '2017-06-15 00:00:00',
 ]);
 

@@ -33,6 +33,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             'password' => 'pass123',
             'unitId' => 666,
             'secure' => 'ssl',
+            'sender' => 'test@seznam.cz',
             'created' => '2017-01-01 00:00:00',
         ];
 
@@ -45,6 +46,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
         $this->assertSame($row['password'], $credentials->getPassword());
         $this->assertSame($row['unitId'], $credentials->getUnitId());
         $this->assertSame(MailCredentials\MailProtocol::get(MailCredentials\MailProtocol::SSL), $credentials->getProtocol());
+        $this->assertSame($row['sender'], $credentials->getSender());
         $this->assertEquals(new \DateTimeImmutable($row['created']), $credentials->getCreatedAt());
     }
 
@@ -64,6 +66,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             'password' => 'pass123',
             'unitId' => 666,
             'secure' => 'ssl',
+            'sender' => 'test@seznam.cz',
             'created' => '2017-01-01 00:00:00',
         ];
 
@@ -73,6 +76,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             'password' => 'pass',
             'unitId' => 663,
             'secure' => 'tls',
+            'sender' => 'test@seznam.cz',
             'created' => '2017-01-01 00:00:00',
         ];
 
@@ -83,6 +87,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             'password' => 'pass',
             'unitId' => 626,
             'secure' => 'tls',
+            'sender' => 'test@seznam.cz',
             'created' => '2017-01-01 00:00:00',
         ]);
         $this->tester->haveInDatabase('pa_smtp', $rows[1]);
@@ -105,6 +110,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             $this->assertSame($row['password'], $credentials->getPassword());
             $this->assertSame($row['unitId'], $credentials->getUnitId());
             $this->assertSame($protocols[$row['secure']], $credentials->getProtocol());
+            $this->assertSame($row['sender'], $credentials->getSender());
             $this->assertEquals(new \DateTimeImmutable($row['created']), $credentials->getCreatedAt());
         }
     }
@@ -117,6 +123,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             'password' => 'pass',
             'unitId' => 663,
             'secure' => 'tls',
+            'sender' => 'test@seznam.cz',
             'created' => '2017-01-01 00:00:00',
         ]);
 
@@ -135,6 +142,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             'mail2',
             'pass',
             MailCredentials\MailProtocol::get(MailCredentials\MailProtocol::TLS),
+            'test@seznam.cz',
             new \DateTimeImmutable('2017-01-01 00:00:00')
         );
 
@@ -147,6 +155,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             'password' => 'pass',
             'unitId' => 663,
             'secure' => 'tls',
+            'sender' => 'test@seznam.cz',
             'created' => '2017-01-01 00:00:00',
         ]);
     }

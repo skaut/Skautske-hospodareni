@@ -25,6 +25,9 @@ class MailCredentials
     /** @var MailProtocol */
     private $protocol;
 
+    /** @var string */
+    private $sender;
+
     /** @var \DateTimeImmutable */
     private $createdAt;
 
@@ -34,6 +37,7 @@ class MailCredentials
         string $username,
         string $password,
         MailProtocol $protocol,
+        string $sender,
         \DateTimeImmutable $createdAt
     )
     {
@@ -42,6 +46,7 @@ class MailCredentials
         $this->username = $username;
         $this->password = $password;
         $this->protocol = $protocol;
+        $this->sender = $sender;
         $this->createdAt = $createdAt;
     }
 
@@ -73,6 +78,11 @@ class MailCredentials
     public function getProtocol(): MailProtocol
     {
         return $this->protocol;
+    }
+
+    public function getSender(): string
+    {
+        return $this->sender;
     }
 
     public function getCreatedAt(): \DateTimeImmutable
