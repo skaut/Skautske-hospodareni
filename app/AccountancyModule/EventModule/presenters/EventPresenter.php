@@ -4,6 +4,7 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
+use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
 use Model\ExportService;
@@ -118,7 +119,7 @@ class EventPresenter extends BasePresenter
 
     public function handleActivateStatistic(): void
     {
-        $this->eventService->participants->activateEventStatistic($this->aid);
+        $this->commandBus->handle(new ActivateStatistics($this->aid));
         //flash message?
         $this->redirect('this', ["aid" => $this->aid]);
     }

@@ -241,11 +241,6 @@ class ParticipantService extends MutableBaseService
         return array_combine(array_map(create_function('$o', 'return $o->ID_ParticipantCategory;'), $skautisData), $skautisData);
     }
 
-    public function activateEventStatistic($eventId)
-    {
-        return $this->skautis->event->{"EventGeneralUpdateStatisticAutoComputed"}(["ID" => $eventId, "IsStatisticAutoComputed" => TRUE], "eventGeneral");
-    }
-
     public function getPotencialCampParticipants($eventId)
     {
         $res = [];
