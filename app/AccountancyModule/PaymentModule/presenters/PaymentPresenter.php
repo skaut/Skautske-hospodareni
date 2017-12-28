@@ -260,6 +260,7 @@ class PaymentPresenter extends BasePresenter
                 ->addRule(Form::NUMERIC, "Vratka musí být číslo!");
 
             $account = "";
+            
             if(array_key_exists($p->ID_Person, $payments)) {
                 $transaction = $payments[$p->ID_Person]->getTransaction();
                 $account = $transaction !== NULL ? $transaction->getBankAccount() : "";
