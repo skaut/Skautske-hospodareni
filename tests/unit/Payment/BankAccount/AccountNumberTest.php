@@ -19,6 +19,15 @@ class AccountNumberTest extends \Codeception\Test\Unit
         $this->assertSame('19-17608231/0100', (string) $number);
     }
 
+    public function testIsValidForValidNumber(): void
+    {
+        $this->assertTrue(AccountNumber::isValid('19-17608231/0100'));
+    }
+
+    public function testIsValidForInvalidNumber(): void
+    {
+        $this->assertFalse(AccountNumber::isValid('123'));
+    }
     public function testFromString()
     {
         $number = AccountNumber::fromString('2000942144/2010');

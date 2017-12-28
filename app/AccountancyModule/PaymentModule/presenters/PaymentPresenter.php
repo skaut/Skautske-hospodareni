@@ -12,6 +12,7 @@ use App\Forms\BaseForm;
 use Consistence\Time\TimeFormat;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
+use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\InvalidBankAccountException;
@@ -245,6 +246,7 @@ class PaymentPresenter extends BasePresenter
             return $p->repayment != NULL;
         });
 
+        /** @var Form $form */
         $form = $this['repaymentForm'];
         foreach ($participantsWithRepayment as $p) {
             $pid = "p_" . $p->ID;
@@ -270,7 +272,10 @@ class PaymentPresenter extends BasePresenter
                 ->setDefaultValue($account)
                 ->setRequired(FALSE)
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
-                ->addRule(Form::PATTERN, "Zadejte platný bankovní účet u " . $p->Person, "[0-9]{5,}/[0-9]{4}$");
+                ->addRule(
+                    [AccountNumber::class, 'isValid'],
+                    "Zadejte platný bankovní účet u " . $p->Person
+                );
         }
 
         $this->template->participants = $participantsWithRepayment;

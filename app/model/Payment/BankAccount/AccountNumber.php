@@ -50,6 +50,16 @@ class AccountNumber
         return new self(...$number);
     }
 
+    public static function isValid(string $number): bool
+    {
+        try {
+            self::fromString($number);
+            return TRUE;
+        } catch (InvalidBankAccountNumberException $e) {
+            return FALSE;
+        }
+    }
+
     public function getPrefix(): ?string
     {
         return $this->prefix;
