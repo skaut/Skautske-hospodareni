@@ -244,20 +244,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * @param int $ID
-     * @param int $state
-     */
-    public function activateAutocomputedCashbook($ID, $state = 1): void
-    {
-        $this->skautis->event->{"EventCampUpdateRealTotalCostBeforeEnd"}(
-            [
-                "ID" => $ID,
-                "IsRealTotalCostAutoComputed" => $state
-            ], "event" . $this->typeName
-        );
-    }
-
-    /**
      * aktivuje automatické dopočítávání pro seznam osobodnů z tabulky účastníků
      * @param int $ID
      * @param int $state

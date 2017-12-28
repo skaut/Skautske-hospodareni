@@ -6,6 +6,7 @@ use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -48,14 +49,15 @@ class CashbookPresenter extends BasePresenter
         }
     }
 
-    public function handleActivateAutocomputedCashbook($aid) : void
+    public function handleActivateAutocomputedCashbook(int $aid) : void
     {
         try {
-            $this->eventService->event->activateAutocomputedCashbook($aid);
+            $this->commandBus->handle(new ActivateAutocomputedCashbook($aid));
             $this->flashMessage("Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.");
         } catch (\Skautis\Wsdl\PermissionException $e) {
             $this->flashMessage("Dopočítávání se nepodařilo aktivovat. Pro aktivaci musí být tábor alespoň ve stavu schváleno střediskem.", "danger");
         }
+
         $this->redirect("this");
     }
 
