@@ -259,11 +259,15 @@ class PaymentPresenter extends BasePresenter
                 ->setRequired("Zadejte částku vratky u " . $p->Person)
                 ->addRule(Form::NUMERIC, "Vratka musí být číslo!");
 
-            $transaction = $payments[$p->ID_Person]->getTransaction();
-            $account = $transaction !== NULL ? $transaction->getBankAccount() : "";
+            $account = "";
+            if(array_key_exists($p->ID_Person, $payments)) {
+                $transaction = $payments[$p->ID_Person]->getTransaction();
+                $account = $transaction !== NULL ? $transaction->getBankAccount() : "";
+            }
             
             $form->addText($pid . "_account")
                 ->setDefaultValue($account)
+                ->setRequired(FALSE)
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
                 ->addRule(Form::PATTERN, "Zadejte platný bankovní účet u " . $p->Person, "[0-9]{5,}/[0-9]{4}$");
         }
