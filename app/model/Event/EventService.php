@@ -193,45 +193,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * založí akci ve SkautIS
-     * EventGeneral specific
-     * @param string $name nazev
-     * @param string $start datum zacatku
-     * @param string $end datum konce
-     * @param int $unit ID jednotky
-     * @param int $scope rozsah zaměření akce
-     * @param int $type typ akce
-     * @return int|\stdClass ID akce
-     */
-    public function create($name, $start, $end, $location = NULL, $unit = NULL, $scope = NULL, $type = NULL)
-    {
-        $scope = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
-        $type = $type !== NULL ? $type : 2; //2-vyprava
-        $unit = $unit !== NULL ? $unit : $this->skautis->getUser()->getUnitId();
-
-        $location = !empty($location) && $location !== NULL ? $location : " ";
-
-        $ret = $this->skautis->event->EventGeneralInsert(
-            [
-                "ID" => 1, //musi byt neco nastavene
-                "Location" => $location,
-                "Note" => " ", //musi byt neco nastavene
-                "ID_EventGeneralScope" => $scope,
-                "ID_EventGeneralType" => $type,
-                "ID_Unit" => $unit,
-                "DisplayName" => $name,
-                "StartDate" => $start,
-                "EndDate" => $end,
-                "IsStatisticAutoComputed" => FALSE,
-            ], "eventGeneral");
-
-        if (isset($ret->ID)) {
-            return $ret->ID;
-        }
-        return $ret;
-    }
-
-    /**
      * @param int $skautisId
      * @param string $prefix
      */
