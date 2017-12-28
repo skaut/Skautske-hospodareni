@@ -130,4 +130,35 @@ class CashbookIntegrationTest extends \IntegrationTest
         return $cashbook;
     }
 
+    public function testLock(): void
+    {
+        $cashbook = new Cashbook(11);
+
+        for ($i = 0; $i < 5; $i++) {
+            $cashbook->addChit(
+                NULL,
+                new Date('2017-11-17'),
+                NULL,
+                new Cashbook\Amount('100'),
+                'purpose',
+                666
+            );
+        }
+
+        $this->entityManager->persist($cashbook);
+        $this->entityManager->flush();
+
+        $cashbook->lockChit(3, 1);
+
+
+        $cashbook->lock(1);
+
+        $chits = $cashbook->getChits();
+
+        $this->assertCount(5, $chits);
+        foreach($chits as $chit) {
+            $this->assertTrue($chit->isLocked());
+        }
+    }
+
 }
