@@ -272,6 +272,7 @@ class PaymentPresenter extends BasePresenter
                 ->setDefaultValue($account)
                 ->setRequired(FALSE)
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
+                ->setRequired('Musíte vyplnit bankovní účet')
                 ->addRule(
                     [AccountNumber::class, 'isValid'],
                     "Zadejte platný bankovní účet u " . $p->Person
