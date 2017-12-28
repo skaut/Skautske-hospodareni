@@ -4,9 +4,7 @@ namespace Model;
 
 use Dibi\Connection;
 use eGen\MessageBus\Bus\EventBus;
-use Model\Event\AssistantNotAdultException;
 use Model\Event\Functions;
-use Model\Event\LeaderNotAdultException;
 use Model\Event\Repositories\IEventRepository;
 use Model\Events\Events\EventWasClosed;
 use Model\Events\Events\EventWasOpened;
@@ -14,7 +12,6 @@ use Model\Skautis\Mapper;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
-use Skautis\Wsdl\WsdlException;
 
 /**
  * @author Hána František
@@ -135,32 +132,6 @@ class EventService extends MutableBaseService
             $data[2]->ID_Person,
             $data[3]->ID_Person
         );
-    }
-
-    public function updateFunctions(int $eventId, Functions $functions): void
-    {
-        $query = [
-            "ID" => $eventId,
-            "ID_PersonLeader" => $functions->getLeaderId(),
-            "ID_PersonAssistant" => $functions->getAssistantId(),
-            "ID_PersonEconomist" => $functions->getAccountantId(),
-            "ID_PersonMedic" => $functions->getMedicId(),
-        ];
-
-        $method = "Event{$this->typeName}UpdateFunction";
-
-        try {
-
-            $this->skautis->event->$method($query);
-        } catch (WsdlException $e) {
-            if (strpos($e->getMessage(), 'EventFunction_LeaderMustBeAdult') != FALSE) {
-                throw new LeaderNotAdultException;
-            }
-            if (strpos($e->getMessage(), 'EventFunction_AssistantMustBeAdult') !== FALSE) {
-                throw new AssistantNotAdultException;
-            }
-            throw $e;
-        }
     }
 
     /**

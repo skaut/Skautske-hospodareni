@@ -5,7 +5,9 @@ namespace App\AccountancyModule\EventModule\Components;
 use App\AccountancyModule\Auth\Event;
 use App\Forms\BaseForm;
 use App\AccountancyModule\Auth\IAuthorizator;
+use eGen\MessageBus\Bus\CommandBus;
 use Model\Event\AssistantNotAdultException;
+use Model\Event\Commands\Event\UpdateFunctions;
 use Model\Event\Functions;
 use Model\Event\LeaderNotAdultException;
 use Model\EventEntity;
@@ -26,6 +28,9 @@ class FunctionsControl extends Control
     /** @var EventService */
     private $events;
 
+    /** @var CommandBus */
+    private $commandBus;
+
     /** @var MemberService */
     private $members;
 
@@ -38,11 +43,12 @@ class FunctionsControl extends Control
      */
     public $editation = FALSE;
 
-    public function __construct(int $eventId, EventEntity $eventEntity, MemberService $members, IAuthorizator $authorizator)
+    public function __construct(int $eventId, EventEntity $eventEntity, CommandBus $commandBus, MemberService $members, IAuthorizator $authorizator)
     {
         parent::__construct();
         $this->eventId = $eventId;
         $this->events = $eventEntity->event;
+        $this->commandBus = $commandBus;
         $this->members = $members;
         $this->authorizator = $authorizator;
     }
@@ -125,9 +131,13 @@ class FunctionsControl extends Control
             $this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
         }
         try {
-            $this->events->updateFunctions($this->eventId,
-                new Functions($values->leader, $values->assistant, $values->accountant, $values->medic)
+            $this->commandBus->handle(
+                new UpdateFunctions(
+                    $this->eventId,
+                    new Functions($values->leader, $values->assistant, $values->accountant, $values->medic)
+                )
             );
+
             $this->handleCloseEditation();
             $this->reload('Funkce uloženy.', 'success');
             return;
