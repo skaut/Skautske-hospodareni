@@ -3,11 +3,7 @@
 namespace Model;
 
 use Dibi\Connection;
-use eGen\MessageBus\Bus\EventBus;
 use Model\Event\Functions;
-use Model\Event\Repositories\IEventRepository;
-use Model\Events\Events\EventWasClosed;
-use Model\Events\Events\EventWasOpened;
 use Model\Skautis\Mapper;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
@@ -28,8 +24,6 @@ class EventService extends MutableBaseService
     /** @var Connection */
     private $connection;
 
-    /** @var IEventRepository */
-    private $eventRepository;
 
     /** @var UnitService */
     private $units;
@@ -37,28 +31,20 @@ class EventService extends MutableBaseService
     /** @var Mapper */
     private $mapper;
 
-    /** @var  EventBus */
-    private $eventBus;
-
     public function __construct(
         string $name,
         EventTable $table,
         Skautis $skautis,
         IStorage $cacheStorage,
         Connection $connection,
-        IEventRepository $eventRepository,
-        EventBus $eventBus,
         Mapper $mapper,
         UnitService $units
     )
     {
         parent::__construct($name, $skautis);
-        /** @var EventTable */
         $this->table = $table;
         $this->cache = new Cache($cacheStorage, __CLASS__);
         $this->connection = $connection;
-        $this->eventRepository = $eventRepository;
-        $this->eventBus = $eventBus;
         $this->mapper = $mapper;
         $this->units = $units;
     }
@@ -251,31 +237,6 @@ class EventService extends MutableBaseService
             $chitService->deleteAll($ID);
         }
         return (bool)$ret;
-    }
-
-    /**
-     * znovu otevřít akci
-     */
-    public function open(int $id): void
-    {
-        if($this->type != "general") {
-            throw new \RuntimeException("Camp can't be opened!");
-        }
-        $event = $this->eventRepository->find($id);
-        $this->eventRepository->open($event);
-
-        $this->eventBus->handle(new EventWasOpened($event->getId(), $event->getUnitId(), $event->getDisplayName()));
-    }
-
-    public function close(int $eventId): void
-    {
-        if($this->type != "general") {
-            throw new \RuntimeException("Camp can't be closed!");
-        }
-        $event = $this->eventRepository->find($eventId);
-        $this->eventRepository->close($event);
-
-        $this->eventBus->handle(new EventWasClosed($event->getId(), $event->getUnitId(), $event->getDisplayName()));
     }
 
     /**

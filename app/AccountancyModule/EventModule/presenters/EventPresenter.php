@@ -4,6 +4,8 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
+use Model\Event\Commands\Event\CloseEvent;
+use Model\Event\Commands\Event\OpenEvent;
 use Model\ExportService;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
@@ -91,7 +93,8 @@ class EventPresenter extends BasePresenter
             $this->flashMessage("Nemáte právo otevřít akci", "warning");
             $this->redirect("this");
         }
-        $this->eventService->event->open($aid);
+
+        $this->commandBus->handle(new OpenEvent($aid));
 
         $this->flashMessage("Akce byla znovu otevřena.");
         $this->redirect("this");
@@ -105,7 +108,7 @@ class EventPresenter extends BasePresenter
         }
 
         if ($this->eventService->event->isCloseable($aid)) {
-            $this->eventService->event->close($aid);
+            $this->commandBus->handle(new CloseEvent($aid));
             $this->flashMessage("Akce byla uzavřena.");
         } else {
             $this->flashMessage("Před uzavřením akce musí být vyplněn vedoucí akce", "danger");
