@@ -1,10 +1,11 @@
 <?php
 
-namespace Model\Travel\Repositories;
+declare(strict_types=1);
 
-use Consistence\Type\ArrayType\ArrayType;
-use Consistence\Type\ArrayType\KeyValuePair;
+namespace Model\Infrastructure\Repositories\Travel;
+
 use Doctrine\ORM\EntityManager;
+use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 
@@ -22,7 +23,7 @@ class VehicleRepository implements IVehicleRepository
     /**
      * @throws VehicleNotFoundException
      */
-    public function get(int $id): Vehicle
+    public function find(int $id): Vehicle
     {
         $vehicle = $this->em->find(Vehicle::class, $id);
 
@@ -51,7 +52,7 @@ class VehicleRepository implements IVehicleRepository
     /**
      * @return Vehicle[]
      */
-    public function getAll(int $unitId): array
+    public function findByUnit(int $unitId): array
     {
         $vehicles = $this->em->createQueryBuilder()
             ->select('v')
@@ -62,26 +63,7 @@ class VehicleRepository implements IVehicleRepository
             ->getQuery()
             ->getResult();
 
-        if(empty($vehicles)) {
-            return [];
-        }
-
-        return $vehicles;
-    }
-
-    public function getPairs(int $unitId): array
-    {
-        $vehicles = $this->em->getRepository(Vehicle::class)->findBy([
-            'unitId' => $unitId,
-            'archived' => FALSE,
-        ]);
-
-        return ArrayType::mapByCallback($vehicles, function(KeyValuePair $pair) {
-            $value = $pair->getValue();
-            /** @var Vehicle $value */
-            return new KeyValuePair($value->getId(), $value->getLabel());
-        });
-
+        return array_values($vehicles);
     }
 
     public function save(Vehicle $vehicle): void
@@ -90,15 +72,10 @@ class VehicleRepository implements IVehicleRepository
         $this->em->flush();
     }
 
-    public function remove(int $vehicleId): bool
+    public function remove(Vehicle $vehicle): void
     {
-        try {
-            $this->em->remove($this->get($vehicleId));
-            $this->em->flush();
-            return TRUE;
-        } catch (VehicleNotFoundException $e) {
-            return FALSE;
-        }
+        $this->em->remove($vehicle);
+        $this->em->flush();
     }
 
 }

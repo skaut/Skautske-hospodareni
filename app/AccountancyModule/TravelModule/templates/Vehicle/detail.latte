@@ -1,4 +1,4 @@
-{block #title}{$vehicle->label}{/block}
+    {block #title}{$vehicle->label}{/block}
 
 {block #content}
 {include ../menu.latte}
@@ -36,6 +36,11 @@
             <tr n:ifset="$subunitName">
                 <th>Oddíl</th>
                 <td>{$subunitName}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center">
+                    Vytvořil <i>{$vehicleDTO->authorName}</i> dne {$vehicleDTO->createdAt|date:'d.m.Y'}
+                </td>
             </tr>
         </table>
     </div>

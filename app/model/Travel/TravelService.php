@@ -6,7 +6,6 @@ use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use Dibi\Row;
 use Model\DTO\Travel as DTO;
-use Model\DTO\Travel\Command\Travel as TravelDTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
 use Model\Travel\Contract;
@@ -67,46 +66,59 @@ class TravelService
     /**     VEHICLES    */
 
     /**
+     * @deprecated Use getVehicleDTO, entities shouldn't be used outside of model
+     *
      * vraci detail daného vozidla
      */
     public function getVehicle(int $vehicleId): Vehicle
     {
-        return $this->vehicles->get($vehicleId);
+        return $this->vehicles->find($vehicleId);
     }
 
-    public function findVehicle(int $id): ?Vehicle
+    public function getVehicleDTO(int $id): ?DTO\Vehicle
     {
         try {
-            return $this->vehicles->get($id);
+            return DTO\VehicleFactory::create(
+                $this->vehicles->find($id)
+            );
         } catch (VehicleNotFoundException $e) {
             return NULL;
         }
     }
 
+    public function findVehicle(int $id): ?Vehicle
+    {
+        try {
+            return $this->vehicles->find($id);
+        } catch (VehicleNotFoundException $e) {
+            return NULL;
+        }
+    }
+
+
+    /**
+     * @return array<int,string> in format [id => label]
+     */
     public function getVehiclesPairs(int $unitId): array
     {
-        return $this->vehicles->getPairs($unitId);
+        $pairs = [];
+
+        foreach($this->vehicles->findByUnit($unitId) as $vehicle) {
+            $pairs[$vehicle->getId()] = $vehicle->getLabel();
+        }
+
+        return $pairs;
     }
 
     /**
-     * @return Travel\Vehicle[]
+     * @return DTO\Vehicle[]
      */
     public function getAllVehicles(int $unitId): array
     {
-        return $this->vehicles->getAll($unitId);
-    }
-
-
-    public function createVehicle(string $type, int $unitId, ?int $subunitId, string $registration, float $consumption): void
-    {
-        $unit = $this->units->find($unitId);
-
-        $subunit = $subunitId !== NULL
-            ? $this->units->find($subunitId)
-            : NULL;
-
-        $vehicle = new Vehicle($type, $unit, $subunit, $registration, $consumption);
-        $this->vehicles->save($vehicle);
+        return array_map(
+            [DTO\VehicleFactory::class, 'create'],
+            $this->vehicles->findByUnit($unitId)
+        );
     }
 
     public function removeVehicle(int $vehicleId): bool
@@ -114,7 +126,16 @@ class TravelService
         if ($this->commands->countByVehicle($vehicleId) > 0) { //nelze mazat vozidlo s navazanými příkazy
             return FALSE;
         }
-        return $this->vehicles->remove($vehicleId);
+
+        try {
+            $vehicle = $this->vehicles->find($vehicleId);
+
+            $this->vehicles->remove($vehicle);
+
+            return TRUE;
+        } catch (VehicleNotFoundException $e) {
+            return FALSE;
+        }
     }
 
     /**
@@ -315,7 +336,7 @@ class TravelService
     ): void
     {
         $vehicle = $vehicleId !== NULL
-            ? $this->vehicles->get($vehicleId)
+            ? $this->vehicles->find($vehicleId)
             : NULL;
 
         $command = new Command(
@@ -351,7 +372,7 @@ class TravelService
         $command = $this->commands->find($id);
 
         $vehicle = $vehicleId !== NULL
-            ? $this->vehicles->get($vehicleId)
+            ? $this->vehicles->find($vehicleId)
             : NULL;
 
         $command->update(

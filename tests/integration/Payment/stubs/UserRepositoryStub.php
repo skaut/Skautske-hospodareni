@@ -2,7 +2,8 @@
 
 namespace Model\Payment;
 
-use Model\Payment\Repositories\IUserRepository;
+use Model\Common\Repositories\IUserRepository;
+use Model\Common\User;
 
 class UserRepositoryStub implements IUserRepository
 {

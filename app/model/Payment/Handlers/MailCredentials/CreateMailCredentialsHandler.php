@@ -7,7 +7,7 @@ use Model\Payment\Commands\CreateMailCredentials;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\MailCredentials;
 use Model\Payment\Repositories\IMailCredentialsRepository;
-use Model\Payment\Repositories\IUserRepository;
+use Model\Common\Repositories\IUserRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
 use Nette\Mail\SmtpException;

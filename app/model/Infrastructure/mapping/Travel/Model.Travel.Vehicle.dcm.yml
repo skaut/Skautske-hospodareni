@@ -24,3 +24,6 @@ Model\Travel\Vehicle:
             type: string
         archived:
             type: boolean
+
+    embedded:
+        metadata: { class: Model\Travel\Vehicle\Metadata }

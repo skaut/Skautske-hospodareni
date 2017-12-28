@@ -6,7 +6,7 @@ use Model\Payment\Commands\CreateMailCredentials;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentials\MailProtocol;
-use Model\Payment\User;
+use Model\Common\User;
 use Model\Payment\UserRepositoryStub;
 
 class CreateMailCredentialsHandlerTest extends \CommandHandlerTest

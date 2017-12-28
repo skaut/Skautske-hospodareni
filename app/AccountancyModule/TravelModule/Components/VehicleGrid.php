@@ -41,6 +41,14 @@ class VehicleGrid extends BaseGridControl
 
         $grid->addColumnText('subunit', 'Oddíl')
             ->setFilterSelect($units, 'subunitId')->setPrompt('-');
+
+        $grid->addColumnDateTime('createdAt', 'Vytvořeno')
+            ->setSortable(TRUE);
+
+        $grid->addColumnDateTime('authorName', 'Vytvořil')
+            ->setSortable()
+            ->setFilterText();
+
         $grid->addColumnText('action', '');
         $grid->setPagination(FALSE);
 

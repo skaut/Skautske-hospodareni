@@ -1,0 +1,7 @@
+Model\Travel\Vehicle\Metadata:
+
+    type: embeddable
+
+    fields:
+        authorName: { type: string }
+        createdAt: { type: datetime_immutable }

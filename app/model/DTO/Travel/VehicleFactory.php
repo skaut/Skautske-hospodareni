@@ -9,7 +9,17 @@ class VehicleFactory
 
     public static function create(VehicleEntity $vehicle): Vehicle
     {
-        return new Vehicle($vehicle->getId(), $vehicle->getLabel(), $vehicle->isArchived());
+        return new Vehicle(
+            $vehicle->getId(),
+            $vehicle->getType(),
+            $vehicle->getRegistration(),
+            $vehicle->getLabel(),
+            $vehicle->getSubunitId(),
+            $vehicle->getConsumption(),
+            $vehicle->isArchived(),
+            $vehicle->getMetadata()->getCreatedAt(),
+            $vehicle->getMetadata()->getAuthorName()
+        );
     }
 
 }
