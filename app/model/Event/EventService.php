@@ -2,7 +2,6 @@
 
 namespace Model;
 
-use Dibi\Connection;
 use Model\Event\Functions;
 use Model\Skautis\Mapper;
 use Nette\Caching\Cache;
@@ -21,10 +20,6 @@ class EventService extends MutableBaseService
     /** @var Cache */
     private $cache;
 
-    /** @var Connection */
-    private $connection;
-
-
     /** @var UnitService */
     private $units;
 
@@ -36,7 +31,6 @@ class EventService extends MutableBaseService
         EventTable $table,
         Skautis $skautis,
         IStorage $cacheStorage,
-        Connection $connection,
         Mapper $mapper,
         UnitService $units
     )
@@ -44,7 +38,6 @@ class EventService extends MutableBaseService
         parent::__construct($name, $skautis);
         $this->table = $table;
         $this->cache = new Cache($cacheStorage, __CLASS__);
-        $this->connection = $connection;
         $this->mapper = $mapper;
         $this->units = $units;
     }
@@ -272,15 +265,6 @@ class EventService extends MutableBaseService
     public function activateAutocomputedParticipants($ID, $state = 1): void
     {
         $this->skautis->event->{"EventCampUpdateAdult"}(["ID" => $ID, "IsRealAutoComputed" => $state], "event" . $this->typeName);
-    }
-
-    /**
-     * vrací počet událostí s vyplněným záznamem v pokladní kníze, který nebyl smazán
-     * @return int počet událostí se záznamem
-     */
-    public function getCountOfActiveEvents()
-    {
-        return $this->connection->query("SELECT COUNT(DISTINCT actionId) FROM [" . BaseTable::TABLE_CHIT . "] WHERE deleted = 0")->fetchSingle();
     }
 
 }
