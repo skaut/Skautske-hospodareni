@@ -2,12 +2,17 @@
 
 namespace Model;
 
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Event\Functions;
+use Model\Event\ReadModel\Queries\CampFunctions;
+use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\Repositories\IEventRepository;
+use Model\Event\SkautisCampId;
+use Model\Event\SkautisEventId;
 use Model\Services\TemplateFactory;
-use Nette\Bridges\ApplicationLatte\Template;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -27,17 +32,22 @@ class ExportService
     /** @var IEventRepository */
     private $events;
 
+    /** @var QueryBus */
+    private $queryBus;
+
     public function __construct(
         UnitService $units,
         ICategoryRepository $categories,
         TemplateFactory $templateFactory,
-        IEventRepository $events
+        IEventRepository $events,
+        QueryBus $queryBus
     )
     {
         $this->units = $units;
         $this->categories = $categories;
         $this->templateFactory = $templateFactory;
         $this->events = $events;
+        $this->queryBus = $queryBus;
     }
 
     public function getNewPage()
@@ -121,7 +131,7 @@ class ExportService
             'personsDays' => $eventService->participants->getPersonsDays($participants),
             'event' => $this->events->find($skautisEventId),
             'chits' => $sums,
-            'func' => $eventService->event->getFunctions($skautisEventId),
+            'functions' => $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId))),
             'incomes' => array_values($sums[Operation::INCOME]),
             'expenses' => array_values($sums[Operation::EXPENSE]),
             'totalIncome' => $totalIncome,
@@ -167,8 +177,16 @@ class ExportService
         //HPD 
         if ($activeHpd) {
             $template['totalPayment'] = $eventService->participants->getTotalPayment($aid);
-            $func = $eventService->event->getFunctions($aid);
-            $template['pokladnik'] = ($func[2]->ID_Person != NULL) ? $func[2]->Person : (($func[0]->ID_Person != NULL) ? $func[0]->Person : "");
+
+            $functionsQuery = $eventService->event->type === 'camp'
+                ? new CampFunctions(new SkautisCampId($aid))
+                : new EventFunctions(new SkautisEventId($aid));
+
+            /** @var Functions $functions */
+            $functions = $this->queryBus->handle($functionsQuery);
+            $accountant = $functions->getAccountant() ?? $functions->getLeader();
+            $template['pokladnik'] = $accountant !== NULL ? $accountant->getName() : '';
+
             $template['list'] = $eventService->participants->getAll($aid);
         }
 
@@ -193,7 +211,7 @@ class ExportService
             'personsDays' => $campService->participants->getPersonsDays($participants),
             'a' => $campService->event->get($skautisCampId),
             'chits' => $categories,
-            'func' => $campService->event->getFunctions($skautisCampId),
+            'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
         ]);
     }
 

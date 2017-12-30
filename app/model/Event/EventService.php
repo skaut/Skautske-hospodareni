@@ -88,16 +88,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * vrací obsazení funkcí na zadané akci
-     * @param int $unitId
-     * @return \stdClass[]
-     */
-    public function getFunctions($unitId)
-    {
-        return $this->skautis->event->{"EventFunctionAll" . $this->typeName}(["ID_Event" . $this->typeName => $unitId]);
-    }
-
-    /**
      * vrací seznam všech stavů akce
      * používá Cache
      * @return string[]
