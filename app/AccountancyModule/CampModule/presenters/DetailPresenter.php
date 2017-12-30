@@ -3,6 +3,8 @@
 namespace App\AccountancyModule\CampModule;
 
 use App\Forms\BaseForm;
+use Model\Event\ReadModel\Queries\CampFunctions;
+use Model\Event\SkautisCampId;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
@@ -29,7 +31,10 @@ class DetailPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $this->template->funkce = $this->isAllowed("EV_EventFunction_ALL_EventCamp") ? $this->eventService->event->getFunctions($aid) : FALSE;
+        $this->template->functions = $this->isAllowed("EV_EventFunction_ALL_EventCamp")
+            ? $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)))
+            : NULL;
+
         $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
         $this->template->skautISUrl = $this->userService->getSkautisUrl();
 
