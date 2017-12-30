@@ -103,12 +103,12 @@ class ChitPresenter extends BasePresenter
         }
     }
 
-    public function handleLockEvent(int $sid, $type) : void
+    public function handleLockEvent(int $eventId, string $type) : void
     {
-        if (!in_array($type, ["event", "camp", "unit"]) || !array_key_exists($sid, $this->info[$type])) {
+        if (!in_array($type, ["event", "camp", "unit"], TRUE) || !array_key_exists($eventId, $this->info[$type])) {
             $this->flashMessage("Neplatný přístup!", "danger");
         } else {
-            $cashbookId = $this->cashbookService->getSkautisIdFromCashbookId($sid, ObjectType::get($type));
+            $cashbookId = $this->cashbookService->getSkautisIdFromCashbookId($eventId, ObjectType::get($type));
             $this->commandBus->handle(new LockCashbook($cashbookId, $this->user->getId()));
         }
 
