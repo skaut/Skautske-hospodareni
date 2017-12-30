@@ -49,6 +49,21 @@ final class EventRepository implements IEventRepository
         $this->webService->EventGeneralUpdateClose(["ID" => $skautisId], $this->skautisType);
     }
 
+    public function getNewestEventId(): ?int
+    {
+        $events = $this->webService->eventGeneralAll([
+            'IsRelation' => TRUE,
+        ]);
+
+        $ids = array_column($events, 'ID');
+
+        if(count($ids) === 0) {
+            return NULL;
+        }
+
+        return max($ids);
+    }
+
     private function createEvent(\stdClass $skautisEvent): Event
     {
         return new Event(

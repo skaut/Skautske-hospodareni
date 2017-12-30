@@ -4,8 +4,10 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
+use Cake\Chronos\Chronos;
 use Cake\Chronos\Date;
 use Model\Event\Commands\Event\CreateEvent;
+use Model\Event\ReadModel\Queries\NewestEventId;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
@@ -243,8 +245,9 @@ class DefaultPresenter extends BasePresenter
             )
         );
 
-        $this->flashMessage("Akce '$v[name]' byla vytvořena", 'success');
-        $this->redirect('this');
+        $this->redirect('Event:', [
+            'aid' => $this->queryBus->handle(new NewestEventId()),
+        ]);
     }
 
 }
