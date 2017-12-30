@@ -8,7 +8,6 @@ use App\AccountancyModule\Auth\IAuthorizator;
 use eGen\MessageBus\Bus\CommandBus;
 use Model\Event\AssistantNotAdultException;
 use Model\Event\Commands\Event\UpdateFunctions;
-use Model\Event\Functions;
 use Model\Event\LeaderNotAdultException;
 use Model\EventEntity;
 use Model\EventService;
@@ -134,7 +133,10 @@ class FunctionsControl extends Control
             $this->commandBus->handle(
                 new UpdateFunctions(
                     $this->eventId,
-                    new Functions($values->leader, $values->assistant, $values->accountant, $values->medic)
+                    $values->leader,
+                    $values->assistant,
+                    $values->accountant,
+                    $values->medic
                 )
             );
 
