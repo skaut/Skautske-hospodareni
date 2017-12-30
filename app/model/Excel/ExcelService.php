@@ -140,7 +140,7 @@ class ExcelService
 
     /* PROTECTED */
 
-    protected function setSheetParticipantCamp(&$sheet, $data): void
+    protected function setSheetParticipantCamp(\PHPExcel_Worksheet $sheet, $data): void
     {
         $sheet->setCellValue('A1', "P.č.")
             ->setCellValue('B1', "Jméno")
@@ -184,7 +184,7 @@ class ExcelService
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
     }
 
-    protected function setSheetParticipantGeneral(&$sheet, $data, $event): void
+    protected function setSheetParticipantGeneral(\PHPExcel_Worksheet $sheet, $data, $event): void
     {
         $startDate = new \DateTime($event->StartDate);
         $sheet->setCellValue('A1', "P.č.")
@@ -260,7 +260,7 @@ class ExcelService
         $sheet->setTitle('Pokladní kniha');
     }
 
-    protected function setSheetEvents(&$sheet, $data): void
+    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, $data): void
     {
         $firstElement = reset($data);
 
@@ -369,7 +369,7 @@ class ExcelService
         $sheet->setTitle('Přehled táborů');
     }
 
-    protected function setSheetChits(&$sheet, $data): void
+    protected function setSheetChits(\PHPExcel_Worksheet $sheet, $data): void
     {
         $sheet->setCellValue('A1', "Název akce")
             ->setCellValue('B1', "Ze dne")
@@ -404,7 +404,7 @@ class ExcelService
         $sheet->setTitle('Doklady');
     }
 
-    protected function setSheetChitsOnly(&$sheet, $data): void
+    protected function setSheetChitsOnly(\PHPExcel_Worksheet $sheet, $data): void
     {
         $sheet->setCellValue('B1', "Ze dne")
             ->setCellValue('C1', "Účel výplaty")
