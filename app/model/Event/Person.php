@@ -7,8 +7,9 @@ namespace Model\Event;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
- * @property-read string $name
+ * @property-read int           $id
+ * @property-read string        $name
+ * @property-read string|NULL   $email
  */
 class Person
 {
@@ -21,10 +22,14 @@ class Person
     /** @var string */
     private $name;
 
-    public function __construct(int $id, string $name)
+    /** @var string|NULL */
+    private $email;
+
+    public function __construct(int $id, string $name, ?string $email)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->email = $email;
     }
 
     public function getId(): int
@@ -35,6 +40,11 @@ class Person
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
     }
 
 }
