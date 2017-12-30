@@ -223,8 +223,8 @@ class DefaultPresenter extends BasePresenter
 
         $v = $form->getValues();
 
-        $startDate = Date::createFromMutable($v['start']);
-        $endDate = Date::createFromMutable($v['end']);
+        $startDate = Date::instance($v['start']);
+        $endDate = Date::instance($v['end']);
 
         if($startDate > $endDate) {
             $form['start']->addError("Akce nemůže dříve začít než zkončit!");
@@ -236,8 +236,8 @@ class DefaultPresenter extends BasePresenter
                 $v['name'],
                 $startDate,
                 $endDate,
-                $v['location'] !== '' ? $v['location'] : NULL,
                 $v->orgID,
+                $v['location'] !== '' ? $v['location'] : NULL,
                 $v['scope'],
                 $v['type']
             )
