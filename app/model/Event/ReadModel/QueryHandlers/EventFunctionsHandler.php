@@ -3,7 +3,7 @@
 namespace Model\Event\ReadModel\QueryHandlers;
 
 use Model\Event\Functions;
-use Model\Event\Person;
+use Model\Event\ReadModel\PersonFactory;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Skautis\Skautis;
 
@@ -25,21 +25,9 @@ class EventFunctionsHandler
         ]);
 
         return new Functions(
-            ...array_map([self::class, 'buildPerson'], $functions)
-        );
-
-    }
-
-    public static function buildPerson(\stdClass $function): ?Person
-    {
-        if($function->ID_Person === NULL) {
-            return NULL;
-        }
-
-        return new Person(
-            $function->ID_Person,
-            $function->Person
+            ...array_map([PersonFactory::class, 'create'], $functions)
         );
     }
 
 }
+
