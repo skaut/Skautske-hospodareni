@@ -8,9 +8,6 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class CashbookPresenter extends BasePresenter
 {
 

@@ -8,9 +8,6 @@ use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
-/**
- * @author Hána František
- */
 class EventService extends MutableBaseService
 {
 
