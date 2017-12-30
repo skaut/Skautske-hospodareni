@@ -10,6 +10,7 @@ use Model\Event\Commands\Event\OpenEvent;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\ReadModel\Queries\EventScopes;
+use Model\Event\ReadModel\Queries\EventTypes;
 use Model\Event\SkautisEventId;
 use Model\ExportService;
 use Model\Logger\Log\Type;
@@ -168,7 +169,7 @@ class EventPresenter extends BasePresenter
             ->setRequired('Musíte zadat datum konce akce')
             ->addRule([\MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
         $form->addText("location", "Místo");
-        $form->addSelect("type", "Typ (+)", $this->eventService->event->getTypes());
+        $form->addSelect("type", "Typ (+)", $this->queryBus->handle(new EventTypes()));
         $form->addSelect("scope", "Rozsah (+)", $this->queryBus->handle(new EventScopes()));
         $form->addText("prefix", "Prefix")
             ->setMaxLength(6);

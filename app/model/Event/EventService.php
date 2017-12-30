@@ -107,25 +107,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * vrací seznam všech typů akce
-     * používá Cache
-     * @return array
-     */
-    public function getTypes()
-    {
-        $cacheId = __FUNCTION__ . $this->typeName;
-        if (!($ret = $this->cache->load($cacheId))) {
-            $res = $this->skautis->event->{($this->typeName != "Camp" ? "Event" : "") . $this->typeName . "TypeAll"}();
-            $ret = [];
-            foreach ($res as $value) {
-                $ret[$value->ID] = $value->DisplayName;
-            }
-            $this->cache->save($cacheId, $ret);
-        }
-        return $ret;
-    }
-
-    /**
      * @param int $skautisId
      * @param string $prefix
      */
