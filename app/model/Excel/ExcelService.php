@@ -2,8 +2,11 @@
 
 namespace Model;
 
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Event\Functions;
+use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -16,9 +19,13 @@ class ExcelService
     /** @var ICategoryRepository */
     private $categories;
 
-    public function __construct(ICategoryRepository $categories)
+    /** @var QueryBus */
+    private $queryBus;
+
+    public function __construct(ICategoryRepository $categories, QueryBus $queryBus)
     {
         $this->categories = $categories;
+        $this->queryBus = $queryBus;
     }
 
     protected function getNewFile(): \PHPExcel
@@ -87,7 +94,7 @@ class ExcelService
             $data[$aid] = $service->event->get($aid);
             $data[$aid]['parStatistic'] = $service->participants->getEventStatistic($aid);
             $data[$aid]['chits'] = $service->chits->getAll($aid);
-            $data[$aid]['func'] = $service->event->getFunctions($aid);
+            $data[$aid]['func'] = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
@@ -279,14 +286,19 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $row) {
+            /** @var Functions $functions */
+            $functions = $row->func;
+            $leader = $functions->getLeader() !== NULL ? $functions->getLeader()->getName() : NULL;
+            $accountant = $functions->getAccountant() !== NULL ? $functions->getAccountant()->getName() : NULL;
+
             $sheet->setCellValue('A' . $rowCnt, $row->Unit)
                 ->setCellValue('B' . $rowCnt, $row->DisplayName)
                 ->setCellValue('C' . $rowCnt, $row->ID_UnitEducative !== NULL ? $row->UnitEducative : "")
                 ->setCellValue('D' . $rowCnt, $row->EventGeneralType)
                 ->setCellValue('E' . $rowCnt, $row->EventGeneralScope)
                 ->setCellValue('F' . $rowCnt, $row->Location)
-                ->setCellValue('G' . $rowCnt, $row->func[0]->ID_Person !== NULL ? $row->func[0]->Person : "")
-                ->setCellValue('H' . $rowCnt, $row->func[2]->ID_Person !== NULL ? $row->func[2]->Person : "")
+                ->setCellValue('G' . $rowCnt, $leader)
+                ->setCellValue('H' . $rowCnt, $accountant)
                 ->setCellValue('I' . $rowCnt, date("d.m.Y", strtotime($row->StartDate)))
                 ->setCellValue('J' . $rowCnt, date("d.m.Y", strtotime($row->EndDate)))
                 ->setCellValue('K' . $rowCnt, $row->TotalDays)

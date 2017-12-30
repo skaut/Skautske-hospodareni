@@ -217,17 +217,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * kontrolu jestli je možné uzavřít
-     * @param int $ID
-     */
-    public function isCloseable($ID): bool
-    {
-        $func = $this->getFunctions($ID);
-
-        return $func[0]->ID_Person != NULL; // musí být nastaven vedoucí akce
-    }
-
-    /**
      * aktivuje automatické dopočítávání pro seznam osobodnů z tabulky účastníků
      * @param int $ID
      * @param int $state

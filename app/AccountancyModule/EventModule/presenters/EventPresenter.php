@@ -7,6 +7,9 @@ use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
+use Model\Event\Functions;
+use Model\Event\ReadModel\Queries\EventFunctions;
+use Model\Event\SkautisEventId;
 use Model\ExportService;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
@@ -108,7 +111,10 @@ class EventPresenter extends BasePresenter
             $this->redirect("this");
         }
 
-        if ($this->eventService->event->isCloseable($aid)) {
+        /** @var Functions $functions */
+        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
+
+        if ($functions->getLeader() !== NULL) {
             $this->commandBus->handle(new CloseEvent($aid));
             $this->flashMessage("Akce byla uzavřena.");
         } else {
