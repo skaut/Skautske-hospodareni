@@ -50,19 +50,19 @@
                 <table class="panel-body table table-bordered">
                     <tr>
                         <th>Vedoucí akce</th>
-                        <td>{$functions[0]->ID_Person !== NULL ? $functions[0]->Person : "-"}</td>
+                        <td>{$functions->leader !== NULL ? $functions->leader->name : "-"}</td>
                     </tr>
                     <tr>
                         <th>Zástupce vedoucího</th>
-                        <td>{$functions[1]->ID_Person !== NULL ? $functions[1]->Person : "-"}</td>
+                        <td>{$functions->assistant !== NULL ? $functions->assistant->name : "-"}</td>
                     </tr>
                     <tr>
                         <th>Hospodář</th>
-                        <td>{$functions[2]->ID_Person !== NULL ? $functions[2]->Person : "-"}</td>
+                        <td>{$functions->accountant !== NULL ? $functions->accountant->name : "-"}</td>
                     </tr>
                     <tr>
                         <th>Zdravotník</th>
-                        <td>{$functions[3]->ID_Person !== NULL ? $functions[3]->Person : "-"}</td>
+                        <td>{$functions->medic !== NULL ? $functions->medic->name : "-"}</td>
                     </tr>
                 </table>
             {/if}

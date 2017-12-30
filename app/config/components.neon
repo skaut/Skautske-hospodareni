@@ -3,8 +3,6 @@ autoDI:
         - implement: App\AccountancyModule\**\I*Factory
 
 services:
-    - implement: App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory
-      arguments: { eventEntity: @eventService }
 
     # Presenters
     - App\AccountancyModule\PaymentModule\GroupPresenter(camp: @campService)

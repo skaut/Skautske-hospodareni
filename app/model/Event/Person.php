@@ -4,8 +4,16 @@ declare(strict_types=1);
 
 namespace Model\Event;
 
+use Nette\SmartObject;
+
+/**
+ * @property-read int $id
+ * @property-read string $name
+ */
 class Person
 {
+
+    use SmartObject;
 
     /** @var int */
     private $id;

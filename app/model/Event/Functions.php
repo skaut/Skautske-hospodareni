@@ -4,8 +4,18 @@ declare(strict_types=1);
 
 namespace Model\Event;
 
+use Nette\SmartObject;
+
+/**
+ * @property-read Person|NULL $leader
+ * @property-read Person|NULL $assistant
+ * @property-read Person|NULL $accountant
+ * @property-read Person|NULL $medic
+ */
 class Functions
 {
+
+    use SmartObject;
 
     /** @var Person|NULL */
     private $leader;

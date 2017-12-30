@@ -14,8 +14,6 @@ use Model\Event\LeaderNotAdultException;
 use Model\Event\Person;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
-use Model\EventEntity;
-use Model\EventService;
 use Model\MemberService;
 use Nette\Application\UI\Control;
 use Nette\Utils\ArrayHash;
@@ -28,9 +26,6 @@ class FunctionsControl extends Control
 
     /** @var int */
     private $eventId;
-
-    /** @var EventService */
-    private $events;
 
     /** @var CommandBus */
     private $commandBus;
@@ -52,7 +47,6 @@ class FunctionsControl extends Control
 
     public function __construct(
         int $eventId,
-        EventEntity $eventEntity,
         CommandBus $commandBus,
         QueryBus $queryBus,
         MemberService $members,
@@ -61,7 +55,6 @@ class FunctionsControl extends Control
     {
         parent::__construct();
         $this->eventId = $eventId;
-        $this->events = $eventEntity->event;
         $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
         $this->members = $members;
@@ -134,7 +127,7 @@ class FunctionsControl extends Control
     public function render() : void
     {
         $this->template->setFile(__DIR__ . '/templates/FunctionsControl.latte');
-        $this->template->functions = $this->events->getFunctions($this->eventId);
+        $this->template->functions = $this->getCurrentFunctions();
         $this->template->editation = $this->editation;
         $this->template->canEdit = $this->canEdit();
         $this->template->render();
@@ -174,8 +167,7 @@ class FunctionsControl extends Control
 
     private function setDefaultValues(Form $form): void
     {
-        /** @var Functions $selected */
-        $selected = $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->eventId)));
+        $selected = $this->getCurrentFunctions();
 
         $values = [
             "leader" => $this->getIdOrNull($selected->getLeader()),
@@ -212,6 +204,11 @@ class FunctionsControl extends Control
         }
 
         return $person->getId();
+    }
+
+    private function getCurrentFunctions(): Functions
+    {
+        return $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->eventId)));
     }
 
 }
