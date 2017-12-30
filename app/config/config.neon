@@ -102,6 +102,13 @@ autoDI:
           tags: [queryBus.handler]
 
 services:
+    skautisCache:
+        factory: Nette\Caching\Cache(namespace: 'skautis')
+        autowired: false
+
+    - factory: Model\Event\ReadModel\QueryHandlers\EventScopesHandler(@skautis.event, @skautisCache)
+      tags: [queryBus.handler]
+
     - App\RouterFactory
 
     - Model\Services\PdfRenderer(%tempDir%)

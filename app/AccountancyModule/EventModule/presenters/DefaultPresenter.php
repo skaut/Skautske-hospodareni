@@ -7,6 +7,7 @@ use App\Forms\BaseForm;
 use Cake\Chronos\Chronos;
 use Cake\Chronos\Date;
 use Model\Event\Commands\Event\CreateEvent;
+use Model\Event\ReadModel\Queries\EventScopes;
 use Model\Event\ReadModel\Queries\NewestEventId;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
@@ -178,7 +179,7 @@ class DefaultPresenter extends BasePresenter
      */
     protected function createComponentFormCreate(): Form
     {
-        $scopes = $this->eventService->event->getScopes();
+        $scopes = $this->queryBus->handle(new EventScopes());
         $types = $this->eventService->event->getTypes();
         $unitId = $this->unitService->getUnitId();
 

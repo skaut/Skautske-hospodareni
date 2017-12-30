@@ -107,26 +107,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * vrací seznam všech rozsahů
-     * používá Cache
-     * EventGeneral specific
-     * @return array
-     */
-    public function getScopes()
-    {
-        $cacheId = __FUNCTION__ . $this->typeName;
-        if (!($ret = $this->cache->load($cacheId))) {
-            $res = $this->skautis->event->EventGeneralScopeAll();
-            $ret = [];
-            foreach ($res as $value) {
-                $ret[$value->ID] = $value->DisplayName;
-            }
-            $this->cache->save($cacheId, $ret);
-        }
-        return $ret;
-    }
-
-    /**
      * vrací seznam všech typů akce
      * používá Cache
      * @return array
