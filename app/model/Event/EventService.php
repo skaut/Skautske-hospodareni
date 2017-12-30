@@ -2,7 +2,6 @@
 
 namespace Model;
 
-use Model\Event\Functions;
 use Model\Skautis\Mapper;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
@@ -96,18 +95,6 @@ class EventService extends MutableBaseService
     public function getFunctions($unitId)
     {
         return $this->skautis->event->{"EventFunctionAll" . $this->typeName}(["ID_Event" . $this->typeName => $unitId]);
-    }
-
-    public function getSelectedFunctions(int $eventId): Functions
-    {
-        $data = $this->getFunctions($eventId);
-
-        return new Functions(
-            $data[0]->ID_Person,
-            $data[1]->ID_Person,
-            $data[2]->ID_Person,
-            $data[3]->ID_Person
-        );
     }
 
     /**

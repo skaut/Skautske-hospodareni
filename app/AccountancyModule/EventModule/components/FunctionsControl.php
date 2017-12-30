@@ -6,9 +6,14 @@ use App\AccountancyModule\Auth\Event;
 use App\Forms\BaseForm;
 use App\AccountancyModule\Auth\IAuthorizator;
 use eGen\MessageBus\Bus\CommandBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Event\AssistantNotAdultException;
 use Model\Event\Commands\Event\UpdateFunctions;
+use Model\Event\Functions;
 use Model\Event\LeaderNotAdultException;
+use Model\Event\Person;
+use Model\Event\ReadModel\Queries\EventFunctions;
+use Model\Event\SkautisEventId;
 use Model\EventEntity;
 use Model\EventService;
 use Model\MemberService;
@@ -30,6 +35,9 @@ class FunctionsControl extends Control
     /** @var CommandBus */
     private $commandBus;
 
+    /** @var QueryBus */
+    private $queryBus;
+
     /** @var MemberService */
     private $members;
 
@@ -42,12 +50,20 @@ class FunctionsControl extends Control
      */
     public $editation = FALSE;
 
-    public function __construct(int $eventId, EventEntity $eventEntity, CommandBus $commandBus, MemberService $members, IAuthorizator $authorizator)
+    public function __construct(
+        int $eventId,
+        EventEntity $eventEntity,
+        CommandBus $commandBus,
+        QueryBus $queryBus,
+        MemberService $members,
+        IAuthorizator $authorizator
+    )
     {
         parent::__construct();
         $this->eventId = $eventId;
         $this->events = $eventEntity->event;
         $this->commandBus = $commandBus;
+        $this->queryBus = $queryBus;
         $this->members = $members;
         $this->authorizator = $authorizator;
     }
@@ -158,13 +174,14 @@ class FunctionsControl extends Control
 
     private function setDefaultValues(Form $form): void
     {
-        $selected = $this->events->getSelectedFunctions($this->eventId);
+        /** @var Functions $selected */
+        $selected = $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->eventId)));
 
         $values = [
-            "leader" => $selected->getLeaderId(),
-            "assistant" => $selected->getAssistantId(),
-            "accountant" => $selected->getAccountantId(),
-            "medic" => $selected->getMedicId(),
+            "leader" => $this->getIdOrNull($selected->getLeader()),
+            "assistant" => $this->getIdOrNull($selected->getAssistant()),
+            "accountant" => $this->getIdOrNull($selected->getAccountant()),
+            "medic" => $this->getIdOrNull($selected->getMedic()),
         ];
 
         foreach($values as $functionName => $personId) {
@@ -186,6 +203,15 @@ class FunctionsControl extends Control
         }
 
         return $persons;
+    }
+
+    private function getIdOrNull(?Person $person): ?int
+    {
+        if($person === NULL) {
+            return NULL;
+        }
+
+        return $person->getId();
     }
 
 }
