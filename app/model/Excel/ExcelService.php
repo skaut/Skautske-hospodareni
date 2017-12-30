@@ -6,7 +6,10 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICategoryRepository;
 use Model\Event\Functions;
+use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
+use Model\Event\SkautisCampId;
+use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -117,7 +120,7 @@ class ExcelService
             $data[$aid] = $camp;
             $data[$aid]['troops'] = implode(', ', array_column($unitService->getCampTroops($camp), 'DisplayName'));
             $data[$aid]['chits'] = $service->chits->getAll($aid);
-            $data[$aid]['func'] = $service->event->getFunctions($aid);
+            $data[$aid]['func'] = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
@@ -343,12 +346,17 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $row) {
+            /** @var Functions $functions */
+            $functions = $row->func;
+            $leader = $functions->getLeader() !== NULL ? $functions->getLeader()->getName() : NULL;
+            $accountant = $functions->getAccountant() !== NULL ? $functions->getAccountant()->getName() : NULL;
+
             $sheet->setCellValue('A' . $rowCnt, $row->Unit)
                 ->setCellValue('B' . $rowCnt, $row->DisplayName)
                 ->setCellValue('C' . $rowCnt, $row->troops)
                 ->setCellValue('D' . $rowCnt, $row->Location)
-                ->setCellValue('E' . $rowCnt, $row->func[0]->Person ?? "")
-                ->setCellValue('F' . $rowCnt, $row->func[3]->Person ?? "")
+                ->setCellValue('E' . $rowCnt, $leader)
+                ->setCellValue('F' . $rowCnt, $accountant)
                 ->setCellValue('G' . $rowCnt, date("d.m.Y", strtotime($row->StartDate)))
                 ->setCellValue('H' . $rowCnt, date("d.m.Y", strtotime($row->EndDate)))
                 ->setCellValue('I' . $rowCnt, $row->TotalDays)
