@@ -20,7 +20,7 @@
                     <th>Částka</th>
                     <th n:if='!isset($disableForm)'>Příjmová kat.</th>
                     <th n:if='!isset($disableForm)'>Výdajová kat.</th>
-                    <th><a href='{link lockEvent! $id, $type}' class='btn btn-xs btn-success ajax'><i class='glyphicon glyphicon-lock'></i> Dozamknout</a></th>
+                    <th><a href='{link lockCashbook! $id, $type}' class='btn btn-xs btn-success ajax'><i class='glyphicon glyphicon-lock'></i> Dozamknout</a></th>
                 </tr>
                 <tr n:foreach="$chits as $c">
                     <td>{$c->date|date:"j.n.Y"}</td>
