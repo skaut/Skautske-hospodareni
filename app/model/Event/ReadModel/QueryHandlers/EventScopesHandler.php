@@ -2,6 +2,7 @@
 
 namespace Model\Event\ReadModel\QueryHandlers;
 
+use Model\Event\ReadModel\Helpers;
 use Model\Event\ReadModel\Queries\EventScopes;
 use Nette\Caching\Cache;
 use Skautis\Wsdl\WebServiceInterface;
@@ -30,14 +31,9 @@ final class EventScopesHandler
     {
         // Scopes doesn't change so it's safe to cache them no matter what
         return $this->cache->load(self::CACHE_KEY, function() {
-            $scopes = $this->eventWebservice->eventGeneralScopeAll();
-            $scopePairs = [];
-
-            foreach($scopes as $scope) {
-                $scopePairs[$scope->ID] = $scope->DisplayName;
-            }
-
-            return $scopePairs;
+            return Helpers::getPairs(
+                $this->eventWebservice->eventGeneralScopeAll()
+            );
         });
     }
 

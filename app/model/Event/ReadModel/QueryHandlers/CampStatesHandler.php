@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\ReadModel\QueryHandlers;
 
 use Model\Event\ReadModel\Helpers;
-use Model\Event\ReadModel\Queries\EventTypes;
+use Model\Event\ReadModel\Queries\CampStates;
 use Nette\Caching\Cache;
 use Skautis\Wsdl\WebServiceInterface;
 
-final class EventTypesHandler
+final class CampStatesHandler
 {
 
-    private const CACHE_KEY = 'event_types';
+    private const CACHE_KEY = 'camp_states';
 
     /** @var WebServiceInterface */
     private $eventWebservice;
@@ -24,15 +26,15 @@ final class EventTypesHandler
         $this->cache = $cache;
     }
 
+
     /**
      * @return array<int,string>
      */
-    public function handle(EventTypes $query): array
+    public function handle(CampStates $query): array
     {
-        // Event types don't change so it's safe to cache them no matter what
-        return $this->cache->load(self::CACHE_KEY, function () {
+        return $this->cache->load(self::CACHE_KEY, function() {
             return Helpers::getPairs(
-                $this->eventWebservice->eventGeneralTypeAll()
+                $this->eventWebservice->eventCampStateAll()
             );
         });
     }

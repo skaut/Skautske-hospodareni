@@ -3,8 +3,6 @@
 namespace Model;
 
 use Model\Skautis\Mapper;
-use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
 use Skautis\Skautis;
 
 class EventService extends MutableBaseService
@@ -12,9 +10,6 @@ class EventService extends MutableBaseService
 
     /** @var EventTable */
     private $table;
-
-    /** @var Cache */
-    private $cache;
 
     /** @var UnitService */
     private $units;
@@ -26,14 +21,12 @@ class EventService extends MutableBaseService
         string $name,
         EventTable $table,
         Skautis $skautis,
-        IStorage $cacheStorage,
         Mapper $mapper,
         UnitService $units
     )
     {
         parent::__construct($name, $skautis);
         $this->table = $table;
-        $this->cache = new Cache($cacheStorage, __CLASS__);
         $this->mapper = $mapper;
         $this->units = $units;
     }
@@ -91,25 +84,6 @@ class EventService extends MutableBaseService
         }
 
         return $res;
-    }
-
-    /**
-     * vrací seznam všech stavů akce
-     * používá Cache
-     * @return string[]
-     */
-    public function getStates()
-    {
-        $cacheId = __FUNCTION__ . $this->typeName;
-        if (!($ret = $this->cache->load($cacheId))) {
-            $res = $this->skautis->event->{"Event" . $this->typeName . "StateAll"}();
-            $ret = [];
-            foreach ($res as $value) {
-                $ret[$value->ID] = $value->DisplayName;
-            }
-            $this->cache->save($cacheId, $ret);
-        }
-        return $ret;
     }
 
     /**

@@ -97,6 +97,10 @@ autoDI:
         - class: Model\**\Handlers\**Handler
           tags: [commandBus.handler]
 
+        - class: 'Model\Event\ReadModel\QueryHandlers\{EventScopes,EventTypes,CampStates,EventStates}Handler'
+          arguments: [@skautis.event, @skautisCache]
+          tags: [queryBus.handler]
+
         # Query handlers
         - class: Model\**\ReadModel\QueryHandlers\**
           tags: [queryBus.handler]
@@ -105,12 +109,6 @@ services:
     skautisCache:
         factory: Nette\Caching\Cache(namespace: 'skautis')
         autowired: false
-
-    - factory: Model\Event\ReadModel\QueryHandlers\EventScopesHandler(@skautis.event, @skautisCache)
-      tags: [queryBus.handler]
-
-    - factory: Model\Event\ReadModel\QueryHandlers\EventTypesHandler(@skautis.event, @skautisCache)
-      tags: [queryBus.handler]
 
     - App\RouterFactory
 
