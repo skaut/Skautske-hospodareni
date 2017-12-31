@@ -4,9 +4,11 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
+use Cake\Chronos\Date;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
+use Model\Event\Commands\Event\UpdateEvent;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\ReadModel\Queries\EventScopes;
@@ -189,19 +191,28 @@ class EventPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
             $this->redirect("this");
         }
+
+        $id = $this->aid;
         $values = $button->getForm()->getValues(TRUE);
-        $values['start'] = $values['start']->format("Y-m-d");
-        $values['end'] = $values['end']->format("Y-m-d");
 
-        $id = $this->eventService->event->update($values);
+        $this->commandBus->handle(
+            new UpdateEvent(
+                new SkautisEventId($id),
+                $values['name'],
+                Date::instance($values['start']),
+                Date::instance($values['end']),
+                $values['location'] !== '' ? $values['location'] : NULL,
+                $values['scope'],
+                $values['type']
+            )
+        );
 
-        if ($id) {
-            $this->flashMessage("Základní údaje byly upraveny.");
-            $this->redirect("default", ["aid" => $values['aid']]);
-        } else {
-            $this->flashMessage("Nepodařilo se upravit základní údaje", "danger");
+        if(isset($values['prefix'])) {
+            $this->eventService->event->updatePrefix($id, $values['prefix']);
         }
-        $this->redirect("this");
+
+        $this->flashMessage("Základní údaje byly upraveny.");
+        $this->redirect("default", ["aid" => $id]);
     }
 
     protected function createComponentFunctions(): FunctionsControl

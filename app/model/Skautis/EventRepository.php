@@ -2,6 +2,7 @@
 
 namespace Model\Skautis;
 
+use Cake\Chronos\Date;
 use Model\Event\Event;
 use Model\Event\EventNotFoundException;
 use Model\Event\Repositories\IEventRepository;
@@ -49,6 +50,21 @@ final class EventRepository implements IEventRepository
         $this->webService->EventGeneralUpdateClose(["ID" => $skautisId], $this->skautisType);
     }
 
+    public function update(Event $event): void
+    {
+        $this->webService->eventGeneralUpdate([
+            "ID" => $this->mapper->getSkautisId($event->getId(), Mapper::EVENT),
+            "Location" => $event->getLocation(),
+            "Note" => $event->getNote(),
+            "ID_EventGeneralScope" => $event->getScopeId(),
+            "ID_EventGeneralType" => $event->getTypeId(),
+            "ID_Unit" => $event->getUnitId(),
+            "DisplayName" => $event->getDisplayName(),
+            "StartDate" => $event->getStartDate()->format('Y-m-d'),
+            "EndDate" => $event->getEndDate()->format('Y-m-d'),
+        ], "eventGeneral");
+    }
+
     public function getNewestEventId(): ?int
     {
         $events = $this->webService->eventGeneralAll([
@@ -72,11 +88,14 @@ final class EventRepository implements IEventRepository
             $skautisEvent->ID_Unit,
             $skautisEvent->Unit,
             $skautisEvent->ID_EventGeneralState,
-            \DateTimeImmutable::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->StartDate),
-            \DateTimeImmutable::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->EndDate),
+            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->StartDate),
+            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->EndDate),
             $skautisEvent->TotalDays,
             $skautisEvent->Location,
-            $skautisEvent->RegistrationNumber
+            $skautisEvent->RegistrationNumber,
+            $skautisEvent->Note,
+            $skautisEvent->ID_EventGeneralScope,
+            $skautisEvent->ID_EventGeneralType
         );
     }
 

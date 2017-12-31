@@ -117,40 +117,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * aktualizuje informace o akci
-     * EventGeneral specific
-     * @param array $data
-     * @return int
-     */
-    public function update(array $data)
-    {
-        $ID = $data['aid'];
-        $old = $this->get($ID);
-
-        if (isset($data['prefix'])) {
-            $this->updatePrefix((int)$ID, $data['prefix']);
-            unset($data['prefix']);
-        }
-
-        $ret = $this->skautis->event->EventGeneralUpdate([
-            "ID" => $ID,
-            "Location" => $data['location'],
-            "Note" => $old->Note,
-            "ID_EventGeneralScope" => isset($data['scope']) ? $data['scope'] : $old->ID_EventGeneralScope,
-            "ID_EventGeneralType" => isset($data['type']) ? $data['type'] : $old->ID_EventGeneralType,
-            "ID_Unit" => $old->ID_Unit,
-            "DisplayName" => $data['name'],
-            "StartDate" => $data['start'],
-            "EndDate" => $data['end'],
-        ], "eventGeneral");
-
-        if (isset($ret->ID)) {
-            return $ret->ID;
-        }
-        return $ret;
-    }
-
-    /**
      * zrušit akci
      * @param ChitService $chitService
      * @param string $msg
