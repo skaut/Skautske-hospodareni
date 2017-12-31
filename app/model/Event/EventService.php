@@ -115,14 +115,4 @@ class EventService extends MutableBaseService
         return (bool)$ret;
     }
 
-    /**
-     * aktivuje automatické dopočítávání pro seznam osobodnů z tabulky účastníků
-     * @param int $ID
-     * @param int $state
-     */
-    public function activateAutocomputedParticipants($ID, $state = 1): void
-    {
-        $this->skautis->event->{"EventCampUpdateAdult"}(["ID" => $ID, "IsRealAutoComputed" => $state], "event" . $this->typeName);
-    }
-
 }
