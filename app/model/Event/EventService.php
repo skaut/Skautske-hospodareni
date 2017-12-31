@@ -48,12 +48,14 @@ class EventService extends MutableBaseService
     {
         $events = $this->skautis->event->{"Event" . $this->typeName . "All"}(["IsRelation" => TRUE, "ID_Event" . $this->typeName . "State" => ($state == "all") ? NULL : $state, "Year" => ($year == "all") ? NULL : $year]);
         $ret = [];
+
         if (is_array($events)) {
             foreach ($events as $e) {
                 $this->mapper->getLocalId($e->ID, $this->type); // called only to create record in ac_object
                 $ret[$e->ID] = (array)$e + (array)$this->table->getByEventId($e->ID, $this->type);
             }
         }
+
         return $ret;
     }
 
@@ -66,25 +68,29 @@ class EventService extends MutableBaseService
      */
     public function get($ID)
     {
-        try {
-            $cacheId = __FUNCTION__ . $ID;
-            if (!($res = $this->loadSes($cacheId))) {
-                $this->mapper->getLocalId($ID, $this->type); // called only to create record in ac_object
-                $localData = (array)$this->table->getByEventId($ID, $this->type);
-                if (in_array($this->type, [self::TYPE_GENERAL, self::TYPE_CAMP])) {
+        $cacheId = __FUNCTION__ . $ID;
+
+        if (!($res = $this->loadSes($cacheId))) {
+            $this->mapper->getLocalId($ID, $this->type); // called only to create record in ac_object
+
+            if (in_array($this->type, [self::TYPE_GENERAL, self::TYPE_CAMP])) {
+                try {
                     $skautisData = (array)$this->skautis->event->{"Event" . $this->typeName . "Detail"}(["ID" => $ID]);
-                } elseif ($this->type == self::TYPE_UNIT) {
-                    $skautisData = (array) $this->units->getDetail($ID);
-                } else {
-                    throw new \InvalidArgumentException("Neplatný typ: " . $this->typeName);
+                } catch (\Skautis\Exception $e) {
+                    throw new \Skautis\Wsdl\PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e instanceof \Exception ? $e->getCode() : 0);
                 }
-                $data = \Nette\Utils\ArrayHash::from(array_merge($skautisData, $localData));
-                $res = $this->saveSes($cacheId, $data);
+            } elseif ($this->type == self::TYPE_UNIT) {
+                $skautisData = (array)$this->units->getDetail($ID);
+            } else {
+                throw new \InvalidArgumentException("Neplatný typ: " . $this->typeName);
             }
-            return $res;
-        } catch (\Skautis\Exception $e) {
-            throw new \Skautis\Wsdl\PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e instanceof \Exception ? $e->getCode() : 0);
+
+            $localData = (array)$this->table->getByEventId($ID, $this->type);
+            $data = \Nette\Utils\ArrayHash::from(array_merge($skautisData, $localData));
+            $res = $this->saveSes($cacheId, $data);
         }
+
+        return $res;
     }
 
     /**
@@ -127,9 +133,11 @@ class EventService extends MutableBaseService
             "ID" => $ID,
             "CancelDecision" => !is_null($msg) ? $msg : " "
         ], "event" . $this->typeName);
+
         if ($ret) {//smaže paragony
             $chitService->deleteAll($ID);
         }
+
         return (bool)$ret;
     }
 
