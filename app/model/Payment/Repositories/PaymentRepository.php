@@ -9,7 +9,6 @@ use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
-use Model\Utils\Arrays;
 
 final class PaymentRepository extends AbstractRepository implements IPaymentRepository
 {
@@ -70,7 +69,7 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
 
     public function findByGroup(int $groupId): array
     {
-        return $this->findByMultipleGroups([$groupId])[$groupId];
+        return $this->findByMultipleGroups([$groupId]);
     }
 
     public function findByMultipleGroups(array $groupIds): array
@@ -81,16 +80,15 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
             return [];
         }
 
-        $result = $this->getEntityManager()->createQueryBuilder()
+        return $this->getEntityManager()->createQueryBuilder()
             ->select('p')
             ->from(Payment::class, 'p')
             ->where('IDENTITY(p.group) IN (:groupIds)')
             ->orderBy('FIELD (p.state, :states)')
             ->setParameter('groupIds', $groupIds)
             ->setParameter('states', self::STATE_ORDER)
-            ->getQuery()->getResult();
-
-        return Arrays::groupBy($result, function(Payment $p) { return $p->getGroupId(); }) + array_fill_keys($groupIds, []);
+            ->getQuery()
+            ->getResult();
     }
 
     public function save(Payment $payment): void

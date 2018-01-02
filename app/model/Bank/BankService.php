@@ -63,7 +63,6 @@ class BankService
         $foundGroups = $this->groups->findByIds($groupIds);
         $groupsByAccount = Arrays::groupBy($foundGroups, function (Group $g) { return $g->getBankAccountId(); }, TRUE);
 
-        $paymentsByGroup = $this->payments->findByMultipleGroups($groupIds);
         $now = new \DateTimeImmutable();
         $pairedCount = 0;
 
@@ -74,8 +73,7 @@ class BankService
                 continue;
             }
 
-            $payments = array_map(function (Group $g) use ($paymentsByGroup) { return $paymentsByGroup[$g->getId()]; }, $groups);
-            $payments = array_merge(...$payments);
+            $payments = $this->payments->findByMultipleGroups($groupIds);
             $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
 
             if(empty($payments)) {

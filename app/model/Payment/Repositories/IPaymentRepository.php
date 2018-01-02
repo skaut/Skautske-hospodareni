@@ -22,7 +22,7 @@ interface IPaymentRepository
 
     /**
      * @param int[] $groupIds
-     * @return Payment[][]
+     * @return Payment[]
      */
     public function findByMultipleGroups(array $groupIds): array;
 
