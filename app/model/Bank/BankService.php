@@ -116,7 +116,12 @@ class BankService
             return $g->getLastPairing();
         }, $groups);
         $lastPairings = array_filter($lastPairings);
-        return !empty($lastPairings) ? min($lastPairings) : new \DateTimeImmutable('- ' . self::DAYS_BACK_DEFAULT . ' days');
+
+        if(count($lastPairings) !== 0) {
+            return min($lastPairings);
+        }
+
+        return new \DateTimeImmutable('- ' . self::DAYS_BACK_DEFAULT . ' days');
     }
 
     /**
