@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use Model\Auth\Resources\Event;
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
 use Cake\Chronos\Chronos;
@@ -56,9 +57,8 @@ class DefaultPresenter extends BasePresenter
         $state = $this->ses->state ?? NULL;
         $list = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $localAvaibleActions = $this->userService->actionVerify(self::STable, $value['ID']);
-            $list[$key]['accessDelete'] = $this->isAllowed("EV_EventGeneral_DELETE", $localAvaibleActions);
-            $list[$key]['accessDetail'] = $this->isAllowed("EV_EventGeneral_DETAIL", $localAvaibleActions);
+            $list[$key]['accessDelete'] = $this->authorizator->isAllowed(Event::DELETE, $value['ID']);
+            $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $value['ID']);
         }
 
         $grid = $this->gridFactory->create();

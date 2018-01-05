@@ -3,6 +3,8 @@
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\CommandBus;
+use Model\Auth\Resources\Camp;
+use Model\Auth\Resources\Event;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ChitLockedException;
 use Model\Cashbook\ChitNotFoundException;
@@ -42,6 +44,9 @@ trait CashbookTrait
 
     /** @var CommandBus */
     protected $commandBus;
+
+    /** @var \Model\Auth\IAuthorizator */
+    protected $authorizator;
 
     /** @var \Psr\Log\LoggerInterface */
     protected $logger;
@@ -206,9 +211,9 @@ trait CashbookTrait
         $originType = $this->entityService->chits->type;
 
         if($newType === ObjectType::EVENT) {
-            $newEventAccessible = $this->userService->isEventEditable($newEventId);
+            $newEventAccessible = $this->authorizator->isAllowed(Event::UPDATE, $newEventId);
         } else {
-            $newEventAccessible = $this->userService->isCampEditable($newEventId);
+            $newEventAccessible = $this->isCampEditable($newEventId);
         }
 
         if (!$this->isEditable || !$newEventAccessible) {
@@ -383,6 +388,13 @@ trait CashbookTrait
         $ids = $form->getHttpData(BaseForm::DATA_TEXT, 'chits[]');
 
         return array_map('intval', $ids);
+    }
+
+    private function isCampEditable(int $id): bool
+    {
+        return $this->authorizator->isAllowed(Camp::UPDATE, $id)
+            || $this->authorizator->isAllowed(Camp::UPDATE_REAL, $id)
+            || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $id);
     }
 
 }
