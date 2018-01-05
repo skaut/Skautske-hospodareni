@@ -7,7 +7,7 @@ use App\Forms\BaseForm;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
 use Model\Payment\InvalidBankAccountNumberException;
-use Nette\ArrayHash;
+use Nette\Utils\ArrayHash;
 
 class BankAccountForm extends BaseControl
 {

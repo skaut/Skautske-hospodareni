@@ -12,7 +12,7 @@ use Model\EventEntity;
 use Model\EventService;
 use Model\MemberService;
 use Nette\Application\UI\Control;
-use Nette\ArrayHash;
+use Nette\Utils\ArrayHash;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
 use Skautis\Wsdl\PermissionException;
