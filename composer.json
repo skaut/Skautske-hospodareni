@@ -46,7 +46,7 @@
         "egen/message-bus": "^1.1",
         "fmasa/auto-di": "^1.0",
         "nettrine/migrations": "^0.1.0",
-        "phpoffice/phpspreadsheet": "dev-develop",
+        "phpoffice/phpspreadsheet": "^1.0",
         "cakephp/chronos": "^1.1",
         "warhuhn/chronos-doctrine": "^1.0"
     },

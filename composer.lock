@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "dcce95521fd1d6feb909951350666a28",
+    "content-hash": "fabb64594e728cc593bc0f2ed342a7c1",
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",
@@ -3869,16 +3869,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "dev-develop",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "40efcd2fdd02b8481342804ff250b21d4e447350"
+                "reference": "691b68de9b87cf6e398df46482741a4f667a9391"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/40efcd2fdd02b8481342804ff250b21d4e447350",
-                "reference": "40efcd2fdd02b8481342804ff250b21d4e447350",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/691b68de9b87cf6e398df46482741a4f667a9391",
+                "reference": "691b68de9b87cf6e398df46482741a4f667a9391",
                 "shasum": ""
             },
             "require": {
@@ -3953,7 +3953,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2017-11-03T03:47:19+00:00"
+            "time": "2017-12-25T01:53:53+00:00"
         },
         {
             "name": "psr/http-message",
@@ -7815,8 +7815,7 @@
     "stability-flags": {
         "skautis/skautis": 20,
         "skautis/nette": 20,
-        "foowie/dependentselectbox": 20,
-        "phpoffice/phpspreadsheet": 20
+        "foowie/dependentselectbox": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
