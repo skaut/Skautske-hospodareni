@@ -2,7 +2,7 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
-use App\AccountancyModule\Auth\Unit;
+use Model\Auth\Resources\Unit;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;

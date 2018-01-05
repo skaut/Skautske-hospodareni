@@ -1,7 +1,6 @@
 <?php
 
-namespace App\AccountancyModule\Auth;
-
+namespace Model\Auth;
 
 interface IAuthorizator
 {

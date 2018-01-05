@@ -1,10 +1,14 @@
 <?php
 
-namespace App\AccountancyModule\Auth;
+namespace Model\Skautis\Auth;
 
+use Model\Auth\IAuthorizator;
+use Model\Auth\Resources\Camp;
+use Model\Auth\Resources\Event;
+use Model\Auth\Resources\Unit;
 use Model\UserService;
 
-final class Authorizator implements IAuthorizator
+final class SkautisAuthorizator implements IAuthorizator
 {
 
     /** @var UserService */
@@ -16,11 +20,13 @@ final class Authorizator implements IAuthorizator
     private const RESOURCE_NAMES = [
         Event::class => "EV_EventGeneral",
         Unit::class => "OU_Unit",
+        Camp::class => 'EV_EventCamp',
     ];
 
     private const AVAILABLE_RESOURCES = [
         Event::class,
         Unit::class,
+        Camp::class,
     ];
 
     public function __construct(UserService $userService)

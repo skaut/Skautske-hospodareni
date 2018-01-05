@@ -136,7 +136,7 @@ services:
     unitAccountService: Model\EventEntity("Unit")
 
     # Model
-    - App\AccountancyModule\Auth\Authorizator
+    - Model\Skautis\Auth\SkautisAuthorizator
 
     # Skautis repositories
     - Model\Skautis\UnitRepository(@skautis.org)

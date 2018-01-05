@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\AccountancyModule\Auth\IAuthorizator;
+use Model\Auth\IAuthorizator;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\UnitService;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AccountancyModule\Auth;
+namespace Model\Auth\Resources;
 
 use Nette\StaticClass;
 
