@@ -267,16 +267,15 @@ class PaymentPresenter extends BasePresenter
                 $transaction = $payments[$p->ID_Person]->getTransaction();
                 $account = $transaction !== NULL ? $transaction->getBankAccount() : "";
             }
-            
+
+            $invalidBankAccountMessage = "Zadejte platný bankovní účet u " . $p->Person;
             $form->addText($pid . "_account")
                 ->setDefaultValue($account)
                 ->setRequired(FALSE)
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
                 ->setRequired('Musíte vyplnit bankovní účet')
-                ->addRule(
-                    [AccountNumber::class, 'isValid'],
-                    "Zadejte platný bankovní účet u " . $p->Person
-                );
+                ->addRule($form::PATTERN, $invalidBankAccountMessage, '^([0-9]{1,6}-)?[0-9]{1,10}/[0-9]{4}$')
+                ->addRule([AccountNumber::class, 'isValid'], $invalidBankAccountMessage);
         }
 
         $this->template->participants = $participantsWithRepayment;
