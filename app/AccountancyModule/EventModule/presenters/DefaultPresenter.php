@@ -4,6 +4,10 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
+use Cake\Chronos\Chronos;
+use Cake\Chronos\Date;
+use Model\Event\Commands\Event\CreateEvent;
+use Model\Event\ReadModel\Queries\NewestEventId;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
@@ -218,23 +222,32 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
             $this->redirect("this");
         }
+
         $v = $form->getValues();
-        try {
-            $id = $this->eventService->event->create(
-                $v['name'], $v['start']->format("Y-m-d"), $v['end']->format("Y-m-d"), $v['location'], $v->orgID, $v['scope'], $v['type']
-            );
-        } catch (\Skautis\Wsdl\WsdlException $e) {
-            if (strpos("EventGeneral_EndLesserThanStart", $e->getMessage())) {
-                $form['start']->addError("Akce nemůže dříve začít než zkončit!");
-                return;
-            }
-            throw $e;
+
+        $startDate = Date::instance($v['start']);
+        $endDate = Date::instance($v['end']);
+
+        if($startDate > $endDate) {
+            $form['start']->addError("Akce nemůže dříve začít než zkončit!");
+            $this->redirect('this');
         }
 
-        if ($id) {
-            $this->redirect("Event:", ["aid" => $id]);
-        }
-        $this->redirect("this");
+        $this->commandBus->handle(
+            new CreateEvent(
+                $v['name'],
+                $startDate,
+                $endDate,
+                $v->orgID,
+                $v['location'] !== '' ? $v['location'] : NULL,
+                $v['scope'],
+                $v['type']
+            )
+        );
+
+        $this->redirect('Event:', [
+            'aid' => $this->queryBus->handle(new NewestEventId()),
+        ]);
     }
 
 }

@@ -39,6 +39,7 @@ dibi:
 messageBus:
     commandBus:
     eventBus:
+    queryBus:
 
 monolog:
     name: hskauting
@@ -95,6 +96,10 @@ autoDI:
         # Command handlers
         - class: Model\**\Handlers\**Handler
           tags: [commandBus.handler]
+
+        # Query handlers
+        - class: Model\**\ReadModel\QueryHandlers\**
+          tags: [queryBus.handler]
 
 services:
     - App\RouterFactory

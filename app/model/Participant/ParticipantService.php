@@ -52,7 +52,7 @@ class ParticipantService extends MutableBaseService
             $participants = (array)$this->skautis->event->{"Participant" . $this->typeName . "All"}(["ID_Event" . $this->typeName => $ID_Event]);
             if ($this->type == "camp") {
                 $campLocalDetails = $this->table->getCampLocalDetails($ID_Event);
-                foreach (array_diff(array_keys($campLocalDetails), array_map(create_function('$o', 'return $o->ID;'), $participants)) as $idForDelete) {
+                foreach (array_diff(array_keys($campLocalDetails), array_column($participants, 'ID')) as $idForDelete) {
                     $this->table->deleteLocalDetail($idForDelete); //delete zaznam, protoze neexistuje k nemu ucastnik
                 }
             }
@@ -232,18 +232,20 @@ class ParticipantService extends MutableBaseService
         } else {
             $participants = $this->getAll($eventIdOrParticipants);
         }
-        return array_reduce($participants, create_function('$res,$v', 'return $res += $v->Days;'));
+
+        return array_sum(
+            array_column($participants, 'Days')
+        );
     }
 
     public function getEventStatistic($eventId)
     {
         $skautisData = $this->skautis->event->{"EventStatisticAllEventGeneral"}(["ID_EventGeneral" => $eventId]);
-        return array_combine(array_map(create_function('$o', 'return $o->ID_ParticipantCategory;'), $skautisData), $skautisData);
-    }
 
-    public function activateEventStatistic($eventId)
-    {
-        return $this->skautis->event->{"EventGeneralUpdateStatisticAutoComputed"}(["ID" => $eventId, "IsStatisticAutoComputed" => TRUE], "eventGeneral");
+        return array_combine(
+            array_column($skautisData, 'ID_ParticipantCategory'),
+            $skautisData
+        );
     }
 
     public function getPotencialCampParticipants($eventId)

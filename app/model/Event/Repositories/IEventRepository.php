@@ -18,4 +18,6 @@ interface IEventRepository
 
     public function close(Event $event): void;
 
+    public function getNewestEventId(): ?int;
+
 }

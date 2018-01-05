@@ -3,6 +3,7 @@
 namespace App;
 
 use eGen\MessageBus\Bus\CommandBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\UnitService;
 use Model\UserService;
 use Nette;
@@ -37,6 +38,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var CommandBus */
     protected $commandBus;
 
+    /** @var QueryBus */
+    protected $queryBus;
+
     /** @var LoggerInterface */
     protected $logger;
 
@@ -45,6 +49,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         UserService $userService,
         UnitService $unitService,
         CommandBus $commandBus,
+        QueryBus $queryBus,
         LoggerInterface $logger
     ): void
     {
@@ -52,6 +57,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->userService = $userService;
         $this->unitService = $unitService;
         $this->commandBus = $commandBus;
+        $this->queryBus = $queryBus;
         $this->logger = $logger;
     }
 

@@ -2,23 +2,12 @@
 
 namespace Model;
 
-use Dibi\Connection;
-use eGen\MessageBus\Bus\EventBus;
-use Model\Event\AssistantNotAdultException;
 use Model\Event\Functions;
-use Model\Event\LeaderNotAdultException;
-use Model\Event\Repositories\IEventRepository;
-use Model\Events\Events\EventWasClosed;
-use Model\Events\Events\EventWasOpened;
 use Model\Skautis\Mapper;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Skautis\Skautis;
-use Skautis\Wsdl\WsdlException;
 
-/**
- * @author Hána František
- */
 class EventService extends MutableBaseService
 {
 
@@ -28,40 +17,24 @@ class EventService extends MutableBaseService
     /** @var Cache */
     private $cache;
 
-    /** @var Connection */
-    private $connection;
-
-    /** @var IEventRepository */
-    private $eventRepository;
-
     /** @var UnitService */
     private $units;
 
     /** @var Mapper */
     private $mapper;
 
-    /** @var  EventBus */
-    private $eventBus;
-
     public function __construct(
         string $name,
         EventTable $table,
         Skautis $skautis,
         IStorage $cacheStorage,
-        Connection $connection,
-        IEventRepository $eventRepository,
-        EventBus $eventBus,
         Mapper $mapper,
         UnitService $units
     )
     {
         parent::__construct($name, $skautis);
-        /** @var EventTable */
         $this->table = $table;
         $this->cache = new Cache($cacheStorage, __CLASS__);
-        $this->connection = $connection;
-        $this->eventRepository = $eventRepository;
-        $this->eventBus = $eventBus;
         $this->mapper = $mapper;
         $this->units = $units;
     }
@@ -137,32 +110,6 @@ class EventService extends MutableBaseService
         );
     }
 
-    public function updateFunctions(int $eventId, Functions $functions): void
-    {
-        $query = [
-            "ID" => $eventId,
-            "ID_PersonLeader" => $functions->getLeaderId(),
-            "ID_PersonAssistant" => $functions->getAssistantId(),
-            "ID_PersonEconomist" => $functions->getAccountantId(),
-            "ID_PersonMedic" => $functions->getMedicId(),
-        ];
-
-        $method = "Event{$this->typeName}UpdateFunction";
-
-        try {
-
-            $this->skautis->event->$method($query);
-        } catch (WsdlException $e) {
-            if (strpos($e->getMessage(), 'EventFunction_LeaderMustBeAdult') != FALSE) {
-                throw new LeaderNotAdultException;
-            }
-            if (strpos($e->getMessage(), 'EventFunction_AssistantMustBeAdult') !== FALSE) {
-                throw new AssistantNotAdultException;
-            }
-            throw $e;
-        }
-    }
-
     /**
      * vrací seznam všech stavů akce
      * používá Cache
@@ -217,45 +164,6 @@ class EventService extends MutableBaseService
                 $ret[$value->ID] = $value->DisplayName;
             }
             $this->cache->save($cacheId, $ret);
-        }
-        return $ret;
-    }
-
-    /**
-     * založí akci ve SkautIS
-     * EventGeneral specific
-     * @param string $name nazev
-     * @param string $start datum zacatku
-     * @param string $end datum konce
-     * @param int $unit ID jednotky
-     * @param int $scope rozsah zaměření akce
-     * @param int $type typ akce
-     * @return int|\stdClass ID akce
-     */
-    public function create($name, $start, $end, $location = NULL, $unit = NULL, $scope = NULL, $type = NULL)
-    {
-        $scope = $scope !== NULL ? $scope : 2; //3-stedisko, 2-oddil
-        $type = $type !== NULL ? $type : 2; //2-vyprava
-        $unit = $unit !== NULL ? $unit : $this->skautis->getUser()->getUnitId();
-
-        $location = !empty($location) && $location !== NULL ? $location : " ";
-
-        $ret = $this->skautis->event->EventGeneralInsert(
-            [
-                "ID" => 1, //musi byt neco nastavene
-                "Location" => $location,
-                "Note" => " ", //musi byt neco nastavene
-                "ID_EventGeneralScope" => $scope,
-                "ID_EventGeneralType" => $type,
-                "ID_Unit" => $unit,
-                "DisplayName" => $name,
-                "StartDate" => $start,
-                "EndDate" => $end,
-                "IsStatisticAutoComputed" => FALSE,
-            ], "eventGeneral");
-
-        if (isset($ret->ID)) {
-            return $ret->ID;
         }
         return $ret;
     }
@@ -322,31 +230,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * znovu otevřít akci
-     */
-    public function open(int $id): void
-    {
-        if($this->type != "general") {
-            throw new \RuntimeException("Camp can't be opened!");
-        }
-        $event = $this->eventRepository->find($id);
-        $this->eventRepository->open($event);
-
-        $this->eventBus->handle(new EventWasOpened($event->getId(), $event->getUnitId(), $event->getDisplayName()));
-    }
-
-    public function close(int $eventId): void
-    {
-        if($this->type != "general") {
-            throw new \RuntimeException("Camp can't be closed!");
-        }
-        $event = $this->eventRepository->find($eventId);
-        $this->eventRepository->close($event);
-
-        $this->eventBus->handle(new EventWasClosed($event->getId(), $event->getUnitId(), $event->getDisplayName()));
-    }
-
-    /**
      * kontrolu jestli je možné uzavřít
      * @param int $ID
      */
@@ -358,20 +241,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * @param int $ID
-     * @param int $state
-     */
-    public function activateAutocomputedCashbook($ID, $state = 1): void
-    {
-        $this->skautis->event->{"EventCampUpdateRealTotalCostBeforeEnd"}(
-            [
-                "ID" => $ID,
-                "IsRealTotalCostAutoComputed" => $state
-            ], "event" . $this->typeName
-        );
-    }
-
-    /**
      * aktivuje automatické dopočítávání pro seznam osobodnů z tabulky účastníků
      * @param int $ID
      * @param int $state
@@ -379,15 +248,6 @@ class EventService extends MutableBaseService
     public function activateAutocomputedParticipants($ID, $state = 1): void
     {
         $this->skautis->event->{"EventCampUpdateAdult"}(["ID" => $ID, "IsRealAutoComputed" => $state], "event" . $this->typeName);
-    }
-
-    /**
-     * vrací počet událostí s vyplněným záznamem v pokladní kníze, který nebyl smazán
-     * @return int počet událostí se záznamem
-     */
-    public function getCountOfActiveEvents()
-    {
-        return $this->connection->query("SELECT COUNT(DISTINCT actionId) FROM [" . BaseTable::TABLE_CHIT . "] WHERE deleted = 0")->fetchSingle();
     }
 
 }

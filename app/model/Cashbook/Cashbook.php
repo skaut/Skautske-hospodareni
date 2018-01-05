@@ -120,6 +120,29 @@ class Cashbook extends AbstractAggregate
         $chit->unlock();
     }
 
+    public function lock(int $userId): void
+    {
+        foreach($this->chits as $chit) {
+            if( ! $chit->isLocked()) {
+                $chit->lock($userId);
+            }
+        }
+    }
+
+    /**
+     * Only for Read model
+     * @return Chit[]
+     */
+    public function getChits(): array
+    {
+        return $this->chits
+            ->map(function(Chit $c): Chit {
+                // clone to avoid modification of cashbook
+                return clone $c;
+            })
+            ->toArray();
+    }
+
     private function getChit(int $id): Chit
     {
         foreach($this->chits as $chit) {

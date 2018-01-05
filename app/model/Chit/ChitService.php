@@ -247,16 +247,6 @@ class ChitService extends MutableBaseService
         return @(($data["in"] - $data["out"]) < 0) ? TRUE : FALSE; //@ potlačuje chyby u neexistujicich indexů "in" a "out"
     }
 
-    /**
-     * @param int $oid
-     * @param int $userId
-     * @return \Dibi\Result|int
-     */
-    public function lockEvent($oid, $userId)
-    {
-        return $this->table->lockEvent($oid, $userId);
-    }
-
     public function moveChits(array $chits, int $originEventId, string $originEventType, int $newEventId, string $newEventType): void
     {
         foreach ($chits as $chitId) {
