@@ -80,17 +80,25 @@
         </div>
     </div>
 
-    <div class="col-md-5" n:if="is_array($funkce)">
+    <div class="col-md-5" n:if="$functions !== NULL">
         <div class="panel panel-default">
             <div class="panel-heading"><h4>Vedení tábora</h4></div>
             <table class="table table-bordered table-condensed">
                 <tr>
-                    <th>Funkce</th>
-                    <th>Příjmení a jméno</th>
+                    <th>Vedoucí tábora</th>
+                    <td>{$functions->leader !== NULL ? $functions->leader->name : "-"}</td>
                 </tr>
-                <tr n:foreach="$funkce as $f">
-                    <td><i>{$f->EventFunctionType}</i></td>
-                    <td>{ifset $f->ID_Person}{$f->Person}{/ifset}</td>
+                <tr>
+                    <th>Zástupce vedoucího tábora</th>
+                    <td>{$functions->assistant !== NULL ? $functions->assistant->name : "-"}</td>
+                </tr>
+                <tr>
+                    <th>Hospodář</th>
+                    <td>{$functions->accountant !== NULL ? $functions->accountant->name : "-"}</td>
+                </tr>
+                <tr>
+                    <th>Zdravotník</th>
+                    <td>{$functions->medic !== NULL ? $functions->medic->name : "-"}</td>
                 </tr>
             </table>
         </div>

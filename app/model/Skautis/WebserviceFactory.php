@@ -7,7 +7,6 @@ use Nette\StaticClass;
 use Skautis\Skautis;
 use Skautis\Wsdl\Decorator\Cache\ArrayCache;
 use Skautis\Wsdl\Decorator\Cache\CacheDecorator;
-use Skautis\Wsdl\WebServiceFactoryInterface;
 use Skautis\Wsdl\WebServiceInterface;
 
 final class WebserviceFactory

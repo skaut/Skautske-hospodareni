@@ -26,14 +26,12 @@ class UpdateFunctionsHandler
      */
     public function handle(UpdateFunctions $command): void
     {
-        $functions = $command->getFunctions();
-
         $query = [
             "ID" => $command->getEventId(),
-            "ID_PersonLeader" => $functions->getLeaderId(),
-            "ID_PersonAssistant" => $functions->getAssistantId(),
-            "ID_PersonEconomist" => $functions->getAccountantId(),
-            "ID_PersonMedic" => $functions->getMedicId(),
+            "ID_PersonLeader" => $command->getLeaderId(),
+            "ID_PersonAssistant" => $command->getAssistantId(),
+            "ID_PersonEconomist" => $command->getAccountantId(),
+            "ID_PersonMedic" => $command->getMedicId(),
         ];
 
         try {

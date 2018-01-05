@@ -2,8 +2,14 @@
 
 namespace Model;
 
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Event\Functions;
+use Model\Event\ReadModel\Queries\CampFunctions;
+use Model\Event\ReadModel\Queries\EventFunctions;
+use Model\Event\SkautisCampId;
+use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -16,9 +22,13 @@ class ExcelService
     /** @var ICategoryRepository */
     private $categories;
 
-    public function __construct(ICategoryRepository $categories)
+    /** @var QueryBus */
+    private $queryBus;
+
+    public function __construct(ICategoryRepository $categories, QueryBus $queryBus)
     {
         $this->categories = $categories;
+        $this->queryBus = $queryBus;
     }
 
     protected function getNewFile(): \PHPExcel
@@ -87,7 +97,7 @@ class ExcelService
             $data[$aid] = $service->event->get($aid);
             $data[$aid]['parStatistic'] = $service->participants->getEventStatistic($aid);
             $data[$aid]['chits'] = $service->chits->getAll($aid);
-            $data[$aid]['func'] = $service->event->getFunctions($aid);
+            $data[$aid]['func'] = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
@@ -110,7 +120,7 @@ class ExcelService
             $data[$aid] = $camp;
             $data[$aid]['troops'] = implode(', ', array_column($unitService->getCampTroops($camp), 'DisplayName'));
             $data[$aid]['chits'] = $service->chits->getAll($aid);
-            $data[$aid]['func'] = $service->event->getFunctions($aid);
+            $data[$aid]['func'] = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
@@ -133,7 +143,7 @@ class ExcelService
 
     /* PROTECTED */
 
-    protected function setSheetParticipantCamp(&$sheet, $data): void
+    protected function setSheetParticipantCamp(\PHPExcel_Worksheet $sheet, $data): void
     {
         $sheet->setCellValue('A1', "P.č.")
             ->setCellValue('B1', "Jméno")
@@ -177,7 +187,7 @@ class ExcelService
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
     }
 
-    protected function setSheetParticipantGeneral(&$sheet, $data, $event): void
+    protected function setSheetParticipantGeneral(\PHPExcel_Worksheet $sheet, $data, $event): void
     {
         $startDate = new \DateTime($event->StartDate);
         $sheet->setCellValue('A1', "P.č.")
@@ -253,7 +263,7 @@ class ExcelService
         $sheet->setTitle('Pokladní kniha');
     }
 
-    protected function setSheetEvents(&$sheet, $data): void
+    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, $data): void
     {
         $firstElement = reset($data);
 
@@ -279,14 +289,19 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $row) {
+            /** @var Functions $functions */
+            $functions = $row->func;
+            $leader = $functions->getLeader() !== NULL ? $functions->getLeader()->getName() : NULL;
+            $accountant = $functions->getAccountant() !== NULL ? $functions->getAccountant()->getName() : NULL;
+
             $sheet->setCellValue('A' . $rowCnt, $row->Unit)
                 ->setCellValue('B' . $rowCnt, $row->DisplayName)
                 ->setCellValue('C' . $rowCnt, $row->ID_UnitEducative !== NULL ? $row->UnitEducative : "")
                 ->setCellValue('D' . $rowCnt, $row->EventGeneralType)
                 ->setCellValue('E' . $rowCnt, $row->EventGeneralScope)
                 ->setCellValue('F' . $rowCnt, $row->Location)
-                ->setCellValue('G' . $rowCnt, $row->func[0]->ID_Person !== NULL ? $row->func[0]->Person : "")
-                ->setCellValue('H' . $rowCnt, $row->func[2]->ID_Person !== NULL ? $row->func[2]->Person : "")
+                ->setCellValue('G' . $rowCnt, $leader)
+                ->setCellValue('H' . $rowCnt, $accountant)
                 ->setCellValue('I' . $rowCnt, date("d.m.Y", strtotime($row->StartDate)))
                 ->setCellValue('J' . $rowCnt, date("d.m.Y", strtotime($row->EndDate)))
                 ->setCellValue('K' . $rowCnt, $row->TotalDays)
@@ -331,12 +346,17 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $row) {
+            /** @var Functions $functions */
+            $functions = $row->func;
+            $leader = $functions->getLeader() !== NULL ? $functions->getLeader()->getName() : NULL;
+            $accountant = $functions->getAccountant() !== NULL ? $functions->getAccountant()->getName() : NULL;
+
             $sheet->setCellValue('A' . $rowCnt, $row->Unit)
                 ->setCellValue('B' . $rowCnt, $row->DisplayName)
                 ->setCellValue('C' . $rowCnt, $row->troops)
                 ->setCellValue('D' . $rowCnt, $row->Location)
-                ->setCellValue('E' . $rowCnt, $row->func[0]->Person ?? "")
-                ->setCellValue('F' . $rowCnt, $row->func[3]->Person ?? "")
+                ->setCellValue('E' . $rowCnt, $leader)
+                ->setCellValue('F' . $rowCnt, $accountant)
                 ->setCellValue('G' . $rowCnt, date("d.m.Y", strtotime($row->StartDate)))
                 ->setCellValue('H' . $rowCnt, date("d.m.Y", strtotime($row->EndDate)))
                 ->setCellValue('I' . $rowCnt, $row->TotalDays)
@@ -357,7 +377,7 @@ class ExcelService
         $sheet->setTitle('Přehled táborů');
     }
 
-    protected function setSheetChits(&$sheet, $data): void
+    protected function setSheetChits(\PHPExcel_Worksheet $sheet, $data): void
     {
         $sheet->setCellValue('A1', "Název akce")
             ->setCellValue('B1', "Ze dne")
@@ -392,7 +412,7 @@ class ExcelService
         $sheet->setTitle('Doklady');
     }
 
-    protected function setSheetChitsOnly(&$sheet, $data): void
+    protected function setSheetChitsOnly(\PHPExcel_Worksheet $sheet, $data): void
     {
         $sheet->setCellValue('B1', "Ze dne")
             ->setCellValue('C1', "Účel výplaty")

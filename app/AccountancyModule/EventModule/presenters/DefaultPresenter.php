@@ -7,6 +7,9 @@ use App\Forms\BaseForm;
 use Cake\Chronos\Chronos;
 use Cake\Chronos\Date;
 use Model\Event\Commands\Event\CreateEvent;
+use Model\Event\ReadModel\Queries\EventScopes;
+use Model\Event\ReadModel\Queries\EventStates;
+use Model\Event\ReadModel\Queries\EventTypes;
 use Model\Event\ReadModel\Queries\NewestEventId;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
@@ -142,7 +145,7 @@ class DefaultPresenter extends BasePresenter
 
     protected function createComponentFormFilter(): Form
     {
-        $states = array_merge(["all" => "Nezrušené"], $this->eventService->event->getStates());
+        $states = array_merge(["all" => "Nezrušené"], $this->queryBus->handle(new EventStates()));
         $years = ["all" => "Všechny"];
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
@@ -178,8 +181,8 @@ class DefaultPresenter extends BasePresenter
      */
     protected function createComponentFormCreate(): Form
     {
-        $scopes = $this->eventService->event->getScopes();
-        $types = $this->eventService->event->getTypes();
+        $scopes = $this->queryBus->handle(new EventScopes());
+        $types = $this->queryBus->handle(new EventTypes());
         $unitId = $this->unitService->getUnitId();
 
         $subunits = $this->unitService->getSubunitPairs($unitId);

@@ -2,6 +2,7 @@
 
 namespace Model\Event;
 
+use Cake\Chronos\Date;
 use Nette\SmartObject;
 
 /**
@@ -10,11 +11,14 @@ use Nette\SmartObject;
  * @property-read int $unitId
  * @property-read string $unitName
  * @property-read string $state
- * @property-read \DateTimeImmutable $startDate
- * @property-read \DateTimeImmutable $endDate
+ * @property-read Date $startDate
+ * @property-read Date $endDate
  * @property-read int $totalDays
  * @property-read string $location
  * @property-read string $registrationNumber
+ * @property-read string $note
+ * @property-read int $scopeId
+ * @property-read int $typeId
  */
 class Event
 {
@@ -36,10 +40,10 @@ class Event
     /** @var string */
     private $state;
 
-    /** @var \DateTimeImmutable */
+    /** @var Date */
     private $startDate;
 
-    /** @var \DateTimeImmutable */
+    /** @var Date */
     private $endDate;
 
     /** @var int */
@@ -51,17 +55,29 @@ class Event
     /** @var string */
     private $registrationNumber;
 
+    /** @var string */
+    private $note;
+
+    /** @var int */
+    private $scopeId;
+
+    /** @var int */
+    private $typeId;
+
     public function __construct(
         int $id,
         string $displayName,
         int $unitId,
         string $unitName,
         string $state,
-        \DateTimeImmutable $startDate,
-        \DateTimeImmutable $endDate,
+        Date $startDate,
+        Date $endDate,
         int $totalDays,
         string $location,
-        string $registrationNumber
+        string $registrationNumber,
+        string $note,
+        int $scopeId,
+        int $typeId
     )
     {
         $this->id = $id;
@@ -74,6 +90,26 @@ class Event
         $this->totalDays = $totalDays;
         $this->location = $location;
         $this->registrationNumber = $registrationNumber;
+        $this->note = $note;
+        $this->scopeId = $scopeId;
+        $this->typeId = $typeId;
+    }
+
+    public function update(
+        string $displayName,
+        ?string $location,
+        Date $startDate,
+        Date $endDate,
+        int $scopeId,
+        int $typeId
+    ): void
+    {
+        $this->displayName = $displayName;
+        $this->location = $location;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+        $this->scopeId = $scopeId;
+        $this->typeId = $typeId;
     }
 
     public function getId(): int
@@ -105,12 +141,12 @@ class Event
         return $this->state;
     }
 
-    public function getStartDate(): \DateTimeImmutable
+    public function getStartDate(): Date
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): \DateTimeImmutable
+    public function getEndDate(): Date
     {
         return $this->endDate;
     }
@@ -128,6 +164,21 @@ class Event
     public function getRegistrationNumber(): string
     {
         return $this->registrationNumber;
+    }
+
+    public function getNote(): string
+    {
+        return $this->note;
+    }
+
+    public function getScopeId(): int
+    {
+        return $this->scopeId;
+    }
+
+    public function getTypeId(): int
+    {
+        return $this->typeId;
     }
 
 }

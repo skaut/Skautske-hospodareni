@@ -6,12 +6,14 @@ use App\AccountancyModule\Auth\Event;
 use App\Forms\BaseForm;
 use App\AccountancyModule\Auth\IAuthorizator;
 use eGen\MessageBus\Bus\CommandBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Event\AssistantNotAdultException;
 use Model\Event\Commands\Event\UpdateFunctions;
 use Model\Event\Functions;
 use Model\Event\LeaderNotAdultException;
-use Model\EventEntity;
-use Model\EventService;
+use Model\Event\Person;
+use Model\Event\ReadModel\Queries\EventFunctions;
+use Model\Event\SkautisEventId;
 use Model\MemberService;
 use Nette\Application\UI\Control;
 use Nette\Utils\ArrayHash;
@@ -25,11 +27,11 @@ class FunctionsControl extends Control
     /** @var int */
     private $eventId;
 
-    /** @var EventService */
-    private $events;
-
     /** @var CommandBus */
     private $commandBus;
+
+    /** @var QueryBus */
+    private $queryBus;
 
     /** @var MemberService */
     private $members;
@@ -43,12 +45,18 @@ class FunctionsControl extends Control
      */
     public $editation = FALSE;
 
-    public function __construct(int $eventId, EventEntity $eventEntity, CommandBus $commandBus, MemberService $members, IAuthorizator $authorizator)
+    public function __construct(
+        int $eventId,
+        CommandBus $commandBus,
+        QueryBus $queryBus,
+        MemberService $members,
+        IAuthorizator $authorizator
+    )
     {
         parent::__construct();
         $this->eventId = $eventId;
-        $this->events = $eventEntity->event;
         $this->commandBus = $commandBus;
+        $this->queryBus = $queryBus;
         $this->members = $members;
         $this->authorizator = $authorizator;
     }
@@ -119,7 +127,7 @@ class FunctionsControl extends Control
     public function render() : void
     {
         $this->template->setFile(__DIR__ . '/templates/FunctionsControl.latte');
-        $this->template->functions = $this->events->getFunctions($this->eventId);
+        $this->template->functions = $this->getCurrentFunctions();
         $this->template->editation = $this->editation;
         $this->template->canEdit = $this->canEdit();
         $this->template->render();
@@ -134,7 +142,10 @@ class FunctionsControl extends Control
             $this->commandBus->handle(
                 new UpdateFunctions(
                     $this->eventId,
-                    new Functions($values->leader, $values->assistant, $values->accountant, $values->medic)
+                    $values->leader,
+                    $values->assistant,
+                    $values->accountant,
+                    $values->medic
                 )
             );
 
@@ -156,13 +167,13 @@ class FunctionsControl extends Control
 
     private function setDefaultValues(Form $form): void
     {
-        $selected = $this->events->getSelectedFunctions($this->eventId);
+        $selected = $this->getCurrentFunctions();
 
         $values = [
-            "leader" => $selected->getLeaderId(),
-            "assistant" => $selected->getAssistantId(),
-            "accountant" => $selected->getAccountantId(),
-            "medic" => $selected->getMedicId(),
+            "leader" => $this->getIdOrNull($selected->getLeader()),
+            "assistant" => $this->getIdOrNull($selected->getAssistant()),
+            "accountant" => $this->getIdOrNull($selected->getAccountant()),
+            "medic" => $this->getIdOrNull($selected->getMedic()),
         ];
 
         foreach($values as $functionName => $personId) {
@@ -184,6 +195,20 @@ class FunctionsControl extends Control
         }
 
         return $persons;
+    }
+
+    private function getIdOrNull(?Person $person): ?int
+    {
+        if($person === NULL) {
+            return NULL;
+        }
+
+        return $person->getId();
+    }
+
+    private function getCurrentFunctions(): Functions
+    {
+        return $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->eventId)));
     }
 
 }

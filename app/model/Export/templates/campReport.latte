@@ -1,6 +1,6 @@
 {* souhrná zpráva z tábora
 $a - informace o táboře
-$func - seznam funkcí na akci
+$functions - seznam funkcí na akci
 $participants - účastníci akce
 $personsDays - počet osobodní
 $chits - paragony akce
@@ -27,8 +27,14 @@ table {
 <br />
 
 <h3>Základní údaje</h3>
-{foreach $func as $p}
-<b>{$p->EventFunctionType}: </b>{ifset $p->Person} {$p->Person} {ifset $p->Email} (email: {$p->Email}){/ifset}{/ifset}<br />
+{var $functionsWithName = [
+    'Vedoucí tábora' => $functions->leader,
+    'Zástupce vedoucího tábora' => $functions->assistant,
+    'Hospodář' => $functions->accountant,
+    'Zdravotník' => $functions->medic,
+]}
+{foreach $functionsWithName as $functionName => $person}
+    <b>{$functionName}: </b> {if $person !== NULL}{$person->name} {if $person->email !== NULL}(email: $person->email){/if}{/if}<br>
 {/foreach}
 
 <br />

@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\CampModule;
 
+use Model\Event\Commands\Camp\ActivateAutocomputedParticipants;
+use Model\Event\SkautisCampId;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
@@ -91,9 +93,9 @@ class ParticipantPresenter extends BasePresenter
         $this->sendPayload();
     }
 
-    public function handleActivateAutocomputedParticipants($aid) : void
+    public function handleActivateAutocomputedParticipants(int $aid) : void
     {
-        $this->eventService->event->activateAutocomputedParticipants($aid);
+        $this->commandBus->handle(new ActivateAutocomputedParticipants(new SkautisCampId($aid)));
         $this->flashMessage("Byl aktivován automatický výpočet seznamu osobodnů.");
         $this->redirect("this");
     }

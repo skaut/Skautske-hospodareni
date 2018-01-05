@@ -63,7 +63,6 @@ class BankService
         $foundGroups = $this->groups->findByIds($groupIds);
         $groupsByAccount = Arrays::groupBy($foundGroups, function (Group $g) { return $g->getBankAccountId(); }, TRUE);
 
-        $paymentsByGroup = $this->payments->findByMultipleGroups($groupIds);
         $now = new \DateTimeImmutable();
         $pairedCount = 0;
 
@@ -74,8 +73,7 @@ class BankService
                 continue;
             }
 
-            $payments = array_map(function (Group $g) use ($paymentsByGroup) { return $paymentsByGroup[$g->getId()]; }, $groups);
-            $payments = array_merge(...$payments);
+            $payments = $this->payments->findByMultipleGroups($groupIds);
             $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
 
             if(empty($payments)) {
@@ -118,7 +116,12 @@ class BankService
             return $g->getLastPairing();
         }, $groups);
         $lastPairings = array_filter($lastPairings);
-        return !empty($lastPairings) ? min($lastPairings) : new \DateTimeImmutable('- ' . self::DAYS_BACK_DEFAULT . ' days');
+
+        if(count($lastPairings) !== 0) {
+            return min($lastPairings);
+        }
+
+        return new \DateTimeImmutable('- ' . self::DAYS_BACK_DEFAULT . ' days');
     }
 
     /**
@@ -128,7 +131,6 @@ class BankService
      */
     private function markPaymentsAsComplete(array $transactions, array $payments): array
     {
-        $payments = array_filter($payments, function (Payment $p) { return $p->canBePaired(); });
         $paymentsByVS = Arrays::groupBy($payments, function(Payment $p) { return $p->getVariableSymbol()->toInt(); });
 
         $transactions = array_filter($transactions, function(BankTransaction $t) use($paymentsByVS) {

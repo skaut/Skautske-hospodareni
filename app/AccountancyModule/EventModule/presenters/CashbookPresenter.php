@@ -8,6 +8,9 @@ use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ObjectType;
+use Model\Event\Functions;
+use Model\Event\ReadModel\Queries\EventFunctions;
+use Model\Event\SkautisEventId;
 
 class CashbookPresenter extends BasePresenter
 {
@@ -55,15 +58,19 @@ class CashbookPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function actionImportHpd($aid): void
+    public function actionImportHpd(int $aid): void
     {
         $this->editableOnly();
 
         // @TODO move logic to specific command handler
         $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);
-        $func = $this->eventService->event->getFunctions($this->aid);
+
+        /** @var Functions $functions */
+        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
         $date = $this->eventService->event->get($aid)->StartDate;
-        $accountant = ($func[2]->ID_Person != NULL) ? new Recipient($func[2]->Person): NULL;
+        $accountant = $functions->getAccountant() !== NULL
+            ? new Recipient($functions->getAccountant()->getName())
+            : NULL;
 
         $cashbookId = $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
 

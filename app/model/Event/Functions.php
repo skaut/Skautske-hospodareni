@@ -1,49 +1,60 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event;
 
+use Nette\SmartObject;
+
+/**
+ * @property-read Person|NULL $leader
+ * @property-read Person|NULL $assistant
+ * @property-read Person|NULL $accountant
+ * @property-read Person|NULL $medic
+ */
 class Functions
 {
 
-    /** @var int|NULL */
-    private $leaderId;
+    use SmartObject;
 
-    /** @var int|NULL */
-    private $assistantId;
+    /** @var Person|NULL */
+    private $leader;
 
-    /** @var int|NULL */
-    private $accountantId;
+    /** @var Person|NULL */
+    private $assistant;
 
-    /** @var int|NULL */
-    private $medicId;
+    /** @var Person|NULL */
+    private $accountant;
 
-    public function __construct(?int $leaderId, ?int $assistantId, ?int $accountantId, ?int $medicId)
+    /** @var Person|NULL */
+    private $medic;
+
+    public function __construct(?Person $leader, ?Person $assistant, ?Person $accountant, ?Person $medic)
     {
-        $this->leaderId = $leaderId;
-        $this->assistantId = $assistantId;
-        $this->accountantId = $accountantId;
-        $this->medicId = $medicId;
+        $this->leader = $leader;
+        $this->assistant = $assistant;
+        $this->accountant = $accountant;
+        $this->medic = $medic;
     }
 
-
-    public function getLeaderId(): ?int
+    public function getLeader(): ?Person
     {
-        return $this->leaderId;
+        return $this->leader;
     }
 
-    public function getAssistantId(): ?int
+    public function getAssistant(): ?Person
     {
-        return $this->assistantId;
+        return $this->assistant;
     }
 
-    public function getAccountantId(): ?int
+    public function getAccountant(): ?Person
     {
-        return $this->accountantId;
+        return $this->accountant;
     }
 
-    public function getMedicId(): ?int
+    public function getMedic(): ?Person
     {
-        return $this->medicId;
+        return $this->medic;
     }
 
 }

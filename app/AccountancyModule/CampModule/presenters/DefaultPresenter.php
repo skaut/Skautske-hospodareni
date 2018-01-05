@@ -4,6 +4,7 @@ namespace App\AccountancyModule\CampModule;
 
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
+use Model\Event\ReadModel\Queries\CampStates;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
@@ -104,7 +105,7 @@ class DefaultPresenter extends BasePresenter
 
     protected function createComponentFormFilter($name): Form
     {
-        $states = array_merge(["all" => "Nezrušené"], $this->eventService->event->getStates());
+        $states = array_merge(["all" => "Nezrušené"], $this->queryBus->handle(new CampStates()));
         $years = ["all" => "Všechny"];
         foreach (array_reverse(range(2012, date("Y"))) as $y) {
             $years[$y] = $y;
