@@ -4,6 +4,7 @@ namespace App\AccountancyModule\CampModule;
 
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
+use Model\Auth\Resources\Camp;
 use Model\Event\ReadModel\Queries\CampStates;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
@@ -50,7 +51,7 @@ class DefaultPresenter extends BasePresenter
         $state = $this->ses->state ?? NULL;
         $list = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $list[$key]['accessDetail'] = $this->userService->actionVerify(self::STable, $value['ID'], self::STable . "_DETAIL");
+            $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $value['ID']);
         }
 
         $grid = $this->gridFactory->create();
