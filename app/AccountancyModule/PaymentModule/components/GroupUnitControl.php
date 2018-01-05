@@ -10,7 +10,7 @@ use eGen\MessageBus\Bus\CommandBus;
 use Model\Payment\Commands\Group\ChangeGroupUnit;
 use Model\PaymentService;
 use Model\UnitService;
-use Nette\ArrayHash;
+use Nette\Utils\ArrayHash;
 
 class GroupUnitControl extends BaseControl
 {

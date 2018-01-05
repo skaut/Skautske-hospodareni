@@ -106,7 +106,7 @@ class EventService extends MutableBaseService
                 } else {
                     throw new \InvalidArgumentException("Neplatný typ: " . $this->typeName);
                 }
-                $data = \Nette\ArrayHash::from(array_merge($skautisData, $localData));
+                $data = \Nette\Utils\ArrayHash::from(array_merge($skautisData, $localData));
                 $res = $this->saveSes($cacheId, $data);
             }
             return $res;

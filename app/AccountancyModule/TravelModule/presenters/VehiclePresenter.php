@@ -11,7 +11,7 @@ use Model\Travel\VehicleNotFoundException;
 use Model\TravelService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\ArrayHash;
+use Nette\Utils\ArrayHash;
 
 
 /**
