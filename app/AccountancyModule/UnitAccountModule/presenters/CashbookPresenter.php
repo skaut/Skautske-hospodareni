@@ -30,13 +30,6 @@ class CashbookPresenter extends BasePresenter
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
 
-    public function actionDefault($aid, $pid = NULL, $dp = FALSE) : void
-    {
-        $items = $this['cashbookForm']['category']->getItems();
-        unset($items[7]);//remove prevod do strediskove pokladny
-        $this['cashbookForm']['category']->setItems($items);
-    }
-
     public function renderDefault(int $aid, $pid = NULL, $dp = FALSE) : void
     {
         if ($pid !== NULL) {
