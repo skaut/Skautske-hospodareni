@@ -6,62 +6,58 @@ use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Event;
 use Model\Auth\Resources\Unit;
-use Model\UserService;
+use Skautis\Wsdl\WebServiceInterface;
 
 final class SkautisAuthorizator implements IAuthorizator
 {
 
-    /** @var UserService */
-    private $userService;
+    /** @var WebServiceInterface */
+    private $userWebservice;
 
-    /** @var array[] */
-    private $resources;
-
-    private const RESOURCE_NAMES = [
+    private const RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP = [
         Event::class => "EV_EventGeneral",
         Unit::class => "OU_Unit",
         Camp::class => 'EV_EventCamp',
     ];
 
-    private const AVAILABLE_RESOURCES = [
-        Event::class,
-        Unit::class,
-        Camp::class,
-    ];
 
-    public function __construct(UserService $userService)
+    public function __construct(WebServiceInterface $userWebservice)
     {
-        $this->userService = $userService;
+        $this->userWebservice = $userWebservice;
     }
 
-    public function isAllowed(array $action, int $resourceId): bool
+    public function isAllowed(array $action, ?int $resourceId): bool
     {
-        if(count($action) !== 2 || !in_array($action[0], self::AVAILABLE_RESOURCES)) {
+        if(count($action) !== 2 || ! isset(self::RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP[$action[0]])) {
             throw new \InvalidArgumentException("Unknown action");
         }
 
-        return in_array($action[1], $this->getResource($action[0], $resourceId), TRUE);
-    }
+        $skautisTable = self::RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP[$action[0]];
 
-
-    /**
-     * @return string[]
-     */
-    private function getResource(string $resource, int $id): array
-    {
-        if(!isset($this->resources[$resource][$id])) {
-            $this->resources[$resource][$id] = $this->loadResource($resource, $id);
+        foreach ($this->getAvailableActions($skautisTable, $resourceId) as $skautisAction) {
+            if($skautisAction->ID === $action[1]) {
+                return TRUE;
+            }
         }
-        return $this->resources[$resource][$id];
+
+        return FALSE;
     }
 
     /**
-     * @return string[]
+     * @return \stdClass[]
      */
-    private function loadResource(string $resource, int $id): array
+    private function getAvailableActions(string $skautisTable, ?int $id): array
     {
         try {
-            return $this->userService->getAvailableActions(self::RESOURCE_NAMES[$resource], $id);
+            $result = $this->userWebservice->ActionVerify([
+                "ID" => $id,
+                "ID_Table" => $skautisTable,
+                "ID_Action" => NULL,
+            ]);
+
+            return is_array($result)
+                ? $result
+                : [];
         } catch (\Skautis\Wsdl\PermissionException $exc) {
             return [];
         }
