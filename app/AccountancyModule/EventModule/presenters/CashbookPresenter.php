@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\EventModule;
 
 use Cake\Chronos\Date;
+use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
@@ -26,8 +27,10 @@ class CashbookPresenter extends BasePresenter
         }
         $this->entityService = $this->eventService;
 
-        $ev_state = $this->event->ID_EventGeneralState == "draft" ? TRUE : FALSE;
-        $this->isEditable = $this->template->isEditable = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
+        $isDraft = $this->event->ID_EventGeneralState === "draft";
+        $this->isEditable = $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
+
+        $this->template->isEditable = $this->isEditable;
         $this->template->missingCategories = FALSE;
     }
 

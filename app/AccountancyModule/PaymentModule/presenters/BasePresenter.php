@@ -24,9 +24,6 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 
         $this->aid = $this->aid ?? $this->unitService->getUnitId();
 
-        $availableActions = $this->userService->getAvailableActions("OU_Unit", $this->aid);
-        $this->availableActions = array_fill_keys($availableActions, TRUE);
-
         $user = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);
 

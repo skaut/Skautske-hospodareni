@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\CampModule;
 
 use App\Forms\BaseForm;
+use Model\Auth\Resources\Camp;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
 use Model\ExportService;
@@ -31,11 +32,11 @@ class DetailPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $this->template->functions = $this->isAllowed("EV_EventFunction_ALL_EventCamp")
+        $this->template->functions = $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)
             ? $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)))
             : NULL;
 
-        $this->template->accessDetail = $this->isAllowed(self::STable . "_DETAIL");
+        $this->template->accessDetail = $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $aid);
         $this->template->skautISUrl = $this->userService->getSkautisUrl();
 
         if (property_exists($this->event->ID_UnitArray, "string")) {
@@ -66,7 +67,7 @@ class DetailPresenter extends BasePresenter
 
     public function renderReport(int $aid) : void
     {
-        if (!$this->isAllowed("EV_EventFunction_ALL_EventCamp")) {
+        if (!$this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)) {
             $this->flashMessage("Nemáte právo přistupovat k táboru", "warning");
             $this->redirect("default", ["aid" => $aid]);
         }
@@ -96,7 +97,7 @@ class DetailPresenter extends BasePresenter
 
     private function formEditSubmitted(Form $form) : void
     {
-        if (!$this->isAllowed("EV_EventCamp_DETAIL")) {
+        if ( ! $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $this->aid)) {
             $this->flashMessage("Nemáte oprávnění pro úpravu tábora", "danger");
             $this->redirect("this");
         }

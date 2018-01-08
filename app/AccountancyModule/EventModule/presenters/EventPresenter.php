@@ -5,6 +5,7 @@ namespace App\AccountancyModule\EventModule;
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use Cake\Chronos\Date;
+use Model\Auth\Resources\Event;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
@@ -63,7 +64,7 @@ class EventPresenter extends BasePresenter
             $this->redirect("Default:");
         }
 
-        $accessEditBase = $this->isAllowed("EV_EventGeneral_UPDATE");
+        $accessEditBase = $this->authorizator->isAllowed(Event::UPDATE, $aid);
 
         if ($accessEditBase) {
             $form = $this['formEdit'];
@@ -81,9 +82,9 @@ class EventPresenter extends BasePresenter
 
         $this->template->statistic = $this->eventService->participants->getEventStatistic($this->aid);
         $this->template->accessEditBase = $accessEditBase;
-        $this->template->accessCloseEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Close");
-        $this->template->accessOpenEvent = $this->isAllowed("EV_EventGeneral_UPDATE_Open");
-        $this->template->accessDetailEvent = $this->isAllowed("EV_EventGeneral_DETAIL");
+        $this->template->accessCloseEvent = $this->authorizator->isAllowed(Event::CLOSE, $aid);
+        $this->template->accessOpenEvent = $this->authorizator->isAllowed(Event::OPEN, $aid);
+        $this->template->accessDetailEvent = $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid);
 
         if ($this->isAjax()) {
             $this->redrawControl("contentSnip");
@@ -97,7 +98,7 @@ class EventPresenter extends BasePresenter
 
     public function handleOpen(int $aid): void
     {
-        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Open")) {
+        if ( ! $this->authorizator->isAllowed(Event::OPEN, $aid)) {
             $this->flashMessage("Nemáte právo otevřít akci", "warning");
             $this->redirect("this");
         }
@@ -110,7 +111,7 @@ class EventPresenter extends BasePresenter
 
     public function handleClose(int $aid): void
     {
-        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Close")) {
+        if (!$this->authorizator->isAllowed(Event::CLOSE, $aid)) {
             $this->flashMessage("Nemáte právo akci uzavřít", "warning");
             $this->redirect("this");
         }
@@ -149,7 +150,7 @@ class EventPresenter extends BasePresenter
 
     public function renderReport(int $aid): void
     {
-        if (!$this->isAllowed("EV_EventGeneral_DETAIL")) {
+        if ( ! $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid)) {
             $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
             $this->redirect("default", ["aid" => $aid]);
         }
@@ -187,7 +188,7 @@ class EventPresenter extends BasePresenter
 
     private function formEditSubmitted(SubmitButton $button): void
     {
-        if (!$this->isAllowed("EV_EventGeneral_UPDATE")) {
+        if ( ! $this->authorizator->isAllowed(Event::UPDATE, $this->aid)) {
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
             $this->redirect("this");
         }
