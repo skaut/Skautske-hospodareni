@@ -34,7 +34,7 @@ table {
     'Zdravotník' => $functions->medic,
 ]}
 {foreach $functionsWithName as $functionName => $person}
-    <b>{$functionName}: </b> {if $person !== NULL}{$person->name} {if $person->email !== NULL}(email: $person->email){/if}{/if}<br>
+    <b>{$functionName}: </b> {if $person !== NULL}{$person->name} {if $person->email !== NULL}(email: {$person->email}){/if}{/if}<br>
 {/foreach}
 
 <br />
