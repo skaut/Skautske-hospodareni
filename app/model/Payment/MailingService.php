@@ -80,30 +80,6 @@ class MailingService
     }
 
     /**
-     * @throws GroupNotFoundException
-     * @throws UserNotFoundException
-     * @throws MailCredentialsNotSetException
-     */
-    public function sendEmailForGroup(int $groupId, int $userId) : int
-    {
-        $group = $this->groups->find($groupId);
-        $payments = $this->payments->findByGroup($groupId);
-        $user = $this->users->find($userId);
-
-        $sent = 0;
-        foreach($payments as $payment) {
-            try {
-                $this->sendForPayment($payment, $group, $user);
-                $sent++;
-            } catch(InvalidEmailException | PaymentClosedException $e) {}
-        }
-
-        $this->payments->saveMany($payments);
-
-        return $sent;
-    }
-
-    /**
      * @param int $groupId
      * @param int $userId
      * @return string User's email

@@ -331,23 +331,35 @@ class PaymentPresenter extends BasePresenter
      * rozešle všechny neposlané emaily
      * @param int $gid groupId
      */
-    public function handleSendGroup($gid): void
+    public function handleSendGroup(int $gid): void
     {
         $this->checkEditation();
 
+        $payments = $this->model->findByGroup($gid);
+        $payments = array_filter($payments, function(Payment $p) {
+            return ! $p->isClosed() && $p->getEmail() !== NULL;
+        });
+
+        $successfulCount = 0;
+
         try {
-            $sentCount = $this->mailing->sendEmailForGroup($gid, $this->user->getId());
-            if ($sentCount > 0) {
-                $this->flashMessage("Informační emaily($sentCount) byly odeslány.");
-            } else {
-                $this->flashMessage('Nebyl odeslán žádný informační email!', 'danger');
+            foreach($payments as $payment) {
+                $this->mailing->sendEmail($payment->getId(), $this->user->getId());
+                $successfulCount++;
             }
         } catch (MailCredentialsNotSetException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-        } catch (SmtpException $e) {
-            $this->smtpError($e);
+            $this->redirect('this');
         } catch (InvalidBankAccountException $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+            $this->redirect('this');
+        } catch (SmtpException $e) {
+            $this->smtpError($e);
+            $this->redirect('this');
+        }
+
+        if ($successfulCount > 0) {
+            $this->flashMessage("Informační emaily ($successfulCount) byly odeslány", 'success');
         }
 
         $this->redirect('this');
@@ -619,7 +631,7 @@ class PaymentPresenter extends BasePresenter
 
     private function smtpError(SmtpException $e): void
     {
-        $this->flashMessage("Nepodařilo se připojit k SMTP serveru ({$e->getMessage()})", 'danger');
+        $this->flashMessage("SMTP server vrátil chybu ({$e->getMessage()})", 'danger');
         $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
     }
 
