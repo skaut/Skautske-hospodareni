@@ -337,7 +337,7 @@ class PaymentPresenter extends BasePresenter
 
         $payments = $this->model->findByGroup($gid);
         $payments = array_filter($payments, function(Payment $p) {
-            return ! $p->isClosed() && $p->getEmail() !== NULL;
+            return ! $p->isClosed() && $p->getEmail() !== NULL && $p->getState()->equalsValue(State::PREPARING);
         });
 
         $successfulCount = 0;
