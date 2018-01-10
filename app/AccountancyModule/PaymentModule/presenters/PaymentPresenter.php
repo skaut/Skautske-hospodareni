@@ -307,50 +307,36 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    public function handleSend($pid): void
+    public function handleSend(int $pid): void
     {
         $this->checkEditation();
 
-        try {
-            $this->mailing->sendEmail($pid, $this->user->getId());
-            $this->flashMessage('Informační email byl odeslán.');
-        } catch (MailCredentialsNotSetException $e) {
-            $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-        } catch (SmtpException $e) {
-            $this->smtpError($e);
-        } catch (InvalidBankAccountException $e) {
-            $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-        } catch (InvalidEmailException $e) {
-            $this->flashMessage('Platba nemá vyplněný email', 'danger');
+        $payment = $this->model->findPayment($pid);
+
+        if($payment === NULL) {
+            $this->flashMessage('Zadaná platba neexistuje', 'danger');
+            $this->redirect('this');
         }
 
-        $this->redirect('this');
+        if($payment->getEmail() === NULL) {
+            $this->flashMessage('Platba nemá vyplněný email', 'danger');
+            $this->redirect('this');
+        }
+
+        $this->sendEmailsForPayments([$payment]);
     }
 
     /**
      * rozešle všechny neposlané emaily
      * @param int $gid groupId
      */
-    public function handleSendGroup($gid): void
+    public function handleSendGroup(int $gid): void
     {
         $this->checkEditation();
 
-        try {
-            $sentCount = $this->mailing->sendEmailForGroup($gid, $this->user->getId());
-            if ($sentCount > 0) {
-                $this->flashMessage("Informační emaily($sentCount) byly odeslány.");
-            } else {
-                $this->flashMessage('Nebyl odeslán žádný informační email!', 'danger');
-            }
-        } catch (MailCredentialsNotSetException $e) {
-            $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-        } catch (SmtpException $e) {
-            $this->smtpError($e);
-        } catch (InvalidBankAccountException $e) {
-            $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-        }
+        $payments = $this->model->findByGroup($gid);
 
-        $this->redirect('this');
+        $this->sendEmailsForPayments($payments);
     }
 
     public function handleSendTest($gid): void
@@ -619,13 +605,52 @@ class PaymentPresenter extends BasePresenter
 
     private function smtpError(SmtpException $e): void
     {
-        $this->flashMessage("Nepodařilo se připojit k SMTP serveru ({$e->getMessage()})", 'danger');
+        $this->flashMessage("SMTP server vrátil chybu ({$e->getMessage()})", 'danger');
         $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
     }
 
     private function hasAccessToGroup(Group $group): bool
     {
         return in_array($group->getUnitId(), array_keys($this->readUnits), TRUE);
+    }
+
+    /**
+     * @param Payment[] $payments
+     */
+    private function sendEmailsForPayments(array $payments): void
+    {
+        $payments = array_filter($payments, function (Payment $p) {
+            return !$p->isClosed() && $p->getEmail() !== NULL && $p->getState()->equalsValue(State::PREPARING);
+        });
+
+        $sentCount = 0;
+
+        try {
+            foreach ($payments as $payment) {
+                $this->mailing->sendEmail($payment->getId(), $this->user->getId());
+                $sentCount++;
+            }
+        } catch (MailCredentialsNotSetException $e) {
+            $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
+            $this->redirect('this');
+        } catch (InvalidBankAccountException $e) {
+            $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+            $this->redirect('this');
+        } catch (SmtpException $e) {
+            $this->smtpError($e);
+            $this->redirect('this');
+        }
+
+        if ($sentCount > 0) {
+            $this->flashMessage(
+                $sentCount === 1
+                    ? 'Informační email byl odeslán'
+                    : "Informační emaily ($sentCount) byly odeslány",
+                'success'
+            );
+        }
+
+        $this->redirect('this');
     }
 
 }
