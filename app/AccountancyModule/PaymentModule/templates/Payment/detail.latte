@@ -91,7 +91,12 @@
                 </tr>
                 {if !empty($payments)}
                     <tr n:foreach="$payments as $l" {if !$l->closed && $l->dueDate < $now}class="danger" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}>
-                        <td>{$l->name}</td>
+                        <td>
+                            <div n:if="$l->note !== ''" class="pull-right">
+                                <i class="fa fa-sticky-note" title="{$l->note}" aria-hidden="true"></i>
+                            </div>
+                            {$l->name}
+                        </td>
                         <td>{if $l->email == null}&nbsp;{else}{$l->email}{/if}</td>
                         <td class="r">{$l->amount|num}</td>
                         {if $l->variableSymbol === NULL}
