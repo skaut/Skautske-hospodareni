@@ -24,7 +24,7 @@ class VariableSymbolType extends StringType
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?VariableSymbol
     {
-        if ($value === NULL || $value === '') {
+        if ($value === NULL || $value === '' || $value === '0') {
             return NULL;
         }
 
