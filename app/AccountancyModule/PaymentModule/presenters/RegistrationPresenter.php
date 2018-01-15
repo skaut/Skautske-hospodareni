@@ -59,6 +59,9 @@ class RegistrationPresenter extends BasePresenter
         $form = $this["massAddForm"];
         /** @var MassAddForm $form */
 
+        // performance issue - při větším množství zobrazených osob se nezpracuje formulář
+        $list = array_slice($list, 0, 50);
+
         foreach ($list as $p) {
             $stsCount = intdiv((int)$p['AmountServices'], self::STS_PRICE);
 
