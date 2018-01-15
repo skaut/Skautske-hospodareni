@@ -4,9 +4,6 @@ namespace Model;
 
 use Skautis\Skautis;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class AuthService
 {
 
