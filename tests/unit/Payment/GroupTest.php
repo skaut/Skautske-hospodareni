@@ -3,7 +3,7 @@
 namespace Model\Payment;
 
 use DateTimeImmutable;
-use Model\Payment\Group\EmailTemplate;
+use Model\Payment\EmailTemplate;
 use Mockery as m;
 
 class GroupTest extends \Codeception\Test\Unit

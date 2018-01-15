@@ -121,7 +121,7 @@ class ChangeGroupUnitHandlerTest extends \CommandHandlerTest
             NULL,
             NULL,
             new \DateTimeImmutable(),
-            new Group\EmailTemplate('', ''),
+            new \Model\Payment\EmailTemplate('', ''),
             NULL,
             $bankAccount
         );

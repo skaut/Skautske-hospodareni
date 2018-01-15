@@ -1,9 +1,7 @@
 <?php
 
-namespace Model\Payment\Group;
+namespace Model\Payment;
 
-use Model\Payment\Group;
-use Model\Payment\InvalidBankAccountException;
 use Model\Payment\Mailing\Payment;
 use Nette\Utils\Strings;
 

@@ -9,7 +9,7 @@ use Model\DTO\Payment\BankAccount;
 use Model\EventEntity;
 use Model\MailService;
 use Model\Payment\BankAccountService;
-use Model\Payment\Group\EmailTemplate;
+use Model\Payment\EmailTemplate;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\VariableSymbol;

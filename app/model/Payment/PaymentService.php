@@ -169,7 +169,7 @@ class PaymentService
         ?int $ks,
         ?VariableSymbol $nextVS,
         ?float $amount,
-        Group\EmailTemplate $emailTemplate,
+        \Model\Payment\EmailTemplate $emailTemplate,
         ?int $smtpId,
         ?int $bankAccountId
     ): int
@@ -191,7 +191,7 @@ class PaymentService
         ?DateTimeImmutable $dueDate,
         ?int $constantSymbol,
         ?VariableSymbol $nextVariableSymbol,
-        Group\EmailTemplate $emailTemplate,
+        \Model\Payment\EmailTemplate $emailTemplate,
         ?int $smtpId,
         ?int $bankAccountId
     ): void

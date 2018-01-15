@@ -3,7 +3,7 @@
 namespace Model\DTO\Payment;
 
 use DateTimeImmutable;
-use Model\Payment\Group\EmailTemplate;
+use Model\Payment\EmailTemplate;
 use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
 

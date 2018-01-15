@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-use Model\Payment\Group\EmailTemplate;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Repositories\IBankAccountRepository;
 
