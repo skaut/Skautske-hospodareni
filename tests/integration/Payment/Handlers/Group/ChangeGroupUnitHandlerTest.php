@@ -35,6 +35,7 @@ class ChangeGroupUnitHandlerTest extends \CommandHandlerTest
         return [
             BankAccount::class,
             Group::class,
+            Group\Email::class,
         ];
     }
 

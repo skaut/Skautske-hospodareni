@@ -18,10 +18,11 @@ class PaymentServiceTest extends \IntegrationTest
 
 	public function getTestedEntites(): array
 	{
-		return [
-			Group::class,
-			Payment::class,
-		];
+	    return [
+	        Group::class,
+            Group\Email::class,
+            Payment::class,
+        ];
 	}
 
 	public function _before()

@@ -98,6 +98,9 @@ class EmailTemplate
         return "<img alt=\"QR platbu se nepodařilo zobrazit\" src=\"" . $file . "\">";
     }
 
-
+    public function equals(EmailTemplate $other): bool
+    {
+        return $other->subject === $this->subject && $other->body === $this->body;
+    }
 
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Model\Payment\Group\Email;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Repositories\IBankAccountRepository;
 
@@ -43,8 +45,8 @@ class Group
     /** @var \DateTimeImmutable|NULL */
     private $lastPairing;
 
-    /** @var EmailTemplate */
-    private $emailTemplate;
+    /** @var ArrayCollection|Email[] */
+    private $emails;
 
     /** @var int|NULL */
     private $smtpId;
@@ -80,8 +82,12 @@ class Group
         $this->constantSymbol = $constantSymbol;
         $this->nextVariableSymbol = $nextVariableSymbol;
         $this->createdAt = $createdAt;
-        $this->emailTemplate = $emailTemplate;
         $this->smtpId = $smtpId;
+
+        $this->emails = new ArrayCollection([
+            new Email($this, EmailType::get(EmailType::PAYMENT_INFO), $emailTemplate)
+        ]);
+
         $this->changeBankAccount($bankAccount);
     }
 
@@ -100,7 +106,7 @@ class Group
         $this->dueDate = $dueDate;
         $this->constantSymbol = $constantSymbol;
         $this->nextVariableSymbol = $nextVariableSymbol;
-        $this->emailTemplate = $emailTemplate;
+        $this->updateEmail(EmailType::get(EmailType::PAYMENT_INFO), $emailTemplate);
         $this->smtpId = $smtpId;
         $this->changeBankAccount($bankAccount);
     }
@@ -163,6 +169,17 @@ class Group
         $this->unitId = $unitId;
     }
 
+    private function updateEmail(EmailType $type, EmailTemplate $template): void
+    {
+        $email = $this->getEmail($type);
+
+        if($email !== NULL) {
+            $email->setTemplate($template);
+            return;
+        }
+
+        $this->emails->add(new Email($this, $type, $template));
+    }
 
     /**
      * @return int
@@ -219,7 +236,13 @@ class Group
 
     public function getEmailTemplate(): EmailTemplate
     {
-        return $this->emailTemplate;
+        $email = $this->getEmail(EmailType::get(EmailType::PAYMENT_INFO));
+
+        if($email !== NULL) {
+            return $email->getTemplate();
+        }
+
+        return new EmailTemplate('', '');
     }
 
     public function updateLastPairing(\DateTimeImmutable $at): void
@@ -269,6 +292,13 @@ class Group
         }
 
         $this->bankAccountId = $bankAccount->getId();
+    }
+
+    private function getEmail(EmailType $type): ?Email
+    {
+        return $this->emails->filter(function(Email $email) use ($type) {
+            return $email->getType()->equals($type);
+        })->first();
     }
 
 }

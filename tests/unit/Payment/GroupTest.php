@@ -37,7 +37,7 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertSame(203, $group->getConstantSymbol());
         $this->assertSame($variableSymbol, $group->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
-        $this->assertSame($emailTemplate, $group->getEmailTemplate());
+        $this->assertTrue($emailTemplate->equals($group->getEmailTemplate()));
         $this->assertNull($group->getSmtpId());
         $this->assertSame($group::STATE_OPEN, $group->getState());
         $this->assertSame("", $group->getNote());
@@ -71,7 +71,7 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertNull($group->getConstantSymbol());
         $this->assertNull($group->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
-        $this->assertSame($emailTemplate, $group->getEmailTemplate());
+        $this->assertTrue($emailTemplate->equals($group->getEmailTemplate()));
         $this->assertSame(20, $group->getSmtpId());
         $this->assertSame(33, $group->getBankAccountId());
     }

@@ -7,6 +7,8 @@ Model\Payment\Group:
         id:
             type: integer
             generator: { strategy: AUTO }
+            options:
+                unsigned: true
 
     fields:
         unitId:
@@ -56,5 +58,10 @@ Model\Payment\Group:
             columnPrefix: false
             annotations:
                 nullable: {}
-        emailTemplate:
-            class: Model\Payment\Group\EmailTemplate
+
+    oneToMany:
+        emails:
+            targetEntity: Model\Payment\Group\Email
+            mappedBy: group
+            cascade: [PERSIST, REMOVE]
+            orphanRemoval: true

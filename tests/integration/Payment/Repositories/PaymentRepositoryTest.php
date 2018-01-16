@@ -168,8 +168,6 @@ class PaymentRepositoryTest extends \IntegrationTest
             'unitId' => 10,
             'state' => Group::STATE_OPEN,
             'state_info' => '',
-            'email_template_subject' => '',
-            'email_template_body' => '',
         ]);
     }
 

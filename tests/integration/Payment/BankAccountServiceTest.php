@@ -43,6 +43,7 @@ class BankAccountServiceTest extends \IntegrationTest
         return [
             BankAccount::class,
             Group::class,
+            Group\Email::class,
         ];
     }
 

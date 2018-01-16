@@ -1,0 +1,25 @@
+Model\Payment\Group\Email:
+
+    type: entity
+    table: pa_group_email
+
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+
+    fields:
+        type:
+            type: string_enum
+            annotations:
+                enum: { class: Model\Payment\EmailType }
+
+    embedded:
+        template:
+            class: Model\Payment\EmailTemplate
+
+
+    manyToOne:
+        group:
+            targetEntity: Model\Payment\Group
+            inversedBy: emails

@@ -50,6 +50,7 @@ class BankServiceTest extends \IntegrationTest
         return [
             BankAccount::class,
             Group::class,
+            Group\Email::class,
             Payment::class,
         ];
     }
