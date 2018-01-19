@@ -14,12 +14,12 @@ class GroupTest extends \Codeception\Test\Unit
     {
         $dueDate = new DateTimeImmutable();
         $createdAt = new DateTimeImmutable();
-        $emailTemplate = new EmailTemplate("subject", "mail body");
         $variableSymbol = new VariableSymbol('666');
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, $variableSymbol);
         $bankAccount = m::mock(BankAccount::class, ['getId' => 23, 'getUnitId' => 20]);
+        $emails = \Helpers::createEmails();
 
-        $group = new Group(20, NULL, "Skupina 01", $paymentDefaults, $createdAt, $emailTemplate, NULL, $bankAccount);
+        $group = new Group(20, NULL, "Skupina 01", $paymentDefaults, $createdAt, $emails, NULL, $bankAccount);
 
         $this->assertSame(20, $group->getUnitId());
         $this->assertNull($group->getObject());
@@ -29,11 +29,22 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertSame(203, $group->getConstantSymbol());
         $this->assertSame($variableSymbol, $group->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
-        $this->assertTrue($emailTemplate->equals($group->getEmailTemplate()));
+        $this->assertEmailsAreSame($emails, $group->getEmailTemplates());
         $this->assertNull($group->getSmtpId());
         $this->assertSame($group::STATE_OPEN, $group->getState());
         $this->assertSame("", $group->getNote());
         $this->assertSame(23, $group->getBankAccountId());
+    }
+
+    public function testCreatingGroupWithNotAllEmailsThrowsException(): void
+    {
+        $paymentDefaults = new PaymentDefaults(NULL, NULL, NULL, NULL);
+        $emails = [];
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Email templates (" . EmailType::PAYMENT_INFO . ") are missing");
+
+        $group = new Group(1, NULL, 'Test', $paymentDefaults, new DateTimeImmutable(), $emails, NULL, NULL);
     }
 
     public function testUpdate()
@@ -42,10 +53,13 @@ class GroupTest extends \Codeception\Test\Unit
         $createdAt = new DateTimeImmutable();
         $group = $this->createGroup($dueDate, $createdAt);
 
-        $emailTemplate = new EmailTemplate("subject2", "body2");
+        $emails = [
+            EmailType::PAYMENT_INFO => new EmailTemplate("subject2", "body2"),
+        ];
+
         $bankAccount = m::mock(BankAccount::class, ['getId' => 33, 'getUnitId' => 20]);
 
-        $group->update("Skupina Jiná", new PaymentDefaults(120, NULL, NULL, NULL), $emailTemplate, 20, $bankAccount);
+        $group->update("Skupina Jiná", new PaymentDefaults(120, NULL, NULL, NULL), $emails, 20, $bankAccount);
 
         $this->assertSame(20, $group->getUnitId());
         $this->assertNull($group->getObject());
@@ -55,9 +69,20 @@ class GroupTest extends \Codeception\Test\Unit
         $this->assertNull($group->getConstantSymbol());
         $this->assertNull($group->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
-        $this->assertTrue($emailTemplate->equals($group->getEmailTemplate()));
+        $this->assertEmailsAreSame($emails, $group->getEmailTemplates());
         $this->assertSame(20, $group->getSmtpId());
         $this->assertSame(33, $group->getBankAccountId());
+    }
+
+    public function testUpdateWithNotAllEmailsThrowsException()
+    {
+        $group = $this->createGroup();
+        $emails = [];
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Email templates (" . EmailType::PAYMENT_INFO . ") are missing");
+
+        $group->update('name', $group->getPaymentDefaults(), $emails, NULL, NULL);
     }
 
     public function testClose()
@@ -98,16 +123,23 @@ class GroupTest extends \Codeception\Test\Unit
 
     private function createGroup(?DateTimeImmutable $dueDate = NULL, ?DateTimeImmutable $createdAt = NULL, BankAccount $bankAccount = NULL): Group
     {
-        return new Group(
-            20,
-            NULL,
-            "Skupina 01",
-            new PaymentDefaults(200.2, $dueDate ?? new DateTimeImmutable(), 203, new VariableSymbol('666')),
-            $createdAt ?? new DateTimeImmutable(),
-            new EmailTemplate("Email subject", "Email body"),
-            NULL,
-            $bankAccount
-        );
+        $paymentDefaults = new PaymentDefaults(200.2, $dueDate ?? new DateTimeImmutable(), 203, new VariableSymbol('666'));
+        $createdAt = $createdAt ?? new DateTimeImmutable();
+        $emails = \Helpers::createEmails();
+
+        return new Group(20, NULL, "Skupina 01", $paymentDefaults, $createdAt, $emails, NULL, $bankAccount);
+    }
+
+    /**
+     * @param EmailTemplate[] $expected
+     * @param EmailTemplate[] $actual
+     */
+    private function assertEmailsAreSame(array $expected, array $actual): void
+    {
+        $this->assertCount(count($expected), $actual);
+        foreach($expected as $key => $value) {
+            $this->assertTrue($value->equals($actual[$key]));
+        }
     }
 
 }

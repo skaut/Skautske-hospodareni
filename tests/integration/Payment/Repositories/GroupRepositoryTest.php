@@ -88,7 +88,7 @@ class GroupRepositoryTest extends \IntegrationTest
         $this->assertEquals($paymentDefaults->getDueDate(), $group->getPaymentDefaults()->getDueDate());
         $this->assertSame($paymentDefaults->getConstantSymbol(), $group->getPaymentDefaults()->getConstantSymbol());
         $this->assertEquals($paymentDefaults->getNextVariableSymbol(), $group->getPaymentDefaults()->getNextVariableSymbol());
-        $this->assertTrue($infoEmail->equals($group->getEmailTemplate()));
+        $this->assertTrue($infoEmail->equals($group->getEmailTemplates()[EmailType::PAYMENT_INFO]));
     }
 
 }

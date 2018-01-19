@@ -112,16 +112,10 @@ class BankServiceTest extends \IntegrationTest
 
     private function addGroup(?BankAccount $bankAccount): Group
     {
-        $group = new Group(
-            1,
-            NULL,
-            'Testovací skupina',
-            new Group\PaymentDefaults(NULL, NULL, NULL, NULL),
-            new \DateTimeImmutable(),
-            new \Model\Payment\EmailTemplate('', ''),
-            NULL,
-            $bankAccount
-        );
+        $paymentDefaults = new Group\PaymentDefaults(NULL, NULL, NULL, NULL);
+        $emails = \Helpers::createEmails();
+
+        $group = new Group(1, NULL, 'Test', $paymentDefaults, new \DateTimeImmutable(), $emails, NULL, $bankAccount);
 
         $this->groups->save($group);
 

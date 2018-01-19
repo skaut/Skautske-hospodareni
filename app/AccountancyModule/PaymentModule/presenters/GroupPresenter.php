@@ -11,6 +11,7 @@ use Model\MailService;
 use Model\Payment\BankAccountService;
 use Model\Payment\DueDateIsNotWorkdayException;
 use Model\Payment\EmailTemplate;
+use Model\Payment\EmailType;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
@@ -205,11 +206,14 @@ class GroupPresenter extends BasePresenter
         }
         $smtpId = $v->smtp;
 
-        $emailTemplate = new EmailTemplate($v->emailSubject, $v->emailBody);
+        $emails = [
+            EmailType::PAYMENT_INFO => new EmailTemplate($v->emailSubject, $v->emailBody),
+        ];
+
         $groupId = $v->groupId !== "" ? (int)$v->groupId : NULL;
 
         if ($groupId !== NULL) {//EDIT
-            $this->model->updateGroup($groupId, $name, $paymentDefaults, $emailTemplate, $smtpId, $v->bankAccount);
+            $this->model->updateGroup($groupId, $name, $paymentDefaults, $emails, $smtpId, $v->bankAccount);
 
             $this->flashMessage('Skupina byla upravena');
         } else {//ADD
@@ -219,7 +223,7 @@ class GroupPresenter extends BasePresenter
 
             $unitId = $this->getCurrentUnitId();
 
-            $groupId = $this->model->createGroup($unitId, $entity, $name, $paymentDefaults, $emailTemplate, $smtpId, $v->bankAccount);
+            $groupId = $this->model->createGroup($unitId, $entity, $name, $paymentDefaults, $emails, $smtpId, $v->bankAccount);
 
             $this->flashMessage('Skupina byla založena');
         }

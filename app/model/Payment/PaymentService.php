@@ -5,7 +5,10 @@ namespace Model;
 use Assert\Assert;
 use DateTimeImmutable;
 use Model\DTO\Payment as DTO;
+use Model\Payment\EmailTemplate;
 use Model\Payment\Group;
+use Model\Payment\Group\PaymentDefaults;
+use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFoundException;
 use Model\Payment\MissingVariableSymbolException;
@@ -18,7 +21,6 @@ use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use Model\Services\Language;
-use Nette\Utils\Strings;
 use Skautis\Skautis;
 
 /**
@@ -161,12 +163,15 @@ class PaymentService
         return $this->payments->summarizeByGroup($groupIds);
     }
 
+    /**
+     * @param EmailTemplate[] $emails
+     */
     public function createGroup(
         int $unitId,
-        ?Group\SkautisEntity $skautisEntity,
+        ?SkautisEntity $skautisEntity,
         string $label,
-        Group\PaymentDefaults $paymentDefaults,
-        \Model\Payment\EmailTemplate $emailTemplate,
+        PaymentDefaults $paymentDefaults,
+        array $emails,
         ?int $smtpId,
         ?int $bankAccountId
     ): int
@@ -174,17 +179,20 @@ class PaymentService
         $now = new DateTimeImmutable();
         $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
 
-        $group = new Group($unitId, $skautisEntity, $label, $paymentDefaults, $now, $emailTemplate, $smtpId, $bankAccount);
+        $group = new Group($unitId, $skautisEntity, $label, $paymentDefaults, $now, $emails, $smtpId, $bankAccount);
 
         $this->groups->save($group);
         return $group->getId();
     }
 
+    /**
+     * @param EmailTemplate[] $emails
+     */
     public function updateGroup(
         int $id,
         string $name,
-        Group\PaymentDefaults $paymentDefaults,
-        \Model\Payment\EmailTemplate $emailTemplate,
+        PaymentDefaults $paymentDefaults,
+        array $emails,
         ?int $smtpId,
         ?int $bankAccountId
     ): void
@@ -192,7 +200,7 @@ class PaymentService
         $group = $this->groups->find($id);
         $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
 
-        $group->update($name, $paymentDefaults, $emailTemplate, $smtpId, $bankAccount);
+        $group->update($name, $paymentDefaults, $emails, $smtpId, $bankAccount);
 
         $this->groups->save($group);
     }

@@ -52,13 +52,16 @@ class Group
     const STATE_OPEN = 'open';
     const STATE_CLOSED = 'closed';
 
+    /**
+     * @param EmailTemplate[] $emails
+     */
     public function __construct(
         int $unitId,
         ?SkautisEntity $object,
         string $name,
         PaymentDefaults $paymentDefaults,
         \DateTimeImmutable $createdAt,
-        EmailTemplate $emailTemplate,
+        array $emails,
         ?int $smtpId,
         ?BankAccount $bankAccount
     )
@@ -70,23 +73,20 @@ class Group
         $this->createdAt = $createdAt;
         $this->smtpId = $smtpId;
 
-        $this->emails = new ArrayCollection([
-            new Email($this, EmailType::get(EmailType::PAYMENT_INFO), $emailTemplate)
-        ]);
+        $this->emails = new ArrayCollection();
+        $this->setEmails($emails);
 
         $this->changeBankAccount($bankAccount);
     }
 
-    public function update(
-        string $name,
-        PaymentDefaults $paymentDefaults,
-        EmailTemplate $emailTemplate,
-        ?int $smtpId,
-        ?BankAccount $bankAccount) : void
+    /**
+     * @param EmailTemplate[] $emails
+     */
+    public function update(string $name, PaymentDefaults $paymentDefaults, array $emails, ?int $smtpId, ?BankAccount $bankAccount) : void
     {
         $this->name = $name;
         $this->paymentDefaults = $paymentDefaults;
-        $this->updateEmail(EmailType::get(EmailType::PAYMENT_INFO), $emailTemplate);
+        $this->setEmails($emails);
         $this->smtpId = $smtpId;
         $this->changeBankAccount($bankAccount);
     }
@@ -147,18 +147,6 @@ class Group
         }
 
         $this->unitId = $unitId;
-    }
-
-    private function updateEmail(EmailType $type, EmailTemplate $template): void
-    {
-        $email = $this->getEmail($type);
-
-        if($email !== NULL) {
-            $email->setTemplate($template);
-            return;
-        }
-
-        $this->emails->add(new Email($this, $type, $template));
     }
 
     /**
@@ -231,15 +219,26 @@ class Group
         return $this->createdAt;
     }
 
-    public function getEmailTemplate(): EmailTemplate
+    /**
+     * @return EmailTemplate[]
+     */
+    public function getEmailTemplates(): array
     {
-        $email = $this->getEmail(EmailType::get(EmailType::PAYMENT_INFO));
+        $emails = [];
 
-        if($email !== NULL) {
-            return $email->getTemplate();
+        foreach($this->emails as $email) {
+            $emails[$email->getType()->getValue()] = $email->getTemplate();
         }
 
-        return new EmailTemplate('', '');
+        return $emails;
+    }
+
+    /**
+     * @deprecated Use getEmailTemplates()[EmailType::PAYMENT_INFO]
+     */
+    public function getEmailTemplate(): EmailTemplate
+    {
+        return $this->getEmailTemplates()[EmailType::PAYMENT_INFO] ?? new EmailTemplate('', '');
     }
 
     public function updateLastPairing(\DateTimeImmutable $at): void
@@ -291,11 +290,39 @@ class Group
         $this->bankAccountId = $bankAccount->getId();
     }
 
+    /**
+     * @param EmailTemplate[] $emails
+     */
+    private function setEmails(array $emails): void
+    {
+        $missingEmails = array_diff(EmailType::getAvailableValues(), array_keys($emails));
+
+        if( ! empty($missingEmails)) {
+            throw new \InvalidArgumentException("Email templates (" . implode(', ', $missingEmails) . ") are missing");
+        }
+
+        foreach($emails as $typeKey => $template) {
+            $type = EmailType::get($typeKey);
+            $email = $this->getEmail($type);
+
+            if($email !== NULL) {
+                $email->setTemplate($template);
+                continue;
+            }
+
+            $this->emails->add(new Email($this, $type, $template));
+        }
+    }
+
     private function getEmail(EmailType $type): ?Email
     {
-        return $this->emails->filter(function(Email $email) use ($type) {
-            return $email->getType()->equals($type);
-        })->first();
+        foreach($this->emails as $email) {
+            if($email->getType()->equals($type)) {
+                return $email;
+            }
+        }
+
+        return NULL;
     }
 
 }
