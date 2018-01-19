@@ -49,3 +49,7 @@ class MailCredentialsNotFound extends \Exception
 class MailCredentialsNotSetException extends \Exception
 {
 }
+
+class DueDateIsNotWorkdayException extends \Exception
+{
+}

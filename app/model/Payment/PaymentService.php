@@ -165,20 +165,16 @@ class PaymentService
         int $unitId,
         ?Group\SkautisEntity $skautisEntity,
         string $label,
-        ?DateTimeImmutable $dueDate,
-        ?int $ks,
-        ?VariableSymbol $nextVS,
-        ?float $amount,
+        Group\PaymentDefaults $paymentDefaults,
         \Model\Payment\EmailTemplate $emailTemplate,
         ?int $smtpId,
         ?int $bankAccountId
     ): int
     {
         $now = new DateTimeImmutable();
-        $amount = $amount !== 0.0 ? $amount : NULL;
         $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
 
-        $group = new Group($unitId, $skautisEntity, $label, $amount, $dueDate, $ks, $nextVS, $now, $emailTemplate, $smtpId, $bankAccount);
+        $group = new Group($unitId, $skautisEntity, $label, $paymentDefaults, $now, $emailTemplate, $smtpId, $bankAccount);
 
         $this->groups->save($group);
         return $group->getId();
@@ -187,10 +183,7 @@ class PaymentService
     public function updateGroup(
         int $id,
         string $name,
-        ?float $defaultAmount,
-        ?DateTimeImmutable $dueDate,
-        ?int $constantSymbol,
-        ?VariableSymbol $nextVariableSymbol,
+        Group\PaymentDefaults $paymentDefaults,
         \Model\Payment\EmailTemplate $emailTemplate,
         ?int $smtpId,
         ?int $bankAccountId
@@ -199,7 +192,7 @@ class PaymentService
         $group = $this->groups->find($id);
         $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
 
-        $group->update($name, $defaultAmount, $dueDate, $constantSymbol, $nextVariableSymbol, $emailTemplate, $smtpId, $bankAccount);
+        $group->update($name, $paymentDefaults, $emailTemplate, $smtpId, $bankAccount);
 
         $this->groups->save($group);
     }

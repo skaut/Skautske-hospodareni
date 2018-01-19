@@ -42,10 +42,7 @@ class PaymentServiceTest extends \IntegrationTest
 			10,
 			NULL,
 			'test group',
-			NULL,
-			NULL,
-			new VariableSymbol('1'),
-			NULL,
+			new Group\PaymentDefaults(NULL, NULL, NULL, new VariableSymbol('1')),
 			new \Model\Payment\EmailTemplate('', ''),
 			NULL,
 			NULL

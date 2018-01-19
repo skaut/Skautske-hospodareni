@@ -9,12 +9,15 @@ use Model\DTO\Payment\BankAccount;
 use Model\EventEntity;
 use Model\MailService;
 use Model\Payment\BankAccountService;
+use Model\Payment\DueDateIsNotWorkdayException;
 use Model\Payment\EmailTemplate;
+use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\VariableSymbol;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
+use Nette\Utils\ArrayHash;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -193,36 +196,20 @@ class GroupPresenter extends BasePresenter
         }
         $v = $form->getValues();
 
-
-        $dueDate = $v->dueDate !== NULL
-            ? \DateTimeImmutable::createFromMutable($v->dueDate)
-            : NULL;
-
-        if ($dueDate !== NULL && $dueDate->format("N") > 5) {
+        $name = $v->label;
+        try {
+            $paymentDefaults = $this->buildPaymentDefaults($v);
+        } catch (DueDateIsNotWorkdayException $e) {
             $form["dueDate"]->addError("Splatnost nemůže být nastavena na víkend.");
             return;
         }
-
-        $groupId = $v->groupId !== "" ? (int)$v->groupId : NULL;
-        $label = $v->label;
-        $amount = (isset($v->amount) && $v->amount !== "") ? $v->amount : NULL;
-        $constantSymbol = $v->constantSymbol !== "" ? $v->constantSymbol : NULL;
         $smtpId = $v->smtp;
 
         $emailTemplate = new EmailTemplate($v->emailSubject, $v->emailBody);
+        $groupId = $v->groupId !== "" ? (int)$v->groupId : NULL;
 
         if ($groupId !== NULL) {//EDIT
-            $this->model->updateGroup(
-                $groupId,
-                $label,
-                $amount,
-                $dueDate,
-                $constantSymbol,
-                $v->nextVs,
-                $emailTemplate,
-                $smtpId,
-                $v->bankAccount
-            );
+            $this->model->updateGroup($groupId, $name, $paymentDefaults, $emailTemplate, $smtpId, $v->bankAccount);
 
             $this->flashMessage('Skupina byla upravena');
         } else {//ADD
@@ -230,18 +217,9 @@ class GroupPresenter extends BasePresenter
                     ? $this->createSkautisEntity($v->type, (int)$v->skautisEntityId)
                     : NULL;
 
-            $groupId = $this->model->createGroup(
-                $this->getCurrentUnitId(),
-                $entity,
-                $label,
-                $dueDate,
-                $constantSymbol,
-                $v->nextVs,
-                $amount,
-                $emailTemplate,
-                $smtpId,
-                $v->bankAccount
-            );
+            $unitId = $this->getCurrentUnitId();
+
+            $groupId = $this->model->createGroup($unitId, $entity, $name, $paymentDefaults, $emailTemplate, $smtpId, $v->bankAccount);
 
             $this->flashMessage('Skupina byla založena');
         }
@@ -255,6 +233,20 @@ class GroupPresenter extends BasePresenter
         } catch (InvalidEnumValueException $e) {
             return NULL;
         }
+    }
+
+    /**
+     * @throws DueDateIsNotWorkdayException
+     */
+    private function buildPaymentDefaults(ArrayHash $values): PaymentDefaults
+    {
+        $amount = (isset($values->amount) && $values->amount !== "") ? $values->amount : NULL;
+        $constantSymbol = $values->constantSymbol !== "" ? $values->constantSymbol : NULL;
+        $dueDate = $values->dueDate !== NULL
+            ? \DateTimeImmutable::createFromMutable($values->dueDate)
+            : NULL;
+
+        return new PaymentDefaults($amount, $dueDate, $constantSymbol, $values->nextVs);
     }
 
     private function getDefaultEmail(string $name) : string

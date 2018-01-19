@@ -6,6 +6,7 @@ namespace Model\Payment;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\Payment\Group\Email;
+use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Repositories\IBankAccountRepository;
 
@@ -24,17 +25,8 @@ class Group
     /** @var string|NULL */
     private $name;
 
-    /** @var float|NULL */
-    private $defaultAmount;
-
-    /** @var \DateTimeImmutable|NULL */
-    private $dueDate;
-
-    /** @var int|NULL */
-    private $constantSymbol;
-
-    /** @var VariableSymbol|NULL */
-    private $nextVariableSymbol;
+    /** @var PaymentDefaults */
+    private $paymentDefaults;
 
     /** @var string */
     private $state = self::STATE_OPEN;
@@ -64,10 +56,7 @@ class Group
         int $unitId,
         ?SkautisEntity $object,
         string $name,
-        ?float $defaultAmount,
-        ?\DateTimeImmutable $dueDate,
-        ?int $constantSymbol,
-        ?VariableSymbol $nextVariableSymbol,
+        PaymentDefaults $paymentDefaults,
         \DateTimeImmutable $createdAt,
         EmailTemplate $emailTemplate,
         ?int $smtpId,
@@ -77,10 +66,7 @@ class Group
         $this->unitId = $unitId;
         $this->object = $object;
         $this->name = $name;
-        $this->defaultAmount = $defaultAmount;
-        $this->dueDate = $dueDate;
-        $this->constantSymbol = $constantSymbol;
-        $this->nextVariableSymbol = $nextVariableSymbol;
+        $this->paymentDefaults = $paymentDefaults;
         $this->createdAt = $createdAt;
         $this->smtpId = $smtpId;
 
@@ -93,19 +79,13 @@ class Group
 
     public function update(
         string $name,
-        ?float $defaultAmount,
-        ?\DateTimeImmutable $dueDate,
-        ?int $constantSymbol,
-        ?VariableSymbol $nextVariableSymbol,
+        PaymentDefaults $paymentDefaults,
         EmailTemplate $emailTemplate,
         ?int $smtpId,
         ?BankAccount $bankAccount) : void
     {
         $this->name = $name;
-        $this->defaultAmount = $defaultAmount;
-        $this->dueDate = $dueDate;
-        $this->constantSymbol = $constantSymbol;
-        $this->nextVariableSymbol = $nextVariableSymbol;
+        $this->paymentDefaults = $paymentDefaults;
         $this->updateEmail(EmailType::get(EmailType::PAYMENT_INFO), $emailTemplate);
         $this->smtpId = $smtpId;
         $this->changeBankAccount($bankAccount);
@@ -204,24 +184,41 @@ class Group
         return $this->name;
     }
 
+    public function getPaymentDefaults(): PaymentDefaults
+    {
+        return $this->paymentDefaults;
+    }
+
+    /**
+     * @deprecated Use Group::getPaymentDefaults()
+     */
     public function getDefaultAmount(): ?float
     {
-        return $this->defaultAmount;
+        return $this->paymentDefaults->getAmount();
     }
 
+    /**
+     * @deprecated Use Group::getPaymentDefaults()
+     */
     public function getDueDate(): ?\DateTimeImmutable
     {
-        return $this->dueDate;
+        return $this->paymentDefaults->getDueDate();
     }
 
+    /**
+     * @deprecated Use Group::getPaymentDefaults()
+     */
     public function getConstantSymbol(): ?int
     {
-        return $this->constantSymbol;
+        return $this->paymentDefaults->getConstantSymbol();
     }
 
+    /**
+     * @deprecated Use Group::getPaymentDefaults()
+     */
     public function getNextVariableSymbol(): ?VariableSymbol
     {
-        return $this->nextVariableSymbol;
+        return $this->paymentDefaults->getNextVariableSymbol();
     }
 
     public function getState(): string

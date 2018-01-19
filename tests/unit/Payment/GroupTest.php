@@ -5,6 +5,7 @@ namespace Model\Payment;
 use DateTimeImmutable;
 use Model\Payment\EmailTemplate;
 use Mockery as m;
+use Model\Payment\Group\PaymentDefaults;
 
 class GroupTest extends \Codeception\Test\Unit
 {
@@ -15,19 +16,10 @@ class GroupTest extends \Codeception\Test\Unit
         $createdAt = new DateTimeImmutable();
         $emailTemplate = new EmailTemplate("subject", "mail body");
         $variableSymbol = new VariableSymbol('666');
-        $group = new Group(
-            20,
-            NULL,
-            "Skupina 01",
-            200.2,
-            $dueDate,
-            203,
-            $variableSymbol,
-            $createdAt,
-            $emailTemplate,
-            NULL,
-            m::mock(BankAccount::class, ['getId' => 23, 'getUnitId' => 20])
-        );
+        $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, $variableSymbol);
+        $bankAccount = m::mock(BankAccount::class, ['getId' => 23, 'getUnitId' => 20]);
+
+        $group = new Group(20, NULL, "Skupina 01", $paymentDefaults, $createdAt, $emailTemplate, NULL, $bankAccount);
 
         $this->assertSame(20, $group->getUnitId());
         $this->assertNull($group->getObject());
@@ -51,17 +43,9 @@ class GroupTest extends \Codeception\Test\Unit
         $group = $this->createGroup($dueDate, $createdAt);
 
         $emailTemplate = new EmailTemplate("subject2", "body2");
+        $bankAccount = m::mock(BankAccount::class, ['getId' => 33, 'getUnitId' => 20]);
 
-        $group->update(
-            "Skupina Jiná",
-            120.0,
-            NULL,
-            NULL,
-            NULL,
-            $emailTemplate,
-            20,
-            m::mock(BankAccount::class, ['getId' => 33, 'getUnitId' => 20])
-        );
+        $group->update("Skupina Jiná", new PaymentDefaults(120, NULL, NULL, NULL), $emailTemplate, 20, $bankAccount);
 
         $this->assertSame(20, $group->getUnitId());
         $this->assertNull($group->getObject());
@@ -118,10 +102,7 @@ class GroupTest extends \Codeception\Test\Unit
             20,
             NULL,
             "Skupina 01",
-            200.2,
-            $dueDate ?? new DateTimeImmutable(),
-            203,
-            new VariableSymbol('666'),
+            new PaymentDefaults(200.2, $dueDate ?? new DateTimeImmutable(), 203, new VariableSymbol('666')),
             $createdAt ?? new DateTimeImmutable(),
             new EmailTemplate("Email subject", "Email body"),
             NULL,
