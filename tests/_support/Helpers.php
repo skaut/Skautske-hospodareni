@@ -3,6 +3,7 @@
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
+use Model\Payment\Group\PaymentDefaults;
 
 class Helpers
 {
@@ -20,6 +21,16 @@ class Helpers
         return [
             EmailType::PAYMENT_INFO => new EmailTemplate('test subject', 'test body'),
         ];
+    }
+
+    public static function createEmptyPaymentDefaults(): PaymentDefaults
+    {
+        return new PaymentDefaults(NULL, NULL, NULL, NULL);
+    }
+
+    public static function getValidDueDate(): DateTimeImmutable
+    {
+        return new DateTimeImmutable('2018-01-19'); // https://youtu.be/kfVsfOSbJY0?t=44s
     }
 
 }

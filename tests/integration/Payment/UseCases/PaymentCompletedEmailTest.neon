@@ -1,0 +1,24 @@
+
+services:
+    - Model\Payment\Repositories\BankAccountRepository
+    - Model\Payment\Repositories\PaymentRepository
+    - Model\Payment\Repositories\GroupRepository
+    - Model\Payment\Repositories\MailCredentialsRepository
+
+    - Stubs\Skautis
+    - Model\Payment\UserRepositoryStub
+
+    - Model\PaymentService(%tempDir%)
+
+    - Model\Services\TemplateFactory
+    - Model\Mail\MailerFactory(Model\Payment\NullMailer(), true)
+    - Model\Payment\MailingService
+
+    - class: Model\Payment\Subscribers\PaymentMailSubscriber
+      tags: [eventBus.subscriber]
+
+includes:
+    - ../../config/doctrine.neon
+
+extensions:
+    latte: Nette\Bridges\ApplicationDI\LatteExtension(%tempDir%, true)

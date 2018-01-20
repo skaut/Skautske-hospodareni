@@ -5,6 +5,7 @@ namespace Model\Payment;
 use DateTimeImmutable;
 use Model\Common\AbstractAggregate;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
+use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
@@ -104,6 +105,8 @@ class Payment extends AbstractAggregate
         $this->transaction = $transaction;
         $this->state = State::get(State::COMPLETED);
         $this->closedAt = $time;
+
+        $this->raise(new PaymentWasCompleted($this->id));
     }
 
     public function markSent(): void
