@@ -245,7 +245,7 @@ trait CashbookTrait
             ->getControlPrototype()->placeholder("Číslo")
             ->class("form-control input-sm");
         $form->addText("purpose", "Účel výplaty:")
-            ->setMaxLength(40)
+            ->setMaxLength(120)
             ->addRule($form::FILLED, 'Zadejte účel výplaty')
             ->getControlPrototype()->placeholder("Účel")
             ->class("form-control input-sm required");

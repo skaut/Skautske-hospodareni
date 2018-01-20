@@ -105,7 +105,7 @@ $list array() - pole paragonů
                             </td>
                             <td><span class="visible-xs visible-sm">{$item->date|date:"j.n."}</span><span class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
                             <td n:if="!is_null($object->prefix) && $object->prefix !=''" title="{$object->prefix}{$item->num}">{$item->num}</td>
-                            <td title="{$item->purpose}">{$item->purpose|truncate:"120"}</td>
+                            <td title="{$item->purpose}">{$item->purpose|truncate:60, ''}</td>
                             <td class="hidden-xs hidden-sm" title="{$item->clabel}">{$item->cshort}</td>
                             <td class="hidden-xs hidden-sm">{$item->recipient}</td>
                             {if $isIncome}
