@@ -69,11 +69,11 @@ class MailingService
      * @throws PaymentNotFoundException
      * @throws MailCredentialsNotSetException
      */
-    public function sendEmail(int $paymentId, int $userId): void
+    public function sendEmail(int $paymentId): void
     {
         $payment = $this->payments->find($paymentId);
         $group = $this->groups->find($payment->getGroupId());
-        $user = $this->users->find($userId);
+        $user = $this->users->getCurrentUser();
 
         $this->sendForPayment($payment, $group, $user);
         $this->payments->save($payment);

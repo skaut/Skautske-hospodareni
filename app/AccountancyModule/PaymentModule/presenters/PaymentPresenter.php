@@ -627,7 +627,7 @@ class PaymentPresenter extends BasePresenter
 
         try {
             foreach ($payments as $payment) {
-                $this->mailing->sendEmail($payment->getId(), $this->user->getId());
+                $this->mailing->sendEmail($payment->getId());
                 $sentCount++;
             }
         } catch (MailCredentialsNotSetException $e) {
