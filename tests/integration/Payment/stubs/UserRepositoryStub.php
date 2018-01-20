@@ -8,17 +8,22 @@ use Model\Common\User;
 class UserRepositoryStub implements IUserRepository
 {
 
-    /** @var User[] */
-    private $users = [];
+    /** @var User */
+    private $user;
 
     public function find(int $id): User
     {
-        return $this->users[$id];
+        return $this->user;
     }
 
     public function setUser(User $user): void
     {
-        $this->users[$user->getId()] = $user;
+        $this->user = $user;
+    }
+
+    public function getCurrentUser(): User
+    {
+        return $this->user;
     }
 
 }
