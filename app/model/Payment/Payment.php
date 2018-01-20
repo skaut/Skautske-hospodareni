@@ -15,8 +15,8 @@ class Payment extends AbstractAggregate
     /** @var int */
     private $id;
 
-    /** @var Group */
-    private $group;
+    /** @var int */
+    private $groupId;
 
     /** @var string */
     private $name;
@@ -67,7 +67,7 @@ class Payment extends AbstractAggregate
             throw new \InvalidArgumentException('Payment amount must be larger than 0');
         }
 
-        $this->group = $group;
+        $this->groupId = $group->getId();
         $this->personId = $personId;
         $this->state = State::get(State::PREPARING);
         $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
@@ -92,7 +92,7 @@ class Payment extends AbstractAggregate
         $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
 
         if ($this->variableSymbol !== $variableSymbol) {
-            $this->raise(new PaymentVariableSymbolWasChanged($this->group->getId(), $variableSymbol));
+            $this->raise(new PaymentVariableSymbolWasChanged($this->groupId, $variableSymbol));
         }
 
         $this->variableSymbol = $variableSymbol;
@@ -124,7 +124,7 @@ class Payment extends AbstractAggregate
         $this->checkNotClosed();
 
         if( ! VariableSymbol::areEqual($variableSymbol, $this->variableSymbol)) {
-            $this->raise(new PaymentVariableSymbolWasChanged($this->group->getId(), $variableSymbol));
+            $this->raise(new PaymentVariableSymbolWasChanged($this->groupId, $variableSymbol));
         }
 
         $this->variableSymbol = $variableSymbol;
@@ -137,7 +137,7 @@ class Payment extends AbstractAggregate
 
     public function getGroupId(): int
     {
-        return $this->group->getId();
+        return $this->groupId;
     }
 
     public function getName(): string

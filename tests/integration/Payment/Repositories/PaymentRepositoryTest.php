@@ -41,7 +41,6 @@ class PaymentRepositoryTest extends \IntegrationTest
 
     public function testFind()
     {
-
         $data = [
             'groupId' => 1,
             'name' => 'Test',
