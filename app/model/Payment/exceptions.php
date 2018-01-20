@@ -53,3 +53,7 @@ class MailCredentialsNotSetException extends \Exception
 class DueDateIsNotWorkdayException extends \Exception
 {
 }
+
+class EmailTemplateNotSetException extends \Exception
+{
+}

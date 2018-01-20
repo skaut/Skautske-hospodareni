@@ -14,7 +14,9 @@ use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
+use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSetException;
+use Model\Payment\EmailType;
 use Model\Payment\InvalidBankAccountException;
 use Model\Payment\InvalidEmailException;
 use Model\Payment\MailCredentialsNotSetException;
@@ -347,7 +349,7 @@ class PaymentPresenter extends BasePresenter
         }
 
         try {
-            $email = $this->mailing->sendTestMail($gid, $this->user->getId());
+            $email = $this->mailing->sendTestMail($gid);
             $this->flashMessage("Testovací email byl odeslán na $email.");
         } catch (MailCredentialsNotSetException $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
@@ -627,7 +629,7 @@ class PaymentPresenter extends BasePresenter
 
         try {
             foreach ($payments as $payment) {
-                $this->mailing->sendEmail($payment->getId());
+                $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
                 $sentCount++;
             }
         } catch (MailCredentialsNotSetException $e) {
