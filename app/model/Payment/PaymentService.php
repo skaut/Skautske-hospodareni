@@ -6,6 +6,7 @@ use Assert\Assert;
 use DateTimeImmutable;
 use Model\DTO\Payment as DTO;
 use Model\Payment\EmailTemplate;
+use Model\Payment\EmailType;
 use Model\Payment\Group;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
@@ -188,8 +189,7 @@ class PaymentService
     /**
      * @param EmailTemplate[] $emails
      */
-    public function updateGroup(
-        int $id,
+    public function updateGroup(int $id,
         string $name,
         PaymentDefaults $paymentDefaults,
         array $emails,
@@ -200,7 +200,18 @@ class PaymentService
         $group = $this->groups->find($id);
         $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
 
-        $group->update($name, $paymentDefaults, $emails, $smtpId, $bankAccount);
+        $group->update($name, $paymentDefaults, $smtpId, $bankAccount);
+
+        foreach(EmailType::getAvailableValues() as $typeKey) {
+            $type = EmailType::get($typeKey);
+
+            if (isset($emails[$typeKey])) {
+               $group->updateEmail($type, $emails[$typeKey]);
+               continue;
+            }
+
+            $group->disableEmail($type);
+        }
 
         $this->groups->save($group);
     }

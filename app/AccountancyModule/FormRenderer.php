@@ -133,12 +133,14 @@ class FormRenderer extends DefaultFormRenderer
             } elseif ($control instanceof Controls\TextBase || $control instanceof Controls\SelectBox || $control instanceof Controls\MultiSelectBox) {
                 $control->getControlPrototype()->addClass('form-control');
 
-            } elseif ($control instanceof Controls\Checkbox || $control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
+            } elseif ($control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
                 if ($control->getSeparatorPrototype()->getName() !== '') {
                     $control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
                 } else {
                     $control->getItemLabelPrototype()->addClass($control->getControlPrototype()->type . '-inline');
                 }
+            } elseif($control instanceof Controls\Checkbox) {
+                $control->getLabelPrototype()->addClass($control->getControlPrototype()->type . '-inline');
             }
         }
     }

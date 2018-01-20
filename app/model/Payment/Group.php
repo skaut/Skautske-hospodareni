@@ -74,19 +74,22 @@ class Group
         $this->smtpId = $smtpId;
 
         $this->emails = new ArrayCollection();
-        $this->setEmails($emails);
+
+        if ( ! isset($emails[EmailType::PAYMENT_INFO])) {
+            throw new \InvalidArgumentException("Required email template '" . EmailType::PAYMENT_INFO . "' is missing");
+        }
+
+        foreach ($emails as $typeKey => $template) {
+            $this->updateEmail(EmailType::get($typeKey), $template);
+        }
 
         $this->changeBankAccount($bankAccount);
     }
 
-    /**
-     * @param EmailTemplate[] $emails
-     */
-    public function update(string $name, PaymentDefaults $paymentDefaults, array $emails, ?int $smtpId, ?BankAccount $bankAccount) : void
+    public function update(string $name, PaymentDefaults $paymentDefaults, ?int $smtpId, ?BankAccount $bankAccount) : void
     {
         $this->name = $name;
         $this->paymentDefaults = $paymentDefaults;
-        $this->setEmails($emails);
         $this->smtpId = $smtpId;
         $this->changeBankAccount($bankAccount);
     }
@@ -219,26 +222,18 @@ class Group
         return $this->createdAt;
     }
 
-    /**
-     * @return EmailTemplate[]
-     */
-    public function getEmailTemplates(): array
+    public function getEmailTemplate(EmailType $type): ?EmailTemplate
     {
-        $emails = [];
+        $email = $this->getEmail($type);
 
-        foreach($this->emails as $email) {
-            $emails[$email->getType()->getValue()] = $email->getTemplate();
-        }
-
-        return $emails;
+        return $email !== NULL ? $email->getTemplate() : NULL;
     }
 
-    /**
-     * @deprecated Use getEmailTemplates()[EmailType::PAYMENT_INFO]
-     */
-    public function getEmailTemplate(): EmailTemplate
+    public function isEmailEnabled(EmailType $type): bool
     {
-        return $this->getEmailTemplates()[EmailType::PAYMENT_INFO] ?? new EmailTemplate('', '');
+        $email = $this->getEmail($type);
+
+        return $email !== NULL && $email->isEnabled();
     }
 
     public function updateLastPairing(\DateTimeImmutable $at): void
@@ -290,27 +285,24 @@ class Group
         $this->bankAccountId = $bankAccount->getId();
     }
 
-    /**
-     * @param EmailTemplate[] $emails
-     */
-    private function setEmails(array $emails): void
+    public function updateEmail(EmailType $type, EmailTemplate $template): void
     {
-        $missingEmails = array_diff(EmailType::getAvailableValues(), array_keys($emails));
+        $email = $this->getEmail($type);
 
-        if( ! empty($missingEmails)) {
-            throw new \InvalidArgumentException("Email templates (" . implode(', ', $missingEmails) . ") are missing");
+        if ($email !== NULL) {
+            $email->updateTemplate($template);
+            return;
         }
 
-        foreach($emails as $typeKey => $template) {
-            $type = EmailType::get($typeKey);
-            $email = $this->getEmail($type);
+        $this->emails->add(new Email($this, $type, $template));
+    }
 
-            if($email !== NULL) {
-                $email->setTemplate($template);
-                continue;
-            }
+    public function disableEmail(EmailType $type): void
+    {
+        $email = $this->getEmail($type);
 
-            $this->emails->add(new Email($this, $type, $template));
+        if($email !== NULL) {
+            $email->disable();
         }
     }
 

@@ -13,6 +13,8 @@ Model\Payment\Group\Email:
             type: string_enum
             annotations:
                 enum: { class: Model\Payment\EmailType }
+        enabled:
+            type: boolean
 
     embedded:
         template:

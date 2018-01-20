@@ -153,7 +153,7 @@ class MailingService
             ? $this->bankAccounts->find($group->getBankAccountId())
             : NULL;
 
-        $emailTemplate = $group->getEmailTemplate()
+        $emailTemplate = $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO))
             ->evaluate($group, $payment, $bankAccount !== NULL ? (string)$bankAccount->getNumber() : NULL, $user->getName());
 
         $template = $this->templateFactory->create(TemplateFactory::PAYMENT_DETAILS, [

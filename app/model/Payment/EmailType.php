@@ -14,4 +14,6 @@ final class EmailType extends Enum
      */
     public const PAYMENT_INFO = 'payment_info';
 
+    public const PAYMENT_COMPLETED = 'payment_completed';
+
 }

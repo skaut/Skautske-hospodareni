@@ -73,6 +73,7 @@ class GroupRepositoryTest extends \IntegrationTest
             'template_subject' => $infoEmail->getSubject(),
             'template_body' => $infoEmail->getBody(),
             'type' => EmailType::PAYMENT_INFO,
+            'enabled' => 1,
         ]);
 
         $group = $this->repository->find(1);
@@ -88,7 +89,8 @@ class GroupRepositoryTest extends \IntegrationTest
         $this->assertEquals($paymentDefaults->getDueDate(), $group->getPaymentDefaults()->getDueDate());
         $this->assertSame($paymentDefaults->getConstantSymbol(), $group->getPaymentDefaults()->getConstantSymbol());
         $this->assertEquals($paymentDefaults->getNextVariableSymbol(), $group->getPaymentDefaults()->getNextVariableSymbol());
-        $this->assertTrue($infoEmail->equals($group->getEmailTemplates()[EmailType::PAYMENT_INFO]));
+        $this->assertTrue($infoEmail->equals($group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO))));
+        $this->assertTrue($group->isEmailEnabled(EmailType::get(EmailType::PAYMENT_INFO)));
     }
 
 }

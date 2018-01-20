@@ -17,6 +17,9 @@ class Email
     /** @var Group */
     private $group;
 
+    /** @var bool */
+    private $enabled = TRUE;
+
     /** @var EmailType */
     private $type;
 
@@ -30,9 +33,15 @@ class Email
         $this->template = $template;
     }
 
-    public function setTemplate(EmailTemplate $template): void
+    public function updateTemplate(EmailTemplate $template): void
     {
         $this->template = $template;
+        $this->enabled = TRUE;
+    }
+
+    public function disable(): void
+    {
+        $this->enabled = FALSE;
     }
 
     public function getGroup(): Group
@@ -48,6 +57,11 @@ class Email
     public function getTemplate(): EmailTemplate
     {
         return $this->template;
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
     }
 
 }
