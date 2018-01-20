@@ -61,7 +61,6 @@ class MailingService
      * Sends email to single payment address
      *
      * @param int $paymentId
-     * @param int $userId
      * @throws InvalidEmailException
      * @throws PaymentNotFoundException
      * @throws MailCredentialsNotSetException
