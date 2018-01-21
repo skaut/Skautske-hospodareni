@@ -264,11 +264,6 @@ class Group
         return $this->bankAccount !== NULL ? $this->bankAccount->getId() : NULL;
     }
 
-    public function isOpen(): bool
-    {
-        return $this->state === self::STATE_OPEN;
-    }
-
     private function changeBankAccount(?BankAccount $bankAccount): void
     {
         if($bankAccount === NULL) {
