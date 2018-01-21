@@ -119,8 +119,9 @@ class Group
      */
     public function changeUnit(int $unitId, IUnitResolver $unitResolver, IBankAccountRepository $bankAccountRepository): void
     {
+        $this->unitId = $unitId;
+
         if ($this->bankAccount === NULL) {
-            $this->unitId = $unitId;
             return;
         }
 
@@ -129,14 +130,12 @@ class Group
 
         // different official unit
         if($currentOfficialUnit !== $newOfficialUnit) {
-            $this->unitId = $unitId;
             $this->bankAccount = NULL;
             return;
         }
 
         // unit -> official unit
         if($unitId === $newOfficialUnit) {
-            $this->unitId = $unitId;
             return;
         }
 
@@ -145,8 +144,6 @@ class Group
         if( ! $bankAccount->isAllowedForSubunits()) {
             $this->bankAccount = NULL;
         }
-
-        $this->unitId = $unitId;
     }
 
     /**
