@@ -176,7 +176,7 @@
     </target>
 
     <target name="tests-acceptance">
-        <exec command="vendor/bin/codecept run acceptance" passthru="true" checkreturn="true"/>
+        <exec command="vendor/bin/codecept run acceptance -vvv" passthru="true" checkreturn="true"/>
     </target>
     <target name="tests">
         <phingcall target="tests-unit"/>
