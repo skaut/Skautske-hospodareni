@@ -171,25 +171,16 @@ class Group
         return $this->paymentDefaults;
     }
 
-    /**
-     * @deprecated Use Group::getPaymentDefaults()
-     */
     public function getDefaultAmount(): ?float
     {
         return $this->paymentDefaults->getAmount();
     }
 
-    /**
-     * @deprecated Use Group::getPaymentDefaults()
-     */
     public function getDueDate(): ?\DateTimeImmutable
     {
         return $this->paymentDefaults->getDueDate();
     }
 
-    /**
-     * @deprecated Use Group::getPaymentDefaults()
-     */
     public function getConstantSymbol(): ?int
     {
         return $this->paymentDefaults->getConstantSymbol();
