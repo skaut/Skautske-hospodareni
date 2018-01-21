@@ -20,6 +20,7 @@ use Model\Payment\InvalidEmailException;
 use Model\Payment\MailCredentialsNotSetException;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
+use Model\Payment\PaymentClosedException;
 use Model\Payment\PaymentNotFoundException;
 use Model\PaymentService;
 use Model\UnitService;
@@ -323,7 +324,11 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        $this->sendEmailsForPayments([$payment]);
+        try {
+            $this->sendEmailsForPayments([$payment]);
+        } catch (PaymentClosedException $e) {
+            $this->flashMessage('Nelze odeslat uzavřenou platbu');
+        }
     }
 
     /**
@@ -335,6 +340,10 @@ class PaymentPresenter extends BasePresenter
         $this->checkEditation();
 
         $payments = $this->model->findByGroup($gid);
+
+        $payments = array_filter($payments, function (Payment $p) {
+            return !$p->isClosed() && $p->getEmail() !== NULL && $p->getState()->equalsValue(State::PREPARING);
+        });
 
         $this->sendEmailsForPayments($payments);
     }
@@ -619,10 +628,6 @@ class PaymentPresenter extends BasePresenter
      */
     private function sendEmailsForPayments(array $payments): void
     {
-        $payments = array_filter($payments, function (Payment $p) {
-            return !$p->isClosed() && $p->getEmail() !== NULL && $p->getState()->equalsValue(State::PREPARING);
-        });
-
         $sentCount = 0;
 
         try {
