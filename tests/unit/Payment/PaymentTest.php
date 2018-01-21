@@ -244,32 +244,19 @@ class PaymentTest extends \Codeception\Test\Unit
 
     private function createPayment(): Payment
     {
-        return new Payment(
-            $this->mockGroup(29),
-            "Jan novák",
-            "test@gmail.com",
-            500,
-            new DateTimeImmutable(),
-            new VariableSymbol('454545'),
-            666,
-            454,
-            "Some note"
-        );
+        return $this->createPaymentWithVariableSymbol(new VariableSymbol('454545'));
     }
 
     private function createPaymentWithVariableSymbol(?VariableSymbol $symbol): Payment
     {
-        return new Payment(
-            $this->mockGroup(29),
-            "Jan novák",
-            "test@gmail.com",
-            500,
-            new DateTimeImmutable(),
-            $symbol,
-            666,
-            454,
-            "Some note"
-        );
+
+        $group = $this->mockGroup(29);
+        $dueDate = new DateTimeImmutable();
+
+        $payment = new Payment($group, "Jan novák", "test@gmail.com", 500, $dueDate, $symbol, 666, 454, "Some note");
+        \Helpers::assignIdentity($payment, 1);
+
+        return $payment;
     }
 
     private function mockGroup(int $id): Group

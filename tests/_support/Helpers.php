@@ -1,5 +1,6 @@
 <?php
 
+use Model\Common\AbstractAggregate;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
@@ -31,6 +32,16 @@ class Helpers
     public static function getValidDueDate(): DateTimeImmutable
     {
         return new DateTimeImmutable('2018-01-19'); // https://youtu.be/kfVsfOSbJY0?t=44s
+    }
+
+    public static function assignIdentity(AbstractAggregate $aggregate, int $id): void
+    {
+        $class = new ReflectionClass(AbstractAggregate::class);
+
+        $idProperty = $class->getProperty('id');
+        $idProperty->setAccessible(TRUE);
+
+        $idProperty->setValue($aggregate, $id);
     }
 
 }

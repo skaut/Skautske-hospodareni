@@ -14,9 +14,6 @@ class Payment extends AbstractAggregate
 {
 
     /** @var int */
-    private $id;
-
-    /** @var int */
     private $groupId;
 
     /** @var string */
@@ -131,11 +128,6 @@ class Payment extends AbstractAggregate
         }
 
         $this->variableSymbol = $variableSymbol;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function getGroupId(): int
