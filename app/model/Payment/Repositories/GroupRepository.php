@@ -98,7 +98,13 @@ class GroupRepository implements IGroupRepository
 
     public function findByBankAccount(int $bankAccountId): array
     {
-        return $this->em->getRepository(Group::class)->findBy(['bankAccountId' => $bankAccountId]);
+        return $this->em->createQueryBuilder()
+            ->select('g')
+            ->from(Group::class, 'g')
+            ->where('g.bankAccount.id = :bankAccountId')
+            ->setParameter('bankAccountId', $bankAccountId)
+            ->getQuery()
+            ->getResult();
     }
 
 

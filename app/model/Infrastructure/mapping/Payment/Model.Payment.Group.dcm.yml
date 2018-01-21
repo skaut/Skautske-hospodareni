@@ -26,13 +26,7 @@ Model\Payment\Group:
         createdAt:
             type: datetime_immutable
             nullable: true
-        lastPairing:
-            type: datetime_immutable
-            nullable: true
         smtpId:
-            type: integer
-            nullable: true
-        bankAccountId:
             type: integer
             nullable: true
 
@@ -45,6 +39,11 @@ Model\Payment\Group:
         paymentDefaults:
             class: Model\Payment\Group\PaymentDefaults
             columnPrefix: false
+        bankAccount:
+            class: Model\Payment\Group\BankAccount
+            columnPrefix: false
+            annotations:
+                nullable: {}
 
     oneToMany:
         emails:

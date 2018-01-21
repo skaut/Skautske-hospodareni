@@ -34,8 +34,8 @@ class Group
     /** @var \DateTimeImmutable|NULL */
     private $createdAt;
 
-    /** @var \DateTimeImmutable|NULL */
-    private $lastPairing;
+    /** @var Group\BankAccount|NULL */
+    private $bankAccount;
 
     /** @var ArrayCollection|Email[] */
     private $emails;
@@ -45,9 +45,6 @@ class Group
 
     /** @var string */
     private $note = '';
-
-    /** @var int|NULL */
-    private $bankAccountId;
 
     const STATE_OPEN = 'open';
     const STATE_CLOSED = 'closed';
@@ -114,7 +111,7 @@ class Group
 
     public function removeBankAccount(): void
     {
-        $this->bankAccountId = NULL;
+        $this->bankAccount = NULL;
     }
 
     /**
@@ -122,7 +119,7 @@ class Group
      */
     public function changeUnit(int $unitId, IUnitResolver $unitResolver, IBankAccountRepository $bankAccountRepository): void
     {
-        if($this->bankAccountId === NULL) {
+        if ($this->bankAccount === NULL) {
             $this->unitId = $unitId;
             return;
         }
@@ -133,7 +130,7 @@ class Group
         // different official unit
         if($currentOfficialUnit !== $newOfficialUnit) {
             $this->unitId = $unitId;
-            $this->bankAccountId = NULL;
+            $this->bankAccount = NULL;
             return;
         }
 
@@ -143,10 +140,10 @@ class Group
             return;
         }
 
-        $bankAccount = $bankAccountRepository->find($this->bankAccountId);
+        $bankAccount = $bankAccountRepository->find($this->bankAccount->getId());
 
         if( ! $bankAccount->isAllowedForSubunits()) {
-            $this->bankAccountId = NULL;
+            $this->bankAccount = NULL;
         }
 
         $this->unitId = $unitId;
@@ -238,17 +235,21 @@ class Group
 
     public function updateLastPairing(\DateTimeImmutable $at): void
     {
-        $this->lastPairing = $at;
+        if ($this->bankAccount !== NULL) {
+            $this->bankAccount = $this->bankAccount->updateLastPairing($at);
+        }
     }
 
     public function invalidateLastPairing(): void
     {
-        $this->lastPairing = NULL;
+        if ($this->bankAccount !== NULL) {
+            $this->bankAccount = $this->bankAccount->invalidateLastPairing();
+        }
     }
 
     public function getLastPairing(): ?\DateTimeImmutable
     {
-        return $this->lastPairing;
+        return $this->bankAccount !== NULL ? $this->bankAccount->getLastPairing() : NULL;
     }
 
     public function getSmtpId() : ?int
@@ -263,7 +264,7 @@ class Group
 
     public function getBankAccountId(): ?int
     {
-        return $this->bankAccountId;
+        return $this->bankAccount !== NULL ? $this->bankAccount->getId() : NULL;
     }
 
     public function isOpen(): bool
@@ -274,7 +275,7 @@ class Group
     private function changeBankAccount(?BankAccount $bankAccount): void
     {
         if($bankAccount === NULL) {
-            $this->bankAccountId = NULL;
+            $this->bankAccount = NULL;
             return;
         }
 
@@ -282,7 +283,7 @@ class Group
             throw new \InvalidArgumentException("Unit owning this group has no acces to this bank account");
         }
 
-        $this->bankAccountId = $bankAccount->getId();
+        $this->bankAccount = Group\BankAccount::create($bankAccount->getId());
     }
 
     public function updateEmail(EmailType $type, EmailTemplate $template): void
