@@ -7,7 +7,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Payment\IUnitResolver;
 
-class Version20171205114315 extends AbstractMigration
+class Version20180122114315 extends AbstractMigration
 {
 
     /** @var IUnitResolver @inject */
