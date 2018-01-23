@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Model\Payment\EmailType;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\Repositories\IPaymentRepository;
@@ -18,10 +19,11 @@ class PaymentServiceTest extends \IntegrationTest
 
 	public function getTestedEntites(): array
 	{
-		return [
-			Group::class,
-			Payment::class,
-		];
+	    return [
+	        Group::class,
+            Group\Email::class,
+            Payment::class,
+        ];
 	}
 
 	public function _before()
@@ -37,18 +39,10 @@ class PaymentServiceTest extends \IntegrationTest
 	 */
 	public function testGenerateVSForMultiplePayments(): void
 	{
-		$this->service->createGroup(
-			10,
-			NULL,
-			'test group',
-			NULL,
-			NULL,
-			new VariableSymbol('1'),
-			NULL,
-			new Group\EmailTemplate('', ''),
-			NULL,
-			NULL
-		);
+	    $paymentDefaults = new Group\PaymentDefaults(NULL, NULL, NULL, new VariableSymbol('1'));
+	    $emails = \Helpers::createEmails();
+
+		$this->service->createGroup(10, NULL, 'test group', $paymentDefaults, $emails, NULL, NULL);
 
 		for($i = 0; $i < 5; $i++) {
 			$this->createPaymentWithoutVariableSymbol(1);

@@ -1,13 +1,10 @@
 <?php
 
-
 namespace Tests\Integration\Pairing;
-
 
 use Model\Payment\BankAccount;
 use Model\Payment\BankAccountService;
 use Model\Payment\Group;
-use Model\Payment\IUnitResolver;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\UnitResolverStub;
@@ -43,6 +40,7 @@ class BankAccountServiceTest extends \IntegrationTest
         return [
             BankAccount::class,
             Group::class,
+            Group\Email::class,
         ];
     }
 
@@ -85,19 +83,10 @@ class BankAccountServiceTest extends \IntegrationTest
 
     private function addGroup(int $unitId, BankAccount $account): void
     {
-        $group = new Group(
-            $unitId,
-            NULL,
-            'Nazev',
-            NULL,
-            NULL,
-            NULL,
-            NULL,
-            new \DateTimeImmutable(),
-            new Group\EmailTemplate('', ''),
-            NULL,
-            $account
-        );
+        $paymentDefaults = new Group\PaymentDefaults(NULL, NULL, NULL, NULL);
+        $emails = \Helpers::createEmails();
+
+        $group = new Group($unitId, NULL, 'Nazev', $paymentDefaults, new \DateTimeImmutable(), $emails, NULL, $account);
 
         $this->groups->save($group);
     }

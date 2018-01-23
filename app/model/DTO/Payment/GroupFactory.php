@@ -26,7 +26,6 @@ class GroupFactory
             $group->getConstantSymbol(),
             $group->getNextVariableSymbol(),
             $group->getState(),
-            $group->getEmailTemplate(),
             $group->getSmtpId(),
             $group->getNote(),
             $group->getBankAccountId()

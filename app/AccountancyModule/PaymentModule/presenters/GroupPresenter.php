@@ -6,15 +6,21 @@ use App\Forms\BaseForm;
 use Consistence\Enum\InvalidEnumValueException;
 use Consistence\Type\ArrayType\ArrayType;
 use Model\DTO\Payment\BankAccount;
+use Model\DTO\Payment\GroupEmail;
 use Model\EventEntity;
 use Model\MailService;
 use Model\Payment\BankAccountService;
-use Model\Payment\Group\EmailTemplate;
+use Model\Payment\DueDateIsNotWorkdayException;
+use Model\Payment\EmailTemplate;
+use Model\Payment\EmailType;
+use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
+use Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use Model\Payment\VariableSymbol;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
+use Nette\Utils\ArrayHash;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -119,8 +125,10 @@ class GroupPresenter extends BasePresenter
             "constantSymbol" => $dto->getConstantSymbol(),
             "nextVs" => $dto->getNextVariableSymbol(),
             "smtp" => $dto->getSmtpId(),
-            "emailSubject" => $dto->getEmailTemplate()->getSubject(),
-            "emailBody" => $dto->getEmailTemplate()->getBody(),
+            'emails' => [
+                EmailType::PAYMENT_INFO => $this->getEmailDefaults($id, EmailType::get(EmailType::PAYMENT_INFO)),
+                EmailType::PAYMENT_COMPLETED => $this->getEmailDefaults($id, EmailType::get(EmailType::PAYMENT_COMPLETED)),
+            ],
             "groupId" => $id,
             'bankAccount' => $dto->getBankAccountId(),
         ]);
@@ -141,6 +149,7 @@ class GroupPresenter extends BasePresenter
 
         $unitId = $this->getCurrentUnitId();
 
+        $form->addGroup('Základní údaje');
         $form->addSelect("skautisEntityId");
         $form->addText("label", "Název")
             ->setAttribute("class", "form-control")
@@ -171,10 +180,9 @@ class GroupPresenter extends BasePresenter
         $form->addSelect("smtp", "Email odesílatele", $this->mail->getPairs($unitId))
             ->setPrompt("Vyberte email")
             ->setAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
-        $form->addText("emailSubject", "Předmět emailu");
-        $form->addTextArea("emailBody", "Informační email")
-            ->setAttribute("class", "form-control")
-            ->setDefaultValue($this->getDefaultEmail('info'));
+
+        $this->addEmailsToForm($form);
+
         $form->addHidden("type");
         $form->addHidden("groupId");
         $form->addSubmit('send', "Založit skupinu")->setAttribute("class", "btn btn-primary");
@@ -193,36 +201,26 @@ class GroupPresenter extends BasePresenter
         }
         $v = $form->getValues();
 
-
-        $dueDate = $v->dueDate !== NULL
-            ? \DateTimeImmutable::createFromMutable($v->dueDate)
-            : NULL;
-
-        if ($dueDate !== NULL && $dueDate->format("N") > 5) {
+        $name = $v->label;
+        try {
+            $paymentDefaults = $this->buildPaymentDefaults($v);
+        } catch (DueDateIsNotWorkdayException $e) {
             $form["dueDate"]->addError("Splatnost nemůže být nastavena na víkend.");
             return;
         }
-
-        $groupId = $v->groupId !== "" ? (int)$v->groupId : NULL;
-        $label = $v->label;
-        $amount = (isset($v->amount) && $v->amount !== "") ? $v->amount : NULL;
-        $constantSymbol = $v->constantSymbol !== "" ? $v->constantSymbol : NULL;
         $smtpId = $v->smtp;
 
-        $emailTemplate = new EmailTemplate($v->emailSubject, $v->emailBody);
+        $emails = [
+            EmailType::PAYMENT_INFO => $this->buildEmailTemplate($v, EmailType::PAYMENT_INFO),
+            EmailType::PAYMENT_COMPLETED => $this->buildEmailTemplate($v, EmailType::PAYMENT_COMPLETED),
+        ];
+
+        $emails = array_filter($emails); // Remove not submitted emails
+
+        $groupId = $v->groupId !== "" ? (int)$v->groupId : NULL;
 
         if ($groupId !== NULL) {//EDIT
-            $this->model->updateGroup(
-                $groupId,
-                $label,
-                $amount,
-                $dueDate,
-                $constantSymbol,
-                $v->nextVs,
-                $emailTemplate,
-                $smtpId,
-                $v->bankAccount
-            );
+            $this->model->updateGroup($groupId, $name, $paymentDefaults, $emails, $smtpId, $v->bankAccount);
 
             $this->flashMessage('Skupina byla upravena');
         } else {//ADD
@@ -230,18 +228,9 @@ class GroupPresenter extends BasePresenter
                     ? $this->createSkautisEntity($v->type, (int)$v->skautisEntityId)
                     : NULL;
 
-            $groupId = $this->model->createGroup(
-                $this->getCurrentUnitId(),
-                $entity,
-                $label,
-                $dueDate,
-                $constantSymbol,
-                $v->nextVs,
-                $amount,
-                $emailTemplate,
-                $smtpId,
-                $v->bankAccount
-            );
+            $unitId = $this->getCurrentUnitId();
+
+            $groupId = $this->model->createGroup($unitId, $entity, $name, $paymentDefaults, $emails, $smtpId, $v->bankAccount);
 
             $this->flashMessage('Skupina byla založena');
         }
@@ -257,9 +246,87 @@ class GroupPresenter extends BasePresenter
         }
     }
 
+    /**
+     * @throws DueDateIsNotWorkdayException
+     */
+    private function buildPaymentDefaults(ArrayHash $values): PaymentDefaults
+    {
+        $amount = (isset($values->amount) && $values->amount !== "") ? $values->amount : NULL;
+        $constantSymbol = $values->constantSymbol !== "" ? $values->constantSymbol : NULL;
+        $dueDate = $values->dueDate !== NULL
+            ? \DateTimeImmutable::createFromMutable($values->dueDate)
+            : NULL;
+
+        return new PaymentDefaults($amount, $dueDate, $constantSymbol, $values->nextVs);
+    }
+
     private function getDefaultEmail(string $name) : string
     {
         return file_get_contents(__DIR__.'/../templates/defaultEmails/'.$name.'.html');
+    }
+
+    private function addEmailsToForm(BaseForm $form): void
+    {
+        $emailsContainer = $form->addContainer('emails');
+
+        $emails = [
+            EmailType::PAYMENT_INFO => 'Email s platebními údaji',
+            EmailType::PAYMENT_COMPLETED => 'Email při dokončení platby',
+        ];
+
+        foreach ($emails as $type => $caption) {
+            $group = $form->addGroup($caption, FALSE);
+            $container = $emailsContainer->addContainer($type);
+            $container->setCurrentGroup($group);
+
+            $subjectId = $type . '_subject';
+            $bodyId = $type . '_body';
+
+            // Only payment info email is always saved
+            if ($type !== EmailType::PAYMENT_INFO) {
+                $container->addCheckbox('enabled', 'Aktivní')
+                    ->addCondition($form::FILLED)
+                    ->toggle($subjectId)
+                    ->toggle($bodyId);
+            }
+
+            $container->addText('subject', 'Předmět emailu')
+                ->setOption('id', $subjectId);
+            $container->addTextArea('body', 'Text mailu')
+                ->setOption('id', $bodyId)
+                ->setAttribute('class', 'form-control')
+                ->setDefaultValue($this->getDefaultEmail($type));
+
+        }
+
+        $form->setCurrentGroup();
+    }
+
+    private function buildEmailTemplate(ArrayHash $values, string $emailType): ?EmailTemplate
+    {
+        $emailValues = $values->emails->{$emailType};
+
+        if ($emailType !== EmailType::PAYMENT_INFO && ! $emailValues->enabled) {
+            return NULL;
+        }
+
+        return new EmailTemplate($emailValues->subject, $emailValues->body);
+    }
+
+    private function getEmailDefaults(int $groupId, EmailType $type): array
+    {
+        /** @var GroupEmail|NULL $email */
+        $email = $this->queryBus->handle(new GroupEmailQuery($groupId, $type));
+
+        if ($email === NULL) {
+            return [];
+        }
+
+        return [
+            'enabled' => $email->isEnabled(),
+            'subject' => $email->getTemplate()->getSubject(),
+            'body' => $email->getTemplate()->getBody(),
+        ];
     }
 
 }

@@ -35,6 +35,7 @@ class ChangeGroupUnitHandlerTest extends \CommandHandlerTest
         return [
             BankAccount::class,
             Group::class,
+            Group\Email::class,
         ];
     }
 
@@ -112,33 +113,19 @@ class ChangeGroupUnitHandlerTest extends \CommandHandlerTest
 
     private function createGroup(int $unitId, ?BankAccount $bankAccount): void
     {
-        $group = new Group(
-            $unitId,
-            NULL,
-            'Group',
-            NULL,
-            NULL,
-            NULL,
-            NULL,
-            new \DateTimeImmutable(),
-            new Group\EmailTemplate('', ''),
-            NULL,
-            $bankAccount
-        );
+        $emails = \Helpers::createEmails();
+        $paymentDefaults = new Group\PaymentDefaults(NULL, NULL, NULL, NULL);
+
+        $group = new Group($unitId, NULL, 'Group', $paymentDefaults, new \DateTimeImmutable(), $emails, NULL, $bankAccount);
 
         $this->groups->save($group);
     }
 
     private function createBankAccount(int $unitId, bool $allowedForSubunits): BankAccount
     {
-        $bankAccount = new BankAccount(
-            $unitId,
-            'B',
-            \Helpers::createAccountNumber(),
-            NULL,
-            new \DateTimeImmutable(),
-            $this->unitResolver
-        );
+        $accountNumber = \Helpers::createAccountNumber();
+
+        $bankAccount = new BankAccount($unitId, 'B', $accountNumber, NULL, new \DateTimeImmutable(), $this->unitResolver);
 
         if($allowedForSubunits) {
             $bankAccount->allowForSubunits();

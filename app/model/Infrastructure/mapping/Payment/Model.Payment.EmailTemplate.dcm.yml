@@ -1,4 +1,4 @@
-Model\Payment\Group\EmailTemplate:
+Model\Payment\EmailTemplate:
 
     type: embeddable
 

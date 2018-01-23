@@ -7,6 +7,8 @@ Model\Payment\Group:
         id:
             type: integer
             generator: { strategy: AUTO }
+            options:
+                unsigned: true
 
     fields:
         unitId:
@@ -16,22 +18,6 @@ Model\Payment\Group:
             type: string
             nullable: true
             column: label
-        defaultAmount:
-            type: float
-            nullable: true
-            column: amount
-        dueDate:
-            type: datetime_immutable
-            nullable: true
-            column: maturity
-        constantSymbol:
-            type: integer
-            nullable: true
-            column: ks
-        nextVariableSymbol:
-            type: variable_symbol
-            nullable: true
-            column: nextVs
         state:
             type: string
         note:
@@ -40,13 +26,7 @@ Model\Payment\Group:
         createdAt:
             type: datetime_immutable
             nullable: true
-        lastPairing:
-            type: datetime_immutable
-            nullable: true
         smtpId:
-            type: integer
-            nullable: true
-        bankAccountId:
             type: integer
             nullable: true
 
@@ -56,5 +36,18 @@ Model\Payment\Group:
             columnPrefix: false
             annotations:
                 nullable: {}
-        emailTemplate:
-            class: Model\Payment\Group\EmailTemplate
+        paymentDefaults:
+            class: Model\Payment\Group\PaymentDefaults
+            columnPrefix: false
+        bankAccount:
+            class: Model\Payment\Group\BankAccount
+            columnPrefix: false
+            annotations:
+                nullable: {}
+
+    oneToMany:
+        emails:
+            targetEntity: Model\Payment\Group\Email
+            mappedBy: group
+            cascade: [PERSIST, REMOVE]
+            orphanRemoval: true

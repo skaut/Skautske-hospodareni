@@ -5,6 +5,7 @@ namespace Model\Payment;
 use DateTimeImmutable;
 use Model\Common\AbstractAggregate;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
+use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
@@ -13,10 +14,7 @@ class Payment extends AbstractAggregate
 {
 
     /** @var int */
-    private $id;
-
-    /** @var Group */
-    private $group;
+    private $groupId;
 
     /** @var string */
     private $name;
@@ -67,7 +65,7 @@ class Payment extends AbstractAggregate
             throw new \InvalidArgumentException('Payment amount must be larger than 0');
         }
 
-        $this->group = $group;
+        $this->groupId = $group->getId();
         $this->personId = $personId;
         $this->state = State::get(State::PREPARING);
         $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
@@ -92,7 +90,7 @@ class Payment extends AbstractAggregate
         $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
 
         if ($this->variableSymbol !== $variableSymbol) {
-            $this->raise(new PaymentVariableSymbolWasChanged($this->group->getId(), $variableSymbol));
+            $this->raise(new PaymentVariableSymbolWasChanged($this->groupId, $variableSymbol));
         }
 
         $this->variableSymbol = $variableSymbol;
@@ -104,6 +102,8 @@ class Payment extends AbstractAggregate
         $this->transaction = $transaction;
         $this->state = State::get(State::COMPLETED);
         $this->closedAt = $time;
+
+        $this->raise(new PaymentWasCompleted($this->id));
     }
 
     public function markSent(): void
@@ -124,20 +124,15 @@ class Payment extends AbstractAggregate
         $this->checkNotClosed();
 
         if( ! VariableSymbol::areEqual($variableSymbol, $this->variableSymbol)) {
-            $this->raise(new PaymentVariableSymbolWasChanged($this->group->getId(), $variableSymbol));
+            $this->raise(new PaymentVariableSymbolWasChanged($this->groupId, $variableSymbol));
         }
 
         $this->variableSymbol = $variableSymbol;
     }
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
     public function getGroupId(): int
     {
-        return $this->group->getId();
+        return $this->groupId;
     }
 
     public function getName(): string

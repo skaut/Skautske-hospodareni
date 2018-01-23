@@ -7,28 +7,42 @@ namespace Model\Skautis\Common\Repositories;
 use Model\Common\Repositories\IUserRepository;
 use Model\Common\User;
 use Model\Common\UserNotFoundException;
-use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
+use Skautis\Wsdl\WebServiceInterface;
 
-class UserRepository implements IUserRepository
+final class UserRepository implements IUserRepository
 {
 
-    /** @var Skautis */
-    private $skautis;
+    /** @var WebServiceInterface */
+    private $userWebService;
 
-    public function __construct(Skautis $skautis)
+    /** @var WebServiceInterface */
+    private $orgWebService;
+
+    public function __construct(WebServiceInterface $userWebService, WebServiceInterface $orgWebService)
     {
-        $this->skautis = $skautis;
+        $this->userWebService = $userWebService;
+        $this->orgWebService = $orgWebService;
     }
 
     public function find(int $id): User
     {
-        try {
-            $user = $this->skautis->user->UserDetail(["ID" => $id]);
-            if ($user instanceof \stdClass) {
-                $person = $this->skautis->org->PersonDetail(['ID' => $user->ID_Person]);
+        return $this->findWithArguments(["ID" => $id]);
+    }
 
-                return new User($id, $user->Person, $person->Email);
+    public function getCurrentUser(): User
+    {
+        return $this->findWithArguments([]);
+    }
+
+    private function findWithArguments(array $arguments): User
+    {
+        try {
+            $user = $this->userWebService->UserDetail($arguments);
+            if ($user instanceof \stdClass) {
+                $person = $this->orgWebService->PersonDetail(['ID' => $user->ID_Person]);
+
+                return new User($user->ID, $user->Person, $person->Email);
             }
         } catch (PermissionException $e) {
 

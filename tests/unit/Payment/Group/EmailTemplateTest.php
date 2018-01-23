@@ -4,6 +4,7 @@ namespace Model\Payment\Group;
 
 use DateTimeImmutable;
 use Mockery as m;
+use Model\Payment\EmailTemplate;
 use Model\Payment\Group;
 use Model\Payment\Mailing\Payment;
 

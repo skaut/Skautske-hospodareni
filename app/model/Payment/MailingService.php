@@ -5,14 +5,11 @@ namespace Model\Payment;
 use DateTimeImmutable;
 use Model\Payment\Mailing\Payment as MailPayment;
 use Model\Mail\IMailerFactory;
-use Model\Payment\Payment\State;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IMailCredentialsRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Common\Repositories\IUserRepository;
-use Model\Common\User;
-use Model\Common\UserNotFoundException;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
 use Nette\Utils\Validators;
@@ -64,32 +61,37 @@ class MailingService
      * Sends email to single payment address
      *
      * @param int $paymentId
-     * @param int $userId
      * @throws InvalidEmailException
      * @throws PaymentNotFoundException
      * @throws MailCredentialsNotSetException
+     * @throws EmailTemplateNotSetException
      */
-    public function sendEmail(int $paymentId, int $userId): void
+    public function sendEmail(int $paymentId, EmailType $emailType): void
     {
         $payment = $this->payments->find($paymentId);
         $group = $this->groups->find($payment->getGroupId());
-        $user = $this->users->find($userId);
 
-        $this->sendForPayment($payment, $group, $user);
+        $template = $group->getEmailTemplate($emailType);
+
+        if ($template === NULL || ! $group->isEmailEnabled($emailType)) {
+            throw new EmailTemplateNotSetException(
+                "Email template '" . $emailType->getValue() . "' not found"
+            );
+        }
+
+        $this->sendForPayment($payment, $group, $template);
         $this->payments->save($payment);
     }
 
     /**
-     * @param int $groupId
-     * @param int $userId
      * @return string User's email
      * @throws EmailNotSetException
      * @throws MailCredentialsNotSetException
      */
-    public function sendTestMail(int $groupId, int $userId): string
+    public function sendTestMail(int $groupId): string
     {
         $group = $this->groups->find($groupId);
-        $user = $this->users->find($userId);
+        $user = $this->users->getCurrentUser();
 
         if($user->getEmail() === NULL) {
             throw new EmailNotSetException();
@@ -105,7 +107,7 @@ class MailingService
             "obsah poznámky"
         );
 
-        $this->send($group, $payment, $user);
+        $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)));
 
         return $user->getEmail();
     }
@@ -116,26 +118,15 @@ class MailingService
      * @throws InvalidEmailException
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSetException
-     * @throws PaymentClosedException
      */
-    private function sendForPayment(Payment $paymentRow, Group $group, User $user) : void
+    private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
     {
-        if($paymentRow->isClosed()) {
-            throw new PaymentClosedException();
-        }
-
         $email = $paymentRow->getEmail();
         if ($email === NULL || !Validators::isEmail($email)) {
             throw new InvalidEmailException();
         }
 
-        $this->send($group, $this->createPayment($paymentRow), $user);
-
-        if($paymentRow->getState()->equalsValue(State::SENT)) {
-            return;
-        }
-
-        $paymentRow->markSent();
+        $this->send($group, $this->createPayment($paymentRow), $template);
     }
 
     /**
@@ -143,18 +134,20 @@ class MailingService
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSetException
      */
-    private function send(Group $group, MailPayment $payment, User $user) : void
+    private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate) : void
     {
         if($group->getSmtpId() === NULL) {
             throw new MailCredentialsNotSetException();
         }
 
+        $user = $this->users->getCurrentUser();
+
         $bankAccount = $group->getBankAccountId() !== NULL
             ? $this->bankAccounts->find($group->getBankAccountId())
             : NULL;
+        $bankAccountNumber = $bankAccount !== NULL ? (string)$bankAccount->getNumber() : NULL;
 
-        $emailTemplate = $group->getEmailTemplate()
-            ->evaluate($group, $payment, $bankAccount !== NULL ? (string)$bankAccount->getNumber() : NULL, $user->getName());
+        $emailTemplate = $emailTemplate->evaluate($group, $payment, $bankAccountNumber, $user->getName());
 
         $template = $this->templateFactory->create(TemplateFactory::PAYMENT_DETAILS, [
             'body' => nl2br($emailTemplate->getBody(), FALSE),

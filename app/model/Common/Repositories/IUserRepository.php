@@ -13,4 +13,9 @@ interface IUserRepository
      */
     public function find(int $id): User;
 
+    /**
+     * @throws UserNotFoundException
+     */
+    public function getCurrentUser(): User;
+
 }

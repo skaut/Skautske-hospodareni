@@ -5,7 +5,11 @@ namespace Model;
 use Assert\Assert;
 use DateTimeImmutable;
 use Model\DTO\Payment as DTO;
+use Model\Payment\EmailTemplate;
+use Model\Payment\EmailType;
 use Model\Payment\Group;
+use Model\Payment\Group\PaymentDefaults;
+use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFoundException;
 use Model\Payment\MissingVariableSymbolException;
@@ -18,7 +22,6 @@ use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use Model\Services\Language;
-use Nette\Utils\Strings;
 use Skautis\Skautis;
 
 /**
@@ -161,37 +164,35 @@ class PaymentService
         return $this->payments->summarizeByGroup($groupIds);
     }
 
+    /**
+     * @param EmailTemplate[] $emails
+     */
     public function createGroup(
         int $unitId,
-        ?Group\SkautisEntity $skautisEntity,
+        ?SkautisEntity $skautisEntity,
         string $label,
-        ?DateTimeImmutable $dueDate,
-        ?int $ks,
-        ?VariableSymbol $nextVS,
-        ?float $amount,
-        Group\EmailTemplate $emailTemplate,
+        PaymentDefaults $paymentDefaults,
+        array $emails,
         ?int $smtpId,
         ?int $bankAccountId
     ): int
     {
         $now = new DateTimeImmutable();
-        $amount = $amount !== 0.0 ? $amount : NULL;
         $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
 
-        $group = new Group($unitId, $skautisEntity, $label, $amount, $dueDate, $ks, $nextVS, $now, $emailTemplate, $smtpId, $bankAccount);
+        $group = new Group($unitId, $skautisEntity, $label, $paymentDefaults, $now, $emails, $smtpId, $bankAccount);
 
         $this->groups->save($group);
         return $group->getId();
     }
 
-    public function updateGroup(
-        int $id,
+    /**
+     * @param EmailTemplate[] $emails
+     */
+    public function updateGroup(int $id,
         string $name,
-        ?float $defaultAmount,
-        ?DateTimeImmutable $dueDate,
-        ?int $constantSymbol,
-        ?VariableSymbol $nextVariableSymbol,
-        Group\EmailTemplate $emailTemplate,
+        PaymentDefaults $paymentDefaults,
+        array $emails,
         ?int $smtpId,
         ?int $bankAccountId
     ): void
@@ -199,7 +200,18 @@ class PaymentService
         $group = $this->groups->find($id);
         $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
 
-        $group->update($name, $defaultAmount, $dueDate, $constantSymbol, $nextVariableSymbol, $emailTemplate, $smtpId, $bankAccount);
+        $group->update($name, $paymentDefaults, $smtpId, $bankAccount);
+
+        foreach(EmailType::getAvailableValues() as $typeKey) {
+            $type = EmailType::get($typeKey);
+
+            if (isset($emails[$typeKey])) {
+               $group->updateEmail($type, $emails[$typeKey]);
+               continue;
+            }
+
+            $group->disableEmail($type);
+        }
 
         $this->groups->save($group);
     }

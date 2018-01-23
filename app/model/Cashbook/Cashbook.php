@@ -16,9 +16,6 @@ use Model\Common\AbstractAggregate;
 class Cashbook extends AbstractAggregate
 {
 
-    /** @var int */
-    private $id;
-
     /** @var ArrayCollection|Chit[] */
     private $chits;
 
@@ -26,11 +23,6 @@ class Cashbook extends AbstractAggregate
     {
         $this->id = $id;
         $this->chits = new ArrayCollection();
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function addChit(

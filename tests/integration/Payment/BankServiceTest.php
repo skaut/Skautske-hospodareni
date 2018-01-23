@@ -50,6 +50,7 @@ class BankServiceTest extends \IntegrationTest
         return [
             BankAccount::class,
             Group::class,
+            Group\Email::class,
             Payment::class,
         ];
     }
@@ -111,19 +112,10 @@ class BankServiceTest extends \IntegrationTest
 
     private function addGroup(?BankAccount $bankAccount): Group
     {
-        $group = new Group(
-            1,
-            NULL,
-            'Testovací skupina',
-            NULL,
-            NULL,
-            NULL,
-            NULL,
-            new \DateTimeImmutable(),
-            new Group\EmailTemplate('', ''),
-            NULL,
-            $bankAccount
-        );
+        $paymentDefaults = new Group\PaymentDefaults(NULL, NULL, NULL, NULL);
+        $emails = \Helpers::createEmails();
+
+        $group = new Group(1, NULL, 'Test', $paymentDefaults, new \DateTimeImmutable(), $emails, NULL, $bankAccount);
 
         $this->groups->save($group);
 
