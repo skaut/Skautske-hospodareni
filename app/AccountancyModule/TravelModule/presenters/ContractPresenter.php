@@ -41,7 +41,7 @@ class ContractPresenter extends BasePresenter
             $this->redirect("default");
         }
         $this->template->contract = $contract;
-        $this->template->commands = $this->travelService->getAllCommandsByContract($this->getUnitId(), $contract->getUnitId());
+        $this->template->commands = $this->travelService->getAllCommandsByContract($this->getUnitId(), $contract->getId());
     }
 
     public function actionPrint($contractId) : void
