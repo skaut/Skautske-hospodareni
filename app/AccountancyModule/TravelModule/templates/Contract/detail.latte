@@ -59,10 +59,10 @@
                 </tr>
                 <tr n:foreach="$commands as $c">
                     <td><a n:href="Default:detail $c->id" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-zoom-in"></i>Detail</a></td>
-                    <td>{$c->driver_name}</td>
+                    <td>{$c->passenger->name}</td>
                     <td>{$c->purpose}</td>
-                    <td>{if $c->vehicle_type != ""}{$c->vehicle_type} ({$c->vehicle_spz}){/if}</td>
-                    <td>{$c->closed|commandState|noescape}</td>
+                    <td>{if $c->vehicleId !== NULL}{$vehicles[$c->vehicleId]->label}{/if}</td>
+                    <td>{$c->closedAt|commandState|noescape}</td>
                 </tr>
             </table>
         {else}

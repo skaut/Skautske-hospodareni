@@ -429,13 +429,14 @@ class TravelService
 
     /**
      * vraci všechny přikazy navazane na smlouvu
-     * @param int $unitId
-     * @param int $contractId
-     * @return Row[]
+     * @return DTO\Contract[]
      */
-    public function getAllCommandsByContract($unitId, $contractId)
+    public function getAllCommandsByContract(int $contractId): array
     {
-        return $this->table->getAllByContract($unitId, $contractId);
+        return array_map(
+            [DTO\CommandFactory::class, 'create'],
+            $this->commands->findByContract($contractId)
+        );
     }
 
     /**

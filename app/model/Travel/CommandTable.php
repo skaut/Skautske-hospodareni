@@ -2,32 +2,12 @@
 
 namespace Model;
 
-use Dibi\Row;
-
 /**
  * @author Hána František <sinacek@gmail.com>
  * správa cestovních příkazů
  */
 class CommandTable extends BaseTable
 {
-
-    public function getAll($unitId, $returnQuery = FALSE)
-    {
-        $q = $this->connection->select("com.*, con.unit_id as unitId, con.driver_name, c.type as vehicle_type, c.registration as vehicle_spz, com.place")
-            ->select("(SELECT COALESCE(sum(distance), 0) FROM tc_travels WHERE command_id = com.id AND type='auv') * (amortization+(com.fuel_price * (c.consumption/100))) + (SELECT COALESCE(sum(distance), 0) FROM tc_travels WHERE command_id = com.id AND type !='auv') as price")
-            ->select("(SELECT MIN(start_date) FROM tc_travels WHERE command_id = com.id) as start_date")
-            ->select("(SELECT GROUP_CONCAT(tt.label SEPARATOR ', ') FROM " . self::TABLE_TC_COMMAND_TYPES . " ct LEFT JOIN " . self::TABLE_TC_TRAVEL_TYPES . " tt ON (ct.typeId = tt.type) WHERE commandId = com.id) as types")
-            ->from(self::TABLE_TC_COMMANDS . " AS com")
-            ->leftJoin(self::TABLE_TC_CONTRACTS . " AS con ON (com.contract_id = con.id)")
-            ->leftJoin(self::TABLE_TC_VEHICLE . " AS c ON (com.vehicle_id = c.id) ")
-            ->where("com.unit_id=%i", $unitId)
-            ->where("(con.deleted=0 OR con.deleted IS NULL)")
-            ->orderBy("closed, id desc");
-        if ($returnQuery) {
-            return $q;
-        }
-        return $q->fetchAll();
-    }
 
     public function getTypes(array $commandIds): array
     {
@@ -36,20 +16,6 @@ class CommandTable extends BaseTable
             ->where("com.id IN %in", $commandIds)
             ->fetchPairs("comId", "types");
     }
-
-    /**
-     * @param int $unitId
-     * @param int $contractId
-     * @return Row[]
-     */
-    public function getAllByContract($unitId, $contractId)
-    {
-        return $this->getAll($unitId, TRUE)
-            ->where("com.contract_id=", $contractId)
-            ->fetchAll();
-    }
-
-
 
     public function updateTypes($commandId, $commandTypes)
     {

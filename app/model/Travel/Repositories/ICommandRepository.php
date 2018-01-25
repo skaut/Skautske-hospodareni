@@ -25,6 +25,11 @@ interface ICommandRepository
      */
     public function findByVehicle(int $vehicleId): array;
 
+    /**
+     * @return Command[]
+     */
+    public function findByContract(int $contractId): array;
+
     public function countByVehicle(int $vehicleId): int;
 
     public function remove(Command $command): void;
