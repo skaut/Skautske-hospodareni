@@ -14,6 +14,7 @@ use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
+use Model\Payment\BankException;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\EmailType;
@@ -27,6 +28,7 @@ use Model\Payment\PaymentNotFoundException;
 use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\UI\Form;
+use Nette\Forms\IControl;
 use Nette\Mail\SmtpException;
 
 /**
@@ -278,7 +280,9 @@ class PaymentPresenter extends BasePresenter
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
                 ->setRequired('Musíte vyplnit bankovní účet')
                 ->addRule($form::PATTERN, $invalidBankAccountMessage, '^([0-9]{1,6}-)?[0-9]{1,10}/[0-9]{4}$')
-                ->addRule([AccountNumber::class, 'isValid'], $invalidBankAccountMessage);
+                ->addRule(function (IControl $control) {
+                    return AccountNumber::isValid($control->getValue());
+                    }, $invalidBankAccountMessage);
         }
 
         $this->template->participants = $participantsWithRepayment;
@@ -588,14 +592,12 @@ class PaymentPresenter extends BasePresenter
             $this->redirect("this");
         }
 
-        $resultXML = $this->model->sendFioPaymentRequest($dataToRequest, $bankAccount->getToken());
-        $result = (new \SimpleXMLElement($resultXML));
-
-        if ($result->result->errorCode == 0) {//OK
+        try {
+            $this->model->sendFioPaymentRequest($dataToRequest, $bankAccount->getToken());
             $this->flashMessage("Vratky byly odeslány do banky");
             $this->redirect("Payment:detail", ["id" => $values->gid]);
-        } else {
-            $form->addError("Chyba z banky: " . $result->ordersDetails->detail->messages->message);
+        } catch (BankException $e) {
+            $form->addError(sprintf('Chyba z banky %s', $e->getMessage()));
         }
     }
 

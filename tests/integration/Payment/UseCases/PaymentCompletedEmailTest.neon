@@ -4,6 +4,7 @@ services:
     - Model\Payment\Repositories\PaymentRepository
     - Model\Payment\Repositories\GroupRepository
     - Model\Payment\Repositories\MailCredentialsRepository
+    - GuzzleHttp\Client
 
     - Stubs\Skautis
     - Model\Payment\UserRepositoryStub
