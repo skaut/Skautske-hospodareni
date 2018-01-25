@@ -48,6 +48,12 @@ $(document).ready(function () {
 
     prepareGroupActions();
 
+    $('.num-edit, .price-edit').click(function(e) {
+        e.stopPropagation();
+    });
+    $('.edit-cell').click(function() {
+        $(this).find('.num-edit, .price-edit').first().focus();
+    })
 });
 
 

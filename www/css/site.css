@@ -34,7 +34,7 @@
     height: 1.5em;
 }
 
-.num-edit:hover:not(:focus):after, .price-edit:hover:not(:focus):after, .text-edit:hover:not(:focus):after  {
+td:hover .num-edit:not(:focus):after, .price-edit:hover:not(:focus):after, .text-edit:hover:not(:focus):after  {
     content: url(../images/inline-edit.png);
 }
 
