@@ -1,10 +1,11 @@
 <?php
 
-namespace Model\Travel\Repositories;
+namespace Model\Infrastructure\Repositories\Travel;
 
 use Doctrine\ORM\EntityManager;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
+use Model\Travel\Repositories\ICommandRepository;
 
 class CommandRepository implements ICommandRepository
 {
