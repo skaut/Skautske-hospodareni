@@ -27,6 +27,7 @@ use Model\Payment\PaymentNotFoundException;
 use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\UI\Form;
+use Nette\Forms\IControl;
 use Nette\Mail\SmtpException;
 
 /**
@@ -278,7 +279,9 @@ class PaymentPresenter extends BasePresenter
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
                 ->setRequired('Musíte vyplnit bankovní účet')
                 ->addRule($form::PATTERN, $invalidBankAccountMessage, '^([0-9]{1,6}-)?[0-9]{1,10}/[0-9]{4}$')
-                ->addRule([AccountNumber::class, 'isValid'], $invalidBankAccountMessage);
+                ->addRule(function (IControl $control) {
+                    return AccountNumber::isValid($control->getValue());
+                    }, $invalidBankAccountMessage);
         }
 
         $this->template->participants = $participantsWithRepayment;
