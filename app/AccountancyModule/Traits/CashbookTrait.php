@@ -242,6 +242,9 @@ trait CashbookTrait
             ->getControlPrototype()->class("form-control input-sm required")->placeholder("Datum");
         $form->addText("num", "Číslo d.:")
             ->setMaxLength(5)
+            ->setRequired(FALSE)
+            ->addRule($form::MAX_LENGTH, 'Maximální délka čísla dokladu je %d znaků', 5)
+            ->addRule($form::PATTERN, 'Číslo dokladu musí být číslo, případně číslo s prefixem až 3 velkých písmen', ChitNumber::PATTERN)
             ->getControlPrototype()->placeholder("Číslo")
             ->class("form-control input-sm");
         $form->addText("purpose", "Účel výplaty:")
