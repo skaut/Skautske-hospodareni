@@ -40,8 +40,15 @@ class ContractPresenter extends BasePresenter
             $this->flashMessage("Nemáte oprávnění k cestovnímu příkazu.", "danger");
             $this->redirect("default");
         }
-        $this->template->contract = $contract;
-        $this->template->commands = $this->travelService->getAllCommandsByContract($this->getUnitId(), $contract->getId());
+
+        $commands = $this->travelService->getAllCommandsByContract($contract->getId());
+        $vehicleIds = array_filter(array_column($commands, 'vehicleId'));
+
+        $this->template->setParameters([
+            'contract' => $contract,
+            'commands' => $commands,
+            'vehicles' => $this->travelService->findVehiclesByIds($vehicleIds),
+        ]);
     }
 
     public function actionPrint($contractId) : void
@@ -68,11 +75,13 @@ class ContractPresenter extends BasePresenter
 
     public function handleDelete(int $contractId) : void
     {
-        $commands = $this->travelService->getAllCommandsByContract($this->unit->ID, $contractId);
+        $commands = $this->travelService->getAllCommandsByContract($contractId);
+
         if (!empty($commands)) {
             $this->flashMessage("Nelze smazat smlouvu s navázanými cestovními příkazy!", "danger");
             $this->redirect("this");
         }
+
         $this->travelService->deleteContract($contractId);
         $this->flashMessage("Smlouva byla smazána", "success");
         $this->redirect("default");

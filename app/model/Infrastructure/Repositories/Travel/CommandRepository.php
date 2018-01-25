@@ -39,6 +39,21 @@ class CommandRepository implements ICommandRepository
         return $this->em->getRepository(Command::class)->findBy(["vehicle" => $vehicleId]);
     }
 
+    /**
+     * @return Command[]
+     */
+    public function findByContract(int $contractId): array
+    {
+        return $this->em->createQueryBuilder()
+            ->select('c')
+            ->from(Command::class, 'c')
+            ->where('c.passenger.contractId = :contractId')
+            ->addOrderBy('c.closedAt')
+            ->addOrderBy('c.id', 'DESC')
+            ->setParameter('contractId', $contractId)
+            ->getQuery()
+            ->getResult();
+    }
 
     public function countByVehicle(int $vehicleId): int
     {
