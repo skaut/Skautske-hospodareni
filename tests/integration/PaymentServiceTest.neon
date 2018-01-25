@@ -3,6 +3,7 @@ services:
     - Model\Payment\Repositories\PaymentRepository
     - Model\Payment\Repositories\GroupRepository
     - Model\Payment\Repositories\BankAccountRepository
+    - GuzzleHttp\Client
     - Stubs\Skautis
 
 includes:

@@ -57,3 +57,7 @@ class DueDateIsNotWorkdayException extends \Exception
 class EmailTemplateNotSetException extends \Exception
 {
 }
+
+class BankException extends \Exception
+{
+}

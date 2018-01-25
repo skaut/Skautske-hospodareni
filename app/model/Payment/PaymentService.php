@@ -4,7 +4,10 @@ namespace Model;
 
 use Assert\Assert;
 use DateTimeImmutable;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ServerException;
 use Model\DTO\Payment as DTO;
+use Model\Payment\BankException;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
@@ -45,12 +48,16 @@ class PaymentService
     /** @var IBankAccountRepository */
     private $bankAccounts;
 
+    /** @var ClientInterface */
+    private $http;
+
     public function __construct(
         string $tempDir,
         Skautis $skautis,
         IGroupRepository $groups,
         IPaymentRepository $payments,
-        IBankAccountRepository $bankAccounts
+        IBankAccountRepository $bankAccounts,
+        ClientInterface $http
     )
     {
         $this->tempDir = $tempDir;
@@ -58,6 +65,7 @@ class PaymentService
         $this->groups = $groups;
         $this->payments = $payments;
         $this->bankAccounts = $bankAccounts;
+        $this->http = $http;
     }
 
     public function findPayment(int $id): ?DTO\Payment
@@ -463,7 +471,7 @@ class PaymentService
 
     /* Repayments */
 
-    public function getFioRepaymentString($repayments, $accountFrom, $date = NULL)
+    public function getFioRepaymentString($repayments, $accountFrom, $date = NULL): string
     {
         if ($date === NULL) {
             $date = date("Y-m-d");
@@ -489,106 +497,25 @@ class PaymentService
         return $ret;
     }
 
-    public function sendFioPaymentRequest($stringToRequest, $token)
-    {
-        $curl = curl_init();
-        $file = tempnam($this->tempDir, "XML"); // Vytvoření dočasného souboru s náhodným jménem v systémové temp složce.
-        file_put_contents($file, $stringToRequest); // Do souboru se uloží XML string s vygenerovanými příkazy k úhradě.
-
-        $this->curl_custom_postfields($curl, [
-            'type' => 'xml',
-            'token' => $token,
-            'lng' => 'cs',
-        ], ["file" => $file]);
-
-        curl_setopt($curl, CURLOPT_URL, 'https://www.fio.cz/ib_api/rest/import/');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_VERBOSE, 0);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-
-        $resultXML = curl_exec($curl); // Odpověď z banky.
-        curl_close($curl);
-
-        unlink($file);
-        return $resultXML;
-    }
-
     /**
-     * For safe multipart POST request for PHP5.3 ~ PHP 5.4.
-     *
-     * @param resource $ch cURL resource
-     * @param array $assoc "name => value"
-     * @param array $files "name => path"
-     * @return bool
+     * @throws BankException
      */
-    private function curl_custom_postfields($ch, array $assoc = [], array $files = [])
+    public function sendFioPaymentRequest(string $stringToRequest, string $token): void
     {
-
-        // invalid characters for "name" and "filename"
-        static $disallow = ["\0", "\"", "\r", "\n"];
-
-        $body = [];
-
-        // build normal parameters
-        foreach ($assoc as $k => $v) {
-            $k = str_replace($disallow, "_", $k);
-            $body[] = implode("\r\n", [
-                "Content-Disposition: form-data; name=\"{$k}\"",
-                "",
-                filter_var($v),
+        try {
+            $this->http->request('POST', 'https://www.fio.cz/ib_api/rest/import/', [
+                'multipart' => [
+                    ['name' => 'token', 'contents' => $token],
+                    ['name' => 'type', 'contents' => 'xml'],
+                    ['name' => 'file', 'contents' => $stringToRequest, 'filename' => 'request.xml'],
+                    ['name' => 'lng', 'contents' => 'cs'],
+                ],
+                'timeout' => 60,
             ]);
+        } catch (ServerException $e) {
+            throw new BankException($this->getErrorMessage($e), 0, $e);
         }
-
-        // build file parameters
-        foreach ($files as $k => $v) {
-            switch (TRUE) {
-                case FALSE === $v = realpath(filter_var($v)):
-                case!is_file($v):
-                case!is_readable($v):
-                    continue; // or return false, throw new InvalidArgumentException
-            }
-            $data = file_get_contents($v);
-            $v = call_user_func("end", explode(DIRECTORY_SEPARATOR, $v));
-            $k = str_replace($disallow, "_", $k);
-            $v = str_replace($disallow, "_", $v);
-            $body[] = implode("\r\n", [
-                "Content-Disposition: form-data; name=\"{$k}\"; filename=\"{$v}\"",
-                "Content-Type: application/octet-stream",
-                "",
-                $data,
-            ]);
-        }
-
-        // generate safe boundary
-        do {
-            $boundary = "---------------------" . md5(mt_rand() . microtime(TRUE));
-        } while (preg_grep("/{$boundary}/", $body));
-
-        // add boundary for each parameters
-        array_walk($body, function (&$part) use ($boundary) {
-            $part = "--{$boundary}\r\n{$part}";
-        });
-
-        // add final boundary
-        $body[] = "--{$boundary}--";
-        $body[] = "";
-
-        // set options
-        return @curl_setopt_array($ch, [
-            CURLOPT_POST => TRUE,
-            CURLOPT_POSTFIELDS => implode("\r\n", $body),
-            CURLOPT_HTTPHEADER => [
-                "Expect: 100-continue",
-                "charset=utf-8",
-                "Content-Type: multipart/form-data; boundary={$boundary}", // change Content-Type
-            ],
-        ]);
     }
-
 
     /**
      * @throws MissingVariableSymbolException
@@ -630,6 +557,23 @@ class PaymentService
         });
 
         return array_map(function(Payment $p) { return $p->getPersonId(); }, $payments);
+    }
+
+    private function getErrorMessage(ServerException $exception): string
+    {
+        if ($exception->getResponse() === NULL) {
+            return $exception->getMessage();
+        }
+
+        $body = $exception->getResponse()->getBody()->getContents();
+
+        if (strlen(trim($body)) === 0) {
+            return $exception->getMessage();
+        }
+
+        $result = new \SimpleXMLElement($body);
+
+        return $result->ordersDetails->detail->messages->message ?? '';
     }
 
 }

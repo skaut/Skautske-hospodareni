@@ -118,14 +118,14 @@ services:
     - Model\Payment\BankAccountService(fioCache: @fio.cache)
     - Model\MemberService(@skautis.org)
 
+    - GuzzleHttp\Client({ timeout: 3 }) # used for API calls to FIO api
+
     fio.client:
         class: Model\Bank\Fio\FioClient
         autowired: false
     fio.cache: Nette\Caching\Cache
     - Model\Payment\Fio\CachingClientDecorator(@fio.client, @fio.cache)
-    - class: Model\Bank\Fio\DownloaderFactory
-      arguments:
-          - GuzzleHttp\Client({ timeout: 3 })
+    - Model\Bank\Fio\DownloaderFactory
 
     router: @App\RouterFactory::createRouter
 
