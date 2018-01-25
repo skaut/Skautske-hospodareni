@@ -18,7 +18,6 @@ class BaseTable
     const TABLE_OBJECT = 'ac_object';
     const TABLE_OBJECT_TYPE = 'ac_object_type';
     const TABLE_UNIT_BUDGET_CATEGORY = 'ac_unit_budget_category';
-    const TABLE_TC_CONTRACTS = 'tc_contracts';
     const TABLE_TC_COMMANDS = 'tc_commands';
     const TABLE_TC_COMMAND_TYPES = 'tc_command_types';
     const TABLE_TC_TRAVEL_TYPES = 'tc_travelTypes';
