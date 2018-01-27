@@ -36,16 +36,17 @@ class CashbookPresenter extends BasePresenter
         if ($pid !== NULL) {
             $this->editChit($pid);
         }
+        $this->template->setParameters([
+            "isInMinus" => $this->eventService->chits->eventIsInMinus($this->getCurrentUnitId()), // musi byt v before render aby se vyhodnotila az po handleru
+            "list" => $this->eventService->chits->getAll($aid),
+            "linkImportHPD" => $this->link("importHpd", ["aid" => $aid]),
+            "cashbookWithCategoriesAllowed" => TRUE,
+        ]);
 
-        $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->getCurrentUnitId()); // musi byt v before render aby se vyhodnotila az po handleru
-        $this->template->list = $this->eventService->chits->getAll($aid);
-        $this->template->linkImportHPD = $this->link("importHpd", ["aid" => $aid]);
         $this->fillTemplateVariables();
         if ($this->isAjax()) {
             $this->redrawControl("contentSnip");
         }
-
-        $this->template->cashbookWithCategoriesAllowed = TRUE;
     }
 
     public function actionExportExcelWithCategories(int $aid): void
@@ -80,7 +81,7 @@ class CashbookPresenter extends BasePresenter
                 NULL,
                 new Date($date),
                 $accountant,
-                new Amount((string) $totalPayment),
+                new Amount((string)$totalPayment),
                 'účastnické příspěvky',
                 Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID
             )

@@ -243,8 +243,7 @@ class ChitService extends MutableBaseService
      */
     public function eventIsInMinus(int $skautisEventId): bool
     {
-        $data = $this->table->eventIsInMinus($this->getLocalId($skautisEventId));
-        return @(($data["in"] - $data["out"]) < 0) ? TRUE : FALSE; //@ potlačuje chyby u neexistujicich indexů "in" a "out"
+        return $this->table->eventIsInMinus($this->getLocalId($skautisEventId));
     }
 
     public function moveChits(array $chits, int $originEventId, string $originEventType, int $newEventId, string $newEventType): void
