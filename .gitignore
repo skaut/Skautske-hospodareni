@@ -1,4 +1,4 @@
-htaccess
+.htaccess
 /app/config/config.*.neon
 !/app/config/config.sample.local.neon
 !/app/config/config.ci.local.neon
