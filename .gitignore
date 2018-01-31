@@ -1,4 +1,3 @@
-.htaccess
 /app/config/config.*.neon
 !/app/config/config.sample.local.neon
 !/app/config/config.ci.local.neon
@@ -14,7 +13,6 @@ nette-log/*
 deployment.*
 /www/*.json
 /archiv
-!.htaccess
 .wercker*
 tests/_output/*
 tests/_support/_generated/*
