@@ -4,7 +4,7 @@ namespace Model\Cashbook;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-class Category
+class Category implements ICategory
 {
 
     public const EVENT_PARTICIPANTS_INCOME_CATEGORY_ID = 11;
