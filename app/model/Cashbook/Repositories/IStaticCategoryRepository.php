@@ -17,4 +17,9 @@ interface IStaticCategoryRepository
      */
     public function findByObjectType(ObjectType $type): array;
 
+    /**
+     * @throws CategoryNotFoundException
+     */
+    public function find(int $id): Category;
+
 }

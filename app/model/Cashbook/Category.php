@@ -60,4 +60,11 @@ class Category implements ICategory
         return $this->operationType->equalsValue(Operation::INCOME);
     }
 
+    public function supportsType(ObjectType $type): bool
+    {
+        return $this->types->exists(function ($_, Category\ObjectType $categoryType) use ($type): bool {
+            return $categoryType->getType()->equals($type);
+        });
+    }
+
 }

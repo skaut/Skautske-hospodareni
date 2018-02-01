@@ -85,7 +85,9 @@ autoDI:
 
         # Skautis communication related services
         - class: Model\Skautis\**
-          exclude: Model\Skautis\WebserviceFactory
+          exclude:
+              - Model\Skautis\WebserviceFactory
+              - Model\Skautis\DTO\**
 
         # Factories for mutable services
         - implement: 'Model\I{Event,Chit,Participant}ServiceFactory'
@@ -140,6 +142,7 @@ services:
     - Model\Skautis\UnitRepository(@skautis.org)
     - Model\Skautis\Common\Repositories\UserRepository(@skautis.webservice.user, @skautis.org)
     - Model\Skautis\EventRepository(@skautis.event)
+    - Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.event)
 
     # Skautis webservices
     skautis.org:
