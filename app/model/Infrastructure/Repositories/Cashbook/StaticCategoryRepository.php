@@ -4,10 +4,10 @@ namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
-use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\Infrastructure\Repositories\AbstractRepository;
 
-final class CategoryRepository extends AbstractRepository implements ICategoryRepository
+final class StaticCategoryRepository extends AbstractRepository implements IStaticCategoryRepository
 {
 
     public function findByObjectType(ObjectType $type): array

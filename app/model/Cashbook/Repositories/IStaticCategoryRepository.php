@@ -3,9 +3,13 @@
 namespace Model\Cashbook\Repositories;
 
 use Model\Cashbook\Category;
+use Model\Cashbook\CategoryNotFoundException;
 use Model\Cashbook\ObjectType;
 
-interface ICategoryRepository
+/**
+ * Loads categories that are stored in hskauting
+ */
+interface IStaticCategoryRepository
 {
 
     /**

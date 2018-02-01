@@ -5,7 +5,7 @@ namespace Model;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
-use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -23,7 +23,7 @@ class ExportService
     /** @var UnitService */
     private $units;
 
-    /** @var ICategoryRepository */
+    /** @var IStaticCategoryRepository */
     private $categories;
 
     /** @var TemplateFactory */
@@ -37,7 +37,7 @@ class ExportService
 
     public function __construct(
         UnitService $units,
-        ICategoryRepository $categories,
+        IStaticCategoryRepository $categories,
         TemplateFactory $templateFactory,
         IEventRepository $events,
         QueryBus $queryBus

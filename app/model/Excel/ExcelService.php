@@ -4,7 +4,7 @@ namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ObjectType;
-use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -19,13 +19,13 @@ class ExcelService
 
     private const ADULT_AGE = 18;
 
-    /** @var ICategoryRepository */
+    /** @var IStaticCategoryRepository */
     private $categories;
 
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(ICategoryRepository $categories, QueryBus $queryBus)
+    public function __construct(IStaticCategoryRepository $categories, QueryBus $queryBus)
     {
         $this->categories = $categories;
         $this->queryBus = $queryBus;

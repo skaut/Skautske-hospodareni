@@ -7,20 +7,20 @@ use eGen\MessageBus\Bus\EventBus;
 use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
 
-class CategoryRepositoryTest extends \IntegrationTest
+class StaticCategoryRepositoryTest extends \IntegrationTest
 {
 
     private const TABLE_NAME = 'ac_chitsCategory';
     private const OBJECT_TABLE = 'ac_chitsCategory_object';
 
-    /** @var CategoryRepository */
+    /** @var StaticCategoryRepository */
     private $repository;
 
     protected function _before()
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->repository = new CategoryRepository($this->tester->grabService(EntityManager::class), new EventBus());
+        $this->repository = new StaticCategoryRepository($this->tester->grabService(EntityManager::class), new EventBus());
     }
 
     protected function getTestedEntites(): array
