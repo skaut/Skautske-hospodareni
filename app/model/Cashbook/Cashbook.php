@@ -46,15 +46,16 @@ class Cashbook extends AbstractAggregate
         ?Recipient $recipient,
         Amount $amount,
         string $purpose,
-        int $categoryId
+        ICategory $category
     ): void
     {
-        $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $categoryId);
-        $this->raise(new ChitWasAdded($this->id, $categoryId));
+        $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $category);
+        $this->raise(new ChitWasAdded($this->id, $category->getId()));
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @throws ChitNotFoundException
+     * @throws ChitLockedException
      */
     public function updateChit(
         int $chitId,
@@ -63,7 +64,7 @@ class Cashbook extends AbstractAggregate
         ?Recipient $recipient,
         Amount $amount,
         string $purpose,
-        int $categoryId
+        ICategory $category
     ): void
     {
         $chit = $this->getChit($chitId);
@@ -73,9 +74,9 @@ class Cashbook extends AbstractAggregate
             throw new ChitLockedException();
         }
 
-        $chit->update($number, $date, $recipient, $amount, $purpose, $categoryId);
+        $chit->update($number, $date, $recipient, $amount, $purpose, $category);
 
-        $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $categoryId));
+        $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $category->getId()));
     }
 
     /**

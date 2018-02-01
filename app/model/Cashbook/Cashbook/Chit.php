@@ -4,6 +4,7 @@ namespace Model\Cashbook\Cashbook;
 
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook;
+use Model\Cashbook\ICategory;
 
 class Chit
 {
@@ -29,8 +30,8 @@ class Chit
     /** @var string */
     private $purpose;
 
-    /** @var int */
-    private $categoryId;
+    /** @var Category */
+    private $category;
 
     /**
      * ID of person that locked this
@@ -45,20 +46,20 @@ class Chit
         ?Recipient $recipient,
         Amount $amount,
         string $purpose,
-        int $categoryId
+        ICategory $category
     )
     {
         $this->cashbook = $cashbook;
-        $this->update($number, $date, $recipient, $amount, $purpose, $categoryId);
+        $this->update($number, $date, $recipient, $amount, $purpose, $category);
     }
 
-    public function update(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, int $categoryId): void
+    public function update(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, ICategory $category): void
     {
         $this->number = $number;
         $this->date = $date;
         $this->recipient = $recipient;
         $this->amount = $amount;
-        $this->categoryId = $categoryId;
+        $this->category = new Category($category->getId(), $category->getOperationType());
         $this->purpose = $purpose;
     }
 
@@ -84,7 +85,7 @@ class Chit
 
     public function getCategoryId(): int
     {
-        return $this->categoryId;
+        return $this->category->getId();
     }
 
     public function getPurpose(): string

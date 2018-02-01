@@ -7,6 +7,9 @@ use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\ICategory;
+use Mockery as m;
+use Model\Cashbook\Operation;
 
 class CashbookRepositoryTest extends \IntegrationTest
 {
@@ -62,6 +65,7 @@ class CashbookRepositoryTest extends \IntegrationTest
             'priceText' => '100',
             'purpose' => 'Purpose',
             'category' => 10,
+            'category_operation_type' => Operation::INCOME,
         ];
 
         $cashbook = new Cashbook(10, Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
@@ -72,7 +76,7 @@ class CashbookRepositoryTest extends \IntegrationTest
             new Cashbook\Recipient($chit['recipient']),
             new Cashbook\Amount($chit['priceText']),
             $chit['purpose'],
-            $chit['category']
+            $this->mockCategory($chit['category'])
         );
 
         $this->repository->save($cashbook);
@@ -82,6 +86,14 @@ class CashbookRepositoryTest extends \IntegrationTest
             'type' => Cashbook\CashbookType::EVENT,
         ]);
         $this->tester->seeInDatabase(self::CHIT_TABLE, $chit);
+    }
+
+    private function mockCategory(int $id): ICategory
+    {
+        return m::mock(ICategory::class, [
+            'getId' => $id,
+            'getOperationType' => Operation::get(Operation::INCOME),
+        ]);
     }
 
 }

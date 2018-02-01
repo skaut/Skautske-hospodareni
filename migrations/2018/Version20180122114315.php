@@ -17,6 +17,15 @@ class Version20180122114315 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE ac_cashbook ADD type VARCHAR(255) NOT NULL COMMENT \'(DC2Type:string_enum)\'');
         $this->addSql('UPDATE ac_cashbook c JOIN ac_object o ON o.id = c.id SET c.type = o.type');
+        $this->addSql('ALTER TABLE ac_chits ADD category_operation_type VARCHAR(255) DEFAULT NULL COMMENT \'(DC2Type:string_enum)\'');
+        $this->addSql("
+                UPDATE ac_chits c
+                    JOIN ac_cashbook cb ON c.eventId = cb.id
+                    JOIN ac_chitsCategory ct ON c.category = ct.id
+                SET c.category_operation_type = ct.type
+                WHERE cb.type IN ('troop', 'unit', 'general') # cashbooks with static categories only
+                OR ct.id IN (12, 8) # static categories for camp (undefined income & undefined expense)
+        ");
     }
 
     public function postUp(Schema $schema): void

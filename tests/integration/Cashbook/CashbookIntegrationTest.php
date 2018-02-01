@@ -3,12 +3,12 @@
 namespace Model\Cashbook;
 
 use Cake\Chronos\Date;
-use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
+use Mockery as m;
 
 /**
  * These are in fact unit tests, that can't be tested without database right now, because chit ids are
@@ -46,9 +46,13 @@ class CashbookIntegrationTest extends \IntegrationTest
     public function testUnlockedChitCanBeUpdated(): void
     {
         $cashbook = $this->createCashbookWithLockedChit();
+        $category = $this->mockCategory(1);
+        $amount = new Cashbook\Amount('100');
+        $date = new Date('2017-11-17');
+        $recipient = new Recipient('František Maša');
 
         $cashbook->unlockChit(1);
-        $cashbook->updateChit(1, NULL, new Date('2013-11-17'), new Recipient('František Maša'), new Amount('100'), 'purpose', 1);
+        $cashbook->updateChit(1, NULL, $date, $recipient, $amount, 'purpose', $category);
 
         $event = $cashbook->extractEventsToDispatch()[0];
         $this->assertInstanceOf(ChitWasUpdated::class, $event);
@@ -61,19 +65,24 @@ class CashbookIntegrationTest extends \IntegrationTest
     public function testUpdateOfLockedChitThrowsException(): void
     {
         $cashbook = $this->createCashbookWithLockedChit();
-
+        $category = $this->mockCategory(666);
+        $date = new Date('2017-11-17');
+        $amount = new Cashbook\Amount('100');
         $this->expectException(ChitLockedException::class);
 
-        $cashbook->updateChit(1, NULL, new Date('2017-11-17'), NULL, new Cashbook\Amount('100'), 'new-purpose', 666);
+        $cashbook->updateChit(1, NULL, $date, NULL, $amount, 'new-purpose', $category);
     }
 
     public function testUpdateofNonExistentChitThrowsException(): void
     {
         $cashbook = $this->createCashbookWithChit();
+        $category = $this->mockCategory(666);
+        $amount = new Cashbook\Amount('100');
+        $date = new Date('2017-11-17');
 
         $this->expectException(ChitNotFoundException::class);
 
-        $cashbook->updateChit(2, NULL, new Date('2017-11-17'), NULL, new Cashbook\Amount('100'), 'new-purpose', 666);
+        $cashbook->updateChit(2, NULL, $date,NULL, $amount, 'new-purpose', $category);
     }
 
     public function testRemoveChit(): void
@@ -121,7 +130,11 @@ class CashbookIntegrationTest extends \IntegrationTest
     private function createCashbookWithChit(): Cashbook
     {
         $cashbook = new Cashbook(10, CashbookType::get(CashbookType::EVENT));
-        $cashbook->addChit(NULL, new Date('2017-11-17'), NULL, new Cashbook\Amount('100'), 'purpose', 666);
+        $category = $this->mockCategory(666);
+        $amount = new Cashbook\Amount('100');
+        $date = new Date('2017-11-17');
+
+        $cashbook->addChit(NULL, $date, NULL, $amount, 'purpose', $category);
         $cashbook->extractEventsToDispatch();
 
         // This assigns ID 1 to chit
@@ -142,7 +155,7 @@ class CashbookIntegrationTest extends \IntegrationTest
                 NULL,
                 new Cashbook\Amount('100'),
                 'purpose',
-                666
+                $this->mockCategory(666)
             );
         }
 
@@ -160,6 +173,14 @@ class CashbookIntegrationTest extends \IntegrationTest
         foreach($chits as $chit) {
             $this->assertTrue($chit->isLocked());
         }
+    }
+
+    private function mockCategory(int $id): ICategory
+    {
+        return m::mock(ICategory::class, [
+            'getId' => $id,
+            'getOperationType' => Operation::get(Operation::INCOME),
+        ]);
     }
 
 }
