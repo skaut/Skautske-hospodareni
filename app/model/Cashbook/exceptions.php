@@ -13,3 +13,7 @@ class ChitNotFoundException extends \Exception
 class ChitLockedException extends \Exception
 {
 }
+
+class CategoryNotFoundException extends \Exception
+{
+}

@@ -17,9 +17,6 @@ Model\Cashbook\Cashbook\Chit:
         recipient:
             type: recipient
             nullable: true
-        categoryId:
-            type: integer
-            column: category
         purpose:
             type: string
         locked:
@@ -30,6 +27,9 @@ Model\Cashbook\Cashbook\Chit:
     embedded:
         amount:
             class: Model\Cashbook\Cashbook\Amount
+            columnPrefix: false
+        category:
+            class: Model\Cashbook\Cashbook\Category
             columnPrefix: false
 
     manyToOne:

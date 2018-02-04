@@ -4,7 +4,7 @@ namespace Model\Cashbook;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-class Category
+class Category implements ICategory
 {
 
     public const EVENT_PARTICIPANTS_INCOME_CATEGORY_ID = 11;
@@ -58,6 +58,13 @@ class Category
     public function isIncome(): bool
     {
         return $this->operationType->equalsValue(Operation::INCOME);
+    }
+
+    public function supportsType(ObjectType $type): bool
+    {
+        return $this->types->exists(function ($_, Category\ObjectType $categoryType) use ($type): bool {
+            return $categoryType->getType()->equals($type);
+        });
     }
 
 }

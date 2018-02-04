@@ -5,11 +5,8 @@ Model\Cashbook\Category\ObjectType:
     table: ac_chitsCategory_object
 
     id:
-        id:
-            type: integer
-            generator: { strategy: AUTO }
-
-    fields:
+        category:
+            associationKey: true
         type:
             type: string_enum
             column: objectTypeId

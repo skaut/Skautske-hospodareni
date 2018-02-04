@@ -8,9 +8,6 @@ use Model\Cashbook\ObjectType as ObjectTypeEnum;
 class ObjectType
 {
 
-    /** @var int */
-    private $id;
-
     /** @var Category */
     private $category;
 

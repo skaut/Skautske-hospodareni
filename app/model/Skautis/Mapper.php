@@ -3,8 +3,10 @@
 namespace Model\Skautis;
 
 use eGen\MessageBus\Bus\CommandBus;
+use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\CreateCashbook;
 use Model\Cashbook\ObjectType;
+use Model\Payment\IUnitResolver;
 
 class Mapper
 {
@@ -18,6 +20,9 @@ class Mapper
     /** @var ObjectTable */
     private $table;
 
+    /** @var IUnitResolver */
+    private $unitResolver;
+
     /** @var CommandBus */
     private $commandBus;
 
@@ -25,10 +30,11 @@ class Mapper
     public const EVENT = 'general';
     public const CAMP = 'camp';
 
-    public function __construct(ObjectTable $table, CommandBus $commandBus)
+    public function __construct(ObjectTable $table, CommandBus $commandBus, IUnitResolver $unitResolver)
     {
         $this->table = $table;
         $this->commandBus = $commandBus;
+        $this->unitResolver = $unitResolver;
     }
 
     /**
@@ -81,7 +87,13 @@ class Mapper
 
         if ($localId === NULL) {
             $localId = $this->table->add($skautisId, $type);
-            $this->commandBus->handle(new CreateCashbook($localId));
+
+            if($type === ObjectType::UNIT) {
+                $isOfficialUnit = $this->unitResolver->getOfficialUnitId($skautisId) === $skautisId;
+                $type = $isOfficialUnit ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP;
+            }
+
+            $this->commandBus->handle(new CreateCashbook($localId, CashbookType::get($type)));
         }
 
         return $localId;

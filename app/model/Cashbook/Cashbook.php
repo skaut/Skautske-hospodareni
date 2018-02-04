@@ -5,6 +5,7 @@ namespace Model\Cashbook;
 use Cake\Chronos\Date;
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
@@ -16,13 +17,27 @@ use Model\Common\AbstractAggregate;
 class Cashbook extends AbstractAggregate
 {
 
+    /** @var CashbookType */
+    private $type;
+
     /** @var ArrayCollection|Chit[] */
     private $chits;
 
-    public function __construct(int $id)
+    public function __construct(int $id, CashbookType $type)
     {
         $this->id = $id;
+        $this->type = $type;
         $this->chits = new ArrayCollection();
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getType(): CashbookType
+    {
+        return $this->type;
     }
 
     public function addChit(
@@ -31,15 +46,16 @@ class Cashbook extends AbstractAggregate
         ?Recipient $recipient,
         Amount $amount,
         string $purpose,
-        int $categoryId
+        ICategory $category
     ): void
     {
-        $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $categoryId);
-        $this->raise(new ChitWasAdded($this->id, $categoryId));
+        $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $category);
+        $this->raise(new ChitWasAdded($this->id, $category->getId()));
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @throws ChitNotFoundException
+     * @throws ChitLockedException
      */
     public function updateChit(
         int $chitId,
@@ -48,7 +64,7 @@ class Cashbook extends AbstractAggregate
         ?Recipient $recipient,
         Amount $amount,
         string $purpose,
-        int $categoryId
+        ICategory $category
     ): void
     {
         $chit = $this->getChit($chitId);
@@ -58,9 +74,9 @@ class Cashbook extends AbstractAggregate
             throw new ChitLockedException();
         }
 
-        $chit->update($number, $date, $recipient, $amount, $purpose, $categoryId);
+        $chit->update($number, $date, $recipient, $amount, $purpose, $category);
 
-        $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $categoryId));
+        $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $category->getId()));
     }
 
     /**

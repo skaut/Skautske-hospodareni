@@ -19,7 +19,7 @@ final class CreateCashbookHandler
 
     public function handle(CreateCashbook $command): void
     {
-        $cashbook = new Cashbook($command->getId());
+        $cashbook = new Cashbook($command->getId(), $command->getType());
 
         $this->cashbooks->save($cashbook);
     }

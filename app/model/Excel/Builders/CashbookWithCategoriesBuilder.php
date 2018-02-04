@@ -5,7 +5,7 @@ namespace Model\Excel\Builders;
 use Dibi\Row;
 use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
-use Model\Cashbook\Repositories\ICategoryRepository;
+use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\EventEntity;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -15,7 +15,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class CashbookWithCategoriesBuilder
 {
 
-    /** @var ICategoryRepository */
+    /** @var IStaticCategoryRepository */
     private $categories;
 
     /** @var Worksheet */
@@ -30,7 +30,7 @@ class CashbookWithCategoriesBuilder
     // Coefficient for minimal size of column
     private const COLUMN_WIDTH_COEFFICIENT = 1.1;
 
-    public function __construct(ICategoryRepository $categories)
+    public function __construct(IStaticCategoryRepository $categories)
     {
         $this->categories = $categories;
     }
