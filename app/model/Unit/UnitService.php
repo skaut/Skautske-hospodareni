@@ -38,7 +38,7 @@ class UnitService
     }
 
     /**
-     * @deprecated Use UnitService::getDetailV2()
+     * @deprecated Use QueryBus with UnitQuery
      *
      * vrací detail jednotky
      * @throws \Nette\Application\BadRequestException
@@ -62,6 +62,7 @@ class UnitService
     }
 
     /**
+     * @deprecated Use QueryBus with UnitQuery
      * @throws \Nette\Application\BadRequestException
      */
     public function getDetailV2(int $unitId): Unit
