@@ -85,4 +85,11 @@ class Unit
         return in_array($this->type, self::OFFICIAL_UNIT_TYPES, TRUE);
     }
 
+    public function getShortRegistrationNumber(): string
+    {
+        $splitNumber = explode('.', $this->registrationNumber);
+
+        return end($splitNumber);
+    }
+
 }

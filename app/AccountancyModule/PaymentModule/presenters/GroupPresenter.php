@@ -17,6 +17,7 @@ use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
+use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\Payment\VariableSymbol;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
@@ -93,6 +94,11 @@ class GroupPresenter extends BasePresenter
             unset($this['groupForm']['skautisEntityId']);
             $this->template->nadpis = "Založení skupiny plateb";
         }
+
+        $defaultNextVs = $this->queryBus->handle(
+            new NextVariableSymbolSequenceQuery($this->getCurrentUnitId(), new \DateTimeImmutable())
+        );
+        $this['groupForm']['nextVs']->setDefaultValue($defaultNextVs);
 
         $this->template->linkBack = $this->link("Default:");
     }
