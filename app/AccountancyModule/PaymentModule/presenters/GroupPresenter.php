@@ -123,29 +123,28 @@ class GroupPresenter extends BasePresenter
             $this->redirect("Payment:default");
         }
 
-        $dto = $this->model->getGroup($id);
         $form->setDefaults([
-            "label" => $dto->getName(),
-            "amount" => $dto->getDefaultAmount(),
-            "dueDate" => $dto->getDueDate() ? $dto->getDueDate()->format(\DateTime::ISO8601) : NULL,
-            "constantSymbol" => $dto->getConstantSymbol(),
-            "nextVs" => $dto->getNextVariableSymbol(),
-            "smtp" => $dto->getSmtpId(),
+            "label" => $group->getName(),
+            "amount" => $group->getDefaultAmount(),
+            "dueDate" => $group->getDueDate() ? $group->getDueDate()->format(\DateTime::ISO8601) : NULL,
+            "constantSymbol" => $group->getConstantSymbol(),
+            "nextVs" => $group->getNextVariableSymbol(),
+            "smtp" => $group->getSmtpId(),
             'emails' => [
                 EmailType::PAYMENT_INFO => $this->getEmailDefaults($id, EmailType::get(EmailType::PAYMENT_INFO)),
                 EmailType::PAYMENT_COMPLETED => $this->getEmailDefaults($id, EmailType::get(EmailType::PAYMENT_COMPLETED)),
             ],
             "groupId" => $id,
-            'bankAccount' => $dto->getBankAccountId(),
+            'bankAccount' => $group->getBankAccountId(),
         ]);
 
-        $existsPaymentWithVS = $this->model->getMaxVariableSymbol($dto->getId()) !== NULL;
+        $existsPaymentWithVS = $this->model->getMaxVariableSymbol($group->getId()) !== NULL;
 
         if($existsPaymentWithVS) {
             $form["nextVs"]->setDisabled(TRUE);
         }
 
-        $this->template->nadpis = "Editace skupiny: " . $dto->getName();
+        $this->template->nadpis = "Editace skupiny: " . $group->getName();
         $this->template->linkBack = $this->link("Payment:detail", ["id" => $id]);
     }
 
