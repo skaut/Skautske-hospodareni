@@ -142,7 +142,7 @@ services:
     - Model\Skautis\UnitRepository(@skautis.org)
     - Model\Skautis\Common\Repositories\UserRepository(@skautis.webservice.user, @skautis.org)
     - Model\Skautis\EventRepository(@skautis.event)
-    - Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.event)
+    - Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.cached.event)
 
     # Skautis webservices
     skautis.org:
@@ -154,6 +154,8 @@ services:
     skautis.webservice.user:
         factory: Model\Skautis\WebserviceFactory::createCached('user')
         tags: [lookyman.lazy]
+    skautis.cached.event:
+        factory: Model\Skautis\WebserviceFactory::createCached('event')
 
     nette.latteFactory:
         setup:
