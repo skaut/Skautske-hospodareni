@@ -14,6 +14,20 @@ class AmountTest extends \Codeception\Test\Unit
         $this->assertSame($expectedResult, $amount->getValue());
     }
 
+    public function testResultCantBeNegative(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Amount('-100');
+    }
+
+    public function testResultCantBeZero(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Amount('0');
+    }
+
     /**
      * @return array[]
      */
@@ -45,7 +59,6 @@ class AmountTest extends \Codeception\Test\Unit
         return [
             ['5 * 5', 25.0],
             ['5*5', 25.0],
-            ['5*0', 0.0],
             ['3*3*3', 27.0],
         ];
     }

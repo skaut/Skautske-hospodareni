@@ -15,6 +15,10 @@ class Amount
     {
         $this->expression = str_replace(',', '.', $expression);
         $this->value = $this->calculateValue();
+
+        if ($this->value <= 0) {
+            throw new \InvalidArgumentException('Expression result must be larger than 0');
+        }
     }
 
     public function getExpression(): string
