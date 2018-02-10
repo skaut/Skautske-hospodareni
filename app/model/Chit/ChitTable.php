@@ -62,23 +62,6 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * vrací všechny informace o kategoriích
-     * @return array
-     */
-    public function getGeneralCategories(?string $type = NULL)
-    {
-        return $this->connection->fetchAll("SELECT * FROM [" . self::TABLE_CATEGORY . "] WHERE deleted = 0 %if", isset($type), " AND type=%s %end", $type);
-    }
-
-    /**
-     * celková cena v dané kategorii
-     */
-    public function getTotalInCategory(int $categoryId, int $eId): int
-    {
-        return (int)$this->connection->fetchSingle("SELECT SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE category = %i", $categoryId, " AND deleted=0 AND eventId=%i", $eId, " GROUP BY eventId");
-    }
-
-    /**
      * spočítá příjmy a výdaje a ty pak odečte
      *
      * @TODO refactor to Cashbook aggregate
