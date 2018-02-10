@@ -4,8 +4,11 @@ namespace Model;
 
 use Dibi\Row;
 use eGen\MessageBus\Bus\CommandBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\Operation;
+use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Skautis\Mapper;
 use Skautis\Skautis;
 
@@ -25,18 +28,23 @@ class ChitService extends MutableBaseService
     /** @var CommandBus */
     private $commandBus;
 
+    /** @var QueryBus */
+    private $queryBus;
+
     public function __construct(
         string $name,
         ChitTable $table,
         Skautis $skautIS,
         Mapper $skautisMapper,
-        CommandBus $commandBus
+        CommandBus $commandBus,
+        QueryBus $queryBus
     )
     {
         parent::__construct($name, $skautIS);
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
         $this->commandBus = $commandBus;
+        $this->queryBus = $queryBus;
     }
 
     /**
@@ -142,33 +150,27 @@ class ChitService extends MutableBaseService
     }
 
     /**
+     * @deprecated Use query bus with CategoryPairsQuery
+     * @see CategoryPairsQuery
+     *
      * vrací rozpočtové kategorie rozdělené na příjmy a výdaje (camp)
-     * @param int|NULL $skautisEventId
+     *
      * @return array array(in=>(id=>DisplayName, ...), out=>(...))
      */
-    public function getCategoriesPairs($typeInOut = NULL, $skautisEventId = NULL): array
+    public function getCategoriesPairs(?string $typeInOut, int $skautisEventId): array
     {
-        $cacheId = __METHOD__ . $this->type . $skautisEventId . "_" . $typeInOut;
-        if ($this->type === ObjectType::CAMP) {
-            if (is_null($skautisEventId)) {
-                throw new \InvalidArgumentException("Neplatný vstup \$skautisEventId=NULL pro " . __FUNCTION__);
-            }
-            $in = $out = [];
-            if (!($categories = $this->loadSes($cacheId))) {
-                foreach ($this->getCategories($skautisEventId, FALSE) as $i) {
-                    if ($i->IsRevenue) {//výnosy?
-                        $in[$i->ID] = $i->EventCampStatementType;
-                    } else {
-                        $out[$i->ID] = $i->EventCampStatementType;
-                    }
-                }
-                $categories = ["in" => $in, "out" => $out];
-                $this->saveSes($cacheId, $categories);
-            }
-            return is_null($typeInOut) ? $categories : $categories[$typeInOut];
-        } else {
-            return $this->table->getCategoriesPairsByType($this->type, $typeInOut);
+        $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
+
+        if ($typeInOut === NULL) {
+            return [
+                Operation::INCOME => $this->getCategoriesPairs(Operation::INCOME, $skautisEventId),
+                Operation::EXPENSE => $this->getCategoriesPairs(Operation::EXPENSE, $skautisEventId),
+            ];
         }
+
+        return $this->queryBus->handle(
+            new CategoryPairsQuery($cashbookId, $typeInOut !== NULL ? Operation::get($typeInOut) : NULL)
+        );
     }
 
     /**
