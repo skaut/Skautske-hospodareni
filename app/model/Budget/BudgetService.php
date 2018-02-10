@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Model\Cashbook\ObjectType;
 use Model\Skautis\Mapper;
 use Skautis\Skautis;
 
@@ -23,17 +24,17 @@ class BudgetService extends BaseService
 
     public function getCategories($oid)
     {
-        $localId = $this->getLocalId($oid, self::TYPE_UNIT);
+        $localId = $this->getLocalId($oid);
         return [
             "in" => $this->getCategoriesAll($localId, "in"),
             "out" => $this->getCategoriesAll($localId, "out")
         ];
     }
 
-    public function addCategory($oid, $label, $type, $parentId, $value, $year): void
+    public function addCategory(int $oid, $label, $type, $parentId, $value, $year): void
     {
         $this->table->addCategory([
-            "objectId" => $this->getLocalId($oid, self::TYPE_UNIT),
+            "objectId" => $this->getLocalId($oid),
             "label" => $label,
             "type" => $type,
             "parentId" => $parentId,
@@ -44,7 +45,7 @@ class BudgetService extends BaseService
 
     public function getCategoriesRoot(int $oid, $type = NULL)
     {
-        $localId = $this->getLocalId($oid, self::TYPE_UNIT);
+        $localId = $this->getLocalId($oid);
 
         if (is_null($type)) {
             return [
@@ -63,7 +64,7 @@ class BudgetService extends BaseService
                 'out' => $this->{__FUNCTION__}($oid, 'out'),
             ];
         }
-        return $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), $type)->where("parentId IS NOT NULL")->fetchPairs("id", "label");
+        return $this->table->getDS($this->getLocalId($oid), $type)->where("parentId IS NOT NULL")->fetchPairs("id", "label");
     }
 
     public function getCategoriesAll($oid, $type, $parentId = NULL)
@@ -75,9 +76,9 @@ class BudgetService extends BaseService
         return $data;
     }
 
-    private function getLocalId(int $id, string $type) : int
+    private function getLocalId(int $id) : int
     {
-        return $this->skautisMapper->getLocalId($id, $type);
+        return $this->skautisMapper->getLocalId($id, ObjectType::UNIT);
     }
 
 }
