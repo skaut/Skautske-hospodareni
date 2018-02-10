@@ -41,11 +41,11 @@ class BudgetService
         ]);
     }
 
-    public function getCategoriesRoot(int $oid, $type = NULL)
+    public function getCategoriesRoot(int $oid, ?string $type = NULL)
     {
         $localId = $this->getLocalId($oid);
 
-        if (is_null($type)) {
+        if ($type === NULL) {
             return [
                 'in' => $this->table->getDS($localId, 'in')->where("parentId IS NULL")->fetchPairs("id", "label"),
                 'out' => $this->table->getDS($localId, 'out')->where("parentId IS NULL")->fetchPairs("id", "label")
@@ -54,9 +54,9 @@ class BudgetService
         return $this->table->getDS($localId, $type)->where("parentId IS NULL")->fetchPairs("id", "label");
     }
 
-    public function getCategoriesLeaf(int $oid, $type = NULL)
+    public function getCategoriesLeaf(int $oid, ?string $type = NULL)
     {
-        if (is_null($type)) {
+        if ($type === NULL) {
             return [
                 'in' => $this->{__FUNCTION__}($oid, 'in'),
                 'out' => $this->{__FUNCTION__}($oid, 'out'),
