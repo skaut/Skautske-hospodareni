@@ -4,9 +4,8 @@ namespace Model;
 
 use Model\Cashbook\ObjectType;
 use Model\Skautis\Mapper;
-use Skautis\Skautis;
 
-class BudgetService extends BaseService
+class BudgetService
 {
 
     /** @var Mapper */
@@ -15,11 +14,10 @@ class BudgetService extends BaseService
     /** @var BudgetTable */
     private $table;
 
-    public function __construct(BudgetTable $table, Skautis $skautis, Mapper $skautisMapper)
+    public function __construct(BudgetTable $table, Mapper $skautisMapper)
     {
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
-        parent::__construct($skautis);
     }
 
     public function getCategories($oid)
