@@ -4,7 +4,6 @@ namespace Model;
 
 use Dibi\Row;
 use eGen\MessageBus\Bus\CommandBus;
-use eGen\MessageBus\Bus\EventBus;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\ObjectType;
 use Model\Skautis\Mapper;
@@ -26,23 +25,18 @@ class ChitService extends MutableBaseService
     /** @var CommandBus */
     private $commandBus;
 
-    /** @var EventBus */
-    private $eventBus;
-
     public function __construct(
         string $name,
         ChitTable $table,
         Skautis $skautIS,
         Mapper $skautisMapper,
-        CommandBus $commandBus,
-        EventBus $eventBus
+        CommandBus $commandBus
     )
     {
         parent::__construct($name, $skautIS);
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
         $this->commandBus = $commandBus;
-        $this->eventBus = $eventBus;
     }
 
     /**
