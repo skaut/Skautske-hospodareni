@@ -128,9 +128,6 @@ class ChitService extends MutableBaseService
     public function getCategories(int $skautisEventId, bool $isEstimate = FALSE): array
     {
         if ($this->type == self::TYPE_CAMP) {
-            if (is_null($skautisEventId)) {
-                throw new \InvalidArgumentException("Neplatný vstup \$skautisEventId=NULL pro " . __FUNCTION__);
-            }
             //přidání kategorií k táborům
             $res = [//8 a 12 jsou ID použitá i u výprav
                 self::CHIT_UNDEFINED_OUT => (object)["ID" => self::CHIT_UNDEFINED_OUT, "IsRevenue" => FALSE, "EventCampStatementType" => "Neurčeno", "Ammount" => 0],
@@ -170,7 +167,7 @@ class ChitService extends MutableBaseService
         }
 
         return $this->queryBus->handle(
-            new CategoryPairsQuery($cashbookId, $typeInOut !== NULL ? Operation::get($typeInOut) : NULL)
+            new CategoryPairsQuery($cashbookId, Operation::get($typeInOut))
         );
     }
 
