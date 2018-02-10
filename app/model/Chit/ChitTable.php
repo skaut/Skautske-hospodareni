@@ -62,15 +62,6 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * vrací seznam kategorií obecné akce
-     * @return array
-     */
-    public function getCategoriesPairsByType(string $type, ?string $inout = NULL)
-    {
-        return $this->connection->fetchPairs("SELECT id, label FROM [" . self::TABLE_CATEGORY . "] c LEFT JOIN [" . self::TABLE_CATEGORY_OBJECT . "] cc ON cc.categoryId = c.id WHERE deleted = 0 and cc.objectTypeId = %s ",$type," %if", isset($inout), " AND type=%s %end", $inout, "ORDER BY orderby DESC");
-    }
-
-    /**
      * vrací všechny informace o kategoriích
      * @return array
      */

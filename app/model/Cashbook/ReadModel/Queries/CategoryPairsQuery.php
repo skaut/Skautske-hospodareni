@@ -19,7 +19,7 @@ final class CategoryPairsQuery
     /** @var Operation|NULL */
     private $operationType;
 
-    public function __construct(int $cashbookId, ?Operation $operationType)
+    public function __construct(int $cashbookId, ?Operation $operationType = NULL)
     {
         $this->cashbookId = $cashbookId;
         $this->operationType = $operationType;

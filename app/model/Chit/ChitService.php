@@ -122,11 +122,10 @@ class ChitService extends MutableBaseService
 
     /**
      * seznam všech kategorií pro daný typ
-     * @param int|NULL $skautisEventId
      * @param bool $isEstimate - předpoklad?
      * @return array
      */
-    public function getCategories($skautisEventId, bool $isEstimate = FALSE)
+    public function getCategories(int $skautisEventId, bool $isEstimate = FALSE): array
     {
         if ($this->type == self::TYPE_CAMP) {
             if (is_null($skautisEventId)) {
@@ -144,9 +143,11 @@ class ChitService extends MutableBaseService
                 $res[$i->ID] = $i;
             }
             return $res;
-        } else {
-            return $this->table->getCategoriesPairsByType($this->type);
         }
+
+        $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
+
+        return $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
     }
 
     /**
@@ -203,7 +204,7 @@ class ChitService extends MutableBaseService
      * @param int $skautisEventId
      * @return array (ID=>SUM)
      */
-    public function getCategoriesSum($skautisEventId)
+    public function getCategoriesSum(int $skautisEventId)
     {
         $db = $this->table->getTotalInCategories($this->getLocalId($skautisEventId));
         $all = $this->getCategories($skautisEventId, FALSE);
