@@ -137,7 +137,7 @@
                 <tr>
                     <td colspan="3" rowspan="3" style='vertical-align: bottom;'>K vyúčtování připojuji .......... dokladů.</td>
                     <td colspan="3">Celkem po zaokrouhlení dolu</td>
-                    <td>{$command->total|price:true:true}</td>
+                    <td>{$command->total|floor|price}</td>
                     <td></td>
                 </tr>
                 <tr>

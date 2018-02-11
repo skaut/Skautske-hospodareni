@@ -19,7 +19,7 @@ final class PersonFactory
         return new Person(
             $function->ID_Person,
             $function->Person,
-            isset($function->Email) ? $function->Email : ""
+            $function->Email ?? ''
         );
     }
 

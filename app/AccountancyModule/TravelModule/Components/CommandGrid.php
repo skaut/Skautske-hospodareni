@@ -39,7 +39,7 @@ class CommandGrid extends BaseGridControl
         $grid->addColumnText('types', 'Prostředek');
         $grid->addColumnText('vehicle', 'Vozidlo');
         $grid->addColumnDateTime('firstTravelDate', 'První jízda')->setSortable();
-        $grid->addColumnText('total', 'Cena')->setSortable();
+        $grid->addColumnNumber('total', 'Cena')->setSortable();
         $grid->addColumnText('note', 'Poznámka');
         $grid->addColumnText('state', 'Stav')
             ->setSortable()

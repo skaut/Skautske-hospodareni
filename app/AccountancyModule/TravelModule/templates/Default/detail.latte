@@ -98,7 +98,7 @@
                 <tr>
                     <th n:if="$isEditable">&nbsp;</th>
                     <th colspan="5" class="r">Celkem po zaokrouhlení dolu: </th>
-                    <th>{$command->total|price:true:true}&nbsp;Kč</th>
+                    <th>{$command->total|floor|price}&nbsp;Kč</th>
                 </tr>
             {/if}
         </table>

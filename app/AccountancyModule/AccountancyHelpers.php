@@ -102,7 +102,7 @@ abstract class AccountancyHelpers extends Object
      * @param float|string|Money|NULL $price
      * http://prirucka.ujc.cas.cz/?id=786
      */
-    public static function price($price, $full = TRUE, $floor = FALSE): string
+    public static function price($price, $full = TRUE): string
     {
         if ($price === NULL || $price === '') {
             return ' '; //je tam nedělitelná mezera
@@ -113,11 +113,15 @@ abstract class AccountancyHelpers extends Object
             $price = (float)$price->getAmount() / 100;
         }
 
-        if ($floor) {
-            $price = floor($floor);
-        }
-
         return number_format((float)$price, $decimals, ",", " "); //nedělitelná mezera
+    }
+
+    public static function floor($num)
+    {
+        if ($num instanceof Money) {
+            $num = (float)$num->getAmount() / 100;
+        }
+        return floor($num);
     }
 
     /**
