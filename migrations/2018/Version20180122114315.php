@@ -6,6 +6,7 @@ use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Payment\IUnitResolver;
+use Model\Unit\UnitHasNoParentException;
 
 class Version20180122114315 extends AbstractMigration
 {
@@ -34,12 +35,16 @@ class Version20180122114315 extends AbstractMigration
             "SELECT c.id as id, o.skautisId as unit_id FROM ac_cashbook c JOIN ac_object o ON o.id = c.id WHERE c.type = 'unit'"
         );
 
-        foreach($unitCashbooks as $cashbook) {
-            $cashbook['unit_id'] = (int) $cashbook['unit_id'];
-            $isOfficialUnit = $this->unitResolver->getOfficialUnitId($cashbook['unit_id']) === $cashbook['unit_id'];
-            $this->connection->update('ac_cashbook', [
-                'type' => $isOfficialUnit ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP,
-            ], ['id' => $cashbook['id']]);
+        foreach ($unitCashbooks as $cashbook) {
+            $cashbook['unit_id'] = (int)$cashbook['unit_id'];
+            try {
+                $isOfficialUnit = $this->unitResolver->getOfficialUnitId($cashbook['unit_id']) === $cashbook['unit_id'];
+                $this->connection->update('ac_cashbook', [
+                    'type' => $isOfficialUnit ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP,
+                ], ['id' => $cashbook['id']]);
+            } catch (UnitHasNoParentException $exc) {
+                echo "ERROR: " . $exc->getMessage();
+            }
         }
     }
 
