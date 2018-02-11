@@ -10,7 +10,6 @@ use Model\Travel\Command\TravelDetails;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
-use Nette\Bridges\ApplicationLatte\Template;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -42,7 +41,7 @@ class DefaultPresenter extends BasePresenter
         return $command !== NULL && $command->getUnitId() === $this->getUnitId();
     }
 
-    private function isCommandEditable(int $id) : bool
+    private function isCommandEditable(int $id): bool
     {
         $command = $this->travelService->getCommandDetail($id);
 
@@ -50,7 +49,7 @@ class DefaultPresenter extends BasePresenter
     }
 
 
-    public function actionDetail(int $id) : void
+    public function actionDetail(int $id): void
     {
         if ($id == NULL) {
             $this->redirect("default");
@@ -67,14 +66,14 @@ class DefaultPresenter extends BasePresenter
     {
         $this->template->command = $command = $this->travelService->getCommandDetail($id);
         $this->template->vehicle = $command->getVehicleId() !== NULL
-                                 ? $this->travelService->getVehicle($command->getVehicleId())
-                                 : NULL;
+            ? $this->travelService->getVehicle($command->getVehicleId())
+            : NULL;
         $this->template->isEditable = $this->isEditable = $this->unit->ID === $command->getUnitId() && $command->getClosedAt() === NULL;
         $this->template->travels = $this->travelService->getTravels($command->getId());
         $this->template->types = $this->travelService->getCommandTypes($command->getId());
     }
 
-    public function actionPrint(int $commandId) : void
+    public function actionPrint(int $commandId): void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Neoprávněný přístup k záznamu!", "danger");
@@ -108,7 +107,7 @@ class DefaultPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function handleCloseCommand(int $commandId) : void
+    public function handleCloseCommand(int $commandId): void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo uzavřít cestovní příkaz.", "danger");
@@ -120,7 +119,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleOpenCommand(int $commandId) : void
+    public function handleOpenCommand(int $commandId): void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo otevřít cestovní příkaz.", "danger");
@@ -134,7 +133,7 @@ class DefaultPresenter extends BasePresenter
 
     public function handleRemoveTravel(int $commandId, int $travelId): void
     {
-        if(!$this->isCommandEditable($commandId)) {
+        if (!$this->isCommandEditable($commandId)) {
             $this->flashMessage("Nemáte oprávnění smazat cestu.", "danger");
             $this->redirect("default");
         }
@@ -145,7 +144,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleRemoveCommand(int $commandId) : void
+    public function handleRemoveCommand(int $commandId): void
     {
         if (!$this->isCommandAccessible($commandId)) {
             $this->flashMessage("Nemáte právo upravovat záznam.", "danger");
@@ -157,7 +156,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("default");
     }
 
-    protected function createComponentFormAddTravel() : Form
+    protected function createComponentFormAddTravel(): Form
     {
         $form = new BaseForm();
         $form->getElementPrototype()->class("form-inline");
@@ -179,13 +178,13 @@ class DefaultPresenter extends BasePresenter
         $form->addSubmit('send', 'Přidat')
             ->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function(Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formAddTravelSubmitted($form);
         };
         return $form;
     }
 
-    private function formAddTravelSubmitted(Form $form) : void
+    private function formAddTravelSubmitted(Form $form): void
     {
         $v = $form->getValues();
         $commandId = (int)$v->command_id;
@@ -211,7 +210,7 @@ class DefaultPresenter extends BasePresenter
      * EDIT TRAVEL
      */
 
-    public function actionEditTravel(int $commandId, int $travelId) : void
+    public function actionEditTravel(int $commandId, int $travelId): void
     {
         $travel = $this->travelService->getTravel($commandId, $travelId);
 
@@ -235,7 +234,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->form = $form;
     }
 
-    protected function createComponentFormEditTravel() : Form
+    protected function createComponentFormEditTravel(): Form
     {
         $form = new BaseForm();
 
@@ -257,7 +256,7 @@ class DefaultPresenter extends BasePresenter
         $form->addSubmit('send', 'Upravit')
             ->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function(Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formEditTravelSubmitted($form);
         };
 

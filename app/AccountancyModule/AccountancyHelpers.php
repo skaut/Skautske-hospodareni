@@ -32,7 +32,7 @@ abstract class AccountancyHelpers extends Object
      * zobrazení stavu ve formě ikony
      */
 
-    public static function eventStateLabel($s) : string
+    public static function eventStateLabel($s): string
     {
         if ($s == "draft") {
             return '<span class="label label-warning hidden-xs hidden-sm">Rozpracováno</span>'
@@ -49,7 +49,7 @@ abstract class AccountancyHelpers extends Object
      * zobrazuje popisky stavů u táborů
      */
 
-    public static function campStateLabel($s) : string
+    public static function campStateLabel($s): string
     {
         switch ($s) {
             case "draft":
@@ -65,9 +65,9 @@ abstract class AccountancyHelpers extends Object
         }
     }
 
-    public static function commandState(?DateTimeInterface $s) : string
+    public static function commandState(?DateTimeInterface $s): string
     {
-        if($s === NULL) {
+        if ($s === NULL) {
             return '<span class="label label-warning hidden-xs hidden-sm">Rozpracovaný</span>'
                 . '<span class="label label-warning hidden-md hidden-lg">Rozpr.</span>';
         }
@@ -109,7 +109,7 @@ abstract class AccountancyHelpers extends Object
         }
         $decimals = $full ? 2 : 0;
 
-        if($price instanceof Money) {
+        if ($price instanceof Money) {
             $price = (float)$price->getAmount() / 100;
         }
 
