@@ -2,10 +2,10 @@
 
 namespace Model;
 
+use Model\Cashbook\ObjectType;
 use Model\Skautis\Mapper;
-use Skautis\Skautis;
 
-class BudgetService extends BaseService
+class BudgetService
 {
 
     /** @var Mapper */
@@ -14,26 +14,25 @@ class BudgetService extends BaseService
     /** @var BudgetTable */
     private $table;
 
-    public function __construct(BudgetTable $table, Skautis $skautis, Mapper $skautisMapper)
+    public function __construct(BudgetTable $table, Mapper $skautisMapper)
     {
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
-        parent::__construct($skautis);
     }
 
     public function getCategories($oid)
     {
-        $localId = $this->getLocalId($oid, self::TYPE_UNIT);
+        $localId = $this->getLocalId($oid);
         return [
             "in" => $this->getCategoriesAll($localId, "in"),
             "out" => $this->getCategoriesAll($localId, "out")
         ];
     }
 
-    public function addCategory($oid, $label, $type, $parentId, $value, $year): void
+    public function addCategory(int $oid, $label, $type, $parentId, $value, $year): void
     {
         $this->table->addCategory([
-            "objectId" => $this->getLocalId($oid, self::TYPE_UNIT),
+            "objectId" => $this->getLocalId($oid),
             "label" => $label,
             "type" => $type,
             "parentId" => $parentId,
@@ -42,11 +41,11 @@ class BudgetService extends BaseService
         ]);
     }
 
-    public function getCategoriesRoot(int $oid, $type = NULL)
+    public function getCategoriesRoot(int $oid, ?string $type = NULL)
     {
-        $localId = $this->getLocalId($oid, self::TYPE_UNIT);
+        $localId = $this->getLocalId($oid);
 
-        if (is_null($type)) {
+        if ($type === NULL) {
             return [
                 'in' => $this->table->getDS($localId, 'in')->where("parentId IS NULL")->fetchPairs("id", "label"),
                 'out' => $this->table->getDS($localId, 'out')->where("parentId IS NULL")->fetchPairs("id", "label")
@@ -55,15 +54,15 @@ class BudgetService extends BaseService
         return $this->table->getDS($localId, $type)->where("parentId IS NULL")->fetchPairs("id", "label");
     }
 
-    public function getCategoriesLeaf(int $oid, $type = NULL)
+    public function getCategoriesLeaf(int $oid, ?string $type = NULL)
     {
-        if (is_null($type)) {
+        if ($type === NULL) {
             return [
                 'in' => $this->{__FUNCTION__}($oid, 'in'),
                 'out' => $this->{__FUNCTION__}($oid, 'out'),
             ];
         }
-        return $this->table->getDS($this->getLocalId($oid, self::TYPE_UNIT), $type)->where("parentId IS NOT NULL")->fetchPairs("id", "label");
+        return $this->table->getDS($this->getLocalId($oid), $type)->where("parentId IS NOT NULL")->fetchPairs("id", "label");
     }
 
     public function getCategoriesAll($oid, $type, $parentId = NULL)
@@ -75,9 +74,9 @@ class BudgetService extends BaseService
         return $data;
     }
 
-    private function getLocalId(int $id, string $type) : int
+    private function getLocalId(int $id) : int
     {
-        return $this->skautisMapper->getLocalId($id, $type);
+        return $this->skautisMapper->getLocalId($id, ObjectType::UNIT);
     }
 
 }
