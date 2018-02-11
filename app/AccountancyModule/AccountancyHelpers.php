@@ -116,7 +116,10 @@ abstract class AccountancyHelpers extends Object
         return number_format((float)$price, $decimals, ",", " "); //nedělitelná mezera
     }
 
-    public static function floor($num)
+    /**
+     * @param int|float|Money $num
+     */
+    public static function floor($num): float
     {
         if ($num instanceof Money) {
             $num = (float)$num->getAmount() / 100;
