@@ -89,14 +89,16 @@ class ChitTable extends BaseTable
 
     /**
      * spočítá příjmy a výdaje a ty pak odečte
+     *
+     * @TODO refactor to Cashbook aggregate
      */
     public function eventIsInMinus(int $localEventId): bool
     {
-        $data = $this->connection->fetchAll("SELECT cat.type, SUM(ch.price) as sum FROM [" . self::TABLE_CHIT . "] as ch
+        $finalBalance = $this->connection->fetchSingle("SELECT SUM(IF(cat.type = 'in', ch.price, ch.price * -1)) FROM [" . self::TABLE_CHIT . "] as ch
             LEFT JOIN [" . self::TABLE_CATEGORY . "] as cat ON (ch.category = cat.id) 
-            WHERE ch.eventId = %i AND ch.deleted = 0
-            GROUP BY cat.type", $localEventId);
-        return (bool)$data;
+            WHERE ch.eventId = %i AND ch.deleted = 0", $localEventId);
+
+        return $finalBalance < 0;
     }
 
     /**
