@@ -244,7 +244,11 @@ trait CashbookTrait
             ->setMaxLength(5)
             ->setRequired(FALSE)
             ->addRule($form::MAX_LENGTH, 'Maximální délka čísla dokladu je %d znaků', 5)
-            ->addRule($form::PATTERN, 'Číslo dokladu musí být číslo, případně číslo s prefixem až 3 velkých písmen', ChitNumber::PATTERN)
+            ->addRule(
+                $form::PATTERN,
+                'Číslo dokladu musí být číslo, případně číslo s prefixem až 3 velkých písmen. Pro dělené doklady můžete použít číslo za / (např. V01/1)',
+                ChitNumber::PATTERN
+            )
             ->getControlPrototype()->placeholder("Číslo")
             ->class("form-control input-sm");
         $form->addText("purpose", "Účel výplaty:")

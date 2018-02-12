@@ -39,7 +39,10 @@ class ChitNumberTest extends Unit
             ['1A', 'letter postfix'],
             ['', 'empty number'],
             ['$1', 'non-alphanumeric symbol'],
-            ['ABCD1', 'prefix longer than 3 symbols']
+            ['ABCD1', 'prefix longer than 3 symbols'],
+            ['A/01', 'slash at the beginning of numberic part'],
+            ['/A01', 'slash at the beginning of number'],
+            ['A01/', 'slash at the end of number'],
         ];
     }
 
@@ -52,6 +55,7 @@ class ChitNumberTest extends Unit
             ['A1'],
             ['0'],
             ['A0'],
+            ['A1/1'],
         ];
     }
 
