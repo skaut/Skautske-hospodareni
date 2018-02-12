@@ -91,59 +91,6 @@ class UserService extends BaseService
         return $this->skautis->getUser()->updateLogoutTime()->getLogoutDate();
     }
 
-    /**
-     * @deprecated Use UserService::getAvailableActions and search
-     * @param string $table - tabulka v DB skautisu
-     * @param int|NULL $id - např. ID_EventGeneral, NULL = oveření nad celou tabulkou
-     * @param string $ID_Action - id ověřované akce - např EV_EventGeneral_UPDATE
-     * @return bool|\stdClass|array
-     */
-    public function actionVerify($table, $id = NULL, $ID_Action = NULL)
-    {
-        $res = $this->skautis->user->ActionVerify([
-            "ID" => $id,
-            "ID_Table" => $table,
-            "ID_Action" => $ID_Action,
-        ]);
-        if ($ID_Action !== NULL) { //pokud je zadána konrétní funkce pro ověřování, tak se vrací BOOL
-            if ($res instanceof \stdClass) {
-                return FALSE;
-            }
-            if (is_array($res)) {
-                return TRUE;
-            }
-        }
-        if (is_array($res)) {
-            $tmp = [];
-            foreach ($res as $v) {
-                $tmp[$v->ID] = $v;
-            }
-            return $tmp;
-        }
-        return $res;
-    }
-
-    /**
-     * Returns available actions for given resource
-     * @return string[]
-     */
-    public function getAvailableActions(string $table, ?int $id = NULL): array
-    {
-        $result = $this->skautis->user->ActionVerify([
-            "ID" => $id,
-            "ID_Table" => $table,
-            "ID_Action" => NULL,
-        ]);
-
-        if(!is_array($result)) {
-            return [];
-        }
-
-        return array_map(function (\stdClass $value) {
-            return (string)$value->ID;
-        }, $result);
-    }
-
     public function getAccessArrays(UnitService $us)
     {
         $r = $this->getActualRole();
@@ -173,21 +120,6 @@ class UserService extends BaseService
     public function getSkautisUrl(): string
     {
         return $this->skautis->getConfig()->getBaseUrl();
-    }
-
-    public function isEventEditable(int $id): bool
-    {
-        return (bool) $this->actionVerify(self::SKAUTIS_GENERAL_PREFIX, $id, self::SKAUTIS_GENERAL_PREFIX. "_UPDATE");
-    }
-
-    public function isCampEditable(int $id): bool
-    {
-        $actions = $this->actionVerify(self::SKAUTIS_CAMP_PREFIX, $id);
-        return(
-            array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE", $actions) ||
-            array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE_Real", $actions) ||
-            array_key_exists(self::SKAUTIS_CAMP_PREFIX . "_UPDATE_RealTotalCostBeforeEnd", $actions)
-        );
     }
 
 }

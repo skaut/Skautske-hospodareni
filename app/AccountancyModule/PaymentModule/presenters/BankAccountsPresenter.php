@@ -2,8 +2,7 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
-use App\AccountancyModule\Auth\IAuthorizator;
-use App\AccountancyModule\Auth\Unit;
+use Model\Auth\Resources\Unit;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;
@@ -27,19 +26,14 @@ class BankAccountsPresenter extends BasePresenter
     /** @var int[] */
     private $accountIds = [];
 
-    /** @var IAuthorizator */
-    private $authorizator;
-
     /** @var int */
     private $id;
 
-
-    public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts, IAuthorizator $authorizator)
+    public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts)
     {
         parent::__construct();
         $this->formFactory = $formFactory;
         $this->accounts = $accounts;
-        $this->authorizator = $authorizator;
     }
 
     public function handleAllowForSubunits(int $id): void

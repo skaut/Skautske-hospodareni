@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\CampModule;
 
+use Model\Auth\Resources\Camp;
 use Model\Cashbook\ObjectType;
 use Model\EventEntity;
 use Skautis\Wsdl\PermissionException;
@@ -14,6 +15,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     const STable = "EV_EventCamp";
 
+    /** @var \stdClass */
     protected $event;
 
     /** @var EventEntity */
@@ -24,24 +26,12 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         parent::startup();
         $this->eventService = $this->context->getService("campService");
         $this->type = ObjectType::CAMP;
-        $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
+        $this->template->aid = $this->aid;
 
-        $availableActions = [];
-        if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
-            try {
-                $this->template->event = $this->event = $this->eventService->event->get($this->aid);
-
-                $availableActions = $this->userService->getAvailableActions(self::STable, $this->aid);
-
-                $this->template->isEditable = $this->isEditable = $this->isAllowed(self::STable . "_UPDATE_Real", $availableActions);
-            } catch (PermissionException $exc) {
-                $this->flashMessage($exc->getMessage(), "danger");
-                $this->redirect("Default:");
-            }
-        } else {
-            $availableActions = $this->userService->getAvailableActions(self::STable); //zjistení událostí nevázaných na konretnní
+        if ($this->aid !== NULL) {
+            $this->template->event = $this->event = $this->eventService->event->get($this->aid);
+            $this->template->isEditable = $this->isEditable = $this->authorizator->isAllowed(Camp::UPDATE_REAL, $this->aid);
         }
-        $this->availableActions = array_fill_keys($availableActions, TRUE);
     }
 
     protected function editableOnly() : void

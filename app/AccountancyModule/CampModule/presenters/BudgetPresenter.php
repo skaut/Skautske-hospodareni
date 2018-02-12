@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\CampModule;
 
+use Model\Auth\Resources\Camp;
+
 class BudgetPresenter extends BasePresenter
 {
 
@@ -21,7 +23,7 @@ class BudgetPresenter extends BasePresenter
         $this->template->toRepair = $toRepair;
         $this->template->dataEstimate = $this->eventService->chits->getCategories($aid, TRUE);
         $this->template->dataReal = $this->eventService->chits->getCategories($aid, FALSE);
-        $this->template->isUpdateStatementAllowed = in_array("EV_EventCampStatement_UPDATE_EventCamp", $this->availableActions);
+        $this->template->isUpdateStatementAllowed = $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid);
         if ($this->isAjax()) {
             $this->redrawControl("contentSnip");
         }

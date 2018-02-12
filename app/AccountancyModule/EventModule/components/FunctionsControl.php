@@ -2,9 +2,9 @@
 
 namespace App\AccountancyModule\EventModule\Components;
 
-use App\AccountancyModule\Auth\Event;
+use Model\Auth\Resources\Event;
 use App\Forms\BaseForm;
-use App\AccountancyModule\Auth\IAuthorizator;
+use Model\Auth\IAuthorizator;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Event\AssistantNotAdultException;

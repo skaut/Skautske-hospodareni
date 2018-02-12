@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use Model\Auth\Resources\Event;
 use Model\Cashbook\ObjectType;
 use Model\EventEntity;
 
@@ -23,21 +24,12 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->type = ObjectType::EVENT;
         $this->template->aid = $this->aid = $this->getParameter("aid", NULL);
 
-        $availableActions = [];
-        if (isset($this->aid) && !is_null($this->aid)) {//pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
-            try {
-                $this->template->event = $this->event = $this->eventService->event->get($this->aid);
-                $availableActions = $this->userService->getAvailableActions(self::STable, $this->aid);
-                $this->template->isEditable = $this->isEditable = array_key_exists("EV_EventGeneral_UPDATE", $this->availableActions);
-            } catch (\Skautis\Wsdl\PermissionException $exc) {
-                $this->flashMessage($exc->getMessage(), "danger");
-                $this->redirect("Default:");
-            }
-        } else {
-            $availableActions = $this->userService->getAvailableActions(self::STable); //zjistení událostí nevázaných na konretnní akci
+        //pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
+        if ($this->aid !== NULL) {
+            $this->template->event = $this->event = $this->eventService->event->get($this->aid);
+            $this->template->isEditable = $this->isEditable = $this->authorizator->isAllowed(Event::UPDATE, $this->aid);
         }
 
-        $this->availableActions = array_fill_keys($availableActions, TRUE);
     }
 
     protected function editableOnly() : void

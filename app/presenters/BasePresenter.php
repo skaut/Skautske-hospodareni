@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Model\Auth\IAuthorizator;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\UnitService;
@@ -41,6 +42,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var QueryBus */
     protected $queryBus;
 
+    /** @var IAuthorizator */
+    protected $authorizator;
+
     /** @var LoggerInterface */
     protected $logger;
 
@@ -50,6 +54,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         UnitService $unitService,
         CommandBus $commandBus,
         QueryBus $queryBus,
+        IAuthorizator $authorizator,
         LoggerInterface $logger
     ): void
     {
@@ -58,6 +63,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->unitService = $unitService;
         $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
+        $this->authorizator = $authorizator;
         $this->logger = $logger;
     }
 

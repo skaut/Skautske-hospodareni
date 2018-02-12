@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use Model\Auth\Resources\Event;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
@@ -34,14 +35,26 @@ class ParticipantPresenter extends BasePresenter
     {
         parent::startup();
         $this->traitStartup();
-        $this->isAllowRepayment = $this->template->isAllowRepayment = FALSE;
-        $this->isAllowIsAccount = $this->template->isAllowIsAccount = FALSE;
+        $this->isAllowRepayment = FALSE;
+        $this->isAllowIsAccount = FALSE;
 
-        $ev_state = $this->event->ID_EventGeneralState == "draft" ? TRUE : FALSE;
-        $this->isAllowParticipantDetail = $this->template->isAllowParticipantDetail = array_key_exists("EV_ParticipantGeneral_DETAIL", $this->availableActions);
-        $this->isAllowParticipantDelete = $this->template->isAllowParticipantDelete = $ev_state && array_key_exists("EV_ParticipantGeneral_DELETE_EventGeneral", $this->availableActions);
-        $this->isAllowParticipantInsert = $this->template->isAllowParticipantInsert = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
-        $this->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdate = $this->template->isAllowParticipantUpdateLocal = $ev_state && array_key_exists("EV_ParticipantGeneral_UPDATE_EventGeneral", $this->availableActions);
+        $isDraft = $this->event->ID_EventGeneralState === 'draft';
+        $authorizator = $this->authorizator;
+
+        $this->isAllowParticipantDetail = $authorizator->isAllowed(Event::ACCESS_DETAIL, $this->aid);
+        $this->isAllowParticipantDelete = $isDraft && $authorizator->isAllowed(Event::REMOVE_PARTICIPANT, $this->aid);
+        $this->isAllowParticipantInsert = $isDraft && $authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
+        $this->isAllowParticipantUpdate = $this->isAllowParticipantInsert;
+
+        $this->template->setParameters([
+            'isAllowParticipantDetail' => $this->isAllowParticipantDetail,
+            'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
+            'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
+            'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
+            'isAllowParticipantUpdateLocal' => $this->isAllowParticipantUpdate,
+            'isAllowRepayment' => $this->isAllowRepayment,
+            'isAllowIsAccount' => $this->isAllowIsAccount,
+        ]);
     }
 
     /**
@@ -51,7 +64,7 @@ class ParticipantPresenter extends BasePresenter
      */
     public function renderDefault(?int $aid, ?int $uid = NULL, bool $dp = FALSE, $sort = NULL, $regNums = FALSE) : void
     {
-        if (!$this->isAllowed("EV_ParticipantGeneral_ALL_EventGeneral")) {
+        if ( ! $this->authorizator->isAllowed(Event::ACCESS_PARTICIPANTS, $this->aid)) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");
             $this->redirect("Event:");
         }

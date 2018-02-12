@@ -2,8 +2,8 @@
 
 namespace App\AccountancyModule\PaymentModule\Components;
 
-use App\AccountancyModule\Auth\IAuthorizator;
-use App\AccountancyModule\Auth\Unit;
+use Model\Auth\IAuthorizator;
+use Model\Auth\Resources\Unit;
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;

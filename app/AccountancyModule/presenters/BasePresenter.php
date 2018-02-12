@@ -24,13 +24,6 @@ abstract class BasePresenter extends \App\BasePresenter
      */
     protected $isEditable;
 
-    /**
-     * @deprecated Use Authorizator::isAllowed()
-     * pole dostupných událostí s indexi podle SkautISu
-     * @var array
-     */
-    protected $availableActions = [];
-
     /** @var SkautisMaintenanceChecker */
     private $skautisMaintenanceChecker;
 
@@ -71,11 +64,6 @@ abstract class BasePresenter extends \App\BasePresenter
     {
         $this->redrawControl('flash');
         return parent::flashMessage($message, $type);
-    }
-
-    public function isAllowed($action, $avaibleActions = NULL) : bool
-    {
-        return array_key_exists($action, $avaibleActions == NULL ? $this->availableActions : $avaibleActions);
     }
 
     /**

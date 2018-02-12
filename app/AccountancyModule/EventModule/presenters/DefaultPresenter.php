@@ -2,6 +2,8 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use Model\Auth\Resources\Camp;
+use Model\Auth\Resources\Event;
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
 use Cake\Chronos\Chronos;
@@ -56,9 +58,8 @@ class DefaultPresenter extends BasePresenter
         $state = $this->ses->state ?? NULL;
         $list = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $localAvaibleActions = $this->userService->actionVerify(self::STable, $value['ID']);
-            $list[$key]['accessDelete'] = $this->isAllowed("EV_EventGeneral_DELETE", $localAvaibleActions);
-            $list[$key]['accessDetail'] = $this->isAllowed("EV_EventGeneral_DETAIL", $localAvaibleActions);
+            $list[$key]['accessDelete'] = $this->authorizator->isAllowed(Event::DELETE, $value['ID']);
+            $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $value['ID']);
         }
 
         $grid = $this->gridFactory->create();
@@ -95,7 +96,7 @@ class DefaultPresenter extends BasePresenter
     {
         $this['formFilter']['state']->setDefaultValue($this->ses->state);
         $this['formFilter']['year']->setDefaultValue($this->ses->year);
-        $this->template->accessCreate = $this->isAllowed("EV_EventGeneral_INSERT");
+        $this->template->accessCreate = $this->authorizator->isAllowed(Event::CREATE, NULL);
     }
 
     public function handleExportEvents(array $ids): void
@@ -129,7 +130,7 @@ class DefaultPresenter extends BasePresenter
      */
     public function handleCancel(int $aid): void
     {
-        if (!$this->isAllowed("EV_EventGeneral_UPDATE_Cancel")) {
+        if ( ! $this->authorizator->isAllowed(Camp::CANCEL, $aid)) {
             $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
             $this->redirect("this");
         }
@@ -221,7 +222,7 @@ class DefaultPresenter extends BasePresenter
 
     private function formCreateSubmitted(Form $form): void
     {
-        if (!$this->isAllowed("EV_EventGeneral_INSERT")) {
+        if ( ! $this->authorizator->isAllowed(Event::CREATE, NULL)) {
             $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
             $this->redirect("this");
         }

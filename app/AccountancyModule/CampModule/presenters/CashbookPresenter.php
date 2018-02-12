@@ -4,6 +4,7 @@ namespace App\AccountancyModule\CampModule;
 
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
+use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
@@ -21,7 +22,11 @@ class CashbookPresenter extends BasePresenter
             $this->redirect("Default:");
         }
         $this->entityService = $this->eventService;
-        $this->template->isEditable = $this->isEditable = ($this->isEditable || $this->isAllowed("EV_EventCamp_UPDATE_RealTotalCostBeforeEnd"));
+
+        $isEditable = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->aid);
+
+        $this->isEditable = $isEditable;
+        $this->template->isEditable = $isEditable;
     }
 
     public function renderDefault(int $aid, $pid = NULL, $dp = FALSE) : void
