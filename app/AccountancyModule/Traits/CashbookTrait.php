@@ -20,6 +20,7 @@ use Model\ExportService;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Forms\Controls\SubmitButton;
+use Nette\Forms\IControl;
 
 trait CashbookTrait
 {
@@ -272,6 +273,14 @@ trait CashbookTrait
             ->setHtmlId("form-recipient")
             ->getControlPrototype()->class("form-control input-sm")->placeholder("Komu/Od");
         $form->addText("price", "Částka: ")
+            ->setRequired('Musíte vyplnit částku')
+            ->addRule(function(IControl $control) {
+                try {
+                    return new Amount($control->getValue());
+                } catch (InvalidArgumentException $e) {
+                    return FALSE;
+                }
+            }, 'Částka musí být větší než 0')
             ->setMaxLength(100)
             ->setHtmlId("form-out-price")
             ->getControlPrototype()->placeholder("Částka: 2+3*15")

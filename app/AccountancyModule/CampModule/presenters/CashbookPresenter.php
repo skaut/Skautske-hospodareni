@@ -96,6 +96,11 @@ class CashbookPresenter extends BasePresenter
         $amount = $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount);
         $categoryId = $this->eventService->chits->getParticipantIncomeCategory($aid, $values->cat);
 
+        if ($amount === 0.0) {
+            $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
+            $this->redirect('default', ['aid' => $aid]);
+        }
+
         $this->commandBus->handle(
             new AddChitToCashbook(
                 $cashbookId,
