@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Cashbook;
 
 final class Recipient
@@ -10,7 +12,7 @@ final class Recipient
 
     public function __construct(string $name)
     {
-        if(strlen($name) === 0) {
+        if($name === '') {
             throw new \InvalidArgumentException('Recipient must have name');
         }
 
@@ -18,6 +20,11 @@ final class Recipient
     }
 
     public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function __toString(): string
     {
         return $this->name;
     }
