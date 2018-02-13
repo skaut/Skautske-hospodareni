@@ -99,7 +99,7 @@ $list array() - pole paragonů
                         <tr{if $balance < 0} class="alert alert-error"{/if}>
                             <td class="nowrap">
                                 <input type="checkbox" class="hidden-xs hidden-sm" name="chits[]" value={$item->id} />
-                                <a n:href="print $item->id, $aid" target="_blank" class="btn btn-xs btn-info hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i></a>
+                                <a n:href=":Accountancy:CashbookExport:printChits $cashbookId, [$item->id]" target="_blank" class="btn btn-xs btn-info hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i></a>
                                 <a n:if="$isEditable && is_null($item->lock)" n:href="this $aid, pid=>$item->id" class="ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit ui--editChit"></i></a>
                                 <a n:if="$isEditable && is_null($item->lock)" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-xs ui--removeChit"><i class="glyphicon glyphicon-remove"></i></a>
                             </td>

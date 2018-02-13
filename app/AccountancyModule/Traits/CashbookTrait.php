@@ -85,14 +85,6 @@ trait CashbookTrait
         $this->terminate();
     }
 
-    public function actionPrint(int $id, int $aid): void
-    {
-        $chits = [$this->entityService->chits->get($id)];
-        $template = $this->exportService->getChits($aid, $this->entityService, $chits);
-        $this->pdf->render($template, 'paragony.pdf');
-        $this->terminate();
-    }
-
     /**
      * @param int $id ID of chit
      * @param int $actionId ID of event, unit or camp
@@ -136,12 +128,15 @@ trait CashbookTrait
         return $form;
     }
 
+    /**
+     * @param int[] $chitIds
+     */
     private function massPrintSubmitted(array $chitIds): void
     {
-        $chits = $this->entityService->chits->getIn($this->aid, $chitIds);
-        $template = $this->exportService->getChits($this->aid, $this->entityService, $chits);
-        $this->pdf->render($template, 'paragony.pdf');
-        $this->terminate();
+        $this->redirect(':Accountancy:CashbookExport:printChits', [
+            $this->getCashbookId(),
+            $chitIds,
+        ]);
     }
 
     /**
@@ -149,9 +144,10 @@ trait CashbookTrait
      */
     private function massExportSubmitted(array $chitIds): void
     {
-        $chits = $this->entityService->chits->getIn($this->aid, $chitIds);
-        $this->excelService->getChitsExport($chits);
-        $this->terminate();
+        $this->redirect(':Accountancy:CashbookExport:exportChits', [
+            $this->getCashbookId(),
+            $chitIds,
+        ]);
     }
 
     /**
@@ -367,6 +363,7 @@ trait CashbookTrait
     public function fillTemplateVariables(): void
     {
         $this->template->object = $this->event;
+        $this->template->cashbookId = $this->getCashbookId();
         try {
             $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
         } catch (\Skautis\Wsdl\WsdlException $e) {
@@ -410,4 +407,8 @@ trait CashbookTrait
             || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $id);
     }
 
+    private function getCashbookId(): int
+    {
+        return $this->entityService->chits->getCashbookIdFromSkautisId($this->aid);
+    }
 }
