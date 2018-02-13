@@ -43,6 +43,7 @@ webloader:
                 - ie10-viewport-bug-workaround.js # IE10 viewport hack for Surface/desktop Windows 8 bug
                 - datagrid.js
                 - datagrid-spinners.js
+                - ajax.modal.js
             filters:
                 - @webloader.jsMinFilter
 
