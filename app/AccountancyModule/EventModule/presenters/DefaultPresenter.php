@@ -71,11 +71,8 @@ class DefaultPresenter extends BasePresenter
         $grid->addColumnText('prefix', 'Prefix')->setSortable();
         $grid->addColumnText('state', 'Stav');
 
-        $grid->addAction('delete', '', 'cancel!', ['aid' => 'ID'])
-            ->setIcon('trash')
-            ->setTitle('Smazat')
-            ->setClass('btn btn-xs btn-danger ajax')
-            ->setConfirm('Opravdu chcete zrušit akci %s?', 'DisplayName');
+        $grid->addAction('delete', '')
+            ->setTemplate(__DIR__ . '/../templates/eventsGrid.cancel.latte');
 
         $grid->addGroupAction('Souhrn akcí')->onSelect[] = function(array $ids) {
             $this->redirect('exportEvents!', ['ids' => $ids]);

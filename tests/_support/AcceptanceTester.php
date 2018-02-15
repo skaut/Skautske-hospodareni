@@ -51,4 +51,12 @@ class AcceptanceTester extends \Codeception\Actor
 
         $I->saveSessionSnapshot('login');
     }
+
+    /**
+     * PhantomJS can't work with popups ¯\_(ツ)_/¯
+     */
+    public function disablePopups(): void
+    {
+        $this->executeJS('window.confirm = function(msg){return true;};');
+    }
 }
