@@ -32,6 +32,9 @@ tests:
             name: check coding standard
             code: phing coding-standard
         - script:
+            name: wait for MySQL connection
+            code: sleep 10
+        - script:
             name: validate doctrine mapping
             code: php www/index.php orm:validate-schema --skip-sync
         - script:
@@ -83,7 +86,7 @@ acceptance-tests:
             code: service apache2 restart
         - script:
             name: give mysql and phantomjs some time
-            code: sleep 5
+            code: sleep 10
         - script:
             name: acceptance testing
             code: phing tests-acceptance
