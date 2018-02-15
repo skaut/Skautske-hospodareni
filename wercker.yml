@@ -83,7 +83,7 @@ acceptance-tests:
             code: service apache2 restart
         - script:
             name: give mysql and phantomjs some time
-            code: sleep 10
+            code: sleep 15
         - script:
             name: validate doctrine mapping
             code: php www/index.php orm:validate-schema --skip-sync
