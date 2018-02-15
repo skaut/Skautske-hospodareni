@@ -55,7 +55,7 @@ class Payment
 
         $daysToNextWorkday = $dayOfWeek < 5 ? 1 : 8 - $dayOfWeek;
 
-		$date = (new \DateTime())->modify("+ $daysToNextWorkday days")->format('j');
+        $date = (new \DateTime())->modify("+ $daysToNextWorkday days")->format('j');
 
         $button = "(//td[text()='$date' and not(contains(@class, 'disabled'))])[last()]"; // Tlačítko v datepickeru
         $I->waitForElementVisible($button);
