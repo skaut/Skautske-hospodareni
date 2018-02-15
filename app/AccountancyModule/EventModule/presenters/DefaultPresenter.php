@@ -130,7 +130,7 @@ class DefaultPresenter extends BasePresenter
      */
     public function handleCancel(int $aid): void
     {
-        if ( ! $this->authorizator->isAllowed(Camp::CANCEL, $aid)) {
+        if ( ! $this->authorizator->isAllowed(Event::CLOSE, $aid)) {
             $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
             $this->redirect("this");
         }
@@ -211,7 +211,7 @@ class DefaultPresenter extends BasePresenter
         $form->addSelect("type", "Typ (+)", $types)
             ->setDefaultValue("2");
         $form->addSubmit('send', 'Založit novou akci')
-            ->setAttribute("class", "btn btn-primary btn-large");
+            ->setAttribute("class", "btn btn-primary btn-large, ui--createEvent");
 
         $form->onSuccess[] = function (Form $form): void {
             $this->formCreateSubmitted($form);
