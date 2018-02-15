@@ -35,9 +35,6 @@ tests:
             name: wait for MySQL connection
             code: sleep 10
         - script:
-            name: validate doctrine mapping
-            code: php www/index.php orm:validate-schema --skip-sync
-        - script:
             name: run unit & integration tests
             code: phing tests
 
@@ -87,6 +84,9 @@ acceptance-tests:
         - script:
             name: give mysql and phantomjs some time
             code: sleep 10
+        - script:
+            name: validate doctrine mapping
+            code: php www/index.php orm:validate-schema --skip-sync
         - script:
             name: acceptance testing
             code: phing tests-acceptance
