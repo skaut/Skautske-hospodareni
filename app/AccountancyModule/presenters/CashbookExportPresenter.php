@@ -89,6 +89,39 @@ class CashbookExportPresenter extends BasePresenter
     }
 
     /**
+     * Exports all chits as PDF for printing
+     */
+    public function actionPrintAllChits(int $cashbookId): void
+    {
+        $template = $this->exportService->getChitlist($this->getSkautisId(), $this->getEventEntity());
+        $this->pdf->render($template, 'seznam-dokladu.pdf');
+        $this->terminate();
+    }
+
+    /**
+     * Exports cashbook (list of cashbook operations) as PDF for printing
+     */
+    public function actionPrintCashbook(int $cashbookId): void
+    {
+        $template = $this->exportService->getCashbook($this->getSkautisId(), $this->getEventEntity());
+        $this->pdf->render($template, 'pokladni-kniha.pdf');
+        $this->terminate();
+    }
+
+    /**
+     * Exports cashbook (list of cashbook operations) as XLS file
+     */
+    public function actionExportCashbook(int $cashbookId): void
+    {
+        $skautisId = $this->getSkautisId();
+        $eventEntity = $this->getEventEntity();
+        $event = $this->getEventEntity()->event->get($skautisId);
+
+        $this->excelService->getCashbook($eventEntity, $event);
+        $this->terminate();
+    }
+
+    /**
      * @throws BadRequestException
      */
     private function hasAccessToCashbook(): bool

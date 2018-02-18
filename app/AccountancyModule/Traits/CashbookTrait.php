@@ -16,7 +16,6 @@ use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
 use Model\Cashbook\ObjectType;
 use Model\ExcelService;
-use Model\ExportService;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Forms\Controls\SubmitButton;
@@ -30,9 +29,6 @@ trait CashbookTrait
 
     /** @var PdfRenderer */
     private $pdf;
-
-    /** @var ExportService */
-    private $exportService;
 
     /** @var ExcelService */
     private $excelService;
@@ -52,37 +48,11 @@ trait CashbookTrait
     /** @var \Psr\Log\LoggerInterface */
     protected $logger;
 
-    public function injectConstruct(
-        PdfRenderer $pdf,
-        ExportService $exports,
-        ExcelService $excel,
-        MemberService $members
-    ): void
+    public function injectConstruct(PdfRenderer $pdf, ExcelService $excel, MemberService $members): void
     {
         $this->pdf = $pdf;
-        $this->exportService = $exports;
         $this->excelService = $excel;
         $this->memberService = $members;
-    }
-
-    public function actionExport(int $aid): void
-    {
-        $template = $this->exportService->getCashbook($aid, $this->entityService);
-        $this->pdf->render($template, 'pokladni-kniha.pdf');
-        $this->terminate();
-    }
-
-    public function actionExportChitlist(int $aid): void
-    {
-        $template = $this->exportService->getChitlist($aid, $this->entityService);
-        $this->pdf->render($template, 'seznam-dokladu.pdf');
-        $this->terminate();
-    }
-
-    public function actionExportExcel(int $aid): void
-    {
-        $this->excelService->getCashbook($this->entityService, $this->event);
-        $this->terminate();
     }
 
     /**
