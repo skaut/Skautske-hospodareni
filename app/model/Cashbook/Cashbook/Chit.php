@@ -98,4 +98,24 @@ class Chit
         return $this->locked !== NULL;
     }
 
+    public function getNumber(): ?ChitNumber
+    {
+        return $this->number;
+    }
+
+    public function getDate(): Date
+    {
+        return $this->date;
+    }
+
+    public function getRecipient(): ?Recipient
+    {
+        return $this->recipient;
+    }
+
+    public function getCategory(): Category
+    {
+        return $this->category;
+    }
+
 }

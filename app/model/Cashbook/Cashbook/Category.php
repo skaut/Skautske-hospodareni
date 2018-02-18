@@ -29,4 +29,9 @@ class Category
         return $this->id;
     }
 
+    public function getOperationType(): ?Operation
+    {
+        return $this->operationType;
+    }
+
 }

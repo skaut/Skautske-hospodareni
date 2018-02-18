@@ -41,4 +41,26 @@ class Arrays
         return array_reduce($collection, "array_merge", []);
     }
 
+    /**
+     * Because working with references is PITA and there is no nice syntax for multiple comparison functions
+     *
+     * @param callable[] ...$sortFunctions When first function compares items as same, second is used and so on
+     */
+    public static function sort(array $array, callable ...$sortFunctions): array
+    {
+        usort($array, function($a, $b) use ($sortFunctions): int {
+            foreach ($sortFunctions as $function) {
+                $result = $function($a, $b);
+
+                if ($result !== 0) {
+                    return $result;
+                }
+            }
+
+            return 0;
+        });
+
+        return $array;
+    }
+
 }
