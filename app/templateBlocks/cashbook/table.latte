@@ -43,7 +43,7 @@ $list array() - pole paragonů
             </div>
         </div>
 
-        <div class="row well well-sm" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)">
+        <div class="row well well-sm" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)" n:snippet="chitForm">
             {form cashbookForm}
                 <ul class="errors" n:if="$form->hasErrors()">
                     <li n:foreach="$form->errors as $error">{$error}</li>
@@ -61,88 +61,3 @@ $list array() - pole paragonů
                 <div class="col-md-1">{input send}</div>
             {/form}
         </div>  
-
-        <div class="row" n:if='!empty($list)'>
-            {form formMass}
-                <table class="table table-bordered table-condensed" id="cashbookTable">
-                    <thead>
-                        <tr>
-                            <th class='hidden-xs hidden-sm col-xs-1'>
-                                <input type="checkbox" name='chits-all' id='chits-all' onclick="jqCheckAll(this.id, 'chits')" class="hidden-xs hidden-sm" />
-                                <button n:name="massPrintSend" title="Vytisknout vybrané" class="btn btn-info btn-xs allDependend hidden-xs hidden-sm" type="submit">
-                                    <i class="glyphicon glyphicon-print"></i>
-                                </button>
-                                {ifset $smallIcons}{$smallIcons|noescape}{/ifset}
-                            </th>
-                            <th class="col-xs-1">Ze dne</th>
-                            <th class="col-xs-1" n:if="!is_null($object->prefix) && $object->prefix !=''">Číslo</th>
-                            <th>Účel výplaty</th>
-                            <th class="hidden-xs hidden-sm">Typ</th>
-                            <th class="hidden-xs hidden-sm">Komu/Od koho</th>
-                            <th>Příjem</th>
-                            <th>Výdej</th>
-                            <th>Zůstatek</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {var $balance => 0}
-                    {foreach $list as $item}
-                        {var $isIncome = $item->ctype == 'in'}
-                        {php $balance += $isIncome ? $item->price : (-$item->price);}
-                        <tr{if $balance < 0} class="alert alert-error"{/if}>
-                            <td class="nowrap">
-                                <input type="checkbox" class="hidden-xs hidden-sm" name="chits[]" value={$item->id} />
-                                <a n:href=":Accountancy:CashbookExport:printChits $cashbookId, [$item->id]" target="_blank" class="btn btn-xs btn-info hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i></a>
-                                <a n:if="$isEditable && is_null($item->lock)" n:href="this $aid, pid=>$item->id" class="ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit ui--editChit"></i></a>
-                                <a n:if="$isEditable && is_null($item->lock)" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-xs ui--removeChit"><i class="glyphicon glyphicon-remove"></i></a>
-                            </td>
-                            <td><span class="visible-xs visible-sm">{$item->date|date:"j.n."}</span><span class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
-                            <td n:if="!is_null($object->prefix) && $object->prefix !=''" title="{$object->prefix}{$item->num}">{$item->num}</td>
-                            <td title="{$item->purpose}">{$item->purpose|truncate:60, ''}</td>
-                            <td class="hidden-xs hidden-sm" title="{$item->clabel}">{$item->cshort}</td>
-                            <td class="hidden-xs hidden-sm">{$item->recipient}</td>
-                            {if $isIncome}
-                                <td class="r" title="{$item->priceText}">{$item->price|price}</td>
-                                <td class="r">&nbsp;</td>
-                            {else}
-                                <td class="r">&nbsp;</td>
-                                <td class="r" title="{$item->priceText}">{$item->price|price}</td>
-                            {/if}
-                            <td class="r">{$balance|price}</td>
-                        </tr>
-                        {/foreach}
-                        <tr {if $balance < 0}class="alert alert-error"{/if}>
-                            <td colspan="2">&nbsp;</td>
-                            <td n:if="!is_null($object->prefix) && $object->prefix !=''">&nbsp;</td>
-                            <td class="hidden-xs hidden-sm">&nbsp;</td>
-                            <td class="hidden-xs hidden-sm">&nbsp;</td>
-                            <td><b>Konečný stav</b></td>
-                            <td>&nbsp;</td>
-                            <td class='hidden-xs hidden-sm'>&nbsp;</td>
-                            <td class="ui--balance r{if $balance < 0} isMinus{/if}"><b>{$balance|price}</b></td>
-                        </tr>
-                    <tbody>
-                </table>
-
-
-                <div id="maasMoveModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="massMoveLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
-                                <h3>Hromadný přesun dokladů</h3>
-                            </div>
-                            <div class="modal-body">
-                                {input newEventId class => "form-control input-sm"}<br />
-                                {input massMoveChitsSend class => "btn btn-primary"}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            {/form}
-        </div>
-
-    <div class="row" n:if='empty($list)'>
-        <p class="alert alert-info">Zatím zde nemáte žádné doklady.</p>
-    </div>

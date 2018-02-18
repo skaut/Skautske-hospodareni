@@ -24,6 +24,7 @@ class CashbookPresenter extends BasePresenter
             $this->redirect("Default:");
         }
 
+        $this->redrawControl('chitForm');
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
 

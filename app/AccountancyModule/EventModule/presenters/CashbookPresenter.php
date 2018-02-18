@@ -31,6 +31,7 @@ class CashbookPresenter extends BasePresenter
 
         $this->template->isEditable = $this->isEditable;
         $this->template->missingCategories = FALSE;
+        $this->redrawControl('chitForm');
     }
 
     public function renderDefault(int $aid, $pid = NULL, $dp = FALSE): void

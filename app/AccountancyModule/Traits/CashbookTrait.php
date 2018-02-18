@@ -1,10 +1,10 @@
 <?php
 
+use App\AccountancyModule\Components\CashbookControl;
+use App\AccountancyModule\Factories\ICashbookControlFactory;
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\CommandBus;
-use Model\Auth\Resources\Camp;
-use Model\Auth\Resources\Event;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ChitLockedException;
 use Model\Cashbook\ChitNotFoundException;
@@ -14,10 +14,8 @@ use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
-use Model\Cashbook\ObjectType;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
-use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\IControl;
 
 trait CashbookTrait
@@ -44,10 +42,14 @@ trait CashbookTrait
     /** @var \Psr\Log\LoggerInterface */
     protected $logger;
 
-    public function injectConstruct(PdfRenderer $pdf, MemberService $members): void
+    /** @var ICashbookControlFactory */
+    private $cashbookFactory;
+
+    public function injectConstruct(PdfRenderer $pdf, MemberService $members, ICashbookControlFactory $cashbookFactory): void
     {
         $this->pdf = $pdf;
         $this->memberService = $members;
+        $this->cashbookFactory = $cashbookFactory;
     }
 
     /**
@@ -75,122 +77,6 @@ trait CashbookTrait
         } else {
             $this->redirect('this', $actionId);
         }
-    }
-
-    protected function createComponentFormMass(): BaseForm
-    {
-        $form = new BaseForm();
-        $btn = $form->addSubmit('massPrintSend');
-        $btn->onClick[] = function (SubmitButton $button): void {
-            $this->massPrintSubmitted($this->getSelectedChitIds($button->getForm()));
-        };
-        $btn = $form->addSubmit('massExportSend');
-        $btn->onClick[] = function (SubmitButton $button): void {
-            $this->massExportSubmitted($this->getSelectedChitIds($button->getForm()));
-        };
-
-        $form = $this->addMassMove($form);
-        return $form;
-    }
-
-    /**
-     * @param int[] $chitIds
-     */
-    private function massPrintSubmitted(array $chitIds): void
-    {
-        $this->redirect(':Accountancy:CashbookExport:printChits', [
-            $this->getCashbookId(),
-            $chitIds,
-        ]);
-    }
-
-    /**
-     * @param int[] $chitIds
-     */
-    private function massExportSubmitted(array $chitIds): void
-    {
-        $this->redirect(':Accountancy:CashbookExport:exportChits', [
-            $this->getCashbookId(),
-            $chitIds,
-        ]);
-    }
-
-    /**
-     * Vrací pole ID => Název pro výpravy i tábory
-     * @param string $eventType "general" or "camp"
-     * @param array $states
-     * @return array
-     */
-    private function getListOfEvents(string $eventType, array $states = NULL): array
-    {
-        $eventService = $this->context->getService(($eventType === ObjectType::EVENT ? "event" : $eventType) . "Service")->event;
-        $rawArr = $eventService->getAll(date("Y"), NULL);
-        $resultArray = [];
-        if (!empty($rawArr)) {
-            foreach ($rawArr as $item) {
-                if ($states === NULL || in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
-                    $resultArray[$eventType . "_" . $item['ID']] = $item['DisplayName'];
-                }
-            }
-        }
-        return $resultArray;
-    }
-
-    private function addMassMove(BaseForm $form): BaseForm
-    {
-        $allItems = [
-            'Výpravy' => $this->getListOfEvents(ObjectType::EVENT, ["draft"]),
-            'Tábory' => $this->getListOfEvents(ObjectType::CAMP, ["draft", "approvedParent", "approvedLeader"]),
-        ];
-        #remove current event/camp from selectbox
-        $eventType = $this->entityService->chits->type;
-        unset($allItems[$eventType == ObjectType::EVENT ? 'Výpravy' : 'Tábory'][$eventType . "_" . $this->aid]);
-
-        $form->addSelect('newEventId', 'Nová pokladní kniha:', $allItems)->setPrompt('Zvolte knihu');
-        $btn = $form->addSubmit('massMoveChitsSend');
-        $btn->onClick[] = function (SubmitButton $button): void {
-            $this->massMoveChitsSubmitted($button);
-        };
-        return $form;
-    }
-
-    private function massMoveChitsSubmitted(SubmitButton $button): void
-    {
-        $form = $button->getForm();
-        $chits = $this->getSelectedChitIds($form);
-        if (empty($chits)) {
-            $form->addError("Nebyly vybrány žádné paragony!");
-            return;
-        }
-        $eventKey = $form['newEventId']->getValue();
-
-        if ($eventKey === NULL) {
-            $form->addError("Nebyla vybrána žádná cílová pokladní kniha!");
-            return;
-        }
-        list($newType, $newEventId) = explode("_", $eventKey, 2);
-
-        $originType = $this->entityService->chits->type;
-
-        if($newType === ObjectType::EVENT) {
-            $newEventAccessible = $this->authorizator->isAllowed(Event::UPDATE, $newEventId);
-        } else {
-            $newEventAccessible = $this->isCampEditable($newEventId);
-        }
-
-        if (!$this->isEditable || !$newEventAccessible) {
-            $this->flashMessage("Nemáte oprávnění k původní nebo nové pokladní knize!", "danger");
-            $this->redirect("this");
-        }
-
-        $this->entityService->chits->moveChits(
-            $chits,
-            $this->aid,
-            $originType,
-            $newEventId,
-            $newType
-        );
-        $this->redirect("this");
     }
 
     //FORM CASHBOOK
@@ -254,6 +140,13 @@ trait CashbookTrait
 
         };
         return $form;
+    }
+
+    protected function createComponentCashbook(): CashbookControl
+    {
+        $cashbookId = $this->entityService->chits->getCashbookIdFromSkautisId($this->aid);
+
+        return $this->cashbookFactory->create($cashbookId, $this->isEditable);
     }
 
     /**
@@ -353,23 +246,6 @@ trait CashbookTrait
             "type" => $chit->ctype,
             "category" => $chit->category,
         ]);
-    }
-
-    /**
-     * @return int[]
-     */
-    private function getSelectedChitIds(\Nette\Forms\Form $form): array
-    {
-        $ids = $form->getHttpData(BaseForm::DATA_TEXT, 'chits[]');
-
-        return array_map('intval', $ids);
-    }
-
-    private function isCampEditable(int $id): bool
-    {
-        return $this->authorizator->isAllowed(Camp::UPDATE, $id)
-            || $this->authorizator->isAllowed(Camp::UPDATE_REAL, $id)
-            || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $id);
     }
 
     private function getCashbookId(): int
