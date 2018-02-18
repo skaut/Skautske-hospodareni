@@ -85,9 +85,6 @@ acceptance-tests:
             name: give mysql and phantomjs some time
             code: sleep 15
         - script:
-            name: validate doctrine mapping
-            code: php www/index.php orm:validate-schema --skip-sync
-        - script:
             name: acceptance testing
             code: phing tests-acceptance
 
