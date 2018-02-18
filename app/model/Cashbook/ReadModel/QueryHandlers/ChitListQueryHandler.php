@@ -8,6 +8,7 @@ use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\Chit as ChitDTO;
+use Model\DTO\Cashbook\ChitFactory;
 use Model\Utils\Arrays;
 use function array_map;
 
@@ -43,18 +44,7 @@ class ChitListQueryHandler
                 return $a->getId() <=> $b->getId();
             });
 
-        return array_map(function (Chit $chit): ChitDTO {
-            return new ChitDTO(
-                $chit->getId(),
-                $chit->getNumber(),
-                $chit->getDate(),
-                $chit->getRecipient(),
-                $chit->getAmount(),
-                $chit->getPurpose(),
-                $chit->getCategory(),
-                $chit->isLocked()
-            );
-        }, $chits);
+        return array_map([ChitFactory::class, 'create'], $chits);
     }
 
 }
