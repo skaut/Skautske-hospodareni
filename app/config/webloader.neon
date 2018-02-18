@@ -38,6 +38,7 @@ webloader:
                 - bootstrap3-typeahead.min.js
                 - jquery.fancybox.pack.js
                 - offline.js
+                - cashbook.js
                 - my.js
                 - nextras.datetimepicker.init.js
                 - ie10-viewport-bug-workaround.js # IE10 viewport hack for Surface/desktop Windows 8 bug

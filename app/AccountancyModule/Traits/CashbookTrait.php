@@ -14,6 +14,7 @@ use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\MemberService;
 use Nette\Forms\IControl;
+use Nette\Utils\Json;
 
 trait CashbookTrait
 {
@@ -81,6 +82,7 @@ trait CashbookTrait
         $form->addText("recipient", "Vyplaceno komu:")
             ->setMaxLength(64)
             ->setHtmlId("form-recipient")
+            ->setAttribute('data-autocomplete', Json::encode($this->getAdultMemberNames()))
             ->getControlPrototype()->class("form-control input-sm")->placeholder("Komu/Od");
         $form->addText("price", "Částka: ")
             ->setRequired('Musíte vyplnit částku')
@@ -185,11 +187,6 @@ trait CashbookTrait
     {
         $this->template->object = $this->event;
         $this->template->cashbookId = $this->getCashbookId();
-        try {
-            $this->template->autoCompleter = array_values($this->memberService->getCombobox(FALSE, 15));
-        } catch (\Skautis\Wsdl\WsdlException $e) {
-            $this->template->autoCompleter = [];
-        }
     }
 
     private function editChit(int $chitId): void
@@ -209,6 +206,18 @@ trait CashbookTrait
             "type" => $chit->ctype,
             "category" => $chit->category,
         ]);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getAdultMemberNames(): array
+    {
+        try {
+            return array_values($this->memberService->getCombobox(FALSE, 15));
+        } catch (\Skautis\Wsdl\WsdlException $e) {
+            return [];
+        }
     }
 
     private function getCashbookId(): int
