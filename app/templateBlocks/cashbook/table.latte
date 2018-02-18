@@ -100,8 +100,8 @@ $list array() - pole paragonů
                             <td class="nowrap">
                                 <input type="checkbox" class="hidden-xs hidden-sm" name="chits[]" value={$item->id} />
                                 <a n:href="print $item->id, $aid" target="_blank" class="btn btn-xs btn-info hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i></a>
-                                <a n:if="$isEditable && is_null($item->lock)" n:href="this $aid, pid=>$item->id" class="ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                                <a n:if="$isEditable && is_null($item->lock)" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-remove"></i></a>
+                                <a n:if="$isEditable && is_null($item->lock)" n:href="this $aid, pid=>$item->id" class="ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit ui--editChit"></i></a>
+                                <a n:if="$isEditable && is_null($item->lock)" n:href="remove! $item->id, $aid" onclick="return confirm('Opravdu chcete smazat paragon?')" class="btn btn-danger btn-xs ui--removeChit"><i class="glyphicon glyphicon-remove"></i></a>
                             </td>
                             <td><span class="visible-xs visible-sm">{$item->date|date:"j.n."}</span><span class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
                             <td n:if="!is_null($object->prefix) && $object->prefix !=''" title="{$object->prefix}{$item->num}">{$item->num}</td>
@@ -126,7 +126,7 @@ $list array() - pole paragonů
                             <td><b>Konečný stav</b></td>
                             <td>&nbsp;</td>
                             <td class='hidden-xs hidden-sm'>&nbsp;</td>
-                            <td class="r{if $balance < 0} isMinus{/if}"><b>{$balance|price}</b></td>
+                            <td class="ui--balance r{if $balance < 0} isMinus{/if}"><b>{$balance|price}</b></td>
                         </tr>
                     <tbody>
                 </table>

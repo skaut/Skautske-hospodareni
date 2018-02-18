@@ -71,11 +71,8 @@ class DefaultPresenter extends BasePresenter
         $grid->addColumnText('prefix', 'Prefix')->setSortable();
         $grid->addColumnText('state', 'Stav');
 
-        $grid->addAction('delete', '', 'cancel!', ['aid' => 'ID'])
-            ->setIcon('trash')
-            ->setTitle('Smazat')
-            ->setClass('btn btn-xs btn-danger ajax')
-            ->setConfirm('Opravdu chcete zrušit akci %s?', 'DisplayName');
+        $grid->addAction('delete', '')
+            ->setTemplate(__DIR__ . '/../templates/eventsGrid.cancel.latte');
 
         $grid->addGroupAction('Souhrn akcí')->onSelect[] = function(array $ids) {
             $this->redirect('exportEvents!', ['ids' => $ids]);
@@ -130,7 +127,7 @@ class DefaultPresenter extends BasePresenter
      */
     public function handleCancel(int $aid): void
     {
-        if ( ! $this->authorizator->isAllowed(Camp::CANCEL, $aid)) {
+        if ( ! $this->authorizator->isAllowed(Event::CLOSE, $aid)) {
             $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
             $this->redirect("this");
         }
@@ -211,7 +208,7 @@ class DefaultPresenter extends BasePresenter
         $form->addSelect("type", "Typ (+)", $types)
             ->setDefaultValue("2");
         $form->addSubmit('send', 'Založit novou akci')
-            ->setAttribute("class", "btn btn-primary btn-large");
+            ->setAttribute("class", "btn btn-primary btn-large, ui--createEvent");
 
         $form->onSuccess[] = function (Form $form): void {
             $this->formCreateSubmitted($form);
