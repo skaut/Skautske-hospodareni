@@ -7,13 +7,11 @@ use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\CommandBus;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ChitLockedException;
-use Model\Cashbook\ChitNotFoundException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
-use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Forms\IControl;
@@ -50,33 +48,6 @@ trait CashbookTrait
         $this->pdf = $pdf;
         $this->memberService = $members;
         $this->cashbookFactory = $cashbookFactory;
-    }
-
-    /**
-     * @param int $id ID of chit
-     * @param int $actionId ID of event, unit or camp
-     */
-    public function handleRemove(int $id, int $actionId): void
-    {
-        $this->editableOnly();
-
-        $cashbookId = $this->entityService->chits->getCashbookIdFromSkautisId($actionId);
-
-        try {
-            $this->commandBus->handle(new RemoveChitFromCashbook($cashbookId, $id));
-            $this->flashMessage('Paragon byl smazán');
-        } catch (ChitLockedException $e) {
-            $this->flashMessage('Nelze smazat zamčený paragon', 'error');
-        } catch (CashbookNotFoundException | ChitNotFoundException $e) {
-            $this->flashMessage('Paragon se nepodařilo smazat');
-        }
-
-        if ($this->isAjax()) {
-            $this->redrawControl("paragony");
-            $this->redrawControl("flash");
-        } else {
-            $this->redirect('this', $actionId);
-        }
     }
 
     //FORM CASHBOOK

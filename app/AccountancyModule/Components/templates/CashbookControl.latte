@@ -43,7 +43,7 @@
                                     class="glyphicon glyphicon-print"></i></a>
                         <a n:if="$isEditable && ! $item->locked" href="{plink this $aid, pid=>$item->id}"
                                 class="ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                        <a n:if="$isEditable && ! $item->locked" href="{plink remove! $item->id, $aid}"
+                        <a n:if="$isEditable && ! $item->locked" n:href="remove! $item->id"
                                 onclick="return confirm('Opravdu chcete smazat paragon?')"
                                 class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-remove"></i></a>
                     </td>

@@ -7,8 +7,13 @@ namespace App\AccountancyModule\Components;
 use App\AccountancyModule\Components\Cashbook\MoveChitsDialog;
 use App\AccountancyModule\Factories\Cashbook\IMoveChitsDialogFactory;
 use App\Forms\BaseForm;
+use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookType;
+use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\ChitLockedException;
+use Model\Cashbook\ChitNotFoundException;
+use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
@@ -28,17 +33,27 @@ class CashbookControl extends BaseControl
      */
     private $isEditable;
 
+    /** @var CommandBus */
+    private $commandBus;
+
     /** @var QueryBus */
     private $queryBus;
 
     /** @var IMoveChitsDialogFactory */
     private $moveChitsDialogFactory;
 
-    public function __construct(int $cashbookId, bool $isEditable, QueryBus $queryBus, IMoveChitsDialogFactory $moveChitsDialogFactory)
+    public function __construct(
+        int $cashbookId,
+        bool $isEditable,
+        CommandBus $commandBus,
+        QueryBus $queryBus,
+        IMoveChitsDialogFactory $moveChitsDialogFactory
+    )
     {
         parent::__construct();
         $this->cashbookId = $cashbookId;
         $this->isEditable = $isEditable;
+        $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
         $this->moveChitsDialogFactory = $moveChitsDialogFactory;
     }
@@ -58,6 +73,25 @@ class CashbookControl extends BaseControl
 
         $this->template->setFile(__DIR__ . '/templates/CashbookControl.latte');
         $this->template->render();
+    }
+
+    public function handleRemove(int $chitId): void
+    {
+        if ( ! $this->isEditable) {
+            $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu.', 'danger');
+            $this->redirect('this');
+        }
+
+        try {
+            $this->commandBus->handle(new RemoveChitFromCashbook($this->cashbookId, $chitId));
+            $this->flashMessage('Paragon byl smazán');
+        } catch (ChitLockedException $e) {
+            $this->flashMessage('Nelze smazat zamčený paragon', 'error');
+        } catch (CashbookNotFoundException | ChitNotFoundException $e) {
+            $this->flashMessage('Paragon se nepodařilo smazat');
+        }
+
+        $this->redirect('this');
     }
 
     protected function createComponentFormMass(): BaseForm
