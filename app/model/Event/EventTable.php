@@ -19,4 +19,14 @@ class EventTable extends BaseTable
             ->execute();
     }
 
+    public function getPrefix(int $localId): ?string
+    {
+        $prefix = $this->connection->select('prefix')
+            ->from(self::TABLE_OBJECT)
+            ->where('id = ', $localId)
+            ->fetchSingle();
+
+        return $prefix != '' ? $prefix : NULL;
+    }
+
 }
