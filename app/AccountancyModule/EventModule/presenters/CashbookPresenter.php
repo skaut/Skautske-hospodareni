@@ -8,7 +8,6 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
-use Model\Cashbook\ObjectType;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
@@ -54,11 +53,7 @@ class CashbookPresenter extends BasePresenter
 
     public function actionExportExcelWithCategories(int $aid): void
     {
-        $this->excelService->getCashbookWithCategories(
-            $this->entityService,
-            $aid,
-            ObjectType::get(ObjectType::EVENT)
-        );
+        $this->excelService->getCashbookWithCategories($this->entityService, $aid);
         $this->terminate();
     }
 
