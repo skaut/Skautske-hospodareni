@@ -13,7 +13,6 @@ use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\MemberService;
-use Model\Services\PdfRenderer;
 use Nette\Forms\IControl;
 
 trait CashbookTrait
@@ -21,9 +20,6 @@ trait CashbookTrait
 
     /** @var \Model\EventEntity */
     protected $entityService;
-
-    /** @var PdfRenderer */
-    private $pdf;
 
     /** @var MemberService */
     private $memberService;
@@ -34,18 +30,14 @@ trait CashbookTrait
     /** @var CommandBus */
     protected $commandBus;
 
-    /** @var \Model\Auth\IAuthorizator */
-    protected $authorizator;
-
     /** @var \Psr\Log\LoggerInterface */
     protected $logger;
 
     /** @var ICashbookControlFactory */
     private $cashbookFactory;
 
-    public function injectConstruct(PdfRenderer $pdf, MemberService $members, ICashbookControlFactory $cashbookFactory): void
+    public function injectConstruct(MemberService $members, ICashbookControlFactory $cashbookFactory): void
     {
-        $this->pdf = $pdf;
         $this->memberService = $members;
         $this->cashbookFactory = $cashbookFactory;
     }
