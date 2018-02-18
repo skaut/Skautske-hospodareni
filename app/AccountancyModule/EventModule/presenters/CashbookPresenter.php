@@ -51,12 +51,6 @@ class CashbookPresenter extends BasePresenter
         }
     }
 
-    public function actionExportExcelWithCategories(int $aid): void
-    {
-        $this->excelService->getCashbookWithCategories($this->entityService, $aid);
-        $this->terminate();
-    }
-
     public function actionImportHpd(int $aid): void
     {
         $this->editableOnly();

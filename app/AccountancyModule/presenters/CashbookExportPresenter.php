@@ -122,6 +122,15 @@ class CashbookExportPresenter extends BasePresenter
     }
 
     /**
+     * Exports cashbook (list of cashbook operations) with category columns as XLS file
+     */
+    public function actionExportCashbookWithCategories(int $cashbookId): void
+    {
+        $this->excelService->getCashbookWithCategories($this->getEventEntity(), $this->getSkautisId());
+        $this->terminate();
+    }
+
+    /**
      * @throws BadRequestException
      */
     private function hasAccessToCashbook(): bool

@@ -15,7 +15,6 @@ use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
 use Model\Cashbook\ObjectType;
-use Model\ExcelService;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Forms\Controls\SubmitButton;
@@ -29,9 +28,6 @@ trait CashbookTrait
 
     /** @var PdfRenderer */
     private $pdf;
-
-    /** @var ExcelService */
-    private $excelService;
 
     /** @var MemberService */
     private $memberService;
@@ -48,10 +44,9 @@ trait CashbookTrait
     /** @var \Psr\Log\LoggerInterface */
     protected $logger;
 
-    public function injectConstruct(PdfRenderer $pdf, ExcelService $excel, MemberService $members): void
+    public function injectConstruct(PdfRenderer $pdf, MemberService $members): void
     {
         $this->pdf = $pdf;
-        $this->excelService = $excel;
         $this->memberService = $members;
     }
 

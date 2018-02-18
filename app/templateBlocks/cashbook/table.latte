@@ -23,29 +23,22 @@ $list array() - pole paragonů
                         <a n:href=":Accountancy:CashbookExport:printCashbook $cashbookId" target="_blank" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout pokladní knihu</a>
                     {/ifset}
 
-                    {ifset $cashbookWithCategoriesAllowed}
-                        <div class="dropdown inline-block">
-                            <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="excelExportButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i>
-                                Exportovat do excelu
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="excelExportButton">
-                                <li>
-                                    <a class="dropdown-item" n:href=":Accountancy:CashbookExport:exportCashbook $cashbookId">Jednoduchá šablona</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" n:href="exportExcelWithCategories $aid">Šablona s rozepsanými kategoriemi</a>
-                                </li>
-                            </ul>
-                        </div>
-                    {else}
-                        <a n:href=":Accountancy:CashbookExport:exportCashbook $cashbookId" target="_blank" class="btn btn-sm btn-info">
+                    <div class="dropdown inline-block">
+                        <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="excelExportButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i>
                             Exportovat do excelu
-                        </a>
-                    {/ifset}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="excelExportButton">
+                            <li>
+                                <a class="dropdown-item" n:href=":Accountancy:CashbookExport:exportCashbook $cashbookId">Jednoduchá šablona</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" n:href=":Accountancy:CashbookExport:exportCashbookWithCategories $cashbookId">Šablona s rozepsanými kategoriemi</a>
+                            </li>
+                        </ul>
+                    </div>
                 {/if}
             </div>
         </div>
