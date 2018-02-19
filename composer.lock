@@ -3923,16 +3923,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "691b68de9b87cf6e398df46482741a4f667a9391"
+                "reference": "a2771e562e3a17c0d512d2009e38fd628beece90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/691b68de9b87cf6e398df46482741a4f667a9391",
-                "reference": "691b68de9b87cf6e398df46482741a4f667a9391",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/a2771e562e3a17c0d512d2009e38fd628beece90",
+                "reference": "a2771e562e3a17c0d512d2009e38fd628beece90",
                 "shasum": ""
             },
             "require": {
@@ -3953,7 +3953,7 @@
             },
             "require-dev": {
                 "dompdf/dompdf": "^0.8.0",
-                "friendsofphp/php-cs-fixer": "^2.7",
+                "friendsofphp/php-cs-fixer": "@stable",
                 "jpgraph/jpgraph": "^4.0",
                 "mpdf/mpdf": "^7.0.0",
                 "phpunit/phpunit": "^5.7",
@@ -4007,7 +4007,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2017-12-25T01:53:53+00:00"
+            "time": "2018-01-28T12:37:15+00:00"
         },
         {
             "name": "psr/http-message",
