@@ -57,7 +57,7 @@ class CashbookWithCategoriesBuilder
 
     private function addCashbookHeader(): void
     {
-        $this->sheet->mergeCells('D2:F2');
+        $this->sheet->mergeCells('D2:G2');
         $this->sheet->setCellValue('D2', 'Pokladní kniha');
 
         $columns = ['Dne', 'Dokl.', 'Účel platby', 'Příjem', 'Výdaj', 'Zůstatek'];
@@ -188,7 +188,7 @@ class CashbookWithCategoriesBuilder
     {
         $sheet = $this->sheet;
 
-        $sheet->mergeCellsByColumnAndRow(1, 2, 3, 2);
+        $sheet->mergeCells('A2:C2');
 
         $lastRow = self::SUBHEADER_ROW + $chitsCount + 1;
         $lastColumn = self::CATEGORIES_FIRST_COLUMN + $categoriesCount - 1;
