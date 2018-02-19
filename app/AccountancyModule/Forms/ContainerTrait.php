@@ -37,7 +37,7 @@ trait ContainerTrait
         return $this[$name] = $control;
     }
 
-    public function addJSelect(string $name, ?string $label, $parents, $dataCallback) : JsonDependentSelectBox
+    public function addJSelect(string $name, ?string $label, $parents, callable $dataCallback) : JsonDependentSelectBox
     {
         $this->checkPresenter();
         return $this[$name] = new JsonDependentSelectBox($label, $parents, $dataCallback);
