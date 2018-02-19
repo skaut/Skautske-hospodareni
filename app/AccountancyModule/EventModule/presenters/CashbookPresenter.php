@@ -34,11 +34,8 @@ class CashbookPresenter extends BasePresenter
         $this->redrawControl('chitForm');
     }
 
-    public function renderDefault(int $aid, $pid = NULL, $dp = FALSE): void
+    public function renderDefault(int $aid, $dp = FALSE): void
     {
-        if ($pid !== NULL) {
-            $this->editChit($pid);
-        }
         $this->template->setParameters([
             "isInMinus" => $this->eventService->chits->eventIsInMinus($this->getCurrentUnitId()), // musi byt v before render aby se vyhodnotila az po handleru
             "list" => $this->eventService->chits->getAll($aid),

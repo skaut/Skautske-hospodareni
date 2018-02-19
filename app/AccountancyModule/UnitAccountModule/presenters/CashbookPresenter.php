@@ -28,12 +28,8 @@ class CashbookPresenter extends BasePresenter
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
 
-    public function renderDefault(int $aid, $pid = NULL, $dp = FALSE) : void
+    public function renderDefault(int $aid, $dp = FALSE) : void
     {
-        if ($pid !== NULL) {
-            $this->editChit($pid);
-        }
-
         $this->template->isInMinus = FALSE; // musi byt v before render aby se vyhodnotila az po handleru
 
         $this->fillTemplateVariables();

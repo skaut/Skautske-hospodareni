@@ -42,22 +42,3 @@ $list array() - pole paragonů
                 {/if}
             </div>
         </div>
-
-        <div class="row well well-sm" n:if="$isEditable && (!isset($missingCategories) || !$missingCategories)" n:snippet="chitForm">
-            {form cashbookForm}
-                <ul class="errors" n:if="$form->hasErrors()">
-                    <li n:foreach="$form->errors as $error">{$error}</li>
-                </ul>
-                <div class="col-md-2">{input date}</div>
-                <div class="col-md-1" n:inner-if="$object->prefix != ''">{input num}</div>
-                <div class="col-md-2">{input purpose}</div>
-                <div class="col-md-1">{input type}</div>
-                <div class="col-md-1">
-                    <span><span><input type="submit" formnovalidate="" value="Nahrát" id="frm-cashbookForm-type_submit" class="dependentControl_submit button" name="type_submit"></span></span>
-                    {input category}
-                </div>
-                <div class="col-md-2">{input recipient}</div>
-                <div class="col-md-2">{input price}</div>
-                <div class="col-md-1">{input send}</div>
-            {/form}
-        </div>  
