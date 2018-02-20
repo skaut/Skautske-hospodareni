@@ -23,38 +23,22 @@ build:
             name: install dependencies
             code: composer install
 
-tests:
-    steps:
         - script:
             name: static analysis (phpstan)
             code: phing static-analysis
+
         - script:
             name: check coding standard
             code: phing coding-standard
+
         - script:
             name: wait for MySQL connection
             code: sleep 10
+
         - script:
             name: run unit & integration tests
             code: phing tests-with-coverage
-        - script:
-            name: upload code coverage to codecov.io
-            code: mv tests/_output/coverage.xml clover.xml && bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
 
-acceptance-tests:
-    services:
-        - name: mysql-test
-          id: mysql
-          tag: 5.7
-          env:
-            MYSQL_ALLOW_EMPTY_PASSWORD: yes
-            MYSQL_DATABASE: hskauting
-        - name: smtp-hospodareni.loc
-          id: tophfr/mailcatcher
-          env:
-            SMTP_HOST: smtp-hospodareni.loc
-
-    steps:
         - appnific/expandenv:
             input_file: app/config/config.ci.local.neon
             output_file: app/config/config.local.neon
@@ -66,27 +50,39 @@ acceptance-tests:
         - script:
             name: Symlink webroot
             code: rm -r /var/www/html && ln -s $(pwd) /var/www/html
+
         - script:
             name: run database migrations
             code: php www/index.php migrations:migrate --no-interaction
+
         - script:
             name: configure /etc/hosts (hospodareni.loc)
             code: echo "127.0.0.1 hospodareni.loc" >> /etc/hosts
+
         - script:
             name: configure /etc/hosts (phantom)
             code: echo "127.0.0.1 smtp-hospodareni.loc" >> /etc/hosts
+
         - script:
             name: configure /etc/hosts (phantom.loc)
             code: echo "127.0.0.1 phantom" >> /etc/hosts
+
         - script:
             name: Make everything accessible
             code: chown www-data:www-data . -R && chmod 777 . -R
+
         - script:
             name: start apache
             code: service apache2 restart
+
         - script:
             name: give mysql and phantomjs some time
             code: sleep 15
+
+        - script:
+            name: upload code coverage to codecov.io
+            code: mv tests/_output/coverage.xml clover.xml && bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
+
         - script:
             name: acceptance testing
             code: phing tests-acceptance
