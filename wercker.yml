@@ -36,7 +36,10 @@ tests:
             code: sleep 10
         - script:
             name: run unit & integration tests
-            code: phing tests
+            code: phing tests-with-coverage
+        - script:
+            name: upload code coverage to codecov.io
+            code: mv tests/_output/coverage.xml clover.xml && bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
 
 acceptance-tests:
     services:
