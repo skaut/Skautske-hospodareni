@@ -3,7 +3,16 @@
 {include ../ActionMenu.latte}
 
 <div n:snippet="paragony">
-    {include $templateBlockDir.'cashbook/table.latte', printChitlist=>true}
-    {control chitForm}
+    <script type="text/javascript" src="{$baseUri}/js/nextras.datetimepicker.init.js"></script>{* include kvuli ajaxovým požadavkům *}
+    <div class="row">
+        <div class="well well-sm" n:if=" ! $isCashbookEmpty">
+            <a n:href=":Accountancy:CashbookExport:printAllChits $cashbookId" target="_blank" class="btn btn-sm btn-info">
+                <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout seznam dokladů
+            </a>
+
+            {include $templateBlockDir . 'cashbook/excelExportDropdown.latte', cashbookId => $cashbookId}
+        </div>
+    </div>
+
     {control cashbook}
 </div>
