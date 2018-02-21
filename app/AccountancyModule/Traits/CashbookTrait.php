@@ -1,8 +1,8 @@
 <?php
 
-use App\AccountancyModule\Components\CashbookControl;
+use App\AccountancyModule\Components\Cashbook\ChitListControl;
 use App\AccountancyModule\Components\ChitForm;
-use App\AccountancyModule\Factories\ICashbookControlFactory;
+use App\AccountancyModule\Factories\Cashbook\IChitListControlFactory;
 use App\AccountancyModule\Factories\IChitFormFactory;
 
 trait CashbookTrait
@@ -14,13 +14,13 @@ trait CashbookTrait
     /** @var \Nette\Utils\ArrayHash */
     protected $event;
 
-    /** @var ICashbookControlFactory */
+    /** @var IChitListControlFactory */
     private $cashbookFactory;
 
     /** @var IChitFormFactory */
     private $formFactory;
 
-    public function injectConstruct(ICashbookControlFactory $cashbookFactory, IChitFormFactory $formFactory): void
+    public function injectConstruct(IChitListControlFactory $cashbookFactory, IChitFormFactory $formFactory): void
     {
         $this->cashbookFactory = $cashbookFactory;
         $this->formFactory = $formFactory;
@@ -35,7 +35,7 @@ trait CashbookTrait
         return $control;
     }
 
-    protected function createComponentCashbook(): CashbookControl
+    protected function createComponentCashbook(): ChitListControl
     {
         $cashbookId = $this->entityService->chits->getCashbookIdFromSkautisId($this->aid);
 

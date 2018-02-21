@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\Components;
+namespace App\AccountancyModule\Components\Cashbook;
 
+use App\AccountancyModule\Components\BaseControl;
 use App\AccountancyModule\Components\Cashbook\MoveChitsDialog;
 use App\AccountancyModule\Factories\Cashbook\IMoveChitsDialogFactory;
 use App\Forms\BaseForm;
@@ -21,7 +22,7 @@ use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Nette\InvalidStateException;
 
-class CashbookControl extends BaseControl
+class ChitListControl extends BaseControl
 {
 
     /** @var int */
@@ -71,7 +72,7 @@ class CashbookControl extends BaseControl
             'categories'    => $this->queryBus->handle(new CategoryListQuery($this->cashbookId)),
         ]);
 
-        $this->template->setFile(__DIR__ . '/templates/CashbookControl.latte');
+        $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
         $this->template->render();
     }
 
