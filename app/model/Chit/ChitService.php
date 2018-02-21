@@ -187,7 +187,7 @@ class ChitService extends MutableBaseService
         //@TODO: předělat na konstanty
         $catId = ($category == "adult") ? 3 : 1;
         foreach ($this->getCategories($skautisEventId) as $k => $val) {
-            if ($val->ID_EventCampStatementType == $catId) {
+            if (isset($val->ID_EventCampStatementType) && $val->ID_EventCampStatementType == $catId) {
                 return $k;
             }
         }
