@@ -26,7 +26,7 @@ class CashbookExportPresenter extends BasePresenter
      * @var int
      * @persistent
      */
-    public $cashbookId;
+    public $cashbookId = 0; // default value type is used for type casting
 
     /** @var ExportService */
     private $exportService;
@@ -52,8 +52,6 @@ class CashbookExportPresenter extends BasePresenter
     public function startup(): void
     {
         parent::startup();
-
-        $this->cashbookId = (int) $this->cashbookId;
 
         if ( ! $this->hasAccessToCashbook()) {
             throw new BadRequestException('User has no access to cashbook', IResponse::S403_FORBIDDEN);
