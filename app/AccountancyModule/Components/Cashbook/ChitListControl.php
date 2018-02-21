@@ -20,6 +20,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\DTO\Cashbook\Category;
 use Nette\InvalidStateException;
 
 class ChitListControl extends BaseControl
@@ -69,7 +70,7 @@ class ChitListControl extends BaseControl
             'aid'           => (int) $this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
             'chits'         => $this->queryBus->handle(new ChitListQuery($this->cashbookId)),
             'prefix'        => $this->queryBus->handle(new CashbookNumberPrefixQuery($this->cashbookId)),
-            'categories'    => $this->queryBus->handle(new CategoryListQuery($this->cashbookId)),
+            'categories'    => $this->getCategoriesById(),
         ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
@@ -160,6 +161,22 @@ class ChitListControl extends BaseControl
         $cashbookType = $this->queryBus->handle(new CashbookTypeQuery($this->cashbookId));
 
         return $cashbookType->getSkautisObjectType();
+    }
+
+    /**
+     * @return array<int,Category>
+     */
+    private function getCategoriesById(): array
+    {
+        /** @var Category[] $categories */
+        $categories = $this->queryBus->handle(new CategoryListQuery($this->cashbookId));
+        $result = [];
+
+        foreach ($categories as $category) {
+            $result[$category->getId()] = $category;
+        }
+
+        return $result;
     }
 
 }
