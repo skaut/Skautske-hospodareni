@@ -2,53 +2,56 @@
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\Components\CashbookControl;
+use App\AccountancyModule\Factories\ICashbookControlFactory;
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
+use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
+use Money\Money;
 
 class CashbookPresenter extends BasePresenter
 {
 
-    use \CashbookTrait;
+    /** @var bool */
+    private $missingCategories;
 
-    protected function startup() : void
+    /** @var ICashbookControlFactory */
+    private $cashbookFactory;
+
+    public function __construct(ICashbookControlFactory $cashbookFactory)
+    {
+        parent::__construct();
+        $this->cashbookFactory = $cashbookFactory;
+    }
+
+    protected function startup(): void
     {
         parent::startup();
-        if (!$this->aid) {
-            $this->flashMessage("Musíš vybrat akci", "danger");
-            $this->redirect("Default:");
-        }
-        $this->entityService = $this->eventService;
-
-        $isEditable = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->aid);
-
-        $this->isEditable = $isEditable;
-        $this->template->isEditable = $isEditable;
-        $this->redrawControl('chitForm');
+        $this->isEditable = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->aid);
+        $this->missingCategories = ! $this->event->IsRealTotalCostAutoComputed; // je aktivní dopočítávání?
     }
 
-    public function renderDefault(int $aid, $dp = FALSE) : void
+    public function renderDefault(int $aid): void
     {
-        $this->template->isInMinus = $this->eventService->chits->eventIsInMinus($this->getCurrentUnitId());
+        /** @var Money $finalBalance */
+        $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
 
-        $this->template->list = $this->eventService->chits->getAll($aid);
-        $this->template->missingCategories = FALSE;
-        $this->template->linkImportHPD = "#importHpd";
-
-        $this->fillTemplateVariables();
-
-        if (!$this->event->IsRealTotalCostAutoComputed) { //nabízí možnost aktivovat dopočítávání, pokud již není aktivní a je dostupná
-            $this->template->missingCategories = TRUE; //boolean - nastavuje upozornění na chybějící dopočítávání kategorií
-        }
-        if ($this->isAjax()) {
-            $this->redrawControl("contentSnip");
-        }
+        $this->template->setParameters([
+            'isCashbookEmpty'   => $this->isCashbookEmpty(),
+            'cashbookId'        => $this->getCashbookId(),
+            'isInMinus'         => $finalBalance->isNegative(),
+            'isEditable'        => $this->isEditable,
+            'missingCategories' => $this->missingCategories,
+        ]);
     }
 
-    public function handleActivateAutocomputedCashbook(int $aid) : void
+    public function handleActivateAutocomputedCashbook(int $aid): void
     {
         try {
             $this->commandBus->handle(new ActivateAutocomputedCashbook($aid));
@@ -58,6 +61,11 @@ class CashbookPresenter extends BasePresenter
         }
 
         $this->redirect("this");
+    }
+
+    protected function createComponentCashbook(): CashbookControl
+    {
+        return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable && ! $this->missingCategories);
     }
 
     protected function createComponentFormImportHpd(): BaseForm
@@ -73,7 +81,7 @@ class CashbookPresenter extends BasePresenter
         $form->addSubmit('send', 'Importovat')
             ->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function(BaseForm $form) : void {
+        $form->onSuccess[] = function(BaseForm $form): void {
             $this->formImportHpdSubmitted($form);
         };
 
@@ -82,7 +90,7 @@ class CashbookPresenter extends BasePresenter
         return $form;
     }
 
-    private function formImportHpdSubmitted(BaseForm $form) : void
+    private function formImportHpdSubmitted(BaseForm $form): void
     {
         $this->editableOnly();
         $values = $form->getValues();
@@ -105,13 +113,27 @@ class CashbookPresenter extends BasePresenter
                 new Date($date),
                 NULL,
                 new Amount((string) $amount),
-                "úč. příspěvky " . ($values->isAccount == "Y" ? "- účet" : "- hotovost"),
+                "úč. příspěvky " . ($values->isAccount === "Y" ? "- účet" : "- hotovost"),
                 $categoryId
             )
         );
 
-        $this->flashMessage("HPD byl importován");
-        $this->redirect("default", ["aid" => $aid]);
+        $this->flashMessage('HPD byl importován');
+
+        $this->redirect('default', $aid);
+    }
+
+    private function getCashbookId(): int
+    {
+        return $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
+    }
+
+    private function isCashbookEmpty(): bool
+    {
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId()));
+
+        return empty($chits);
     }
 
 }

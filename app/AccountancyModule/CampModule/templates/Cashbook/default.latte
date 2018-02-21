@@ -12,10 +12,30 @@
 </div>
 
 <div n:snippet="paragony">
-    {include $templateBlockDir.'cashbook/table.latte'}
-    {if ! $missingCategories}
-        {control chitForm}
-    {/if}
+    <script type="text/javascript" src="{$baseUri}/js/nextras.datetimepicker.init.js"></script>{* include kvuli ajaxovým požadavkům *}
+
+    <div class="row">
+        <p n:if="$isInMinus" class="alert alert-danger">
+            Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+        </p>
+        <div class="well well-sm" n:ifcontent>
+            <a n:if="$isEditable" href="#importHpd" role="button" data-toggle="modal" class="btn btn-sm btn-primary">
+                Načíst příjmy od účastníků
+            </a>
+
+            {if ! $isCashbookEmpty}
+                <a n:href=":Accountancy:CashbookExport:printCashbook $cashbookId"
+                        target="_blank"
+                        class="btn btn-sm btn-info">
+                    <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i>
+                    Vytisknout pokladní knihu
+                </a>
+
+                {include $templateBlockDir . 'cashbook/excelExportDropdown.latte', cashbookId => $cashbookId}
+            {/if}
+        </div>
+    </div>
+
     {control cashbook}
 </div>
 
