@@ -33,16 +33,8 @@ class CashbookPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
-
-        if ( ! $this->aid) {
-            $this->flashMessage("Musíš vybrat akci", "danger");
-            $this->redirect("Event:");
-        }
-
         $isDraft = $this->event->ID_EventGeneralState === 'draft';
         $this->isEditable = $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
-
-        $this->redrawControl('chitForm');
     }
 
     public function renderDefault(int $aid): void
