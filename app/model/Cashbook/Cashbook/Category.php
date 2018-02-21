@@ -13,8 +13,7 @@ class Category
     private $id;
 
     /**
-     * TODO: NULL only allowed until camp chits are updated
-     * @var Operation|NULL
+     * @var Operation
      */
     private $operationType;
 
@@ -29,7 +28,7 @@ class Category
         return $this->id;
     }
 
-    public function getOperationType(): ?Operation
+    public function getOperationType(): Operation
     {
         return $this->operationType;
     }
