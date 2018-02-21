@@ -77,7 +77,7 @@ build:
 
         - script:
             name: give mysql and phantomjs some time
-            code: sleep 15
+            code: sleep 5
 
         - script:
             name: upload code coverage to codecov.io
