@@ -2,51 +2,60 @@
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\Components\CashbookControl;
+use App\AccountancyModule\Factories\ICashbookControlFactory;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
+use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
+use Money\Money;
 
 class CashbookPresenter extends BasePresenter
 {
 
-    use \CashbookTrait;
+    /** @var ICashbookControlFactory */
+    private $cashbookFactory;
+
+    public function __construct(ICashbookControlFactory $cashbookFactory)
+    {
+        parent::__construct();
+        $this->cashbookFactory = $cashbookFactory;
+    }
 
     protected function startup(): void
     {
         parent::startup();
-        if (!$this->aid) {
+
+        if ( ! $this->aid) {
             $this->flashMessage("Musíš vybrat akci", "danger");
             $this->redirect("Event:");
         }
-        $this->entityService = $this->eventService;
 
-        $isDraft = $this->event->ID_EventGeneralState === "draft";
+        $isDraft = $this->event->ID_EventGeneralState === 'draft';
         $this->isEditable = $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
 
-        $this->template->isEditable = $this->isEditable;
-        $this->template->missingCategories = FALSE;
         $this->redrawControl('chitForm');
     }
 
-    public function renderDefault(int $aid, $dp = FALSE): void
+    public function renderDefault(int $aid): void
     {
-        $this->template->setParameters([
-            "isInMinus" => $this->eventService->chits->eventIsInMinus($this->getCurrentUnitId()), // musi byt v before render aby se vyhodnotila az po handleru
-            "list" => $this->eventService->chits->getAll($aid),
-            "linkImportHPD" => $this->link("importHpd", ["aid" => $aid]),
-            "cashbookWithCategoriesAllowed" => TRUE,
-        ]);
+        /** @var Money $finalBalance */
+        $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
 
-        $this->fillTemplateVariables();
-        if ($this->isAjax()) {
-            $this->redrawControl("contentSnip");
-        }
+        $this->template->setParameters([
+            'isCashbookEmpty'   => $this->isCashbookEmpty(),
+            'cashbookId'        => $this->getCashbookId(),
+            'isInMinus'         => $finalBalance->isNegative(),
+            'isEditable'        => $this->isEditable,
+        ]);
     }
 
     public function actionImportHpd(int $aid): void
@@ -79,6 +88,28 @@ class CashbookPresenter extends BasePresenter
 
         $this->flashMessage("Účastníci byli importováni");
         $this->redirect("default", ["aid" => $aid]);
+    }
+
+    protected function createComponentCashbook(string $name): CashbookControl
+    {
+        $control = $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable);
+
+        $this->addComponent($control, $name); // necessary for JSelect
+
+        return $control;
+    }
+
+    private function isCashbookEmpty(): bool
+    {
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId()));
+
+        return empty($chits);
+    }
+
+    private function getCashbookId(): int
+    {
+        return $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
     }
 
 }
