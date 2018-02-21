@@ -52,7 +52,7 @@ class ChitService extends MutableBaseService
      * @param int $chitId
      * @return Row|FALSE
      */
-    public function get($chitId)
+    private function get($chitId)
     {
         $ret = $this->table->get($chitId);
         if ($ret instanceof Row && $this->type == self::TYPE_CAMP) {//doplnění kategorie u paragonu z tábora
@@ -155,7 +155,7 @@ class ChitService extends MutableBaseService
      *
      * @return array array(in=>(id=>DisplayName, ...), out=>(...))
      */
-    public function getCategoriesPairs(?string $typeInOut, int $skautisEventId): array
+    private function getCategoriesPairs(?string $typeInOut, int $skautisEventId): array
     {
         $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
 
@@ -229,15 +229,6 @@ class ChitService extends MutableBaseService
             }
         }
         return empty($toRepair);
-    }
-
-    /**
-     * je akce celkově v záporu?
-     * @param int $skautisEventId
-     */
-    public function eventIsInMinus(int $skautisEventId): bool
-    {
-        return $this->table->eventIsInMinus($this->getLocalId($skautisEventId));
     }
 
     public function moveChits(array $chits, int $originEventId, string $originEventType, int $newEventId, string $newEventType): void
