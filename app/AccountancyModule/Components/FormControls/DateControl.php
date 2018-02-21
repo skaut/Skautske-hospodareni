@@ -13,17 +13,15 @@ use Nextras\Forms\Controls\DatePicker;
 class DateControl extends DatePicker
 {
 
-    /**
-     * @param Date|NULL $value
-     * @return static
-     */
-    public function setValue($value)
+    public function setDefaultValue($value): self
     {
-        if ( ! $value instanceof Date && $value !== NULL) {
+        if (!$value instanceof Date && $value !== NULL) {
             throw new \InvalidArgumentException(sprintf('$value must be instance of %s or NULL', Date::class));
         }
 
-        return parent::setValue($value);
+        parent::setDefaultValue($value);
+
+        return $this;
     }
 
     public function getValue(): ?Date

@@ -195,7 +195,9 @@ final class ChitForm extends BaseControl
             ->setAttribute('class', 'form-control input-sm');
 
         // ID of edited chit
-        $form->addHidden('pid');
+        $form->addHidden('pid')
+            ->setRequired(FALSE)
+            ->addRule($form::INTEGER);
 
         $form->addSubmit('send', 'Uložit')
             ->setAttribute('class', 'btn btn-primary');
@@ -217,7 +219,7 @@ final class ChitForm extends BaseControl
 
         $values = $form->getValues();
 
-        $chitId = $values['pid'];
+        $chitId = $values['pid'] !== '' ? (int) $values['pid'] : NULL;
         $number = $values->num !== '' ? new ChitNumber($values->num) : NULL;
 
         $date = $values->date;
