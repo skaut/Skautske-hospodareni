@@ -9,8 +9,8 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\Chit as ChitDTO;
 use Model\DTO\Cashbook\ChitFactory;
-use Model\Utils\Arrays;
 use function array_map;
+use function usort;
 
 class ChitListQueryHandler
 {
@@ -32,17 +32,18 @@ class ChitListQueryHandler
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 
         $chits = $cashbook->getChits();
-        $chits = Arrays::sort(
-            $chits,
-            function (Chit $a, Chit $b): int {
-                return $a->getDate() <=> $b->getDate();
-                },
-            function (Chit $a, Chit $b): int {
-                return $a->getCategory()->getOperationType()->compareWith($b->getCategory()->getOperationType());
-                },
-            function (Chit $a, Chit $b): int {
-                return $a->getId() <=> $b->getId();
-            });
+
+        usort($chits, function (Chit $a, Chit $b): int {
+            return [
+                $a->getDate(),
+                $a->getCategory()->getOperationType()->getValue(),
+                $a->getId(),
+            ] <=> [
+                $b->getDate(),
+                $b->getCategory()->getOperationType()->getValue(),
+                $b->getId(),
+            ];
+        });
 
         return array_map([ChitFactory::class, 'create'], $chits);
     }
