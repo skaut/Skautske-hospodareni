@@ -61,10 +61,6 @@ build:
 
         - script:
             name: configure /etc/hosts (phantom)
-            code: echo "127.0.0.1 smtp-hospodareni.loc" >> /etc/hosts
-
-        - script:
-            name: configure /etc/hosts (phantom.loc)
             code: echo "127.0.0.1 phantom" >> /etc/hosts
 
         - script:
