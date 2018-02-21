@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\FormControls;
 
 use Cake\Chronos\Date;
+use Nette\Utils\Html;
 use Nextras\Forms\Controls\DatePicker;
 
 /**
@@ -33,6 +34,19 @@ class DateControl extends DatePicker
         }
 
         return Date::instance($value);
+    }
+
+    public function getControl(): Html
+    {
+        $control = parent::getControl();
+
+        $value = $this->getValue();
+
+        if ($value !== NULL) {
+            $control->setAttribute('value', $value->format($this->htmlFormat));
+        }
+
+        return $control;
     }
 
 }
