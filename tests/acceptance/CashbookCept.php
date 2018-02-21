@@ -52,7 +52,8 @@ $I->waitForElementNotVisible($noChitsMessage);
 $page->seeBalance('-101,00');
 
 $I->click('.ui--editChit');
-$I->wait(2); // give it some time to refresh
+$I->waitForElement('[name="pid"]:not([value=""])');
+
 
 // change amount
 $page->fillChitForm(new Date(), $purpose, 'Výdaje', 'Potraviny', 'Testovací skaut', '120 + 1');
