@@ -3,7 +3,6 @@
 {include ../ActionMenu.latte}
 
 <div n:snippet="paragony">
-    <script type="text/javascript" src="{$baseUri}/js/nextras.datetimepicker.init.js"></script>{* include kvuli ajaxovým požadavkům *}
     <div class="row">
         <div class="well well-sm" n:if=" ! $isCashbookEmpty">
             <a n:href=":Accountancy:CashbookExport:printAllChits $cashbookId" target="_blank" class="btn btn-sm btn-info">
