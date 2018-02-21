@@ -101,8 +101,6 @@ final class ChitForm extends BaseControl
 
     public function editChit(int $chitId): void
     {
-        $form = $this['cashbookForm'];
-
         /** @var Chit|NULL $chit */
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $chitId));
 
@@ -114,6 +112,8 @@ final class ChitForm extends BaseControl
             throw new BadRequestException('Can\'t edit locked chit', IResponse::S403_FORBIDDEN);
         }
 
+        $form = $this['form'];
+
         $form['category']->setItems($this->getCategoryPairsByType($chit->getCategory()->getOperationType()));
 
         $form->setDefaults([
@@ -122,9 +122,9 @@ final class ChitForm extends BaseControl
             'num'       => (string) $chit->getNumber(),
             'recipient' => (string) $chit->getRecipient(),
             'purpose'   => $chit->getPurpose(),
-            'price' => $chit->getAmount()->getExpression(),
-            'type' => $chit->getCategory()->getOperationType()->getValue(),
-            'category' => $chit->getCategory()->getId(),
+            'price'     => $chit->getAmount()->getExpression(),
+            'type'      => $chit->getCategory()->getOperationType()->getValue(),
+            'category'  => $chit->getCategory()->getId(),
         ]);
 
         $this->redrawControl();

@@ -23,8 +23,14 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Category;
 use Nette\InvalidStateException;
 
+/**
+ * @method onEditButtonClicked(int $chitId)
+ */
 class ChitListControl extends BaseControl
 {
+
+    /** @var callable[] */
+    public $onEditButtonClicked = [];
 
     /** @var int */
     private $cashbookId;
@@ -94,6 +100,11 @@ class ChitListControl extends BaseControl
         }
 
         $this->redirect('this');
+    }
+
+    public function handleEdit(int $chitId): void
+    {
+        $this->onEditButtonClicked($chitId);
     }
 
     protected function createComponentFormMass(): BaseForm

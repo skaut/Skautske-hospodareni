@@ -53,7 +53,17 @@ class CashbookControl extends BaseControl
 
     protected function createComponentChitList(): ChitListControl
     {
-        return $this->chitListFactory->create($this->cashbookId, $this->isEditable);
+        $control = $this->chitListFactory->create($this->cashbookId, $this->isEditable);
+
+        $control->onEditButtonClicked[] = function (int $chitId) {
+            /** @var ChitForm $form */
+            $form = $this['chitForm'];
+            $form->editChit($chitId);
+
+            $form->redrawControl();
+        };
+
+        return $control;
     }
 
 }
