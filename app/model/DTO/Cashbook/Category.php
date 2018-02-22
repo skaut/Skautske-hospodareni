@@ -30,12 +30,16 @@ class Category
     /** @var Operation */
     private $operationType;
 
-    public function __construct(int $id, string $name, string $shortcut, Operation $operationType)
+    /** @var bool */
+    private $income;
+
+    public function __construct(int $id, string $name, string $shortcut, Operation $operationType, bool $income)
     {
         $this->id = $id;
         $this->name = $name;
         $this->shortcut = $shortcut;
         $this->operationType = $operationType;
+        $this->income = $income;
     }
 
     public function getId(): int
@@ -60,7 +64,7 @@ class Category
 
     public function isIncome(): bool
     {
-        return $this->operationType->equalsValue(Operation::INCOME);
+        return $this->income;
     }
 
 }

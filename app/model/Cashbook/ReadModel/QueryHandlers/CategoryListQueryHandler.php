@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Model\Cashbook\ICategory;
+use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
@@ -35,7 +36,13 @@ class CategoryListQueryHandler
         $categories = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());
 
         return array_map(function (ICategory $category): Category {
-            return new Category($category->getId(), $category->getName(), $category->getShortcut(), $category->getOperationType());
+            return new Category(
+                $category->getId(),
+                $category->getName(),
+                $category->getShortcut(),
+                $category->getOperationType(),
+                $category->getOperationType()->equalsValue(Operation::INCOME)
+            );
         }, $categories);
     }
 
