@@ -21,7 +21,9 @@ use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\MemberService;
+use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\IControl;
 use Nette\Http\IResponse;
 use Nette\Utils\Json;
@@ -112,6 +114,7 @@ final class ChitForm extends BaseControl
             throw new BadRequestException('Can\'t edit locked chit', IResponse::S403_FORBIDDEN);
         }
 
+        /** @var BaseForm $form */
         $form = $this['form'];
 
         $form['category']->setItems($this->getCategoryPairsByType($chit->getCategory()->getOperationType()));
@@ -130,28 +133,25 @@ final class ChitForm extends BaseControl
         $this->redrawControl();
     }
 
-    /**
-     * @param BaseForm $form
-     * @return array<int,string>|array<string,array<int,string>>
-     */
-    public function getTypeItems(BaseForm $form): array
+    public function getCategoryItems(array $values): DependentData
     {
-        $type = $form['type']->getValue();
+        $type = $values['type'];
 
-        if ($type === NULL) {
-            return [
-                Operation::INCOME => $this->getCategoryPairsByType(Operation::get(Operation::INCOME)),
-                Operation::EXPENSE => $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)),
-            ];
+        if ($type !== NULL) {
+            return new DependentData(
+                $this->getCategoryPairsByType(Operation::get($type))
+            );
         }
 
-        return $this->getCategoryPairsByType(NULL);
+        return new DependentData([
+            Operation::INCOME => $this->getCategoryPairsByType(Operation::get(Operation::INCOME)),
+            Operation::EXPENSE => $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)),
+        ]);
     }
 
-    protected function createComponentForm(string $name): BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
-        $this->addComponent($form, $name); // necessary for JSelect
 
         $form->addDate('date')
             ->setRequired('Zadejte datum')
@@ -176,7 +176,8 @@ final class ChitForm extends BaseControl
             ->setDefaultValue(Operation::EXPENSE)
             ->setRequired('Vyberte typ');
 
-        $form->addJSelect('category', NULL, $form['type'], [$this, 'getTypeItems'])
+        $form->addDependentSelectBox('category', NULL, $form['type'])
+            ->setDependentCallback([$this, 'getCategoryItems'])
             ->setAttribute('class', 'form-control input-sm');
 
         $form->addText('recipient')

@@ -82,13 +82,9 @@ class CashbookPresenter extends BasePresenter
         $this->redirect("default", ["aid" => $aid]);
     }
 
-    protected function createComponentCashbook(string $name): CashbookControl
+    protected function createComponentCashbook(): CashbookControl
     {
-        $control = $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable);
-
-        $this->addComponent($control, $name); // necessary for JSelect
-
-        return $control;
+        return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable);
     }
 
     private function isCashbookEmpty(): bool

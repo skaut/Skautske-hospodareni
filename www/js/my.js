@@ -6,9 +6,16 @@ function domInit() {
         noneSelectedText: 'Nevybráno',
         noneResultsText: 'Nenalezeny žádné výsledky {0}'
     });
+
+    $('[data-dependentselectbox]').dependentSelectBox();
 }
 
 $(document).ready(function () {
+
+    $.nette.ext({
+        load: domInit,
+        init: domInit
+    });
 
     $.nette.ext({
         load: domInit,

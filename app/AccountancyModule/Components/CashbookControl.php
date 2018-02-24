@@ -42,13 +42,9 @@ class CashbookControl extends BaseControl
         $this->template->render();
     }
 
-    protected function createComponentChitForm(string $name): ChitForm
+    protected function createComponentChitForm(): ChitForm
     {
-        $control = $this->formFactory->create($this->cashbookId, $this->isEditable);
-
-        $this->addComponent($control, $name); // necessary for JSelect
-
-        return $control;
+        return $this->formFactory->create($this->cashbookId, $this->isEditable);
     }
 
     protected function createComponentChitList(): ChitListControl

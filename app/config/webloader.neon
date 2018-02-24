@@ -34,6 +34,7 @@ webloader:
                 - nextras.netteForms.js
                 - dependentselectbox.ajax.js
                 - jquery.nette.dependentselectbox.js
+                - %appDir%/../vendor/nasext/dependent-select-box/client-side/dependentSelectBox.js
                 - bootstrap.js
                 - bootstrap3-typeahead.min.js
                 - jquery.fancybox.pack.js
