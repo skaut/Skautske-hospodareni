@@ -11,4 +11,3 @@ Model\Cashbook\Cashbook\Category:
             column: category_operation_type
             annotations:
                 enum: { class: Model\Cashbook\Operation }
-            nullable: true

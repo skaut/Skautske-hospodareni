@@ -47,6 +47,10 @@ class RouterFactory
 
         $router[] = $accountancy = new RouteList('Accountancy');
 
+        $accountancy[] = new Route('export/<action>/<cashbookId>', [
+            'presenter' => 'CashbookExport',
+        ]);
+
         $accountancy[] = $this->createCampRoutes();
         $accountancy[] = $this->createEventRoutes();
         $accountancy[] = $this->createTravelRoutes();

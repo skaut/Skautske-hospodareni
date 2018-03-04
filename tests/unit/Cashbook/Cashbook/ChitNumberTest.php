@@ -31,6 +31,13 @@ class ChitNumberTest extends Unit
         $this->assertSame($value, $number->getValue());
     }
 
+    public function testToString(): void
+    {
+        $value = 'A123';
+
+        $this->assertSame($value, (string) new ChitNumber($value));
+    }
+
     public function getInvalidNumbers(): array
     {
         return [

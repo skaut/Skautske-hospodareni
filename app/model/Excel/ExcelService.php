@@ -3,8 +3,8 @@
 namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\ObjectType;
-use Model\Cashbook\Repositories\IStaticCategoryRepository;
+use Model\Cashbook\Repositories\CategoryRepository;
+use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -19,15 +19,19 @@ class ExcelService
 
     private const ADULT_AGE = 18;
 
-    /** @var IStaticCategoryRepository */
+    /** @var CategoryRepository */
     private $categories;
+
+    /** @var ICashbookRepository */
+    private $cashbooks;
 
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(IStaticCategoryRepository $categories, QueryBus $queryBus)
+    public function __construct(CategoryRepository $categories, ICashbookRepository $cashbooks, QueryBus $queryBus)
     {
         $this->categories = $categories;
+        $this->cashbooks = $cashbooks;
         $this->queryBus = $queryBus;
     }
 
@@ -77,13 +81,13 @@ class ExcelService
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
     }
 
-    public function getCashbookWithCategories(EventEntity $eventEntity, int $eventId, ObjectType $type): void
+    public function getCashbookWithCategories(EventEntity $eventEntity, int $eventId): void
     {
         $excel = $this->getNewFileV2();
         $sheet = $excel->getActiveSheet();
 
-        $builder = new CashbookWithCategoriesBuilder($this->categories);
-        $builder->build($sheet, $eventEntity, $eventId, $type);
+        $builder = new CashbookWithCategoriesBuilder($this->categories, $this->cashbooks);
+        $builder->build($sheet, $eventEntity, $eventId);
 
         $this->sendV2($excel, 'test');
     }

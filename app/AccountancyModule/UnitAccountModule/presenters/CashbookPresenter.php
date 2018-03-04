@@ -2,44 +2,62 @@
 
 namespace App\AccountancyModule\UnitAccountModule;
 
+use App\AccountancyModule\Components\CashbookControl;
+use App\AccountancyModule\Factories\ICashbookControlFactory;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\DTO\Cashbook\Chit;
+use Model\EventEntity;
+
 class CashbookPresenter extends BasePresenter
 {
 
-    use \CashbookTrait;
+    /** @var ICashbookControlFactory */
+    private $cashbookFactory;
+
+    /** @var int */
+    private $cashbookId;
+
+    public function __construct(ICashbookControlFactory $cashbookFactory)
+    {
+        parent::__construct();
+        $this->cashbookFactory = $cashbookFactory;
+    }
 
     protected function startup() : void
     {
         parent::startup();
-        if (!$this->aid) {
-            $this->flashMessage("Musíš vybrat jednotku", "danger");
-            $this->redirect("Default:");
-        }
-        $this->entityService = $this->context->getService("unitAccountService");
 
-
-        $this->event = $this->entityService->event->get($this->aid);
-
-        if (!$this->isReadable) {
-            $this->flashMessage("Nemáš oprávnění číst data jednotky", "danger");
-            $this->redirect("Default:");
+        if ( ! $this->isReadable) {
+            $this->flashMessage('Nemáš oprávnění číst data jednotky', 'danger');
+            $this->redirect('Default:');
         }
 
-        $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
+        /** @var EventEntity $eventEntity */
+        $eventEntity = $this->context->getService('unitAccountService');
+
+        $this->cashbookId = $eventEntity->chits->getCashbookIdFromSkautisId($this->aid);
     }
 
-    public function renderDefault(int $aid, $pid = NULL, $dp = FALSE) : void
+    public function renderDefault(int $aid) : void
     {
-        if ($pid !== NULL) {
-            $this->editChit($pid);
-        }
+        $this->template->setParameters([
+            'cashbookId' => $this->cashbookId,
+            'isCashbookEmpty' => $this->isCashbookEmpty(),
+            'unitPairs' => $this->unitService->getReadUnits($this->user),
+        ]);
+    }
 
-        $this->template->isInMinus = FALSE; // musi byt v before render aby se vyhodnotila az po handleru
+    protected function createComponentCashbook(): CashbookControl
+    {
+        return $this->cashbookFactory->create($this->cashbookId, $this->isEditable);
+    }
 
-        $this->fillTemplateVariables();
-        $this->template->list = $this->entityService->chits->getAll($aid);
-        if ($this->isAjax()) {
-            $this->redrawControl("contentSnip");
-        }
+    private function isCashbookEmpty(): bool
+    {
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(new ChitListQuery($this->cashbookId));
+
+        return empty($chits);
     }
 
 }

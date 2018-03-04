@@ -2,9 +2,29 @@
 
 {block #content}
 <h2>{$event->DisplayName}</h2>
+
 {include ../ActionMenu.latte}
 
 <div n:snippet="paragony">
-    {include $templateBlockDir.'cashbook/table.latte', smallIcons=>'<a href="#maasMoveModal" title="Přesunout vybrané" role="button" data-toggle="modal" class="btn btn-info btn-xs allDependend hidden-xs"><i class="glyphicon glyphicon-step-forward"></i></a>'}
-    {include $templateBlockDir.'cashbook/js.latte'}
+    <div class="row">
+        <p n:if="$isInMinus" class="alert alert-danger">
+            Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+        </p>
+        <div class="well well-sm" n:ifcontent>
+            <a n:if="$isEditable" n:href="importHpd aid => $aid" class="btn btn-sm btn-primary">Načíst příjmy od účastníků</a>
+
+            {if ! $isCashbookEmpty}
+                <a n:href=":Accountancy:CashbookExport:printCashbook $cashbookId" target="_blank" class="btn btn-sm btn-info">
+                    <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i>
+                    Vytisknout pokladní knihu
+                </a>
+
+                {include $templateBlockDir . 'cashbook/excelExportDropdown.latte', cashbookId => $cashbookId}
+            {/if}
+        </div>
+    </div>
+
+    {snippet}
+    {control cashbook}
+    {/snippet}
 </div>

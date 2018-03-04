@@ -15,6 +15,8 @@ interface ICategory
 
     public function getName(): string;
 
+    public function getShortcut(): string;
+
     public function getOperationType(): Operation;
 
 }

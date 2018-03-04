@@ -2,8 +2,16 @@
 
 namespace Model\Cashbook\Cashbook;
 
+use Nette\SmartObject;
+
+/**
+ * @property-read string $expression
+ * @property-read float $value
+ */
 class Amount
 {
+
+    use SmartObject;
 
     /** @var string */
     private $expression;

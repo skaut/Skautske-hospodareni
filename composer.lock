@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8979d81e47838f5468c4f5fab72c3d4f",
+    "content-hash": "ba9685ee267b5a5373c1324d3f7352cc",
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",
@@ -2488,6 +2488,65 @@
                 "utf-8"
             ],
             "time": "2018-01-03T07:32:36+00:00"
+        },
+        {
+            "name": "nasext/dependent-select-box",
+            "version": "v3.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/NasExt/DependentSelectBox.git",
+                "reference": "09c616dbd4e4255e156c10b964cc28baf332ff00"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/NasExt/DependentSelectBox/zipball/09c616dbd4e4255e156c10b964cc28baf332ff00",
+                "reference": "09c616dbd4e4255e156c10b964cc28baf332ff00",
+                "shasum": ""
+            },
+            "require": {
+                "nette/application": "~2.4.0 || ~3.0.0",
+                "nette/forms": "~2.4.0 || ~3.0.0",
+                "nette/utils": "~2.4.0 || ~3.0.0",
+                "php": "~5.6.0 || ~7.0"
+            },
+            "require-dev": {
+                "latte/latte": "~2.4.0 || ~3.0.0",
+                "nette/bootstrap": "~2.4.0 || ~3.0.0",
+                "nette/di": "~2.4.6 || ~3.0.0",
+                "nette/http": "~2.4.0 || ~3.0.0",
+                "nette/robot-loader": "~2.4.0 || ~3.0.0",
+                "nette/tester": "~2.0.0",
+                "tracy/tracy": "~2.4.0 || ~3.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dusan Hudak"
+                },
+                {
+                    "name": "Ales Wita",
+                    "email": "aleswita+github@gmail.com"
+                },
+                {
+                    "name": "Jáchym Toušek"
+                }
+            ],
+            "description": "Dependent Select Box for Nette Framework.",
+            "keywords": [
+                "DependentSelectBox",
+                "nasext",
+                "nette"
+            ],
+            "time": "2018-02-12T16:31:46+00:00"
         },
         {
             "name": "natxet/CssMin",
@@ -6783,17 +6842,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "3df94834c80037130b533703df4672785b6ea112"
+                "reference": "940eb3dbebd9bb2d82c94ecc896df8b19b9bd867"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/3df94834c80037130b533703df4672785b6ea112",
-                "reference": "3df94834c80037130b533703df4672785b6ea112",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/940eb3dbebd9bb2d82c94ecc896df8b19b9bd867",
+                "reference": "940eb3dbebd9bb2d82c94ecc896df8b19b9bd867",
                 "shasum": ""
             },
             "conflict": {
+                "3f/pygmentize": "<1.2",
                 "adodb/adodb-php": "<5.20.6",
                 "amphp/artax": "<1.0.6|>=2,<2.0.6",
+                "asymmetricrypt/asymmetricrypt": ">=0,<9.9.99",
                 "aws/aws-sdk-php": ">=3,<3.2.1",
                 "bugsnag/bugsnag-laravel": ">=2,<2.0.2",
                 "cakephp/cakephp": ">=1.3,<1.3.18|>=2,<2.4.99|>=2.5,<2.5.99|>=2.6,<2.6.12|>=2.7,<2.7.6|>=3,<3.0.15|>=3.1,<3.1.4",
@@ -6838,9 +6899,13 @@
                 "onelogin/php-saml": "<2.10.4",
                 "oro/crm": ">=1.7,<1.7.4",
                 "oro/platform": ">=1.7,<1.7.4",
+                "padraic/humbug_get_contents": "<1.1.2",
+                "pagarme/pagarme-php": ">=0,<9.9.99",
                 "phpmailer/phpmailer": ">=5,<5.2.24",
                 "phpunit/phpunit": ">=4.8.19,<4.8.28|>=5.0.10,<5.6.3",
                 "phpxmlrpc/extras": "<0.6.1",
+                "propel/propel": ">=2.0.0-alpha1,<=2.0.0-alpha7",
+                "propel/propel1": ">=1,<=1.7.1",
                 "pusher/pusher-php-server": "<2.2.1",
                 "sabre/dav": ">=1.6,<1.6.99|>=1.7,<1.7.11|>=1.8,<1.8.9",
                 "shopware/shopware": "<5.3.7",
@@ -6853,6 +6918,7 @@
                 "simplesamlphp/simplesamlphp-module-infocard": "<1.0.1",
                 "socalnick/scn-social-auth": "<1.15.2",
                 "squizlabs/php_codesniffer": ">=1,<2.8.1",
+                "stormpath/sdk": ">=0,<9.9.99",
                 "swiftmailer/swiftmailer": ">=4,<5.4.5",
                 "symfony/dependency-injection": ">=2,<2.0.17",
                 "symfony/form": ">=2.3,<2.3.35|>=2.4,<2.6.12|>=2.7,<2.7.38|>=2.8,<2.8.31|>=3,<3.2.14|>=3.3,<3.3.13",
@@ -6872,16 +6938,17 @@
                 "symfony/web-profiler-bundle": ">=2,<2.3.19|>=2.4,<2.4.9|>=2.5,<2.5.4",
                 "symfony/yaml": ">=2,<2.0.22|>=2.1,<2.1.7",
                 "thelia/backoffice-default-template": ">=2.1,<2.1.2",
-                "thelia/thelia": ">=2.1.0-beta1,<2.1.3|>=2.1,<2.1.2",
+                "thelia/thelia": ">=2.1,<2.1.2|>=2.1.0-beta1,<2.1.3",
+                "titon/framework": ">=0,<9.9.99",
                 "twig/twig": "<1.20",
                 "typo3/cms": ">=6.2,<6.2.30|>=7,<7.6.22|>=8,<8.7.5",
                 "typo3/flow": ">=1,<1.0.4|>=1.1,<1.1.1|>=2,<2.0.1|>=2.3,<2.3.16|>=3,<3.0.10|>=3.1,<3.1.7|>=3.2,<3.2.7|>=3.3,<3.3.5",
                 "typo3/neos": ">=1.1,<1.1.3|>=1.2,<1.2.13|>=2,<2.0.4",
                 "willdurand/js-translation-bundle": "<2.1.1",
                 "yiisoft/yii": ">=1.1.14,<1.1.15",
-                "yiisoft/yii2": "<2.0.5",
+                "yiisoft/yii2": "<2.0.14",
                 "yiisoft/yii2-bootstrap": "<2.0.4",
-                "yiisoft/yii2-dev": "<2.0.4",
+                "yiisoft/yii2-dev": "<2.0.14",
                 "yiisoft/yii2-gii": "<2.0.4",
                 "yiisoft/yii2-jui": "<2.0.4",
                 "zendframework/zend-cache": ">=2.4,<2.4.8|>=2.5,<2.5.3",
@@ -6921,7 +6988,7 @@
                 }
             ],
             "description": "Prevents installation of composer packages with known security vulnerabilities: no API, simply require it",
-            "time": "2018-02-04T22:09:50+00:00"
+            "time": "2018-02-21T14:50:18+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

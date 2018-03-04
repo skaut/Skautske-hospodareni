@@ -48,7 +48,8 @@
         "nettrine/migrations": "^0.1.0",
         "phpoffice/phpspreadsheet": "^1.0",
         "cakephp/chronos": "^1.1",
-        "warhuhn/chronos-doctrine": "^1.0"
+        "warhuhn/chronos-doctrine": "^1.0",
+        "nasext/dependent-select-box": "^3.1"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.8",

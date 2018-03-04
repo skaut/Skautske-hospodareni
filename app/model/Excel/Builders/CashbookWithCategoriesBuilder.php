@@ -4,8 +4,10 @@ namespace Model\Excel\Builders;
 
 use Dibi\Row;
 use Model\Cashbook\Category;
-use Model\Cashbook\ObjectType;
-use Model\Cashbook\Repositories\IStaticCategoryRepository;
+use Model\Cashbook\ICategory;
+use Model\Cashbook\Operation;
+use Model\Cashbook\Repositories\CategoryRepository;
+use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\EventEntity;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -16,11 +18,14 @@ use function count;
 class CashbookWithCategoriesBuilder
 {
 
-    /** @var IStaticCategoryRepository */
+    /** @var CategoryRepository */
     private $categories;
 
     /** @var Worksheet */
     private $sheet;
+
+    /** @var ICashbookRepository */
+    private $cashbooks;
 
     private const HEADER_ROW = 2;
     private const SUBHEADER_ROW = 3;
@@ -31,18 +36,21 @@ class CashbookWithCategoriesBuilder
     // Coefficient for minimal size of column
     private const COLUMN_WIDTH_COEFFICIENT = 1.1;
 
-    public function __construct(IStaticCategoryRepository $categories)
+    public function __construct(CategoryRepository $categories, ICashbookRepository $cashbooks)
     {
         $this->categories = $categories;
+        $this->cashbooks = $cashbooks;
     }
 
-    public function build(Worksheet $sheet, EventEntity $eventEntity, int $eventId, ObjectType $type): void
+    public function build(Worksheet $sheet, EventEntity $eventEntity, int $eventId): void
     {
         $this->sheet = $sheet;
 
         $this->addCashbookHeader();
 
-        [$incomeCategories, $expenseCategories] = $this->getCategories($type);
+        $cashbookId = $eventEntity->chits->getCashbookIdFromSkautisId($eventId);
+
+        [$incomeCategories, $expenseCategories] = $this->getCategories($cashbookId);
         $expensesFirstColumn = self::CATEGORIES_FIRST_COLUMN + count($incomeCategories);
         $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
         $this->addCategoriesHeader($expensesFirstColumn, 'Výdaje', $expenseCategories);
@@ -91,7 +99,7 @@ class CashbookWithCategoriesBuilder
     }
 
     /**
-     * @param Category[] $categories
+     * @param ICategory[] $categories
      * @throws \PHPExcel_Exception
      */
     private function addCategoriesHeader(int $startColumn, string $groupName, array $categories): void
@@ -118,11 +126,11 @@ class CashbookWithCategoriesBuilder
 
     /**
      * @param Row[] $chits
-     * @param Category[] $categories
+     * @param ICategory[] $categories
      */
     private function addChits(array $chits, array $categories): void
     {
-        $categories = array_map(function (Category $c) { return $c->getId(); }, $categories);
+        $categories = array_map(function (ICategory $c) { return $c->getId(); }, $categories);
         $categoryColumns = array_flip($categories);
         $categoryColumns = array_map(function (int $column) {
             return $column + self::CATEGORIES_FIRST_COLUMN;
@@ -155,16 +163,18 @@ class CashbookWithCategoriesBuilder
     }
 
     /**
-     * @return Category[][]
+     * @return ICategory[][]
      */
-    private function getCategories(ObjectType $type): array
+    private function getCategories(int $cashbookId): array
     {
-        $categories = $this->categories->findByObjectType($type);
+        $cashbook = $this->cashbooks->find($cashbookId);
+
+        $categories = $this->categories->findForCashbook($cashbookId, $cashbook->getType());
         $incomeCategories = [];
         $expenseCategories = [];
 
         foreach($categories as $category) {
-            if($category->isIncome()) {
+            if($category->getOperationType()->equalsValue(Operation::INCOME)) {
                 $incomeCategories[] = $category;
             } else {
                 $expenseCategories[] = $category;

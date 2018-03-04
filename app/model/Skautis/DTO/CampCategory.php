@@ -41,4 +41,9 @@ final class CampCategory implements ICategory
         return $this->name;
     }
 
+    public function getShortcut(): string
+    {
+        return mb_substr($this->name, 0, 5, 'UTF-8');
+    }
+
 }

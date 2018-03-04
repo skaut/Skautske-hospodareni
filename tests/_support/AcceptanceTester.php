@@ -33,7 +33,8 @@ class AcceptanceTester extends \Codeception\Actor
     {
         $I = $this;
 
-        if($I->loadSessionSnapshot('login')) {
+        if ($I->loadSessionSnapshot('login')) {
+            $I->click('Akce');
              return;
         }
 
