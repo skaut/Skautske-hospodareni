@@ -195,12 +195,10 @@ class ParticipantService extends MutableBaseService
 
     /**
      * celkově vybraná částka
-     * @param int $eventId
-     * @return int - vybraná částka
      */
-    public function getTotalPayment($eventId)
+    public function getTotalPayment(int $eventId): float
     {
-        return array_reduce($this->getAll($eventId), function ($res, $v) {
+        return (float) array_reduce($this->getAll($eventId), function ($res, $v) {
             return isset($v->{ParticipantService::PAYMENT}) ? $res + $v->{ParticipantService::PAYMENT} : $res;
         });
     }
