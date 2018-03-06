@@ -121,12 +121,12 @@ class ChitListControl extends BaseControl
             $chitIds = array_map('\intval', $chitIds);
 
             if ($printButton->isSubmittedBy()) {
-                $this->redirectToExport(':Accountancy:Export:printChits', $chitIds);
+                $this->redirectToExport(':Accountancy:CashbookExport:printChits', $chitIds);
                 return;
             }
 
             if ($exportButton->isSubmittedBy()) {
-                $this->redirectToExport(':Accountancy:Export:exportChits', $chitIds);
+                $this->redirectToExport(':Accountancy:CashbookExport:exportChits', $chitIds);
                 return;
             }
 

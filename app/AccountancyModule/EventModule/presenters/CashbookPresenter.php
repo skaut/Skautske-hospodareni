@@ -57,6 +57,11 @@ class CashbookPresenter extends BasePresenter
         // @TODO move logic to specific command handler
         $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);
 
+        if ($totalPayment === 0.0) {
+        	$this->flashMessage('Nemáte žádné účastníky');
+        	$this->redirect('this');
+        }
+
         /** @var Functions $functions */
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
         $date = $this->eventService->event->get($aid)->StartDate;
