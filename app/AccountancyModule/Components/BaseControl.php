@@ -5,8 +5,12 @@ namespace App\AccountancyModule\Components;
 
 use App\BasePresenter;
 use Nette\Application\UI\Control;
+use Nette\Bridges\ApplicationLatte\Template;
 use Nette\InvalidStateException;
 
+/**
+ * @property-read Template $template
+ */
 class BaseControl extends Control
 {
 

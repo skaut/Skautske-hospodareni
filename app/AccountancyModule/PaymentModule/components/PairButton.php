@@ -2,14 +2,14 @@
 
 namespace App\AccountancyModule\PaymentModule\Components;
 
+use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use Model\BankService;
 use Model\DTO\Payment\Group;
 use Model\Payment\BankAccountService;
 use Model\PaymentService;
-use Nette\Application\UI\Control;
 
-class PairButton extends Control
+class PairButton extends BaseControl
 {
 
     public const TIMEOUT_MESSAGE = 'Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.';
