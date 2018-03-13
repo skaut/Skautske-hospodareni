@@ -220,7 +220,10 @@ class GroupPresenter extends BasePresenter
             EmailType::PAYMENT_COMPLETED => $this->buildEmailTemplate($v, EmailType::PAYMENT_COMPLETED),
         ];
 
-        $emails = array_filter($emails); // Remove not submitted emails
+        /** @var array<string, EmailTemplate> $emails */
+        $emails = array_filter($emails, function (?EmailTemplate $email): bool {
+            return $email !== NULL; // Remove not submitted emails
+        });
 
         $groupId = $v->groupId !== "" ? (int)$v->groupId : NULL;
 
