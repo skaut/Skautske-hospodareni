@@ -17,5 +17,11 @@ services:
 	  tags: [ phpstan.broker.propertiesClassReflectionExtension ]
 	- class: SkautisWebserviceMagicMethodsExtension
 	  tags: [ phpstan.broker.methodsClassReflectionExtension ]
+
+	#
+	# Dynamic method return types
+	#
 	- class: WorksheetDynamicReturnTypeExtension
+	  tags: [ phpstan.broker.dynamicMethodReturnTypeExtension ]
+	- class: CodeQuality\PresenterDynamicReturnTypeExtension
 	  tags: [ phpstan.broker.dynamicMethodReturnTypeExtension ]
