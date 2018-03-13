@@ -17,3 +17,5 @@ services:
 	  tags: [ phpstan.broker.propertiesClassReflectionExtension ]
 	- class: SkautisWebserviceMagicMethodsExtension
 	  tags: [ phpstan.broker.methodsClassReflectionExtension ]
+	- class: WorksheetDynamicReturnTypeExtension
+	  tags: [ phpstan.broker.dynamicMethodReturnTypeExtension ]
