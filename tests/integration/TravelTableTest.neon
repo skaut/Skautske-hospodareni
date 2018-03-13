@@ -1,0 +1,14 @@
+parameters:
+    database:
+        driver: mysqli
+        host: mysql-test
+        username: root
+        password: ''
+        database: hskauting
+        charset: utf8
+
+services:
+    - Dibi\Connection(%database%)
+
+includes:
+- config/doctrine.neon

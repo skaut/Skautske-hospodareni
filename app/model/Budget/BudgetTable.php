@@ -21,12 +21,18 @@ class BudgetTable extends BaseTable
 
     public function getCategoriesByParent($unitId, $type, $parentId)
     {
-        return $this->connection->query("SELECT * FROM [" . self::TABLE_UNIT_BUDGET_CATEGORY . "] WHERE "
-            . "deleted = 0 AND "
-            . "type = %s ", $type, "AND "
-            . "parentId %if ", is_null($parentId), " IS %else = %end %i", $parentId, " AND "
-            . "objectId = %i ", $unitId)
-            ->fetchAssoc("id");
+        $categories = $this->connection->fetchAll('SELECT * FROM [' . self::TABLE_UNIT_BUDGET_CATEGORY . '] WHERE '
+            . 'deleted = 0 AND '
+            . 'type = %s ', $type, 'AND '
+            . 'parentId %if ', is_null($parentId), ' IS %else = %end %i', $parentId, ' AND '
+            . 'objectId = %i ', $unitId);
+        $result = [];
+
+        foreach($categories as $category) {
+            $result[$category->id] = $category;
+        }
+
+        return $result;
     }
 
     public function addCategory($arr)
