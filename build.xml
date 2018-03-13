@@ -189,7 +189,7 @@
     </target>
 
     <target name="static-analysis">
-        <exec command="php -d memory_limit=512M vendor/bin/phpstan analyse -l 5 -c phpstan.neon app --no-progress"
+        <exec command="php -d memory_limit=512M vendor/bin/phpstan analyse -l 6 -c phpstan.neon app --no-progress"
               passthru="true" checkreturn="true"/>
     </target>
 
