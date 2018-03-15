@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Model\DTO\Travel\Command;
 use Model\TravelService;
 use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
 
 class CommandGrid extends BaseGridControl
 {
@@ -32,7 +33,7 @@ class CommandGrid extends BaseGridControl
     {
         $grid = $this->createGrid();
 
-        $grid->setPrimaryKey("id");
+        $grid->setPrimaryKey('id');
 
         $grid->addColumnText('purpose', 'Účel cesty')->setSortable()->setFilterText();
         $grid->addColumnText('passenger', 'Cestující')->setSortable()->setFilterText();
@@ -56,7 +57,7 @@ class CommandGrid extends BaseGridControl
 
         $commands = $this->travel->getAllCommands($this->unitId);
 
-        $grid->setDataSource(new ArrayCollection($commands));
+        $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($commands), 'id'));
 
         $commandIds = array_column($commands, 'id');
         $vehicleIds = array_column($commands, 'vehicleId');

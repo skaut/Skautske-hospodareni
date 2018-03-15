@@ -24,10 +24,18 @@ class ChitTable extends BaseTable
      */
     public function getAll($localEventId, $onlyUnlocked): array
     {
-        return $this->connection->query("SELECT * FROM [" . self::TABLE_CHIT_VIEW . "]
-                WHERE eventId=%i", $localEventId, " AND deleted=0
-                    %if ", $onlyUnlocked, " AND [lock] IS NULL %end
-                ORDER BY date, ctype, num, cshort")->fetchAssoc("id");
+        $chits = $this->connection->fetchAll('SELECT * FROM [' . self::TABLE_CHIT_VIEW . ']
+                WHERE eventId=%i', $localEventId, ' AND deleted=0
+                    %if ', $onlyUnlocked, ' AND [lock] IS NULL %end
+                ORDER BY date, ctype, num, cshort');
+
+        $result = [];
+
+        foreach ($chits as $chit) {
+            $result[$chit->id] = $chit;
+        }
+
+        return $result;
     }
 
     /**

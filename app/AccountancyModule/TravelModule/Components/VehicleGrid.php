@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Model\TravelService;
 use Model\UnitService;
 use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
 
 class VehicleGrid extends BaseGridControl
 {
@@ -53,7 +54,7 @@ class VehicleGrid extends BaseGridControl
         $grid->setPagination(FALSE);
 
         $vehicles = $this->travel->getAllVehicles($this->unitId);
-        $grid->setDataSource(new ArrayCollection($vehicles));
+        $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($vehicles), 'id'));
 
         $grid->onRender[] = function (DataGrid $grid) use($units) {
             $grid->template->units = $units;

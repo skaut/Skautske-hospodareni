@@ -3,10 +3,10 @@
 
 namespace App\AccountancyModule\Factories;
 
-use Nette\Application\UI\Control;
+use App\AccountancyModule\Components\BaseControl;
 use Ublaboo\DataGrid\DataGrid;
 
-abstract class BaseGridControl extends Control
+abstract class BaseGridControl extends BaseControl
 {
 
     public function render(): void

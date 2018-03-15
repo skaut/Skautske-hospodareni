@@ -20,8 +20,14 @@ class ParticipantTable extends BaseTable
      */
     public function getCampLocalDetails($skautiEventId)
     {
-        return $this->connection->query("SELECT participantId, payment, repayment, isAccount FROM [" . self::TABLE_CAMP_PARTICIPANT . "] WHERE actionId=%i", $skautiEventId)
-            ->fetchAssoc("participantId");
+        $participants = $this->connection->fetchAll('SELECT participantId, payment, repayment, isAccount FROM [' . self::TABLE_CAMP_PARTICIPANT . '] WHERE actionId=%i', $skautiEventId);
+        $result = [];
+
+        foreach ($participants as $participant) {
+            $result[$participant->participantId] = $participant;
+        }
+
+        return $result;
     }
 
     /**

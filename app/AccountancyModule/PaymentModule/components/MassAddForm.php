@@ -2,12 +2,12 @@
 
 namespace App\AccountancyModule\PaymentModule\Components;
 
+use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseContainer;
 use App\Forms\BaseForm;
 use Model\PaymentService;
-use Nette\Application\UI\Control;
 
-class MassAddForm extends Control
+class MassAddForm extends BaseControl
 {
 
     /** @var int */

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba9685ee267b5a5373c1324d3f7352cc",
+    "content-hash": "beaf726e6e1958eff7d976879b8b5cbf",
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",
@@ -5297,31 +5297,41 @@
     "packages-dev": [
         {
             "name": "arachne/codeception",
-            "version": "v0.7.7",
+            "version": "v0.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Arachne/Codeception.git",
-                "reference": "aef3844daa88739ec40f115b69f8a402a3a82da4"
+                "reference": "2764209afbeb786500687f4134495085dee1deb1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Arachne/Codeception/zipball/aef3844daa88739ec40f115b69f8a402a3a82da4",
-                "reference": "aef3844daa88739ec40f115b69f8a402a3a82da4",
+                "url": "https://api.github.com/repos/Arachne/Codeception/zipball/2764209afbeb786500687f4134495085dee1deb1",
+                "reference": "2764209afbeb786500687f4134495085dee1deb1",
                 "shasum": ""
             },
             "require": {
-                "codeception/codeception": "^2.2.0",
-                "nette/bootstrap": "^2.3.0",
-                "nette/di": "^2.3.0",
-                "nette/http": "^2.3.0",
-                "php": "^5.5.0|^7.0.0"
+                "codeception/codeception": "^2.3.2",
+                "nette/bootstrap": "^2.4.0",
+                "nette/di": "^2.4.10",
+                "nette/http": "^2.4.0",
+                "nette/utils": "^2.4.0",
+                "php": "^7.1.0"
             },
             "require-dev": {
-                "enumag/application": "^0.3.16",
-                "latte/latte": "^2.3.0",
-                "tracy/tracy": "^2.3.0"
+                "friendsofphp/php-cs-fixer": "^2.8.0",
+                "latte/latte": "^2.4.0",
+                "nette/application": "^2.4.0",
+                "nette/caching": "^2.4.0",
+                "phpstan/phpstan": "^0.9.0",
+                "phpstan/phpstan-nette": "^0.9.0",
+                "tracy/tracy": "^2.4.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.8-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Arachne\\Codeception\\": "src"
@@ -5344,7 +5354,7 @@
                 "codeception",
                 "nette"
             ],
-            "time": "2017-09-29T15:22:01+00:00"
+            "time": "2017-12-12T22:03:25+00:00"
         },
         {
             "name": "behat/gherkin",

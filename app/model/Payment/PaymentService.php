@@ -195,7 +195,7 @@ class PaymentService
     }
 
     /**
-     * @param EmailTemplate[] $emails
+     * @param array<string,EmailTemplate> $emails
      */
     public function updateGroup(int $id,
         string $name,

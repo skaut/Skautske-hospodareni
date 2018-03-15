@@ -2,6 +2,7 @@
 
 namespace App\AccountancyModule\EventModule\Components;
 
+use App\AccountancyModule\Components\BaseControl;
 use Model\Auth\Resources\Event;
 use App\Forms\BaseForm;
 use Model\Auth\IAuthorizator;
@@ -15,13 +16,12 @@ use Model\Event\Person;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
 use Model\MemberService;
-use Nette\Application\UI\Control;
 use Nette\Utils\ArrayHash;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
 use Skautis\Wsdl\PermissionException;
 
-class FunctionsControl extends Control
+class FunctionsControl extends BaseControl
 {
 
     /** @var int */

@@ -237,6 +237,11 @@ class ChitService extends MutableBaseService
             $cashbookId = $this->getLocalId($newEventId, $newEventType);
             $toUpdate = ["eventId" => $cashbookId];
             $chit = $this->get($chitId);
+
+            if ($chit === FALSE) {
+                throw new \RuntimeException('Chit not found');
+            }
+
             if ($this->getLocalId($originEventId, $originEventType) !== $chit['eventId']) {
                 throw new \InvalidArgumentException("Zvolený doklad ($chitId) nenáleží původní akci ($originEventId)");
             }
