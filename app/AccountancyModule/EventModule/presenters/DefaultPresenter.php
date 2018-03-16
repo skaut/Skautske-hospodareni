@@ -100,6 +100,7 @@ class DefaultPresenter extends BasePresenter
     {
         $ids = array_map('intval', $ids);
         $this->excelService->getEventSummaries($ids, $this->eventService);
+        $this->terminate();
     }
 
     public function handleChangeYear(?int $year): void
