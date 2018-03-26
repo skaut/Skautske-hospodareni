@@ -31,7 +31,6 @@
         "consistence/consistence": "^0.22.0",
         "kdyby/doctrine": "^3.1",
         "consistence/consistence-doctrine": "^0.6.0",
-        "vasek-purchart/doctrine-date-time-immutable-types": "^0.4.0",
         "beberlei/DoctrineExtensions": "^1.0",
         "fmasa/doctrine-yaml-annotations": "^1.0",
         "kdyby/monolog": "^1.2",

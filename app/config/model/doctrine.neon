@@ -19,7 +19,6 @@ doctrine:
         Model\Payment: yaml(%mappingDir%/Payment)
         Model\Travel: yaml(%mappingDir%/Travel)
     types:
-        datetime_immutable: VasekPurchart\Doctrine\Type\DateTimeImmutable\DateTimeImmutableType
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
         money: Model\Infrastructure\Types\MoneyType
         variable_symbol: Model\Infrastructure\Types\VariableSymbolType
