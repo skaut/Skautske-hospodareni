@@ -5,6 +5,7 @@ namespace Model;
 use Model\Payment\IUnitResolver;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
+use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Security\User;
 use Skautis;
 
@@ -146,6 +147,9 @@ class UnitService
     }
 
     /**
+     * @deprecated use EditableUnitsQuery
+     * @see EditableUnitsQuery
+     *
      * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
      * @return array<int, string>
      */
