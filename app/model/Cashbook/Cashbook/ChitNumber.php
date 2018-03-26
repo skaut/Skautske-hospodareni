@@ -15,7 +15,9 @@ final class ChitNumber
     public function __construct(string $value)
     {
         if(strlen($value) > 5 || ! Strings::match($value, sprintf('~%s~', self::PATTERN))) {
-            throw new \InvalidArgumentException('Chit number doesn\'t match required pattern');
+            throw new \InvalidArgumentException(
+                sprintf('"%s" is not valid chit number', $value)
+            );
         }
 
         $this->value = $value;
