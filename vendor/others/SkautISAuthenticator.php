@@ -7,7 +7,8 @@ use Nette;
  * používat pouze pro data ze skautISu, nikdy nenechávat aby uživatel zadal sám svoje ID!
  * @author Hána František <sinacek@gmail.com>
  */
-class SkautisAuthenticator extends Nette\Object implements Nette\Security\IAuthenticator {
+final class SkautisAuthenticator implements Nette\Security\IAuthenticator
+{
 
     public function authenticate(array $credentials) {
         $data = $credentials[0];
