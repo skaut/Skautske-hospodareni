@@ -43,9 +43,16 @@
                                     class="glyphicon glyphicon-print"></i></a>
                         <a n:if="$isEditable && ! $item->locked" n:href="edit! $item->id"
                                 class="ajax btn btn-xs btn-primary ui--editChit"><i class="glyphicon glyphicon-edit"></i></a>
+
                         <a n:if="$isEditable && ! $item->locked" n:href="remove! $item->id"
                                 onclick="return confirm('Opravdu chcete smazat paragon?')"
                                 class="btn btn-danger btn-xs ui--removeChit"><i class="glyphicon glyphicon-remove"></i></a>
+
+                        <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $item->inverseCashbookTypes))"
+                                class="ajax btn btn-xs btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $item->id"
+                                title="Vytvořit protidoklad">
+                            <i class="fa fa-exchange"></i>
+                        </a>
                     </td>
                     <td><span class="visible-xs visible-sm">{$item->date|date:"j.n."}</span><span
                                 class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
@@ -80,6 +87,7 @@
     {if $canMoveChits}
         {control moveChitsDialog}
     {/if}
+    {control invertChitDialog}
 </div>
 
 <div class="row" n:if="empty($chits)">

@@ -6,6 +6,7 @@ namespace Model\DTO\Cashbook;
 
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Category;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
@@ -20,6 +21,7 @@ use Nette\SmartObject;
  * @property-read string            $purpose
  * @property-read Category          $category
  * @property-read bool              $locked
+ * @property-read CashbookType[]    $inverseCashbookTypes
  */
 class Chit
 {
@@ -50,6 +52,12 @@ class Chit
     /** @var bool */
     private $locked;
 
+    /** @var CashbookType[] */
+    private $inverseCashbookTypes;
+
+    /**
+     * @param CashbookType[] $inverseCashbookTypes
+     */
     public function __construct(
         int $id,
         ?ChitNumber $number,
@@ -58,7 +66,8 @@ class Chit
         Amount $amount,
         string $purpose,
         Category $category,
-        bool $locked
+        bool $locked,
+        array $inverseCashbookTypes
     )
     {
         $this->id = $id;
@@ -69,6 +78,7 @@ class Chit
         $this->purpose = $purpose;
         $this->category = $category;
         $this->locked = $locked;
+        $this->inverseCashbookTypes = $inverseCashbookTypes;
     }
 
     public function getId(): int
@@ -109,6 +119,14 @@ class Chit
     public function isLocked(): bool
     {
         return $this->locked;
+    }
+
+    /**
+     * @return CashbookType[]
+     */
+    public function getInverseCashbookTypes(): array
+    {
+        return $this->inverseCashbookTypes;
     }
 
 }
