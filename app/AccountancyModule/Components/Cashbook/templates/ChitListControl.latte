@@ -4,7 +4,7 @@
         <table class="table table-bordered table-condensed" id="cashbookTable">
             <thead>
             <tr>
-                <th class='hidden-xs hidden-sm col-xs-1'>
+                <th class='col-xs-1'>
                     <input type="checkbox" name='chits-all' id='chits-all' onclick="jqCheckAll(this.id, 'chits')"
                            class="hidden-xs hidden-sm"/>
                     <button n:name="massPrintSend" title="Vytisknout vybrané"
@@ -70,15 +70,15 @@
                     <td class="r">{$balance|price}</td>
                 </tr>
             {/foreach}
-            <tr {if $balance < 0}class="alert alert-error"{/if}>
+            <tr n:class="$balance < 0 ? 'alert alert-error'">
                 <td colspan="2">&nbsp;</td>
                 <td n:if="$prefix !== NULL">&nbsp;</td>
-                <td class="hidden-xs hidden-sm">&nbsp;</td>
+                <td>&nbsp;</td>
                 <td class="hidden-xs hidden-sm">&nbsp;</td>
                 <td><b>Konečný stav</b></td>
                 <td>&nbsp;</td>
                 <td class='hidden-xs hidden-sm'>&nbsp;</td>
-                <td class="r{if $balance < 0} isMinus{/if} ui--balance"><b>{$balance|price}</b></td>
+                <td n:class="r, ui--balance, $balance < 0 ? isMinus"><b>{$balance|price}</b></td>
             </tr>
             <tbody>
         </table>
