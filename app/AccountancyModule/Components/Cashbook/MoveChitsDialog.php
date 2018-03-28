@@ -6,11 +6,13 @@ namespace App\AccountancyModule\Components\Cashbook;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
+use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookType;
+use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
@@ -37,6 +39,9 @@ class MoveChitsDialog extends BaseControl
     /** @var int */
     private $cashbookId;
 
+    /** @var CommandBus */
+    private $commandBus;
+
     /** @var QueryBus */
     private $queryBus;
 
@@ -46,10 +51,11 @@ class MoveChitsDialog extends BaseControl
     /** @var Container */
     private $context;
 
-    public function __construct(int $cashbookId, QueryBus $queryBus, IAuthorizator $authorizator, Container $context)
+    public function __construct(int $cashbookId, CommandBus $commandBus, QueryBus $queryBus, IAuthorizator $authorizator, Container $context)
     {
         parent::__construct();
         $this->cashbookId = $cashbookId;
+        $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
         $this->authorizator = $authorizator;
         $this->context = $context;
@@ -113,22 +119,14 @@ class MoveChitsDialog extends BaseControl
             return;
         }
 
-        $currentCashbookType = $this->getCashbookType($this->cashbookId);
-        $newCashbookType = $this->getCashbookType($newCashbookId);
-
         if ( ! $this->canEdit($this->cashbookId) || ! $this->canEdit($newCashbookId)) {
             $this->presenter->flashMessage('Nemáte oprávnění k původní nebo nové pokladní knize!', 'danger');
             $this->redirect('this');
         }
 
-        $this->getEventEntity()->chits->moveChits(
-            $chitIds,
-            $this->getSkautisId($this->cashbookId),
-            $currentCashbookType->getSkautisObjectType()->getValue(),
-            $this->getSkautisId($newCashbookId),
-            $newCashbookType->getSkautisObjectType()->getValue()
+        $this->commandBus->handle(
+            new MoveChitsToDifferentCashbook($chitIds, $this->cashbookId, $newCashbookId)
         );
-
 
         $this->redirect('this');
     }
@@ -193,19 +191,6 @@ class MoveChitsDialog extends BaseControl
     private function getCashbookType(int $cashbookId): CashbookType
     {
         return $this->queryBus->handle(new CashbookTypeQuery($cashbookId));
-    }
-
-    private function getEventEntity(): EventEntity
-    {
-        $type = $this->getCashbookType($this->cashbookId)->getSkautisObjectType()->getValue();
-
-        if ($type === ObjectType::UNIT) {
-            $serviceName = 'unitAccountService';
-        } else {
-            $serviceName = ($type === ObjectType::EVENT ? 'event' : $type) . 'Service';
-        }
-
-        return $this->context->getService($serviceName);
     }
 
     private function getSkautisId(int $cashbookId): int

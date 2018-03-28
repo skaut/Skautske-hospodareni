@@ -172,6 +172,27 @@ class Cashbook extends AbstractAggregate
     }
 
     /**
+     * @throws ChitNotFoundException
+     */
+    public function copyChitsFrom(array $chitIds, Cashbook $sourceCashbook): void
+    {
+        $chits = array_map(function (int $chitId) use ($sourceCashbook): Chit {
+            return $sourceCashbook->getChit($chitId);
+        }, $chitIds);
+
+        foreach ($chits as $chit) {
+            /** @var Chit $chit */
+            $newChit = $this->type->equals($sourceCashbook->type) && ! $this->type->equalsValue(CashbookType::CAMP)
+                ? $chit->copyToCashbook($this)
+                : $chit->copyToCashbookWithUndefinedCategory($this);
+
+            $this->chits->add($newChit);
+
+            $this->raise(new ChitWasAdded($this->id, $newChit->getCategoryId()));
+        }
+    }
+
+    /**
      * Only for Read model
      * @return Chit[]
      */
@@ -185,6 +206,9 @@ class Cashbook extends AbstractAggregate
             ->toArray();
     }
 
+    /**
+     * @throws ChitNotFoundException
+     */
     private function getChit(int $id): Chit
     {
         foreach($this->chits as $chit) {

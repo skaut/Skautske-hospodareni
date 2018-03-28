@@ -23,6 +23,14 @@ Model\Cashbook\Cashbook\Chit:
             column: '`lock`'
             type: integer
             nullable: true
+        budgetCategoryIn:
+            type: integer
+            column: budgetCategoryIn
+            nullable: true
+        budgetCategoryOut:
+            type: integer
+            column: budgetCategoryOut
+            nullable: true
 
     embedded:
         amount:

@@ -48,21 +48,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * vrací jeden paragon
-     * @param int $chitId
-     * @return Row|FALSE
-     */
-    private function get($chitId)
-    {
-        $ret = $this->table->get($chitId);
-        if ($ret instanceof Row && $this->type == self::TYPE_CAMP) {//doplnění kategorie u paragonu z tábora
-            $categories = $this->getCategoriesPairs(NULL, $this->getSkautisId($ret->eventId));
-            $ret->ctype = array_key_exists($ret->category, $categories['in']) ? "in" : "out";
-        }
-        return $ret;
-    }
-
-    /**
      * seznam paragonů k akci
      * @param int $skautisEventId
      * @return Row[]
@@ -229,42 +214,6 @@ class ChitService extends MutableBaseService
             }
         }
         return empty($toRepair);
-    }
-
-    public function moveChits(array $chits, int $originEventId, string $originEventType, int $newEventId, string $newEventType): void
-    {
-        foreach ($chits as $chitId) {
-            $cashbookId = $this->getLocalId($newEventId, $newEventType);
-            $toUpdate = ["eventId" => $cashbookId];
-            $chit = $this->get($chitId);
-
-            if ($chit === FALSE) {
-                throw new \RuntimeException('Chit not found');
-            }
-
-            if ($this->getLocalId($originEventId, $originEventType) !== $chit['eventId']) {
-                throw new \InvalidArgumentException("Zvolený doklad ($chitId) nenáleží původní akci ($originEventId)");
-            }
-            //pokud nejsou obe knihy od výprav, tak nastav kategorii na neurčitou kategorii
-            if ($originEventType !== $newEventType || $originEventType !== "general") {
-                $toUpdate["category"] = $chit['ctype'] === "out" ? self::CHIT_UNDEFINED_OUT : self::CHIT_UNDEFINED_IN;
-            }
-            $this->table->update($chitId, $toUpdate);
-
-            //category update
-            if ($this->type === ObjectType::CAMP) {
-                $skautisEventId = $this->getSkautisId($newEventId);
-                if ($skautisEventId !== NULL) {
-                    $this->commandBus->handle(
-                        new UpdateCampCategoryTotal(
-                            $cashbookId,
-                            $toUpdate['category'] ?? $chit->category
-                        )
-                    );
-                }
-            }
-
-        }
     }
 
     /**
