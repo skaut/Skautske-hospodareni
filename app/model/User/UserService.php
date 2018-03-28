@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Model\User\SkautisRole;
 use Nette\Utils\Strings;
 
 /**
@@ -54,13 +55,12 @@ class UserService extends BaseService
 
     /**
      * informace o aktuálně přihlášené roli
-     * @return \stdClass|NULL
      */
-    public function getActualRole()
+    public function getActualRole(): ?SkautisRole
     {
         foreach ($this->getAllSkautisRoles() as $r) {
-            if ($r->ID == $this->getRoleId()) {
-                return $r;
+            if (isset($r->Key) && $r->ID === $this->getRoleId()) {
+                return new SkautisRole($r->Key, $r->ID_Unit);
             }
         }
 
@@ -91,26 +91,33 @@ class UserService extends BaseService
         return $this->skautis->getUser()->updateLogoutTime()->getLogoutDate();
     }
 
-    public function getAccessArrays(UnitService $us)
+    public function getAccessArrays(UnitService $us): array
     {
-        $r = $this->getActualRole();
-        if ($r !== NULL && isset($r->Key)) {
-            $unitIds = Strings::endsWith($r->Key, "Stredisko") || Strings::endsWith($r->Key, "Oddil") ? $us->getAllUnder($r->ID_Unit) : [$r->ID_Unit => $us->getDetail($r->ID_Unit)];
-            if (Strings::startsWith($r->Key, "cinovnik")) {
+        $role = $this->getActualRole();
+
+        if ($role !== NULL) {
+            $unitIds = $role->isBasicUnit() || $role->isTroop()
+                ? $us->getAllUnder($role->getUnitId())
+                : [$role->getUnitId() => $us->getDetail($role->getUnitId())];
+
+            if ($role->isOfficer()) {
                 return [
                     self::ACCESS_READ => $unitIds,
                     self::ACCESS_EDIT => []
                 ];
-            } elseif (Strings::startsWith($r->Key, "vedouci") || Strings::startsWith($r->Key, "hospodar")) {
+            }
+
+            if ($role->isLeader() || $role->isAccountant()) {
                 return [
                     self::ACCESS_READ => $unitIds,
-                    self::ACCESS_EDIT => $unitIds
+                    self::ACCESS_EDIT => $unitIds,
                 ];
             }
         }
+
         return [
             self::ACCESS_READ => [],
-            self::ACCESS_EDIT => []
+            self::ACCESS_EDIT => [],
         ];
     }
 

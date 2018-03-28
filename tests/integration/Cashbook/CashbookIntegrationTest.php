@@ -3,9 +3,12 @@
 namespace Model\Cashbook;
 
 use Cake\Chronos\Date;
+use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
+use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
+use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Mockery as m;
@@ -127,11 +130,136 @@ class CashbookIntegrationTest extends \IntegrationTest
         return $cashbook;
     }
 
+    /**
+     * @dataProvider getValidTransfers
+     */
+    public function testAddInverseTransferAddsChitToCalledCashbook(
+        string $originalCashbookType,
+        string $cashbookType,
+        string $originalOperation,
+        int $originalCategoryId,
+        int $newCategoryId
+    ): void
+    {
+        $originalCashbook = new Cashbook(20, CashbookType::get($originalCashbookType));
+        $originalCashbook->addChit(
+            new ChitNumber('123'),
+            new Date(),
+            new Recipient('František Maša'),
+            new Amount('100 + 1'),
+            'transfer',
+            $this->mockCategory($originalCategoryId, $originalOperation)
+        );
+
+        // to generate ID for chit
+        $this->entityManager->persist($originalCashbook);
+        $this->entityManager->flush();
+
+        $cashbook = new Cashbook(10, CashbookType::get($cashbookType));
+        $cashbook->addInverseChit($originalCashbook, 1);
+
+        // inverse chit must have inverse category type
+        $this->assertSame(
+            Operation::get($originalOperation)->getInverseOperation(),
+            $cashbook->getChits()[0]->getCategory()->getOperationType()
+        );
+        $this->assertSame([$newCategoryId => 101.0], $cashbook->getCategoryTotals());
+        $this->assertSame([$originalCategoryId => 101.0], $originalCashbook->getCategoryTotals()); // other cashbook is not changed by this action
+    }
+
+    public function getValidTransfers(): array
+    {
+        return [ // expense -> income
+            [
+                CashbookType::TROOP,
+                CashbookType::EVENT,
+                Operation::EXPENSE,
+                16, // "Převod do akce"
+                13, // "Převod z oddílové pokladny"
+            ],
+            [ // income -> expense
+                CashbookType::OFFICIAL_UNIT,
+                CashbookType::TROOP,
+                Operation::INCOME,
+                13, // "Převod z oddílové pokladny"
+                7, // "Převod do stř. pokladny"
+            ]
+        ];
+    }
+
+    public function testAddInverseTransferRaisesEvent(): void
+    {
+        $originalCashbook = new Cashbook(20, CashbookType::get(CashbookType::TROOP));
+        $originalCashbook->addChit(
+            new ChitNumber('123'),
+            new Date(),
+            new Recipient('František Maša'),
+            new Amount('100 + 1'),
+            'transfer',
+            $this->mockCategory(16, Operation::EXPENSE) // "Převod do akce"
+        );
+
+        // to generate ID for chit
+        $this->entityManager->persist($originalCashbook);
+        $this->entityManager->flush();
+
+        $cashbook = new Cashbook(10, CashbookType::get(CashbookType::EVENT));
+        $cashbook->extractEventsToDispatch();
+
+        $cashbook->addInverseChit($originalCashbook, 1);
+
+        $events = $cashbook->extractEventsToDispatch();
+
+        $this->assertCount(1, $events);
+        $event = $events[0];
+
+        /** @var ChitWasAdded $event */
+        $this->assertSame(10, $event->getCashbookId());
+        $this->assertSame(13, $event->getCategoryId()); // "Převod z odd. pokladny"
+    }
+
+    /**
+     * @dataProvider getInvalidInverseChitCategories
+     */
+    public function testAddInvalidInverseChitThrowsException(int $invalidCategoryId): void
+    {
+        $originalCashbook = new Cashbook(20, CashbookType::get(CashbookType::OFFICIAL_UNIT));
+        $originalCashbook->addChit(
+            new ChitNumber('123'),
+            new Date(),
+            new Recipient('František Maša'),
+            new Amount('100'),
+            'just transfer',
+            $this->mockCategory($invalidCategoryId)
+        );
+
+        // to generate ID for chit
+        $this->entityManager->persist($originalCashbook);
+        $this->entityManager->flush();
+
+        $cashbook = new Cashbook(10, CashbookType::get(CashbookType::EVENT));
+
+        $this->expectException(InvalidCashbookTransferException::class);
+
+        $cashbook->addInverseChit($originalCashbook, 1);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getInvalidInverseChitCategories(): array
+    {
+        return [
+            [13], // "Převod z odd. pokladny"
+            [14], // "Převod do odd. pokladny"
+        ];
+    }
+
     private function createCashbookWithChit(): Cashbook
     {
         $cashbook = new Cashbook(10, CashbookType::get(CashbookType::EVENT));
         $category = $this->mockCategory(666);
-        $amount = new Cashbook\Amount('100');
+        $amount = new Amount('100');
         $date = new Date('2017-11-17');
 
         $cashbook->addChit(NULL, $date, NULL, $amount, 'purpose', $category);
@@ -175,11 +303,11 @@ class CashbookIntegrationTest extends \IntegrationTest
         }
     }
 
-    private function mockCategory(int $id): ICategory
+    private function mockCategory(int $id, string $operationType = Operation::INCOME): ICategory
     {
         return m::mock(ICategory::class, [
             'getId' => $id,
-            'getOperationType' => Operation::get(Operation::INCOME),
+            'getOperationType' => Operation::get($operationType),
         ]);
     }
 

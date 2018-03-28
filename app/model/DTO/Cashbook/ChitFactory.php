@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Cashbook;
 
+use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit as ChitEntity;
 use Nette\StaticClass;
 
@@ -22,7 +23,8 @@ final class ChitFactory
             $chit->getAmount(),
             $chit->getPurpose(),
             $chit->getCategory(),
-            $chit->isLocked()
+            $chit->isLocked(),
+            CashbookType::getInverseCashbookTypes($chit->getCategory()->getId())
         );
     }
 

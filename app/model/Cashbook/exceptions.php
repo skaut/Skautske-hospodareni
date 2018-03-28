@@ -14,6 +14,10 @@ class ChitLockedException extends \Exception
 {
 }
 
+class InvalidCashbookTransferException extends \Exception
+{
+}
+
 class CategoryNotFoundException extends \Exception
 {
 }

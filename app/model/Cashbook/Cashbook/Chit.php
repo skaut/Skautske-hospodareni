@@ -4,7 +4,6 @@ namespace Model\Cashbook\Cashbook;
 
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook;
-use Model\Cashbook\ICategory;
 
 class Chit
 {
@@ -46,20 +45,20 @@ class Chit
         ?Recipient $recipient,
         Amount $amount,
         string $purpose,
-        ICategory $category
+        Category $category
     )
     {
         $this->cashbook = $cashbook;
         $this->update($number, $date, $recipient, $amount, $purpose, $category);
     }
 
-    public function update(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, ICategory $category): void
+    public function update(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, Category $category): void
     {
         $this->number = $number;
         $this->date = $date;
         $this->recipient = $recipient;
         $this->amount = $amount;
-        $this->category = new Category($category->getId(), $category->getOperationType());
+        $this->category = $category;
         $this->purpose = $purpose;
     }
 

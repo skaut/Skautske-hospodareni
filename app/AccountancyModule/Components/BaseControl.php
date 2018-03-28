@@ -10,6 +10,7 @@ use Nette\InvalidStateException;
 
 /**
  * @property-read Template $template
+ * @property-read BasePresenter $presenter
  */
 class BaseControl extends Control
 {

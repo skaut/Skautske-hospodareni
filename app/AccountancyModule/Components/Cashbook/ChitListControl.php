@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\Cashbook;
 
 use App\AccountancyModule\Components\BaseControl;
-use App\AccountancyModule\Components\Cashbook\MoveChitsDialog;
+use App\AccountancyModule\Factories\Cashbook\IInvertChitDialogFactory;
 use App\AccountancyModule\Factories\Cashbook\IMoveChitsDialogFactory;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
@@ -50,12 +50,16 @@ class ChitListControl extends BaseControl
     /** @var IMoveChitsDialogFactory */
     private $moveChitsDialogFactory;
 
+    /** @var IInvertChitDialogFactory */
+    private $invertChitDialogFactory;
+
     public function __construct(
         int $cashbookId,
         bool $isEditable,
         CommandBus $commandBus,
         QueryBus $queryBus,
-        IMoveChitsDialogFactory $moveChitsDialogFactory
+        IMoveChitsDialogFactory $moveChitsDialogFactory,
+        IInvertChitDialogFactory $invertChitDialogFactory
     )
     {
         parent::__construct();
@@ -64,19 +68,21 @@ class ChitListControl extends BaseControl
         $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
         $this->moveChitsDialogFactory = $moveChitsDialogFactory;
+        $this->invertChitDialogFactory = $invertChitDialogFactory;
     }
 
     public function render(): void
     {
         $this->template->setParameters([
-            'cashbookId'    => $this->cashbookId,
-            'isEditable'    => $this->isEditable,
-            'canMoveChits'  => $this->canMoveChits(),
+            'cashbookId' => $this->cashbookId,
+            'isEditable' => $this->isEditable,
+            'canMoveChits' => $this->canMoveChits(),
             'canMassExport' => $this->canMassExport(),
-            'aid'           => (int) $this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
-            'chits'         => $this->queryBus->handle(new ChitListQuery($this->cashbookId)),
-            'prefix'        => $this->queryBus->handle(new CashbookNumberPrefixQuery($this->cashbookId)),
-            'categories'    => $this->getCategoriesById(),
+            'aid' => (int)$this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
+            'chits' => $this->queryBus->handle(new ChitListQuery($this->cashbookId)),
+            'prefix' => $this->queryBus->handle(new CashbookNumberPrefixQuery($this->cashbookId)),
+            'categories' => $this->getCategoriesById(),
+            'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
         ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
@@ -147,6 +153,11 @@ class ChitListControl extends BaseControl
         return $this->moveChitsDialogFactory->create($this->cashbookId);
     }
 
+    protected function createComponentInvertChitDialog(): InvertChitDialog
+    {
+        return $this->invertChitDialogFactory->create($this->cashbookId);
+    }
+
     /**
      * @param int[] $chitIds
      */
@@ -157,7 +168,6 @@ class ChitListControl extends BaseControl
 
     private function canMoveChits(): bool
     {
-
         return ! $this->getSkautisType()->equalsValue(ObjectType::UNIT);
     }
 
