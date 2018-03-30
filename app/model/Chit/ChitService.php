@@ -10,6 +10,7 @@ use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Skautis\Mapper;
 use Skautis\Skautis;
 
@@ -49,6 +50,9 @@ class ChitService extends MutableBaseService
     }
 
     /**
+     * @deprecated Use ChitListQuery via query bus
+     * @see ChitListQuery
+     *
      * seznam paragonů k akci
      * @param int $skautisEventId
      * @return Row[]

@@ -5,7 +5,9 @@ namespace Model;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
+use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -111,9 +113,14 @@ class ExportService
             ];
         }
 
+        $cashbookId = $eventService->chits->getCashbookIdFromSkautisId($skautisEventId);
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+
         //rozpočítává paragony do jednotlivých skupin
-        foreach ($eventService->chits->getAll($skautisEventId) as $chit) {
-            $sums[$chit->ctype][$chit->category]['amount'] += $chit->price;
+        foreach ($chits as $chit) {
+            $category = $chit->getCategory();
+            $sums[$category->getOperationType()->getValue()][$category->getId()]['amount'] += $chit->getAmount()->getValue();
         }
 
         $totalIncome = array_sum(
