@@ -1,0 +1,7 @@
+services:
+    - Model\Infrastructure\Repositories\Cashbook\CashbookRepository
+    - class: Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler
+      tags: [commandBus.handler]
+
+includes:
+    - ../../config/doctrine.neon

@@ -255,9 +255,9 @@ class CashbookIntegrationTest extends \IntegrationTest
         ];
     }
 
-    private function createCashbookWithChit(): Cashbook
+    private function createCashbookWithChit(string $type = CashbookType::EVENT): Cashbook
     {
-        $cashbook = new Cashbook(10, CashbookType::get(CashbookType::EVENT));
+        $cashbook = new Cashbook(10, CashbookType::get($type));
         $category = $this->mockCategory(666);
         $amount = new Amount('100');
         $date = new Date('2017-11-17');
@@ -301,6 +301,69 @@ class CashbookIntegrationTest extends \IntegrationTest
         foreach($chits as $chit) {
             $this->assertTrue($chit->isLocked());
         }
+    }
+
+    public function testCopyingChitRaisesEvent(): void
+    {
+        $sourceCashbook = $this->createCashbookWithChit();
+        $targetCashbook = new Cashbook(1, CashbookType::get(CashbookType::EVENT));
+
+        $targetCashbook->copyChitsFrom([1], $sourceCashbook);
+
+        $events = $targetCashbook->extractEventsToDispatch();
+
+        $this->assertCount(1, $events);
+        $this->assertInstanceOf(ChitWasAdded::class, $events[0]);
+    }
+
+    /**
+     * @dataProvider getNonCampCashbookTypes
+     */
+    public function testCopyChitsBetweenTwoNonCampCashbooksWithSameType(string $cashbookType): void
+    {
+        $sourceCashbook = $this->createCashbookWithChit($cashbookType);
+        $targetCashbook = new Cashbook(2, CashbookType::get($cashbookType));
+
+        $targetCashbook->copyChitsFrom([1], $sourceCashbook);
+
+        $this->assertSame(
+            $sourceCashbook->getCategoryTotals(),
+            $targetCashbook->getCategoryTotals()
+        );
+    }
+
+    public function getNonCampCashbookTypes(): array
+    {
+        return [
+            [CashbookType::EVENT],
+            [CashbookType::TROOP],
+            [CashbookType::OFFICIAL_UNIT],
+        ];
+    }
+
+    /**
+     * @dataProvider getDifferentCashbookTypes
+     */
+    public function testCopyChitsBetweenDifferentCashbooksWithDifferentCategories(string $sourceType, string $targetType): void
+    {
+        $sourceCashbook = $this->createCashbookWithChit($sourceType);
+        $targetCashbook = new Cashbook(2, CashbookType::get($targetType));
+
+        $targetCashbook->copyChitsFrom([1], $sourceCashbook);
+
+        $chitAmount = $sourceCashbook->getChits()[0]->getAmount()->getValue();
+
+        $this->assertSame([
+            Category::UNDEFINED_INCOME_ID => $chitAmount
+        ], $targetCashbook->getCategoryTotals());
+    }
+
+    public function getDifferentCashbookTypes(): array
+    {
+        return [
+            [CashbookType::EVENT, CashbookType::TROOP],
+            [CashbookType::CAMP, CashbookType::CAMP], // camps may have different categories
+        ];
     }
 
     private function mockCategory(int $id, string $operationType = Operation::INCOME): ICategory

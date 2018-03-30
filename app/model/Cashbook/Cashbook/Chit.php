@@ -4,11 +4,13 @@ namespace Model\Cashbook\Cashbook;
 
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook;
+use Model\Cashbook\Operation;
+use Model\Cashbook\Category as CategoryAggregate;
 
 class Chit
 {
 
-    /** @var int */
+    /** @var int|NULL */
     private $id;
 
     /** @var Cashbook */
@@ -37,6 +39,12 @@ class Chit
      * @var int|NULL
      */
     private $locked;
+
+    /** @var int|NULL */
+    private $budgetCategoryIn;
+
+    /** @var int|NULL */
+    private $budgetCategoryOut;
 
     public function __construct(
         Cashbook $cashbook,
@@ -74,6 +82,10 @@ class Chit
 
     public function getId(): int
     {
+        if ($this->id === NULL) {
+            throw new \RuntimeException('ID not set');
+        }
+
         return $this->id;
     }
 
@@ -115,6 +127,30 @@ class Chit
     public function getCategory(): Category
     {
         return $this->category;
+    }
+
+    public function copyToCashbook(Cashbook $newCashbook): self
+    {
+        $newChit = clone $this;
+        $newChit->id = NULL;
+        $newChit->cashbook = $newCashbook;
+
+        return $newChit;
+    }
+
+    public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook): self
+    {
+        $newChit = $this->copyToCashbook($newCashbook);
+        $operation = $newChit->category->getOperationType();
+
+        $newChit->category = new Category(
+            $operation->equalsValue(Operation::INCOME)
+                ? CategoryAggregate::UNDEFINED_INCOME_ID
+                : CategoryAggregate::UNDEFINED_EXPENSE_ID,
+            $operation
+        );
+
+        return $newChit;
     }
 
 }
