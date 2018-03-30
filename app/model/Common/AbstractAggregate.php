@@ -7,20 +7,8 @@ namespace Model\Common;
 abstract class AbstractAggregate
 {
 
-    /** @var int|NULL */
-    protected $id;
-
     /** @var object[] */
     private $eventsToDispatch = [];
-
-    public function getId(): int
-    {
-        if ($this->id === NULL) {
-            throw new \RuntimeException("Can't get ID from not persisted aggregate");
-        }
-
-        return $this->id;
-    }
 
     /**
      * @param object $event

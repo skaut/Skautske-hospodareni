@@ -34,9 +34,12 @@ class Helpers
         return new DateTimeImmutable('2018-01-19'); // https://youtu.be/kfVsfOSbJY0?t=44s
     }
 
-    public static function assignIdentity(AbstractAggregate $aggregate, int $id): void
+    /**
+     * @param object $aggregate
+     */
+    public static function assignIdentity($aggregate, int $id): void
     {
-        $class = new ReflectionClass(AbstractAggregate::class);
+        $class = new ReflectionClass(get_class($aggregate));
 
         $idProperty = $class->getProperty('id');
         $idProperty->setAccessible(TRUE);
