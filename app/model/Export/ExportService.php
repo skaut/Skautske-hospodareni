@@ -3,10 +3,14 @@
 namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
+use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
+use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -73,11 +77,13 @@ class ExportService
     /**
      * vrací pokladní knihu
      */
-    public function getCashbook(int $skautisEventId, EventEntity $service): string
+    public function getCashbook(CashbookId $cashbookId, string $cashbookName): string
     {
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
-            'list' => $service->chits->getAll($skautisEventId),
-            'info' => $service->event->get($skautisEventId),
+            'cashbookName'  => $cashbookName,
+            'prefix'        => $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId)),
+            'chits'         => $this->queryBus->handle(new ChitListQuery($cashbookId)),
+            'categories'    => $this->getCategoriesById($cashbookId),
         ]);
     }
 
@@ -220,6 +226,19 @@ class ExportService
             'chits' => $categories,
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
         ]);
+    }
+
+    private function getCategoriesById(CashbookId $cashbookId): array
+    {
+        /** @var Category[] $categories */
+        $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
+        $categoriesById = [];
+
+        foreach ($categories as $category) {
+            $categoriesById[$category->getId()] = $category;
+        }
+
+        return $categoriesById;
     }
 
 }

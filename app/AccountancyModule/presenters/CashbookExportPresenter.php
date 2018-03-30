@@ -102,8 +102,11 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionPrintCashbook(int $cashbookId): void
     {
-        $template = $this->exportService->getCashbook($this->getSkautisId(), $this->getEventEntity());
+        $cashbookName = $this->getEventEntity()->event->get($this->getSkautisId())->DisplayName;
+
+        $template = $this->exportService->getCashbook(CashbookId::fromInt($cashbookId), $cashbookName);
         $this->pdf->render($template, 'pokladni-kniha.pdf');
+
         $this->terminate();
     }
 
