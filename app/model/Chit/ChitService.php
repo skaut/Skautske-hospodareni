@@ -236,16 +236,6 @@ class ChitService extends MutableBaseService
         return $this->table->getBudgetCategoriesSummary(array_keys($categories['in']), 'in') + $this->table->getBudgetCategoriesSummary(array_keys($categories['out']), 'out');
     }
 
-    public function getSkautisId(int $localEventId): ?int
-    {
-        return $this->skautisMapper->getSkautisId($localEventId, $this->type);
-    }
-
-    public function getSkautisIdFromCashbookId(int $cashbookId): int
-    {
-        return $this->getSkautisId($cashbookId);
-    }
-
     public function getLocalId(int $skautisEventId, string $type = NULL): int
     {
         return $this->skautisMapper->getLocalId($skautisEventId, $type ?? $this->type);
