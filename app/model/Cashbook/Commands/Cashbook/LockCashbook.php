@@ -2,6 +2,7 @@
 
 namespace Model\Cashbook\Commands\Cashbook;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\LockCashbookHandler;
 
 /**
@@ -10,19 +11,19 @@ use Model\Cashbook\Handlers\Cashbook\LockCashbookHandler;
 final class LockCashbook
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var int */
     private $userId;
 
-    public function __construct(int $cashbookId, int $userId)
+    public function __construct(CashbookId $cashbookId, int $userId)
     {
         $this->cashbookId = $cashbookId;
         $this->userId = $userId;
     }
 
-    public function getCashbookId(): int
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

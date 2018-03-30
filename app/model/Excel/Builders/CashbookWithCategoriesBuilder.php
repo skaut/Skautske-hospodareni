@@ -3,6 +3,7 @@
 namespace Model\Excel\Builders;
 
 use Dibi\Row;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Category;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
@@ -165,7 +166,7 @@ class CashbookWithCategoriesBuilder
     /**
      * @return ICategory[][]
      */
-    private function getCategories(int $cashbookId): array
+    private function getCategories(CashbookId $cashbookId): array
     {
         $cashbook = $this->cashbooks->find($cashbookId);
 

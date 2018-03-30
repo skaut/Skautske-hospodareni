@@ -4,6 +4,7 @@ namespace Model\Cashbook\Subscribers;
 
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\Events\ChitWasAdded;
@@ -54,12 +55,12 @@ final class CampCashbookSubscriber
         }
     }
 
-    private function updateCategory(int $cashbookId, int $categoryId): void
+    private function updateCategory(CashbookId $cashbookId, int $categoryId): void
     {
         $this->commandBus->handle(new UpdateCampCategoryTotal($cashbookId, $categoryId));
     }
 
-    private function isCamp(int $cashbookId): bool
+    private function isCamp(CashbookId $cashbookId): bool
     {
         /** @var CashbookType $actualType */
         $actualType = $this->queryBus->handle(new CashbookTypeQuery($cashbookId));

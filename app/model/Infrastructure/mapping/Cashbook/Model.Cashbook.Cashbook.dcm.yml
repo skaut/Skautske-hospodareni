@@ -5,7 +5,7 @@ Model\Cashbook\Cashbook:
 
     id:
         id:
-            type: integer
+            type: cashbook_id
             generator: { strategy: none }
 
     fields:

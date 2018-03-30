@@ -5,6 +5,7 @@ namespace Model;
 use Dibi\Row;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
@@ -54,7 +55,7 @@ class ChitService extends MutableBaseService
      */
     public function getAll($skautisEventId, $onlyUnlocked = FALSE): array
     {
-        $list = $this->table->getAll($this->getLocalId($skautisEventId), $onlyUnlocked);
+        $list = $this->table->getAll($this->getLocalId($skautisEventId)->toInt(), $onlyUnlocked);
         if (!empty($list) && $this->type == self::TYPE_CAMP) {
             $categories = $this->getCategoriesPairs(NULL, $skautisEventId);
             foreach ($list as $k => $i) {
@@ -86,7 +87,7 @@ class ChitService extends MutableBaseService
      */
     public function getIn($skautisEventId, array $chitIds)
     {
-        $ret = $this->table->getIn($this->getLocalId($skautisEventId), $chitIds);
+        $ret = $this->table->getIn($this->getLocalId($skautisEventId)->toInt(), $chitIds);
         if ($this->type == self::TYPE_CAMP) {
             $categories = $this->getCategoriesPairs(NULL, $skautisEventId);
             foreach ($ret as $k => $v) {
@@ -102,7 +103,7 @@ class ChitService extends MutableBaseService
      */
     public function deleteAll(int $skautisEventId): void
     {
-        $this->table->deleteAll($this->getLocalId($skautisEventId));
+        $this->table->deleteAll($this->getLocalId($skautisEventId)->toInt());
     }
 
     /**
@@ -188,7 +189,7 @@ class ChitService extends MutableBaseService
      */
     public function getCategoriesSum(int $skautisEventId)
     {
-        $db = $this->table->getTotalInCategories($this->getLocalId($skautisEventId));
+        $db = $this->table->getTotalInCategories($this->getLocalId($skautisEventId)->toInt());
         $all = $this->getCategories($skautisEventId, FALSE);
         foreach (array_keys($all) as $key) {
             $all[$key] = array_key_exists($key, $db) ? $db[$key] : 0;
@@ -236,12 +237,12 @@ class ChitService extends MutableBaseService
         return $this->table->getBudgetCategoriesSummary(array_keys($categories['in']), 'in') + $this->table->getBudgetCategoriesSummary(array_keys($categories['out']), 'out');
     }
 
-    public function getLocalId(int $skautisEventId, string $type = NULL): int
+    public function getLocalId(int $skautisEventId, string $type = NULL): CashbookId
     {
         return $this->skautisMapper->getLocalId($skautisEventId, $type ?? $this->type);
     }
 
-    public function getCashbookIdFromSkautisId(int $skautisid): int
+    public function getCashbookIdFromSkautisId(int $skautisid): CashbookId
     {
         return $this->getLocalId($skautisid);
     }

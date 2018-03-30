@@ -3,6 +3,7 @@
 namespace Model\Skautis;
 
 use Cake\Chronos\Date;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Event\Event;
 use Model\Event\EventNotFoundException;
 use Model\Event\Repositories\IEventRepository;
@@ -53,7 +54,7 @@ final class EventRepository implements IEventRepository
     public function update(Event $event): void
     {
         $this->webService->eventGeneralUpdate([
-            "ID" => $this->mapper->getSkautisId($event->getId(), Mapper::EVENT),
+            "ID" => $this->mapper->getSkautisId(CashbookId::fromInt($event->getId()), Mapper::EVENT), // @todo use Skautis ID instead of cashbook ID
             "Location" => $event->getLocation(),
             "Note" => $event->getNote(),
             "ID_EventGeneralScope" => $event->getScopeId(),
@@ -83,7 +84,7 @@ final class EventRepository implements IEventRepository
     private function createEvent(\stdClass $skautisEvent): Event
     {
         return new Event(
-            $this->mapper->getLocalId($skautisEvent->ID, Mapper::EVENT),
+            $this->mapper->getLocalId($skautisEvent->ID, Mapper::EVENT)->toInt(), // @todo Use Skautis ID instead of cashbook ID
             $skautisEvent->DisplayName,
             $skautisEvent->ID_Unit,
             $skautisEvent->Unit,

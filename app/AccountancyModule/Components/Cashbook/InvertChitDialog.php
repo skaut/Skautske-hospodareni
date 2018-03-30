@@ -8,6 +8,7 @@ use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\AddInverseChit;
 use Model\Cashbook\ObjectType;
@@ -34,7 +35,7 @@ class InvertChitDialog extends BaseControl
      */
     public $chitId;
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var array<int, string>|NULL */
@@ -46,7 +47,7 @@ class InvertChitDialog extends BaseControl
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(int $cashbookId, CommandBus $commandBus, QueryBus $queryBus)
+    public function __construct(CashbookId $cashbookId, CommandBus $commandBus, QueryBus $queryBus)
     {
         parent::__construct();
         $this->cashbookId = $cashbookId;
@@ -106,7 +107,8 @@ class InvertChitDialog extends BaseControl
             ->setAttribute('class', 'ajax');
 
         $form->onSuccess[] = function (BaseForm $form, array $values) {
-            $this->commandBus->handle(new AddInverseChit($this->cashbookId, $values['cashbookId'], (int) $this->chitId));
+            $cashbookId = CashbookId::fromInt($values['cashbookId']);
+            $this->commandBus->handle(new AddInverseChit($this->cashbookId,  $cashbookId, (int) $this->chitId));
             $this->presenter->flashMessage('Protidoklad byl vytvořen', 'success');
             $this->close();
         };
@@ -147,7 +149,7 @@ class InvertChitDialog extends BaseControl
             $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unit->getId()));
 
             foreach ($unitCashbooks as $cashbook) {
-                $cashbooks[$cashbook->getCashbookId()] = $unit->getDisplayName();
+                $cashbooks[$cashbook->getCashbookId()->toInt()] = $unit->getDisplayName();
             }
         }
 

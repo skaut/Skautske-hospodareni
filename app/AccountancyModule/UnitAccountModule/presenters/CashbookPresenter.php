@@ -4,6 +4,7 @@ namespace App\AccountancyModule\UnitAccountModule;
 
 use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\EventEntity;
@@ -14,7 +15,7 @@ class CashbookPresenter extends BasePresenter
     /** @var ICashbookControlFactory */
     private $cashbookFactory;
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     public function __construct(ICashbookControlFactory $cashbookFactory)
@@ -41,7 +42,7 @@ class CashbookPresenter extends BasePresenter
     public function renderDefault(int $aid) : void
     {
         $this->template->setParameters([
-            'cashbookId' => $this->cashbookId,
+            'cashbookId' => $this->cashbookId->toInt(),
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'unitPairs' => $this->unitService->getReadUnits($this->user),
         ]);

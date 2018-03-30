@@ -2,6 +2,7 @@
 
 namespace Model\Skautis\Cashbook;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Services\ICampCategoryUpdater;
 use Model\Skautis\Mapper;
@@ -22,7 +23,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
         $this->mapper = $mapper;
     }
 
-    public function updateCategories(int $cashbookId, array $totals): void
+    public function updateCategories(CashbookId $cashbookId, array $totals): void
     {
         if(count($totals) === 0) {
             return;

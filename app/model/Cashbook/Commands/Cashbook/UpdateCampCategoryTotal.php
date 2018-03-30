@@ -2,6 +2,7 @@
 
 namespace Model\Cashbook\Commands\Cashbook;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\UpdateCampCategoryTotalHandler;
 
 /**
@@ -11,19 +12,19 @@ use Model\Cashbook\Handlers\Cashbook\UpdateCampCategoryTotalHandler;
 final class UpdateCampCategoryTotal
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var int */
     private $categoryId;
 
-    public function __construct(int $cashbookId, int $categoryId)
+    public function __construct(CashbookId $cashbookId, int $categoryId)
     {
         $this->cashbookId = $cashbookId;
         $this->categoryId = $categoryId;
     }
 
-    public function getCashbookId(): int
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

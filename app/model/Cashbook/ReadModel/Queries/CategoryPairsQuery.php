@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\Queries;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\QueryHandlers\CategoryPairsQueryHandler;
 
@@ -13,19 +14,19 @@ use Model\Cashbook\ReadModel\QueryHandlers\CategoryPairsQueryHandler;
 final class CategoryPairsQuery
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var Operation|NULL */
     private $operationType;
 
-    public function __construct(int $cashbookId, ?Operation $operationType = NULL)
+    public function __construct(CashbookId $cashbookId, ?Operation $operationType = NULL)
     {
         $this->cashbookId = $cashbookId;
         $this->operationType = $operationType;
     }
 
-    public function getCashbookId(): int
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

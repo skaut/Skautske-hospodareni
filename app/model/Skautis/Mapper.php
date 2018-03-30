@@ -3,6 +3,7 @@
 namespace Model\Skautis;
 
 use eGen\MessageBus\Bus\CommandBus;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\CreateCashbook;
 use Model\Cashbook\ObjectType;
@@ -40,8 +41,10 @@ class Mapper
     /**
      * Returns ID representing unit/event in Skautis
      */
-    public function getSkautisId(int $localId, string $type): ?int
+    public function getSkautisId(CashbookId $cashbookId, string $type): ?int
     {
+        $localId = $cashbookId->toInt();
+
         $key = $type . $localId;
 
         if ( ! isset($this->skautisIds[$key])) {
@@ -55,7 +58,7 @@ class Mapper
     /**
      * Returns ID representing unit/event in hskauting
      */
-    public function getLocalId(int $skautisId, string $type): int
+    public function getLocalId(int $skautisId, string $type): CashbookId
     {
         $key = $type . $skautisId;
 
@@ -64,7 +67,7 @@ class Mapper
             $this->cache($skautisId, $localId, $type);
         }
 
-        return $this->localIds[$key];
+        return CashbookId::fromInt($this->localIds[$key]);
     }
 
     private function cache(?int $skautisId, ?int $localId, string $type): void
@@ -88,7 +91,7 @@ class Mapper
                 $type = $isOfficialUnit ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP;
             }
 
-            $this->commandBus->handle(new CreateCashbook($localId, CashbookType::get($type)));
+            $this->commandBus->handle(new CreateCashbook(CashbookId::fromInt($localId), CashbookType::get($type)));
         }
 
         return $localId;

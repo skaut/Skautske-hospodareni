@@ -46,17 +46,19 @@ final class FinalBalanceQueryHandlerTest extends Unit
      */
     private function assertBalance(Money $expectedBalance, array $chits): void
     {
+        $cashbookId = Cashbook\CashbookId::fromInt(self::CASHBOOK_ID);
+
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('find')
             ->once()
-            ->with(self::CASHBOOK_ID)
+            ->with($cashbookId)
             ->andReturn(
                 m::mock(Cashbook::class, ['getChits' => $chits])
             );
 
         $handler = new FinalBalanceQueryHandler($repository);
 
-        $actualBalance = $handler->handle(new FinalBalanceQuery(self::CASHBOOK_ID));
+        $actualBalance = $handler->handle(new FinalBalanceQuery($cashbookId));
 
         $this->assertTrue($expectedBalance->equals($actualBalance));
     }

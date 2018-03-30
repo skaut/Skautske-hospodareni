@@ -4,11 +4,13 @@ namespace App\AccountancyModule\UnitAccountModule;
 
 use App\Forms\BaseForm;
 use Model\BudgetService;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\CashbookService;
 use Model\Cashbook\Commands\Cashbook\LockCashbook;
 use Model\Cashbook\Commands\Cashbook\LockChit;
 use Model\Cashbook\Commands\Cashbook\UnlockChit;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 
 class ChitPresenter extends BasePresenter
 {
@@ -105,7 +107,9 @@ class ChitPresenter extends BasePresenter
         if (!in_array($type, ObjectType::getAvailableValues(), TRUE) || !array_key_exists($cashbookId, $this->info[$type])) {
             $this->flashMessage("Neplatný přístup!", "danger");
         } else {
-            $this->commandBus->handle(new LockCashbook($cashbookId, $this->user->getId()));
+            $this->commandBus->handle(
+                new LockCashbook(CashbookId::fromInt($cashbookId), $this->user->getId())
+            );
         }
 
         if ($this->isAjax()) {
@@ -120,16 +124,18 @@ class ChitPresenter extends BasePresenter
      */
     public function handleLock(int $cashbookId, int $chitId, string $type, string $act = "lock") : void
     {
-        if ( ! in_array($type, ObjectType::getAvailableValues(), TRUE) || ! $this->accessChitControl($cashbookId, $type)) {
+        $cashbookIdVo = CashbookId::fromInt($cashbookId);
+
+        if ( ! in_array($type, ObjectType::getAvailableValues(), TRUE) || ! $this->accessChitControl($cashbookIdVo, $type)) {
             $this->flashMessage("Neplatný přístup!", "danger");
             $this->redraw();
             return;
         }
 
         if ($act === 'lock') {
-            $this->commandBus->handle(new LockChit($cashbookId, $chitId, $this->user->getId()));
+            $this->commandBus->handle(new LockChit($cashbookIdVo, $chitId, $this->user->getId()));
         } elseif($act === 'unlock') {
-            $this->commandBus->handle(new UnlockChit($cashbookId, $chitId));
+            $this->commandBus->handle(new UnlockChit($cashbookIdVo, $chitId));
         }
 
         $this->redraw();
@@ -191,10 +197,9 @@ class ChitPresenter extends BasePresenter
         }
     }
 
-    private function accessChitControl(int $cashbookId, string $type): bool
+    private function accessChitControl(CashbookId $cashbookId, string $type): bool
     {
-        $cashbookType = ObjectType::get($type);
-        $skautisId = $this->cashbookService->getSkautisIdFromCashbookId($cashbookId, $cashbookType);
+        $skautisId = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
 
         return array_key_exists($skautisId, $this->info[$type]);
     }

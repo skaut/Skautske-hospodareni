@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Repositories;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CashbookService;
 use Model\Cashbook\CategoryNotFoundException;
@@ -32,7 +33,7 @@ class CategoryRepository
     /**
      * @return ICategory[]
      */
-    public function findForCashbook(int $cashbookId, CashbookType $type): array
+    public function findForCashbook(CashbookId $cashbookId, CashbookType $type): array
     {
         $skautisType = $type->getSkautisObjectType();
 
@@ -48,7 +49,7 @@ class CategoryRepository
     /**
      * @throws CategoryNotFoundException
      */
-    public function find(int $categoryId, int $cashbookId, CashbookType $type): ICategory
+    public function find(int $categoryId, CashbookId $cashbookId, CashbookType $type): ICategory
     {
         if ($type->equalsValue(CashbookType::CAMP)) {
             foreach ($this->findForCashbook($cashbookId, $type) as $category) {

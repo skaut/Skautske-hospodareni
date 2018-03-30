@@ -4,6 +4,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Handlers\Cashbook\UpdateChitHandler;
@@ -14,7 +15,7 @@ use Model\Cashbook\Handlers\Cashbook\UpdateChitHandler;
 final class UpdateChit
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var int */
@@ -38,7 +39,7 @@ final class UpdateChit
     /** @var int */
     private $categoryId;
 
-    public function __construct(int $cashbookId, int $chitId, $number, Date $date, $recipient, Amount $amount, string $purpose, int $categoryId)
+    public function __construct(CashbookId $cashbookId, int $chitId, $number, Date $date, $recipient, Amount $amount, string $purpose, int $categoryId)
     {
         $this->cashbookId = $cashbookId;
         $this->chitId = $chitId;
@@ -50,7 +51,7 @@ final class UpdateChit
         $this->categoryId = $categoryId;
     }
 
-    public function getCashbookId(): int
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

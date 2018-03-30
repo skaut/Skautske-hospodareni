@@ -201,7 +201,7 @@ class EventPresenter extends BasePresenter
             $this->redirect("this");
         }
 
-        $id = $this->aid;
+        $id = (int) $this->aid;
         $values = $button->getForm()->getValues(TRUE);
 
         $this->commandBus->handle(

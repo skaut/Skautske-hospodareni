@@ -2,15 +2,16 @@
 
 namespace Model\Cashbook\Services;
 
+use Model\Cashbook\Cashbook\CashbookId;
+
 interface ICampCategoryUpdater
 {
 
     /**
      * Updates statistics in Skautis
-     * @param int $cashbookId Local camp/cashbook ID
      * @param float[] $totals Category totals indexed by category ID
      * @throws \InvalidArgumentException
      */
-    public function updateCategories(int $cashbookId, array $totals): void;
+    public function updateCategories(CashbookId $cashbookId, array $totals): void;
 
 }

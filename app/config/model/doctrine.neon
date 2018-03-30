@@ -25,6 +25,7 @@ doctrine:
         chit_number: Model\Infrastructure\Types\ChitNumberType
         recipient: Model\Infrastructure\Types\RecipientType
         chronos_date: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
+        cashbook_id: Model\Infrastructure\Types\CashbookIdType
     dql:
         string:
             field: DoctrineExtensions\Query\Mysql\Field

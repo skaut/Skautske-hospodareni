@@ -7,6 +7,7 @@ namespace App\AccountancyModule;
 use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Event;
 use Model\Auth\Resources\Unit;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ObjectType;
@@ -155,7 +156,9 @@ class CashbookExportPresenter extends BasePresenter
     {
         try {
             /** @var CashbookType $cashbookType */
-            $cashbookType = $this->queryBus->handle(new CashbookTypeQuery($this->cashbookId));
+            $cashbookType = $this->queryBus->handle(
+                new CashbookTypeQuery(CashbookId::fromInt($this->cashbookId))
+            );
 
             return $cashbookType->getSkautisObjectType();
         } catch (CashbookNotFoundException $e) {
@@ -165,7 +168,9 @@ class CashbookExportPresenter extends BasePresenter
 
     private function getSkautisId(): int
     {
-        return $this->queryBus->handle(new SkautisIdQuery($this->cashbookId));
+        return $this->queryBus->handle(
+            new SkautisIdQuery(CashbookId::fromInt($this->cashbookId))
+        );
     }
 
     private function getEventEntity(): EventEntity

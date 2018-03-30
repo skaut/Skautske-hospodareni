@@ -30,17 +30,19 @@ class ChitListQueryHandlerTest extends Unit
             $this->mockChit(4, new Date('2018-01-01'), Operation::INCOME),
         ];
 
+        $cashbookId = Cashbook\CashbookId::fromInt(self::CASHBOOK_ID);
+
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('find')
             ->once()
-            ->with(self::CASHBOOK_ID)
+            ->with($cashbookId)
             ->andReturn(
                 m::mock(Cashbook::class, ['getChits' => $chits])
             );
 
         $handler = new ChitListQueryHandler($repository);
 
-        $chitDtos = $handler->handle(new ChitListQuery(self::CASHBOOK_ID));
+        $chitDtos = $handler->handle(new ChitListQuery($cashbookId));
 
         $expectedOrder = [2, 4, 3, 1];
         $this->assertCount(count($expectedOrder), $chitDtos);

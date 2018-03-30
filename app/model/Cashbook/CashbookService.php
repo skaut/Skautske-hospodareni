@@ -2,6 +2,7 @@
 
 namespace Model\Cashbook;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Skautis\Mapper;
 
 class CashbookService
@@ -15,9 +16,9 @@ class CashbookService
         $this->mapper = $mapper;
     }
 
-    public function getSkautisIdFromCashbookId(int $skautisId, ObjectType $type): int
+    public function getSkautisIdFromCashbookId(CashbookId $cashbookId, ObjectType $type): int
     {
-        return $this->mapper->getSkautisId($skautisId, $type->getValue());
+        return $this->mapper->getSkautisId($cashbookId, $type->getValue());
     }
 
 }

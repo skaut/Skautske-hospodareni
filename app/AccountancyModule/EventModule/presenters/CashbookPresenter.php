@@ -7,6 +7,7 @@ use App\AccountancyModule\Factories\ICashbookControlFactory;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
@@ -44,7 +45,7 @@ class CashbookPresenter extends BasePresenter
 
         $this->template->setParameters([
             'isCashbookEmpty'   => $this->isCashbookEmpty(),
-            'cashbookId'        => $this->getCashbookId(),
+            'cashbookId'        => $this->getCashbookId()->toInt(),
             'isInMinus'         => $finalBalance->isNegative(),
             'isEditable'        => $this->isEditable,
         ]);
@@ -100,7 +101,7 @@ class CashbookPresenter extends BasePresenter
         return empty($chits);
     }
 
-    private function getCashbookId(): int
+    private function getCashbookId(): CashbookId
     {
         return $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
     }

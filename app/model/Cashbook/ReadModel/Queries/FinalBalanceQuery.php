@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\Queries;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\QueryHandlers\FinalBalanceQueryHandler;
 
 /**
@@ -12,15 +13,15 @@ use Model\Cashbook\ReadModel\QueryHandlers\FinalBalanceQueryHandler;
 final class FinalBalanceQuery
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
-    public function __construct(int $cashbookId)
+    public function __construct(CashbookId $cashbookId)
     {
         $this->cashbookId = $cashbookId;
     }
 
-    public function getCashbookId(): int
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

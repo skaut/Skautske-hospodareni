@@ -8,6 +8,7 @@ use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
@@ -45,7 +46,7 @@ class CashbookPresenter extends BasePresenter
 
         $this->template->setParameters([
             'isCashbookEmpty'   => $this->isCashbookEmpty(),
-            'cashbookId'        => $this->getCashbookId(),
+            'cashbookId'        => $this->getCashbookId()->toInt(),
             'isInMinus'         => $finalBalance->isNegative(),
             'isEditable'        => $this->isEditable,
             'missingCategories' => $this->missingCategories,
@@ -97,7 +98,6 @@ class CashbookPresenter extends BasePresenter
         $values = $form->getValues();
 
         $aid = $this->getCurrentUnitId();
-        $cashbookId = $this->eventService->chits->getCashbookIdFromSkautisId($aid);
         $date = $this->eventService->event->get($aid)->StartDate;
         $amount = $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount);
         $categoryId = $this->eventService->chits->getParticipantIncomeCategory($aid, $values->cat);
@@ -109,7 +109,7 @@ class CashbookPresenter extends BasePresenter
 
         $this->commandBus->handle(
             new AddChitToCashbook(
-                $cashbookId,
+                $this->getCashbookId(),
                 NULL,
                 new Date($date),
                 NULL,
@@ -124,7 +124,7 @@ class CashbookPresenter extends BasePresenter
         $this->redirect('default', $aid);
     }
 
-    private function getCashbookId(): int
+    private function getCashbookId(): CashbookId
     {
         return $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
     }

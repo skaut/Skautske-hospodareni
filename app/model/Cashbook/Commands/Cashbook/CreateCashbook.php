@@ -2,6 +2,7 @@
 
 namespace Model\Cashbook\Commands\Cashbook;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler;
 
@@ -11,19 +12,19 @@ use Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler;
 final class CreateCashbook
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $id;
 
     /** @var CashbookType */
     private $type;
 
-    public function __construct(int $id, CashbookType $type)
+    public function __construct(CashbookId $id, CashbookType $type)
     {
         $this->id = $id;
         $this->type = $type;
     }
 
-    public function getId(): int
+    public function getId(): CashbookId
     {
         return $this->id;
     }

@@ -10,6 +10,7 @@ use App\AccountancyModule\Factories\Cashbook\IMoveChitsDialogFactory;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ChitLockedException;
@@ -32,7 +33,7 @@ class ChitListControl extends BaseControl
     /** @var callable[] */
     public $onEditButtonClicked = [];
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /**
@@ -54,7 +55,7 @@ class ChitListControl extends BaseControl
     private $invertChitDialogFactory;
 
     public function __construct(
-        int $cashbookId,
+        CashbookId $cashbookId,
         bool $isEditable,
         CommandBus $commandBus,
         QueryBus $queryBus,
@@ -74,7 +75,7 @@ class ChitListControl extends BaseControl
     public function render(): void
     {
         $this->template->setParameters([
-            'cashbookId' => $this->cashbookId,
+            'cashbookId' => $this->cashbookId->toInt(),
             'isEditable' => $this->isEditable,
             'canMoveChits' => $this->canMoveChits(),
             'canMassExport' => $this->canMassExport(),
@@ -163,7 +164,7 @@ class ChitListControl extends BaseControl
      */
     private function redirectToExport(string $action, array $chitIds): void
     {
-        $this->presenter->redirect($action, [$this->cashbookId, $chitIds]);
+        $this->presenter->redirect($action, [$this->cashbookId->toInt(), $chitIds]);
     }
 
     private function canMoveChits(): bool

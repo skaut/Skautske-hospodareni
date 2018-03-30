@@ -20,7 +20,7 @@ class CashbookNumberPrefixQueryHandler
 
     public function handle(CashbookNumberPrefixQuery $query): ?string
     {
-        return $this->table->getPrefix($query->getCashbookId());
+        return $this->table->getPrefix($query->getCashbookId()->toInt());
     }
 
 }
