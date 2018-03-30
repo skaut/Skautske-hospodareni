@@ -92,7 +92,7 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionPrintAllChits(int $cashbookId): void
     {
-        $template = $this->exportService->getChitlist($this->getSkautisId(), $this->getEventEntity());
+        $template = $this->exportService->getChitlist($cashbookId);
         $this->pdf->render($template, 'seznam-dokladu.pdf');
         $this->terminate();
     }

@@ -90,11 +90,13 @@ class ExportService
     /**
      * vrací seznam dokladů
      */
-    public function getChitlist(int $skautisEventId, EventEntity $service): string
+    public function getChitlist(CashbookId $cashbookId): string
     {
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+
         return $this->templateFactory->create(__DIR__ . '/templates/chitlist.latte', [
-            'list' => array_filter($service->chits->getAll($skautisEventId), function ($c) {
-                return $c->ctype == "out";
+            'list' => array_filter($chits, function (Chit $chit): bool {
+                return $chit->getCategory()->getOperationType()->equalsValue(Operation::EXPENSE);
             }),
         ]);
     }
