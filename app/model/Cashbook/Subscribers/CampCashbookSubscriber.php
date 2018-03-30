@@ -3,10 +3,12 @@
 namespace Model\Cashbook\Subscribers;
 
 use eGen\MessageBus\Bus\CommandBus;
+use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
 use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasUpdated;
-use Model\Skautis\Mapper;
+use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
 
 /**
  * Update category total in Skautis for camp cashbook
@@ -14,22 +16,22 @@ use Model\Skautis\Mapper;
 final class CampCashbookSubscriber
 {
 
-    /** @var Mapper */
-    private $mapper;
-
     /** @var CommandBus */
     private $commandBus;
 
-    public function __construct(Mapper $mapper, CommandBus $commandBus)
+    /** @var QueryBus */
+    private $queryBus;
+
+    public function __construct(CommandBus $commandBus, QueryBus $queryBus)
     {
-        $this->mapper = $mapper;
         $this->commandBus = $commandBus;
+        $this->queryBus = $queryBus;
     }
     public function chitWasAdded(ChitWasAdded $event): void
     {
         $id = $event->getCashbookId();
 
-        if( ! $this->mapper->isCamp($id)) {
+        if( ! $this->isCamp($id)) {
             return;
         }
 
@@ -40,7 +42,7 @@ final class CampCashbookSubscriber
     {
         $id = $event->getCashbookId();
 
-        if( ! $this->mapper->isCamp($id)) {
+        if( ! $this->isCamp($id)) {
             return;
         }
 
@@ -55,6 +57,14 @@ final class CampCashbookSubscriber
     private function updateCategory(int $cashbookId, int $categoryId): void
     {
         $this->commandBus->handle(new UpdateCampCategoryTotal($cashbookId, $categoryId));
+    }
+
+    private function isCamp(int $cashbookId): bool
+    {
+        /** @var CashbookType $actualType */
+        $actualType = $this->queryBus->handle(new CashbookTypeQuery($cashbookId));
+
+        return $actualType->equalsValue(CashbookType::CAMP);
     }
 
 }

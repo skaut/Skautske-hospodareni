@@ -67,11 +67,6 @@ class Mapper
         return $this->localIds[$key];
     }
 
-    public function isCamp(int $localId): bool
-    {
-        return $this->getSkautisId($localId, ObjectType::CAMP) !== NULL;
-    }
-
     private function cache(?int $skautisId, ?int $localId, string $type): void
     {
         $this->skautisIds[$type . $localId] = $skautisId;
