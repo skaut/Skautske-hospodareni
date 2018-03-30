@@ -30,9 +30,14 @@ final class CashbookId implements ValueObject
         return (int) $this->id;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->id;
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 
     public function equals(ValueObject $otherValueObject): bool

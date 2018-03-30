@@ -125,8 +125,9 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionExportCashbookWithCategories(int $cashbookId): void
     {
-        $this->excelService->getCashbookWithCategories($this->getEventEntity(), $this->getSkautisId());
-        $this->terminate();
+        $spreadsheet = $this->excelService->getCashbookWithCategories(CashbookId::fromInt($cashbookId));
+
+        $this->sendResponse(new ExcelResponse('pokladni-kniha', $spreadsheet));
     }
 
     /**

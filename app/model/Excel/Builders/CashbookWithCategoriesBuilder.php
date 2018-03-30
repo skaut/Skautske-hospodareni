@@ -2,14 +2,14 @@
 
 namespace Model\Excel\Builders;
 
-use Dibi\Row;
+use Doctrine\Common\Collections\ArrayCollection;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Category;
-use Model\Cashbook\ICategory;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\DTO\Cashbook\Category;
 use Model\Cashbook\Operation;
-use Model\Cashbook\Repositories\CategoryRepository;
-use Model\Cashbook\Repositories\ICashbookRepository;
-use Model\EventEntity;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\DTO\Cashbook\Chit;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\ColumnDimension;
@@ -19,14 +19,11 @@ use function count;
 class CashbookWithCategoriesBuilder
 {
 
-    /** @var CategoryRepository */
-    private $categories;
-
     /** @var Worksheet */
     private $sheet;
 
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    /** @var QueryBus */
+    private $queryBus;
 
     private const HEADER_ROW = 2;
     private const SUBHEADER_ROW = 3;
@@ -37,26 +34,23 @@ class CashbookWithCategoriesBuilder
     // Coefficient for minimal size of column
     private const COLUMN_WIDTH_COEFFICIENT = 1.1;
 
-    public function __construct(CategoryRepository $categories, ICashbookRepository $cashbooks)
+    public function __construct(QueryBus $queryBus)
     {
-        $this->categories = $categories;
-        $this->cashbooks = $cashbooks;
+        $this->queryBus = $queryBus;
     }
 
-    public function build(Worksheet $sheet, EventEntity $eventEntity, int $eventId): void
+    public function build(Worksheet $sheet, CashbookId $cashbookId): void
     {
         $this->sheet = $sheet;
 
         $this->addCashbookHeader();
-
-        $cashbookId = $eventEntity->chits->getCashbookIdFromSkautisId($eventId);
 
         [$incomeCategories, $expenseCategories] = $this->getCategories($cashbookId);
         $expensesFirstColumn = self::CATEGORIES_FIRST_COLUMN + count($incomeCategories);
         $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
         $this->addCategoriesHeader($expensesFirstColumn, 'Výdaje', $expenseCategories);
 
-        $chits = $eventEntity->chits->getAll($eventId);
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
         $categories = array_merge($incomeCategories, $expenseCategories);
 
         $this->addChits($chits, $categories);
@@ -100,7 +94,7 @@ class CashbookWithCategoriesBuilder
     }
 
     /**
-     * @param ICategory[] $categories
+     * @param Category[] $categories
      * @throws \PHPExcel_Exception
      */
     private function addCategoriesHeader(int $startColumn, string $groupName, array $categories): void
@@ -126,31 +120,34 @@ class CashbookWithCategoriesBuilder
     }
 
     /**
-     * @param Row[] $chits
-     * @param ICategory[] $categories
+     * @param Chit[] $chits
+     * @param Category[] $categories
      */
     private function addChits(array $chits, array $categories): void
     {
-        $categories = array_map(function (ICategory $c) { return $c->getId(); }, $categories);
-        $categoryColumns = array_flip($categories);
-        $categoryColumns = array_map(function (int $column) {
-            return $column + self::CATEGORIES_FIRST_COLUMN;
-        }, $categoryColumns);
+        $categoryColumns = [];
+
+        foreach ($categories as $index => $category) {
+            $categoryColumns[$category->getId()] = self::CATEGORIES_FIRST_COLUMN + $index;
+        }
 
         $row = self::SUBHEADER_ROW + 1;
         $index = 1;
 
         $balance = 0;
         foreach ($chits as $chit) {
-            $balance += $chit->ctype === 'in' ? $chit->price : -$chit->price;
+            $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+            $amount = $chit->getAmount()->getValue();
+
+            $balance += $isIncome ? $amount : -$amount;
 
             $cashbookColumns = [
                 $index++,
-                $chit->date->format('d.m.'),
-                $chit->num,
-                $chit->purpose,
-                $chit->ctype === 'in' ? $chit->price : '',
-                $chit->ctype === 'out' ? $chit->price : '',
+                $chit->getDate()->format('d.m.'),
+                (string) $chit->getNumber(),
+                $chit->getPurpose(),
+                $isIncome ? $amount : '',
+                ! $isIncome ? $amount : '',
                 $balance,
             ];
 
@@ -158,32 +155,27 @@ class CashbookWithCategoriesBuilder
                 $this->sheet->setCellValueByColumnAndRow($column + 1, $row, $value);
             }
 
-            $this->sheet->setCellValueByColumnAndRow($categoryColumns[$chit->category], $row, $chit->price);
+            $this->sheet->setCellValueByColumnAndRow($categoryColumns[$chit->getCategory()->getId()], $row, $amount);
             $row++;
         }
     }
 
     /**
-     * @return ICategory[][]
+     * @return Category[][]
      */
     private function getCategories(CashbookId $cashbookId): array
     {
-        $cashbook = $this->cashbooks->find($cashbookId);
+        $categories = new ArrayCollection(
+            $this->queryBus->handle(new CategoryListQuery($cashbookId))
+        );
 
-        $categories = $this->categories->findForCashbook($cashbookId, $cashbook->getType());
-        $incomeCategories = [];
-        $expenseCategories = [];
+        $categoriesByOperation = $categories->partition(function ($_, Category $category): bool {
+            return $category->getOperationType()->equalsValue(Operation::INCOME);
+        });
 
-        foreach($categories as $category) {
-            if($category->getOperationType()->equalsValue(Operation::INCOME)) {
-                $incomeCategories[] = $category;
-            } else {
-                $expenseCategories[] = $category;
-            }
-
-        }
-
-        return [$incomeCategories, $expenseCategories];
+        return array_map(function (ArrayCollection $categories): array {
+            return array_values($categories->toArray()); // partition keeps original keys
+        }, $categoriesByOperation);
     }
 
     private function addColumnSum(int $column, int $resultRow, int $firstRow): void

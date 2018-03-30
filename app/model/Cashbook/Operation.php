@@ -4,6 +4,9 @@ namespace Model\Cashbook;
 
 use Consistence\Enum\Enum;
 
+/**
+ * @TODO move to Common BC
+ */
 class Operation extends Enum
 {
 

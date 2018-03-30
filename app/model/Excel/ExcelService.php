@@ -3,8 +3,7 @@
 namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\Repositories\CategoryRepository;
-use Model\Cashbook\Repositories\ICashbookRepository;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -13,26 +12,17 @@ use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExcelService
 {
 
     private const ADULT_AGE = 18;
 
-    /** @var CategoryRepository */
-    private $categories;
-
-    /** @var ICashbookRepository */
-    private $cashbooks;
-
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(CategoryRepository $categories, ICashbookRepository $cashbooks, QueryBus $queryBus)
+    public function __construct(QueryBus $queryBus)
     {
-        $this->categories = $categories;
-        $this->cashbooks = $cashbooks;
         $this->queryBus = $queryBus;
     }
 
@@ -82,15 +72,15 @@ class ExcelService
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
     }
 
-    public function getCashbookWithCategories(EventEntity $eventEntity, int $eventId): void
+    public function getCashbookWithCategories(CashbookId $cashbookId): Spreadsheet
     {
         $excel = $this->getNewFileV2();
         $sheet = $excel->getActiveSheet();
 
-        $builder = new CashbookWithCategoriesBuilder($this->categories, $this->cashbooks);
-        $builder->build($sheet, $eventEntity, $eventId);
+        $builder = new CashbookWithCategoriesBuilder($this->queryBus);
+        $builder->build($sheet, $cashbookId);
 
-        $this->sendV2($excel, 'test');
+        return $excel;
     }
 
     public function getEventSummaries(array $eventIds, EventEntity $service): void
@@ -506,27 +496,6 @@ class ExcelService
         $objWriter = new \PHPExcel_Writer_Excel2007($obj);
         $objWriter->setPreCalculateFormulas(TRUE);
         $objWriter->save('php://output');
-        //exit;
-    }
-
-    private function sendV2(Spreadsheet $sheet, string $filename): void
-    {
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
-
-        // If you're serving to IE over SSL, then the following may be needed
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header('Pragma: public'); // HTTP/1.0
-
-        $xls = new Xlsx($sheet);
-        $xls->setPreCalculateFormulas(TRUE);
-        $xls->save('php://output');
         //exit;
     }
 
