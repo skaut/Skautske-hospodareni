@@ -7,10 +7,8 @@ use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
-use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Skautis\Mapper;
 use Skautis\Skautis;
 
@@ -50,44 +48,11 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * @deprecated Use ChitListQuery via query bus
-     * @see ChitListQuery
-     *
-     * seznam paragonů k akci
-     * @param int $skautisEventId
-     * @return Row[]
-     */
-    public function getAll($skautisEventId, $onlyUnlocked = FALSE): array
-    {
-        $list = $this->table->getAll($this->getLocalId($skautisEventId)->toInt(), $onlyUnlocked);
-        if (!empty($list) && $this->type == self::TYPE_CAMP) {
-            $categories = $this->getCategoriesPairs(NULL, $skautisEventId);
-            foreach ($list as $k => $i) {
-                $i->ctype = array_key_exists($i->category, $categories['in']) ? "in" : "out";
-                $i->clabel = $categories[$i->ctype][$i->category];
-                $i->cshort = mb_substr($categories[$i->ctype][$i->category], 0, 5, 'UTF-8');
-
-                $list[$k] = $i;
-            }
-            uasort($list, function ($a, $b) {
-                if ($a->date == $b->date) {
-                    if (($tmpCat = strlen($a->ctype) - strlen($b->ctype))) {
-                        return $tmpCat; //pokud je název kratší, je dříve, platí pro in a out
-                    }
-                    return ($a->id < $b->id) ? -1 : 1;
-                }
-                return ($a->date < $b->date) ? -1 : 1;
-            });
-        }
-        return $list;
-    }
-
-    /**
      * vrací pole paragonů s ID zadanými v $list
      * použití - hromadný tisk
      * @param int $skautisEventId
      * @param int[] $chitIds
-     * @return array
+     * @return Row[]
      */
     public function getIn($skautisEventId, array $chitIds)
     {

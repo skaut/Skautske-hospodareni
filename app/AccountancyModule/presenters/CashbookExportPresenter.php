@@ -12,13 +12,16 @@ use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\DTO\Cashbook\Chit;
 use Model\EventEntity;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
+use function in_array;
 
 class CashbookExportPresenter extends BasePresenter
 {
@@ -69,8 +72,10 @@ class CashbookExportPresenter extends BasePresenter
         $skautisId = $this->getSkautisId();
         $eventEntity = $this->getEventEntity();
 
-        $chits = $eventEntity->chits->getIn($skautisId, $chitIds);
-        $template = $this->exportService->getChits($skautisId, $eventEntity, $chits);
+        $chitIds = array_map('\intval', $chitIds);
+        $chits = $this->getChitsWithIds($chitIds);
+
+        $template = $this->exportService->getChits($skautisId, $eventEntity, $chits, CashbookId::fromInt($cashbookId));
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
@@ -187,6 +192,21 @@ class CashbookExportPresenter extends BasePresenter
         }
 
         return $this->context->getService($serviceName);
+    }
+
+    /**
+     * @param int[] $ids
+     * @return Chit[]
+     */
+    private function getChitsWithIds(array $ids): array
+    {
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(new ChitListQuery(CashbookId::fromInt($this->cashbookId)));
+        $filteredChits = array_filter($chits, function (Chit $chit) use ($ids): bool {
+            return in_array($chit->getId(), $ids, TRUE);
+        });
+
+        return array_values($filteredChits);
     }
 
 }

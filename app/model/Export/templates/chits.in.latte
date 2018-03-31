@@ -14,7 +14,7 @@ table {
     </tr>
     <tr>
         <td><b>ze dne:</b> {$item->date|date:"j.n.Y"}</td>
-        <td><b>č.</b> {if $event->prefix != null}{$event->prefix}{$item->num}{/if}</td>
+        <td><b>č.</b> {if $event->prefix != null}{$event->prefix}{$item->number}{/if}</td>
     </tr>
     <tr>
         <td colspan="3"><b>Přijato od:</b> {$item->recipient}</td>
@@ -49,8 +49,9 @@ table {
         <td>&nbsp;</td>
     </tr>
     <tr>
-        <td><b>Celkem Kč:</b>{if $item->price != 0} {= number_format($item->price, 2, ",", "")}=={/if}</td>
-        <td colspan="2"><b>Slovy:</b>{if $item->price != 0} =={$item->price|priceToString}korun=={/if}</td>
+        {var $amount = $item->amount->toFloat()}
+        <td><b>Celkem Kč:</b>{if $amount !== 0.0} {= number_format($amount, 2, ",", "")}=={/if}</td>
+        <td colspan="2"><b>Slovy:</b>{if $amount !== 0.0} =={$amount|priceToString}korun=={/if}</td>
     </tr>
     <tr>
         <td><b>přezkoušel dne:</b> </td>

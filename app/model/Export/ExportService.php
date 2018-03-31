@@ -2,11 +2,14 @@
 
 namespace Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
@@ -156,44 +159,40 @@ class ExportService
 
     /**
      * vrací PDF s vybranými paragony
+     * @param Chit[] $chits
      */
-    public function getChits(int $aid, EventEntity $eventService, array $chits): string
+    public function getChits(
+        int $aid,
+        EventEntity $eventService,
+        array $chits,
+        CashbookId $cashbookId
+    ): string
     {
-        $income = [];
-        $outcome = [];
-        $activeHpd = FALSE;
+        $categories = $this->getCategoriesById($cashbookId);
+        $chitsCollection = new ArrayCollection($chits);
 
-        foreach ($chits as $c) {
-            if ($c->cshort == "hpd") {
-                $activeHpd = TRUE;
-            }
-            switch ($c->ctype) {
-                case "out":
-                    $outcome[] = $c;
-                    break;
-                case "in":
-                    $income[] = $c;
-                    break;
-                default:
-                    throw new \Nette\InvalidStateException("Neznámý typ paragou: " . $c->ctype);
-            }
-        }
-        $event = $eventService->event->get($aid);
+        [$income, $outcome] = $chitsCollection->partition(function ($_, Chit $chit): bool {
+            return $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+        });
+
+        $activeHpd = $chitsCollection->exists(function ($_, Chit $chit) use ($categories): bool {
+            return $categories[$chit->getCategory()->getId()]->getShortcut() === 'hpd';
+        });
+
+        /** @var CashbookType $cashbookType */
+        $cashbookType = $this->queryBus->handle(new CashbookTypeQuery($cashbookId));
 
         $template = [];
 
-        if (in_array($eventService->event->type, ["camp", "general"])) {
-            $template['oficialName'] = $this->units->getOficialName($event->ID_Unit);
-        } elseif ($eventService->event->type == "unit") {
-            $template['oficialName'] = $this->units->getOficialName($event->ID);
-        } else {
-            throw new \Nette\InvalidArgumentException("Neplatný typ události v ExportService");
-        }
+        $event = $eventService->event->get($aid);
+        $unitId = $cashbookType->isUnit() ? $event->ID : $event->ID_Unit;
+        $template['oficialName'] = $this->units->getOficialName($unitId);
+
         //HPD 
         if ($activeHpd) {
             $template['totalPayment'] = $eventService->participants->getTotalPayment($aid);
 
-            $functionsQuery = $eventService->event->type === 'camp'
+            $functionsQuery = $cashbookType->equalsValue(CashbookType::CAMP)
                 ? new CampFunctions(new SkautisCampId($aid))
                 : new EventFunctions(new SkautisEventId($aid));
 
@@ -208,6 +207,7 @@ class ExportService
         $template['event'] = $event;
         $template['income'] = $income;
         $template['outcome'] = $outcome;
+        $template['categories'] = $categories;
 
         return $this->templateFactory->create(__DIR__ . '/templates/chits.latte', $template);
     }
@@ -230,6 +230,9 @@ class ExportService
         ]);
     }
 
+    /**
+     * @return Category[]
+     */
     private function getCategoriesById(CashbookId $cashbookId): array
     {
         /** @var Category[] $categories */

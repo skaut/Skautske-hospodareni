@@ -14,14 +14,14 @@ table {
     </tr>
     <tr>
         <td><b>ze dne:</b> {$item->date|date:"j.n.Y"}</td>
-        <td><b>č.</b> {if $event->prefix != null}{$event->prefix}{$item->num}{/if}</td>
+        <td><b>č.</b> {if $event->prefix != null}{$event->prefix}{$item->number}{/if}</td>
     </tr>
     <tr>
         <td colspan="3"><b>Vyplaceno komu:</b> {$item->recipient}</td>
     </tr>
     <tr>
         <td colspan="2"><b>Účel výplaty:</b> {$item->purpose}</td>
-        <td><b>Kategorie v PK:</b> {$item->cshort}</td>
+        <td><b>Kategorie v PK:</b> {$categories[$item->category->getId()]->shortcut}</td>
     </tr>
     <tr>
         <td><b>Pokladník:</b> </td>
@@ -50,8 +50,9 @@ table {
         <td>&nbsp;</td>
     </tr>
     <tr>
-        <td><b>Celkem Kč:</b>{if $item->price != 0} {= number_format($item->price, 2, ",", "")}=={/if}</td>
-        <td colspan="2"><b>Slovy:</b>{if $item->price != 0} =={$item->price|priceToString}korun=={/if}</td>
+        {var $amount = $item->amount->toFloat()}
+        <td><b>Celkem Kč:</b>{if $amount !== 0.0} {= number_format($amount, 2, ",", "")}=={/if}</td>
+        <td colspan="2"><b>Slovy:</b>{if $amount !== 0.0} =={$amount|priceToString}korun=={/if}</td>
     </tr>
     <tr>
         <td><b>přezkoušel dne:</b> </td>
@@ -60,5 +61,5 @@ table {
 </table>
 
 <div style="font-size:0.9em;color:#777;padding-top:10px;">
-    <i>{$item->priceText} = {$item->price}  </i>
+    <i>{$item->amount->expression} = {$amount}  </i>
 </div>

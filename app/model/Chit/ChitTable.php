@@ -18,27 +18,6 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * vrací seznam všech paragonů k danému $actionId
-     * @param int $localEventId
-     * @return Row[]
-     */
-    public function getAll($localEventId, $onlyUnlocked): array
-    {
-        $chits = $this->connection->fetchAll('SELECT * FROM [' . self::TABLE_CHIT_VIEW . ']
-                WHERE eventId=%i', $localEventId, ' AND deleted=0
-                    %if ', $onlyUnlocked, ' AND [lock] IS NULL %end
-                ORDER BY date, ctype, num, cshort');
-
-        $result = [];
-
-        foreach ($chits as $chit) {
-            $result[$chit->id] = $chit;
-        }
-
-        return $result;
-    }
-
-    /**
      * vrací seznam poragonů podle zadaných ID
      * @param int $localEventId
      * @param array $list - seznam id
