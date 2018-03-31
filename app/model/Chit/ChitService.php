@@ -2,12 +2,10 @@
 
 namespace Model;
 
-use Dibi\Row;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
-use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Skautis\Mapper;
 use Skautis\Skautis;
@@ -48,25 +46,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * vrací pole paragonů s ID zadanými v $list
-     * použití - hromadný tisk
-     * @param int $skautisEventId
-     * @param int[] $chitIds
-     * @return Row[]
-     */
-    public function getIn($skautisEventId, array $chitIds)
-    {
-        $ret = $this->table->getIn($this->getLocalId($skautisEventId)->toInt(), $chitIds);
-        if ($this->type == self::TYPE_CAMP) {
-            $categories = $this->getCategoriesPairs(NULL, $skautisEventId);
-            foreach ($ret as $k => $v) {
-                $ret[$k]->ctype = array_key_exists($ret[$k]->category, $categories['in']) ? "in" : "out";
-            }
-        }
-        return $ret;
-    }
-
-    /**
      * smazat všechny paragony dané akce
      * použití při rušení celé akce
      */
@@ -100,30 +79,6 @@ class ChitService extends MutableBaseService
         $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
 
         return $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
-    }
-
-    /**
-     * @deprecated Use query bus with CategoryPairsQuery
-     * @see CategoryPairsQuery
-     *
-     * vrací rozpočtové kategorie rozdělené na příjmy a výdaje (camp)
-     *
-     * @return array array(in=>(id=>DisplayName, ...), out=>(...))
-     */
-    private function getCategoriesPairs(?string $typeInOut, int $skautisEventId): array
-    {
-        $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
-
-        if ($typeInOut === NULL) {
-            return [
-                Operation::INCOME => $this->getCategoriesPairs(Operation::INCOME, $skautisEventId),
-                Operation::EXPENSE => $this->getCategoriesPairs(Operation::EXPENSE, $skautisEventId),
-            ];
-        }
-
-        return $this->queryBus->handle(
-            new CategoryPairsQuery($cashbookId, Operation::get($typeInOut))
-        );
     }
 
     /**

@@ -130,4 +130,9 @@ class Chit
         return $this->inverseCashbookTypes;
     }
 
+    public function isIncome(): bool
+    {
+        return $this->category->getOperationType()->equalsValue(Operation::INCOME);
+    }
+
 }

@@ -87,8 +87,13 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionExportChits(int $cashbookId, array $chitIds): void
     {
-        $chits = $this->getEventEntity()->chits->getIn($this->getSkautisId(), $chitIds);
-        $this->excelService->getChitsExport($chits);
+        $chitIds = array_map('\intval', $chitIds);
+
+        $this->excelService->getChitsExport(
+            CashbookId::fromInt($cashbookId),
+            $this->getChitsWithIds($chitIds)
+        );
+
         $this->terminate();
     }
 

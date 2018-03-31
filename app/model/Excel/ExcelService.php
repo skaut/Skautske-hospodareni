@@ -147,11 +147,15 @@ class ExcelService
         $this->send($objPHPExcel, "Souhrn-táborů-" . date("Y_n_j"));
     }
 
-    public function getChitsExport($chits): void
+    /**
+     * @param Chit[] $chits
+     * @throws \PHPExcel_Exception
+     */
+    public function getChitsExport(CashbookId $cashbookId, array $chits): void
     {
         $objPHPExcel = $this->getNewFile();
         $sheetChit = $objPHPExcel->setActiveSheetIndex(0);
-        $this->setSheetChitsOnly($sheetChit, $chits);
+        $this->setSheetChitsOnly($sheetChit, $chits, $cashbookId);
         $this->send($objPHPExcel, "Export-vybranych-paragonu");
     }
 
@@ -464,7 +468,11 @@ class ExcelService
         $sheet->setTitle('Doklady');
     }
 
-    protected function setSheetChitsOnly(\PHPExcel_Worksheet $sheet, $data): void
+    /**
+     * @param Chit[] $chits
+     * @throws \PHPExcel_Exception
+     */
+    private function setSheetChitsOnly(\PHPExcel_Worksheet $sheet, array $chits, CashbookId $cashbookId): void
     {
         $sheet->setCellValue('B1', "Ze dne")
             ->setCellValue('C1', "Účel výplaty")
@@ -476,19 +484,26 @@ class ExcelService
         $rowCnt = 2;
         $sumIn = $sumOut = 0;
 
-        foreach ($data as $chit) {
+        /** @var array<int, string> $categoryNames */
+        $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
+
+        foreach ($chits as $chit) {
+            $amount = $chit->getAmount()->toFloat();
+
             $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
-                ->setCellValue('B' . $rowCnt, date("d.m.Y", strtotime($chit->date)))
-                ->setCellValue('C' . $rowCnt, $chit->purpose)
-                ->setCellValue('D' . $rowCnt, $chit->clabel)
-                ->setCellValue('E' . $rowCnt, $chit->recipient)
-                ->setCellValue('F' . $rowCnt, $chit->price)
-                ->setCellValue('G' . $rowCnt, $chit->ctype == "in" ? "Příjem" : "Výdaj");
-            if ($chit->ctype == "in") {
-                $sumIn += $chit->price;
+                ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
+                ->setCellValue('C' . $rowCnt, $chit->getPurpose())
+                ->setCellValue('D' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
+                ->setCellValue('E' . $rowCnt, $chit->getRecipient())
+                ->setCellValue('F' . $rowCnt, $amount)
+                ->setCellValue('G' . $rowCnt, $chit->isIncome() ? 'Příjem' : 'Výdaj');
+
+            if ($chit->isIncome()) {
+                $sumIn += $amount;
             } else {
-                $sumOut += $chit->price;
+                $sumOut += $amount;
             }
+
             $rowCnt++;
         }
         //add border
