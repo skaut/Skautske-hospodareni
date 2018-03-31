@@ -4,6 +4,13 @@ namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Operation;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -90,10 +97,15 @@ class ExcelService
         $allowPragueColumns = false;
         $data = [];
         foreach ($eventIds as $aid) {
+            $eventId = new SkautisEventId($aid);
+            /** @var CashbookId $cashbookId */
+            $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
+
             $data[$aid] = $service->event->get($aid);
+            $data[$aid]['cashbookId'] = $cashbookId;
             $data[$aid]['parStatistic'] = $service->participants->getEventStatistic($aid);
-            $data[$aid]['chits'] = $service->chits->getAll($aid);
-            $data[$aid]['func'] = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
+            $data[$aid]['chits'] = $this->queryBus->handle(new ChitListQuery($cashbookId));
+            $data[$aid]['func'] = $this->queryBus->handle(new EventFunctions($eventId));
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
@@ -118,10 +130,15 @@ class ExcelService
 
         $data = [];
         foreach ($campsIds as $aid) {
+            $campId = new SkautisCampId($aid);
+            /** @var CashbookId $cashbookId */
+            $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($campId));
+
             $camp = $service->event->get($aid);
             $data[$aid] = $camp;
+            $data[$aid]['cashbookId'] = $cashbookId;
             $data[$aid]['troops'] = implode(', ', $unitService->getCampTroopNames($camp));
-            $data[$aid]['chits'] = $service->chits->getAll($aid);
+            $data[$aid]['chits'] = $this->queryBus->handle(new ChitListQuery($cashbookId));
             $data[$aid]['func'] = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -392,7 +409,7 @@ class ExcelService
         $sheet->setTitle('Přehled táborů');
     }
 
-    protected function setSheetChits(\PHPExcel_Worksheet $sheet, $data): void
+    private function setSheetChits(\PHPExcel_Worksheet $sheet, array $data): void
     {
         $sheet->setCellValue('A1', "Název akce")
             ->setCellValue('B1', "Ze dne")
@@ -405,15 +422,29 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $event) {
+            /** @var CashbookId $cashbookId */
+            $cashbookId = $event['cashbookId'];
+
+            /** @var string|NULL $prefix */
+            $prefix = $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId));
+
+            /** @var array<int, string> $categories */
+            $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId, NULL));
+
             foreach ($event['chits'] as $chit) {
+                /** @var Chit $chit */
+                $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+                $amount = $chit->getAmount()->toFloat();
+
                 $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
-                    ->setCellValue('B' . $rowCnt, date("d.m.Y", strtotime($chit->date)))
-                    ->setCellValue('C' . $rowCnt, $event->prefix !== NULL ? $event->prefix . $chit->num : "")
-                    ->setCellValue('D' . $rowCnt, $chit->purpose)
-                    ->setCellValue('E' . $rowCnt, $chit->clabel)
+                    ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
+                    ->setCellValue('C' . $rowCnt, $prefix !== NULL ? $prefix . (string) $chit->getNumber() : '')
+                    ->setCellValue('D' . $rowCnt, $chit->getPurpose())
+                    ->setCellValue('E' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
                     ->setCellValue('F' . $rowCnt, $chit->recipient)
-                    ->setCellValue('G' . $rowCnt, $chit->ctype == "in" ? $chit->price : "")
-                    ->setCellValue('H' . $rowCnt, $chit->ctype != "in" ? $chit->price : "");
+                    ->setCellValue('G' . $rowCnt, $isIncome ? $amount : '')
+                    ->setCellValue('H' . $rowCnt, ! $isIncome ? $amount : '');
+
                 $rowCnt++;
             }
         }
