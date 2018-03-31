@@ -66,17 +66,12 @@ class ExcelService
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-" . date("Y_n_j"));
     }
 
-    /**
-     * @param EventEntity $service
-     * @param \stdClass $event
-     */
-    public function getCashbook(EventEntity $service, $event): void
+    public function getCashbook(string $cashbookName, CashbookId $cashbookId): void
     {
         $objPHPExcel = $this->getNewFile();
-        $data = $service->chits->getAll($event->ID);
         $sheet = $objPHPExcel->setActiveSheetIndex(0);
-        $this->setSheetCashbook($sheet, $data, $event->prefix);
-        $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
+        $this->setSheetCashbook($sheet, $cashbookId);
+        $this->send($objPHPExcel, Strings::webalize($cashbookName) . '-pokladni-kniha-' . date('Y_n_j'));
     }
 
     public function getCashbookWithCategories(CashbookId $cashbookId): Spreadsheet
@@ -245,7 +240,7 @@ class ExcelService
         $sheet->setTitle('Seznam účastníků');
     }
 
-    protected function setSheetCashbook(\PHPExcel_Worksheet $sheet, $data, $prefix): void
+    private function setSheetCashbook(\PHPExcel_Worksheet $sheet, CashbookId $cashbookId): void
     {
         $sheet->setCellValue('A1', "Ze dne")
             ->setCellValue('B1', "Číslo dokladu")
@@ -256,17 +251,28 @@ class ExcelService
             ->setCellValue('G1', "Výdej")
             ->setCellValue('H1', "Zůstatek");
 
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+        /** @var string|NULL $prefix */
+        $prefix = $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId));
+        /** @var array<int, string> $categoryNames */
+        $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
+
         $balance = 0;
         $rowCnt = 2;
-        foreach ($data as $row) {
-            $balance += $row->ctype == 'in' ? $row->price : (-$row->price);
-            $sheet->setCellValue('A' . $rowCnt, date("d.m.Y", strtotime($row->date)))
-                ->setCellValue('B' . $rowCnt, $prefix . $row->num)
-                ->setCellValue('C' . $rowCnt, $row->purpose)
-                ->setCellValue('D' . $rowCnt, $row->clabel)
-                ->setCellValue('E' . $rowCnt, $row->recipient)
-                ->setCellValue('F' . $rowCnt, $row->ctype == 'in' ? $row->price : "")
-                ->setCellValue('G' . $rowCnt, $row->ctype != 'in' ? $row->price : "")
+        foreach ($chits as $chit) {
+            $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+            $amount = $chit->getAmount()->toFloat();
+
+            $balance += $isIncome ? $amount : -$amount;
+
+            $sheet->setCellValue('A' . $rowCnt, $chit->getDate()->format('d.m.Y'))
+                ->setCellValue('B' . $rowCnt, $prefix . $chit->getNumber())
+                ->setCellValue('C' . $rowCnt, $chit->getPurpose())
+                ->setCellValue('D' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
+                ->setCellValue('E' . $rowCnt, (string) $chit->getRecipient())
+                ->setCellValue('F' . $rowCnt, $isIncome ? $amount : '')
+                ->setCellValue('G' . $rowCnt, ! $isIncome ? $amount : '')
                 ->setCellValue('H' . $rowCnt, $balance);
             $rowCnt++;
         }

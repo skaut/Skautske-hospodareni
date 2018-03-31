@@ -116,10 +116,9 @@ class CashbookExportPresenter extends BasePresenter
     public function actionExportCashbook(int $cashbookId): void
     {
         $skautisId = $this->getSkautisId();
-        $eventEntity = $this->getEventEntity();
         $event = $this->getEventEntity()->event->get($skautisId);
 
-        $this->excelService->getCashbook($eventEntity, $event);
+        $this->excelService->getCashbook($event->DisplayName, CashbookId::fromInt($cashbookId));
         $this->terminate();
     }
 
