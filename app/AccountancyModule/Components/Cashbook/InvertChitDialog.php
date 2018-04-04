@@ -16,8 +16,9 @@ use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\UnitCashbook;
 use Model\Unit\Unit;
+use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
-use Model\UserService;
+use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
 use function count;
@@ -45,16 +46,12 @@ class InvertChitDialog extends BaseControl
     /** @var QueryBus */
     private $queryBus;
 
-    /** @var UserService */
-    private $userService;
-
-    public function __construct(int $cashbookId, CommandBus $commandBus, QueryBus $queryBus, UserService $userService)
+    public function __construct(int $cashbookId, CommandBus $commandBus, QueryBus $queryBus)
     {
         parent::__construct();
         $this->cashbookId = $cashbookId;
         $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
-        $this->userService = $userService;
     }
 
     public function handleOpen(int $chitId): void
@@ -126,7 +123,8 @@ class InvertChitDialog extends BaseControl
             return $this->cashbooks;
         }
 
-        $role = $this->userService->getActualRole();
+        /** @var SkautisRole|NULL $role */
+        $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         $chit = $this->getChit();
 
         if ($role === NULL || $chit === NULL) {

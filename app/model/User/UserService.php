@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Utils\Strings;
 
@@ -55,6 +56,8 @@ class UserService extends BaseService
 
     /**
      * informace o aktuálně přihlášené roli
+     * @internal  Use query bus with ActiveSkautisRoleQuery
+     * @see ActiveSkautisRoleQuery
      */
     public function getActualRole(): ?SkautisRole
     {
