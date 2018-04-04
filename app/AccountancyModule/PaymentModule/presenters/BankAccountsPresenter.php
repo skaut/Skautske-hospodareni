@@ -12,6 +12,8 @@ use Model\DTO\Payment\BankAccount;
 use Model\Payment\BankAccountNotFoundException;
 use Model\Payment\BankAccountService;
 use Model\Payment\TokenNotSetException;
+use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
+use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
 
 class BankAccountsPresenter extends BasePresenter
@@ -135,7 +137,7 @@ class BankAccountsPresenter extends BasePresenter
             throw new BadRequestException('Bankovní účet neexistuje');
         }
 
-        if(!$this->canEdit($account->getUnitId()) && ( ! $account->isAllowedForSubunits() || ! $this->isSubunitOf($account->getUnitId()))) {
+        if(!$this->canViewBankAccount($account)) {
             $this->noAccess();
         }
 
@@ -168,6 +170,22 @@ class BankAccountsPresenter extends BasePresenter
     private function canEdit(int $unitId = NULL): bool
     {
         return $this->authorizator->isAllowed(Unit::EDIT, $unitId ?? $this->getUnitId());
+    }
+
+    private function canViewBankAccount(BankAccount $account): bool
+    {
+        if ($this->canEdit($account->getUnitId())) {
+            return TRUE;
+        }
+
+        if ($account->isAllowedForSubunits() && $this->isSubunitOf($account->getUnitId())) {
+            return TRUE;
+        }
+
+        /** @var SkautisRole $role */
+        $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
+
+        return $role->getUnitId() === $account->getUnitId() && $role->isBasicUnit() && $role->isAccountant();
     }
 
     private function isSubunitOf(int $unitId): bool
