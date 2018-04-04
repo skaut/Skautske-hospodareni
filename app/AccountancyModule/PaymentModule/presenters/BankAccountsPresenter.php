@@ -108,12 +108,12 @@ class BankAccountsPresenter extends BasePresenter
 
         $account = $this->accounts->find($id);
 
-        if( ! $this->canEdit($account->getUnitId())) {
-            $this->noAccess();
-        }
-
         if ($account === NULL) {
             throw new BadRequestException('Bankovní účet neexistuje');
+        }
+
+        if( ! $this->canEdit($account->getUnitId())) {
+            $this->noAccess();
         }
 
         $this->id = $id;
