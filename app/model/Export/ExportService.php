@@ -10,10 +10,8 @@ use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
-use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -86,7 +84,6 @@ class ExportService
             'cashbookName'  => $cashbookName,
             'prefix'        => $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId)),
             'chits'         => $this->queryBus->handle(new ChitListQuery($cashbookId)),
-            'categories'    => $this->getCategoriesById($cashbookId),
         ]);
     }
 
@@ -168,15 +165,14 @@ class ExportService
         CashbookId $cashbookId
     ): string
     {
-        $categories = $this->getCategoriesById($cashbookId);
         $chitsCollection = new ArrayCollection($chits);
 
         [$income, $outcome] = $chitsCollection->partition(function ($_, Chit $chit): bool {
             return $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
         });
 
-        $activeHpd = $chitsCollection->exists(function ($_, Chit $chit) use ($categories): bool {
-            return $categories[$chit->getCategory()->getId()]->getShortcut() === 'hpd';
+        $activeHpd = $chitsCollection->exists(function ($_, Chit $chit): bool {
+            return $chit->getCategory()->getShortcut() === 'hpd';
         });
 
         /** @var CashbookType $cashbookType */
@@ -207,7 +203,6 @@ class ExportService
         $template['event'] = $event;
         $template['income'] = $income;
         $template['outcome'] = $outcome;
-        $template['categories'] = $categories;
 
         return $this->templateFactory->create(__DIR__ . '/templates/chits.latte', $template);
     }
@@ -228,22 +223,6 @@ class ExportService
             'chits' => $categories,
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
         ]);
-    }
-
-    /**
-     * @return Category[]
-     */
-    private function getCategoriesById(CashbookId $cashbookId): array
-    {
-        /** @var Category[] $categories */
-        $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
-        $categoriesById = [];
-
-        foreach ($categories as $category) {
-            $categoriesById[$category->getId()] = $category;
-        }
-
-        return $categoriesById;
     }
 
 }

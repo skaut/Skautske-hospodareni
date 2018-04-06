@@ -7,7 +7,6 @@ namespace Model\DTO\Cashbook;
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Cashbook\Category;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Operation;

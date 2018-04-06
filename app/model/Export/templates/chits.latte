@@ -21,13 +21,13 @@ table {
 {var $incomeCnt = 0}
 {foreach $income as $item}
 
-{if $categories[$item->category->getId()]->shortcut == "hpd"}
+{if $item->category->shortcut == "hpd"}
     {if !$iterator->isFirst()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
     {include chits.hpd.latte "item"=>$item, "list"=>$list, "pokladnik"=>$pokladnik, "totalPayment"=>$totalPayment}
     {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
     {php $incomeCnt = 0}
 {else}
-    {include chits.in.latte "item"=>$item, 'categories' => $categories}
+    {include chits.in.latte "item"=>$item}
     {php $incomeCnt++}
     {if $incomeCnt % 3 == 0}
         <pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />
@@ -42,6 +42,6 @@ table {
 {if count($outcome) > 0 && count($income) > 0}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
 
 {foreach $outcome as $item}
-    {include chits.out.latte "item"=>$item, 'categories' => $categories}
+    {include chits.out.latte "item"=>$item}
     {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
 {/foreach}

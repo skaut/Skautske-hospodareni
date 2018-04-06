@@ -20,12 +20,11 @@ table {
         <td style="height:30px;">{$chit->date|date:"d.m.Y"}</td>
         <td>{if $prefix !== null}{(string) $prefix}{(string) $chit->number}{/if}</td>
         <td>{$chit->purpose}</td>
-        {var $category = $categories[$chit->category->getId()]}
-        {var $amount = $chit->amount->value}
-        <td>{$category->shortcut}</td>
-        <td style="text-align:right;">{$category->isIncome() ? $amount : '&nbsp;'|price|noescape}</td>
-        <td style="text-align:right;">{$category->isIncome() ? '&nbsp;' : $amount|price|noescape}</td>
-        <td style="text-align:right;">{$balance += $category->isIncome() ? $amount : -$amount |price}</td>
+        {var $amount = $chit->amount->toFloat()}
+        <td>{$chit->category->shortcut}</td>
+        <td style="text-align:right;">{$chit->category->isIncome() ? $amount : '&nbsp;'|price|noescape}</td>
+        <td style="text-align:right;">{$chit->isIncome() ? '&nbsp;' : $amount|price|noescape}</td>
+        <td style="text-align:right;">{$balance += $chit->category->isIncome() ? $amount : -$amount |price}</td>
     </tr>
     <tr>
         <td>&nbsp;</td>
