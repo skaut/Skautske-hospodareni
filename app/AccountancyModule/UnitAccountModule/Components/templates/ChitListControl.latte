@@ -1,0 +1,34 @@
+{snippet}
+<table class="table table-condensed">
+    <tr>
+        <th>Datum</th>
+        <th>Účel</th>
+        <th>Osoba</th>
+        <th>Kategorie</th>
+        <th>Částka</th>
+        <th>
+            <a n:href="lockCashbook!" class="btn btn-xs btn-success ajax">
+                <i class="glyphicon glyphicon-lock"></i>
+                Dozamknout
+            </a>
+        </th>
+    </tr>
+    <tr n:foreach="$chits as $chit">
+        <td>{$chit->date|date:"j.n.Y"}</td>
+        <td>{$chit->purpose}</td>
+        <td>{$chit->recipient}</td>
+        <td>{$chit->category->name}</td>
+        <td>{if ! $chit->category->isIncome()}-{/if}{$chit->amount->toFloat()}</td>
+        <td>
+            {if ! $chit->locked}
+                <a n:href="lockChit! $chit->id" class="btn btn-xs btn-success ajax">
+                    <i class="glyphicon glyphicon-lock"></i> Uzamknout</a>
+            {else}
+                <a n:href="unlockChit! $chit->id" class="btn btn-xs btn-danger ajax">
+                    <i class="glyphicon glyphicon-folder-open"></i> Odemknout
+                </a>
+            {/if}
+        </td>
+    </tr>
+</table>
+{/snippet}

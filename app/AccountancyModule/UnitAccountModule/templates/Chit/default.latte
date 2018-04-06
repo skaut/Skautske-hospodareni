@@ -1,46 +1,6 @@
 {block #group}
 {if array_key_exists($type, $chitsArr)}
-    <h2 id="a-{$type}">{$grpLabel}</h2>
-    {foreach $chitsArr[$type] as $id=>$chits}
-        {if !empty($chits)}
-            <h3 id="a-{$type}-{$id}">
-                <a href="{if $type == 'event'}{link :Accountancy:Event:Cashbook: $id}{elseif $type == 'camp'}{link :Accountancy:Camp:Cashbook: $id}{elseif $type == 'unit'}{link :Accountancy:UnitAccount:Cashbook: $id}{/if}">
-                    {$info[$type][$id]['DisplayName']}
-                </a>
-                    {ifset $info[$type][$id]['StartDate']}
-                        ({$info[$type][$id]['StartDate']|date:'j.n'} - {$info[$type][$id]['EndDate']|date:'j.n.Y'})
-                    {/ifset}
-            </h3>
-            <table class='table table-condensed'>
-                <tr>
-                    <th>Datum</th>
-                    <th>Účel</th>
-                    <th>Osoba</th>
-                    <th>Kategorie</th>
-                    <th>Částka</th>
-                    <th n:if='!isset($disableForm)'>Příjmová kat.</th>
-                    <th n:if='!isset($disableForm)'>Výdajová kat.</th>
-                    <th><a href='{link lockCashbook! $id, $type}' class='btn btn-xs btn-success ajax'><i class='glyphicon glyphicon-lock'></i> Dozamknout</a></th>
-                </tr>
-                <tr n:foreach="$chits as $c">
-                    <td>{$c->date|date:"j.n.Y"}</td>
-                    <td>{$c->purpose}</td>
-                    <td>{$c->recipient}</td>
-                    <td>{$c->clabel}</td>
-                    <td>{if $c->ctype != 'in'}-{/if}{$c->price}</td>
-                    <td n:if='!isset($disableForm)'>{input selectBudget_in_$c->id}</td>
-                    <td n:if='!isset($disableForm)'>{input selectBudget_out_$c->id}</td>
-                    <td>
-                        {if $c->lock == NULL}
-                            <a href='{link lock! $c->eventId, $c->id, $type}' class='btn btn-xs btn-success ajax'><i class='glyphicon glyphicon-lock'></i> Uzamknout</a>
-                        {else}
-                            <a href='{link lock! $c->eventId, $c->id, $type, 'unlock'}' class='btn btn-xs btn-danger ajax'><i class='glyphicon glyphicon-folder-open'></i> Odemknout</a>
-                        {/if}
-                    </td>
-                </tr>
-            </table>
-        {/if}
-    {/foreach}
+
 {/if}
 {/block}
 
@@ -48,37 +8,45 @@
 {block #content}
 <h2 n:block="title">Přehled paragonů</h2>
 {include ../ActionMenu.latte}
-{dump $info}
-{dump $chitsArr}
 
 {snippet tableChits}
-    {form budgetCategoryForm}
-        <div class='well'>
-            <div style='float:right' n:if='!isset($disableForm)'>
-                {input send}
-            </div>
-            <a n:href="this onlyUnlocked=>!$onlyUnlocked" class="btn btn-primary">Zobrazit {if $onlyUnlocked}i uzamčené{else}pouze nezamčené{/if}</a>
-            {for $y= 2015;$y<=date('Y');$y++}
-                <a n:href="this $y" class="btn btn-default {if $year == $y} active{/if}">{$y}</a>
-            {/for}
-        </div>
-        
-        <div class="row">
-            {foreach $types as $id=>$label}
-            <div class="col-md-4" n:if="!empty($info[$id]) && isset($chitsArr[$id])">
-                <h3><a href="#a-{$id}">{$label}</a></h3>
-                <ul>
-                    {foreach $info[$id] as $itemId=>$item}
-                        <li n:if="!empty($chitsArr[$id][$itemId])"><a href="#a-{$id}-{$itemId}">{$item["DisplayName"]}</a></li>
-                    {/foreach}
-                </ul>
-            </div>
-            {/foreach}
-        </div>
-        
+    <div class='well'>
+        <a n:href="this onlyUnlocked=>!$onlyUnlocked" class="btn btn-primary">Zobrazit {if $onlyUnlocked}i uzamčené{else}pouze nezamčené{/if}</a>
+        {for $y= 2015;$y<=date('Y');$y++}
+            <a n:href="this $y" class="btn btn-default {if $year == $y} active{/if}">{$y}</a>
+        {/for}
+    </div>
+
+    <div class="row">
         {foreach $types as $id=>$label}
-            {include #group grpLabel=>$label, type=>$id}
+        <div class="col-md-4" n:if="!empty($info[$id]) && isset($chitsArr[$id])">
+            <h3><a href="#a-{$id}">{$label}</a></h3>
+            <ul>
+                {foreach $info[$id] as $itemId=>$item}
+                    <li n:if="!empty($chitsArr[$id][$itemId])"><a href="#a-{$id}-{$itemId}">{$item["DisplayName"]}</a></li>
+                {/foreach}
+            </ul>
+        </div>
         {/foreach}
-        
-    {/form}{if !isset($disableForm)} {/if}
+    </div>
+
+    {foreach $types as $type => $label}
+        <h2 id="a-{$type}">{$label}</h2>
+
+        {foreach $info[$type] as $cashbookId => $object}
+            {if ! $isCashbookEmpty($cashbookId)}
+                {dump $object}
+                {var $id = $object['ID']}
+                <h3 id="a-{$type}-{$cashbookId}">
+                    <a href="{if $type == 'event'}{link :Accountancy:Event:Cashbook: $id}{elseif $type == 'camp'}{link :Accountancy:Camp:Cashbook: $id}{elseif $type == 'unit'}{link :Accountancy:UnitAccount:Cashbook: $id}{/if}">
+                        {$object['DisplayName']}
+                    </a>
+                    {ifset $object['StartDate']}
+                        ({$object['StartDate']|date:'j.n'} - {$object['EndDate']|date:'j.n.Y'})
+                    {/ifset}
+                </h3>
+                {control chitList-$cashbookId}
+            {/if}
+        {/foreach}
+    {/foreach}
 {/snippet}
