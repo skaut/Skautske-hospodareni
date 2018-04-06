@@ -8,7 +8,6 @@ use App\AccountancyModule\Components\BaseControl;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Commands\Cashbook\LockCashbook;
 use Model\Cashbook\Commands\Cashbook\LockChit;
 use Model\Cashbook\Commands\Cashbook\UnlockChit;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
@@ -52,14 +51,6 @@ final class ChitListControl extends BaseControl
         $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
         $this->user = $user;
-    }
-
-    public function handleLockCashbook(): void
-    {
-        $this->commandBus->handle(new LockCashbook($this->cashbookId, $this->user->getId()));
-
-        $this->flashMessage('Pokladní kniha byla uzamčena', 'success');
-        $this->redrawControl();
     }
 
     public function handleLockChit(int $chitId): void

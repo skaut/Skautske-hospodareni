@@ -6,12 +6,7 @@
         <th>Osoba</th>
         <th>Kategorie</th>
         <th>Částka</th>
-        <th>
-            <a n:href="lockCashbook!" class="btn btn-xs btn-success ajax">
-                <i class="glyphicon glyphicon-lock"></i>
-                Dozamknout
-            </a>
-        </th>
+        <td>&nbsp;</td>
     </tr>
     <tr n:foreach="$chits as $chit">
         <td>{$chit->date|date:"j.n.Y"}</td>
@@ -19,7 +14,7 @@
         <td>{$chit->recipient}</td>
         <td>{$chit->category->name}</td>
         <td>{if ! $chit->category->isIncome()}-{/if}{$chit->amount->toFloat()}</td>
-        <td>
+        <td class="text-right">
             {if ! $chit->locked}
                 <a n:href="lockChit! $chit->id" class="btn btn-xs btn-success ajax">
                     <i class="glyphicon glyphicon-lock"></i> Uzamknout</a>

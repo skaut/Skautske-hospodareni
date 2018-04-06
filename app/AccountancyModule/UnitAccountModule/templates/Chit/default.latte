@@ -34,19 +34,27 @@
         <h2 id="a-{$type}">{$label}</h2>
 
         {foreach $info[$type] as $cashbookId => $object}
-            {if ! $isCashbookEmpty($cashbookId)}
-                {dump $object}
-                {var $id = $object['ID']}
-                <h3 id="a-{$type}-{$cashbookId}">
-                    <a href="{if $type == 'event'}{link :Accountancy:Event:Cashbook: $id}{elseif $type == 'camp'}{link :Accountancy:Camp:Cashbook: $id}{elseif $type == 'unit'}{link :Accountancy:UnitAccount:Cashbook: $id}{/if}">
-                        {$object['DisplayName']}
+            <div class="panel panel-default" n:if=" ! $isCashbookEmpty($cashbookId)">
+                <div class="panel-heading">
+                    {var $id = $object['ID']}
+
+                    <a n:href="lockCashbook! $cashbookId" class="btn btn-sm btn-success ajax pull-right">
+                            <i class="glyphicon glyphicon-lock"></i>
+                            Zamknout vše
                     </a>
-                    {ifset $object['StartDate']}
-                        ({$object['StartDate']|date:'j.n'} - {$object['EndDate']|date:'j.n.Y'})
-                    {/ifset}
-                </h3>
-                {control chitList-$cashbookId}
-            {/if}
+                    <h4 id="a-{$type}-{$cashbookId}">
+                        <a href="{if $type == 'event'}{link :Accountancy:Event:Cashbook: $id}{elseif $type == 'camp'}{link :Accountancy:Camp:Cashbook: $id}{elseif $type == 'unit'}{link :Accountancy:UnitAccount:Cashbook: $id}{/if}">
+                            {$object['DisplayName']}
+                        </a>
+                        {ifset $object['StartDate']}
+                            ({$object['StartDate']|date:'j.n'} - {$object['EndDate']|date:'j.n.Y'})
+                        {/ifset}
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    {control chitList-$cashbookId}
+                </div>
+            </div>
         {/foreach}
     {/foreach}
 {/snippet}

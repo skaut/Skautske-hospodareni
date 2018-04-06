@@ -5,6 +5,7 @@ namespace App\AccountancyModule\UnitAccountModule;
 use App\AccountancyModule\UnitAccountModule\Components\ChitListControl;
 use App\AccountancyModule\UnitAccountModule\Factories\IChitListControlFactory;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Commands\Cashbook\LockCashbook;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
@@ -53,6 +54,14 @@ class ChitPresenter extends BasePresenter
             $this->flashMessage("Přehled paragonů je dostupný jen pro organizační jednotky.");
             $this->redirect("this", ["aid" => $oficialUnit->ID]);
         }
+    }
+
+    public function handleLockCashbook(int $cashbookId): void
+    {
+        $this->commandBus->handle(new LockCashbook(CashbookId::fromInt($cashbookId), $this->user->getId()));
+
+        $this->flashMessage('Pokladní kniha byla uzamčena', 'success');
+        $this->redrawControl();
     }
 
     public function actionDefault($year = NULL) : void
