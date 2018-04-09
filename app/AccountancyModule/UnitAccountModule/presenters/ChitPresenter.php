@@ -56,9 +56,9 @@ class ChitPresenter extends BasePresenter
         }
     }
 
-    public function handleLockCashbook(int $cashbookId): void
+    public function handleLockCashbook(CashbookId $cashbookId): void
     {
-        $this->commandBus->handle(new LockCashbook(CashbookId::fromInt($cashbookId), $this->user->getId()));
+        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId), $this->user->getId()));
 
         $this->flashMessage('Pokladní kniha byla uzamčena', 'success');
         $this->redrawControl();

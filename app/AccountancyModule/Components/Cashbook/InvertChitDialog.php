@@ -38,7 +38,7 @@ class InvertChitDialog extends BaseControl
     /** @var CashbookId */
     private $cashbookId;
 
-    /** @var array<int, string>|NULL */
+    /** @var array<string, string>|NULL */
     private $cashbooks;
 
     /** @var CommandBus */
@@ -107,7 +107,7 @@ class InvertChitDialog extends BaseControl
             ->setAttribute('class', 'ajax');
 
         $form->onSuccess[] = function (BaseForm $form, array $values) {
-            $cashbookId = CashbookId::fromInt($values['cashbookId']);
+            $cashbookId = CashbookId::fromString($values['cashbookId']);
             $this->commandBus->handle(new AddInverseChit($this->cashbookId,  $cashbookId, (int) $this->chitId));
             $this->presenter->flashMessage('Protidoklad byl vytvořen', 'success');
             $this->close();
@@ -117,7 +117,7 @@ class InvertChitDialog extends BaseControl
     }
 
     /**
-     * @return array<int, string>
+     * @return array<string, string>
      */
     private function getCashbooks(): array
     {
@@ -149,7 +149,7 @@ class InvertChitDialog extends BaseControl
             $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unit->getId()));
 
             foreach ($unitCashbooks as $cashbook) {
-                $cashbooks[$cashbook->getCashbookId()->toInt()] = $unit->getDisplayName();
+                $cashbooks[$cashbook->getCashbookId()->toString()] = $unit->getDisplayName();
             }
         }
 

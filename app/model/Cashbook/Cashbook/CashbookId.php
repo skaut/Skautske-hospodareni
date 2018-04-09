@@ -17,9 +17,17 @@ final class CashbookId implements ValueObject
         $this->id = $id;
     }
 
+    /**
+     * @deprecated Use self::fromString
+     */
     public static function fromInt(int $id): self
     {
         return new self((string) $id);
+    }
+
+    public static function fromString(string $id): self
+    {
+        return new self($id);
     }
 
     /**

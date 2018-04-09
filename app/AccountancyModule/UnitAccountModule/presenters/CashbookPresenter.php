@@ -42,7 +42,7 @@ class CashbookPresenter extends BasePresenter
     public function renderDefault(int $aid) : void
     {
         $this->template->setParameters([
-            'cashbookId' => $this->cashbookId->toInt(),
+            'cashbookId' => $this->cashbookId->toString(),
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'unitPairs' => $this->unitService->getReadUnits($this->user),
         ]);

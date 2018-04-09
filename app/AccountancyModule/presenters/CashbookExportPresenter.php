@@ -27,10 +27,10 @@ class CashbookExportPresenter extends BasePresenter
 {
 
     /**
-     * @var int
+     * @var string
      * @persistent
      */
-    public $cashbookId = 0; // default value type is used for type casting
+    public $cashbookId = ''; // default value type is used for type casting
 
     /** @var ExportService */
     private $exportService;
@@ -67,7 +67,7 @@ class CashbookExportPresenter extends BasePresenter
      *
      * @param int[] $chitIds
      */
-    public function actionPrintChits(int $cashbookId, array $chitIds): void
+    public function actionPrintChits(string $cashbookId, array $chitIds): void
     {
         $skautisId = $this->getSkautisId();
         $eventEntity = $this->getEventEntity();
@@ -75,7 +75,7 @@ class CashbookExportPresenter extends BasePresenter
         $chitIds = array_map('\intval', $chitIds);
         $chits = $this->getChitsWithIds($chitIds);
 
-        $template = $this->exportService->getChits($skautisId, $eventEntity, $chits, CashbookId::fromInt($cashbookId));
+        $template = $this->exportService->getChits($skautisId, $eventEntity, $chits, CashbookId::fromString($cashbookId));
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
@@ -85,12 +85,12 @@ class CashbookExportPresenter extends BasePresenter
      *
      * @param int[] $chitIds
      */
-    public function actionExportChits(int $cashbookId, array $chitIds): void
+    public function actionExportChits(string $cashbookId, array $chitIds): void
     {
         $chitIds = array_map('\intval', $chitIds);
 
         $this->excelService->getChitsExport(
-            CashbookId::fromInt($cashbookId),
+            CashbookId::fromString($cashbookId),
             $this->getChitsWithIds($chitIds)
         );
 
@@ -110,11 +110,11 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports cashbook (list of cashbook operations) as PDF for printing
      */
-    public function actionPrintCashbook(int $cashbookId): void
+    public function actionPrintCashbook(string $cashbookId): void
     {
         $cashbookName = $this->getEventEntity()->event->get($this->getSkautisId())->DisplayName;
 
-        $template = $this->exportService->getCashbook(CashbookId::fromInt($cashbookId), $cashbookName);
+        $template = $this->exportService->getCashbook(CashbookId::fromString($cashbookId), $cashbookName);
         $this->pdf->render($template, 'pokladni-kniha.pdf');
 
         $this->terminate();
@@ -123,21 +123,21 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports cashbook (list of cashbook operations) as XLS file
      */
-    public function actionExportCashbook(int $cashbookId): void
+    public function actionExportCashbook(string $cashbookId): void
     {
         $skautisId = $this->getSkautisId();
         $event = $this->getEventEntity()->event->get($skautisId);
 
-        $this->excelService->getCashbook($event->DisplayName, CashbookId::fromInt($cashbookId));
+        $this->excelService->getCashbook($event->DisplayName, CashbookId::fromString($cashbookId));
         $this->terminate();
     }
 
     /**
      * Exports cashbook (list of cashbook operations) with category columns as XLS file
      */
-    public function actionExportCashbookWithCategories(int $cashbookId): void
+    public function actionExportCashbookWithCategories(string $cashbookId): void
     {
-        $spreadsheet = $this->excelService->getCashbookWithCategories(CashbookId::fromInt($cashbookId));
+        $spreadsheet = $this->excelService->getCashbookWithCategories(CashbookId::fromString($cashbookId));
 
         $this->sendResponse(new ExcelResponse('pokladni-kniha', $spreadsheet));
     }
@@ -170,7 +170,7 @@ class CashbookExportPresenter extends BasePresenter
         try {
             /** @var CashbookType $cashbookType */
             $cashbookType = $this->queryBus->handle(
-                new CashbookTypeQuery(CashbookId::fromInt($this->cashbookId))
+                new CashbookTypeQuery(CashbookId::fromString($this->cashbookId))
             );
 
             return $cashbookType->getSkautisObjectType();
@@ -182,7 +182,7 @@ class CashbookExportPresenter extends BasePresenter
     private function getSkautisId(): int
     {
         return $this->queryBus->handle(
-            new SkautisIdQuery(CashbookId::fromInt($this->cashbookId))
+            new SkautisIdQuery(CashbookId::fromString($this->cashbookId))
         );
     }
 
@@ -206,7 +206,7 @@ class CashbookExportPresenter extends BasePresenter
     private function getChitsWithIds(array $ids): array
     {
         /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(new ChitListQuery(CashbookId::fromInt($this->cashbookId)));
+        $chits = $this->queryBus->handle(new ChitListQuery(CashbookId::fromString($this->cashbookId)));
         $filteredChits = array_filter($chits, function (Chit $chit) use ($ids): bool {
             return in_array($chit->getId(), $ids, TRUE);
         });

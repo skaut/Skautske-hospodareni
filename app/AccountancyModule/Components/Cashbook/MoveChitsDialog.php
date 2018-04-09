@@ -119,7 +119,7 @@ class MoveChitsDialog extends BaseControl
             return;
         }
 
-        $newCashbookId = CashbookId::fromInt($values->newCashbookId);
+        $newCashbookId = CashbookId::fromString($values->newCashbookId);
 
         if ( ! $this->canEdit($this->cashbookId) || ! $this->canEdit($newCashbookId)) {
             $this->presenter->flashMessage('Nemáte oprávnění k původní nebo nové pokladní knize!', 'danger');
@@ -170,7 +170,7 @@ class MoveChitsDialog extends BaseControl
 
             if ($states === NULL || in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
                 $cashbookId = $eventEntity->chits->getCashbookIdFromSkautisId($item['ID']);
-                $resultArray[$cashbookId->toInt()] = $item['DisplayName'];
+                $resultArray[$cashbookId->toString()] = $item['DisplayName'];
             }
         }
 
