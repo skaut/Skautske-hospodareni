@@ -5,7 +5,7 @@ namespace Model;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
+use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Skautis\Mapper;
 use Skautis\Skautis;
@@ -105,11 +105,14 @@ class ChitService extends MutableBaseService
     {
         $sumSkautis = $this->getCategories($skautisEventId, FALSE);
         $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
+
+        if ($repair) {
+            $this->commandBus->handle(new UpdateCampCategoryTotals($cashbookId));
+        }
+
         foreach ($this->getCategoriesSum($skautisEventId) as $catId => $ammount) {
             if ($ammount != $sumSkautis[$catId]->Ammount) {
-                if ($repair) { //má se kategorie opravit?
-                    $this->commandBus->handle(new UpdateCampCategoryTotal($cashbookId, $catId));
-                } elseif ($toRepair !== NULL) {
+                if ($toRepair !== NULL) {
                     $toRepair[$catId] = $ammount; //seznam ID vadných kategorií a jejich částek
                 }
             }

@@ -6,7 +6,7 @@ use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotal;
+use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
 use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
@@ -36,7 +36,7 @@ final class CampCashbookSubscriber
             return;
         }
 
-        $this->updateCategory($id, $event->getCategoryId());
+        $this->updateCategories($id);
     }
 
     public function chitWasUpdated(ChitWasUpdated $event): void
@@ -47,17 +47,12 @@ final class CampCashbookSubscriber
             return;
         }
 
-        $categoryIds = [$event->getOldCategoryId(), $event->getNewCategoryId()];
-        $categoryIds = array_unique($categoryIds); // Chit can be updated without category being changed
-
-        foreach($categoryIds as $categoryId) {
-            $this->updateCategory($id, $categoryId);
-        }
+        $this->updateCategories($id);
     }
 
-    private function updateCategory(CashbookId $cashbookId, int $categoryId): void
+    private function updateCategories(CashbookId $cashbookId): void
     {
-        $this->commandBus->handle(new UpdateCampCategoryTotal($cashbookId, $categoryId));
+        $this->commandBus->handle(new UpdateCampCategoryTotals($cashbookId));
     }
 
     private function isCamp(CashbookId $cashbookId): bool

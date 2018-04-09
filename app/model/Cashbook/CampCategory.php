@@ -19,17 +19,17 @@ final class CampCategory implements ICategory
     private $name;
 
     /** @var Money */
-    private $amount;
+    private $total;
 
     /** @var ParticipantType|NULL */
     private $participantType;
 
-    public function __construct(int $id, Operation $operationType, string $name, Money $amount, ?ParticipantType $participantType)
+    public function __construct(int $id, Operation $operationType, string $name, Money $total, ?ParticipantType $participantType)
     {
         $this->id = $id;
         $this->operationType = $operationType;
         $this->name = $name;
-        $this->amount = $amount;
+        $this->total = $total;
         $this->participantType = $participantType;
     }
 
@@ -53,9 +53,9 @@ final class CampCategory implements ICategory
         return mb_substr($this->name, 0, 5, 'UTF-8');
     }
 
-    public function getAmount(): Money
+    public function getTotal(): Money
     {
-        return $this->amount;
+        return $this->total;
     }
 
     public function getParticipantType(): ?ParticipantType
