@@ -5,7 +5,6 @@ namespace Model;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Skautis\Mapper;
 use Skautis\Skautis;
@@ -23,9 +22,6 @@ class ChitService extends MutableBaseService
     /** @var ChitTable */
     private $table;
 
-    /** @var CommandBus */
-    private $commandBus;
-
     /** @var QueryBus */
     private $queryBus;
 
@@ -41,7 +37,6 @@ class ChitService extends MutableBaseService
         parent::__construct($name, $skautIS);
         $this->table = $table;
         $this->skautisMapper = $skautisMapper;
-        $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
     }
 
@@ -79,40 +74,6 @@ class ChitService extends MutableBaseService
         $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
 
         return $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
-    }
-
-    /**
-     * vrací soucet v kazdé kategorii
-     * používá se pouze u táborů
-     * @param int $skautisEventId
-     * @return array (ID=>SUM)
-     */
-    public function getCategoriesSum(int $skautisEventId)
-    {
-        $db = $this->table->getTotalInCategories($this->getLocalId($skautisEventId)->toInt());
-        $all = $this->getCategories($skautisEventId, FALSE);
-        foreach (array_keys($all) as $key) {
-            $all[$key] = array_key_exists($key, $db) ? $db[$key] : 0;
-        }
-        return $all;
-    }
-
-    /**
-     * ověřuje konzistentnost dat mezi paragony a SkautISem
-     * @param array|NULL $toRepair
-     */
-    public function isConsistent(int $skautisEventId, array &$toRepair = NULL): bool
-    {
-        $sumSkautis = $this->getCategories($skautisEventId, FALSE);
-
-        foreach ($this->getCategoriesSum($skautisEventId) as $catId => $ammount) {
-            if ($ammount != $sumSkautis[$catId]->Ammount) {
-                if ($toRepair !== NULL) {
-                    $toRepair[$catId] = $ammount; //seznam ID vadných kategorií a jejich částek
-                }
-            }
-        }
-        return empty($toRepair);
     }
 
     /**

@@ -6,11 +6,13 @@ use App\Forms\BaseForm;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
+use function count;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -73,7 +75,7 @@ class DetailPresenter extends BasePresenter
             $this->flashMessage("Nemáte právo přistupovat k táboru", "warning");
             $this->redirect("default", ["aid" => $aid]);
         }
-        if (!$this->eventService->chits->isConsistent($aid)) {
+        if ( ! $this->areTotalsConsistentWithSkautis($aid)) {
             $this->flashMessage("Data v účtech a ve skautisu jsou nekonzistentní!", "warning");
             $this->redirect("default", ["aid" => $aid]);
         }
@@ -113,4 +115,10 @@ class DetailPresenter extends BasePresenter
         $this->redirect("this");
     }
 
+    private function areTotalsConsistentWithSkautis(int $campId): bool
+    {
+        $totals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery(new SkautisCampId($campId)));
+
+        return count($totals) === 0;
+    }
 }

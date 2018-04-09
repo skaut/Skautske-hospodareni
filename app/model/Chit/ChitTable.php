@@ -49,16 +49,6 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * spočte součet částek v jednotlivých kategoriích
-     * @param int $localEventId
-     * @return array (categoryId=>SUM)
-     */
-    public function getTotalInCategories($localEventId): array
-    {
-        return $this->connection->fetchPairs("SELECT category, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE eventId=%i", $localEventId, " AND deleted=0 GROUP BY category");
-    }
-
-    /**
      * @param int[] $categories
      * @return array
      */

@@ -6,7 +6,9 @@ use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Event\SkautisCampId;
+use function count;
 
 class BudgetPresenter extends BasePresenter
 {
@@ -22,9 +24,10 @@ class BudgetPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $toRepair = [];
-        $this->template->isConsistent = $this->eventService->chits->isConsistent($aid, $toRepair);
-        $this->template->toRepair = $toRepair;
+        $inconistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery(new SkautisCampId($aid)));
+
+        $this->template->isConsistent = count($inconistentTotals) === 0;
+        $this->template->toRepair = $inconistentTotals;
         $this->template->dataEstimate = $this->eventService->chits->getCategories($aid, TRUE);
         $this->template->dataReal = $this->eventService->chits->getCategories($aid, FALSE);
         $this->template->isUpdateStatementAllowed = $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid);
