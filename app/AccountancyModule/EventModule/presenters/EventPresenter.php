@@ -8,6 +8,7 @@ use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\DTO\Cashbook\Chit;
@@ -150,7 +151,7 @@ class EventPresenter extends BasePresenter
     public function actionPrintAll(int $aid): void
     {
         /** @var CashbookId $cashbookId */
-        $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($aid)));
+        $cashbookId = $this->getCashbookId($aid);
         /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
 
@@ -226,7 +227,7 @@ class EventPresenter extends BasePresenter
         );
 
         if (isset($values['prefix'])) {
-            $this->eventService->event->updatePrefix($id, $values['prefix']);
+            $this->commandBus->handle(new UpdateChitNumberPrefix($this->getCashbookId($id), $values['prefix']));
         }
 
         $this->flashMessage("Základní údaje byly upraveny.");
@@ -237,4 +238,10 @@ class EventPresenter extends BasePresenter
     {
         return $this->functionsFactory->create($this->aid);
     }
+
+    private function getCashbookId(int $skautisEventId): CashbookId
+    {
+        return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
+    }
+
 }

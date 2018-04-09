@@ -3,7 +3,10 @@
 namespace App\AccountancyModule\EventModule;
 
 use Model\Auth\Resources\Event;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Event\SkautisEventId;
 use Model\EventEntity;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter

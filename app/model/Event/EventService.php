@@ -87,15 +87,6 @@ class EventService extends MutableBaseService
     }
 
     /**
-     * @param string $prefix
-     */
-    public function updatePrefix(int $skautisId, $prefix): bool
-    {
-        $localId = $this->mapper->getLocalId($skautisId, strtolower($this->typeName))->toInt();
-        return $this->table->updatePrefix($localId , $prefix);
-    }
-
-    /**
      * zrušit akci
      * @param ChitService $chitService
      * @param string $msg

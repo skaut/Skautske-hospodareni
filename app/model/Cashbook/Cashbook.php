@@ -14,6 +14,7 @@ use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\AbstractAggregate;
+use Nette\Utils\Strings;
 
 class Cashbook extends AbstractAggregate
 {
@@ -23,6 +24,9 @@ class Cashbook extends AbstractAggregate
 
     /** @var CashbookType */
     private $type;
+
+    /** @var string|NULL */
+    private $chitNumberPrefix;
 
     /** @var ArrayCollection|Chit[] */
     private $chits;
@@ -42,6 +46,20 @@ class Cashbook extends AbstractAggregate
     public function getType(): CashbookType
     {
         return $this->type;
+    }
+
+    public function getChitNumberPrefix(): ?string
+    {
+        return $this->chitNumberPrefix;
+    }
+
+    public function updateChitNumberPrefix(?string $chitNumberPrefix): void
+    {
+        if ($chitNumberPrefix !== NULL && Strings::length($chitNumberPrefix) > 6) {
+            throw new \InvalidArgumentException('Chit number prefix too long');
+        }
+
+        $this->chitNumberPrefix = $chitNumberPrefix;
     }
 
     public function addChit(

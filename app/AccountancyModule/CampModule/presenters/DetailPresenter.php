@@ -4,6 +4,8 @@ namespace App\AccountancyModule\CampModule;
 
 use App\Forms\BaseForm;
 use Model\Auth\Resources\Camp;
+use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
 use Model\ExportService;
@@ -102,13 +104,12 @@ class DetailPresenter extends BasePresenter
             $this->redirect("this");
         }
         $values = $form->getValues();
+        $campId = (int)$values['aid'];
+        $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($campId)));
 
-        if ($this->eventService->event->updatePrefix((int) $values['aid'], $values['prefix'])) {
-            $this->flashMessage("Prefix byl nastaven.");
+        $this->commandBus->handle(new UpdateChitNumberPrefix($cashbookId, $values['prefix']));
+        $this->flashMessage('Prefix byl nastaven.');
 
-        } else {
-            $this->flashMessage("Nepodařilo se nastavit prefix.", "danger");
-        }
         $this->redirect("this");
     }
 

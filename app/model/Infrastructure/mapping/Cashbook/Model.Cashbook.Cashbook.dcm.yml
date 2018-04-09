@@ -14,6 +14,10 @@ Model\Cashbook\Cashbook:
             annotations:
                 enum: { class: Model\Cashbook\Cashbook\CashbookType }
 
+        chitNumberPrefix:
+            type: string
+            nullable: true
+
     oneToMany:
         chits:
             targetEntity: Model\Cashbook\Cashbook\Chit

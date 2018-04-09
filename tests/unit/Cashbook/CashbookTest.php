@@ -92,6 +92,28 @@ class CashbookTest extends \Codeception\Test\Unit
         $this->assertSame(666, $event->getCategoryId());
     }
 
+    /**
+     * @dataProvider dataValidChitNumberPrefixes
+     */
+    public function testUpdateChitNumberPrefix(?string $prefix): void
+    {
+        $cashbook = $this->createEventCashbook();
+
+        $this->assertNull($cashbook->getChitNumberPrefix());
+
+        $cashbook->updateChitNumberPrefix($prefix);
+
+        $this->assertSame($prefix, $cashbook->getChitNumberPrefix());
+    }
+
+    public function dataValidChitNumberPrefixes(): array
+    {
+        return [
+            ['test'],
+            [NULL],
+        ];
+    }
+
     private function createEventCashbook(?CashbookId $cashbookId = NULL): Cashbook
     {
         return new Cashbook($cashbookId ?? CashbookId::fromInt(1), CashbookType::get(CashbookType::EVENT));

@@ -2,31 +2,28 @@
 
 namespace Model;
 
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+
 /**
- * @author Hána František
+ * @todo Remove
  */
 class EventTable extends BaseTable
 {
-
-    public function updatePrefix(int $localId, $prefix): bool
+    /**
+     * @deprecated Use queries to obtain Cashbook prefix or ID
+     * @see EventCashbookIdQuery
+     * @see CampCashbookIdQuery
+     * @see CashbookNumberPrefixQuery
+     */
+    public function getByEventId($skautisEventId, $type)
     {
-        if($prefix == '') {
-            $prefix = NULL;
-        }
-
-        return (bool) $this->connection->update(self::TABLE_OBJECT, ['prefix' => $prefix])
-            ->where('id = ?', $localId)
-            ->execute();
+        return $this->connection->fetch(
+            "SELECT o.id as localId, c.chit_number_prefix as prefix FROM [" . self::TABLE_OBJECT . "] o JOIN ac_cashbook cb ON cb.id = o.id
+            WHERE skautisId=%i AND o.type=%s LIMIT 1", $skautisEventId, $type
+        );
     }
 
-    public function getPrefix(int $localId): ?string
-    {
-        $prefix = $this->connection->select('prefix')
-            ->from(self::TABLE_OBJECT)
-            ->where('id = ', $localId)
-            ->fetchSingle();
-
-        return $prefix != '' ? $prefix : NULL;
-    }
 
 }
