@@ -101,14 +101,9 @@ class ChitService extends MutableBaseService
      * ověřuje konzistentnost dat mezi paragony a SkautISem
      * @param array|NULL $toRepair
      */
-    public function isConsistent(int $skautisEventId, bool $repair = FALSE, array &$toRepair = NULL): bool
+    public function isConsistent(int $skautisEventId, array &$toRepair = NULL): bool
     {
         $sumSkautis = $this->getCategories($skautisEventId, FALSE);
-        $cashbookId = $this->getCashbookIdFromSkautisId($skautisEventId);
-
-        if ($repair) {
-            $this->commandBus->handle(new UpdateCampCategoryTotals($cashbookId));
-        }
 
         foreach ($this->getCategoriesSum($skautisEventId) as $catId => $ammount) {
             if ($ammount != $sumSkautis[$catId]->Ammount) {
