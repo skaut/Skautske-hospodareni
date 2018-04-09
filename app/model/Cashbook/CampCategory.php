@@ -2,10 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Skautis\DTO;
-
-use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
+namespace Model\Cashbook;
 
 final class CampCategory implements ICategory
 {

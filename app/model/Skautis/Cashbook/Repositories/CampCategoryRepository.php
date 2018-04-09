@@ -7,7 +7,7 @@ namespace Model\Skautis\Cashbook\Repositories;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
-use Model\Skautis\DTO\CampCategory;
+use Model\Cashbook\CampCategory;
 use Skautis\Wsdl\WebServiceInterface;
 
 final class CampCategoryRepository implements ICampCategoryRepository
@@ -22,7 +22,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
     }
 
     /**
-     * @return ICategory[]
+     * @return CampCategory[]
      */
     public function findForCamp(int $campId): array
     {
