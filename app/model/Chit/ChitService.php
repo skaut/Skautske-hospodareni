@@ -82,30 +82,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * CAMP ONLY
-     * vrací ID kategorie pro příjmy od účastníků
-     * @param string|NULL $category
-     * @throws \Nette\InvalidStateException
-     * @return int
-     */
-    public function getParticipantIncomeCategory(?int $skautisEventId = NULL, $category = NULL)
-    {
-        if ($this->type !== self::TYPE_CAMP) {
-            throw new \InvalidArgumentException('This method is only for camps');
-        }
-
-        //@TODO: předělat na konstanty
-        $catId = ($category == "adult") ? 3 : 1;
-        foreach ($this->getCategories($skautisEventId) as $k => $val) {
-            if (isset($val->ID_EventCampStatementType) && $val->ID_EventCampStatementType == $catId) {
-                return $k;
-            }
-        }
-
-        throw new \Nette\InvalidStateException("Chybí typ pro příjem od účastníků pro skupinu " . $category, 500);
-    }
-
-    /**
      * vrací soucet v kazdé kategorii
      * používá se pouze u táborů
      * @param int $skautisEventId

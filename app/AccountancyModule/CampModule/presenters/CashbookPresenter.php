@@ -10,6 +10,8 @@ use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Cashbook\ParticipantType;
+use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
 use Model\DTO\Cashbook\Chit;
@@ -100,7 +102,12 @@ class CashbookPresenter extends BasePresenter
         $aid = $this->getCurrentUnitId();
         $date = $this->eventService->event->get($aid)->StartDate;
         $amount = $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount);
-        $categoryId = $this->eventService->chits->getParticipantIncomeCategory($aid, $values->cat);
+        $categoryId = $this->queryBus->handle(
+            new CampParticipantCategoryIdQuery(
+                new SkautisCampId($aid),
+                ParticipantType::get(ParticipantType::CHILD)
+            )
+        );
 
         if ($amount === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
