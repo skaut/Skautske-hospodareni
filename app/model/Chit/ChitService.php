@@ -2,30 +2,15 @@
 
 namespace Model;
 
-use eGen\MessageBus\Bus\CommandBus;
-use Model\Skautis\Mapper;
-use Skautis\Skautis;
-
-class ChitService extends MutableBaseService
+class ChitService
 {
-
-    /** @var Mapper */
-    private $skautisMapper;
 
     /** @var ChitTable */
     private $table;
 
-    public function __construct(
-        string $name,
-        ChitTable $table,
-        Skautis $skautIS,
-        Mapper $skautisMapper,
-        CommandBus $commandBus
-    )
+    public function __construct(ChitTable $table)
     {
-        parent::__construct($name, $skautIS);
         $this->table = $table;
-        $this->skautisMapper = $skautisMapper;
     }
 
     /**
