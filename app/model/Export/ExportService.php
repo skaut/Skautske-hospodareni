@@ -8,10 +8,13 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
+use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -20,6 +23,8 @@ use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Services\TemplateFactory;
+use Model\Utils\MoneyFactory;
+use Money\Money;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -209,9 +214,25 @@ class ExportService
 
     public function getCampReport(int $skautisCampId, EventEntity $campService): string
     {
-        $categories = [];
-        foreach ($campService->chits->getCategories($skautisCampId) as $c) {
-            $categories[$c->IsRevenue ? "in" : "out"][$c->ID] = $c;
+        $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisCampId)));
+
+        /** @var Category[] $categories */
+        $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
+
+        $totalIncome = MoneyFactory::zero();
+        $totalExpense = MoneyFactory::zero();
+
+        $incomeCategories = [];
+        $expenseCategories = [];
+
+        foreach ($categories as $category) {
+            if ($category->isIncome()) {
+                $totalIncome = $totalIncome->add($category->getTotal());
+                $incomeCategories[] = $category;
+            } else {
+                $totalExpense = $totalExpense->add($category->getTotal());
+                $expenseCategories[] = $category;
+            }
         }
 
         $participants = $campService->participants->getAll($skautisCampId);
@@ -220,7 +241,10 @@ class ExportService
             'participantsCnt' => count($participants),
             'personsDays' => $campService->participants->getPersonsDays($participants),
             'a' => $campService->event->get($skautisCampId),
-            'chits' => $categories,
+            'incomeCategories' => $incomeCategories,
+            'expenseCategories' => $expenseCategories,
+            'totalIncome' => $totalIncome,
+            'totalExpense' => $totalExpense,
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
         ]);
     }

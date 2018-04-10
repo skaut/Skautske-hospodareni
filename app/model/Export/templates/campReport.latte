@@ -49,7 +49,7 @@ table {
         <th>{$a->StartDate|date:"j.n.Y"}</th>
         <th>{$a->EndDate|date:"j.n.Y"}</th>
         <th>{$a->TotalDays}</th>
-        <th>{!= trim($a->Location) ? $a->Location : "&nbsp;"|stripHtml}</th>
+        <th>{trim($a->Location) ? $a->Location : "&nbsp;"|stripHtml|noescape}</th>
     </tr>
 </table>
 
@@ -72,42 +72,30 @@ table {
         <th style="width: 20%;text-align: right;">Kč</th>
     </tr>
 
-{?
-$cntIn = count($chits['in']);
-$cntOut = count($chits['out']);
-$iter = max($cntIn, $cntOut);
-$totalIn = 0;
-$totalOut = 0;
-}
+    {var $rowsCount = max(count($incomeCategories), count($expenseCategories))}
 
-    {for $i = 0; $i < $iter; $i++}
-    <tr>
-        {if $i < $cntIn}
-            {php $in = current($chits['in'])}
-        <td>{$in->EventCampStatementType}</td>
-        <td>{$in->Ammount|price}</td>
-            {php $totalIn += $in->Ammount}
-            {php next($chits['in'])}
+    <tr n:for="$i = 0; $i < $rowsCount; $i++">
+        {ifset $incomeCategories[$i]}
+            <td>{$incomeCategories[$i]->name}</td>
+            <td>{$incomeCategories[$i]->total|price}</td>
         {else}
-            <td>&nbsp;</td><td>&nbsp;</td>
-        {/if}
-        {if $i < $cntOut}
-            {php $out = current($chits['out'])}
-            <td>{$out->EventCampStatementType}</td>
-            <td>{$out->Ammount|price}</td>
-            {php $totalOut += $out->Ammount}
-            {php next($chits['out'])}
+            <td></td>
+            <td></td>
+        {/ifset}
+        {ifset $expenseCategories[$i]}
+            <td>{$expenseCategories[$i]->name}</td>
+            <td>{$expenseCategories[$i]->total|price}</td>
         {else}
-            <td>&nbsp;</td><td>&nbsp;</td>
-        {/if}
+            <td></td>
+            <td></td>
+        {/ifset}
     </tr>
-    {/for}
 
     <tr>
         <td>Celkem</td>
-        <td><b>{$totalIn|price}</b></td>
+        <td><b>{$totalIncome|price}</b></td>
         <td>Celkem</td>
-        <td><b>{$totalOut|price}</b></td>
+        <td><b>{$totalExpense|price}</b></td>
     </tr>
 </table>
 
