@@ -40,15 +40,6 @@ class ChitTable extends BaseTable
     }
 
     /**
-     * označí paragony z dané akce za smazané
-     * @param int $localEventId
-     */
-    public function deleteAll($localEventId): void
-    {
-        $this->connection->query("UPDATE [" . self::TABLE_CHIT . "] SET deleted=1 WHERE eventId = %i", $localEventId);
-    }
-
-    /**
      * @param int[] $categories
      * @return array
      */

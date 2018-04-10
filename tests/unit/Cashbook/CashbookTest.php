@@ -114,6 +114,26 @@ class CashbookTest extends \Codeception\Test\Unit
         ];
     }
 
+    public function testClearCashbook(): void
+    {
+        $cashbook = new Cashbook(CashbookId::fromInt(11), CashbookType::get(CashbookType::EVENT));
+
+        for ($i = 0; $i < 5; $i++) {
+            $cashbook->addChit(
+                NULL,
+                new Date('2017-11-17'),
+                NULL,
+                new Cashbook\Amount('100'),
+                'purpose',
+                $this->mockCategory(666)
+            );
+        }
+
+        $cashbook->clear();
+
+        $this->assertEmpty($cashbook->getChits());
+    }
+
     private function createEventCashbook(?CashbookId $cashbookId = NULL): Cashbook
     {
         return new Cashbook($cashbookId ?? CashbookId::fromInt(1), CashbookType::get(CashbookType::EVENT));

@@ -228,6 +228,11 @@ class Cashbook extends AbstractAggregate
             ->toArray();
     }
 
+    public function clear(): void
+    {
+        $this->chits->clear();
+    }
+
     /**
      * @throws ChitNotFoundException
      */

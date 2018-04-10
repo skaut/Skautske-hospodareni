@@ -2,6 +2,7 @@
 
 namespace Model;
 
+use eGen\MessageBus\Bus\EventBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
@@ -21,12 +22,16 @@ class EventService extends MutableBaseService
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(string $name, Skautis $skautis, Mapper $mapper, UnitService $units, QueryBus $queryBus)
+    /** @var EventBus */
+    private $eventBus;
+
+    public function __construct(string $name, Skautis $skautis, Mapper $mapper, UnitService $units, QueryBus $queryBus, EventBus $eventBus)
     {
         parent::__construct($name, $skautis);
         $this->mapper = $mapper;
         $this->units = $units;
         $this->queryBus = $queryBus;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -82,25 +87,6 @@ class EventService extends MutableBaseService
         }
 
         return $res;
-    }
-
-    /**
-     * zrušit akci
-     * @param ChitService $chitService
-     * @param string $msg
-     */
-    public function cancel(int $ID, $chitService, $msg = NULL): bool
-    {
-        $ret = $this->skautis->event->{"Event" . $this->typeName . "UpdateCancel"}([
-            "ID" => $ID,
-            "CancelDecision" => !is_null($msg) ? $msg : " "
-        ], "event" . $this->typeName);
-
-        if ($ret) {//smaže paragony
-            $chitService->deleteAll($ID);
-        }
-
-        return (bool)$ret;
     }
 
     private function getCashbookData(CashbookId $cashbookId): array

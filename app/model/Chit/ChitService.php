@@ -30,15 +30,6 @@ class ChitService extends MutableBaseService
     }
 
     /**
-     * smazat všechny paragony dané akce
-     * použití při rušení celé akce
-     */
-    public function deleteAll(int $skautisEventId): void
-    {
-        $this->table->deleteAll($this->getLocalId($skautisEventId)->toInt());
-    }
-
-    /**
      * nastavuje kategorie z rozpočtu
      * @param int $chitId
      * @param int|NULL $in
