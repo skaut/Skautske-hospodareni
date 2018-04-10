@@ -15,8 +15,12 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Event\SkautisCampId;
+use Model\Event\SkautisEventId;
 use Model\EventEntity;
 use Nette\DI\Container;
 use Nette\Utils\ArrayHash;
@@ -169,7 +173,7 @@ class MoveChitsDialog extends BaseControl
             }
 
             if ($states === NULL || in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
-                $cashbookId = $eventEntity->chits->getCashbookIdFromSkautisId($item['ID']);
+                $cashbookId = $this->getCashbookId($item['ID'], ObjectType::get($eventType));
                 $resultArray[$cashbookId->toString()] = $item['DisplayName'];
             }
         }
@@ -194,6 +198,15 @@ class MoveChitsDialog extends BaseControl
     private function getCashbookType(CashbookId $cashbookId): CashbookType
     {
         return $this->queryBus->handle(new CashbookTypeQuery($cashbookId));
+    }
+
+    private function getCashbookId(int $skautisId, ObjectType $objectType): CashbookId
+    {
+        if ($objectType->equalsValue(ObjectType::CAMP)) {
+            return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisId)));
+        }
+
+        return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisId)));
     }
 
     private function getSkautisId(CashbookId $cashbookId): int

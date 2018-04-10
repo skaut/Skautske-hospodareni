@@ -12,6 +12,7 @@ use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
@@ -70,7 +71,7 @@ class CashbookPresenter extends BasePresenter
             ? new Recipient($functions->getAccountant()->getName())
             : NULL;
 
-        $cashbookId = $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
+        $cashbookId = $this->getCashbookId();
 
         $this->commandBus->handle(
             new AddChitToCashbook(
@@ -103,7 +104,7 @@ class CashbookPresenter extends BasePresenter
 
     private function getCashbookId(): CashbookId
     {
-        return $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
+        return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($this->aid)));
     }
 
 }

@@ -13,6 +13,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
@@ -126,7 +127,7 @@ class ExportService
             ];
         }
 
-        $cashbookId = $eventService->chits->getCashbookIdFromSkautisId($skautisEventId);
+        $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
         /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
 

@@ -11,6 +11,7 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ParticipantType;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
@@ -133,7 +134,7 @@ class CashbookPresenter extends BasePresenter
 
     private function getCashbookId(): CashbookId
     {
-        return $this->eventService->chits->getCashbookIdFromSkautisId($this->aid);
+        return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
     }
 
     private function isCashbookEmpty(): bool

@@ -6,8 +6,10 @@ use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\DTO\Cashbook\Chit;
-use Model\EventEntity;
+use Model\DTO\Cashbook\UnitCashbook;
+use Nette\InvalidStateException;
 
 class CashbookPresenter extends BasePresenter
 {
@@ -33,10 +35,14 @@ class CashbookPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        /** @var EventEntity $eventEntity */
-        $eventEntity = $this->context->getService('unitAccountService');
+        /** @var UnitCashbook[] $unitCashbooks */
+        $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->aid));
 
-        $this->cashbookId = $eventEntity->chits->getCashbookIdFromSkautisId($this->aid);
+        if (count($unitCashbooks) !== 1) {
+            throw new InvalidStateException('This should not happen (unit should have always one cashbook)');
+        }
+
+        $this->cashbookId = $unitCashbooks[0]->getCashbookId();
     }
 
     public function renderDefault(int $aid) : void
