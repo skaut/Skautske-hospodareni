@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Repositories;
 
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\CashbookService;
 use Model\Cashbook\CategoryNotFoundException;
 use Model\Cashbook\ICategory;
+use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 
 class CategoryRepository
 {
@@ -19,14 +20,18 @@ class CategoryRepository
     /** @var IStaticCategoryRepository */
     private $staticCategories;
 
-    /** @var CashbookService */
-    private $cashbookService;
+    /** @var QueryBus */
+    private $queryBus;
 
-    public function __construct(ICampCategoryRepository $campCategories, IStaticCategoryRepository $staticCategories, CashbookService $cashbookService)
+    public function __construct(
+        ICampCategoryRepository $campCategories,
+        IStaticCategoryRepository $staticCategories,
+        QueryBus $queryBus
+    )
     {
         $this->campCategories = $campCategories;
         $this->staticCategories = $staticCategories;
-        $this->cashbookService = $cashbookService;
+        $this->queryBus = $queryBus;
     }
 
 
@@ -38,7 +43,7 @@ class CategoryRepository
         $skautisType = $type->getSkautisObjectType();
 
         if ($skautisType->equalsValue(CashbookType::CAMP)) {
-            $campId = $this->cashbookService->getSkautisIdFromCashbookId($cashbookId, $skautisType);
+            $campId = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
 
             return $this->campCategories->findForCamp($campId);
         }
