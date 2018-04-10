@@ -1,25 +1,44 @@
 {block #title}{$event->DisplayName} - rozpočet{/block}
 
-{block #bughetTable $data, $toRepair, $isIn}
-<table n:ifset="$data" class="table myTable table-bordered table-condensed">
-    <thead>
+{define #budgetTable $entries, $income}
+    <table n:ifset="$entries" class="table myTable table-bordered table-condensed">
+        <thead>
         <tr>
             <th>Položka</th>
             <th>Částka</th>
         </tr>
-    </thead>
-    {foreach $data as $ID=>$item}
-    <tr n:if="$item->IsRevenue == $isIn">
-        <td>{$item->EventCampStatementType}</td>
-        <td style="text-align: right;">
-        {if array_key_exists($ID, $toRepair)} <span class="btn btn-xs btn-danger" title="Součet paragonů je {$toRepair[$ID]}"><i class="glyphicon glyphicon-ban-circle"></i></span>{/if}
-        {$data[$ID]->Ammount|price}
-        </td>
-    </tr>
-    {/foreach}
-</table>
-{/block}
+        </thead>
+        <tr n:foreach="$entries as $entry" n:if="$entry->isIncome() === $income">
+            <td>{$entry->name}</td>
+            <td class="text-right">
+                {$entry->total|price}
+            </td>
+        </tr>
+    </table>
+{/define}
 
+{define #categoriesTable $categories, $income}
+    <table n:ifset="$categories" class="table myTable table-bordered table-condensed">
+        <thead>
+        <tr>
+            <th>Položka</th>
+            <th>Částka</th>
+        </tr>
+        </thead>
+        <tr n:foreach="$categories as $category" n:if="$category->isIncome() === $income">
+            <td>{$category->name}</td>
+            <td style="text-align: right;">
+
+                <span n:if="array_key_exists($category->id, $toRepair)"
+                        class="btn btn-xs btn-danger"
+                        title="Součet paragonů je {$toRepair[$category->id]}">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                </span>
+                {$category->total|price}
+            </td>
+        </tr>
+    </table>
+{/define}
 
 {block #content}
 <h2>{$event->DisplayName}</h2>
@@ -42,24 +61,25 @@
 
     <div class="col-md-3 col-sm-6">
         <h3>Skutečné náklady</h3>
-        {include #bughetTable data=>$dataReal, toRepair=>$toRepair, isIn=>false}
+        {include #categoriesTable $categories, FALSE}
     </div>
     <div class="col-md-3 col-sm-6">
         <h3>Skutečné výnosy</h3>
-        {include #bughetTable data=>$dataReal, toRepair=>$toRepair, isIn=>true}
+        {include #categoriesTable $categories, TRUE}
     </div>
     
     <div class="clearfix visible-sm-block"></div>
 
     <div class="col-md-3 col-sm-6 ">
         <h3>Předpokl. náklady</h3>
-        {include #bughetTable data=>$dataEstimate, toRepair=>$toRepair, isIn=>false}
+        {include #budgetTable $budgetEntries, FALSE}
     </div>
     <div class="col-md-3">
         <h3>Předpokládané výnosy</h3>
-        {include #bughetTable data=>$dataEstimate, toRepair=>$toRepair, isIn=>true}
+        {include #budgetTable $budgetEntries, TRUE}
     </div>
 
 </div>
+
 
 
