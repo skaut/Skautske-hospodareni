@@ -22,7 +22,7 @@ class ChitTable extends BaseTable
     public function getBudgetCategoriesSummary(array $categories, string $type)
     {
         $catName = "budgetCategory" . ucfirst($type);
-        return $this->connection->fetchPairs("SELECT $catName, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE $catName IN %in", $categories, " AND deleted=0 GROUP BY $catName");
+        return $this->connection->fetchPairs("SELECT $catName, SUM(price) FROM [" . self::TABLE_CHIT . "] WHERE $catName IN %in", $categories, " GROUP BY $catName");
     }
 
 }
