@@ -55,6 +55,10 @@ final class CampCategoryRepository implements ICampCategoryRepository
             'IsEstimate' => FALSE,
         ]);
 
+        if (is_object($skautisCategories)) { // API returns empty object when there are no results
+            return [];
+        }
+
         foreach ($skautisCategories as $category) {
             if ($category->ID_EventCampStatementType === ICategory::CAMP_RESERVE_ID) {
                 continue;
