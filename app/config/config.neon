@@ -1,6 +1,4 @@
 parameters:
-    slack:
-        url: "https://hooks.slack.com/services/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"
 
 php:
     date.timezone: Europe/Prague
@@ -44,10 +42,6 @@ messageBus:
 monolog:
     name: hskauting
 
-    handlers:
-        slackWebhook:
-            class: Monolog\Handler\SlackWebhookHandler(%slack.url%)
-        - Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272)
 proxy:
     default: off
     proxyDir: %tempDir%/proxies
