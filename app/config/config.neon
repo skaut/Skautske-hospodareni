@@ -47,6 +47,7 @@ monolog:
     handlers:
         slackWebhook:
             class: Monolog\Handler\SlackWebhookHandler(%slack.url%)
+        - Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272)
 proxy:
     default: off
     proxyDir: %tempDir%/proxies
@@ -107,6 +108,8 @@ autoDI:
         - class: Model\**\ReadModel\QueryHandlers\**
           tags: [queryBus.handler]
 
+        - class: Model\Infrastructure\Services\**
+
 services:
     skautisCache:
         factory: Nette\Caching\Cache(namespace: 'skautis')
@@ -160,6 +163,10 @@ services:
     nette.latteFactory:
         setup:
             - addFilter(null, [App\AccountancyModule\AccountancyHelpers, loader])
+
+    @Skautis\Wsdl\WsdlManager:
+        setup:
+            - @Model\Infrastructure\Services\SkautisCallListener::register
 
     nette.mailer: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
 
