@@ -40,12 +40,6 @@ class Chit
      */
     private $locked;
 
-    /** @var int|NULL */
-    private $budgetCategoryIn;
-
-    /** @var int|NULL */
-    private $budgetCategoryOut;
-
     public function __construct(
         Cashbook $cashbook,
         ?ChitNumber $number,

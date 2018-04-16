@@ -13,7 +13,7 @@ class Version20180409115846 extends AbstractMigration
         $this->addSql('UPDATE ac_cashbook c JOIN ac_object o ON o.id = c.id SET c.chit_number_prefix = o.prefix');
         $this->addSql('ALTER TABLE ac_object DROP prefix');
         $this->addSql('DELETE FROM ac_chits WHERE deleted = 1');
-        $this->addSql('ALTER TABLE ac_chits DROP deleted');
+        $this->addSql('ALTER TABLE ac_chits DROP deleted, DROP budgetCategoryIn,  DROP budgetCategoryOut');
     }
 
     public function down(Schema $schema): void

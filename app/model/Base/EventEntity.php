@@ -5,7 +5,6 @@ namespace Model;
 /**
  * @property-read EventService $event
  * @property-read ParticipantService $participants
- * @property-read ChitService $chits
  */
 class EventEntity
 {
@@ -16,18 +15,13 @@ class EventEntity
     /** @var ParticipantService */
     private $participants;
 
-    /** @var ChitService */
-    private $chits;
-
     public function __construct(
         string $name,
-        IChitServiceFactory $chitFactory,
         IParticipantServiceFactory $participantFactory,
         IEventServiceFactory $eventFactory)
     {
         $this->event = $eventFactory->create($name);
         $this->participants = $participantFactory->create($name);
-        $this->chits = $chitFactory->create();
     }
 
     public function __get($name)
