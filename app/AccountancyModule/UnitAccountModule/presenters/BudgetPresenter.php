@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\UnitAccountModule;
 
 use App\Forms\BaseForm;
+use Model\ChitService;
 use Nette\Application\UI\Form;
 
 /**
@@ -23,7 +24,11 @@ class BudgetPresenter extends BasePresenter
     public function renderDefault($year = NULL) : void
     {
         $this->template->categories = $this->budgetService->getCategories($this->aid);
-        $this->template->categoriesSummary = $this->context->getService("unitAccountService")->chits->getBudgetCategoriesSummary($this->budgetService->getCategoriesLeaf((int)$this->aid));
+
+        /** @var ChitService $chitService */
+        $chitService = $this->context->getService("unitAccountService")->chits;
+
+        $this->template->categoriesSummary = $chitService->getBudgetCategoriesSummary($this->budgetService->getCategoriesLeaf((int)$this->aid));
         $this->template->sum = $this->template->sumReality = 0; //je potreba kvuli sablone, kde se pouzije jako globalni promena
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
