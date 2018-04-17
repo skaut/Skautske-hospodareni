@@ -7,7 +7,7 @@
 <div n:if="$missingCategories" class="row">
     <div class="alert alert-danger">
         Nemáte aktivní automatické dopočítání z kategorií, bez kterého nelze přidávat záznamy.
-        <a n:href="activateAutocomputedCashbook! $aid" class="btn btn-primary btn-sm">Aktivovat dopočítávání</a>
+        <a n:if="$isEditable" n:href="activateAutocomputedCashbook! $aid" class="btn btn-primary btn-sm">Aktivovat dopočítávání</a>
     </div>
 </div>
 
