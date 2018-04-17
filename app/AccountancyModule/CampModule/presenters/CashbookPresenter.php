@@ -13,6 +13,7 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
+use Model\Event\SkautisCampId;
 use Money\Money;
 
 class CashbookPresenter extends BasePresenter
@@ -54,7 +55,7 @@ class CashbookPresenter extends BasePresenter
     public function handleActivateAutocomputedCashbook(int $aid): void
     {
         try {
-            $this->commandBus->handle(new ActivateAutocomputedCashbook($aid));
+            $this->commandBus->handle(new ActivateAutocomputedCashbook(new SkautisCampId($aid)));
             $this->flashMessage("Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.");
         } catch (\Skautis\Wsdl\PermissionException $e) {
             $this->flashMessage("Dopočítávání se nepodařilo aktivovat. Pro aktivaci musí být tábor alespoň ve stavu schváleno střediskem.", "danger");
