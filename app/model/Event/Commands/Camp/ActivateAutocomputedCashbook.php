@@ -2,18 +2,20 @@
 
 namespace Model\Event\Commands\Camp;
 
+use Model\Event\SkautisCampId;
+
 class ActivateAutocomputedCashbook
 {
 
-    /** @var int */
+    /** @var SkautisCampId */
     private $campId;
 
-    public function __construct(int $campId)
+    public function __construct(SkautisCampId $campId)
     {
         $this->campId = $campId;
     }
 
-    public function getCampId(): int
+    public function getCampId(): SkautisCampId
     {
         return $this->campId;
     }
