@@ -9,7 +9,7 @@ use Skautis\Skautis;
  * @author Hána František <sinacek@gmail.com>
  * @deprecated Don't inherit from this service
  */
-abstract class BaseService extends Nette\Object
+abstract class BaseService
 {
 
     public const ACCESS_READ = 'read';

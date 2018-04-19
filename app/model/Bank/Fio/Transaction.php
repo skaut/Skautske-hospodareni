@@ -4,8 +4,20 @@ namespace Model\Bank\Fio;
 
 use Nette;
 
-class Transaction extends Nette\Object
+/**
+ * @property-read string                $id
+ * @property-read \DateTimeImmutable    $date
+ * @property-read float                 $amount
+ * @property-read string                $bankAccount
+ * @property-read string                $name
+ * @property-read int|NULL              $variableSymbol
+ * @property-read int|NULL              $constantSymbol
+ * @property-read string|NULL           $note
+ */
+class Transaction
 {
+
+    use Nette\SmartObject;
 
     /** @var string */
     private $id;

@@ -1,11 +1,19 @@
 <?php
 
 namespace Model\DTO\Payment;
+use Nette\SmartObject;
 
-use Nette;
-
-class Mail extends Nette\Object
+/**
+ * @property-read int       $id
+ * @property-read int       $unitId
+ * @property-read string    $username
+ * @property-read string    $host
+ * @property-read string    $secure
+ */
+class Mail
 {
+
+    use SmartObject;
 
     /** @var int */
     private $id;

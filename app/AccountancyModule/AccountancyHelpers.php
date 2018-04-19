@@ -5,12 +5,11 @@ namespace App\AccountancyModule;
 use DateTimeInterface;
 use Model\Payment\Payment\State;
 use Money\Money;
-use Nette\Object;
 
 /**
  * @author Hána František <sinacek@gmail.com>
  */
-abstract class AccountancyHelpers extends Object
+abstract class AccountancyHelpers
 {
 
     /**

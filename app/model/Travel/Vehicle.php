@@ -4,10 +4,23 @@ namespace Model\Travel;
 
 use Model\Travel\Vehicle\Metadata;
 use Model\Unit\Unit;
-use Nette;
+use Nette\SmartObject;
 
-class Vehicle extends Nette\Object
+/**
+ * @property-read int           $id
+ * @property-read string        $type
+ * @property-read int           $unitId
+ * @property-read int|NULL      $subunitId
+ * @property-read string        $registration
+ * @property-read float         $consumption
+ * @property-read string|NULL   $note
+ * @property-read bool          $archived
+ * @property-read Metadata      $metadata
+ */
+class Vehicle
 {
+
+    use SmartObject;
 
     /** @var int */
     private $id;
