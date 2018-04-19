@@ -25,4 +25,14 @@ final class MoneyFactory
         return self::fromFloat(0);
     }
 
+    /**
+     * Removes cents from amount
+     */
+    public static function floor(Money $money): Money
+    {
+        $floatAmount = self::toFloat($money);
+
+        return self::fromFloat(floor($floatAmount));
+    }
+
 }
