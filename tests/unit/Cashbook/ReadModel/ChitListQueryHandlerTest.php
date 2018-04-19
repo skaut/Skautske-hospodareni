@@ -26,10 +26,10 @@ class ChitListQueryHandlerTest extends Unit
     public function testReturnsChitsWithSorting(): void
     {
         $chits = [
-            $this->mockChit(1, new Date('2018-01-02'), Operation::INCOME, 11),
-            $this->mockChit(2, new Date('2018-01-01'), Operation::INCOME, 22),
-            $this->mockChit(3, new Date('2018-01-01'), Operation::EXPENSE, 44),
-            $this->mockChit(4, new Date('2018-01-01'), Operation::INCOME, 33),
+            \Helpers::mockChit(1, new Date('2018-01-02'), Operation::INCOME, 11),
+            \Helpers::mockChit(2, new Date('2018-01-01'), Operation::INCOME, 22),
+            \Helpers::mockChit(3, new Date('2018-01-01'), Operation::EXPENSE, 44),
+            \Helpers::mockChit(4, new Date('2018-01-01'), Operation::INCOME, 33),
         ];
 
         $cashbookId = $this->getCashbookId();
@@ -62,21 +62,6 @@ class ChitListQueryHandlerTest extends Unit
             $this->assertSame($chit->getRecipient(), $dto->getRecipient());
             $this->assertSame($chit->isLocked(), $dto->isLocked());
         }
-    }
-
-    private function mockChit(int $id, Date $date, string $operation, int $categoryId): Chit
-    {
-        return m::mock(Chit::class, [
-            'getId'         => $id,
-            'getDate'       => $date,
-            'getCategory'   => new Cashbook\Category($categoryId, Operation::get($operation)),
-            'getCategoryId' => $categoryId,
-            'getNumber'     => new Cashbook\ChitNumber('132'),
-            'getAmount'     => new Cashbook\Amount('1'),
-            'getPurpose'    => random_bytes(100),
-            'getRecipient'  => new Cashbook\Recipient('František Maša'),
-            'isLocked'      => TRUE,
-        ]);
     }
 
     private function prepareQueryBus(): QueryBus
