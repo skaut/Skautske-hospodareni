@@ -72,6 +72,11 @@ class FioClient implements IFioClient
             $this->logger->error("Bank account #{$account->getId()} hit API limit");
             throw new BankTimeLimitException('', 0, $e);
         } catch (TransferException | InternalErrorException $e) {
+            $this->logger->error(
+                sprintf('Bank account #%d request failed: %s', $account->getId(), $e->getMessage()),
+                ['previous' => $e]
+            );
+
             throw new BankTimeoutException("There was an error when connecting to FIO", $e->getCode(), $e);
         }
     }
