@@ -44,7 +44,31 @@ class CommandTest extends \Codeception\Test\Unit
         $expectedPricePerKm = 6 / 100 * 31.20 + 5;
         $this->assertEquals(MoneyFactory::fromFloat(31.20 * 6 / 100), $command->getFuelPricePerKm());
         $this->assertEquals(MoneyFactory::fromFloat($expectedPricePerKm), $command->getPricePerKm());
-        $this->assertEquals(MoneyFactory::fromFloat($expectedPricePerKm * 420)->add(Money::CZK(50000)), $command->calculateTotal());
+
+        $total = MoneyFactory::fromFloat($expectedPricePerKm * 420)->add(Money::CZK(50000));
+        $this->assertEquals(MoneyFactory::floor($total), $command->calculateTotal());
+    }
+
+    public function testTotalIsFloored(): void
+    {
+        $command = new Command(
+            123,
+            NULL,
+            new Passenger('František Maša', 'Test', 'Test'),
+            '-',
+            'Brno',
+            '',
+            Money::fromFloat(100),
+            MoneyFactory::fromFloat(3),
+            ''
+            );
+
+        $command->addTransportTravel(
+            MoneyFactory::fromFloat(500.6),
+            new TravelDetails(new \DateTimeImmutable(), 'test', 'Brno', 'Praha')
+        );
+
+        $this->assertEquals(MoneyFactory::fromFloat(500), $command->calculateTotal());
     }
 
     public function testGetFirstTravelDate(): void

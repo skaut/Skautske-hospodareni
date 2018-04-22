@@ -116,17 +116,6 @@ abstract class AccountancyHelpers
     }
 
     /**
-     * @param int|float|Money $num
-     */
-    public static function floor($num): float
-    {
-        if ($num instanceof Money) {
-            $num = (float)$num->getAmount() / 100;
-        }
-        return floor($num);
-    }
-
-    /**
      * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
      * @param int|float $num
      */

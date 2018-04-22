@@ -161,8 +161,9 @@ class Command
 
     public function calculateTotal(): Money
     {
-        return $this->getTransportPrice()
-                    ->add($this->getVehiclePrice());
+        $amount = $this->getTransportPrice()->add($this->getVehiclePrice());
+
+        return MoneyFactory::floor($amount);
     }
 
     public function getPriceFor(VehicleTravel $travel): Money
