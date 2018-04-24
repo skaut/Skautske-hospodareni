@@ -14,6 +14,17 @@ class PaymentRepositoryTest extends \IntegrationTest
 
     private const TABLE = 'pa_payment';
 
+    private const PAYMENT_ROW = [
+        'groupId' => 1,
+        'name' => 'Test',
+        'email' => 'frantisekmasa1@gmail.com',
+        'amount' => 200.0,
+        'maturity' => '2017-10-29',
+        'note' => '',
+        'state' => Payment\State::PREPARING,
+        'vs' => '100',
+    ];
+
     /** @var PaymentRepository */
     private $repository;
 
@@ -41,16 +52,7 @@ class PaymentRepositoryTest extends \IntegrationTest
 
     public function testFind()
     {
-        $data = [
-            'groupId' => 1,
-            'name' => 'Test',
-            'email' => 'frantisekmasa1@gmail.com',
-            'amount' => 200.0,
-            'maturity' => '2017-10-29',
-            'note' => '',
-            'state' => Payment\State::PREPARING,
-            'vs' => '100',
-        ];
+        $data = self::PAYMENT_ROW;
 
         $this->addGroupWithId(1);
         $this->addPayments([$data]);
@@ -66,6 +68,30 @@ class PaymentRepositoryTest extends \IntegrationTest
         $this->assertEquals(new VariableSymbol($data['vs']), $payment->getVariableSymbol(), 'Variable symbol doesn\'t match');
     }
 
+    public function testFindWithTransaction(): void
+    {
+        $data = array_merge([
+            'transactionId' => '123456',
+            'transaction_payer' => 'František Maša',
+            'transaction_note' => 'Poznámka',
+            'paidFrom' => (string) \Helpers::createAccountNumber(),
+        ], self::PAYMENT_ROW);
+
+        $this->addGroupWithId(1);
+        $this->addPayments([$data]);
+
+        $payment = $this->repository->find(1);
+
+        $expectedTransaction = new Payment\Transaction(
+            $data['transactionId'],
+            $data['paidFrom'],
+            $data['transaction_payer'],
+            $data['transaction_note']
+        );
+
+        $this->assertTrue($expectedTransaction->equals($payment->getTransaction()));
+    }
+
     public function testGetMaxVariableSymbolForNoPaymentIsNull()
     {
         $this->assertNull($this->repository->getMaxVariableSymbol(10));
@@ -73,16 +99,7 @@ class PaymentRepositoryTest extends \IntegrationTest
 
     public function testGetMaxVariableSymbol()
     {
-        $payments = array_fill(0, 5, [
-            'groupId' => 1,
-            'name' => 'Test',
-            'email' => 'frantisekmasa1@gmail.com',
-            'amount' => 200.0,
-            'maturity' => '2017-10-29',
-            'note' => '',
-            'state' => Payment\State::PREPARING,
-            'vs' => '100',
-        ]);
+        $payments = array_fill(0, 5, self::PAYMENT_ROW);
 
         $payments[2]['vs'] = '100';
         $payments[3]['vs'] = '0100';

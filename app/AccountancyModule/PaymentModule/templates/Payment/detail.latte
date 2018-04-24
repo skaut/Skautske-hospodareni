@@ -115,8 +115,23 @@
                             <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="glyphicon glyphicon-check"></i></a> 
                             <a n:href="cancel! $l->id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete zrušit platbu?');" title="Zrušit"><i class="glyphicon glyphicon-remove"></i></a>
                         {elseif $l->closed}
-                                <span title="Datum uzavření platby">{$l->closedAt|date:'j.n.Y'}</span>
-                                {if $l->transaction !== NULL}<span title="Číslo platby na účtu">({$l->transaction->id})</span>{/if}
+                            <span title="Datum uzavření platby">{$l->closedAt|date:'j.n.Y'}</span>
+                            {if $l->transaction !== NULL}
+
+                                {*<span title="Číslo platby na účtu">({$l->transaction->id})</span>*}
+                                <div class="dropdown inline-block">
+                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button"
+                                            data-toggle="dropdown">
+                                        <span class="fa fa-info-circle"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-form dropdown-menu-right">
+                                        <li><strong>ID:</strong> {$l->transaction->id}</li>
+                                        <li><strong>Plátce:</strong> {$l->transaction->payer}</li>
+                                        <li><strong>Účet:</strong> {$l->transaction->bankAccount}</li>
+                                        <li><strong>Poznámka:</strong> {$l->transaction->note}</li>
+                                    </ul>
+                                </div>
+                            {/if}
                         {else}&nbsp;{/if}
                     </td>
                 </tr>
