@@ -143,7 +143,7 @@ class BankService
             foreach($paymentsByVS[$transaction->getVariableSymbol()] as $payment) {
                 /** @var Payment $payment */
                 if ($payment->getAmount() === $transaction->getAmount()) {
-                    $payment->complete($now, new Transaction((int)$transaction->getId(), $transaction->getBankAccount()));
+                    $payment->complete($now, Transaction::fromFioTransaction($transaction));
                     $paired[] = $payment;
                 }
             }
