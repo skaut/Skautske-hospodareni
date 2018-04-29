@@ -5,6 +5,7 @@ namespace Model;
 use Model\Payment\IUnitResolver;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
+use Model\Unit\UnitNotFoundException;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Security\User;
 use Skautis;
@@ -189,7 +190,12 @@ class UnitService
         $troopNames = [];
 
         foreach ($troopIds as $troopId) {
-            $unit = $this->units->find($troopId);
+            try {
+                $unit = $this->units->find($troopId);
+            } catch (UnitNotFoundException $e) {
+                // Removed troops are returned as well https://github.com/skaut/Skautske-hospodareni/issues/483
+                continue;
+            }
 
             $troopNames[] = $unit->getDisplayName();
         }
