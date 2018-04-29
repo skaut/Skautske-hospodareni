@@ -70,6 +70,8 @@ class MailPresenter extends BasePresenter
             MailProtocol::TLS => "tls"
         ]);
         $form->addText("sender", "Email odesílatele")
+            ->setRequired('Musíte vyplnit email odesílatele')
+            ->addRule($form::EMAIL, 'Email odesílatele není platná emailová adresa')
             ->getControlPrototype()->placeholder("např. platby@stredisko.cz");
         $form->addSubmit('send', 'Založit')
             ->setAttribute("class", "btn btn-primary");
