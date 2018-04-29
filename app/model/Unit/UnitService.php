@@ -175,9 +175,9 @@ class UnitService
 
     /**
      * load camp troops
-     * @return \stdClass[]
+     * @return string[]
      */
-    public function getCampTroops(\stdClass $camp): array
+    public function getCampTroopNames(\stdClass $camp): array
     {
         if (!isset($camp->ID_UnitArray->string)) {
             return [];
@@ -186,9 +186,15 @@ class UnitService
         $troopIds = $camp->ID_UnitArray->string;
         $troopIds = is_array($troopIds) ? $troopIds : [$troopIds];
 
-        return array_map(function ($id) {
-            return $this->getDetail($id);
-        }, $troopIds);
+        $troopNames = [];
+
+        foreach ($troopIds as $troopId) {
+            $unit = $this->units->find($troopId);
+
+            $troopNames[] = $unit->getDisplayName();
+        }
+
+        return $troopNames;
     }
 
 }
