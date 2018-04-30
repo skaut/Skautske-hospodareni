@@ -54,7 +54,7 @@ class DefaultPresenter extends BasePresenter
     protected function createComponentEventGrid()
     {
         //filtrovani zobrazených položek
-        $year = $this->ses->year ?? date('Y');
+        $year = $this->ses->year;
         $state = $this->ses->state ?? NULL;
         $list = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
@@ -92,7 +92,7 @@ class DefaultPresenter extends BasePresenter
     public function renderDefault(): void
     {
         $this['formFilter']['state']->setDefaultValue($this->ses->state);
-        $this['formFilter']['year']->setDefaultValue($this->ses->year);
+        $this['formFilter']['year']->setDefaultValue($this->ses->year ?? "all");
         $this->template->accessCreate = $this->authorizator->isAllowed(Event::CREATE, NULL);
     }
 
@@ -103,9 +103,15 @@ class DefaultPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function handleChangeYear(?int $year): void
+    public function handleChangeYear(string $year): void
     {
-        $this->ses->year = $year;
+        if ($year === "all") {
+            $this->ses->year = null;
+        } elseif (is_int($year)) {
+            $this->ses->year = $year;
+        } else {
+            $this->error(null, 400);
+        }
         if ($this->isAjax()) {
             $this->redrawControl('events');
         } else {
