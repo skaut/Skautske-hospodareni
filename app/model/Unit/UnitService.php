@@ -5,6 +5,7 @@ namespace Model;
 use Model\Payment\IUnitResolver;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
+use Model\Unit\UnitNotFoundException;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Security\User;
 use Skautis;
@@ -175,9 +176,9 @@ class UnitService
 
     /**
      * load camp troops
-     * @return \stdClass[]
+     * @return string[]
      */
-    public function getCampTroops(\stdClass $camp): array
+    public function getCampTroopNames(\stdClass $camp): array
     {
         if (!isset($camp->ID_UnitArray->string)) {
             return [];
@@ -186,9 +187,20 @@ class UnitService
         $troopIds = $camp->ID_UnitArray->string;
         $troopIds = is_array($troopIds) ? $troopIds : [$troopIds];
 
-        return array_map(function ($id) {
-            return $this->getDetail($id);
-        }, $troopIds);
+        $troopNames = [];
+
+        foreach ($troopIds as $troopId) {
+            try {
+                $unit = $this->units->find($troopId);
+            } catch (UnitNotFoundException $e) {
+                // Removed troops are returned as well https://github.com/skaut/Skautske-hospodareni/issues/483
+                continue;
+            }
+
+            $troopNames[] = $unit->getDisplayName();
+        }
+
+        return $troopNames;
     }
 
 }

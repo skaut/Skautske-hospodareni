@@ -122,7 +122,7 @@ class ExcelService
         foreach ($campsIds as $aid) {
             $camp = $service->event->get($aid);
             $data[$aid] = $camp;
-            $data[$aid]['troops'] = implode(', ', array_column($unitService->getCampTroops($camp), 'DisplayName'));
+            $data[$aid]['troops'] = implode(', ', $unitService->getCampTroopNames($camp));
             $data[$aid]['chits'] = $service->chits->getAll($aid);
             $data[$aid]['func'] = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $participants = $service->participants->getAll($aid);
