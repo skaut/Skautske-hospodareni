@@ -5,9 +5,11 @@ namespace App\AccountancyModule\PaymentModule;
 use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
+use App\AccountancyModule\PaymentModule\Components\RemoveGroupDialog;
 use App\AccountancyModule\PaymentModule\Factories\IGroupUnitControlFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
+use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
 use Consistence\Time\TimeFormat;
 use Model\DTO\Payment\Group;
@@ -27,6 +29,7 @@ use Model\Payment\PaymentClosedException;
 use Model\Payment\PaymentNotFoundException;
 use Model\PaymentService;
 use Model\UnitService;
+use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Forms\IControl;
 use Nette\Mail\SmtpException;
@@ -62,6 +65,9 @@ class PaymentPresenter extends BasePresenter
     /** @var IGroupUnitControlFactory */
     private $unitControlFactory;
 
+    /** @var IRemoveGroupDialogFactory */
+    private $removeGroupDialogFactory;
+
     private const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
@@ -72,7 +78,8 @@ class PaymentPresenter extends BasePresenter
         BankAccountService $bankAccounts,
         IMassAddFormFactory $massAddFormFactory,
         IPairButtonFactory $pairButtonFactory,
-        IGroupUnitControlFactory $unitControlFactory
+        IGroupUnitControlFactory $unitControlFactory,
+        IRemoveGroupDialogFactory $removeGroupDialogFactory
     )
     {
         parent::__construct();
@@ -83,6 +90,7 @@ class PaymentPresenter extends BasePresenter
         $this->massAddFormFactory = $massAddFormFactory;
         $this->pairButtonFactory = $pairButtonFactory;
         $this->unitControlFactory = $unitControlFactory;
+        $this->removeGroupDialogFactory = $removeGroupDialogFactory;
     }
 
     protected function startup(): void
@@ -454,6 +462,14 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
+    public function handleOpenRemoveDialog(): void
+    {
+        /** @var RemoveGroupDialog $dialog */
+        $dialog = $this['removeGroupDialog'];
+
+        $dialog->open();
+    }
+
     protected function createComponentPaymentForm(): Form
     {
         $form = new BaseForm();
@@ -614,6 +630,15 @@ class PaymentPresenter extends BasePresenter
     protected function createComponentUnit(): GroupUnitControl
     {
         return $this->unitControlFactory->create($this->id);
+    }
+
+    protected function createComponentRemoveGroupDialog(): RemoveGroupDialog
+    {
+        if ( ! $this->isEditable) {
+            throw new BadRequestException('Nemáte oprávnění mazat tuto skupinu');
+        }
+
+        return $this->removeGroupDialogFactory->create($this->id);
     }
 
     private function smtpError(SmtpException $e): void

@@ -29,8 +29,8 @@
 </div> 
 <div class="row">
     <div class="col-md-12">
-        <div class="well well-sm">
-            {if $group->state =='open' && $isEditable}
+        <div class="well well-sm" n:inner-if="$isEditable">
+            {if $group->state =='open'}
                 <a n:href="Group:edit aid=>$group->unitId, $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit skupinu</a>
                 {if $group->type === 'registration'}
                     <a n:href="Registration:massAdd $group->id" class="btn btn-primary" ><i class="glyphicon glyphicon-plus-sign hidden-xs"></i> Přidat z registrace</a>
@@ -52,13 +52,17 @@
                 <a n:href="generateVS! $group->id" class="btn btn-warning" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
                 <a n:href="closeGroup! $group->id" class="btn btn-success"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
             {else}
-                <a n:if="$group->state == 'closed'" n:href="openGroup! $group->id"  class="btn btn-warning"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
+                <a n:href="openGroup! $group->id" class="btn btn-warning"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
+                <a n:href="openRemoveDialog!" class="ajax btn btn-danger"><i class="fa fa-remove"></i> Smazat skupinu plateb</a>
             {/if}
 
         </div>
     </div>
 </div>
 
+{if $isEditable}
+    {control removeGroupDialog}
+{/if}
 <div class='row'>
     <div class='col-md-12'>
         {dump $payments}

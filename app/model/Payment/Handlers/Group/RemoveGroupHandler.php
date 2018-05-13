@@ -34,8 +34,8 @@ final class RemoveGroupHandler
             throw new GroupNotClosedException(sprintf('Cannot remove open group #%d', $group->getId()));
         }
 
-        $this->groups->remove($group);
         $this->eventBus->handle(new GroupWasRemoved($command->getGroupId()));
+        $this->groups->remove($group);
     }
 
 }
