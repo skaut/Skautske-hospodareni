@@ -1,0 +1,12 @@
+
+services:
+    - Model\Payment\Repositories\BankAccountRepository
+    - Model\Payment\Repositories\PaymentRepository
+    - Model\Payment\Repositories\GroupRepository
+    - Model\Payment\Handlers\Group\RemoveGroupHandler
+
+    - class: Model\Payment\Subscribers\GroupRemovedSubscriber
+      tags: [eventBus.subscriber]
+
+includes:
+    - ../../config/doctrine.neon

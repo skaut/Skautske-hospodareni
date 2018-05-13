@@ -93,4 +93,39 @@ class GroupRepositoryTest extends \IntegrationTest
         $this->assertTrue($group->isEmailEnabled(EmailType::get(EmailType::PAYMENT_INFO)));
     }
 
+    public function testRemoveRemovesGroupFromDatabase()
+    {
+        $I = $this->tester;
+
+        $I->haveInDatabase('pa_group', [
+            'label' => 'Test',
+            'state' => Group::STATE_CLOSED,
+            'state_info' => 'Test note',
+            'created_at' => '2018-05-14 00:00:00',
+            'unitId' => 12,
+            'last_pairing' => '2018-05-14 00:00:00',
+            'smtp_id' => 10,
+            'bank_account_id' => 100,
+            'amount' => 100.0,
+            'nextVs' => 123,
+            'maturity' => '2018-05-14 00:00:00',
+            'ks' => 123,
+        ]);
+
+        $I->haveInDatabase('pa_group_email', [
+            'group_id' => 1,
+            'template_subject' => 'test',
+            'template_body' => '',
+            'type' => EmailType::PAYMENT_INFO,
+            'enabled' => 1,
+        ]);
+
+        $group = $this->repository->find(1);
+
+        $this->repository->remove($group);
+
+        $I->dontSeeInDatabase('pa_group', ['id' => 1]);
+        $I->dontSeeInDatabase('pa_group_email', ['group_id' => 1]);
+    }
+
 }

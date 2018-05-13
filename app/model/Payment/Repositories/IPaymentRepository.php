@@ -39,6 +39,8 @@ interface IPaymentRepository
      */
     public function saveMany(array $payments): void;
 
+    public function remove(Payment $payment): void;
+
     public function getMaxVariableSymbol(int $groupId): ?VariableSymbol;
 
 }

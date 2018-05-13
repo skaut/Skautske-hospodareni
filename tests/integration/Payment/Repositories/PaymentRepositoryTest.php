@@ -176,6 +176,28 @@ class PaymentRepositoryTest extends \IntegrationTest
         }
     }
 
+    public function testRemove(): void
+    {
+        $this->addGroupWithId(1);
+
+        $this->tester->haveInDatabase(self::TABLE, [
+            'groupId' => 1,
+            'name' => 'Test',
+            'email' => 'frantisekmasa1@gmail.com',
+            'amount' => 120,
+            'maturity' => '2017-10-29',
+            'note' => '',
+            'state' => Payment\State::SENT,
+            'vs' => '100',
+        ]);
+
+        $payment = $this->repository->find(1);
+
+        $this->repository->remove($payment);
+
+        $this->tester->dontSeeInDatabase(self::TABLE, ['id' => 1]);
+    }
+
     private function addGroupWithId(int $id)
     {
         $this->tester->haveInDatabase('pa_group', [

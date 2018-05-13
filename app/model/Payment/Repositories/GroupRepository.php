@@ -114,4 +114,10 @@ class GroupRepository implements IGroupRepository
         $this->em->flush();
     }
 
+    public function remove(Group $group): void
+    {
+        $this->em->remove($group);
+        $this->em->flush();
+    }
+
 }
