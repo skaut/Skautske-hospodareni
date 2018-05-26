@@ -260,11 +260,12 @@ class ParticipantService extends MutableBaseService
         $person->NickName = isset($matches['nick']) ? $matches['nick'] : NULL;
     }
 
-    public function countPragueParticipants(int $eventId, string $startDate): array
+    public function countPragueParticipants(int $eventId, string $eventStartDate): array
     {
-        $startDate = new \DateTime($startDate);
+        $ageThreshold = 18;
+        $eventStartDate = new \DateTime($eventStartDate);
         $participants = $this->getAll($eventId);
-        $under26 = 0;
+        $underAge = 0;
         $cityMatch = 0;
         foreach ($participants as $p) {
             if (stripos($p->City, "Praha") === false) {
@@ -272,11 +273,11 @@ class ParticipantService extends MutableBaseService
             }
             $cityMatch += 1;
 
-            if ($startDate->diff(new \DateTime($p->Birthday))->format("%Y") < 26) {
-                $under26 += 1;
+            if ($eventStartDate->diff(new \DateTime($p->Birthday))->format("%Y") < $ageThreshold) {
+                $underAge += 1;
             }
         }
-        return ["under26" => $under26, "all" => $cityMatch];
+        return ["underAge" => $underAge, "all" => $cityMatch];
     }
 
 }
