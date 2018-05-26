@@ -4,6 +4,7 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
+use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Event\Commands\Event\ActivateStatistics;
@@ -19,7 +20,6 @@ use Model\ExportService;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
 use Model\MemberService;
-use App\Forms\BaseForm;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -80,11 +80,13 @@ class EventPresenter extends BasePresenter
             ]);
         }
 
-        $this->template->statistic = $this->eventService->participants->getEventStatistic($this->aid);
-        $this->template->accessEditBase = $accessEditBase;
-        $this->template->accessCloseEvent = $this->authorizator->isAllowed(Event::CLOSE, $aid);
-        $this->template->accessOpenEvent = $this->authorizator->isAllowed(Event::OPEN, $aid);
-        $this->template->accessDetailEvent = $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid);
+        $this->template->setParameters([
+            "statistic" => $this->eventService->participants->getEventStatistic($this->aid),
+            "accessEditBase" => $accessEditBase,
+            "accessCloseEvent" => $this->authorizator->isAllowed(Event::CLOSE, $aid),
+            "accessOpenEvent" => $this->authorizator->isAllowed(Event::OPEN, $aid),
+            "accessDetailEvent" => $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid),
+        ]);
 
         if ($this->isAjax()) {
             $this->redrawControl("contentSnip");
@@ -93,12 +95,14 @@ class EventPresenter extends BasePresenter
 
     public function renderLogs(int $aid): void
     {
-        $this->template->logs = $this->loggerService->findAllByTypeId(Type::get(Type::OBJECT), $this->event->localId);
+        $this->template->setParameters([
+            "logs" => $this->loggerService->findAllByTypeId(Type::get(Type::OBJECT), $this->event->localId)
+        ]);
     }
 
     public function handleOpen(int $aid): void
     {
-        if ( ! $this->authorizator->isAllowed(Event::OPEN, $aid)) {
+        if (!$this->authorizator->isAllowed(Event::OPEN, $aid)) {
             $this->flashMessage("Nemáte právo otevřít akci", "warning");
             $this->redirect("this");
         }
@@ -150,7 +154,7 @@ class EventPresenter extends BasePresenter
 
     public function renderReport(int $aid): void
     {
-        if ( ! $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid)) {
+        if (!$this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid)) {
             $this->flashMessage("Nemáte právo přistupovat k akci", "warning");
             $this->redirect("default", ["aid" => $aid]);
         }
@@ -160,7 +164,7 @@ class EventPresenter extends BasePresenter
         $this->terminate();
     }
 
-    protected function createComponentFormEdit() : Form
+    protected function createComponentFormEdit(): Form
     {
         $form = new BaseForm();
 
@@ -180,15 +184,15 @@ class EventPresenter extends BasePresenter
         $form->addSubmit('send', 'Upravit')
             ->setAttribute("class", "btn btn-primary")
             ->onClick[] = function (SubmitButton $button): void {
-                $this->formEditSubmitted($button);
-            };
+            $this->formEditSubmitted($button);
+        };
 
         return $form;
     }
 
     private function formEditSubmitted(SubmitButton $button): void
     {
-        if ( ! $this->authorizator->isAllowed(Event::UPDATE, $this->aid)) {
+        if (!$this->authorizator->isAllowed(Event::UPDATE, $this->aid)) {
             $this->flashMessage("Nemáte oprávnění pro úpravu akce", "danger");
             $this->redirect("this");
         }
@@ -208,7 +212,7 @@ class EventPresenter extends BasePresenter
             )
         );
 
-        if(isset($values['prefix'])) {
+        if (isset($values['prefix'])) {
             $this->eventService->event->updatePrefix($id, $values['prefix']);
         }
 
