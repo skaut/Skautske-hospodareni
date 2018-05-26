@@ -9,6 +9,8 @@ use Skautis\Skautis;
 class ParticipantService extends MutableBaseService
 {
 
+    const PRAGUE_SUPPORTABLE_AGE = 18;
+
     /** @var ParticipantTable */
     private $table;
 
@@ -262,7 +264,6 @@ class ParticipantService extends MutableBaseService
 
     public function countPragueParticipants(int $eventId, string $eventStartDate): array
     {
-        $ageThreshold = 18;
         $eventStartDate = new \DateTime($eventStartDate);
         $participants = $this->getAll($eventId);
         $underAge = 0;
@@ -273,11 +274,11 @@ class ParticipantService extends MutableBaseService
             }
             $cityMatch += 1;
 
-            if ($eventStartDate->diff(new \DateTime($p->Birthday))->format("%Y") < $ageThreshold) {
+            if ($eventStartDate->diff(new \DateTime($p->Birthday))->format("%Y") < self::PRAGUE_SUPPORTABLE_AGE) {
                 $underAge += 1;
             }
         }
-        return ["underAge" => $underAge, "all" => $cityMatch];
+        return ["underAge" => $underAge, "all" => $cityMatch, "ageThreshold" => self::PRAGUE_SUPPORTABLE_AGE];
     }
 
 }

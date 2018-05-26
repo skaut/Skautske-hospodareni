@@ -11,6 +11,7 @@ use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
+use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -96,6 +97,7 @@ class ExcelService
     {
         $objPHPExcel = $this->getNewFile();
 
+        $allowPragueColumns = false;
         $data = [];
         foreach ($eventIds as $aid) {
             $data[$aid] = $service->event->get($aid);
@@ -105,9 +107,15 @@ class ExcelService
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
+            if (Strings::startsWith($data[$aid]->RegistrationNumber, "11")) { //Prague event
+                $allowPragueColumns = true;
+                $pp = $service->participants->countPragueParticipants($aid, $data[$aid]->StartDate);
+                $pp["isSupportable"] = $pp["underAge"] >= 8 && $data[$aid]->TotalDays >= 2 && $data[$aid]->TotalDays <= 6;
+                $data[$aid]["prague"] = $pp;
+            }
         }
         $sheetEvents = $objPHPExcel->setActiveSheetIndex(0);
-        $this->setSheetEvents($sheetEvents, $data);
+        $this->setSheetEvents($sheetEvents, $data, $allowPragueColumns);
         $objPHPExcel->createSheet(1);
         $sheetChit = $objPHPExcel->setActiveSheetIndex(1);
         $this->setSheetChits($sheetChit, $data);
@@ -267,7 +275,7 @@ class ExcelService
         $sheet->setTitle('Pokladní kniha');
     }
 
-    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, $data): void
+    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, $data, bool $allowPragueColumns = false): void
     {
         $firstElement = reset($data);
 
@@ -290,6 +298,14 @@ class ExcelService
             ->setCellValue('Q1', $firstElement->parStatistic[3]->ParticipantCategory)
             ->setCellValue('R1', $firstElement->parStatistic[4]->ParticipantCategory)
             ->setCellValue('S1', $firstElement->parStatistic[5]->ParticipantCategory);
+        if ($allowPragueColumns) {
+            $sheet->setCellValue('T1', "Dotovatelná MHMP?")
+                ->setCellValue('U1', "Praž. uč. pod " . $firstElement->prague['ageThreshold'])
+                ->setCellValue('V1', "Praž. uč. celkem");
+            $sheet->getComment('T1')
+                ->setWidth("150pt")->setHeight("50pt")->getText()
+                ->createTextRun('Ověřte, že se akce konala ve dny obecního volna!!!');
+        }
 
         $rowCnt = 2;
         foreach ($data as $row) {
@@ -317,15 +333,20 @@ class ExcelService
                 ->setCellValue('Q' . $rowCnt, $row->parStatistic[3]->Count)
                 ->setCellValue('R' . $rowCnt, $row->parStatistic[4]->Count)
                 ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count);
+            if ($allowPragueColumns) {
+                $sheet->setCellValue('T' . $rowCnt, $row->prague['isSupportable'] ? "Ano" : "Ne")
+                    ->setCellValue('U' . $rowCnt, $row->prague['underAge'])
+                    ->setCellValue('V' . $rowCnt, $row->prague['all']);
+            }
             $rowCnt++;
         }
 
         //format
-        foreach (range('A', 'S') as $columnID) {
+        foreach (range('A', 'V') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(TRUE);
         }
-        $sheet->getStyle('A1:S1')->getFont()->setBold(TRUE);
-        $sheet->setAutoFilter('A1:S' . ($rowCnt - 1));
+        $sheet->getStyle('A1:V1')->getFont()->setBold(TRUE);
+        $sheet->setAutoFilter('A1:V' . ($rowCnt - 1));
         $sheet->setTitle('Přehled akcí');
     }
 
