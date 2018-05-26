@@ -79,6 +79,7 @@ class EmailTemplate
             "amount" => $payment->getAmount(),
             "currency" => "CZK",
             "size" => "200",
+            "message" => $payment->getName(),
         ];
         if (array_key_exists("prefix", $account) && $account["prefix"] != "") {
             $params["accountPrefix"] = $account["prefix"];
