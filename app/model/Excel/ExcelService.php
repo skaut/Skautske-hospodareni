@@ -107,7 +107,7 @@ class ExcelService
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
-            $pp = $service->participants->countPragueParticipants($aid, $data[$aid]->StartDate);
+            $pp = $service->participants->countPragueParticipants($data[$aid]);
             if ($pp !== NULL) { //Prague event
                 $allowPragueColumns = true;
                 $pp["isSupportable"] = $pp["underAge"] >= 8 && $data[$aid]->TotalDays >= 2 && $data[$aid]->TotalDays <= 6;
