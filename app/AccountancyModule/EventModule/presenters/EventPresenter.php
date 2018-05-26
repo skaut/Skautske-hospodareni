@@ -81,10 +81,7 @@ class EventPresenter extends BasePresenter
             ]);
         }
 
-        $pragueParticipants = NULL;
-        if (Strings::startsWith($this->event->RegistrationNumber, "11")) {
-            $pragueParticipants = $this->eventService->participants->countPragueParticipants($this->aid, $this->event->StartDate);
-        }
+        $pragueParticipants = $this->eventService->participants->countPragueParticipants($this->event);
 
         $this->template->setParameters([
             "statistic" => $this->eventService->participants->getEventStatistic($this->aid),

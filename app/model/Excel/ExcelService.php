@@ -107,9 +107,9 @@ class ExcelService
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
-            if (Strings::startsWith($data[$aid]->RegistrationNumber, "11")) { //Prague event
+            $pp = $service->participants->countPragueParticipants($aid, $data[$aid]->StartDate);
+            if ($pp !== NULL) { //Prague event
                 $allowPragueColumns = true;
-                $pp = $service->participants->countPragueParticipants($aid, $data[$aid]->StartDate);
                 $pp["isSupportable"] = $pp["underAge"] >= 8 && $data[$aid]->TotalDays >= 2 && $data[$aid]->TotalDays <= 6;
                 $data[$aid]["prague"] = $pp;
             }
@@ -333,7 +333,7 @@ class ExcelService
                 ->setCellValue('Q' . $rowCnt, $row->parStatistic[3]->Count)
                 ->setCellValue('R' . $rowCnt, $row->parStatistic[4]->Count)
                 ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count);
-            if ($allowPragueColumns) {
+            if (isset($row->prague)) {
                 $sheet->setCellValue('T' . $rowCnt, $row->prague['isSupportable'] ? "Ano" : "Ne")
                     ->setCellValue('U' . $rowCnt, $row->prague['underAge'])
                     ->setCellValue('V' . $rowCnt, $row->prague['all']);

@@ -4,12 +4,14 @@ namespace Model;
 
 use Model\Services\Language;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Strings;
 use Skautis\Skautis;
 
 class ParticipantService extends MutableBaseService
 {
 
     const PRAGUE_SUPPORTABLE_AGE = 18;
+    const PRAGUE_UNIT_PREFIX = 11;
 
     /** @var ParticipantTable */
     private $table;
@@ -262,10 +264,14 @@ class ParticipantService extends MutableBaseService
         $person->NickName = isset($matches['nick']) ? $matches['nick'] : NULL;
     }
 
-    public function countPragueParticipants(int $eventId, string $eventStartDate): array
+    public function countPragueParticipants($event): ?array
     {
-        $eventStartDate = new \DateTime($eventStartDate);
-        $participants = $this->getAll($eventId);
+        if (!Strings::startsWith($event->RegistrationNumber, self::PRAGUE_UNIT_PREFIX)) {
+            return NULL;
+        }
+
+        $eventStartDate = new \DateTime($event->StartDate);
+        $participants = $this->getAll($event->ID);
         $underAge = 0;
         $cityMatch = 0;
         foreach ($participants as $p) {
@@ -273,7 +279,6 @@ class ParticipantService extends MutableBaseService
                 continue;
             }
             $cityMatch += 1;
-
             if ($eventStartDate->diff(new \DateTime($p->Birthday))->format("%Y") < self::PRAGUE_SUPPORTABLE_AGE) {
                 $underAge += 1;
             }
