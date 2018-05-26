@@ -78,6 +78,10 @@
                             <th>{$item->ParticipantCategory}</th>
                             <td>{$item->Count}</td>
                         </tr>
+                        <tr>
+                            <th>Pražských pod 26 / celkem</th>
+                            <td>{$pragueParticipants["under26"]} / {$pragueParticipants["all"]}</td>
+                        </tr>
                     </table>
                 {else}
                     <div class="panel-body">

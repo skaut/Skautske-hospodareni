@@ -23,6 +23,7 @@ use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+use Nette\Utils\Strings;
 
 class EventPresenter extends BasePresenter
 {
@@ -80,12 +81,18 @@ class EventPresenter extends BasePresenter
             ]);
         }
 
+        $pragueParticipants = NULL;
+        if (Strings::startsWith($this->event->RegistrationNumber, "11")) {
+            $pragueParticipants = $this->eventService->participants->countPragueParticipants($this->aid, $this->event->StartDate);
+        }
+
         $this->template->setParameters([
             "statistic" => $this->eventService->participants->getEventStatistic($this->aid),
             "accessEditBase" => $accessEditBase,
             "accessCloseEvent" => $this->authorizator->isAllowed(Event::CLOSE, $aid),
             "accessOpenEvent" => $this->authorizator->isAllowed(Event::OPEN, $aid),
             "accessDetailEvent" => $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid),
+            "pragueParticipants" => $pragueParticipants,
         ]);
 
         if ($this->isAjax()) {
