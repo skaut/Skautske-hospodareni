@@ -142,7 +142,7 @@ class BankService
         foreach ($transactions as $transaction) {
             foreach($paymentsByVS[$transaction->getVariableSymbol()] as $payment) {
                 /** @var Payment $payment */
-                if ($payment->getAmount() === $transaction->getAmount()) {
+                if (!$payment->isClosed() && $payment->getAmount() === $transaction->getAmount()) {
                     $payment->complete($now, Transaction::fromFioTransaction($transaction));
                     $paired[] = $payment;
                 }
