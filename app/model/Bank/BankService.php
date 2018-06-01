@@ -140,11 +140,12 @@ class BankService
         $paired = [];
         $now = new \DateTimeImmutable();
         foreach ($transactions as $transaction) {
-            foreach($paymentsByVS[$transaction->getVariableSymbol()] as $payment) {
+            foreach($paymentsByVS[$transaction->getVariableSymbol()] as $offset => $payment) {
                 /** @var Payment $payment */
-                if (!$payment->isClosed() && $payment->getAmount() === $transaction->getAmount()) {
+                if ($payment->getAmount() === $transaction->getAmount()) {
                     $payment->complete($now, Transaction::fromFioTransaction($transaction));
                     $paired[] = $payment;
+                    unset($paymentsByVS[$transaction->getVariableSymbol()][$offset]);
                 }
             }
         }
