@@ -303,8 +303,8 @@ class ExcelService
                 ->setCellValue('U1', "Praž. uč. pod " . $firstElement->prague['ageThreshold'])
                 ->setCellValue('V1', "Praž. uč. celkem");
             $sheet->getComment('T1')
-                ->setWidth("150pt")->setHeight("50pt")->getText()
-                ->createTextRun('Ověřte, že se akce konala ve dny obecního volna!!!');
+                ->setWidth("200pt")->setHeight("50pt")->getText()
+                ->createTextRun('Ověřte, zda jsou splněny další podmínky - např. akce konaná v době mimo školní vyučování (u táborů prázdnin), cílovou skupinou je studující mládež do 26 let.');
         }
 
         $rowCnt = 2;
