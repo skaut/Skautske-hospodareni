@@ -7,6 +7,8 @@ namespace Model\Payment\Subscribers;
 use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\EmailTemplateNotSetException;
 use Model\Payment\EmailType;
+use Model\Payment\InvalidEmailException;
+use Model\Payment\MailCredentialsNotSetException;
 use Model\Payment\MailingService;
 
 final class PaymentMailSubscriber
@@ -24,8 +26,7 @@ final class PaymentMailSubscriber
     {
         try {
             $this->mailingService->sendEmail($event->getId(), EmailType::get(EmailType::PAYMENT_COMPLETED));
-        } catch (EmailTemplateNotSetException $e) {
-            // Email is either disabled or not set, do nothing
+        } catch (EmailTemplateNotSetException | MailCredentialsNotSetException | InvalidEmailException $e) {
         }
     }
 
