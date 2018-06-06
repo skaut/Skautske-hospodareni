@@ -48,7 +48,39 @@ class PaymentCompletedEmailTest extends \IntegrationTest
 
     public function testWhenEmailIsNotSetNothingHappens(): void
     {
+        $this->createMailCredentials();
         $this->initEntities();
+
+        $this->paymentService->completePayment(1);
+
+        $this->tester->seeEmailCount(0);
+    }
+
+    /**
+     * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
+     */
+    public function testWhenPaymentHasNoEmailNothingHappens(): void
+    {
+        $this->createMailCredentials();
+        $this->initEntities([
+            EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+            EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
+        ], NULL);
+
+        $this->paymentService->completePayment(1);
+
+        $this->tester->seeEmailCount(0);
+    }
+
+    /**
+     * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
+     */
+    public function testWhenGroupHasNoMailCredentialsSetNothingHappens(): void
+    {
+        $this->initEntities([
+            EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+            EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
+        ], self::EMAIL, NULL);
 
         $this->paymentService->completePayment(1);
 
@@ -58,6 +90,7 @@ class PaymentCompletedEmailTest extends \IntegrationTest
     public function testEmailIsSentWhenPaymentIsCompleted(): void
     {
         $email = new EmailTemplate('subject', 'body');
+        $this->createMailCredentials();
         $this->initEntities([
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
             EmailType::PAYMENT_COMPLETED => $email,
@@ -72,9 +105,8 @@ class PaymentCompletedEmailTest extends \IntegrationTest
         $this->tester->seeInLastEmailTo(self::EMAIL, $email->getBody());
     }
 
-    private function initEntities(?array $emails = NULL): void
+    private function initEntities(?array $emails = NULL, ?string $paymentEmail = self::EMAIL, ?int $credentialsId = 1): void
     {
-        $this->createMailCredentials();
         $this->tester->resetEmails();
 
         $paymentDefaults = \Helpers::createEmptyPaymentDefaults();
@@ -82,11 +114,11 @@ class PaymentCompletedEmailTest extends \IntegrationTest
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
         ];
 
-        $this->paymentService->createGroup(11, NULL, 'Test', $paymentDefaults, $emails, 1, NULL);
+        $this->paymentService->createGroup(11, NULL, 'Test', $paymentDefaults, $emails, $credentialsId, NULL);
         $this->paymentService->createPayment(
             1,
             'Platba',
-            self::EMAIL,
+            $paymentEmail,
             100,
             \Helpers::getValidDueDate(),
             NULL,
