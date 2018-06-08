@@ -144,7 +144,7 @@ class CashbookWithCategoriesBuilder
             $cashbookColumns = [
                 $index++,
                 $chit->getDate()->format('d.m.'),
-                (string) $chit->getNumber(),
+                $chit->getNumber() !== NULL ? $chit->getNumber()->toString() : '',
                 $chit->getPurpose(),
                 $isIncome ? $amount : '',
                 ! $isIncome ? $amount : '',

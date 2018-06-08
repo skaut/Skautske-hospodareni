@@ -23,14 +23,14 @@ final class ChitNumber
         $this->value = $value;
     }
 
-    public function getValue(): string
+    public function toString(): string
     {
         return $this->value;
     }
 
     public function __toString(): string
     {
-        return $this->value;
+        return $this->toString();
     }
 
 }
