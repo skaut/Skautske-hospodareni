@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Cashbook;
 
-use Model\Common\ValueObject;
-
-final class CashbookId implements ValueObject
+final class CashbookId
 {
 
     /** @var string */
@@ -48,10 +46,9 @@ final class CashbookId implements ValueObject
         return $this->toString();
     }
 
-    public function equals(ValueObject $otherValueObject): bool
+    public function equals(self $otherValueObject): bool
     {
-        return $otherValueObject instanceof self
-            && $otherValueObject->id === $this->id;
+        return $otherValueObject->id === $this->id;
     }
 
 }
