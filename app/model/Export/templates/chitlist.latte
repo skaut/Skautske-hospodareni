@@ -19,8 +19,8 @@ $list - seznam položek
     <tr n:foreach="$list as $item">
         <td style="text-align:right;height:30px;">{$iterator->getCounter()}. </td> {* height:30px; *}
         <td>{$item->purpose}</td>
-        <td style="text-align:right;">{$item->amount->value}</td>
-        {php $balance += $item->amount->value}
+        <td style="text-align:right;">{$item->amount->toFloat()}</td>
+        {php $balance += $item->amount->toFloat()}
     </tr>
     <tr>
         <td>&nbsp;</td>
