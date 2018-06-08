@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace integration\Payment\Repositories;
 
+use eGen\MessageBus\Bus\EventBus;
+use Mockery as m;
+use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
@@ -17,6 +20,9 @@ class GroupRepositoryTest extends \IntegrationTest
     /** @var GroupRepository */
     private $repository;
 
+    /** @var EventBus */
+    private $eventBus;
+
     public function getTestedEntites(): array
     {
         return [
@@ -29,7 +35,9 @@ class GroupRepositoryTest extends \IntegrationTest
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->repository = new GroupRepository($this->entityManager);
+
+        $this->eventBus = m::mock(EventBus::class);
+        $this->repository = new GroupRepository($this->entityManager, $this->eventBus);
     }
 
     public function testFindNotSavedGroupThrowsException(): void
@@ -95,6 +103,12 @@ class GroupRepositoryTest extends \IntegrationTest
 
     public function testRemoveRemovesGroupFromDatabase()
     {
+        $this->eventBus->shouldReceive('handle')
+            ->once()
+            ->withArgs(function (GroupWasRemoved $event): bool {
+                return $event->getGroupId() === 1;
+            });
+
         $I = $this->tester;
 
         $I->haveInDatabase('pa_group', [

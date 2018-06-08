@@ -6,6 +6,8 @@ namespace Model\Payment\Repositories;
 
 use Assert\Assert;
 use Doctrine\ORM\EntityManager;
+use eGen\MessageBus\Bus\EventBus;
+use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\Group;
 use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFoundException;
@@ -16,10 +18,13 @@ class GroupRepository implements IGroupRepository
     /** @var EntityManager */
     private $em;
 
+    /** @var EventBus */
+    private $eventBus;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, EventBus $eventBus)
     {
         $this->em = $em;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -116,8 +121,13 @@ class GroupRepository implements IGroupRepository
 
     public function remove(Group $group): void
     {
-        $this->em->remove($group);
-        $this->em->flush();
+        $this->em->transactional(function (EntityManager $entityManager) use ($group): void {
+            $entityManager->remove($group);
+
+            $this->eventBus->handle(new GroupWasRemoved($group->getId()));
+
+            $entityManager->flush();
+        });
     }
 
 }

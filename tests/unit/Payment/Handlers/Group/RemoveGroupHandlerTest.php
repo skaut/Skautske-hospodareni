@@ -6,9 +6,7 @@ namespace Model\Payment\Handlers\Group;
 
 use Codeception\Test\Unit;
 use Mockery as m;
-use eGen\MessageBus\Bus\EventBus;
 use Model\Payment\Commands\Group\RemoveGroup;
-use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\Group;
 use Model\Payment\GroupNotClosedException;
 use Model\Payment\Repositories\IGroupRepository;
@@ -30,7 +28,7 @@ final class RemoveGroupHandlerTest extends Unit
                 'getState' => Group::STATE_OPEN,
             ]));
 
-        $handler = new RemoveGroupHandler($groupRepository, new EventBus());
+        $handler = new RemoveGroupHandler($groupRepository);
 
         $this->expectException(GroupNotClosedException::class);
 
@@ -56,14 +54,7 @@ final class RemoveGroupHandlerTest extends Unit
             ->once()
             ->with($group);
 
-        $eventBus = m::mock(EventBus::class);
-        $eventBus->shouldReceive('handle')
-            ->once()
-            ->withArgs(function (GroupWasRemoved $event) use ($groupId): bool {
-                return $event->getGroupId() === $groupId;
-            });
-
-        $handler = new RemoveGroupHandler($groupRepository, $eventBus);
+        $handler = new RemoveGroupHandler($groupRepository);
 
         $handler->handle(new RemoveGroup($groupId));
     }
