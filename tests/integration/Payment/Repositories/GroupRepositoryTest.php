@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace integration\Payment\Repositories;
 
+use eGen\MessageBus\Bus\EventBus;
+use Mockery as m;
+use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
@@ -17,6 +20,9 @@ class GroupRepositoryTest extends \IntegrationTest
     /** @var GroupRepository */
     private $repository;
 
+    /** @var EventBus */
+    private $eventBus;
+
     public function getTestedEntites(): array
     {
         return [
@@ -29,7 +35,9 @@ class GroupRepositoryTest extends \IntegrationTest
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->repository = new GroupRepository($this->entityManager);
+
+        $this->eventBus = m::mock(EventBus::class);
+        $this->repository = new GroupRepository($this->entityManager, $this->eventBus);
     }
 
     public function testFindNotSavedGroupThrowsException(): void
@@ -91,6 +99,47 @@ class GroupRepositoryTest extends \IntegrationTest
         $this->assertEquals($paymentDefaults->getNextVariableSymbol(), $group->getPaymentDefaults()->getNextVariableSymbol());
         $this->assertTrue($infoEmail->equals($group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO))));
         $this->assertTrue($group->isEmailEnabled(EmailType::get(EmailType::PAYMENT_INFO)));
+    }
+
+    public function testRemoveRemovesGroupFromDatabase()
+    {
+        $this->eventBus->shouldReceive('handle')
+            ->once()
+            ->withArgs(function (GroupWasRemoved $event): bool {
+                return $event->getGroupId() === 1;
+            });
+
+        $I = $this->tester;
+
+        $I->haveInDatabase('pa_group', [
+            'label' => 'Test',
+            'state' => Group::STATE_CLOSED,
+            'state_info' => 'Test note',
+            'created_at' => '2018-05-14 00:00:00',
+            'unitId' => 12,
+            'last_pairing' => '2018-05-14 00:00:00',
+            'smtp_id' => 10,
+            'bank_account_id' => 100,
+            'amount' => 100.0,
+            'nextVs' => 123,
+            'maturity' => '2018-05-14 00:00:00',
+            'ks' => 123,
+        ]);
+
+        $I->haveInDatabase('pa_group_email', [
+            'group_id' => 1,
+            'template_subject' => 'test',
+            'template_body' => '',
+            'type' => EmailType::PAYMENT_INFO,
+            'enabled' => 1,
+        ]);
+
+        $group = $this->repository->find(1);
+
+        $this->repository->remove($group);
+
+        $I->dontSeeInDatabase('pa_group', ['id' => 1]);
+        $I->dontSeeInDatabase('pa_group_email', ['group_id' => 1]);
     }
 
 }

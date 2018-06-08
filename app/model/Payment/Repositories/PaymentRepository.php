@@ -109,6 +109,14 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
         }
     }
 
+    public function remove(Payment $payment): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $entityManager->remove($payment);
+        $entityManager->flush();
+    }
+
     public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
     {
         $result = $this->getEntityManager()->createQueryBuilder()

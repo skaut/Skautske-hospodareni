@@ -39,16 +39,16 @@ interface IGroupRepository
      */
     public function findBySkautisEntityType(Type $type): array;
 
-
     /**
      * @return Group[]
      */
     public function findByBankAccount(int $bankAccountId): array;
 
-
     /**
      * @param Group $group
      */
     public function save(Group $group): void;
+
+    public function remove(Group $group): void;
 
 }

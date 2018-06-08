@@ -46,8 +46,8 @@ class Group
     /** @var string */
     private $note = '';
 
-    const STATE_OPEN = 'open';
-    const STATE_CLOSED = 'closed';
+    public const STATE_OPEN = 'open';
+    public const STATE_CLOSED = 'closed';
 
     /**
      * @param EmailTemplate[] $emails

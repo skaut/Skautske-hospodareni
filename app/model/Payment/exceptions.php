@@ -6,6 +6,10 @@ class GroupNotFoundException extends \Exception
 {
 }
 
+class GroupNotClosedException extends \Exception
+{
+}
+
 class InvalidEmailException extends \Exception
 {
 }
