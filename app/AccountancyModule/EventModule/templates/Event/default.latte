@@ -78,6 +78,10 @@
                             <th>{$item->ParticipantCategory}</th>
                             <td>{$item->Count}</td>
                         </tr>
+                        <tr n:if="$pragueParticipants !== NULL">
+                            <th>Pražských pod {$pragueParticipants['ageThreshold']} / celkem</th>
+                            <td>{$pragueParticipants["underAge"]} / {$pragueParticipants["all"]}</td>
+                        </tr>
                     </table>
                 {else}
                     <div class="panel-body">

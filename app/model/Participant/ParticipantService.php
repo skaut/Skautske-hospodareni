@@ -4,14 +4,14 @@ namespace Model;
 
 use Model\Services\Language;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Strings;
 use Skautis\Skautis;
 
-/**
- * slouží pro obsluhu účastníků
- * @author Hána František <sinacek@gmail.com>
- */
 class ParticipantService extends MutableBaseService
 {
+
+    const PRAGUE_SUPPORTABLE_AGE = 18;
+    const PRAGUE_UNIT_PREFIX = 11;
 
     /** @var ParticipantTable */
     private $table;
@@ -36,7 +36,7 @@ class ParticipantService extends MutableBaseService
         }
         $this->setPersonName($data);
 
-        return (array) $data;
+        return (array)$data;
     }
 
     /**
@@ -198,7 +198,7 @@ class ParticipantService extends MutableBaseService
      */
     public function getTotalPayment(int $eventId): float
     {
-        return (float) array_reduce($this->getAll($eventId), function ($res, $v) {
+        return (float)array_reduce($this->getAll($eventId), function ($res, $v) {
             return isset($v->{ParticipantService::PAYMENT}) ? $res + $v->{ParticipantService::PAYMENT} : $res;
         });
     }
@@ -262,6 +262,28 @@ class ParticipantService extends MutableBaseService
         $person->LastName = $matches['last'];
         $person->FirstName = $matches['first'];
         $person->NickName = isset($matches['nick']) ? $matches['nick'] : NULL;
+    }
+
+    public function countPragueParticipants($event): ?array
+    {
+        if (!Strings::startsWith($event->RegistrationNumber, self::PRAGUE_UNIT_PREFIX)) {
+            return NULL;
+        }
+
+        $eventStartDate = new \DateTime($event->StartDate);
+        $participants = $this->getAll($event->ID);
+        $underAge = 0;
+        $cityMatch = 0;
+        foreach ($participants as $p) {
+            if (stripos($p->City, "Praha") === false) {
+                continue;
+            }
+            $cityMatch += 1;
+            if ($eventStartDate->diff(new \DateTime($p->Birthday))->format("%Y") < self::PRAGUE_SUPPORTABLE_AGE) {
+                $underAge += 1;
+            }
+        }
+        return ["underAge" => $underAge, "all" => $cityMatch, "ageThreshold" => self::PRAGUE_SUPPORTABLE_AGE];
     }
 
 }
