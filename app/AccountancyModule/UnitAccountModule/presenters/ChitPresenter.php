@@ -10,9 +10,6 @@ use Model\Cashbook\Commands\Cashbook\LockChit;
 use Model\Cashbook\Commands\Cashbook\UnlockChit;
 use Model\Cashbook\ObjectType;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class ChitPresenter extends BasePresenter
 {
 
@@ -55,8 +52,8 @@ class ChitPresenter extends BasePresenter
         $eventService = $this->context->getService("eventService");
         $campService = $this->context->getService("campService");
 
-        $this->info['event'] = $eventService->event->getAll($this->year);
-        $this->info['camp'] = $campService->event->getAll($this->year);
+        $this->info[ObjectType::EVENT] = $eventService->event->getAll($this->year);
+        $this->info[ObjectType::CAMP] = $campService->event->getAll($this->year);
 
         $categories = $this->budgetService->getCategoriesLeaf($this->aid);
         if (empty($categories['in']) && empty($categories['out'])) {
@@ -65,17 +62,17 @@ class ChitPresenter extends BasePresenter
 
         $this->chits = [];
         //formulář pro kategorie, to potrebuje drive nez v renderu
-        $this->getAllChitsByObjectId("unit", $this->chits, $this->onlyUnlocked, $this->context->getService("unitAccountService"));
-        $this->getAllChitsByObjectId("event", $this->chits, $this->onlyUnlocked, $eventService);
-        $this->getAllChitsByObjectId("camp", $this->chits, $this->onlyUnlocked, $campService);
+        $this->getAllChitsByObjectId(ObjectType::UNIT, $this->chits, $this->onlyUnlocked, $this->context->getService("unitAccountService"));
+        $this->getAllChitsByObjectId(ObjectType::EVENT, $this->chits, $this->onlyUnlocked, $eventService);
+        $this->getAllChitsByObjectId(ObjectType::CAMP, $this->chits, $this->onlyUnlocked, $campService);
     }
 
     public function renderDefault($year = NULL) : void
     {
         $this->template->types = [
-            "event" => "Výpravy",
-            "camp" => "Tábory",
-            "unit" => "Jednotky"
+            ObjectType::EVENT => "Výpravy",
+            ObjectType::CAMP => "Tábory",
+            ObjectType::UNIT => "Jednotky"
         ];
         $this->template->chitsArr = $this->chits;
         $this->template->info = $this->info;
@@ -83,7 +80,7 @@ class ChitPresenter extends BasePresenter
 
     private function getAllChitsByObjectId($objectType, &$chits, $onlyUnlocked, $service) : void
     {
-        if (in_array($objectType, ["event", "camp"])) {//filtrování akcí spojených pouze s danou jednotkou
+        if (in_array($objectType, [ObjectType::EVENT, ObjectType::CAMP])) {//filtrování akcí spojených pouze s danou jednotkou
             $ids = [];
             foreach ($this->info[$objectType] as $k => $e) {
 
@@ -105,7 +102,7 @@ class ChitPresenter extends BasePresenter
 
     public function handleLockCashbook(int $eventId, string $type) : void
     {
-        if (!in_array($type, ["event", "camp", "unit"], TRUE) || !array_key_exists($eventId, $this->info[$type])) {
+        if (!in_array($type, ObjectType::getAvailableValues(), TRUE) || !array_key_exists($eventId, $this->info[$type])) {
             $this->flashMessage("Neplatný přístup!", "danger");
         } else {
             $cashbookId = $this->cashbookService->getSkautisIdFromCashbookId($eventId, ObjectType::get($type));
@@ -124,9 +121,7 @@ class ChitPresenter extends BasePresenter
      */
     public function handleLock(int $cashbookId, int $chitId, string $type, string $act = "lock") : void
     {
-        $allowedTypes = ["event", "camp", "unit"];
-
-        if ( ! in_array($type, $allowedTypes, TRUE) || ! $this->accessChitControl($cashbookId, $type)) {
+        if ( ! in_array($type, ObjectType::getAvailableValues(), TRUE) || ! $this->accessChitControl($cashbookId, $type)) {
             $this->flashMessage("Neplatný přístup!", "danger");
             $this->redraw();
             return;
@@ -199,8 +194,7 @@ class ChitPresenter extends BasePresenter
 
     private function accessChitControl(int $cashbookId, string $type): bool
     {
-        // in this presenter 'event' is used instead of 'general' for some reason
-        $cashbookType = ObjectType::get($type === 'event' ? ObjectType::EVENT : $type);
+        $cashbookType = ObjectType::get($type);
         $skautisId = $this->cashbookService->getSkautisIdFromCashbookId($cashbookId, $cashbookType);
 
         return array_key_exists($skautisId, $this->info[$type]);
