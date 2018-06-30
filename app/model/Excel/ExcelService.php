@@ -448,7 +448,7 @@ class ExcelService
 
                 $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
                     ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
-                    ->setCellValue('C' . $rowCnt, $prefix !== NULL ? $prefix . (string) $chit->getNumber() : '')
+                    ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
                     ->setCellValue('D' . $rowCnt, $chit->getPurpose())
                     ->setCellValue('E' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
                     ->setCellValue('F' . $rowCnt, $chit->recipient)

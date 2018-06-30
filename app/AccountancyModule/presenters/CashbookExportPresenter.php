@@ -152,7 +152,7 @@ class CashbookExportPresenter extends BasePresenter
         $requiredPermissions = [
             ObjectType::EVENT => Event::ACCESS_DETAIL,
             ObjectType::CAMP => Camp::ACCESS_DETAIL,
-            ObjectType::UNIT => Unit::EDIT, // TODO: add some better permission
+            ObjectType::UNIT => Unit::ACCESS_DETAIL,
         ];
 
         if ( ! isset($requiredPermissions[$skautisType])) {

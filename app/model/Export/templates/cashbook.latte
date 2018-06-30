@@ -18,7 +18,7 @@ table {
     {var balance = 0}
     <tr n:foreach="$chits as $chit">
         <td style="height:30px;">{$chit->date|date:"d.m.Y"}</td>
-        <td>{if $prefix !== null}{(string) $prefix}{(string) $chit->number}{/if}</td>
+        <td>{(string) $prefix}{(string) $chit->number}</td>
         <td>{$chit->purpose}</td>
         {var $amount = $chit->amount->toFloat()}
         <td>{$chit->category->shortcut}</td>
