@@ -15,13 +15,6 @@ abstract class BaseService
     public const ACCESS_READ = 'read';
     public const ACCESS_EDIT = 'edit';
 
-    //konstanty pro Event a Camp
-    const TYPE_CAMP = "camp";
-    const TYPE_GENERAL = "general";
-    const TYPE_UNIT = "unit";
-    //konstanty pro uživatelskou identitu
-
-
     /**
      * slouží pro komunikaci se skautISem
      * @var Skautis
