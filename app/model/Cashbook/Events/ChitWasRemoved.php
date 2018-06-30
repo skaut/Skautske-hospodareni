@@ -1,6 +1,7 @@
 <?php
 
 namespace Model\Cashbook\Events;
+use Model\Cashbook\Cashbook\CashbookId;
 
 /**
  * @todo Use this event for logging
@@ -8,19 +9,19 @@ namespace Model\Cashbook\Events;
 class ChitWasRemoved
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var string */
     private $chitPurpose;
 
-    public function __construct(int $cashbookId, string $chitPurpose)
+    public function __construct(CashbookId $cashbookId, string $chitPurpose)
     {
         $this->cashbookId = $cashbookId;
         $this->chitPurpose = $chitPurpose;
     }
 
-    public function getCashbookId(): int
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

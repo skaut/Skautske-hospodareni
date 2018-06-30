@@ -31,9 +31,4 @@ class BaseTable
         $this->connection = $connection;
     }
 
-    public function getByEventId($skautisEventId, $type)
-    {
-        return $this->connection->fetch("SELECT id as localId, prefix FROM  [" . self::TABLE_OBJECT . "] WHERE skautisId=%i AND type=%s LIMIT 1", $skautisEventId, $type);
-    }
-
 }

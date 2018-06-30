@@ -13,7 +13,15 @@ final class SkautisCampId
         $this->value = $value;
     }
 
+    /**
+     * @deprecated use self::toInt()
+     */
     public function getValue(): int
+    {
+        return $this->value;
+    }
+
+    public function toInt(): int
     {
         return $this->value;
     }

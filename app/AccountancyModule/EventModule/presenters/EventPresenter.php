@@ -7,6 +7,11 @@ use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
+use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
@@ -145,12 +150,17 @@ class EventPresenter extends BasePresenter
 
     public function actionPrintAll(int $aid): void
     {
-        $chits = $this->eventService->chits->getAll($this->aid);
+        /** @var CashbookId $cashbookId */
+        $cashbookId = $this->getCashbookId($aid);
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+
+        $event = $this->eventService->event->get($aid);
 
         $template = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getCashbook($aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getChits($aid, $this->eventService, $chits);
+        $template .= $this->exportService->getCashbook($cashbookId, $event->DisplayName) . $this->exportService->getNewPage();
+        $template .= $this->exportService->getChits($aid, $this->eventService, $chits, $cashbookId);
 
         $this->pdf->render($template, 'all.pdf');
         $this->terminate();
@@ -201,7 +211,7 @@ class EventPresenter extends BasePresenter
             $this->redirect("this");
         }
 
-        $id = $this->aid;
+        $id = (int) $this->aid;
         $values = $button->getForm()->getValues(TRUE);
 
         $this->commandBus->handle(
@@ -217,7 +227,7 @@ class EventPresenter extends BasePresenter
         );
 
         if (isset($values['prefix'])) {
-            $this->eventService->event->updatePrefix($id, $values['prefix']);
+            $this->commandBus->handle(new UpdateChitNumberPrefix($this->getCashbookId($id), $values['prefix']));
         }
 
         $this->flashMessage("Základní údaje byly upraveny.");
@@ -228,4 +238,10 @@ class EventPresenter extends BasePresenter
     {
         return $this->functionsFactory->create($this->aid);
     }
+
+    private function getCashbookId(int $skautisEventId): CashbookId
+    {
+        return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
+    }
+
 }

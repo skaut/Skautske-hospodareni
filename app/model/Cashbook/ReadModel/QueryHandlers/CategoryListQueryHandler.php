@@ -10,6 +10,7 @@ use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\Category;
+use Model\Utils\MoneyFactory;
 
 class CategoryListQueryHandler
 {
@@ -35,10 +36,13 @@ class CategoryListQueryHandler
 
         $categories = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());
 
-        return array_map(function (ICategory $category): Category {
+        $categoryTotals = $cashbook->getCategoryTotals();
+
+        return array_map(function (ICategory $category) use ($categoryTotals): Category {
             return new Category(
                 $category->getId(),
                 $category->getName(),
+                MoneyFactory::fromFloat($categoryTotals[$category->getId()] ?? 0),
                 $category->getShortcut(),
                 $category->getOperationType(),
                 $category->getOperationType()->equalsValue(Operation::INCOME)

@@ -7,11 +7,12 @@ namespace App\AccountancyModule\Components;
 use App\AccountancyModule\Components\Cashbook\ChitListControl;
 use App\AccountancyModule\Factories\Cashbook\IChitListControlFactory;
 use App\AccountancyModule\Factories\IChitFormFactory;
+use Model\Cashbook\Cashbook\CashbookId;
 
 class CashbookControl extends BaseControl
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var bool */
@@ -23,7 +24,7 @@ class CashbookControl extends BaseControl
     /** @var IChitListControlFactory */
     private $chitListFactory;
 
-    public function __construct(int $cashbookId, bool $isEditable, IChitFormFactory $formFactory, IChitListControlFactory $chitListFactory)
+    public function __construct(CashbookId $cashbookId, bool $isEditable, IChitFormFactory $formFactory, IChitListControlFactory $chitListFactory)
     {
         parent::__construct();
         $this->cashbookId = $cashbookId;

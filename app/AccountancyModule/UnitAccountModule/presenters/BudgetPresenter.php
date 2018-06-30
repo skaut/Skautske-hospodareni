@@ -3,6 +3,7 @@
 namespace App\AccountancyModule\UnitAccountModule;
 
 use App\Forms\BaseForm;
+use NasExt\Forms\DependentData;
 use Nette\Application\UI\Form;
 
 /**
@@ -23,29 +24,32 @@ class BudgetPresenter extends BasePresenter
     public function renderDefault($year = NULL) : void
     {
         $this->template->categories = $this->budgetService->getCategories($this->aid);
-        $this->template->categoriesSummary = $this->context->getService("unitAccountService")->chits->getBudgetCategoriesSummary($this->budgetService->getCategoriesLeaf((int)$this->aid));
-        $this->template->sum = $this->template->sumReality = 0; //je potreba kvuli sablone, kde se pouzije jako globalni promena
         $this->template->unitPairs = $this->unitService->getReadUnits($this->user);
     }
 
-    public function getParentCategories($form, $dependentSelectBoxName) : array
+    public function getParentCategories(array $values) : DependentData
     {
-        return ["0" => "Žádná"] + $this->budgetService->getCategoriesRoot((int)$this->aid, $form["type"]->getValue());
+        $items = $this->budgetService->getCategoriesRoot((int) $this->aid, $values['type']);
+
+        return new DependentData(
+            ['0' => 'Žádná'] + $items
+        );
     }
 
-    protected function createComponentAddCategoryForm($name) : Form
+    protected function createComponentAddCategoryForm(): BaseForm
     {
         $form = new BaseForm();
-        $this->addComponent($form, $name); // required addJSelect (TODO: add late attach to addJSelect)
 
         $form->addText("label", "Název")
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Vyplňte název kategorie");
         $form->addSelect("type", "Typ", ["in" => "Příjmy", "out" => "Výdaje"])
+            ->setDefaultValue('in')
             ->setAttribute("class", "form-control")
             ->addRule(Form::FILLED, "Vyberte typ")
             ->setHtmlId("form-select-type");
-        $form->addJSelect("parentId", "Nadřazená kategorie", $form["type"], [$this, "getParentCategories"])
+        $form->addDependentSelectBox('parentId', 'Nadřazená kategorie', $form['type'])
+            ->setDependentCallback([$this, 'getParentCategories'])
             ->setAttribute("class", "form-control")
             ->setHtmlId("form-select-parentId");
         $form->addText("value", "Částka")

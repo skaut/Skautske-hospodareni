@@ -7,6 +7,7 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
@@ -32,7 +33,9 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $this->assertSame([
             1 => 'Název 1',
             2 => 'Název 2',
-        ], $handler->handle(new CategoryPairsQuery(self::CASHBOOK_ID)));
+        ], $handler->handle(
+            new CategoryPairsQuery(CashbookId::fromInt(self::CASHBOOK_ID))
+        ));
     }
 
     public function testReturnOnlyIncomeCategoriesWhenOperationTypeIsPassed(): void
@@ -41,7 +44,9 @@ final class CategoryPairsQueryHandlerTest extends Unit
 
         $this->assertSame([
             1 => 'Název 1'
-        ], $handler->handle(new CategoryPairsQuery(self::CASHBOOK_ID, Operation::get(Operation::INCOME))));
+        ], $handler->handle(
+            new CategoryPairsQuery(CashbookId::fromInt(self::CASHBOOK_ID), Operation::get(Operation::INCOME))
+        ));
     }
 
     private function createHandler(): CategoryPairsQueryHandler
@@ -57,15 +62,20 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $categoryRepository = m::mock(CategoryRepository::class);
         $categoryRepository->shouldReceive('findForCashbook')
             ->once()
-            ->with(self::CASHBOOK_ID, CashbookType::get(self::CASHBOOK_TYPE))
+            ->withArgs(function (CashbookId $cashbookId, CashbookType $type): bool {
+                return $cashbookId->equals(CashbookId::fromInt(self::CASHBOOK_ID))
+                    && $type->equalsValue(self::CASHBOOK_TYPE);
+            })
             ->andReturn($categories);
 
         $cashbookRepository = m::mock(ICashbookRepository::class);
         $cashbookRepository->shouldReceive('find')
             ->once()
-            ->with(self::CASHBOOK_ID)
+            ->withArgs(function (CashbookId $id) {
+                return $id->equals(CashbookId::fromInt(self::CASHBOOK_ID));
+            })
             ->andReturn(m::mock(Cashbook::class, [
-                'getId' => self::CASHBOOK_ID,
+                'getId' => CashbookId::fromInt(self::CASHBOOK_ID),
                 'getType' => CashbookType::get(self::CASHBOOK_TYPE),
             ]));
 

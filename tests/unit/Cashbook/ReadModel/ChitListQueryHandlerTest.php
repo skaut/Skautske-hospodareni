@@ -6,14 +6,16 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use eGen\MessageBus\Bus\QueryBus;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\Category;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Operation;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use function count;
+use Model\DTO\Cashbook\Category;
 use function random_bytes;
 
 class ChitListQueryHandlerTest extends Unit
@@ -24,23 +26,25 @@ class ChitListQueryHandlerTest extends Unit
     public function testReturnsChitsWithSorting(): void
     {
         $chits = [
-            $this->mockChit(1, new Date('2018-01-02'), Operation::INCOME),
-            $this->mockChit(2, new Date('2018-01-01'), Operation::INCOME),
-            $this->mockChit(3, new Date('2018-01-01'), Operation::EXPENSE),
-            $this->mockChit(4, new Date('2018-01-01'), Operation::INCOME),
+            \Helpers::mockChit(1, new Date('2018-01-02'), Operation::INCOME, 11),
+            \Helpers::mockChit(2, new Date('2018-01-01'), Operation::INCOME, 22),
+            \Helpers::mockChit(3, new Date('2018-01-01'), Operation::EXPENSE, 44),
+            \Helpers::mockChit(4, new Date('2018-01-01'), Operation::INCOME, 33),
         ];
+
+        $cashbookId = $this->getCashbookId();
 
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('find')
             ->once()
-            ->with(self::CASHBOOK_ID)
+            ->with($cashbookId)
             ->andReturn(
                 m::mock(Cashbook::class, ['getChits' => $chits])
             );
 
-        $handler = new ChitListQueryHandler($repository);
+        $handler = new ChitListQueryHandler($repository, $this->prepareQueryBus());
 
-        $chitDtos = $handler->handle(new ChitListQuery(self::CASHBOOK_ID));
+        $chitDtos = $handler->handle(new ChitListQuery($cashbookId));
 
         $expectedOrder = [2, 4, 3, 1];
         $this->assertCount(count($expectedOrder), $chitDtos);
@@ -51,7 +55,7 @@ class ChitListQueryHandlerTest extends Unit
 
             $this->assertSame($chit->getId(), $dto->getId());
             $this->assertSame($chit->getDate(), $dto->getDate());
-            $this->assertSame($chit->getCategory(), $dto->getCategory());
+            $this->assertSame($chit->getCategoryId(), $dto->getCategory()->getId());
             $this->assertSame($chit->getNumber(), $dto->getNumber());
             $this->assertSame($chit->getAmount(), $dto->getAmount());
             $this->assertSame($chit->getPurpose(), $dto->getPurpose());
@@ -60,18 +64,27 @@ class ChitListQueryHandlerTest extends Unit
         }
     }
 
-    private function mockChit(int $id, Date $date, string $operation): Chit
+    private function prepareQueryBus(): QueryBus
     {
-        return m::mock(Chit::class, [
-            'getId'         => $id,
-            'getDate'       => $date,
-            'getCategory'   => new Category(1, Operation::get($operation)),
-            'getNumber'     => new Cashbook\ChitNumber('132'),
-            'getAmount'     => new Cashbook\Amount('1'),
-            'getPurpose'    => random_bytes(100),
-            'getRecipient'  => new Cashbook\Recipient('František Maša'),
-            'isLocked'      => TRUE,
-        ]);
+        $bus = m::mock(QueryBus::class);
+
+        $categories = array_map(function (int $id): Category {
+            return m::mock(Category::class, [
+                'getId' => $id,
+            ]);
+        }, [11, 22, 33, 44]);
+
+        $bus->shouldReceive('handle')
+            ->withArgs(function (CategoryListQuery $query) {
+                return $query->getCashbookId()->equals($this->getCashbookId());
+            })->andReturn($categories);
+
+        return $bus;
+    }
+
+    private function getCashbookId(): Cashbook\CashbookId
+    {
+        return Cashbook\CashbookId::fromInt(self::CASHBOOK_ID);
     }
 
 }

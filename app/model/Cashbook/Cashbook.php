@@ -5,6 +5,7 @@ namespace Model\Cashbook;
 use Cake\Chronos\Date;
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitNumber;
@@ -13,24 +14,31 @@ use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\AbstractAggregate;
+use Nette\Utils\Strings;
 
 class Cashbook extends AbstractAggregate
 {
 
+    /** @var CashbookId */
+    private $id;
+
     /** @var CashbookType */
     private $type;
+
+    /** @var string|NULL */
+    private $chitNumberPrefix;
 
     /** @var ArrayCollection|Chit[] */
     private $chits;
 
-    public function __construct(int $id, CashbookType $type)
+    public function __construct(CashbookId $id, CashbookType $type)
     {
         $this->id = $id;
         $this->type = $type;
         $this->chits = new ArrayCollection();
     }
 
-    public function getId(): int
+    public function getId(): CashbookId
     {
         return $this->id;
     }
@@ -38,6 +46,20 @@ class Cashbook extends AbstractAggregate
     public function getType(): CashbookType
     {
         return $this->type;
+    }
+
+    public function getChitNumberPrefix(): ?string
+    {
+        return $this->chitNumberPrefix;
+    }
+
+    public function updateChitNumberPrefix(?string $chitNumberPrefix): void
+    {
+        if ($chitNumberPrefix !== NULL && Strings::length($chitNumberPrefix) > 6) {
+            throw new \InvalidArgumentException('Chit number prefix too long');
+        }
+
+        $this->chitNumberPrefix = $chitNumberPrefix;
     }
 
     public function addChit(
@@ -204,6 +226,11 @@ class Cashbook extends AbstractAggregate
                 return clone $c;
             })
             ->toArray();
+    }
+
+    public function clear(): void
+    {
+        $this->chits->clear();
     }
 
     /**

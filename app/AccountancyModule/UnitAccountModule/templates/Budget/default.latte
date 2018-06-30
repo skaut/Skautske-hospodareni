@@ -1,31 +1,37 @@
 {block #table}
-{var $level = 1}
-{var $maxLevel = 2}
 
 <table class="table table-bordered table-condensed">
     <tr>
         <th colspan='2'>Kategorie</th>
         <th>Předpoklad</th>
-        <th>Čerpáno</th>
     </tr>
-    <tr>
-        {block #cat}
-        {foreach $cat as $c}
-            {if !$iterator->isFirst()}</tr><tr>{/if}
-            <td {if count($c['childrens'])>1}rowspan="{= count($c['childrens'])}" class="vm"{/if} {if empty($c['childrens']) && $maxLevel != $level} colspan="{= 1+$maxLevel-$level}" {/if}>{$c->label}</td>
-            {if is_array($c['childrens']) && !empty($c['childrens'])}
-                {include #this cat=>$c['childrens'], level=>$level+1, maxLevel=>$maxLevel}
-            {elseif $maxLevel==$level}
-                <td class="r">{php $presenter->template->sum+=$c->value} {$c->value|number:2:',':' '} Kč</td>
-                <td class="r">{if array_key_exists($c->id, $categoriesSummary)}{php $presenter->template->sumReality+=$categoriesSummary[$c->id]}{$categoriesSummary[$c->id]|number:2:',':' '} Kč{/if}</td>
-            {else}
-                <td colspan='2'>&nbsp;</td>
-            {/if}
-        {/foreach}
-    </tr>
-    {/block}
+    {var $sum = 0}
+    {dump $cat}
+    {foreach $cat as $c}
+        {var $subcategoryCount = count($c['childrens'])}
+        {var $subcategories = array_values($c['childrens'])}
+        {if $subcategoryCount === 0}
+            <tr>
+                <td colspan="2">{$c->label}</td>
+                <td>&nbsp;</td>
+            </tr>
+        {else}
+            {dump $c['childrens']}
+            {var $firstSubcategory = $subcategories[0]}
+            <tr>
+                <td rowspan="{$subcategoryCount}">{$c->label}</td>
+                <td>{$firstSubcategory->label}</td>
+                <td class="r">{php $sum += $firstSubcategory->value} {$firstSubcategory->value|number:2:',':' '} Kč</td>
+            </tr>
+            <tr n:for="$i = 1; $i < $subcategoryCount; $i++">
+                {var $subcategory = $subcategories[$i]}
+                <td>{$subcategory->label}</td>
+                <td class="r">{php $sum += $subcategory->value} {$subcategory->value|number:2:',':' '} Kč</td>
+            </tr>
+        {/if}
+    {/foreach}
 
-    <tr><th colspan="{$maxLevel}">Celkem</th><th class="r">{$presenter->template->sum|number:2:',':' '} Kč</th><th class="r">{$presenter->template->sumReality|number:2:',':' '} Kč</th></tr>
+    <tr><th colspan="2">Celkem</th><th class="r">{$sum|number:2:',':' '} Kč</th></tr>
 </table>   
 {/block}
 

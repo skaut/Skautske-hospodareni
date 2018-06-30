@@ -69,6 +69,11 @@ class CashbookType extends Enum
         return [];
     }
 
+    public function isUnit(): bool
+    {
+        return in_array($this->getValue(), [self::OFFICIAL_UNIT, self::TROOP], TRUE);
+    }
+
     public function __toString(): string
     {
         return (string) $this->getValue();

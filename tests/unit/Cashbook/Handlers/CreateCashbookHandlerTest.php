@@ -19,13 +19,14 @@ class CreateCashbookHandlerTest extends \Codeception\Test\Unit
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('save')
             ->once()
-            ->with(m::on(function(Cashbook $cashbook) use($type) {
-                return $cashbook->getId() === 10 && $cashbook->getType() === $type;
-            }));
+            ->withArgs(function(Cashbook $cashbook) use($type) {
+                return $cashbook->getId()->equals(Cashbook\CashbookId::fromInt(10))
+                    && $cashbook->getType() === $type;
+            });
 
         $handler = new CreateCashbookHandler($repository);
 
-        $handler->handle(new CreateCashbook(10, $type));
+        $handler->handle(new CreateCashbook(Cashbook\CashbookId::fromInt(10), $type));
 
         m::close();
     }
