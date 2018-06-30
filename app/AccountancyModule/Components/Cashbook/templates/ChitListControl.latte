@@ -32,8 +32,7 @@
             <tbody>
             {var $balance => 0}
             {foreach $chits as $item}
-                {var $category = $categories[$item->category->getId()]}
-                {var $isIncome = $category->isIncome()}
+                {var $isIncome = $item->category->isIncome()}
                 {php $balance += $isIncome ? $item->amount->value : -$item->amount->value}
                 <tr{if $balance < 0} class="alert alert-error"{/if}>
                     <td class="nowrap">
@@ -58,7 +57,7 @@
                                 class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
                     <td n:if="$prefix !== NULL" title="{$prefix}{$item->number}">{$item->number}</td>
                     <td title="{$item->purpose}">{dump $item}{$item->purpose|truncate:"120"}</td>
-                    <td class="hidden-xs hidden-sm" title="{$category->name}">{$category->shortcut}</td>
+                    <td class="hidden-xs hidden-sm" title="{$item->category->name}">{$item->category->shortcut}</td>
                     <td class="hidden-xs hidden-sm">{$item->recipient}</td>
                     {if $isIncome}
                         <td class="r" title="{$item->amount->expression}">{$item->amount->value|price}</td>

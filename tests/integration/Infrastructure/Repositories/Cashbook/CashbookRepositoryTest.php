@@ -6,6 +6,7 @@ use Cake\Chronos\Date;
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Cashbook\Cashbook;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ICategory;
 use Mockery as m;
@@ -41,9 +42,11 @@ class CashbookRepositoryTest extends \IntegrationTest
     {
         $this->tester->haveInDatabase(self::TABLE, ['id' => 10, 'type' => Cashbook\CashbookType::EVENT]);
 
-        $cashbook = $this->repository->find(10);
+        $id = CashbookId::fromInt(10);
 
-        $this->assertSame(10, $cashbook->getId());
+        $cashbook = $this->repository->find($id);
+
+        $this->assertTrue($id->equals($cashbook->getId()));
         $this->assertSame(Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT), $cashbook->getType());
     }
 
@@ -51,7 +54,7 @@ class CashbookRepositoryTest extends \IntegrationTest
     {
         $this->expectException(CashbookNotFoundException::class);
 
-        $this->repository->find(1);
+        $this->repository->find(CashbookId::fromInt(1));
     }
 
     public function testSaveCashbookWithChits(): void
@@ -68,7 +71,8 @@ class CashbookRepositoryTest extends \IntegrationTest
             'category_operation_type' => Operation::INCOME,
         ];
 
-        $cashbook = new Cashbook(10, Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
+        $cashbook = new Cashbook(CashbookId::fromInt(10), Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
+        $cashbook->updateChitNumberPrefix('test');
 
         $cashbook->addChit(
             new Cashbook\ChitNumber($chit['num']),
@@ -84,6 +88,7 @@ class CashbookRepositoryTest extends \IntegrationTest
         $this->tester->seeInDatabase(self::TABLE, [
             'id' => 10,
             'type' => Cashbook\CashbookType::EVENT,
+            'chit_number_prefix' => 'test',
         ]);
         $this->tester->seeInDatabase(self::CHIT_TABLE, $chit);
     }

@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Model\Skautis\DTO;
+namespace Model\Cashbook;
 
-use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
+use Money\Money;
 
 final class CampCategory implements ICategory
 {
@@ -19,11 +18,19 @@ final class CampCategory implements ICategory
     /** @var string */
     private $name;
 
-    public function __construct(int $id, Operation $operationType, string $name)
+    /** @var Money */
+    private $total;
+
+    /** @var ParticipantType|NULL */
+    private $participantType;
+
+    public function __construct(int $id, Operation $operationType, string $name, Money $total, ?ParticipantType $participantType)
     {
         $this->id = $id;
         $this->operationType = $operationType;
         $this->name = $name;
+        $this->total = $total;
+        $this->participantType = $participantType;
     }
 
     public function getId(): int
@@ -44,6 +51,16 @@ final class CampCategory implements ICategory
     public function getShortcut(): string
     {
         return mb_substr($this->name, 0, 5, 'UTF-8');
+    }
+
+    public function getTotal(): Money
+    {
+        return $this->total;
+    }
+
+    public function getParticipantType(): ?ParticipantType
+    {
+        return $this->participantType;
     }
 
 }

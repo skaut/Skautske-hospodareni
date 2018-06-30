@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\Queries;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\QueryHandlers\ChitQueryHandler;
 
 /**
@@ -12,19 +13,19 @@ use Model\Cashbook\ReadModel\QueryHandlers\ChitQueryHandler;
 final class ChitQuery
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var int */
     private $chitId;
 
-    public function __construct(int $cashbookId, int $chitId)
+    public function __construct(CashbookId $cashbookId, int $chitId)
     {
         $this->cashbookId = $cashbookId;
         $this->chitId = $chitId;
     }
 
-    public function getCashbookId(): int
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

@@ -3,8 +3,14 @@
 namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\Repositories\CategoryRepository;
-use Model\Cashbook\Repositories\ICashbookRepository;
+use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Operation;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -13,26 +19,17 @@ use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExcelService
 {
 
     private const ADULT_AGE = 18;
 
-    /** @var CategoryRepository */
-    private $categories;
-
-    /** @var ICashbookRepository */
-    private $cashbooks;
-
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(CategoryRepository $categories, ICashbookRepository $cashbooks, QueryBus $queryBus)
+    public function __construct(QueryBus $queryBus)
     {
-        $this->categories = $categories;
-        $this->cashbooks = $cashbooks;
         $this->queryBus = $queryBus;
     }
 
@@ -69,28 +66,23 @@ class ExcelService
         $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-" . date("Y_n_j"));
     }
 
-    /**
-     * @param EventEntity $service
-     * @param \stdClass $event
-     */
-    public function getCashbook(EventEntity $service, $event): void
+    public function getCashbook(string $cashbookName, CashbookId $cashbookId): void
     {
         $objPHPExcel = $this->getNewFile();
-        $data = $service->chits->getAll($event->ID);
         $sheet = $objPHPExcel->setActiveSheetIndex(0);
-        $this->setSheetCashbook($sheet, $data, $event->prefix);
-        $this->send($objPHPExcel, \Nette\Utils\Strings::webalize($event->DisplayName) . "-pokladni-kniha-" . date("Y_n_j"));
+        $this->setSheetCashbook($sheet, $cashbookId);
+        $this->send($objPHPExcel, Strings::webalize($cashbookName) . '-pokladni-kniha-' . date('Y_n_j'));
     }
 
-    public function getCashbookWithCategories(EventEntity $eventEntity, int $eventId): void
+    public function getCashbookWithCategories(CashbookId $cashbookId): Spreadsheet
     {
         $excel = $this->getNewFileV2();
         $sheet = $excel->getActiveSheet();
 
-        $builder = new CashbookWithCategoriesBuilder($this->categories, $this->cashbooks);
-        $builder->build($sheet, $eventEntity, $eventId);
+        $builder = new CashbookWithCategoriesBuilder($this->queryBus);
+        $builder->build($sheet, $cashbookId);
 
-        $this->sendV2($excel, 'test');
+        return $excel;
     }
 
     public function getEventSummaries(array $eventIds, EventEntity $service): void
@@ -100,10 +92,15 @@ class ExcelService
         $allowPragueColumns = false;
         $data = [];
         foreach ($eventIds as $aid) {
+            $eventId = new SkautisEventId($aid);
+            /** @var CashbookId $cashbookId */
+            $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
+
             $data[$aid] = $service->event->get($aid);
+            $data[$aid]['cashbookId'] = $cashbookId;
             $data[$aid]['parStatistic'] = $service->participants->getEventStatistic($aid);
-            $data[$aid]['chits'] = $service->chits->getAll($aid);
-            $data[$aid]['func'] = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
+            $data[$aid]['chits'] = $this->queryBus->handle(new ChitListQuery($cashbookId));
+            $data[$aid]['func'] = $this->queryBus->handle(new EventFunctions($eventId));
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
@@ -128,10 +125,15 @@ class ExcelService
 
         $data = [];
         foreach ($campsIds as $aid) {
+            $campId = new SkautisCampId($aid);
+            /** @var CashbookId $cashbookId */
+            $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($campId));
+
             $camp = $service->event->get($aid);
             $data[$aid] = $camp;
+            $data[$aid]['cashbookId'] = $cashbookId;
             $data[$aid]['troops'] = implode(', ', $unitService->getCampTroopNames($camp));
-            $data[$aid]['chits'] = $service->chits->getAll($aid);
+            $data[$aid]['chits'] = $this->queryBus->handle(new ChitListQuery($cashbookId));
             $data[$aid]['func'] = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $participants = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -145,11 +147,15 @@ class ExcelService
         $this->send($objPHPExcel, "Souhrn-táborů-" . date("Y_n_j"));
     }
 
-    public function getChitsExport($chits): void
+    /**
+     * @param Chit[] $chits
+     * @throws \PHPExcel_Exception
+     */
+    public function getChitsExport(CashbookId $cashbookId, array $chits): void
     {
         $objPHPExcel = $this->getNewFile();
         $sheetChit = $objPHPExcel->setActiveSheetIndex(0);
-        $this->setSheetChitsOnly($sheetChit, $chits);
+        $this->setSheetChitsOnly($sheetChit, $chits, $cashbookId);
         $this->send($objPHPExcel, "Export-vybranych-paragonu");
     }
 
@@ -238,7 +244,7 @@ class ExcelService
         $sheet->setTitle('Seznam účastníků');
     }
 
-    protected function setSheetCashbook(\PHPExcel_Worksheet $sheet, $data, $prefix): void
+    private function setSheetCashbook(\PHPExcel_Worksheet $sheet, CashbookId $cashbookId): void
     {
         $sheet->setCellValue('A1', "Ze dne")
             ->setCellValue('B1', "Číslo dokladu")
@@ -249,17 +255,28 @@ class ExcelService
             ->setCellValue('G1', "Výdej")
             ->setCellValue('H1', "Zůstatek");
 
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+        /** @var string|NULL $prefix */
+        $prefix = $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId));
+        /** @var array<int, string> $categoryNames */
+        $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
+
         $balance = 0;
         $rowCnt = 2;
-        foreach ($data as $row) {
-            $balance += $row->ctype == 'in' ? $row->price : (-$row->price);
-            $sheet->setCellValue('A' . $rowCnt, date("d.m.Y", strtotime($row->date)))
-                ->setCellValue('B' . $rowCnt, $prefix . $row->num)
-                ->setCellValue('C' . $rowCnt, $row->purpose)
-                ->setCellValue('D' . $rowCnt, $row->clabel)
-                ->setCellValue('E' . $rowCnt, $row->recipient)
-                ->setCellValue('F' . $rowCnt, $row->ctype == 'in' ? $row->price : "")
-                ->setCellValue('G' . $rowCnt, $row->ctype != 'in' ? $row->price : "")
+        foreach ($chits as $chit) {
+            $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+            $amount = $chit->getAmount()->toFloat();
+
+            $balance += $isIncome ? $amount : -$amount;
+
+            $sheet->setCellValue('A' . $rowCnt, $chit->getDate()->format('d.m.Y'))
+                ->setCellValue('B' . $rowCnt, $prefix . $chit->getNumber())
+                ->setCellValue('C' . $rowCnt, $chit->getPurpose())
+                ->setCellValue('D' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
+                ->setCellValue('E' . $rowCnt, (string) $chit->getRecipient())
+                ->setCellValue('F' . $rowCnt, $isIncome ? $amount : '')
+                ->setCellValue('G' . $rowCnt, ! $isIncome ? $amount : '')
                 ->setCellValue('H' . $rowCnt, $balance);
             $rowCnt++;
         }
@@ -402,7 +419,7 @@ class ExcelService
         $sheet->setTitle('Přehled táborů');
     }
 
-    protected function setSheetChits(\PHPExcel_Worksheet $sheet, $data): void
+    private function setSheetChits(\PHPExcel_Worksheet $sheet, array $data): void
     {
         $sheet->setCellValue('A1', "Název akce")
             ->setCellValue('B1', "Ze dne")
@@ -415,15 +432,29 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $event) {
+            /** @var CashbookId $cashbookId */
+            $cashbookId = $event['cashbookId'];
+
+            /** @var string|NULL $prefix */
+            $prefix = $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId));
+
+            /** @var array<int, string> $categories */
+            $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId, NULL));
+
             foreach ($event['chits'] as $chit) {
+                /** @var Chit $chit */
+                $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+                $amount = $chit->getAmount()->toFloat();
+
                 $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
-                    ->setCellValue('B' . $rowCnt, date("d.m.Y", strtotime($chit->date)))
-                    ->setCellValue('C' . $rowCnt, $event->prefix . $chit->num)
-                    ->setCellValue('D' . $rowCnt, $chit->purpose)
-                    ->setCellValue('E' . $rowCnt, $chit->clabel)
+                    ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
+                    ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
+                    ->setCellValue('D' . $rowCnt, $chit->getPurpose())
+                    ->setCellValue('E' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
                     ->setCellValue('F' . $rowCnt, $chit->recipient)
-                    ->setCellValue('G' . $rowCnt, $chit->ctype == "in" ? $chit->price : "")
-                    ->setCellValue('H' . $rowCnt, $chit->ctype != "in" ? $chit->price : "");
+                    ->setCellValue('G' . $rowCnt, $isIncome ? $amount : '')
+                    ->setCellValue('H' . $rowCnt, ! $isIncome ? $amount : '');
+
                 $rowCnt++;
             }
         }
@@ -437,7 +468,11 @@ class ExcelService
         $sheet->setTitle('Doklady');
     }
 
-    protected function setSheetChitsOnly(\PHPExcel_Worksheet $sheet, $data): void
+    /**
+     * @param Chit[] $chits
+     * @throws \PHPExcel_Exception
+     */
+    private function setSheetChitsOnly(\PHPExcel_Worksheet $sheet, array $chits, CashbookId $cashbookId): void
     {
         $sheet->setCellValue('B1', "Ze dne")
             ->setCellValue('C1', "Účel výplaty")
@@ -449,19 +484,26 @@ class ExcelService
         $rowCnt = 2;
         $sumIn = $sumOut = 0;
 
-        foreach ($data as $chit) {
+        /** @var array<int, string> $categoryNames */
+        $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
+
+        foreach ($chits as $chit) {
+            $amount = $chit->getAmount()->toFloat();
+
             $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
-                ->setCellValue('B' . $rowCnt, date("d.m.Y", strtotime($chit->date)))
-                ->setCellValue('C' . $rowCnt, $chit->purpose)
-                ->setCellValue('D' . $rowCnt, $chit->clabel)
-                ->setCellValue('E' . $rowCnt, $chit->recipient)
-                ->setCellValue('F' . $rowCnt, $chit->price)
-                ->setCellValue('G' . $rowCnt, $chit->ctype == "in" ? "Příjem" : "Výdaj");
-            if ($chit->ctype == "in") {
-                $sumIn += $chit->price;
+                ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
+                ->setCellValue('C' . $rowCnt, $chit->getPurpose())
+                ->setCellValue('D' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
+                ->setCellValue('E' . $rowCnt, $chit->getRecipient())
+                ->setCellValue('F' . $rowCnt, $amount)
+                ->setCellValue('G' . $rowCnt, $chit->isIncome() ? 'Příjem' : 'Výdaj');
+
+            if ($chit->isIncome()) {
+                $sumIn += $amount;
             } else {
-                $sumOut += $chit->price;
+                $sumOut += $amount;
             }
+
             $rowCnt++;
         }
         //add border
@@ -506,27 +548,6 @@ class ExcelService
         $objWriter = new \PHPExcel_Writer_Excel2007($obj);
         $objWriter->setPreCalculateFormulas(TRUE);
         $objWriter->save('php://output');
-        //exit;
-    }
-
-    private function sendV2(Spreadsheet $sheet, string $filename): void
-    {
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
-
-        // If you're serving to IE over SSL, then the following may be needed
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header('Pragma: public'); // HTTP/1.0
-
-        $xls = new Xlsx($sheet);
-        $xls->setPreCalculateFormulas(TRUE);
-        $xls->save('php://output');
         //exit;
     }
 

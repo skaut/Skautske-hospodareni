@@ -28,7 +28,7 @@ class ChitNumberTest extends Unit
     {
         $number = new ChitNumber($value);
 
-        $this->assertSame($value, $number->getValue());
+        $this->assertSame($value, $number->toString());
     }
 
     public function testToString(): void

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Repositories;
 
+use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\CashbookService;
 use Model\Cashbook\CategoryNotFoundException;
 use Model\Cashbook\ICategory;
+use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 
 class CategoryRepository
 {
@@ -18,26 +20,30 @@ class CategoryRepository
     /** @var IStaticCategoryRepository */
     private $staticCategories;
 
-    /** @var CashbookService */
-    private $cashbookService;
+    /** @var QueryBus */
+    private $queryBus;
 
-    public function __construct(ICampCategoryRepository $campCategories, IStaticCategoryRepository $staticCategories, CashbookService $cashbookService)
+    public function __construct(
+        ICampCategoryRepository $campCategories,
+        IStaticCategoryRepository $staticCategories,
+        QueryBus $queryBus
+    )
     {
         $this->campCategories = $campCategories;
         $this->staticCategories = $staticCategories;
-        $this->cashbookService = $cashbookService;
+        $this->queryBus = $queryBus;
     }
 
 
     /**
      * @return ICategory[]
      */
-    public function findForCashbook(int $cashbookId, CashbookType $type): array
+    public function findForCashbook(CashbookId $cashbookId, CashbookType $type): array
     {
         $skautisType = $type->getSkautisObjectType();
 
         if ($skautisType->equalsValue(CashbookType::CAMP)) {
-            $campId = $this->cashbookService->getSkautisIdFromCashbookId($cashbookId, $skautisType);
+            $campId = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
 
             return $this->campCategories->findForCamp($campId);
         }
@@ -48,7 +54,7 @@ class CategoryRepository
     /**
      * @throws CategoryNotFoundException
      */
-    public function find(int $categoryId, int $cashbookId, CashbookType $type): ICategory
+    public function find(int $categoryId, CashbookId $cashbookId, CashbookType $type): ICategory
     {
         if ($type->equalsValue(CashbookType::CAMP)) {
             foreach ($this->findForCashbook($cashbookId, $type) as $category) {

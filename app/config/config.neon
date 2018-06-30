@@ -82,7 +82,7 @@ autoDI:
         - class: Model\Skautis\**
           exclude:
               - Model\Skautis\WebserviceFactory
-              - Model\Skautis\DTO\**
+              - Model\Skautis\ReadModel\Queries\**
 
         # Factories for mutable services
         - implement: 'Model\I{Event,Chit,Participant}ServiceFactory'
@@ -140,6 +140,10 @@ services:
     - Model\Skautis\Common\Repositories\UserRepository(@skautis.webservice.user, @skautis.org)
     - Model\Skautis\EventRepository(@skautis.event)
     - Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.cached.event)
+
+    # Skautis read model
+    - class: Model\Skautis\ReadModel\QueryHandlers\CampBudgetQueryHandler(@skautis.cached.event)
+      tags: [queryBus.handler]
 
     # Skautis webservices
     skautis.org:

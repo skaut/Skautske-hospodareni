@@ -8,15 +8,18 @@ use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
 use Cake\Chronos\Chronos;
 use Cake\Chronos\Date;
+use Model\Event\Commands\CancelEvent;
 use Model\Event\Commands\Event\CreateEvent;
 use Model\Event\ReadModel\Queries\EventScopes;
 use Model\Event\ReadModel\Queries\EventStates;
 use Model\Event\ReadModel\Queries\EventTypes;
 use Model\Event\ReadModel\Queries\NewestEventId;
+use Model\Event\SkautisEventId;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
 use MyValidators;
+use function get_class;
 
 class DefaultPresenter extends BasePresenter
 {
@@ -133,10 +136,15 @@ class DefaultPresenter extends BasePresenter
             $this->redirect("this");
         }
 
-        if ($this->eventService->event->cancel($aid, $this->eventService->chits)) {
+        try {
+            $this->commandBus->handle(new CancelEvent(new SkautisEventId($aid)));
             $this->flashMessage("Akce byla zrušena");
-        } else {
+        } catch (\Skautis\Exception $e) {
             $this->flashMessage("Akci se nepodařilo zrušit", "danger");
+            $this->logger->error(
+                sprintf('Event #%d couldn\'t be canceled. Reason: %s', $aid, $e->getMessage()),
+                ['exception' => get_class($e)]
+            );
         }
 
         $this->redirect("this");

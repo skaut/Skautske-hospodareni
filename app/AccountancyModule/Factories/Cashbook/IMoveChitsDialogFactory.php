@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Factories\Cashbook;
 
 use App\AccountancyModule\Components\Cashbook\MoveChitsDialog;
+use Model\Cashbook\Cashbook\CashbookId;
 
 interface IMoveChitsDialogFactory
 {
 
-    public function create(int $cashbookId): MoveChitsDialog;
+    public function create(CashbookId $cashbookId): MoveChitsDialog;
 
 }

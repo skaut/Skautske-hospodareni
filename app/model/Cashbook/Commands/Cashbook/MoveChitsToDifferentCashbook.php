@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Commands\Cashbook;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler;
 
 /**
@@ -15,16 +16,16 @@ final class MoveChitsToDifferentCashbook
     /** @var int[] */
     private $chitIds;
 
-    /** @var int */
+    /** @var CashbookId */
     private $sourceCashbookId;
 
-    /** @var int */
+    /** @var CashbookId */
     private $targetCashbookId;
 
     /**
      * @param int[] $chitIds
      */
-    public function __construct(array $chitIds, int $sourceCashbookId, int $targetCashbookId)
+    public function __construct(array $chitIds, CashbookId $sourceCashbookId, CashbookId $targetCashbookId)
     {
         $this->chitIds = $chitIds;
         $this->sourceCashbookId = $sourceCashbookId;
@@ -39,12 +40,12 @@ final class MoveChitsToDifferentCashbook
         return $this->chitIds;
     }
 
-    public function getSourceCashbookId(): int
+    public function getSourceCashbookId(): CashbookId
     {
         return $this->sourceCashbookId;
     }
 
-    public function getTargetCashbookId(): int
+    public function getTargetCashbookId(): CashbookId
     {
         return $this->targetCashbookId;
     }

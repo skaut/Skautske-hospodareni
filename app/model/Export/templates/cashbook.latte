@@ -1,13 +1,9 @@
-{*
-$info - informace o akci
-$list - seznam položek
-*}
 <style>
 table {
     border-spacing: 0;
 }
 </style>
-<h2>Pokladní kniha - {$info->DisplayName}</h2>
+<h2>Pokladní kniha - {$cashbookName}</h2>
 
 <table style="width: 800px;" border="1">
     <tr>
@@ -19,15 +15,16 @@ table {
         <th style="width: 11%;">Výdej</th>
         <th style="width: 11%;">Zůstatek</th>
     </tr>
-    {var balance => 0}
-    <tr n:foreach="$list as $item">
-        <td style="height:30px;">{$item->date|date:"d.m.Y"}</td>
-        <td>{$info->prefix}{$item->num}</td>
-        <td>{$item->purpose}</td>
-        <td>{$item->cshort}</td>
-        <td style="text-align:right;">{$item->ctype == 'in' ? $item->price: '&nbsp;'|price|noescape}</td>
-        <td style="text-align:right;">{$item->ctype != 'in' ? $item->price: '&nbsp;'|price|noescape}</td>
-        <td style="text-align:right;">{$balance += $item->ctype == 'in' ? $item->price : (-$item->price)|price}</td>
+    {var balance = 0}
+    <tr n:foreach="$chits as $chit">
+        <td style="height:30px;">{$chit->date|date:"d.m.Y"}</td>
+        <td>{(string) $prefix}{(string) $chit->number}</td>
+        <td>{$chit->purpose}</td>
+        {var $amount = $chit->amount->toFloat()}
+        <td>{$chit->category->shortcut}</td>
+        <td style="text-align:right;">{$chit->category->isIncome() ? $amount : '&nbsp;'|price|noescape}</td>
+        <td style="text-align:right;">{$chit->isIncome() ? '&nbsp;' : $amount|price|noescape}</td>
+        <td style="text-align:right;">{$balance += $chit->category->isIncome() ? $amount : -$amount |price}</td>
     </tr>
     <tr>
         <td>&nbsp;</td>

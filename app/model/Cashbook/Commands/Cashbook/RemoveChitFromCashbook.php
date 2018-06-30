@@ -2,6 +2,7 @@
 
 namespace Model\Cashbook\Commands\Cashbook;
 
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\RemoveChitFromCashbookHandler;
 
 /**
@@ -10,19 +11,19 @@ use Model\Cashbook\Handlers\Cashbook\RemoveChitFromCashbookHandler;
 final class RemoveChitFromCashbook
 {
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var int */
     private $chitId;
 
-    public function __construct(int $cashbookId, int $chitId)
+    public function __construct(CashbookId $cashbookId, int $chitId)
     {
         $this->cashbookId = $cashbookId;
         $this->chitId = $chitId;
     }
 
-    public function getCashbookId(): int
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

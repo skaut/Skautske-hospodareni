@@ -5,7 +5,7 @@ Model\Cashbook\Cashbook:
 
     id:
         id:
-            type: integer
+            type: cashbook_id
             generator: { strategy: none }
 
     fields:
@@ -13,6 +13,10 @@ Model\Cashbook\Cashbook:
             type: string_enum
             annotations:
                 enum: { class: Model\Cashbook\Cashbook\CashbookType }
+
+        chitNumberPrefix:
+            type: string
+            nullable: true
 
     oneToMany:
         chits:

@@ -76,7 +76,7 @@ class BudgetService
 
     private function getLocalId(int $id) : int
     {
-        return $this->skautisMapper->getLocalId($id, ObjectType::UNIT);
+        return $this->skautisMapper->getLocalId($id, ObjectType::UNIT)->toInt();
     }
 
 }

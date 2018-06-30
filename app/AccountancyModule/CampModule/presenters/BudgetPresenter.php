@@ -3,6 +3,14 @@
 namespace App\AccountancyModule\CampModule;
 
 use Model\Auth\Resources\Camp;
+use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
+use Model\Event\SkautisCampId;
+use function count;
+use Model\Skautis\ReadModel\Queries\CampBudgetQuery;
 
 class BudgetPresenter extends BasePresenter
 {
@@ -18,11 +26,14 @@ class BudgetPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $toRepair = [];
-        $this->template->isConsistent = $this->eventService->chits->isConsistent($aid, FALSE, $toRepair);
-        $this->template->toRepair = $toRepair;
-        $this->template->dataEstimate = $this->eventService->chits->getCategories($aid, TRUE);
-        $this->template->dataReal = $this->eventService->chits->getCategories($aid, FALSE);
+        $campId = new SkautisCampId($aid);
+
+        $inconistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery($campId));
+
+        $this->template->isConsistent = count($inconistentTotals) === 0;
+        $this->template->toRepair = $inconistentTotals;
+        $this->template->budgetEntries = $this->queryBus->handle(new CampBudgetQuery($campId));
+        $this->template->categories = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId($aid)));
         $this->template->isUpdateStatementAllowed = $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid);
         if ($this->isAjax()) {
             $this->redrawControl("contentSnip");
@@ -36,7 +47,8 @@ class BudgetPresenter extends BasePresenter
     public function handleConvert(int $aid) : void
     {
         $this->editableOnly();
-        $this->eventService->chits->isConsistent($aid, $repair = TRUE);
+
+        $this->commandBus->handle(new UpdateCampCategoryTotals($this->getCashbookId($aid)));
         $this->flashMessage("Kategorie byly přepočítány.");
 
         if ($this->isAjax()) {
@@ -44,6 +56,11 @@ class BudgetPresenter extends BasePresenter
         } else {
             $this->redirect('this', $aid);
         }
+    }
+
+    private function getCashbookId(int $campId): CashbookId
+    {
+        return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($campId)));
     }
 
 }

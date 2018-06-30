@@ -2,10 +2,21 @@
 
 namespace Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
+use Model\DTO\Cashbook\Category;
+use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -13,6 +24,8 @@ use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Services\TemplateFactory;
+use Model\Utils\MoneyFactory;
+use Money\Money;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -71,22 +84,25 @@ class ExportService
     /**
      * vrací pokladní knihu
      */
-    public function getCashbook(int $skautisEventId, EventEntity $service): string
+    public function getCashbook(CashbookId $cashbookId, string $cashbookName): string
     {
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
-            'list' => $service->chits->getAll($skautisEventId),
-            'info' => $service->event->get($skautisEventId),
+            'cashbookName'  => $cashbookName,
+            'prefix'        => $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId)),
+            'chits'         => $this->queryBus->handle(new ChitListQuery($cashbookId)),
         ]);
     }
 
     /**
      * vrací seznam dokladů
      */
-    public function getChitlist(int $skautisEventId, EventEntity $service): string
+    public function getChitlist(CashbookId $cashbookId): string
     {
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+
         return $this->templateFactory->create(__DIR__ . '/templates/chitlist.latte', [
-            'list' => array_filter($service->chits->getAll($skautisEventId), function ($c) {
-                return $c->ctype == "out";
+            'list' => array_filter($chits, function (Chit $chit): bool {
+                return $chit->getCategory()->getOperationType()->equalsValue(Operation::EXPENSE);
             }),
         ]);
     }
@@ -111,9 +127,14 @@ class ExportService
             ];
         }
 
+        $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+
         //rozpočítává paragony do jednotlivých skupin
-        foreach ($eventService->chits->getAll($skautisEventId) as $chit) {
-            $sums[$chit->ctype][$chit->category]['amount'] += $chit->price;
+        foreach ($chits as $chit) {
+            $category = $chit->getCategory();
+            $sums[$category->getOperationType()->getValue()][$category->getId()]['amount'] += $chit->getAmount()->getValue();
         }
 
         $totalIncome = array_sum(
@@ -141,44 +162,39 @@ class ExportService
 
     /**
      * vrací PDF s vybranými paragony
+     * @param Chit[] $chits
      */
-    public function getChits(int $aid, EventEntity $eventService, array $chits): string
+    public function getChits(
+        int $aid,
+        EventEntity $eventService,
+        array $chits,
+        CashbookId $cashbookId
+    ): string
     {
-        $income = [];
-        $outcome = [];
-        $activeHpd = FALSE;
+        $chitsCollection = new ArrayCollection($chits);
 
-        foreach ($chits as $c) {
-            if ($c->cshort == "hpd") {
-                $activeHpd = TRUE;
-            }
-            switch ($c->ctype) {
-                case "out":
-                    $outcome[] = $c;
-                    break;
-                case "in":
-                    $income[] = $c;
-                    break;
-                default:
-                    throw new \Nette\InvalidStateException("Neznámý typ paragou: " . $c->ctype);
-            }
-        }
-        $event = $eventService->event->get($aid);
+        [$income, $outcome] = $chitsCollection->partition(function ($_, Chit $chit): bool {
+            return $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+        });
+
+        $activeHpd = $chitsCollection->exists(function ($_, Chit $chit): bool {
+            return $chit->getCategory()->getShortcut() === 'hpd';
+        });
+
+        /** @var CashbookType $cashbookType */
+        $cashbookType = $this->queryBus->handle(new CashbookTypeQuery($cashbookId));
 
         $template = [];
 
-        if (in_array($eventService->event->type, ["camp", "general"])) {
-            $template['oficialName'] = $this->units->getOficialName($event->ID_Unit);
-        } elseif ($eventService->event->type == "unit") {
-            $template['oficialName'] = $this->units->getOficialName($event->ID);
-        } else {
-            throw new \Nette\InvalidArgumentException("Neplatný typ události v ExportService");
-        }
+        $event = $eventService->event->get($aid);
+        $unitId = $cashbookType->isUnit() ? $event->ID : $event->ID_Unit;
+        $template['oficialName'] = $this->units->getOficialName($unitId);
+
         //HPD 
         if ($activeHpd) {
             $template['totalPayment'] = $eventService->participants->getTotalPayment($aid);
 
-            $functionsQuery = $eventService->event->type === 'camp'
+            $functionsQuery = $cashbookType->equalsValue(CashbookType::CAMP)
                 ? new CampFunctions(new SkautisCampId($aid))
                 : new EventFunctions(new SkautisEventId($aid));
 
@@ -199,9 +215,25 @@ class ExportService
 
     public function getCampReport(int $skautisCampId, EventEntity $campService): string
     {
-        $categories = [];
-        foreach ($campService->chits->getCategories($skautisCampId) as $c) {
-            $categories[$c->IsRevenue ? "in" : "out"][$c->ID] = $c;
+        $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisCampId)));
+
+        /** @var Category[] $categories */
+        $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
+
+        $totalIncome = MoneyFactory::zero();
+        $totalExpense = MoneyFactory::zero();
+
+        $incomeCategories = [];
+        $expenseCategories = [];
+
+        foreach ($categories as $category) {
+            if ($category->isIncome()) {
+                $totalIncome = $totalIncome->add($category->getTotal());
+                $incomeCategories[] = $category;
+            } else {
+                $totalExpense = $totalExpense->add($category->getTotal());
+                $expenseCategories[] = $category;
+            }
         }
 
         $participants = $campService->participants->getAll($skautisCampId);
@@ -210,7 +242,10 @@ class ExportService
             'participantsCnt' => count($participants),
             'personsDays' => $campService->participants->getPersonsDays($participants),
             'a' => $campService->event->get($skautisCampId),
-            'chits' => $categories,
+            'incomeCategories' => $incomeCategories,
+            'expenseCategories' => $expenseCategories,
+            'totalIncome' => $totalIncome,
+            'totalExpense' => $totalExpense,
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
         ]);
     }

@@ -11,11 +11,16 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Event;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Event\SkautisCampId;
+use Model\Event\SkautisEventId;
 use Model\EventEntity;
 use Nette\DI\Container;
 use Nette\Utils\ArrayHash;
@@ -36,7 +41,7 @@ class MoveChitsDialog extends BaseControl
      */
     public $opened = FALSE;
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /** @var CommandBus */
@@ -51,7 +56,7 @@ class MoveChitsDialog extends BaseControl
     /** @var Container */
     private $context;
 
-    public function __construct(int $cashbookId, CommandBus $commandBus, QueryBus $queryBus, IAuthorizator $authorizator, Container $context)
+    public function __construct(CashbookId $cashbookId, CommandBus $commandBus, QueryBus $queryBus, IAuthorizator $authorizator, Container $context)
     {
         parent::__construct();
         $this->cashbookId = $cashbookId;
@@ -112,12 +117,13 @@ class MoveChitsDialog extends BaseControl
             return;
         }
 
-        $newCashbookId = $values->newCashbookId;
 
-        if ($newCashbookId === NULL) {
+        if ($values->newCashbookId === NULL) {
             $form->addError('Nebyla vybrána žádná cílová pokladní kniha!');
             return;
         }
+
+        $newCashbookId = CashbookId::fromString($values->newCashbookId);
 
         if ( ! $this->canEdit($this->cashbookId) || ! $this->canEdit($newCashbookId)) {
             $this->presenter->flashMessage('Nemáte oprávnění k původní nebo nové pokladní knize!', 'danger');
@@ -167,14 +173,15 @@ class MoveChitsDialog extends BaseControl
             }
 
             if ($states === NULL || in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
-                $resultArray[$eventEntity->chits->getCashbookIdFromSkautisId($item['ID'])] = $item['DisplayName'];
+                $cashbookId = $this->getCashbookId($item['ID'], ObjectType::get($eventType));
+                $resultArray[$cashbookId->toString()] = $item['DisplayName'];
             }
         }
 
         return $resultArray;
     }
 
-    private function canEdit(int $cashbookId): bool
+    private function canEdit(CashbookId $cashbookId): bool
     {
         $type = $this->getCashbookType($cashbookId);
         $skautisId = $this->getSkautisId($cashbookId);
@@ -188,12 +195,21 @@ class MoveChitsDialog extends BaseControl
             || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $skautisId);
     }
 
-    private function getCashbookType(int $cashbookId): CashbookType
+    private function getCashbookType(CashbookId $cashbookId): CashbookType
     {
         return $this->queryBus->handle(new CashbookTypeQuery($cashbookId));
     }
 
-    private function getSkautisId(int $cashbookId): int
+    private function getCashbookId(int $skautisId, ObjectType $objectType): CashbookId
+    {
+        if ($objectType->equalsValue(ObjectType::CAMP)) {
+            return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisId)));
+        }
+
+        return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisId)));
+    }
+
+    private function getSkautisId(CashbookId $cashbookId): int
     {
         return $this->queryBus->handle(new SkautisIdQuery($cashbookId));
     }

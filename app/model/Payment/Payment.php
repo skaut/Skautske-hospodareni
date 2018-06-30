@@ -14,6 +14,9 @@ class Payment extends AbstractAggregate
 {
 
     /** @var int */
+    private $id;
+
+    /** @var int */
     private $groupId;
 
     /** @var string */
@@ -71,6 +74,15 @@ class Payment extends AbstractAggregate
         $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
         $this->variableSymbol = $variableSymbol;
         $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
+    }
+
+    public function getId(): int
+    {
+        if ($this->id === NULL) {
+            throw new \RuntimeException("Can't get ID from not persisted aggregate");
+        }
+
+        return $this->id;
     }
 
     /**

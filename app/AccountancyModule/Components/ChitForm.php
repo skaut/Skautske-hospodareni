@@ -9,6 +9,7 @@ use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use InvalidArgumentException;
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\CashbookNotFoundException;
@@ -40,7 +41,7 @@ final class ChitForm extends BaseControl
         Operation::EXPENSE  => 'Výdaje',
     ];
 
-    /** @var int */
+    /** @var CashbookId */
     private $cashbookId;
 
     /**
@@ -62,7 +63,7 @@ final class ChitForm extends BaseControl
     private $logger;
 
     public function __construct(
-        int $cashbookId,
+        CashbookId $cashbookId,
         bool $isEditable,
         CommandBus $commandBus,
         QueryBus $queryBus,

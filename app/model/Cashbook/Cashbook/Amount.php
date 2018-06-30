@@ -34,7 +34,15 @@ class Amount
         return $this->expression;
     }
 
+    /**
+     * @deprecated use self::toFloat()
+     */
     public function getValue(): float
+    {
+        return $this->value;
+    }
+
+    public function toFloat(): float
     {
         return $this->value;
     }

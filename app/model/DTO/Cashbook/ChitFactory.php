@@ -13,7 +13,7 @@ final class ChitFactory
 
     use StaticClass;
 
-    public static function create(ChitEntity $chit): Chit
+    public static function create(ChitEntity $chit, Category $category): Chit
     {
         return new Chit(
             $chit->getId(),
@@ -22,7 +22,7 @@ final class ChitFactory
             $chit->getRecipient(),
             $chit->getAmount(),
             $chit->getPurpose(),
-            $chit->getCategory(),
+            $category,
             $chit->isLocked(),
             CashbookType::getInverseCashbookTypes($chit->getCategory()->getId())
         );
