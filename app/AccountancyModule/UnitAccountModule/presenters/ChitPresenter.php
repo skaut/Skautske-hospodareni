@@ -70,7 +70,7 @@ class ChitPresenter extends BasePresenter
         $units = [];
 
         foreach ($this->unitService->getReadUnits($this->getUser()) as $ik => $iu) {
-            $units[$ik] = $iu;
+            $units[$ik]["DisplayName"] = $iu;
         }
 
         /** @var EventEntity $eventService */
