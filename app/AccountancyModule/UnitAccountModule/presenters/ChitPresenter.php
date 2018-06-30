@@ -47,7 +47,7 @@ class ChitPresenter extends BasePresenter
     {
         $this->info = [];
         foreach ($this->unitService->getReadUnits($this->getUser()) as $ik => $iu) {
-            $this->info['unit'][$ik] = (array)$iu;
+            $this->info['unit'][$ik]["DisplayName"] = $iu;
         }
         $eventService = $this->context->getService("eventService");
         $campService = $this->context->getService("campService");
