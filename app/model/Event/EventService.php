@@ -2,7 +2,6 @@
 
 namespace Model;
 
-use eGen\MessageBus\Bus\EventBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
@@ -23,16 +22,12 @@ class EventService extends MutableBaseService
     /** @var QueryBus */
     private $queryBus;
 
-    /** @var EventBus */
-    private $eventBus;
-
-    public function __construct(string $name, Skautis $skautis, Mapper $mapper, UnitService $units, QueryBus $queryBus, EventBus $eventBus)
+    public function __construct(string $name, Skautis $skautis, Mapper $mapper, UnitService $units, QueryBus $queryBus)
     {
         parent::__construct($name, $skautis);
         $this->mapper = $mapper;
         $this->units = $units;
         $this->queryBus = $queryBus;
-        $this->eventBus = $eventBus;
     }
 
     /**
