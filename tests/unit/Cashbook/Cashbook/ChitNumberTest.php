@@ -38,6 +38,13 @@ class ChitNumberTest extends Unit
         $this->assertSame($value, (string) new ChitNumber($value));
     }
 
+    public function testUpperCase(): void
+    {
+        $value = 'a123';
+
+        $this->assertSame(strtoupper($value), (string) new ChitNumber($value));
+    }
+
     public function getInvalidNumbers(): array
     {
         return [
