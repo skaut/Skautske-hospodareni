@@ -418,7 +418,7 @@ class ExcelService
             foreach ($event['chits'] as $chit) {
                 $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
                     ->setCellValue('B' . $rowCnt, date("d.m.Y", strtotime($chit->date)))
-                    ->setCellValue('C' . $rowCnt, $event->prefix !== NULL ? $event->prefix . $chit->num : "")
+                    ->setCellValue('C' . $rowCnt, $event->prefix . $chit->num)
                     ->setCellValue('D' . $rowCnt, $chit->purpose)
                     ->setCellValue('E' . $rowCnt, $chit->clabel)
                     ->setCellValue('F' . $rowCnt, $chit->recipient)
