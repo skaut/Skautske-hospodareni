@@ -27,7 +27,6 @@ webloader:
                 - jquery-ui-1.10.0.custom.min.js
                 - bootstrap-datetimepicker.js
                 - bootstrap-datetimepicker.cs.js
-                - jquery.placeholder.min.js # IE 8, 9 placeholders bugfix
                 - bootstrap-select.js
                 - nette.ajax.js
                 - netteForms.js
@@ -42,7 +41,6 @@ webloader:
                 - cashbook.js
                 - my.js
                 - nextras.datetimepicker.init.js
-                - ie10-viewport-bug-workaround.js # IE10 viewport hack for Surface/desktop Windows 8 bug
                 - datagrid.js
                 - datagrid-spinners.js
                 - ajax.modal.js
