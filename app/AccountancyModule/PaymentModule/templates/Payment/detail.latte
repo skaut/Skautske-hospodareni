@@ -113,7 +113,7 @@
                         <td class="r">{$l->dueDate|date:'j.n.Y'}</td>
                         <td>{$l->state|paymentStateLabel|noescape}</td>
                         <td class="r nowrap">
-                        {if !$l->closed}
+                        {if !$l->closed && $isEditable}
                             <a n:href="edit $l->id" class="btn btn-sm btn-primary" title="Upravit platbu"><i class="glyphicon glyphicon-edit"></i></a>
                             <a n:href="send! $l->id" n:class="btn, btn-sm, btn-primary, 'ui--sendEmail-'.$iterator->counter, $l->email === NULL ? disabled" title="{$l->email === NULL ? 'Není uveden email' : 'Odeslat email o platbě'}"><i class="glyphicon glyphicon-envelope"></i></a>
                             <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="glyphicon glyphicon-check"></i></a> 
