@@ -2,9 +2,9 @@
 
 namespace Model;
 
-use eGen\MessageBus\Bus\EventBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
 use Model\Skautis\Mapper;
 use Nette\Utils\ArrayHash;
@@ -22,16 +22,12 @@ class EventService extends MutableBaseService
     /** @var QueryBus */
     private $queryBus;
 
-    /** @var EventBus */
-    private $eventBus;
-
-    public function __construct(string $name, Skautis $skautis, Mapper $mapper, UnitService $units, QueryBus $queryBus, EventBus $eventBus)
+    public function __construct(string $name, Skautis $skautis, Mapper $mapper, UnitService $units, QueryBus $queryBus)
     {
         parent::__construct($name, $skautis);
         $this->mapper = $mapper;
         $this->units = $units;
         $this->queryBus = $queryBus;
-        $this->eventBus = $eventBus;
     }
 
     /**
@@ -70,13 +66,13 @@ class EventService extends MutableBaseService
         if (!($res = $this->loadSes($cacheId))) {
             $cashbookId = $this->mapper->getLocalId($ID, $this->type);
 
-            if (in_array($this->type, [self::TYPE_GENERAL, self::TYPE_CAMP])) {
+            if (in_array($this->type, [ObjectType::EVENT, ObjectType::CAMP], TRUE)) {
                 try {
                     $skautisData = (array)$this->skautis->event->{"Event" . $this->typeName . "Detail"}(["ID" => $ID]);
                 } catch (\Skautis\Exception $e) {
                     throw new \Skautis\Wsdl\PermissionException("Nemáte oprávnění pro získání požadovaných informací.", $e instanceof \Exception ? $e->getCode() : 0);
                 }
-            } elseif ($this->type == self::TYPE_UNIT) {
+            } elseif ($this->type === ObjectType::UNIT) {
                 $skautisData = (array)$this->units->getDetail($ID);
             } else {
                 throw new \InvalidArgumentException("Neplatný typ: " . $this->typeName);
