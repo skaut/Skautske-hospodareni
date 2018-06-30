@@ -22,7 +22,7 @@ table {
     {var balance => 0}
     <tr n:foreach="$list as $item">
         <td style="height:30px;">{$item->date|date:"d.m.Y"}</td>
-        <td>{if $info->prefix != null}{$info->prefix}{$item->num}{/if}</td>
+        <td>{$info->prefix}{$item->num}</td>
         <td>{$item->purpose}</td>
         <td>{$item->cshort}</td>
         <td style="text-align:right;">{$item->ctype == 'in' ? $item->price: '&nbsp;'|price|noescape}</td>
