@@ -63,6 +63,7 @@ class ChitNumberTest extends Unit
             ['0'],
             ['A0'],
             ['A1/1'],
+            ['a1/1'],
         ];
     }
 
