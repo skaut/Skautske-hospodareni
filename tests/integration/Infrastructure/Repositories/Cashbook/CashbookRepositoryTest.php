@@ -40,7 +40,7 @@ class CashbookRepositoryTest extends \IntegrationTest
 
     public function testFindEmptyCashbook(): void
     {
-        $this->tester->haveInDatabase(self::TABLE, ['id' => 10, 'type' => Cashbook\CashbookType::EVENT]);
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 10, 'type' => Cashbook\CashbookType::EVENT, 'note'=>""]);
 
         $id = CashbookId::fromInt(10);
 
