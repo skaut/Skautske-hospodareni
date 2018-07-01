@@ -90,7 +90,7 @@ class ExcelService
     {
         $objPHPExcel = $this->getNewFile();
 
-        $allowPragueColumns = false;
+        $allowPragueColumns = FALSE;
         $data = [];
         foreach ($eventIds as $aid) {
             $eventId = new SkautisEventId($aid);
@@ -107,7 +107,7 @@ class ExcelService
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
             $pp = $service->participants->countPragueParticipants($data[$aid]);
             if ($pp !== NULL) { //Prague event
-                $allowPragueColumns = true;
+                $allowPragueColumns = TRUE;
                 $pp["isSupportable"] = $pp["underAge"] >= 8 && $data[$aid]->TotalDays >= 2 && $data[$aid]->TotalDays <= 6;
                 $data[$aid]["prague"] = $pp;
             }
@@ -296,7 +296,7 @@ class ExcelService
         $sheet->setTitle('Pokladní kniha');
     }
 
-    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, $data, bool $allowPragueColumns = false): void
+    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, $data, bool $allowPragueColumns = FALSE): void
     {
         $firstElement = reset($data);
 
