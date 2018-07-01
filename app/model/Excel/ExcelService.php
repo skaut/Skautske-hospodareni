@@ -259,8 +259,8 @@ class ExcelService
         /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
 
+        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-        /** @var string|NULL $prefix */
         $prefix = $cashbook->getChitNumberPrefix();
         /** @var array<int, string> $categoryNames */
         $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
@@ -440,7 +440,6 @@ class ExcelService
 
             /** @var Cashbook $cashbook */
             $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-            /** @var string|NULL $prefix */
             $prefix = $cashbook->getChitNumberPrefix();
 
             /** @var array<int, string> $categories */
