@@ -34,9 +34,6 @@ use Nette\Application\UI\Form;
 use Nette\Forms\IControl;
 use Nette\Mail\SmtpException;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class PaymentPresenter extends BasePresenter
 {
 

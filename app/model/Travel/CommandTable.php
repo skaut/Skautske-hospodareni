@@ -2,10 +2,6 @@
 
 namespace Model;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- * správa cestovních příkazů
- */
 class CommandTable extends BaseTable
 {
 

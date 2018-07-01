@@ -6,9 +6,6 @@ use App\Forms\BaseForm;
 use NasExt\Forms\DependentData;
 use Nette\Application\UI\Form;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class BudgetPresenter extends BasePresenter
 {
 

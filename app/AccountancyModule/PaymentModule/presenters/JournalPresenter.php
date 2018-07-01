@@ -4,9 +4,6 @@ namespace App\AccountancyModule\PaymentModule;
 
 use Model\PaymentService;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class JournalPresenter extends BasePresenter
 {
 

@@ -9,9 +9,6 @@ use Model\Payment\Commands\RemoveMailCredentials;
 use Model\Payment\MailCredentials\MailProtocol;
 use Nette\Application\UI\Form;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class MailPresenter extends BasePresenter
 {
 

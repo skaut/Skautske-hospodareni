@@ -14,10 +14,6 @@ use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use function count;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- * akce
- */
 class DetailPresenter extends BasePresenter
 {
 

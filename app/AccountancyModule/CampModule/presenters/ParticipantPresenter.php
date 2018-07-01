@@ -10,9 +10,6 @@ use Model\ExportService;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class ParticipantPresenter extends BasePresenter
 {
 

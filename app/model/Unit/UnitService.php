@@ -10,9 +10,6 @@ use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Security\User;
 use Skautis;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class UnitService
 {
 

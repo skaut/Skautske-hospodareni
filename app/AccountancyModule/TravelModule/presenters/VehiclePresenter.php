@@ -13,10 +13,6 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
-
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class VehiclePresenter extends BasePresenter
 {
 

@@ -26,9 +26,6 @@ use Model\Event\SkautisEventId;
 use Model\Services\TemplateFactory;
 use Model\Utils\MoneyFactory;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class ExportService
 {
 

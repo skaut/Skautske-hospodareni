@@ -7,9 +7,6 @@ use Model\Cashbook\ObjectType;
 use Model\EventEntity;
 use Skautis\Wsdl\PermissionException;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
 

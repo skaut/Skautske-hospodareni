@@ -6,9 +6,6 @@ use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Utils\Strings;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class UserService extends BaseService
 {
 

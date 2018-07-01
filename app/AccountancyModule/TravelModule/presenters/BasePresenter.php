@@ -4,9 +4,6 @@ namespace App\AccountancyModule\TravelModule;
 
 use Nette\NotImplementedException;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
 

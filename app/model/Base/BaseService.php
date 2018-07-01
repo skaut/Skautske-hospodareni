@@ -6,7 +6,6 @@ use Nette;
 use Skautis\Skautis;
 
 /**
- * @author Hána František <sinacek@gmail.com>
  * @deprecated Don't inherit from this service
  */
 abstract class BaseService
