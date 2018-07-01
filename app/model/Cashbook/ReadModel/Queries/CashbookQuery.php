@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\Queries;
 
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ReadModel\QueryHandlers\CashbookTypeQueryHandler;
+use Model\Cashbook\ReadModel\QueryHandlers\CashbookNumberPrefixQueryHandler;
 
 /**
- * @see CashbookTypeQueryHandler
+ * @see CashbookQueryHandler
  */
-class CashbookTypeQuery
+class CashbookQuery
 {
 
     /** @var CashbookId */

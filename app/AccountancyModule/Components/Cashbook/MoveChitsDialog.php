@@ -16,9 +16,10 @@ use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\EventEntity;
@@ -197,7 +198,9 @@ class MoveChitsDialog extends BaseControl
 
     private function getCashbookType(CashbookId $cashbookId): CashbookType
     {
-        return $this->queryBus->handle(new CashbookTypeQuery($cashbookId));
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        return $cashbook->getType();
     }
 
     private function getCashbookId(int $skautisId, ObjectType $objectType): CashbookId

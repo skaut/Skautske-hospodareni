@@ -5,7 +5,8 @@ namespace Model;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
-use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Model\Skautis\Mapper;
 use Nette\Utils\ArrayHash;
 use Skautis\Skautis;
@@ -87,9 +88,11 @@ class EventService extends MutableBaseService
 
     private function getCashbookData(CashbookId $cashbookId): array
     {
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         return [
             'localId' => $cashbookId->toInt(),
-            'prefix' => $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId)),
+            'prefix' => $cashbook->getChitNumberPrefix(),
         ];
     }
 

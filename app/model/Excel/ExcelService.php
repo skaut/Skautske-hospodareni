@@ -6,10 +6,11 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -257,8 +258,11 @@ class ExcelService
 
         /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         /** @var string|NULL $prefix */
-        $prefix = $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId));
+        $prefix = $cashbook->getChitNumberPrefix();
         /** @var array<int, string> $categoryNames */
         $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
 
@@ -435,8 +439,10 @@ class ExcelService
             /** @var CashbookId $cashbookId */
             $cashbookId = $event['cashbookId'];
 
+            /** @var Cashbook $cashbook */
+            $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
             /** @var string|NULL $prefix */
-            $prefix = $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId));
+            $prefix = $cashbook->getChitNumberPrefix();
 
             /** @var array<int, string> $categories */
             $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId, NULL));

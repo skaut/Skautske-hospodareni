@@ -8,12 +8,12 @@ use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Event;
 use Model\Auth\Resources\Unit;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ObjectType;
-use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\EventEntity;
 use Model\ExcelService;
@@ -168,12 +168,9 @@ class CashbookExportPresenter extends BasePresenter
     private function getSkautisType(): ObjectType
     {
         try {
-            /** @var CashbookType $cashbookType */
-            $cashbookType = $this->queryBus->handle(
-                new CashbookTypeQuery(CashbookId::fromString($this->cashbookId))
-            );
-
-            return $cashbookType->getSkautisObjectType();
+            /** @var Cashbook $cashbook */
+            $cashbook = $this->queryBus->handle(new CashbookQuery(CashbookId::fromString($this->cashbookId)));
+            return $cashbook->getType()->getSkautisObjectType();
         } catch (CashbookNotFoundException $e) {
             throw new BadRequestException($e->getMessage(), IResponse::S404_NOT_FOUND, $e);
         }

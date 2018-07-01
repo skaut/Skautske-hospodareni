@@ -9,12 +9,12 @@ use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
-use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
+use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
@@ -25,7 +25,6 @@ use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Services\TemplateFactory;
 use Model\Utils\MoneyFactory;
-use Money\Money;
 
 /**
  * @author Hána František <sinacek@gmail.com>
@@ -86,9 +85,12 @@ class ExportService
      */
     public function getCashbook(CashbookId $cashbookId, string $cashbookName): string
     {
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
             'cashbookName'  => $cashbookName,
-            'prefix'        => $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId)),
+            'prefix' => $cashbook->getChitNumberPrefix(),
             'chits'         => $this->queryBus->handle(new ChitListQuery($cashbookId)),
         ]);
     }
@@ -181,8 +183,9 @@ class ExportService
             return $chit->getCategory()->getShortcut() === 'hpd';
         });
 
-        /** @var CashbookType $cashbookType */
-        $cashbookType = $this->queryBus->handle(new CashbookTypeQuery($cashbookId));
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        $cashbookType = $cashbook->getType();
 
         $template = [];
 
