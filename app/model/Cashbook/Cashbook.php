@@ -34,11 +34,12 @@ class Cashbook extends AbstractAggregate
     /** @var string|NULL */
     private $note;
 
-    public function __construct(CashbookId $id, CashbookType $type)
+    public function __construct(CashbookId $id, CashbookType $type, string $note = "")
     {
         $this->id = $id;
         $this->type = $type;
         $this->chits = new ArrayCollection();
+        $this->note = $note;
     }
 
     public function getId(): CashbookId
