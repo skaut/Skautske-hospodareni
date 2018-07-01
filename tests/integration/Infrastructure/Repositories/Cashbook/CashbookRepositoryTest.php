@@ -73,6 +73,7 @@ class CashbookRepositoryTest extends \IntegrationTest
 
         $cashbook = new Cashbook(CashbookId::fromInt(10), Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
         $cashbook->updateChitNumberPrefix('test');
+        $cashbook->updateNote('poznamka moje');
 
         $cashbook->addChit(
             new Cashbook\ChitNumber($chit['num']),
@@ -89,6 +90,7 @@ class CashbookRepositoryTest extends \IntegrationTest
             'id' => 10,
             'type' => Cashbook\CashbookType::EVENT,
             'chit_number_prefix' => 'test',
+            'note' => 'poznamka moje',
         ]);
         $this->tester->seeInDatabase(self::CHIT_TABLE, $chit);
     }
