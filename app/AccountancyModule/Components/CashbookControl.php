@@ -6,6 +6,7 @@ namespace App\AccountancyModule\Components;
 
 use App\AccountancyModule\Components\Cashbook\ChitListControl;
 use App\AccountancyModule\Factories\Cashbook\IChitListControlFactory;
+use App\AccountancyModule\Factories\ICashbookNoteFormFactory;
 use App\AccountancyModule\Factories\IChitFormFactory;
 use Model\Cashbook\Cashbook\CashbookId;
 
@@ -24,13 +25,17 @@ class CashbookControl extends BaseControl
     /** @var IChitListControlFactory */
     private $chitListFactory;
 
-    public function __construct(CashbookId $cashbookId, bool $isEditable, IChitFormFactory $formFactory, IChitListControlFactory $chitListFactory)
+    /** @var INoteFormFactory */
+    private $noteFormFactory;
+
+    public function __construct(CashbookId $cashbookId, bool $isEditable, IChitFormFactory $formFactory, IChitListControlFactory $chitListFactory, ICashbookNoteFormFactory $noteFactory)
     {
         parent::__construct();
         $this->cashbookId = $cashbookId;
         $this->isEditable = $isEditable;
         $this->formFactory = $formFactory;
         $this->chitListFactory = $chitListFactory;
+        $this->noteFormFactory = $noteFactory;
     }
 
     public function render(): void
@@ -61,6 +66,11 @@ class CashbookControl extends BaseControl
         };
 
         return $control;
+    }
+
+    protected function createComponentNoteForm(): NoteForm
+    {
+        return $this->noteFormFactory->create($this->cashbookId, $this->isEditable);
     }
 
 }

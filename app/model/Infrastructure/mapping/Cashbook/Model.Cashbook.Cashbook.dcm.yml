@@ -18,6 +18,9 @@ Model\Cashbook\Cashbook:
             type: string
             nullable: true
 
+        note:
+            type: string
+
     oneToMany:
         chits:
             targetEntity: Model\Cashbook\Cashbook\Chit

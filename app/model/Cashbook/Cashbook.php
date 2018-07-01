@@ -31,6 +31,9 @@ class Cashbook extends AbstractAggregate
     /** @var ArrayCollection|Chit[] */
     private $chits;
 
+    /** @var string|NULL */
+    private $note;
+
     public function __construct(CashbookId $id, CashbookType $type)
     {
         $this->id = $id;
@@ -53,6 +56,11 @@ class Cashbook extends AbstractAggregate
         return $this->chitNumberPrefix;
     }
 
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
     public function updateChitNumberPrefix(?string $chitNumberPrefix): void
     {
         if ($chitNumberPrefix !== NULL && Strings::length($chitNumberPrefix) > 6) {
@@ -60,6 +68,11 @@ class Cashbook extends AbstractAggregate
         }
 
         $this->chitNumberPrefix = $chitNumberPrefix;
+    }
+
+    public function updateNote(?string $note): void
+    {
+        $this->note = $note;
     }
 
     public function addChit(

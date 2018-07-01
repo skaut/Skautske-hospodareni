@@ -17,14 +17,14 @@ use Model\Cashbook\ChitLockedException;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\MemberService;
 use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
-use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\IControl;
 use Nette\Http\IResponse;
 use Nette\Utils\Json;
@@ -93,9 +93,11 @@ final class ChitForm extends BaseControl
 
     public function render(): void
     {
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         $this->template->setParameters([
             'isEditable'        => $this->isEditable,
-            'chitNumberPrefix'  => $this->queryBus->handle(new CashbookNumberPrefixQuery($this->cashbookId)),
+            'chitNumberPrefix' => $cashbook->getChitNumberPrefix(),
         ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitForm.latte');

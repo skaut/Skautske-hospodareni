@@ -25,13 +25,13 @@ class Cashbook
         CashbookId $id,
         CashbookType $type,
         ?string $chit_number_prefix,
-        string $note
+        ?string $note
     )
     {
         $this->id = $id;
         $this->type = $type;
         $this->chit_number_prefix = $chit_number_prefix;
-        $this->note = $note;
+        $this->note = $note ?? "";
     }
 
     public function getId(): int
