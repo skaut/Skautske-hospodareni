@@ -28,8 +28,8 @@ final class UpdateNote
         return $this->cashbookId;
     }
 
-    public function getNote(): ?string
+    public function getNote(): string
     {
-        return $this->note === "" ? NULL : $this->note;
+        return $this->note;
     }
 }

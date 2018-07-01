@@ -31,15 +31,15 @@ class Cashbook extends AbstractAggregate
     /** @var ArrayCollection|Chit[] */
     private $chits;
 
-    /** @var string|NULL */
+    /** @var string */
     private $note;
 
-    public function __construct(CashbookId $id, CashbookType $type, string $note = "")
+    public function __construct(CashbookId $id, CashbookType $type)
     {
         $this->id = $id;
         $this->type = $type;
         $this->chits = new ArrayCollection();
-        $this->note = $note;
+        $this->note = "";
     }
 
     public function getId(): CashbookId
@@ -71,7 +71,7 @@ class Cashbook extends AbstractAggregate
         $this->chitNumberPrefix = $chitNumberPrefix;
     }
 
-    public function updateNote(?string $note): void
+    public function updateNote(string $note): void
     {
         $this->note = $note;
     }

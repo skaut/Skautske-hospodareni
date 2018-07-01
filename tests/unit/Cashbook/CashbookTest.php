@@ -134,22 +134,13 @@ class CashbookTest extends \Codeception\Test\Unit
         $this->assertEmpty($cashbook->getChits());
     }
 
-    /**
-     * @dataProvider dataValidNotes
-     */
-    public function testUpdateNote(string $note): void
+    public function testUpdateNote(): void
     {
+        $note = 'moje poznamka';
         $cashbook = $this->createEventCashbook();
         $this->assertEmpty($cashbook->getNote());
         $cashbook->updateNote($note);
         $this->assertSame($note, $cashbook->getNote());
-    }
-
-    public function dataValidNotes(): array
-    {
-        return [
-            ['moje poznamka'],
-        ];
     }
 
     private function createEventCashbook(?CashbookId $cashbookId = NULL): Cashbook

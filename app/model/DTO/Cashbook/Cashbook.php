@@ -16,7 +16,7 @@ class Cashbook
     private $type;
 
     /** @var string|NULL */
-    private $chit_number_prefix;
+    private $chitNumberPrefix;
 
     /** @var string */
     private $note;
@@ -24,13 +24,13 @@ class Cashbook
     public function __construct(
         CashbookId $id,
         CashbookType $type,
-        ?string $chit_number_prefix,
+        ?string $chitNumberPrefix,
         ?string $note
     )
     {
         $this->id = $id;
         $this->type = $type;
-        $this->chit_number_prefix = $chit_number_prefix;
+        $this->chitNumberPrefix = $chitNumberPrefix;
         $this->note = $note ?? "";
     }
 
@@ -46,7 +46,7 @@ class Cashbook
 
     public function getChitNumberPrefix(): ?string
     {
-        return $this->chit_number_prefix;
+        return $this->chitNumberPrefix;
     }
 
     public function getNote(): string

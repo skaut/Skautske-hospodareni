@@ -69,7 +69,7 @@ final class NoteForm extends BaseControl
             'note' => $cashbook->getNote()
         ]);
 
-        $note = nl2br(strip_tags($cashbook->getNote()));
+        $note = nl2br(htmlspecialchars($cashbook->getNote()));
         $pattern = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
         $note = preg_replace($pattern, '<a href="$0" target="_blank" title="$0">$0</a>', $note);
 
