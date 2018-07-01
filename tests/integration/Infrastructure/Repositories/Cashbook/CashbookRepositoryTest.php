@@ -71,6 +71,7 @@ class CashbookRepositoryTest extends \IntegrationTest
             'purpose' => 'Purpose',
             'category' => 10,
             'category_operation_type' => Operation::INCOME,
+            'payment_method' => Cashbook\PaymentMethod::BANK_TRANSFER,
         ];
 
         $cashbook = new Cashbook(CashbookId::fromInt(10), Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
@@ -85,7 +86,8 @@ class CashbookRepositoryTest extends \IntegrationTest
                 new Cashbook\Amount($chit['priceText']),
                 $chit['purpose']
             ),
-            $this->mockCategory($chit['category'])
+            $this->mockCategory($chit['category']),
+            Cashbook\PaymentMethod::get($chit['payment_method'])
         );
 
         $this->repository->save($cashbook);
