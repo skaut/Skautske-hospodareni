@@ -2,9 +2,6 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
 

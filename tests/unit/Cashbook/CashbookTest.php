@@ -134,6 +134,15 @@ class CashbookTest extends \Codeception\Test\Unit
         $this->assertEmpty($cashbook->getChits());
     }
 
+    public function testUpdateNote(): void
+    {
+        $note = 'moje poznamka';
+        $cashbook = $this->createEventCashbook();
+        $this->assertEmpty($cashbook->getNote());
+        $cashbook->updateNote($note);
+        $this->assertSame($note, $cashbook->getNote());
+    }
+
     private function createEventCashbook(?CashbookId $cashbookId = NULL): Cashbook
     {
         return new Cashbook($cashbookId ?? CashbookId::fromInt(1), CashbookType::get(CashbookType::EVENT));

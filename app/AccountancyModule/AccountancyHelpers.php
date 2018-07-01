@@ -6,9 +6,6 @@ use DateTimeInterface;
 use Model\Payment\Payment\State;
 use Money\Money;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 abstract class AccountancyHelpers
 {
 

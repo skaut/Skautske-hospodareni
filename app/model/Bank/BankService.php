@@ -13,9 +13,6 @@ use Model\Payment\Repositories\IPaymentRepository;
 use Model\Utils\Arrays;
 use Model\Payment\Repositories\IGroupRepository;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class BankService
 {
 

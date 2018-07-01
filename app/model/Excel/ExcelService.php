@@ -6,10 +6,11 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -89,7 +90,7 @@ class ExcelService
     {
         $objPHPExcel = $this->getNewFile();
 
-        $allowPragueColumns = false;
+        $allowPragueColumns = FALSE;
         $data = [];
         foreach ($eventIds as $aid) {
             $eventId = new SkautisEventId($aid);
@@ -106,7 +107,7 @@ class ExcelService
             $data[$aid]['personDays'] = $service->participants->getPersonsDays($participants);
             $pp = $service->participants->countPragueParticipants($data[$aid]);
             if ($pp !== NULL) { //Prague event
-                $allowPragueColumns = true;
+                $allowPragueColumns = TRUE;
                 $pp["isSupportable"] = $pp["underAge"] >= 8 && $data[$aid]->TotalDays >= 2 && $data[$aid]->TotalDays <= 6;
                 $data[$aid]["prague"] = $pp;
             }
@@ -257,8 +258,10 @@ class ExcelService
 
         /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
-        /** @var string|NULL $prefix */
-        $prefix = $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId));
+
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        $prefix = $cashbook->getChitNumberPrefix();
         /** @var array<int, string> $categoryNames */
         $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
 
@@ -292,7 +295,7 @@ class ExcelService
         $sheet->setTitle('Pokladní kniha');
     }
 
-    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, $data, bool $allowPragueColumns = false): void
+    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, $data, bool $allowPragueColumns = FALSE): void
     {
         $firstElement = reset($data);
 
@@ -435,8 +438,9 @@ class ExcelService
             /** @var CashbookId $cashbookId */
             $cashbookId = $event['cashbookId'];
 
-            /** @var string|NULL $prefix */
-            $prefix = $this->queryBus->handle(new CashbookNumberPrefixQuery($cashbookId));
+            /** @var Cashbook $cashbook */
+            $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+            $prefix = $cashbook->getChitNumberPrefix();
 
             /** @var array<int, string> $categories */
             $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId, NULL));

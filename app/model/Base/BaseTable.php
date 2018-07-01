@@ -4,9 +4,6 @@ namespace Model;
 
 use Dibi\Connection;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class BaseTable
 {
 

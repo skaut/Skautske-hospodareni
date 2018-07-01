@@ -8,9 +8,6 @@ use Model\Travel\Contract\Passenger;
 use Nette\Application\UI\Form;
 use Model\TravelService;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class ContractPresenter extends BasePresenter
 {
 

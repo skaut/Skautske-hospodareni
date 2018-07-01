@@ -275,7 +275,7 @@ class ParticipantService extends MutableBaseService
         $underAge = 0;
         $cityMatch = 0;
         foreach ($participants as $p) {
-            if (stripos($p->City, "Praha") === false) {
+            if (stripos($p->City, "Praha") === FALSE) {
                 continue;
             }
             $cityMatch += 1;

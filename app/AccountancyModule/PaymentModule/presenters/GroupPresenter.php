@@ -23,9 +23,6 @@ use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class GroupPresenter extends BasePresenter
 {
 

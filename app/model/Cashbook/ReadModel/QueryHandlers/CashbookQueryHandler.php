@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
+use Model\DTO\Cashbook\Cashbook;
 
-class CashbookTypeQueryHandler
+class CashbookQueryHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -19,11 +18,14 @@ class CashbookTypeQueryHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(CashbookTypeQuery $query): CashbookType
+    /**
+     * @throws \Model\Cashbook\CashbookNotFoundException
+     */
+    public function handle(CashbookQuery $query): Cashbook
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 
-        return $cashbook->getType();
+        return new Cashbook($cashbook->getId(), $cashbook->getType(), $cashbook->getChitNumberPrefix(), $cashbook->getNote());
     }
 
 }

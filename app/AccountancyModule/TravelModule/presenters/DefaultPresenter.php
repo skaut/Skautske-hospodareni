@@ -11,9 +11,6 @@ use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class DefaultPresenter extends BasePresenter
 {
 

@@ -2,10 +2,6 @@
 
 namespace Model;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- * správa cest na cestovních příkazech
- */
 class TravelTable extends BaseTable
 {
 

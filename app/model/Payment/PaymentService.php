@@ -27,9 +27,6 @@ use Model\Payment\VariableSymbol;
 use Model\Services\Language;
 use Skautis\Skautis;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- */
 class PaymentService
 {
 

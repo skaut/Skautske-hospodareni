@@ -11,15 +11,14 @@ use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ChitLockedException;
 use Model\Cashbook\ChitNotFoundException;
 use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
 use Model\Cashbook\ObjectType;
-use Model\Cashbook\ReadModel\Queries\CashbookNumberPrefixQuery;
-use Model\Cashbook\ReadModel\Queries\CashbookTypeQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Nette\InvalidStateException;
 
 /**
@@ -72,6 +71,8 @@ class ChitListControl extends BaseControl
 
     public function render(): void
     {
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         $this->template->setParameters([
             'cashbookId' => $this->cashbookId->toInt(),
             'isEditable' => $this->isEditable,
@@ -79,7 +80,7 @@ class ChitListControl extends BaseControl
             'canMassExport' => $this->canMassExport(),
             'aid' => (int)$this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
             'chits' => $this->queryBus->handle(new ChitListQuery($this->cashbookId)),
-            'prefix' => $this->queryBus->handle(new CashbookNumberPrefixQuery($this->cashbookId)),
+            'prefix' => $cashbook->getChitNumberPrefix(),
             'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
         ]);
 
@@ -176,10 +177,9 @@ class ChitListControl extends BaseControl
 
     private function getSkautisType(): ObjectType
     {
-        /** @var CashbookType $cashbookType */
-        $cashbookType = $this->queryBus->handle(new CashbookTypeQuery($this->cashbookId));
-
-        return $cashbookType->getSkautisObjectType();
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
+        return $cashbook->getType()->getSkautisObjectType();
     }
 
 }

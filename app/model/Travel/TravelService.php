@@ -21,10 +21,6 @@ use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 
-/**
- * @author Hána František <sinacek@gmail.com>
- * správa cestovních příkazů
- */
 class TravelService
 {
 
