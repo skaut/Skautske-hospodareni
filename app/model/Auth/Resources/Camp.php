@@ -11,6 +11,8 @@ final class Camp
 
     use StaticClass;
 
+    public const TABLE = "EV_EventCamp";
+
     public const ACCESS_DETAIL = [self::class, 'EV_EventCamp_DETAIL'];
     public const ACCESS_FUNCTIONS = [self::class, 'EV_EventFunction_ALL_EventCamp'];
     public const ACCESS_PARTICIPANTS = [self::class, 'EV_ParticipantCamp_ALL_EventCamp'];
