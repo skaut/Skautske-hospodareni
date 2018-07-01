@@ -49,15 +49,12 @@ class ChitListQueryHandlerTest extends Unit
 
         foreach ($expectedOrder as $index => $chitId) {
             $dto  = $chitDtos[$index];
+            /** @var Chit $chit */
             $chit = $chits[$chitId - 1];
 
             $this->assertSame($chit->getId(), $dto->getId());
-            $this->assertSame($chit->getDate(), $dto->getDate());
+            $this->assertSame($chit->getBody(), $dto->getBody());
             $this->assertSame($chit->getCategoryId(), $dto->getCategory()->getId());
-            $this->assertSame($chit->getNumber(), $dto->getNumber());
-            $this->assertSame($chit->getAmount(), $dto->getAmount());
-            $this->assertSame($chit->getPurpose(), $dto->getPurpose());
-            $this->assertSame($chit->getRecipient(), $dto->getRecipient());
             $this->assertSame($chit->isLocked(), $dto->isLocked());
         }
     }

@@ -41,20 +41,9 @@ class ChitListQueryHandler
 
         $chits = $cashbook->getChits();
 
-        usort(
-            $chits,
-            function (Chit $a, Chit $b) : int {
-                return [
-                $a->getDate(),
-                $a->getCategory()->getOperationType()->getValue(),
-                $a->getId(),
-                ] <=> [
-                $b->getDate(),
-                $b->getCategory()->getOperationType()->getValue(),
-                $b->getId(),
-                ];
-            }
-        );
+        usort($chits, function (Chit $a, Chit $b) : int {
+            return [$a->getDate(), ! $a->isIncome(), $a->getId()] <=> [$b->getDate(), ! $b->isIncome(), $b->getId()];
+        });
 
         $categories = $this->getCategories($query->getCashbookId());
 

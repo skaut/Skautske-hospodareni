@@ -52,6 +52,11 @@ class Amount
         return $this->value;
     }
 
+    public static function fromFloat(float $amount) : self
+    {
+        return new self((string) $amount);
+    }
+
     /**
      * Evaluates expression of numbers and + and * operators
      */

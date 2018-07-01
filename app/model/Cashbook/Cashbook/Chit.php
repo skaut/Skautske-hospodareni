@@ -17,20 +17,8 @@ class Chit
     /** @var Cashbook */
     private $cashbook;
 
-    /** @var ChitNumber|NULL */
-    private $number;
-
-    /** @var Date */
-    private $date;
-
-    /** @var Recipient|NULL */
-    private $recipient;
-
-    /** @var Amount */
-    private $amount;
-
-    /** @var string */
-    private $purpose;
+    /** @var ChitBody */
+    private $body;
 
     /** @var Category */
     private $category;
@@ -42,27 +30,16 @@ class Chit
      */
     private $locked;
 
-    public function __construct(
-        Cashbook $cashbook,
-        ?ChitNumber $number,
-        Date $date,
-        ?Recipient $recipient,
-        Amount $amount,
-        string $purpose,
-        Category $category
-    ) {
+    public function __construct(Cashbook $cashbook, ChitBody $body, Category $category)
+    {
         $this->cashbook = $cashbook;
-        $this->update($number, $date, $recipient, $amount, $purpose, $category);
+        $this->update($body, $category);
     }
 
-    public function update(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, Category $category) : void
+    public function update(ChitBody $body, Category $category) : void
     {
-        $this->number    = $number;
-        $this->date      = $date;
-        $this->recipient = $recipient;
-        $this->amount    = $amount;
-        $this->category  = $category;
-        $this->purpose   = $purpose;
+        $this->body     = $body;
+        $this->category = $category;
     }
 
     public function lock(int $userId) : void
@@ -84,9 +61,24 @@ class Chit
         return $this->id;
     }
 
+    public function getBody() : ChitBody
+    {
+        return $this->body;
+    }
+
     public function getAmount() : Amount
     {
-        return $this->amount;
+        return $this->body->getAmount();
+    }
+
+    public function getPurpose() : string
+    {
+        return $this->body->getPurpose();
+    }
+
+    public function getDate() : Date
+    {
+        return $this->body->getDate();
     }
 
     public function getCategoryId() : int
@@ -94,29 +86,9 @@ class Chit
         return $this->category->getId();
     }
 
-    public function getPurpose() : string
-    {
-        return $this->purpose;
-    }
-
     public function isLocked() : bool
     {
         return $this->locked !== null;
-    }
-
-    public function getNumber() : ?ChitNumber
-    {
-        return $this->number;
-    }
-
-    public function getDate() : Date
-    {
-        return $this->date;
-    }
-
-    public function getRecipient() : ?Recipient
-    {
-        return $this->recipient;
     }
 
     public function getCategory() : Category
@@ -124,25 +96,28 @@ class Chit
         return $this->category;
     }
 
+    public function getOperation() : Operation
+    {
+        return $this->category->getOperationType();
+    }
+
     public function copyToCashbook(Cashbook $newCashbook) : self
     {
-        $newChit           = clone $this;
-        $newChit->id       = null;
-        $newChit->cashbook = $newCashbook;
+        return new self($newCashbook, $this->body, $this->category);
+    }
 
-        return $newChit;
+    public function isIncome() : bool
+    {
+        return $this->category->getOperationType()->equalsValue(Operation::INCOME);
     }
 
     public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook) : self
     {
-        $newChit   = $this->copyToCashbook($newCashbook);
-        $operation = $newChit->category->getOperationType();
+        $newChit = $this->copyToCashbook($newCashbook);
 
         $newChit->category = new Category(
-            $operation->equalsValue(Operation::INCOME)
-                ? CategoryAggregate::UNDEFINED_INCOME_ID
-                : CategoryAggregate::UNDEFINED_EXPENSE_ID,
-            $operation
+            $newChit->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
+            $newChit->category->getOperationType()
         );
 
         return $newChit;

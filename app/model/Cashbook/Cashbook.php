@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Cashbook;
 
-use Cake\Chronos\Date;
 use Doctrine\Common\Collections\ArrayCollection;
-use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
-use Model\Cashbook\Cashbook\ChitNumber;
-use Model\Cashbook\Cashbook\Recipient;
+use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
@@ -79,15 +76,9 @@ class Cashbook extends Aggregate
         $this->note = $note;
     }
 
-    public function addChit(
-        ?ChitNumber $number,
-        Date $date,
-        ?Recipient $recipient,
-        Amount $amount,
-        string $purpose,
-        ICategory $category
-    ) : void {
-        $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $this->getChitCategory($category));
+    public function addChit(ChitBody $chitBody, ICategory $category) : void
+    {
+        $this->chits[] = new Chit($this, $chitBody, $this->getChitCategory($category));
         $this->raise(new ChitWasAdded($this->id, $category->getId()));
     }
 
@@ -113,15 +104,12 @@ class Cashbook extends Aggregate
             );
         }
 
-        $this->chits[] = new Chit(
-            $this,
-            null,
-            $originalChit->getDate(),
-            $originalChit->getRecipient(),
-            $originalChit->getAmount(),
-            $originalChit->getPurpose(),
-            new Cashbook\Category($categoryId, $originalChit->getCategory()->getOperationType()->getInverseOperation())
+        $category = new Cashbook\Category(
+            $categoryId,
+            $originalChit->getCategory()->getOperationType()->getInverseOperation()
         );
+
+        $this->chits[] = new Chit($this, $originalChit->getBody()->withoutChitNumber(), $category);
 
         $this->raise(new ChitWasAdded($this->id, $categoryId));
     }
@@ -130,15 +118,8 @@ class Cashbook extends Aggregate
      * @throws ChitNotFound
      * @throws ChitLocked
      */
-    public function updateChit(
-        int $chitId,
-        ?ChitNumber $number,
-        Date $date,
-        ?Recipient $recipient,
-        Amount $amount,
-        string $purpose,
-        ICategory $category
-    ) : void {
+    public function updateChit(int $chitId, ChitBody $chitBody, ICategory $category) : void
+    {
         $chit          = $this->getChit($chitId);
         $oldCategoryId = $chit->getCategoryId();
 
@@ -146,7 +127,7 @@ class Cashbook extends Aggregate
             throw new ChitLocked();
         }
 
-        $chit->update($number, $date, $recipient, $amount, $purpose, $this->getChitCategory($category));
+        $chit->update($chitBody, $this->getChitCategory($category));
 
         $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $category->getId()));
     }
@@ -225,9 +206,7 @@ class Cashbook extends Aggregate
         );
 
         foreach ($chits as $chit) {
-            /**
-            * @var Chit $chit
-            */
+            /** @var Chit $chit */
             $newChit = $this->type->equals($sourceCashbook->type) && ! $this->type->equalsValue(CashbookType::CAMP)
                 ? $chit->copyToCashbook($this)
                 : $chit->copyToCashbookWithUndefinedCategory($this);

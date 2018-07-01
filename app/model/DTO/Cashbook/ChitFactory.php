@@ -16,11 +16,7 @@ final class ChitFactory
     {
         return new Chit(
             $chit->getId(),
-            $chit->getNumber(),
-            $chit->getDate(),
-            $chit->getRecipient(),
-            $chit->getAmount(),
-            $chit->getPurpose(),
+            $chit->getBody(),
             $category,
             $chit->isLocked(),
             CashbookType::getInverseCashbookTypes($chit->getCategory()->getId())

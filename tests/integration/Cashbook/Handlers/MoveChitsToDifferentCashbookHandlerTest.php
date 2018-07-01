@@ -7,6 +7,7 @@ namespace Model\Cashbook\Handlers;
 use Cake\Chronos\Date;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
+use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
@@ -31,9 +32,10 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
         $type = CashbookType::get(CashbookType::EVENT);
         $this->cashbooks->save(new Cashbook($targetCashbookId, $type));
         $sourceCashbook = new Cashbook($sourceCashbookId, $type);
+        $chitBody = new Cashbook\ChitBody(null, new Date(), null, new Amount('100'), 'test');
 
-        for ($i = 0; $i < 3; $i++) {
-            $sourceCashbook->addChit(null, new Date(), null, new Cashbook\Amount('100'), 'test', $this->mockCategory());
+        for($i = 0; $i < 3; $i++) {
+            $sourceCashbook->addChit($chitBody, $this->mockCategory());
         }
 
         $this->cashbooks->save($sourceCashbook);
