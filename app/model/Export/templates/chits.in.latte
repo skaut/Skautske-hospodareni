@@ -14,7 +14,7 @@ table {
     </tr>
     <tr>
         <td><b>ze dne:</b> {$item->date|date:"j.n.Y"}</td>
-        <td><b>č.</b> {if $event->prefix != null}{$event->prefix}{$item->number}{/if}</td>
+        <td><b>č.</b> {$event->prefix}{$item->number}</td>
     </tr>
     <tr>
         <td colspan="3"><b>Přijato od:</b> {$item->recipient}</td>

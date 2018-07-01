@@ -20,7 +20,7 @@
                                 class="glyphicon glyphicon-download-alt"></i></button>
                 </th>
                 <th class="col-xs-1">Ze dne</th>
-                <th class="col-xs-1" n:if="$prefix !== NULL">Číslo</th>
+                <th class="col-xs-1">Číslo</th>
                 <th>Účel výplaty</th>
                 <th class="hidden-xs hidden-sm">Typ</th>
                 <th class="hidden-xs hidden-sm">Komu/Od koho</th>
@@ -55,7 +55,7 @@
                     </td>
                     <td><span class="visible-xs visible-sm">{$item->date|date:"j.n."}</span><span
                                 class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
-                    <td n:if="$prefix !== NULL" title="{$prefix}{$item->number}">{$item->number}</td>
+                    <td title="{$prefix}{$item->number}">{$item->number}</td>
                     <td title="{$item->purpose}">{dump $item}{$item->purpose|truncate:"120"}</td>
                     <td class="hidden-xs hidden-sm" title="{$item->category->name}">{$item->category->shortcut}</td>
                     <td class="hidden-xs hidden-sm">{$item->recipient}</td>
@@ -71,7 +71,7 @@
             {/foreach}
             <tr n:class="$balance < 0 ? 'alert alert-error'">
                 <td colspan="2">&nbsp;</td>
-                <td n:if="$prefix !== NULL">&nbsp;</td>
+                <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td class="hidden-xs hidden-sm">&nbsp;</td>
                 <td><b>Konečný stav</b></td>
