@@ -57,7 +57,7 @@ class Cashbook extends AbstractAggregate
         return $this->chitNumberPrefix;
     }
 
-    public function getNote(): ?string
+    public function getNote(): string
     {
         return $this->note;
     }
