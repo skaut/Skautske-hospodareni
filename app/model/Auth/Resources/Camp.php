@@ -29,6 +29,4 @@ final class Camp
     public const SET_AUTOMATIC_PARTICIPANTS_CALCULATION = [self::class, 'EV_EventCamp_UPDATE_Adult'];
 
     public const UPDATE_BUDGET = [self::class, 'EV_EventCampStatement_UPDATE_EventCamp'];
-
-    public const CANCEL = [self::class, 'EV_EventGeneral_UPDATE_Cancel'];
 }
