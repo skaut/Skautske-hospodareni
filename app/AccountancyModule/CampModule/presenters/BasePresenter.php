@@ -9,9 +9,6 @@ use Skautis\Wsdl\PermissionException;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-
-    const STable = "EV_EventCamp";
-
     /** @var \stdClass */
     protected $event;
 

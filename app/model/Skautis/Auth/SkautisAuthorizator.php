@@ -15,9 +15,9 @@ final class SkautisAuthorizator implements IAuthorizator
     private $userWebservice;
 
     private const RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP = [
-        Event::class => "EV_EventGeneral",
-        Unit::class => "OU_Unit",
-        Camp::class => 'EV_EventCamp',
+        Event::class => Event::TABLE,
+        Unit::class => Unit::TABLE,
+        Camp::class => Camp::TABLE,
     ];
 
 

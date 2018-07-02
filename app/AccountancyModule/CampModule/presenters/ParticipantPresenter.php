@@ -15,10 +15,6 @@ class ParticipantPresenter extends BasePresenter
 
     use \ParticipantTrait;
 
-    const RULE_PARTICIPANTS_DETAIL = "EV_ParticipantCamp_DETAIL";
-    const RULE_PARTICIPANTS_UPDATE_COST = "EV_ParticipantCamp_UPDATE_EventCamp_Note";
-    const RULE_PARTICIPANTS_UPDATE_ADULT = "EV_EventCamp_UPDATE_Adult"; //Nastavit, zda se počty tábořících počítají automaticky
-
     public function __construct(MemberService $member, ExportService $export, ExcelService $excel, PdfRenderer $pdf)
     {
         parent::__construct();

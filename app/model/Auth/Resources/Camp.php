@@ -11,6 +11,8 @@ final class Camp
 
     use StaticClass;
 
+    public const TABLE = "EV_EventCamp";
+
     public const ACCESS_DETAIL = [self::class, 'EV_EventCamp_DETAIL'];
     public const ACCESS_FUNCTIONS = [self::class, 'EV_EventFunction_ALL_EventCamp'];
     public const ACCESS_PARTICIPANTS = [self::class, 'EV_ParticipantCamp_ALL_EventCamp'];
@@ -29,6 +31,4 @@ final class Camp
     public const SET_AUTOMATIC_PARTICIPANTS_CALCULATION = [self::class, 'EV_EventCamp_UPDATE_Adult'];
 
     public const UPDATE_BUDGET = [self::class, 'EV_EventCampStatement_UPDATE_EventCamp'];
-
-    public const CANCEL = [self::class, 'EV_EventGeneral_UPDATE_Cancel'];
 }

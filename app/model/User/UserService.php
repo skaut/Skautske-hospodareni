@@ -9,9 +9,6 @@ use Nette\Utils\Strings;
 class UserService extends BaseService
 {
 
-    const SKAUTIS_CAMP_PREFIX = "EV_EventCamp";
-    const SKAUTIS_GENERAL_PREFIX = "EV_EventGeneral";
-
     /**
      * varcí ID role aktuálně přihlášeného uživatele
      */

@@ -11,9 +11,6 @@ use Model\EventEntity;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-
-    const STable = "EV_EventGeneral";
-
     /** @var \stdClass */
     protected $event;
 

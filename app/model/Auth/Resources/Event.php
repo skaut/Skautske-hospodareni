@@ -8,6 +8,8 @@ final class Event
 {
     use StaticClass;
 
+    public const TABLE = "EV_EventGeneral";
+
     public const UPDATE_FUNCTION = [self::class, "EV_EventGeneral_UPDATE_Function"];
     public const UPDATE = [self::class, "EV_EventGeneral_UPDATE"];
     public const DELETE = [self::class, "EV_EventGeneral_DELETE"];
