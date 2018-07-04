@@ -100,9 +100,9 @@ final class EventRepository implements IEventRepository
         );
     }
 
-    private function getSkautisId($id)
+    private function getSkautisId(int $id)
     {
-        $skautisId = $this->mapper->getSkautisId(CashbookId::fromString($id), Mapper::EVENT);
+        $skautisId = $this->mapper->getSkautisId(CashbookId::fromString((string)$id), Mapper::EVENT);
         if (is_null($skautisId)) {
             throw new EventNotFoundException();
         }
