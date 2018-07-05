@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers\Cashbook;
 
-use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
@@ -34,7 +33,7 @@ final class AddChitToCashbookHandler
         $cashbook = $this->cashbooks->find($command->getCashbookId());
         $category = $this->categories->find($command->getCategoryId(), $cashbook->getId(), $cashbook->getType());
 
-        $cashbook->addChit($command->getBody(), $category, PaymentMethod::get(PaymentMethod::CASH));
+        $cashbook->addChit($command->getBody(), $category, $command->getPaymentMethod());
 
         $this->cashbooks->save($cashbook);
     }

@@ -12,6 +12,7 @@ use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
@@ -121,7 +122,9 @@ class CashbookPresenter extends BasePresenter
             new CampParticipantCategoryIdQuery(new SkautisCampId($aid), ParticipantType::get(ParticipantType::CHILD))
         );
 
-        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $categoryId));
+        $this->commandBus->handle(
+            new AddChitToCashbook($this->getCashbookId(), $body, $categoryId, PaymentMethod::get(PaymentMethod::CASH))
+        );
 
         $this->flashMessage('HPD byl importován');
 

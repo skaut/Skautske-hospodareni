@@ -12,6 +12,7 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitNumber;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ChitLocked;
@@ -187,6 +188,15 @@ final class ChitForm extends BaseControl
             ->setAttribute('placeholder', 'Číslo')
             ->setAttribute('class', 'form-control input-sm');
 
+        $paymentMethods = [
+            PaymentMethod::CASH => 'Pokladna',
+            PaymentMethod::BANK_TRANSFER => 'Banka',
+        ];
+
+        $form->addSelect('paymentMethod', null, $paymentMethods)
+            ->setRequired(true)
+            ->setAttribute('class', 'form-control input-sm required');
+
         $form->addText('purpose')
             ->setMaxLength(120)
             ->setRequired('Zadejte účel výplaty')
@@ -244,13 +254,14 @@ final class ChitForm extends BaseControl
         $cashbookId = $this->cashbookId;
         $category   = $values->category;
         $chitBody   = $this->buildChitBodyFromValues($values);
+        $method     = PaymentMethod::get($values->paymentMethod);
 
         try {
             if ($chitId !== null) {
-                $this->commandBus->handle(new UpdateChit($cashbookId, $chitId, $chitBody, $category));
+                $this->commandBus->handle(new UpdateChit($cashbookId, $chitId, $chitBody, $category, $method));
                 $this->flashMessage('Paragon byl upraven.');
             } else {
-                $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $category));
+                $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $category, $method));
                 $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
         } catch (InvalidArgumentException | CashbookNotFound $exc) {
