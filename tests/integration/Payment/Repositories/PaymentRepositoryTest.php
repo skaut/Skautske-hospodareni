@@ -87,7 +87,7 @@ class PaymentRepositoryTest extends \IntegrationTest
         $payment = $this->repository->find(1);
 
         $expectedTransaction = new Payment\Transaction(
-            $data['transactionId'],
+            (int) $data['transactionId'],
             $data['paidFrom'],
             $data['transaction_payer'],
             $data['transaction_note']

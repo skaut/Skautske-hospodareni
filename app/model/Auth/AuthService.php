@@ -20,7 +20,7 @@ class AuthService
     /**
      * vrací přihlašovací url
      */
-    public function getLoginUrl(string $backlink) : string
+    public function getLoginUrl(?string $backlink) : string
     {
         return $this->skautis->getLoginUrl($backlink);
     }

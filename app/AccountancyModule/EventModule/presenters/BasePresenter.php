@@ -21,7 +21,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         parent::startup();
         $this->eventService  = $this->context->getService('eventService');
         $this->type          = ObjectType::EVENT;
-        $this->template->aid = $this->aid = $this->getParameter('aid', null);
+        $this->template->aid = $this->aid;
 
         //pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
         if ($this->aid === null) {

@@ -126,7 +126,7 @@ class BankServiceTest extends \IntegrationTest
     private function createTransaction(float $amount, ?string $variableSymbol) : Transaction
     {
         return new Transaction(
-            mt_rand(1, 1000),
+            (string)mt_rand(1, 1000),
             new \DateTimeImmutable(),
             $amount,
             '',

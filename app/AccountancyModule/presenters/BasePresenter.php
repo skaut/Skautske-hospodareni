@@ -16,7 +16,7 @@ abstract class BasePresenter extends \App\BasePresenter
     /**
      * id volane v url, vetsinou id akce
      *
-     * @var int|mixed
+     * @var int|null
      */
     protected $aid;
 
@@ -46,6 +46,7 @@ abstract class BasePresenter extends \App\BasePresenter
             throw new SkautisMaintenanceException();
         }
 
+        $this->aid = $this->getParameter('aid', null);
         if ($this->aid !== null) { // Persistent parameters aren't auto-casted to int
             $this->aid = (int) $this->aid;
         }

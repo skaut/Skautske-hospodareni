@@ -59,7 +59,7 @@ class DefaultPresenter extends BasePresenter
         $state = $this->ses->state ?? null;
         $list  = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $value['ID']);
+            $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, (int) $value['ID']);
         }
 
         $grid = $this->gridFactory->create();

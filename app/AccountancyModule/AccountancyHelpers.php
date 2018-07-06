@@ -27,8 +27,9 @@ abstract class AccountancyHelpers
 {
     /**
      * loader na všechny filtry
+     * @param null|int|float|string|DateTimeInterface|Money|State $value
      */
-    public static function loader(string $filter, string $value) : string
+    public static function loader(string $filter, $value) : string
     {
         if (method_exists(__CLASS__, $filter)) {
             $args = func_get_args();
@@ -136,11 +137,11 @@ abstract class AccountancyHelpers
     /**
      * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
      *
-     * @param int|float $num
+     * @param int|float|string $num
      */
     public static function num($num) : string
     {
-        return number_format($num, strpos($num, '.') ? 2 : 0, ',', ' ');
+        return number_format((float) $num, strpos((string)$num, '.') ? 2 : 0, ',', ' ');
     }
 
     public static function postCode(string $oldPsc) : string

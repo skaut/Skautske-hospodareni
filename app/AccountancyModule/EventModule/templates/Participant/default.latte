@@ -1,3 +1,9 @@
+{*
+$aid
+$event
+$list
+$participants
+*}
 {block #title}{$event->DisplayName} - seznam účastníků{/block}
 
 {block #content}
@@ -7,12 +13,6 @@
 </div>
 {dump $list}
 {dump $participants}
-
-
-
-
-
-
 
 <div class="row">
     {include $templateBlockDir.'participants/list.latte'}

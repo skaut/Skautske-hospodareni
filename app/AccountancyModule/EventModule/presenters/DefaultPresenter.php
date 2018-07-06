@@ -70,8 +70,8 @@ class DefaultPresenter extends BasePresenter
         $state = $this->ses->state ?? null;
         $list  = $this->eventService->event->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $list[$key]['accessDelete'] = $this->authorizator->isAllowed(Event::DELETE, $value['ID']);
-            $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $value['ID']);
+            $list[$key]['accessDelete'] = $this->authorizator->isAllowed(Event::DELETE, (int) $value['ID']);
+            $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Event::ACCESS_DETAIL, (int) $value['ID']);
         }
 
         $grid = $this->gridFactory->create();
