@@ -11,7 +11,6 @@ use Skautis\Wsdl\WebServiceInterface;
 
 final class EventStatesHandler
 {
-
     private const CACHE_KEY = 'event_states';
 
     /** @var WebServiceInterface */
@@ -23,14 +22,14 @@ final class EventStatesHandler
     public function __construct(WebServiceInterface $eventWebservice, Cache $cache)
     {
         $this->eventWebservice = $eventWebservice;
-        $this->cache = $cache;
+        $this->cache           = $cache;
     }
 
 
     /**
      * @return array<int,string>
      */
-    public function handle(EventStates $query): array
+    public function handle(EventStates $query) : array
     {
         return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(
@@ -38,5 +37,4 @@ final class EventStatesHandler
             );
         });
     }
-
 }

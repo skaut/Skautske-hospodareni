@@ -1,22 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment;
 
 use DateTimeImmutable;
-use Model\Payment\Mailing\Payment as MailPayment;
+use Model\Common\Repositories\IUserRepository;
 use Model\Mail\IMailerFactory;
+use Model\Payment\Mailing\Payment as MailPayment;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IMailCredentialsRepository;
 use Model\Payment\Repositories\IPaymentRepository;
-use Model\Common\Repositories\IUserRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
 use Nette\Utils\Validators;
+use function nl2br;
+use function rand;
 
 class MailingService
 {
-
     /** @var IGroupRepository */
     private $groups;
 
@@ -46,34 +49,32 @@ class MailingService
         TemplateFactory $templateFactory,
         IUserRepository $users,
         IMailCredentialsRepository $credentials
-    )
-    {
-        $this->groups = $groups;
-        $this->mailerFactory = $mailerFactory;
-        $this->payments = $payments;
-        $this->bankAccounts = $bankAccounts;
+    ) {
+        $this->groups          = $groups;
+        $this->mailerFactory   = $mailerFactory;
+        $this->payments        = $payments;
+        $this->bankAccounts    = $bankAccounts;
         $this->templateFactory = $templateFactory;
-        $this->users = $users;
-        $this->credentials = $credentials;
+        $this->users           = $users;
+        $this->credentials     = $credentials;
     }
 
     /**
      * Sends email to single payment address
      *
-     * @param int $paymentId
      * @throws InvalidEmailException
      * @throws PaymentNotFoundException
      * @throws MailCredentialsNotSetException
      * @throws EmailTemplateNotSetException
      */
-    public function sendEmail(int $paymentId, EmailType $emailType): void
+    public function sendEmail(int $paymentId, EmailType $emailType) : void
     {
         $payment = $this->payments->find($paymentId);
-        $group = $this->groups->find($payment->getGroupId());
+        $group   = $this->groups->find($payment->getGroupId());
 
         $template = $group->getEmailTemplate($emailType);
 
-        if ($template === NULL || ! $group->isEmailEnabled($emailType)) {
+        if ($template === null || ! $group->isEmailEnabled($emailType)) {
             throw new EmailTemplateNotSetException(
                 "Email template '" . $emailType->getValue() . "' not found"
             );
@@ -88,23 +89,23 @@ class MailingService
      * @throws EmailNotSetException
      * @throws MailCredentialsNotSetException
      */
-    public function sendTestMail(int $groupId): string
+    public function sendTestMail(int $groupId) : string
     {
         $group = $this->groups->find($groupId);
-        $user = $this->users->getCurrentUser();
+        $user  = $this->users->getCurrentUser();
 
-        if($user->getEmail() === NULL) {
+        if ($user->getEmail() === null) {
             throw new EmailNotSetException();
         }
 
         $payment = new MailPayment(
-            "Testovací účel",
+            'Testovací účel',
             $group->getDefaultAmount() ?? rand(50, 1000),
             $user->getEmail(),
             $group->getDueDate() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
             $group->getConstantSymbol(),
-            "obsah poznámky"
+            'obsah poznámky'
         );
 
         $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)));
@@ -122,7 +123,7 @@ class MailingService
     private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
     {
         $email = $paymentRow->getEmail();
-        if ($email === NULL || !Validators::isEmail($email)) {
+        if ($email === null || ! Validators::isEmail($email)) {
             throw new InvalidEmailException();
         }
 
@@ -136,22 +137,25 @@ class MailingService
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate) : void
     {
-        if($group->getSmtpId() === NULL) {
+        if ($group->getSmtpId() === null) {
             throw new MailCredentialsNotSetException();
         }
 
         $user = $this->users->getCurrentUser();
 
-        $bankAccount = $group->getBankAccountId() !== NULL
+        $bankAccount       = $group->getBankAccountId() !== null
             ? $this->bankAccounts->find($group->getBankAccountId())
-            : NULL;
-        $bankAccountNumber = $bankAccount !== NULL ? (string)$bankAccount->getNumber() : NULL;
+            : null;
+        $bankAccountNumber = $bankAccount !== null ? (string) $bankAccount->getNumber() : null;
 
         $emailTemplate = $emailTemplate->evaluate($group, $payment, $bankAccountNumber, $user->getName());
 
-        $template = $this->templateFactory->create(TemplateFactory::PAYMENT_DETAILS, [
-            'body' => nl2br($emailTemplate->getBody(), FALSE),
-        ]);
+        $template = $this->templateFactory->create(
+            TemplateFactory::PAYMENT_DETAILS,
+            [
+            'body' => nl2br($emailTemplate->getBody(), false),
+            ]
+        );
 
         $credentials = $this->credentials->find($group->getSmtpId());
 
@@ -164,17 +168,16 @@ class MailingService
         $this->mailerFactory->create($credentials)->send($mail);
     }
 
-    private function createPayment(Payment $payment): MailPayment
+    private function createPayment(Payment $payment) : MailPayment
     {
         return new MailPayment(
-                $payment->getName(),
-                $payment->getAmount(),
-                $payment->getEmail(),
-                $payment->getDueDate(),
-                $payment->getVariableSymbol() !== NULL ? $payment->getVariableSymbol()->toInt() : NULL,
-                $payment->getConstantSymbol(),
-                $payment->getNote()
+            $payment->getName(),
+            $payment->getAmount(),
+            $payment->getEmail(),
+            $payment->getDueDate(),
+            $payment->getVariableSymbol() !== null ? $payment->getVariableSymbol()->toInt() : null,
+            $payment->getConstantSymbol(),
+            $payment->getNote()
         );
     }
-
 }

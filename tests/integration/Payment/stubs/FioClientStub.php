@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment;
 
 use DateTimeImmutable;
@@ -8,19 +10,17 @@ use Model\Payment\Fio\IFioClient;
 
 class FioClientStub implements IFioClient
 {
-    
     /** @var Transaction[] */
     private $transactions = [];
 
-    public function setTransactions(array $transactions)
+    public function setTransactions(array $transactions) : void
     {
         $this->transactions = $transactions;
     }
 
 
-    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
+    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account) : array
     {
         return $this->transactions;
     }
-
 }

@@ -8,7 +8,6 @@ use Nette\Utils\Strings;
 
 final class VariableSymbol
 {
-
     /** @var string */
     private $value;
 
@@ -16,35 +15,34 @@ final class VariableSymbol
 
     public function __construct(string $value)
     {
-        if( ! Strings::match($value, '/' . self::PATTERN . '/')) {
+        if (! Strings::match($value, '/' . self::PATTERN . '/')) {
             throw new \InvalidArgumentException("Invalid variable symbol '$value'");
         }
         $this->value = $value;
     }
 
-    public function increment(): self
+    public function increment() : self
     {
         return new VariableSymbol(
-            (string)($this->toInt()+ 1)
+            (string) ($this->toInt()+ 1)
         );
     }
 
-    public static function areEqual(?VariableSymbol $first, ?VariableSymbol $second): bool
+    public static function areEqual(?VariableSymbol $first, ?VariableSymbol $second) : bool
     {
-        $firstInt = $first !== NULL ? $first->toInt() : NULL;
-        $secondInt = $second !== NULL ? $second->toInt() : NULL;
+        $firstInt  = $first !== null ? $first->toInt() : null;
+        $secondInt = $second !== null ? $second->toInt() : null;
 
         return $firstInt === $secondInt;
     }
 
-    public function toInt(): int
+    public function toInt() : int
     {
         return (int) $this->value;
     }
 
-    public function __toString(): string
+    public function __toString() : string
     {
         return $this->value;
     }
-
 }

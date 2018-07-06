@@ -12,7 +12,6 @@ use Model\Event\SkautisCampId;
  */
 final class ActivateAutocomputedParticipants
 {
-
     /** @var SkautisCampId */
     private $campId;
 
@@ -21,9 +20,8 @@ final class ActivateAutocomputedParticipants
         $this->campId = $campId;
     }
 
-    public function getCampId(): SkautisCampId
+    public function getCampId() : SkautisCampId
     {
         return $this->campId;
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook;
 
 use Cake\Chronos\Date;
@@ -15,10 +17,10 @@ use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\AbstractAggregate;
 use Nette\Utils\Strings;
+use function array_map;
 
 class Cashbook extends AbstractAggregate
 {
-
     /** @var CashbookId */
     private $id;
 
@@ -36,42 +38,42 @@ class Cashbook extends AbstractAggregate
 
     public function __construct(CashbookId $id, CashbookType $type)
     {
-        $this->id = $id;
-        $this->type = $type;
+        $this->id    = $id;
+        $this->type  = $type;
         $this->chits = new ArrayCollection();
-        $this->note = "";
+        $this->note  = '';
     }
 
-    public function getId(): CashbookId
+    public function getId() : CashbookId
     {
         return $this->id;
     }
 
-    public function getType(): CashbookType
+    public function getType() : CashbookType
     {
         return $this->type;
     }
 
-    public function getChitNumberPrefix(): ?string
+    public function getChitNumberPrefix() : ?string
     {
         return $this->chitNumberPrefix;
     }
 
-    public function getNote(): string
+    public function getNote() : string
     {
         return $this->note;
     }
 
-    public function updateChitNumberPrefix(?string $chitNumberPrefix): void
+    public function updateChitNumberPrefix(?string $chitNumberPrefix) : void
     {
-        if ($chitNumberPrefix !== NULL && Strings::length($chitNumberPrefix) > 6) {
+        if ($chitNumberPrefix !== null && Strings::length($chitNumberPrefix) > 6) {
             throw new \InvalidArgumentException('Chit number prefix too long');
         }
 
         $this->chitNumberPrefix = $chitNumberPrefix;
     }
 
-    public function updateNote(string $note): void
+    public function updateNote(string $note) : void
     {
         $this->note = $note;
     }
@@ -83,19 +85,19 @@ class Cashbook extends AbstractAggregate
         Amount $amount,
         string $purpose,
         ICategory $category
-    ): void
-    {
+    ) : void {
         $this->chits[] = new Chit($this, $number, $date, $recipient, $amount, $purpose, $this->getChitCategory($category));
         $this->raise(new ChitWasAdded($this->id, $category->getId()));
     }
 
     /**
      * Adds inverse chit for chit in specified cashbook
+     *
      * @throws InvalidCashbookTransferException
      */
-    public function addInverseChit(Cashbook $cashbook, int $chitId): void
+    public function addInverseChit(Cashbook $cashbook, int $chitId) : void
     {
-        $originalChit = $cashbook->getChit($chitId);
+        $originalChit       = $cashbook->getChit($chitId);
         $originalCategoryId = $originalChit->getCategoryId();
 
         if ($this->type->getTransferToCategoryId() === $originalCategoryId) {
@@ -112,7 +114,7 @@ class Cashbook extends AbstractAggregate
 
         $this->chits[] = new Chit(
             $this,
-            NULL,
+            null,
             $originalChit->getDate(),
             $originalChit->getRecipient(),
             $originalChit->getAmount(),
@@ -135,12 +137,11 @@ class Cashbook extends AbstractAggregate
         Amount $amount,
         string $purpose,
         ICategory $category
-    ): void
-    {
-        $chit = $this->getChit($chitId);
+    ) : void {
+        $chit          = $this->getChit($chitId);
         $oldCategoryId = $chit->getCategoryId();
 
-        if($chit->isLocked()) {
+        if ($chit->isLocked()) {
             throw new ChitLockedException();
         }
 
@@ -152,23 +153,23 @@ class Cashbook extends AbstractAggregate
     /**
      * @return float[] Category totals indexed by category IDs
      */
-    public function getCategoryTotals(): array
+    public function getCategoryTotals() : array
     {
         $totalByCategories = [];
 
-        foreach($this->chits as $chit) {
-            $categoryId = $chit->getCategoryId();
-            $totalByCategories[$categoryId]  = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->getValue();
+        foreach ($this->chits as $chit) {
+            $categoryId                     = $chit->getCategoryId();
+            $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->getValue();
         }
 
         return $totalByCategories;
     }
 
-    public function removeChit(int $chitId): void
+    public function removeChit(int $chitId) : void
     {
         $chit = $this->getChit($chitId);
 
-        if($chit->isLocked()) {
+        if ($chit->isLocked()) {
             throw new ChitLockedException();
         }
 
@@ -176,48 +177,55 @@ class Cashbook extends AbstractAggregate
         $this->raise(new ChitWasRemoved($this->id, $chit->getPurpose()));
     }
 
-    public function lockChit(int $chitId, int $userId): void
+    public function lockChit(int $chitId, int $userId) : void
     {
         $chit = $this->getChit($chitId);
 
-        if($chit->isLocked()) {
+        if ($chit->isLocked()) {
             return;
         }
 
         $chit->lock($userId);
     }
 
-    public function unlockChit(int $chitId): void
+    public function unlockChit(int $chitId) : void
     {
         $chit = $this->getChit($chitId);
 
-        if ( ! $chit->isLocked()) {
+        if (! $chit->isLocked()) {
             return;
         }
 
         $chit->unlock();
     }
 
-    public function lock(int $userId): void
+    public function lock(int $userId) : void
     {
-        foreach($this->chits as $chit) {
-            if( ! $chit->isLocked()) {
-                $chit->lock($userId);
+        foreach ($this->chits as $chit) {
+            if ($chit->isLocked()) {
+                continue;
             }
+
+            $chit->lock($userId);
         }
     }
 
     /**
      * @throws ChitNotFoundException
      */
-    public function copyChitsFrom(array $chitIds, Cashbook $sourceCashbook): void
+    public function copyChitsFrom(array $chitIds, Cashbook $sourceCashbook) : void
     {
-        $chits = array_map(function (int $chitId) use ($sourceCashbook): Chit {
-            return $sourceCashbook->getChit($chitId);
-        }, $chitIds);
+        $chits = array_map(
+            function (int $chitId) use ($sourceCashbook) : Chit {
+                return $sourceCashbook->getChit($chitId);
+            },
+            $chitIds
+        );
 
         foreach ($chits as $chit) {
-            /** @var Chit $chit */
+            /**
+ * @var Chit $chit
+*/
             $newChit = $this->type->equals($sourceCashbook->type) && ! $this->type->equalsValue(CashbookType::CAMP)
                 ? $chit->copyToCashbook($this)
                 : $chit->copyToCashbookWithUndefinedCategory($this);
@@ -230,19 +238,22 @@ class Cashbook extends AbstractAggregate
 
     /**
      * Only for Read model
+     *
      * @return Chit[]
      */
-    public function getChits(): array
+    public function getChits() : array
     {
         return $this->chits
-            ->map(function(Chit $c): Chit {
-                // clone to avoid modification of cashbook
-                return clone $c;
-            })
+            ->map(
+                function (Chit $c) : Chit {
+                    // clone to avoid modification of cashbook
+                    return clone $c;
+                }
+            )
             ->toArray();
     }
 
-    public function clear(): void
+    public function clear() : void
     {
         $this->chits->clear();
     }
@@ -250,10 +261,10 @@ class Cashbook extends AbstractAggregate
     /**
      * @throws ChitNotFoundException
      */
-    private function getChit(int $id): Chit
+    private function getChit(int $id) : Chit
     {
-        foreach($this->chits as $chit) {
-            if($chit->getId() === $id) {
+        foreach ($this->chits as $chit) {
+            if ($chit->getId() === $id) {
                 return $chit;
             }
         }
@@ -261,9 +272,8 @@ class Cashbook extends AbstractAggregate
         throw new ChitNotFoundException();
     }
 
-    private function getChitCategory(ICategory $category): Cashbook\Category
+    private function getChitCategory(ICategory $category) : Cashbook\Category
     {
         return new Cashbook\Category($category->getId(), $category->getOperationType());
     }
-
 }

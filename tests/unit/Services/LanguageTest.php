@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Services;
 
-class LanguageTest extends \Codeception\Test\Unit
-{
+use Codeception\Test\Unit;
+use function array_map;
 
+class LanguageTest extends Unit
+{
     /**
      * @dataProvider getWithGreaterFirst
      */
-    public function testFirstOneIsGreater(string $a, string $b): void
+    public function testFirstOneIsGreater(string $a, string $b) : void
     {
         $this->assertGreaterThan(0, Language::compare($a, $b));
     }
@@ -16,7 +20,7 @@ class LanguageTest extends \Codeception\Test\Unit
     /**
      * @dataProvider getWithLowerFirst
      */
-    public function testFirstOneIsLower(string $a, string $b): void
+    public function testFirstOneIsLower(string $a, string $b) : void
     {
         $this->assertLessThan(0, Language::compare($a, $b));
     }
@@ -24,12 +28,12 @@ class LanguageTest extends \Codeception\Test\Unit
     /**
      * @dataProvider getWithGreaterFirst
      */
-    public function testEqualStrings(string $a)
+    public function testEqualStrings(string $a) : void
     {
         $this->assertSame(0, Language::compare($a, $a));
     }
 
-    public function getWithGreaterFirst(): array
+    public function getWithGreaterFirst() : array
     {
         return [
             ['b', 'a'],
@@ -41,9 +45,8 @@ class LanguageTest extends \Codeception\Test\Unit
         ];
     }
 
-    public function getWithLowerFirst(): array
+    public function getWithLowerFirst() : array
     {
         return array_map('array_reverse', $this->getWithGreaterFirst());
     }
-
 }

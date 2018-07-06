@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 use Skautis\Skautis;
 
 class AuthService
 {
-
     /** @var Skautis */
     private $skautis;
 
@@ -18,9 +19,8 @@ class AuthService
 
     /**
      * vrací přihlašovací url
-     * @param string $backlink
      */
-    public function getLoginUrl($backlink): string
+    public function getLoginUrl(string $backlink) : string
     {
         return $this->skautis->getLoginUrl($backlink);
     }
@@ -28,7 +28,7 @@ class AuthService
     /**
      * nastavuje základní udaje po prihlášení do SkautISu
      */
-    public function setInit(string $token, int $roleId, int $unitId): void
+    public function setInit(string $token, int $roleId, int $unitId) : void
     {
         $this->skautis->getUser()->setLoginData($token, $roleId, $unitId);
     }
@@ -36,9 +36,8 @@ class AuthService
     /**
      * vrací url pro odhlášení
      */
-    public function getLogoutUrl(): string
+    public function getLogoutUrl() : string
     {
         return $this->skautis->getLogoutUrl();
     }
-
 }

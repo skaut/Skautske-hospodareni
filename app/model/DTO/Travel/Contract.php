@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Model\DTO\Travel;
 
 use Model\Travel\Contract\Passenger;
 use Nette\SmartObject;
-
 
 /**
  * @property-read int                       $id
@@ -18,7 +18,6 @@ use Nette\SmartObject;
  */
 class Contract
 {
-
     use SmartObject;
 
     /** @var int */
@@ -50,50 +49,48 @@ class Contract
         ?\DateTimeImmutable $since,
         ?\DateTimeImmutable $until,
         int $templateVersion
-    )
-    {
-        $this->id = $id;
-        $this->passenger = $passenger;
-        $this->unitId = $unitId;
+    ) {
+        $this->id                 = $id;
+        $this->passenger          = $passenger;
+        $this->unitId             = $unitId;
         $this->unitRepresentative = $unitRepresentative;
-        $this->since = $since;
-        $this->until = $until;
-        $this->templateVersion = $templateVersion;
+        $this->since              = $since;
+        $this->until              = $until;
+        $this->templateVersion    = $templateVersion;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getPassenger(): Passenger
+    public function getPassenger() : Passenger
     {
         return $this->passenger;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getUnitRepresentative(): string
+    public function getUnitRepresentative() : string
     {
         return $this->unitRepresentative;
     }
 
-    public function getSince(): ?\DateTimeImmutable
+    public function getSince() : ?\DateTimeImmutable
     {
         return $this->since;
     }
 
-    public function getUntil(): ?\DateTimeImmutable
+    public function getUntil() : ?\DateTimeImmutable
     {
         return $this->until;
     }
 
-    public function getTemplateVersion(): int
+    public function getTemplateVersion() : int
     {
         return $this->templateVersion;
     }
-
 }

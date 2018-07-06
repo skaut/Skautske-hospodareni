@@ -13,7 +13,6 @@ use Model\Event\SkautisCampId;
  */
 final class CampParticipantCategoryIdQuery
 {
-
     /** @var SkautisCampId */
     private $campId;
 
@@ -22,18 +21,17 @@ final class CampParticipantCategoryIdQuery
 
     public function __construct(SkautisCampId $campId, ParticipantType $participantType)
     {
-        $this->campId = $campId;
+        $this->campId          = $campId;
         $this->participantType = $participantType;
     }
 
-    public function getCampId(): SkautisCampId
+    public function getCampId() : SkautisCampId
     {
         return $this->campId;
     }
 
-    public function getParticipantType(): ParticipantType
+    public function getParticipantType() : ParticipantType
     {
         return $this->participantType;
     }
-
 }

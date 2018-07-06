@@ -10,7 +10,6 @@ use Model\Payment\VariableSymbol;
 
 final class PaymentDefaults
 {
-
     /** @var float|NULL */
     private $amount;
 
@@ -31,43 +30,41 @@ final class PaymentDefaults
         ?DateTimeImmutable $dueDate,
         ?int $constantSymbol,
         ?VariableSymbol $nextVariableSymbol
-    )
-    {
-        if($dueDate !== NULL && ! $this->isWorkday($dueDate)) {
+    ) {
+        if ($dueDate !== null && ! $this->isWorkday($dueDate)) {
             throw new DueDateIsNotWorkdayException();
         }
 
-        $this->amount = $amount !== 0.0 ? $amount : NULL;
-        $this->dueDate = $dueDate;
-        $this->constantSymbol = $constantSymbol;
+        $this->amount             = $amount !== 0.0 ? $amount : null;
+        $this->dueDate            = $dueDate;
+        $this->constantSymbol     = $constantSymbol;
         $this->nextVariableSymbol = $nextVariableSymbol;
     }
 
-    public function getAmount(): ?float
+    public function getAmount() : ?float
     {
         return $this->amount;
     }
 
-    public function getDueDate(): ?DateTimeImmutable
+    public function getDueDate() : ?DateTimeImmutable
     {
         return $this->dueDate;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol() : ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNextVariableSymbol(): ?VariableSymbol
+    public function getNextVariableSymbol() : ?VariableSymbol
     {
         return $this->nextVariableSymbol;
     }
 
-    private function isWorkday(DateTimeImmutable $date): bool
+    private function isWorkday(DateTimeImmutable $date) : bool
     {
-        $dayOfWeek = (int) $date->format("N");
+        $dayOfWeek = (int) $date->format('N');
 
         return $dayOfWeek <= 5;
     }
-
 }

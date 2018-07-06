@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Migrations;
 
 use Doctrine\DBAL\Migrations\AbstractMigration;
@@ -7,7 +9,7 @@ use Doctrine\DBAL\Schema\Schema;
 
 class Version20170707164123 extends AbstractMigration
 {
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         $this->addSql("
 CREATE TABLE `log` (
@@ -23,12 +25,10 @@ CREATE TABLE `log` (
   KEY `typeId` (`typeId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
         ");
-
-
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
-        $this->addSql("DROP TABLE IF EXISTS `log`;");
+        $this->addSql('DROP TABLE IF EXISTS `log`;');
     }
 }

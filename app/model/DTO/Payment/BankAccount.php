@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Payment;
 
 use Model\Payment\BankAccount\AccountNumber;
 
 class BankAccount
 {
-
     /** @var int */
     private $id;
 
@@ -36,50 +37,48 @@ class BankAccount
         ?string $token,
         \DateTimeImmutable $createdAt,
         bool $allowedForSubunits
-    )
-    {
-        $this->id = $id;
-        $this->unitId = $unitId;
-        $this->name = $name;
-        $this->number = $number;
-        $this->token = $token;
-        $this->createdAt = $createdAt;
+    ) {
+        $this->id                 = $id;
+        $this->unitId             = $unitId;
+        $this->name               = $name;
+        $this->number             = $number;
+        $this->token              = $token;
+        $this->createdAt          = $createdAt;
         $this->allowedForSubunits = $allowedForSubunits;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getNumber(): AccountNumber
+    public function getNumber() : AccountNumber
     {
         return $this->number;
     }
 
-    public function getToken(): ?string
+    public function getToken() : ?string
     {
         return $this->token;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt() : \DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function isAllowedForSubunits(): bool
+    public function isAllowedForSubunits() : bool
     {
         return $this->allowedForSubunits;
     }
-
 }

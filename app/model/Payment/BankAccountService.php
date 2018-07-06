@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment;
 
 use Assert\Assert;
@@ -15,10 +17,13 @@ use Model\Payment\Fio\IFioClient;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Nette\Caching\Cache;
+use function array_filter;
+use function array_map;
+use function count;
+use function in_array;
 
 class BankAccountService
 {
-
     /** @var IBankAccountRepository */
     private $bankAccounts;
 
@@ -44,17 +49,16 @@ class BankAccountService
         IFioClient $fio,
         IBankAccountImporter $importer,
         Cache $fioCache
-    )
-    {
+    ) {
         $this->bankAccounts = $bankAccounts;
-        $this->groups = $groups;
+        $this->groups       = $groups;
         $this->unitResolver = $unitResolver;
-        $this->fio = $fio;
-        $this->importer = $importer;
-        $this->fioCache = $fioCache;
+        $this->fio          = $fio;
+        $this->importer     = $importer;
+        $this->fioCache     = $fioCache;
     }
 
-    public function addBankAccount(int $unitId, string $name, AccountNumber $number, ?string $token): void
+    public function addBankAccount(int $unitId, string $name, AccountNumber $number, ?string $token) : void
     {
         $account = new BankAccount($unitId, $name, $number, $token, new DateTimeImmutable(), $this->unitResolver);
 
@@ -65,7 +69,7 @@ class BankAccountService
     /**
      * @throws BankAccountNotFoundException
      */
-    public function updateBankAccount(int $id, string $name, AccountNumber $number, ?string $token): void
+    public function updateBankAccount(int $id, string $name, AccountNumber $number, ?string $token) : void
     {
         $account = $this->bankAccounts->find($id);
 
@@ -79,13 +83,13 @@ class BankAccountService
     /**
      * @throws BankAccountNotFoundException
      */
-    public function removeBankAccount(int $id): void
+    public function removeBankAccount(int $id) : void
     {
         $account = $this->bankAccounts->find($id);
 
         $groups = $this->groups->findByBankAccount($id);
 
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $group->removeBankAccount();
             $this->groups->save($group);
         }
@@ -96,10 +100,9 @@ class BankAccountService
 
 
     /**
-     * @param int $id
      * @throws BankAccountNotFoundException
      */
-    public function allowForSubunits(int $id): void
+    public function allowForSubunits(int $id) : void
     {
         $account = $this->bankAccounts->find($id);
 
@@ -108,29 +111,31 @@ class BankAccountService
         $this->bankAccounts->save($account);
     }
 
-    public function disallowForSubunits(int $id): void
+    public function disallowForSubunits(int $id) : void
     {
         $account = $this->bankAccounts->find($id);
 
         $account->disallowForSubunits();
 
-        foreach($this->groups->findByBankAccount($id) as $group) {
-            if($group->getUnitId() !== $account->getUnitId()) {
-                $group->removeBankAccount();
-                $this->groups->save($group);
+        foreach ($this->groups->findByBankAccount($id) as $group) {
+            if ($group->getUnitId() === $account->getUnitId()) {
+                continue;
             }
+
+            $group->removeBankAccount();
+            $this->groups->save($group);
         }
 
         $this->bankAccounts->save($account);
     }
 
 
-    public function find(int $id): ?BankAccountDTO
+    public function find(int $id) : ?BankAccountDTO
     {
         try {
             return BankAccountFactory::create($this->bankAccounts->find($id));
-        } catch(BankAccountNotFoundException $e) {
-            return NULL;
+        } catch (BankAccountNotFoundException $e) {
+            return null;
         }
     }
 
@@ -140,26 +145,39 @@ class BankAccountService
      * @return BankAccountDTO[]
      * @throws BankAccountNotFoundException
      */
-    public function findByIds(array $ids): array
+    public function findByIds(array $ids) : array
     {
         Assert::thatAll($ids)->integer();
         $accounts = $this->bankAccounts->findByIds($ids);
 
-        return array_map(function(BankAccount $a) { return BankAccountFactory::create($a); }, $accounts);
+        return array_map(
+            function (BankAccount $a) {
+                return BankAccountFactory::create($a);
+            },
+            $accounts
+        );
     }
 
 
     /**
      * @return BankAccountDTO[]
      */
-    public function findByUnit(int $unitId): array
+    public function findByUnit(int $unitId) : array
     {
         $accounts = $this->bankAccounts->findByUnit($this->unitResolver->getOfficialUnitId($unitId));
-        $accounts = array_filter($accounts, function (BankAccount $a ) use($unitId){
-            return $a->getUnitId() === $unitId || $a->isAllowedForSubunits();
-        });
+        $accounts = array_filter(
+            $accounts,
+            function (BankAccount $a) use ($unitId) {
+                return $a->getUnitId() === $unitId || $a->isAllowedForSubunits();
+            }
+        );
 
-        return array_map(function (BankAccount $a) { return BankAccountFactory::create($a); }, $accounts);
+        return array_map(
+            function (BankAccount $a) {
+                return BankAccountFactory::create($a);
+            },
+            $accounts
+        );
     }
 
 
@@ -169,11 +187,11 @@ class BankAccountService
      * @throws BankTimeoutException
      * @throws BankTimeLimitException
      */
-    public function getTransactions(int $bankAccountId, int $daysBack): array
+    public function getTransactions(int $bankAccountId, int $daysBack) : array
     {
         Assert::that($daysBack)->greaterThan(0);
         $account = $this->bankAccounts->find($bankAccountId);
-        $now = new DateTimeImmutable();
+        $now     = new DateTimeImmutable();
         return $this->fio->getTransactions($now->modify("- $daysBack days"), $now, $account);
     }
 
@@ -181,19 +199,19 @@ class BankAccountService
     /**
      * @throws BankAccountNotFoundException when no bank accounts were imported
      */
-    public function importFromSkautis(int $unitId): void
+    public function importFromSkautis(int $unitId) : void
     {
-        $now = new DateTimeImmutable();
+        $now     = new DateTimeImmutable();
         $numbers = $this->getImportableBankAccounts($unitId);
 
-        if(count($numbers) === 0) {
+        if (count($numbers) === 0) {
             throw new BankAccountNotFoundException();
         }
 
         $i = 1;
-        foreach($numbers as $number) {
+        foreach ($numbers as $number) {
             $this->bankAccounts->save(
-                new BankAccount($unitId, 'Importovaný účet (' . $i++ . ')', $number, NULL, $now, $this->unitResolver)
+                new BankAccount($unitId, 'Importovaný účet (' . $i++ . ')', $number, null, $now, $this->unitResolver)
             );
         }
     }
@@ -202,24 +220,33 @@ class BankAccountService
     /**
      * @return AccountNumber[]
      */
-    private function getImportableBankAccounts(int $unitId): array
+    private function getImportableBankAccounts(int $unitId) : array
     {
-        $unitId = $this->unitResolver->getOfficialUnitId($unitId);
+        $unitId   = $this->unitResolver->getOfficialUnitId($unitId);
         $accounts = $this->bankAccounts->findByUnit($unitId);
-        $numbers = array_map(function(BankAccount $a) { return (string) $a->getNumber(); }, $accounts);
+        $numbers  = array_map(
+            function (BankAccount $a) {
+                return (string) $a->getNumber();
+            },
+            $accounts
+        );
 
         $imported = $this->importer->import($unitId);
 
-        return array_filter($imported, function(AccountNumber $n) use ($numbers) { return ! in_array((string) $n, $numbers, TRUE); });
+        return array_filter(
+            $imported,
+            function (AccountNumber $n) use ($numbers) {
+                return ! in_array((string) $n, $numbers, true);
+            }
+        );
     }
 
 
     /**
      * Cleans cached transactions for account
      */
-    private function cleanFioCache(int $bankAccountId): void
+    private function cleanFioCache(int $bankAccountId) : void
     {
         $this->fioCache->clean([Cache::TAGS => 'fio/' . $bankAccountId]);
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\ReadModel\QueryHandlers;
 
 use Model\Event\ReadModel\Helpers;
@@ -9,7 +11,6 @@ use Skautis\Wsdl\WebServiceInterface;
 
 final class EventScopesHandler
 {
-
     private const CACHE_KEY = 'event_scopes';
 
     /** @var WebServiceInterface */
@@ -21,20 +22,19 @@ final class EventScopesHandler
     public function __construct(WebServiceInterface $eventWebservice, Cache $cache)
     {
         $this->eventWebservice = $eventWebservice;
-        $this->cache = $cache;
+        $this->cache           = $cache;
     }
 
     /**
      * @return array<int,string>
      */
-    public function handle(EventScopes $query): array
+    public function handle(EventScopes $query) : array
     {
         // Scopes doesn't change so it's safe to cache them no matter what
-        return $this->cache->load(self::CACHE_KEY, function() {
+        return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(
                 $this->eventWebservice->eventGeneralScopeAll()
             );
         });
     }
-
 }

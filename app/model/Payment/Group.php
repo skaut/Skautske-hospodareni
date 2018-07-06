@@ -12,7 +12,6 @@ use Model\Payment\Repositories\IBankAccountRepository;
 
 class Group
 {
-
     /** @var int */
     private $id;
 
@@ -46,7 +45,7 @@ class Group
     /** @var string */
     private $note = '';
 
-    public const STATE_OPEN = 'open';
+    public const STATE_OPEN   = 'open';
     public const STATE_CLOSED = 'closed';
 
     /**
@@ -61,18 +60,17 @@ class Group
         array $emails,
         ?int $smtpId,
         ?BankAccount $bankAccount
-    )
-    {
-        $this->unitId = $unitId;
-        $this->object = $object;
-        $this->name = $name;
+    ) {
+        $this->unitId          = $unitId;
+        $this->object          = $object;
+        $this->name            = $name;
         $this->paymentDefaults = $paymentDefaults;
-        $this->createdAt = $createdAt;
-        $this->smtpId = $smtpId;
+        $this->createdAt       = $createdAt;
+        $this->smtpId          = $smtpId;
 
         $this->emails = new ArrayCollection();
 
-        if ( ! isset($emails[EmailType::PAYMENT_INFO])) {
+        if (! isset($emails[EmailType::PAYMENT_INFO])) {
             throw new \InvalidArgumentException("Required email template '" . EmailType::PAYMENT_INFO . "' is missing");
         }
 
@@ -85,103 +83,105 @@ class Group
 
     public function update(string $name, PaymentDefaults $paymentDefaults, ?int $smtpId, ?BankAccount $bankAccount) : void
     {
-        $this->name = $name;
+        $this->name            = $name;
         $this->paymentDefaults = $paymentDefaults;
-        $this->smtpId = $smtpId;
+        $this->smtpId          = $smtpId;
         $this->changeBankAccount($bankAccount);
     }
 
-    public function open(string $note): void
+    public function open(string $note) : void
     {
         if ($this->state === self::STATE_OPEN) {
             return;
         }
         $this->state = self::STATE_OPEN;
-        $this->note = $note;
+        $this->note  = $note;
     }
 
-    public function close(string $note): void
+    public function close(string $note) : void
     {
-        if($this->state === self::STATE_CLOSED) {
+        if ($this->state === self::STATE_CLOSED) {
             return;
         }
         $this->state = self::STATE_CLOSED;
-        $this->note = $note;
+        $this->note  = $note;
     }
 
-    public function removeBankAccount(): void
+    public function removeBankAccount() : void
     {
-        $this->bankAccount = NULL;
+        $this->bankAccount = null;
     }
 
     /**
      * @throws BankAccountNotFoundException
      */
-    public function changeUnit(int $unitId, IUnitResolver $unitResolver, IBankAccountRepository $bankAccountRepository): void
+    public function changeUnit(int $unitId, IUnitResolver $unitResolver, IBankAccountRepository $bankAccountRepository) : void
     {
         $this->unitId = $unitId;
 
-        if ($this->bankAccount === NULL) {
+        if ($this->bankAccount === null) {
             return;
         }
 
         $currentOfficialUnit = $unitResolver->getOfficialUnitId($this->unitId);
-        $newOfficialUnit = $unitResolver->getOfficialUnitId($unitId);
+        $newOfficialUnit     = $unitResolver->getOfficialUnitId($unitId);
 
         // different official unit
-        if($currentOfficialUnit !== $newOfficialUnit) {
-            $this->bankAccount = NULL;
+        if ($currentOfficialUnit !== $newOfficialUnit) {
+            $this->bankAccount = null;
             return;
         }
 
         // unit -> official unit
-        if($unitId === $newOfficialUnit) {
+        if ($unitId === $newOfficialUnit) {
             return;
         }
 
         $bankAccount = $bankAccountRepository->find($this->bankAccount->getId());
 
-        if( ! $bankAccount->isAllowedForSubunits()) {
-            $this->bankAccount = NULL;
+        if ($bankAccount->isAllowedForSubunits()) {
+            return;
         }
+
+        $this->bankAccount = null;
     }
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getObject(): ?SkautisEntity
+    public function getObject() : ?SkautisEntity
     {
         return $this->object;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getPaymentDefaults(): PaymentDefaults
+    public function getPaymentDefaults() : PaymentDefaults
     {
         return $this->paymentDefaults;
     }
 
-    public function getDefaultAmount(): ?float
+    public function getDefaultAmount() : ?float
     {
         return $this->paymentDefaults->getAmount();
     }
 
-    public function getDueDate(): ?\DateTimeImmutable
+    public function getDueDate() : ?\DateTimeImmutable
     {
         return $this->paymentDefaults->getDueDate();
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol() : ?int
     {
         return $this->paymentDefaults->getConstantSymbol();
     }
@@ -189,52 +189,56 @@ class Group
     /**
      * @deprecated Use Group::getPaymentDefaults()
      */
-    public function getNextVariableSymbol(): ?VariableSymbol
+    public function getNextVariableSymbol() : ?VariableSymbol
     {
         return $this->paymentDefaults->getNextVariableSymbol();
     }
 
-    public function getState(): string
+    public function getState() : string
     {
         return $this->state;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt() : ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getEmailTemplate(EmailType $type): ?EmailTemplate
+    public function getEmailTemplate(EmailType $type) : ?EmailTemplate
     {
         $email = $this->getEmail($type);
 
-        return $email !== NULL ? $email->getTemplate() : NULL;
+        return $email !== null ? $email->getTemplate() : null;
     }
 
-    public function isEmailEnabled(EmailType $type): bool
+    public function isEmailEnabled(EmailType $type) : bool
     {
         $email = $this->getEmail($type);
 
-        return $email !== NULL && $email->isEnabled();
+        return $email !== null && $email->isEnabled();
     }
 
-    public function updateLastPairing(\DateTimeImmutable $at): void
+    public function updateLastPairing(\DateTimeImmutable $at) : void
     {
-        if ($this->bankAccount !== NULL) {
-            $this->bankAccount = $this->bankAccount->updateLastPairing($at);
+        if ($this->bankAccount === null) {
+            return;
         }
+
+        $this->bankAccount = $this->bankAccount->updateLastPairing($at);
     }
 
-    public function invalidateLastPairing(): void
+    public function invalidateLastPairing() : void
     {
-        if ($this->bankAccount !== NULL) {
-            $this->bankAccount = $this->bankAccount->invalidateLastPairing();
+        if ($this->bankAccount === null) {
+            return;
         }
+
+        $this->bankAccount = $this->bankAccount->invalidateLastPairing();
     }
 
-    public function getLastPairing(): ?\DateTimeImmutable
+    public function getLastPairing() : ?\DateTimeImmutable
     {
-        return $this->bankAccount !== NULL ? $this->bankAccount->getLastPairing() : NULL;
+        return $this->bankAccount !== null ? $this->bankAccount->getLastPairing() : null;
     }
 
     public function getSmtpId() : ?int
@@ -242,35 +246,35 @@ class Group
         return $this->smtpId;
     }
 
-    public function getNote(): string
+    public function getNote() : string
     {
         return $this->note;
     }
 
-    public function getBankAccountId(): ?int
+    public function getBankAccountId() : ?int
     {
-        return $this->bankAccount !== NULL ? $this->bankAccount->getId() : NULL;
+        return $this->bankAccount !== null ? $this->bankAccount->getId() : null;
     }
 
-    private function changeBankAccount(?BankAccount $bankAccount): void
+    private function changeBankAccount(?BankAccount $bankAccount) : void
     {
-        if($bankAccount === NULL) {
-            $this->bankAccount = NULL;
+        if ($bankAccount === null) {
+            $this->bankAccount = null;
             return;
         }
 
-        if($bankAccount->getUnitId() !== $this->unitId && !$bankAccount->isAllowedForSubunits()) {
-            throw new \InvalidArgumentException("Unit owning this group has no acces to this bank account");
+        if ($bankAccount->getUnitId() !== $this->unitId && ! $bankAccount->isAllowedForSubunits()) {
+            throw new \InvalidArgumentException('Unit owning this group has no acces to this bank account');
         }
 
         $this->bankAccount = Group\BankAccount::create($bankAccount->getId());
     }
 
-    public function updateEmail(EmailType $type, EmailTemplate $template): void
+    public function updateEmail(EmailType $type, EmailTemplate $template) : void
     {
         $email = $this->getEmail($type);
 
-        if ($email !== NULL) {
+        if ($email !== null) {
             $email->updateTemplate($template);
             return;
         }
@@ -278,24 +282,25 @@ class Group
         $this->emails->add(new Email($this, $type, $template));
     }
 
-    public function disableEmail(EmailType $type): void
+    public function disableEmail(EmailType $type) : void
     {
         $email = $this->getEmail($type);
 
-        if($email !== NULL) {
-            $email->disable();
+        if ($email === null) {
+            return;
         }
+
+        $email->disable();
     }
 
-    private function getEmail(EmailType $type): ?Email
+    private function getEmail(EmailType $type) : ?Email
     {
-        foreach($this->emails as $email) {
-            if($email->getType()->equals($type)) {
+        foreach ($this->emails as $email) {
+            if ($email->getType()->equals($type)) {
                 return $email;
             }
         }
 
-        return NULL;
+        return null;
     }
-
 }

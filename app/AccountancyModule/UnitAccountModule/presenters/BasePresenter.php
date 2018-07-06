@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\UnitAccountModule;
+
+use function array_key_exists;
+use function date;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-
     /** @persistent */
     public $aid;
     protected $year;
@@ -15,40 +19,43 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->type = "unit";
-        $this->aid = $this->aid ?? $this->unitService->getUnitId();
-        $this->year = $this->getParameter("year", date("Y"));
+        $this->type = 'unit';
+        $this->aid  = $this->aid ?? $this->unitService->getUnitId();
+        $this->year = $this->getParameter('year', date('Y'));
 
-        $user = $this->getUser();
+        $user          = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);
 
         $this->isReadable = $isReadable = isset($readableUnits[$this->aid]);
         $this->isEditable = array_key_exists($this->aid, $this->unitService->getEditUnits($user));
 
-        if(!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění pro zobrazení stránky", "warning");
-            $this->redirect(":Accountancy:Default:", ["aid" => NULL]);
+        if ($this->isEditable) {
+            return;
         }
+
+        $this->flashMessage('Nemáte oprávnění pro zobrazení stránky', 'warning');
+        $this->redirect(':Accountancy:Default:', ['aid' => null]);
     }
 
     protected function beforeRender() : void
     {
         parent::beforeRender();
-        $this->template->year = $this->year;
+        $this->template->year       = $this->year;
         $this->template->isEditable = $this->isEditable;
-        $this->template->aid = $this->aid;
+        $this->template->aid        = $this->aid;
     }
 
     protected function editableOnly() : void
     {
-        if(!$this->isEditable) {
-            $this->flashMessage("Data jednotky jsou uzavřené a nelze je upravovat.", "danger");
-            if($this->isAjax()) {
-                $this->sendPayload();
-            } else {
-                $this->redirect("Default:");
-            }
+        if ($this->isEditable) {
+            return;
+        }
+
+        $this->flashMessage('Data jednotky jsou uzavřené a nelze je upravovat.', 'danger');
+        if ($this->isAjax()) {
+            $this->sendPayload();
+        } else {
+            $this->redirect('Default:');
         }
     }
-
 }

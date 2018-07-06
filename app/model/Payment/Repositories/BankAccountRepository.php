@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Repositories;
 
 use Assert\Assert;
 use Doctrine\ORM\EntityManager;
 use Model\Payment\BankAccount;
 use Model\Payment\BankAccountNotFoundException;
+use function array_unique;
+use function count;
 
 class BankAccountRepository implements IBankAccountRepository
 {
-
     /** @var EntityManager */
     private $entityManager;
 
@@ -18,11 +21,11 @@ class BankAccountRepository implements IBankAccountRepository
         $this->entityManager = $entityManager;
     }
 
-    public function find(int $id): BankAccount
+    public function find(int $id) : BankAccount
     {
         $account = $this->entityManager->find(BankAccount::class, $id);
 
-        if($account === NULL) {
+        if ($account === null) {
             throw new BankAccountNotFoundException();
         }
 
@@ -30,7 +33,7 @@ class BankAccountRepository implements IBankAccountRepository
     }
 
 
-    public function findByIds(array $ids): array
+    public function findByIds(array $ids) : array
     {
         Assert::thatAll($ids)->integer();
 
@@ -44,7 +47,7 @@ class BankAccountRepository implements IBankAccountRepository
             ->getQuery()
             ->getResult();
 
-        if(count($accounts) !== count($ids)) {
+        if (count($accounts) !== count($ids)) {
             throw new BankAccountNotFoundException();
         }
 
@@ -52,7 +55,7 @@ class BankAccountRepository implements IBankAccountRepository
     }
 
 
-    public function save(BankAccount $account): void
+    public function save(BankAccount $account) : void
     {
         $this->entityManager->persist($account);
         $this->entityManager->flush();
@@ -61,16 +64,15 @@ class BankAccountRepository implements IBankAccountRepository
     /**
      * {@inheritDoc}
      */
-    public function findByUnit(int $unitId): array
+    public function findByUnit(int $unitId) : array
     {
         return $this->entityManager->getRepository(BankAccount::class)->findBy(['unitId' => $unitId]);
     }
 
 
-    public function remove(BankAccount $account): void
+    public function remove(BankAccount $account) : void
     {
         $this->entityManager->remove($account);
         $this->entityManager->flush();
     }
-
 }

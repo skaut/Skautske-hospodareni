@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\ReadModel\QueryHandlers;
 
 use Model\Event\Functions;
@@ -10,7 +12,6 @@ use Skautis\Skautis;
 
 class CampFunctionsHandler
 {
-
     /** @var Skautis */
     private $skautis;
 
@@ -19,7 +20,7 @@ class CampFunctionsHandler
         $this->skautis = $skautis;
     }
 
-    public function handle(CampFunctions $query): Functions
+    public function handle(CampFunctions $query) : Functions
     {
         $functions = $this->skautis->event->eventFunctionAllCamp([
             'ID_EventCamp' => $query->getCampId()->getValue(),
@@ -37,17 +38,16 @@ class CampFunctionsHandler
 
     /**
      * @param \stdClass[] $functions
-     * @return array<string, Person>
+     * @return Person[]
      */
-    private function getFunctionsByType(array $functions): array
+    private function getFunctionsByType(array $functions) : array
     {
         $functionsByType = [];
 
-        foreach($functions as $function) {
+        foreach ($functions as $function) {
             $functionsByType[$function->EventFunctionTypeKey] = PersonFactory::create($function);
         }
 
         return $functionsByType;
     }
-
 }

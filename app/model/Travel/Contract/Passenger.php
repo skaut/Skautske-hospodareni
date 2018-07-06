@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Travel\Contract;
 
 use Nette\SmartObject;
@@ -12,7 +14,6 @@ use Nette\SmartObject;
  */
 final class Passenger
 {
-
     use SmartObject;
 
     /** @var string */
@@ -29,23 +30,23 @@ final class Passenger
 
     public function __construct(string $name, string $contact, string $address, ?\DateTimeImmutable $birthday)
     {
-        $this->name = $name;
-        $this->contact = $contact;
-        $this->address = $address;
+        $this->name     = $name;
+        $this->contact  = $contact;
+        $this->address  = $address;
         $this->birthday = $birthday;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getContact(): string
+    public function getContact() : string
     {
         return $this->contact;
     }
 
-    public function getAddress(): string
+    public function getAddress() : string
     {
         return $this->address;
     }
@@ -54,5 +55,4 @@ final class Passenger
     {
         return $this->birthday;
     }
-
 }

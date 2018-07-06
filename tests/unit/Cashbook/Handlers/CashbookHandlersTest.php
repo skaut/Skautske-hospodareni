@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers;
 
+use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -16,9 +17,8 @@ use Model\Cashbook\Handlers\Cashbook\UnlockChitHandler;
 use Model\Cashbook\Handlers\Cashbook\UpdateChitNumberPrefixHandler;
 use Model\Cashbook\Repositories\ICashbookRepository;
 
-final class CashbookHandlersTest extends \Codeception\Test\Unit
+final class CashbookHandlersTest extends Unit
 {
-
     /**
      * @dataProvider dataHandlers
      */
@@ -27,8 +27,7 @@ final class CashbookHandlersTest extends \Codeception\Test\Unit
         string $handlerClass,
         string $expectedMethodCall,
         array $expectedMethodArguments
-    ): void
-    {
+    ) : void {
         $cashbook = m::mock(Cashbook::class);
         $cashbook->shouldReceive($expectedMethodCall)
             ->once()
@@ -37,7 +36,9 @@ final class CashbookHandlersTest extends \Codeception\Test\Unit
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('find')
             ->once()
-            ->withArgs(function (CashbookId $id) { return $id->equals($this->getCashbookId()); })
+            ->withArgs(function (CashbookId $id) {
+                return $id->equals($this->getCashbookId());
+            })
             ->andReturn($cashbook);
 
         $repository->shouldReceive('save')
@@ -49,7 +50,7 @@ final class CashbookHandlersTest extends \Codeception\Test\Unit
         $handler->handle($commandInstance);
     }
 
-    public function dataHandlers(): array
+    public function dataHandlers() : array
     {
         return [
             [
@@ -87,13 +88,12 @@ final class CashbookHandlersTest extends \Codeception\Test\Unit
                 UpdateChitNumberPrefixHandler::class,
                 'updateChitNumberPrefix',
                 ['V123'],
-            ]
+            ],
         ];
     }
 
-    private function getCashbookId(): Cashbook\CashbookId
+    private function getCashbookId() : Cashbook\CashbookId
     {
         return Cashbook\CashbookId::fromString('132');
     }
-
 }

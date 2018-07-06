@@ -12,7 +12,6 @@ use Model\Cashbook\ReadModel\QueryHandlers\FinalBalanceQueryHandler;
  */
 final class FinalBalanceQuery
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -21,9 +20,8 @@ final class FinalBalanceQuery
         $this->cashbookId = $cashbookId;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
-
 }

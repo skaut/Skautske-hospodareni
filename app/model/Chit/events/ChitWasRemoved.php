@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Chit\Events;
 
 class ChitWasRemoved extends BaseChit
 {
-
     /** @var string */
     private $chitPurpose;
 
@@ -14,9 +15,8 @@ class ChitWasRemoved extends BaseChit
         $this->chitPurpose = $chitPurpose;
     }
 
-    public function getChitPurpose(): string
+    public function getChitPurpose() : string
     {
         return $this->chitPurpose;
     }
-
 }

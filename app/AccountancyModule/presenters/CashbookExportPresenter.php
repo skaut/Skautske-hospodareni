@@ -21,11 +21,13 @@ use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
+use function array_filter;
+use function array_map;
+use function array_values;
 use function in_array;
 
 class CashbookExportPresenter extends BasePresenter
 {
-
     /**
      * @var string
      * @persistent
@@ -45,8 +47,8 @@ class CashbookExportPresenter extends BasePresenter
     {
         parent::__construct();
         $this->exportService = $exportService;
-        $this->excelService = $excelService;
-        $this->pdf = $pdf;
+        $this->excelService  = $excelService;
+        $this->pdf           = $pdf;
     }
 
     /**
@@ -57,7 +59,7 @@ class CashbookExportPresenter extends BasePresenter
     {
         parent::startup();
 
-        if(!$this->hasAccessToCashbook()) {
+        if (! $this->hasAccessToCashbook()) {
             throw new BadRequestException('User has no access to cashbook', IResponse::S403_FORBIDDEN);
         }
     }
@@ -69,11 +71,11 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionPrintChits(string $cashbookId, array $chitIds) : void
     {
-        $skautisId = $this->getSkautisId();
+        $skautisId   = $this->getSkautisId();
         $eventEntity = $this->getEventEntity();
 
         $chitIds = array_map('\intval', $chitIds);
-        $chits = $this->getChitsWithIds($chitIds);
+        $chits   = $this->getChitsWithIds($chitIds);
 
         $template = $this->exportService->getChits($skautisId, $eventEntity, $chits, CashbookId::fromString($cashbookId));
         $this->pdf->render($template, 'paragony.pdf');
@@ -126,7 +128,7 @@ class CashbookExportPresenter extends BasePresenter
     public function actionExportCashbook(string $cashbookId) : void
     {
         $skautisId = $this->getSkautisId();
-        $event = $this->getEventEntity()->event->get($skautisId);
+        $event     = $this->getEventEntity()->event->get($skautisId);
 
         $this->excelService->getCashbook($event->DisplayName, CashbookId::fromString($cashbookId));
         $this->terminate();
@@ -155,7 +157,7 @@ class CashbookExportPresenter extends BasePresenter
             ObjectType::UNIT => Unit::ACCESS_DETAIL,
         ];
 
-        if(!isset($requiredPermissions[$skautisType])) {
+        if (! isset($requiredPermissions[$skautisType])) {
             throw new \RuntimeException('Unknown cashbook type');
         }
 
@@ -168,7 +170,9 @@ class CashbookExportPresenter extends BasePresenter
     private function getSkautisType() : ObjectType
     {
         try {
-            /** @var Cashbook $cashbook */
+            /**
+ * @var Cashbook $cashbook
+*/
             $cashbook = $this->queryBus->handle(new CashbookQuery(CashbookId::fromString($this->cashbookId)));
             return $cashbook->getType()->getSkautisObjectType();
         } catch (CashbookNotFoundException $e) {
@@ -187,7 +191,7 @@ class CashbookExportPresenter extends BasePresenter
     {
         $type = $this->getSkautisType()->getValue();
 
-        if($type === ObjectType::UNIT) {
+        if ($type === ObjectType::UNIT) {
             $serviceName = 'unitAccountService';
         } else {
             $serviceName = ($type === ObjectType::EVENT ? 'event' : $type) . 'Service';
@@ -202,13 +206,17 @@ class CashbookExportPresenter extends BasePresenter
      */
     private function getChitsWithIds(array $ids) : array
     {
-        /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(new ChitListQuery(CashbookId::fromString($this->cashbookId)));
-        $filteredChits = array_filter($chits, function(Chit $chit) use ($ids): bool {
-            return in_array($chit->getId(), $ids, TRUE);
-        });
+        /**
+ * @var Chit[] $chits
+*/
+        $chits         = $this->queryBus->handle(new ChitListQuery(CashbookId::fromString($this->cashbookId)));
+        $filteredChits = array_filter(
+            $chits,
+            function (Chit $chit) use ($ids) : bool {
+                return in_array($chit->getId(), $ids, true);
+            }
+        );
 
         return array_values($filteredChits);
     }
-
 }

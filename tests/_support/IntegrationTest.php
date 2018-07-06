@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\SchemaTool;
 
 abstract class IntegrationTest extends Codeception\Test\Unit
 {
-
     /** @var IntegrationTester */
     protected $tester;
 
-    /** @var \Doctrine\ORM\Mapping\ClassMetadata[] */
+    /** @var ClassMetadata[] */
     private $metadata;
 
     /** @var EntityManager */
@@ -18,23 +20,22 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     /** @var SchemaTool */
     private $schemaTool;
 
-    protected function getTestedEntites(): array
+    protected function getTestedEntites() : array
     {
         return [];
     }
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->entityManager = $this->tester->grabService(EntityManager::class);
-        $this->metadata = array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntites());
-        $this->schemaTool = new SchemaTool($this->entityManager);
+        $this->metadata      = array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntites());
+        $this->schemaTool    = new SchemaTool($this->entityManager);
         $this->schemaTool->dropSchema($this->metadata);
         $this->schemaTool->createSchema($this->metadata);
     }
 
-    protected function _after()
+    protected function _after() : void
     {
         $this->schemaTool->dropSchema($this->metadata);
     }
-
 }

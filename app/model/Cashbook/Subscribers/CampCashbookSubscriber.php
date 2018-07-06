@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Subscribers;
 
 use eGen\MessageBus\Bus\CommandBus;
@@ -17,7 +19,6 @@ use Model\DTO\Cashbook\Cashbook;
  */
 final class CampCashbookSubscriber
 {
-
     /** @var CommandBus */
     private $commandBus;
 
@@ -27,40 +28,41 @@ final class CampCashbookSubscriber
     public function __construct(CommandBus $commandBus, QueryBus $queryBus)
     {
         $this->commandBus = $commandBus;
-        $this->queryBus = $queryBus;
+        $this->queryBus   = $queryBus;
     }
-    public function chitWasAdded(ChitWasAdded $event): void
+    public function chitWasAdded(ChitWasAdded $event) : void
     {
         $id = $event->getCashbookId();
 
-        if( ! $this->isCamp($id)) {
+        if (! $this->isCamp($id)) {
             return;
         }
 
         $this->updateCategories($id);
     }
 
-    public function chitWasUpdated(ChitWasUpdated $event): void
+    public function chitWasUpdated(ChitWasUpdated $event) : void
     {
         $id = $event->getCashbookId();
 
-        if( ! $this->isCamp($id)) {
+        if (! $this->isCamp($id)) {
             return;
         }
 
         $this->updateCategories($id);
     }
 
-    private function updateCategories(CashbookId $cashbookId): void
+    private function updateCategories(CashbookId $cashbookId) : void
     {
         $this->commandBus->handle(new UpdateCampCategoryTotals($cashbookId));
     }
 
-    private function isCamp(CashbookId $cashbookId): bool
+    private function isCamp(CashbookId $cashbookId) : bool
     {
-        /** @var Cashbook $cashbook */
+        /**
+ * @var Cashbook $cashbook
+*/
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         return $cashbook->getType()->equalsValue(CashbookType::CAMP);
     }
-
 }

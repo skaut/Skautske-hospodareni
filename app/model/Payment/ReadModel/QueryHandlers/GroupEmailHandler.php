@@ -11,7 +11,6 @@ use Model\Payment\Repositories\IGroupRepository;
 
 final class GroupEmailHandler
 {
-
     /** @var IGroupRepository */
     private $groups;
 
@@ -20,20 +19,19 @@ final class GroupEmailHandler
         $this->groups = $groups;
     }
 
-    public function handle(GroupEmailQuery $query): ?GroupEmail
+    public function handle(GroupEmailQuery $query) : ?GroupEmail
     {
         try {
-            $group = $this->groups->find($query->getGroupId());
+            $group    = $this->groups->find($query->getGroupId());
             $template = $group->getEmailTemplate($query->getEmailType());
 
-            if ($template === NULL) {
-                return NULL;
+            if ($template === null) {
+                return null;
             }
 
             return new GroupEmail($template, $group->isEmailEnabled($query->getEmailType()));
         } catch (GroupNotFoundException $e) {
-            return NULL;
+            return null;
         }
     }
-
 }

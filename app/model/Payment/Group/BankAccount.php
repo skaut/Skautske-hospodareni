@@ -8,7 +8,6 @@ use DateTimeImmutable;
 
 final class BankAccount
 {
-
     /** @var int */
     private $id;
 
@@ -17,33 +16,32 @@ final class BankAccount
 
     private function __construct(int $id, ?DateTimeImmutable $lastPairing)
     {
-        $this->id = $id;
+        $this->id          = $id;
         $this->lastPairing = $lastPairing;
     }
 
-    public static function create(int $bankAccountId): self
+    public static function create(int $bankAccountId) : self
     {
-        return new self($bankAccountId, NULL);
+        return new self($bankAccountId, null);
     }
 
-    public function updateLastPairing(DateTimeImmutable $lastPairing): self
+    public function updateLastPairing(DateTimeImmutable $lastPairing) : self
     {
         return new self($this->id, $lastPairing);
     }
 
-    public function invalidateLastPairing(): self
+    public function invalidateLastPairing() : self
     {
-        return new self($this->id, NULL);
+        return new self($this->id, null);
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getLastPairing(): ?DateTimeImmutable
+    public function getLastPairing() : ?DateTimeImmutable
     {
         return $this->lastPairing;
     }
-
 }

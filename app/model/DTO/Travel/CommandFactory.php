@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Travel;
 
 use Model\Travel\Command as CommandEntity;
 
 class CommandFactory
 {
-
-    public static function create(CommandEntity $command): Command
+    public static function create(CommandEntity $command) : Command
     {
         return new Command(
             $command->getId(),
@@ -25,8 +26,7 @@ class CommandFactory
             $command->getFirstTravelDate(),
             $command->getPricePerKm(),
             $command->getFuelPricePerKm(),
-            $command->getClosedAt() !== NULL ? Command::STATE_CLOSED : Command::STATE_IN_PROGRESS
+            $command->getClosedAt() !== null ? Command::STATE_CLOSED : Command::STATE_IN_PROGRESS
         );
     }
-
 }

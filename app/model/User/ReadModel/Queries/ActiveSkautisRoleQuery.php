@@ -12,7 +12,5 @@ use Model\User\SkautisRole;
  */
 final class ActiveSkautisRoleQuery
 {
-
     public const RETURN_TYPE = SkautisRole::class;
-
 }

@@ -25,13 +25,19 @@ use Model\Event\SkautisEventId;
 use Model\EventEntity;
 use Nette\DI\Container;
 use Nette\Utils\ArrayHash;
+use function array_map;
+use function date;
+use function explode;
+use function implode;
+use function in_array;
+use function ucfirst;
 
 class MoveChitsDialog extends BaseControl
 {
-
     /**
      * Comma-separated chit IDS (because persistent parameters don't support arrays)
-     * @var string
+     *
+     * @var        string
      * @persistent
      */
     public $chitIds;
@@ -40,7 +46,7 @@ class MoveChitsDialog extends BaseControl
      * @var bool
      * @persistent
      */
-    public $opened = FALSE;
+    public $opened = false;
 
     /** @var CashbookId */
     private $cashbookId;
@@ -60,11 +66,11 @@ class MoveChitsDialog extends BaseControl
     public function __construct(CashbookId $cashbookId, CommandBus $commandBus, QueryBus $queryBus, IAuthorizator $authorizator, Container $context)
     {
         parent::__construct();
-        $this->cashbookId = $cashbookId;
-        $this->commandBus = $commandBus;
-        $this->queryBus = $queryBus;
+        $this->cashbookId   = $cashbookId;
+        $this->commandBus   = $commandBus;
+        $this->queryBus     = $queryBus;
         $this->authorizator = $authorizator;
-        $this->context = $context;
+        $this->context      = $context;
     }
 
     /**
@@ -73,15 +79,17 @@ class MoveChitsDialog extends BaseControl
     public function open(array $chitIds) : void
     {
         $this->chitIds = implode(',', $chitIds);
-        $this->opened = TRUE;
+        $this->opened  = true;
         $this->redrawControl();
     }
 
     public function render() : void
     {
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'renderModal' => $this->opened,
-        ]);
+            ]
+        );
 
         $this->template->setFile(__DIR__ . '/templates/MoveChitsDialog.latte');
         $this->template->render();
@@ -89,7 +97,7 @@ class MoveChitsDialog extends BaseControl
 
     protected function createComponentForm() : BaseForm
     {
-        $form = new BaseForm();
+        $form  = new BaseForm();
         $items = [
             'Výpravy' => $this->getListOfEvents(ObjectType::EVENT, ['draft']),
             'Tábory' => $this->getListOfEvents(ObjectType::CAMP, ['draft', 'approvedParent', 'approvedLeader']),
@@ -101,8 +109,7 @@ class MoveChitsDialog extends BaseControl
         $form->addSubmit('move', 'Přesunout doklady')
             ->setAttribute('class', 'ajax');
 
-
-        $form->onSuccess[] = function(BaseForm $form, ArrayHash $values) : void {
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
             $this->formSubmitted($form, $values);
         };
 
@@ -113,20 +120,19 @@ class MoveChitsDialog extends BaseControl
     {
         $chitIds = $this->getChitIds();
 
-        if(empty($chitIds)) {
+        if (empty($chitIds)) {
             $form->addError('Nebyly vybrány žádné paragony!');
             return;
         }
 
-
-        if($values->newCashbookId === NULL) {
+        if ($values->newCashbookId === null) {
             $form->addError('Nebyla vybrána žádná cílová pokladní kniha!');
             return;
         }
 
         $newCashbookId = CashbookId::fromString($values->newCashbookId);
 
-        if(!$this->canEdit($this->cashbookId) || !$this->canEdit($newCashbookId)) {
+        if (! $this->canEdit($this->cashbookId) || ! $this->canEdit($newCashbookId)) {
             $this->presenter->flashMessage('Nemáte oprávnění k původní nebo nové pokladní knize!', 'danger');
             $this->redirect('this');
         }
@@ -150,33 +156,38 @@ class MoveChitsDialog extends BaseControl
 
     /**
      * Vrací pole ID => Název pro výpravy i tábory
-     * @param string $eventType "general" or "camp"
-     * @param array $states
+     *
+     * @param  string $eventType "general" or "camp"
+     * @param  array  $states
      * @return array
      */
-    private function getListOfEvents(string $eventType, array $states = NULL) : array
+    private function getListOfEvents(string $eventType, ?array $states = null) : array
     {
-        /** @var EventEntity $eventEntity */
-        $eventEntity = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
+        /**
+ * @var EventEntity $eventEntity
+*/
+        $eventEntity  = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
         $eventService = $eventEntity->event;
-        $rawArr = $eventService->getAll(date('Y'));
+        $rawArr       = $eventService->getAll(date('Y'));
 
-        if(empty($rawArr)) {
+        if (empty($rawArr)) {
             return [];
         }
 
         $currentSkautisId = $this->getSkautisId($this->cashbookId);
-        $resultArray = [];
+        $resultArray      = [];
 
         foreach ($rawArr as $item) {
-            if($item['ID'] === $currentSkautisId) {
+            if ($item['ID'] === $currentSkautisId) {
                 continue;
             }
 
-            if($states === NULL || in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
-                $cashbookId = $this->getCashbookId($item['ID'], ObjectType::get($eventType));
-                $resultArray[$cashbookId->toString()] = $item['DisplayName'];
+            if ($states !== null && ! in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
+                continue;
             }
+
+            $cashbookId                           = $this->getCashbookId($item['ID'], ObjectType::get($eventType));
+            $resultArray[$cashbookId->toString()] = $item['DisplayName'];
         }
 
         return $resultArray;
@@ -184,10 +195,10 @@ class MoveChitsDialog extends BaseControl
 
     private function canEdit(CashbookId $cashbookId) : bool
     {
-        $type = $this->getCashbookType($cashbookId);
+        $type      = $this->getCashbookType($cashbookId);
         $skautisId = $this->getSkautisId($cashbookId);
 
-        if($type->equalsValue(CashbookType::EVENT)) {
+        if ($type->equalsValue(CashbookType::EVENT)) {
             return $this->authorizator->isAllowed(Event::UPDATE, $skautisId);
         }
 
@@ -198,14 +209,16 @@ class MoveChitsDialog extends BaseControl
 
     private function getCashbookType(CashbookId $cashbookId) : CashbookType
     {
-        /** @var Cashbook $cashbook */
+        /**
+ * @var Cashbook $cashbook
+*/
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         return $cashbook->getType();
     }
 
     private function getCashbookId(int $skautisId, ObjectType $objectType) : CashbookId
     {
-        if($objectType->equalsValue(ObjectType::CAMP)) {
+        if ($objectType->equalsValue(ObjectType::CAMP)) {
             return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisId)));
         }
 
@@ -216,5 +229,4 @@ class MoveChitsDialog extends BaseControl
     {
         return $this->queryBus->handle(new SkautisIdQuery($cashbookId));
     }
-
 }

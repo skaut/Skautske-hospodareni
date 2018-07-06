@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 use Assert\Assert;
@@ -26,10 +28,24 @@ use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use Model\Services\Language;
 use Skautis\Skautis;
+use Skautis\Wsdl\PermissionException;
+use function array_filter;
+use function array_key_exists;
+use function array_map;
+use function count;
+use function date;
+use function explode;
+use function in_array;
+use function is_array;
+use function mb_substr;
+use function reset;
+use function strcmp;
+use function strlen;
+use function trim;
+use function usort;
 
 class PaymentService
 {
-
     /** @var string */
     private $tempDir;
 
@@ -55,38 +71,40 @@ class PaymentService
         IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts,
         ClientInterface $http
-    )
-    {
-        $this->tempDir = $tempDir;
-        $this->skautis = $skautis;
-        $this->groups = $groups;
-        $this->payments = $payments;
+    ) {
+        $this->tempDir      = $tempDir;
+        $this->skautis      = $skautis;
+        $this->groups       = $groups;
+        $this->payments     = $payments;
         $this->bankAccounts = $bankAccounts;
-        $this->http = $http;
+        $this->http         = $http;
     }
 
-    public function findPayment(int $id): ?DTO\Payment
+    public function findPayment(int $id) : ?DTO\Payment
     {
         try {
             return DTO\PaymentFactory::create($this->payments->find($id));
-        } catch(PaymentNotFoundException $e) {
-            return NULL;
+        } catch (PaymentNotFoundException $e) {
+            return null;
         }
     }
 
     /**
-	 * @return DTO\Payment[]
-	 */
-    public function findByGroup(int $groupId): array
+     * @return DTO\Payment[]
+     */
+    public function findByGroup(int $groupId) : array
     {
         $payments = $this->payments->findByGroup($groupId);
 
-        return array_map(function(Payment $payment) {
-               return DTO\PaymentFactory::create($payment);
-        }, $payments);
+        return array_map(
+            function (Payment $payment) {
+                return DTO\PaymentFactory::create($payment);
+            },
+            $payments
+        );
     }
 
-    public function createPayment(int $groupId, string $name, ?string $email, float $amount, DateTimeImmutable $dueDate, ?int $personId, ?VariableSymbol $vs, ?int $ks, string $note): void
+    public function createPayment(int $groupId, string $name, ?string $email, float $amount, DateTimeImmutable $dueDate, ?int $personId, ?VariableSymbol $vs, ?int $ks, string $note) : void
     {
         $group = $this->groups->find($groupId);
 
@@ -104,8 +122,7 @@ class PaymentService
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         string $note
-    ): void
-    {
+    ) : void {
         $payment = $this->payments->find($id);
 
         $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
@@ -113,7 +130,7 @@ class PaymentService
         $this->payments->save($payment);
     }
 
-    public function cancelPayment(int $pid): void
+    public function cancelPayment(int $pid) : void
     {
         $payment = $this->payments->find($pid);
         $payment->cancel(new DateTimeImmutable());
@@ -121,7 +138,7 @@ class PaymentService
         $this->payments->save($payment);
     }
 
-    public function completePayment(int $id): void
+    public function completePayment(int $id) : void
     {
         $payment = $this->payments->find($id);
         $payment->complete(new DateTimeImmutable());
@@ -137,13 +154,16 @@ class PaymentService
      * @param int[] $unitIds
      * @return DTO\Group[]
      */
-    public function getGroups(array $unitIds, bool $onlyOpen): array
+    public function getGroups(array $unitIds, bool $onlyOpen) : array
     {
         $groups = $this->groups->findByUnits($unitIds, $onlyOpen);
 
-        return array_map(function (Group $group) {
-            return DTO\GroupFactory::create($group);
-        }, $groups);
+        return array_map(
+            function (Group $group) {
+                return DTO\GroupFactory::create($group);
+            },
+            $groups
+        );
     }
 
 
@@ -151,12 +171,17 @@ class PaymentService
      * @param int[] $ids
      * @return DTO\Group[]
      */
-    public function findGroupsByIds(array $ids): array
+    public function findGroupsByIds(array $ids) : array
     {
         Assert::thatAll($ids)->integer();
         $groups = $this->groups->findByIds($ids);
 
-        return array_map(function (Group $g) { return DTO\GroupFactory::create($g); }, $groups);
+        return array_map(
+            function (Group $g) {
+                return DTO\GroupFactory::create($g);
+            },
+            $groups
+        );
     }
 
 
@@ -164,7 +189,7 @@ class PaymentService
      * @param int[] $groupIds
      * @return Summary[][]
      */
-    public function getGroupSummaries(array $groupIds): array
+    public function getGroupSummaries(array $groupIds) : array
     {
         return $this->payments->summarizeByGroup($groupIds);
     }
@@ -180,10 +205,9 @@ class PaymentService
         array $emails,
         ?int $smtpId,
         ?int $bankAccountId
-    ): int
-    {
-        $now = new DateTimeImmutable();
-        $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
+    ) : int {
+        $now         = new DateTimeImmutable();
+        $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
         $group = new Group($unitId, $skautisEntity, $label, $paymentDefaults, $now, $emails, $smtpId, $bankAccount);
 
@@ -194,25 +218,25 @@ class PaymentService
     /**
      * @param array<string,EmailTemplate> $emails
      */
-    public function updateGroup(int $id,
+    public function updateGroup(
+        int $id,
         string $name,
         PaymentDefaults $paymentDefaults,
         array $emails,
         ?int $smtpId,
         ?int $bankAccountId
-    ): void
-    {
-        $group = $this->groups->find($id);
-        $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
+    ) : void {
+        $group       = $this->groups->find($id);
+        $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
         $group->update($name, $paymentDefaults, $smtpId, $bankAccount);
 
-        foreach(EmailType::getAvailableValues() as $typeKey) {
+        foreach (EmailType::getAvailableValues() as $typeKey) {
             $type = EmailType::get($typeKey);
 
             if (isset($emails[$typeKey])) {
-               $group->updateEmail($type, $emails[$typeKey]);
-               continue;
+                $group->updateEmail($type, $emails[$typeKey]);
+                continue;
             }
 
             $group->disableEmail($type);
@@ -221,31 +245,31 @@ class PaymentService
         $this->groups->save($group);
     }
 
-    public function getGroup($id): ?DTO\Group
+    public function getGroup(int $id) : ?DTO\Group
     {
         try {
             $group = $this->groups->find($id);
             return DTO\GroupFactory::create($group);
         } catch (GroupNotFoundException $e) {
         }
-        return NULL;
+        return null;
     }
 
-    public function openGroup(int $id, string $note): void
+    public function openGroup(int $id, string $note) : void
     {
         $group = $this->groups->find($id);
         $group->open($note);
         $this->groups->save($group);
     }
 
-    public function closeGroup(int $id, string $note): void
+    public function closeGroup(int $id, string $note) : void
     {
         $group = $this->groups->find($id);
         $group->close($note);
         $this->groups->save($group);
     }
 
-    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
+    public function getMaxVariableSymbol(int $groupId) : ?VariableSymbol
     {
         return $this->payments->getMaxVariableSymbol($groupId);
     }
@@ -253,11 +277,11 @@ class PaymentService
     /**
      * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby
      */
-    public function getNextVS(int $groupId): ?VariableSymbol
+    public function getNextVS(int $groupId) : ?VariableSymbol
     {
         $maxVs = $this->payments->getMaxVariableSymbol($groupId);
 
-        if($maxVs !== NULL) {
+        if ($maxVs !== null) {
             return $maxVs->increment();
         }
 
@@ -268,57 +292,65 @@ class PaymentService
 
     /**
      * seznam osob z dané jednotky
-     * @param int $unitId
-     * @param int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
+     *
+     * @param  int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
      * @return DTO\Person[]
      */
-    public function getPersons($unitId, int $groupId)
+    public function getPersons(int $unitId, int $groupId) : array
     {
-        $persons = $this->skautis->org->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => TRUE]);
+        $persons = $this->skautis->org->PersonAll(['ID_Unit' => $unitId, 'OnlyDirectMember' => true]);
 
-        if(!is_array($persons) || empty($persons)) {
+        if (! is_array($persons) || empty($persons)) {
             return [];
         }
 
         $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
 
         $result = [];
-        foreach($persons as $person) {
-            if(in_array($person->ID, $personsWithPayment)) {
+        foreach ($persons as $person) {
+            if (in_array($person->ID, $personsWithPayment)) {
                 continue;
             }
 
             $result[] = new DTO\Person($person->ID, $person->DisplayName, $this->getPersonEmails($person->ID));
         }
 
-        usort($result, function (DTO\Person $one, DTO\Person $two) {
-            return Language::compare($one->getName(), $two->getName());
-        });
+        usort(
+            $result,
+            function (DTO\Person $one, DTO\Person $two) {
+                return Language::compare($one->getName(), $two->getName());
+            }
+        );
 
         return $result;
     }
 
     /**
      * vrací seznam emailů osoby
-     * @param int $personId
+     *
      * @return string[]
      */
-    public function getPersonEmails($personId)
+    public function getPersonEmails(int $personId) : array
     {
         $result = [];
         try {
             $emails = $this->skautis->org->PersonContactAll(['ID_Person' => $personId]);
             if (is_array($emails)) {
-                usort($emails, function ($a, $b) {
-                    return $a->IsMain == $b->IsMain ? 0 : ($a->IsMain > $b->IsMain) ? -1 : 1;
-                });
-                foreach ($emails as $c) {
-                    if (mb_substr($c->ID_ContactType, 0, 5) == "email") {
-                        $result[$c->Value] = $c->Value . " (" . $c->ContactType . ")";
+                usort(
+                    $emails,
+                    function ($a, $b) {
+                        return $a->IsMain === $b->IsMain ? 0 : ($a->IsMain > $b->IsMain) ? -1 : 1;
                     }
+                );
+                foreach ($emails as $c) {
+                    if (mb_substr($c->ID_ContactType, 0, 5) !== 'email') {
+                        continue;
+                    }
+
+                    $result[$c->Value] = $c->Value . ' (' . $c->ContactType . ')';
                 }
             }
-        } catch (\Skautis\Wsdl\PermissionException $exc) {//odchycení bývalých členů, ke kterým už nemáme oprávnění
+        } catch (PermissionException $exc) {//odchycení bývalých členů, ke kterým už nemáme oprávnění
         }
         return $result;
     }
@@ -330,21 +362,21 @@ class PaymentService
     /**
      * Returns newest registration without created group
      */
-    public function getNewestRegistration(): array
+    public function getNewestRegistration() : array
     {
         $unitId = $this->skautis->getUser()->getUnitId();
 
-        $data = $this->skautis->org->UnitRegistrationAll(["ID_Unit" => $unitId, ""]);
+        $data = $this->skautis->org->UnitRegistrationAll(['ID_Unit' => $unitId, '']);
 
-        if ($data != new \stdClass()) { // Skautis returns empty object when no registration is found
+        if ($data !== new \stdClass()) { // Skautis returns empty object when no registration is found
             $registration = $data[0];
 
             $groups = $this->groups->findBySkautisEntity(
                 new Group\SkautisEntity($registration->ID, Type::get(Type::REGISTRATION))
             );
 
-            if(empty($groups)) {
-                return (array)$registration;
+            if (empty($groups)) {
+                return (array) $registration;
             }
         }
 
@@ -353,40 +385,46 @@ class PaymentService
 
     /**
      * seznam osob z registrace
+     *
      * @param int[] $units
-     * @param int $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
-     * @return array(array())
+     * @param int   $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
      */
-    public function getPersonsFromRegistrationWithoutPayment(array $units, int $groupId)
+    public function getPersonsFromRegistrationWithoutPayment(array $units, int $groupId) : array
     {
         $result = [];
 
         $group = $this->getGroup($groupId);
 
-        if ($group === NULL || !in_array($group->getUnitId(), $units, TRUE)) {
-            throw new \InvalidArgumentException("Nebyla nalezena platební skupina");
+        if ($group === null || ! in_array($group->getUnitId(), $units, true)) {
+            throw new \InvalidArgumentException('Nebyla nalezena platební skupina');
         }
-        $persons = $this->getPersonFromRegistration($group->getSkautisId(), TRUE);
+        $persons = $this->getPersonFromRegistration($group->getSkautisId(), true);
 
         if (is_array($persons)) {
-            usort($persons, function ($a, $b) {
-                return strcmp($a->Person, $b->Person);
-            });
+            usort(
+                $persons,
+                function ($a, $b) {
+                    return strcmp($a->Person, $b->Person);
+                }
+            );
 
             $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
-            $persons = array_filter($persons, function ($v) use ($personsWithPayment) {
-                return !in_array($v->ID_Person, $personsWithPayment);
-            });
+            $persons            = array_filter(
+                $persons,
+                function ($v) use ($personsWithPayment) {
+                    return ! in_array($v->ID_Person, $personsWithPayment);
+                }
+            );
 
             foreach ($persons as $p) {
-                $result[$p->ID_Person] = (array)$p;
+                $result[$p->ID_Person]           = (array) $p;
                 $result[$p->ID_Person]['emails'] = $this->getPersonEmails($p->ID_Person);
             }
         }
         return $result;
     }
 
-    public function getPersonFromRegistration($registrationId, $includeChild = TRUE)
+    public function getPersonFromRegistration(?int $registrationId, bool $includeChild = true)
     {
         $persons = $this->skautis->org->PersonRegistrationAll([
             'ID_UnitRegistration' => $registrationId,
@@ -405,42 +443,40 @@ class PaymentService
      */
 
     /**
-     * @param int $unitId
-     * @param int $year
      * @return array - format array("add" => [], "remove" => [])
      */
-    public function getJournalChangesAfterRegistration($unitId, $year): array
+    public function getJournalChangesAfterRegistration(int $unitId, int $year) : array
     {
-        $changes = ["add" => [], "remove" => []];
+        $changes = ['add' => [], 'remove' => []];
 
-        $registrations = $this->skautis->org->UnitRegistrationAll(["ID_Unit" => $unitId, "Year" => $year]);
+        $registrations = $this->skautis->org->UnitRegistrationAll(['ID_Unit' => $unitId, 'Year' => $year]);
 
-        if (!is_array($registrations) || count($registrations) < 1) {
+        if (! is_array($registrations) || count($registrations) < 1) {
             return $changes;
         }
 
         $registrationId = reset($registrations)->ID;
-        $registration = $this->getPersonFromRegistration($registrationId, FALSE);
+        $registration   = $this->getPersonFromRegistration($registrationId, false);
 
         $regCategories = [];
-        foreach ($this->skautis->org->RegistrationCategoryAll(["ID_UnitRegistration" => $registrationId]) as $rc) {
+        foreach ($this->skautis->org->RegistrationCategoryAll(['ID_UnitRegistration' => $registrationId]) as $rc) {
             $regCategories[$rc->ID] = $rc->IsJournal;
         }
-        $unitJournals = $this->skautis->Journal->PersonJournalAllUnit(["ID_Unit" => $unitId, "ShowHistory" => FALSE, "IncludeChild" => TRUE]);
+        $unitJournals = $this->skautis->Journal->PersonJournalAllUnit(['ID_Unit' => $unitId, 'ShowHistory' => false, 'IncludeChild' => true]);
 
         //seznam osob s casopisem
         $personIdsWithJournal = [];
         foreach ($unitJournals as $journal) {
-            $personIdsWithJournal[$journal->ID_Person] = TRUE;
+            $personIdsWithJournal[$journal->ID_Person] = true;
         }
 
         foreach ($registration as $p) {
             $isRegustredWithJournal = $regCategories[$p->ID_RegistrationCategory];
-            $hasPersonJournal = array_key_exists($p->ID_Person, $personIdsWithJournal);
-            if ($hasPersonJournal && !$isRegustredWithJournal) {
-                $changes["remove"][] = $p->Person;
-            } elseif (!$hasPersonJournal && $isRegustredWithJournal) {
-                $changes["add"][] = $p->Person;
+            $hasPersonJournal       = array_key_exists($p->ID_Person, $personIdsWithJournal);
+            if ($hasPersonJournal && ! $isRegustredWithJournal) {
+                $changes['remove'][] = $p->Person;
+            } elseif (! $hasPersonJournal && $isRegustredWithJournal) {
+                $changes['add'][] = $p->Person;
             }
         }
         return $changes;
@@ -451,7 +487,7 @@ class PaymentService
      */
     public function getCamp($campId)
     {
-        return $this->skautis->event->{"EventCampDetail"}(["ID" => $campId]);
+        return $this->skautis->event->{'EventCampDetail'}(['ID' => $campId]);
     }
 
     /**
@@ -461,46 +497,52 @@ class PaymentService
     {
         $groups = $this->groups->findBySkautisEntityType(Type::get(Type::CAMP));
 
-        return array_map(function(Group $group) {
-            return $group->getObject()->getId();
-        }, $groups);
+        return array_map(
+            function (Group $group) {
+                return $group->getObject()->getId();
+            },
+            $groups
+        );
     }
 
     /* Repayments */
 
-    public function getFioRepaymentString($repayments, $accountFrom, $date = NULL): string
+    public function getFioRepaymentString($repayments, $accountFrom, $date = null) : string
     {
-        if ($date === NULL) {
-            $date = date("Y-m-d");
+        if ($date === null) {
+            $date = date('Y-m-d');
         }
-        $accountFromArr = explode("/", $accountFrom, 2);
+        $accountFromArr = explode('/', $accountFrom, 2);
 
         $ret = '<?xml version="1.0" encoding="UTF-8"?><Import xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.fio.cz/schema/importIB.xsd"> <Orders>';
         foreach ($repayments as $r) {
-            $accountArr = explode("/", $r['account'], 2);
-            $ret .= "<DomesticTransaction>";
-            $ret .= "<accountFrom>" . $accountFromArr[0] . "</accountFrom>";
-            $ret .= "<currency>CZK</currency>";
-            $ret .= "<amount>" . $r['amount'] . "</amount>";
-            $ret .= "<accountTo>" . $accountArr[0] . "</accountTo>";
-            $ret .= "<bankCode>" . $accountArr[1] . "</bankCode>";
-            $ret .= "<date>" . $date . "</date>";
-            $ret .= "<messageForRecipient>" . $r['name'] . "</messageForRecipient>";
-            $ret .= "<comment></comment>";
-            $ret .= "<paymentType>431001</paymentType>";
-            $ret .= "</DomesticTransaction>";
+            $accountArr = explode('/', $r['account'], 2);
+            $ret       .= '<DomesticTransaction>';
+            $ret       .= '<accountFrom>' . $accountFromArr[0] . '</accountFrom>';
+            $ret       .= '<currency>CZK</currency>';
+            $ret       .= '<amount>' . $r['amount'] . '</amount>';
+            $ret       .= '<accountTo>' . $accountArr[0] . '</accountTo>';
+            $ret       .= '<bankCode>' . $accountArr[1] . '</bankCode>';
+            $ret       .= '<date>' . $date . '</date>';
+            $ret       .= '<messageForRecipient>' . $r['name'] . '</messageForRecipient>';
+            $ret       .= '<comment></comment>';
+            $ret       .= '<paymentType>431001</paymentType>';
+            $ret       .= '</DomesticTransaction>';
         }
-        $ret .= "</Orders></Import>";
+        $ret .= '</Orders></Import>';
         return $ret;
     }
 
     /**
      * @throws BankException
      */
-    public function sendFioPaymentRequest(string $stringToRequest, string $token): void
+    public function sendFioPaymentRequest(string $stringToRequest, string $token) : void
     {
         try {
-            $this->http->request('POST', 'https://www.fio.cz/ib_api/rest/import/', [
+            $this->http->request(
+                'POST',
+                'https://www.fio.cz/ib_api/rest/import/',
+                [
                 'multipart' => [
                     ['name' => 'token', 'contents' => $token],
                     ['name' => 'type', 'contents' => 'xml'],
@@ -508,7 +550,8 @@ class PaymentService
                     ['name' => 'lng', 'contents' => 'cs'],
                 ],
                 'timeout' => 60,
-            ]);
+                ]
+            );
         } catch (ServerException $e) {
             throw new BankException($this->getErrorMessage($e), 0, $e);
         }
@@ -517,19 +560,22 @@ class PaymentService
     /**
      * @throws MissingVariableSymbolException
      */
-    public function generateVs(int $gid): int
+    public function generateVs(int $gid) : int
     {
         $nextVariableSymbol = $this->getNextVS($gid);
 
-        if($nextVariableSymbol === NULL) {
+        if ($nextVariableSymbol === null) {
             throw new MissingVariableSymbolException();
         }
 
         $payments = $this->payments->findByGroup($gid);
 
-        $payments = array_filter($payments, function(Payment $p) {
-            return $p->getVariableSymbol() === NULL && $p->getState()->equalsValue(State::PREPARING);
-        });
+        $payments = array_filter(
+            $payments,
+            function (Payment $p) {
+                return $p->getVariableSymbol() === null && $p->getState()->equalsValue(State::PREPARING);
+            }
+        );
 
         foreach ($payments as $payment) {
             $payment->updateVariableSymbol($nextVariableSymbol);
@@ -542,23 +588,30 @@ class PaymentService
     }
 
     /**
-     * @param int $groupId
      * @return int[]
      */
-    public function getPersonsWithActivePayment(int $groupId): array
+    public function getPersonsWithActivePayment(int $groupId) : array
     {
         $payments = $this->payments->findByGroup($groupId);
 
-        $payments = array_filter($payments, function(Payment $payment) {
-            return $payment->getPersonId() !== NULL && !$payment->getState()->equalsValue(State::CANCELED);
-        });
+        $payments = array_filter(
+            $payments,
+            function (Payment $payment) {
+                return $payment->getPersonId() !== null && ! $payment->getState()->equalsValue(State::CANCELED);
+            }
+        );
 
-        return array_map(function(Payment $p) { return $p->getPersonId(); }, $payments);
+        return array_map(
+            function (Payment $p) {
+                return $p->getPersonId();
+            },
+            $payments
+        );
     }
 
-    private function getErrorMessage(ServerException $exception): string
+    private function getErrorMessage(ServerException $exception) : string
     {
-        if ($exception->getResponse() === NULL) {
+        if ($exception->getResponse() === null) {
             return $exception->getMessage();
         }
 
@@ -572,5 +625,4 @@ class PaymentService
 
         return $result->ordersDetails->detail->messages->message ?? '';
     }
-
 }

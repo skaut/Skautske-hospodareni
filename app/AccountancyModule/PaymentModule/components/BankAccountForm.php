@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\PaymentModule\Factories;
 
 use App\AccountancyModule\Components\BaseControl;
@@ -11,7 +13,6 @@ use Nette\Utils\ArrayHash;
 
 class BankAccountForm extends BaseControl
 {
-
     /** @var int|NULL */
     private $id;
 
@@ -22,7 +23,7 @@ class BankAccountForm extends BaseControl
     public function __construct(?int $id, BankAccountService $model)
     {
         parent::__construct();
-        $this->id = $id;
+        $this->id    = $id;
         $this->model = $model;
     }
 
@@ -33,7 +34,7 @@ class BankAccountForm extends BaseControl
         $form->addText('name', 'Název')
             ->setRequired('Musíte vyplnit název');
         $form->addText('prefix')
-            ->setRequired(FALSE)
+            ->setRequired(false)
             ->addRule($form::INTEGER, 'Neplatné předčíslí')
             ->addRule($form::MAX_LENGTH, 'Maximální délka předčíslí je %d znaků', 6);
         $form->addText('number')
@@ -49,18 +50,20 @@ class BankAccountForm extends BaseControl
 
         $form->addSubmit('send', 'Uložit');
 
-        if($this->id !== NULL) {
+        if ($this->id !== null) {
             $account = $this->model->find($this->id);
-            $form->setDefaults([
+            $form->setDefaults(
+                [
                 'name' => $account->getName(),
                 'prefix' => $account->getNumber()->getPrefix(),
                 'number' => $account->getNumber()->getNumber(),
                 'bankCode' => $account->getNumber()->getBankCode(),
                 'token' => $account->getToken(),
-            ]);
+                ]
+            );
         }
 
-        $form->onSuccess[] = function(BaseForm $form, ArrayHash $values) {
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
             $this->formSucceeded($form, $values);
         };
 
@@ -71,7 +74,7 @@ class BankAccountForm extends BaseControl
     private function formSucceeded(BaseForm $form, ArrayHash $values) : void
     {
         try {
-            if($this->id !== NULL) {
+            if ($this->id !== null) {
                 $this->model->updateBankAccount(
                     $this->id,
                     $values->name,
@@ -85,7 +88,6 @@ class BankAccountForm extends BaseControl
                     new AccountNumber($values->prefix, $values->number, $values->bankCode),
                     $values->token
                 );
-
             }
 
             $this->presenter->flashMessage('Bankovní účet byl uložen');
@@ -101,5 +103,4 @@ class BankAccountForm extends BaseControl
         $this->template->setFile(__DIR__ . '/templates/BankAccountForm.latte');
         $this->template->render();
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 /**
@@ -8,7 +10,6 @@ namespace Model;
  */
 class EventEntity
 {
-
     /** @var EventService */
     private $event;
 
@@ -18,9 +19,9 @@ class EventEntity
     public function __construct(
         string $name,
         IParticipantServiceFactory $participantFactory,
-        IEventServiceFactory $eventFactory)
-    {
-        $this->event = $eventFactory->create($name);
+        IEventServiceFactory $eventFactory
+    ) {
+        $this->event        = $eventFactory->create($name);
         $this->participants = $participantFactory->create($name);
     }
 
@@ -29,7 +30,6 @@ class EventEntity
         if (isset($this->$name)) {
             return $this->$name;
         }
-        throw new \InvalidArgumentException("Invalid service request for: " . $name);
+        throw new \InvalidArgumentException('Invalid service request for: ' . $name);
     }
-
 }

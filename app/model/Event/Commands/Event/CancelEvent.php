@@ -12,7 +12,6 @@ use Model\Event\SkautisEventId;
  */
 final class CancelEvent
 {
-
     /** @var SkautisEventId */
     private $eventId;
 
@@ -21,9 +20,8 @@ final class CancelEvent
         $this->eventId = $eventId;
     }
 
-    public function getEventId(): SkautisEventId
+    public function getEventId() : SkautisEventId
     {
         return $this->eventId;
     }
-
 }

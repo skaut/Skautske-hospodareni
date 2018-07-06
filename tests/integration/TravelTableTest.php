@@ -8,14 +8,13 @@ use Doctrine\DBAL\Connection;
 
 final class TravelTableTest extends \IntegrationTest
 {
-
     /** @var Connection */
     private $connection;
 
     /** @var TravelTable */
     private $table;
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->tester->useConfigFiles([
             __DIR__ . '/TravelTableTest.neon',
@@ -24,7 +23,7 @@ final class TravelTableTest extends \IntegrationTest
         parent::_before();
 
         $this->connection = $this->tester->grabService(Connection::class);
-        $this->table = new TravelTable($this->tester->grabService(\Dibi\Connection::class));
+        $this->table      = new TravelTable($this->tester->grabService(\Dibi\Connection::class));
 
         $this->cleanup();
 
@@ -49,7 +48,7 @@ final class TravelTableTest extends \IntegrationTest
         $this->connection->exec($sql);
     }
 
-    public function testPairs(): void
+    public function testPairs() : void
     {
         $expected = [
             'auv'   => 'auto vlastní',
@@ -61,17 +60,16 @@ final class TravelTableTest extends \IntegrationTest
             'l'     => 'letadlo',
         ];
 
-        $this->assertSame($expected, $this->table->getTypes(TRUE));
+        $this->assertSame($expected, $this->table->getTypes(true));
     }
 
-    protected function _after()
+    protected function _after() : void
     {
         $this->cleanup();
     }
 
-    private function cleanup(): void
+    private function cleanup() : void
     {
         $this->connection->exec('DROP TABLE IF EXISTS tc_travelTypes');
     }
-
 }

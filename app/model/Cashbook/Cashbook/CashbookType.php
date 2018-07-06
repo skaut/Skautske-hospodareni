@@ -7,16 +7,16 @@ namespace Model\Cashbook\Cashbook;
 use Consistence\Enum\Enum;
 use Model\Cashbook\ObjectType;
 use function array_keys;
-use function in_array;
+use function array_map;
 use function count;
+use function in_array;
 
 class CashbookType extends Enum
 {
-
-    public const EVENT = 'general';
+    public const EVENT         = 'general';
     public const OFFICIAL_UNIT = 'official_unit';
-    public const TROOP = 'troop';
-    public const CAMP = 'camp';
+    public const TROOP         = 'troop';
+    public const CAMP          = 'camp';
 
     private const TRANSFER_FROM_CATEGORY_IDS = [
         self::OFFICIAL_UNIT => 9, // "Převod z pokladny střediska"
@@ -32,21 +32,21 @@ class CashbookType extends Enum
         self::CAMP => 16, // "Převod do akce"
     ];
 
-    public function getSkautisObjectType(): ObjectType
+    public function getSkautisObjectType() : ObjectType
     {
-        if (in_array($this->getValue(), [self::OFFICIAL_UNIT, self::TROOP], TRUE)) {
+        if (in_array($this->getValue(), [self::OFFICIAL_UNIT, self::TROOP], true)) {
             return ObjectType::get(ObjectType::UNIT);
         }
 
         return ObjectType::get($this->getValue());
     }
 
-    public function getTransferFromCategoryId(): int
+    public function getTransferFromCategoryId() : int
     {
         return self::TRANSFER_FROM_CATEGORY_IDS[$this->getValue()];
     }
 
-    public function getTransferToCategoryId(): int
+    public function getTransferToCategoryId() : int
     {
         return self::TRANSFER_TO_CATEGORY_IDS[$this->getValue()];
     }
@@ -54,27 +54,30 @@ class CashbookType extends Enum
     /**
      * @return CashbookType[]
      */
-    public static function getInverseCashbookTypes(int $chitCategoryId): array
+    public static function getInverseCashbookTypes(int $chitCategoryId) : array
     {
         foreach ([self::TRANSFER_FROM_CATEGORY_IDS, self::TRANSFER_TO_CATEGORY_IDS] as $categoryIdsByType) {
-            $types = array_keys($categoryIdsByType, $chitCategoryId, TRUE);
+            $types = array_keys($categoryIdsByType, $chitCategoryId, true);
 
             if (count($types) !== 0) {
-                return array_map(function (string $type): self {
-                    return CashbookType::get($type);
-                }, $types);
+                return array_map(
+                    function (string $type) : self {
+                        return CashbookType::get($type);
+                    },
+                    $types
+                );
             }
         }
 
         return [];
     }
 
-    public function isUnit(): bool
+    public function isUnit() : bool
     {
-        return in_array($this->getValue(), [self::OFFICIAL_UNIT, self::TROOP], TRUE);
+        return in_array($this->getValue(), [self::OFFICIAL_UNIT, self::TROOP], true);
     }
 
-    public function __toString(): string
+    public function __toString() : string
     {
         return (string) $this->getValue();
     }
@@ -82,12 +85,11 @@ class CashbookType extends Enum
     /**
      * @return string[]
      */
-    protected static function getIgnoredConstantNames(): array
+    protected static function getIgnoredConstantNames() : array
     {
         return [
             'TRANSFER_FROM_CATEGORY_IDS',
             'TRANSFER_TO_CATEGORY_IDS',
         ];
     }
-
 }

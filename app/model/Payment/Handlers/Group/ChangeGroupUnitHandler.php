@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Handlers\Group;
 
+use Model\Payment\BankAccountNotFoundException;
 use Model\Payment\Commands\Group\ChangeGroupUnit;
+use Model\Payment\GroupNotFoundException;
 use Model\Payment\IUnitResolver;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 
 class ChangeGroupUnitHandler
 {
-
     /** @var IGroupRepository */
     private $groups;
 
@@ -21,16 +24,16 @@ class ChangeGroupUnitHandler
 
     public function __construct(IGroupRepository $groups, IBankAccountRepository $bankAccounts, IUnitResolver $unitResolver)
     {
-        $this->groups = $groups;
+        $this->groups       = $groups;
         $this->bankAccounts = $bankAccounts;
         $this->unitResolver = $unitResolver;
     }
 
     /**
-     * @throws \Model\Payment\GroupNotFoundException
-     * @throws \Model\Payment\BankAccountNotFoundException
+     * @throws GroupNotFoundException
+     * @throws BankAccountNotFoundException
      */
-    public function handle(ChangeGroupUnit $command): void
+    public function handle(ChangeGroupUnit $command) : void
     {
         $group = $this->groups->find($command->getGroupId());
 
@@ -42,5 +45,4 @@ class ChangeGroupUnitHandler
 
         $this->groups->save($group);
     }
-
 }

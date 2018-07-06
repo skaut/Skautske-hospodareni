@@ -10,30 +10,28 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 final class CashbookIdType extends IntegerType
 {
-
-    public function getName(): string
+    public function getName() : string
     {
         return 'cashbook_id';
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?CashbookId
+    public function convertToPHPValue($value, AbstractPlatform $platform) : ?CashbookId
     {
-        if ($value === NULL) {
-            return NULL;
+        if ($value === null) {
+            return null;
         }
 
         /** @var string $value */
         return CashbookId::fromInt((int) $value);
     }
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?int
+    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?int
     {
-        if ($value === NULL) {
-            return NULL;
+        if ($value === null) {
+            return null;
         }
 
         /** @var CashbookId $value */
         return $value->toInt();
     }
-
 }

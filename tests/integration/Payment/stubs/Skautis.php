@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Stubs;
 
 /**
@@ -7,8 +9,7 @@ namespace Stubs;
  */
 class Skautis extends \Skautis\Skautis
 {
-
-	public function __construct()
-	{
-	}
+    public function __construct()
+    {
+    }
 }

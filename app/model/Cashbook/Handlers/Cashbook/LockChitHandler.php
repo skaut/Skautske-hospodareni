@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Handlers\Cashbook;
 
 use Model\Cashbook\Commands\Cashbook\LockChit;
@@ -7,7 +9,6 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 class LockChitHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -16,7 +17,7 @@ class LockChitHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(LockChit $command): void
+    public function handle(LockChit $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 
@@ -24,5 +25,4 @@ class LockChitHandler
 
         $this->cashbooks->save($cashbook);
     }
-
 }

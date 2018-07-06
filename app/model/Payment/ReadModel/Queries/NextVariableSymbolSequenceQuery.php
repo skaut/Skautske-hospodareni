@@ -6,7 +6,6 @@ namespace Model\Payment\ReadModel\Queries;
 
 class NextVariableSymbolSequenceQuery
 {
-
     /** @var int */
     private $unitId;
 
@@ -16,17 +15,16 @@ class NextVariableSymbolSequenceQuery
     public function __construct(int $unitId, \DateTimeImmutable $now)
     {
         $this->unitId = $unitId;
-        $this->now = $now;
+        $this->now    = $now;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getNow(): \DateTimeImmutable
+    public function getNow() : \DateTimeImmutable
     {
         return $this->now;
     }
-
 }

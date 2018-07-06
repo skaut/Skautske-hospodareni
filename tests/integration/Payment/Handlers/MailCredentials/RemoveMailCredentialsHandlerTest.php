@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Handlers\MailCredentials;
 
 use Model\Payment\Commands\RemoveMailCredentials;
@@ -7,23 +9,20 @@ use Model\Payment\MailCredentials;
 
 class RemoveMailCredentialsHandlerTest extends \CommandHandlerTest
 {
-
-    public function _before()
+    public function _before() : void
     {
-        $this->tester->useConfigFiles([
-            'Payment/Handlers/MailCredentials/RemoveMailCredentialsHandlerTest.neon',
-        ]);
+        $this->tester->useConfigFiles(['Payment/Handlers/MailCredentials/RemoveMailCredentialsHandlerTest.neon']);
         parent::_before();
     }
 
-    public function getTestedEntites(): array
+    public function getTestedEntites() : array
     {
         return [
             MailCredentials::class,
         ];
     }
 
-    public function testRemoveExistingCredentials()
+    public function testRemoveExistingCredentials() : void
     {
         $this->tester->haveInDatabase('pa_smtp', [
             'unitId' => 666,
@@ -40,9 +39,8 @@ class RemoveMailCredentialsHandlerTest extends \CommandHandlerTest
         $this->tester->dontSeeInDatabase('pa_smtp', ['id' => 1]);
     }
 
-    public function testRemoveNonexistentCredentialsSilentlyProceeds()
+    public function testRemoveNonexistentCredentialsSilentlyProceeds() : void
     {
         $this->commandBus->handle(new RemoveMailCredentials(20));
     }
-
 }

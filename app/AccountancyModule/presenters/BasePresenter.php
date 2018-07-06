@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule;
 
 use Model\Skautis\SkautisMaintenanceChecker;
 
 abstract class BasePresenter extends \App\BasePresenter
 {
-
     /**
      * backlink
      */
@@ -14,12 +15,14 @@ abstract class BasePresenter extends \App\BasePresenter
 
     /**
      * id volane v url, vetsinou id akce
+     *
      * @var int|mixed
      */
     protected $aid;
 
     /**
      * je akci možné upravovat?
+     *
      * @var bool
      */
     protected $isEditable;
@@ -39,20 +42,20 @@ abstract class BasePresenter extends \App\BasePresenter
     {
         parent::startup();
 
-        if($this->skautisMaintenanceChecker->isMaintenance()) {
+        if ($this->skautisMaintenanceChecker->isMaintenance()) {
             throw new SkautisMaintenanceException();
         }
 
-        if($this->aid != NULL) { // Persistent parameters aren't auto-casted to int
-            $this->aid = (int)$this->aid;
+        if ($this->aid !== null) { // Persistent parameters aren't auto-casted to int
+            $this->aid = (int) $this->aid;
         }
 
-        if(!$this->user->isLoggedIn()) {
+        if (! $this->user->isLoggedIn()) {
             $this->backlink = $this->storeRequest('+ 3 days');
-            if($this->isAjax()) {
-                $this->forward(":Auth:ajax", ["backlink" => $this->backlink]);
+            if ($this->isAjax()) {
+                $this->forward(':Auth:ajax', ['backlink' => $this->backlink]);
             } else {
-                $this->redirect(":Default:", ["backlink" => $this->backlink]);
+                $this->redirect(':Default:', ['backlink' => $this->backlink]);
             }
         }
 
@@ -71,7 +74,6 @@ abstract class BasePresenter extends \App\BasePresenter
      */
     public function getCurrentUnitId() : int
     {
-        return (int)$this->aid;
+        return (int) $this->aid;
     }
-
 }

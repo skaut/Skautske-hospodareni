@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Components\CashbookControl;
@@ -22,7 +24,6 @@ use Money\Money;
 
 class CashbookPresenter extends BasePresenter
 {
-
     /** @var ICashbookControlFactory */
     private $cashbookFactory;
 
@@ -35,21 +36,25 @@ class CashbookPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $isDraft = $this->event->ID_EventGeneralState === 'draft';
+        $isDraft          = $this->event->ID_EventGeneralState === 'draft';
         $this->isEditable = $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
     }
 
     public function renderDefault(int $aid) : void
     {
-        /** @var Money $finalBalance */
+        /**
+ * @var Money $finalBalance
+*/
         $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
 
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'cashbookId' => $this->getCashbookId()->toString(),
             'isInMinus' => $finalBalance->isNegative(),
             'isEditable' => $this->isEditable,
-        ]);
+            ]
+        );
     }
 
     public function actionImportHpd(int $aid) : void
@@ -59,34 +64,36 @@ class CashbookPresenter extends BasePresenter
         // @TODO move logic to specific command handler
         $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);
 
-        if($totalPayment === 0.0) {
+        if ($totalPayment === 0.0) {
             $this->flashMessage('Nemáte žádné účastníky');
             $this->redirect('this');
         }
 
-        /** @var Functions $functions */
-        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
-        $date = $this->eventService->event->get($aid)->StartDate;
-        $accountant = $functions->getAccountant() !== NULL
+        /**
+ * @var Functions $functions
+*/
+        $functions  = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
+        $date       = $this->eventService->event->get($aid)->StartDate;
+        $accountant = $functions->getAccountant() !== null
             ? new Recipient($functions->getAccountant()->getName())
-            : NULL;
+            : null;
 
         $cashbookId = $this->getCashbookId();
 
         $this->commandBus->handle(
             new AddChitToCashbook(
                 $cashbookId,
-                NULL,
+                null,
                 new Date($date),
                 $accountant,
-                new Amount((string)$totalPayment),
+                new Amount((string) $totalPayment),
                 'účastnické příspěvky',
                 Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID
             )
         );
 
-        $this->flashMessage("Účastníci byli importováni");
-        $this->redirect("default", ["aid" => $aid]);
+        $this->flashMessage('Účastníci byli importováni');
+        $this->redirect('default', ['aid' => $aid]);
     }
 
     protected function createComponentCashbook() : CashbookControl
@@ -96,7 +103,9 @@ class CashbookPresenter extends BasePresenter
 
     private function isCashbookEmpty() : bool
     {
-        /** @var Chit[] $chits */
+        /**
+ * @var Chit[] $chits
+*/
         $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId()));
 
         return empty($chits);
@@ -106,5 +115,4 @@ class CashbookPresenter extends BasePresenter
     {
         return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($this->aid)));
     }
-
 }

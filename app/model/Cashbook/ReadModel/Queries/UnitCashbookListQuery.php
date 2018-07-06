@@ -11,7 +11,6 @@ use Model\Cashbook\ReadModel\QueryHandlers\UnitCashbookListQueryHandler;
  */
 final class UnitCashbookListQuery
 {
-
     /** @var int */
     private $unitId;
 
@@ -20,9 +19,8 @@ final class UnitCashbookListQuery
         $this->unitId = $unitId;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
-
 }

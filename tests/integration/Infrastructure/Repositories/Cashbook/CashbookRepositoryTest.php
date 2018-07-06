@@ -1,27 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Cake\Chronos\Date;
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
+use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ICategory;
-use Mockery as m;
 use Model\Cashbook\Operation;
 
 class CashbookRepositoryTest extends \IntegrationTest
 {
-
-    private const TABLE = 'ac_cashbook';
+    private const TABLE      = 'ac_cashbook';
     private const CHIT_TABLE = 'ac_chits';
 
     /** @var CashbookRepository */
     private $repository;
 
-    public function _before()
+    public function _before() : void
     {
         parent::_before();
         $this->repository = new CashbookRepository(
@@ -30,7 +31,7 @@ class CashbookRepositoryTest extends \IntegrationTest
         );
     }
 
-    public function getTestedEntites(): array
+    public function getTestedEntites() : array
     {
         return [
             Cashbook::class,
@@ -38,9 +39,9 @@ class CashbookRepositoryTest extends \IntegrationTest
         ];
     }
 
-    public function testFindEmptyCashbook(): void
+    public function testFindEmptyCashbook() : void
     {
-        $this->tester->haveInDatabase(self::TABLE, ['id' => 10, 'type' => Cashbook\CashbookType::EVENT, 'note'=>""]);
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 10, 'type' => Cashbook\CashbookType::EVENT, 'note' => '']);
 
         $id = CashbookId::fromInt(10);
 
@@ -50,14 +51,14 @@ class CashbookRepositoryTest extends \IntegrationTest
         $this->assertSame(Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT), $cashbook->getType());
     }
 
-    public function testFindNotExistingCashbookThrowsException(): void
+    public function testFindNotExistingCashbookThrowsException() : void
     {
         $this->expectException(CashbookNotFoundException::class);
 
         $this->repository->find(CashbookId::fromInt(1));
     }
 
-    public function testSaveCashbookWithChits(): void
+    public function testSaveCashbookWithChits() : void
     {
         $chit = [
             'eventId' => 10,
@@ -95,12 +96,11 @@ class CashbookRepositoryTest extends \IntegrationTest
         $this->tester->seeInDatabase(self::CHIT_TABLE, $chit);
     }
 
-    private function mockCategory(int $id): ICategory
+    private function mockCategory(int $id) : ICategory
     {
         return m::mock(ICategory::class, [
             'getId' => $id,
             'getOperationType' => Operation::get(Operation::INCOME),
         ]);
     }
-
 }

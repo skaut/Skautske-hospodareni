@@ -16,14 +16,13 @@ use Model\Payment\VariableSymbol;
 
 class GroupRepositoryTest extends \IntegrationTest
 {
-
     /** @var GroupRepository */
     private $repository;
 
     /** @var EventBus */
     private $eventBus;
 
-    public function getTestedEntites(): array
+    public function getTestedEntites() : array
     {
         return [
             Group::class,
@@ -31,26 +30,26 @@ class GroupRepositoryTest extends \IntegrationTest
         ];
     }
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
 
-        $this->eventBus = m::mock(EventBus::class);
+        $this->eventBus   = m::mock(EventBus::class);
         $this->repository = new GroupRepository($this->entityManager, $this->eventBus);
     }
 
-    public function testFindNotSavedGroupThrowsException(): void
+    public function testFindNotSavedGroupThrowsException() : void
     {
         $this->expectException(GroupNotFoundException::class);
 
         $this->repository->find(10);
     }
 
-    public function testFind(): void
+    public function testFind() : void
     {
-        $createdAt = new \DateTimeImmutable('2018-01-01 00:00:00');
-        $lastPairing = new \DateTimeImmutable('2018-01-19 18:34:00');
+        $createdAt       = new \DateTimeImmutable('2018-01-01 00:00:00');
+        $lastPairing     = new \DateTimeImmutable('2018-01-19 18:34:00');
         $paymentDefaults = new Group\PaymentDefaults(
             100,
             new \DateTimeImmutable('2018-01-29 00:00:00'),
@@ -101,11 +100,11 @@ class GroupRepositoryTest extends \IntegrationTest
         $this->assertTrue($group->isEmailEnabled(EmailType::get(EmailType::PAYMENT_INFO)));
     }
 
-    public function testRemoveRemovesGroupFromDatabase()
+    public function testRemoveRemovesGroupFromDatabase() : void
     {
         $this->eventBus->shouldReceive('handle')
             ->once()
-            ->withArgs(function (GroupWasRemoved $event): bool {
+            ->withArgs(function (GroupWasRemoved $event) : bool {
                 return $event->getGroupId() === 1;
             });
 
@@ -141,5 +140,4 @@ class GroupRepositoryTest extends \IntegrationTest
         $I->dontSeeInDatabase('pa_group', ['id' => 1]);
         $I->dontSeeInDatabase('pa_group_email', ['group_id' => 1]);
     }
-
 }

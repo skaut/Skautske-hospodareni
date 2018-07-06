@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseContainer;
 use App\Forms\BaseForm;
 use Model\PaymentService;
+use function array_filter;
 
 class MassAddForm extends BaseControl
 {
-
     /** @var int */
     private $groupId;
 
@@ -19,7 +21,7 @@ class MassAddForm extends BaseControl
     public function __construct(int $groupId, PaymentService $payments)
     {
         parent::__construct();
-        $this->groupId = $groupId;
+        $this->groupId  = $groupId;
         $this->payments = $payments;
     }
 
@@ -28,84 +30,90 @@ class MassAddForm extends BaseControl
     {
         $form = new BaseForm();
 
-        $form->addText("amount", "Částka:")
+        $form->addText('amount', 'Částka:')
             ->setAttribute('class', 'input-mini');
 
-        $form->addDatePicker("dueDate", "Splatnost:")
+        $form->addDatePicker('dueDate', 'Splatnost:')
             ->setAttribute('class', 'input-small');
-        $form->addText("constantSymbol", "KS:")
+        $form->addText('constantSymbol', 'KS:')
             ->setMaxLength(4)
             ->setAttribute('class', 'input-mini');
-        $form->addText("note", "Poznámka:")
+        $form->addText('note', 'Poznámka:')
             ->setAttribute('class', 'input-small');
 
-        $form->addContainer("persons");
+        $form->addContainer('persons');
 
         $form->addSubmit('send', 'Přidat vybrané')
-            ->setAttribute("class", "btn btn-primary btn-large");
+            ->setAttribute('class', 'btn btn-primary btn-large');
 
-        $form->onSubmit[] = function(BaseForm $form) : void {
+        $form->onSubmit[] = function (BaseForm $form) : void {
             $this->formSubmitted($form);
         };
 
         $group = $this->payments->getGroup($this->groupId);
 
-        $form->setDefaults([
-            "amount" => $group->getDefaultAmount(),
-            "dueDate" => $group->getDueDate() !== NULL ? $group->getDueDate()->format('d.m.Y') : NULL,
-            "constantSymbol" => $group->getConstantSymbol(),
-        ]);
+        $form->setDefaults(
+            [
+            'amount' => $group->getDefaultAmount(),
+            'dueDate' => $group->getDueDate() !== null ? $group->getDueDate()->format('d.m.Y') : null,
+            'constantSymbol' => $group->getConstantSymbol(),
+            ]
+        );
 
         return $form;
     }
 
-    public function addPerson(int $id, array $emails, string $name, ?float $amount = NULL, string $note = "") : void
+    public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = '') : void
     {
-        /** @var BaseForm $form */
-        $form = $this["form"];
-        /** @var BaseContainer $persons */
-        $persons = $form["persons"];
+        /**
+ * @var BaseForm $form
+*/
+        $form = $this['form'];
+        /**
+ * @var BaseContainer $persons
+*/
+        $persons = $form['persons'];
 
         $container = $persons->addContainer("person{$id}");
 
-        $container->addCheckbox("selected");
+        $container->addCheckbox('selected');
 
-        $container->addSelect("email", NULL, $emails)
-            ->setRequired(FALSE);
+        $container->addSelect('email', null, $emails)
+            ->setRequired(false);
 
-        $container->addText("name")
-            ->setRequired("Musíte vyplnit jméno")
+        $container->addText('name')
+            ->setRequired('Musíte vyplnit jméno')
             ->setDefaultValue($name);
 
-        $container->addHidden("id", $id);
+        $container->addHidden('id', $id);
 
-        $container->addText("amount", "Částka:")
+        $container->addText('amount', 'Částka:')
             ->setAttribute('class', 'input-mini')
             ->setType('number')
-            ->setRequired(FALSE)
+            ->setRequired(false)
             ->setDefaultValue($amount)
-            ->addConditionOn($container["selected"], $form::FILLED)
-            ->addConditionOn($form["amount"], $form::BLANK)
-            ->setRequired("Musíte vyplnit částku")
-            ->addRule($form::FLOAT, "Částka musí být číslo")
+            ->addConditionOn($container['selected'], $form::FILLED)
+            ->addConditionOn($form['amount'], $form::BLANK)
+            ->setRequired('Musíte vyplnit částku')
+            ->addRule($form::FLOAT, 'Částka musí být číslo')
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01);
 
-        $container->addDatePicker('dueDate', "Splatnost:")
+        $container->addDatePicker('dueDate', 'Splatnost:')
             ->setAttribute('class', 'input-small')
-            ->setRequired(FALSE);
+            ->setRequired(false);
 
-        $container->addVariableSymbol("variableSymbol", "VS:")
-            ->setRequired(FALSE);
+        $container->addVariableSymbol('variableSymbol', 'VS:')
+            ->setRequired(false);
 
-        $container->addText("constantSymbol", "KS:")
+        $container->addText('constantSymbol', 'KS:')
             ->setAttribute('class', 'input-mini')
-            ->setRequired(FALSE)
+            ->setRequired(false)
             ->addRule($form::INTEGER)
-            ->addRule($form::MAX_LENGTH, "Maximální délka konstantního symbolu je %d", 4);
+            ->addRule($form::MAX_LENGTH, 'Maximální délka konstantního symbolu je %d', 4);
 
-        $container->addText("note", "Poznámka:")
+        $container->addText('note', 'Poznámka:')
             ->setDefaultValue($note)
-            ->setRequired(FALSE)
+            ->setRequired(false)
             ->setAttribute('class', 'input-small');
     }
 
@@ -119,21 +127,27 @@ class MassAddForm extends BaseControl
     {
         $values = $form->getValues();
 
-        $persons = array_filter((array)$values->persons, function($person) {
-            return $person->selected === TRUE;
-        });
+        $persons = array_filter(
+            (array) $values->persons,
+            function ($person) {
+                return $person->selected === true;
+            }
+        );
 
-        if(empty($persons)) {
-            $form->addError("Nebyla vybrána žádná osoba k přidání!");
+        if (empty($persons)) {
+            $form->addError('Nebyla vybrána žádná osoba k přidání!');
             return;
         }
 
-        if($values->dueDate === NULL) {
-            $withoutDueDate = array_filter($persons, function($person) {
-                return $person->dueDate === NULL;
-            });
-            if(!empty($withoutDueDate)) {
-                $form->addError("Musíte vyplnit datum splatnosti");
+        if ($values->dueDate === null) {
+            $withoutDueDate = array_filter(
+                $persons,
+                function ($person) {
+                    return $person->dueDate === null;
+                }
+            );
+            if (! empty($withoutDueDate)) {
+                $form->addError('Musíte vyplnit datum splatnosti');
                 return;
             }
         }
@@ -143,7 +157,7 @@ class MassAddForm extends BaseControl
                 $this->groupId,
                 $person->name,
                 $person->email,
-                $this->floatOrNull($person->amount) ?? (float)$values->amount,
+                $this->floatOrNull($person->amount) ?? (float) $values->amount,
                 \DateTimeImmutable::createFromMutable($person->dueDate ?? $values->dueDate),
                 $person->id,
                 $person->variableSymbol,
@@ -152,18 +166,17 @@ class MassAddForm extends BaseControl
             );
         }
 
-        $this->presenter->flashMessage("Platby byly přidány");
-        $this->presenter->redirect("Payment:detail", ["id" => $this->groupId]);
+        $this->presenter->flashMessage('Platby byly přidány');
+        $this->presenter->redirect('Payment:detail', ['id' => $this->groupId]);
     }
 
     private function intOrNull(string $value) : ?int
     {
-        return $value === "" ? NULL : (int)$value;
+        return $value === '' ? null : (int) $value;
     }
 
     private function floatOrNull(string $value) : ?float
     {
-        return $value === "" ? NULL : (float)$value;
+        return $value === '' ? null : (float) $value;
     }
-
 }

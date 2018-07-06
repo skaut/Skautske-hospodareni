@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Repositories;
 
 use eGen\MessageBus\Bus\EventBus;
@@ -8,10 +10,12 @@ use Model\Payment\Payment;
 use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
+use function array_fill;
+use function array_map;
+use function array_merge;
 
 class PaymentRepositoryTest extends \IntegrationTest
 {
-
     private const TABLE = 'pa_payment';
 
     private const PAYMENT_ROW = [
@@ -28,7 +32,7 @@ class PaymentRepositoryTest extends \IntegrationTest
     /** @var PaymentRepository */
     private $repository;
 
-    public function getTestedEntites(): array
+    public function getTestedEntites() : array
     {
         return [
             Payment::class,
@@ -36,21 +40,21 @@ class PaymentRepositoryTest extends \IntegrationTest
         ];
     }
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
         $this->repository = new PaymentRepository($this->entityManager, new EventBus());
     }
 
-    public function testFindNotSavedPaymentThrowsException()
+    public function testFindNotSavedPaymentThrowsException() : void
     {
         $this->expectException(PaymentNotFoundException::class);
 
         $this->repository->find(10);
     }
 
-    public function testFind()
+    public function testFind() : void
     {
         $data = self::PAYMENT_ROW;
 
@@ -68,7 +72,7 @@ class PaymentRepositoryTest extends \IntegrationTest
         $this->assertEquals(new VariableSymbol($data['vs']), $payment->getVariableSymbol(), 'Variable symbol doesn\'t match');
     }
 
-    public function testFindWithTransaction(): void
+    public function testFindWithTransaction() : void
     {
         $data = array_merge([
             'transactionId' => '123456',
@@ -92,12 +96,12 @@ class PaymentRepositoryTest extends \IntegrationTest
         $this->assertTrue($expectedTransaction->equals($payment->getTransaction()));
     }
 
-    public function testGetMaxVariableSymbolForNoPaymentIsNull()
+    public function testGetMaxVariableSymbolForNoPaymentIsNull() : void
     {
         $this->assertNull($this->repository->getMaxVariableSymbol(10));
     }
 
-    public function testGetMaxVariableSymbol()
+    public function testGetMaxVariableSymbol() : void
     {
         $payments = array_fill(0, 5, self::PAYMENT_ROW);
 
@@ -111,7 +115,7 @@ class PaymentRepositoryTest extends \IntegrationTest
         $this->assertEquals(new VariableSymbol('1000'), $this->repository->getMaxVariableSymbol(1));
     }
 
-    public function testSummarizeByGroupReturnsCorrectStats(): void
+    public function testSummarizeByGroupReturnsCorrectStats() : void
     {
         $payments = [
             [1, 300, Payment\State::PREPARING],
@@ -129,7 +133,7 @@ class PaymentRepositoryTest extends \IntegrationTest
             [2, 300, Payment\State::COMPLETED],
         ];
 
-        $paymentRows = array_map(function(array $payment): array {
+        $paymentRows = array_map(function (array $payment) : array {
             return [
                 'groupId' => $payment[0],
                 'name' => 'Test',
@@ -163,12 +167,12 @@ class PaymentRepositoryTest extends \IntegrationTest
             ],
         ];
 
-        foreach($expectedSummaries as $groupId => $summaries) {
+        foreach ($expectedSummaries as $groupId => $summaries) {
             $this->assertCount(3, $result[$groupId], 'There should be 3 items for 3 states');
-            foreach($summaries as $state => $expectedSummary) {
+            foreach ($summaries as $state => $expectedSummary) {
                 $actualSummary = $result[$groupId][$state];
-                /* @var $expectedSummary Summary */
-                /* @var $actualSummary Summary */
+                /** @var $expectedSummary Summary */
+                /** @var Summary $actualSummary */
 
                 $this->assertSame($expectedSummary->getCount(), $actualSummary->getCount());
                 $this->assertSame($expectedSummary->getAmount(), $actualSummary->getAmount());
@@ -176,7 +180,7 @@ class PaymentRepositoryTest extends \IntegrationTest
         }
     }
 
-    public function testRemove(): void
+    public function testRemove() : void
     {
         $this->addGroupWithId(1);
 
@@ -198,7 +202,7 @@ class PaymentRepositoryTest extends \IntegrationTest
         $this->tester->dontSeeInDatabase(self::TABLE, ['id' => 1]);
     }
 
-    private function addGroupWithId(int $id)
+    private function addGroupWithId(int $id) : void
     {
         $this->tester->haveInDatabase('pa_group', [
             'id' => $id,
@@ -209,11 +213,10 @@ class PaymentRepositoryTest extends \IntegrationTest
         ]);
     }
 
-    private function addPayments(array $payments)
+    private function addPayments(array $payments) : void
     {
-        foreach($payments as $payment) {
+        foreach ($payments as $payment) {
             $this->tester->haveInDatabase(self::TABLE, $payment);
         }
     }
-
 }

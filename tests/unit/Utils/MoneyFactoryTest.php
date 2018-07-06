@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Utils;
 
+use Codeception\Test\Unit;
 use Money\Currency;
 use Money\Money;
 
-class MoneyFactoryTest extends \Codeception\Test\Unit
+class MoneyFactoryTest extends Unit
 {
-
-    public function testFromFloatCreatesInstanceWithCorrectAmountAndCurrency()
+    public function testFromFloatCreatesInstanceWithCorrectAmountAndCurrency() : void
     {
         $money = MoneyFactory::fromFloat(69.99);
 
@@ -17,14 +19,14 @@ class MoneyFactoryTest extends \Codeception\Test\Unit
         $this->assertSame('CZK', $money->getCurrency()->getCode());
     }
 
-    public function testToFloatReturnsCorrectValue()
+    public function testToFloatReturnsCorrectValue() : void
     {
         $money = new Money('4599', new Currency('CZK'));
 
         $this->assertSame(45.99, MoneyFactory::toFloat($money));
     }
 
-    public function testZeroReturnsInstanceWithZeroValueAndCorrectCurrency()
+    public function testZeroReturnsInstanceWithZeroValueAndCorrectCurrency() : void
     {
         $money = MoneyFactory::zero();
 
@@ -35,7 +37,7 @@ class MoneyFactoryTest extends \Codeception\Test\Unit
     /**
      * @dataProvider dataFloor
      */
-    public function testFloor(float $amount, float $flooredAmount): void
+    public function testFloor(float $amount, float $flooredAmount) : void
     {
         $money = MoneyFactory::fromFloat($amount);
 
@@ -44,7 +46,7 @@ class MoneyFactoryTest extends \Codeception\Test\Unit
         );
     }
 
-    public function dataFloor(): array
+    public function dataFloor() : array
     {
         return [
             [15.1, 15],
@@ -52,5 +54,4 @@ class MoneyFactoryTest extends \Codeception\Test\Unit
             [15.8, 15],
         ];
     }
-
 }

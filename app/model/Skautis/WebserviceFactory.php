@@ -12,17 +12,15 @@ use Skautis\Wsdl\WebService;
 
 final class WebserviceFactory
 {
-
     use StaticClass;
 
-    public static function createCached(string $name, Skautis $skautis): CacheDecorator
+    public static function createCached(string $name, Skautis $skautis) : CacheDecorator
     {
         return new CacheDecorator($skautis->getWebService($name), new ArrayCache());
     }
 
-    public static function create(string $name, Skautis $skautis): WebService
+    public static function create(string $name, Skautis $skautis) : WebService
     {
         return $skautis->getWebService($name);
     }
-
 }

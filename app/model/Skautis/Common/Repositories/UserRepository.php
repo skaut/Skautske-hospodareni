@@ -12,7 +12,6 @@ use Skautis\Wsdl\WebServiceInterface;
 
 final class UserRepository implements IUserRepository
 {
-
     /** @var WebServiceInterface */
     private $userWebService;
 
@@ -22,20 +21,20 @@ final class UserRepository implements IUserRepository
     public function __construct(WebServiceInterface $userWebService, WebServiceInterface $orgWebService)
     {
         $this->userWebService = $userWebService;
-        $this->orgWebService = $orgWebService;
+        $this->orgWebService  = $orgWebService;
     }
 
-    public function find(int $id): User
+    public function find(int $id) : User
     {
-        return $this->findWithArguments(["ID" => $id]);
+        return $this->findWithArguments(['ID' => $id]);
     }
 
-    public function getCurrentUser(): User
+    public function getCurrentUser() : User
     {
         return $this->findWithArguments([]);
     }
 
-    private function findWithArguments(array $arguments): User
+    private function findWithArguments(array $arguments) : User
     {
         try {
             $user = $this->userWebService->UserDetail($arguments);
@@ -45,9 +44,7 @@ final class UserRepository implements IUserRepository
                 return new User($user->ID, $user->Person, $person->Email);
             }
         } catch (PermissionException $e) {
-
         }
         throw new UserNotFoundException();
     }
-
 }

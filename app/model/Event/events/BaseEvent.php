@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Events\Events;
 
 class BaseEvent
@@ -15,24 +17,23 @@ class BaseEvent
 
     public function __construct(int $eventId, int $unitId, string $eventName)
     {
-        $this->eventId = $eventId;
-        $this->unitId = $unitId;
+        $this->eventId   = $eventId;
+        $this->unitId    = $unitId;
         $this->eventName = $eventName;
     }
 
-    public function getEventId(): int
+    public function getEventId() : int
     {
         return $this->eventId;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getEventName(): string
+    public function getEventName() : string
     {
         return $this->eventName;
     }
-
 }

@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 use Model\Cashbook\ObjectType;
 use Model\Skautis\Mapper;
+use function str_replace;
 
 class BudgetService
 {
-
     /** @var Mapper */
     private $skautisMapper;
 
@@ -16,7 +18,7 @@ class BudgetService
 
     public function __construct(BudgetTable $table, Mapper $skautisMapper)
     {
-        $this->table = $table;
+        $this->table         = $table;
         $this->skautisMapper = $skautisMapper;
     }
 
@@ -24,48 +26,48 @@ class BudgetService
     {
         $localId = $this->getLocalId($oid);
         return [
-            "in" => $this->getCategoriesAll($localId, "in"),
-            "out" => $this->getCategoriesAll($localId, "out")
+            'in' => $this->getCategoriesAll($localId, 'in'),
+            'out' => $this->getCategoriesAll($localId, 'out'),
         ];
     }
 
-    public function addCategory(int $oid, $label, $type, $parentId, $value, $year): void
+    public function addCategory(int $oid, $label, $type, $parentId, $value, $year) : void
     {
         $this->table->addCategory([
-            "objectId" => $this->getLocalId($oid),
-            "label" => $label,
-            "type" => $type,
-            "parentId" => $parentId,
-            "value" => (float)str_replace(",", ".", $value),
-            "year" => $year,
+            'objectId' => $this->getLocalId($oid),
+            'label' => $label,
+            'type' => $type,
+            'parentId' => $parentId,
+            'value' => (float) str_replace(',', '.', $value),
+            'year' => $year,
         ]);
     }
 
-    public function getCategoriesRoot(int $oid, ?string $type = NULL)
+    public function getCategoriesRoot(int $oid, ?string $type = null)
     {
         $localId = $this->getLocalId($oid);
 
-        if ($type === NULL) {
+        if ($type === null) {
             return [
-                'in' => $this->table->getDS($localId, 'in')->where("parentId IS NULL")->fetchPairs("id", "label"),
-                'out' => $this->table->getDS($localId, 'out')->where("parentId IS NULL")->fetchPairs("id", "label")
+                'in' => $this->table->getDS($localId, 'in')->where('parentId IS NULL')->fetchPairs('id', 'label'),
+                'out' => $this->table->getDS($localId, 'out')->where('parentId IS NULL')->fetchPairs('id', 'label'),
             ];
         }
-        return $this->table->getDS($localId, $type)->where("parentId IS NULL")->fetchPairs("id", "label");
+        return $this->table->getDS($localId, $type)->where('parentId IS NULL')->fetchPairs('id', 'label');
     }
 
-    public function getCategoriesLeaf(int $oid, ?string $type = NULL)
+    public function getCategoriesLeaf(int $oid, ?string $type = null)
     {
-        if ($type === NULL) {
+        if ($type === null) {
             return [
                 'in' => $this->{__FUNCTION__}($oid, 'in'),
                 'out' => $this->{__FUNCTION__}($oid, 'out'),
             ];
         }
-        return $this->table->getDS($this->getLocalId($oid), $type)->where("parentId IS NOT NULL")->fetchPairs("id", "label");
+        return $this->table->getDS($this->getLocalId($oid), $type)->where('parentId IS NOT NULL')->fetchPairs('id', 'label');
     }
 
-    public function getCategoriesAll($oid, $type, $parentId = NULL)
+    public function getCategoriesAll($oid, $type, $parentId = null)
     {
         $data = $this->table->getCategoriesByParent($oid, $type, $parentId);
         foreach ($data as $k => $v) {
@@ -78,5 +80,4 @@ class BudgetService
     {
         return $this->skautisMapper->getLocalId($id, ObjectType::UNIT)->toInt();
     }
-
 }

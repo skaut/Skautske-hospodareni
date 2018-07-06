@@ -7,16 +7,16 @@ namespace App\AccountancyModule\Components\FormControls;
 use Cake\Chronos\Date;
 use Nette\Utils\Html;
 use Nextras\Forms\Controls\DatePicker;
+use function sprintf;
 
 /**
  * Datetime picker with automatic string <-> Date conversion
  */
 class DateControl extends DatePicker
 {
-
     public function setDefaultValue($value) : self
     {
-        if(!$value instanceof Date && $value !== NULL) {
+        if (! $value instanceof Date && $value !== null) {
             throw new \InvalidArgumentException(sprintf('$value must be instance of %s or NULL', Date::class));
         }
 
@@ -29,8 +29,8 @@ class DateControl extends DatePicker
     {
         $value = parent::getValue();
 
-        if($value === NULL) {
-            return NULL;
+        if ($value === null) {
+            return null;
         }
 
         return Date::instance($value);
@@ -42,11 +42,10 @@ class DateControl extends DatePicker
 
         $value = $this->getValue();
 
-        if($value !== NULL) {
+        if ($value !== null) {
             $control->setAttribute('value', $value->format($this->htmlFormat));
         }
 
         return $control;
     }
-
 }

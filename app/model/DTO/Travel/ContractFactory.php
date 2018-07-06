@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Model\DTO\Travel;
 
-use Nette\StaticClass;
 use Model\Travel\Contract as ContractEntity;
+use Nette\StaticClass;
 
 final class ContractFactory
 {
-
     use StaticClass;
 
-    public static function create(ContractEntity $contract): Contract
+    public static function create(ContractEntity $contract) : Contract
     {
         return new Contract(
             $contract->getId(),
@@ -23,5 +23,4 @@ final class ContractFactory
             $contract->getTemplateVersion()
         );
     }
-
 }

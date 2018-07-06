@@ -11,7 +11,6 @@ use Model\Skautis\Mapper;
 
 final class EventCashbookIdQueryHandler
 {
-
     /** @var Mapper */
     private $mapper;
 
@@ -20,9 +19,8 @@ final class EventCashbookIdQueryHandler
         $this->mapper = $mapper;
     }
 
-    public function handle(EventCashbookIdQuery $query): CashbookId
+    public function handle(EventCashbookIdQuery $query) : CashbookId
     {
         return $this->mapper->getLocalId($query->getEventId()->toInt(), ObjectType::EVENT);
     }
-
 }

@@ -10,51 +10,53 @@ use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
+use function array_map;
+use function array_merge;
 use function array_slice;
 use function count;
+use function ksort;
 
 /**
  * @see https://is.skaut.cz/JunakWebservice/Events.asmx?WSDL
  */
 final class CampCategoryRepositoryTest extends Unit
 {
-
     private const CAMP_ID = 666;
 
     private const CATEGORIES = [
         [
             'ID' => 4,
-            'IsRevenue' => FALSE,
+            'IsRevenue' => false,
             'EventCampStatementType' => 'Rezerva',
             'Ammount' => '2000.0',
             'ID_EventCampStatementType' => ICategory::CAMP_RESERVE_ID,
         ],
         [
             'ID' => 1,
-            'IsRevenue' => TRUE,
+            'IsRevenue' => true,
             'EventCampStatementType' => 'Příjem od dětí',
             'Ammount' => '2400.15',
-            'ID_EventCampStatementType' => NULL,
+            'ID_EventCampStatementType' => null,
         ],
         [
             'ID' => 3,
-            'IsRevenue' => TRUE,
+            'IsRevenue' => true,
             'EventCampStatementType' => 'Příjem od dospělých',
             'Ammount' => '1000',
-            'ID_EventCampStatementType' => NULL,
+            'ID_EventCampStatementType' => null,
         ],
         [
             'ID' => 5,
-            'IsRevenue' => FALSE,
+            'IsRevenue' => false,
             'EventCampStatementType' => 'Materiál',
             'Ammount' => '0',
-            'ID_EventCampStatementType' => NULL,
+            'ID_EventCampStatementType' => null,
         ],
     ];
 
-    public function test(): void
+    public function test() : void
     {
-        $webserviceResult = array_map(function (array $category): \stdClass {
+        $webserviceResult = array_map(function (array $category) : \stdClass {
             return (object) $category;
         }, self::CATEGORIES);
 
@@ -70,13 +72,13 @@ final class CampCategoryRepositoryTest extends Unit
         $undefinedCategories = [
             [
                 ICategory::UNDEFINED_EXPENSE_ID,
-                FALSE, // Expense
+                false, // Expense
                 'Neurčeno',
                 0, // undefined categories have static amount -> zero
             ],
             [
                 ICategory::UNDEFINED_INCOME_ID,
-                TRUE, // Income
+                true, // Income
                 'Neurčeno',
                 0, // undefined categories have static amount -> zero
             ],
@@ -93,7 +95,7 @@ final class CampCategoryRepositoryTest extends Unit
             $this->assertSame($id, $category->getId());
             $this->assertSame($category->getOperationType()->getValue(), $isIncome ? Operation::INCOME : Operation::EXPENSE);
             $this->assertSame($name, $category->getName());
-            $this->assertTrue($category->getTotal()->equals(MoneyFactory::fromFloat((float)$amount)));
+            $this->assertTrue($category->getTotal()->equals(MoneyFactory::fromFloat((float) $amount)));
         }
     }
 
@@ -101,7 +103,7 @@ final class CampCategoryRepositoryTest extends Unit
      * IMHO this is seems very improbable, but WSDL states, that no response may be returned.
      * Skautis client returns empty stdClass in that case.
      */
-    public function testReturnEmptyResponse(): void
+    public function testReturnEmptyResponse() : void
     {
         $repository = $this->prepareRepository(new \stdClass());
 
@@ -113,16 +115,15 @@ final class CampCategoryRepositoryTest extends Unit
     /**
      * @param \stdClass|array $webserviceResult
      */
-    private function prepareRepository($webserviceResult): CampCategoryRepository
+    private function prepareRepository($webserviceResult) : CampCategoryRepository
     {
         $service = m::mock(WebServiceInterface::class);
 
-
         $service->expects('EventCampStatementAll')
-            ->withArgs(function (array $parameters): bool {
+            ->withArgs(function (array $parameters) : bool {
                 $expectedParameters = [
                     'ID_EventCamp' => self::CAMP_ID,
-                    'IsEstimate' => FALSE,
+                    'IsEstimate' => false,
                 ];
 
                 ksort($expectedParameters);
@@ -133,5 +134,4 @@ final class CampCategoryRepositoryTest extends Unit
 
         return new CampCategoryRepository($service);
     }
-
 }

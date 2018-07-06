@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\CampModule;
 
 use Model\Auth\Resources\Camp;
@@ -9,10 +11,10 @@ use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
+use Nette\Application\AbortException;
 
 class ParticipantPresenter extends BasePresenter
 {
-
     use \ParticipantTrait;
 
     public function __construct(MemberService $member, ExportService $export, ExcelService $excel, PdfRenderer $pdf)
@@ -20,71 +22,81 @@ class ParticipantPresenter extends BasePresenter
         parent::__construct();
         $this->memberService = $member;
         $this->exportService = $export;
-        $this->excelService = $excel;
-        $this->pdf = $pdf;
+        $this->excelService  = $excel;
+        $this->pdf           = $pdf;
     }
 
     protected function startup() : void
     {
         parent::startup();
         $this->traitStartup();
-        $this->isAllowRepayment = TRUE;
-        $this->isAllowIsAccount = TRUE;
+        $this->isAllowRepayment = true;
+        $this->isAllowIsAccount = true;
 
         $this->isAllowParticipantInsert = $this->authorizator->isAllowed(Camp::ADD_PARTICIPANT, $this->aid);
         $this->isAllowParticipantDelete = $this->authorizator->isAllowed(Camp::REMOVE_PARTICIPANT, $this->aid);
         $this->isAllowParticipantUpdate = $this->authorizator->isAllowed(Camp::UPDATE_PARTICIPANT, $this->aid);
 
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
             'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
             'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
             'isAllowRepayment' => $this->isAllowRepayment,
             'isAllowIsAccount' => $this->isAllowIsAccount,
-        ]);
+            ]
+        );
     }
 
-    public function renderDefault(int $aid, $uid = NULL, $dp = FALSE, $sort = NULL, $regNums = FALSE) : void
+    public function renderDefault(int $aid, $uid = null, bool $dp = false, ?string $sort = null, bool $regNums = false) : void
     {
         $authorizator = $this->authorizator;
 
-        if(!$authorizator->isAllowed(Camp::ACCESS_PARTICIPANTS, $aid)) {
-            $this->flashMessage("Nemáte právo prohlížeč účastníky", "danger");
-            $this->redirect("Default:");
+        if (! $authorizator->isAllowed(Camp::ACCESS_PARTICIPANTS, $aid)) {
+            $this->flashMessage('Nemáte právo prohlížeč účastníky', 'danger');
+            $this->redirect('Default:');
         }
 
         $this->traitDefault($dp, $sort, $regNums);
 
         $isAutocomputed = $this->event->IsRealAutoComputed;
 
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'isAllowParticipantDetail' => $authorizator->isAllowed(Camp::ACCESS_PARTICIPANT_DETAIL, $aid),
             'isAllowParticipantUpdateLocal' => $this->isAllowParticipantDelete,
-            'missingAvailableAutoComputed' => !$isAutocomputed && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
-        ]);
+            'missingAvailableAutoComputed' => ! $isAutocomputed && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
+            ]
+        );
 
-        if($this->isAjax()) {
-            $this->redrawControl("contentSnip");
+        if (! $this->isAjax()) {
+            return;
         }
+
+        $this->redrawControl('contentSnip');
     }
 
-    public function actionEditField($aid, $id, $field, $value) : void
+    /**
+     * @param int|float|string $value
+     * @throws AbortException
+     */
+    public function actionEditField(int $aid, int $id, string $field, $value) : void
     {
-        if(!$this->isAllowParticipantUpdate) {
-            $this->flashMessage("Nemáte oprávnění měnit účastníkův jejich údaje.", "danger");
-            if($this->isAjax()) {
+        if (! $this->isAllowParticipantUpdate) {
+            $this->flashMessage('Nemáte oprávnění měnit účastníkův jejich údaje.', 'danger');
+            if ($this->isAjax()) {
                 $this->sendPayload();
             } else {
-                $this->redirect("Default:");
+                $this->redirect('Default:');
             }
         }
-        $data = ["actionId" => $aid];
+        $data    = ['actionId' => $aid];
         $sisdata = $this->eventService->participants->get($id);
         switch ($field) {
-            case "days":
-            case "payment":
-            case "repayment":
-            case "isAccount":
+            case 'days':
+            case 'payment':
+            case 'repayment':
+            case 'isAccount':
                 $data[$field] = $value;
                 break;
             default:
@@ -101,8 +113,7 @@ class ParticipantPresenter extends BasePresenter
     public function handleActivateAutocomputedParticipants(int $aid) : void
     {
         $this->commandBus->handle(new ActivateAutocomputedParticipants(new SkautisCampId($aid)));
-        $this->flashMessage("Byl aktivován automatický výpočet seznamu osobodnů.");
-        $this->redirect("this");
+        $this->flashMessage('Byl aktivován automatický výpočet seznamu osobodnů.');
+        $this->redirect('this');
     }
-
 }

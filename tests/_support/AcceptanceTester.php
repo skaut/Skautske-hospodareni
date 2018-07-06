@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
+use Codeception\Actor;
 
 /**
  * Inherited Methods
@@ -16,7 +19,7 @@
  *
  * @SuppressWarnings(PHPMD)
  */
-class AcceptanceTester extends \Codeception\Actor
+class AcceptanceTester extends Actor
 {
     use _generated\AcceptanceTesterActions;
 
@@ -56,7 +59,7 @@ class AcceptanceTester extends \Codeception\Actor
     /**
      * PhantomJS can't work with popups ¯\_(ツ)_/¯
      */
-    public function disablePopups(): void
+    public function disablePopups() : void
     {
         $this->executeJS('window.confirm = function(msg){return true;};');
     }

@@ -12,7 +12,6 @@ use Model\Cashbook\ReadModel\QueryHandlers\ChitQueryHandler;
  */
 final class ChitQuery
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -22,17 +21,16 @@ final class ChitQuery
     public function __construct(CashbookId $cashbookId, int $chitId)
     {
         $this->cashbookId = $cashbookId;
-        $this->chitId = $chitId;
+        $this->chitId     = $chitId;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getChitId(): int
+    public function getChitId() : int
     {
         return $this->chitId;
     }
-
 }

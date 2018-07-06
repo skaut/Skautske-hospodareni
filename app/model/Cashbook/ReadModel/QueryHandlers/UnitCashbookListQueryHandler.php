@@ -11,7 +11,6 @@ use Model\Skautis\Mapper;
 
 final class UnitCashbookListQueryHandler
 {
-
     /** @var Mapper */
     private $mapper;
 
@@ -23,7 +22,7 @@ final class UnitCashbookListQueryHandler
     /**
      * @return UnitCashbook[]
      */
-    public function handle(UnitCashbookListQuery $query): array
+    public function handle(UnitCashbookListQuery $query) : array
     {
         $cashbookId = $this->mapper->getLocalId($query->getUnitId(), ObjectType::UNIT);
 
@@ -31,5 +30,4 @@ final class UnitCashbookListQueryHandler
             new UnitCashbook($cashbookId),
         ];
     }
-
 }

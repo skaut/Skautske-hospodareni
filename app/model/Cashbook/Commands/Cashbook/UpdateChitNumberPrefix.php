@@ -8,7 +8,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 final class UpdateChitNumberPrefix
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -18,17 +17,16 @@ final class UpdateChitNumberPrefix
     public function __construct(CashbookId $cashbookId, ?string $prefix)
     {
         $this->cashbookId = $cashbookId;
-        $this->prefix = $prefix;
+        $this->prefix     = $prefix;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getPrefix(): ?string
+    public function getPrefix() : ?string
     {
         return $this->prefix;
     }
-
 }

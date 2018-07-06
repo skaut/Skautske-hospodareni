@@ -10,7 +10,6 @@ use Model\Payment\Group;
 
 class Email
 {
-
     /** @var int */
     private $id;
 
@@ -18,7 +17,7 @@ class Email
     private $group;
 
     /** @var bool */
-    private $enabled = TRUE;
+    private $enabled = true;
 
     /** @var EmailType */
     private $type;
@@ -28,40 +27,39 @@ class Email
 
     public function __construct(Group $group, EmailType $type, EmailTemplate $template)
     {
-        $this->group = $group;
-        $this->type = $type;
+        $this->group    = $group;
+        $this->type     = $type;
         $this->template = $template;
     }
 
-    public function updateTemplate(EmailTemplate $template): void
+    public function updateTemplate(EmailTemplate $template) : void
     {
         $this->template = $template;
-        $this->enabled = TRUE;
+        $this->enabled  = true;
     }
 
-    public function disable(): void
+    public function disable() : void
     {
-        $this->enabled = FALSE;
+        $this->enabled = false;
     }
 
-    public function getGroup(): Group
+    public function getGroup() : Group
     {
         return $this->group;
     }
 
-    public function getType(): EmailType
+    public function getType() : EmailType
     {
         return $this->type;
     }
 
-    public function getTemplate(): EmailTemplate
+    public function getTemplate() : EmailTemplate
     {
         return $this->template;
     }
 
-    public function isEnabled(): bool
+    public function isEnabled() : bool
     {
         return $this->enabled;
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Commands\Cashbook;
 
 use Cake\Chronos\Date;
@@ -14,7 +16,6 @@ use Model\Cashbook\Handlers\Cashbook\AddChitToCashbookHandler;
  */
 final class AddChitToCashbook
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -44,50 +45,48 @@ final class AddChitToCashbook
         Amount $amount,
         string $purpose,
         int $categoryId
-    )
-    {
+    ) {
         $this->cashbookId = $cashbookId;
-        $this->number = $number;
-        $this->date = $date;
-        $this->recipient = $recipient;
-        $this->amount = $amount;
+        $this->number     = $number;
+        $this->date       = $date;
+        $this->recipient  = $recipient;
+        $this->amount     = $amount;
         $this->categoryId = $categoryId;
-        $this->purpose = $purpose;
+        $this->purpose    = $purpose;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getNumber(): ?ChitNumber
+    public function getNumber() : ?ChitNumber
     {
         return $this->number;
     }
 
-    public function getDate(): Date
+    public function getDate() : Date
     {
         return $this->date;
     }
 
-    public function getRecipient(): ?Recipient
+    public function getRecipient() : ?Recipient
     {
         return $this->recipient;
     }
 
-    public function getAmount(): Amount
+    public function getAmount() : Amount
     {
         return $this->amount;
     }
 
-    public function getPurpose(): string
+    public function getPurpose() : string
     {
         return $this->purpose;
     }
 
-    public function getCategoryId(): int
+    public function getCategoryId() : int
     {
         return $this->categoryId;
     }
-
 }

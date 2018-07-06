@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\Commands\Camp;
 
 use Model\Event\SkautisCampId;
 
 class ActivateAutocomputedCashbook
 {
-
     /** @var SkautisCampId */
     private $campId;
 
@@ -15,9 +16,8 @@ class ActivateAutocomputedCashbook
         $this->campId = $campId;
     }
 
-    public function getCampId(): SkautisCampId
+    public function getCampId() : SkautisCampId
     {
         return $this->campId;
     }
-
 }

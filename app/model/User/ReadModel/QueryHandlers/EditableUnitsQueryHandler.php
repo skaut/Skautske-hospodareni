@@ -10,7 +10,6 @@ use Model\User\ReadModel\Queries\EditableUnitsQuery;
 
 final class EditableUnitsQueryHandler
 {
-
     /** @var IUnitRepository */
     private $units;
 
@@ -22,7 +21,7 @@ final class EditableUnitsQueryHandler
     /**
      * @return Unit[]
      */
-    public function handle(EditableUnitsQuery $query): array
+    public function handle(EditableUnitsQuery $query) : array
     {
         $role = $query->getRole();
 
@@ -42,14 +41,12 @@ final class EditableUnitsQueryHandler
     /**
      * @return Unit[]
      */
-    private function getUnitTree(int $rootUnitId): array
+    private function getUnitTree(int $rootUnitId) : array
     {
         $rootUnit = $this->units->find($rootUnitId);
         $subUnits = $this->units->findByParent($rootUnitId);
 
-        $units = [
-            $rootUnitId => $rootUnit,
-        ];
+        $units = [$rootUnitId => $rootUnit];
 
         foreach ($subUnits as $subUnit) {
             foreach ($this->getUnitTree($subUnit->getId()) as $id => $unit) {
@@ -59,5 +56,4 @@ final class EditableUnitsQueryHandler
 
         return $units;
     }
-
 }

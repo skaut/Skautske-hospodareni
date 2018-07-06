@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 use Skautis\Wsdl\WebServiceInterface;
+use function array_key_exists;
+use function asort;
+use function natcasesort;
 
 class MemberService
 {
-
     /** @var WebServiceInterface @todo Create anticorruption layer */
     private $organizationWebservice;
 
@@ -20,9 +24,9 @@ class MemberService
      * vrací seznam všech osob
      * @return array
      */
-    public function getAll(int $unitId, bool $onlyDirectMember, array $participants)
+    public function getAll(int $unitId, bool $onlyDirectMember, array $participants) : array
     {
-        $all = $this->organizationWebservice->PersonAll(["ID_Unit" => $unitId, "OnlyDirectMember" => $onlyDirectMember]);
+        $all = $this->organizationWebservice->PersonAll(['ID_Unit' => $unitId, 'OnlyDirectMember' => $onlyDirectMember]);
         $ret = [];
 
         if (empty($participants)) {
@@ -32,12 +36,14 @@ class MemberService
         } else { //odstranení jiz oznacených
             $check = [];
             foreach ($participants as $p) {
-                $check[$p->ID_Person] = TRUE;
+                $check[$p->ID_Person] = true;
             }
             foreach ($all as $p) {
-                if (!array_key_exists($p->ID, $check)) {
-                    $ret[$p->ID] = $p->DisplayName;
+                if (array_key_exists($p->ID, $check)) {
+                    continue;
                 }
+
+                $ret[$p->ID] = $p->DisplayName;
             }
         }
         natcasesort($ret);
@@ -49,9 +55,9 @@ class MemberService
      * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
      * @return array
      */
-    public function getCombobox($OnlyDirectMember = FALSE, $ageLimit = NULL)
+    public function getCombobox(bool $OnlyDirectMember = false, $ageLimit = null) : array
     {
-        return $this->getPairs($this->organizationWebservice->PersonAll(["OnlyDirectMember" => $OnlyDirectMember]), $ageLimit);
+        return $this->getPairs($this->organizationWebservice->PersonAll(['OnlyDirectMember' => $OnlyDirectMember]), $ageLimit);
     }
 
     /**
@@ -59,15 +65,15 @@ class MemberService
      * @param array $data - vráceno z PersonAll
      * @return array
      */
-    private function getPairs($data, $ageLimit = NULL)
+    private function getPairs(array $data, $ageLimit = null) : array
     {
         $res = [];
         $now = new \DateTime();
         foreach ($data as $p) {
-            if ($ageLimit != NULL) {
-                $birth = new \DateTime($p->Birthday);
+            if ($ageLimit !== null) {
+                $birth    = new \DateTime($p->Birthday);
                 $interval = $now->diff($birth);
-                $diff = $interval->format("%y");
+                $diff     = $interval->format('%y');
                 if ($diff < $ageLimit) {
                     continue;
                 }
@@ -77,5 +83,4 @@ class MemberService
         asort($res);
         return $res;
     }
-
 }

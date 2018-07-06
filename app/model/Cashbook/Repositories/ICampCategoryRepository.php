@@ -8,10 +8,8 @@ use Model\Cashbook\CampCategory;
 
 interface ICampCategoryRepository
 {
-
     /**
      * @return CampCategory[]
      */
-    public function findForCamp(int $campId): array;
-
+    public function findForCamp(int $campId) : array;
 }

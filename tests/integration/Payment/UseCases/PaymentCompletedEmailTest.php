@@ -16,9 +16,8 @@ use Model\PaymentService;
 
 class PaymentCompletedEmailTest extends \IntegrationTest
 {
-
     private const UNIT_ID = 10;
-    private const EMAIL = 'test@hospodareni.loc';
+    private const EMAIL   = 'test@hospodareni.loc';
 
     /** @var PaymentService */
     private $paymentService;
@@ -26,7 +25,7 @@ class PaymentCompletedEmailTest extends \IntegrationTest
     /** @var UserRepositoryStub */
     private $users;
 
-    protected function getTestedEntites(): array
+    protected function getTestedEntites() : array
     {
         return [
             Group::class,
@@ -36,17 +35,15 @@ class PaymentCompletedEmailTest extends \IntegrationTest
         ];
     }
 
-    protected function _before()
+    protected function _before() : void
     {
-        $this->tester->useConfigFiles([
-            'Payment/UseCases/PaymentCompletedEmailTest.neon',
-        ]);
+        $this->tester->useConfigFiles(['Payment/UseCases/PaymentCompletedEmailTest.neon']);
         parent::_before();
         $this->paymentService = $this->tester->grabService(PaymentService::class);
-        $this->users = $this->tester->grabService(UserRepositoryStub::class);
+        $this->users          = $this->tester->grabService(UserRepositoryStub::class);
     }
 
-    public function testWhenEmailIsNotSetNothingHappens(): void
+    public function testWhenEmailIsNotSetNothingHappens() : void
     {
         $this->createMailCredentials();
         $this->initEntities();
@@ -59,13 +56,13 @@ class PaymentCompletedEmailTest extends \IntegrationTest
     /**
      * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
      */
-    public function testWhenPaymentHasNoEmailNothingHappens(): void
+    public function testWhenPaymentHasNoEmailNothingHappens() : void
     {
         $this->createMailCredentials();
         $this->initEntities([
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
             EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
-        ], NULL);
+        ], null);
 
         $this->paymentService->completePayment(1);
 
@@ -75,19 +72,19 @@ class PaymentCompletedEmailTest extends \IntegrationTest
     /**
      * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
      */
-    public function testWhenGroupHasNoMailCredentialsSetNothingHappens(): void
+    public function testWhenGroupHasNoMailCredentialsSetNothingHappens() : void
     {
         $this->initEntities([
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
             EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
-        ], self::EMAIL, NULL);
+        ], self::EMAIL, null);
 
         $this->paymentService->completePayment(1);
 
         $this->tester->seeEmailCount(0);
     }
 
-    public function testEmailIsSentWhenPaymentIsCompleted(): void
+    public function testEmailIsSentWhenPaymentIsCompleted() : void
     {
         $email = new EmailTemplate('subject', 'body');
         $this->createMailCredentials();
@@ -105,30 +102,30 @@ class PaymentCompletedEmailTest extends \IntegrationTest
         $this->tester->seeInLastEmailTo(self::EMAIL, $email->getBody());
     }
 
-    private function initEntities(?array $emails = NULL, ?string $paymentEmail = self::EMAIL, ?int $credentialsId = 1): void
+    private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?int $credentialsId = 1) : void
     {
         $this->tester->resetEmails();
 
         $paymentDefaults = \Helpers::createEmptyPaymentDefaults();
-        $emails = $emails ?? [
+        $emails          = $emails ?? [
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
         ];
 
-        $this->paymentService->createGroup(11, NULL, 'Test', $paymentDefaults, $emails, $credentialsId, NULL);
+        $this->paymentService->createGroup(11, null, 'Test', $paymentDefaults, $emails, $credentialsId, null);
         $this->paymentService->createPayment(
             1,
             'Platba',
             $paymentEmail,
             100,
             \Helpers::getValidDueDate(),
-            NULL,
-            NULL,
-            NULL,
+            null,
+            null,
+            null,
             ''
         );
     }
 
-    private function createMailCredentials(): void
+    private function createMailCredentials() : void
     {
         $this->tester->haveInDatabase('pa_smtp', [
             'unitId' => self::UNIT_ID,
@@ -140,5 +137,4 @@ class PaymentCompletedEmailTest extends \IntegrationTest
             'created' => '2017-10-01 00:00:00',
         ]);
     }
-
 }

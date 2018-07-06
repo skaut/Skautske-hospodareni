@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\TravelModule;
 
 use App\AccountancyModule\TravelModule\Components\VehicleGrid;
@@ -15,7 +17,6 @@ use Nette\Utils\ArrayHash;
 
 class VehiclePresenter extends BasePresenter
 {
-
     /** @var TravelService */
     private $travelService;
 
@@ -26,7 +27,7 @@ class VehiclePresenter extends BasePresenter
     {
         parent::__construct();
         $this->travelService = $travelService;
-        $this->gridFactory = $gridFactory;
+        $this->gridFactory   = $gridFactory;
     }
 
 
@@ -42,7 +43,7 @@ class VehiclePresenter extends BasePresenter
         }
 
         // Check whether vehicle belongs to unit
-        if($vehicle->getUnitId() != $this->unit->ID) {
+        if ($vehicle->getUnitId() !== $this->unit->ID) {
             $this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
             $this->redirect('default');
         }
@@ -51,10 +52,10 @@ class VehiclePresenter extends BasePresenter
 
     public function actionDetail(int $id) : void
     {
-        $vehicle = $this->getVehicle($id);
-        $this->template->vehicle = $vehicle;
+        $vehicle                    = $this->getVehicle($id);
+        $this->template->vehicle    = $vehicle;
         $this->template->vehicleDTO = $this->travelService->getVehicleDTO($id);
-        if($vehicle->getSubunitId() !== NULL) {
+        if ($vehicle->getSubunitId() !== null) {
             $this->template->subunitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
         }
 
@@ -71,12 +72,12 @@ class VehiclePresenter extends BasePresenter
         // Check whether vehicle exists and belongs to unit
         $this->getVehicle($vehicleId);
 
-        if($this->travelService->removeVehicle($vehicleId)) {
-            $this->flashMessage("Vozidlo bylo odebráno.");
+        if ($this->travelService->removeVehicle($vehicleId)) {
+            $this->flashMessage('Vozidlo bylo odebráno.');
         } else {
-            $this->flashMessage("Nelze smazat vozidlo s cestovními příkazy.", "warning");
+            $this->flashMessage('Nelze smazat vozidlo s cestovními příkazy.', 'warning');
         }
-        $this->redirect("default");
+        $this->redirect('default');
     }
 
     public function handleArchive(int $vehicleId) : void
@@ -100,23 +101,23 @@ class VehiclePresenter extends BasePresenter
     protected function createComponentFormCreateVehicle() : Form
     {
         $form = new BaseForm();
-        $form->addText("type", "Typ*")
-            ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit typ.");
-        $form->addText("registration", "SPZ*")
-            ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit SPZ.");
-        $form->addText("consumption", "Harmonizovaná spotřeba*")
-            ->setAttribute("class", "form-control")
-            ->addRule(Form::FILLED, "Musíte vyplnit průměrnou spotřebu.")
-            ->addRule(Form::FLOAT, "Průměrná spotřeba musí být číslo!");
+        $form->addText('type', 'Typ*')
+            ->setAttribute('class', 'form-control')
+            ->addRule(Form::FILLED, 'Musíte vyplnit typ.');
+        $form->addText('registration', 'SPZ*')
+            ->setAttribute('class', 'form-control')
+            ->addRule(Form::FILLED, 'Musíte vyplnit SPZ.');
+        $form->addText('consumption', 'Harmonizovaná spotřeba*')
+            ->setAttribute('class', 'form-control')
+            ->addRule(Form::FILLED, 'Musíte vyplnit průměrnou spotřebu.')
+            ->addRule(Form::FLOAT, 'Průměrná spotřeba musí být číslo!');
         $form->addSelect('subunitId', 'Oddíl', $this->unitService->getSubunitPairs($this->getUnitId()))
             ->setAttribute('class', 'form-control')
             ->setPrompt('Žádný')
-            ->setRequired(FALSE);
-        $form->addSubmit("send", "Založit");
+            ->setRequired(false);
+        $form->addSubmit('send', 'Založit');
 
-        $form->onSuccess[] = function(Form $form, ArrayHash $values) : void {
+        $form->onSuccess[] = function (Form $form, ArrayHash $values) : void {
             $this->formCreateVehicleSubmitted($values);
         };
 
@@ -136,8 +137,7 @@ class VehiclePresenter extends BasePresenter
             )
         );
 
-        $this->flashMessage("Vozidlo bylo vytvořeno");
-        $this->redirect("this");
+        $this->flashMessage('Vozidlo bylo vytvořeno');
+        $this->redirect('this');
     }
-
 }

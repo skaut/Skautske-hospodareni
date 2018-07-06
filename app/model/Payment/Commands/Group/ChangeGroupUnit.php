@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Commands\Group;
 
 final class ChangeGroupUnit
 {
-
     /** @var int */
     private $groupId;
 
@@ -14,17 +15,16 @@ final class ChangeGroupUnit
     public function __construct($groupId, $unitId)
     {
         $this->groupId = $groupId;
-        $this->unitId = $unitId;
+        $this->unitId  = $unitId;
     }
 
-    public function getGroupId(): int
+    public function getGroupId() : int
     {
         return $this->groupId;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
-
 }

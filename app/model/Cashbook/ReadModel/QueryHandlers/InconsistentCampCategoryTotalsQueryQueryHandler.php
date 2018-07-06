@@ -14,7 +14,6 @@ use Model\Utils\MoneyFactory;
 
 class InconsistentCampCategoryTotalsQueryQueryHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -26,26 +25,26 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
 
     public function __construct(ICashbookRepository $cashbooks, ICampCategoryRepository $campCategories, QueryBus $queryBus)
     {
-        $this->cashbooks = $cashbooks;
+        $this->cashbooks      = $cashbooks;
         $this->campCategories = $campCategories;
-        $this->queryBus = $queryBus;
+        $this->queryBus       = $queryBus;
     }
 
     /**
      * @return array<int, float>
      */
-    public function handle(InconsistentCampCategoryTotalsQuery $query): array
+    public function handle(InconsistentCampCategoryTotalsQuery $query) : array
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($query->getCampId()));
 
         $cashbook = $this->cashbooks->find($cashbookId);
-        $totals = $cashbook->getCategoryTotals();
+        $totals   = $cashbook->getCategoryTotals();
 
         $skautisTotals = [];
 
         foreach ($this->campCategories->findForCamp($query->getCampId()->toInt()) as $category) {
-            $id = $category->getId();
-            $total = $category->getTotal();
+            $id           = $category->getId();
+            $total        = $category->getTotal();
             $isConsistent = MoneyFactory::fromFloat($totals[$id] ?? 0)->equals($total);
 
             if ($isConsistent || $id === ICategory::UNDEFINED_INCOME_ID || $id === ICategory::UNDEFINED_EXPENSE_ID) {
@@ -57,5 +56,4 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
 
         return $skautisTotals;
     }
-
 }

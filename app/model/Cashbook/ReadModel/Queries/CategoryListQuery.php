@@ -12,7 +12,6 @@ use Model\Cashbook\ReadModel\QueryHandlers\ChitListQueryHandler;
  */
 final class CategoryListQuery
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -21,9 +20,8 @@ final class CategoryListQuery
         $this->cashbookId = $cashbookId;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
-
 }

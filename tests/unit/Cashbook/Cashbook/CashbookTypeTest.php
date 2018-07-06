@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Cashbook;
 
-class CashbookTypeTest extends \Codeception\Test\Unit
-{
+use Codeception\Test\Unit;
 
-    public function testTransferCategoriesBetweenAllTestsAreDefined(): void
+class CashbookTypeTest extends Unit
+{
+    public function testTransferCategoriesBetweenAllTestsAreDefined() : void
     {
-        foreach(CashbookType::getAvailableValues() as $value) {
+        foreach (CashbookType::getAvailableValues() as $value) {
             $type = CashbookType::get($value);
 
             // undefined category would throw exception
@@ -15,5 +18,4 @@ class CashbookTypeTest extends \Codeception\Test\Unit
             $type->getTransferToCategoryId();
         }
     }
-
 }

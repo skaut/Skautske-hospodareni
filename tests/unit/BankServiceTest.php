@@ -15,23 +15,23 @@ use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
+use function array_map;
 
 final class BankServiceTest extends Unit
 {
-
     /**
      * @see https://github.com/skaut/Skautske-hospodareni/pull/508
      */
-    public function testPaymentIsPairedOnlyOnceForDuplicateTransactions()
+    public function testPaymentIsPairedOnlyOnceForDuplicateTransactions() : void
     {
-        $groupId = 123;
+        $groupId       = 123;
         $bankAccountId = 456;
 
         $group = m::mock(Group::class, [
             'getId' => $groupId,
             'getBankAccountId' => $bankAccountId,
             'getLastPairing' => new \DateTimeImmutable('- 5 days'),
-            'updateLastPairing' => NULL,
+            'updateLastPairing' => null,
         ]);
 
         $groups = m::mock(IGroupRepository::class);
@@ -41,9 +41,7 @@ final class BankServiceTest extends Unit
             ->andReturn([$group]);
         $groups->shouldReceive('save');
 
-        $bankAccount = m::mock(BankAccount::class, [
-            'getToken' => '123',
-        ]);
+        $bankAccount = m::mock(BankAccount::class, ['getToken' => '123']);
 
         $bankAccounts = m::mock(IBankAccountRepository::class);
         $bankAccounts->shouldReceive('find')
@@ -51,15 +49,15 @@ final class BankServiceTest extends Unit
             ->with($bankAccountId)
             ->andReturn($bankAccount);
 
-        $amount = 200.50;
-        $vs = new VariableSymbol('123456');
-        $account = (string)\Helpers::createAccountNumber();
+        $amount  = 200.50;
+        $vs      = new VariableSymbol('123456');
+        $account = (string) \Helpers::createAccountNumber();
 
         $transactions = array_map(
             function (string $id) use ($amount, $vs, $account) {
                 $today = new \DateTimeImmutable();
 
-                return new Transaction($id, $today, $amount, $account, 'František Maša', $vs->toInt(), NULL, 'note' . $id);
+                return new Transaction($id, $today, $amount, $account, 'František Maša', $vs->toInt(), null, 'note' . $id);
             },
             ['123', '456']
         );
@@ -70,7 +68,7 @@ final class BankServiceTest extends Unit
             ->andReturn($transactions);
 
         $payments = [
-            new Payment($group, '-', NULL, $amount, new \DateTimeImmutable(), $vs, NULL, NULL, ''),
+            new Payment($group, '-', null, $amount, new \DateTimeImmutable(), $vs, null, null, ''),
         ];
 
         \Helpers::assignIdentity($payments[0], 1);
@@ -92,5 +90,4 @@ final class BankServiceTest extends Unit
         $this->assertSame('note123', $transaction->getNote());
         $this->assertSame('František Maša', $transaction->getPayer());
     }
-
 }

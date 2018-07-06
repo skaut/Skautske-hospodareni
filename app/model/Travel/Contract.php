@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Travel;
 
-use Model\Unit\Unit;
 use Model\Travel\Contract\Passenger as ContractPassenger;
+use Model\Unit\Unit;
 
 class Contract
 {
-
     /** @var int */
     private $id;
 
@@ -32,46 +33,45 @@ class Contract
 
     public function __construct(Unit $unit, string $unitRepresentative, \DateTimeImmutable $since, ContractPassenger $passenger)
     {
-        $this->unitId = $unit->getId();
+        $this->unitId             = $unit->getId();
         $this->unitRepresentative = $unitRepresentative;
-        $this->since = $since->setTime(0,0,0);
-        $this->until = $this->since->modify('+ 3 years');
-        $this->passenger = $passenger;
+        $this->since              = $since->setTime(0, 0, 0);
+        $this->until              = $this->since->modify('+ 3 years');
+        $this->passenger          = $passenger;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getUnitRepresentative(): string
+    public function getUnitRepresentative() : string
     {
         return $this->unitRepresentative;
     }
 
-    public function getSince(): ?\DateTimeImmutable
+    public function getSince() : ?\DateTimeImmutable
     {
         return $this->since;
     }
 
-    public function getUntil(): ?\DateTimeImmutable
+    public function getUntil() : ?\DateTimeImmutable
     {
         return $this->until;
     }
 
-    public function getPassenger(): ContractPassenger
+    public function getPassenger() : ContractPassenger
     {
         return $this->passenger;
     }
 
-    public function getTemplateVersion(): int
+    public function getTemplateVersion() : int
     {
         return $this->templateVersion;
     }
-
 }

@@ -12,7 +12,6 @@ use Model\Events\Events\EventWasCanceled;
 
 final class EventWasCanceledSubscriber
 {
-
     /** @var CommandBus */
     private $commandBus;
 
@@ -22,14 +21,13 @@ final class EventWasCanceledSubscriber
     public function __construct(CommandBus $commandBus, QueryBus $queryBus)
     {
         $this->commandBus = $commandBus;
-        $this->queryBus = $queryBus;
+        $this->queryBus   = $queryBus;
     }
 
-    public function handle(EventWasCanceled $event): void
+    public function handle(EventWasCanceled $event) : void
     {
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getEventId()));
 
         $this->commandBus->handle(new ClearCashbook($cashbookId));
     }
-
 }

@@ -8,10 +8,10 @@ use Doctrine\ORM\EntityManager;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
+use function array_values;
 
 class VehicleRepository implements IVehicleRepository
 {
-
     /** @var EntityManager */
     private $em;
 
@@ -23,28 +23,28 @@ class VehicleRepository implements IVehicleRepository
     /**
      * @throws VehicleNotFoundException
      */
-    public function find(int $id): Vehicle
+    public function find(int $id) : Vehicle
     {
         $vehicle = $this->em->find(Vehicle::class, $id);
 
-        if(! $vehicle instanceof Vehicle) {
+        if (! $vehicle instanceof Vehicle) {
             throw new VehicleNotFoundException();
         }
 
         return $vehicle;
     }
 
-    public function findByIds(array $ids): array
+    public function findByIds(array $ids) : array
     {
-        if(empty($ids)) {
+        if (empty($ids)) {
             return [];
         }
 
         return $this->em->createQueryBuilder()
-            ->select("v")
-            ->from(Vehicle::class, "v", "v.id")
-            ->where("v.id IN (:ids)")
-            ->setParameter("ids", $ids)
+            ->select('v')
+            ->from(Vehicle::class, 'v', 'v.id')
+            ->where('v.id IN (:ids)')
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
     }
@@ -52,7 +52,7 @@ class VehicleRepository implements IVehicleRepository
     /**
      * @return Vehicle[]
      */
-    public function findByUnit(int $unitId): array
+    public function findByUnit(int $unitId) : array
     {
         $vehicles = $this->em->createQueryBuilder()
             ->select('v')
@@ -66,16 +66,15 @@ class VehicleRepository implements IVehicleRepository
         return array_values($vehicles);
     }
 
-    public function save(Vehicle $vehicle): void
+    public function save(Vehicle $vehicle) : void
     {
         $this->em->persist($vehicle);
         $this->em->flush();
     }
 
-    public function remove(Vehicle $vehicle): void
+    public function remove(Vehicle $vehicle) : void
     {
         $this->em->remove($vehicle);
         $this->em->flush();
     }
-
 }

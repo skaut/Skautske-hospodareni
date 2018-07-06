@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\Handlers\Event;
 
 use eGen\MessageBus\Bus\EventBus;
@@ -9,7 +11,6 @@ use Model\Events\Events\EventWasOpened;
 
 final class OpenEventHandler
 {
-
     /** @var IEventRepository */
     private $events;
 
@@ -18,11 +19,11 @@ final class OpenEventHandler
 
     public function __construct(IEventRepository $events, EventBus $eventBus)
     {
-        $this->events = $events;
+        $this->events   = $events;
         $this->eventBus = $eventBus;
     }
 
-    public function handle(OpenEvent $command): void
+    public function handle(OpenEvent $command) : void
     {
         $event = $this->events->find($command->getEventId());
 
@@ -36,5 +37,4 @@ final class OpenEventHandler
             )
         );
     }
-
 }

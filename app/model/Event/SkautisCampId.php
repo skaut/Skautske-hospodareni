@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event;
 
 final class SkautisCampId
 {
-
     /** @var int */
     private $value;
 
@@ -16,14 +17,13 @@ final class SkautisCampId
     /**
      * @deprecated use self::toInt()
      */
-    public function getValue(): int
+    public function getValue() : int
     {
         return $this->value;
     }
 
-    public function toInt(): int
+    public function toInt() : int
     {
         return $this->value;
     }
-
 }

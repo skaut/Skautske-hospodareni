@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Unit\Services;
 
 use Mockery as m;
@@ -8,11 +10,10 @@ use Model\Unit\Unit;
 
 class UnitResolverTest extends \Codeception\Test\Unit
 {
-
-    public function testResolveOfficialUnitIdToItself(): void
+    public function testResolveOfficialUnitIdToItself() : void
     {
         $unit = m::mock(Unit::class);
-        $unit->shouldReceive('isOfficial')->andReturn(TRUE);
+        $unit->shouldReceive('isOfficial')->andReturn(true);
 
         $repository = m::mock(IUnitRepository::class);
         $repository->shouldReceive('find')
@@ -24,14 +25,14 @@ class UnitResolverTest extends \Codeception\Test\Unit
         $this->assertSame(5, $resolver->getOfficialUnitId(5));
     }
 
-    public function testResolveSubunitToOfficialUnitId(): void
+    public function testResolveSubunitToOfficialUnitId() : void
     {
         $unit = m::mock(Unit::class);
-        $unit->shouldReceive('isOfficial')->andReturn(FALSE);
+        $unit->shouldReceive('isOfficial')->andReturn(false);
         $unit->shouldReceive('getParentId')->andReturn(10);
 
         $officialParent = m::mock(Unit::class);
-        $officialParent->shouldReceive('isOfficial')->andReturn(TRUE);
+        $officialParent->shouldReceive('isOfficial')->andReturn(true);
 
         $repository = m::mock(IUnitRepository::class);
         $repository->shouldReceive('find')
@@ -46,5 +47,4 @@ class UnitResolverTest extends \Codeception\Test\Unit
 
         $this->assertSame(10, $resolver->getOfficialUnitId(5));
     }
-
 }

@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Logger;
 
 use Model\Logger\Log\Type;
 
 class Log
 {
-
     /** @var int */
     private $id;
 
@@ -28,44 +29,43 @@ class Log
     /** @var int|NULL */
     private $typeId;
 
-    public function __construct(int $unitId, int $userId, string $desc, Type $type, ?int $typeId = NULL)
+    public function __construct(int $unitId, int $userId, string $desc, Type $type, ?int $typeId = null)
     {
-        $this->unitId = $unitId;
-        $this->date = new \DateTimeImmutable();
-        $this->userId = $userId;
+        $this->unitId      = $unitId;
+        $this->date        = new \DateTimeImmutable();
+        $this->userId      = $userId;
         $this->description = $desc;
-        $this->type = $type;
-        $this->typeId = $typeId;
+        $this->type        = $type;
+        $this->typeId      = $typeId;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getDate(): \DateTimeImmutable
+    public function getDate() : \DateTimeImmutable
     {
         return $this->date;
     }
 
-    public function getUserId(): int
+    public function getUserId() : int
     {
         return $this->userId;
     }
 
-    public function getDescription(): string
+    public function getDescription() : string
     {
         return $this->description;
     }
 
-    public function getType(): Type
+    public function getType() : Type
     {
         return $this->type;
     }
 
-    public function getTypeId(): ?int
+    public function getTypeId() : ?int
     {
         return $this->typeId;
     }
-
 }

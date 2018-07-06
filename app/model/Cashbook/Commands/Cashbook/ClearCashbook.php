@@ -12,7 +12,6 @@ use Model\Cashbook\Handlers\Cashbook\ClearCashbookHandler;
  */
 final class ClearCashbook
 {
-    
     /** @var CashbookId */
     private $cashbookId;
 
@@ -21,9 +20,8 @@ final class ClearCashbook
         $this->cashbookId = $cashbookId;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
-
 }

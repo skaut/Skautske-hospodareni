@@ -25,7 +25,6 @@ use Nette\SmartObject;
  */
 class Chit
 {
-
     use SmartObject;
 
     /** @var int */
@@ -68,55 +67,54 @@ class Chit
         Category $category,
         bool $locked,
         array $inverseCashbookTypes
-    )
-    {
-        $this->id = $id;
-        $this->number = $number;
-        $this->date = $date;
-        $this->recipient = $recipient;
-        $this->amount = $amount;
-        $this->purpose = $purpose;
-        $this->category = $category;
-        $this->locked = $locked;
+    ) {
+        $this->id                   = $id;
+        $this->number               = $number;
+        $this->date                 = $date;
+        $this->recipient            = $recipient;
+        $this->amount               = $amount;
+        $this->purpose              = $purpose;
+        $this->category             = $category;
+        $this->locked               = $locked;
         $this->inverseCashbookTypes = $inverseCashbookTypes;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getNumber(): ?ChitNumber
+    public function getNumber() : ?ChitNumber
     {
         return $this->number;
     }
 
-    public function getDate(): Date
+    public function getDate() : Date
     {
         return $this->date;
     }
 
-    public function getRecipient(): ?Recipient
+    public function getRecipient() : ?Recipient
     {
         return $this->recipient;
     }
 
-    public function getAmount(): Amount
+    public function getAmount() : Amount
     {
         return $this->amount;
     }
 
-    public function getPurpose(): string
+    public function getPurpose() : string
     {
         return $this->purpose;
     }
 
-    public function getCategory(): Category
+    public function getCategory() : Category
     {
         return $this->category;
     }
 
-    public function isLocked(): bool
+    public function isLocked() : bool
     {
         return $this->locked;
     }
@@ -124,14 +122,13 @@ class Chit
     /**
      * @return CashbookType[]
      */
-    public function getInverseCashbookTypes(): array
+    public function getInverseCashbookTypes() : array
     {
         return $this->inverseCashbookTypes;
     }
 
-    public function isIncome(): bool
+    public function isIncome() : bool
     {
         return $this->category->getOperationType()->equalsValue(Operation::INCOME);
     }
-
 }

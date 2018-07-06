@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
 class Category implements ICategory
 {
-
     public const EVENT_PARTICIPANTS_INCOME_CATEGORY_ID = 11;
 
     /** @var int */
@@ -28,43 +29,44 @@ class Category implements ICategory
     private $priority;
 
     /** @var bool */
-    private $deleted = FALSE;
+    private $deleted = false;
 
     public function __construct()
     {
         $this->types = new ArrayCollection();
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getShortcut(): string
+    public function getShortcut() : string
     {
         return $this->shortcut;
     }
 
-    public function getOperationType(): Operation
+    public function getOperationType() : Operation
     {
         return $this->operationType;
     }
 
-    public function isIncome(): bool
+    public function isIncome() : bool
     {
         return $this->operationType->equalsValue(Operation::INCOME);
     }
 
-    public function supportsType(ObjectType $type): bool
+    public function supportsType(ObjectType $type) : bool
     {
-        return $this->types->exists(function ($_, Category\ObjectType $categoryType) use ($type): bool {
-            return $categoryType->getType()->equals($type);
-        });
+        return $this->types->exists(
+            function ($_, Category\ObjectType $categoryType) use ($type) : bool {
+                return $categoryType->getType()->equals($type);
+            }
+        );
     }
-
 }

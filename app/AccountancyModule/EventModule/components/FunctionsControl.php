@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\EventModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
@@ -23,7 +25,6 @@ use Skautis\Wsdl\PermissionException;
 
 class FunctionsControl extends BaseControl
 {
-
     /** @var int */
     private $eventId;
 
@@ -43,7 +44,7 @@ class FunctionsControl extends BaseControl
      * @persistent
      * @var bool
      */
-    public $editation = FALSE;
+    public $editation = false;
 
     public function __construct(
         int $eventId,
@@ -51,22 +52,21 @@ class FunctionsControl extends BaseControl
         QueryBus $queryBus,
         MemberService $members,
         IAuthorizator $authorizator
-    )
-    {
+    ) {
         parent::__construct();
-        $this->eventId = $eventId;
-        $this->commandBus = $commandBus;
-        $this->queryBus = $queryBus;
-        $this->members = $members;
+        $this->eventId      = $eventId;
+        $this->commandBus   = $commandBus;
+        $this->queryBus     = $queryBus;
+        $this->members      = $members;
         $this->authorizator = $authorizator;
     }
 
-    private function reload(?string $message = NULL, ?string $type = NULL) : void
+    private function reload(?string $message = null, ?string $type = null) : void
     {
-        if($message !== NULL) {
+        if ($message !== null) {
             $this->presenter->flashMessage($message, $type);
         }
-        if($this->presenter->isAjax()) {
+        if ($this->presenter->isAjax()) {
             $this->redrawControl();
         } else {
             $this->redirect('this');
@@ -86,41 +86,41 @@ class FunctionsControl extends BaseControl
 
     public function handleCloseEditation() : void
     {
-        $this->editation = FALSE;
+        $this->editation = false;
         $this->reload();
     }
 
     protected function createComponentForm() : BaseForm
     {
-        $form = new BaseForm();
+        $form             = new BaseForm();
         $personsOlderThan = $this->getPersonsOlderThan([15, 18]);
 
-        $form->addSelect("leader", "Vedoucí", $personsOlderThan[18])
-            ->setPrompt("")
-            ->setAttribute("class", "combobox")
-            ->setAttribute("data-autocomplete");
+        $form->addSelect('leader', 'Vedoucí', $personsOlderThan[18])
+            ->setPrompt('')
+            ->setAttribute('class', 'combobox')
+            ->setAttribute('data-autocomplete');
 
-        $form->addSelect("assistant", "Zástupce", $personsOlderThan[18])
-            ->setPrompt("")
-            ->setAttribute("class", "combobox")
-            ->setAttribute("data-autocomplete");
+        $form->addSelect('assistant', 'Zástupce', $personsOlderThan[18])
+            ->setPrompt('')
+            ->setAttribute('class', 'combobox')
+            ->setAttribute('data-autocomplete');
 
-        $form->addSelect("accountant", "Hospodář", $personsOlderThan[15])
-            ->setPrompt("")
-            ->setAttribute("class", "combobox")
-            ->setAttribute("data-autocomplete");
+        $form->addSelect('accountant', 'Hospodář', $personsOlderThan[15])
+            ->setPrompt('')
+            ->setAttribute('class', 'combobox')
+            ->setAttribute('data-autocomplete');
 
-        $form->addSelect("medic", "Zdravotník", $personsOlderThan[15])
-            ->setPrompt("")
-            ->setAttribute("class", "combobox")
-            ->setAttribute("data-autocomplete");
+        $form->addSelect('medic', 'Zdravotník', $personsOlderThan[15])
+            ->setPrompt('')
+            ->setAttribute('class', 'combobox')
+            ->setAttribute('data-autocomplete');
 
-        $form->addSubmit("save", "Uložit")
-            ->setAttribute("class", "btn btn-sm btn-primary ajax");
+        $form->addSubmit('save', 'Uložit')
+            ->setAttribute('class', 'btn btn-sm btn-primary ajax');
 
         $this->setDefaultValues($form);
 
-        $form->onSuccess[] = function(BaseForm $form, ArrayHash $values) {
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
             $this->formSubmitted($form, $values);
         };
         return $form;
@@ -131,13 +131,13 @@ class FunctionsControl extends BaseControl
         $this->template->setFile(__DIR__ . '/templates/FunctionsControl.latte');
         $this->template->functions = $this->getCurrentFunctions();
         $this->template->editation = $this->editation;
-        $this->template->canEdit = $this->canEdit();
+        $this->template->canEdit   = $this->canEdit();
         $this->template->render();
     }
 
     private function formSubmitted(BaseForm $form, ArrayHash $values) : void
     {
-        if(!$this->canEdit()) {
+        if (! $this->canEdit()) {
             $this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
         }
         try {
@@ -172,16 +172,18 @@ class FunctionsControl extends BaseControl
         $selected = $this->getCurrentFunctions();
 
         $values = [
-            "leader" => $this->getIdOrNull($selected->getLeader()),
-            "assistant" => $this->getIdOrNull($selected->getAssistant()),
-            "accountant" => $this->getIdOrNull($selected->getAccountant()),
-            "medic" => $this->getIdOrNull($selected->getMedic()),
+            'leader' => $this->getIdOrNull($selected->getLeader()),
+            'assistant' => $this->getIdOrNull($selected->getAssistant()),
+            'accountant' => $this->getIdOrNull($selected->getAccountant()),
+            'medic' => $this->getIdOrNull($selected->getMedic()),
         ];
 
         foreach ($values as $functionName => $personId) {
-            /** @var SelectBox $selectbox */
+            /**
+ * @var SelectBox $selectbox
+*/
             $selectbox = $form[$functionName];
-            $selectbox->setDefaultValue(isset($selectbox->getItems()[$personId]) ? $personId : NULL);
+            $selectbox->setDefaultValue(isset($selectbox->getItems()[$personId]) ? $personId : null);
         }
     }
 
@@ -193,7 +195,7 @@ class FunctionsControl extends BaseControl
     {
         $persons = [];
         foreach ($ages as $age) {
-            $persons[$age] = $this->members->getCombobox(FALSE, $age);
+            $persons[$age] = $this->members->getCombobox(false, $age);
         }
 
         return $persons;
@@ -201,8 +203,8 @@ class FunctionsControl extends BaseControl
 
     private function getIdOrNull(?Person $person) : ?int
     {
-        if($person === NULL) {
-            return NULL;
+        if ($person === null) {
+            return null;
         }
 
         return $person->getId();
@@ -212,5 +214,4 @@ class FunctionsControl extends BaseControl
     {
         return $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->eventId)));
     }
-
 }

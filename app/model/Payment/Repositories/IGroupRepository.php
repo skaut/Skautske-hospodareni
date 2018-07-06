@@ -11,44 +11,39 @@ use Model\Payment\GroupNotFoundException;
 
 interface IGroupRepository
 {
-
     /**
      * @throws GroupNotFoundException
      */
-    public function find(int $id): Group;
+    public function find(int $id) : Group;
 
     /**
      * @param int[] $ids
      * @return Group[]
      */
-    public function findByIds(array $ids): array;
+    public function findByIds(array $ids) : array;
 
     /**
      * @param int[] $unitIds
      * @return Group[]
      */
-    public function findByUnits(array $unitIds, bool $openOnly): array;
+    public function findByUnits(array $unitIds, bool $openOnly) : array;
 
     /**
      * @return Group[]
      */
-    public function findBySkautisEntity(SkautisEntity $object): array;
+    public function findBySkautisEntity(SkautisEntity $object) : array;
 
     /**
      * @return Group[]
      */
-    public function findBySkautisEntityType(Type $type): array;
+    public function findBySkautisEntityType(Type $type) : array;
 
     /**
      * @return Group[]
      */
-    public function findByBankAccount(int $bankAccountId): array;
+    public function findByBankAccount(int $bankAccountId) : array;
 
-    /**
-     * @param Group $group
-     */
-    public function save(Group $group): void;
+    public function save(Group $group) : void;
 
-    public function remove(Group $group): void;
-
+    public function remove(Group $group) : void;
 }

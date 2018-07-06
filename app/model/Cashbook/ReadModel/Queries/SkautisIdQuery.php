@@ -12,7 +12,6 @@ use Model\Cashbook\ReadModel\QueryHandlers\SkautisIdQueryHandler;
  */
 final class SkautisIdQuery
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -21,9 +20,8 @@ final class SkautisIdQuery
         $this->cashbookId = $cashbookId;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
-
 }

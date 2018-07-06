@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Category;
 
 use Model\Cashbook\Category;
@@ -7,7 +9,6 @@ use Model\Cashbook\ObjectType as ObjectTypeEnum;
 
 class ObjectType
 {
-
     /** @var Category */
     private $category;
 
@@ -17,12 +18,11 @@ class ObjectType
     public function __construct(Category $category, ObjectTypeEnum $value)
     {
         $this->category = $category;
-        $this->type = $value;
+        $this->type     = $value;
     }
 
-    public function getType(): ObjectTypeEnum
+    public function getType() : ObjectTypeEnum
     {
         return $this->type;
     }
-
 }

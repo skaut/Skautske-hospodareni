@@ -9,7 +9,6 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class UpdateChitNumberPrefixHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -18,7 +17,7 @@ final class UpdateChitNumberPrefixHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(UpdateChitNumberPrefix $command): void
+    public function handle(UpdateChitNumberPrefix $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 
@@ -26,5 +25,4 @@ final class UpdateChitNumberPrefixHandler
 
         $this->cashbooks->save($cashbook);
     }
-
 }

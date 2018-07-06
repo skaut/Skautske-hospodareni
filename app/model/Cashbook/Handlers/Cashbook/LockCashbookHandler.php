@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers\Cashbook;
 
+use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\Commands\Cashbook\LockCashbook;
 use Model\Cashbook\Repositories\ICashbookRepository;
 
 class LockCashbookHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -18,9 +19,9 @@ class LockCashbookHandler
     }
 
     /**
-     * @throws \Model\Cashbook\CashbookNotFoundException
+     * @throws CashbookNotFoundException
      */
-    public function handle(LockCashbook $command): void
+    public function handle(LockCashbook $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 
@@ -28,5 +29,4 @@ class LockCashbookHandler
 
         $this->cashbooks->save($cashbook);
     }
-
 }

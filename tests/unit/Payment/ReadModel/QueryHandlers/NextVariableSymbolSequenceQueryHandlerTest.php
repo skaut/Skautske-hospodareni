@@ -6,54 +6,53 @@ namespace Model\Payment\ReadModel\QueryHandlers;
 
 use Codeception\Test\Unit;
 use eGen\MessageBus\Bus\QueryBus;
+use Mockery as m;
 use Model\Payment\Group;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\VariableSymbol;
-use Mockery as m;
 use Model\Unit\ReadModel\Queries\UnitQuery;
+use function array_fill;
+use function array_merge;
 
 class NextVariableSymbolSequenceQueryHandlerTest extends Unit
 {
-
-    private const YEAR = '17';
+    private const YEAR    = '17';
     private const UNIT_ID = 1;
 
-    public function testWithZeroGroups(): void
+    public function testWithZeroGroups() : void
     {
         $this->assertReturnsVariableSymbol(self::YEAR . '11101001', 0, '111');
     }
 
-    public function testUnitWithMoreThanOrEqualTo99GroupsReturnsNull(): void
+    public function testUnitWithMoreThanOrEqualTo99GroupsReturnsNull() : void
     {
-        $this->assertReturnsVariableSymbol(NULL, 99, '111');
+        $this->assertReturnsVariableSymbol(null, 99, '111');
     }
 
-    public function testUnitWithDashInRegistratioNumber(): void
+    public function testUnitWithDashInRegistratioNumber() : void
     {
         $this->assertReturnsVariableSymbol(self::YEAR . '14166001', 65, '14-1');
     }
 
-    public function testUnitWithShortRegistrationNumber(): void
+    public function testUnitWithShortRegistrationNumber() : void
     {
         $this->assertReturnsVariableSymbol(self::YEAR . '01402001', 1, '014');
     }
 
-    public function testWithLongRegistrationNumber(): void
+    public function testWithLongRegistrationNumber() : void
     {
         $this->assertReturnsVariableSymbol(self::YEAR . '14102001', 1, '014-1');
     }
 
 
-    private function assertReturnsVariableSymbol(?string $expectedSymbol, int $groupsCount, string $unitRegistrationNumber): void
+    private function assertReturnsVariableSymbol(?string $expectedSymbol, int $groupsCount, string $unitRegistrationNumber) : void
     {
-        $unitDTO = m::mock(Unit::class, [
-            'getShortRegistrationNumber' => $unitRegistrationNumber,
-        ]);
+        $unitDTO = m::mock(Unit::class, ['getShortRegistrationNumber' => $unitRegistrationNumber]);
 
         $queryBus = m::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
-            ->withArgs(function(UnitQuery $query) {
+            ->withArgs(function (UnitQuery $query) {
                 return $query->getUnitId() === self::UNIT_ID;
             })
             ->andReturn($unitDTO);
@@ -69,20 +68,18 @@ class NextVariableSymbolSequenceQueryHandlerTest extends Unit
         );
 
         $groupRepository->shouldReceive('findByUnits')
-            ->withArgs([[1], FALSE])
+            ->withArgs([[1], false])
             ->andReturn($groups);
 
         $handler = new NextVariableSymbolSequenceQueryHandler($groupRepository, $queryBus);
 
         $actualSymbol = $handler->handle(new NextVariableSymbolSequenceQuery(self::UNIT_ID, $now->setTime(1, 1, 1)));
 
-        $this->assertEquals($expectedSymbol !== NULL ? new VariableSymbol($expectedSymbol) : NULL, $actualSymbol);
+        $this->assertEquals($expectedSymbol !== null ? new VariableSymbol($expectedSymbol) : null, $actualSymbol);
     }
 
-    private function mockGroup(\DateTimeImmutable $time): Group
+    private function mockGroup(\DateTimeImmutable $time) : Group
     {
-        return m::mock(Group::class, [
-            'getCreatedAt' => $time,
-        ]);
+        return m::mock(Group::class, ['getCreatedAt' => $time]);
     }
 }

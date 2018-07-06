@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Repositories;
 
 use Model\Payment\Payment;
@@ -9,38 +11,36 @@ use Model\Payment\VariableSymbol;
 
 interface IPaymentRepository
 {
-
     /**
-	 * @throws PaymentNotFoundException
-	 */
-    public function find(int $id): Payment;
+     * @throws PaymentNotFoundException
+     */
+    public function find(int $id) : Payment;
 
     /**
      * @return Payment[]
      */
-    public function findByGroup(int $groupId): array;
+    public function findByGroup(int $groupId) : array;
 
     /**
      * @param int[] $groupIds
      * @return Payment[]
      */
-    public function findByMultipleGroups(array $groupIds): array;
+    public function findByMultipleGroups(array $groupIds) : array;
 
     /**
      * @param int[] $groupIds
      * @return Summary[][]
      */
-    public function summarizeByGroup(array $groupIds): array;
+    public function summarizeByGroup(array $groupIds) : array;
 
-    public function save(Payment $payment): void;
+    public function save(Payment $payment) : void;
 
     /**
      * @param Payment[] $payments
      */
-    public function saveMany(array $payments): void;
+    public function saveMany(array $payments) : void;
 
-    public function remove(Payment $payment): void;
+    public function remove(Payment $payment) : void;
 
-    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol;
-
+    public function getMaxVariableSymbol(int $groupId) : ?VariableSymbol;
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment;
 
 use DateTimeImmutable;
@@ -9,10 +11,10 @@ use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
+use function in_array;
 
 class Payment extends AbstractAggregate
 {
-
     /** @var int */
     private $id;
 
@@ -62,23 +64,22 @@ class Payment extends AbstractAggregate
         ?int $constantSymbol,
         ?int $personId,
         string $note
-    )
-    {
-        if($amount <= 0) {
+    ) {
+        if ($amount <= 0) {
             throw new \InvalidArgumentException('Payment amount must be larger than 0');
         }
 
-        $this->groupId = $group->getId();
+        $this->groupId  = $group->getId();
         $this->personId = $personId;
-        $this->state = State::get(State::PREPARING);
+        $this->state    = State::get(State::PREPARING);
         $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
         $this->variableSymbol = $variableSymbol;
         $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
     }
 
-    public function getId(): int
+    public function getId() : int
     {
-        if ($this->id === NULL) {
+        if ($this->id === null) {
             throw new \RuntimeException("Can't get ID from not persisted aggregate");
         }
 
@@ -96,8 +97,7 @@ class Payment extends AbstractAggregate
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         string $note
-    ): void
-    {
+    ) : void {
         $this->checkNotClosed();
         $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
 
@@ -108,118 +108,118 @@ class Payment extends AbstractAggregate
         $this->variableSymbol = $variableSymbol;
     }
 
-    public function complete(DateTimeImmutable $time, ?Transaction $transaction = NULL): void
+    public function complete(DateTimeImmutable $time, ?Transaction $transaction = null) : void
     {
         $this->checkNotClosed();
         $this->transaction = $transaction;
-        $this->state = State::get(State::COMPLETED);
-        $this->closedAt = $time;
+        $this->state       = State::get(State::COMPLETED);
+        $this->closedAt    = $time;
 
         $this->raise(new PaymentWasCompleted($this->id));
     }
 
-    public function markSent(): void
+    public function markSent() : void
     {
         $this->checkNotClosed();
         $this->state = State::get(State::SENT);
     }
 
-    public function cancel(DateTimeImmutable $time): void
+    public function cancel(DateTimeImmutable $time) : void
     {
         $this->checkNotClosed();
-        $this->state = State::get(State::CANCELED);
+        $this->state    = State::get(State::CANCELED);
         $this->closedAt = $time;
     }
 
-    public function updateVariableSymbol(VariableSymbol $variableSymbol): void
+    public function updateVariableSymbol(VariableSymbol $variableSymbol) : void
     {
         $this->checkNotClosed();
 
-        if( ! VariableSymbol::areEqual($variableSymbol, $this->variableSymbol)) {
+        if (! VariableSymbol::areEqual($variableSymbol, $this->variableSymbol)) {
             $this->raise(new PaymentVariableSymbolWasChanged($this->groupId, $variableSymbol));
         }
 
         $this->variableSymbol = $variableSymbol;
     }
 
-    public function getGroupId(): int
+    public function getGroupId() : int
     {
         return $this->groupId;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getEmail(): ?string
+    public function getEmail() : ?string
     {
         return $this->email;
     }
 
-    public function getPersonId(): ?int
+    public function getPersonId() : ?int
     {
         return $this->personId;
     }
 
-    public function getAmount(): float
+    public function getAmount() : float
     {
         return $this->amount;
     }
 
-    public function getDueDate(): DateTimeImmutable
+    public function getDueDate() : DateTimeImmutable
     {
         return $this->dueDate;
     }
 
-    public function getVariableSymbol(): ?VariableSymbol
+    public function getVariableSymbol() : ?VariableSymbol
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol() : ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNote(): string
+    public function getNote() : string
     {
         return $this->note;
     }
 
-    public function getTransaction(): ?Transaction
+    public function getTransaction() : ?Transaction
     {
         return $this->transaction;
     }
 
-    public function getClosedAt(): ?DateTimeImmutable
+    public function getClosedAt() : ?DateTimeImmutable
     {
         return $this->closedAt;
     }
 
-    public function getState(): State
+    public function getState() : State
     {
         return $this->state;
     }
 
-    public function isClosed(): bool
+    public function isClosed() : bool
     {
         $state = $this->state;
-        return in_array($state->getValue(), [State::COMPLETED, State::CANCELED], TRUE);
+        return in_array($state->getValue(), [State::COMPLETED, State::CANCELED], true);
     }
 
-    public function canBePaired(): bool
+    public function canBePaired() : bool
     {
-        return !$this->isClosed() && $this->variableSymbol !== NULL;
+        return ! $this->isClosed() && $this->variableSymbol !== null;
     }
 
     /**
      * @throws PaymentClosedException
      */
-    private function checkNotClosed(): void
+    private function checkNotClosed() : void
     {
-        if ($this->closedAt !== NULL) {
-            throw new PaymentClosedException("Already closed!");
+        if ($this->closedAt !== null) {
+            throw new PaymentClosedException('Already closed!');
         }
     }
 
@@ -230,14 +230,12 @@ class Payment extends AbstractAggregate
         DateTimeImmutable $dueDate,
         ?int $constantSymbol,
         string $note
-    ): void
-    {
-        $this->name = $name;
-        $this->email = $email;
-        $this->amount = $amount;
-        $this->dueDate = $dueDate;
+    ) : void {
+        $this->name           = $name;
+        $this->email          = $email;
+        $this->amount         = $amount;
+        $this->dueDate        = $dueDate;
         $this->constantSymbol = $constantSymbol;
-        $this->note = $note;
+        $this->note           = $note;
     }
-
 }

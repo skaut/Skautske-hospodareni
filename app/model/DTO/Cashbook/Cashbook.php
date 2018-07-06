@@ -26,32 +26,30 @@ class Cashbook
         CashbookType $type,
         ?string $chitNumberPrefix,
         string $note
-    )
-    {
-        $this->id = $id;
-        $this->type = $type;
+    ) {
+        $this->id               = $id;
+        $this->type             = $type;
         $this->chitNumberPrefix = $chitNumberPrefix;
-        $this->note = $note;
+        $this->note             = $note;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id->toInt();
     }
 
-    public function getType(): CashbookType
+    public function getType() : CashbookType
     {
         return $this->type;
     }
 
-    public function getChitNumberPrefix(): ?string
+    public function getChitNumberPrefix() : ?string
     {
         return $this->chitNumberPrefix;
     }
 
-    public function getNote(): string
+    public function getNote() : string
     {
         return $this->note;
     }
-
 }

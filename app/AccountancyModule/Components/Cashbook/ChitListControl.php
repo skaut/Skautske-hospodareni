@@ -20,13 +20,13 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Nette\InvalidStateException;
+use function array_map;
 
 /**
  * @method onEditButtonClicked(int $chitId)
  */
 class ChitListControl extends BaseControl
 {
-
     /** @var callable[] */
     public $onEditButtonClicked = [];
 
@@ -35,6 +35,7 @@ class ChitListControl extends BaseControl
 
     /**
      * Can current user edit cashbook?
+     *
      * @var bool
      */
     private $isEditable;
@@ -58,31 +59,34 @@ class ChitListControl extends BaseControl
         QueryBus $queryBus,
         IMoveChitsDialogFactory $moveChitsDialogFactory,
         IInvertChitDialogFactory $invertChitDialogFactory
-    )
-    {
+    ) {
         parent::__construct();
-        $this->cashbookId = $cashbookId;
-        $this->isEditable = $isEditable;
-        $this->commandBus = $commandBus;
-        $this->queryBus = $queryBus;
-        $this->moveChitsDialogFactory = $moveChitsDialogFactory;
+        $this->cashbookId              = $cashbookId;
+        $this->isEditable              = $isEditable;
+        $this->commandBus              = $commandBus;
+        $this->queryBus                = $queryBus;
+        $this->moveChitsDialogFactory  = $moveChitsDialogFactory;
         $this->invertChitDialogFactory = $invertChitDialogFactory;
     }
 
     public function render() : void
     {
-        /** @var Cashbook $cashbook */
+        /**
+ * @var Cashbook $cashbook
+*/
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'cashbookId' => $this->cashbookId->toInt(),
             'isEditable' => $this->isEditable,
             'canMoveChits' => $this->canMoveChits(),
             'canMassExport' => $this->canMassExport(),
-            'aid' => (int)$this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
+            'aid' => (int) $this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
             'chits' => $this->queryBus->handle(new ChitListQuery($this->cashbookId)),
             'prefix' => $cashbook->getChitNumberPrefix(),
             'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
-        ]);
+            ]
+        );
 
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
         $this->template->render();
@@ -90,7 +94,7 @@ class ChitListControl extends BaseControl
 
     public function handleRemove(int $chitId) : void
     {
-        if(!$this->isEditable) {
+        if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu.', 'danger');
             $this->redirect('this');
         }
@@ -117,27 +121,29 @@ class ChitListControl extends BaseControl
         $form = new BaseForm();
         $form->getElementPrototype()->setAttribute('class', 'ajax');
 
-        $printButton = $form->addSubmit('massPrintSend');
-        $exportButton = $form->addSubmit('massExportSend');
+        $printButton     = $form->addSubmit('massPrintSend');
+        $exportButton    = $form->addSubmit('massExportSend');
         $moveChitsButton = $form->addSubmit('massMoveSend');
 
-        $form->onSuccess[] = function(BaseForm $form) use ($printButton, $exportButton, $moveChitsButton) : void {
+        $form->onSuccess[] = function (BaseForm $form) use ($printButton, $exportButton, $moveChitsButton) : void {
             $chitIds = $form->getHttpData($form::DATA_TEXT, 'chits[]');
             $chitIds = array_map('\intval', $chitIds);
 
-            if($printButton->isSubmittedBy()) {
+            if ($printButton->isSubmittedBy()) {
                 $this->redirectToExport(':Accountancy:CashbookExport:printChits', $chitIds);
                 return;
             }
 
-            if($exportButton->isSubmittedBy()) {
+            if ($exportButton->isSubmittedBy()) {
                 $this->redirectToExport(':Accountancy:CashbookExport:exportChits', $chitIds);
                 return;
             }
 
-            if($moveChitsButton->isSubmittedBy()) {
-                $this['moveChitsDialog']->open($chitIds);
+            if (! $moveChitsButton->isSubmittedBy()) {
+                return;
             }
+
+            $this['moveChitsDialog']->open($chitIds);
         };
 
         return $form;
@@ -145,7 +151,7 @@ class ChitListControl extends BaseControl
 
     protected function createComponentMoveChitsDialog() : MoveChitsDialog
     {
-        if(!$this->canMoveChits()) {
+        if (! $this->canMoveChits()) {
             throw new InvalidStateException("Can't create move dialog for unit cashbook");
         }
 
@@ -167,7 +173,7 @@ class ChitListControl extends BaseControl
 
     private function canMoveChits() : bool
     {
-        return !$this->getSkautisType()->equalsValue(ObjectType::UNIT);
+        return ! $this->getSkautisType()->equalsValue(ObjectType::UNIT);
     }
 
     private function canMassExport() : bool
@@ -177,9 +183,10 @@ class ChitListControl extends BaseControl
 
     private function getSkautisType() : ObjectType
     {
-        /** @var Cashbook $cashbook */
+        /**
+ * @var Cashbook $cashbook
+*/
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         return $cashbook->getType()->getSkautisObjectType();
     }
-
 }

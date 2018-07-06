@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\CampModule;
 
 use App\AccountancyModule\Components\CashbookControl;
@@ -19,10 +21,10 @@ use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\SkautisCampId;
 use Money\Money;
+use Skautis\Wsdl\PermissionException;
 
 class CashbookPresenter extends BasePresenter
 {
-
     /** @var bool */
     private $missingCategories;
 
@@ -38,55 +40,59 @@ class CashbookPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->isEditable = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->aid);
-        $this->missingCategories = !$this->event->IsRealTotalCostAutoComputed; // je aktivní dopočítávání?
+        $this->isEditable        = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->aid);
+        $this->missingCategories = ! $this->event->IsRealTotalCostAutoComputed; // je aktivní dopočítávání?
     }
 
     public function renderDefault(int $aid) : void
     {
-        /** @var Money $finalBalance */
+        /**
+ * @var Money $finalBalance
+*/
         $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
 
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'cashbookId' => $this->getCashbookId()->toString(),
             'isInMinus' => $finalBalance->isNegative(),
             'isEditable' => $this->isEditable,
             'missingCategories' => $this->missingCategories,
-        ]);
+            ]
+        );
     }
 
     public function handleActivateAutocomputedCashbook(int $aid) : void
     {
         try {
             $this->commandBus->handle(new ActivateAutocomputedCashbook(new SkautisCampId($aid)));
-            $this->flashMessage("Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.");
-        } catch (\Skautis\Wsdl\PermissionException $e) {
-            $this->flashMessage("Dopočítávání se nepodařilo aktivovat. Pro aktivaci musí být tábor alespoň ve stavu schváleno střediskem.", "danger");
+            $this->flashMessage('Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.');
+        } catch (PermissionException $e) {
+            $this->flashMessage('Dopočítávání se nepodařilo aktivovat. Pro aktivaci musí být tábor alespoň ve stavu schváleno střediskem.', 'danger');
         }
 
-        $this->redirect("this");
+        $this->redirect('this');
     }
 
     protected function createComponentCashbook() : CashbookControl
     {
-        return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable && !$this->missingCategories);
+        return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable && ! $this->missingCategories);
     }
 
     protected function createComponentFormImportHpd() : BaseForm
     {
         $form = new BaseForm();
-        $form->addRadioList("cat", "Kategorie:", ["child" => "Od dětí a roverů", "adult" => "Od dospělých"])
-            ->addRule($form::FILLED, "Musíte vyplnit kategorii.")
-            ->setDefaultValue("child");
-        $form->addRadioList("isAccount", "Placeno:", ["N" => "Hotově", "Y" => "Přes účet"])
-            ->addRule($form::FILLED, "Musíte vyplnit způsob platby.")
-            ->setDefaultValue("N");
+        $form->addRadioList('cat', 'Kategorie:', ['child' => 'Od dětí a roverů', 'adult' => 'Od dospělých'])
+            ->addRule($form::FILLED, 'Musíte vyplnit kategorii.')
+            ->setDefaultValue('child');
+        $form->addRadioList('isAccount', 'Placeno:', ['N' => 'Hotově', 'Y' => 'Přes účet'])
+            ->addRule($form::FILLED, 'Musíte vyplnit způsob platby.')
+            ->setDefaultValue('N');
 
         $form->addSubmit('send', 'Importovat')
-            ->setAttribute("class", "btn btn-primary");
+            ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function(BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form) : void {
             $this->formImportHpdSubmitted($form);
         };
 
@@ -100,9 +106,9 @@ class CashbookPresenter extends BasePresenter
         $this->editableOnly();
         $values = $form->getValues();
 
-        $aid = $this->getCurrentUnitId();
-        $date = $this->eventService->event->get($aid)->StartDate;
-        $amount = $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount);
+        $aid        = $this->getCurrentUnitId();
+        $date       = $this->eventService->event->get($aid)->StartDate;
+        $amount     = $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount);
         $categoryId = $this->queryBus->handle(
             new CampParticipantCategoryIdQuery(
                 new SkautisCampId($aid),
@@ -110,7 +116,7 @@ class CashbookPresenter extends BasePresenter
             )
         );
 
-        if($amount === 0.0) {
+        if ($amount === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $aid]);
         }
@@ -118,11 +124,11 @@ class CashbookPresenter extends BasePresenter
         $this->commandBus->handle(
             new AddChitToCashbook(
                 $this->getCashbookId(),
-                NULL,
+                null,
                 new Date($date),
-                NULL,
-                new Amount((string)$amount),
-                "úč. příspěvky " . ($values->isAccount === "Y" ? "- účet" : "- hotovost"),
+                null,
+                new Amount((string) $amount),
+                'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost'),
                 $categoryId
             )
         );
@@ -139,10 +145,11 @@ class CashbookPresenter extends BasePresenter
 
     private function isCashbookEmpty() : bool
     {
-        /** @var Chit[] $chits */
+        /**
+ * @var Chit[] $chits
+*/
         $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId()));
 
         return empty($chits);
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\UnitAccountModule;
 
 use App\AccountancyModule\Components\CashbookControl;
@@ -10,10 +12,10 @@ use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\UnitCashbook;
 use Nette\InvalidStateException;
+use function count;
 
 class CashbookPresenter extends BasePresenter
 {
-
     /** @var ICashbookControlFactory */
     private $cashbookFactory;
 
@@ -30,15 +32,17 @@ class CashbookPresenter extends BasePresenter
     {
         parent::startup();
 
-        if(!$this->isReadable) {
+        if (! $this->isReadable) {
             $this->flashMessage('Nemáš oprávnění číst data jednotky', 'danger');
             $this->redirect('Default:');
         }
 
-        /** @var UnitCashbook[] $unitCashbooks */
+        /**
+ * @var UnitCashbook[] $unitCashbooks
+*/
         $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->aid));
 
-        if(count($unitCashbooks) !== 1) {
+        if (count($unitCashbooks) !== 1) {
             throw new InvalidStateException('This should not happen (unit should have always one cashbook)');
         }
 
@@ -47,11 +51,13 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'cashbookId' => $this->cashbookId->toString(),
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'unitPairs' => $this->unitService->getReadUnits($this->user),
-        ]);
+            ]
+        );
     }
 
     protected function createComponentCashbook() : CashbookControl
@@ -61,10 +67,11 @@ class CashbookPresenter extends BasePresenter
 
     private function isCashbookEmpty() : bool
     {
-        /** @var Chit[] $chits */
+        /**
+ * @var Chit[] $chits
+*/
         $chits = $this->queryBus->handle(new ChitListQuery($this->cashbookId));
 
         return empty($chits);
     }
-
 }

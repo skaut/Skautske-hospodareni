@@ -13,7 +13,6 @@ use Nette\SmartObject;
  */
 final class BudgetEntry
 {
-
     use SmartObject;
 
     /** @var string */
@@ -27,24 +26,23 @@ final class BudgetEntry
 
     public function __construct(string $name, Money $total, bool $income)
     {
-        $this->name = $name;
-        $this->total = $total;
+        $this->name   = $name;
+        $this->total  = $total;
         $this->income = $income;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getTotal(): Money
+    public function getTotal() : Money
     {
         return $this->total;
     }
 
-    public function isIncome(): bool
+    public function isIncome() : bool
     {
         return $this->income;
     }
-
 }

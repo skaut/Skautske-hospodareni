@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment;
 
 use Model\Payment\BankAccount\AccountNumber;
 
 class BankAccount
 {
-
     private const FIO_BANK_CODE = '2010';
 
     /** @var int */
@@ -28,7 +29,7 @@ class BankAccount
     private $createdAt;
 
     /** @var bool */
-    private $allowedForSubunits = FALSE;
+    private $allowedForSubunits = false;
 
     public function __construct(
         int $unitId,
@@ -37,63 +38,61 @@ class BankAccount
         ?string $token,
         \DateTimeImmutable $createdAt,
         IUnitResolver $unitResolver
-    )
-    {
+    ) {
         $this->unitId = $unitResolver->getOfficialUnitId($unitId);
         $this->update($name, $number, $token);
         $this->createdAt = $createdAt;
     }
 
-    public function allowForSubunits(): void
+    public function allowForSubunits() : void
     {
-        $this->allowedForSubunits = TRUE;
+        $this->allowedForSubunits = true;
     }
 
-    public function disallowForSubunits(): void
+    public function disallowForSubunits() : void
     {
-        $this->allowedForSubunits = FALSE;
+        $this->allowedForSubunits = false;
     }
 
-    public function update(string $name, AccountNumber $number, ?string $token): void
+    public function update(string $name, AccountNumber $number, ?string $token) : void
     {
-        $this->name = $name;
+        $this->name   = $name;
         $this->number = $number;
-        $this->token = ($number->getBankCode() !== self::FIO_BANK_CODE || $token === '') ? NULL : $token;
+        $this->token  = ($number->getBankCode() !== self::FIO_BANK_CODE || $token === '') ? null : $token;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getNumber(): AccountNumber
+    public function getNumber() : AccountNumber
     {
         return $this->number;
     }
 
-    public function getToken(): ?string
+    public function getToken() : ?string
     {
         return $this->token;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt() : \DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function isAllowedForSubunits(): bool
+    public function isAllowedForSubunits() : bool
     {
         return $this->allowedForSubunits;
     }
-
 }

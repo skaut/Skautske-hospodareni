@@ -13,7 +13,6 @@ use Model\Payment\MailingService;
 
 final class PaymentMailSubscriber
 {
-
     /** @var MailingService */
     private $mailingService;
 
@@ -22,13 +21,11 @@ final class PaymentMailSubscriber
         $this->mailingService = $mailingService;
     }
 
-    public function handle(PaymentWasCompleted $event): void
+    public function handle(PaymentWasCompleted $event) : void
     {
         try {
             $this->mailingService->sendEmail($event->getId(), EmailType::get(EmailType::PAYMENT_COMPLETED));
         } catch (EmailTemplateNotSetException | MailCredentialsNotSetException | InvalidEmailException $e) {
         }
     }
-
-
 }

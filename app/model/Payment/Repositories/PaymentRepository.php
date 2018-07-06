@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Repositories;
 
 use Assert\Assert;
@@ -9,10 +11,10 @@ use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFoundException;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
+use function array_fill_keys;
 
 final class PaymentRepository extends AbstractRepository implements IPaymentRepository
 {
-
     private const STATE_ORDER = [
         State::PREPARING,
         State::SENT,
@@ -21,45 +23,45 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
     ];
 
 
-    public function find(int $id): Payment
+    public function find(int $id) : Payment
     {
         $payment = $this->getEntityManager()->find(Payment::class, $id);
 
-        if (!$payment instanceof Payment) {
+        if (! $payment instanceof Payment) {
             throw new PaymentNotFoundException();
         }
 
         return $payment;
     }
 
-    public function summarizeByGroup(array $groupIds): array
+    public function summarizeByGroup(array $groupIds) : array
     {
         $states = [State::PREPARING, State::SENT, State::COMPLETED];
 
         $res = $this->getEntityManager()->createQueryBuilder()
-            ->select("p.groupId as groupId, p.state as state, SUM(p.amount) as amount, COUNT(p.id) as number")
-            ->from(Payment::class, "p")
-            ->where("p.groupId IN (:ids)")
-            ->groupBy("groupId, state")
-            ->having("state IN (:states)")
-            ->setParameter("ids", $groupIds)
-            ->setParameter("states", $states)
+            ->select('p.groupId as groupId, p.state as state, SUM(p.amount) as amount, COUNT(p.id) as number')
+            ->from(Payment::class, 'p')
+            ->where('p.groupId IN (:ids)')
+            ->groupBy('groupId, state')
+            ->having('state IN (:states)')
+            ->setParameter('ids', $groupIds)
+            ->setParameter('states', $states)
             ->getQuery()
             ->getResult();
 
         $amounts = array_fill_keys($groupIds, array_fill_keys($states, 0));
-        $counts = array_fill_keys($groupIds, array_fill_keys($states, 0));
+        $counts  = array_fill_keys($groupIds, array_fill_keys($states, 0));
 
-        foreach($res as $row) {
-            $id = (int)$row["groupId"];
-            $amounts[$id][$row["state"]] += (float)$row["amount"];
-            $counts[$id][$row["state"]] = (int)$row["number"];
+        foreach ($res as $row) {
+            $id                           = (int) $row['groupId'];
+            $amounts[$id][$row['state']] += (float) $row['amount'];
+            $counts[$id][$row['state']]   = (int) $row['number'];
         }
 
         $summaries = array_fill_keys($groupIds, []);
 
-        foreach($groupIds as $id) {
-            foreach($states as $state) {
+        foreach ($groupIds as $id) {
+            foreach ($states as $state) {
                 $summaries[$id][$state] = new Summary($counts[$id][$state], $amounts[$id][$state]);
             }
         }
@@ -67,16 +69,16 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
         return $summaries;
     }
 
-    public function findByGroup(int $groupId): array
+    public function findByGroup(int $groupId) : array
     {
         return $this->findByMultipleGroups([$groupId]);
     }
 
-    public function findByMultipleGroups(array $groupIds): array
+    public function findByMultipleGroups(array $groupIds) : array
     {
         Assert::thatAll($groupIds)->integer();
 
-        if(empty($groupIds)) {
+        if (empty($groupIds)) {
             return [];
         }
 
@@ -91,12 +93,12 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
             ->getResult();
     }
 
-    public function save(Payment $payment): void
+    public function save(Payment $payment) : void
     {
         $this->saveAndDispatchEvents($payment);
     }
 
-    public function saveMany(array $payments): void
+    public function saveMany(array $payments) : void
     {
         if (empty($payments)) {
             return;
@@ -104,12 +106,12 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
 
         Assert::thatAll($payments)->isInstanceOf(Payment::class);
 
-        foreach($payments as $payment) {
+        foreach ($payments as $payment) {
             $this->saveAndDispatchEvents($payment);
         }
     }
 
-    public function remove(Payment $payment): void
+    public function remove(Payment $payment) : void
     {
         $entityManager = $this->getEntityManager();
 
@@ -117,21 +119,20 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
         $entityManager->flush();
     }
 
-    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
+    public function getMaxVariableSymbol(int $groupId) : ?VariableSymbol
     {
         $result = $this->getEntityManager()->createQueryBuilder()
-            ->select("MAX(p.variableSymbol) as vs")
-            ->from(Payment::class, "p")
-            ->where("p.groupId = :groupId")
-            ->andWhere("p.state != :state")
-            ->setParameter("groupId", $groupId)
-            ->setParameter("state", State::CANCELED)
+            ->select('MAX(p.variableSymbol) as vs')
+            ->from(Payment::class, 'p')
+            ->where('p.groupId = :groupId')
+            ->andWhere('p.state != :state')
+            ->setParameter('groupId', $groupId)
+            ->setParameter('state', State::CANCELED)
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $result !== NULL
+        return $result !== null
             ? new VariableSymbol($result)
-            : NULL;
+            : null;
     }
-
 }

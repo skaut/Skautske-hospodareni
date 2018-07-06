@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\ReadModel\Queries;
 
 use Model\Event\ReadModel\QueryHandlers\CampFunctionsHandler;
@@ -10,7 +12,6 @@ use Model\Event\SkautisCampId;
  */
 class CampFunctions
 {
-
     /** @var SkautisCampId */
     private $campId;
 
@@ -19,9 +20,8 @@ class CampFunctions
         $this->campId = $campId;
     }
 
-    public function getCampId(): SkautisCampId
+    public function getCampId() : SkautisCampId
     {
         return $this->campId;
     }
-
 }

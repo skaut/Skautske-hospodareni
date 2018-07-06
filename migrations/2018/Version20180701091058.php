@@ -1,20 +1,21 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Migrations;
 
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
-
 class Version20180701091058 extends AbstractMigration
 {
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         $this->addSql("ALTER TABLE `ac_cashbook` ADD `note` text COLLATE 'utf8_unicode_ci' NOT NULL;");
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
-        $this->addSql("ALTER TABLE `ac_cashbook` DROP `note`;");
+        $this->addSql('ALTER TABLE `ac_cashbook` DROP `note`;');
     }
 }

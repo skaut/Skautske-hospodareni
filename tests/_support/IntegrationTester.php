@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
+use Codeception\Actor;
 
 /**
  * Inherited Methods
@@ -15,8 +18,8 @@
  * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
  *
  * @SuppressWarnings(PHPMD)
-*/
-class IntegrationTester extends \Codeception\Actor
+ */
+class IntegrationTester extends Actor
 {
     use _generated\IntegrationTesterActions;
 

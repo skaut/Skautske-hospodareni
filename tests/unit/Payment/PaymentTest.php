@@ -1,28 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment;
 
+use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery as m;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 
-class PaymentTest extends \Codeception\Test\Unit
+class PaymentTest extends Unit
 {
-
-
-    public function testCreate(): void
+    public function testCreate() : void
     {
-        $groupId = 29;
-        $name = "Jan novák";
-        $email = "test@gmail.com";
-        $dueDate = new DateTimeImmutable();
-        $amount = 450;
+        $groupId        = 29;
+        $name           = 'Jan novák';
+        $email          = 'test@gmail.com';
+        $dueDate        = new DateTimeImmutable();
+        $amount         = 450;
         $variableSymbol = new VariableSymbol('454545');
         $constantSymbol = 666;
-        $personId = 2;
-        $note = 'Something';
+        $personId       = 2;
+        $note           = 'Something';
 
         $payment = new Payment(
             $this->mockGroup($groupId),
@@ -38,7 +39,7 @@ class PaymentTest extends \Codeception\Test\Unit
 
         $this->assertSame($name, $payment->getName());
         $this->assertSame($email, $payment->getEmail());
-        $this->assertSame((float)$amount, $payment->getAmount());
+        $this->assertSame((float) $amount, $payment->getAmount());
         $this->assertSame($dueDate, $payment->getDueDate());
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
         $this->assertSame($constantSymbol, $payment->getConstantSymbol());
@@ -49,14 +50,14 @@ class PaymentTest extends \Codeception\Test\Unit
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
-        /* @var $event PaymentWasCreated */
+        /** @var PaymentWasCreated $event */
         $event = $events[0];
         $this->assertInstanceOf(PaymentWasCreated::class, $event);
         $this->assertSame(29, $event->getGroupId());
         $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
-    public function testCantCreatePaymentWithNegativeAmount()
+    public function testCantCreatePaymentWithNegativeAmount() : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -66,14 +67,14 @@ class PaymentTest extends \Codeception\Test\Unit
             'frantisekmasa1@gmail.com',
             -500,
             new DateTimeImmutable(),
-            NULL,
-            NULL,
-            NULL,
+            null,
+            null,
+            null,
             ''
         );
     }
 
-    public function testCantCreatePaymentWithZeroAmount()
+    public function testCantCreatePaymentWithZeroAmount() : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -83,25 +84,25 @@ class PaymentTest extends \Codeception\Test\Unit
             'frantisekmasa1@gmail.com',
             0,
             new DateTimeImmutable(),
-            NULL,
-            NULL,
-            NULL,
+            null,
+            null,
+            null,
             ''
         );
     }
 
-    public function testCancel()
+    public function testCancel() : void
     {
-        $time = new DateTimeImmutable();
+        $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->cancel($time);
         $this->assertSame(State::get(State::CANCELED), $payment->getState());
         $this->assertSame($time, $payment->getClosedAt());
     }
 
-    public function testCancelClosedPayment()
+    public function testCancelClosedPayment() : void
     {
-        $time = new DateTimeImmutable();
+        $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -109,18 +110,18 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment->cancel($time);
     }
 
-    public function testCompletePayment()
+    public function testCompletePayment() : void
     {
-        $time = new DateTimeImmutable();
+        $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->complete($time);
         $this->assertSame(State::get(State::COMPLETED), $payment->getState());
         $this->assertSame($time, $payment->getClosedAt());
     }
 
-    public function testCompleteClosedPayment()
+    public function testCompleteClosedPayment() : void
     {
-        $time = new DateTimeImmutable();
+        $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -131,7 +132,7 @@ class PaymentTest extends \Codeception\Test\Unit
     /**
      * @dataProvider getVariableSymbolUpdates
      */
-    public function testUpdateVariableSymbol(?VariableSymbol $old, VariableSymbol $new)
+    public function testUpdateVariableSymbol(?VariableSymbol $old, VariableSymbol $new) : void
     {
         $payment = $this->createPaymentWithVariableSymbol($old);
         $payment->extractEventsToDispatch(); // Clear events collection;
@@ -141,7 +142,7 @@ class PaymentTest extends \Codeception\Test\Unit
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
-        /* @var $event PaymentVariableSymbolWasChanged */
+        /** @var PaymentVariableSymbolWasChanged $event */
         $event = $events[0];
         $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
         $this->assertSame(29, $event->getGroupId());
@@ -152,13 +153,13 @@ class PaymentTest extends \Codeception\Test\Unit
     {
         return [
             [new VariableSymbol('123'), new VariableSymbol('456')],
-            [NULL, new VariableSymbol('456')],
+            [null, new VariableSymbol('456')],
         ];
     }
 
-    public function testVariableSymbolUpdateToSameSymbolDoesntRaiseEvent()
+    public function testVariableSymbolUpdateToSameSymbolDoesntRaiseEvent() : void
     {
-        $symbol = '12345';
+        $symbol  = '12345';
         $payment = $this->createPaymentWithVariableSymbol(new VariableSymbol($symbol));
         $payment->extractEventsToDispatch(); // Clear events collection
 
@@ -168,7 +169,7 @@ class PaymentTest extends \Codeception\Test\Unit
         $this->assertCount(0, $events);
     }
 
-    public function testUpdateVariableForClosedPaymentThrowsException()
+    public function testUpdateVariableForClosedPaymentThrowsException() : void
     {
         $payment = $this->createPayment();
         $payment->cancel(new DateTimeImmutable());
@@ -178,62 +179,60 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment->updateVariableSymbol(new VariableSymbol('789789'));
     }
 
-    public function testUpdate()
+    public function testUpdate() : void
     {
         $payment = $this->createPayment();
         $payment->extractEventsToDispatch(); // Clear events collection
 
-        $name = "František Maša";
-        $amount = 300;
-        $email = "franta@gmail.com";
-        $dueDate = new DateTimeImmutable();
+        $name           = 'František Maša';
+        $amount         = 300;
+        $email          = 'franta@gmail.com';
+        $dueDate        = new DateTimeImmutable();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
-        $note = "Never pays!";
+        $note           = 'Never pays!';
 
         $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
 
         $this->assertSame($name, $payment->getName());
         $this->assertSame($email, $payment->getEmail());
-        $this->assertSame((float)$amount, $payment->getAmount());
+        $this->assertSame((float) $amount, $payment->getAmount());
         $this->assertSame($dueDate, $payment->getDueDate());
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
         $this->assertSame($constantSymbol, $payment->getConstantSymbol());
         $this->assertSame($note, $payment->getNote());
 
-
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
-        /* @var $event PaymentVariableSymbolWasChanged */
+        /** @var PaymentVariableSymbolWasChanged $event */
         $event = $events[0];
         $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
         $this->assertSame(29, $event->getGroupId());
         $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
-    public function testUpdateWithSameVariableSymbolDoesntThrowException()
+    public function testUpdateWithSameVariableSymbolDoesntThrowException() : void
     {
-
     }
 
-    public function getVariableSymbolChanges(): array
+    public function getVariableSymbolChanges() : array
     {
         return [
-            [new VariableSymbol('123'), new VariableSymbol('')]
+            [new VariableSymbol('123'), new VariableSymbol('')],
         ];
     }
 
-    public function testCannotUpdateClosedPayment()
+    public function testCannotUpdateClosedPayment() : void
     {
         $payment = $this->createPayment();
 
-        $name = "František Maša";
-        $amount = 300;
-        $email = "franta@gmail.com";
-        $dueDate = new DateTimeImmutable();
+        $name           = 'František Maša';
+        $amount         = 300;
+        $email          = 'franta@gmail.com';
+        $dueDate        = new DateTimeImmutable();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
-        $note = "Never pays!";
+        $note           = 'Never pays!';
 
         $payment->complete(new DateTimeImmutable());
 
@@ -242,29 +241,27 @@ class PaymentTest extends \Codeception\Test\Unit
         $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
     }
 
-    private function createPayment(): Payment
+    private function createPayment() : Payment
     {
         return $this->createPaymentWithVariableSymbol(new VariableSymbol('454545'));
     }
 
-    private function createPaymentWithVariableSymbol(?VariableSymbol $symbol): Payment
+    private function createPaymentWithVariableSymbol(?VariableSymbol $symbol) : Payment
     {
-
-        $group = $this->mockGroup(29);
+        $group   = $this->mockGroup(29);
         $dueDate = new DateTimeImmutable();
 
-        $payment = new Payment($group, "Jan novák", "test@gmail.com", 500, $dueDate, $symbol, 666, 454, "Some note");
+        $payment = new Payment($group, 'Jan novák', 'test@gmail.com', 500, $dueDate, $symbol, 666, 454, 'Some note');
         \Helpers::assignIdentity($payment, 1);
 
         return $payment;
     }
 
-    private function mockGroup(int $id): Group
+    private function mockGroup(int $id) : Group
     {
         $group = m::mock(Group::class);
-        $group->shouldReceive("getId")->andReturn($id);
+        $group->shouldReceive('getId')->andReturn($id);
 
         return $group;
     }
-
 }

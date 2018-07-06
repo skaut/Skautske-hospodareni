@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Forms;
 
 use Model\Payment\VariableSymbol;
@@ -8,8 +10,7 @@ use Nette\Forms\Form;
 
 class VariableSymbolControl extends TextInput
 {
-
-    public function __construct($label = NULL)
+    public function __construct($label = null)
     {
         parent::__construct($label, 10);
         $this->addRule(Form::PATTERN, 'Variabilní symbol musí být nejvýše 10 číslic a nezačínat nulou', VariableSymbol::PATTERN);
@@ -19,10 +20,9 @@ class VariableSymbolControl extends TextInput
     {
         $value = parent::getValue();
 
-        if($value === NULL || $value === '') {
-            return NULL;
+        if ($value === null || $value === '') {
+            return null;
         }
         return new VariableSymbol($value);
     }
-
 }

@@ -14,7 +14,6 @@ use Model\Event\SkautisCampId;
  */
 final class InconsistentCampCategoryTotalsQuery
 {
-
     /** @var SkautisCampId */
     private $campId;
 
@@ -23,9 +22,8 @@ final class InconsistentCampCategoryTotalsQuery
         $this->campId = $campId;
     }
 
-    public function getCampId(): SkautisCampId
+    public function getCampId() : SkautisCampId
     {
         return $this->campId;
     }
-
 }

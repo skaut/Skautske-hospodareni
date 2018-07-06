@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Handlers\Cashbook;
 
 use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
@@ -7,7 +9,6 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class RemoveChitFromCashbookHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -16,7 +17,7 @@ final class RemoveChitFromCashbookHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(RemoveChitFromCashbook $command): void
+    public function handle(RemoveChitFromCashbook $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 
@@ -24,5 +25,4 @@ final class RemoveChitFromCashbookHandler
 
         $this->cashbooks->save($cashbook);
     }
-
 }

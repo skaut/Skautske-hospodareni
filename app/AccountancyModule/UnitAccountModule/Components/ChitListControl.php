@@ -13,11 +13,11 @@ use Model\Cashbook\Commands\Cashbook\UnlockChit;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Chit;
 use Nette\Security\User;
+use function array_filter;
 use function count;
 
 final class ChitListControl extends BaseControl
 {
-
     /** @var Chit[]|NULL */
     private $chits;
 
@@ -43,14 +43,13 @@ final class ChitListControl extends BaseControl
         CommandBus $commandBus,
         QueryBus $queryBus,
         User $user
-    )
-    {
+    ) {
         parent::__construct();
-        $this->cashbookId = $cashbookId;
+        $this->cashbookId   = $cashbookId;
         $this->onlyUnlocked = $onlyUnlocked;
-        $this->commandBus = $commandBus;
-        $this->queryBus = $queryBus;
-        $this->user = $user;
+        $this->commandBus   = $commandBus;
+        $this->queryBus     = $queryBus;
+        $this->user         = $user;
     }
 
     public function handleLockChit(int $chitId) : void
@@ -72,9 +71,11 @@ final class ChitListControl extends BaseControl
     public function render() : void
     {
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'chits' => $this->getChits(),
-        ]);
+            ]
+        );
 
         $this->template->render();
     }
@@ -89,13 +90,16 @@ final class ChitListControl extends BaseControl
      */
     private function getChits() : array
     {
-        if($this->chits === NULL) {
+        if ($this->chits === null) {
             $chits = $this->queryBus->handle(new ChitListQuery($this->cashbookId));
 
-            if($this->onlyUnlocked) {
-                $chits = array_filter($chits, function(Chit $chit) : bool {
-                    return !$chit->isLocked();
-                });
+            if ($this->onlyUnlocked) {
+                $chits = array_filter(
+                    $chits,
+                    function (Chit $chit) : bool {
+                        return ! $chit->isLocked();
+                    }
+                );
             }
 
             $this->chits = $chits;
@@ -103,5 +107,4 @@ final class ChitListControl extends BaseControl
 
         return $this->chits;
     }
-
 }

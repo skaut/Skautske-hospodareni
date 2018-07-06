@@ -1,18 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\Factories;
 
 use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\Localization\SimpleTranslator;
 
 class GridFactory
 {
-
     public function create() : DataGrid
     {
         $grid = new DataGrid();
         $grid->setDefaultPerPage(20);
 
-        $translator = new \Ublaboo\DataGrid\Localization\SimpleTranslator([
+        $translator = new SimpleTranslator(
+            [
             'ublaboo_datagrid.no_item_found_reset' => 'Nebyly nalezeny žádné položky. Zkuste zrušit filtry.',
             'ublaboo_datagrid.no_item_found' => 'Nebyly nalezeny žádné položky.',
             'ublaboo_datagrid.here' => 'Zde',
@@ -31,11 +34,11 @@ class GridFactory
             'ublaboo_datagrid.save' => 'Uložit',
             'ublaboo_datagrid.cancel' => 'Zrušit',
             'Name' => 'Jméno',
-            'Inserted' => 'Vloženo'
-        ]);
+            'Inserted' => 'Vloženo',
+            ]
+        );
         $grid->setTranslator($translator);
 
         return $grid;
     }
-
 }

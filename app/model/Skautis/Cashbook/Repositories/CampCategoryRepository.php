@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Cashbook\Repositories;
 
+use Model\Cashbook\CampCategory;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ParticipantType;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
-use Model\Cashbook\CampCategory;
 use Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
+use function is_object;
 
 final class CampCategoryRepository implements ICampCategoryRepository
 {
-
     private const PARTICIPANT_CATEGORIES = [
         1 => ParticipantType::CHILD,
         3 => ParticipantType::ADULT,
@@ -36,7 +36,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
     /**
      * @return CampCategory[]
      */
-    public function findForCamp(int $campId): array
+    public function findForCamp(int $campId) : array
     {
         $categories = [];
 
@@ -46,13 +46,13 @@ final class CampCategoryRepository implements ICampCategoryRepository
                 Operation::get($operation),
                 'Neurčeno',
                 MoneyFactory::zero(),
-                NULL
+                null
             );
         }
 
         $skautisCategories = $this->eventWebService->EventCampStatementAll([
             'ID_EventCamp' => $campId,
-            'IsEstimate' => FALSE,
+            'IsEstimate' => false,
         ]);
 
         if (is_object($skautisCategories)) { // API returns empty object when there are no results
@@ -78,15 +78,14 @@ final class CampCategoryRepository implements ICampCategoryRepository
         return $categories;
     }
 
-    private function getParticipantType(\stdClass $category): ?ParticipantType
+    private function getParticipantType(\stdClass $category) : ?ParticipantType
     {
-        $categoryId = $category->ID_EventCampStatementType ?? NULL;
+        $categoryId = $category->ID_EventCampStatementType ?? null;
 
-        if ($categoryId === NULL || ! isset(self::PARTICIPANT_CATEGORIES[$categoryId])) {
-            return NULL;
+        if ($categoryId === null || ! isset(self::PARTICIPANT_CATEGORIES[$categoryId])) {
+            return null;
         }
 
         return ParticipantType::get(self::PARTICIPANT_CATEGORIES[$categoryId]);
     }
-
 }

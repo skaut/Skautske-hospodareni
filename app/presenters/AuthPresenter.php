@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
+use Model\AuthService;
+use Sinacek\SkautisAuthenticator;
 use Skautis\Wsdl\AuthenticationException;
 
 class AuthPresenter extends BasePresenter
 {
-
-    /** @var \Model\AuthService */
+    /** @var AuthService */
     protected $authService;
 
-    public function __construct(\Model\AuthService $as)
+    public function __construct(AuthService $as)
     {
         parent::__construct();
         $this->authService = $as;
@@ -18,31 +21,28 @@ class AuthPresenter extends BasePresenter
 
     /**
      * pokud je uziatel uz prihlasen, staci udelat referesh
-     * @param string $backlink
      */
-    public function actionDefault($backlink) : void
+    public function actionDefault(string $backlink) : void
     {
         $this->redirect(':Default:');
     }
 
     /**
      * přesměruje na stránku s přihlášením
-     * @param string $backlink
      */
-    public function actionLogOnSkautIs($backlink = NULL) : void
+    public function actionLogOnSkautIs(?string $backlink = null) : void
     {
         $this->redirectUrl($this->authService->getLoginUrl($backlink));
     }
 
     /**
      * zajistuje zpracovani prihlaseni na skautIS
-     * @param string $ReturnUrl
      */
-    public function actionSkautIS($ReturnUrl = NULL) : void
+    public function actionSkautIS(?string $ReturnUrl = null) : void
     {
         $post = $this->request->post;
-        if (!isset($post['skautIS_Token'])) { //pokud není nastavený token, tak zde nemá co dělat
-            $this->redirect(":Default:");
+        if (! isset($post['skautIS_Token'])) { //pokud není nastavený token, tak zde nemá co dělat
+            $this->redirect(':Default:');
         }
         try {
             $this->authService->setInit(
@@ -51,13 +51,13 @@ class AuthPresenter extends BasePresenter
                 (int) $post['skautIS_IDUnit']
             );
 
-            if (!$this->userService->isLoggedIn()) {
-                throw new AuthenticationException("Nemáte platné přihlášení do skautisu");
+            if (! $this->userService->isLoggedIn()) {
+                throw new AuthenticationException('Nemáte platné přihlášení do skautisu');
             }
             $me = $this->userService->getPersonalDetail();
 
             $this->user->setExpiration('+ 29 minutes'); // nastavíme expiraci
-            $this->user->setAuthenticator(new \Sinacek\SkautisAuthenticator());
+            $this->user->setAuthenticator(new SkautisAuthenticator());
             $this->user->login($me);
 
             $this->updateUserAccess();
@@ -66,16 +66,16 @@ class AuthPresenter extends BasePresenter
                 $this->restoreRequest($ReturnUrl);
             }
         } catch (AuthenticationException $e) {
-            $this->flashMessage($e->getMessage(), "danger");
-            $this->redirect(":Auth:");
+            $this->flashMessage($e->getMessage(), 'danger');
+            $this->redirect(':Auth:');
         }
         $this->presenter->redirect(':Accountancy:Default:');
     }
 
-    public function actionAjax($backlink = NULL) : void
+    public function actionAjax($backlink = null) : void
     {
         $this->template->backlink = $backlink;
-        $this->flashMessage("Vypršel čas přihlášení. Přihlaste se prosím znovu.", "warning");
+        $this->flashMessage('Vypršel čas přihlášení. Přihlaste se prosím znovu.', 'warning');
         $this->redrawControl();
     }
 
@@ -90,13 +90,12 @@ class AuthPresenter extends BasePresenter
 
     public function actionSkautisLogout() : void
     {
-        $this->user->logout(TRUE);
+        $this->user->logout(true);
         if (isset($this->request->post['skautIS_Logout'])) {
-            $this->presenter->flashMessage("Byl jsi úspěšně odhlášen.");
+            $this->presenter->flashMessage('Byl jsi úspěšně odhlášen.');
         } else {
-            $this->presenter->flashMessage("Odhlášení ze skautisu se nezdařilo", "danger");
+            $this->presenter->flashMessage('Odhlášení ze skautisu se nezdařilo', 'danger');
         }
-        $this->redirect(":Default:");
+        $this->redirect(':Default:');
     }
-
 }

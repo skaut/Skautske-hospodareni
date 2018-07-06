@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Payment;
+
 use Nette\SmartObject;
 
 /**
@@ -12,7 +15,6 @@ use Nette\SmartObject;
  */
 class Mail
 {
-
     use SmartObject;
 
     /** @var int */
@@ -32,36 +34,35 @@ class Mail
 
     public function __construct(int $id, int $unitId, string $username, string $host, string $secure)
     {
-        $this->id = $id;
-        $this->unitId = $unitId;
+        $this->id       = $id;
+        $this->unitId   = $unitId;
         $this->username = $username;
-        $this->host = $host;
-        $this->secure = $secure;
+        $this->host     = $host;
+        $this->secure   = $secure;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getUsername(): string
+    public function getUsername() : string
     {
         return $this->username;
     }
 
-    public function getHost(): string
+    public function getHost() : string
     {
         return $this->host;
     }
 
-    public function getSecure(): string
+    public function getSecure() : string
     {
         return $this->secure;
     }
-
 }

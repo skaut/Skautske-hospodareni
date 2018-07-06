@@ -12,7 +12,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 class CashbookControl extends BaseControl
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -31,18 +30,20 @@ class CashbookControl extends BaseControl
     public function __construct(CashbookId $cashbookId, bool $isEditable, IChitFormFactory $formFactory, IChitListControlFactory $chitListFactory, INoteFormFactory $noteFactory)
     {
         parent::__construct();
-        $this->cashbookId = $cashbookId;
-        $this->isEditable = $isEditable;
-        $this->formFactory = $formFactory;
+        $this->cashbookId      = $cashbookId;
+        $this->isEditable      = $isEditable;
+        $this->formFactory     = $formFactory;
         $this->chitListFactory = $chitListFactory;
         $this->noteFormFactory = $noteFactory;
     }
 
     public function render() : void
     {
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'isEditable' => $this->isEditable,
-        ]);
+            ]
+        );
 
         $this->template->setFile(__DIR__ . '/templates/CashbookControl.latte');
         $this->template->render();
@@ -57,8 +58,10 @@ class CashbookControl extends BaseControl
     {
         $control = $this->chitListFactory->create($this->cashbookId, $this->isEditable);
 
-        $control->onEditButtonClicked[] = function(int $chitId) {
-            /** @var ChitForm $form */
+        $control->onEditButtonClicked[] = function (int $chitId) : void {
+            /**
+ * @var ChitForm $form
+*/
             $form = $this['chitForm'];
             $form->editChit($chitId);
 
@@ -72,5 +75,4 @@ class CashbookControl extends BaseControl
     {
         return $this->noteFormFactory->create($this->cashbookId, $this->isEditable);
     }
-
 }

@@ -8,7 +8,6 @@ use Model\Event\SkautisEventId;
 
 final class EventCashbookIdQuery
 {
-
     /** @var SkautisEventId */
     private $eventId;
 
@@ -17,9 +16,8 @@ final class EventCashbookIdQuery
         $this->eventId = $eventId;
     }
 
-    public function getEventId(): SkautisEventId
+    public function getEventId() : SkautisEventId
     {
         return $this->eventId;
     }
-
 }

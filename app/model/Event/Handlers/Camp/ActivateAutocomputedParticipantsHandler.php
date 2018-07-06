@@ -9,7 +9,6 @@ use Skautis\Skautis;
 
 final class ActivateAutocomputedParticipantsHandler
 {
-
     /** @var Skautis */
     private $skautis;
 
@@ -18,12 +17,14 @@ final class ActivateAutocomputedParticipantsHandler
         $this->skautis = $skautis;
     }
 
-    public function handle(ActivateAutocomputedParticipants $command): void
+    public function handle(ActivateAutocomputedParticipants $command) : void
     {
-        $this->skautis->event->eventCampUpdateAdult([
+        $this->skautis->event->eventCampUpdateAdult(
+            [
             'ID' => $command->getCampId()->getValue(),
-            'IsRealAutoComputed' => 1],
-            'eventCamp');
+            'IsRealAutoComputed' => 1,
+            ],
+            'eventCamp'
+        );
     }
-
 }

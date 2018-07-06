@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace acceptance;
 
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use function date;
+use function sprintf;
+use function time;
 
 class CashbookTest extends Unit
 {
-
     private const BALANCE_SELECTOR = '.ui--balance';
     private const NO_CHITS_MESSAGE = 'žádné doklady';
 
@@ -17,12 +21,12 @@ class CashbookTest extends Unit
     /** @var string */
     private $eventName;
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->eventName = 'Acceptance test event ' . time();
     }
 
-    public function test(): void
+    public function test() : void
     {
         $this->tester->login($this->tester::UNIT_LEADER_ROLE);
 
@@ -35,7 +39,7 @@ class CashbookTest extends Unit
         $this->cancelEvent();
     }
 
-    private function createEvent(): void
+    private function createEvent() : void
     {
         $I = $this->tester;
         $I->amGoingTo('create event');
@@ -50,10 +54,9 @@ class CashbookTest extends Unit
         $I->fillField('Do', $today);
 
         $I->click('.ui--createEvent');
-
     }
 
-    private function goToCashbookPage(): void
+    private function goToCashbookPage() : void
     {
         $I = $this->tester;
         $I->amGoingTo('open cashbook');
@@ -65,7 +68,7 @@ class CashbookTest extends Unit
         $I->waitForText(self::NO_CHITS_MESSAGE);
     }
 
-    private function createExpenseChit(): void
+    private function createExpenseChit() : void
     {
         $I = $this->tester;
         $I->amGoingTo('create expense chit');
@@ -78,7 +81,7 @@ class CashbookTest extends Unit
         $this->waitForBalance('-101,00');
     }
 
-    private function editExpenseChit(): void
+    private function editExpenseChit() : void
     {
         $I = $this->tester;
         $I->wantTo('Update expense chit amount');
@@ -92,7 +95,7 @@ class CashbookTest extends Unit
         $this->waitForBalance('-121,00');
     }
 
-    private function addIncomeChit(): void
+    private function addIncomeChit() : void
     {
         $I = $this->tester;
         $I->amGoingTo('add income chit');
@@ -103,7 +106,7 @@ class CashbookTest extends Unit
         $this->waitForBalance('-21,00');
     }
 
-    private function removeBothChits(): void
+    private function removeBothChits() : void
     {
         $I = $this->tester;
         $I->amGoingTo('remove both chits');
@@ -115,7 +118,7 @@ class CashbookTest extends Unit
         $I->waitForText(self::NO_CHITS_MESSAGE);
     }
 
-    private function cancelEvent(): void
+    private function cancelEvent() : void
     {
         $I = $this->tester;
         $I->amGoingTo('cancel the event');
@@ -131,7 +134,7 @@ class CashbookTest extends Unit
         $I->waitForElementNotVisible($cancelButton);
     }
 
-    private function fillChitForm(Date $date, string $purpose, string $type, string $category, string $recipient, string $amount): void
+    private function fillChitForm(Date $date, string $purpose, string $type, string $category, string $recipient, string $amount) : void
     {
         $this->tester->fillField('Datum', $date->format('d.m. Y'));
         $this->tester->fillField('Účel', $purpose);
@@ -141,13 +144,13 @@ class CashbookTest extends Unit
         $this->tester->fillField('price', $amount);
     }
 
-    private function waitForBalance(string $balance): void
+    private function waitForBalance(string $balance) : void
     {
         $this->tester->expectTo(sprintf('see %s CZK as final balance', $balance));
-        $this->tester->waitForText($balance, NULL, self::BALANCE_SELECTOR);
+        $this->tester->waitForText($balance, null, self::BALANCE_SELECTOR);
     }
 
-    private function removeChit(int $position): void
+    private function removeChit(int $position) : void
     {
         $this->tester->disablePopups();
         $this->tester->click('.ui--removeChit');

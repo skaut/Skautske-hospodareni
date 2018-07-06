@@ -10,10 +10,9 @@ use Nette\StaticClass;
 
 final class ChitFactory
 {
-
     use StaticClass;
 
-    public static function create(ChitEntity $chit, Category $category): Chit
+    public static function create(ChitEntity $chit, Category $category) : Chit
     {
         return new Chit(
             $chit->getId(),
@@ -27,5 +26,4 @@ final class ChitFactory
             CashbookType::getInverseCashbookTypes($chit->getCategory()->getId())
         );
     }
-
 }

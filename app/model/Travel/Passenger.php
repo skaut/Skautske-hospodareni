@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Travel;
 
 use Nette\SmartObject;
@@ -12,7 +14,6 @@ use Nette\SmartObject;
  */
 final class Passenger
 {
-
     use SmartObject;
 
     /** @var string */
@@ -29,20 +30,20 @@ final class Passenger
 
     public function __construct(string $name, string $contact, string $address)
     {
-        $this->name = $name;
+        $this->name    = $name;
         $this->contact = $contact;
         $this->address = $address;
     }
-    
+
     /**
      * nezbytné pro řazení v Gridu cestovních příkazů
      */
-    public function __toString(): string
+    public function __toString() : string
     {
         return $this->name;
     }
 
-    public static function fromContract(Contract $contract): Passenger
+    public static function fromContract(Contract $contract) : Passenger
     {
         $contractPassenger = $contract->getPassenger();
 
@@ -56,29 +57,28 @@ final class Passenger
         return $passenger;
     }
 
-    private function setContractId(int $contractId): void
+    private function setContractId(int $contractId) : void
     {
         $this->contractId = $contractId;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getContact(): string
+    public function getContact() : string
     {
         return $this->contact;
     }
 
-    public function getAddress(): string
+    public function getAddress() : string
     {
         return $this->address;
     }
 
-    public function getContractId(): ?int
+    public function getContractId() : ?int
     {
         return $this->contractId;
     }
-
 }

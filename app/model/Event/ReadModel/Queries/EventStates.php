@@ -11,5 +11,4 @@ use Model\Event\ReadModel\QueryHandlers\EventStatesHandler;
  */
 class EventStates
 {
-
 }
