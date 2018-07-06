@@ -2,9 +2,11 @@
 
 namespace Model\Auth\Resources;
 
+use Nette\StaticClass;
+
 final class Unit
 {
-    use \Nette\StaticClass;
+    use StaticClass;
 
     public const TABLE = "OU_Unit";
 
