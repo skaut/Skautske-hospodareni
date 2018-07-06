@@ -194,6 +194,6 @@
     </target>
 
     <target name="coding-standard">
-        <exec command="vendor/bin/phpcs app --standard=ruleset.xml" passthru="true"/>
+        <exec command="vendor/bin/phpcs" passthru="true"/>
     </target>
 </project>
