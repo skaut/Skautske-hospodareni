@@ -60,12 +60,12 @@ class CashbookPresenter extends BasePresenter
 
     public function actionImportHpd(int $aid) : void
     {
-        if (!$this->isEditable) {
-            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
+        if (! $this->isEditable) {
+            $this->flashMessage('Akce je uzavřena a nelze ji upravovat.', 'danger');
             if ($this->isAjax()) {
                 $this->sendPayload();
             } else {
-                $this->redirect("Default:");
+                $this->redirect('Default:');
             }
         }
 
