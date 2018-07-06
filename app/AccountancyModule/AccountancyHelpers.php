@@ -141,7 +141,7 @@ abstract class AccountancyHelpers
      */
     public static function num($num) : string
     {
-        return number_format((float) $num, strpos((string)$num, '.') ? 2 : 0, ',', ' ');
+        return number_format((float) $num, strpos((string) $num, '.') ? 2 : 0, ',', ' ');
     }
 
     public static function postCode(string $oldPsc) : string
