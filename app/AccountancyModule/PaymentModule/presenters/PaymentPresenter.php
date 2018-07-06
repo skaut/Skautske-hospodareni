@@ -19,9 +19,7 @@ use Model\Payment\BankAccountService;
 use Model\Payment\BankException;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSetException;
-use Model\Payment\EmailType;
 use Model\Payment\InvalidBankAccountException;
-use Model\Payment\InvalidEmailException;
 use Model\Payment\MailCredentialsNotSetException;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
@@ -90,7 +88,7 @@ class PaymentPresenter extends BasePresenter
         $this->removeGroupDialogFactory = $removeGroupDialogFactory;
     }
 
-    protected function startup(): void
+    protected function startup() : void
     {
         parent::startup();
         //Kontrola ověření přístupu
@@ -98,7 +96,7 @@ class PaymentPresenter extends BasePresenter
         $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
 
-    public function actionDefault(bool $onlyOpen = TRUE): void
+    public function actionDefault(bool $onlyOpen = TRUE) : void
     {
         $this->template->onlyOpen = $onlyOpen;
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
@@ -106,7 +104,7 @@ class PaymentPresenter extends BasePresenter
         $groupIds = [];
         $unitIds = [];
         $bankAccountIds = [];
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $groupIds[] = $group->getId();
             $unitIds[] = $group->getUnitId();
             $bankAccountIds[] = $group->getBankAccountId();
@@ -115,7 +113,7 @@ class PaymentPresenter extends BasePresenter
         $bankAccounts = $this->bankAccounts->findByIds(array_filter(array_unique($bankAccountIds)));
 
         $groupsPairingSupport = [];
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $accountId = $group->getBankAccountId();
             $groupsPairingSupport[$group->getId()] = $accountId !== NULL && $bankAccounts[$accountId]->getToken() !== NULL;
         }
@@ -127,7 +125,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->groupsPairingSupport = $groupsPairingSupport;
     }
 
-    public function actionDetail(int $id): void
+    public function actionDetail(int $id) : void
     {
         $group = $this->model->getGroup($id);
 
@@ -137,7 +135,7 @@ class PaymentPresenter extends BasePresenter
         }
 
         $this->id = $id;
-        if ($this->isEditable) {
+        if($this->isEditable) {
             $this["pairButton"]->setGroups([$id], $group->getUnitId());
         }
 
@@ -164,9 +162,9 @@ class PaymentPresenter extends BasePresenter
         $this->template->isGroupSendActive = $group->getState() === 'open' && !empty($paymentsForSendEmail);
     }
 
-    public function actionEdit(int $pid): void
+    public function actionEdit(int $pid) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění editovat platbu", "warning");
             $this->redirect("Payment:default");
         }
@@ -195,7 +193,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->linkBack = $this->link("detail", ["id" => $payment->getGroupId()]);
     }
 
-    public function actionMassAdd(int $id): void
+    public function actionMassAdd(int $id) : void
     {
         //ověření přístupu
         $this->template->unitPairs = $this->readUnits;
@@ -222,7 +220,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->showForm = count($list) !== 0;
     }
 
-    public function actionRepayment(int $id): void
+    public function actionRepayment(int $id) : void
     {
         $campService = $this->context->getService("campService");
         $group = $this->model->getGroup($id);
@@ -248,11 +246,11 @@ class PaymentPresenter extends BasePresenter
         /** @var Payment[] $payments */
         $payments = [];
         foreach ($this->model->findByGroup($id) as $p) {
-            if ($p->getState()->equalsValue(State::COMPLETED) && $p->getPersonId() !== NULL) {
+            if($p->getState()->equalsValue(State::COMPLETED) && $p->getPersonId() !== NULL) {
                 $payments[$p->getPersonId()] = $p;
             }
         }
-        $participantsWithRepayment = array_filter($campService->participants->getAll($group->getSkautisId()), function ($p) {
+        $participantsWithRepayment = array_filter($campService->participants->getAll($group->getSkautisId()), function($p) {
             return $p->repayment != NULL;
         });
 
@@ -272,7 +270,7 @@ class PaymentPresenter extends BasePresenter
                 ->addRule(Form::NUMERIC, "Vratka musí být číslo!");
 
             $account = "";
-            
+
             if(array_key_exists($p->ID_Person, $payments)) {
                 $transaction = $payments[$p->ID_Person]->getTransaction();
                 $account = $transaction !== NULL ? $transaction->getBankAccount() : "";
@@ -285,18 +283,18 @@ class PaymentPresenter extends BasePresenter
                 ->addConditionOn($form[$pid], Form::EQUAL, TRUE)
                 ->setRequired('Musíte vyplnit bankovní účet')
                 ->addRule($form::PATTERN, $invalidBankAccountMessage, '^([0-9]{1,6}-)?[0-9]{1,10}/[0-9]{4}$')
-                ->addRule(function (IControl $control) {
+                ->addRule(function(IControl $control) {
                     return AccountNumber::isValid($control->getValue());
-                    }, $invalidBankAccountMessage);
+                }, $invalidBankAccountMessage);
         }
 
         $this->template->participants = $participantsWithRepayment;
         $this->template->payments = $payments;
     }
 
-    public function handleCancel(int $pid): void
+    public function handleCancel(int $pid) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na zrušení platby!", "danger");
             $this->redirect("this");
         }
@@ -305,21 +303,21 @@ class PaymentPresenter extends BasePresenter
             $this->model->cancelPayment($pid);
         } catch (PaymentNotFoundException $e) {
             $this->flashMessage("Platba nenalezena!", "danger");
-        } catch(\Model\Payment\PaymentClosedException $e) {
+        } catch (\Model\Payment\PaymentClosedException $e) {
             $this->flashMessage("Tato platba už je uzavřená", "danger");
         }
         $this->redirect("this");
     }
 
-    private function checkEditation(): void
+    private function checkEditation() : void
     {
-        if (!$this->isEditable || !isset($this->readUnits[$this->aid])) {
+        if(!$this->isEditable || !isset($this->readUnits[$this->aid])) {
             $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou!', 'danger');
             $this->redirect('this');
         }
     }
 
-    public function handleSend(int $pid): void
+    public function handleSend(int $pid) : void
     {
         $this->checkEditation();
 
@@ -346,22 +344,22 @@ class PaymentPresenter extends BasePresenter
      * rozešle všechny neposlané emaily
      * @param int $gid groupId
      */
-    public function handleSendGroup(int $gid): void
+    public function handleSendGroup(int $gid) : void
     {
         $this->checkEditation();
 
         $payments = $this->model->findByGroup($gid);
 
-        $payments = array_filter($payments, function (Payment $p) {
+        $payments = array_filter($payments, function(Payment $p) {
             return !$p->isClosed() && $p->getEmail() !== NULL && $p->getState()->equalsValue(State::PREPARING);
         });
 
         $this->sendEmailsForPayments($payments);
     }
 
-    public function handleSendTest($gid): void
+    public function handleSendTest($gid) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Neplatný požadavek na odeslání testovacího emailu!", "danger");
             $this->redirect("this");
         }
@@ -375,16 +373,16 @@ class PaymentPresenter extends BasePresenter
             $this->smtpError($e);
         } catch (InvalidBankAccountException $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-        } catch(EmailNotSetException $e) {
+        } catch (EmailNotSetException $e) {
             $this->flashMessage("Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!", "danger");
         }
 
         $this->redirect("this");
     }
 
-    public function handleComplete(int $pid): void
+    public function handleComplete(int $pid) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k uzavření platby!", "danger");
             $this->redirect("this");
         }
@@ -392,14 +390,14 @@ class PaymentPresenter extends BasePresenter
         try {
             $this->model->completePayment($pid);
             $this->flashMessage("Platba byla zaplacena.");
-        } catch(\Model\Payment\PaymentClosedException $e) {
+        } catch (\Model\Payment\PaymentClosedException $e) {
             $this->flashMessage("Tato platba už je uzavřená", "danger");
         }
 
         $this->redirect("this");
     }
 
-    public function handleGenerateVs(int $gid): void
+    public function handleGenerateVs(int $gid) : void
     {
         $group = $this->model->getGroup($gid);
 
@@ -410,7 +408,7 @@ class PaymentPresenter extends BasePresenter
 
         $nextVS = $this->model->getNextVS($group->getId());
 
-        if ($nextVS === NULL) {
+        if($nextVS === NULL) {
             $this->flashMessage("Vyplňte VS libovolné platbě a další pak již budou dogenerovány způsobem +1.", "warning");
             $this->redirect("this");
         }
@@ -420,10 +418,10 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    public function handleCloseGroup(int $gid): void
+    public function handleCloseGroup(int $gid) : void
     {
         $group = $this->model->getGroup($gid);
-        if (!$this->isEditable || $group === NULL || !$this->hasAccessToGroup($group)) {
+        if(!$this->isEditable || $group === NULL || !$this->hasAccessToGroup($group)) {
             $this->flashMessage("Nejste oprávněni úpravám akce!", "danger");
             $this->redirect("this");
         }
@@ -433,13 +431,13 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->model->closeGroup($gid, $note);
-        } catch(\Model\Payment\GroupNotFoundException $e) {
+        } catch (\Model\Payment\GroupNotFoundException $e) {
         }
 
         $this->redirect("this");
     }
 
-    public function handleOpenGroup(int $gid): void
+    public function handleOpenGroup(int $gid) : void
     {
         $group = $this->model->getGroup($gid);
 
@@ -453,13 +451,13 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->model->openGroup($gid, $note);
-        } catch(\Model\Payment\GroupNotFoundException $e) {
+        } catch (\Model\Payment\GroupNotFoundException $e) {
         }
 
         $this->redirect("this");
     }
 
-    public function handleOpenRemoveDialog(): void
+    public function handleOpenRemoveDialog() : void
     {
         /** @var RemoveGroupDialog $dialog */
         $dialog = $this['removeGroupDialog'];
@@ -467,7 +465,7 @@ class PaymentPresenter extends BasePresenter
         $dialog->open();
     }
 
-    protected function createComponentPaymentForm(): Form
+    protected function createComponentPaymentForm() : Form
     {
         $form = new BaseForm();
         $form->addText("name", "Název/účel")
@@ -498,21 +496,21 @@ class PaymentPresenter extends BasePresenter
         $form->addHidden("pid");
         $form->addSubmit('send', 'Přidat platbu')->setAttribute("class", "btn btn-primary");
 
-        $form->onSubmit[] = function (Form $form): void {
+        $form->onSubmit[] = function(Form $form) : void {
             $this->paymentSubmitted($form);
         };
 
         return $form;
     }
 
-    private function paymentSubmitted(Form $form): void
+    private function paymentSubmitted(Form $form) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nejste oprávněni k úpravám plateb!", "danger");
             $this->redirect("this");
         }
         $v = $form->getValues();
-        if ($v->maturity == NULL) {
+        if($v->maturity == NULL) {
             $form['maturity']->addError("Musíte vyplnit splatnost");
             return;
         }
@@ -526,7 +524,7 @@ class PaymentPresenter extends BasePresenter
         $constantSymbol = $v->ks !== "" ? (int)$v->ks : NULL;
         $note = (string)$v->note;
 
-        if ($id !== NULL) {//EDIT
+        if($id !== NULL) {//EDIT
             $this->model->update($id, $name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
             $this->flashMessage("Platba byla upravena");
         } else {//ADD
@@ -546,7 +544,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect("detail", ["id" => $v->oid]);
     }
 
-    protected function createComponentRepaymentForm(): Form
+    protected function createComponentRepaymentForm() : Form
     {
         $form = new BaseForm();
         $form->addHidden("gid");
@@ -557,28 +555,28 @@ class PaymentPresenter extends BasePresenter
         $form->addSubmit('send', 'Odeslat platby do banky')
             ->setAttribute("class", "btn btn-primary btn-large");
 
-        $form->onSubmit[] = function (Form $form): void {
+        $form->onSubmit[] = function(Form $form) : void {
             $this->repaymentFormSubmitted($form);
         };
 
         return $form;
     }
 
-    private function repaymentFormSubmitted(Form $form): void
+    private function repaymentFormSubmitted(Form $form) : void
     {
         $values = $form->getValues();
 
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro práci s platbami jednotky", "danger");
             $this->redirect("Payment:default", ["id" => $values->gid]);
         }
 
         $accountFrom = $values->accountFrom;
-        $ids = array_keys(array_filter((array)$values, function ($val) {
+        $ids = array_keys(array_filter((array)$values, function($val) {
             return (is_bool($val) && $val);
         }));
 
-        if (empty($ids)) {
+        if(empty($ids)) {
             $form->addError("Nebyl vybrán žádný záznam k vrácení!");
             return;
         }
@@ -590,17 +588,17 @@ class PaymentPresenter extends BasePresenter
             $data[$pid]['name'] = $values["p_" . $pid . "_name"];
             $data[$pid]['amount'] = $values["p_" . $pid . "_amount"];
             $data[$pid]['account'] = $values["p_" . $pid . "_account"];
-            if (!($bankValidator->validate($data[$pid]['account']))) {
+            if(!($bankValidator->validate($data[$pid]['account']))) {
                 $form->addError("Neplatné číslo účtu: '" . $data[$pid]['account'] . "' u jména '" . $data[$pid]['name'] . "' !");
                 return;
             }
         }
         $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $date = NULL);
 
-        $bankAccountId = $this->model->getGroup((int) $values->gid)->getBankAccountId();
+        $bankAccountId = $this->model->getGroup((int)$values->gid)->getBankAccountId();
         $bankAccount = $bankAccountId !== NULL ? $this->bankAccounts->find($bankAccountId) : NULL;
 
-        if ($bankAccount === NULL || $bankAccount->getToken() === NULL) {
+        if($bankAccount === NULL || $bankAccount->getToken() === NULL) {
             $this->flashMessage("Není zadán API token z banky!", "danger");
             $this->redirect("this");
         }
@@ -614,37 +612,37 @@ class PaymentPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentPairButton(): PairButton
+    protected function createComponentPairButton() : PairButton
     {
         return $this->pairButtonFactory->create();
     }
 
-    protected function createComponentMassAddForm(): MassAddForm
+    protected function createComponentMassAddForm() : MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
     }
 
-    protected function createComponentUnit(): GroupUnitControl
+    protected function createComponentUnit() : GroupUnitControl
     {
         return $this->unitControlFactory->create($this->id);
     }
 
-    protected function createComponentRemoveGroupDialog(): RemoveGroupDialog
+    protected function createComponentRemoveGroupDialog() : RemoveGroupDialog
     {
-        if ( ! $this->isEditable) {
+        if(!$this->isEditable) {
             throw new BadRequestException('Nemáte oprávnění mazat tuto skupinu');
         }
 
         return $this->removeGroupDialogFactory->create($this->id);
     }
 
-    private function smtpError(SmtpException $e): void
+    private function smtpError(SmtpException $e) : void
     {
         $this->flashMessage("SMTP server vrátil chybu ({$e->getMessage()})", 'danger');
         $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
     }
 
-    private function hasAccessToGroup(Group $group): bool
+    private function hasAccessToGroup(Group $group) : bool
     {
         return in_array($group->getUnitId(), array_keys($this->readUnits), TRUE);
     }
@@ -652,7 +650,7 @@ class PaymentPresenter extends BasePresenter
     /**
      * @param Payment[] $payments
      */
-    private function sendEmailsForPayments(array $payments): void
+    private function sendEmailsForPayments(array $payments) : void
     {
         $sentCount = 0;
 
@@ -672,7 +670,7 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        if ($sentCount > 0) {
+        if($sentCount > 0) {
             $this->flashMessage(
                 $sentCount === 1
                     ? 'Informační email byl odeslán'

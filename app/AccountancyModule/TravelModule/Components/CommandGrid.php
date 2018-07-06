@@ -29,7 +29,7 @@ class CommandGrid extends BaseGridControl
     }
 
 
-    protected function createComponentGrid(): DataGrid
+    protected function createComponentGrid() : DataGrid
     {
         $grid = $this->createGrid();
 
@@ -47,7 +47,7 @@ class CommandGrid extends BaseGridControl
             ->setFilterSelect([
                 Command::STATE_IN_PROGRESS => 'Rozpracovaný',
                 Command::STATE_CLOSED => 'Uzavřený',
-             ])->setPrompt('-');
+            ])->setPrompt('-');
 
         $grid->addColumnText('action', '');
 

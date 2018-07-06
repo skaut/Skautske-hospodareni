@@ -3,11 +3,11 @@
 namespace App\AccountancyModule\EventModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
-use Model\Auth\Resources\Event;
 use App\Forms\BaseForm;
-use Model\Auth\IAuthorizator;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Auth\IAuthorizator;
+use Model\Auth\Resources\Event;
 use Model\Event\AssistantNotAdultException;
 use Model\Event\Commands\Event\UpdateFunctions;
 use Model\Event\Functions;
@@ -16,9 +16,9 @@ use Model\Event\Person;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
 use Model\MemberService;
-use Nette\Utils\ArrayHash;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
+use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
 
 class FunctionsControl extends BaseControl
@@ -63,10 +63,10 @@ class FunctionsControl extends BaseControl
 
     private function reload(?string $message = NULL, ?string $type = NULL) : void
     {
-        if ($message !== NULL) {
+        if($message !== NULL) {
             $this->presenter->flashMessage($message, $type);
         }
-        if ($this->presenter->isAjax()) {
+        if($this->presenter->isAjax()) {
             $this->redrawControl();
         } else {
             $this->redirect('this');
@@ -90,7 +90,7 @@ class FunctionsControl extends BaseControl
         $this->reload();
     }
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
         $personsOlderThan = $this->getPersonsOlderThan([15, 18]);
@@ -120,7 +120,9 @@ class FunctionsControl extends BaseControl
 
         $this->setDefaultValues($form);
 
-        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) { $this->formSubmitted($form, $values); };
+        $form->onSuccess[] = function(BaseForm $form, ArrayHash $values) {
+            $this->formSubmitted($form, $values);
+        };
         return $form;
     }
 
@@ -133,9 +135,9 @@ class FunctionsControl extends BaseControl
         $this->template->render();
     }
 
-    private function formSubmitted(BaseForm $form, ArrayHash $values): void
+    private function formSubmitted(BaseForm $form, ArrayHash $values) : void
     {
-        if (!$this->canEdit()) {
+        if(!$this->canEdit()) {
             $this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
         }
         try {
@@ -165,7 +167,7 @@ class FunctionsControl extends BaseControl
         $this->reload('Nepodařilo se upravit funkce', 'danger');
     }
 
-    private function setDefaultValues(Form $form): void
+    private function setDefaultValues(Form $form) : void
     {
         $selected = $this->getCurrentFunctions();
 
@@ -176,7 +178,7 @@ class FunctionsControl extends BaseControl
             "medic" => $this->getIdOrNull($selected->getMedic()),
         ];
 
-        foreach($values as $functionName => $personId) {
+        foreach ($values as $functionName => $personId) {
             /** @var SelectBox $selectbox */
             $selectbox = $form[$functionName];
             $selectbox->setDefaultValue(isset($selectbox->getItems()[$personId]) ? $personId : NULL);
@@ -187,17 +189,17 @@ class FunctionsControl extends BaseControl
      * @param int[] $ages
      * @return array - [age => [person id => name], ...]
      */
-    private function getPersonsOlderThan(array $ages): array
+    private function getPersonsOlderThan(array $ages) : array
     {
         $persons = [];
-        foreach($ages as $age) {
+        foreach ($ages as $age) {
             $persons[$age] = $this->members->getCombobox(FALSE, $age);
         }
 
         return $persons;
     }
 
-    private function getIdOrNull(?Person $person): ?int
+    private function getIdOrNull(?Person $person) : ?int
     {
         if($person === NULL) {
             return NULL;
@@ -206,7 +208,7 @@ class FunctionsControl extends BaseControl
         return $person->getId();
     }
 
-    private function getCurrentFunctions(): Functions
+    private function getCurrentFunctions() : Functions
     {
         return $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->eventId)));
     }

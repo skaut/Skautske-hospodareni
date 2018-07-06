@@ -7,7 +7,7 @@ use Ublaboo\DataGrid\DataGrid;
 class GridFactory
 {
 
-    public function create(): DataGrid
+    public function create() : DataGrid
     {
         $grid = new DataGrid();
         $grid->setDefaultPerPage(20);

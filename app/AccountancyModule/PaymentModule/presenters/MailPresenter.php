@@ -21,9 +21,9 @@ class MailPresenter extends BasePresenter
         $this->model = $model;
     }
 
-    public function renderDefault(int $aid): void
+    public function renderDefault(int $aid) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přistupovat ke správě emailů", "danger");
             $this->redirect("Payment:default");
         }
@@ -31,19 +31,19 @@ class MailPresenter extends BasePresenter
         $this->template->editableUnits = $this->getEditableUnits();
     }
 
-    public function handleEdit($id): void
+    public function handleEdit($id) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění měnit smtp", "danger");
             $this->redirect("Payment:default");
         }
     }
 
-    public function handleRemove(int $id): void
+    public function handleRemove(int $id) : void
     {
         $mail = $this->model->get($id);
 
-        if (!$this->isEditable || $mail->getUnitId() !== $this->aid) {
+        if(!$this->isEditable || $mail->getUnitId() !== $this->aid) {
             $this->flashMessage("Nemáte oprávnění mazat smtp", "danger");
             $this->redirect("Payment:default");
         }
@@ -51,7 +51,7 @@ class MailPresenter extends BasePresenter
         $this->commandBus->handle(new RemoveMailCredentials($id));
     }
 
-    protected function createComponentFormCreate(): Form
+    protected function createComponentFormCreate() : Form
     {
         $form = new BaseForm();
         $form->addText("host", "Host")
@@ -73,16 +73,16 @@ class MailPresenter extends BasePresenter
         $form->addSubmit('send', 'Založit')
             ->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function (Form $form): void {
+        $form->onSuccess[] = function(Form $form) : void {
             $this->formCreateSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formCreateSubmitted(Form $form): void
+    private function formCreateSubmitted(Form $form) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přidávat smtp", "danger");
             $this->redirect("Payment:default");
         }

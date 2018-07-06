@@ -26,14 +26,14 @@ class BudgetPresenter extends BasePresenter
 
     public function getParentCategories(array $values) : DependentData
     {
-        $items = $this->budgetService->getCategoriesRoot((int) $this->aid, $values['type']);
+        $items = $this->budgetService->getCategoriesRoot((int)$this->aid, $values['type']);
 
         return new DependentData(
             ['0' => 'Žádná'] + $items
         );
     }
 
-    protected function createComponentAddCategoryForm(): BaseForm
+    protected function createComponentAddCategoryForm() : BaseForm
     {
         $form = new BaseForm();
 
@@ -70,7 +70,7 @@ class BudgetPresenter extends BasePresenter
 
     private function addCategoryFormSubmitted(Form $form) : void
     {
-        if ($form["submit"]->isSubmittedBy()) {
+        if($form["submit"]->isSubmittedBy()) {
             $v = $form->values;
             $this->budgetService->addCategory($v->oid, $v->label, $v->type, $v->parentId == 0 ? NULL : $v->parentId, $v->value, $v->year);
             $this->flashMessage("Kategorie byla přidána.");

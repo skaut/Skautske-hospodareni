@@ -9,6 +9,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 interface INoteFormFactory
 {
-    public function create(CashbookId $cashbookId, bool $isEditable): NoteForm;
+    public function create(CashbookId $cashbookId, bool $isEditable) : NoteForm;
 
 }

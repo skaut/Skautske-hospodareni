@@ -30,7 +30,7 @@ class CashbookPresenter extends BasePresenter
     {
         parent::startup();
 
-        if ( ! $this->isReadable) {
+        if(!$this->isReadable) {
             $this->flashMessage('Nemáš oprávnění číst data jednotky', 'danger');
             $this->redirect('Default:');
         }
@@ -38,7 +38,7 @@ class CashbookPresenter extends BasePresenter
         /** @var UnitCashbook[] $unitCashbooks */
         $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->aid));
 
-        if (count($unitCashbooks) !== 1) {
+        if(count($unitCashbooks) !== 1) {
             throw new InvalidStateException('This should not happen (unit should have always one cashbook)');
         }
 
@@ -54,12 +54,12 @@ class CashbookPresenter extends BasePresenter
         ]);
     }
 
-    protected function createComponentCashbook(): CashbookControl
+    protected function createComponentCashbook() : CashbookControl
     {
         return $this->cashbookFactory->create($this->cashbookId, $this->isEditable);
     }
 
-    private function isCashbookEmpty(): bool
+    private function isCashbookEmpty() : bool
     {
         /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery($this->cashbookId));

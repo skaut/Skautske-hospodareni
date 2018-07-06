@@ -31,20 +31,20 @@ class DefaultPresenter extends BasePresenter
     }
 
 
-    protected function startup(): void
+    protected function startup() : void
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
         $this->ses = $this->session->getSection(__CLASS__);
-        if (!isset($this->ses->state)) {
+        if(!isset($this->ses->state)) {
             $this->ses->state = self::DEFAULT_STATE;
         }
-        if (!isset($this->ses->year)) {
+        if(!isset($this->ses->year)) {
             $this->ses->year = date("Y");
         }
     }
 
-    protected function createComponentCampGrid(): DataGrid
+    protected function createComponentCampGrid() : DataGrid
     {
         //filtrovani zobrazených položek
         $year = $this->ses->year ?? date('Y');
@@ -68,43 +68,43 @@ class DefaultPresenter extends BasePresenter
     }
 
 
-    public function renderDefault(): void
+    public function renderDefault() : void
     {
-        if ($this->ses->year !== NULL) {
+        if($this->ses->year !== NULL) {
             $this['formFilter']['year']->setDefaultValue($this->ses->year);
         }
-        if ($this->ses->state !== NULL) {
+        if($this->ses->state !== NULL) {
             $this['formFilter']['state']->setDefaultValue($this->ses->state);
         }
     }
 
-    public function actionCampSummary(): void
+    public function actionCampSummary() : void
     {
         $this->excelService->getCampsSummary(array_keys($this->eventService->event->getAll($this->ses->year, $this->ses->state)), $this->eventService, $this->unitService);
         $this->terminate();
     }
 
-    public function handleChangeYear(?int $year): void
+    public function handleChangeYear(?int $year) : void
     {
         $this->ses->year = $year;
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl("camps");
         } else {
             $this->redirect("this");
         }
     }
 
-    public function handleChangeState($state): void
+    public function handleChangeState($state) : void
     {
         $this->ses->state = $state;
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl("camps");
         } else {
             $this->redirect("this");
         }
     }
 
-    protected function createComponentFormFilter($name): Form
+    protected function createComponentFormFilter($name) : Form
     {
         $states = array_merge(["all" => "Nezrušené"], $this->queryBus->handle(new CampStates()));
         $years = ["all" => "Všechny"];
@@ -117,14 +117,14 @@ class DefaultPresenter extends BasePresenter
         $form->addSelect("year", "Rok", $years);
         $form->addSubmit('send', 'Hledat')
             ->setAttribute("class", "btn btn-primary");
-        $form->onSuccess[] = function (Form $form): void {
+        $form->onSuccess[] = function(Form $form) : void {
             $this->formFilterSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formFilterSubmitted(Form $form): void
+    private function formFilterSubmitted(Form $form) : void
     {
         $v = $form->getValues();
         $this->ses->year = $v['year'];

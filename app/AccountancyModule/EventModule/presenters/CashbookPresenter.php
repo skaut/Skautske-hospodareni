@@ -32,36 +32,36 @@ class CashbookPresenter extends BasePresenter
         $this->cashbookFactory = $cashbookFactory;
     }
 
-    protected function startup(): void
+    protected function startup() : void
     {
         parent::startup();
         $isDraft = $this->event->ID_EventGeneralState === 'draft';
         $this->isEditable = $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
     }
 
-    public function renderDefault(int $aid): void
+    public function renderDefault(int $aid) : void
     {
         /** @var Money $finalBalance */
         $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
 
         $this->template->setParameters([
-            'isCashbookEmpty'   => $this->isCashbookEmpty(),
-            'cashbookId'        => $this->getCashbookId()->toString(),
-            'isInMinus'         => $finalBalance->isNegative(),
-            'isEditable'        => $this->isEditable,
+            'isCashbookEmpty' => $this->isCashbookEmpty(),
+            'cashbookId' => $this->getCashbookId()->toString(),
+            'isInMinus' => $finalBalance->isNegative(),
+            'isEditable' => $this->isEditable,
         ]);
     }
 
-    public function actionImportHpd(int $aid): void
+    public function actionImportHpd(int $aid) : void
     {
         $this->editableOnly();
 
         // @TODO move logic to specific command handler
         $totalPayment = $this->eventService->participants->getTotalPayment($this->aid);
 
-        if ($totalPayment === 0.0) {
-        	$this->flashMessage('Nemáte žádné účastníky');
-        	$this->redirect('this');
+        if($totalPayment === 0.0) {
+            $this->flashMessage('Nemáte žádné účastníky');
+            $this->redirect('this');
         }
 
         /** @var Functions $functions */
@@ -89,12 +89,12 @@ class CashbookPresenter extends BasePresenter
         $this->redirect("default", ["aid" => $aid]);
     }
 
-    protected function createComponentCashbook(): CashbookControl
+    protected function createComponentCashbook() : CashbookControl
     {
         return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable);
     }
 
-    private function isCashbookEmpty(): bool
+    private function isCashbookEmpty() : bool
     {
         /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId()));
@@ -102,7 +102,7 @@ class CashbookPresenter extends BasePresenter
         return empty($chits);
     }
 
-    private function getCashbookId(): CashbookId
+    private function getCashbookId() : CashbookId
     {
         return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($this->aid)));
     }

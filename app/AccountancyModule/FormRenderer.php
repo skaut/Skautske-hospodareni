@@ -10,10 +10,10 @@
 
 namespace App;
 
-use Nette\Forms\Rendering\DefaultFormRenderer;
+use Nette;
 use Nette\Forms\Controls;
 use Nette\Forms\Form;
-use Nette;
+use Nette\Forms\Rendering\DefaultFormRenderer;
 use Nette\Utils\Html;
 
 
@@ -34,7 +34,7 @@ class FormRenderer extends DefaultFormRenderer
 
     public function __construct($inline = FALSE)
     {
-        if ($inline) {
+        if($inline) {
             $this->wrappers['controls']['container'] = NULL;
             $this->wrappers['pair']['container'] = NULL;
             $this->wrappers['pair']['.error'] = NULL;
@@ -111,18 +111,18 @@ class FormRenderer extends DefaultFormRenderer
         return parent::renderControl($control);
     }
 
-    private function controlsInit(): void
+    private function controlsInit() : void
     {
-        if ($this->controlsInit) {
+        if($this->controlsInit) {
             return;
         }
 
         $this->controlsInit = TRUE;
         $this->form->getElementPrototype()->addClass($this->inline ? 'form-inline' : 'form-horizontal');
         foreach ($this->form->getControls() as $control) {
-            if ($control instanceof Controls\Button) {
+            if($control instanceof Controls\Button) {
                 $markAsPrimary = $control === $this->primaryButton || (!isset($this->primaryButton) && empty($usedPrimary) && $control->parent instanceof Form);
-                if ($markAsPrimary) {
+                if($markAsPrimary) {
                     $class = 'btn btn-primary';
                     $usedPrimary = TRUE;
                 } else {
@@ -130,11 +130,11 @@ class FormRenderer extends DefaultFormRenderer
                 }
                 $control->getControlPrototype()->addClass($class);
 
-            } elseif ($control instanceof Controls\TextBase || $control instanceof Controls\SelectBox || $control instanceof Controls\MultiSelectBox) {
+            } elseif($control instanceof Controls\TextBase || $control instanceof Controls\SelectBox || $control instanceof Controls\MultiSelectBox) {
                 $control->getControlPrototype()->addClass('form-control');
 
-            } elseif ($control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
-                if ($control->getSeparatorPrototype()->getName() !== '') {
+            } elseif($control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
+                if($control->getSeparatorPrototype()->getName() !== '') {
                     $control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
                 } else {
                     $control->getItemLabelPrototype()->addClass($control->getControlPrototype()->type . '-inline');

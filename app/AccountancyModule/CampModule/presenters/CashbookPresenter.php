@@ -35,28 +35,28 @@ class CashbookPresenter extends BasePresenter
         $this->cashbookFactory = $cashbookFactory;
     }
 
-    protected function startup(): void
+    protected function startup() : void
     {
         parent::startup();
         $this->isEditable = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->aid);
-        $this->missingCategories = ! $this->event->IsRealTotalCostAutoComputed; // je aktivní dopočítávání?
+        $this->missingCategories = !$this->event->IsRealTotalCostAutoComputed; // je aktivní dopočítávání?
     }
 
-    public function renderDefault(int $aid): void
+    public function renderDefault(int $aid) : void
     {
         /** @var Money $finalBalance */
         $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
 
         $this->template->setParameters([
-            'isCashbookEmpty'   => $this->isCashbookEmpty(),
-            'cashbookId'        => $this->getCashbookId()->toString(),
-            'isInMinus'         => $finalBalance->isNegative(),
-            'isEditable'        => $this->isEditable,
+            'isCashbookEmpty' => $this->isCashbookEmpty(),
+            'cashbookId' => $this->getCashbookId()->toString(),
+            'isInMinus' => $finalBalance->isNegative(),
+            'isEditable' => $this->isEditable,
             'missingCategories' => $this->missingCategories,
         ]);
     }
 
-    public function handleActivateAutocomputedCashbook(int $aid): void
+    public function handleActivateAutocomputedCashbook(int $aid) : void
     {
         try {
             $this->commandBus->handle(new ActivateAutocomputedCashbook(new SkautisCampId($aid)));
@@ -68,12 +68,12 @@ class CashbookPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentCashbook(): CashbookControl
+    protected function createComponentCashbook() : CashbookControl
     {
-        return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable && ! $this->missingCategories);
+        return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable && !$this->missingCategories);
     }
 
-    protected function createComponentFormImportHpd(): BaseForm
+    protected function createComponentFormImportHpd() : BaseForm
     {
         $form = new BaseForm();
         $form->addRadioList("cat", "Kategorie:", ["child" => "Od dětí a roverů", "adult" => "Od dospělých"])
@@ -86,7 +86,7 @@ class CashbookPresenter extends BasePresenter
         $form->addSubmit('send', 'Importovat')
             ->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function(BaseForm $form): void {
+        $form->onSuccess[] = function(BaseForm $form) : void {
             $this->formImportHpdSubmitted($form);
         };
 
@@ -95,7 +95,7 @@ class CashbookPresenter extends BasePresenter
         return $form;
     }
 
-    private function formImportHpdSubmitted(BaseForm $form): void
+    private function formImportHpdSubmitted(BaseForm $form) : void
     {
         $this->editableOnly();
         $values = $form->getValues();
@@ -110,7 +110,7 @@ class CashbookPresenter extends BasePresenter
             )
         );
 
-        if ($amount === 0.0) {
+        if($amount === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $aid]);
         }
@@ -121,7 +121,7 @@ class CashbookPresenter extends BasePresenter
                 NULL,
                 new Date($date),
                 NULL,
-                new Amount((string) $amount),
+                new Amount((string)$amount),
                 "úč. příspěvky " . ($values->isAccount === "Y" ? "- účet" : "- hotovost"),
                 $categoryId
             )
@@ -132,12 +132,12 @@ class CashbookPresenter extends BasePresenter
         $this->redirect('default', $aid);
     }
 
-    private function getCashbookId(): CashbookId
+    private function getCashbookId() : CashbookId
     {
         return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
     }
 
-    private function isCashbookEmpty(): bool
+    private function isCashbookEmpty() : bool
     {
         /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId()));

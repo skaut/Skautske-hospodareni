@@ -5,8 +5,8 @@ namespace App\AccountancyModule\TravelModule;
 use App\Forms\BaseForm;
 use Model\Services\PdfRenderer;
 use Model\Travel\Contract\Passenger;
-use Nette\Application\UI\Form;
 use Model\TravelService;
+use Nette\Application\UI\Form;
 
 class ContractPresenter extends BasePresenter
 {
@@ -29,11 +29,11 @@ class ContractPresenter extends BasePresenter
         $this->template->list = $this->travelService->getAllContracts($this->unit->ID);
     }
 
-    public function actionDetail(int $id): void
+    public function actionDetail(int $id) : void
     {
         $contract = $this->travelService->getContract($id);
 
-        if ($contract === NULL || $contract->getUnitId() !== $this->getUnitId()) {
+        if($contract === NULL || $contract->getUnitId() !== $this->getUnitId()) {
             $this->flashMessage("Nemáte oprávnění k cestovnímu příkazu.", "danger");
             $this->redirect("default");
         }
@@ -67,14 +67,14 @@ class ContractPresenter extends BasePresenter
 
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
 
-        $this->pdf->render( (string)$template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
+        $this->pdf->render((string)$template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
     }
 
     public function handleDelete(int $contractId) : void
     {
         $commands = $this->travelService->getAllCommandsByContract($contractId);
 
-        if (!empty($commands)) {
+        if(!empty($commands)) {
             $this->flashMessage("Nelze smazat smlouvu s navázanými cestovními příkazy!", "danger");
             $this->redirect("this");
         }
@@ -119,7 +119,7 @@ class ContractPresenter extends BasePresenter
         return $form;
     }
 
-    private function formCreateContractSubmitted(Form $form): void
+    private function formCreateContractSubmitted(Form $form) : void
     {
         $v = $form->getValues();
 
@@ -131,7 +131,7 @@ class ContractPresenter extends BasePresenter
             $v->passengerAddress,
             \DateTimeImmutable::createFromMutable($v->passengerBirthday)
         );
-        
+
         $this->travelService->createContract($this->getUnitId(), $v->unitRepresentative, $since, $passenger);
         $this->flashMessage("Smlouva byla založena.");
 

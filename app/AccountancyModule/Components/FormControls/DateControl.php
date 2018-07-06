@@ -14,9 +14,9 @@ use Nextras\Forms\Controls\DatePicker;
 class DateControl extends DatePicker
 {
 
-    public function setDefaultValue($value): self
+    public function setDefaultValue($value) : self
     {
-        if (!$value instanceof Date && $value !== NULL) {
+        if(!$value instanceof Date && $value !== NULL) {
             throw new \InvalidArgumentException(sprintf('$value must be instance of %s or NULL', Date::class));
         }
 
@@ -25,24 +25,24 @@ class DateControl extends DatePicker
         return $this;
     }
 
-    public function getValue(): ?Date
+    public function getValue() : ?Date
     {
         $value = parent::getValue();
 
-        if ($value === NULL) {
+        if($value === NULL) {
             return NULL;
         }
 
         return Date::instance($value);
     }
 
-    public function getControl(): Html
+    public function getControl() : Html
     {
         $control = parent::getControl();
 
         $value = $this->getValue();
 
-        if ($value !== NULL) {
+        if($value !== NULL) {
             $control->setAttribute('value', $value->format($this->htmlFormat));
         }
 

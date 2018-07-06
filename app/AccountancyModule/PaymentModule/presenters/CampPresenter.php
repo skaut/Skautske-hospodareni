@@ -4,7 +4,6 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
-use Model\DTO\Payment\Payment;
 use Model\PaymentService;
 
 class CampPresenter extends BasePresenter
@@ -48,7 +47,7 @@ class CampPresenter extends BasePresenter
             $this->redirect("Payment:default");
         }
 
-        if ($group->getSkautisId() === NULL) {
+        if($group->getSkautisId() === NULL) {
             $this->flashMessage("Neplatné propojení skupiny plateb s táborem.", "warning");
             $this->redirect("Default:");
         }
@@ -60,7 +59,7 @@ class CampPresenter extends BasePresenter
 
         $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
 
-        $participants = array_filter($participants, function($p) use($personsWithPayment) {
+        $participants = array_filter($participants, function($p) use ($personsWithPayment) {
             return !in_array($p->ID_Person, $personsWithPayment, TRUE);
         });
 
@@ -77,7 +76,7 @@ class CampPresenter extends BasePresenter
         $this->template->showForm = !empty($participants);
     }
 
-    protected function createComponentMassAddForm(): MassAddForm
+    protected function createComponentMassAddForm() : MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
     }

@@ -2,11 +2,11 @@
 
 namespace App\AccountancyModule\PaymentModule\Components;
 
-use Model\Auth\IAuthorizator;
-use Model\Auth\Resources\Unit;
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
+use Model\Auth\IAuthorizator;
+use Model\Auth\Resources\Unit;
 use Model\Payment\Commands\Group\ChangeGroupUnit;
 use Model\PaymentService;
 use Model\UnitService;
@@ -43,13 +43,13 @@ class GroupUnitControl extends BaseControl
         $this->authorizator = $authorizator;
     }
 
-    public function handleEdit(): void
+    public function handleEdit() : void
     {
         $this->editation = TRUE;
         $this->redrawControl();
     }
 
-    public function handleCancel(): void
+    public function handleCancel() : void
     {
         $this->editation = FALSE;
         $this->redrawControl();
@@ -58,7 +58,7 @@ class GroupUnitControl extends BaseControl
     /**
      * @throws \Nette\Application\BadRequestException
      */
-    public function render(): void
+    public function render() : void
     {
         $group = $this->groups->getGroup($this->groupId);
         $unit = $this->units->getDetailV2($group->getUnitId());
@@ -73,7 +73,7 @@ class GroupUnitControl extends BaseControl
     /**
      * @throws \Nette\Application\BadRequestException
      */
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
 
@@ -94,7 +94,7 @@ class GroupUnitControl extends BaseControl
         $form->addButton('save')
             ->setAttribute('type', 'submit');
 
-        $form->onSuccess[] = function($form, ArrayHash $values) use($group) {
+        $form->onSuccess[] = function($form, ArrayHash $values) use ($group) {
             if(!$this->canEdit($group->getUnitId())) {
                 $this->getPresenter()->flashMessage('Nemáte oprávnění pro změnu jednotky');
                 $this->editation = FALSE;
@@ -107,7 +107,7 @@ class GroupUnitControl extends BaseControl
         return $form;
     }
 
-    private function formSucceeded(ArrayHash $values, int $groupId): void
+    private function formSucceeded(ArrayHash $values, int $groupId) : void
     {
         $this->commandBus->handle(new ChangeGroupUnit($groupId, $values->unitId));
         $this->getPresenter()->flashMessage('Jednotka byla změněna', 'success');
@@ -115,7 +115,7 @@ class GroupUnitControl extends BaseControl
         $this->redrawControl();
     }
 
-    private function canEdit(int $unitId): bool
+    private function canEdit(int $unitId) : bool
     {
         return $this->authorizator->isAllowed(Unit::EDIT, $this->units->getOfficialUnitId($unitId));
     }

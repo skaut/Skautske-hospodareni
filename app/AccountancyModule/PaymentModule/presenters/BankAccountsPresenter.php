@@ -2,10 +2,10 @@
 
 namespace App\AccountancyModule\PaymentModule;
 
-use Model\Auth\Resources\Unit;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;
+use Model\Auth\Resources\Unit;
 use Model\BankTimeLimitException;
 use Model\BankTimeoutException;
 use Model\DTO\Payment\BankAccount;
@@ -38,9 +38,9 @@ class BankAccountsPresenter extends BasePresenter
         $this->accounts = $accounts;
     }
 
-    public function handleAllowForSubunits(int $id): void
+    public function handleAllowForSubunits(int $id) : void
     {
-        if (!$this->canEdit() || !in_array($id, $this->accountIds, TRUE)) {
+        if(!$this->canEdit() || !in_array($id, $this->accountIds, TRUE)) {
             $this->noAccess();
         }
 
@@ -53,9 +53,9 @@ class BankAccountsPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleDisallowForSubunits(int $id): void
+    public function handleDisallowForSubunits(int $id) : void
     {
-        if (!$this->canEdit() || !in_array($id, $this->accountIds, TRUE)) {
+        if(!$this->canEdit() || !in_array($id, $this->accountIds, TRUE)) {
             $this->noAccess();
         }
 
@@ -68,24 +68,24 @@ class BankAccountsPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleRemove(int $id): void
+    public function handleRemove(int $id) : void
     {
-        if (!$this->canEdit()) {
+        if(!$this->canEdit()) {
             $this->noAccess();
         }
 
         try {
             $this->accounts->removeBankAccount($id);
             $this->flashMessage('Bankovní účet byl odstraněn', 'success');
-        } catch(BankAccountNotFoundException $e) {
+        } catch (BankAccountNotFoundException $e) {
         }
         $this->redirect('this');
     }
 
 
-    public function handleImport(): void
+    public function handleImport() : void
     {
-        if (!$this->canEdit()) {
+        if(!$this->canEdit()) {
             $this->noAccess();
         }
 
@@ -100,36 +100,38 @@ class BankAccountsPresenter extends BasePresenter
     }
 
 
-    public function actionEdit(int $id): void
+    public function actionEdit(int $id) : void
     {
-        if (!$this->canEdit()) {
+        if(!$this->canEdit()) {
             $this->noAccess();
         }
 
         $account = $this->accounts->find($id);
 
-        if ($account === NULL) {
+        if($account === NULL) {
             throw new BadRequestException('Bankovní účet neexistuje');
         }
 
-        if( ! $this->canEdit($account->getUnitId())) {
+        if(!$this->canEdit($account->getUnitId())) {
             $this->noAccess();
         }
 
         $this->id = $id;
     }
 
-    public function actionDefault(): void
+    public function actionDefault() : void
     {
         $accounts = $this->accounts->findByUnit($this->getCurrentUnitId());
-        $this->accountIds = array_map(function (BankAccount $a) { return $a->getId(); }, $accounts);
+        $this->accountIds = array_map(function(BankAccount $a) {
+            return $a->getId();
+        }, $accounts);
 
         $this->template->accounts = $accounts;
         $this->template->canEdit = $this->canEdit();
     }
 
 
-    public function renderDetail(int $id): void
+    public function renderDetail(int $id) : void
     {
         $account = $this->accounts->find($id);
 
@@ -145,7 +147,7 @@ class BankAccountsPresenter extends BasePresenter
         $this->template->transactions = NULL;
         try {
             $this->template->transactions = $this->accounts->getTransactions($id, 60);
-        } catch(TokenNotSetException $e) {
+        } catch (TokenNotSetException $e) {
             $this->template->warningMessage = 'Nemáte vyplněný token pro komunikaci s FIO';
         } catch (BankTimeLimitException $e) {
             $this->template->warningMessage = PairButton::TIME_LIMIT_MESSAGE;
@@ -155,30 +157,30 @@ class BankAccountsPresenter extends BasePresenter
     }
 
 
-    protected function createComponentForm(): BankAccountForm
+    protected function createComponentForm() : BankAccountForm
     {
         return $this->formFactory->create($this->id);
     }
 
 
-    private function noAccess(): void
+    private function noAccess() : void
     {
         $this->flashMessage('Na tuto stránku nemáte přistup', 'danger');
         $this->redirect(403, 'default');
     }
 
-    private function canEdit(int $unitId = NULL): bool
+    private function canEdit(int $unitId = NULL) : bool
     {
         return $this->authorizator->isAllowed(Unit::EDIT, $unitId ?? $this->getUnitId());
     }
 
-    private function canViewBankAccount(BankAccount $account): bool
+    private function canViewBankAccount(BankAccount $account) : bool
     {
-        if ($this->canEdit($account->getUnitId())) {
+        if($this->canEdit($account->getUnitId())) {
             return TRUE;
         }
 
-        if ($account->isAllowedForSubunits() && $this->isSubunitOf($account->getUnitId())) {
+        if($account->isAllowedForSubunits() && $this->isSubunitOf($account->getUnitId())) {
             return TRUE;
         }
 
@@ -188,12 +190,12 @@ class BankAccountsPresenter extends BasePresenter
         return $role->getUnitId() === $account->getUnitId() && $role->isBasicUnit() && $role->isAccountant();
     }
 
-    private function isSubunitOf(int $unitId): bool
+    private function isSubunitOf(int $unitId) : bool
     {
         $currentUnitId = $this->getCurrentUnitId();
         $subunits = $this->unitService->getSubunits($unitId);
 
-        foreach($subunits as $subunit) {
+        foreach ($subunits as $subunit) {
             if($subunit->getId() === $currentUnitId) {
                 return TRUE;
             }

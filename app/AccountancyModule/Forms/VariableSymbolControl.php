@@ -15,11 +15,11 @@ class VariableSymbolControl extends TextInput
         $this->addRule(Form::PATTERN, 'Variabilní symbol musí být nejvýše 10 číslic a nezačínat nulou', VariableSymbol::PATTERN);
     }
 
-    public function getValue(): ?VariableSymbol
+    public function getValue() : ?VariableSymbol
     {
         $value = parent::getValue();
 
-        if ($value === NULL || $value === '') {
+        if($value === NULL || $value === '') {
             return NULL;
         }
         return new VariableSymbol($value);

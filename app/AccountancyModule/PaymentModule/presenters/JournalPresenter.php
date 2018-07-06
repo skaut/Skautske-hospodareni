@@ -17,14 +17,14 @@ class JournalPresenter extends BasePresenter
     }
 
 
-    public function renderDefault(int $aid, $year = NULL): void
+    public function renderDefault(int $aid, $year = NULL) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění přistupovat ke správě emailů", "danger");
             $this->redirect("Payment:default");
         }
 
-        if (is_null($year)) {
+        if(is_null($year)) {
             $year = date("Y");
         }
         $this->template->year = $year;

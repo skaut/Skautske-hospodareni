@@ -27,7 +27,7 @@ class BankAccountForm extends BaseControl
     }
 
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
         $form->addText('name', 'Název')
@@ -52,15 +52,15 @@ class BankAccountForm extends BaseControl
         if($this->id !== NULL) {
             $account = $this->model->find($this->id);
             $form->setDefaults([
-                'name'      => $account->getName(),
-                'prefix'    => $account->getNumber()->getPrefix(),
-                'number'    => $account->getNumber()->getNumber(),
-                'bankCode'  => $account->getNumber()->getBankCode(),
-                'token'     => $account->getToken(),
+                'name' => $account->getName(),
+                'prefix' => $account->getNumber()->getPrefix(),
+                'number' => $account->getNumber()->getNumber(),
+                'bankCode' => $account->getNumber()->getBankCode(),
+                'token' => $account->getToken(),
             ]);
         }
 
-        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) {
+        $form->onSuccess[] = function(BaseForm $form, ArrayHash $values) {
             $this->formSucceeded($form, $values);
         };
 
@@ -68,10 +68,10 @@ class BankAccountForm extends BaseControl
     }
 
 
-    private function formSucceeded(BaseForm $form, ArrayHash $values): void
+    private function formSucceeded(BaseForm $form, ArrayHash $values) : void
     {
         try {
-            if ($this->id !== NULL) {
+            if($this->id !== NULL) {
                 $this->model->updateBankAccount(
                     $this->id,
                     $values->name,
@@ -90,13 +90,13 @@ class BankAccountForm extends BaseControl
 
             $this->presenter->flashMessage('Bankovní účet byl uložen');
             $this->presenter->redirect('BankAccounts:default');
-        } catch(InvalidBankAccountNumberException $e) {
+        } catch (InvalidBankAccountNumberException $e) {
             $form->addError('Neplatné číslo účtu');
         }
     }
 
 
-    public function render(): void
+    public function render() : void
     {
         $this->template->setFile(__DIR__ . '/templates/BankAccountForm.latte');
         $this->template->render();

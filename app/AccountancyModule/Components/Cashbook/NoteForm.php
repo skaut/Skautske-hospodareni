@@ -46,19 +46,19 @@ final class NoteForm extends BaseControl
         $this->queryBus = $queryBus;
     }
 
-    public function handleEdit(): void
+    public function handleEdit() : void
     {
         $this->editation = TRUE;
         $this->redrawControl();
     }
 
-    public function handleCancel(): void
+    public function handleCancel() : void
     {
         $this->editation = FALSE;
         $this->redrawControl();
     }
 
-    public function render(): void
+    public function render() : void
     {
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
@@ -83,7 +83,7 @@ final class NoteForm extends BaseControl
         $this->template->render();
     }
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
 
@@ -97,7 +97,7 @@ final class NoteForm extends BaseControl
             ->setAttribute('class', 'btn btn-primary');
 
 
-        $form->onSuccess[] = function (BaseForm $form): void {
+        $form->onSuccess[] = function(BaseForm $form) : void {
             $this->editation = FALSE;
             $this->formSucceeded($form);
             $this->redrawControl();
@@ -105,9 +105,9 @@ final class NoteForm extends BaseControl
         return $form;
     }
 
-    private function formSucceeded(BaseForm $form): void
+    private function formSucceeded(BaseForm $form) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu', 'danger');
             $this->redirect('this');
         }

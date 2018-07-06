@@ -13,9 +13,9 @@ abstract class AccountancyHelpers
      * loader na všechny filtry
      * @param string $filter
      */
-    public static function loader($filter, $value): string
+    public static function loader($filter, $value) : string
     {
-        if (method_exists(__CLASS__, $filter)) {
+        if(method_exists(__CLASS__, $filter)) {
             $args = func_get_args();
             array_shift($args);
             return call_user_func_array([__CLASS__, $filter], $args);
@@ -28,12 +28,12 @@ abstract class AccountancyHelpers
      * zobrazení stavu ve formě ikony
      */
 
-    public static function eventStateLabel($s): string
+    public static function eventStateLabel($s) : string
     {
-        if ($s == "draft") {
+        if($s == "draft") {
             return '<span class="label label-warning hidden-xs hidden-sm">Rozpracováno</span>'
                 . '<span class="label label-warning visible-xs visible-sm">Rozprac.</span>';
-        } elseif ($s == "closed") {
+        } elseif($s == "closed") {
             return '<span class="label label-success">Uzavřeno</span>';
         } else {
             return '<span class="label label-default">Zrušeno</span>';
@@ -45,7 +45,7 @@ abstract class AccountancyHelpers
      * zobrazuje popisky stavů u táborů
      */
 
-    public static function campStateLabel($s): string
+    public static function campStateLabel($s) : string
     {
         switch ($s) {
             case "draft":
@@ -61,9 +61,9 @@ abstract class AccountancyHelpers
         }
     }
 
-    public static function commandState(?DateTimeInterface $s): string
+    public static function commandState(?DateTimeInterface $s) : string
     {
-        if ($s === NULL) {
+        if($s === NULL) {
             return '<span class="label label-warning hidden-xs hidden-sm">Rozpracovaný</span>'
                 . '<span class="label label-warning hidden-md hidden-lg">Rozpr.</span>';
         }
@@ -71,7 +71,7 @@ abstract class AccountancyHelpers
         return '<span class="label label-success" title="Uzavřeno dne: ' . $s->format("j.n.Y H:i:s") . '">Uzavřený</span>';
     }
 
-    public static function paymentState($state, bool $plural): string
+    public static function paymentState($state, bool $plural) : string
     {
         $labels = [
             State::PREPARING => ["Připravena", "Připravené"],
@@ -83,9 +83,9 @@ abstract class AccountancyHelpers
         return $labels[$state][$plural ? 1 : 0] ?? $state;
     }
 
-    public static function paymentStateLabel($s): string
+    public static function paymentStateLabel($s) : string
     {
-        if ($s instanceof State) {
+        if($s instanceof State) {
             $s = self::paymentState($s->getValue(), FALSE);
         }
         $long = $s;
@@ -98,14 +98,14 @@ abstract class AccountancyHelpers
      * @param float|string|Money|NULL $price
      * http://prirucka.ujc.cas.cz/?id=786
      */
-    public static function price($price, $full = TRUE): string
+    public static function price($price, $full = TRUE) : string
     {
-        if ($price === NULL || $price === '') {
+        if($price === NULL || $price === '') {
             return ' '; //je tam nedělitelná mezera
         }
         $decimals = $full ? 2 : 0;
 
-        if ($price instanceof Money) {
+        if($price instanceof Money) {
             $price = (float)$price->getAmount() / 100;
         }
 
@@ -116,15 +116,15 @@ abstract class AccountancyHelpers
      * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
      * @param int|float $num
      */
-    public static function num($num): string
+    public static function num($num) : string
     {
         return number_format($num, strpos($num, '.') ? 2 : 0, ",", " ");
     }
 
-    public static function postCode($oldPsc): string
+    public static function postCode($oldPsc) : string
     {
         $psc = preg_replace("[^0-9]", "", $oldPsc);
-        if (strlen($psc) == 5) {
+        if(strlen($psc) == 5) {
             return substr($psc, 0, 3) . " " . substr($psc, -2);
         }
         return $oldPsc;
@@ -134,7 +134,7 @@ abstract class AccountancyHelpers
      * převádí zadané číslo na slovní řetězec
      * @param int $price
      */
-    public static function priceToString($price): string
+    public static function priceToString($price) : string
     {
         //@todo ošetření správného tvaru
 
@@ -165,7 +165,7 @@ abstract class AccountancyHelpers
         $parts = explode(".", $price, 2); //0-pred 1-za desitou čárkou
         $numbers = array_reverse(str_split($parts[0]));
 
-        if (count($numbers) > 6) {
+        if(count($numbers) > 6) {
             return "PŘÍLIŠ VYSOKÉ ČÍSLO";
         }
 
@@ -175,11 +175,11 @@ abstract class AccountancyHelpers
 
         //tisice    
         $nTisice = (int)($numbers[5] . $numbers[4] . $numbers[3]);
-        if ($nTisice <= 4) {
+        if($nTisice <= 4) {
             $string .= $_tisice[$numbers[3]];
-        } elseif ($nTisice < 20) {
+        } elseif($nTisice < 20) {
             $string .= $_jednotky[(int)($numbers[4] . $numbers[3])] . "tisíc";
-        } elseif ($nTisice < 100) {
+        } elseif($nTisice < 100) {
             $string .= $_desitky[$numbers[4]] . $_jednotky[$numbers[3]] . "tisíc";
         } else {
             $string .= $_sta[$numbers[5]] . $_desitky[$numbers[4]] . $_jednotky[$numbers[3]] . "tisíc";
@@ -191,7 +191,7 @@ abstract class AccountancyHelpers
 
         //desitky a jednotky
         $nDesitky = (int)($numbers[1] . $numbers[0]);
-        if ($nDesitky < 20) {
+        if($nDesitky < 20) {
             $string .= $_jednotky[$nDesitky];
         } else {
             $string .= $_desitky[$numbers[1]] . $_jednotky[$numbers[0]];
@@ -200,12 +200,12 @@ abstract class AccountancyHelpers
         return mb_strtoupper(mb_substr($string, 0, 1, "UTF-8"), "UTF-8") . mb_substr($string, 1, NULL, "UTF-8");
     }
 
-    public static function yesno($s): string
+    public static function yesno($s) : string
     {
         return $s == 1 ? "Ano" : "Ne";
     }
 
-    public static function groupState($s): string
+    public static function groupState($s) : string
     {
         switch ($s) {
             case 'open':

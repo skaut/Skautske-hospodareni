@@ -24,7 +24,7 @@ class MassAddForm extends BaseControl
     }
 
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
 
@@ -44,7 +44,7 @@ class MassAddForm extends BaseControl
         $form->addSubmit('send', 'Přidat vybrané')
             ->setAttribute("class", "btn btn-primary btn-large");
 
-        $form->onSubmit[] = function (BaseForm $form): void {
+        $form->onSubmit[] = function(BaseForm $form) : void {
             $this->formSubmitted($form);
         };
 
@@ -59,10 +59,12 @@ class MassAddForm extends BaseControl
         return $form;
     }
 
-    public function addPerson(int $id, array $emails, string $name, ?float $amount = NULL, string $note = ""): void
+    public function addPerson(int $id, array $emails, string $name, ?float $amount = NULL, string $note = "") : void
     {
-        $form = $this["form"]; /** @var BaseForm $form */
-        $persons = $form["persons"]; /** @var BaseContainer $persons */
+        /** @var BaseForm $form */
+        $form = $this["form"];
+        /** @var BaseContainer $persons */
+        $persons = $form["persons"];
 
         $container = $persons->addContainer("person{$id}");
 
@@ -84,9 +86,9 @@ class MassAddForm extends BaseControl
             ->setDefaultValue($amount)
             ->addConditionOn($container["selected"], $form::FILLED)
             ->addConditionOn($form["amount"], $form::BLANK)
-                ->setRequired("Musíte vyplnit částku")
-                ->addRule($form::FLOAT, "Částka musí být číslo")
-                ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01);
+            ->setRequired("Musíte vyplnit částku")
+            ->addRule($form::FLOAT, "Částka musí být číslo")
+            ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01);
 
         $container->addDatePicker('dueDate', "Splatnost:")
             ->setAttribute('class', 'input-small')
@@ -107,13 +109,13 @@ class MassAddForm extends BaseControl
             ->setAttribute('class', 'input-small');
     }
 
-    public function render(): void
+    public function render() : void
     {
-        $this->template->setFile(__DIR__.'/templates/MassAddForm.latte');
+        $this->template->setFile(__DIR__ . '/templates/MassAddForm.latte');
         $this->template->render();
     }
 
-    private function formSubmitted(BaseForm $form): void
+    private function formSubmitted(BaseForm $form) : void
     {
         $values = $form->getValues();
 
@@ -121,7 +123,7 @@ class MassAddForm extends BaseControl
             return $person->selected === TRUE;
         });
 
-        if (empty($persons)) {
+        if(empty($persons)) {
             $form->addError("Nebyla vybrána žádná osoba k přidání!");
             return;
         }
@@ -136,7 +138,7 @@ class MassAddForm extends BaseControl
             }
         }
 
-        foreach($persons as $person) {
+        foreach ($persons as $person) {
             $this->payments->createPayment(
                 $this->groupId,
                 $person->name,
@@ -147,19 +149,19 @@ class MassAddForm extends BaseControl
                 $person->variableSymbol,
                 $this->intOrNull($person->constantSymbol) ?? $this->intOrNull($values->constantSymbol),
                 $person->note
-                );
+            );
         }
 
         $this->presenter->flashMessage("Platby byly přidány");
         $this->presenter->redirect("Payment:detail", ["id" => $this->groupId]);
     }
 
-    private function intOrNull(string $value): ?int
+    private function intOrNull(string $value) : ?int
     {
         return $value === "" ? NULL : (int)$value;
     }
 
-    private function floatOrNull(string $value): ?float
+    private function floatOrNull(string $value) : ?float
     {
         return $value === "" ? NULL : (float)$value;
     }

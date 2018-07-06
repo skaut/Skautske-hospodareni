@@ -50,13 +50,13 @@ class ChitPresenter extends BasePresenter
         $this->template->onlyUnlocked = $this->onlyUnlocked;
         $oficialUnit = $this->unitService->getOficialUnit($this->aid);
 
-        if ($oficialUnit->ID != $this->aid) {
+        if($oficialUnit->ID != $this->aid) {
             $this->flashMessage("Přehled paragonů je dostupný jen pro organizační jednotky.");
             $this->redirect("this", ["aid" => $oficialUnit->ID]);
         }
     }
 
-    public function handleLockCashbook(CashbookId $cashbookId): void
+    public function handleLockCashbook(CashbookId $cashbookId) : void
     {
         $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId), $this->user->getId()));
 
@@ -79,9 +79,9 @@ class ChitPresenter extends BasePresenter
         $campService = $this->context->getService('campService');
 
         $objectsByType = [
-            ObjectType::UNIT    => $units,
-            ObjectType::EVENT   => $eventService->event->getAll($this->year),
-            ObjectType::CAMP    => $campService->event->getAll($this->year),
+            ObjectType::UNIT => $units,
+            ObjectType::EVENT => $eventService->event->getAll($this->year),
+            ObjectType::CAMP => $campService->event->getAll($this->year),
         ];
 
         foreach ($objectsByType as $type => $objects) {
@@ -98,7 +98,7 @@ class ChitPresenter extends BasePresenter
         ];
 
         $this->template->info = $this->cashbooks;
-        $this->template->isCashbookEmpty = function (string $cashbookId): bool {
+        $this->template->isCashbookEmpty = function(string $cashbookId) : bool {
             /** @var ChitListControl $chitList */
             $chitList = $this['chitList-' . $cashbookId];
 
@@ -106,12 +106,12 @@ class ChitPresenter extends BasePresenter
         };
     }
 
-    protected function createComponentChitList(string $cashbookId): Multiplier
+    protected function createComponentChitList(string $cashbookId) : Multiplier
     {
-        return new Multiplier(function (string $cashbookId): ChitListControl {
+        return new Multiplier(function(string $cashbookId) : ChitListControl {
             $cashbookIdVo = CashbookId::fromInt((int)$cashbookId);
 
-            if ( ! $this->canEditCashbook($cashbookIdVo)) {
+            if(!$this->canEditCashbook($cashbookIdVo)) {
                 throw new BadRequestException("Cashbook #$cashbookId not found", IResponse::S404_NOT_FOUND);
             }
 
@@ -119,10 +119,10 @@ class ChitPresenter extends BasePresenter
         });
     }
 
-    private function canEditCashbook(CashbookId $cashbookId): bool
+    private function canEditCashbook(CashbookId $cashbookId) : bool
     {
         foreach ($this->cashbooks as $cashbookList) {
-            if (isset($cashbookList[$cashbookId->toString()])) {
+            if(isset($cashbookList[$cashbookId->toString()])) {
                 return TRUE;
             }
         }
@@ -135,12 +135,12 @@ class ChitPresenter extends BasePresenter
      * @param array $objects
      * @return array<string, array>
      */
-    private function getAllChitsByObjectId(ObjectType $objectType, array $objects): array
+    private function getAllChitsByObjectId(ObjectType $objectType, array $objects) : array
     {
-        if (in_array($objectType->getValue(), [ObjectType::EVENT, ObjectType::CAMP], TRUE)) { //filtrování akcí spojených pouze s danou jednotkou
+        if(in_array($objectType->getValue(), [ObjectType::EVENT, ObjectType::CAMP], TRUE)) { //filtrování akcí spojených pouze s danou jednotkou
             $readableUnits = $this->unitService->getReadUnits($this->user);
 
-            $objects = array_filter($objects, function (array $object) use ($readableUnits): bool {
+            $objects = array_filter($objects, function(array $object) use ($readableUnits): bool {
                 return isset($readableUnits[$object['ID_Unit']]);
             });
         } else {
@@ -165,24 +165,24 @@ class ChitPresenter extends BasePresenter
     /**
      * @return CashbookId[]
      */
-    private function getCashbookIds(ObjectType $object, int $objectId): array
+    private function getCashbookIds(ObjectType $object, int $objectId) : array
     {
-        if ($object->equalsValue(ObjectType::CAMP)) {
+        if($object->equalsValue(ObjectType::CAMP)) {
             return [
                 $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($objectId)))
             ];
         }
 
-        if ($object->equalsValue(ObjectType::EVENT)) {
+        if($object->equalsValue(ObjectType::EVENT)) {
             return [
                 $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($objectId)))
             ];
         }
 
-        if ($object->equalsValue(ObjectType::UNIT)) {
+        if($object->equalsValue(ObjectType::UNIT)) {
             $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($objectId));
 
-            return array_map(function (UnitCashbook $cashbook): CashbookId {
+            return array_map(function(UnitCashbook $cashbook) : CashbookId {
                 return $cashbook->getCashbookId();
             }, $unitCashbooks);
         }

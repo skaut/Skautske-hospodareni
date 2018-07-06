@@ -37,8 +37,8 @@ final class ChitForm extends BaseControl
     private const INVALID_CHIT_NUMBER_MESSAGE = 'Číslo dokladu musí být číslo, případně číslo s prefixem až 3 velkých písmen. Pro dělené doklady můžete použít číslo za / (např. V01/1)';
 
     private const CATEGORY_TYPES = [
-        Operation::INCOME   => 'Příjmy',
-        Operation::EXPENSE  => 'Výdaje',
+        Operation::INCOME => 'Příjmy',
+        Operation::EXPENSE => 'Výdaje',
     ];
 
     /** @var CashbookId */
@@ -80,7 +80,7 @@ final class ChitForm extends BaseControl
         $this->logger = $logger;
     }
 
-    public function isAmountValid(IControl $control): bool
+    public function isAmountValid(IControl $control) : bool
     {
         try {
             new Amount($control->getValue());
@@ -91,12 +91,12 @@ final class ChitForm extends BaseControl
         }
     }
 
-    public function render(): void
+    public function render() : void
     {
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         $this->template->setParameters([
-            'isEditable'        => $this->isEditable,
+            'isEditable' => $this->isEditable,
             'chitNumberPrefix' => $cashbook->getChitNumberPrefix(),
         ]);
 
@@ -104,16 +104,16 @@ final class ChitForm extends BaseControl
         $this->template->render();
     }
 
-    public function editChit(int $chitId): void
+    public function editChit(int $chitId) : void
     {
         /** @var Chit|NULL $chit */
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $chitId));
 
-        if ($chit === NULL) {
+        if($chit === NULL) {
             throw new BadRequestException(sprintf('Chit %d not found', $chitId), IResponse::S404_NOT_FOUND);
         }
 
-        if ($chit->isLocked()) {
+        if($chit->isLocked()) {
             throw new BadRequestException('Can\'t edit locked chit', IResponse::S403_FORBIDDEN);
         }
 
@@ -123,24 +123,24 @@ final class ChitForm extends BaseControl
         $form['category']->setItems($this->getCategoryPairsByType($chit->getCategory()->getOperationType()));
 
         $form->setDefaults([
-            'pid'       => $chit->getId(),
-            'date'      => $chit->getDate(),
-            'num'       => (string) $chit->getNumber(),
-            'recipient' => (string) $chit->getRecipient(),
-            'purpose'   => $chit->getPurpose(),
-            'price'     => $chit->getAmount()->getExpression(),
-            'type'      => $chit->getCategory()->getOperationType()->getValue(),
-            'category'  => $chit->getCategory()->getId(),
+            'pid' => $chit->getId(),
+            'date' => $chit->getDate(),
+            'num' => (string)$chit->getNumber(),
+            'recipient' => (string)$chit->getRecipient(),
+            'purpose' => $chit->getPurpose(),
+            'price' => $chit->getAmount()->getExpression(),
+            'type' => $chit->getCategory()->getOperationType()->getValue(),
+            'category' => $chit->getCategory()->getId(),
         ]);
 
         $this->redrawControl();
     }
 
-    public function getCategoryItems(array $values): DependentData
+    public function getCategoryItems(array $values) : DependentData
     {
         $type = $values['type'];
 
-        if ($type !== NULL) {
+        if($type !== NULL) {
             return new DependentData(
                 $this->getCategoryPairsByType(Operation::get($type))
             );
@@ -152,7 +152,7 @@ final class ChitForm extends BaseControl
         ]);
     }
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
 
@@ -206,7 +206,7 @@ final class ChitForm extends BaseControl
         $form->addSubmit('send', 'Uložit')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (BaseForm $form): void {
+        $form->onSuccess[] = function(BaseForm $form) : void {
             $this->formSubmitted($form);
             $this->redirect('this');
         };
@@ -214,16 +214,16 @@ final class ChitForm extends BaseControl
         return $form;
     }
 
-    private function formSubmitted(BaseForm $form): void
+    private function formSubmitted(BaseForm $form) : void
     {
-        if ( ! $this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu', 'danger');
             $this->redirect('this');
         }
 
         $values = $form->getValues();
 
-        $chitId = $values['pid'] !== '' ? (int) $values['pid'] : NULL;
+        $chitId = $values['pid'] !== '' ? (int)$values['pid'] : NULL;
         $number = $values->num !== '' ? new ChitNumber($values->num) : NULL;
 
         $date = $values->date;
@@ -238,7 +238,7 @@ final class ChitForm extends BaseControl
             /*
              * Update existing chit
              */
-            if ($chitId !== NULL) {
+            if($chitId !== NULL) {
                 $this->commandBus->handle(
                     new UpdateChit($cashbookId, $chitId, $number, $date, $recipient, $amount, $purpose, $category)
                 );
@@ -266,7 +266,7 @@ final class ChitForm extends BaseControl
     /**
      * @return string[]
      */
-    private function getAdultMemberNames(): array
+    private function getAdultMemberNames() : array
     {
         try {
             return array_values($this->memberService->getCombobox(FALSE, 15));
@@ -278,7 +278,7 @@ final class ChitForm extends BaseControl
     /**
      * @return array<int,string>
      */
-    private function getCategoryPairsByType(?Operation $operation): array
+    private function getCategoryPairsByType(?Operation $operation) : array
     {
         return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
     }

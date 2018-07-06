@@ -27,7 +27,7 @@ final class ExcelResponse implements IResponse
     /**
      * Redirect output to a client’s web browser (Excel 2007)
      */
-    public function send(Nette\Http\IRequest $httpRequest, Nette\Http\IResponse $httpResponse): void
+    public function send(Nette\Http\IRequest $httpRequest, Nette\Http\IResponse $httpResponse) : void
     {
         $httpResponse->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $httpResponse->addHeader('Content-Disposition', sprintf('attachment;filename="%s.xlsx"', $this->filename));

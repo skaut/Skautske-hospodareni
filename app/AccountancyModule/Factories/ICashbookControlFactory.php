@@ -10,6 +10,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 interface ICashbookControlFactory
 {
 
-    public function create(CashbookId $cashbookId, bool $isEditable): CashbookControl;
+    public function create(CashbookId $cashbookId, bool $isEditable) : CashbookControl;
 
 }

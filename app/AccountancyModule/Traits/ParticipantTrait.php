@@ -1,10 +1,10 @@
 <?php
 
-use Nette\Application\UI\Form;
 use App\Forms\BaseForm;
-use Nette\Forms\Controls\SubmitButton;
 use Model\Services\PdfRenderer;
 use Model\UnitService;
+use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SubmitButton;
 
 trait ParticipantTrait
 {
@@ -41,13 +41,13 @@ trait ParticipantTrait
     protected function traitStartup() : void
     {
         parent::startup();
-        if ($this->aid === NULL) {
+        if($this->aid === NULL) {
             $this->flashMessage("Nepovolený přístup", "danger");
             $this->redirect("Default:");
         }
 
         $uid = $this->getParameter('uid', NULL);
-        $this->uid = $uid !== NULL ? (int) $uid : NULL;
+        $this->uid = $uid !== NULL ? (int)$uid : NULL;
     }
 
     protected function beforeRender() : void
@@ -63,7 +63,7 @@ trait ParticipantTrait
             $unitId = $this->uid ?? $this->unitService->getUnitId();
             $list = $dp ? [] : $this->memberService->getAll($unitId, $this->getDirectMemberOnly(), $participants);
         } catch (\Skautis\Wsdl\WsdlException $e) {
-            if (!$dp && strpos("Timeout expired", $e->getMessage())) {
+            if(!$dp && strpos("Timeout expired", $e->getMessage())) {
                 $this->flashMessage("Bylo vypnuto doplňování osob, protože vypršel časový limit!", 'danger');
                 $this->redirect("this", ["aid" => $this->aid, "uid" => $this->uid, "dp" => 1]);
             }
@@ -84,18 +84,18 @@ trait ParticipantTrait
     {
         $textItems = ["regNum", "isAccount"];
         $numberItems = ["Days", "payment", "repayment"];
-        if (count($participants) > 0) {
-            if ($sort == "regNum") {
+        if(count($participants) > 0) {
+            if($sort == "regNum") {
                 $sort = "UnitRegistrationNumber";
-            } elseif ($sort === NULL || !in_array($sort, array_merge($textItems, $numberItems)) || !property_exists($participants[0], $sort)) {
+            } elseif($sort === NULL || !in_array($sort, array_merge($textItems, $numberItems)) || !property_exists($participants[0], $sort)) {
                 $sort = "Person"; //default sort
             }
             $isNumeric = in_array($sort, $numberItems);
-            usort($participants, function ($a, $b) use ($sort, $isNumeric) {
-                if (!property_exists($a, $sort)) {
+            usort($participants, function($a, $b) use ($sort, $isNumeric) {
+                if(!property_exists($a, $sort)) {
                     return TRUE;
                 }
-                if (!property_exists($b, $sort)) {
+                if(!property_exists($b, $sort)) {
                     return FALSE;
                 }
                 return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort}, $b->{$sort});
@@ -130,12 +130,12 @@ trait ParticipantTrait
 
     public function handleRemove($pid) : void
     {
-        if (!$this->isAllowParticipantDelete) {
+        if(!$this->isAllowParticipantDelete) {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
             $this->redirect("this");
         }
         $this->eventService->participants->removeParticipant($pid);
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl("potencialParticipants");
             $this->redrawControl("participants");
         } else {
@@ -145,16 +145,16 @@ trait ParticipantTrait
 
     public function handleAdd($pid) : void
     {
-        if (!$this->isAllowParticipantInsert) {
+        if(!$this->isAllowParticipantInsert) {
             $this->flashMessage("Nemáte oprávnění přidávat účastníky.", "danger");
-            if ($this->isAjax()) {
+            if($this->isAjax()) {
                 $this->sendPayload();
             } else {
                 $this->redirect("this");
             }
         }
         $this->eventService->participants->add($this->aid, $pid);
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl("potencialParticipants");
             $this->redrawControl("participants");
         } else {
@@ -168,7 +168,7 @@ trait ParticipantTrait
     public function handleChangeDirectMemberOnly() : void
     {
         $this->setDirectMemberOnly(!$this->getDirectMemberOnly());
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl("potencialParticipants");
         } else {
             $this->redirect("this");
@@ -180,15 +180,15 @@ trait ParticipantTrait
         $form = new BaseForm();
         $form->addSubmit('send')
             ->onClick[] = function(SubmitButton $button) : void {
-                $this->formMassListSubmitted($button);
-            };
+            $this->formMassListSubmitted($button);
+        };
 
         return $form;
     }
 
     private function formMassListSubmitted(SubmitButton $button) : void
     {
-        if (!$this->isAllowParticipantInsert) {
+        if(!$this->isAllowParticipantInsert) {
             $this->flashMessage("Nemáte právo přidávat účastníky.", "danger");
             $this->redirect("Default:");
         }
@@ -225,22 +225,22 @@ trait ParticipantTrait
     public function massEditSubmitted(SubmitButton $button) : void
     {
         $type = $this->eventService->participants->type; //camp vs general
-        if (!$this->isAllowParticipantUpdate) {
+        if(!$this->isAllowParticipantUpdate) {
             $this->flashMessage("Nemáte právo upravovat účastníky.", "danger");
             $this->redirect("Default:");
         }
         $values = $button->getForm()->getValues();
         $data = ["actionId" => $this->aid];
-        if ($values['edit']['daysc']) {
+        if($values['edit']['daysc']) {
             $data['days'] = (int)$values['edit']['days'];
         }
-        if ($values['edit']['paymentc']) {
+        if($values['edit']['paymentc']) {
             $data['payment'] = (double)$values['edit']['payment'];
         }
-        if ($values['edit']['repaymentc']) {
+        if($values['edit']['repaymentc']) {
             $data['repayment'] = (double)$values['edit']['repayment'];
         }
-        if ($values['edit']['isAccountc']) {
+        if($values['edit']['isAccountc']) {
             $data['isAccount'] = $values['edit']['isAccount'];
         }
 
@@ -253,7 +253,7 @@ trait ParticipantTrait
 
     public function massRemoveSubmitted(SubmitButton $button) : void
     {
-        if (!$this->isAllowParticipantDelete) {
+        if(!$this->isAllowParticipantDelete) {
             $this->flashMessage("Nemáte právo mazat účastníky.", "danger");
             $this->redirect("Default:");
         }
@@ -294,9 +294,9 @@ trait ParticipantTrait
 
     private function formAddParticipantNewSubmitted(Form $form) : void
     {
-        if (!$this->isAllowParticipantInsert) {
+        if(!$this->isAllowParticipantInsert) {
             $this->flashMessage("Nemáte oprávnění přidávat účastníky.", "danger");
-            if ($this->isAjax()) {
+            if($this->isAjax()) {
                 $this->sendPayload();
             } else {
                 $this->redirect("Default:");

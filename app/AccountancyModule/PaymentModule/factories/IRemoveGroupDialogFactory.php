@@ -9,6 +9,6 @@ use App\AccountancyModule\PaymentModule\Components\RemoveGroupDialog;
 interface IRemoveGroupDialogFactory
 {
 
-    public function create(int $groupId): RemoveGroupDialog;
+    public function create(int $groupId) : RemoveGroupDialog;
 
 }

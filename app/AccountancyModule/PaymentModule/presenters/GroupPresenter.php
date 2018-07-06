@@ -4,8 +4,6 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\Forms\BaseForm;
 use Consistence\Enum\InvalidEnumValueException;
-use Consistence\Type\ArrayType\ArrayType;
-use Model\DTO\Payment\BankAccount;
 use Model\DTO\Payment\GroupEmail;
 use Model\EventEntity;
 use Model\MailService;
@@ -18,7 +16,6 @@ use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
-use Model\Payment\VariableSymbol;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
@@ -52,14 +49,14 @@ class GroupPresenter extends BasePresenter
         $this->bankAccounts = $bankAccounts;
     }
 
-    public function actionDefault($type = NULL): void
+    public function actionDefault($type = NULL) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
             $this->redirect("Payment:default");
         }
 
-        if ($type == "camp") {
+        if($type == "camp") {
             $allCamps = $this->camp->event->getAll(date("Y"));
             $camps = [];
             foreach (array_diff_key($allCamps, (array)$this->model->getCampIds()) as $id => $c) {
@@ -73,8 +70,8 @@ class GroupPresenter extends BasePresenter
                 ->setHtmlId("camp-select")
                 ->setItems($camps);
             $this->template->nadpis = "Založení skupiny plateb tábora";
-        } elseif ($type == "registration") {
-            if (!($reg = $this->model->getNewestRegistration())) {
+        } elseif($type == "registration") {
+            if(!($reg = $this->model->getNewestRegistration())) {
                 $this->flashMessage("Nemáte založenou žádnou otevřenou registraci", "warning");
                 $this->redirect("Payment:default");
             }
@@ -100,11 +97,11 @@ class GroupPresenter extends BasePresenter
         $this->template->linkBack = $this->link("Default:");
     }
 
-    public function renderEdit($id): void
+    public function renderEdit($id) : void
     {
         $this->setView('default');
 
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění upravovat skupiny plateb", "danger");
             $this->redirect("Payment:default");
         }
@@ -115,7 +112,7 @@ class GroupPresenter extends BasePresenter
 
         $group = $this->model->getGroup($id);
 
-        if ($group === NULL || $group->getUnitId() !== $this->getCurrentUnitId()) {
+        if($group === NULL || $group->getUnitId() !== $this->getCurrentUnitId()) {
             $this->flashMessage("Skupina nebyla nalezena", "warning");
             $this->redirect("Payment:default");
         }
@@ -145,7 +142,7 @@ class GroupPresenter extends BasePresenter
         $this->template->linkBack = $this->link("Payment:detail", ["id" => $id]);
     }
 
-    protected function createComponentGroupForm(): Form
+    protected function createComponentGroupForm() : Form
     {
         $form = new BaseForm();
 
@@ -173,7 +170,7 @@ class GroupPresenter extends BasePresenter
 
         $bankAccounts = $this->bankAccounts->findByUnit($unitId);
         $bankAccountItems = [];
-        foreach($bankAccounts as $bankAccount) {
+        foreach ($bankAccounts as $bankAccount) {
             $bankAccountItems[$bankAccount->getId()] = $bankAccount->getName();
         }
 
@@ -189,15 +186,15 @@ class GroupPresenter extends BasePresenter
         $form->addHidden("groupId");
         $form->addSubmit('send', "Založit skupinu")->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function (Form $form): void {
+        $form->onSuccess[] = function(Form $form) : void {
             $this->groupFormSubmitted($form);
         };
         return $form;
     }
 
-    private function groupFormSubmitted(Form $form): void
+    private function groupFormSubmitted(Form $form) : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro změny skupin plateb", "danger");
             $this->redirect("default");
         }
@@ -218,20 +215,20 @@ class GroupPresenter extends BasePresenter
         ];
 
         /** @var array<string, EmailTemplate> $emails */
-        $emails = array_filter($emails, function (?EmailTemplate $email): bool {
+        $emails = array_filter($emails, function(?EmailTemplate $email) : bool {
             return $email !== NULL; // Remove not submitted emails
         });
 
         $groupId = $v->groupId !== "" ? (int)$v->groupId : NULL;
 
-        if ($groupId !== NULL) {//EDIT
+        if($groupId !== NULL) {//EDIT
             $this->model->updateGroup($groupId, $name, $paymentDefaults, $emails, $smtpId, $v->bankAccount);
 
             $this->flashMessage('Skupina byla upravena');
         } else {//ADD
             $entity = isset($v->skautisEntityId)
-                    ? $this->createSkautisEntity($v->type, (int)$v->skautisEntityId)
-                    : NULL;
+                ? $this->createSkautisEntity($v->type, (int)$v->skautisEntityId)
+                : NULL;
 
             $unitId = $this->getCurrentUnitId();
 
@@ -242,7 +239,7 @@ class GroupPresenter extends BasePresenter
         $this->redirect('Payment:detail', ['id' => $groupId]);
     }
 
-    private function createSkautisEntity(string $type, int $id): ?SkautisEntity
+    private function createSkautisEntity(string $type, int $id) : ?SkautisEntity
     {
         try {
             return new SkautisEntity($id, Type::get($type));
@@ -254,7 +251,7 @@ class GroupPresenter extends BasePresenter
     /**
      * @throws DueDateIsNotWorkdayException
      */
-    private function buildPaymentDefaults(ArrayHash $values): PaymentDefaults
+    private function buildPaymentDefaults(ArrayHash $values) : PaymentDefaults
     {
         $amount = (isset($values->amount) && $values->amount !== "") ? $values->amount : NULL;
         $constantSymbol = $values->constantSymbol !== "" ? $values->constantSymbol : NULL;
@@ -267,10 +264,10 @@ class GroupPresenter extends BasePresenter
 
     private function getDefaultEmail(string $name) : string
     {
-        return file_get_contents(__DIR__.'/../templates/defaultEmails/'.$name.'.html');
+        return file_get_contents(__DIR__ . '/../templates/defaultEmails/' . $name . '.html');
     }
 
-    private function addEmailsToForm(BaseForm $form): void
+    private function addEmailsToForm(BaseForm $form) : void
     {
         $emailsContainer = $form->addContainer('emails');
 
@@ -288,7 +285,7 @@ class GroupPresenter extends BasePresenter
             $bodyId = $type . '_body';
 
             // Only payment info email is always saved
-            if ($type !== EmailType::PAYMENT_INFO) {
+            if($type !== EmailType::PAYMENT_INFO) {
                 $container->addCheckbox('enabled', 'Aktivní')
                     ->addCondition($form::FILLED)
                     ->toggle($subjectId)
@@ -307,23 +304,23 @@ class GroupPresenter extends BasePresenter
         $form->setCurrentGroup();
     }
 
-    private function buildEmailTemplate(ArrayHash $values, string $emailType): ?EmailTemplate
+    private function buildEmailTemplate(ArrayHash $values, string $emailType) : ?EmailTemplate
     {
         $emailValues = $values->emails->{$emailType};
 
-        if ($emailType !== EmailType::PAYMENT_INFO && ! $emailValues->enabled) {
+        if($emailType !== EmailType::PAYMENT_INFO && !$emailValues->enabled) {
             return NULL;
         }
 
         return new EmailTemplate($emailValues->subject, $emailValues->body);
     }
 
-    private function getEmailDefaults(int $groupId, EmailType $type): array
+    private function getEmailDefaults(int $groupId, EmailType $type) : array
     {
         /** @var GroupEmail|NULL $email */
         $email = $this->queryBus->handle(new GroupEmailQuery($groupId, $type));
 
-        if ($email === NULL) {
+        if($email === NULL) {
             return [];
         }
 

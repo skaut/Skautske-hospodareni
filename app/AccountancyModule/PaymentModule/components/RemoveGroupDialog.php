@@ -39,17 +39,17 @@ final class RemoveGroupDialog extends BaseControl
         $this->paymentService = $paymentService;
     }
 
-    public function open(): void
+    public function open() : void
     {
         $this->opened = TRUE;
         $this->redrawControl();
     }
 
-    public function render(): void
+    public function render() : void
     {
         $group = $this->paymentService->getGroup($this->groupId);
 
-        if ($group === NULL) {
+        if($group === NULL) {
             throw new BadRequestException('Skupina plateb neexistuje');
         }
 
@@ -62,14 +62,14 @@ final class RemoveGroupDialog extends BaseControl
         $this->template->render();
     }
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
 
         $form->addSubmit('delete', 'Smazat')
             ->setAttribute('class', 'btn-danger');
 
-        $form->onSuccess[] = function (): void {
+        $form->onSuccess[] = function() : void {
             $this->commandBus->handle(new RemoveGroup($this->groupId));
 
             $this->getPresenter()->flashMessage('Skupina plateb byla odstraněna', 'success');

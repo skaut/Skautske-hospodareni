@@ -1,7 +1,7 @@
 <?php
 
-use Nextras\Forms\Controls\DatePicker;
 use Nette\Forms\Controls\MultiChoiceControl;
+use Nextras\Forms\Controls\DatePicker;
 
 
 class MyValidators
@@ -18,7 +18,7 @@ class MyValidators
         return $start <= $end->getValue();
     }
 
-    public static function hasSelectedAny(MultiChoiceControl $control, array $values): bool
+    public static function hasSelectedAny(MultiChoiceControl $control, array $values) : bool
     {
         return count(array_intersect($control->getValue(), $values)) !== 0;
     }

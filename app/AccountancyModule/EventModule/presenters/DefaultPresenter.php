@@ -2,12 +2,10 @@
 
 namespace App\AccountancyModule\EventModule;
 
-use Model\Auth\Resources\Camp;
-use Model\Auth\Resources\Event;
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
-use Cake\Chronos\Chronos;
 use Cake\Chronos\Date;
+use Model\Auth\Resources\Event;
 use Model\Event\Commands\CancelEvent;
 use Model\Event\Commands\Event\CreateEvent;
 use Model\Event\ReadModel\Queries\EventScopes;
@@ -16,9 +14,8 @@ use Model\Event\ReadModel\Queries\EventTypes;
 use Model\Event\ReadModel\Queries\NewestEventId;
 use Model\Event\SkautisEventId;
 use Model\ExcelService;
-use Nette\Application\UI\Form;
-use Ublaboo\DataGrid\DataGrid;
 use MyValidators;
+use Nette\Application\UI\Form;
 use function get_class;
 
 class DefaultPresenter extends BasePresenter
@@ -41,15 +38,15 @@ class DefaultPresenter extends BasePresenter
         $this->gridFactory = $gf;
     }
 
-    protected function startup(): void
+    protected function startup() : void
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
         $this->ses = $this->session->getSection(__CLASS__);
-        if (!isset($this->ses->state)) {
+        if(!isset($this->ses->state)) {
             $this->ses->state = self::DEFAULT_STATE;
         }
-        if (!isset($this->ses->year)) {
+        if(!isset($this->ses->year)) {
             $this->ses->year = date("Y");
         }
     }
@@ -81,8 +78,8 @@ class DefaultPresenter extends BasePresenter
             $this->redirect('exportEvents!', ['ids' => $ids]);
         };
 
-        $grid->allowRowsAction('delete', function ($item) {
-            if (!array_key_exists("accessDelete", $item)) {
+        $grid->allowRowsAction('delete', function($item) {
+            if(!array_key_exists("accessDelete", $item)) {
                 return TRUE;
             }
             return $item['accessDelete'];
@@ -92,34 +89,34 @@ class DefaultPresenter extends BasePresenter
         return $grid;
     }
 
-    public function renderDefault(): void
+    public function renderDefault() : void
     {
         $this['formFilter']['state']->setDefaultValue($this->ses->state);
         $this['formFilter']['year']->setDefaultValue($this->ses->year);
         $this->template->accessCreate = $this->authorizator->isAllowed(Event::CREATE, NULL);
     }
 
-    public function handleExportEvents(array $ids): void
+    public function handleExportEvents(array $ids) : void
     {
         $ids = array_map('intval', $ids);
         $this->excelService->getEventSummaries($ids, $this->eventService);
         $this->terminate();
     }
 
-    public function handleChangeYear(?int $year): void
+    public function handleChangeYear(?int $year) : void
     {
         $this->ses->year = $year ?? "all";
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl('events');
         } else {
             $this->redirect("this");
         }
     }
 
-    public function handleChangeState(?string $state): void
+    public function handleChangeState(?string $state) : void
     {
         $this->ses->state = $state;
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl('events');
         } else {
             $this->redirect("this");
@@ -129,9 +126,9 @@ class DefaultPresenter extends BasePresenter
     /**
      * zruší akci
      */
-    public function handleCancel(int $aid): void
+    public function handleCancel(int $aid) : void
     {
-        if ( ! $this->authorizator->isAllowed(Event::CLOSE, $aid)) {
+        if(!$this->authorizator->isAllowed(Event::CLOSE, $aid)) {
             $this->flashMessage("Nemáte právo na zrušení akce.", "danger");
             $this->redirect("this");
         }
@@ -150,7 +147,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    protected function createComponentFormFilter(): Form
+    protected function createComponentFormFilter() : Form
     {
         $states = array_merge(["all" => "Nezrušené"], $this->queryBus->handle(new EventStates()));
         $years = ["all" => "Všechny"];
@@ -163,14 +160,14 @@ class DefaultPresenter extends BasePresenter
         $form->addSubmit('send', 'Hledat')
             ->setAttribute("class", "btn btn-primary");
 
-        $form->onSuccess[] = function (Form $form): void {
+        $form->onSuccess[] = function(Form $form) : void {
             $this->formFilterSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formFilterSubmitted(Form $form): void
+    private function formFilterSubmitted(Form $form) : void
     {
         $v = $form->getValues();
         $this->ses->year = $v['year'];
@@ -186,14 +183,16 @@ class DefaultPresenter extends BasePresenter
     /**
      * @throws \Nette\Application\BadRequestException
      */
-    protected function createComponentFormCreate(): Form
+    protected function createComponentFormCreate() : Form
     {
         $scopes = $this->queryBus->handle(new EventScopes());
         $types = $this->queryBus->handle(new EventTypes());
         $unitId = $this->unitService->getUnitId();
 
         $subunits = $this->unitService->getSubunitPairs($unitId);
-        $subunits = array_map(function(string $name) { return '» ' . $name; }, $subunits);
+        $subunits = array_map(function(string $name) {
+            return '» ' . $name;
+        }, $subunits);
 
         $units = [
             $unitId => $this->unitService->getDetailV2($unitId)->getSortName(),
@@ -219,16 +218,16 @@ class DefaultPresenter extends BasePresenter
         $form->addSubmit('send', 'Založit novou akci')
             ->setAttribute("class", "btn btn-primary btn-large, ui--createEvent");
 
-        $form->onSuccess[] = function (Form $form): void {
+        $form->onSuccess[] = function(Form $form) : void {
             $this->formCreateSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formCreateSubmitted(Form $form): void
+    private function formCreateSubmitted(Form $form) : void
     {
-        if ( ! $this->authorizator->isAllowed(Event::CREATE, NULL)) {
+        if(!$this->authorizator->isAllowed(Event::CREATE, NULL)) {
             $this->flashMessage("Nemáte oprávnění pro založení akce", "danger");
             $this->redirect("this");
         }

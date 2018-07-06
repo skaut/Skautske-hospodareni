@@ -15,7 +15,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     private $editableUnits;
 
 
-    protected function startup(): void
+    protected function startup() : void
     {
         parent::startup();
 
@@ -29,14 +29,14 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->editableUnits = array_keys($this->unitService->getEditUnits($this->getUser()));
         $this->isEditable = in_array($this->aid, $this->editableUnits);
 
-        if (!$isReadable) {
+        if(!$isReadable) {
             $this->flashMessage("Nemáte oprávnění pro zobrazení stránky", "warning");
             $this->redirect(":Accountancy:Default:", ["aid" => NULL]);
         }
     }
 
 
-    protected function beforeRender(): void
+    protected function beforeRender() : void
     {
         parent::beforeRender();
         $this->template->aid = $this->aid;
@@ -47,7 +47,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     /**
      * @return int[]
      */
-    protected function getEditableUnits(): array
+    protected function getEditableUnits() : array
     {
         return $this->editableUnits;
     }

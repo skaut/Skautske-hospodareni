@@ -10,6 +10,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 interface IMoveChitsDialogFactory
 {
 
-    public function create(CashbookId $cashbookId): MoveChitsDialog;
+    public function create(CashbookId $cashbookId) : MoveChitsDialog;
 
 }

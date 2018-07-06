@@ -38,7 +38,7 @@ class CashbookControl extends BaseControl
         $this->noteFormFactory = $noteFactory;
     }
 
-    public function render(): void
+    public function render() : void
     {
         $this->template->setParameters([
             'isEditable' => $this->isEditable,
@@ -48,16 +48,16 @@ class CashbookControl extends BaseControl
         $this->template->render();
     }
 
-    protected function createComponentChitForm(): ChitForm
+    protected function createComponentChitForm() : ChitForm
     {
         return $this->formFactory->create($this->cashbookId, $this->isEditable);
     }
 
-    protected function createComponentChitList(): ChitListControl
+    protected function createComponentChitList() : ChitListControl
     {
         $control = $this->chitListFactory->create($this->cashbookId, $this->isEditable);
 
-        $control->onEditButtonClicked[] = function (int $chitId) {
+        $control->onEditButtonClicked[] = function(int $chitId) {
             /** @var ChitForm $form */
             $form = $this['chitForm'];
             $form->editChit($chitId);
@@ -68,7 +68,7 @@ class CashbookControl extends BaseControl
         return $control;
     }
 
-    protected function createComponentNoteForm(): NoteForm
+    protected function createComponentNoteForm() : NoteForm
     {
         return $this->noteFormFactory->create($this->cashbookId, $this->isEditable);
     }

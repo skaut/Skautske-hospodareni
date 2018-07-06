@@ -30,7 +30,7 @@ abstract class BasePresenter extends \App\BasePresenter
     /** @var string camp, event, unit */
     public $type;
 
-    public function injectSkautisMaintenanceChecker(SkautisMaintenanceChecker $checker): void
+    public function injectSkautisMaintenanceChecker(SkautisMaintenanceChecker $checker) : void
     {
         $this->skautisMaintenanceChecker = $checker;
     }
@@ -47,9 +47,9 @@ abstract class BasePresenter extends \App\BasePresenter
             $this->aid = (int)$this->aid;
         }
 
-        if (!$this->user->isLoggedIn()) {
+        if(!$this->user->isLoggedIn()) {
             $this->backlink = $this->storeRequest('+ 3 days');
-            if ($this->isAjax()) {
+            if($this->isAjax()) {
                 $this->forward(":Auth:ajax", ["backlink" => $this->backlink]);
             } else {
                 $this->redirect(":Default:", ["backlink" => $this->backlink]);
@@ -69,9 +69,9 @@ abstract class BasePresenter extends \App\BasePresenter
     /**
      * Returns current unit ID (e.g oddíl)
      */
-    public function getCurrentUnitId(): int
+    public function getCurrentUnitId() : int
     {
-        return (int) $this->aid;
+        return (int)$this->aid;
     }
 
 }

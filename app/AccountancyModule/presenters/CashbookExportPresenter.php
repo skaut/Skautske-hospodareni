@@ -53,11 +53,11 @@ class CashbookExportPresenter extends BasePresenter
      * @throws SkautisMaintenanceException
      * @throws BadRequestException
      */
-    public function startup(): void
+    public function startup() : void
     {
         parent::startup();
 
-        if ( ! $this->hasAccessToCashbook()) {
+        if(!$this->hasAccessToCashbook()) {
             throw new BadRequestException('User has no access to cashbook', IResponse::S403_FORBIDDEN);
         }
     }
@@ -67,7 +67,7 @@ class CashbookExportPresenter extends BasePresenter
      *
      * @param int[] $chitIds
      */
-    public function actionPrintChits(string $cashbookId, array $chitIds): void
+    public function actionPrintChits(string $cashbookId, array $chitIds) : void
     {
         $skautisId = $this->getSkautisId();
         $eventEntity = $this->getEventEntity();
@@ -85,7 +85,7 @@ class CashbookExportPresenter extends BasePresenter
      *
      * @param int[] $chitIds
      */
-    public function actionExportChits(string $cashbookId, array $chitIds): void
+    public function actionExportChits(string $cashbookId, array $chitIds) : void
     {
         $chitIds = array_map('\intval', $chitIds);
 
@@ -100,7 +100,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports all chits as PDF for printing
      */
-    public function actionPrintAllChits(int $cashbookId): void
+    public function actionPrintAllChits(int $cashbookId) : void
     {
         $template = $this->exportService->getChitlist(CashbookId::fromInt($cashbookId));
         $this->pdf->render($template, 'seznam-dokladu.pdf');
@@ -110,7 +110,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports cashbook (list of cashbook operations) as PDF for printing
      */
-    public function actionPrintCashbook(string $cashbookId): void
+    public function actionPrintCashbook(string $cashbookId) : void
     {
         $cashbookName = $this->getEventEntity()->event->get($this->getSkautisId())->DisplayName;
 
@@ -123,7 +123,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports cashbook (list of cashbook operations) as XLS file
      */
-    public function actionExportCashbook(string $cashbookId): void
+    public function actionExportCashbook(string $cashbookId) : void
     {
         $skautisId = $this->getSkautisId();
         $event = $this->getEventEntity()->event->get($skautisId);
@@ -135,7 +135,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports cashbook (list of cashbook operations) with category columns as XLS file
      */
-    public function actionExportCashbookWithCategories(string $cashbookId): void
+    public function actionExportCashbookWithCategories(string $cashbookId) : void
     {
         $spreadsheet = $this->excelService->getCashbookWithCategories(CashbookId::fromString($cashbookId));
 
@@ -145,7 +145,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * @throws BadRequestException
      */
-    private function hasAccessToCashbook(): bool
+    private function hasAccessToCashbook() : bool
     {
         $skautisType = $this->getSkautisType()->getValue();
 
@@ -155,7 +155,7 @@ class CashbookExportPresenter extends BasePresenter
             ObjectType::UNIT => Unit::ACCESS_DETAIL,
         ];
 
-        if ( ! isset($requiredPermissions[$skautisType])) {
+        if(!isset($requiredPermissions[$skautisType])) {
             throw new \RuntimeException('Unknown cashbook type');
         }
 
@@ -165,7 +165,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * @throws BadRequestException
      */
-    private function getSkautisType(): ObjectType
+    private function getSkautisType() : ObjectType
     {
         try {
             /** @var Cashbook $cashbook */
@@ -176,18 +176,18 @@ class CashbookExportPresenter extends BasePresenter
         }
     }
 
-    private function getSkautisId(): int
+    private function getSkautisId() : int
     {
         return $this->queryBus->handle(
             new SkautisIdQuery(CashbookId::fromString($this->cashbookId))
         );
     }
 
-    private function getEventEntity(): EventEntity
+    private function getEventEntity() : EventEntity
     {
         $type = $this->getSkautisType()->getValue();
 
-        if ($type === ObjectType::UNIT) {
+        if($type === ObjectType::UNIT) {
             $serviceName = 'unitAccountService';
         } else {
             $serviceName = ($type === ObjectType::EVENT ? 'event' : $type) . 'Service';
@@ -200,11 +200,11 @@ class CashbookExportPresenter extends BasePresenter
      * @param int[] $ids
      * @return Chit[]
      */
-    private function getChitsWithIds(array $ids): array
+    private function getChitsWithIds(array $ids) : array
     {
         /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery(CashbookId::fromString($this->cashbookId)));
-        $filteredChits = array_filter($chits, function (Chit $chit) use ($ids): bool {
+        $filteredChits = array_filter($chits, function(Chit $chit) use ($ids): bool {
             return in_array($chit->getId(), $ids, TRUE);
         });
 

@@ -42,7 +42,7 @@ class VehiclePresenter extends BasePresenter
         }
 
         // Check whether vehicle belongs to unit
-        if ($vehicle->getUnitId() != $this->unit->ID) {
+        if($vehicle->getUnitId() != $this->unit->ID) {
             $this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
             $this->redirect('default');
         }
@@ -71,7 +71,7 @@ class VehiclePresenter extends BasePresenter
         // Check whether vehicle exists and belongs to unit
         $this->getVehicle($vehicleId);
 
-        if ($this->travelService->removeVehicle($vehicleId)) {
+        if($this->travelService->removeVehicle($vehicleId)) {
             $this->flashMessage("Vozidlo bylo odebráno.");
         } else {
             $this->flashMessage("Nelze smazat vozidlo s cestovními příkazy.", "warning");
@@ -91,7 +91,7 @@ class VehiclePresenter extends BasePresenter
     }
 
 
-    protected function createComponentGrid(): VehicleGrid
+    protected function createComponentGrid() : VehicleGrid
     {
         return $this->gridFactory->create($this->getUnitId());
     }
@@ -123,7 +123,7 @@ class VehiclePresenter extends BasePresenter
         return $form;
     }
 
-    private function formCreateVehicleSubmitted(ArrayHash $values): void
+    private function formCreateVehicleSubmitted(ArrayHash $values) : void
     {
         $this->commandBus->handle(
             new CreateVehicle(

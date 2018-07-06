@@ -16,17 +16,17 @@ trait ContainerTrait
     /**
      * @deprecated Use self::addDate() which handles conversion to Date automatically
      */
-    public function addDatePicker(string $name, string $label = NULL): DatePicker
+    public function addDatePicker(string $name, string $label = NULL) : DatePicker
     {
         return $this[$name] = new DatePicker($label);
     }
 
-    public function addDate(string $name, string $label = NULL): DateControl
+    public function addDate(string $name, string $label = NULL) : DateControl
     {
         return $this[$name] = new DateControl($label);
     }
 
-    public function addVariableSymbol(string $name, string $label): VariableSymbolControl
+    public function addVariableSymbol(string $name, string $label) : VariableSymbolControl
     {
         return $this[$name] = new VariableSymbolControl($label);
     }
@@ -47,7 +47,7 @@ trait ContainerTrait
         return $this[$name] = new JsonDependentSelectBox($label, $parents, $dataCallback);
     }
 
-    public function addDependentSelectBox(string $name, ?string $label, IControl ...$parents): DependentSelectBox
+    public function addDependentSelectBox(string $name, ?string $label, IControl ...$parents) : DependentSelectBox
     {
         return $this[$name] = new DependentSelectBox($label, $parents);
     }
@@ -56,7 +56,7 @@ trait ContainerTrait
     {
         $form = $this->getForm(TRUE);
 
-        if ( ! $form instanceof Form) {
+        if(!$form instanceof Form) {
             throw new InvalidStateException('I\'m supposed to be used with ' . Form::class . ' only');
         }
 

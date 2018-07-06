@@ -60,36 +60,36 @@ class ParticipantPresenter extends BasePresenter
      */
     public function renderDefault(?int $aid, ?int $uid = NULL, bool $dp = FALSE, $sort = NULL, $regNums = FALSE) : void
     {
-        if ( ! $this->authorizator->isAllowed(Event::ACCESS_PARTICIPANTS, $this->aid)) {
+        if(!$this->authorizator->isAllowed(Event::ACCESS_PARTICIPANTS, $this->aid)) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky akce", "danger");
             $this->redirect("Event:");
         }
 
         $this->traitDefault($dp, $sort, $regNums);
 
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl("contentSnip");
         }
     }
 
     public function actionEditField($aid, $id, $field, $value) : void
     {
-        if (!$this->isAllowParticipantUpdate) {
+        if(!$this->isAllowParticipantUpdate) {
             $this->flashMessage("Nemáte oprávnění měnit účastníkův jejich údaje.", "danger");
-            if ($this->isAjax()) {
+            if($this->isAjax()) {
                 $this->sendPayload();
             } else {
                 $this->redirect("Default:");
             }
         }
         $oldData = $this->eventService->participants->get($id);
-        if ($field == "days") {
+        if($field == "days") {
             $arr = [
                 "payment" => key_exists("payment", $oldData) ? $oldData['payment'] : 0,
                 "days" => $value,
             ];
             $this->eventService->participants->update($id, $arr);
-        } else if ($field == "payment") {
+        } else if($field == "payment") {
             $arr = [
                 "payment" => $value,
                 "days" => key_exists("days", $oldData) ? $oldData['days'] : NULL,

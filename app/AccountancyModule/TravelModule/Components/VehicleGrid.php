@@ -31,7 +31,7 @@ class VehicleGrid extends BaseGridControl
     }
 
 
-    protected function createComponentGrid(): DataGrid
+    protected function createComponentGrid() : DataGrid
     {
         $grid = $this->createGrid();
         $grid->addColumnText('type', 'Typ');
@@ -56,7 +56,7 @@ class VehicleGrid extends BaseGridControl
         $vehicles = $this->travel->getAllVehicles($this->unitId);
         $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($vehicles), 'id'));
 
-        $grid->onRender[] = function (DataGrid $grid) use($units) {
+        $grid->onRender[] = function(DataGrid $grid) use ($units) {
             $grid->template->units = $units;
             $grid->setTemplateFile(__DIR__ . '/templates/VehicleGrid.latte');
         };

@@ -26,7 +26,7 @@ class CommandPresenter extends BasePresenter
         $this->model = $model;
     }
 
-    public function actionEdit(int $id): void
+    public function actionEdit(int $id) : void
     {
         $command = $this->model->getCommandDetail($id);
         if($command === NULL || $command->getUnitId() !== $this->getUnitId() || $command->getClosedAt() !== NULL) {
@@ -36,7 +36,7 @@ class CommandPresenter extends BasePresenter
         $this->id = $id;
     }
 
-    protected function createComponentForm(): CommandForm
+    protected function createComponentForm() : CommandForm
     {
         $form = $this->commandFormFactory->create($this->getUnitId(), $this->id);
         $form->onSuccess[] = function() {

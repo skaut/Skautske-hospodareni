@@ -7,6 +7,6 @@ use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 interface IMassAddFormFactory
 {
 
-    public function create(int $groupId): MassAddForm;
+    public function create(int $groupId) : MassAddForm;
 
 }

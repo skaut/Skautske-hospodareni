@@ -40,11 +40,11 @@ class DetailPresenter extends BasePresenter
         $this->template->accessDetail = $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $aid);
         $this->template->skautISUrl = $this->userService->getSkautisUrl();
 
-        if (property_exists($this->event->ID_UnitArray, "string")) {
+        if(property_exists($this->event->ID_UnitArray, "string")) {
             $unitIdOrIds = $this->event->ID_UnitArray->string;
 
-            if (is_array($unitIdOrIds)) {
-                $this->template->troops = array_map(function ($id) {
+            if(is_array($unitIdOrIds)) {
+                $this->template->troops = array_map(function($id) {
                     try {
                         return $this->unitService->getDetail($id);
                     } catch (UnitNotFoundException $exc) {
@@ -52,14 +52,14 @@ class DetailPresenter extends BasePresenter
                     }
                 }, $this->event->ID_UnitArray->string);
 
-            } elseif (is_string($unitIdOrIds)) {
+            } elseif(is_string($unitIdOrIds)) {
                 $this->template->troops = [$this->unitService->getDetail((int)$unitIdOrIds)];
             }
         } else {
             $this->template->troops = [];
         }
 
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl("contentSnip");
         }
 
@@ -72,11 +72,11 @@ class DetailPresenter extends BasePresenter
 
     public function renderReport(int $aid) : void
     {
-        if (!$this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)) {
+        if(!$this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)) {
             $this->flashMessage("Nemáte právo přistupovat k táboru", "warning");
             $this->redirect("default", ["aid" => $aid]);
         }
-        if ( ! $this->areTotalsConsistentWithSkautis($aid)) {
+        if(!$this->areTotalsConsistentWithSkautis($aid)) {
             $this->flashMessage("Data v účtech a ve skautisu jsou nekonzistentní!", "warning");
             $this->redirect("default", ["aid" => $aid]);
         }
@@ -102,7 +102,7 @@ class DetailPresenter extends BasePresenter
 
     private function formEditSubmitted(Form $form) : void
     {
-        if ( ! $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $this->aid)) {
+        if(!$this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $this->aid)) {
             $this->flashMessage("Nemáte oprávnění pro úpravu tábora", "danger");
             $this->redirect("this");
         }
@@ -116,7 +116,7 @@ class DetailPresenter extends BasePresenter
         $this->redirect("this");
     }
 
-    private function areTotalsConsistentWithSkautis(int $campId): bool
+    private function areTotalsConsistentWithSkautis(int $campId) : bool
     {
         $totals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery(new SkautisCampId($campId)));
 

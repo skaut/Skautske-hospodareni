@@ -10,6 +10,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 interface IInvertChitDialogFactory
 {
 
-    public function create(CashbookId $cashbookId): InvertChitDialog;
+    public function create(CashbookId $cashbookId) : InvertChitDialog;
 
 }

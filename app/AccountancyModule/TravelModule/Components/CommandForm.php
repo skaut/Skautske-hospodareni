@@ -40,17 +40,21 @@ class CommandForm extends Control
         $this->transportTypes = $this->model->getTravelTypes();
     }
 
-    public function render(): void
+    public function render() : void
     {
         $this["form"]->render();
     }
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $vehicles = $this->model->getVehiclesPairs($this->unitId);
 
-        $vehiclesWithFuel = array_filter($this->transportTypes, function ($t) { return $t->hasFuel; });
-        $vehiclesWithFuel = array_map(function($t) { return $t->type; }, $vehiclesWithFuel);
+        $vehiclesWithFuel = array_filter($this->transportTypes, function($t) {
+            return $t->hasFuel;
+        });
+        $vehiclesWithFuel = array_map(function($t) {
+            return $t->type;
+        }, $vehiclesWithFuel);
 
         $form = new BaseForm();
 
@@ -119,8 +123,8 @@ class CommandForm extends Control
         $form->setCurrentGroup();
         $form->addSubmit("send", $this->commandId !== NULL ? "Upravit" : "Založit");
 
-        $form->onSuccess[] = function (BaseForm $form) {
-            if ($this->commandId === NULL) {
+        $form->onSuccess[] = function(BaseForm $form) {
+            if($this->commandId === NULL) {
                 $this->createCommand($form->getValues());
             } else {
                 $this->updateCommand($form->getValues());
@@ -135,11 +139,11 @@ class CommandForm extends Control
         return $form;
     }
 
-    private function loadDefaultValues(BaseForm $form): void
+    private function loadDefaultValues(BaseForm $form) : void
     {
         $command = $this->model->getCommandDetail($this->commandId);
 
-        if ($command === NULL) {
+        if($command === NULL) {
             throw new InvalidStateException("Travel command #{$this->commandId} not found");
         }
 
@@ -155,7 +159,7 @@ class CommandForm extends Control
         /** @var SelectBox $contracts */
         $contracts = $form['contract_id'];
 
-        if($contractId !== NULL && ! isset($contracts->getItems()[$contractId])) {
+        if($contractId !== NULL && !isset($contracts->getItems()[$contractId])) {
             $contracts->setItems($this->prepareContracts($contractId)); // Prepare list with missing contract
         }
 
@@ -184,7 +188,7 @@ class CommandForm extends Control
         /** @var \Nette\Forms\Controls\SelectBox $vehicles */
         $vehicles = $form["vehicle_id"];
 
-        if (!in_array($vehicleId, $vehicles->getItems())) {
+        if(!in_array($vehicleId, $vehicles->getItems())) {
             try {
                 $vehicle = $this->model->getVehicle($vehicleId);
                 $vehicles->setItems([$vehicle->getId() => $vehicle->getLabel()] + $vehicles->getItems());
@@ -194,7 +198,7 @@ class CommandForm extends Control
         }
     }
 
-    private function createCommand(ArrayHash $values): void
+    private function createCommand(ArrayHash $values) : void
     {
         $this->model->addCommand(
             $this->unitId,
@@ -213,7 +217,7 @@ class CommandForm extends Control
         $this->presenter->flashMessage("Cestovní příkaz byl založen.");
     }
 
-    private function updateCommand(ArrayHash $values): void
+    private function updateCommand(ArrayHash $values) : void
     {
         $this->model->updateCommand(
             $this->commandId,
@@ -232,10 +236,10 @@ class CommandForm extends Control
         $this->presenter->flashMessage("Cestovní příkaz byl upraven.");
     }
 
-    private function prepareTranportTypeOptions(array $disabledValues = []): array
+    private function prepareTranportTypeOptions(array $disabledValues = []) : array
     {
         $options = [];
-        foreach($this->transportTypes as $value => $type) {
+        foreach ($this->transportTypes as $value => $type) {
             $option = Html::el("option")
                 ->setAttribute("value", $value)
                 ->setHtml($type->label)
@@ -246,21 +250,21 @@ class CommandForm extends Control
         return $options;
     }
 
-    private function prepareContracts(?int $includeContractId = NULL): array
+    private function prepareContracts(?int $includeContractId = NULL) : array
     {
         $contracts = $this->model->getAllContractsPairs(
             $this->unitId,
             $includeContractId
         );
 
-        if (!empty($contracts["past"])) {
+        if(!empty($contracts["past"])) {
             return ["platné" => $contracts["valid"], "ukončené" => $contracts["past"]];
         }
 
         return $contracts["valid"];
     }
 
-    private function createPassenger(ArrayHash $values): ?Passenger
+    private function createPassenger(ArrayHash $values) : ?Passenger
     {
         return isset($values->contract_id)
             ? NULL

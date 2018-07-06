@@ -25,13 +25,13 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->isReadable = $isReadable = isset($readableUnits[$this->aid]);
         $this->isEditable = array_key_exists($this->aid, $this->unitService->getEditUnits($user));
 
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Nemáte oprávnění pro zobrazení stránky", "warning");
             $this->redirect(":Accountancy:Default:", ["aid" => NULL]);
         }
     }
 
-    protected function beforeRender(): void
+    protected function beforeRender() : void
     {
         parent::beforeRender();
         $this->template->year = $this->year;
@@ -41,9 +41,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     protected function editableOnly() : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Data jednotky jsou uzavřené a nelze je upravovat.", "danger");
-            if ($this->isAjax()) {
+            if($this->isAjax()) {
                 $this->sendPayload();
             } else {
                 $this->redirect("Default:");

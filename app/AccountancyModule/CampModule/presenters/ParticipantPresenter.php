@@ -48,7 +48,7 @@ class ParticipantPresenter extends BasePresenter
     {
         $authorizator = $this->authorizator;
 
-        if ( ! $authorizator->isAllowed(Camp::ACCESS_PARTICIPANTS, $aid)) {
+        if(!$authorizator->isAllowed(Camp::ACCESS_PARTICIPANTS, $aid)) {
             $this->flashMessage("Nemáte právo prohlížeč účastníky", "danger");
             $this->redirect("Default:");
         }
@@ -60,19 +60,19 @@ class ParticipantPresenter extends BasePresenter
         $this->template->setParameters([
             'isAllowParticipantDetail' => $authorizator->isAllowed(Camp::ACCESS_PARTICIPANT_DETAIL, $aid),
             'isAllowParticipantUpdateLocal' => $this->isAllowParticipantDelete,
-            'missingAvailableAutoComputed' => ! $isAutocomputed && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
+            'missingAvailableAutoComputed' => !$isAutocomputed && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
         ]);
 
-        if ($this->isAjax()) {
+        if($this->isAjax()) {
             $this->redrawControl("contentSnip");
         }
     }
 
     public function actionEditField($aid, $id, $field, $value) : void
     {
-        if (!$this->isAllowParticipantUpdate) {
+        if(!$this->isAllowParticipantUpdate) {
             $this->flashMessage("Nemáte oprávnění měnit účastníkův jejich údaje.", "danger");
-            if ($this->isAjax()) {
+            if($this->isAjax()) {
                 $this->sendPayload();
             } else {
                 $this->redirect("Default:");

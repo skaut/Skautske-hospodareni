@@ -5,7 +5,6 @@ namespace App\AccountancyModule\CampModule;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\ObjectType;
 use Model\EventEntity;
-use Skautis\Wsdl\PermissionException;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
@@ -22,7 +21,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->type = ObjectType::CAMP;
         $this->template->aid = $this->aid = $this->getParameter('aid');
 
-        if ($this->aid !== NULL) {
+        if($this->aid !== NULL) {
             $this->template->event = $this->event = $this->eventService->event->get($this->aid);
             $this->template->isEditable = $this->isEditable = $this->authorizator->isAllowed(Camp::UPDATE_REAL, $this->aid);
         }
@@ -30,9 +29,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     protected function editableOnly() : void
     {
-        if (!$this->isEditable) {
+        if(!$this->isEditable) {
             $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
-            if ($this->isAjax()) {
+            if($this->isAjax()) {
                 $this->sendPayload();
             } else {
                 $this->redirect("Default:");

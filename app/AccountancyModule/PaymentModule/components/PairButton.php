@@ -35,7 +35,7 @@ class PairButton extends BaseControl
         $this->bankAccounts = $bankAccounts;
     }
 
-    public function handlePair(): void
+    public function handlePair() : void
     {
         $this->pair();
     }
@@ -44,20 +44,20 @@ class PairButton extends BaseControl
      * Select groups to pair
      * @param int[] $groupIds
      */
-    public function setGroups(array $groupIds): void
+    public function setGroups(array $groupIds) : void
     {
         $this->groupIds = $groupIds;
     }
 
-    public function render(): void
+    public function render() : void
     {
         $this->template->canPair = $this->canPair();
         $this->template->groupsCount = count($this->groupIds);
-        $this->template->setFile(__DIR__."/templates/PairButton.latte");
+        $this->template->setFile(__DIR__ . "/templates/PairButton.latte");
         $this->template->render();
     }
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm(TRUE);
 
@@ -68,7 +68,7 @@ class PairButton extends BaseControl
             ->setType('number');
         $form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
 
-        $form->onSuccess[] = function ($form, $values): void {
+        $form->onSuccess[] = function($form, $values) : void {
             $this->pair($values->days);
         };
         $this->redrawControl('form');
@@ -76,19 +76,21 @@ class PairButton extends BaseControl
     }
 
 
-    private function canPair(): bool
+    private function canPair() : bool
     {
         if(empty($this->groupIds)) {
             return FALSE;
         }
 
         $groups = $this->payments->findGroupsByIds($this->groupIds);
-        $bankAccountIds = array_map(function (Group $g) { return $g->getBankAccountId(); }, $groups);
+        $bankAccountIds = array_map(function(Group $g) {
+            return $g->getBankAccountId();
+        }, $groups);
         $bankAccountIds = array_filter($bankAccountIds);
 
         $bankAccounts = $this->bankAccounts->findByIds($bankAccountIds);
 
-        foreach($bankAccounts as $account) {
+        foreach ($bankAccounts as $account) {
             if($account->getToken() !== NULL) {
                 return TRUE;
             }
@@ -98,7 +100,7 @@ class PairButton extends BaseControl
     }
 
 
-    private function pair(?int $daysBack = NULL): void
+    private function pair(?int $daysBack = NULL) : void
     {
         $error = NULL;
         try {
@@ -109,9 +111,9 @@ class PairButton extends BaseControl
             $error = self::TIME_LIMIT_MESSAGE;
         }
 
-        if ($error !== NULL) {
+        if($error !== NULL) {
             $this->presenter->flashMessage($error, "danger");
-        } elseif (isset($pairedCount) && $pairedCount > 0) {
+        } elseif(isset($pairedCount) && $pairedCount > 0) {
             $this->presenter->flashMessage("Platby byly spárovány ($pairedCount)", "success");
         } else {
             $this->presenter->flashMessage("Žádné platby nebyly spárovány");
