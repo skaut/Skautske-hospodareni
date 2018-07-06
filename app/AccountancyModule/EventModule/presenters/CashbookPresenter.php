@@ -60,7 +60,14 @@ class CashbookPresenter extends BasePresenter
 
     public function actionImportHpd(int $aid) : void
     {
-        $this->editableOnly();
+        if (!$this->isEditable) {
+            $this->flashMessage("Akce je uzavřena a nelze ji upravovat.", "danger");
+            if ($this->isAjax()) {
+                $this->sendPayload();
+            } else {
+                $this->redirect("Default:");
+            }
+        }
 
         // @TODO move logic to specific command handler
         $totalPayment = $this->eventService->getParticipants()->getTotalPayment($this->aid);
