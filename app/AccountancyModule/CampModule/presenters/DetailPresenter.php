@@ -11,6 +11,7 @@ use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
+use Model\Unit\UnitNotFoundException;
 use Nette\Application\UI\Form;
 use function count;
 
@@ -44,7 +45,11 @@ class DetailPresenter extends BasePresenter
 
             if (is_array($unitIdOrIds)) {
                 $this->template->troops = array_map(function ($id) {
-                    return $this->unitService->getDetail($id);
+                    try {
+                        return $this->unitService->getDetail($id);
+                    } catch (UnitNotFoundException $exc) {
+                        return ["ID" => $id, "DisplayName" => "Jednotka ($id) již neexistuje."];
+                    }
                 }, $this->event->ID_UnitArray->string);
 
             } elseif (is_string($unitIdOrIds)) {
