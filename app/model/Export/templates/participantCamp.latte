@@ -41,8 +41,8 @@ table {
         <td style="text-align: right;">{$u->Birthday|date:"d.m.Y"}</td>
         <td style="text-align: right;">{$u->Days}</td>
         <td style="text-align: right;">{if $u->Age < 18}{$u->Days}{php $totDDays += $u->Days}{else}0{/if}</td>
-        <td style="text-align: right;">{$u->payment|price:0}</td>
-        <td style="text-align: right;">{$u->repayment|price:0}</td>
+        <td style="text-align: right;">{$u->payment|price:false}</td>
+        <td style="text-align: right;">{$u->repayment|price:false}</td>
         <td style="text-align: right;">{= $u->payment - $u->repayment|price}</td>
         <td style="text-align: right;">{if $u->isAccount == "Y"}Ano{php $totAccount += ($u->payment - $u->repayment)}{else}&nbsp;{/if}</td>
     </tr>
@@ -50,8 +50,8 @@ table {
         <td colspan="7">&nbsp;</td>
         <td style="text-align: right;">{$totPDays}</td>
         <td style="text-align: right;">{$totDDays}</td>
-        <td style="text-align: right;">{$totPay|price:0}</td>
-        <td style="text-align: right;">{$totRepay|price:0}</td>
+        <td style="text-align: right;">{$totPay|price:false}</td>
+        <td style="text-align: right;">{$totRepay|price:false}</td>
         <td style="text-align: right;"><b>{= $totPay - $totRepay|price}<b></td>
         <td style="text-align: right;">{$totAccount}</td>
     </tr>

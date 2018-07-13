@@ -21,7 +21,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         parent::startup();
         $this->eventService  = $this->context->getService('campService');
         $this->type          = ObjectType::CAMP;
-        $this->template->aid = $this->aid = $this->getParameter('aid');
+        $this->template->aid = $this->aid;
 
         if ($this->aid === null) {
             return;
