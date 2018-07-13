@@ -187,7 +187,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createPaymentRoutes()
+    private function createPaymentRoutes() : RouteList
     {
         $router = new RouteList('Payment');
 

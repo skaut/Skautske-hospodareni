@@ -22,7 +22,7 @@ class BudgetTable extends BaseTable
             . 'objectId = %i ', $unitId);
     }
 
-    public function getCategoriesByParent($unitId, $type, $parentId)
+    public function getCategoriesByParent(int $unitId, string $type, ?int $parentId)
     {
         $categories = $this->connection->fetchAll('SELECT * FROM [' . self::TABLE_UNIT_BUDGET_CATEGORY . '] WHERE '
             . 'deleted = 0 AND '

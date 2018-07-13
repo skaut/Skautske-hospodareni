@@ -78,7 +78,7 @@ class BudgetPresenter extends BasePresenter
         }
 
         $v = $form->values;
-        $this->budgetService->addCategory($v->oid, $v->label, $v->type, $v->parentId === 0 ? null : $v->parentId, $v->value, $v->year);
+        $this->budgetService->addCategory($v->oid, $v->label, $v->type, $v->parentId === 0 ? null : $v->parentId, $v->value, (int) $v->year);
         $this->flashMessage('Kategorie byla přidána.');
         $this->redirect('default');
     }

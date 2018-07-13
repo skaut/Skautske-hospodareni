@@ -31,7 +31,7 @@ class BudgetService
         ];
     }
 
-    public function addCategory(int $oid, $label, $type, $parentId, $value, $year) : void
+    public function addCategory(int $oid, string $label, string $type, ?int $parentId, string $value, int $year) : void
     {
         $this->table->addCategory([
             'objectId' => $this->getLocalId($oid),
@@ -43,7 +43,10 @@ class BudgetService
         ]);
     }
 
-    public function getCategoriesRoot(int $oid, ?string $type = null)
+    /**
+     * @return string[]
+     */
+    public function getCategoriesRoot(int $oid, ?string $type = null) : array
     {
         $localId = $this->getLocalId($oid);
 
@@ -56,7 +59,22 @@ class BudgetService
         return $this->table->getDS($localId, $type)->where('parentId IS NULL')->fetchPairs('id', 'label');
     }
 
-    public function getCategoriesLeaf(int $oid, ?string $type = null)
+    /**
+     * @return string[]
+     */
+    public function getCategoriesAll(int $oid, string $type, ?int $parentId = null) : array
+    {
+        $data = $this->table->getCategoriesByParent($oid, $type, $parentId);
+        foreach ($data as $k => $v) {
+            $data[$k]['childrens'] = $this->{__FUNCTION__}($oid, $type, $v->id);
+        }
+        return $data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getCategoriesLeaf(int $oid, ?string $type = null) : array
     {
         if ($type === null) {
             return [
@@ -65,15 +83,6 @@ class BudgetService
             ];
         }
         return $this->table->getDS($this->getLocalId($oid), $type)->where('parentId IS NOT NULL')->fetchPairs('id', 'label');
-    }
-
-    public function getCategoriesAll($oid, $type, $parentId = null)
-    {
-        $data = $this->table->getCategoriesByParent($oid, $type, $parentId);
-        foreach ($data as $k => $v) {
-            $data[$k]['childrens'] = $this->{__FUNCTION__}($oid, $type, $v->id);
-        }
-        return $data;
     }
 
     private function getLocalId(int $id) : int
