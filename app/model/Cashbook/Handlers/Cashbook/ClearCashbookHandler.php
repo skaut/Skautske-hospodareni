@@ -9,7 +9,6 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class ClearCashbookHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -18,7 +17,7 @@ final class ClearCashbookHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(ClearCashbook $command): void
+    public function handle(ClearCashbook $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 
@@ -26,5 +25,4 @@ final class ClearCashbookHandler
 
         $this->cashbooks->save($cashbook);
     }
-
 }

@@ -1,32 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Utils;
 
-
 use Nette\StaticClass;
+use function array_reduce;
 
 class Arrays
 {
-
     use StaticClass;
 
     /**
      * Groups given collection by key provided from $keyFunction
      * @param array $collection
-     * @param callable $keyFunction
-     * @param bool $excludeNull Do not add item if keyFunction returns null
+     * @param bool  $excludeNull Do not add item if keyFunction returns null
      * @return array
      */
-    public static function groupBy(array $collection, callable $keyFunction, bool $excludeNull = FALSE): array
+    public static function groupBy(array $collection, callable $keyFunction, bool $excludeNull = false) : array
     {
         $newCollection = [];
-        foreach($collection as $index => $item) {
+        foreach ($collection as $index => $item) {
             $key = $keyFunction($item);
-            if ($key === NULL && $excludeNull === TRUE) {
+            if ($key === null && $excludeNull === true) {
                 continue;
             }
 
-            if(!isset($newCollection[$key])) {
+            if (! isset($newCollection[$key])) {
                 $newCollection[$key] = [];
             }
 
@@ -38,7 +38,6 @@ class Arrays
 
     public static function ungroup(array $collection)
     {
-        return array_reduce($collection, "array_merge", []);
+        return array_reduce($collection, 'array_merge', []);
     }
-
 }

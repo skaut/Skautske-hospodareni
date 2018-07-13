@@ -6,7 +6,6 @@ namespace Model\Payment\DomainEvents;
 
 final class GroupWasRemoved
 {
-
     /** @var int */
     private $groupId;
 
@@ -15,9 +14,8 @@ final class GroupWasRemoved
         $this->groupId = $groupId;
     }
 
-    public function getGroupId(): int
+    public function getGroupId() : int
     {
         return $this->groupId;
     }
-
 }

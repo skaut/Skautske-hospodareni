@@ -8,10 +8,11 @@ use Nette;
 use Nette\Application\IResponse;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use function gmdate;
+use function sprintf;
 
 final class ExcelResponse implements IResponse
 {
-
     /** @var string */
     private $filename;
 
@@ -20,14 +21,14 @@ final class ExcelResponse implements IResponse
 
     public function __construct(string $filename, Spreadsheet $spreadsheet)
     {
-        $this->filename = $filename;
+        $this->filename    = $filename;
         $this->spreadsheet = $spreadsheet;
     }
 
     /**
      * Redirect output to a client’s web browser (Excel 2007)
      */
-    public function send(Nette\Http\IRequest $httpRequest, Nette\Http\IResponse $httpResponse): void
+    public function send(Nette\Http\IRequest $httpRequest, Nette\Http\IResponse $httpResponse) : void
     {
         $httpResponse->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $httpResponse->addHeader('Content-Disposition', sprintf('attachment;filename="%s.xlsx"', $this->filename));
@@ -40,8 +41,7 @@ final class ExcelResponse implements IResponse
         $httpResponse->setHeader('Pragma', 'public'); // HTTP/1.0
 
         $xls = new Xlsx($this->spreadsheet);
-        $xls->setPreCalculateFormulas(TRUE);
+        $xls->setPreCalculateFormulas(true);
         $xls->save('php://output');
     }
-
 }

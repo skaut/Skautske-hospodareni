@@ -9,34 +9,34 @@ use Mockery as m;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFoundException;
 use Model\Unit\Unit;
+use function var_dump;
 
 class VehicleRepositoryTest extends \IntegrationTest
 {
+    private const TABLE = 'tc_vehicle';
 
-	private const TABLE = 'tc_vehicle';
+    /** @var VehicleRepository */
+    private $repository;
 
-	/** @var VehicleRepository */
-	private $repository;
+    public function getTestedEntites() : array
+    {
+        return [
+            Vehicle::class,
+        ];
+    }
 
-	public function getTestedEntites(): array
-	{
-		return [
-			Vehicle::class,
-		];
-	}
+    protected function _before() : void
+    {
+        parent::_before();
+        $this->repository = new VehicleRepository($this->tester->grabService(EntityManager::class));
+    }
 
-	protected function _before()
-	{
-		parent::_before();
-		$this->repository = new VehicleRepository($this->tester->grabService(EntityManager::class));
-	}
+    public function testFindByUnitWithNoVehiclesReturnsEmptyArray() : void
+    {
+        $this->assertEmpty($this->repository->findByUnit(10));
+    }
 
-	public function testFindByUnitWithNoVehiclesReturnsEmptyArray(): void
-	{
-		$this->assertEmpty($this->repository->findByUnit(10));
-	}
-
-	public function testFindByUnitReturnsOnlyVehiclesWithCorrectUnit(): void
+    public function testFindByUnitReturnsOnlyVehiclesWithCorrectUnit() : void
     {
         $I = $this->tester;
 
@@ -60,7 +60,7 @@ class VehicleRepositoryTest extends \IntegrationTest
                 'archived' => 0,
                 'metadata_created_at' => '2016-11-17',
                 'metadata_author_name' => 'František Hána',
-            ]
+            ],
         ];
 
         $I->haveInDatabase(self::TABLE, $expectedVehicles[0]);
@@ -84,14 +84,14 @@ class VehicleRepositoryTest extends \IntegrationTest
         $this->assertSame(2, $vehicles[1]->getId());
     }
 
-	public function testFindNonExistentVehicleThrowsException(): void
+    public function testFindNonExistentVehicleThrowsException() : void
     {
         $this->expectException(VehicleNotFoundException::class);
 
         $this->repository->find(1);
     }
 
-    public function testFindReturnsCorrectlyMappedEntity(): void
+    public function testFindReturnsCorrectlyMappedEntity() : void
     {
         $row = $this->getVehicleRow();
         $this->tester->haveInDatabase(self::TABLE, $row);
@@ -116,7 +116,7 @@ class VehicleRepositoryTest extends \IntegrationTest
         );
     }
 
-    public function testRemove(): void
+    public function testRemove() : void
     {
         $this->tester->haveInDatabase(self::TABLE, $this->getVehicleRow());
 
@@ -127,12 +127,12 @@ class VehicleRepositoryTest extends \IntegrationTest
         $this->tester->dontSeeInDatabase(self::TABLE, ['id' => 1]);
     }
 
-    public function testSave(): void
+    public function testSave() : void
     {
         $row = $this->getVehicleRow();
 
-        $unit = m::mock(Unit::class, ['getId' => $row['unit_id']]);
-        $subunit = m::mock(Unit::class, ['getId' => $row['subunit_id'], 'isSubunitOf' => TRUE]);
+        $unit    = m::mock(Unit::class, ['getId' => $row['unit_id']]);
+        $subunit = m::mock(Unit::class, ['getId' => $row['subunit_id'], 'isSubunitOf' => true]);
 
         $vehicle = new Vehicle(
             $row['type'],
@@ -150,7 +150,7 @@ class VehicleRepositoryTest extends \IntegrationTest
         $this->tester->seeInDatabase(self::TABLE, ['id' => 1] + $row);
     }
 
-    private function getVehicleRow(): array
+    private function getVehicleRow() : array
     {
         return [
             'type' => 'Car 3',
@@ -164,5 +164,4 @@ class VehicleRepositoryTest extends \IntegrationTest
             'metadata_author_name' => 'Frantisek Hana',
         ];
     }
-
 }

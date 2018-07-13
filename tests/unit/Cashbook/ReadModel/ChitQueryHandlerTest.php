@@ -16,13 +16,12 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class ChitQueryHandlerTest extends Unit
 {
-
     private const CASHBOOK_ID = '123';
 
     private const EXISTING_CHIT_ID = 10;
-    private const CATEGORY_ID = 156;
+    private const CATEGORY_ID      = 156;
 
-    public function testUnexistingChit(): void
+    public function testUnexistingChit() : void
     {
         $handler = new ChitQueryHandler($this->mockCashbookRepository(), new QueryBus());
 
@@ -31,27 +30,26 @@ final class ChitQueryHandlerTest extends Unit
         );
     }
 
-    private function mockCashbookRepository(): ICashbookRepository
+    private function mockCashbookRepository() : ICashbookRepository
     {
         $cashbook = m::mock(Cashbook::class);
 
         $cashbook->shouldReceive('getChits')
-            ->andReturn([
-                \Helpers::mockChit(self::EXISTING_CHIT_ID, new Date(), Operation::INCOME, self::CATEGORY_ID)
-            ]);
+            ->andReturn([\Helpers::mockChit(self::EXISTING_CHIT_ID, new Date(), Operation::INCOME, self::CATEGORY_ID)]);
 
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('find')
-            ->withArgs(function (CashbookId $cashbookId) { return $cashbookId->equals($this->getCashbookId()); })
+            ->withArgs(function (CashbookId $cashbookId) {
+                return $cashbookId->equals($this->getCashbookId());
+            })
             ->andReturn($cashbook);
 
         return $repository;
     }
 
 
-    private function getCashbookId(): CashbookId
+    private function getCashbookId() : CashbookId
     {
         return CashbookId::fromString(self::CASHBOOK_ID);
     }
-
 }

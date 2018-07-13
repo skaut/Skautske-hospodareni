@@ -10,7 +10,6 @@ use Model\Skautis\Mapper;
 
 class SkautisIdQueryHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -20,15 +19,14 @@ class SkautisIdQueryHandler
     public function __construct(ICashbookRepository $cashbooks, Mapper $mapper)
     {
         $this->cashbooks = $cashbooks;
-        $this->mapper = $mapper;
+        $this->mapper    = $mapper;
     }
 
-    public function handle(SkautisIdQuery $query): int
+    public function handle(SkautisIdQuery $query) : int
     {
-        $cashbook = $this->cashbooks->find($query->getCashbookId());
+        $cashbook   = $this->cashbooks->find($query->getCashbookId());
         $objectType = $cashbook->getType()->getSkautisObjectType()->getValue();
 
         return $this->mapper->getSkautisId($cashbook->getId(), $objectType);
     }
-
 }

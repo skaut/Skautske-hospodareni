@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Bank\Fio;
 
 use Nette;
@@ -16,7 +18,6 @@ use Nette;
  */
 class Transaction
 {
-
     use Nette\SmartObject;
 
     /** @var string */
@@ -51,57 +52,56 @@ class Transaction
         string $name,
         ?int $variableSymbol,
         ?int $constantSymbol,
-        ?string $note)
-    {
-        $this->id = $id;
-        $this->date = $date;
-        $this->amount = $amount;
-        $this->bankAccount = $bankAccount;
-        $this->name = $name;
+        ?string $note
+    ) {
+        $this->id             = $id;
+        $this->date           = $date;
+        $this->amount         = $amount;
+        $this->bankAccount    = $bankAccount;
+        $this->name           = $name;
         $this->variableSymbol = $variableSymbol;
         $this->constantSymbol = $constantSymbol;
-        $this->note = $note;
+        $this->note           = $note;
     }
 
-    public function getId(): string
+    public function getId() : string
     {
         return $this->id;
     }
 
 
-    public function getDate(): \DateTimeImmutable
+    public function getDate() : \DateTimeImmutable
     {
         return $this->date;
     }
 
-    public function getAmount(): float
+    public function getAmount() : float
     {
         return $this->amount;
     }
 
-    public function getBankAccount(): string
+    public function getBankAccount() : string
     {
         return $this->bankAccount;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getVariableSymbol(): ?int
+    public function getVariableSymbol() : ?int
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol() : ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNote(): ?string
+    public function getNote() : ?string
     {
         return $this->note;
     }
-
 }

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Payment;
 
-use Nette\SmartObject;
 use Model\Bank\Fio\Transaction as FioTransaction;
+use Nette\SmartObject;
 
 /**
  * @property-read int $id
@@ -13,7 +15,6 @@ use Model\Bank\Fio\Transaction as FioTransaction;
  */
 class Transaction
 {
-
     use SmartObject;
 
     /** @var int @todo start using string as does FIO */
@@ -30,13 +31,13 @@ class Transaction
 
     public function __construct(int $id, string $bankAccount, string $payer, ?string $note)
     {
-        $this->id = $id;
+        $this->id          = $id;
         $this->bankAccount = $bankAccount;
-        $this->payer = $payer;
-        $this->note = $note;
+        $this->payer       = $payer;
+        $this->note        = $note;
     }
 
-    public static function fromFioTransaction(FioTransaction $transaction): self
+    public static function fromFioTransaction(FioTransaction $transaction) : self
     {
         return new self(
             (int) $transaction->getId(),
@@ -46,7 +47,7 @@ class Transaction
         );
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
@@ -54,27 +55,26 @@ class Transaction
     /**
      * TODO: fix some payment transactions in database, that have NULL bank accounts
      */
-    public function getBankAccount(): ?string
+    public function getBankAccount() : ?string
     {
         return $this->bankAccount;
     }
 
-    public function getPayer(): ?string
+    public function getPayer() : ?string
     {
         return $this->payer;
     }
 
-    public function getNote(): ?string
+    public function getNote() : ?string
     {
         return $this->note;
     }
 
-    public function equals(self $other): bool
+    public function equals(self $other) : bool
     {
         return $other->id === $this->id
             && $other->bankAccount === $this->bankAccount
             && $other->note === $this->note
             && $other->payer === $this->payer;
     }
-
 }

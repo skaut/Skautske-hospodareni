@@ -10,10 +10,10 @@ use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CategoryNotFoundException;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use function sprintf;
 
 class CategoryRepository
 {
-
     /** @var ICampCategoryRepository */
     private $campCategories;
 
@@ -27,18 +27,17 @@ class CategoryRepository
         ICampCategoryRepository $campCategories,
         IStaticCategoryRepository $staticCategories,
         QueryBus $queryBus
-    )
-    {
-        $this->campCategories = $campCategories;
+    ) {
+        $this->campCategories   = $campCategories;
         $this->staticCategories = $staticCategories;
-        $this->queryBus = $queryBus;
+        $this->queryBus         = $queryBus;
     }
 
 
     /**
      * @return ICategory[]
      */
-    public function findForCashbook(CashbookId $cashbookId, CashbookType $type): array
+    public function findForCashbook(CashbookId $cashbookId, CashbookType $type) : array
     {
         $skautisType = $type->getSkautisObjectType();
 
@@ -54,7 +53,7 @@ class CategoryRepository
     /**
      * @throws CategoryNotFoundException
      */
-    public function find(int $categoryId, CashbookId $cashbookId, CashbookType $type): ICategory
+    public function find(int $categoryId, CashbookId $cashbookId, CashbookType $type) : ICategory
     {
         if ($type->equalsValue(CashbookType::CAMP)) {
             foreach ($this->findForCashbook($cashbookId, $type) as $category) {
@@ -68,7 +67,7 @@ class CategoryRepository
 
         $category = $this->staticCategories->find($categoryId);
 
-        if ( ! $category->supportsType($type->getSkautisObjectType())) {
+        if (! $category->supportsType($type->getSkautisObjectType())) {
             throw new CategoryNotFoundException(
                 sprintf("Category #%d found, but it doesn't support cashbook type %s", $categoryId, $type->getValue())
             );
@@ -76,5 +75,4 @@ class CategoryRepository
 
         return $category;
     }
-
 }

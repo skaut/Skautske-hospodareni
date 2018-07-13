@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Skautis\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
@@ -10,13 +12,18 @@ use Model\Cashbook\Services\ICampCategoryUpdater;
 use Model\Skautis\Mapper;
 use Model\Utils\MoneyFactory;
 use Skautis\Skautis;
+use const ARRAY_FILTER_USE_BOTH;
+use function array_diff;
+use function array_fill_keys;
+use function array_filter;
+use function array_keys;
+use function count;
 
 final class CampCategoryUpdater implements ICampCategoryUpdater
 {
-    
     /** @var Skautis */
     private $skautis;
-    
+
     /** @var Mapper */
     private $mapper;
 
@@ -25,12 +32,12 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
 
     public function __construct(Skautis $skautis, Mapper $mapper, ICampCategoryRepository $campCategories)
     {
-        $this->skautis = $skautis;
-        $this->mapper = $mapper;
+        $this->skautis        = $skautis;
+        $this->mapper         = $mapper;
         $this->campCategories = $campCategories;
     }
 
-    public function updateCategories(CashbookId $cashbookId, array $cashbookTotals): void
+    public function updateCategories(CashbookId $cashbookId, array $cashbookTotals) : void
     {
         $campSkautisId = $this->mapper->getSkautisId($cashbookId, ObjectType::CAMP);
         $skautisTotals = $this->getSkautisTotals($campSkautisId);
@@ -48,15 +55,15 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
 
         $cashbookTotals = $cashbookTotals + array_fill_keys($categoriesOnlyInSkautis, 0);
 
-        if(count($cashbookTotals) === 0) {
+        if (count($cashbookTotals) === 0) {
             return;
         }
 
-        if($campSkautisId === NULL) {
+        if ($campSkautisId === null) {
             throw new \InvalidArgumentException("Camp #$cashbookId doesn't exist");
         }
 
-        foreach($cashbookTotals as $categoryId => $total) {
+        foreach ($cashbookTotals as $categoryId => $total) {
             if ($categoryId === ICategory::UNDEFINED_EXPENSE_ID || $categoryId === ICategory::UNDEFINED_INCOME_ID) {
                 continue; // Undefined categories aren't in Skautis
             }
@@ -65,7 +72,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
                 'ID' => $categoryId,
                 'ID_EventCamp' => $campSkautisId,
                 'Ammount' => $total,
-                'IsEstimate' => FALSE
+                'IsEstimate' => false,
             ], 'eventCampStatement');
         }
     }
@@ -73,10 +80,10 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
     /**
      * @return array<int, float>
      */
-    private function getSkautisTotals(int $campSkautisId): array
+    private function getSkautisTotals(int $campSkautisId) : array
     {
         $categories = $this->campCategories->findForCamp($campSkautisId);
-        $totals = [];
+        $totals     = [];
 
         foreach ($categories as $category) {
             $totals[$category->getId()] = MoneyFactory::toFloat($category->getTotal());
@@ -84,5 +91,4 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
 
         return $totals;
     }
-
 }

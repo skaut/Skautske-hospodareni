@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Travel;
 
 use Model\Travel\Vehicle\Metadata;
@@ -19,7 +21,6 @@ use Nette\SmartObject;
  */
 class Vehicle
 {
-
     use SmartObject;
 
     /** @var int */
@@ -44,7 +45,7 @@ class Vehicle
     private $note = '';
 
     /** @var bool */
-    private $archived = FALSE;
+    private $archived = false;
 
     /** @var Metadata */
     private $metadata;
@@ -52,11 +53,11 @@ class Vehicle
 
     public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption, Metadata $metadata)
     {
-        $this->type = $type;
+        $this->type   = $type;
         $this->unitId = $unit->getId();
 
-        if($subunit !== NULL) {
-            if( ! $subunit->isSubunitOf($unit)) {
+        if ($subunit !== null) {
+            if (! $subunit->isSubunitOf($unit)) {
                 throw new \InvalidArgumentException("Unit #{$subunit->getId()} is not child of #{$unit->getId()}");
             }
 
@@ -64,72 +65,71 @@ class Vehicle
         }
 
         $this->registration = $registration;
-        $this->consumption = $consumption;
-        $this->metadata = $metadata;
+        $this->consumption  = $consumption;
+        $this->metadata     = $metadata;
     }
 
-    public function archive(): void
+    public function archive() : void
     {
-        $this->archived = TRUE;
+        $this->archived = true;
     }
 
 
-    public function getType(): string
+    public function getType() : string
     {
         return $this->type;
     }
 
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
 
-    public function getSubunitId(): ?int
+    public function getSubunitId() : ?int
     {
         return $this->subunitId;
     }
 
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
 
-    public function getRegistration(): string
+    public function getRegistration() : string
     {
         return $this->registration;
     }
 
 
-    public function getConsumption(): float
+    public function getConsumption() : float
     {
         return $this->consumption;
     }
 
 
-    public function getNote(): ?string
+    public function getNote() : ?string
     {
         return $this->note;
     }
 
 
-    public function isArchived(): bool
+    public function isArchived() : bool
     {
         return $this->archived;
     }
 
 
-    public function getLabel(): string
+    public function getLabel() : string
     {
         return $this->type . ' (' . $this->registration . ')';
     }
 
-    public function getMetadata(): Metadata
+    public function getMetadata() : Metadata
     {
         return $this->metadata;
     }
-
 }

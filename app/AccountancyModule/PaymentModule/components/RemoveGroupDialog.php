@@ -13,9 +13,8 @@ use Nette\Application\BadRequestException;
 
 final class RemoveGroupDialog extends BaseControl
 {
-
     /** @var bool */
-    private $opened = FALSE;
+    private $opened = false;
 
     /** @var int */
     private $groupId;
@@ -30,46 +29,47 @@ final class RemoveGroupDialog extends BaseControl
         int $groupId,
         CommandBus $commandBus,
         PaymentService $paymentService
-    )
-    {
+    ) {
         parent::__construct();
 
-        $this->groupId = $groupId;
-        $this->commandBus = $commandBus;
+        $this->groupId        = $groupId;
+        $this->commandBus     = $commandBus;
         $this->paymentService = $paymentService;
     }
 
-    public function open(): void
+    public function open() : void
     {
-        $this->opened = TRUE;
+        $this->opened = true;
         $this->redrawControl();
     }
 
-    public function render(): void
+    public function render() : void
     {
         $group = $this->paymentService->getGroup($this->groupId);
 
-        if ($group === NULL) {
+        if ($group === null) {
             throw new BadRequestException('Skupina plateb neexistuje');
         }
 
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'groupName' => $group->getName(),
             'renderModal' => $this->opened,
-        ]);
+            ]
+        );
 
         $this->template->setFile(__DIR__ . '/templates/RemoveGroupDialog.latte');
         $this->template->render();
     }
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
 
         $form->addSubmit('delete', 'Smazat')
             ->setAttribute('class', 'btn-danger');
 
-        $form->onSuccess[] = function (): void {
+        $form->onSuccess[] = function () : void {
             $this->commandBus->handle(new RemoveGroup($this->groupId));
 
             $this->getPresenter()->flashMessage('Skupina plateb byla odstraněna', 'success');

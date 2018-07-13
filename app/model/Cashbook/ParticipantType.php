@@ -8,8 +8,6 @@ use Consistence\Enum\Enum;
 
 final class ParticipantType extends Enum
 {
-
     public const ADULT = 'adult';
     public const CHILD = 'child';
-
 }

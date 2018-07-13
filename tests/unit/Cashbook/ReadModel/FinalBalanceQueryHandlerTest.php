@@ -7,24 +7,23 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
+use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
-use Model\Cashbook\Cashbook\Chit;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 
 final class FinalBalanceQueryHandlerTest extends Unit
 {
-
     private const CASHBOOK_ID = 111;
 
-    public function testCashbookWithoutChitsReturnsZero(): void
+    public function testCashbookWithoutChitsReturnsZero() : void
     {
         $this->assertBalance(Money::CZK(0), []);
     }
 
-    public function testCashbookWithPositiveAndNegativeChitsReturnsCorrectBalance(): void
+    public function testCashbookWithPositiveAndNegativeChitsReturnsCorrectBalance() : void
     {
         $this->assertBalance(MoneyFactory::fromFloat(1100), [
             $this->mockChit('100', Operation::INCOME),
@@ -37,14 +36,14 @@ final class FinalBalanceQueryHandlerTest extends Unit
     {
         return m::mock(Chit::class, [
             'getAmount'     => new Cashbook\Amount($amount),
-            'getCategory'   => new Cashbook\Category(1, Operation::get($operation))
+            'getCategory'   => new Cashbook\Category(1, Operation::get($operation)),
         ]);
     }
 
     /**
      * @param Chit[] $chits
      */
-    private function assertBalance(Money $expectedBalance, array $chits): void
+    private function assertBalance(Money $expectedBalance, array $chits) : void
     {
         $cashbookId = Cashbook\CashbookId::fromInt(self::CASHBOOK_ID);
 
@@ -62,5 +61,4 @@ final class FinalBalanceQueryHandlerTest extends Unit
 
         $this->assertTrue($expectedBalance->equals($actualBalance));
     }
-
 }

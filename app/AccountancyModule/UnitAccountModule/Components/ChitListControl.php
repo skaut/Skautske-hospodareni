@@ -13,11 +13,11 @@ use Model\Cashbook\Commands\Cashbook\UnlockChit;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Chit;
 use Nette\Security\User;
+use function array_filter;
 use function count;
 
 final class ChitListControl extends BaseControl
 {
-
     /** @var Chit[]|NULL */
     private $chits;
 
@@ -43,17 +43,16 @@ final class ChitListControl extends BaseControl
         CommandBus $commandBus,
         QueryBus $queryBus,
         User $user
-    )
-    {
+    ) {
         parent::__construct();
-        $this->cashbookId = $cashbookId;
+        $this->cashbookId   = $cashbookId;
         $this->onlyUnlocked = $onlyUnlocked;
-        $this->commandBus = $commandBus;
-        $this->queryBus = $queryBus;
-        $this->user = $user;
+        $this->commandBus   = $commandBus;
+        $this->queryBus     = $queryBus;
+        $this->user         = $user;
     }
 
-    public function handleLockChit(int $chitId): void
+    public function handleLockChit(int $chitId) : void
     {
         $this->commandBus->handle(new LockChit($this->cashbookId, $chitId, $this->user->getId()));
 
@@ -61,7 +60,7 @@ final class ChitListControl extends BaseControl
         $this->redrawControl();
     }
 
-    public function handleUnlockChit(int $chitId): void
+    public function handleUnlockChit(int $chitId) : void
     {
         $this->commandBus->handle(new UnlockChit($this->cashbookId, $chitId));
 
@@ -69,17 +68,19 @@ final class ChitListControl extends BaseControl
         $this->redrawControl();
     }
 
-    public function render(): void
+    public function render() : void
     {
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'chits' => $this->getChits(),
-        ]);
+            ]
+        );
 
         $this->template->render();
     }
 
-    public function isEmpty(): bool
+    public function isEmpty() : bool
     {
         return count($this->getChits()) === 0;
     }
@@ -87,15 +88,18 @@ final class ChitListControl extends BaseControl
     /**
      * @return Chit[]
      */
-    private function getChits(): array
+    private function getChits() : array
     {
-        if ($this->chits === NULL) {
+        if ($this->chits === null) {
             $chits = $this->queryBus->handle(new ChitListQuery($this->cashbookId));
 
             if ($this->onlyUnlocked) {
-                $chits = array_filter($chits, function (Chit $chit): bool {
-                    return ! $chit->isLocked();
-                });
+                $chits = array_filter(
+                    $chits,
+                    function (Chit $chit) : bool {
+                        return ! $chit->isLocked();
+                    }
+                );
             }
 
             $this->chits = $chits;
@@ -103,5 +107,4 @@ final class ChitListControl extends BaseControl
 
         return $this->chits;
     }
-
 }

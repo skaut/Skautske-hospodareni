@@ -6,12 +6,11 @@ namespace Model\Event\ReadModel;
 
 class Helpers
 {
-
     /**
      * @param \stdClass[] $items
      * @return array<int,string>
      */
-    public static function getPairs(array $items): array
+    public static function getPairs(array $items) : array
     {
         $pairs = [];
 
@@ -21,5 +20,4 @@ class Helpers
 
         return $pairs;
     }
-
 }

@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
-use Dibi\Row;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFoundException;
@@ -20,10 +21,11 @@ use Model\Travel\VehicleNotFoundException;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
+use function array_map;
+use function in_array;
 
 class TravelService
 {
-
     /** @var CommandTable */
     private $table;
 
@@ -49,14 +51,13 @@ class TravelService
         ICommandRepository $commands,
         IContractRepository $contracts,
         IUnitRepository $units
-    )
-    {
-        $this->table = $table;
+    ) {
+        $this->table       = $table;
         $this->tableTravel = $tableTravel;
-        $this->vehicles = $vehicles;
-        $this->commands = $commands;
-        $this->contracts = $contracts;
-        $this->units = $units;
+        $this->vehicles    = $vehicles;
+        $this->commands    = $commands;
+        $this->contracts   = $contracts;
+        $this->units       = $units;
     }
 
     /**     VEHICLES    */
@@ -66,28 +67,28 @@ class TravelService
      *
      * vraci detail daného vozidla
      */
-    public function getVehicle(int $vehicleId): Vehicle
+    public function getVehicle(int $vehicleId) : Vehicle
     {
         return $this->vehicles->find($vehicleId);
     }
 
-    public function getVehicleDTO(int $id): ?DTO\Vehicle
+    public function getVehicleDTO(int $id) : ?DTO\Vehicle
     {
         try {
             return DTO\VehicleFactory::create(
                 $this->vehicles->find($id)
             );
         } catch (VehicleNotFoundException $e) {
-            return NULL;
+            return null;
         }
     }
 
-    public function findVehicle(int $id): ?Vehicle
+    public function findVehicle(int $id) : ?Vehicle
     {
         try {
             return $this->vehicles->find($id);
         } catch (VehicleNotFoundException $e) {
-            return NULL;
+            return null;
         }
     }
 
@@ -95,11 +96,11 @@ class TravelService
     /**
      * @return array<int,string> in format [id => label]
      */
-    public function getVehiclesPairs(int $unitId): array
+    public function getVehiclesPairs(int $unitId) : array
     {
         $pairs = [];
 
-        foreach($this->vehicles->findByUnit($unitId) as $vehicle) {
+        foreach ($this->vehicles->findByUnit($unitId) as $vehicle) {
             $pairs[$vehicle->getId()] = $vehicle->getLabel();
         }
 
@@ -109,7 +110,7 @@ class TravelService
     /**
      * @return DTO\Vehicle[]
      */
-    public function getAllVehicles(int $unitId): array
+    public function getAllVehicles(int $unitId) : array
     {
         return array_map(
             [DTO\VehicleFactory::class, 'create'],
@@ -117,10 +118,10 @@ class TravelService
         );
     }
 
-    public function removeVehicle(int $vehicleId): bool
+    public function removeVehicle(int $vehicleId) : bool
     {
         if ($this->commands->countByVehicle($vehicleId) > 0) { //nelze mazat vozidlo s navazanými příkazy
-            return FALSE;
+            return false;
         }
 
         try {
@@ -128,17 +129,16 @@ class TravelService
 
             $this->vehicles->remove($vehicle);
 
-            return TRUE;
+            return true;
         } catch (VehicleNotFoundException $e) {
-            return FALSE;
+            return false;
         }
     }
 
     /**
      * Archives specified vehicle
-     * @param int $vehicleId
      */
-    public function archiveVehicle(int $vehicleId): void
+    public function archiveVehicle(int $vehicleId) : void
     {
         $vehicle = $this->getVehicle($vehicleId);
 
@@ -151,7 +151,7 @@ class TravelService
     }
 
     /**     TRAVELS    */
-    public function getTravel(int $commandId, int $travelId): ?DTO\Command\Travel
+    public function getTravel(int $commandId, int $travelId) : ?DTO\Command\Travel
     {
         $command = $this->commands->find($commandId);
 
@@ -162,14 +162,14 @@ class TravelService
      * @return DTO\Command\Travel[]
      * @throws CommandNotFoundException
      */
-    public function getTravels(int $commandId): array
+    public function getTravels(int $commandId) : array
     {
         return DTO\Command\TravelFactory::createList(
             $this->commands->find($commandId)
         );
     }
 
-    public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice): void
+    public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
     {
         $command = $this->commands->find($commandId);
 
@@ -184,7 +184,7 @@ class TravelService
         $this->commands->save($command);
     }
 
-    public function updateTravel(int $commandId, int $travelId, float $distanceOrPrice, Command\TravelDetails $details): void
+    public function updateTravel(int $commandId, int $travelId, float $distanceOrPrice, Command\TravelDetails $details) : void
     {
         $command = $this->commands->find($commandId);
 
@@ -199,7 +199,7 @@ class TravelService
         }
     }
 
-    public function removeTravel(int $commandId, int $travelId): void
+    public function removeTravel(int $commandId, int $travelId) : void
     {
         $command = $this->commands->find($commandId);
         $command->removeTravel($travelId);
@@ -207,7 +207,7 @@ class TravelService
         $this->commands->save($command);
     }
 
-    public function getTravelTypes($pairs = FALSE)
+    public function getTravelTypes($pairs = false)
     {
         return $this->tableTravel->getTypes($pairs);
     }
@@ -216,28 +216,27 @@ class TravelService
      * @param int[] $commandIds
      * @return string[]
      */
-    public function getTypes(array $commandIds): array
+    public function getTypes(array $commandIds) : array
     {
         return $this->table->getTypes($commandIds);
     }
 
     /**     CONTRACTS    */
-    public function getContract(int $contractId): ?DTO\Contract
+    public function getContract(int $contractId) : ?DTO\Contract
     {
         try {
             return DTO\ContractFactory::create(
                 $this->contracts->find($contractId)
             );
         } catch (ContractNotFoundException $e) {
-            return NULL;
+            return null;
         }
     }
 
     /**
-     * @param int $unitId
      * @return DTO\Contract[]
      */
-    public function getAllContracts($unitId): array
+    public function getAllContracts(int $unitId) : array
     {
         return array_map(
             [DTO\ContractFactory::class, 'create'],
@@ -248,28 +247,28 @@ class TravelService
     /**
      * @return string[][]
      */
-    public function getAllContractsPairs(int $unitId, ?int $includeContractId): array
+    public function getAllContractsPairs(int $unitId, ?int $includeContractId) : array
     {
         $contracts = $this->contracts->findByUnit($unitId);
 
-        $result = ["valid" => [], "past" => []];
+        $result = ['valid' => [], 'past' => []];
 
         $now = new \DateTimeImmutable();
 
-        foreach($contracts as $contract) {
+        foreach ($contracts as $contract) {
             $name = $contract->getPassenger()->getName();
 
-            if($contract->getUnitRepresentative() !== '') {
+            if ($contract->getUnitRepresentative() !== '') {
                 $name = $contract->getUnitRepresentative() . ' <=> ' . $name;
             }
 
-            if($contract->getUntil() !== NULL) {
+            if ($contract->getUntil() !== null) {
                 $name .= ' (platná do ' . $contract->getUntil()->format('j.n.Y') . ')';
             }
 
-            if($contract->getUntil() === NULL || $contract->getUntil() > $now) {
+            if ($contract->getUntil() === null || $contract->getUntil() > $now) {
                 $result['valid'][$contract->getId()] = $name;
-            } elseif($now->diff($contract->getUntil())->y === 0 || $contract->getId() === $includeContractId) {
+            } elseif ($now->diff($contract->getUntil())->y === 0 || $contract->getId() === $includeContractId) {
                 $result['past'][$contract->getId()] = $name;
             }
         }
@@ -277,7 +276,7 @@ class TravelService
         return $result;
     }
 
-    public function createContract(int $unitId, string $unitRepresentative, \DateTimeImmutable $since, Contract\Passenger $passenger): void
+    public function createContract(int $unitId, string $unitRepresentative, \DateTimeImmutable $since, Contract\Passenger $passenger) : void
     {
         $unit = $this->units->find($unitId);
 
@@ -286,7 +285,7 @@ class TravelService
         $this->contracts->save($contract);
     }
 
-    public function deleteContract(int $contractId): void
+    public function deleteContract(int $contractId) : void
     {
         try {
             $contract = $this->contracts->find($contractId);
@@ -297,20 +296,19 @@ class TravelService
 
     /*     COMMANDS    */
 
-    public function getCommandDetail(int $id): ?DTO\Command
+    public function getCommandDetail(int $id) : ?DTO\Command
     {
         try {
             return DTO\CommandFactory::create($this->commands->find($id));
         } catch (CommandNotFoundException $e) {
-            return NULL;
+            return null;
         }
     }
 
     /**
-     * @param int $commandId
      * @return string[]
      */
-    public function getUsedTransportTypes(int $commandId): array
+    public function getUsedTransportTypes(int $commandId) : array
     {
         $command = $this->commands->find($commandId);
 
@@ -329,11 +327,10 @@ class TravelService
         Money $amortization,
         string $note,
         array $types
-    ): void
-    {
-        $vehicle = $vehicleId !== NULL
+    ) : void {
+        $vehicle = $vehicleId !== null
             ? $this->vehicles->find($vehicleId)
-            : NULL;
+            : null;
 
         $command = new Command(
             $unitId,
@@ -363,13 +360,12 @@ class TravelService
         Money $amortization,
         string $note,
         array $types
-    ): void
-    {
+    ) : void {
         $command = $this->commands->find($id);
 
-        $vehicle = $vehicleId !== NULL
+        $vehicle = $vehicleId !== null
             ? $this->vehicles->find($vehicleId)
-            : NULL;
+            : null;
 
         $command->update(
             $vehicle,
@@ -385,9 +381,11 @@ class TravelService
         $this->commands->save($command);
 
         foreach ($command->getUsedTransportTypes() as $type) {
-            if (!in_array($type, $types, TRUE)) {
-                $types[] = $type;
+            if (in_array($type, $types, true)) {
+                continue;
             }
+
+            $types[] = $type;
         }
 
         $this->table->updateTypes($id, $types);
@@ -397,7 +395,7 @@ class TravelService
      * @param int[] $ids
      * @return DTO\Vehicle[]
      */
-    public function findVehiclesByIds(array $ids): array
+    public function findVehiclesByIds(array $ids) : array
     {
         return ArrayType::mapByCallback(
             $this->vehicles->findByIds($ids),
@@ -411,14 +409,14 @@ class TravelService
     /**
      * @return DTO\Command[]
      */
-    public function getAllCommands(int $unitId): array
+    public function getAllCommands(int $unitId) : array
     {
         return array_map(function (Command $command) {
             return DTO\CommandFactory::create($command);
         }, $this->commands->findByUnit($unitId));
     }
 
-    public function getCommandsCount(int $vehicleId): int
+    public function getCommandsCount(int $vehicleId) : int
     {
         return $this->commands->countByVehicle($vehicleId);
     }
@@ -427,7 +425,7 @@ class TravelService
      * vraci všechny přikazy navazane na smlouvu
      * @return DTO\Contract[]
      */
-    public function getAllCommandsByContract(int $contractId): array
+    public function getAllCommandsByContract(int $contractId) : array
     {
         return array_map(
             [DTO\CommandFactory::class, 'create'],
@@ -449,7 +447,7 @@ class TravelService
     /**
      * uzavře cestovní příkaz a nastavi cas uzavření
      */
-    public function closeCommand(int $commandId): void
+    public function closeCommand(int $commandId) : void
     {
         $command = $this->commands->find($commandId);
 
@@ -458,7 +456,7 @@ class TravelService
         $this->commands->save($command);
     }
 
-    public function openCommand(int $commandId): void
+    public function openCommand(int $commandId) : void
     {
         $command = $this->commands->find($commandId);
 
@@ -467,10 +465,7 @@ class TravelService
         $this->commands->save($command);
     }
 
-    /**
-     * @param int $commandId
-     */
-    public function deleteCommand(int $commandId): void
+    public function deleteCommand(int $commandId) : void
     {
         $command = $this->commands->find($commandId);
         $this->commands->remove($command);
@@ -481,28 +476,27 @@ class TravelService
         return $this->table->getCommandTypes($commandId);
     }
 
-    private function selectPassenger(?Passenger $passenger, ?int $contractId): Passenger
+    private function selectPassenger(?Passenger $passenger, ?int $contractId) : Passenger
     {
-        if (($passenger === NULL && $contractId === NULL)
-            || ($passenger !== NULL && $contractId !== NULL)
+        if (($passenger === null && $contractId === null)
+            || ($passenger !== null && $contractId !== null)
         ) {
-            throw new \InvalidArgumentException("Either passenger or contract must be specified");
+            throw new \InvalidArgumentException('Either passenger or contract must be specified');
         }
 
-        return $contractId === NULL
+        return $contractId === null
             ? $passenger
             : Passenger::fromContract($this->contracts->find($contractId));
     }
 
-    private function hasFuel(string $type): bool
+    private function hasFuel(string $type) : bool
     {
-        $type = $this->tableTravel->getTypes()[$type] ?? NULL;
+        $type = $this->tableTravel->getTypes()[$type] ?? null;
 
-        if ($type === NULL) {
+        if ($type === null) {
             throw new \InvalidArgumentException("Type $type not found");
         }
 
-        return $type["hasFuel"];
+        return $type['hasFuel'];
     }
-
 }

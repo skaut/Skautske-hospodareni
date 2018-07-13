@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\Commands\Event;
 
 final class UpdateFunctions
 {
-
     /** @var int */
     private $eventId;
 
@@ -22,36 +23,35 @@ final class UpdateFunctions
 
     public function __construct(int $eventId, ?int $leaderId, ?int $assistantId, ?int $accountantId, ?int $medicId)
     {
-        $this->eventId = $eventId;
-        $this->leaderId = $leaderId;
-        $this->assistantId = $assistantId;
+        $this->eventId      = $eventId;
+        $this->leaderId     = $leaderId;
+        $this->assistantId  = $assistantId;
         $this->accountantId = $accountantId;
-        $this->medicId = $medicId;
+        $this->medicId      = $medicId;
     }
 
-    public function getEventId(): int
+    public function getEventId() : int
     {
         return $this->eventId;
     }
 
-    public function getLeaderId(): ?int
+    public function getLeaderId() : ?int
     {
         return $this->leaderId;
     }
 
-    public function getAssistantId(): ?int
+    public function getAssistantId() : ?int
     {
         return $this->assistantId;
     }
 
-    public function getAccountantId(): ?int
+    public function getAccountantId() : ?int
     {
         return $this->accountantId;
     }
 
-    public function getMedicId(): ?int
+    public function getMedicId() : ?int
     {
         return $this->medicId;
     }
-
 }

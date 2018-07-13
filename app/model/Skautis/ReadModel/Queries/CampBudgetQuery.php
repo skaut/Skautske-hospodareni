@@ -12,7 +12,6 @@ use Model\Skautis\ReadModel\QueryHandlers\CampBudgetQueryHandler;
  */
 final class CampBudgetQuery
 {
-
     /** @var SkautisCampId */
     private $campId;
 
@@ -21,9 +20,8 @@ final class CampBudgetQuery
         $this->campId = $campId;
     }
 
-    public function getCampId(): SkautisCampId
+    public function getCampId() : SkautisCampId
     {
         return $this->campId;
     }
-
 }

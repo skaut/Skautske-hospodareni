@@ -6,11 +6,9 @@ namespace Model\Event\Handlers\Event;
 
 use Model\Event\Commands\Event\UpdateEvent;
 use Model\Event\Repositories\IEventRepository;
-use SebastianBergmann\Diff\Diff;
 
 final class UpdateEventHandler
 {
-
     /** @var IEventRepository */
     private $events;
 
@@ -19,7 +17,7 @@ final class UpdateEventHandler
         $this->events = $events;
     }
 
-    public function handle(UpdateEvent $command): void
+    public function handle(UpdateEvent $command) : void
     {
         $event = $this->events->find($command->getEventId()->getValue());
 
@@ -34,5 +32,4 @@ final class UpdateEventHandler
 
         $this->events->update($event);
     }
-
 }

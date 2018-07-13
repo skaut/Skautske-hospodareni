@@ -14,7 +14,6 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class RemoveGroupTest extends \IntegrationTest
 {
-
     /** @var IGroupRepository */
     private $groups;
 
@@ -24,7 +23,7 @@ final class RemoveGroupTest extends \IntegrationTest
     /** @var RemoveGroupHandler */
     private $handler;
 
-    protected function getTestedEntites(): array
+    protected function getTestedEntites() : array
     {
         return [
             Group::class,
@@ -33,26 +32,26 @@ final class RemoveGroupTest extends \IntegrationTest
         ];
     }
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->tester->useConfigFiles([__DIR__ . '/RemoveGroupTest.neon']);
         parent::_before();
-        $this->groups = $this->tester->grabService(IGroupRepository::class);
+        $this->groups   = $this->tester->grabService(IGroupRepository::class);
         $this->payments = $this->tester->grabService(IPaymentRepository::class);
-        $this->handler = $this->tester->grabService(RemoveGroupHandler::class);
+        $this->handler  = $this->tester->grabService(RemoveGroupHandler::class);
     }
 
-    public function test(): void
+    public function test() : void
     {
         $group = new Group(
             123,
-            NULL,
+            null,
             'test',
             \Helpers::createEmptyPaymentDefaults(),
             new \DateTimeImmutable(),
             \Helpers::createEmails(),
-            NULL,
-            NULL
+            null,
+            null
         );
 
         $group->close(''); // only closed groups can be removed
@@ -62,9 +61,9 @@ final class RemoveGroupTest extends \IntegrationTest
         // just to make sure it got the right ID
         $this->assertSame(1, $group->getId());
 
-        for($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; $i++) {
             $this->payments->save(
-                new Payment($group, 'test' . $i, NULL, 120, \Helpers::getValidDueDate(), NULL, NULL, NULL, '')
+                new Payment($group, 'test' . $i, null, 120, \Helpers::getValidDueDate(), null, null, null, '')
             );
         }
 
@@ -76,5 +75,4 @@ final class RemoveGroupTest extends \IntegrationTest
 
         $this->groups->find(1);
     }
-
 }

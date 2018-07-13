@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
-use Nette;
 use Skautis\Skautis;
+use function array_key_exists;
 
 /**
  * @deprecated Don't inherit from this service
  */
 abstract class BaseService
 {
-
     public const ACCESS_READ = 'read';
     public const ACCESS_EDIT = 'edit';
 
@@ -52,7 +53,6 @@ abstract class BaseService
         if (array_key_exists($id, self::$storage)) {
             return self::$storage[$id];
         }
-        return FALSE;
+        return false;
     }
-
 }

@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Payment;
 
-use Model\Payment\Payment;
 use Model\DTO\Payment\Payment as PaymentDTO;
+use Model\Payment\Payment;
 
 class PaymentFactory
 {
-
-    public static function create(Payment $payment): PaymentDTO
+    public static function create(Payment $payment) : PaymentDTO
     {
         return new PaymentDTO(
             $payment->getId(),
@@ -27,5 +28,4 @@ class PaymentFactory
             $payment->getGroupId()
         );
     }
-
 }

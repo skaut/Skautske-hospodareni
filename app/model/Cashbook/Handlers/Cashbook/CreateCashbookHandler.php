@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Handlers\Cashbook;
 
 use Model\Cashbook\Cashbook;
@@ -8,7 +10,6 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class CreateCashbookHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -17,12 +18,10 @@ final class CreateCashbookHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(CreateCashbook $command): void
+    public function handle(CreateCashbook $command) : void
     {
         $cashbook = new Cashbook($command->getId(), $command->getType());
 
         $this->cashbooks->save($cashbook);
     }
-
-
 }

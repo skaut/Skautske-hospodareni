@@ -1,31 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Repositories;
 
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
+use function array_keys;
 
 class MailCredentialsRepositoryTest extends \IntegrationTest
 {
-
     /** @var MailCredentialsRepository */
     private $repository;
 
-    public function getTestedEntites(): array
+    public function getTestedEntites() : array
     {
         return [
             MailCredentials::class,
         ];
     }
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
         $this->repository = new MailCredentialsRepository($this->entityManager);
     }
 
-    public function testFind()
+    public function testFind() : void
     {
         $row = [
             'host' => 'smtp.gmail.com',
@@ -50,16 +52,16 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
         $this->assertEquals(new \DateTimeImmutable($row['created']), $credentials->getCreatedAt());
     }
 
-    public function testFindNotExistingConfigThrowsException()
+    public function testFindNotExistingConfigThrowsException() : void
     {
         $this->expectException(MailCredentialsNotFound::class);
 
         $this->repository->find(19);
     }
 
-    public function testFindByUnits()
+    public function testFindByUnits() : void
     {
-        $rows = [];
+        $rows   = [];
         $rows[] = [
             'host' => 'smtp.gmail.com',
             'username' => 'mail',
@@ -103,7 +105,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
 
         $this->assertSame($unitIds, array_keys($credentialsListByUnit));
 
-        foreach([$credentialsListByUnit[666][0], $credentialsListByUnit[663][0]] as $index => $credentials) {
+        foreach ([$credentialsListByUnit[666][0], $credentialsListByUnit[663][0]] as $index => $credentials) {
             $row = $rows[$index];
             $this->assertSame($row['host'], $credentials->getHost());
             $this->assertSame($row['username'], $credentials->getUsername());
@@ -115,7 +117,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
         }
     }
 
-    public function testRemove()
+    public function testRemove() : void
     {
         $this->tester->haveInDatabase('pa_smtp', [
             'host' => 'smtp.seznam.cz',
@@ -134,7 +136,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
         $this->tester->dontSeeInDatabase('pa_smtp', ['id' => 1]);
     }
 
-    public function testSave()
+    public function testSave() : void
     {
         $credentials = new MailCredentials(
             663,
@@ -160,9 +162,8 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
         ]);
     }
 
-    public function findByUnitsWithEmptyIdsReturnsEmptyArray()
+    public function findByUnitsWithEmptyIdsReturnsEmptyArray() : void
     {
         $this->assertSame([], $this->repository->findByUnits([]));
     }
-
 }

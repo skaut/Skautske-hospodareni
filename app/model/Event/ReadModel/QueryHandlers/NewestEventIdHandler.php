@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\ReadModel\QueryHandlers;
 
 use Model\Event\ReadModel\Queries\NewestEventId;
@@ -7,7 +9,6 @@ use Model\Event\Repositories\IEventRepository;
 
 final class NewestEventIdHandler
 {
-
     /** @var IEventRepository */
     private $events;
 
@@ -16,9 +17,8 @@ final class NewestEventIdHandler
         $this->events = $events;
     }
 
-    public function handle(NewestEventId $query): ?int
+    public function handle(NewestEventId $query) : ?int
     {
         return $this->events->getNewestEventId();
     }
-
 }

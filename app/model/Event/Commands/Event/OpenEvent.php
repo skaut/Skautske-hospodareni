@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\Commands\Event;
 
 use Model\Event\Handlers\Event\OpenEventHandler;
@@ -9,7 +11,6 @@ use Model\Event\Handlers\Event\OpenEventHandler;
  */
 final class OpenEvent
 {
-
     /** @var int */
     private $eventId;
 
@@ -18,9 +19,8 @@ final class OpenEvent
         $this->eventId = $eventId;
     }
 
-    public function getEventId(): int
+    public function getEventId() : int
     {
         return $this->eventId;
     }
-
 }

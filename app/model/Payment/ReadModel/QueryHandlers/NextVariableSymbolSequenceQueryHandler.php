@@ -12,12 +12,13 @@ use Model\Payment\VariableSymbol;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
 use Nette\Utils\Strings;
+use function array_filter;
 use function count;
-use function date;
+use function ltrim;
+use function str_replace;
 
 class NextVariableSymbolSequenceQueryHandler
 {
-
     private const UNIT_PART_LENGTH = 3;
 
     /** @var IGroupRepository */
@@ -28,17 +29,17 @@ class NextVariableSymbolSequenceQueryHandler
 
     public function __construct(IGroupRepository $groups, QueryBus $queryBus)
     {
-        $this->groups = $groups;
+        $this->groups   = $groups;
         $this->queryBus = $queryBus;
     }
 
-    public function handle(NextVariableSymbolSequenceQuery $query): ?VariableSymbol
+    public function handle(NextVariableSymbolSequenceQuery $query) : ?VariableSymbol
     {
-        $now = $query->getNow();
+        $now                = $query->getNow();
         $groupIncrementPart = $this->getGroupIncrement($query->getUnitId(), $now);
 
         if (Strings::length($groupIncrementPart) > 2) {
-            return NULL;
+            return null;
         }
 
         $unitPart = $this->getLastDigitsOfUnitNumber($query->getUnitId());
@@ -46,21 +47,26 @@ class NextVariableSymbolSequenceQueryHandler
         return new VariableSymbol($now->format('y') . $unitPart . $groupIncrementPart . '001');
     }
 
-    private function getGroupIncrement(int $unitId, \DateTimeImmutable $now): string
+    private function getGroupIncrement(int $unitId, \DateTimeImmutable $now) : string
     {
         $currentYear = $now->format('Y');
 
-        $groups = $this->groups->findByUnits([$unitId], FALSE);
-        $groups = array_filter($groups, function (Group $group) use ($currentYear): bool {
-            return $group->getCreatedAt() !== NULL && $group->getCreatedAt()->format('Y') === $currentYear;
-        });
+        $groups = $this->groups->findByUnits([$unitId], false);
+        $groups = array_filter(
+            $groups,
+            function (Group $group) use ($currentYear) : bool {
+                return $group->getCreatedAt() !== null && $group->getCreatedAt()->format('Y') === $currentYear;
+            }
+        );
 
         return Strings::padLeft((string) (count($groups) + 1), 2, '0');
     }
 
-    private function getLastDigitsOfUnitNumber(int $unitId): string
+    private function getLastDigitsOfUnitNumber(int $unitId) : string
     {
-        /** @var Unit $unit */
+        /**
+ * @var Unit $unit
+*/
         $unit = $this->queryBus->handle(new UnitQuery($unitId));
 
         $number = $unit->getShortRegistrationNumber();
@@ -75,5 +81,4 @@ class NextVariableSymbolSequenceQueryHandler
 
         return Strings::padLeft($number, self::UNIT_PART_LENGTH, '0');
     }
-
 }

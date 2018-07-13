@@ -1,17 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 class TravelTable extends BaseTable
 {
-
-    public function getTypes($pairs = FALSE)
+    public function getTypes($pairs = false)
     {
         if ($pairs) {
-            return $this->connection->fetchPairs("SELECT type, label FROM [" . self::TABLE_TC_TRAVEL_TYPES . "] ORDER BY [order] DESC");
+            return $this->connection->fetchPairs('SELECT type, label FROM [' . self::TABLE_TC_TRAVEL_TYPES . '] ORDER BY [order] DESC');
         }
 
-        $types = $this->connection->fetchAll('SELECT type, label, hasFuel FROM [' . self::TABLE_TC_TRAVEL_TYPES . '] ORDER BY [order] DESC');
+        $types  = $this->connection->fetchAll('SELECT type, label, hasFuel FROM [' . self::TABLE_TC_TRAVEL_TYPES . '] ORDER BY [order] DESC');
         $result = [];
 
         foreach ($types as $type) {
@@ -20,6 +21,4 @@ class TravelTable extends BaseTable
 
         return $result;
     }
-
-
 }

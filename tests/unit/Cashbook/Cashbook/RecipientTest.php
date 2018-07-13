@@ -8,20 +8,18 @@ use Codeception\Test\Unit;
 
 class RecipientTest extends Unit
 {
-
-    public function testToString(): void
+    public function testToString() : void
     {
-        $name = 'František Maša';
+        $name      = 'František Maša';
         $recipient = new Recipient($name);
 
         $this->assertSame($name, (string) $recipient);
     }
 
-    public function testCantCreateRecipientWithoutName(): void
+    public function testCantCreateRecipientWithoutName() : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         new Recipient('');
     }
-
 }

@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Handlers\MailCredentials;
 
+use Model\Common\Repositories\IUserRepository;
 use Model\Mail\IMailerFactory;
 use Model\Payment\Commands\CreateMailCredentials;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\MailCredentials;
 use Model\Payment\Repositories\IMailCredentialsRepository;
-use Model\Common\Repositories\IUserRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
 use Nette\Mail\SmtpException;
 
 class CreateMailCredentialsHandler
 {
-
     /** @var IMailCredentialsRepository */
     private $credentials;
 
@@ -29,13 +30,13 @@ class CreateMailCredentialsHandler
 
     public function __construct(IMailCredentialsRepository $credentials, TemplateFactory $templateFactory, IMailerFactory $mailerFactory, IUserRepository $users)
     {
-        $this->credentials = $credentials;
+        $this->credentials     = $credentials;
         $this->templateFactory = $templateFactory;
-        $this->mailerFactory = $mailerFactory;
-        $this->users = $users;
+        $this->mailerFactory   = $mailerFactory;
+        $this->users           = $users;
     }
 
-    public function handle(CreateMailCredentials $command): void
+    public function handle(CreateMailCredentials $command) : void
     {
         $credentials = new MailCredentials(
             $command->getUnitId(),
@@ -57,12 +58,12 @@ class CreateMailCredentialsHandler
      * @throws EmailNotSetException
      * @throws SmtpException
      */
-    private function trySendViaSmtp(MailCredentials $credentials, int $userId): void
+    private function trySendViaSmtp(MailCredentials $credentials, int $userId) : void
     {
         $mailer = $this->mailerFactory->create($credentials);
 
         $user = $this->users->find($userId);
-        if ($user->getEmail() === NULL) {
+        if ($user->getEmail() === null) {
             throw new EmailNotSetException();
         }
 
@@ -81,5 +82,4 @@ class CreateMailCredentialsHandler
 
         $mailer->send($mail);
     }
-
 }

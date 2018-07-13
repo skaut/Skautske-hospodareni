@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\Handlers\Event;
 
 use Model\Event\AssistantNotAdultException;
@@ -7,10 +9,10 @@ use Model\Event\Commands\Event\UpdateFunctions;
 use Model\Event\LeaderNotAdultException;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
+use function strpos;
 
 class UpdateFunctionsHandler
 {
-
     /** @var Skautis */
     private $skautis;
 
@@ -24,30 +26,28 @@ class UpdateFunctionsHandler
      * @throws LeaderNotAdultException
      * @throws WsdlException
      */
-    public function handle(UpdateFunctions $command): void
+    public function handle(UpdateFunctions $command) : void
     {
         $query = [
-            "ID" => $command->getEventId(),
-            "ID_PersonLeader" => $command->getLeaderId(),
-            "ID_PersonAssistant" => $command->getAssistantId(),
-            "ID_PersonEconomist" => $command->getAccountantId(),
-            "ID_PersonMedic" => $command->getMedicId(),
+            'ID' => $command->getEventId(),
+            'ID_PersonLeader' => $command->getLeaderId(),
+            'ID_PersonAssistant' => $command->getAssistantId(),
+            'ID_PersonEconomist' => $command->getAccountantId(),
+            'ID_PersonMedic' => $command->getMedicId(),
         ];
 
         try {
-
             $this->skautis->event->EventGeneralUpdateFunction($query);
         } catch (WsdlException $e) {
-            if (strpos($e->getMessage(), 'EventFunction_LeaderMustBeAdult') != FALSE) {
+            if (strpos($e->getMessage(), 'EventFunction_LeaderMustBeAdult') !== false) {
                 throw new LeaderNotAdultException();
             }
 
-            if (strpos($e->getMessage(), 'EventFunction_AssistantMustBeAdult') !== FALSE) {
+            if (strpos($e->getMessage(), 'EventFunction_AssistantMustBeAdult') !== false) {
                 throw new AssistantNotAdultException();
             }
 
             throw $e;
         }
     }
-
 }

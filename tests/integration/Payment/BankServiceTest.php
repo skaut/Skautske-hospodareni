@@ -1,7 +1,8 @@
 <?php
 
-namespace Tests\Integration\Pairing;
+declare(strict_types=1);
 
+namespace Tests\Integration\Pairing;
 
 use Mockery as m;
 use Model\Bank\Fio\Transaction;
@@ -16,10 +17,10 @@ use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
 use Nette\Utils\Random;
+use function mt_rand;
 
 class BankServiceTest extends \IntegrationTest
 {
-
     /** @var \IntegrationTester */
     protected $tester;
 
@@ -35,17 +36,17 @@ class BankServiceTest extends \IntegrationTest
     /** @var IBankAccountRepository */
     private $bankAccounts;
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->tester->useConfigFiles(['Payment/BankServiceTest.neon']);
         parent::_before();
-        $this->bankService = $this->tester->grabService(BankService::class);
-        $this->payments = $this->tester->grabService(IPaymentRepository::class);
-        $this->groups = $this->tester->grabService(IGroupRepository::class);
+        $this->bankService  = $this->tester->grabService(BankService::class);
+        $this->payments     = $this->tester->grabService(IPaymentRepository::class);
+        $this->groups       = $this->tester->grabService(IGroupRepository::class);
         $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
     }
 
-    protected function getTestedEntites(): array
+    protected function getTestedEntites() : array
     {
         return [
             BankAccount::class,
@@ -56,14 +57,14 @@ class BankServiceTest extends \IntegrationTest
     }
 
 
-    public function testPairGroups()
+    public function testPairGroups() : void
     {
         $I = $this->tester;
 
         $bankAccount = new BankAccount(
             1,
             'Hlavní',
-            new BankAccount\AccountNumber(NULL, '2000942144', '2010'),
+            new BankAccount\AccountNumber(null, '2000942144', '2010'),
             'test-token',
             new \DateTimeImmutable(),
             m::mock(IUnitResolver::class, ['getOfficialUnitId' => 1])
@@ -78,12 +79,11 @@ class BankServiceTest extends \IntegrationTest
         $this->addPayment($group1, 400, '345');
         $this->addPayment($group2, 400, '345');
 
-
         $I->grabService(FioClientStub::class)
             ->setTransactions([
                 $this->createTransaction(200, '123'),
                 $this->createTransaction(400, '345'),
-                $this->createTransaction(500, '')
+                $this->createTransaction(500, ''),
             ]);
 
         $this->assertSame(
@@ -93,29 +93,29 @@ class BankServiceTest extends \IntegrationTest
     }
 
 
-    private function addPayment(Group $group, float $amount, ?string $variableSymbol)
+    private function addPayment(Group $group, float $amount, ?string $variableSymbol) : void
     {
         $payment = new Payment(
             $group,
             Random::generate(),
-            NULL,
+            null,
             $amount,
             new \DateTimeImmutable(),
-            $variableSymbol === NULL ? NULL : new VariableSymbol($variableSymbol),
-            NULL,
-            NULL,
+            $variableSymbol === null ? null : new VariableSymbol($variableSymbol),
+            null,
+            null,
             ''
         );
         $this->payments->save($payment);
     }
 
 
-    private function addGroup(?BankAccount $bankAccount): Group
+    private function addGroup(?BankAccount $bankAccount) : Group
     {
-        $paymentDefaults = new Group\PaymentDefaults(NULL, NULL, NULL, NULL);
-        $emails = \Helpers::createEmails();
+        $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
+        $emails          = \Helpers::createEmails();
 
-        $group = new Group(1, NULL, 'Test', $paymentDefaults, new \DateTimeImmutable(), $emails, NULL, $bankAccount);
+        $group = new Group(1, null, 'Test', $paymentDefaults, new \DateTimeImmutable(), $emails, null, $bankAccount);
 
         $this->groups->save($group);
 
@@ -123,18 +123,17 @@ class BankServiceTest extends \IntegrationTest
     }
 
 
-    private function createTransaction(float $amount, ?string $variableSymbol): Transaction
+    private function createTransaction(float $amount, ?string $variableSymbol) : Transaction
     {
         return new Transaction(
-            mt_rand(1, 1000),
+            (string)mt_rand(1, 1000),
             new \DateTimeImmutable(),
             $amount,
             '',
             '',
-            (int)$variableSymbol,
+            (int) $variableSymbol,
             0,
             ''
         );
     }
-
 }

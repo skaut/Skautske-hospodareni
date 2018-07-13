@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Cashbook;
 
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook;
-use Model\Cashbook\Operation;
 use Model\Cashbook\Category as CategoryAggregate;
+use Model\Cashbook\Operation;
 
 class Chit
 {
-
     /** @var int|NULL */
     private $id;
 
@@ -36,6 +37,7 @@ class Chit
 
     /**
      * ID of person that locked this
+     *
      * @var int|NULL
      */
     private $locked;
@@ -48,93 +50,92 @@ class Chit
         Amount $amount,
         string $purpose,
         Category $category
-    )
-    {
+    ) {
         $this->cashbook = $cashbook;
         $this->update($number, $date, $recipient, $amount, $purpose, $category);
     }
 
-    public function update(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, Category $category): void
+    public function update(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose, Category $category) : void
     {
-        $this->number = $number;
-        $this->date = $date;
+        $this->number    = $number;
+        $this->date      = $date;
         $this->recipient = $recipient;
-        $this->amount = $amount;
-        $this->category = $category;
-        $this->purpose = $purpose;
+        $this->amount    = $amount;
+        $this->category  = $category;
+        $this->purpose   = $purpose;
     }
 
-    public function lock(int $userId): void
+    public function lock(int $userId) : void
     {
         $this->locked = $userId;
     }
 
-    public function unlock(): void
+    public function unlock() : void
     {
-        $this->locked = NULL;
+        $this->locked = null;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
-        if ($this->id === NULL) {
+        if ($this->id === null) {
             throw new \RuntimeException('ID not set');
         }
 
         return $this->id;
     }
 
-    public function getAmount(): Amount
+    public function getAmount() : Amount
     {
         return $this->amount;
     }
 
-    public function getCategoryId(): int
+    public function getCategoryId() : int
     {
         return $this->category->getId();
     }
 
-    public function getPurpose(): string
+    public function getPurpose() : string
     {
         return $this->purpose;
     }
 
-    public function isLocked(): bool
+    public function isLocked() : bool
     {
-        return $this->locked !== NULL;
+        return $this->locked !== null;
     }
 
-    public function getNumber(): ?ChitNumber
+    public function getNumber() : ?ChitNumber
     {
         return $this->number;
     }
 
-    public function getDate(): Date
+    public function getDate() : Date
     {
         return $this->date;
     }
 
-    public function getRecipient(): ?Recipient
+    public function getRecipient() : ?Recipient
     {
         return $this->recipient;
     }
 
-    public function getCategory(): Category
+    public function getCategory() : Category
     {
         return $this->category;
     }
 
-    public function copyToCashbook(Cashbook $newCashbook): self
+    public function copyToCashbook(Cashbook $newCashbook) : self
     {
-        $newChit = clone $this;
-        $newChit->id = NULL;
+        $newChit           = clone $this;
+        $newChit->id       = null;
         $newChit->cashbook = $newCashbook;
 
         return $newChit;
     }
 
-    public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook): self
+    public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook) : self
     {
-        $newChit = $this->copyToCashbook($newCashbook);
+        $newChit   = $this->copyToCashbook($newCashbook);
         $operation = $newChit->category->getOperationType();
 
         $newChit->category = new Category(
@@ -146,5 +147,4 @@ class Chit
 
         return $newChit;
     }
-
 }

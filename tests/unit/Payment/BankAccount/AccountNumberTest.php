@@ -1,34 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\BankAccount;
 
-class AccountNumberTest extends \Codeception\Test\Unit
-{
+use Codeception\Test\Unit;
 
-    public function testToString()
+class AccountNumberTest extends Unit
+{
+    public function testToString() : void
     {
-        $number = new AccountNumber(NULL, '2000942144', '2010');
+        $number = new AccountNumber(null, '2000942144', '2010');
 
         $this->assertSame('2000942144/2010', (string) $number);
     }
 
-    public function testToStringWithPrefix()
+    public function testToStringWithPrefix() : void
     {
         $number = new AccountNumber('19', '17608231', '0100'); // To je E-ON btw
 
         $this->assertSame('19-17608231/0100', (string) $number);
     }
 
-    public function testIsValidForValidNumber(): void
+    public function testIsValidForValidNumber() : void
     {
         $this->assertTrue(AccountNumber::isValid('19-17608231/0100'));
     }
 
-    public function testIsValidForInvalidNumber(): void
+    public function testIsValidForInvalidNumber() : void
     {
         $this->assertFalse(AccountNumber::isValid('123'));
     }
-    public function testFromString()
+    public function testFromString() : void
     {
         $number = AccountNumber::fromString('2000942144/2010');
 

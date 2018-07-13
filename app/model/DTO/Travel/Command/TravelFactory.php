@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Travel\Command;
 
 use Model\Travel\Command;
 use Nette\StaticClass;
+use function array_map;
+use function get_class;
+use function usort;
 
 class TravelFactory
 {
@@ -12,35 +17,41 @@ class TravelFactory
     /**
      * @return Travel[]
      */
-    public static function createList(Command $command): array
+    public static function createList(Command $command) : array
     {
-        $dtos = array_map(function(Command\Travel $travel) use ($command) {
-            return self::createSingle($travel, $command);
-        }, $command->getTravels());
+        $dtos = array_map(
+            function (Command\Travel $travel) use ($command) {
+                return self::createSingle($travel, $command);
+            },
+            $command->getTravels()
+        );
 
-        usort($dtos, function (Travel $a, Travel $b) {
-            $result = $a->getDetails()->getDate() <=> $b->getDetails()->getDate();
+        usort(
+            $dtos,
+            function (Travel $a, Travel $b) {
+                $result = $a->getDetails()->getDate() <=> $b->getDetails()->getDate();
 
-            return $result === 0 ? $a->getId() <=> $b->getId() : $result;
-        });
+                return $result === 0 ? $a->getId() <=> $b->getId() : $result;
+            }
+        );
 
         return $dtos;
     }
 
-    public static function create(Command $command, int $travelId): ?Travel
+    public static function create(Command $command, int $travelId) : ?Travel
     {
-        foreach($command->getTravels() as $travel) {
-            if($travel->getId() === $travelId) {
+        foreach ($command->getTravels() as $travel) {
+            if ($travel->getId() === $travelId) {
                 return self::createSingle($travel, $command);
             }
         }
 
-        return NULL;
+        return null;
     }
 
-    private static function createSingle(Command\Travel $travel, Command $command): Travel
+    private static function createSingle(Command\Travel $travel, Command $command) : Travel
     {
-        $id = $travel->getId();
+        $id      = $travel->getId();
         $details = $travel->getDetails();
 
         if ($travel instanceof Command\VehicleTravel) {
@@ -48,10 +59,9 @@ class TravelFactory
         }
 
         if ($travel instanceof Command\TransportTravel) {
-            return new Travel($id, $details, NULL, $travel->getPrice());
+            return new Travel($id, $details, null, $travel->getPrice());
         }
 
-        throw new \RuntimeException("Invalid travel type " . get_class($travel));
+        throw new \RuntimeException('Invalid travel type ' . get_class($travel));
     }
-
 }

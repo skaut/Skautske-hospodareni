@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Travel\Command;
 
+use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Travel\Command;
 use Money\Money;
+use function array_map;
 
-class TravelFactoryTest extends \Codeception\Test\Unit
+class TravelFactoryTest extends Unit
 {
-
-    public function testCreateListCorrectOrder()
+    public function testCreateListCorrectOrder() : void
     {
-        $firstDay = new \DateTimeImmutable();
+        $firstDay  = new \DateTimeImmutable();
         $secondDay = new \DateTimeImmutable();
 
         $travels = [
@@ -40,10 +43,10 @@ class TravelFactoryTest extends \Codeception\Test\Unit
         $travels = TravelFactory::createList($command);
 
         $expectedOrder = [2, 1, 3];
-        $actualOrder = array_map(function (Travel $travel) { return $travel->getId(); }, $travels);
+        $actualOrder   = array_map(function (Travel $travel) {
+            return $travel->getId();
+        }, $travels);
 
         $this->assertSame($expectedOrder, $actualOrder);
     }
-
-
 }

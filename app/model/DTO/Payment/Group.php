@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Payment;
 
 use DateTimeImmutable;
@@ -22,7 +24,6 @@ use Nette\SmartObject;
  */
 class Group
 {
-
     use SmartObject;
 
     /** @var int */
@@ -77,44 +78,44 @@ class Group
         string $state,
         ?int $smtpId,
         string $note,
-        ?int $bankAccountId)
-    {
-        $this->id = $id;
-        $this->type = $type;
-        $this->unitId = $unitId;
-        $this->skautisId = $skautisId;
-        $this->name = $name;
-        $this->defaultAmount = $defaultAmount;
-        $this->dueDate = $dueDate;
-        $this->constantSymbol = $constantSymbol;
+        ?int $bankAccountId
+    ) {
+        $this->id                 = $id;
+        $this->type               = $type;
+        $this->unitId             = $unitId;
+        $this->skautisId          = $skautisId;
+        $this->name               = $name;
+        $this->defaultAmount      = $defaultAmount;
+        $this->dueDate            = $dueDate;
+        $this->constantSymbol     = $constantSymbol;
         $this->nextVariableSymbol = $nextVariableSymbol;
-        $this->state = $state;
-        $this->smtpId = $smtpId;
-        $this->note = $note;
-        $this->bankAccountId = $bankAccountId;
+        $this->state              = $state;
+        $this->smtpId             = $smtpId;
+        $this->note               = $note;
+        $this->bankAccountId      = $bankAccountId;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getType(): ?string
+    public function getType() : ?string
     {
         return $this->type;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getSkautisId(): ?int
+    public function getSkautisId() : ?int
     {
         return $this->skautisId;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
@@ -134,29 +135,28 @@ class Group
         return $this->constantSymbol;
     }
 
-    public function getNextVariableSymbol(): ?VariableSymbol
+    public function getNextVariableSymbol() : ?VariableSymbol
     {
         return $this->nextVariableSymbol;
     }
 
-    public function getState(): string
+    public function getState() : string
     {
         return $this->state;
     }
 
-    public function getSmtpId(): ?int
+    public function getSmtpId() : ?int
     {
         return $this->smtpId;
     }
 
-    public function getNote(): string
+    public function getNote() : string
     {
         return $this->note;
     }
 
-    public function getBankAccountId(): ?int
+    public function getBankAccountId() : ?int
     {
         return $this->bankAccountId;
     }
-
 }

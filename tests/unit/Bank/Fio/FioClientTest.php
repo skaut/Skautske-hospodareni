@@ -1,39 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Bank\Fio;
 
-use FioApi\Account;
+use Codeception\Test\Unit;
 use FioApi\Downloader;
 use FioApi\Exceptions\InternalErrorException;
 use FioApi\Exceptions\TooGreedyException;
-use FioApi\TransactionList;
 use GuzzleHttp\Exception\TransferException;
 use Mockery as m;
-
 use Model\BankTimeLimitException;
 use Model\BankTimeoutException;
 use Model\Payment\BankAccount;
 use Model\Payment\TokenNotSetException;
 use Psr\Log\NullLogger;
 
-class FioClientTest extends \Codeception\Test\Unit
+class FioClientTest extends Unit
 {
-
-    public function testBankAccountWithoutTokenThrowsException()
+    public function testBankAccountWithoutTokenThrowsException() : void
     {
         $factory = m::mock(IDownloaderFactory::class);
-        $fio = new FioClient($factory, new NullLogger());
+        $fio     = new FioClient($factory, new NullLogger());
 
         $this->expectException(TokenNotSetException::class);
 
         $fio->getTransactions(
             new \DateTimeImmutable(),
             new \DateTimeImmutable(),
-            $this->mockAccount(NULL)
+            $this->mockAccount(null)
         );
     }
 
-    public function testTooGreedyExceptionResultsInLimitException()
+    public function testTooGreedyExceptionResultsInLimitException() : void
     {
         $since = new \DateTimeImmutable();
         $until = new \DateTimeImmutable();
@@ -45,14 +44,14 @@ class FioClientTest extends \Codeception\Test\Unit
             ->andThrow(TooGreedyException::class);
 
         $factory = $this->buildDownloaderFactory($downloader);
-        $fio = new FioClient($factory, new NullLogger());
+        $fio     = new FioClient($factory, new NullLogger());
 
         $this->expectException(BankTimeLimitException::class);
 
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    public function tesGeneralApiErrorExceptionResultsInTimeoutException()
+    public function tesGeneralApiErrorExceptionResultsInTimeoutException() : void
     {
         $since = new \DateTimeImmutable();
         $until = new \DateTimeImmutable();
@@ -64,14 +63,14 @@ class FioClientTest extends \Codeception\Test\Unit
             ->andThrow(TransferException::class);
 
         $factory = $this->buildDownloaderFactory($downloader);
-        $fio = new FioClient($factory, new NullLogger());
+        $fio     = new FioClient($factory, new NullLogger());
 
         $this->expectException(BankTimeoutException::class);
 
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    public function testInternalErrorResultsInTimeoutException()
+    public function testInternalErrorResultsInTimeoutException() : void
     {
         $since = new \DateTimeImmutable();
         $until = new \DateTimeImmutable();
@@ -83,14 +82,14 @@ class FioClientTest extends \Codeception\Test\Unit
             ->andThrow(InternalErrorException::class);
 
         $factory = $this->buildDownloaderFactory($downloader);
-        $fio = new FioClient($factory, new NullLogger());
+        $fio     = new FioClient($factory, new NullLogger());
 
         $this->expectException(BankTimeoutException::class);
 
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    private function mockAccount(?string $token = 'token'): BankAccount
+    private function mockAccount(?string $token = 'token') : BankAccount
     {
         return m::mock(BankAccount::class, [
             'getId' => 10,
@@ -98,7 +97,7 @@ class FioClientTest extends \Codeception\Test\Unit
         ]);
     }
 
-    private function buildDownloaderFactory(Downloader $downloader): IDownloaderFactory
+    private function buildDownloaderFactory(Downloader $downloader) : IDownloaderFactory
     {
         $factory = m::mock(IDownloaderFactory::class);
         $factory->shouldReceive('create')
@@ -108,5 +107,4 @@ class FioClientTest extends \Codeception\Test\Unit
 
         return $factory;
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Chit\Events;
 
 class BaseChit
@@ -21,34 +23,34 @@ class BaseChit
 
     public function __construct(int $unitId, int $userId, string $userName, int $chitId, int $eventId)
     {
-        $this->unitId = $unitId;
-        $this->userId = $userId;
+        $this->unitId   = $unitId;
+        $this->userId   = $userId;
         $this->userName = $userName;
-        $this->chitId = $chitId;
-        $this->eventId = $eventId;
+        $this->chitId   = $chitId;
+        $this->eventId  = $eventId;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getUserId(): int
+    public function getUserId() : int
     {
         return $this->userId;
     }
 
-    public function getUserName(): string
+    public function getUserName() : string
     {
         return $this->userName;
     }
 
-    public function getChitId(): int
+    public function getChitId() : int
     {
         return $this->chitId;
     }
 
-    public function getEventId(): int
+    public function getEventId() : int
     {
         return $this->eventId;
     }

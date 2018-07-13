@@ -13,7 +13,6 @@ use Money\Money;
 
 class FinalBalanceQueryHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -22,7 +21,7 @@ class FinalBalanceQueryHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(FinalBalanceQuery $query): Money
+    public function handle(FinalBalanceQuery $query) : Money
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 
@@ -35,7 +34,7 @@ class FinalBalanceQueryHandler
         return MoneyFactory::fromFloat($balance);
     }
 
-    private function getSignedChitAmount(Chit $chit): float
+    private function getSignedChitAmount(Chit $chit) : float
     {
         $amount = $chit->getAmount()->getValue();
 
@@ -45,5 +44,4 @@ class FinalBalanceQueryHandler
 
         return $amount;
     }
-
 }

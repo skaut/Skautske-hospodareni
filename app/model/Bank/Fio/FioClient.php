@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Bank\Fio;
 
 use DateTimeImmutable;
@@ -7,16 +9,18 @@ use FioApi\Exceptions\InternalErrorException;
 use FioApi\Exceptions\TooGreedyException;
 use FioApi\Transaction as ApiTransaction;
 use GuzzleHttp\Exception\TransferException;
+use Model\BankTimeLimitException;
+use Model\BankTimeoutException;
 use Model\Payment\BankAccount;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\TokenNotSetException;
-use Model\BankTimeLimitException;
-use Model\BankTimeoutException;
 use Psr\Log\LoggerInterface;
+use function array_map;
+use function array_reverse;
+use function sprintf;
 
 class FioClient implements IFioClient
 {
-
     /** @var IDownloaderFactory */
     private $downloaderFactory;
 
@@ -27,13 +31,13 @@ class FioClient implements IFioClient
     public function __construct(IDownloaderFactory $downloaderFactory, LoggerInterface $logger)
     {
         $this->downloaderFactory = $downloaderFactory;
-        $this->logger = $logger;
+        $this->logger            = $logger;
     }
 
 
-    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
+    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account) : array
     {
-        if($account->getToken() === NULL) {
+        if ($account->getToken() === null) {
             throw new TokenNotSetException();
         }
 
@@ -43,7 +47,7 @@ class FioClient implements IFioClient
         return array_reverse($transactions); // DESC sort
     }
 
-    private function createTransactionDTO(ApiTransaction $transaction): Transaction
+    private function createTransactionDTO(ApiTransaction $transaction) : Transaction
     {
         return new Transaction(
             $transaction->getId(),
@@ -51,8 +55,8 @@ class FioClient implements IFioClient
             $transaction->getAmount(),
             $transaction->getSenderAccountNumber() . '/' . $transaction->getSenderBankCode(),
             $transaction->getUserIdentity() ?? $transaction->getPerformedBy() ?? '',
-            $transaction->getVariableSymbol() !== NULL ? (int)$transaction->getVariableSymbol() : NULL,
-            $transaction->getConstantSymbol() !== NULL ? (int)$transaction->getConstantSymbol() : NULL,
+            $transaction->getVariableSymbol() !== null ? (int) $transaction->getVariableSymbol() : null,
+            $transaction->getConstantSymbol() !== null ? (int) $transaction->getConstantSymbol() : null,
             $transaction->getComment()
         );
     }
@@ -62,7 +66,7 @@ class FioClient implements IFioClient
      * @throws BankTimeLimitException
      * @throws BankTimeoutException
      */
-    private function loadTransactionsFromApi(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
+    private function loadTransactionsFromApi(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account) : array
     {
         $api = $this->downloaderFactory->create($account->getToken());
 
@@ -77,8 +81,7 @@ class FioClient implements IFioClient
                 ['previous' => $e]
             );
 
-            throw new BankTimeoutException("There was an error when connecting to FIO", $e->getCode(), $e);
+            throw new BankTimeoutException('There was an error when connecting to FIO', $e->getCode(), $e);
         }
     }
-
 }

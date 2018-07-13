@@ -11,7 +11,6 @@ use Model\Travel\Handlers\Vehicle\CreateVehicleHandler;
  */
 final class CreateVehicle
 {
-
     /** @var string */
     private $type;
 
@@ -37,44 +36,42 @@ final class CreateVehicle
         string $registration,
         float $consumption,
         int $userId
-    )
-    {
-        $this->type = $type;
-        $this->unitId = $unitId;
-        $this->subunitId = $subunitId;
+    ) {
+        $this->type         = $type;
+        $this->unitId       = $unitId;
+        $this->subunitId    = $subunitId;
         $this->registration = $registration;
-        $this->consumption = $consumption;
-        $this->userId = $userId;
+        $this->consumption  = $consumption;
+        $this->userId       = $userId;
     }
 
-    public function getType(): string
+    public function getType() : string
     {
         return $this->type;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getSubunitId(): ?int
+    public function getSubunitId() : ?int
     {
         return $this->subunitId;
     }
 
-    public function getRegistration(): string
+    public function getRegistration() : string
     {
         return $this->registration;
     }
 
-    public function getConsumption(): float
+    public function getConsumption() : float
     {
         return $this->consumption;
     }
 
-    public function getUserId(): int
+    public function getUserId() : int
     {
         return $this->userId;
     }
-
 }

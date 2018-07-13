@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Handlers\Cashbook;
 
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
@@ -8,7 +10,6 @@ use Model\Cashbook\Services\ICampCategoryUpdater;
 
 class UpdateCampCategoryTotalHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -18,10 +19,10 @@ class UpdateCampCategoryTotalHandler
     public function __construct(ICashbookRepository $cashbooks, ICampCategoryUpdater $updater)
     {
         $this->cashbooks = $cashbooks;
-        $this->updater = $updater;
+        $this->updater   = $updater;
     }
 
-    public function handle(UpdateCampCategoryTotals $command): void
+    public function handle(UpdateCampCategoryTotals $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 
@@ -30,5 +31,4 @@ class UpdateCampCategoryTotalHandler
             $cashbook->getCategoryTotals()
         );
     }
-
 }

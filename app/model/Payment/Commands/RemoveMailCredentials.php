@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Commands;
 
 class RemoveMailCredentials
 {
-
     /** @var int */
     private $id;
 
@@ -13,9 +14,8 @@ class RemoveMailCredentials
         $this->id = $id;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
-
 }

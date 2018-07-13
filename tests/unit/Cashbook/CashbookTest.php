@@ -1,20 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook;
 
 use Cake\Chronos\Date;
+use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Events\ChitWasAdded;
+use function ksort;
 
-class CashbookTest extends \Codeception\Test\Unit
+class CashbookTest extends Unit
 {
-
-    public function testCreateCashbook(): void
+    public function testCreateCashbook() : void
     {
-        $type = CashbookType::get(CashbookType::EVENT);
+        $type       = CashbookType::get(CashbookType::EVENT);
         $cashbookId = CashbookId::fromInt(100);
 
         $cashbook = new Cashbook($cashbookId, $type);
@@ -23,30 +26,30 @@ class CashbookTest extends \Codeception\Test\Unit
         $this->assertSame($type, $cashbook->getType());
     }
 
-    public function testAddingChitRaisesEvent(): void
+    public function testAddingChitRaisesEvent() : void
     {
         $cashbookId = CashbookId::fromInt(10);
-        $cashbook = $this->createEventCashbook($cashbookId);
-        $category = $this->mockCategory(6);
+        $cashbook   = $this->createEventCashbook($cashbookId);
+        $category   = $this->mockCategory(6);
 
-        $cashbook->addChit(NULL, Date::now(), NULL, new Amount('500'), 'Nákup potravin', $category);
+        $cashbook->addChit(null, Date::now(), null, new Amount('500'), 'Nákup potravin', $category);
 
         $events = $cashbook->extractEventsToDispatch();
         $this->assertCount(1, $events);
 
-        /* @var $event ChitWasAdded */
+        /** @var ChitWasAdded $event */
         $event = $events[0];
         $this->assertInstanceOf(ChitWasAdded::class, $event);
         $this->assertTrue($cashbookId->equals($event->getCashbookId()));
         $this->assertSame(6, $event->getCategoryId());
     }
 
-    public function testGetCategoryTotalsReturnsCorrectValues(): void
+    public function testGetCategoryTotalsReturnsCorrectValues() : void
     {
         $cashbook = $this->createEventCashbook();
 
-        $addChit = function(int $categoryId, string $amount) use ($cashbook) {
-            $cashbook->addChit(NULL, Date::now(), NULL, new Amount($amount), '', $this->mockCategory($categoryId));
+        $addChit = function (int $categoryId, string $amount) use ($cashbook) : void {
+            $cashbook->addChit(null, Date::now(), null, new Amount($amount), '', $this->mockCategory($categoryId));
         };
 
         $addChit(1, '200');
@@ -67,7 +70,7 @@ class CashbookTest extends \Codeception\Test\Unit
         $this->assertSame($expectedTotals, $totals);
     }
 
-    public function testAddChitRaisesEvent(): void
+    public function testAddChitRaisesEvent() : void
     {
         $cashbookId = CashbookId::fromInt(10);
 
@@ -85,7 +88,7 @@ class CashbookTest extends \Codeception\Test\Unit
         $events = $cashbook->extractEventsToDispatch();
 
         $this->assertCount(1, $events);
-        /* @var $event ChitWasAdded */
+        /** @var ChitWasAdded $event */
         $event = $events[0];
         $this->assertInstanceOf(ChitWasAdded::class, $event);
         $this->assertTrue($cashbookId->equals($event->getCashbookId()));
@@ -95,7 +98,7 @@ class CashbookTest extends \Codeception\Test\Unit
     /**
      * @dataProvider dataValidChitNumberPrefixes
      */
-    public function testUpdateChitNumberPrefix(?string $prefix): void
+    public function testUpdateChitNumberPrefix(?string $prefix) : void
     {
         $cashbook = $this->createEventCashbook();
 
@@ -106,23 +109,23 @@ class CashbookTest extends \Codeception\Test\Unit
         $this->assertSame($prefix, $cashbook->getChitNumberPrefix());
     }
 
-    public function dataValidChitNumberPrefixes(): array
+    public function dataValidChitNumberPrefixes() : array
     {
         return [
             ['test'],
-            [NULL],
+            [null],
         ];
     }
 
-    public function testClearCashbook(): void
+    public function testClearCashbook() : void
     {
         $cashbook = new Cashbook(CashbookId::fromInt(11), CashbookType::get(CashbookType::EVENT));
 
         for ($i = 0; $i < 5; $i++) {
             $cashbook->addChit(
-                NULL,
+                null,
                 new Date('2017-11-17'),
-                NULL,
+                null,
                 new Cashbook\Amount('100'),
                 'purpose',
                 $this->mockCategory(666)
@@ -134,26 +137,25 @@ class CashbookTest extends \Codeception\Test\Unit
         $this->assertEmpty($cashbook->getChits());
     }
 
-    public function testUpdateNote(): void
+    public function testUpdateNote() : void
     {
-        $note = 'moje poznamka';
+        $note     = 'moje poznamka';
         $cashbook = $this->createEventCashbook();
         $this->assertEmpty($cashbook->getNote());
         $cashbook->updateNote($note);
         $this->assertSame($note, $cashbook->getNote());
     }
 
-    private function createEventCashbook(?CashbookId $cashbookId = NULL): Cashbook
+    private function createEventCashbook(?CashbookId $cashbookId = null) : Cashbook
     {
         return new Cashbook($cashbookId ?? CashbookId::fromInt(1), CashbookType::get(CashbookType::EVENT));
     }
 
-    private function mockCategory(int $id): ICategory
+    private function mockCategory(int $id) : ICategory
     {
         return m::mock(ICategory::class, [
             'getId' => $id,
             'getOperationType' => Operation::get(Operation::INCOME),
         ]);
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Payment;
 
 use DateTimeImmutable;
@@ -26,7 +28,6 @@ use Nette\SmartObject;
  */
 class Payment
 {
-
     use SmartObject;
 
     /** @var int */
@@ -86,98 +87,79 @@ class Payment
         ?DateTimeImmutable $closedAt,
         ?int $personId,
         int $groupId
-    )
-    {
-        $this->id = $id;
-        $this->name = $name;
-        $this->amount = $amount;
-        $this->email = $email;
-        $this->dueDate = $dueDate;
+    ) {
+        $this->id             = $id;
+        $this->name           = $name;
+        $this->amount         = $amount;
+        $this->email          = $email;
+        $this->dueDate        = $dueDate;
         $this->variableSymbol = $variableSymbol;
         $this->constantSymbol = $constantSymbol;
-        $this->note = $note;
-        $this->closed = $closed;
-        $this->state = $state;
-        $this->transaction = $transaction;
-        $this->closedAt = $closedAt;
-        $this->personId = $personId;
-        $this->groupId = $groupId;
+        $this->note           = $note;
+        $this->closed         = $closed;
+        $this->state          = $state;
+        $this->transaction    = $transaction;
+        $this->closedAt       = $closedAt;
+        $this->personId       = $personId;
+        $this->groupId        = $groupId;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    /**
-     * @return float
-     */
-    public function getAmount(): float
+    public function getAmount() : float
     {
         return $this->amount;
     }
 
-    /**
-     * @return NULL|string
-     */
-    public function getEmail(): ?string
+    public function getEmail() : ?string
     {
         return $this->email;
     }
 
-    /**
-     * @return \DateTimeImmutable
-     */
-    public function getDueDate(): DateTimeImmutable
+    public function getDueDate() : DateTimeImmutable
     {
         return $this->dueDate;
     }
 
-    public function getVariableSymbol(): ?VariableSymbol
+    public function getVariableSymbol() : ?VariableSymbol
     {
         return $this->variableSymbol;
     }
 
-    /**
-     * @return int|NULL
-     */
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol() : ?int
     {
         return $this->constantSymbol;
     }
 
-    /**
-     * @return string
-     */
-    public function getNote(): string
+    public function getNote() : string
     {
         return $this->note;
     }
 
-    public function isClosed(): bool
+    public function isClosed() : bool
     {
         return $this->closed;
     }
 
-    public function getState(): State
+    public function getState() : State
     {
         return $this->state;
     }
 
-    public function getTransaction(): ?Transaction
+    public function getTransaction() : ?Transaction
     {
         return $this->transaction;
     }
 
-    public function getClosedAt(): ?DateTimeImmutable
+    public function getClosedAt() : ?DateTimeImmutable
     {
         return $this->closedAt;
     }
@@ -187,9 +169,8 @@ class Payment
         return $this->personId;
     }
 
-    public function getGroupId(): int
+    public function getGroupId() : int
     {
         return $this->groupId;
     }
-
 }

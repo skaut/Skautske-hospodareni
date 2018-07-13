@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Repositories;
 
 use Model\Cashbook\Category;
@@ -11,15 +13,13 @@ use Model\Cashbook\ObjectType;
  */
 interface IStaticCategoryRepository
 {
-
     /**
      * @return Category[]
      */
-    public function findByObjectType(ObjectType $type): array;
+    public function findByObjectType(ObjectType $type) : array;
 
     /**
      * @throws CategoryNotFoundException
      */
-    public function find(int $id): Category;
-
+    public function find(int $id) : Category;
 }

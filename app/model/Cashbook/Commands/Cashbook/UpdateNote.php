@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Commands\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
@@ -10,7 +12,6 @@ use Model\Cashbook\Handlers\Cashbook\UpdateNoteHandler;
  */
 final class UpdateNote
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -20,15 +21,15 @@ final class UpdateNote
     public function __construct(CashbookId $cashbookId, string $note)
     {
         $this->cashbookId = $cashbookId;
-        $this->note = $note;
+        $this->note       = $note;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getNote(): string
+    public function getNote() : string
     {
         return $this->note;
     }

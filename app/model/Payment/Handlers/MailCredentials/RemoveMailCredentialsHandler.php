@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Handlers\MailCredentials;
 
 use Model\Payment\Commands\RemoveMailCredentials;
@@ -8,7 +10,6 @@ use Model\Payment\Repositories\IMailCredentialsRepository;
 
 class RemoveMailCredentialsHandler
 {
-
     /** @var IMailCredentialsRepository */
     private $credentials;
 
@@ -17,7 +18,7 @@ class RemoveMailCredentialsHandler
         $this->credentials = $credentials;
     }
 
-    public function handle(RemoveMailCredentials $command): void
+    public function handle(RemoveMailCredentials $command) : void
     {
         try {
             $credentials = $this->credentials->find($command->getId());
@@ -26,5 +27,4 @@ class RemoveMailCredentialsHandler
             // fail silently
         }
     }
-
 }

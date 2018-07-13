@@ -11,7 +11,6 @@ use Model\Skautis\Mapper;
 
 final class CampCashbookIdQueryHandler
 {
-
     /** @var Mapper */
     private $mapper;
 
@@ -20,9 +19,8 @@ final class CampCashbookIdQueryHandler
         $this->mapper = $mapper;
     }
 
-    public function handle(CampCashbookIdQuery $query): CashbookId
+    public function handle(CampCashbookIdQuery $query) : CashbookId
     {
         return $this->mapper->getLocalId($query->getCampId()->toInt(), ObjectType::CAMP);
     }
-
 }

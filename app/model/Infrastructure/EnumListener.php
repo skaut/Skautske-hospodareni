@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Infrastructure;
 
 use Consistence\Doctrine\Enum\EnumPostLoadEntityListener;
@@ -8,7 +10,6 @@ use Kdyby\Events\Subscriber;
 
 class EnumListener implements Subscriber
 {
-
     /** @var EnumPostLoadEntityListener */
     private $listener;
 
@@ -22,9 +23,8 @@ class EnumListener implements Subscriber
         $this->listener = $listener;
     }
 
-    public function postLoad(LifecycleEventArgs $args): void
+    public function postLoad(LifecycleEventArgs $args) : void
     {
         $this->listener->postLoad($args);
     }
-
 }

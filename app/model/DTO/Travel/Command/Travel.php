@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Travel\Command;
 
 use Model\Travel\Command\TravelDetails;
@@ -14,7 +16,6 @@ use Nette\SmartObject;
  */
 class Travel
 {
-
     use SmartObject;
 
     /** @var int */
@@ -31,30 +32,29 @@ class Travel
 
     public function __construct(int $id, TravelDetails $details, ?float $distance, Money $price)
     {
-        $this->id = $id;
-        $this->details = $details;
+        $this->id       = $id;
+        $this->details  = $details;
         $this->distance = $distance;
-        $this->price = $price;
+        $this->price    = $price;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getDetails(): TravelDetails
+    public function getDetails() : TravelDetails
     {
         return $this->details;
     }
 
-    public function getDistance(): ?float
+    public function getDistance() : ?float
     {
         return $this->distance;
     }
 
-    public function getPrice(): Money
+    public function getPrice() : Money
     {
         return $this->price;
     }
-
 }

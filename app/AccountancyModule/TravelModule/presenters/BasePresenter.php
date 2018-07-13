@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\TravelModule;
 
 use Nette\NotImplementedException;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-
     protected $unit;
 
     protected function startup() : void
@@ -17,7 +18,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     protected function editableOnly() : void
     {
-        throw new NotImplementedException("todo");
+        throw new NotImplementedException('todo');
     }
-
 }

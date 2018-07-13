@@ -10,7 +10,6 @@ use Model\Unit\Unit;
 
 class UnitQueryHandler
 {
-
     /** @var IUnitRepository */
     private $units;
 
@@ -19,9 +18,8 @@ class UnitQueryHandler
         $this->units = $units;
     }
 
-    public function handle(UnitQuery $query): Unit
+    public function handle(UnitQuery $query) : Unit
     {
         return $this->units->find($query->getUnitId());
     }
-
 }

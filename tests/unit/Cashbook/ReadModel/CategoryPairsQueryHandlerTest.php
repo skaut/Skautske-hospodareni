@@ -14,19 +14,19 @@ use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
+use function array_map;
 
 final class CategoryPairsQueryHandlerTest extends Unit
 {
-
     private const CATEGORIES = [
         [1, 'Název 1', Operation::INCOME],
         [2, 'Název 2', Operation::EXPENSE],
     ];
 
     private const CASHBOOK_TYPE = CashbookType::EVENT;
-    private const CASHBOOK_ID = 123;
+    private const CASHBOOK_ID   = 123;
 
-    public function testReturnAllCategoriesIfOperationIsNotPassed(): void
+    public function testReturnAllCategoriesIfOperationIsNotPassed() : void
     {
         $handler = $this->createHandler();
 
@@ -38,18 +38,16 @@ final class CategoryPairsQueryHandlerTest extends Unit
         ));
     }
 
-    public function testReturnOnlyIncomeCategoriesWhenOperationTypeIsPassed(): void
+    public function testReturnOnlyIncomeCategoriesWhenOperationTypeIsPassed() : void
     {
         $handler = $this->createHandler();
 
-        $this->assertSame([
-            1 => 'Název 1'
-        ], $handler->handle(
+        $this->assertSame([1 => 'Název 1'], $handler->handle(
             new CategoryPairsQuery(CashbookId::fromInt(self::CASHBOOK_ID), Operation::get(Operation::INCOME))
         ));
     }
 
-    private function createHandler(): CategoryPairsQueryHandler
+    private function createHandler() : CategoryPairsQueryHandler
     {
         $categories = array_map(function (array $category) : ICategory {
             return m::mock(ICategory::class, [
@@ -62,7 +60,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $categoryRepository = m::mock(CategoryRepository::class);
         $categoryRepository->shouldReceive('findForCashbook')
             ->once()
-            ->withArgs(function (CashbookId $cashbookId, CashbookType $type): bool {
+            ->withArgs(function (CashbookId $cashbookId, CashbookType $type) : bool {
                 return $cashbookId->equals(CashbookId::fromInt(self::CASHBOOK_ID))
                     && $type->equalsValue(self::CASHBOOK_TYPE);
             })
@@ -81,5 +79,4 @@ final class CategoryPairsQueryHandlerTest extends Unit
 
         return new CategoryPairsQueryHandler($categoryRepository, $cashbookRepository);
     }
-
 }

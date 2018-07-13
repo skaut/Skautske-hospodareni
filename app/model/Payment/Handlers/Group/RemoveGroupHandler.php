@@ -8,10 +8,10 @@ use Model\Payment\Commands\Group\RemoveGroup;
 use Model\Payment\Group;
 use Model\Payment\GroupNotClosedException;
 use Model\Payment\Repositories\IGroupRepository;
+use function sprintf;
 
 final class RemoveGroupHandler
 {
-
     /** @var IGroupRepository */
     private $groups;
 
@@ -20,7 +20,7 @@ final class RemoveGroupHandler
         $this->groups = $groups;
     }
 
-    public function handle(RemoveGroup $command): void
+    public function handle(RemoveGroup $command) : void
     {
         $group = $this->groups->find($command->getGroupId());
 
@@ -30,5 +30,4 @@ final class RemoveGroupHandler
 
         $this->groups->remove($group);
     }
-
 }

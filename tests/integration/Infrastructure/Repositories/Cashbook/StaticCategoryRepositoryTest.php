@@ -1,29 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
+use function array_map;
 
 class StaticCategoryRepositoryTest extends \IntegrationTest
 {
-
-    private const TABLE_NAME = 'ac_chitsCategory';
+    private const TABLE_NAME   = 'ac_chitsCategory';
     private const OBJECT_TABLE = 'ac_chitsCategory_object';
 
     /** @var StaticCategoryRepository */
     private $repository;
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
         $this->repository = new StaticCategoryRepository($this->tester->grabService(EntityManager::class), new EventBus());
     }
 
-    protected function getTestedEntites(): array
+    protected function getTestedEntites() : array
     {
         return [
             Category::class,
@@ -31,7 +33,7 @@ class StaticCategoryRepositoryTest extends \IntegrationTest
         ];
     }
 
-    public function testFindByObjectType()
+    public function testFindByObjectType() : void
     {
         $this->tester->haveInDatabase(self::TABLE_NAME, [
             'label' => 'Category 1',
@@ -71,11 +73,10 @@ class StaticCategoryRepositoryTest extends \IntegrationTest
             'Category 1',
         ];
 
-        $actualNames = array_map(function(Category $category) {
+        $actualNames = array_map(function (Category $category) {
             return $category->getName();
         }, $categories);
 
         $this->assertSame($expectedNames, $actualNames);
     }
-
 }

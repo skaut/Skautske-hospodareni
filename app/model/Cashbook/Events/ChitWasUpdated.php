@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Events;
 
 use Model\Cashbook\Cashbook\CashbookId;
 
 final class ChitWasUpdated
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -18,24 +19,23 @@ final class ChitWasUpdated
 
     public function __construct(CashbookId $cashbookId, int $oldCategoryId, int $newCategoryId)
     {
-        $this->cashbookId = $cashbookId;
+        $this->cashbookId    = $cashbookId;
         $this->oldCategoryId = $oldCategoryId;
         $this->newCategoryId = $newCategoryId;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getOldCategoryId(): int
+    public function getOldCategoryId() : int
     {
         return $this->oldCategoryId;
     }
 
-    public function getNewCategoryId(): int
+    public function getNewCategoryId() : int
     {
         return $this->newCategoryId;
     }
-
 }

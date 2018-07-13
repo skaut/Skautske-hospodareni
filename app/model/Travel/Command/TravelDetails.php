@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Travel\Command;
 
 use DateTimeImmutable;
@@ -13,7 +15,6 @@ use Nette\SmartObject;
  */
 class TravelDetails
 {
-
     use SmartObject;
 
     /** @var DateTimeImmutable */
@@ -30,30 +31,29 @@ class TravelDetails
 
     public function __construct(DateTimeImmutable $date, string $transportType, string $startPlace, string $endPlace)
     {
-        $this->date = $date;
+        $this->date          = $date;
         $this->transportType = $transportType;
-        $this->startPlace = $startPlace;
-        $this->endPlace = $endPlace;
+        $this->startPlace    = $startPlace;
+        $this->endPlace      = $endPlace;
     }
 
-    public function getDate(): DateTimeImmutable
+    public function getDate() : DateTimeImmutable
     {
         return $this->date;
     }
 
-    public function getTransportType(): string
+    public function getTransportType() : string
     {
         return $this->transportType;
     }
 
-    public function getStartPlace(): string
+    public function getStartPlace() : string
     {
         return $this->startPlace;
     }
 
-    public function getEndPlace(): string
+    public function getEndPlace() : string
     {
         return $this->endPlace;
     }
-
 }

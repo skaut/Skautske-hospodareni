@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Commands\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
@@ -10,7 +12,6 @@ use Model\Cashbook\Handlers\Cashbook\LockChitHandler;
  */
 final class LockChit
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -23,23 +24,22 @@ final class LockChit
     public function __construct(CashbookId $cashbookId, int $chitId, int $userId)
     {
         $this->cashbookId = $cashbookId;
-        $this->chitId = $chitId;
-        $this->userId = $userId;
+        $this->chitId     = $chitId;
+        $this->userId     = $userId;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getChitId(): int
+    public function getChitId() : int
     {
         return $this->chitId;
     }
 
-    public function getUserId(): int
+    public function getUserId() : int
     {
         return $this->userId;
     }
-
 }

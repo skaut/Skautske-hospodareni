@@ -1,27 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Cashbook;
 
-class AmountTest extends \Codeception\Test\Unit
-{
+use Codeception\Test\Unit;
 
+class AmountTest extends Unit
+{
     /**
      * @dataProvider getSums
      */
-    public function testCalculateSum(string $expression, float $expectedResult): void
+    public function testCalculateSum(string $expression, float $expectedResult) : void
     {
         $amount = new Amount($expression);
         $this->assertSame($expectedResult, $amount->getValue());
     }
 
-    public function testResultCantBeNegative(): void
+    public function testResultCantBeNegative() : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         new Amount('-100');
     }
 
-    public function testResultCantBeZero(): void
+    public function testResultCantBeZero() : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -31,7 +34,7 @@ class AmountTest extends \Codeception\Test\Unit
     /**
      * @return array[]
      */
-    public function getSums(): array
+    public function getSums() : array
     {
         return [
             ['5 + 5', 10.0],
@@ -45,7 +48,7 @@ class AmountTest extends \Codeception\Test\Unit
     /**
      * @dataProvider getMultiplications
      */
-    public function testCalculateMultiplication(string $expression, float $expectedResult): void
+    public function testCalculateMultiplication(string $expression, float $expectedResult) : void
     {
         $amount = new Amount($expression);
         $this->assertSame($expectedResult, $amount->getValue());
@@ -54,7 +57,7 @@ class AmountTest extends \Codeception\Test\Unit
     /**
      * @return array[]
      */
-    public function getMultiplications(): array
+    public function getMultiplications() : array
     {
         return [
             ['5 * 5', 25.0],
@@ -66,7 +69,7 @@ class AmountTest extends \Codeception\Test\Unit
     /**
      * @dataProvider getMultiplications
      */
-    public function testCalculateSumsAndMultiplications(string $expression, float $expectedResult): void
+    public function testCalculateSumsAndMultiplications(string $expression, float $expectedResult) : void
     {
         $amount = new Amount($expression);
         $this->assertSame($expectedResult, $amount->getValue());
@@ -75,7 +78,7 @@ class AmountTest extends \Codeception\Test\Unit
     /**
      * @return array[]
      */
-    public function getMultiplicationsWithSums(): array
+    public function getMultiplicationsWithSums() : array
     {
         return [
             ['5*5+5', 30.0],
@@ -83,5 +86,4 @@ class AmountTest extends \Codeception\Test\Unit
             ['5*5+5*5', 30.0],
         ];
     }
-
 }

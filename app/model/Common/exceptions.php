@@ -13,10 +13,8 @@ class UserNotFoundException extends \Exception
  */
 class ShouldNotHappenException extends \RuntimeException
 {
-
     public function __construct(string $message = 'Internal error')
     {
         parent::__construct($message);
     }
-
 }

@@ -11,5 +11,4 @@ use Model\Event\ReadModel\QueryHandlers\CampStatesHandler;
  */
 class CampStates
 {
-
 }

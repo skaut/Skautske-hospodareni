@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Model\Travel;
 
@@ -9,14 +10,13 @@ use Model\Unit\Unit;
 
 class VehicleTest extends \Codeception\Test\Unit
 {
-
-    public function testCreateWithSubunit()
+    public function testCreateWithSubunit() : void
     {
-        $unit = m::mock(Unit::class, ['getId' => 10]);
+        $unit    = m::mock(Unit::class, ['getId' => 10]);
         $subunit = m::mock(Unit::class, ['getId' => 20]);
-        $subunit->shouldReceive('isSubunitOf')->with($unit)->once()->andReturn(TRUE);
+        $subunit->shouldReceive('isSubunitOf')->with($unit)->once()->andReturn(true);
         $metadata = new Metadata(new \DateTimeImmutable(), 'František Maša');
-        $vehicle = new Vehicle('test', $unit, $subunit, '666-666', 6.0, $metadata);
+        $vehicle  = new Vehicle('test', $unit, $subunit, '666-666', 6.0, $metadata);
 
         $this->assertSame(10, $vehicle->getUnitId());
         $this->assertSame(20, $vehicle->getSubunitId());
@@ -24,11 +24,11 @@ class VehicleTest extends \Codeception\Test\Unit
     }
 
 
-    public function testCantCreateWithUnrelatedSubunit()
+    public function testCantCreateWithUnrelatedSubunit() : void
     {
-        $unit = m::mock(Unit::class, ['getId' => 10]);
+        $unit    = m::mock(Unit::class, ['getId' => 10]);
         $subunit = m::mock(Unit::class, ['getId' => 20]);
-        $subunit->shouldReceive('isSubunitOf')->with($unit)->once()->andReturn(FALSE);
+        $subunit->shouldReceive('isSubunitOf')->with($unit)->once()->andReturn(false);
 
         $this->expectException(\InvalidArgumentException::class);
 

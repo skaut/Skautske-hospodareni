@@ -9,11 +9,11 @@ use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Model\User\SkautisRole;
+use function array_map;
 use function count;
 
 final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
 {
-
     /**
      * parent unit ID => sub units ID
      */
@@ -31,7 +31,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
      * @dataProvider getExpectedReturnedUnits
      * @param int[] $expectedUnitIdsInResult
      */
-    public function test(string $roleName, array $expectedUnitIdsInResult): void
+    public function test(string $roleName, array $expectedUnitIdsInResult) : void
     {
         $role = new SkautisRole($roleName, 100);
 
@@ -49,7 +49,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
         }
     }
 
-    public function getExpectedReturnedUnits(): array
+    public function getExpectedReturnedUnits() : array
     {
         return [
             ['cinovnikStredisko', []],
@@ -61,15 +61,13 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
         ];
     }
 
-    protected function _before(): void
+    protected function _before() : void
     {
         $unitsRepository = m::mock(IUnitRepository::class);
 
         foreach (self::UNITS_TREE as $parentUnitId => $subUnitIds) {
-            $subUnits = array_map(function (int $id): Unit {
-                return m::mock(Unit::class, [
-                    'getId' => $id,
-                ]);
+            $subUnits = array_map(function (int $id) : Unit {
+                return m::mock(Unit::class, ['getId' => $id]);
             }, $subUnitIds);
 
             $unitsRepository->shouldReceive('findByParent')
@@ -78,12 +76,9 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
 
             $unitsRepository->shouldReceive('find')
                 ->withArgs([$parentUnitId])
-                ->andReturn(m::mock(Unit::class, [
-                    'getId' => $parentUnitId,
-                ]));
+                ->andReturn(m::mock(Unit::class, ['getId' => $parentUnitId]));
         }
 
         $this->handler = new EditableUnitsQueryHandler($unitsRepository);
     }
-
 }

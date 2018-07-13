@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 use Model\DTO\Payment\Mail;
@@ -8,10 +10,11 @@ use Model\Payment\IUnitResolver;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 use Model\Payment\Repositories\IMailCredentialsRepository;
+use function array_map;
+use function array_merge;
 
 class MailService
 {
-
     /** @var IMailCredentialsRepository */
     private $credentials;
 
@@ -20,18 +23,18 @@ class MailService
 
     public function __construct(IMailCredentialsRepository $credentials, IUnitResolver $unitResolver)
     {
-        $this->credentials = $credentials;
+        $this->credentials  = $credentials;
         $this->unitResolver = $unitResolver;
     }
 
-    public function get(int $id): ?Mail
+    public function get(int $id) : ?Mail
     {
         try {
             return MailFactory::create(
                 $this->credentials->find($id)
             );
         } catch (MailCredentialsNotFound $e) {
-            return NULL;
+            return null;
         }
     }
 
@@ -44,7 +47,7 @@ class MailService
     public function getPairs(int $unitId) : array
     {
         $pairs = [];
-        foreach($this->findForUnit($unitId) as $credentials) {
+        foreach ($this->findForUnit($unitId) as $credentials) {
             $pairs[$credentials->getId()] = $credentials->getUsername();
         }
 
@@ -52,15 +55,13 @@ class MailService
     }
 
     /**
-     * @param int $unitId
      * @return MailCredentials[]
      */
-    private function findForUnit(int $unitId): array
+    private function findForUnit(int $unitId) : array
     {
-        $units = [$unitId, $this->unitResolver->getOfficialUnitId($unitId)];
+        $units  = [$unitId, $this->unitResolver->getOfficialUnitId($unitId)];
         $byUnit = $this->credentials->findByUnits($units);
 
         return array_merge(...$byUnit);
     }
-
 }

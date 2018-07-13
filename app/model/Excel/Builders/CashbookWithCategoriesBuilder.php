@@ -1,32 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Excel\Builders;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ReadModel\Queries\ChitListQuery;
-use Model\DTO\Cashbook\Category;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\ColumnDimension;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use function array_map;
+use function array_merge;
+use function array_values;
 use function count;
+use function explode;
+use function mb_strlen;
+use function range;
+use function uasort;
 
 class CashbookWithCategoriesBuilder
 {
-
     /** @var Worksheet */
     private $sheet;
 
     /** @var QueryBus */
     private $queryBus;
 
-    private const HEADER_ROW = 2;
-    private const SUBHEADER_ROW = 3;
+    private const HEADER_ROW              = 2;
+    private const SUBHEADER_ROW           = 3;
     private const CATEGORIES_FIRST_COLUMN = 8;
 
     private const FONT_SIZE = 8;
@@ -39,18 +47,18 @@ class CashbookWithCategoriesBuilder
         $this->queryBus = $queryBus;
     }
 
-    public function build(Worksheet $sheet, CashbookId $cashbookId): void
+    public function build(Worksheet $sheet, CashbookId $cashbookId) : void
     {
         $this->sheet = $sheet;
 
         $this->addCashbookHeader();
 
         [$incomeCategories, $expenseCategories] = $this->getCategories($cashbookId);
-        $expensesFirstColumn = self::CATEGORIES_FIRST_COLUMN + count($incomeCategories);
+        $expensesFirstColumn                    = self::CATEGORIES_FIRST_COLUMN + count($incomeCategories);
         $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
         $this->addCategoriesHeader($expensesFirstColumn, 'Výdaje', $expenseCategories);
 
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+        $chits      = $this->queryBus->handle(new ChitListQuery($cashbookId));
         $categories = array_merge($incomeCategories, $expenseCategories);
 
         $this->addChits($chits, $categories);
@@ -58,15 +66,15 @@ class CashbookWithCategoriesBuilder
         $this->addTableStyles(count($chits), count($categories), count($incomeCategories));
     }
 
-    private function addCashbookHeader(): void
+    private function addCashbookHeader() : void
     {
         $this->sheet->mergeCells('D2:G2');
         $this->sheet->setCellValue('D2', 'Pokladní kniha');
 
         $columns = ['Dne', 'Dokl.', 'Účel platby', 'Příjem', 'Výdaj', 'Zůstatek'];
-        $column = 2;
+        $column  = 2;
 
-        foreach($columns as $value) {
+        foreach ($columns as $value) {
             $this->sheet->setCellValueByColumnAndRow(
                 $column++,
                 self::SUBHEADER_ROW,
@@ -76,10 +84,10 @@ class CashbookWithCategoriesBuilder
     }
 
 
-    private function addSumsRow(int $categoriesCount, int $chitsCount): void
+    private function addSumsRow(int $categoriesCount, int $chitsCount) : void
     {
         $firstChitRow = self::SUBHEADER_ROW + 1;
-        $resultRow = $firstChitRow + $chitsCount;
+        $resultRow    = $firstChitRow + $chitsCount;
 
         $categoriesLastColumn = self::CATEGORIES_FIRST_COLUMN + $categoriesCount - 1;
 
@@ -97,20 +105,20 @@ class CashbookWithCategoriesBuilder
      * @param Category[] $categories
      * @throws \PHPExcel_Exception
      */
-    private function addCategoriesHeader(int $startColumn, string $groupName, array $categories): void
+    private function addCategoriesHeader(int $startColumn, string $groupName, array $categories) : void
     {
         $lastColumn = $startColumn + count($categories) - 1;
         $this->sheet->mergeCellsByColumnAndRow($startColumn, self::HEADER_ROW, $lastColumn, self::HEADER_ROW);
         $this->sheet->setCellValueByColumnAndRow($startColumn, self::HEADER_ROW, $groupName);
 
-        foreach($categories as $index => $category) {
+        foreach ($categories as $index => $category) {
             $column = $startColumn + $index;
 
             $cell = $this->sheet->getCellByColumnAndRow($column, self::SUBHEADER_ROW);
             $cell->setValue($category->getName());
             $cell->getStyle()
                 ->getAlignment()
-                ->setWrapText(TRUE);
+                ->setWrapText(true);
 
             $this->guessColumnWidth(
                 $this->sheet->getColumnDimensionByColumn($column),
@@ -120,10 +128,10 @@ class CashbookWithCategoriesBuilder
     }
 
     /**
-     * @param Chit[] $chits
+     * @param Chit[]     $chits
      * @param Category[] $categories
      */
-    private function addChits(array $chits, array $categories): void
+    private function addChits(array $chits, array $categories) : void
     {
         $categoryColumns = [];
 
@@ -131,27 +139,27 @@ class CashbookWithCategoriesBuilder
             $categoryColumns[$category->getId()] = self::CATEGORIES_FIRST_COLUMN + $index;
         }
 
-        $row = self::SUBHEADER_ROW + 1;
+        $row   = self::SUBHEADER_ROW + 1;
         $index = 1;
 
         $balance = 0;
         foreach ($chits as $chit) {
             $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
-            $amount = $chit->getAmount()->getValue();
+            $amount   = $chit->getAmount()->getValue();
 
             $balance += $isIncome ? $amount : -$amount;
 
             $cashbookColumns = [
                 $index++,
                 $chit->getDate()->format('d.m.'),
-                $chit->getNumber() !== NULL ? $chit->getNumber()->toString() : '',
+                $chit->getNumber() !== null ? $chit->getNumber()->toString() : '',
                 $chit->getPurpose(),
                 $isIncome ? $amount : '',
                 ! $isIncome ? $amount : '',
                 $balance,
             ];
 
-            foreach($cashbookColumns as $column => $value) {
+            foreach ($cashbookColumns as $column => $value) {
                 $this->sheet->setCellValueByColumnAndRow($column + 1, $row, $value);
             }
 
@@ -163,37 +171,37 @@ class CashbookWithCategoriesBuilder
     /**
      * @return Category[][]
      */
-    private function getCategories(CashbookId $cashbookId): array
+    private function getCategories(CashbookId $cashbookId) : array
     {
         $categories = new ArrayCollection(
             $this->queryBus->handle(new CategoryListQuery($cashbookId))
         );
 
-        $categoriesByOperation = $categories->partition(function ($_, Category $category): bool {
+        $categoriesByOperation = $categories->partition(function ($_, Category $category) : bool {
             return $category->getOperationType()->equalsValue(Operation::INCOME);
         });
 
-        return array_map(function (ArrayCollection $categories): array {
+        return array_map(function (ArrayCollection $categories) : array {
             return array_values($categories->toArray()); // partition keeps original keys
         }, $categoriesByOperation);
     }
 
-    private function addColumnSum(int $column, int $resultRow, int $firstRow): void
+    private function addColumnSum(int $column, int $resultRow, int $firstRow) : void
     {
-        $lastRow = $resultRow - 1;
-        $resultCell = $this->sheet->getCellByColumnAndRow($column, $resultRow);
+        $lastRow      = $resultRow - 1;
+        $resultCell   = $this->sheet->getCellByColumnAndRow($column, $resultRow);
         $stringColumn = $resultCell->getColumn();
 
         $resultCell->setValue('=SUM(' . $stringColumn . $firstRow . ':' . $stringColumn . $lastRow . ')');
     }
 
-    private function addTableStyles(int $chitsCount, int $categoriesCount, int $incomeCategoriesCount): void
+    private function addTableStyles(int $chitsCount, int $categoriesCount, int $incomeCategoriesCount) : void
     {
         $sheet = $this->sheet;
 
         $sheet->mergeCells('A2:C2');
 
-        $lastRow = self::SUBHEADER_ROW + $chitsCount + 1;
+        $lastRow    = self::SUBHEADER_ROW + $chitsCount + 1;
         $lastColumn = self::CATEGORIES_FIRST_COLUMN + $categoriesCount - 1;
 
         $sheet->getRowDimension(self::SUBHEADER_ROW)->setRowHeight(40);
@@ -202,18 +210,18 @@ class CashbookWithCategoriesBuilder
             ->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $sheet->getColumnDimensionByColumn(0)->setAutoSize(TRUE);
-        $sheet->getColumnDimensionByColumn(1)->setAutoSize(TRUE);
-        $sheet->getColumnDimensionByColumn(2)->setAutoSize(TRUE);
-        $sheet->getColumnDimensionByColumn(3)->setAutoSize(TRUE);
-        $sheet->getColumnDimensionByColumn(4)->setAutoSize(TRUE);
-        $sheet->getColumnDimensionByColumn(5)->setAutoSize(TRUE);
-        $sheet->getColumnDimensionByColumn(6)->setAutoSize(TRUE);
+        $sheet->getColumnDimensionByColumn(0)->setAutoSize(true);
+        $sheet->getColumnDimensionByColumn(1)->setAutoSize(true);
+        $sheet->getColumnDimensionByColumn(2)->setAutoSize(true);
+        $sheet->getColumnDimensionByColumn(3)->setAutoSize(true);
+        $sheet->getColumnDimensionByColumn(4)->setAutoSize(true);
+        $sheet->getColumnDimensionByColumn(5)->setAutoSize(true);
+        $sheet->getColumnDimensionByColumn(6)->setAutoSize(true);
 
         $header = $sheet->getStyleByColumnAndRow(1, self::HEADER_ROW, $lastColumn, self::HEADER_ROW);
 
         $header->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $header->getFont()->setBold(TRUE);
+        $header->getFont()->setBold(true);
 
         $wholeTable = $sheet->getStyleByColumnAndRow(1, self::HEADER_ROW, $lastColumn, $lastRow);
 
@@ -228,7 +236,7 @@ class CashbookWithCategoriesBuilder
         ]);
 
         $lastRowStyle = $sheet->getStyleByColumnAndRow(0, $lastRow, $lastColumn, $lastRow);
-        $lastRowStyle->getFont()->setBold(TRUE);
+        $lastRowStyle->getFont()->setBold(true);
         $lastRowStyle->getBorders()->getTop()->setBorderStyle(Border::BORDER_MEDIUM);
 
         $sheet->getStyleByColumnAndRow(0, 1, $lastColumn, $lastRow)
@@ -242,7 +250,7 @@ class CashbookWithCategoriesBuilder
             4,
         ];
 
-        foreach($separatedColumns as $column) {
+        foreach ($separatedColumns as $column) {
             $sheet->getStyleByColumnAndRow($column, self::HEADER_ROW, $column, $lastRow)
                 ->getBorders()
                 ->getLeft()
@@ -258,19 +266,20 @@ class CashbookWithCategoriesBuilder
         $headers->getAlignment()->setHorizontal('center');
     }
 
-    private function guessColumnWidth(ColumnDimension $column, string $content): void
+    private function guessColumnWidth(ColumnDimension $column, string $content) : void
     {
         $words = explode(' ', $content);
 
-        if(count($words) <= 1) {
-            $column->setAutoSize(TRUE);
+        if (count($words) <= 1) {
+            $column->setAutoSize(true);
             return;
         }
 
-        uasort($words, function(string $a, string $b) { return mb_strlen($a) <=> mb_strlen($b); });
+        uasort($words, function (string $a, string $b) {
+            return mb_strlen($a) <=> mb_strlen($b);
+        });
 
         $width = mb_strlen($words[0]) * self::COLUMN_WIDTH_COEFFICIENT;
         $column->setWidth($width);
     }
-
 }

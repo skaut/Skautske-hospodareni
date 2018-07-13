@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 class TutorialPresenter extends BasePresenter
 {
-
-    public function renderEvent($anchor = NULL) : void
+    public function renderEvent($anchor = null) : void
     {
-
     }
-
 }

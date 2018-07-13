@@ -7,6 +7,7 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\Chit;
+use Model\Cashbook\CashbookNotFoundException;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
@@ -18,7 +19,6 @@ use function usort;
 
 class ChitListQueryHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -28,45 +28,53 @@ class ChitListQueryHandler
     public function __construct(ICashbookRepository $cashbooks, QueryBus $queryBus)
     {
         $this->cashbooks = $cashbooks;
-        $this->queryBus = $queryBus;
+        $this->queryBus  = $queryBus;
     }
 
     /**
      * @return ChitDTO[]
-     * @throws \Model\Cashbook\CashbookNotFoundException
+     * @throws CashbookNotFoundException
      */
-    public function handle(ChitListQuery $query): array
+    public function handle(ChitListQuery $query) : array
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 
         $chits = $cashbook->getChits();
 
-        usort($chits, function (Chit $a, Chit $b): int {
-            return [
+        usort(
+            $chits,
+            function (Chit $a, Chit $b) : int {
+                return [
                 $a->getDate(),
                 $a->getCategory()->getOperationType()->getValue(),
                 $a->getId(),
-            ] <=> [
+                ] <=> [
                 $b->getDate(),
                 $b->getCategory()->getOperationType()->getValue(),
                 $b->getId(),
-            ];
-        });
+                ];
+            }
+        );
 
         $categories = $this->getCategories($query->getCashbookId());
 
-        return array_map(function (Chit $chit) use ($categories): ChitDTO {
-            return ChitFactory::create($chit, $categories[$chit->getCategoryId()]);
-        }, $chits);
+        return array_map(
+            function (Chit $chit) use ($categories) : ChitDTO {
+                return ChitFactory::create($chit, $categories[$chit->getCategoryId()]);
+            },
+            $chits
+        );
     }
 
     /**
      * @return array<int, Category>
      */
-    private function getCategories(CashbookId $cashbookId): array
+    private function getCategories(CashbookId $cashbookId) : array
     {
-        /** @var Category[] $categories */
-        $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
+        /**
+ * @var Category[] $categories
+*/
+        $categories     = $this->queryBus->handle(new CategoryListQuery($cashbookId));
         $categoriesById = [];
 
         foreach ($categories as $category) {
@@ -75,5 +83,4 @@ class ChitListQueryHandler
 
         return $categoriesById;
     }
-
 }

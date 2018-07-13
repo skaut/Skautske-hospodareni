@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Cashbook\Commands\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
@@ -22,23 +24,22 @@ final class AddInverseChit
     public function __construct(CashbookId $originalCashbookId, CashbookId $targetCashbookId, int $chitId)
     {
         $this->originaliCashbookId = $originalCashbookId;
-        $this->targetCashbookId = $targetCashbookId;
-        $this->chitId = $chitId;
+        $this->targetCashbookId    = $targetCashbookId;
+        $this->chitId              = $chitId;
     }
 
-    public function getOriginalCashbookId(): CashbookId
+    public function getOriginalCashbookId() : CashbookId
     {
         return $this->originaliCashbookId;
     }
 
-    public function getTargetCashbookId(): CashbookId
+    public function getTargetCashbookId() : CashbookId
     {
         return $this->targetCashbookId;
     }
 
-    public function getChitId(): int
+    public function getChitId() : int
     {
         return $this->chitId;
     }
-
 }

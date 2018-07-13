@@ -6,7 +6,6 @@ namespace Model\Unit\ReadModel\Queries;
 
 final class UnitQuery
 {
-
     /** @var int */
     private $unitId;
 
@@ -15,9 +14,8 @@ final class UnitQuery
         $this->unitId = $unitId;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
-
 }

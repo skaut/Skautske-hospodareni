@@ -9,21 +9,19 @@ use Codeception\Test\Unit;
 use eGen\MessageBus\Bus\QueryBus;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
-use function count;
 use Model\DTO\Cashbook\Category;
-use function random_bytes;
+use function array_map;
+use function count;
 
 class ChitListQueryHandlerTest extends Unit
 {
-
     private const CASHBOOK_ID = 123;
 
-    public function testReturnsChitsWithSorting(): void
+    public function testReturnsChitsWithSorting() : void
     {
         $chits = [
             \Helpers::mockChit(1, new Date('2018-01-02'), Operation::INCOME, 11),
@@ -50,7 +48,7 @@ class ChitListQueryHandlerTest extends Unit
         $this->assertCount(count($expectedOrder), $chitDtos);
 
         foreach ($expectedOrder as $index => $chitId) {
-            $dto = $chitDtos[$index];
+            $dto  = $chitDtos[$index];
             $chit = $chits[$chitId - 1];
 
             $this->assertSame($chit->getId(), $dto->getId());
@@ -64,14 +62,12 @@ class ChitListQueryHandlerTest extends Unit
         }
     }
 
-    private function prepareQueryBus(): QueryBus
+    private function prepareQueryBus() : QueryBus
     {
         $bus = m::mock(QueryBus::class);
 
-        $categories = array_map(function (int $id): Category {
-            return m::mock(Category::class, [
-                'getId' => $id,
-            ]);
+        $categories = array_map(function (int $id) : Category {
+            return m::mock(Category::class, ['getId' => $id]);
         }, [11, 22, 33, 44]);
 
         $bus->shouldReceive('handle')
@@ -82,9 +78,8 @@ class ChitListQueryHandlerTest extends Unit
         return $bus;
     }
 
-    private function getCashbookId(): Cashbook\CashbookId
+    private function getCashbookId() : Cashbook\CashbookId
     {
         return Cashbook\CashbookId::fromInt(self::CASHBOOK_ID);
     }
-
 }

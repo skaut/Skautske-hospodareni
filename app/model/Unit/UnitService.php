@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 use Model\Payment\IUnitResolver;
@@ -7,12 +9,14 @@ use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Model\Unit\UnitNotFoundException;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
+use Nette\Application\BadRequestException;
+use Nette\Security\Identity;
 use Nette\Security\User;
 use Skautis;
+use function is_array;
 
 class UnitService
 {
-
     /** @var Skautis\Skautis */
     private $skautis;
 
@@ -25,59 +29,60 @@ class UnitService
 
     public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver)
     {
-        $this->skautis = $skautis;
-        $this->units = $units;
+        $this->skautis      = $skautis;
+        $this->units        = $units;
         $this->unitResolver = $unitResolver;
     }
 
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
-        return (int)$this->skautis->getUser()->getUnitId();
+        return (int) $this->skautis->getUser()->getUnitId();
     }
 
     /**
      * @deprecated Use QueryBus with UnitQuery
      *
      * vrací detail jednotky
-     * @throws \Nette\Application\BadRequestException
+     * @throws BadRequestException
      */
-    public function getDetail(?int $unitId = NULL): \stdClass
+    public function getDetail(?int $unitId = null) : \stdClass
     {
-        if ($unitId === NULL) {
+        if ($unitId === null) {
             $unitId = $this->getUnitId();
         }
 
         try {
             return $this->units->findAsStdClass($unitId);
         } catch (Skautis\Exception $exc) {
-            throw new \Nette\Application\BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
+            throw new BadRequestException('Nemáte oprávnění pro získání informací o jednotce.');
         }
     }
 
-    public function getOfficialUnitId(int $unitId): int
+    public function getOfficialUnitId(int $unitId) : int
     {
         return $this->unitResolver->getOfficialUnitId($unitId);
     }
 
     /**
      * @deprecated Use QueryBus with UnitQuery
-     * @throws \Nette\Application\BadRequestException
+     * @throws BadRequestException
      */
-    public function getDetailV2(int $unitId): Unit
+    public function getDetailV2(int $unitId) : Unit
     {
         try {
             return $this->units->find($unitId);
         } catch (Skautis\Exception $exc) {
-            throw new \Nette\Application\BadRequestException("Nemáte oprávnění pro získání informací o jednotce.");
+            throw new BadRequestException('Nemáte oprávnění pro získání informací o jednotce.');
         }
     }
 
     /**
      * nalezne podřízené jednotky
+     *
      * @return Unit[]
      */
-    public function getSubunits(int $parentId): array
+    public function getSubunits(int $parentId) : array
     {
         return $this->units->findByParent($parentId);
     }
@@ -85,7 +90,7 @@ class UnitService
     /**
      * @return array<int, string>
      */
-    public function getSubunitPairs(int $parentId): array
+    public function getSubunitPairs(int $parentId) : array
     {
         $subUnits = $this->units->findByParent($parentId);
 
@@ -99,11 +104,10 @@ class UnitService
 
     /**
      * vrací jednotku, která má právní subjektivitu
-     * @return \stdClass
      */
-    public function getOficialUnit(?int $unitId = NULL)
+    public function getOficialUnit(?int $unitId = null) : \stdClass
     {
-        $unitId = $unitId ?? $this->getUnitId();
+        $unitId         = $unitId ?? $this->getUnitId();
         $officialUnitId = $this->unitResolver->getOfficialUnitId($unitId);
 
         return $this->getDetail($officialUnitId);
@@ -112,24 +116,22 @@ class UnitService
     /**
      * vrací oficiální název organizační jednotky (využití na paragonech)
      */
-    public function getOficialName(int $unitId): string
+    public function getOficialName(int $unitId) : string
     {
         $unit = $this->getOficialUnit($unitId);
-        return "IČO " . $unit->IC . " " . $unit->FullDisplayName . ", " . $unit->Street . ", " . $unit->City . ", " . $unit->Postcode;
+        return 'IČO ' . $unit->IC . ' ' . $unit->FullDisplayName . ', ' . $unit->Street . ', ' . $unit->City . ', ' . $unit->Postcode;
     }
 
     /**
-     * @param int $ID_Unit
-     * @param bool $self
      * @return Unit[]|array<int, Unit>
-     * @throws \Nette\Application\BadRequestException
+     * @throws BadRequestException
      */
-    public function getAllUnder(int $ID_Unit, bool $self = TRUE): array
+    public function getAllUnder(int $ID_Unit, bool $self = true) : array
     {
         $data = $self ? [$ID_Unit => $this->getDetail($ID_Unit)] : [];
         foreach ($this->units->findByParent($ID_Unit) as $u) {
             $data[$u->getId()] = $u;
-            $data = $data + $this->getAllUnder($u->getId(), FALSE);
+            $data              = $data + $this->getAllUnder($u->getId(), false);
         }
         return $data;
     }
@@ -137,9 +139,10 @@ class UnitService
 
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na čtení
+     *
      * @return array<int, string>
      */
-    public function getReadUnits(User $user): array
+    public function getReadUnits(User $user) : array
     {
         return $this->getUnits($user, BaseService::ACCESS_READ);
     }
@@ -151,7 +154,7 @@ class UnitService
      * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
      * @return array<int, string>
      */
-    public function getEditUnits(User $user): array
+    public function getEditUnits(User $user) : array
     {
         return $this->getUnits($user, BaseService::ACCESS_EDIT);
     }
@@ -159,9 +162,11 @@ class UnitService
     /**
      * @return array<int, string>
      */
-    public function getUnits(User $user, string $accessType): array
+    public function getUnits(User $user, string $accessType) : array
     {
-        /** @var \Nette\Security\Identity $identity */
+        /**
+ * @var Identity $identity
+*/
         $identity = $user->getIdentity();
 
         $res = [];
@@ -173,11 +178,12 @@ class UnitService
 
     /**
      * load camp troops
+     *
      * @return string[]
      */
-    public function getCampTroopNames(\stdClass $camp): array
+    public function getCampTroopNames(\stdClass $camp) : array
     {
-        if (!isset($camp->ID_UnitArray->string)) {
+        if (! isset($camp->ID_UnitArray->string)) {
             return [];
         }
 
@@ -199,5 +205,4 @@ class UnitService
 
         return $troopNames;
     }
-
 }

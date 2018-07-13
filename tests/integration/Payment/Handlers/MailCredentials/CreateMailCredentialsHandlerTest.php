@@ -1,38 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment\Handlers\MailCredentials;
 
+use Model\Common\User;
 use Model\Payment\Commands\CreateMailCredentials;
 use Model\Payment\EmailNotSetException;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentials\MailProtocol;
-use Model\Common\User;
 use Model\Payment\UserRepositoryStub;
 
 class CreateMailCredentialsHandlerTest extends \CommandHandlerTest
 {
-
     /** @var UserRepositoryStub */
     private $users;
 
-    public function _before()
+    public function _before() : void
     {
-        $this->tester->useConfigFiles([
-            'Payment/Handlers/MailCredentials/CreateMailCredentialsHandlerTest.neon',
-        ]);
+        $this->tester->useConfigFiles(['Payment/Handlers/MailCredentials/CreateMailCredentialsHandlerTest.neon']);
         parent::_before();
         $this->users = $this->tester->grabService(UserRepositoryStub::class);
         $this->tester->resetEmails();
     }
 
-    public function getTestedEntites(): array
+    public function getTestedEntites() : array
     {
         return [
             MailCredentials::class,
         ];
     }
 
-    public function testRecordToDatabaseIsAdded()
+    public function testRecordToDatabaseIsAdded() : void
     {
         $this->users->setUser(new User(10, 'František Maša', 'test@hospodareni.loc'));
 
@@ -48,7 +47,7 @@ class CreateMailCredentialsHandlerTest extends \CommandHandlerTest
         ]);
     }
 
-    public function testEmailIsSentToUser()
+    public function testEmailIsSentToUser() : void
     {
         $this->users->setUser(new User(10, 'František Maša', 'test@hospodareni.loc'));
 
@@ -57,16 +56,16 @@ class CreateMailCredentialsHandlerTest extends \CommandHandlerTest
         $this->tester->seeEmailCount(1);
     }
 
-    public function testExceptionIsThrownForUserWithoutEmail()
+    public function testExceptionIsThrownForUserWithoutEmail() : void
     {
-        $this->users->setUser(new User(10, 'František Maša', NULL));
+        $this->users->setUser(new User(10, 'František Maša', null));
 
         $this->expectException(EmailNotSetException::class);
 
         $this->commandBus->handle($this->getCommand());
     }
 
-    private function getCommand(): CreateMailCredentials
+    private function getCommand() : CreateMailCredentials
     {
         return new CreateMailCredentials(
             666,
@@ -78,5 +77,4 @@ class CreateMailCredentialsHandlerTest extends \CommandHandlerTest
             10
         );
     }
-
 }

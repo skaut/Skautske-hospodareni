@@ -1,23 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment;
 
-class VariableSymbolTest extends \Codeception\Test\Unit
-{
+use Codeception\Test\Unit;
 
-    public function testToStringReturnsValue()
+class VariableSymbolTest extends Unit
+{
+    public function testToStringReturnsValue() : void
     {
         $this->assertSame('123', (string) new VariableSymbol('123'));
     }
 
-    public function testVariableSymbolCantBeLongerThanTenSymbols()
+    public function testVariableSymbolCantBeLongerThanTenSymbols() : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         new VariableSymbol('12345678910');
     }
 
-    public function testVariableSymbolCantBeEmpty()
+    public function testVariableSymbolCantBeEmpty() : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -27,7 +30,7 @@ class VariableSymbolTest extends \Codeception\Test\Unit
     /**
      * @dataProvider getVariableSymbolsStartingWithZero
      */
-    public function testVariableSymbolCantStartWithZero(string $symbol)
+    public function testVariableSymbolCantStartWithZero(string $symbol) : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -38,7 +41,7 @@ class VariableSymbolTest extends \Codeception\Test\Unit
     /**
      * @dataProvider getNonNumericSymbol
      */
-    public function testVariableSymbolCantContainNonNumericSymbols($data)
+    public function testVariableSymbolCantContainNonNumericSymbols($data) : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -55,7 +58,7 @@ class VariableSymbolTest extends \Codeception\Test\Unit
         ];
     }
 
-    public function getVariableSymbolsStartingWithZero(): array
+    public function getVariableSymbolsStartingWithZero() : array
     {
         return [
             ['0123'],
@@ -63,9 +66,9 @@ class VariableSymbolTest extends \Codeception\Test\Unit
         ];
     }
 
-    public function testAreEqual()
+    public function testAreEqual() : void
     {
-        $first = new VariableSymbol('123');
+        $first  = new VariableSymbol('123');
         $second = new VariableSymbol('123');
 
         $this->assertTrue(
@@ -74,25 +77,24 @@ class VariableSymbolTest extends \Codeception\Test\Unit
         );
     }
 
-    public function areNotEqual(?VariableSymbol $first, ?VariableSymbol $second)
+    public function areNotEqual(?VariableSymbol $first, ?VariableSymbol $second) : void
     {
         $this->assertFalse(VariableSymbol::areEqual($first, $second));
     }
 
-    public function getNotEqualPairs(): array
+    public function getNotEqualPairs() : array
     {
         return [
             [new VariableSymbol('123'), new VariableSymbol('456')],
-            [new VariableSymbol('123'), NULL],
-            [NULL, new VariableSymbol('123')],
+            [new VariableSymbol('123'), null],
+            [null, new VariableSymbol('123')],
         ];
     }
 
-    public function testIntValue()
+    public function testIntValue() : void
     {
         $variableSymbol = new VariableSymbol('123');
 
         $this->assertSame(123, $variableSymbol->toInt());
     }
-
 }

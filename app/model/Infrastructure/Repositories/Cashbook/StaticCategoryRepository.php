@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Model\Cashbook\Category;
@@ -10,8 +12,7 @@ use Model\Infrastructure\Repositories\AbstractRepository;
 
 final class StaticCategoryRepository extends AbstractRepository implements IStaticCategoryRepository
 {
-
-    public function findByObjectType(ObjectType $type): array
+    public function findByObjectType(ObjectType $type) : array
     {
         return $this->getEntityManager()->createQueryBuilder()
             ->select('c')
@@ -27,15 +28,14 @@ final class StaticCategoryRepository extends AbstractRepository implements IStat
     /**
      * @throws CategoryNotFoundException
      */
-    public function find(int $id): Category
+    public function find(int $id) : Category
     {
         $category = $this->getEntityManager()->find(Category::class, $id);
 
-        if ($category === NULL) {
+        if ($category === null) {
             throw new CategoryNotFoundException();
         }
 
         return $category;
     }
-
 }

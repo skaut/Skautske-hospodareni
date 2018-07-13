@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Migrations;
 
 use Doctrine\DBAL\Migrations\AbstractMigration;
@@ -7,8 +9,7 @@ use Doctrine\DBAL\Schema\Schema;
 
 class Version20170528182347 extends AbstractMigration
 {
-
-    public function up(Schema $schema): void
+    public function up(Schema $schema) : void
     {
         $this->addSql('ALTER TABLE tc_commands ADD next_travel_id INT NOT NULL');
         $this->addSql('
@@ -17,9 +18,8 @@ class Version20170528182347 extends AbstractMigration
         ');
     }
 
-    public function down(Schema $schema): void
+    public function down(Schema $schema) : void
     {
         $this->addSql('ALTER TABLE tc_commands DROP next_travel_id');
     }
-
 }

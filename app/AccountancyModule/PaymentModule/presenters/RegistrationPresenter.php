@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\PaymentService;
+use function array_keys;
+use function array_slice;
+use function intdiv;
 
 class RegistrationPresenter extends BasePresenter
 {
-
     protected $readUnits;
 
     /** @var PaymentService */
@@ -25,7 +29,7 @@ class RegistrationPresenter extends BasePresenter
     public function __construct(IMassAddFormFactory $massAddFormFactory, PaymentService $model)
     {
         parent::__construct();
-        $this->model = $model;
+        $this->model              = $model;
         $this->massAddFormFactory = $massAddFormFactory;
     }
 
@@ -44,43 +48,44 @@ class RegistrationPresenter extends BasePresenter
         try {
             $list = $this->model->getPersonsFromRegistrationWithoutPayment(array_keys($this->readUnits), $id);
         } catch (\InvalidArgumentException $exc) {
-            $this->flashMessage("Neoprávněný přístup ke skupině.", "danger");
-            $this->redirect("Payment:default");
+            $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
+            $this->redirect('Payment:default');
             return;
         }
 
         $group = $this->model->getGroup($id);
 
-        if($group === NULL) {
-            $this->flashMessage("Neplatný požadavek na přidání registračních plateb", "danger");
-            $this->redirect("Payment:default");
+        if ($group === null) {
+            $this->flashMessage('Neplatný požadavek na přidání registračních plateb', 'danger');
+            $this->redirect('Payment:default');
         }
 
-        $form = $this["massAddForm"];
-        /** @var MassAddForm $form */
+        $form = $this['massAddForm'];
+        /**
+ * @var MassAddForm $form
+*/
 
         // performance issue - při větším množství zobrazených osob se nezpracuje formulář
         $list = array_slice($list, 0, 50);
 
         foreach ($list as $p) {
-            $stsCount = intdiv((int)$p['AmountServices'], self::STS_PRICE);
+            $stsCount = intdiv((int) $p['AmountServices'], self::STS_PRICE);
 
             $form->addPerson(
-                $p["ID_Person"],
-                $p["emails"],
-                $p["Person"],
-                (float)$p["AmountTotal"],
-                $stsCount !== 0 ? "{$stsCount}x STS" : ""
+                $p['ID_Person'],
+                $p['emails'],
+                $p['Person'],
+                (float) $p['AmountTotal'],
+                $stsCount !== 0 ? "{$stsCount}x STS" : ''
             );
         }
 
-        $this->template->id = $id;
-        $this->template->showForm = !empty($list);
+        $this->template->id       = $id;
+        $this->template->showForm = ! empty($list);
     }
 
     protected function createComponentMassAddForm()
     {
         return $this->massAddFormFactory->create($this->id);
     }
-
 }

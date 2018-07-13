@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Logger;
 
 use Model\DTO\Logger\Log as LogDTO;
@@ -7,8 +9,7 @@ use Model\Logger\Log;
 
 class LogFactory
 {
-
-    public static function create(Log $log): LogDTO
+    public static function create(Log $log) : LogDTO
     {
         return new LogDTO(
             $log->getUnitId(),
@@ -19,5 +20,4 @@ class LogFactory
             $log->getTypeId()
         );
     }
-
 }

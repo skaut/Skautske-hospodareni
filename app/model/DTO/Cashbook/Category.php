@@ -17,7 +17,6 @@ use Nette\SmartObject;
  */
 class Category
 {
-
     use SmartObject;
 
     /** @var int */
@@ -40,42 +39,41 @@ class Category
 
     public function __construct(int $id, string $name, Money $total, string $shortcut, Operation $operationType, bool $income)
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->total = $total;
-        $this->shortcut = $shortcut;
+        $this->id            = $id;
+        $this->name          = $name;
+        $this->total         = $total;
+        $this->shortcut      = $shortcut;
         $this->operationType = $operationType;
-        $this->income = $income;
+        $this->income        = $income;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getTotal(): Money
+    public function getTotal() : Money
     {
         return $this->total;
     }
 
-    public function getShortcut(): string
+    public function getShortcut() : string
     {
         return $this->shortcut;
     }
 
-    public function getOperationType(): Operation
+    public function getOperationType() : Operation
     {
         return $this->operationType;
     }
 
-    public function isIncome(): bool
+    public function isIncome() : bool
     {
         return $this->income;
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Skautis;
 
 use Dibi\Connection;
@@ -7,7 +9,6 @@ use Model\BaseTable;
 
 class ObjectTable
 {
-
     private const TABLE = BaseTable::TABLE_OBJECT;
 
     /** @var Connection */
@@ -18,7 +19,7 @@ class ObjectTable
         $this->connection = $connection;
     }
 
-    public function add(int $skautisId, string $type): int
+    public function add(int $skautisId, string $type) : int
     {
         return (int) $this->connection->insert(self::TABLE, [
             'skautisId' => $skautisId,
@@ -29,7 +30,7 @@ class ObjectTable
     /**
      * Vyhleda akci|jednotku
      */
-    public function getLocalId(int $skautisEventId, string $type): ?int
+    public function getLocalId(int $skautisEventId, string $type) : ?int
     {
         $id = $this->connection->select('id')
             ->from(self::TABLE)
@@ -37,10 +38,10 @@ class ObjectTable
             ->where('type = %s', $type)
             ->fetchSingle();
 
-        return $id !== FALSE ? $id : NULL;
+        return $id !== false ? $id : null;
     }
 
-    public function getSkautisId(int $localId, string $type): ?int
+    public function getSkautisId(int $localId, string $type) : ?int
     {
         $id = $this->connection->select('skautisId')
             ->from(self::TABLE)
@@ -48,7 +49,6 @@ class ObjectTable
             ->where('type = %s', $type)
             ->fetchSingle();
 
-        return $id !== FALSE ? $id : NULL;
+        return $id !== false ? $id : null;
     }
-
 }

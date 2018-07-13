@@ -11,7 +11,6 @@ use Skautis\Wsdl\WebServiceInterface;
 
 final class CampStatesHandler
 {
-
     private const CACHE_KEY = 'camp_states';
 
     /** @var WebServiceInterface */
@@ -23,20 +22,19 @@ final class CampStatesHandler
     public function __construct(WebServiceInterface $eventWebservice, Cache $cache)
     {
         $this->eventWebservice = $eventWebservice;
-        $this->cache = $cache;
+        $this->cache           = $cache;
     }
 
 
     /**
      * @return array<int,string>
      */
-    public function handle(CampStates $query): array
+    public function handle(CampStates $query) : array
     {
-        return $this->cache->load(self::CACHE_KEY, function() {
+        return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(
                 $this->eventWebservice->eventCampStateAll()
             );
         });
     }
-
 }

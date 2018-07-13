@@ -6,7 +6,6 @@ namespace Model\Cashbook\Cashbook;
 
 final class CashbookId
 {
-
     /** @var string */
     private $id;
 
@@ -18,12 +17,12 @@ final class CashbookId
     /**
      * @deprecated Use self::fromString
      */
-    public static function fromInt(int $id): self
+    public static function fromInt(int $id) : self
     {
         return new self((string) $id);
     }
 
-    public static function fromString(string $id): self
+    public static function fromString(string $id) : self
     {
         return new self($id);
     }
@@ -31,24 +30,23 @@ final class CashbookId
     /**
      * @deprecated This is only intermediate method, because CashbookId will wrap uuid soon
      */
-    public function toInt(): int
+    public function toInt() : int
     {
         return (int) $this->id;
     }
 
-    public function toString(): string
+    public function toString() : string
     {
         return $this->id;
     }
 
-    public function __toString(): string
+    public function __toString() : string
     {
         return $this->toString();
     }
 
-    public function equals(self $otherValueObject): bool
+    public function equals(self $otherValueObject) : bool
     {
         return $otherValueObject->id === $this->id;
     }
-
 }

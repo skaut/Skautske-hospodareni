@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Unit\Repositories;
 
 use Model\Unit\Unit;
@@ -7,20 +9,18 @@ use Model\Unit\UnitNotFoundException;
 
 interface IUnitRepository
 {
-
     /**
      * @return Unit[]
      */
-    public function findByParent(int $parentId): array;
+    public function findByParent(int $parentId) : array;
 
     /**
      * @throws UnitNotFoundException
      */
-    public function find(int $id): Unit;
+    public function find(int $id) : Unit;
 
     /**
      * @deprecated Use IUnitRepository::find()
      */
-    public function findAsStdClass(int $id): \stdClass;
-
+    public function findAsStdClass(int $id) : \stdClass;
 }

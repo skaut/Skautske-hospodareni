@@ -9,7 +9,6 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class MoveChitsToDifferentCashbookHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -18,7 +17,7 @@ final class MoveChitsToDifferentCashbookHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(MoveChitsToDifferentCashbook $command): void
+    public function handle(MoveChitsToDifferentCashbook $command) : void
     {
         $sourceCashbook = $this->cashbooks->find($command->getSourceCashbookId());
         $targetCashbook = $this->cashbooks->find($command->getTargetCashbookId());
@@ -32,5 +31,4 @@ final class MoveChitsToDifferentCashbookHandler
         $this->cashbooks->save($targetCashbook);
         $this->cashbooks->save($sourceCashbook);
     }
-
 }

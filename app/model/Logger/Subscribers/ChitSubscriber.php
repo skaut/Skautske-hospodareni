@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Logger\Subscribers;
 
 use Model\Chit\Events\ChitWasRemoved;
@@ -9,7 +11,6 @@ use Model\LoggerService;
 
 class ChitSubscriber
 {
-
     /** @var LoggerService */
     private $loggerService;
 
@@ -18,26 +19,25 @@ class ChitSubscriber
         $this->loggerService = $ls;
     }
 
-    public function handleUpdate(ChitWasUpdated $chit): void
+    public function handleUpdate(ChitWasUpdated $chit) : void
     {
         $this->loggerService->log(
             $chit->getUnitId(),
             $chit->getUserId(),
-            "Uživatel '" . $chit->getUserName() . "' upravil paragon (ID=" . $chit->getChitId() . ").",
+            "Uživatel '" . $chit->getUserName() . "' upravil paragon (ID=" . $chit->getChitId() . ').',
             Type::get(Type::OBJECT),
             $chit->getEventId()
         );
     }
 
-    public function handleRemove(ChitWasRemoved $chit): void
+    public function handleRemove(ChitWasRemoved $chit) : void
     {
         $this->loggerService->log(
             $chit->getUnitId(),
             $chit->getUserId(),
-            "Uživatel '" . $chit->getUserName() . "' odebral paragon (ID=" . $chit->getChitId() . ", účel=" . $chit->getChitPurpose() . ").",
+            "Uživatel '" . $chit->getUserName() . "' odebral paragon (ID=" . $chit->getChitId() . ', účel=' . $chit->getChitPurpose() . ').',
             Type::get(Type::OBJECT),
             $chit->getEventId()
         );
     }
-
 }

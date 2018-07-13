@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Travel\Command;
 
 use Model\Travel\Command;
@@ -7,7 +9,6 @@ use Money\Money;
 
 class TransportTravel extends Travel
 {
-
     /** @var Money */
     private $price;
 
@@ -17,19 +18,18 @@ class TransportTravel extends Travel
         $this->price = $price;
     }
 
-    public function update(Money $price, TravelDetails $details): void
+    public function update(Money $price, TravelDetails $details) : void
     {
-        if( ! $price->isPositive()) {
-            throw new \InvalidArgumentException("Price must be positive");
+        if (! $price->isPositive()) {
+            throw new \InvalidArgumentException('Price must be positive');
         }
 
         $this->price = $price;
         $this->setDetails($details);
     }
 
-    public function getPrice(): Money
+    public function getPrice() : Money
     {
         return $this->price;
     }
-
 }

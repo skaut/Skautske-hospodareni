@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\AccountancyModule\TravelModule\Components;
-
 
 use App\AccountancyModule\Factories\BaseGridControl;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,10 +10,12 @@ use Model\DTO\Travel\Command;
 use Model\TravelService;
 use Ublaboo\DataGrid\DataGrid;
 use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
+use function array_column;
+use function array_filter;
+use function array_unique;
 
 class CommandGrid extends BaseGridControl
 {
-
     /** @var int */
     private $unitId;
 
@@ -29,7 +31,7 @@ class CommandGrid extends BaseGridControl
     }
 
 
-    protected function createComponentGrid(): DataGrid
+    protected function createComponentGrid() : DataGrid
     {
         $grid = $this->createGrid();
 
@@ -44,16 +46,18 @@ class CommandGrid extends BaseGridControl
         $grid->addColumnText('note', 'Poznámka');
         $grid->addColumnText('state', 'Stav')
             ->setSortable()
-            ->setFilterSelect([
+            ->setFilterSelect(
+                [
                 Command::STATE_IN_PROGRESS => 'Rozpracovaný',
                 Command::STATE_CLOSED => 'Uzavřený',
-             ])->setPrompt('-');
+                ]
+            )->setPrompt('-');
 
         $grid->addColumnText('action', '');
 
-        $grid->setPagination(FALSE);
+        $grid->setPagination(false);
 
-        $grid->setDefaultFilter(['state' => Command::STATE_IN_PROGRESS], FALSE);
+        $grid->setDefaultFilter(['state' => Command::STATE_IN_PROGRESS], false);
 
         $commands = $this->travel->getAllCommands($this->unitId);
 
@@ -63,13 +67,12 @@ class CommandGrid extends BaseGridControl
         $vehicleIds = array_column($commands, 'vehicleId');
         $vehicleIds = array_unique(array_filter($vehicleIds));
 
-        $grid->onRender[] = function(DataGrid $grid) use ($commandIds, $vehicleIds) {
-            $grid->template->types = $this->travel->getTypes($commandIds);
+        $grid->onRender[] = function (DataGrid $grid) use ($commandIds, $vehicleIds) : void {
+            $grid->template->types    = $this->travel->getTypes($commandIds);
             $grid->template->vehicles = $this->travel->findVehiclesByIds($vehicleIds);
-            $grid->setTemplateFile(__DIR__ . "/templates/CommandGrid.latte");
+            $grid->setTemplateFile(__DIR__ . '/templates/CommandGrid.latte');
         };
 
         return $grid;
     }
-
 }

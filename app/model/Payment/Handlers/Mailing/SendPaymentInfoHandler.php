@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\Handlers\Mailing;
 
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
@@ -11,7 +13,6 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class SendPaymentInfoHandler
 {
-
     /** @var IPaymentRepository */
     private $payments;
 
@@ -20,11 +21,11 @@ final class SendPaymentInfoHandler
 
     public function __construct(IPaymentRepository $payments, MailingService $mailingService)
     {
-        $this->payments = $payments;
+        $this->payments       = $payments;
         $this->mailingService = $mailingService;
     }
 
-    public function handle(SendPaymentInfo $command): void
+    public function handle(SendPaymentInfo $command) : void
     {
         $payment = $this->payments->find($command->getPaymentId());
 
@@ -42,5 +43,4 @@ final class SendPaymentInfoHandler
 
         $this->payments->save($payment);
     }
-
 }

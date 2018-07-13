@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\UnitAccountModule;
 
 use App\AccountancyModule\UnitAccountModule\Components\ChitListControl;
@@ -17,17 +19,19 @@ use Model\EventEntity;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Multiplier;
 use Nette\Http\IResponse;
+use function array_filter;
+use function array_map;
 use function in_array;
 
 class ChitPresenter extends BasePresenter
 {
-
     public $info;
 
     /**
      * object type => [
      *      cashbook ID => object
      * ]
+     *
      * @var array<string, array<string, array>>
      */
     private $cashbooks = [];
@@ -48,40 +52,46 @@ class ChitPresenter extends BasePresenter
     {
         parent::startup();
         $this->template->onlyUnlocked = $this->onlyUnlocked;
-        $oficialUnit = $this->unitService->getOficialUnit($this->aid);
+        $oficialUnit                  = $this->unitService->getOficialUnit($this->aid);
 
-        if ($oficialUnit->ID != $this->aid) {
-            $this->flashMessage("Přehled paragonů je dostupný jen pro organizační jednotky.");
-            $this->redirect("this", ["aid" => $oficialUnit->ID]);
+        if ($oficialUnit->ID === $this->aid) {
+            return;
         }
+
+        $this->flashMessage('Přehled paragonů je dostupný jen pro organizační jednotky.');
+        $this->redirect('this', ['aid' => $oficialUnit->ID]);
     }
 
-    public function handleLockCashbook(CashbookId $cashbookId): void
+    public function handleLockCashbook(CashbookId $cashbookId) : void
     {
-        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId), $this->user->getId()));
+        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId->toString ()), $this->user->getId()));
 
         $this->flashMessage('Pokladní kniha byla uzamčena', 'success');
         $this->redrawControl();
     }
 
-    public function actionDefault($year = NULL) : void
+    public function actionDefault($year = null) : void
     {
         $this->info = [];
-        $units = [];
+        $units      = [];
 
         foreach ($this->unitService->getReadUnits($this->getUser()) as $ik => $iu) {
-            $units[$ik]["DisplayName"] = $iu;
+            $units[$ik]['DisplayName'] = $iu;
         }
 
-        /** @var EventEntity $eventService */
+        /**
+ * @var EventEntity $eventService
+*/
         $eventService = $this->context->getService('eventService');
-        /** @var EventEntity $campService */
+        /**
+ * @var EventEntity $campService
+*/
         $campService = $this->context->getService('campService');
 
         $objectsByType = [
-            ObjectType::UNIT    => $units,
-            ObjectType::EVENT   => $eventService->event->getAll($this->year),
-            ObjectType::CAMP    => $campService->event->getAll($this->year),
+            ObjectType::UNIT => $units,
+            ObjectType::EVENT => $eventService->event->getAll($this->year),
+            ObjectType::CAMP => $campService->event->getAll($this->year),
         ];
 
         foreach ($objectsByType as $type => $objects) {
@@ -92,57 +102,63 @@ class ChitPresenter extends BasePresenter
     public function renderDefault() : void
     {
         $this->template->types = [
-            ObjectType::EVENT => "Výpravy",
-            ObjectType::CAMP => "Tábory",
-            ObjectType::UNIT => "Jednotky"
+            ObjectType::EVENT => 'Výpravy',
+            ObjectType::CAMP => 'Tábory',
+            ObjectType::UNIT => 'Jednotky',
         ];
 
-        $this->template->info = $this->cashbooks;
-        $this->template->isCashbookEmpty = function (string $cashbookId): bool {
-            /** @var ChitListControl $chitList */
+        $this->template->info            = $this->cashbooks;
+        $this->template->isCashbookEmpty = function (string $cashbookId) : bool {
+            /**
+ * @var ChitListControl $chitList
+*/
             $chitList = $this['chitList-' . $cashbookId];
 
             return $chitList->isEmpty();
         };
     }
 
-    protected function createComponentChitList(string $cashbookId): Multiplier
+    protected function createComponentChitList(string $cashbookId) : Multiplier
     {
-        return new Multiplier(function (string $cashbookId): ChitListControl {
-            $cashbookIdVo = CashbookId::fromInt((int)$cashbookId);
+        return new Multiplier(
+            function (string $cashbookId) : ChitListControl {
+                $cashbookIdVo = CashbookId::fromInt((int) $cashbookId);
 
-            if ( ! $this->canEditCashbook($cashbookIdVo)) {
-                throw new BadRequestException("Cashbook #$cashbookId not found", IResponse::S404_NOT_FOUND);
+                if (! $this->canEditCashbook($cashbookIdVo)) {
+                    throw new BadRequestException("Cashbook #$cashbookId not found", IResponse::S404_NOT_FOUND);
+                }
+
+                return $this->chitListFactory->create($cashbookIdVo, (bool)$this->onlyUnlocked);
             }
-
-            return $this->chitListFactory->create($cashbookIdVo, $this->onlyUnlocked);
-        });
+        );
     }
 
-    private function canEditCashbook(CashbookId $cashbookId): bool
+    private function canEditCashbook(CashbookId $cashbookId) : bool
     {
         foreach ($this->cashbooks as $cashbookList) {
             if (isset($cashbookList[$cashbookId->toString()])) {
-                return TRUE;
+                return true;
             }
         }
 
-        return FALSE;
+        return false;
     }
 
     /**
-     * @param ObjectType $objectType
      * @param array $objects
      * @return array<string, array>
      */
-    private function getAllChitsByObjectId(ObjectType $objectType, array $objects): array
+    private function getAllChitsByObjectId(ObjectType $objectType, array $objects) : array
     {
-        if (in_array($objectType->getValue(), [ObjectType::EVENT, ObjectType::CAMP], TRUE)) { //filtrování akcí spojených pouze s danou jednotkou
+        if (in_array($objectType->getValue(), [ObjectType::EVENT, ObjectType::CAMP], true)) { //filtrování akcí spojených pouze s danou jednotkou
             $readableUnits = $this->unitService->getReadUnits($this->user);
 
-            $objects = array_filter($objects, function (array $object) use ($readableUnits): bool {
-                return isset($readableUnits[$object['ID_Unit']]);
-            });
+            $objects = array_filter(
+                $objects,
+                function (array $object) use ($readableUnits) : bool {
+                    return isset($readableUnits[$object['ID_Unit']]);
+                }
+            );
         } else {
             foreach ($objects as $id => $object) {
                 $objects[$id] = [
@@ -165,29 +181,27 @@ class ChitPresenter extends BasePresenter
     /**
      * @return CashbookId[]
      */
-    private function getCashbookIds(ObjectType $object, int $objectId): array
+    private function getCashbookIds(ObjectType $object, int $objectId) : array
     {
         if ($object->equalsValue(ObjectType::CAMP)) {
-            return [
-                $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($objectId)))
-            ];
+            return [$this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($objectId)))];
         }
 
         if ($object->equalsValue(ObjectType::EVENT)) {
-            return [
-                $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($objectId)))
-            ];
+            return [$this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($objectId)))];
         }
 
         if ($object->equalsValue(ObjectType::UNIT)) {
             $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($objectId));
 
-            return array_map(function (UnitCashbook $cashbook): CashbookId {
-                return $cashbook->getCashbookId();
-            }, $unitCashbooks);
+            return array_map(
+                function (UnitCashbook $cashbook) : CashbookId {
+                    return $cashbook->getCashbookId();
+                },
+                $unitCashbooks
+            );
         }
 
         throw new \RuntimeException('Unknown cashbook type');
     }
-
 }

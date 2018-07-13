@@ -13,7 +13,6 @@ use Model\Event\SkautisEventId;
  */
 class UpdateEvent
 {
-
     /** @var SkautisEventId */
     private $eventId;
 
@@ -37,48 +36,47 @@ class UpdateEvent
 
     public function __construct(SkautisEventId $eventId, string $name, Date $startDate, Date $endDate, ?string $location, int $scopeId, int $typeId)
     {
-        $this->eventId = $eventId;
-        $this->name = $name;
+        $this->eventId   = $eventId;
+        $this->name      = $name;
         $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->location = $location;
-        $this->scopeId = $scopeId;
-        $this->typeId = $typeId;
+        $this->endDate   = $endDate;
+        $this->location  = $location;
+        $this->scopeId   = $scopeId;
+        $this->typeId    = $typeId;
     }
 
-    public function getEventId(): SkautisEventId
+    public function getEventId() : SkautisEventId
     {
         return $this->eventId;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate() : Date
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate() : Date
     {
         return $this->endDate;
     }
 
-    public function getLocation(): ?string
+    public function getLocation() : ?string
     {
         return $this->location;
     }
 
-    public function getScopeId(): int
+    public function getScopeId() : int
     {
         return $this->scopeId;
     }
 
-    public function getTypeId(): int
+    public function getTypeId() : int
     {
         return $this->typeId;
     }
-
 }

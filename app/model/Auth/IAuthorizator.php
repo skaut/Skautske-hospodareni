@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Auth;
 
 interface IAuthorizator
 {
-
     /**
      * Checks whether action is allowed
      *
@@ -13,6 +14,5 @@ interface IAuthorizator
      *
      * @param string[] $action [resource_class, action_name]
      */
-    public function isAllowed(array $action, ?int $resourceId): bool;
-
+    public function isAllowed(array $action, ?int $resourceId) : bool;
 }

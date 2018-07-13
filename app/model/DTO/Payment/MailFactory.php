@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Payment;
 
 use Model\Payment\MailCredentials;
 
 class MailFactory
 {
-
     public static function create(MailCredentials $credentials) : Mail
     {
         return new Mail(
@@ -17,5 +18,4 @@ class MailFactory
             $credentials->getProtocol()->getValue()
         );
     }
-
 }

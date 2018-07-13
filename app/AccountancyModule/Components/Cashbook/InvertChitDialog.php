@@ -24,13 +24,14 @@ use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
 use function count;
 use function in_array;
+use function sprintf;
 
 class InvertChitDialog extends BaseControl
 {
-
     /**
      * (string because persistent parameters aren't auto-casted)
-     * @var int|string|NULL
+     *
+     * @var        int|string|NULL
      * @persistent
      */
     public $chitId;
@@ -52,18 +53,18 @@ class InvertChitDialog extends BaseControl
         parent::__construct();
         $this->cashbookId = $cashbookId;
         $this->commandBus = $commandBus;
-        $this->queryBus = $queryBus;
+        $this->queryBus   = $queryBus;
     }
 
-    public function handleOpen(int $chitId): void
+    public function handleOpen(int $chitId) : void
     {
         $this->chitId = $chitId;
         $this->redrawControl();
     }
 
-    public function render(): void
+    public function render() : void
     {
-        if ($this->chitId !== NULL && ! $this->isChitValid()) {
+        if ($this->chitId !== null && ! $this->isChitValid()) {
             throw new BadRequestException(
                 sprintf('Chit %d doesn\'t exist or can\'t be inverted', $this->chitId),
                 IResponse::S404_NOT_FOUND
@@ -72,10 +73,12 @@ class InvertChitDialog extends BaseControl
 
         $template = $this->template;
 
-        $template->setParameters([
-            'renderModal' => $this->chitId !== NULL,
+        $template->setParameters(
+            [
+            'renderModal' => $this->chitId !== null,
             'noCashbooks' => ! $this->isChitValid() || count($this->getCashbooks()) === 0,
-        ]);
+            ]
+        );
 
         $template->setFile(__DIR__ . '/templates/InvertChitDialog.latte');
         $template->render();
@@ -84,7 +87,7 @@ class InvertChitDialog extends BaseControl
     /**
      * @return CashbookType[]
      */
-    public static function getValidInverseCashbookTypes(): array
+    public static function getValidInverseCashbookTypes() : array
     {
         return [
             CashbookType::get(CashbookType::TROOP),
@@ -92,9 +95,9 @@ class InvertChitDialog extends BaseControl
         ];
     }
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
-        if ( ! $this->isChitValid()) {
+        if (! $this->isChitValid()) {
             throw new \RuntimeException('Chit is not set or is not valid for inverting');
         }
 
@@ -106,9 +109,9 @@ class InvertChitDialog extends BaseControl
         $form->addSubmit('send', 'Vytvořit protidoklad')
             ->setAttribute('class', 'ajax');
 
-        $form->onSuccess[] = function (BaseForm $form, array $values) {
+        $form->onSuccess[] = function (BaseForm $form, array $values) : void {
             $cashbookId = CashbookId::fromString($values['cashbookId']);
-            $this->commandBus->handle(new AddInverseChit($this->cashbookId,  $cashbookId, (int) $this->chitId));
+            $this->commandBus->handle(new AddInverseChit($this->cashbookId, $cashbookId, (int) $this->chitId));
             $this->presenter->flashMessage('Protidoklad byl vytvořen', 'success');
             $this->close();
         };
@@ -119,17 +122,19 @@ class InvertChitDialog extends BaseControl
     /**
      * @return array<string, string>
      */
-    private function getCashbooks(): array
+    private function getCashbooks() : array
     {
-        if ($this->cashbooks !== NULL) {
+        if ($this->cashbooks !== null) {
             return $this->cashbooks;
         }
 
-        /** @var SkautisRole|NULL $role */
+        /**
+ * @var SkautisRole|NULL $role
+*/
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         $chit = $this->getChit();
 
-        if ($role === NULL || $chit === NULL) {
+        if ($role === null || $chit === null) {
             return [];
         }
 
@@ -138,14 +143,18 @@ class InvertChitDialog extends BaseControl
         $cashbooks = [];
 
         foreach ($units as $unit) {
-            /** @var Unit $unit */
+            /**
+ * @var Unit $unit
+*/
             $type = CashbookType::get($unit->isOfficial() ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP);
 
-            if ( ! in_array($type, $chit->getInverseCashbookTypes(), TRUE)) {
+            if (! in_array($type, $chit->getInverseCashbookTypes(), true)) {
                 continue;
             }
 
-            /** @var UnitCashbook[] $unitCashbooks */
+            /**
+ * @var UnitCashbook[] $unitCashbooks
+*/
             $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unit->getId()));
 
             foreach ($unitCashbooks as $cashbook) {
@@ -158,39 +167,38 @@ class InvertChitDialog extends BaseControl
         return $cashbooks;
     }
 
-    private function isChitValid(): bool
+    private function isChitValid() : bool
     {
         // No chit selected -> modal closed
-        if ($this->chitId === NULL) {
-            return FALSE;
+        if ($this->chitId === null) {
+            return false;
         }
 
         $chit = $this->getChit();
 
         // Nonexistent chit
-        if ($chit === NULL) {
-            return FALSE;
+        if ($chit === null) {
+            return false;
         }
 
         // Right now only inverting to unit cashbook is supported
         foreach ($chit->getInverseCashbookTypes() as $type) {
             if ($type->getSkautisObjectType()->equalsValue(ObjectType::UNIT)) {
-                return TRUE;
+                return true;
             }
         }
 
-        return FALSE;
+        return false;
     }
 
-    private function getChit(): ?Chit
+    private function getChit() : ?Chit
     {
         return $this->queryBus->handle(new ChitQuery($this->cashbookId, (int) $this->chitId));
     }
 
-    private function close(): void
+    private function close() : void
     {
-        $this->chitId = NULL;
+        $this->chitId = null;
         $this->redrawControl();
     }
-
 }

@@ -61,7 +61,8 @@
         "phpstan/phpstan-dibi": "^0.9.0",
         "phpstan/phpstan-nette": "^0.9.0",
         "phpstan/phpstan-doctrine": "^0.9.0",
-        "roave/security-advisories": "dev-master"
+        "roave/security-advisories": "dev-master",
+        "doctrine/coding-standard": "^4.0"
     },
     "repositories": [
         {

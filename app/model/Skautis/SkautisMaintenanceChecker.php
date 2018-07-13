@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Skautis;
 
 use Skautis\Skautis;
 
 class SkautisMaintenanceChecker
 {
-
     /** @var Skautis */
     private $skautis;
 
@@ -15,9 +16,8 @@ class SkautisMaintenanceChecker
         $this->skautis = $skautis;
     }
 
-    public function isMaintenance(): bool
+    public function isMaintenance() : bool
     {
         return $this->skautis->isMaintenance();
     }
-
 }

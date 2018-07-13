@@ -1,36 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model;
 
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
-use Nette\Utils\Strings;
 
 class UserService extends BaseService
 {
-
     /**
      * varcí ID role aktuálně přihlášeného uživatele
      */
-    public function getRoleId(): ?int
+    public function getRoleId() : ?int
     {
         return $this->skautis->getUser()->getRoleId();
     }
 
     /**
      * vrací pole
-     * @param bool $activeOnly
      * @return array všech dostupných rolí přihlášeného uživatele
      */
-    public function getAllSkautisRoles($activeOnly = TRUE)
+    public function getAllSkautisRoles(bool $activeOnly = true) : array
     {
-        return $this->skautis->user->UserRoleAll(["ID_User" => $this->getUserDetail()->ID, "IsActive" => $activeOnly]);
+        return $this->skautis->user->UserRoleAll(['ID_User' => $this->getUserDetail()->ID, 'IsActive' => $activeOnly]);
     }
 
     public function getUserDetail()
     {
         $id = __FUNCTION__;
-        if (!($res = $this->loadSes($id))) {
+        if (! ($res = $this->loadSes($id))) {
             $res = $this->saveSes($id, $this->skautis->user->UserDetail());
         }
         return $res;
@@ -38,14 +37,15 @@ class UserService extends BaseService
 
     /**
      * změní přihlášenou roli do skautISu
-     * @param int $id
      */
-    public function updateSkautISRole($id): void
+    public function updateSkautISRole(int $id) : void
     {
-        $response = $this->skautis->user->LoginUpdate(["ID_UserRole" => $id, "ID" => $this->skautis->getUser()->getLoginId()]);
-        if ($response) {
-            $this->skautis->getUser()->updateLoginData(NULL, $id, $response->ID_Unit);
+        $response = $this->skautis->user->LoginUpdate(['ID_UserRole' => $id, 'ID' => $this->skautis->getUser()->getLoginId()]);
+        if (! $response) {
+            return;
         }
+
+        $this->skautis->getUser()->updateLoginData(null, $id, $response->ID_Unit);
     }
 
     /**
@@ -53,7 +53,7 @@ class UserService extends BaseService
      * @internal  Use query bus with ActiveSkautisRoleQuery
      * @see ActiveSkautisRoleQuery
      */
-    public function getActualRole(): ?SkautisRole
+    public function getActualRole() : ?SkautisRole
     {
         foreach ($this->getAllSkautisRoles() as $r) {
             if (isset($r->Key) && $r->ID === $this->getRoleId()) {
@@ -61,24 +61,23 @@ class UserService extends BaseService
             }
         }
 
-        return NULL;
+        return null;
     }
 
     /**
      * vrací kompletní seznam informací o přihlášené osobě
-     * @return \stdClass
      */
-    public function getPersonalDetail()
+    public function getPersonalDetail() : \stdClass
     {
-        $user = $this->getUserDetail();
-        $person = $this->skautis->org->personDetail((["ID" => $user->ID_Person]));
+        $user   = $this->getUserDetail();
+        $person = $this->skautis->org->personDetail((['ID' => $user->ID_Person]));
         return $person;
     }
 
     /**
      * kontroluje jestli je přihlášení platné
      */
-    public function isLoggedIn(): bool
+    public function isLoggedIn() : bool
     {
         return $this->skautis->getUser()->isLoggedIn();
     }
@@ -88,11 +87,11 @@ class UserService extends BaseService
         return $this->skautis->getUser()->updateLogoutTime()->getLogoutDate();
     }
 
-    public function getAccessArrays(UnitService $us): array
+    public function getAccessArrays(UnitService $us) : array
     {
         $role = $this->getActualRole();
 
-        if ($role !== NULL) {
+        if ($role !== null) {
             $unitIds = $role->isBasicUnit() || $role->isTroop()
                 ? $us->getAllUnder($role->getUnitId())
                 : [$role->getUnitId() => $us->getDetail($role->getUnitId())];
@@ -100,7 +99,7 @@ class UserService extends BaseService
             if ($role->isOfficer()) {
                 return [
                     self::ACCESS_READ => $unitIds,
-                    self::ACCESS_EDIT => []
+                    self::ACCESS_EDIT => [],
                 ];
             }
 
@@ -121,9 +120,8 @@ class UserService extends BaseService
     /**
      * vrací adresu skautisu např.: https://is.skaut.cz/
      */
-    public function getSkautisUrl(): string
+    public function getSkautisUrl() : string
     {
         return $this->skautis->getConfig()->getBaseUrl();
     }
-
 }

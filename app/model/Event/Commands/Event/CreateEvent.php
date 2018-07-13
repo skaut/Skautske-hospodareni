@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\Commands\Event;
 
 use Cake\Chronos\Date;
@@ -10,7 +12,6 @@ use Model\Event\Handlers\Event\CreateEventHandler;
  */
 final class CreateEvent
 {
-
     /** @var string */
     private $name;
 
@@ -40,50 +41,48 @@ final class CreateEvent
         ?string $location,
         int $scopeId,
         int $typeId
-    )
-    {
-        $this->name = $name;
+    ) {
+        $this->name      = $name;
         $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->unitId = $unitId;
-        $this->location = $location;
-        $this->scopeId = $scopeId;
-        $this->typeId = $typeId;
+        $this->endDate   = $endDate;
+        $this->unitId    = $unitId;
+        $this->location  = $location;
+        $this->scopeId   = $scopeId;
+        $this->typeId    = $typeId;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate() : Date
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate() : Date
     {
         return $this->endDate;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getLocation(): ?string
+    public function getLocation() : ?string
     {
         return $this->location;
     }
 
-    public function getScopeId(): int
+    public function getScopeId() : int
     {
         return $this->scopeId;
     }
 
-    public function getTypeId(): int
+    public function getTypeId() : int
     {
         return $this->typeId;
     }
-
 }

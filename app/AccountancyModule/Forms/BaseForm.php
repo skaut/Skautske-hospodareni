@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Forms;
 
 use App\FormRenderer;
@@ -13,20 +15,18 @@ class BaseForm extends Form
     /** @var CsrfProtection */
     private $protection;
 
-    public function __construct(bool $inline = FALSE)
+    public function __construct(bool $inline = false)
     {
-        parent::__construct(NULL, NULL);
+        parent::__construct(null, null);
         $this->setRenderer(new FormRenderer($inline));
         $this->protection = parent::addProtection('Vypršela platnost formuláře, zkus to ještě jednou.');
     }
 
     /**
      * @deprecated CSRF protection is auto-enabled for all forms
-     * @param string|NULL $message
      */
-    public function addProtection($message = NULL) : CsrfProtection
+    public function addProtection($errorMessage = null) : CsrfProtection
     {
         return $this->protection;
     }
-
 }

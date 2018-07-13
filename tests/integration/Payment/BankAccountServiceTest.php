@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Integration\Pairing;
 
 use Model\Payment\BankAccount;
@@ -11,7 +13,6 @@ use Model\Payment\UnitResolverStub;
 
 class BankAccountServiceTest extends \IntegrationTest
 {
-
     /** @var BankAccountService */
     private $bankAccountService;
 
@@ -25,17 +26,17 @@ class BankAccountServiceTest extends \IntegrationTest
     private $unitResolver;
 
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->tester->useConfigFiles(['Payment/BankAccountServiceTest.neon']);
         parent::_before();
         $this->bankAccountService = $this->tester->grabService(BankAccountService::class);
-        $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
-        $this->groups = $this->tester->grabService(IGroupRepository::class);
-        $this->unitResolver = $this->tester->grabService(UnitResolverStub::class);
+        $this->bankAccounts       = $this->tester->grabService(IBankAccountRepository::class);
+        $this->groups             = $this->tester->grabService(IGroupRepository::class);
+        $this->unitResolver       = $this->tester->grabService(UnitResolverStub::class);
     }
 
-    public function getTestedEntites(): array
+    public function getTestedEntites() : array
     {
         return [
             BankAccount::class,
@@ -44,7 +45,7 @@ class BankAccountServiceTest extends \IntegrationTest
         ];
     }
 
-    public function testDisallowingBankAccountForSubunitsCascadesToGroups()
+    public function testDisallowingBankAccountForSubunitsCascadesToGroups() : void
     {
         $this->unitResolver->setOfficialUnits([
             5 => 10,
@@ -69,26 +70,25 @@ class BankAccountServiceTest extends \IntegrationTest
         $this->assertSame(1, $group3->getBankAccountId());
     }
 
-    private function createBankAccount(): BankAccount
+    private function createBankAccount() : BankAccount
     {
         return new BankAccount(
             5, // official id is resolved to 10
             'Název',
             \Helpers::createAccountNumber(),
-            NULL,
+            null,
             new \DateTimeImmutable(),
             $this->unitResolver
         );
     }
 
-    private function addGroup(int $unitId, BankAccount $account): void
+    private function addGroup(int $unitId, BankAccount $account) : void
     {
-        $paymentDefaults = new Group\PaymentDefaults(NULL, NULL, NULL, NULL);
-        $emails = \Helpers::createEmails();
+        $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
+        $emails          = \Helpers::createEmails();
 
-        $group = new Group($unitId, NULL, 'Nazev', $paymentDefaults, new \DateTimeImmutable(), $emails, NULL, $account);
+        $group = new Group($unitId, null, 'Nazev', $paymentDefaults, new \DateTimeImmutable(), $emails, null, $account);
 
         $this->groups->save($group);
     }
-
 }

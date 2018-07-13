@@ -10,7 +10,6 @@ use Model\UserService;
 
 final class ActiveSkautisRoleQueryHandler
 {
-
     /** @var UserService */
     private $userService;
 
@@ -19,9 +18,8 @@ final class ActiveSkautisRoleQueryHandler
         $this->userService = $userService;
     }
 
-    public function handle(ActiveSkautisRoleQuery $_): ?SkautisRole
+    public function handle(ActiveSkautisRoleQuery $_) : ?SkautisRole
     {
         return $this->userService->getActualRole();
     }
-
 }

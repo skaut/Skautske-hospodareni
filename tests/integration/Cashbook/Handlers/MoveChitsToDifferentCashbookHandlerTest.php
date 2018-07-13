@@ -16,7 +16,6 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
 {
-
     private const TARGET_CASHBOOK_ID = 2;
     private const SOURCE_CASHBOOK_ID = 1;
 
@@ -24,7 +23,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
     private $cashbooks;
 
 
-    public function testMovingChits(): void
+    public function testMovingChits() : void
     {
         $sourceCashbookId = CashbookId::fromInt(self::SOURCE_CASHBOOK_ID);
         $targetCashbookId = CashbookId::fromInt(self::TARGET_CASHBOOK_ID);
@@ -33,8 +32,8 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
         $this->cashbooks->save(new Cashbook($targetCashbookId, $type));
         $sourceCashbook = new Cashbook($sourceCashbookId, $type);
 
-        for($i = 0; $i < 3; $i++) {
-            $sourceCashbook->addChit(NULL, new Date(), NULL, new Cashbook\Amount('100'), 'test', $this->mockCategory());
+        for ($i = 0; $i < 3; $i++) {
+            $sourceCashbook->addChit(null, new Date(), null, new Cashbook\Amount('100'), 'test', $this->mockCategory());
         }
 
         $this->cashbooks->save($sourceCashbook);
@@ -52,7 +51,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
         $this->assertCount(2, $targetCashbook->getChits());
     }
 
-    protected function getTestedEntites(): array
+    protected function getTestedEntites() : array
     {
         return [
             Cashbook::class,
@@ -60,19 +59,18 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
         ];
     }
 
-    protected function _before()
+    protected function _before() : void
     {
         $this->tester->useConfigFiles([__DIR__ . '/MoveChitsToDifferentCashbookHandlerTest.neon']);
         parent::_before();
         $this->cashbooks = $this->tester->grabService(ICashbookRepository::class);
     }
 
-    private function mockCategory(): ICategory
+    private function mockCategory() : ICategory
     {
         return m::mock(ICategory::class, [
             'getId' => 123,
             'getOperationType' => Operation::get(Operation::INCOME),
         ]);
     }
-
 }

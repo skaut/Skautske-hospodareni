@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Page;
+
+use function date;
 
 class Payment
 {
-
     /** @var \AcceptanceTester */
     private $tester;
 
@@ -13,26 +16,26 @@ class Payment
         $this->tester = $tester;
     }
 
-    public function fillName(string $name)
+    public function fillName(string $name) : void
     {
-        $this->tester->fillField("(//table//input)[1]", $name);
+        $this->tester->fillField('(//table//input)[1]', $name);
     }
 
-    public function fillEmail(string $name)
+    public function fillEmail(string $name) : void
     {
-        $this->tester->fillField("(//table//input)[2]", $name);
+        $this->tester->fillField('(//table//input)[2]', $name);
     }
 
-    public function fillAmount($amount)
+    public function fillAmount($amount) : void
     {
-        $this->tester->fillField("(//table//input)[3]", $amount);
+        $this->tester->fillField('(//table//input)[3]', $amount);
     }
 
-    public function addPayment(string $name, ?string $email, float $amount): void
+    public function addPayment(string $name, ?string $email, float $amount) : void
     {
         $this->fillName($name);
 
-        if($email !== NULL) {
+        if ($email !== null) {
             $this->fillEmail($email);
         }
 
@@ -41,12 +44,12 @@ class Payment
         $this->submitPayment();
     }
 
-    public function seeNumberOfPaymentsWithState(string $state, int $count)
+    public function seeNumberOfPaymentsWithState(string $state, int $count) : void
     {
         $this->tester->seeNumberOfElements("(//*[text()='$state'])", $count);
     }
 
-    public function selectNextWorkdayForDueDate()
+    public function selectNextWorkdayForDueDate() : void
     {
         $I = $this->tester;
         $I->click('(//table//input)[6]');
@@ -63,9 +66,8 @@ class Payment
         $I->waitForElementNotVisible($button);
     }
 
-    public function submitPayment()
+    public function submitPayment() : void
     {
         $this->tester->click('Přidat platbu');
     }
-
 }

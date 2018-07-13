@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Payment;
 
 use Model\Payment\BankAccount as BankAccountEntity;
@@ -7,10 +9,9 @@ use Nette\StaticClass;
 
 final class BankAccountFactory
 {
-
     use StaticClass;
 
-    public static function create(BankAccountEntity $bankAccount): BankAccount
+    public static function create(BankAccountEntity $bankAccount) : BankAccount
     {
         return new BankAccount(
             $bankAccount->getId(),
@@ -22,5 +23,4 @@ final class BankAccountFactory
             $bankAccount->isAllowedForSubunits()
         );
     }
-
 }

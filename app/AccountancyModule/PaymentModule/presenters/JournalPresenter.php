@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\PaymentModule;
 
 use Model\PaymentService;
+use function array_keys;
+use function date;
+use function is_null;
 
 class JournalPresenter extends BasePresenter
 {
-
     /** @var PaymentService */
     private $model;
 
@@ -17,29 +21,28 @@ class JournalPresenter extends BasePresenter
     }
 
 
-    public function renderDefault(int $aid, $year = NULL): void
+    public function renderDefault(int $aid, ?int $year = null) : void
     {
-        if (!$this->isEditable) {
-            $this->flashMessage("Nemáte oprávnění přistupovat ke správě emailů", "danger");
-            $this->redirect("Payment:default");
+        if (! $this->isEditable) {
+            $this->flashMessage('Nemáte oprávnění přistupovat ke správě emailů', 'danger');
+            $this->redirect('Payment:default');
         }
 
         if (is_null($year)) {
-            $year = date("Y");
+            $year = date('Y');
         }
         $this->template->year = $year;
 
         $this->template->units = $units = $this->unitService->getAllUnder($this->aid);
 
-        $changes = [];
-        $changeExists = FALSE;
+        $changes      = [];
+        $changeExists = false;
         foreach (array_keys($units) as $unitId) {
-            $uch = $this->model->getJournalChangesAfterRegistration($unitId, $year);
-            $changeExists = $changeExists || (empty($uch["add"]) && $uch["remove"]);
+            $uch              = $this->model->getJournalChangesAfterRegistration($unitId, (int)$year);
+            $changeExists     = $changeExists || (empty($uch['add']) && $uch['remove']);
             $changes[$unitId] = $uch;
         }
-        $this->template->changes = $changes;
+        $this->template->changes      = $changes;
         $this->template->changeExists = $changeExists;
     }
-
 }

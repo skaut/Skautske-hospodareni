@@ -1,20 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Unit;
 
 use Nette\Utils\Strings;
+use function end;
+use function explode;
+use function in_array;
 
 class Unit
 {
-
     private const OFFICIAL_UNIT_TYPES = [
         'stredisko',
         'kraj',
         'okres',
         'ustredi',
-        'zvlastniJednotka'
+        'zvlastniJednotka',
     ];
-    
+
     /** @var int */
     private $id;
 
@@ -41,55 +45,53 @@ class Unit
         string $registrationNumber,
         string $type,
         ?int $parentId
-    )
-    {
-        $this->id = $id;
-        $this->sortName = $sortName;
-        $this->displayName = $displayName;
+    ) {
+        $this->id                 = $id;
+        $this->sortName           = $sortName;
+        $this->displayName        = $displayName;
         $this->registrationNumber = $registrationNumber;
-        $this->type = $type;
-        $this->parentId = $parentId;
+        $this->type               = $type;
+        $this->parentId           = $parentId;
     }
 
 
-    public function isSubunitOf(Unit $unit): bool
+    public function isSubunitOf(Unit $unit) : bool
     {
         return Strings::startsWith($this->registrationNumber, $unit->registrationNumber);
     }
 
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
 
-    public function getSortName(): string
+    public function getSortName() : string
     {
         return $this->sortName;
     }
 
 
-    public function getDisplayName(): string
+    public function getDisplayName() : string
     {
         return $this->displayName;
     }
 
-    public function getParentId(): ?int
+    public function getParentId() : ?int
     {
         return $this->parentId;
     }
 
-    public function isOfficial(): bool
+    public function isOfficial() : bool
     {
-        return in_array($this->type, self::OFFICIAL_UNIT_TYPES, TRUE);
+        return in_array($this->type, self::OFFICIAL_UNIT_TYPES, true);
     }
 
-    public function getShortRegistrationNumber(): string
+    public function getShortRegistrationNumber() : string
     {
         $splitNumber = explode('.', $this->registrationNumber);
 
         return end($splitNumber);
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Travel;
 
 use Model\Travel\Passenger;
@@ -26,10 +28,9 @@ use Nette\SmartObject;
  */
 class Command
 {
-
     use SmartObject;
 
-    public const STATE_CLOSED = 'closed';
+    public const STATE_CLOSED      = 'closed';
     public const STATE_IN_PROGRESS = 'in_progress';
 
     /** @var int */
@@ -97,104 +98,102 @@ class Command
         Money $pricePerKm,
         Money $fuelPricePerKm,
         string $state
-    )
-    {
-        $this->id = $id;
-        $this->unitId = $unitId;
-        $this->vehicleId = $vehicleId;
-        $this->passenger = $passenger;
-        $this->purpose = $purpose;
-        $this->place = $place;
-        $this->fellowPassengers = $fellowPassengers;
-        $this->fuelPrice = $fuelPrice;
+    ) {
+        $this->id                = $id;
+        $this->unitId            = $unitId;
+        $this->vehicleId         = $vehicleId;
+        $this->passenger         = $passenger;
+        $this->purpose           = $purpose;
+        $this->place             = $place;
+        $this->fellowPassengers  = $fellowPassengers;
+        $this->fuelPrice         = $fuelPrice;
         $this->amortizationPerKm = $amortizationPerKm;
-        $this->note = $note;
-        $this->total = $total;
-        $this->closedAt = $closedAt;
-        $this->firstTravelDate = $firstTravelDate;
-        $this->pricePerKm = $pricePerKm;
-        $this->fuelPricePerKm = $fuelPricePerKm;
-        $this->state = $state;
+        $this->note              = $note;
+        $this->total             = $total;
+        $this->closedAt          = $closedAt;
+        $this->firstTravelDate   = $firstTravelDate;
+        $this->pricePerKm        = $pricePerKm;
+        $this->fuelPricePerKm    = $fuelPricePerKm;
+        $this->state             = $state;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getVehicleId(): ?int
+    public function getVehicleId() : ?int
     {
         return $this->vehicleId;
     }
 
-    public function getPassenger(): Passenger
+    public function getPassenger() : Passenger
     {
         return $this->passenger;
     }
 
-    public function getPurpose(): string
+    public function getPurpose() : string
     {
         return $this->purpose;
     }
 
-    public function getPlace(): string
+    public function getPlace() : string
     {
         return $this->place;
     }
 
-    public function getFellowPassengers(): string
+    public function getFellowPassengers() : string
     {
         return $this->fellowPassengers;
     }
 
-    public function getFuelPrice(): Money
+    public function getFuelPrice() : Money
     {
         return $this->fuelPrice;
     }
 
-    public function getAmortizationPerKm(): Money
+    public function getAmortizationPerKm() : Money
     {
         return $this->amortizationPerKm;
     }
 
-    public function getNote(): string
+    public function getNote() : string
     {
         return $this->note;
     }
 
-    public function getClosedAt(): ?\DateTimeImmutable
+    public function getClosedAt() : ?\DateTimeImmutable
     {
         return $this->closedAt;
     }
 
-    public function getTotal(): Money
+    public function getTotal() : Money
     {
         return $this->total;
     }
 
-    public function getFirstTravelDate(): ?\DateTimeImmutable
+    public function getFirstTravelDate() : ?\DateTimeImmutable
     {
         return $this->firstTravelDate;
     }
 
-    public function getPricePerKm(): Money
+    public function getPricePerKm() : Money
     {
         return $this->pricePerKm;
     }
 
-    public function getFuelPricePerKm(): Money
+    public function getFuelPricePerKm() : Money
     {
         return $this->fuelPricePerKm;
     }
 
-    public function getState(): string
+    public function getState() : string
     {
         return $this->state;
     }
-
 }

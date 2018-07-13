@@ -11,7 +11,6 @@ use Model\Event\Handlers\Mailing\SendPaymentInfoHandler;
  */
 final class SendPaymentInfo
 {
-
     /** @var int */
     private $paymentId;
 
@@ -20,9 +19,8 @@ final class SendPaymentInfo
         $this->paymentId = $paymentId;
     }
 
-    public function getPaymentId(): int
+    public function getPaymentId() : int
     {
         return $this->paymentId;
     }
-
 }

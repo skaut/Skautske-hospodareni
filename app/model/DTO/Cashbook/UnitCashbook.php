@@ -8,7 +8,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 class UnitCashbook
 {
-
     /** @var CashbookId */
     private $cashbookId;
 
@@ -17,9 +16,8 @@ class UnitCashbook
         $this->cashbookId = $cashbookId;
     }
 
-    public function getCashbookId(): CashbookId
+    public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
-
 }

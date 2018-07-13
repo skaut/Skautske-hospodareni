@@ -16,7 +16,6 @@ use Model\DTO\Cashbook\ChitFactory;
 
 final class ChitQueryHandler
 {
-
     /** @var ICashbookRepository */
     private $cashbooks;
 
@@ -26,10 +25,10 @@ final class ChitQueryHandler
     public function __construct(ICashbookRepository $cashbooks, QueryBus $queryBus)
     {
         $this->cashbooks = $cashbooks;
-        $this->queryBus = $queryBus;
+        $this->queryBus  = $queryBus;
     }
 
-    public function handle(ChitQuery $query): ?Chit
+    public function handle(ChitQuery $query) : ?Chit
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 
@@ -39,12 +38,14 @@ final class ChitQueryHandler
             }
         }
 
-        return NULL;
+        return null;
     }
 
-    private function getCategory(CashbookId $cashbookId, int $categoryId): Category
+    private function getCategory(CashbookId $cashbookId, int $categoryId) : Category
     {
-        /** @var Category[] $categories */
+        /**
+ * @var Category[] $categories
+*/
         $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
 
         foreach ($categories as $category) {
@@ -55,5 +56,4 @@ final class ChitQueryHandler
 
         throw new ShouldNotHappenException('Category not found');
     }
-
 }

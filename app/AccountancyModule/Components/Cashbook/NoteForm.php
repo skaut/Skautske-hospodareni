@@ -11,17 +11,21 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateNote;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Cashbook\Cashbook;
+use function htmlspecialchars;
+use function nl2br;
+use function preg_replace;
 
 final class NoteForm extends BaseControl
 {
     /** @var bool @persistent */
-    public $editation = FALSE;
+    public $editation = false;
 
     /** @var CashbookId */
     private $cashbookId;
 
     /**
      * Can current user add/edit chits?
+     *
      * @var bool
      */
     private $isEditable;
@@ -37,58 +41,65 @@ final class NoteForm extends BaseControl
         bool $isEditable,
         CommandBus $commandBus,
         QueryBus $queryBus
-    )
-    {
+    ) {
         parent::__construct();
         $this->cashbookId = $cashbookId;
         $this->isEditable = $isEditable;
         $this->commandBus = $commandBus;
-        $this->queryBus = $queryBus;
+        $this->queryBus   = $queryBus;
     }
 
-    public function handleEdit(): void
+    public function handleEdit() : void
     {
-        $this->editation = TRUE;
+        $this->editation = true;
         $this->redrawControl();
     }
 
-    public function handleCancel(): void
+    public function handleCancel() : void
     {
-        $this->editation = FALSE;
+        $this->editation = false;
         $this->redrawControl();
     }
 
-    public function render(): void
+    public function render() : void
     {
-        /** @var Cashbook $cashbook */
+        /**
+ * @var Cashbook $cashbook
+*/
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
-        /** @var BaseForm $form */
+        /**
+ * @var BaseForm $form
+*/
         $form = $this['form'];
-        $form->setDefaults([
-            'note' => $cashbook->getNote()
-        ]);
+        $form->setDefaults(
+            [
+            'note' => $cashbook->getNote(),
+            ]
+        );
 
-        $note = nl2br(htmlspecialchars($cashbook->getNote()));
+        $note    = nl2br(htmlspecialchars($cashbook->getNote()));
         $pattern = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
-        $note = preg_replace($pattern, '<a href="$0" target="_blank" title="$0">$0</a>', $note);
+        $note    = preg_replace($pattern, '<a href="$0" target="_blank" title="$0">$0</a>', $note);
 
-        $this->template->setParameters([
+        $this->template->setParameters(
+            [
             'isEditable' => $this->isEditable,
             'editation' => $this->editation,
             'note' => $note,
-        ]);
+            ]
+        );
 
         $this->template->setFile(__DIR__ . '/templates/NoteForm.latte');
         $this->template->render();
     }
 
-    protected function createComponentForm(): BaseForm
+    protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
 
         $form->addText('note')
-            ->setRequired(FALSE)
+            ->setRequired(false)
             ->setAttribute('placeholder', 'Libovolná poznámka, kde se odkazy stanou aktivní...')
             ->setAttribute('class', '');
 
@@ -96,24 +107,20 @@ final class NoteForm extends BaseControl
             ->setAttribute('type', 'submit')
             ->setAttribute('class', 'btn btn-primary');
 
-
-        $form->onSuccess[] = function (BaseForm $form): void {
-            $this->editation = FALSE;
+        $form->onSuccess[] = function (BaseForm $form) : void {
+            $this->editation = false;
             $this->formSucceeded($form);
             $this->redrawControl();
         };
         return $form;
     }
 
-    private function formSucceeded(BaseForm $form): void
+    private function formSucceeded(BaseForm $form) : void
     {
-        if (!$this->isEditable) {
+        if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu', 'danger');
             $this->redirect('this');
         }
         $this->commandBus->handle(new UpdateNote($this->cashbookId, $form->getValues()->note));
-
     }
-
-
 }

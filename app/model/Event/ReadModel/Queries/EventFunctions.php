@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\ReadModel\Queries;
 
 use Model\Event\ReadModel\QueryHandlers\EventFunctionsHandler;
@@ -10,7 +12,6 @@ use Model\Event\SkautisEventId;
  */
 final class EventFunctions
 {
-
     /** @var SkautisEventId */
     private $eventId;
 
@@ -19,9 +20,8 @@ final class EventFunctions
         $this->eventId = $eventId;
     }
 
-    public function getEventId(): SkautisEventId
+    public function getEventId() : SkautisEventId
     {
         return $this->eventId;
     }
-
 }

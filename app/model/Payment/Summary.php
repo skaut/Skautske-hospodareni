@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Payment;
 
 use Nette\SmartObject;
@@ -10,7 +12,6 @@ use Nette\SmartObject;
  */
 class Summary
 {
-
     use SmartObject;
 
     /** @var int */
@@ -21,18 +22,17 @@ class Summary
 
     public function __construct(int $count, float $amount)
     {
-        $this->count = $count;
+        $this->count  = $count;
         $this->amount = $amount;
     }
 
-    public function getCount(): int
+    public function getCount() : int
     {
         return $this->count;
     }
 
-    public function getAmount(): float
+    public function getAmount() : float
     {
         return $this->amount;
     }
-
 }

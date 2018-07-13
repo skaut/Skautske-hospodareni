@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Travel\Repositories;
 
 use Doctrine\ORM\EntityManager;
@@ -8,7 +10,6 @@ use Model\Travel\ContractNotFoundException;
 
 final class ContractRepository implements IContractRepository
 {
-
     /** @var EntityManager */
     private $em;
 
@@ -17,33 +18,31 @@ final class ContractRepository implements IContractRepository
         $this->em = $em;
     }
 
-    public function find(int $id): Contract
+    public function find(int $id) : Contract
     {
         $contract = $this->em->find(Contract::class, $id);
 
-        if($contract === NULL) {
+        if ($contract === null) {
             throw new ContractNotFoundException("Contract with id #$id not found");
         }
 
         return $contract;
     }
 
-    public function findByUnit(int $unitId): array
+    public function findByUnit(int $unitId) : array
     {
         return $this->em->getRepository(Contract::class)->findBy(['unitId' => $unitId]);
     }
 
-    public function save(Contract $contract): void
+    public function save(Contract $contract) : void
     {
         $this->em->persist($contract);
         $this->em->flush($contract);
     }
 
-    public function remove(Contract $contract): void
+    public function remove(Contract $contract) : void
     {
         $this->em->remove($contract);
         $this->em->flush();
     }
-
-
 }

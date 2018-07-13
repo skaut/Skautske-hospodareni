@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\DTO\Logger;
 
 use DateTimeImmutable;
@@ -44,44 +46,42 @@ class Log
         string $description,
         Type $type,
         ?int $typeId
-    )
-    {
-        $this->unitId = $unitId;
-        $this->date = $date;
-        $this->userId = $userId;
+    ) {
+        $this->unitId      = $unitId;
+        $this->date        = $date;
+        $this->userId      = $userId;
         $this->description = $description;
-        $this->type = $type;
-        $this->typeId = $typeId;
+        $this->type        = $type;
+        $this->typeId      = $typeId;
     }
 
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getDate(): \DateTimeImmutable
+    public function getDate() : \DateTimeImmutable
     {
         return $this->date;
     }
 
-    public function getUserId(): int
+    public function getUserId() : int
     {
         return $this->userId;
     }
 
-    public function getDescription(): string
+    public function getDescription() : string
     {
         return $this->description;
     }
 
-    public function getType(): string
+    public function getType() : string
     {
         return $this->type->getValue();
     }
 
-    public function getTypeId(): ?int
+    public function getTypeId() : ?int
     {
         return $this->typeId;
     }
-
 }

@@ -1,14 +1,13 @@
 <?php
 
-namespace Model\Payment\BankAccount;
+declare(strict_types=1);
 
+namespace Model\Payment\BankAccount;
 
 interface IBankAccountImporter
 {
-
     /**
      * @return AccountNumber[]
      */
-    public function import(int $unitId): array;
-
+    public function import(int $unitId) : array;
 }

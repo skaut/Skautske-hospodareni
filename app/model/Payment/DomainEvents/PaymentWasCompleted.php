@@ -6,7 +6,6 @@ namespace Model\Payment\DomainEvents;
 
 final class PaymentWasCompleted
 {
-
     /** @var int */
     private $id;
 
@@ -15,9 +14,8 @@ final class PaymentWasCompleted
         $this->id = $id;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
-
 }

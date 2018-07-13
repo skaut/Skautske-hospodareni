@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event;
 
 use Cake\Chronos\Date;
@@ -22,7 +24,6 @@ use Nette\SmartObject;
  */
 class Event
 {
-
     use SmartObject;
 
     /** @var int */
@@ -78,21 +79,20 @@ class Event
         string $note,
         int $scopeId,
         int $typeId
-    )
-    {
-        $this->id = $id;
-        $this->displayName = $displayName;
-        $this->unitId = $unitId;
-        $this->unitName = $unitName;
-        $this->state = $state;
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->totalDays = $totalDays;
-        $this->location = $location;
+    ) {
+        $this->id                 = $id;
+        $this->displayName        = $displayName;
+        $this->unitId             = $unitId;
+        $this->unitName           = $unitName;
+        $this->state              = $state;
+        $this->startDate          = $startDate;
+        $this->endDate            = $endDate;
+        $this->totalDays          = $totalDays;
+        $this->location           = $location;
         $this->registrationNumber = $registrationNumber;
-        $this->note = $note;
-        $this->scopeId = $scopeId;
-        $this->typeId = $typeId;
+        $this->note               = $note;
+        $this->scopeId            = $scopeId;
+        $this->typeId             = $typeId;
     }
 
     public function update(
@@ -102,83 +102,81 @@ class Event
         Date $endDate,
         int $scopeId,
         int $typeId
-    ): void
-    {
+    ) : void {
         $this->displayName = $displayName;
-        $this->location = $location;
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->scopeId = $scopeId;
-        $this->typeId = $typeId;
+        $this->location    = $location;
+        $this->startDate   = $startDate;
+        $this->endDate     = $endDate;
+        $this->scopeId     = $scopeId;
+        $this->typeId      = $typeId;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getDisplayName(): string
+    public function getDisplayName() : string
     {
         return $this->displayName;
     }
-    public function getUnitId(): int
+    public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-    public function getUnitName(): string
+    public function getUnitName() : string
     {
         return $this->unitName;
     }
 
-    public function isOpen(): bool
+    public function isOpen() : bool
     {
-        return $this->state === "draft";
+        return $this->state === 'draft';
     }
 
-    public function getState(): string
+    public function getState() : string
     {
         return $this->state;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate() : Date
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate() : Date
     {
         return $this->endDate;
     }
 
-    public function getTotalDays(): int
+    public function getTotalDays() : int
     {
         return $this->totalDays;
     }
 
-    public function getLocation(): string
+    public function getLocation() : string
     {
         return $this->location;
     }
 
-    public function getRegistrationNumber(): string
+    public function getRegistrationNumber() : string
     {
         return $this->registrationNumber;
     }
 
-    public function getNote(): string
+    public function getNote() : string
     {
         return $this->note;
     }
 
-    public function getScopeId(): int
+    public function getScopeId() : int
     {
         return $this->scopeId;
     }
 
-    public function getTypeId(): int
+    public function getTypeId() : int
     {
         return $this->typeId;
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Model\Event\Handlers\Camp;
 
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
@@ -7,7 +9,6 @@ use Skautis\Skautis;
 
 class ActivateAutocomputedCashbookHandler
 {
-
     /** @var Skautis */
     private $skautis;
 
@@ -16,13 +17,11 @@ class ActivateAutocomputedCashbookHandler
         $this->skautis = $skautis;
     }
 
-    public function handle(ActivateAutocomputedCashbook $command): void
+    public function handle(ActivateAutocomputedCashbook $command) : void
     {
         $this->skautis->event->eventCampUpdateRealTotalCostBeforeEnd([
                 'ID' => $command->getCampId()->getValue(),
                 'IsRealTotalCostAutoComputed' => 1,
-            ], 'eventCamp'
-        );
+            ], 'eventCamp');
     }
-
 }

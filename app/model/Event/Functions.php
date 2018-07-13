@@ -14,7 +14,6 @@ use Nette\SmartObject;
  */
 class Functions
 {
-
     use SmartObject;
 
     /** @var Person|NULL */
@@ -31,30 +30,29 @@ class Functions
 
     public function __construct(?Person $leader, ?Person $assistant, ?Person $accountant, ?Person $medic)
     {
-        $this->leader = $leader;
-        $this->assistant = $assistant;
+        $this->leader     = $leader;
+        $this->assistant  = $assistant;
         $this->accountant = $accountant;
-        $this->medic = $medic;
+        $this->medic      = $medic;
     }
 
-    public function getLeader(): ?Person
+    public function getLeader() : ?Person
     {
         return $this->leader;
     }
 
-    public function getAssistant(): ?Person
+    public function getAssistant() : ?Person
     {
         return $this->assistant;
     }
 
-    public function getAccountant(): ?Person
+    public function getAccountant() : ?Person
     {
         return $this->accountant;
     }
 
-    public function getMedic(): ?Person
+    public function getMedic() : ?Person
     {
         return $this->medic;
     }
-
 }

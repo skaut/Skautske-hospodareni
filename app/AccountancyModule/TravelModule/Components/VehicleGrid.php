@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AccountancyModule\TravelModule\Components;
 
 use App\AccountancyModule\Factories\BaseGridControl;
@@ -11,7 +13,6 @@ use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
 
 class VehicleGrid extends BaseGridControl
 {
-
     /** @var int */
     private $unitId;
 
@@ -27,11 +28,11 @@ class VehicleGrid extends BaseGridControl
         parent::__construct();
         $this->unitId = $unitId;
         $this->travel = $travel;
-        $this->units = $units;
+        $this->units  = $units;
     }
 
 
-    protected function createComponentGrid(): DataGrid
+    protected function createComponentGrid() : DataGrid
     {
         $grid = $this->createGrid();
         $grid->addColumnText('type', 'Typ');
@@ -44,24 +45,23 @@ class VehicleGrid extends BaseGridControl
             ->setFilterSelect($units, 'subunitId')->setPrompt('-');
 
         $grid->addColumnDateTime('createdAt', 'Vytvořeno')
-            ->setSortable(TRUE);
+            ->setSortable(true);
 
         $grid->addColumnDateTime('authorName', 'Vytvořil')
             ->setSortable()
             ->setFilterText();
 
         $grid->addColumnText('action', '');
-        $grid->setPagination(FALSE);
+        $grid->setPagination(false);
 
         $vehicles = $this->travel->getAllVehicles($this->unitId);
         $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($vehicles), 'id'));
 
-        $grid->onRender[] = function (DataGrid $grid) use($units) {
+        $grid->onRender[] = function (DataGrid $grid) use ($units) : void {
             $grid->template->units = $units;
             $grid->setTemplateFile(__DIR__ . '/templates/VehicleGrid.latte');
         };
 
         return $grid;
     }
-
 }
