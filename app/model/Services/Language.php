@@ -13,7 +13,7 @@ class Language
 {
     private const LOCALE = 'cs_CZ.UTF-8';
 
-    public static function compare(string $first, $second) : int
+    public static function compare(string $first, string $second) : int
     {
         $originalLocale = setlocale(LC_ALL, 0);
         setlocale(LC_COLLATE, self::LOCALE);

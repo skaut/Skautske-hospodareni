@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 namespace Model;
 
-use function is_null;
+use Dibi\DataSource;
 
 class BudgetTable extends BaseTable
 {
-    public function getCategories($type = null)
-    {
-        return $this->connection->fetchPairs('SELECT id, label FROM [' . self::TABLE_UNIT_BUDGET_CATEGORY . ']
-            WHERE deleted = 0 %if', isset($type), ' AND type=%s %end', $type);
-    }
-
-    public function getDS($unitId, $type)
+    public function getDS(int $unitId, string $type) : DataSource
     {
         return $this->connection->dataSource('SELECT * FROM [' . self::TABLE_UNIT_BUDGET_CATEGORY . '] WHERE '
             . 'deleted = 0 AND '
@@ -22,12 +16,15 @@ class BudgetTable extends BaseTable
             . 'objectId = %i ', $unitId);
     }
 
-    public function getCategoriesByParent(int $unitId, string $type, ?int $parentId)
+    /**
+     * @return string[]
+     */
+    public function getCategoriesByParent(int $unitId, string $type, ?int $parentId) : array
     {
         $categories = $this->connection->fetchAll('SELECT * FROM [' . self::TABLE_UNIT_BUDGET_CATEGORY . '] WHERE '
             . 'deleted = 0 AND '
             . 'type = %s ', $type, 'AND '
-            . 'parentId %if ', is_null($parentId), ' IS %else = %end %i', $parentId, ' AND '
+            . 'parentId %if ', $parentId === null, ' IS %else = %end %i', $parentId, ' AND '
             . 'objectId = %i ', $unitId);
         $result     = [];
 
@@ -38,7 +35,10 @@ class BudgetTable extends BaseTable
         return $result;
     }
 
-    public function addCategory($arr)
+    /**
+     * @param mixed[] $arr
+     */
+    public function addCategory(array $arr) : bool
     {
         $this->connection->query('INSERT INTO [' . self::TABLE_UNIT_BUDGET_CATEGORY . '] %v', $arr);
         return true;

@@ -32,6 +32,9 @@ class TemplateFactory
         return $this->engine;
     }
 
+    /**
+     * @param mixed[] $parameters
+     */
     public function create(string $file, array $parameters) : string
     {
         $template = new Template($this->getEngine());

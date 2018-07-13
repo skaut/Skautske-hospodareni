@@ -58,7 +58,7 @@ class Vehicle
 
         if ($subunit !== null) {
             if (! $subunit->isSubunitOf($unit)) {
-                throw new \InvalidArgumentException("Unit #{$subunit->getId()} is not child of #{$unit->getId()}");
+                throw new \InvalidArgumentException('Unit #{' . $subunit->getId() . '} is not child of #{' . $unit->getId() . '}');
             }
 
             $this->subunitId = $subunit->getId();

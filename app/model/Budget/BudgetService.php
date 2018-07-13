@@ -22,7 +22,10 @@ class BudgetService
         $this->skautisMapper = $skautisMapper;
     }
 
-    public function getCategories($oid)
+    /**
+     * @return array[]
+     */
+    public function getCategories(int $oid) : array
     {
         $localId = $this->getLocalId($oid);
         return [
@@ -44,7 +47,7 @@ class BudgetService
     }
 
     /**
-     * @return string[]
+     * @return array[]
      */
     public function getCategoriesRoot(int $oid, ?string $type = null) : array
     {
@@ -60,13 +63,13 @@ class BudgetService
     }
 
     /**
-     * @return string[]
+     * @return mixed[]
      */
     public function getCategoriesAll(int $oid, string $type, ?int $parentId = null) : array
     {
         $data = $this->table->getCategoriesByParent($oid, $type, $parentId);
         foreach ($data as $k => $v) {
-            $data[$k]['childrens'] = $this->{__FUNCTION__}($oid, $type, $v->id);
+            $data[$k]['childrens'] = $this->{__FUNCTION__}($oid, $type, $v['id']);
         }
         return $data;
     }
