@@ -21,7 +21,7 @@ class JournalPresenter extends BasePresenter
     }
 
 
-    public function renderDefault(int $aid, $year = null) : void
+    public function renderDefault(int $aid, ?int $year = null) : void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění přistupovat ke správě emailů', 'danger');
@@ -38,7 +38,7 @@ class JournalPresenter extends BasePresenter
         $changes      = [];
         $changeExists = false;
         foreach (array_keys($units) as $unitId) {
-            $uch              = $this->model->getJournalChangesAfterRegistration($unitId, $year);
+            $uch              = $this->model->getJournalChangesAfterRegistration($unitId, (int)$year);
             $changeExists     = $changeExists || (empty($uch['add']) && $uch['remove']);
             $changes[$unitId] = $uch;
         }

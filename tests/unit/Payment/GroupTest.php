@@ -54,7 +54,7 @@ class GroupTest extends Unit
         $group       = $this->createGroup($dueDate, $createdAt);
         $bankAccount = m::mock(BankAccount::class, ['getId' => 33, 'getUnitId' => 20]);
 
-        $group->update('Skupina Jiná', new PaymentDefaults(120, null, null, null), 20, $bankAccount);
+        $group->update('Skupina Jiná', new PaymentDefaults(120.0, null, null, null), 20, $bankAccount);
 
         $this->assertSame(20, $group->getUnitId());
         $this->assertNull($group->getObject());

@@ -623,6 +623,6 @@ class PaymentService
 
         $result = new \SimpleXMLElement($body);
 
-        return $result->ordersDetails->detail->messages->message ?? '';
+        return (string)($result->ordersDetails->detail->messages->message ?? '');
     }
 }

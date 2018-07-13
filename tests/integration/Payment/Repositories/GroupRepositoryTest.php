@@ -51,7 +51,7 @@ class GroupRepositoryTest extends \IntegrationTest
         $createdAt       = new \DateTimeImmutable('2018-01-01 00:00:00');
         $lastPairing     = new \DateTimeImmutable('2018-01-19 18:34:00');
         $paymentDefaults = new Group\PaymentDefaults(
-            100,
+            100.0,
             new \DateTimeImmutable('2018-01-29 00:00:00'),
             123,
             new VariableSymbol('140')
