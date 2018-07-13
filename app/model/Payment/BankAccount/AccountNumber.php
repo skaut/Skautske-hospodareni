@@ -36,7 +36,7 @@ class AccountNumber
     }
 
     /**
-     * @throws InvalidBankAccountException
+     * @throws InvalidBankAccountNumberException
      */
     public static function fromString(string $number) : self
     {

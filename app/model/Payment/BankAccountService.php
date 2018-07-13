@@ -111,6 +111,9 @@ class BankAccountService
         $this->bankAccounts->save($account);
     }
 
+    /**
+     * @throws BankAccountNotFoundException
+     */
     public function disallowForSubunits(int $id) : void
     {
         $account = $this->bankAccounts->find($id);
