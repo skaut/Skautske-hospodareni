@@ -36,7 +36,7 @@ td {
         <td>{$u->Person}</td>
         <td>{if $u->Street != ""}{$u->Street}{else}&nbsp;{/if}{if $u->City != ""}, {$u->City}{/if}{if $u->Postcode != ""}, {$u->Postcode}{/if}</td>
         <td style="text-align: right;">{$u->Birthday|date:"d.m.Y"}</td>
-        <td style="text-align: right;">{$u->payment|price:0} Kč</td>
+        <td style="text-align: right;">{$u->payment|price:false} Kč</td>
     </tr>
     {/if}
 </table>

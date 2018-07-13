@@ -21,7 +21,7 @@
 {/define}
 
 {define col-total}
-    {if ! $item->total->isZero()}{$item->total|price:0}{else}-{/if}
+    {if ! $item->total->isZero()}{$item->total|price:false}{else}-{/if}
 {/define}
 
 {define col-state}
