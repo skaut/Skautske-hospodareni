@@ -64,7 +64,7 @@ class ChitPresenter extends BasePresenter
 
     public function handleLockCashbook(CashbookId $cashbookId) : void
     {
-        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId->toString ()), $this->user->getId()));
+        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId->toString()), $this->user->getId()));
 
         $this->flashMessage('Pokladní kniha byla uzamčena', 'success');
         $this->redrawControl();
@@ -128,7 +128,7 @@ class ChitPresenter extends BasePresenter
                     throw new BadRequestException("Cashbook #$cashbookId not found", IResponse::S404_NOT_FOUND);
                 }
 
-                return $this->chitListFactory->create($cashbookIdVo, (bool)$this->onlyUnlocked);
+                return $this->chitListFactory->create($cashbookIdVo, (bool) $this->onlyUnlocked);
             }
         );
     }

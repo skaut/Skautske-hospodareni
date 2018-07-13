@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Payment\BankAccount;
 
 use BankAccountValidator\Czech;
-use Model\Payment\InvalidBankAccountException;
 use Model\Payment\InvalidBankAccountNumberException;
 
 class AccountNumber

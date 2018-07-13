@@ -38,7 +38,7 @@ class JournalPresenter extends BasePresenter
         $changes      = [];
         $changeExists = false;
         foreach (array_keys($units) as $unitId) {
-            $uch              = $this->model->getJournalChangesAfterRegistration($unitId, (int)$year);
+            $uch              = $this->model->getJournalChangesAfterRegistration($unitId, (int) $year);
             $changeExists     = $changeExists || (empty($uch['add']) && $uch['remove']);
             $changes[$unitId] = $uch;
         }
