@@ -149,7 +149,7 @@ class PaymentPresenter extends BasePresenter
 
         $this->id = $id;
         if ($this->isEditable) {
-            $this['pairButton']->setGroups([$id, $group->getUnitId()]);
+            $this['pairButton']->setGroups([$id]);
         }
 
         $this->template->group = $group;
