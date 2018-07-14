@@ -27,9 +27,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     protected $unitService;
 
     /** @var string */
-    private $wwwDir;
-
-    /** @var string */
     private $appDir;
 
     /** @var int */
@@ -72,7 +69,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     {
         parent::startup();
 
-        $this->wwwDir = $this->context->getParameters()['wwwDir'];
         $this->appDir = $this->context->getParameters()['appDir'];
 
         //adresář s částmi šablon pro použití ve více modulech
