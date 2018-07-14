@@ -258,7 +258,7 @@ trait ParticipantTrait
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
             $oldData = ($type === 'camp') ? [] : $this->eventService->getParticipants()->get($id);
-            $this->eventService->getParticipants()->update($id, array_merge($oldData, $data));
+            $this->eventService->getParticipants()->update((int) $id, array_merge($oldData, $data));
         }
         $this->redirect('this');
     }
