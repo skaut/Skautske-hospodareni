@@ -68,7 +68,7 @@ class DefaultPresenter extends BasePresenter
         //filtrovani zobrazených položek
         $year  = $this->ses->year ?? date('Y');
         $state = $this->ses->state ?? null;
-        $list  = $this->eventService->event->getAll($year, $state);
+        $list  = $this->eventService->getEvent()->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
             $list[$key]['accessDelete'] = $this->authorizator->isAllowed(Event::DELETE, (int) $value['ID']);
             $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Event::ACCESS_DETAIL, (int) $value['ID']);

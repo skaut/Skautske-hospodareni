@@ -90,8 +90,8 @@ class ChitPresenter extends BasePresenter
 
         $objectsByType = [
             ObjectType::UNIT => $units,
-            ObjectType::EVENT => $eventService->event->getAll($this->year),
-            ObjectType::CAMP => $campService->event->getAll($this->year),
+            ObjectType::EVENT => $eventService->getEvent()->getAll($this->year),
+            ObjectType::CAMP => $campService->getEvent()->getAll($this->year),
         ];
 
         foreach ($objectsByType as $type => $objects) {

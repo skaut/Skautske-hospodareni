@@ -111,7 +111,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     }
 
     //změní přihlášenou roli ve skautISu
-    public function handleChangeRole(int $roleId = null) : void
+    public function handleChangeRole(?int $roleId = null) : void
     {
         if ($roleId === null) {
             throw new Nette\Application\BadRequestException();

@@ -91,7 +91,7 @@ class ParticipantPresenter extends BasePresenter
             }
         }
         $data    = ['actionId' => $aid];
-        $sisdata = $this->eventService->participants->get($id);
+        $sisdata = $this->eventService->getParticipants()->get($id);
         switch ($field) {
             case 'days':
             case 'payment':
@@ -104,7 +104,7 @@ class ParticipantPresenter extends BasePresenter
                 $this->sendPayload();
                 break;
         }
-        $this->eventService->participants->update($sisdata['ID'], $data);
+        $this->eventService->getParticipants()->update($sisdata['ID'], $data);
 
         $this->payload->message = 'Success';
         $this->sendPayload();

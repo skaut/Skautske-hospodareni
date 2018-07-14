@@ -149,11 +149,11 @@ class ExportService
             array_column($sums[Operation::EXPENSE], 'amount')
         );
 
-        $participants = $eventService->participants->getAll($skautisEventId);
+        $participants = $eventService->getParticipants()->getAll($skautisEventId);
 
         return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
             'participantsCnt' => count($participants),
-            'personsDays' => $eventService->participants->getPersonsDays($participants),
+            'personsDays' => $eventService->getParticipants()->getPersonsDays($participants),
             'event' => $this->events->find($skautisEventId),
             'chits' => $sums,
             'functions' => $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId))),
@@ -190,13 +190,13 @@ class ExportService
 
         $template = [];
 
-        $event                   = $eventService->event->get($aid);
+        $event                   = $eventService->getEvent()->get($aid);
         $unitId                  = $cashbookType->isUnit() ? $event->ID : $event->ID_Unit;
         $template['oficialName'] = $this->units->getOficialName($unitId);
 
         //HPD
         if ($activeHpd) {
-            $template['totalPayment'] = $eventService->participants->getTotalPayment($aid);
+            $template['totalPayment'] = $eventService->getParticipants()->getTotalPayment($aid);
 
             $functionsQuery = $cashbookType->equalsValue(CashbookType::CAMP)
                 ? new CampFunctions(new SkautisCampId($aid))
@@ -207,7 +207,7 @@ class ExportService
             $accountant            = $functions->getAccountant() ?? $functions->getLeader();
             $template['pokladnik'] = $accountant !== null ? $accountant->getName() : '';
 
-            $template['list'] = $eventService->participants->getAll($aid);
+            $template['list'] = $eventService->getParticipants()->getAll($aid);
         }
 
         $template['event']   = $event;
@@ -240,12 +240,12 @@ class ExportService
             }
         }
 
-        $participants = $campService->participants->getAll($skautisCampId);
+        $participants = $campService->getParticipants()->getAll($skautisCampId);
 
         return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
             'participantsCnt' => count($participants),
-            'personsDays' => $campService->participants->getPersonsDays($participants),
-            'a' => $campService->event->get($skautisCampId),
+            'personsDays' => $campService->getParticipants()->getPersonsDays($participants),
+            'a' => $campService->getEvent()->get($skautisCampId),
             'incomeCategories' => $incomeCategories,
             'expenseCategories' => $expenseCategories,
             'totalIncome' => $totalIncome,
