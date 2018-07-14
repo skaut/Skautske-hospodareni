@@ -335,7 +335,7 @@ class Command
         $travel = $this->travels->get($id);
 
         if ($travel === null) {
-            throw new TravelNotFoundException("Travel #$id not found");
+            throw new TravelNotFoundException('Travel #' . $id . ' not found');
         }
 
         return $travel;

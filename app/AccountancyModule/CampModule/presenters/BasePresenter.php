@@ -27,7 +27,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
             return;
         }
 
-        $this->template->event      = $this->event = $this->eventService->event->get($this->aid);
+        $this->template->event      = $this->event = $this->eventService->getEvent()->get($this->aid);
         $this->template->isEditable = $this->isEditable = $this->authorizator->isAllowed(Camp::UPDATE_REAL, $this->aid);
     }
 

@@ -13,6 +13,7 @@ use function strtolower;
  */
 abstract class MutableBaseService extends BaseService
 {
+    /** @var string */
     protected $typeName;
 
     /** @var string */

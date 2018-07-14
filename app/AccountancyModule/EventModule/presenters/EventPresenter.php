@@ -87,11 +87,11 @@ class EventPresenter extends BasePresenter
             );
         }
 
-        $pragueParticipants = $this->eventService->participants->countPragueParticipants($this->event);
+        $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants($this->event);
 
         $this->template->setParameters(
             [
-            'statistic' => $this->eventService->participants->getEventStatistic($this->aid),
+            'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),
             'accessEditBase' => $accessEditBase,
             'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
             'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
@@ -168,7 +168,7 @@ class EventPresenter extends BasePresenter
 */
         $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
 
-        $event = $this->eventService->event->get($aid);
+        $event = $this->eventService->getEvent()->get($aid);
 
         $template  = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();

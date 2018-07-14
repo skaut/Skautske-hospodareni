@@ -66,7 +66,7 @@ trait ParticipantTrait
 
     protected function traitDefault(bool $dp, ?string $sort, bool $regNums) : void
     {
-        $participants = $this->eventService->participants->getAll($this->aid);
+        $participants = $this->eventService->getParticipants()->getAll($this->aid);
         try {
             $unitId = $this->uid ?? $this->unitService->getUnitId();
             $list   = $dp ? [] : $this->memberService->getAll($unitId, $this->getDirectMemberOnly(), $participants);
@@ -118,7 +118,7 @@ trait ParticipantTrait
 
     public function actionExport(int $aid) : void
     {
-        $type = $this->eventService->participants->type; //camp vs general
+        $type = $this->eventService->getParticipants()->type; //camp vs general
         try {
             $template = $this->exportService->getParticipants($aid, $this->eventService, $type);
             $this->pdf->render($template, 'seznam-ucastniku.pdf', $type === 'camp');
@@ -131,7 +131,7 @@ trait ParticipantTrait
 
     public function actionExportExcel($aid) : void
     {
-        $type = $this->eventService->participants->type; //camp vs general
+        $type = $this->eventService->getParticipants()->type; //camp vs general
         try {
             $this->excelService->getParticipants($this->eventService, $this->event, $type);
         } catch (PermissionException $ex) {
@@ -147,7 +147,7 @@ trait ParticipantTrait
             $this->flashMessage('Nemáte právo mazat účastníky.', 'danger');
             $this->redirect('this');
         }
-        $this->eventService->participants->removeParticipant($pid);
+        $this->eventService->getParticipants()->removeParticipant($pid);
         if ($this->isAjax()) {
             $this->redrawControl('potencialParticipants');
             $this->redrawControl('participants');
@@ -166,7 +166,7 @@ trait ParticipantTrait
                 $this->redirect('this');
             }
         }
-        $this->eventService->participants->add($this->aid, $pid);
+        $this->eventService->getParticipants()->add($this->aid, $pid);
         if ($this->isAjax()) {
             $this->redrawControl('potencialParticipants');
             $this->redrawControl('participants');
@@ -206,7 +206,7 @@ trait ParticipantTrait
             $this->redirect('Default:');
         }
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massList[]') as $id) {
-            $this->eventService->participants->add($this->aid, $id);
+            $this->eventService->getParticipants()->add($this->aid, $id);
         }
         $this->redirect('this');
     }
@@ -236,7 +236,7 @@ trait ParticipantTrait
 
     public function massEditSubmitted(SubmitButton $button) : void
     {
-        $type = $this->eventService->participants->type; //camp vs general
+        $type = $this->eventService->getParticipants()->type; //camp vs general
         if (! $this->isAllowParticipantUpdate) {
             $this->flashMessage('Nemáte právo upravovat účastníky.', 'danger');
             $this->redirect('Default:');
@@ -257,8 +257,8 @@ trait ParticipantTrait
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $oldData = ($type === 'camp') ? [] : $this->eventService->participants->get($id);
-            $this->eventService->participants->update($id, array_merge($oldData, $data));
+            $oldData = ($type === 'camp') ? [] : $this->eventService->getParticipants()->get($id);
+            $this->eventService->getParticipants()->update($id, array_merge($oldData, $data));
         }
         $this->redirect('this');
     }
@@ -271,7 +271,7 @@ trait ParticipantTrait
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $this->eventService->participants->removeParticipant($id);
+            $this->eventService->getParticipants()->removeParticipant($id);
         }
         $this->redirect('this');
     }
@@ -325,7 +325,7 @@ trait ParticipantTrait
             'city' => $values['city'],
             'postcode' => $values['postcode'],
         ];
-        $this->eventService->participants->addNew($this->getCurrentUnitId(), $person);
+        $this->eventService->getParticipants()->addNew($this->getCurrentUnitId(), $person);
         $this->redirect('this');
     }
 

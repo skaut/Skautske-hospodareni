@@ -149,7 +149,7 @@ class PaymentPresenter extends BasePresenter
 
         $this->id = $id;
         if ($this->isEditable) {
-            $this['pairButton']->setGroups([$id], $group->getUnitId());
+            $this['pairButton']->setGroups([$id]);
         }
 
         $this->template->group = $group;
@@ -279,7 +279,7 @@ class PaymentPresenter extends BasePresenter
             $payments[$p->getPersonId()] = $p;
         }
         $participantsWithRepayment = array_filter(
-            $campService->participants->getAll($group->getSkautisId()),
+            $campService->getParticipants()->getAll($group->getSkautisId()),
             function ($p) {
                 return $p->repayment !== null;
             }

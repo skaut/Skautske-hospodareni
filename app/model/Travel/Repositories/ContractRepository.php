@@ -23,12 +23,15 @@ final class ContractRepository implements IContractRepository
         $contract = $this->em->find(Contract::class, $id);
 
         if ($contract === null) {
-            throw new ContractNotFoundException("Contract with id #$id not found");
+            throw new ContractNotFoundException('Contract with id #' . $id . ' not found');
         }
 
         return $contract;
     }
 
+    /**
+     * @return Contract[]
+     */
     public function findByUnit(int $unitId) : array
     {
         return $this->em->getRepository(Contract::class)->findBy(['unitId' => $unitId]);

@@ -100,19 +100,19 @@ class ParticipantPresenter extends BasePresenter
                 $this->redirect('Default:');
             }
         }
-        $oldData = $this->eventService->participants->get($id);
+        $oldData = $this->eventService->getParticipants()->get($id);
         if ($field === 'days') {
             $arr = [
                 'payment' => array_key_exists('payment', $oldData) ? $oldData['payment'] : 0,
                 'days' => $value,
             ];
-            $this->eventService->participants->update($id, $arr);
+            $this->eventService->getParticipants()->update($id, $arr);
         } elseif ($field === 'payment') {
             $arr = [
                 'payment' => $value,
                 'days' => array_key_exists('days', $oldData) ? $oldData['days'] : null,
             ];
-            $this->eventService->participants->update($id, $arr);
+            $this->eventService->getParticipants()->update($id, $arr);
         }
         $this->payload->message = 'Success';
         $this->sendPayload();

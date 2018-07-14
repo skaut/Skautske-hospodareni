@@ -107,8 +107,8 @@ class CashbookPresenter extends BasePresenter
         $values = $form->getValues();
 
         $aid        = $this->getCurrentUnitId();
-        $date       = $this->eventService->event->get($aid)->StartDate;
-        $amount     = $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount);
+        $date       = $this->eventService->getEvent()->get($aid)->StartDate;
+        $amount     = $this->eventService->getParticipants()->getCampTotalPayment($aid, $values->cat, $values->isAccount);
         $categoryId = $this->queryBus->handle(
             new CampParticipantCategoryIdQuery(
                 new SkautisCampId($aid),

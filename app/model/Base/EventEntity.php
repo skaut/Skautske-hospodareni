@@ -25,11 +25,25 @@ class EventEntity
         $this->participants = $participantFactory->create($name);
     }
 
-    public function __get($name)
+    /**
+     * @deprecated Use getXxxx()
+     * @return mixed
+     */
+    public function __get(string $name)
     {
         if (isset($this->$name)) {
             return $this->$name;
         }
         throw new \InvalidArgumentException('Invalid service request for: ' . $name);
+    }
+
+    public function getEvent() : EventService
+    {
+        return $this->event;
+    }
+
+    public function getParticipants() : ParticipantService
+    {
+        return $this->participants;
     }
 }

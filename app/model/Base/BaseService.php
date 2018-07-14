@@ -23,7 +23,7 @@ abstract class BaseService
 
     /**
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
-     * @var array
+     * @var mixed[]
      */
     private static $storage = [];
 

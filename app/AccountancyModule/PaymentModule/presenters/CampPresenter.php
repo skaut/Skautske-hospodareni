@@ -56,7 +56,7 @@ class CampPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        $participants = $this->campService->participants->getAll($group->getSkautisId());
+        $participants = $this->campService->getParticipants()->getAll($group->getSkautisId());
 
         $form = $this['massAddForm'];
         /**

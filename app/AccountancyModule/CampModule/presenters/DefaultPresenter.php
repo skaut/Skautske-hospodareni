@@ -57,7 +57,7 @@ class DefaultPresenter extends BasePresenter
         //filtrovani zobrazených položek
         $year  = $this->ses->year ?? date('Y');
         $state = $this->ses->state ?? null;
-        $list  = $this->eventService->event->getAll($year, $state);
+        $list  = $this->eventService->getEvent()->getAll($year, $state);
         foreach ($list as $key => $value) {//přidání dodatečných atributů
             $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, (int) $value['ID']);
         }
@@ -90,7 +90,7 @@ class DefaultPresenter extends BasePresenter
 
     public function actionCampSummary() : void
     {
-        $this->excelService->getCampsSummary(array_keys($this->eventService->event->getAll($this->ses->year, $this->ses->state)), $this->eventService, $this->unitService);
+        $this->excelService->getCampsSummary(array_keys($this->eventService->getEvent()->getAll($this->ses->year, $this->ses->state)), $this->eventService, $this->unitService);
         $this->terminate();
     }
 
