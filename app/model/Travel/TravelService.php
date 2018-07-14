@@ -497,6 +497,6 @@ class TravelService
             throw new \InvalidArgumentException("Type $type not found");
         }
 
-        return $type['hasFuel'];
+        return (bool) $type['hasFuel'];
     }
 }
