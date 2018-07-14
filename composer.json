@@ -24,7 +24,6 @@
         "phpoffice/phpexcel": "1.8.*",
         "mpdf/mpdf": "^7.0",
         "nextras/forms": "^2.0",
-        "foowie/dependentselectbox": "dev-master",
         "heureka/bank-account-validator": "1.1.*",
         "nextras/mail-panel": "2.4.0-beta1",
         "kdyby/console": "^2.6",
@@ -64,12 +63,6 @@
         "roave/security-advisories": "dev-master",
         "doctrine/coding-standard": "^4.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:fmasa/dependentselectbox.git"
-        }
-    ],
     "scripts": {
         "run-migrations": "php71 www/index.php migrations:migrate --no-interaction",
         "generate-orm-proxies": "php71 www/index.php orm:generate-proxies",
