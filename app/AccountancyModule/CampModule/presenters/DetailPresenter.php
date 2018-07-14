@@ -52,7 +52,7 @@ class DetailPresenter extends BasePresenter
                 $this->template->troops = array_map(
                     function ($id) {
                         try {
-                            return $this->unitService->getDetail($id);
+                            return $this->unitService->getDetail((int) $id);
                         } catch (UnitNotFoundException $exc) {
                             return ['ID' => $id, 'DisplayName' => "Jednotka ($id) již neexistuje."];
                         }
