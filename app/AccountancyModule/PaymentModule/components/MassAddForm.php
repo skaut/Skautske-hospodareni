@@ -159,7 +159,7 @@ class MassAddForm extends BaseControl
                 $person->email,
                 $this->floatOrNull($person->amount) ?? (float) $values->amount,
                 \DateTimeImmutable::createFromMutable($person->dueDate ?? $values->dueDate),
-                $person->id,
+                (int) $person->id,
                 $person->variableSymbol,
                 $this->intOrNull($person->constantSymbol) ?? $this->intOrNull($values->constantSymbol),
                 $person->note

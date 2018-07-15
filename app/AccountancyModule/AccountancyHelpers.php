@@ -156,7 +156,7 @@ abstract class AccountancyHelpers
     /**
      * převádí zadané číslo na slovní řetězec
      */
-    public static function priceToString(int $price) : string
+    public static function priceToString(float $price) : string
     {
         //@todo ošetření správného tvaru
 
@@ -214,7 +214,7 @@ abstract class AccountancyHelpers
         ];
 
         $string  = '';
-        $parts   = explode('.', $price, 2); //0-pred 1-za desitou čárkou
+        $parts   = explode('.', (string) $price, 2); //0-pred 1-za desitou čárkou
         $numbers = array_reverse(str_split($parts[0]));
 
         if (count($numbers) > 6) {
