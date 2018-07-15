@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d801c3ae679d7027fc30ed101eab644",
+    "content-hash": "d60bb4d944d21a35e5cf4f6650b474fe",
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",
@@ -1276,50 +1276,6 @@
             ],
             "description": "Custom annotations for YAML mapping",
             "time": "2018-02-03T15:02:21+00:00"
-        },
-        {
-            "name": "foowie/dependentselectbox",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fmasa/dependentselectbox.git",
-                "reference": "c4e8265bae430b3979dbfa6a4a353f0f92e463f7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fmasa/dependentselectbox/zipball/c4e8265bae430b3979dbfa6a4a353f0f92e463f7",
-                "reference": "c4e8265bae430b3979dbfa6a4a353f0f92e463f7",
-                "shasum": ""
-            },
-            "require": {
-                "nette/application": "^2.1",
-                "nette/forms": "^2.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "DependentSelectBox": "src/"
-                }
-            },
-            "license": [
-                "BSD-3-Clause",
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Daniel Robenek"
-                }
-            ],
-            "description": "Selectbox whose options are depended on another selectbox. Library for Nette Framework",
-            "homepage": "http://addons.nette.org/cs/dependentselectbox",
-            "keywords": [
-                "nette",
-                "selectbox"
-            ],
-            "support": {
-                "source": "https://github.com/fmasa/dependentselectbox/tree/master"
-            },
-            "time": "2017-03-25T16:55:16+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -8303,7 +8259,6 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "skautis/skautis": 20,
-        "foowie/dependentselectbox": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": true,

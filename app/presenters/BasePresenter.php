@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App;
 
-use DependentSelectBox\JsonDependentSelectBox;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
@@ -26,9 +25,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     /** @var UnitService */
     protected $unitService;
-
-    /** @var string */
-    private $wwwDir;
 
     /** @var string */
     private $appDir;
@@ -73,7 +69,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     {
         parent::startup();
 
-        $this->wwwDir = $this->context->getParameters()['wwwDir'];
         $this->appDir = $this->context->getParameters()['appDir'];
 
         //adresář s částmi šablon pro použití ve více modulech
@@ -98,6 +93,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     protected function beforeRender() : void
     {
         parent::beforeRender();
+
         if ($this->user->isLoggedIn()) {
             try {
                 $this->template->myRoles = $this->userService->getAllSkautisRoles();
@@ -106,8 +102,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
                 $this->user->logout(true);
             }
         }
-
-        JsonDependentSelectBox::tryJsonResponse($this /* (presenter) */);
     }
 
     //změní přihlášenou roli ve skautISu

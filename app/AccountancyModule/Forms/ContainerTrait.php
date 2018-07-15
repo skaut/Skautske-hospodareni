@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Forms;
 
 use App\AccountancyModule\Components\FormControls\DateControl;
-use DependentSelectBox\JsonDependentSelectBox;
 use NasExt\Forms\Controls\DependentSelectBox;
-use Nette\Application\UI\Form;
 use Nette\Forms\IControl;
-use Nette\InvalidStateException;
 use Nextras\Forms\Controls\DatePicker;
 
 trait ContainerTrait
@@ -39,28 +36,8 @@ trait ContainerTrait
         return $this[$name]    = $control;
     }
 
-    /**
-     * @deprecated Use addDependentSelectbox which returns superior dependent selectbox implementation
-     */
-    public function addJSelect(string $name, ?string $label, $parents, callable $dataCallback) : JsonDependentSelectBox
-    {
-        $this->checkPresenter();
-        return $this[$name] = new JsonDependentSelectBox($label, $parents, $dataCallback);
-    }
-
     public function addDependentSelectBox(string $name, ?string $label, IControl ...$parents) : DependentSelectBox
     {
         return $this[$name] = new DependentSelectBox($label, $parents);
-    }
-
-    private function checkPresenter() : void
-    {
-        $form = $this->getForm(true);
-
-        if (! $form instanceof Form) {
-            throw new InvalidStateException('I\'m supposed to be used with ' . Form::class . ' only');
-        }
-
-        $form->getPresenter(true);
     }
 }
