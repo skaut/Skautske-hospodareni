@@ -156,7 +156,7 @@ trait ParticipantTrait
         }
     }
 
-    public function handleAdd($pid) : void
+    public function handleAdd(int $pid) : void
     {
         if (! $this->isAllowParticipantInsert) {
             $this->flashMessage('Nemáte oprávnění přidávat účastníky.', 'danger');
@@ -271,7 +271,7 @@ trait ParticipantTrait
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $this->eventService->getParticipants()->removeParticipant($id);
+            $this->eventService->getParticipants()->removeParticipant((int) $id);
         }
         $this->redirect('this');
     }
