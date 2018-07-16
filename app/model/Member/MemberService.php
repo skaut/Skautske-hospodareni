@@ -62,10 +62,10 @@ class MemberService
 
     /**
      * vrací pole osob ID => jméno
-     * @param array $data - vráceno z PersonAll
+     * @param mixed $data - vráceno z PersonAll
      * @return array
      */
-    private function getPairs(array $data, $ageLimit = null) : array
+    private function getPairs($data, $ageLimit = null) : array
     {
         $res = [];
         $now = new \DateTime();
