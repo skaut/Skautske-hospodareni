@@ -320,7 +320,7 @@ trait ParticipantTrait
             'firstName' => $values['firstName'],
             'lastName' => $values['lastName'],
             'nick' => $values['nick'],
-            'Birthday' => date('c', strtotime($values['birthday'])),
+            'Birthday' => is_string($values['birthday']) ? date('c', strtotime($values['birthday'])): null,
             'street' => $values['street'],
             'city' => $values['city'],
             'postcode' => $values['postcode'],

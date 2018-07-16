@@ -130,7 +130,7 @@ class ParticipantService extends MutableBaseService
      */
     public function addNew(int $ID, array $person) : void
     {
-        $newPaerticipantArr = $this->skautis->event->{'Participant' . $this->typeName . 'Insert'}(
+        $newParticipantArr = $this->skautis->event->{'Participant' . $this->typeName . 'Insert'}(
             [
             'ID_Event' . $this->typeName => $ID,
             'Person' => [
@@ -141,7 +141,7 @@ class ParticipantService extends MutableBaseService
             ],
             ]
         );
-        $this->personUpdate($newPaerticipantArr->ID_Person, $person);
+        $this->personUpdate($newParticipantArr->ID_Person, $person);
     }
 
     /**
