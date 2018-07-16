@@ -147,7 +147,7 @@ trait ParticipantTrait
             $this->flashMessage('Nemáte právo mazat účastníky.', 'danger');
             $this->redirect('this');
         }
-        $this->eventService->getParticipants()->removeParticipant($pid);
+        $this->eventService->getParticipants()->removeParticipant((int) $pid);
         if ($this->isAjax()) {
             $this->redrawControl('potencialParticipants');
             $this->redrawControl('participants');
