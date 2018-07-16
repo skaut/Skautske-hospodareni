@@ -141,13 +141,13 @@ trait ParticipantTrait
         $this->terminate();
     }
 
-    public function handleRemove($pid) : void
+    public function handleRemove(int $pid) : void
     {
         if (! $this->isAllowParticipantDelete) {
             $this->flashMessage('Nemáte právo mazat účastníky.', 'danger');
             $this->redirect('this');
         }
-        $this->eventService->getParticipants()->removeParticipant((int) $pid);
+        $this->eventService->getParticipants()->removeParticipant($pid);
         if ($this->isAjax()) {
             $this->redrawControl('potencialParticipants');
             $this->redrawControl('participants');
