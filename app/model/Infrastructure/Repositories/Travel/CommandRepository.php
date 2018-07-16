@@ -58,7 +58,7 @@ class CommandRepository implements ICommandRepository
 
     public function countByVehicle(int $vehicleId) : int
     {
-        return $this->em->getRepository(Command::class)
+        return (int) $this->em->getRepository(Command::class)
             ->createQueryBuilder('c')
             ->select('COUNT(c)')
             ->where('IDENTITY(c.vehicle) = :vehicleId')
