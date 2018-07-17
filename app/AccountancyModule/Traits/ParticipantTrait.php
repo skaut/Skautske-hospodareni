@@ -111,7 +111,7 @@ trait ParticipantTrait
                 if (! property_exists($b, $sort)) {
                     return false;
                 }
-                return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort}, $b->{$sort});
+                return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort} ?? "", $b->{$sort} ?? "");
             }
         );
     }
