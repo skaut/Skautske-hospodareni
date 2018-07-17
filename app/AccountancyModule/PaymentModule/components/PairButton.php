@@ -76,7 +76,7 @@ class PairButton extends BaseControl
         $form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
 
         $form->onSuccess[] = function ($form, $values) : void {
-            $this->pair($values->days);
+            $this->pair((int) $values->days);
         };
         $this->redrawControl('form');
         return $form;
