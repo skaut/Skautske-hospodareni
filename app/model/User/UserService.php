@@ -19,9 +19,9 @@ class UserService extends BaseService
 
     /**
      * vrací pole
-     * @return array všech dostupných rolí přihlášeného uživatele
+     * @return mixed všech dostupných rolí přihlášeného uživatele
      */
-    public function getAllSkautisRoles(bool $activeOnly = true) : array
+    public function getAllSkautisRoles(bool $activeOnly = true)
     {
         return $this->skautis->user->UserRoleAll(['ID_User' => $this->getUserDetail()->ID, 'IsActive' => $activeOnly]);
     }
