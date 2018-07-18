@@ -132,9 +132,9 @@ class ContractPresenter extends BasePresenter
         $since = \DateTimeImmutable::createFromMutable($v->start);
 
         $passenger = new Passenger(
-            $v->passengerName,
-            $v->passengerContact,
-            $v->passengerAddress,
+            (string) $v->passengerName,
+            (string) $v->passengerContact,
+            (string) $v->passengerAddress,
             \DateTimeImmutable::createFromMutable($v->passengerBirthday)
         );
 
