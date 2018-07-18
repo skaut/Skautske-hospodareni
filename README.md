@@ -61,7 +61,12 @@ vendor/bin/codecept run
 Coding standard vychází z Nette coding standardu.
 Zda je projekt v souladu s CS lze ověřit pomocí příkazu v kontejneru:
 ```bash
-vendor/bin/phpcs app --standard=ruleset.xml
+./vendor/bin/phpcs app
+```
+
+Automaticky lze nechat opravit pomocí:
+```
+./vendor/bin/phpcbf app
 ```
 
 ## CI
