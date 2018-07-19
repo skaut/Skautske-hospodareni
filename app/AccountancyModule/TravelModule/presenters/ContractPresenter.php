@@ -54,7 +54,7 @@ class ContractPresenter extends BasePresenter
         );
     }
 
-    public function actionPrint($contractId) : void
+    public function actionPrint(int $contractId) : void
     {
         $template           = $this->template;
         $template->contract = $contract = $this->travelService->getContract($contractId);
