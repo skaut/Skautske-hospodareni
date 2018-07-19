@@ -1,5 +1,5 @@
 services:
-    - Model\PaymentService(%tempDir%)
+    - Model\PaymentService
     - Model\Payment\Repositories\PaymentRepository
     - Model\Payment\Repositories\GroupRepository
     - Model\Payment\Repositories\BankAccountRepository

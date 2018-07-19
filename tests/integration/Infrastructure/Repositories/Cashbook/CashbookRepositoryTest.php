@@ -10,7 +10,7 @@ use eGen\MessageBus\Bus\EventBus;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 
@@ -53,7 +53,7 @@ class CashbookRepositoryTest extends \IntegrationTest
 
     public function testFindNotExistingCashbookThrowsException() : void
     {
-        $this->expectException(CashbookNotFoundException::class);
+        $this->expectException(CashbookNotFound::class);
 
         $this->repository->find(CashbookId::fromInt(1));
     }

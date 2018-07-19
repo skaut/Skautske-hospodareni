@@ -6,6 +6,7 @@ namespace Model;
 
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
+use Nette\Application\BadRequestException;
 
 class UserService extends BaseService
 {
@@ -26,10 +27,11 @@ class UserService extends BaseService
         return $this->skautis->user->UserRoleAll(['ID_User' => $this->getUserDetail()->ID, 'IsActive' => $activeOnly]);
     }
 
-    public function getUserDetail()
+    public function getUserDetail() : \stdClass
     {
-        $id = __FUNCTION__;
-        if (! ($res = $this->loadSes($id))) {
+        $id  = __FUNCTION__;
+        $res = $this->loadSes($id);
+        if (! $res) {
             $res = $this->saveSes($id, $this->skautis->user->UserDetail());
         }
         return $res;
@@ -82,11 +84,15 @@ class UserService extends BaseService
         return $this->skautis->getUser()->isLoggedIn();
     }
 
-    public function updateLogoutTime()
+    public function updateLogoutTime() : void
     {
-        return $this->skautis->getUser()->updateLogoutTime()->getLogoutDate();
+        $this->skautis->getUser()->updateLogoutTime()->getLogoutDate();
     }
 
+    /**
+     * @return mixed[]
+     * @throws BadRequestException
+     */
     public function getAccessArrays(UnitService $us) : array
     {
         $role = $this->getActualRole();

@@ -11,9 +11,9 @@ use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\CashbookNotFoundException;
-use Model\Cashbook\ChitLockedException;
-use Model\Cashbook\ChitNotFoundException;
+use Model\Cashbook\CashbookNotFound;
+use Model\Cashbook\ChitLocked;
+use Model\Cashbook\ChitNotFound;
 use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -102,9 +102,9 @@ class ChitListControl extends BaseControl
         try {
             $this->commandBus->handle(new RemoveChitFromCashbook($this->cashbookId, $chitId));
             $this->flashMessage('Paragon byl smazán');
-        } catch (ChitLockedException $e) {
+        } catch (ChitLocked $e) {
             $this->flashMessage('Nelze smazat zamčený paragon', 'error');
-        } catch (CashbookNotFoundException | ChitNotFoundException $e) {
+        } catch (CashbookNotFound | ChitNotFound $e) {
             $this->flashMessage('Paragon se nepodařilo smazat');
         }
 

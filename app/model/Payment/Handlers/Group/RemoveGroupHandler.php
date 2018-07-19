@@ -6,7 +6,7 @@ namespace Model\Payment\Handlers\Group;
 
 use Model\Payment\Commands\Group\RemoveGroup;
 use Model\Payment\Group;
-use Model\Payment\GroupNotClosedException;
+use Model\Payment\GroupNotClosed;
 use Model\Payment\Repositories\IGroupRepository;
 use function sprintf;
 
@@ -25,7 +25,7 @@ final class RemoveGroupHandler
         $group = $this->groups->find($command->getGroupId());
 
         if ($group->getState() !== Group::STATE_CLOSED) {
-            throw new GroupNotClosedException(sprintf('Cannot remove open group #%d', $group->getId()));
+            throw new GroupNotClosed(sprintf('Cannot remove open group #%d', $group->getId()));
         }
 
         $this->groups->remove($group);

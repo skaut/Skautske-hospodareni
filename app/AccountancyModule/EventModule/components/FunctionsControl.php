@@ -10,10 +10,10 @@ use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Event;
-use Model\Event\AssistantNotAdultException;
+use Model\Event\AssistantNotAdult;
 use Model\Event\Commands\Event\UpdateFunctions;
 use Model\Event\Functions;
-use Model\Event\LeaderNotAdultException;
+use Model\Event\LeaderNotAdult;
 use Model\Event\Person;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
@@ -157,10 +157,10 @@ class FunctionsControl extends BaseControl
         } catch (PermissionException $exc) {
             $form->addError($exc->getMessage());
             $this->reload($exc->getMessage(), 'danger');
-        } catch (LeaderNotAdultException $e) {
+        } catch (LeaderNotAdult $e) {
             $form->addError('Vedoucí akce musí být dosplělá osoba.');
             $this->reload();
-        } catch (AssistantNotAdultException $e) {
+        } catch (AssistantNotAdult $e) {
             $form->addError('Zástupce musí být dosplělá osoba.');
             $this->reload();
         }
@@ -179,9 +179,7 @@ class FunctionsControl extends BaseControl
         ];
 
         foreach ($values as $functionName => $personId) {
-            /**
- * @var SelectBox $selectbox
-*/
+            /** @var SelectBox $selectbox */
             $selectbox = $form[$functionName];
             $selectbox->setDefaultValue(isset($selectbox->getItems()[$personId]) ? $personId : null);
         }
@@ -189,7 +187,7 @@ class FunctionsControl extends BaseControl
 
     /**
      * @param int[] $ages
-     * @return array - [age => [person id => name], ...]
+     * @return mixed[] - [age => [person id => name], ...]
      */
     private function getPersonsOlderThan(array $ages) : array
     {

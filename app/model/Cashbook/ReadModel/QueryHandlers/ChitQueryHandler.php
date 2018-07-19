@@ -9,7 +9,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
-use Model\Common\ShouldNotHappenException;
+use Model\Common\ShouldNotHappen;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\ChitFactory;
@@ -54,6 +54,6 @@ final class ChitQueryHandler
             }
         }
 
-        throw new ShouldNotHappenException('Category not found');
+        throw new ShouldNotHappen('Category not found');
     }
 }

@@ -64,15 +64,12 @@ class ExportService
         $this->queryBus        = $queryBus;
     }
 
-    public function getNewPage()
+    public function getNewPage() : string
     {
         return '<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />';
     }
 
-    /**
-     * vrací seznam účastníků
-     */
-    public function getParticipants($aid, EventEntity $service, $type = 'general') : string
+    public function getParticipants(int $aid, EventEntity $service, string $type = 'general') : string
     {
         $templateFile = __DIR__ . '/templates/participant' . ($type === 'camp' ? 'Camp' : '') . '.latte';
 
@@ -112,7 +109,7 @@ class ExportService
     }
 
     /**
-     * @throws Event\EventNotFoundException
+     * @throws Event\EventNotFound
      */
     public function getEventReport(int $skautisEventId, EventEntity $eventService) : string
     {

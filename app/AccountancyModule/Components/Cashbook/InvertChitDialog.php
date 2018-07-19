@@ -110,7 +110,7 @@ class InvertChitDialog extends BaseControl
             ->setAttribute('class', 'ajax');
 
         $form->onSuccess[] = function (BaseForm $form, array $values) : void {
-            $cashbookId = CashbookId::fromString((string)$values['cashbookId']);
+            $cashbookId = CashbookId::fromString((string) $values['cashbookId']);
             $this->commandBus->handle(new AddInverseChit($this->cashbookId, $cashbookId, (int) $this->chitId));
             $this->presenter->flashMessage('Protidoklad byl vytvořen', 'success');
             $this->close();
@@ -120,7 +120,7 @@ class InvertChitDialog extends BaseControl
     }
 
     /**
-     * @return array<string, string>
+     * @return string[]
      */
     private function getCashbooks() : array
     {
@@ -128,9 +128,7 @@ class InvertChitDialog extends BaseControl
             return $this->cashbooks;
         }
 
-        /**
- * @var SkautisRole|NULL $role
-*/
+        /** @var SkautisRole|NULL $role */
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         $chit = $this->getChit();
 
@@ -138,23 +136,17 @@ class InvertChitDialog extends BaseControl
             return [];
         }
 
-        $units = $this->queryBus->handle(new EditableUnitsQuery($role));
-
+        $units     = $this->queryBus->handle(new EditableUnitsQuery($role));
         $cashbooks = [];
-
         foreach ($units as $unit) {
-            /**
- * @var Unit $unit
-*/
+            /** @var Unit $unit */
             $type = CashbookType::get($unit->isOfficial() ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP);
 
             if (! in_array($type, $chit->getInverseCashbookTypes(), true)) {
                 continue;
             }
 
-            /**
- * @var UnitCashbook[] $unitCashbooks
-*/
+            /** @var UnitCashbook[] $unitCashbooks */
             $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unit->getId()));
 
             foreach ($unitCashbooks as $cashbook) {

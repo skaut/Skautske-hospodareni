@@ -72,7 +72,7 @@ class AuthPresenter extends BasePresenter
         $this->presenter->redirect(':Accountancy:Default:');
     }
 
-    public function actionAjax($backlink = null) : void
+    public function actionAjax(?string $backlink = null) : void
     {
         $this->template->backlink = $backlink;
         $this->flashMessage('Vypršel čas přihlášení. Přihlaste se prosím znovu.', 'warning');

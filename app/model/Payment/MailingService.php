@@ -6,6 +6,7 @@ namespace Model\Payment;
 
 use DateTimeImmutable;
 use Model\Common\Repositories\IUserRepository;
+use Model\Common\UserNotFound;
 use Model\Mail\IMailerFactory;
 use Model\Payment\Mailing\Payment as MailPayment;
 use Model\Payment\Repositories\IBankAccountRepository;
@@ -62,10 +63,10 @@ class MailingService
     /**
      * Sends email to single payment address
      *
-     * @throws InvalidEmailException
-     * @throws PaymentNotFoundException
-     * @throws MailCredentialsNotSetException
-     * @throws EmailTemplateNotSetException
+     * @throws InvalidEmail
+     * @throws PaymentNotFound
+     * @throws MailCredentialsNotSet
+     * @throws EmailTemplateNotSet
      */
     public function sendEmail(int $paymentId, EmailType $emailType) : void
     {
@@ -75,7 +76,7 @@ class MailingService
         $template = $group->getEmailTemplate($emailType);
 
         if ($template === null || ! $group->isEmailEnabled($emailType)) {
-            throw new EmailTemplateNotSetException(
+            throw new EmailTemplateNotSet(
                 "Email template '" . $emailType->getValue() . "' not found"
             );
         }
@@ -86,8 +87,12 @@ class MailingService
 
     /**
      * @return string User's email
-     * @throws EmailNotSetException
-     * @throws MailCredentialsNotSetException
+     * @throws EmailNotSet
+     * @throws GroupNotFound
+     * @throws InvalidBankAccount
+     * @throws MailCredentialsNotFound
+     * @throws MailCredentialsNotSet
+     * @throws UserNotFound
      */
     public function sendTestMail(int $groupId) : string
     {
@@ -95,7 +100,7 @@ class MailingService
         $user  = $this->users->getCurrentUser();
 
         if ($user->getEmail() === null) {
-            throw new EmailNotSetException();
+            throw new EmailNotSet();
         }
 
         $payment = new MailPayment(
@@ -115,30 +120,30 @@ class MailingService
 
 
     /**
-     * @throws InvalidBankAccountException
-     * @throws InvalidEmailException
+     * @throws InvalidBankAccount
+     * @throws InvalidEmail
      * @throws MailCredentialsNotFound
-     * @throws MailCredentialsNotSetException
+     * @throws MailCredentialsNotSet
      */
     private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
     {
         $email = $paymentRow->getEmail();
         if ($email === null || ! Validators::isEmail($email)) {
-            throw new InvalidEmailException();
+            throw new InvalidEmail();
         }
 
         $this->send($group, $this->createPayment($paymentRow), $template);
     }
 
     /**
-     * @throws InvalidBankAccountException
+     * @throws InvalidBankAccount
      * @throws MailCredentialsNotFound
-     * @throws MailCredentialsNotSetException
+     * @throws MailCredentialsNotSet
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate) : void
     {
         if ($group->getSmtpId() === null) {
-            throw new MailCredentialsNotSetException();
+            throw new MailCredentialsNotSet();
         }
 
         $user = $this->users->getCurrentUser();

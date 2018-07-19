@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Event\Handlers\Event;
 
-use Model\Event\AssistantNotAdultException;
+use Model\Event\AssistantNotAdult;
 use Model\Event\Commands\Event\UpdateFunctions;
-use Model\Event\LeaderNotAdultException;
+use Model\Event\LeaderNotAdult;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
 use function strpos;
@@ -22,8 +22,8 @@ class UpdateFunctionsHandler
     }
 
     /**
-     * @throws AssistantNotAdultException
-     * @throws LeaderNotAdultException
+     * @throws AssistantNotAdult
+     * @throws LeaderNotAdult
      * @throws WsdlException
      */
     public function handle(UpdateFunctions $command) : void
@@ -40,11 +40,11 @@ class UpdateFunctionsHandler
             $this->skautis->event->EventGeneralUpdateFunction($query);
         } catch (WsdlException $e) {
             if (strpos($e->getMessage(), 'EventFunction_LeaderMustBeAdult') !== false) {
-                throw new LeaderNotAdultException();
+                throw new LeaderNotAdult();
             }
 
             if (strpos($e->getMessage(), 'EventFunction_AssistantMustBeAdult') !== false) {
-                throw new AssistantNotAdultException();
+                throw new AssistantNotAdult();
             }
 
             throw $e;

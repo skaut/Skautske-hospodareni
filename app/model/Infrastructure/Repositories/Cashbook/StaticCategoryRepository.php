@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Model\Cashbook\Category;
-use Model\Cashbook\CategoryNotFoundException;
+use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
-use Model\Infrastructure\Repositories\AbstractRepository;
+use Model\Infrastructure\Repositories\AggregateRepository;
 
-final class StaticCategoryRepository extends AbstractRepository implements IStaticCategoryRepository
+final class StaticCategoryRepository extends AggregateRepository implements IStaticCategoryRepository
 {
+    /**
+     * @return Category[]
+     */
     public function findByObjectType(ObjectType $type) : array
     {
         return $this->getEntityManager()->createQueryBuilder()
@@ -26,14 +29,14 @@ final class StaticCategoryRepository extends AbstractRepository implements IStat
     }
 
     /**
-     * @throws CategoryNotFoundException
+     * @throws CategoryNotFound
      */
     public function find(int $id) : Category
     {
         $category = $this->getEntityManager()->find(Category::class, $id);
 
         if ($category === null) {
-            throw new CategoryNotFoundException();
+            throw new CategoryNotFound();
         }
 
         return $category;

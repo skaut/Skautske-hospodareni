@@ -15,11 +15,12 @@ use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
-use Model\Common\AbstractAggregate;
+use Model\Common\Aggregate;
 use Nette\Utils\Strings;
 use function array_map;
+use function sprintf;
 
-class Cashbook extends AbstractAggregate
+class Cashbook extends Aggregate
 {
     /** @var CashbookId */
     private $id;
@@ -93,7 +94,7 @@ class Cashbook extends AbstractAggregate
     /**
      * Adds inverse chit for chit in specified cashbook
      *
-     * @throws InvalidCashbookTransferException
+     * @throws InvalidCashbookTransfer
      */
     public function addInverseChit(Cashbook $cashbook, int $chitId) : void
     {
@@ -107,8 +108,8 @@ class Cashbook extends AbstractAggregate
             // chit is transfer FROM this cashbook
             $categoryId = $cashbook->type->getTransferToCategoryId();
         } else {
-            throw new InvalidCashbookTransferException(
-                "Can't create inverse chit to chit with category '$originalCategoryId'"
+            throw new InvalidCashbookTransfer(
+                sprintf("Can't create inverse chit to chit with category '%s'", $originalCategoryId)
             );
         }
 
@@ -126,8 +127,8 @@ class Cashbook extends AbstractAggregate
     }
 
     /**
-     * @throws ChitNotFoundException
-     * @throws ChitLockedException
+     * @throws ChitNotFound
+     * @throws ChitLocked
      */
     public function updateChit(
         int $chitId,
@@ -142,7 +143,7 @@ class Cashbook extends AbstractAggregate
         $oldCategoryId = $chit->getCategoryId();
 
         if ($chit->isLocked()) {
-            throw new ChitLockedException();
+            throw new ChitLocked();
         }
 
         $chit->update($number, $date, $recipient, $amount, $purpose, $this->getChitCategory($category));
@@ -170,7 +171,7 @@ class Cashbook extends AbstractAggregate
         $chit = $this->getChit($chitId);
 
         if ($chit->isLocked()) {
-            throw new ChitLockedException();
+            throw new ChitLocked();
         }
 
         $this->chits->removeElement($chit);
@@ -211,7 +212,8 @@ class Cashbook extends AbstractAggregate
     }
 
     /**
-     * @throws ChitNotFoundException
+     * @param int[] $chitIds
+     * @throws ChitNotFound
      */
     public function copyChitsFrom(array $chitIds, Cashbook $sourceCashbook) : void
     {
@@ -224,8 +226,8 @@ class Cashbook extends AbstractAggregate
 
         foreach ($chits as $chit) {
             /**
- * @var Chit $chit
-*/
+            * @var Chit $chit
+            */
             $newChit = $this->type->equals($sourceCashbook->type) && ! $this->type->equalsValue(CashbookType::CAMP)
                 ? $chit->copyToCashbook($this)
                 : $chit->copyToCashbookWithUndefinedCategory($this);
@@ -259,7 +261,7 @@ class Cashbook extends AbstractAggregate
     }
 
     /**
-     * @throws ChitNotFoundException
+     * @throws ChitNotFound
      */
     private function getChit(int $id) : Chit
     {
@@ -269,7 +271,7 @@ class Cashbook extends AbstractAggregate
             }
         }
 
-        throw new ChitNotFoundException();
+        throw new ChitNotFound();
     }
 
     private function getChitCategory(ICategory $category) : Cashbook\Category

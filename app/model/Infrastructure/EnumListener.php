@@ -13,14 +13,15 @@ class EnumListener implements Subscriber
     /** @var EnumPostLoadEntityListener */
     private $listener;
 
-    public function getSubscribedEvents()
-    {
-        return ['postLoad'];
-    }
-
     public function __construct(EnumPostLoadEntityListener $listener)
     {
         $this->listener = $listener;
+    }
+
+    /** @return string[] */
+    public function getSubscribedEvents() : array
+    {
+        return ['postLoad'];
     }
 
     public function postLoad(LifecycleEventArgs $args) : void

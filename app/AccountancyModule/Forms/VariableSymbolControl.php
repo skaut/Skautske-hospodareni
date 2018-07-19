@@ -10,6 +10,9 @@ use Nette\Forms\Form;
 
 class VariableSymbolControl extends TextInput
 {
+    /**
+     * {@inheritDoc}
+     */
     public function __construct($label = null)
     {
         parent::__construct($label, 10);

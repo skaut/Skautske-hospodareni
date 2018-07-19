@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Model\Payment\Repositories;
 
 use Model\Payment\BankAccount;
-use Model\Payment\BankAccountNotFoundException;
+use Model\Payment\BankAccountNotFound;
 
 interface IBankAccountRepository
 {
     /**
-     * @throws BankAccountNotFoundException
+     * @throws BankAccountNotFound
      */
     public function find(int $id) : BankAccount;
 
@@ -18,7 +18,7 @@ interface IBankAccountRepository
     /**
      * @param int[] $ids
      * @return BankAccount[]
-     * @throws BankAccountNotFoundException
+     * @throws BankAccountNotFound
      */
     public function findByIds(array $ids) : array;
 

@@ -12,8 +12,8 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
-use Model\Cashbook\CashbookNotFoundException;
-use Model\Cashbook\ChitLockedException;
+use Model\Cashbook\CashbookNotFound;
+use Model\Cashbook\ChitLocked;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Operation;
@@ -148,6 +148,9 @@ final class ChitForm extends BaseControl
         $this->redrawControl();
     }
 
+    /**
+     * @param mixed[] $values
+     */
     public function getCategoryItems(array $values) : DependentData
     {
         $type = $values['type'];
@@ -267,10 +270,10 @@ final class ChitForm extends BaseControl
                 new AddChitToCashbook($cashbookId, $number, $date, $recipient, $amount, $purpose, $category)
             );
             $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
-        } catch (InvalidArgumentException | CashbookNotFoundException $exc) {
+        } catch (InvalidArgumentException | CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');
             $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', get_class($exc), $exc->getMessage()));
-        } catch (ChitLockedException $e) {
+        } catch (ChitLocked $e) {
             $this->flashMessage('Nelze upravit zamčený paragon', 'error');
         } catch (WsdlException $se) {
             $this->flashMessage('Nepodařilo se upravit záznamy ve skautisu.', 'danger');
@@ -290,7 +293,7 @@ final class ChitForm extends BaseControl
     }
 
     /**
-     * @return array<int,string>
+     * @return string[]
      */
     private function getCategoryPairsByType(?Operation $operation) : array
     {

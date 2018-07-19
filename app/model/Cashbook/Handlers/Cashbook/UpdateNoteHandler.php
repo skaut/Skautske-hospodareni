@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers\Cashbook;
 
-use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\Commands\Cashbook\UpdateNote;
 use Model\Cashbook\Repositories\ICashbookRepository;
 
@@ -20,7 +20,7 @@ final class UpdateNoteHandler
     }
 
     /**
-     * @throws CashbookNotFoundException
+     * @throws CashbookNotFound
      */
     public function handle(UpdateNote $command) : void
     {

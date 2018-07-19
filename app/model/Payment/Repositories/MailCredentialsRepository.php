@@ -31,6 +31,10 @@ final class MailCredentialsRepository implements IMailCredentialsRepository
         return $credentials;
     }
 
+    /**
+     * @param int[] $unitIds
+     * @return mixed[]
+     */
     public function findByUnits(array $unitIds) : array
     {
         if (count($unitIds) === 0) {
@@ -42,9 +46,7 @@ final class MailCredentialsRepository implements IMailCredentialsRepository
         $credentialsList = $this->entityManager->getRepository(MailCredentials::class)->findBy(['unitId IN' => $unitIds]);
 
         foreach ($credentialsList as $credentials) {
-            /**
- * @var MailCredentials $credentials
-*/
+            /** @var MailCredentials $credentials */
             $byUnit[$credentials->getUnitId()][] = $credentials;
         }
 

@@ -6,7 +6,7 @@ namespace Model\Travel\Repositories;
 
 use Doctrine\ORM\EntityManager;
 use Model\Travel\Contract;
-use Model\Travel\ContractNotFoundException;
+use Model\Travel\ContractNotFound;
 
 final class ContractRepository implements IContractRepository
 {
@@ -23,7 +23,7 @@ final class ContractRepository implements IContractRepository
         $contract = $this->em->find(Contract::class, $id);
 
         if ($contract === null) {
-            throw new ContractNotFoundException('Contract with id #' . $id . ' not found');
+            throw new ContractNotFound('Contract with id #' . $id . ' not found');
         }
 
         return $contract;

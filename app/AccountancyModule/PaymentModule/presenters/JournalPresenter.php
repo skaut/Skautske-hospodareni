@@ -7,7 +7,6 @@ namespace App\AccountancyModule\PaymentModule;
 use Model\PaymentService;
 use function array_keys;
 use function date;
-use function is_null;
 
 class JournalPresenter extends BasePresenter
 {
@@ -28,7 +27,7 @@ class JournalPresenter extends BasePresenter
             $this->redirect('Payment:default');
         }
 
-        if (is_null($year)) {
+        if ($year === null) {
             $year = date('Y');
         }
         $this->template->year = $year;

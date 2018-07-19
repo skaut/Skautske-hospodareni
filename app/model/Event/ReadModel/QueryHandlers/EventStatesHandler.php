@@ -27,7 +27,7 @@ final class EventStatesHandler
 
 
     /**
-     * @return array<int,string>
+     * @return string[]
      */
     public function handle(EventStates $query) : array
     {

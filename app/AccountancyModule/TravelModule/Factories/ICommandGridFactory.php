@@ -8,5 +8,5 @@ use App\AccountancyModule\TravelModule\Components\CommandGrid;
 
 interface ICommandGridFactory
 {
-    public function create (int $unitId) : CommandGrid;
+    public function create(int $unitId) : CommandGrid;
 }

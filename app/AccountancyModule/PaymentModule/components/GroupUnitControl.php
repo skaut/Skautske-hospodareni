@@ -111,7 +111,7 @@ class GroupUnitControl extends BaseControl
 
     private function formSucceeded(ArrayHash $values, int $groupId) : void
     {
-        $this->commandBus->handle(new ChangeGroupUnit($groupId, $values->unitId));
+        $this->commandBus->handle(new ChangeGroupUnit($groupId, (int) $values->unitId));
         $this->getPresenter()->flashMessage('Jednotka byla změněna', 'success');
         $this->editation = false;
         $this->redrawControl();

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Model\Payment\Subscribers;
 
 use Model\Payment\DomainEvents\PaymentWasCompleted;
-use Model\Payment\EmailTemplateNotSetException;
+use Model\Payment\EmailTemplateNotSet;
 use Model\Payment\EmailType;
-use Model\Payment\InvalidEmailException;
-use Model\Payment\MailCredentialsNotSetException;
+use Model\Payment\InvalidEmail;
+use Model\Payment\MailCredentialsNotSet;
 use Model\Payment\MailingService;
 
 final class PaymentMailSubscriber
@@ -25,7 +25,7 @@ final class PaymentMailSubscriber
     {
         try {
             $this->mailingService->sendEmail($event->getId(), EmailType::get(EmailType::PAYMENT_COMPLETED));
-        } catch (EmailTemplateNotSetException | MailCredentialsNotSetException | InvalidEmailException $e) {
+        } catch (EmailTemplateNotSet | MailCredentialsNotSet | InvalidEmail $e) {
         }
     }
 }

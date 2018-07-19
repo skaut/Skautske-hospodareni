@@ -8,12 +8,12 @@ use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;
 use Model\Auth\Resources\Unit;
-use Model\BankTimeLimitException;
-use Model\BankTimeoutException;
+use Model\BankTimeLimit;
+use Model\BankTimeout;
 use Model\DTO\Payment\BankAccount;
-use Model\Payment\BankAccountNotFoundException;
+use Model\Payment\BankAccountNotFound;
 use Model\Payment\BankAccountService;
-use Model\Payment\TokenNotSetException;
+use Model\Payment\TokenNotSet;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
@@ -50,7 +50,7 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $this->accounts->allowForSubunits($id);
             $this->flashMessage('Bankovní účet zpřístupněn', 'success');
-        } catch (BankAccountNotFoundException $e) {
+        } catch (BankAccountNotFound $e) {
             $this->flashMessage('Bankovní účet neexistuje', 'danger');
         }
         $this->redirect('this');
@@ -65,7 +65,7 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $this->accounts->disallowForSubunits($id);
             $this->flashMessage('Bankovní účet znepřístupněn', 'success');
-        } catch (BankAccountNotFoundException $e) {
+        } catch (BankAccountNotFound $e) {
             $this->flashMessage('Bankovní účet neexistuje', 'danger');
         }
         $this->redirect('this');
@@ -80,7 +80,7 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $this->accounts->removeBankAccount($id);
             $this->flashMessage('Bankovní účet byl odstraněn', 'success');
-        } catch (BankAccountNotFoundException $e) {
+        } catch (BankAccountNotFound $e) {
         }
         $this->redirect('this');
     }
@@ -95,7 +95,7 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $this->accounts->importFromSkautis($this->getUnitId());
             $this->flashMessage('Účty byly importovány', 'success');
-        } catch (BankAccountNotFoundException $e) {
+        } catch (BankAccountNotFound $e) {
             $this->flashMessage('Nenalezeny žádné účty', 'warning');
         }
 
@@ -153,11 +153,11 @@ class BankAccountsPresenter extends BasePresenter
         $this->template->transactions = null;
         try {
             $this->template->transactions = $this->accounts->getTransactions($id, 60);
-        } catch (TokenNotSetException $e) {
+        } catch (TokenNotSet $e) {
             $this->template->warningMessage = 'Nemáte vyplněný token pro komunikaci s FIO';
-        } catch (BankTimeLimitException $e) {
+        } catch (BankTimeLimit $e) {
             $this->template->warningMessage = PairButton::TIME_LIMIT_MESSAGE;
-        } catch (BankTimeoutException $e) {
+        } catch (BankTimeout $e) {
             $this->template->errorMessage = PairButton::TIMEOUT_MESSAGE;
         }
     }

@@ -10,7 +10,7 @@ use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
-use Model\Payment\GroupNotFoundException;
+use Model\Payment\GroupNotFound;
 use Model\Payment\Repositories\GroupRepository;
 use Model\Payment\VariableSymbol;
 
@@ -41,7 +41,7 @@ class GroupRepositoryTest extends \IntegrationTest
 
     public function testFindNotSavedGroupThrowsException() : void
     {
-        $this->expectException(GroupNotFoundException::class);
+        $this->expectException(GroupNotFound::class);
 
         $this->repository->find(10);
     }

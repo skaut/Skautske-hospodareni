@@ -6,18 +6,19 @@ namespace Model;
 
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
+use Dibi\Exception;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
-use Model\Travel\CommandNotFoundException;
+use Model\Travel\CommandNotFound;
 use Model\Travel\Contract;
-use Model\Travel\ContractNotFoundException;
+use Model\Travel\ContractNotFound;
 use Model\Travel\Passenger;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
-use Model\Travel\TravelNotFoundException;
+use Model\Travel\TravelNotFound;
 use Model\Travel\Vehicle;
-use Model\Travel\VehicleNotFoundException;
+use Model\Travel\VehicleNotFound;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
@@ -78,7 +79,7 @@ class TravelService
             return DTO\VehicleFactory::create(
                 $this->vehicles->find($id)
             );
-        } catch (VehicleNotFoundException $e) {
+        } catch (VehicleNotFound $e) {
             return null;
         }
     }
@@ -87,14 +88,14 @@ class TravelService
     {
         try {
             return $this->vehicles->find($id);
-        } catch (VehicleNotFoundException $e) {
+        } catch (VehicleNotFound $e) {
             return null;
         }
     }
 
 
     /**
-     * @return array<int,string> in format [id => label]
+     * @return string[]
      */
     public function getVehiclesPairs(int $unitId) : array
     {
@@ -130,7 +131,7 @@ class TravelService
             $this->vehicles->remove($vehicle);
 
             return true;
-        } catch (VehicleNotFoundException $e) {
+        } catch (VehicleNotFound $e) {
             return false;
         }
     }
@@ -160,7 +161,7 @@ class TravelService
 
     /**
      * @return DTO\Command\Travel[]
-     * @throws CommandNotFoundException
+     * @throws CommandNotFound
      */
     public function getTravels(int $commandId) : array
     {
@@ -195,7 +196,7 @@ class TravelService
                 $command->updateTransportTravel($travelId, MoneyFactory::fromFloat($distanceOrPrice), $details);
             }
             $this->commands->save($command);
-        } catch (TravelNotFoundException $e) {
+        } catch (TravelNotFound $e) {
         }
     }
 
@@ -207,7 +208,10 @@ class TravelService
         $this->commands->save($command);
     }
 
-    public function getTravelTypes($pairs = false)
+    /**
+     * @return mixed[]
+     */
+    public function getTravelTypes(bool $pairs = false) : array
     {
         return $this->tableTravel->getTypes($pairs);
     }
@@ -228,7 +232,7 @@ class TravelService
             return DTO\ContractFactory::create(
                 $this->contracts->find($contractId)
             );
-        } catch (ContractNotFoundException $e) {
+        } catch (ContractNotFound $e) {
             return null;
         }
     }
@@ -290,17 +294,15 @@ class TravelService
         try {
             $contract = $this->contracts->find($contractId);
             $this->contracts->remove($contract);
-        } catch (ContractNotFoundException $e) {
+        } catch (ContractNotFound $e) {
         }
     }
-
-    /*     COMMANDS    */
 
     public function getCommandDetail(int $id) : ?DTO\Command
     {
         try {
             return DTO\CommandFactory::create($this->commands->find($id));
-        } catch (CommandNotFoundException $e) {
+        } catch (CommandNotFound $e) {
             return null;
         }
     }
@@ -315,6 +317,10 @@ class TravelService
         return $command->getUsedTransportTypes();
     }
 
+    /**
+     * @param int[] $types
+     * @throws Exception
+     */
     public function addCommand(
         int $unitId,
         ?int $contractId,
@@ -348,6 +354,10 @@ class TravelService
         $this->table->updateTypes($command->getId(), $types);
     }
 
+    /**
+     * @param int[] $types
+     * @throws Exception
+     */
     public function updateCommand(
         int $id,
         ?int $contractId,
@@ -437,7 +447,7 @@ class TravelService
      * vraci všechny přikazy navazane na vozidlo
      * @return DTO\Command[]
      */
-    public function getAllCommandsByVehicle(int $vehicleId)
+    public function getAllCommandsByVehicle(int $vehicleId) : array
     {
         return array_map(function (Command $command) {
             return DTO\CommandFactory::create($command);
@@ -471,7 +481,10 @@ class TravelService
         $this->commands->remove($command);
     }
 
-    public function getCommandTypes($commandId)
+    /**
+     * @return mixed[]
+     */
+    public function getCommandTypes(int $commandId) : array
     {
         return $this->table->getCommandTypes($commandId);
     }
@@ -494,7 +507,7 @@ class TravelService
         $type = $this->tableTravel->getTypes()[$type] ?? null;
 
         if ($type === null) {
-            throw new \InvalidArgumentException("Type $type not found");
+            throw new \InvalidArgumentException('Type ' . $type . ' not found');
         }
 
         return (bool) $type['hasFuel'];

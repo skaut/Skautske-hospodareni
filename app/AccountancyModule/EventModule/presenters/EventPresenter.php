@@ -7,6 +7,7 @@ namespace App\AccountancyModule\EventModule;
 use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use App\Forms\BaseForm;
+use App\MyValidators;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -26,7 +27,6 @@ use Model\Event\SkautisEventId;
 use Model\ExportService;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
-use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -35,9 +35,6 @@ class EventPresenter extends BasePresenter
 {
     /** @var ExportService */
     protected $exportService;
-
-    /** @var MemberService */
-    private $memberService;
 
     /** @var IFunctionsControlFactory */
     private $functionsFactory;
@@ -50,14 +47,12 @@ class EventPresenter extends BasePresenter
 
     public function __construct(
         ExportService $exportService,
-        MemberService $memberService,
         IFunctionsControlFactory $functionsFactory,
         PdfRenderer $pdf,
         LoggerService $loggerService
     ) {
         parent::__construct();
         $this->exportService    = $exportService;
-        $this->memberService    = $memberService;
         $this->functionsFactory = $functionsFactory;
         $this->pdf              = $pdf;
         $this->loggerService    = $loggerService;
@@ -201,7 +196,7 @@ class EventPresenter extends BasePresenter
             ->setRequired('Musíte zadat datum začátku akce');
         $form->addDatePicker('end', 'Do')
             ->setRequired('Musíte zadat datum konce akce')
-            ->addRule([\MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
+            ->addRule([MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
         $form->addText('location', 'Místo');
         $form->addSelect('type', 'Typ (+)', $this->queryBus->handle(new EventTypes()));
         $form->addSelect('scope', 'Rozsah (+)', $this->queryBus->handle(new EventScopes()));

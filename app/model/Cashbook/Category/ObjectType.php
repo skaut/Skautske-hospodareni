@@ -25,4 +25,9 @@ class ObjectType
     {
         return $this->type;
     }
+
+    public function getCategory() : Category
+    {
+        return $this->category;
+    }
 }

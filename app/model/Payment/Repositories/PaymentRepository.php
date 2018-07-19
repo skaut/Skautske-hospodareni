@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Model\Payment\Repositories;
 
 use Assert\Assert;
-use Model\Infrastructure\Repositories\AbstractRepository;
+use Model\Infrastructure\Repositories\AggregateRepository;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
-use Model\Payment\PaymentNotFoundException;
+use Model\Payment\PaymentNotFound;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use function array_fill_keys;
 
-final class PaymentRepository extends AbstractRepository implements IPaymentRepository
+final class PaymentRepository extends AggregateRepository implements IPaymentRepository
 {
     private const STATE_ORDER = [
         State::PREPARING,
@@ -28,12 +28,15 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
         $payment = $this->getEntityManager()->find(Payment::class, $id);
 
         if (! $payment instanceof Payment) {
-            throw new PaymentNotFoundException();
+            throw new PaymentNotFound();
         }
 
         return $payment;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function summarizeByGroup(array $groupIds) : array
     {
         $states = [State::PREPARING, State::SENT, State::COMPLETED];
@@ -69,11 +72,17 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
         return $summaries;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByGroup(int $groupId) : array
     {
         return $this->findByMultipleGroups([$groupId]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByMultipleGroups(array $groupIds) : array
     {
         Assert::thatAll($groupIds)->integer();
@@ -98,6 +107,9 @@ final class PaymentRepository extends AbstractRepository implements IPaymentRepo
         $this->saveAndDispatchEvents($payment);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function saveMany(array $payments) : void
     {
         if (empty($payments)) {

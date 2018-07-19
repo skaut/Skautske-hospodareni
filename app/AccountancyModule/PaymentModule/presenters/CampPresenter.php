@@ -13,6 +13,7 @@ use function in_array;
 
 class CampPresenter extends BasePresenter
 {
+    /** @var string[] */
     protected $readUnits;
 
     /** @var PaymentService */

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\Repositories\CategoryRepository;
@@ -26,8 +26,8 @@ class CategoryPairsQueryHandler
     }
 
     /**
-     * @return array<int,string>
-     * @throws CashbookNotFoundException
+     * @return string[]
+     * @throws CashbookNotFound
      */
     public function handle(CategoryPairsQuery $query) : array
     {

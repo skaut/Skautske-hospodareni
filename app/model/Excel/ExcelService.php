@@ -22,12 +22,12 @@ use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Skautis\Wsdl\PermissionException;
 use function count;
 use function date;
 use function gmdate;
 use function header;
 use function implode;
-use function is_null;
 use function range;
 use function reset;
 use function strtotime;
@@ -64,7 +64,7 @@ class ExcelService
         return $sheet;
     }
 
-    public function getParticipants(EventEntity $service, $event, $type = 'general') : void
+    public function getParticipants(EventEntity $service, \stdClass $event, string $type) : void
     {
         $objPHPExcel = $this->getNewFile();
         $data        = $service->participants->getAll($event->ID);
@@ -96,6 +96,9 @@ class ExcelService
         return $excel;
     }
 
+    /**
+     * @param int[] $eventIds
+     */
     public function getEventSummaries(array $eventIds, EventEntity $service) : void
     {
         $objPHPExcel = $this->getNewFile();
@@ -107,15 +110,15 @@ class ExcelService
             /** @var CashbookId $cashbookId */
             $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
 
-            $data[$aid]                    = $service->event->get($aid);
+            $data[$aid]                    = $service->getEvent()->get($aid);
             $data[$aid]['cashbookId']      = $cashbookId;
-            $data[$aid]['parStatistic']    = $service->participants->getEventStatistic($aid);
+            $data[$aid]['parStatistic']    = $service->getParticipants()->getEventStatistic($aid);
             $data[$aid]['chits']           = $this->queryBus->handle(new ChitListQuery($cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new EventFunctions($eventId));
-            $participants                  = $service->participants->getAll($aid);
+            $participants                  = $service->getParticipants()->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
-            $data[$aid]['personDays']      = $service->participants->getPersonsDays($participants);
-            $pp                            = $service->participants->countPragueParticipants($data[$aid]);
+            $data[$aid]['personDays']      = $service->getParticipants()->getPersonsDays($participants);
+            $pp                            = $service->getParticipants()->countPragueParticipants($data[$aid]);
             if ($pp === null) {
                 continue;
             }
@@ -132,6 +135,11 @@ class ExcelService
         $this->send($objPHPExcel, 'Souhrn-akcí-' . date('Y_n_j'));
     }
 
+    /**
+     * @param int[] $campsIds
+     * @throws \PHPExcel_Exception
+     * @throws PermissionException
+     */
     public function getCampsSummary(array $campsIds, EventEntity $service, UnitService $unitService) : void
     {
         $objPHPExcel = $this->getNewFile();
@@ -172,9 +180,11 @@ class ExcelService
         $this->send($objPHPExcel, 'Export-vybranych-paragonu');
     }
 
-    /* PROTECTED */
-
-    protected function setSheetParticipantCamp(\PHPExcel_Worksheet $sheet, $data) : void
+    /**
+     * @param mixed[] $data
+     * @throws \PHPExcel_Exception
+     */
+    protected function setSheetParticipantCamp(\PHPExcel_Worksheet $sheet, array $data) : void
     {
         $sheet->setCellValue('A1', 'P.č.')
             ->setCellValue('B1', 'Jméno')
@@ -201,11 +211,11 @@ class ExcelService
                 ->setCellValue('E' . $rowCnt, $row->Street)
                 ->setCellValue('F' . $rowCnt, $row->City)
                 ->setCellValue('G' . $rowCnt, $row->Postcode)
-                ->setCellValue('H' . $rowCnt, ! is_null($row->Birthday) ? date('d.m.Y', strtotime($row->Birthday)) : '')
+                ->setCellValue('H' . $rowCnt, $row->Birthday !== null ? date('d.m.Y', strtotime($row->Birthday)) : '')
                 ->setCellValue('I' . $rowCnt, $row->Days)
                 ->setCellValue('J' . $rowCnt, $row->Age < self::ADULT_AGE ? $row->Days : 0)
-                ->setCellValue('K' . $rowCnt, ! is_null($row->payment) ? $row->payment : 0)
-                ->setCellValue('L' . $rowCnt, ! is_null($row->repayment) ? $row->repayment : 0)
+                ->setCellValue('K' . $rowCnt, $row->payment !== null ? $row->payment : 0)
+                ->setCellValue('L' . $rowCnt, $row->repayment !== null ? $row->repayment : 0)
                 ->setCellValue('M' . $rowCnt, ($row->payment - $row->repayment))
                 ->setCellValue('N' . $rowCnt, $row->isAccount === 'Y' ? 'Ano' : 'Ne');
             $rowCnt++;
@@ -218,7 +228,11 @@ class ExcelService
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
     }
 
-    protected function setSheetParticipantGeneral(\PHPExcel_Worksheet $sheet, $data, $event) : void
+    /**
+     * @param mixed[] $data
+     * @throws \PHPExcel_Exception
+     */
+    protected function setSheetParticipantGeneral(\PHPExcel_Worksheet $sheet, array $data, \stdClass $event) : void
     {
         $startDate = new \DateTime($event->StartDate);
         $sheet->setCellValue('A1', 'P.č.')
@@ -242,9 +256,9 @@ class ExcelService
                 ->setCellValue('E' . $rowCnt, $row->Street)
                 ->setCellValue('F' . $rowCnt, $row->City)
                 ->setCellValue('G' . $rowCnt, $row->Postcode)
-                ->setCellValue('H' . $rowCnt, ! is_null($row->Birthday) ? date('d.m.Y', strtotime($row->Birthday)) : '')
+                ->setCellValue('H' . $rowCnt, $row->Birthday !== null ? date('d.m.Y', strtotime($row->Birthday)) : '')
                 ->setCellValue('I' . $rowCnt, $row->Days)
-                ->setCellValue('J' . $rowCnt, ($startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE && ! is_null($row->Birthday)) ? $row->Days : 0)
+                ->setCellValue('J' . $rowCnt, ($startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE && $row->Birthday !== null) ? $row->Days : 0)
                 ->setCellValue('K' . $rowCnt, $row->payment);
             $rowCnt++;
         }
@@ -274,7 +288,7 @@ class ExcelService
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         $prefix   = $cashbook->getChitNumberPrefix();
-        /** @var array<int, string> $categoryNames */
+        /** @var string[] $categoryNames */
         $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
 
         $balance = 0;
@@ -307,7 +321,11 @@ class ExcelService
         $sheet->setTitle('Pokladní kniha');
     }
 
-    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, $data, bool $allowPragueColumns = false) : void
+    /**
+     * @param mixed[] $data
+     * @throws \PHPExcel_Exception
+     */
+    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, array $data, bool $allowPragueColumns = false) : void
     {
         $firstElement = reset($data);
 
@@ -382,6 +400,10 @@ class ExcelService
         $sheet->setTitle('Přehled akcí');
     }
 
+    /**
+     * @param mixed[] $data
+     * @throws \PHPExcel_Exception
+     */
     protected function setSheetCamps(\PHPExcel_Worksheet $sheet, array $data) : void
     {
         $firstElement = reset($data);
@@ -434,6 +456,10 @@ class ExcelService
         $sheet->setTitle('Přehled táborů');
     }
 
+    /**
+     * @param mixed[] $data
+     * @throws \PHPExcel_Exception
+     */
     private function setSheetChits(\PHPExcel_Worksheet $sheet, array $data) : void
     {
         $sheet->setCellValue('A1', 'Název akce')
@@ -454,7 +480,7 @@ class ExcelService
             $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
             $prefix   = $cashbook->getChitNumberPrefix();
 
-            /** @var array<int, string> $categories */
+            /** @var string[] $categories */
             $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId, null));
 
             foreach ($event['chits'] as $chit) {
@@ -500,7 +526,7 @@ class ExcelService
         $rowCnt = 2;
         $sumIn  = $sumOut = 0;
 
-        /** @var array<int, string> $categoryNames */
+        /** @var string[] $categoryNames */
         $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
 
         foreach ($chits as $chit) {
@@ -546,7 +572,7 @@ class ExcelService
         $sheet->setTitle('Doklady');
     }
 
-    protected function send(\PHPExcel $obj, $filename) : void
+    protected function send(\PHPExcel $obj, string $filename) : void
     {
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

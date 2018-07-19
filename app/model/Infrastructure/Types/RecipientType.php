@@ -15,12 +15,18 @@ class RecipientType extends StringType
         return 'recipient';
     }
 
+    /**
+     * @param mixed $value
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
     {
         /** @var $value Recipient */
         return $value === null ? null : $value->getName();
     }
 
+    /**
+     * @param mixed $value
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform) : ?Recipient
     {
         return $value === null ? null : new Recipient($value);

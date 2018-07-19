@@ -6,12 +6,12 @@ namespace Model\Cashbook\Repositories;
 
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\CashbookNotFound;
 
 interface ICashbookRepository
 {
     /**
-     * @throws CashbookNotFoundException
+     * @throws CashbookNotFound
      */
     public function find(CashbookId $id) : Cashbook;
 

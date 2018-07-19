@@ -27,9 +27,10 @@ class FormRenderer extends DefaultFormRenderer
     /** @var bool */
     private $controlsInit = false;
 
+    /** @var bool */
     private $inline = false;
 
-    public function __construct($inline = false)
+    public function __construct(bool $inline = false)
     {
         if ($inline) {
             $this->wrappers['controls']['container']     = null;
@@ -73,7 +74,9 @@ class FormRenderer extends DefaultFormRenderer
         return parent::renderBody();
     }
 
-
+    /**
+     * @param Nette\Forms\Container|Nette\Forms\ControlGroup $parent
+     */
     public function renderControls($parent) : string
     {
         $this->controlsInit();
@@ -87,7 +90,9 @@ class FormRenderer extends DefaultFormRenderer
         return parent::renderPair($control);
     }
 
-
+    /**
+     * @param  Nette\Forms\IControl[] $controls
+     */
     public function renderPairMulti(array $controls) : string
     {
         $this->controlsInit();

@@ -19,7 +19,7 @@ class LoggerRepository implements ILoggerRepository
     }
 
     /**
-     * @return Log[]
+     * {@inheritDoc}
      */
     public function findAllByTypeId(Type $type, int $typeId) : array
     {

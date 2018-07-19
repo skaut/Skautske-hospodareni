@@ -113,7 +113,7 @@ services:
 
     - Model\Services\PdfRenderer(%tempDir%)
 
-    - Model\PaymentService(%tempDir%)
+    - Model\PaymentService
     - Model\Payment\BankAccountService(fioCache: @fio.cache)
     - Model\MemberService(@skautis.org)
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\ParticipantTrait;
 use Model\Auth\Resources\Event;
 use Model\ExcelService;
 use Model\ExportService;
@@ -16,7 +17,7 @@ use function array_key_exists;
 
 class ParticipantPresenter extends BasePresenter
 {
-    use \ParticipantTrait;
+    use ParticipantTrait;
 
     /** @var bool */
     protected $isAllowParticipantDetail;
@@ -94,10 +95,10 @@ class ParticipantPresenter extends BasePresenter
      */
     public function actionEditField(?int $aid = null, ?int $id = null, ?string $field = null, $value = null) : void
     {
-        if($aid === null || $id === null || $field === null || $value === null) {
+        if ($aid === null || $id === null || $field === null || $value === null) {
             throw new BadRequestException();
         }
-        
+
         if (! $this->isAllowParticipantUpdate) {
             $this->flashMessage('Nemáte oprávnění měnit účastníkův jejich údaje.', 'danger');
             if ($this->isAjax()) {

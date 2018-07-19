@@ -7,7 +7,7 @@ namespace Model;
 use Model\Payment\IUnitResolver;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
-use Model\Unit\UnitNotFoundException;
+use Model\Unit\UnitNotFound;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Application\BadRequestException;
 use Nette\Security\Identity;
@@ -88,7 +88,7 @@ class UnitService
     }
 
     /**
-     * @return array<int, string>
+     * @return string[]
      */
     public function getSubunitPairs(int $parentId) : array
     {
@@ -105,7 +105,7 @@ class UnitService
     /**
      * vrací jednotku, která má právní subjektivitu
      */
-    public function getOficialUnit(?int $unitId = null) : \stdClass
+    public function getOfficialUnit(?int $unitId = null) : \stdClass
     {
         $unitId         = $unitId ?? $this->getUnitId();
         $officialUnitId = $this->unitResolver->getOfficialUnitId($unitId);
@@ -118,7 +118,7 @@ class UnitService
      */
     public function getOficialName(int $unitId) : string
     {
-        $unit = $this->getOficialUnit($unitId);
+        $unit = $this->getOfficialUnit($unitId);
         return 'IČO ' . $unit->IC . ' ' . $unit->FullDisplayName . ', ' . $unit->Street . ', ' . $unit->City . ', ' . $unit->Postcode;
     }
 
@@ -140,7 +140,7 @@ class UnitService
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na čtení
      *
-     * @return array<int, string>
+     * @return string[]
      */
     public function getReadUnits(User $user) : array
     {
@@ -152,7 +152,7 @@ class UnitService
      * @see EditableUnitsQuery
      *
      * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
-     * @return array<int, string>
+     * @return string[]
      */
     public function getEditUnits(User $user) : array
     {
@@ -160,7 +160,7 @@ class UnitService
     }
 
     /**
-     * @return array<int, string>
+     * @return string[]
      */
     public function getUnits(User $user, string $accessType) : array
     {
@@ -195,7 +195,7 @@ class UnitService
         foreach ($troopIds as $troopId) {
             try {
                 $unit = $this->units->find($troopId);
-            } catch (UnitNotFoundException $e) {
+            } catch (UnitNotFound $e) {
                 // Removed troops are returned as well https://github.com/skaut/Skautske-hospodareni/issues/483
                 continue;
             }

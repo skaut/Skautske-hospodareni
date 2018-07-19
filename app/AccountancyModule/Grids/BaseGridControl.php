@@ -16,7 +16,7 @@ abstract class BaseGridControl extends BaseControl
         $this->template->render();
     }
 
-    abstract protected function createComponentGrid () : DataGrid;
+    abstract protected function createComponentGrid() : DataGrid;
 
     protected function createGrid() : DataGrid
     {

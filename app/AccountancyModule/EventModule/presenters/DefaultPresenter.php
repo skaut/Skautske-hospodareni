@@ -6,6 +6,7 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
+use App\MyValidators;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Event\Commands\CancelEvent;
@@ -16,10 +17,11 @@ use Model\Event\ReadModel\Queries\EventTypes;
 use Model\Event\ReadModel\Queries\NewestEventId;
 use Model\Event\SkautisEventId;
 use Model\ExcelService;
-use MyValidators;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\Http\SessionSection;
 use Skautis\Exception;
+use Ublaboo\DataGrid\DataGrid;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
@@ -33,6 +35,7 @@ class DefaultPresenter extends BasePresenter
 {
     public const DEFAULT_STATE = 'draft'; //filtrovani zobrazených položek
 
+    /** @var SessionSection */
     public $ses;
 
     /** @var ExcelService */
@@ -63,7 +66,7 @@ class DefaultPresenter extends BasePresenter
         $this->ses->year = date('Y');
     }
 
-    protected function createComponentEventGrid()
+    protected function createComponentEventGrid() : DataGrid
     {
         //filtrovani zobrazených položek
         $year  = $this->ses->year ?? date('Y');
@@ -111,6 +114,9 @@ class DefaultPresenter extends BasePresenter
         $this->template->accessCreate = $this->authorizator->isAllowed(Event::CREATE, null);
     }
 
+    /**
+     * @param string[] $ids
+     */
     public function handleExportEvents(array $ids) : void
     {
         $ids = array_map('intval', $ids);
@@ -190,7 +196,12 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('default', ['aid' => $this->aid]);
     }
 
-    public function isDateValidator($item, $args)
+    /**
+     * @deprecated I didn't found any use of this function (fhana July 2018)
+     * @param mixed $item
+     * @param mixed $args
+     */
+    public function isDateValidator($item, $args) : bool
     {
         return $item === null ? false : true;
     }
@@ -226,7 +237,7 @@ class DefaultPresenter extends BasePresenter
         $form->addDatePicker('end', 'Do*')
             ->addRule(Form::FILLED, 'Musíte vyplnit konec akce')
             ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.')
-            ->addRule([\MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
+            ->addRule([MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
         $form->addText('location', 'Místo');
         $form->addSelect('orgID', 'Pořádající jednotka', $units);
         $form->addSelect('scope', 'Rozsah (+)', $scopes)

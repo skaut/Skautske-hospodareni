@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Model\Common\Repositories;
 
 use Model\Common\User;
-use Model\Common\UserNotFoundException;
+use Model\Common\UserNotFound;
 
 interface IUserRepository
 {
     /**
-     * @throws UserNotFoundException
+     * @throws UserNotFound
      */
     public function find(int $id) : User;
 
     /**
-     * @throws UserNotFoundException
+     * @throws UserNotFound
      */
     public function getCurrentUser() : User;
 }

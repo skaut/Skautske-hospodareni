@@ -7,13 +7,12 @@ namespace Model\Skautis;
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Event\Event;
-use Model\Event\EventNotFoundException;
+use Model\Event\EventNotFound;
 use Model\Event\Repositories\IEventRepository;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use function array_column;
 use function count;
-use function is_null;
 use function max;
 
 final class EventRepository implements IEventRepository
@@ -26,6 +25,7 @@ final class EventRepository implements IEventRepository
     /** @var Mapper */
     private $mapper;
 
+    /** @var string */
     private $skautisType = 'eventGeneral';
 
     public function __construct(WebServiceInterface $webService, Mapper $mapper)
@@ -40,7 +40,7 @@ final class EventRepository implements IEventRepository
             $skautisEvent = $this->webService->EventGeneralDetail(['ID' => $skautisId]);
             return $this->createEvent($skautisEvent);
         } catch (PermissionException $exc) {
-            throw new EventNotFoundException($exc->getMessage(), $exc->getCode(), $exc);
+            throw new EventNotFound($exc->getMessage(), $exc->getCode(), $exc);
         }
     }
 
@@ -103,11 +103,11 @@ final class EventRepository implements IEventRepository
         );
     }
 
-    private function getSkautisId(int $id)
+    private function getSkautisId(int $id) : ?int
     {
         $skautisId = $this->mapper->getSkautisId(CashbookId::fromString((string) $id), Mapper::EVENT);
-        if (is_null($skautisId)) {
-            throw new EventNotFoundException();
+        if ($skautisId === null) {
+            throw new EventNotFound();
         }
         return $skautisId;
     }

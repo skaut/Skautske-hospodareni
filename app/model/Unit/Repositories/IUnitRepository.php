@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Unit\Repositories;
 
 use Model\Unit\Unit;
-use Model\Unit\UnitNotFoundException;
+use Model\Unit\UnitNotFound;
 
 interface IUnitRepository
 {
@@ -15,7 +15,7 @@ interface IUnitRepository
     public function findByParent(int $parentId) : array;
 
     /**
-     * @throws UnitNotFoundException
+     * @throws UnitNotFound
      */
     public function find(int $id) : Unit;
 

@@ -73,7 +73,7 @@ class CashbookIntegrationTest extends \IntegrationTest
         $category = $this->mockCategory(666);
         $date     = new Date('2017-11-17');
         $amount   = new Cashbook\Amount('100');
-        $this->expectException(ChitLockedException::class);
+        $this->expectException(ChitLocked::class);
 
         $cashbook->updateChit(1, null, $date, null, $amount, 'new-purpose', $category);
     }
@@ -85,7 +85,7 @@ class CashbookIntegrationTest extends \IntegrationTest
         $amount   = new Cashbook\Amount('100');
         $date     = new Date('2017-11-17');
 
-        $this->expectException(ChitNotFoundException::class);
+        $this->expectException(ChitNotFound::class);
 
         $cashbook->updateChit(2, null, $date, null, $amount, 'new-purpose', $category);
     }
@@ -109,7 +109,7 @@ class CashbookIntegrationTest extends \IntegrationTest
     {
         $cashbook = $this->createCashbookWithLockedChit();
 
-        $this->expectException(ChitLockedException::class);
+        $this->expectException(ChitLocked::class);
 
         $cashbook->removeChit(1);
     }
@@ -118,7 +118,7 @@ class CashbookIntegrationTest extends \IntegrationTest
     {
         $cashbook = $this->createCashbookWithChit();
 
-        $this->expectException(ChitNotFoundException::class);
+        $this->expectException(ChitNotFound::class);
 
         $cashbook->removeChit(2);
     }
@@ -240,7 +240,7 @@ class CashbookIntegrationTest extends \IntegrationTest
 
         $cashbook = new Cashbook(CashbookId::fromInt(10), CashbookType::get(CashbookType::EVENT));
 
-        $this->expectException(InvalidCashbookTransferException::class);
+        $this->expectException(InvalidCashbookTransfer::class);
 
         $cashbook->addInverseChit($originalCashbook, 1);
     }

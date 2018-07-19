@@ -21,12 +21,15 @@ class BudgetPresenter extends BasePresenter
         $this->budgetService = $budgetService;
     }
 
-    public function renderDefault($year = null) : void
+    public function renderDefault(?int $year = null) : void
     {
         $this->template->categories = $this->budgetService->getCategories($this->aid);
         $this->template->unitPairs  = $this->unitService->getReadUnits($this->user);
     }
 
+    /**
+     * @param mixed[] $values
+     */
     public function getParentCategories(array $values) : DependentData
     {
         $items = $this->budgetService->getCategoriesRoot((int) $this->aid, $values['type']);

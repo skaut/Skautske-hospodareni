@@ -7,12 +7,12 @@ namespace Model\Payment\Repositories;
 use Model\Payment\Group;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
-use Model\Payment\GroupNotFoundException;
+use Model\Payment\GroupNotFound;
 
 interface IGroupRepository
 {
     /**
-     * @throws GroupNotFoundException
+     * @throws GroupNotFound
      */
     public function find(int $id) : Group;
 

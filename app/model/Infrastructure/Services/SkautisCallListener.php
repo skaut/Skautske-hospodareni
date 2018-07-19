@@ -42,6 +42,9 @@ final class SkautisCallListener
         );
     }
 
+    /**
+     * @return mixed[]
+     */
     private function prepareContext(SkautisQuery $query) : array
     {
         return [

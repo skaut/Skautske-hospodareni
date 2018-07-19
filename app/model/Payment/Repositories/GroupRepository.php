@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Payment\Repositories;
 
-use Assert\Assert;
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\Group;
 use Model\Payment\Group\Type;
-use Model\Payment\GroupNotFoundException;
+use Model\Payment\GroupNotFound;
 use function array_diff;
 use function array_keys;
 use function count;
@@ -31,23 +30,24 @@ class GroupRepository implements IGroupRepository
     }
 
     /**
-     * @throws GroupNotFoundException
+     * {@inheritDoc}
      */
     public function find(int $id) : Group
     {
         $group = $this->em->find(Group::class, $id);
 
         if (! $group instanceof Group) {
-            throw new GroupNotFoundException();
+            throw new GroupNotFound();
         }
 
         return $group;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByIds(array $ids) : array
     {
-        Assert::thatAll($ids)->integer();
-
         $groups = $this->em->createQueryBuilder()
             ->select('g')
             ->from(Group::class, 'g', 'g.id')
@@ -57,12 +57,15 @@ class GroupRepository implements IGroupRepository
             ->getResult();
 
         if (count($ids) !== count($groups)) {
-            throw new GroupNotFoundException('Groups with id ' . implode(', ', array_diff($ids, array_keys($groups))));
+            throw new GroupNotFound('Groups with id ' . implode(', ', array_diff($ids, array_keys($groups))));
         }
 
         return $groups;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByUnits(array $unitIds, bool $openOnly) : array
     {
         $qb = $this->em->createQueryBuilder()
@@ -79,6 +82,9 @@ class GroupRepository implements IGroupRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findBySkautisEntity(Group\SkautisEntity $object) : array
     {
         return $this->em->createQueryBuilder()
@@ -92,6 +98,9 @@ class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findBySkautisEntityType(Type $type) : array
     {
         return $this->em->createQueryBuilder()
@@ -103,7 +112,9 @@ class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public function findByBankAccount(int $bankAccountId) : array
     {
         return $this->em->createQueryBuilder()
@@ -114,7 +125,6 @@ class GroupRepository implements IGroupRepository
             ->getQuery()
             ->getResult();
     }
-
 
     public function save(Group $group) : void
     {

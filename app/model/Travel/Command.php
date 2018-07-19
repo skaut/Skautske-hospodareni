@@ -122,7 +122,7 @@ class Command
     }
 
     /**
-     * @throws TravelNotFoundException
+     * @throws TravelNotFound
      */
     public function updateVehicleTravel(int $id, float $distance, TravelDetails $details) : void
     {
@@ -144,7 +144,7 @@ class Command
     }
 
     /**
-     * @throws TravelNotFoundException
+     * @throws TravelNotFound
      */
     public function updateTransportTravel(int $id, Money $price, TravelDetails $details) : void
     {
@@ -328,14 +328,14 @@ class Command
     }
 
     /**
-     * @throws TravelNotFoundException
+     * @throws TravelNotFound
      */
     private function getTravel(int $id) : Travel
     {
         $travel = $this->travels->get($id);
 
         if ($travel === null) {
-            throw new TravelNotFoundException('Travel #' . $id . ' not found');
+            throw new TravelNotFound('Travel #' . $id . ' not found');
         }
 
         return $travel;

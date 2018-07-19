@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\Cashbook;
@@ -20,7 +20,7 @@ class CashbookQueryHandler
     }
 
     /**
-     * @throws CashbookNotFoundException
+     * @throws CashbookNotFound
      */
     public function handle(CashbookQuery $query) : Cashbook
     {

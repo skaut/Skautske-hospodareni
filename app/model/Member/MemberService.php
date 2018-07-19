@@ -21,8 +21,8 @@ class MemberService
 
 
     /**
-     * vrací seznam všech osob
-     * @return array
+     * @param mixed[] $participants
+     * @return string[]
      */
     public function getAll(int $unitId, bool $onlyDirectMember, array $participants) : array
     {
@@ -53,19 +53,19 @@ class MemberService
     /**
      * vytvoří pole jmen s ID pro combobox
      * @param bool $OnlyDirectMember - vybrat pouze z aktuální jednotky?
-     * @return array
+     * @return string[]
      */
-    public function getCombobox(bool $OnlyDirectMember = false, $ageLimit = null) : array
+    public function getCombobox(bool $OnlyDirectMember = false, ?int $ageLimit = null) : array
     {
         return $this->getPairs($this->organizationWebservice->PersonAll(['OnlyDirectMember' => $OnlyDirectMember]), $ageLimit);
     }
 
     /**
      * vrací pole osob ID => jméno
-     * @param mixed $data - vráceno z PersonAll
-     * @return array
+     * @param mixed[] $data - vráceno z PersonAll
+     * @return string[]
      */
-    private function getPairs($data, $ageLimit = null) : array
+    private function getPairs(array $data, ?int $ageLimit = null) : array
     {
         $res = [];
         $now = new \DateTime();

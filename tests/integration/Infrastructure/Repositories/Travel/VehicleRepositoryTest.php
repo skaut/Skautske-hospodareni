@@ -7,7 +7,7 @@ namespace Model\Infrastructure\Repositories\Travel;
 use Doctrine\ORM\EntityManager;
 use Mockery as m;
 use Model\Travel\Vehicle;
-use Model\Travel\VehicleNotFoundException;
+use Model\Travel\VehicleNotFound;
 use Model\Unit\Unit;
 use function var_dump;
 
@@ -86,7 +86,7 @@ class VehicleRepositoryTest extends \IntegrationTest
 
     public function testFindNonExistentVehicleThrowsException() : void
     {
-        $this->expectException(VehicleNotFoundException::class);
+        $this->expectException(VehicleNotFound::class);
 
         $this->repository->find(1);
     }

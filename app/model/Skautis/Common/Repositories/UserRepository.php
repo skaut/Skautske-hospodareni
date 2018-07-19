@@ -6,7 +6,7 @@ namespace Model\Skautis\Common\Repositories;
 
 use Model\Common\Repositories\IUserRepository;
 use Model\Common\User;
-use Model\Common\UserNotFoundException;
+use Model\Common\UserNotFound;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 
@@ -34,6 +34,7 @@ final class UserRepository implements IUserRepository
         return $this->findWithArguments([]);
     }
 
+    /** @param mixed[] $arguments */
     private function findWithArguments(array $arguments) : User
     {
         try {
@@ -45,6 +46,6 @@ final class UserRepository implements IUserRepository
             }
         } catch (PermissionException $e) {
         }
-        throw new UserNotFoundException();
+        throw new UserNotFound();
     }
 }

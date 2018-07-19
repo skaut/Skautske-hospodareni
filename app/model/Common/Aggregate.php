@@ -6,7 +6,7 @@ namespace Model\Common;
 
 use function is_object;
 
-abstract class AbstractAggregate
+abstract class Aggregate
 {
     /** @var object[] */
     private $eventsToDispatch = [];

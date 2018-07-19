@@ -8,7 +8,7 @@ use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Payment\IUnitResolver;
-use Model\Unit\UnitHasNoParentException;
+use Model\Unit\UnitHasNoParent;
 
 class Version20180122114315 extends AbstractMigration
 {
@@ -43,7 +43,7 @@ class Version20180122114315 extends AbstractMigration
                 $this->connection->update('ac_cashbook', [
                     'type' => $isOfficialUnit ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP,
                 ], ['id' => $cashbook['id']]);
-            } catch (UnitHasNoParentException $exc) {
+            } catch (UnitHasNoParent $exc) {
                 echo 'ERROR: ' . $exc->getMessage();
             }
         }

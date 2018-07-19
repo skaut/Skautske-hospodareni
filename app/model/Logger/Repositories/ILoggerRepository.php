@@ -9,6 +9,9 @@ use Model\Logger\Log\Type;
 
 interface ILoggerRepository
 {
+    /**
+     * @return Log[]
+     */
     public function findAllByTypeId(Type $type, int $typeId) : array;
 
     public function save(Log $log) : void;

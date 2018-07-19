@@ -43,7 +43,7 @@
     }
 </script>
 <script type="text/javascript" n:syntax="off">
-    Nette.validators.MyValidators_isValidDate = function (elem, args, val) {
+    Nette.validators.AppMyValidators_isValidDate = function (elem, args, val) {
         var regexp = /^(\d{1,2})[\/\-\.] ?(\d{1,2})[\/\-\.] ?(\d{4})$/;
         var match = val.match(regexp);
         return match == null ? false : true;

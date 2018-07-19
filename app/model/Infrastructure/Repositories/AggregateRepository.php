@@ -6,9 +6,9 @@ namespace Model\Infrastructure\Repositories;
 
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
-use Model\Common\AbstractAggregate;
+use Model\Common\Aggregate;
 
-abstract class AbstractRepository
+abstract class AggregateRepository
 {
     /** @var EntityManager */
     private $entityManager;
@@ -28,7 +28,7 @@ abstract class AbstractRepository
         return $this->entityManager;
     }
 
-    protected function saveAndDispatchEvents(AbstractAggregate $aggregate) : void
+    protected function saveAndDispatchEvents(Aggregate $aggregate) : void
     {
         $events = $aggregate->extractEventsToDispatch();
 
@@ -45,7 +45,7 @@ abstract class AbstractRepository
         });
     }
 
-    private function persist(AbstractAggregate $aggregate) : void
+    private function persist(Aggregate $aggregate) : void
     {
         $this->entityManager->persist($aggregate);
         $this->entityManager->flush();

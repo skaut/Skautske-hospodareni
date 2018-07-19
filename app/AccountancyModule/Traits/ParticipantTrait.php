@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace App\AccountancyModule;
+
 use App\Forms\BaseForm;
 use Model\EventEntity;
 use Model\ExcelService;
@@ -13,6 +15,16 @@ use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
+use function array_merge;
+use function count;
+use function date;
+use function in_array;
+use function is_string;
+use function property_exists;
+use function strcasecmp;
+use function strpos;
+use function strtotime;
+use function usort;
 
 trait ParticipantTrait
 {
@@ -22,10 +34,15 @@ trait ParticipantTrait
      * @var int
      */
     protected $uid;
+    /** @var bool */
     protected $isAllowRepayment;
+    /** @var bool */
     protected $isAllowIsAccount;
+    /** @var bool */
     protected $isAllowParticipantInsert;
+    /** @var bool */
     protected $isAllowParticipantUpdate;
+    /** @var bool */
     protected $isAllowParticipantDelete;
 
     /** @var MemberService */
@@ -88,7 +105,10 @@ trait ParticipantTrait
         $this->template->useRegNums = $regNums;
     }
 
-    protected function sortParticipants(&$participants, ?string $sort) : void
+    /**
+     * @param mixed[] $participants
+     */
+    protected function sortParticipants(array &$participants, ?string $sort) : void
     {
         $textItems   = ['regNum', 'isAccount'];
         $numberItems = ['Days', 'payment', 'repayment'];
@@ -111,7 +131,7 @@ trait ParticipantTrait
                 if (! property_exists($b, $sort)) {
                     return false;
                 }
-                return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort} ?? "", $b->{$sort} ?? "");
+                return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort} ?? '', $b->{$sort} ?? '');
             }
         );
     }
@@ -129,7 +149,7 @@ trait ParticipantTrait
         $this->terminate();
     }
 
-    public function actionExportExcel($aid) : void
+    public function actionExportExcel(int $aid) : void
     {
         $type = $this->eventService->getParticipants()->type; //camp vs general
         try {
@@ -257,7 +277,7 @@ trait ParticipantTrait
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $oldData = ($type === 'camp') ? [] : $this->eventService->getParticipants()->get($id);
+            $oldData = ($type === 'camp') ? [] : $this->eventService->getParticipants()->get((int) $id);
             $this->eventService->getParticipants()->update((int) $id, array_merge($oldData, $data));
         }
         $this->redirect('this');
@@ -335,7 +355,7 @@ trait ParticipantTrait
         return (bool) $this->getSession(__CLASS__)->DirectMemberOnly;
     }
 
-    protected function setDirectMemberOnly($direct)
+    protected function setDirectMemberOnly(bool $direct) : bool
     {
         return $this->getSession(__CLASS__)->DirectMemberOnly = $direct;
     }

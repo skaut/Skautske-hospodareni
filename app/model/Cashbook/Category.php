@@ -69,4 +69,9 @@ class Category implements ICategory
             }
         );
     }
+
+    public function isDeleted() : bool
+    {
+        return $this->deleted;
+    }
 }

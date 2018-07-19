@@ -12,7 +12,7 @@ final class ChangeGroupUnit
     /** @var int */
     private $unitId;
 
-    public function __construct($groupId, $unitId)
+    public function __construct(int $groupId, int $unitId)
     {
         $this->groupId = $groupId;
         $this->unitId  = $unitId;

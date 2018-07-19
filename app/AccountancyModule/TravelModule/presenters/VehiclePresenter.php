@@ -9,7 +9,7 @@ use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 use App\Forms\BaseForm;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
 use Model\Travel\Vehicle;
-use Model\Travel\VehicleNotFoundException;
+use Model\Travel\VehicleNotFound;
 use Model\TravelService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
@@ -38,7 +38,7 @@ class VehiclePresenter extends BasePresenter
     {
         try {
             $vehicle = $this->travelService->getVehicle($id);
-        } catch (VehicleNotFoundException $e) {
+        } catch (VehicleNotFound $e) {
             throw new BadRequestException('Zadané vozidlo neexistuje');
         }
 

@@ -31,7 +31,7 @@ class EmailTemplate
     {
         $accountRequired = Strings::contains($this->body, '%qrcode') || Strings::contains($this->body, '%account');
         if ($bankAccount === null && $accountRequired) {
-            throw new InvalidBankAccountException('Bank account required for email template.');
+            throw new InvalidBankAccount('Bank account required for email template.');
         }
 
         $parameters = [
@@ -67,6 +67,9 @@ class EmailTemplate
         return $this->body;
     }
 
+    /**
+     * @param mixed[] $parameters
+     */
     private function replace(array $parameters, string $template) : string
     {
         return str_replace(array_keys($parameters), array_values($parameters), $template);
@@ -77,7 +80,7 @@ class EmailTemplate
         $pattern = '#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#';
 
         if (preg_match($pattern, $bankAccount, $account) !== 1) {
-            throw new InvalidBankAccountException();
+            throw new InvalidBankAccount();
         }
 
         $params = [

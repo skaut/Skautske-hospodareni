@@ -157,15 +157,13 @@ class MoveChitsDialog extends BaseControl
     /**
      * Vrací pole ID => Název pro výpravy i tábory
      *
-     * @param  string $eventType "general" or "camp"
-     * @param  array  $states
-     * @return array
+     * @param  string   $eventType "general" or "camp"
+     * @param  string[] $states
+     * @return mixed[]
      */
-    private function getListOfEvents(string $eventType, ?array $states = null) : array
+    private function getListOfEvents(string $eventType, array $states) : array
     {
-        /**
- * @var EventEntity $eventEntity
-*/
+        /** @var EventEntity $eventEntity */
         $eventEntity  = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
         $eventService = $eventEntity->event;
         $rawArr       = $eventService->getAll(date('Y'));
@@ -182,7 +180,7 @@ class MoveChitsDialog extends BaseControl
                 continue;
             }
 
-            if ($states !== null && ! in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
+            if (! in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
                 continue;
             }
 

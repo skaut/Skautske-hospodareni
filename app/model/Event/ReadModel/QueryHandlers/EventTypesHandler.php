@@ -26,7 +26,7 @@ final class EventTypesHandler
     }
 
     /**
-     * @return array<int,string>
+     * @return string[]
      */
     public function handle(EventTypes $query) : array
     {

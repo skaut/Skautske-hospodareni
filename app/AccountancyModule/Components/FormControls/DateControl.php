@@ -14,6 +14,9 @@ use function sprintf;
  */
 class DateControl extends DatePicker
 {
+    /**
+     * @param mixed $value
+     */
     public function setDefaultValue($value) : self
     {
         if (! $value instanceof Date && $value !== null) {

@@ -6,7 +6,7 @@ namespace Model\Skautis;
 
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
-use Model\Unit\UnitNotFoundException;
+use Model\Unit\UnitNotFound;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use function array_map;
@@ -23,6 +23,7 @@ final class UnitRepository implements IUnitRepository
         $this->webService = $webService;
     }
 
+    /** @return mixed[] */
     public function findByParent(int $parentId) : array
     {
         $units = $this->webService->call('UnitAll', [
@@ -50,7 +51,7 @@ final class UnitRepository implements IUnitRepository
                 ['ID' => $id],
             ]);
         } catch (PermissionException $e) { // Unit doesn't exist or user has no access to it
-            throw new UnitNotFoundException('', 0, $e);
+            throw new UnitNotFound('', 0, $e);
         }
     }
 

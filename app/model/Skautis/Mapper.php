@@ -13,10 +13,10 @@ use Model\Payment\IUnitResolver;
 
 class Mapper
 {
-    /** @var array */
+    /** @var int[] */
     private $skautisIds = [];
 
-    /** @var array */
+    /** @var int[] */
     private $localIds = [];
 
     /** @var ObjectTable */

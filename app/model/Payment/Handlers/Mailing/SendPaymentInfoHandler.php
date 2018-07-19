@@ -8,7 +8,7 @@ use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailType;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
-use Model\Payment\PaymentClosedException;
+use Model\Payment\PaymentClosed;
 use Model\Payment\Repositories\IPaymentRepository;
 
 final class SendPaymentInfoHandler
@@ -30,7 +30,7 @@ final class SendPaymentInfoHandler
         $payment = $this->payments->find($command->getPaymentId());
 
         if ($payment->isClosed()) {
-            throw new PaymentClosedException();
+            throw new PaymentClosed();
         }
 
         $this->mailingService->sendEmail($payment->getId(), EmailType::get(EmailType::PAYMENT_INFO));

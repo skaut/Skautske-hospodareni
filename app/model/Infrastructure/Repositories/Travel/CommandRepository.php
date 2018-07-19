@@ -6,7 +6,7 @@ namespace Model\Infrastructure\Repositories\Travel;
 
 use Doctrine\ORM\EntityManager;
 use Model\Travel\Command;
-use Model\Travel\CommandNotFoundException;
+use Model\Travel\CommandNotFound;
 use Model\Travel\Repositories\ICommandRepository;
 
 class CommandRepository implements ICommandRepository
@@ -24,17 +24,23 @@ class CommandRepository implements ICommandRepository
         $command = $this->em->find(Command::class, $id);
 
         if ($command === null) {
-            throw new CommandNotFoundException();
+            throw new CommandNotFound();
         }
 
         return $command;
     }
 
+    /**
+     * @return Command[]
+     */
     public function findByUnit(int $unitId) : array
     {
         return $this->em->getRepository(Command::class)->findBy(['unitId' => $unitId]);
     }
 
+    /**
+     * @return Command[]
+     */
     public function findByVehicle(int $vehicleId) : array
     {
         return $this->em->getRepository(Command::class)->findBy(['vehicle' => $vehicleId]);

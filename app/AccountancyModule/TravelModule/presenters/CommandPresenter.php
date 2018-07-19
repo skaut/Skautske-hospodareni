@@ -31,7 +31,7 @@ class CommandPresenter extends BasePresenter
     {
         $command = $this->model->getCommandDetail($id);
         if ($command === null || $command->getUnitId() !== $this->getUnitId() || $command->getClosedAt() !== null) {
-            throw new BadRequestException("Cestovní příkaz #$id neexistuje");
+            throw new BadRequestException('Cestovní příkaz #' . $id . ' neexistuje');
         }
 
         $this->id = $id;

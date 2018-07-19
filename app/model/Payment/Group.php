@@ -113,7 +113,7 @@ class Group
     }
 
     /**
-     * @throws BankAccountNotFoundException
+     * @throws BankAccountNotFound
      */
     public function changeUnit(int $unitId, IUnitResolver $unitResolver, IBankAccountRepository $bankAccountRepository) : void
     {

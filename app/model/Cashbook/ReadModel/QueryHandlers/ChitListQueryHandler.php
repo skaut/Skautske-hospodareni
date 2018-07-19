@@ -7,7 +7,7 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\Chit;
-use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
@@ -33,7 +33,7 @@ class ChitListQueryHandler
 
     /**
      * @return ChitDTO[]
-     * @throws CashbookNotFoundException
+     * @throws CashbookNotFound
      */
     public function handle(ChitListQuery $query) : array
     {
@@ -67,13 +67,13 @@ class ChitListQueryHandler
     }
 
     /**
-     * @return array<int, Category>
+     * @return Category[]
      */
     private function getCategories(CashbookId $cashbookId) : array
     {
         /**
- * @var Category[] $categories
-*/
+        * @var Category[] $categories
+        */
         $categories     = $this->queryBus->handle(new CategoryListQuery($cashbookId));
         $categoriesById = [];
 

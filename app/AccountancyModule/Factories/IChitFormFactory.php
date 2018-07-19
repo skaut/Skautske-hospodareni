@@ -9,5 +9,5 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 interface IChitFormFactory
 {
-    public function create (CashbookId $cashbookId, bool $isEditable) : ChitForm;
+    public function create(CashbookId $cashbookId, bool $isEditable) : ChitForm;
 }

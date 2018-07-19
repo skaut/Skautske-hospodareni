@@ -27,7 +27,7 @@ final class CampStatesHandler
 
 
     /**
-     * @return array<int,string>
+     * @return string[]
      */
     public function handle(CampStates $query) : array
     {

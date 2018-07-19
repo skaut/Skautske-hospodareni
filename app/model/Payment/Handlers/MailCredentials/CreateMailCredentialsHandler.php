@@ -7,7 +7,7 @@ namespace Model\Payment\Handlers\MailCredentials;
 use Model\Common\Repositories\IUserRepository;
 use Model\Mail\IMailerFactory;
 use Model\Payment\Commands\CreateMailCredentials;
-use Model\Payment\EmailNotSetException;
+use Model\Payment\EmailNotSet;
 use Model\Payment\MailCredentials;
 use Model\Payment\Repositories\IMailCredentialsRepository;
 use Model\Services\TemplateFactory;
@@ -55,7 +55,7 @@ class CreateMailCredentialsHandler
 
     /**
      * Send test email to user who tries to add SMTP
-     * @throws EmailNotSetException
+     * @throws EmailNotSet
      * @throws SmtpException
      */
     private function trySendViaSmtp(MailCredentials $credentials, int $userId) : void
@@ -64,7 +64,7 @@ class CreateMailCredentialsHandler
 
         $user = $this->users->find($userId);
         if ($user->getEmail() === null) {
-            throw new EmailNotSetException();
+            throw new EmailNotSet();
         }
 
         $template = $this->templateFactory->create(TemplateFactory::SMTP_CREDENTIALS_ADDED, [

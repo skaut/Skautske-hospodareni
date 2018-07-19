@@ -22,9 +22,11 @@ use Nette\Http\IResponse;
 use function array_filter;
 use function array_map;
 use function in_array;
+use function sprintf;
 
 class ChitPresenter extends BasePresenter
 {
+    /** @var mixed[] */
     public $info;
 
     /**
@@ -36,7 +38,10 @@ class ChitPresenter extends BasePresenter
      */
     private $cashbooks = [];
 
-    /** @persistent */
+    /**
+     * @persistent
+     * @var int
+     */
     public $onlyUnlocked = 1;
 
     /** @var IChitListControlFactory */
@@ -52,7 +57,7 @@ class ChitPresenter extends BasePresenter
     {
         parent::startup();
         $this->template->onlyUnlocked = $this->onlyUnlocked;
-        $oficialUnit                  = $this->unitService->getOficialUnit($this->aid);
+        $oficialUnit                  = $this->unitService->getOfficialUnit($this->aid);
 
         if ($oficialUnit->ID === $this->aid) {
             return;
@@ -70,7 +75,7 @@ class ChitPresenter extends BasePresenter
         $this->redrawControl();
     }
 
-    public function actionDefault($year = null) : void
+    public function actionDefault(?int $year = null) : void
     {
         $this->info = [];
         $units      = [];
@@ -119,7 +124,7 @@ class ChitPresenter extends BasePresenter
                 $cashbookIdVo = CashbookId::fromInt((int) $cashbookId);
 
                 if (! $this->canEditCashbook($cashbookIdVo)) {
-                    throw new BadRequestException("Cashbook #$cashbookId not found", IResponse::S404_NOT_FOUND);
+                    throw new BadRequestException(sprintf('Cashbook #%s not found', $cashbookId), IResponse::S404_NOT_FOUND);
                 }
 
                 return $this->chitListFactory->create($cashbookIdVo, (bool) $this->onlyUnlocked);
@@ -139,8 +144,8 @@ class ChitPresenter extends BasePresenter
     }
 
     /**
-     * @param array $objects
-     * @return array<string, array>
+     * @param mixed[] $objects
+     * @return mixed[]
      */
     private function getAllChitsByObjectId(ObjectType $objectType, array $objects) : array
     {

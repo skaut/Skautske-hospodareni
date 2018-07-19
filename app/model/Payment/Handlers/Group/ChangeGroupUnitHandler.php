@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Payment\Handlers\Group;
 
-use Model\Payment\BankAccountNotFoundException;
+use Model\Payment\BankAccountNotFound;
 use Model\Payment\Commands\Group\ChangeGroupUnit;
-use Model\Payment\GroupNotFoundException;
+use Model\Payment\GroupNotFound;
 use Model\Payment\IUnitResolver;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
@@ -30,8 +30,8 @@ class ChangeGroupUnitHandler
     }
 
     /**
-     * @throws GroupNotFoundException
-     * @throws BankAccountNotFoundException
+     * @throws GroupNotFound
+     * @throws BankAccountNotFound
      */
     public function handle(ChangeGroupUnit $command) : void
     {

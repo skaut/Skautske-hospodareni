@@ -23,7 +23,7 @@ class BudgetService
     }
 
     /**
-     * @return array[]
+     * @return mixed[]
      */
     public function getCategories(int $oid) : array
     {
@@ -47,7 +47,7 @@ class BudgetService
     }
 
     /**
-     * @return array[]
+     * @return mixed[]
      */
     public function getCategoriesRoot(int $oid, ?string $type = null) : array
     {

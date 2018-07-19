@@ -38,12 +38,18 @@ class MailService
         }
     }
 
+    /**
+     * @return Mail[]
+     */
     public function getAll(int $unitId) : array
     {
         $mails = $this->findForUnit($unitId);
         return array_map([MailFactory::class, 'create'], $mails);
     }
 
+    /**
+     * @return string[]
+     */
     public function getPairs(int $unitId) : array
     {
         $pairs = [];
