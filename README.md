@@ -62,11 +62,15 @@ Coding standard vychází z Nette coding standardu.
 Zda je projekt v souladu s CS lze ověřit pomocí příkazu v kontejneru:
 ```bash
 ./vendor/bin/phpcs app
+# nebo composer alias
+composer cs
 ```
 
 Automaticky lze nechat opravit pomocí:
 ```
 ./vendor/bin/phpcbf app
+# nebo composer alias
+composer cbf
 ```
 
 ## CI
