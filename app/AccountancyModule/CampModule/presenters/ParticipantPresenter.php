@@ -12,6 +12,7 @@ use Model\ExportService;
 use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Application\AbortException;
+use Nette\Application\BadRequestException;
 
 class ParticipantPresenter extends BasePresenter
 {
@@ -79,9 +80,14 @@ class ParticipantPresenter extends BasePresenter
     /**
      * @param int|float|string $value
      * @throws AbortException
+     * @throws BadRequestException
      */
-    public function actionEditField(int $aid, int $id, string $field, $value) : void
+    public function actionEditField(?int $aid = null, ?int $id = null, ?string $field = null, $value = null) : void
     {
+        if($aid === null || $id === null || $field === null || $value === null) {
+            throw new BadRequestException();
+        }
+
         if (! $this->isAllowParticipantUpdate) {
             $this->flashMessage('Nemáte oprávnění měnit účastníkův jejich údaje.', 'danger');
             if ($this->isAjax()) {
