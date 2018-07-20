@@ -206,7 +206,7 @@ trait ParticipantTrait
             $this->redirect('Default:');
         }
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massList[]') as $id) {
-            $this->eventService->getParticipants()->add($this->aid, $id);
+            $this->eventService->getParticipants()->add($this->aid, (int) $id);
         }
         $this->redirect('this');
     }
