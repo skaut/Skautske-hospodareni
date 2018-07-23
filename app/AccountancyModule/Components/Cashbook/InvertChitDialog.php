@@ -110,7 +110,7 @@ class InvertChitDialog extends BaseControl
             ->setAttribute('class', 'ajax');
 
         $form->onSuccess[] = function (BaseForm $form, array $values) : void {
-            $cashbookId = CashbookId::fromString($values['cashbookId']);
+            $cashbookId = CashbookId::fromString((string)$values['cashbookId']);
             $this->commandBus->handle(new AddInverseChit($this->cashbookId, $cashbookId, (int) $this->chitId));
             $this->presenter->flashMessage('Protidoklad byl vytvořen', 'success');
             $this->close();
