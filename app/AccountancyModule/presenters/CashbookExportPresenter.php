@@ -170,9 +170,7 @@ class CashbookExportPresenter extends BasePresenter
     private function getSkautisType() : ObjectType
     {
         try {
-            /**
- * @var Cashbook $cashbook
-*/
+            /** @var Cashbook $cashbook */
             $cashbook = $this->queryBus->handle(new CashbookQuery(CashbookId::fromString($this->cashbookId)));
             return $cashbook->getType()->getSkautisObjectType();
         } catch (CashbookNotFoundException $e) {
