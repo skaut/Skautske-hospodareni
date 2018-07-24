@@ -62,9 +62,9 @@ class ChitPresenter extends BasePresenter
         $this->redirect('this', ['aid' => $oficialUnit->ID]);
     }
 
-    public function handleLockCashbook(CashbookId $cashbookId) : void
+    public function handleLockCashbook(string $cashbookId) : void
     {
-        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId->toString()), $this->user->getId()));
+        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId), $this->user->getId()));
 
         $this->flashMessage('Pokladní kniha byla uzamčena', 'success');
         $this->redrawControl();
@@ -79,13 +79,9 @@ class ChitPresenter extends BasePresenter
             $units[$ik]['DisplayName'] = $iu;
         }
 
-        /**
- * @var EventEntity $eventService
-*/
+        /** @var EventEntity $eventService */
         $eventService = $this->context->getService('eventService');
-        /**
- * @var EventEntity $campService
-*/
+        /** @var EventEntity $campService */
         $campService = $this->context->getService('campService');
 
         $objectsByType = [
@@ -109,9 +105,7 @@ class ChitPresenter extends BasePresenter
 
         $this->template->info            = $this->cashbooks;
         $this->template->isCashbookEmpty = function (string $cashbookId) : bool {
-            /**
- * @var ChitListControl $chitList
-*/
+            /** @var ChitListControl $chitList */
             $chitList = $this['chitList-' . $cashbookId];
 
             return $chitList->isEmpty();
