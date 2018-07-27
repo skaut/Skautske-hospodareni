@@ -289,7 +289,7 @@ class ParticipantService extends MutableBaseService
     }
 
     /**
-     * @param stdClass|ArrayHash $person
+     * @param \stdClass|ArrayHash $person
      */
     protected function setPersonName(&$person) : void
     {
