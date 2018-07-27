@@ -134,7 +134,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function handleChangeState(?string $state) : void
+    public function handleChangeState(?string $state = null) : void
     {
         $this->ses->state = $state;
         if ($this->isAjax()) {
