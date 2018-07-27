@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Payment\Repositories;
 
-use Assert\Assert;
 use Doctrine\ORM\EntityManager;
 use Model\Payment\BankAccount;
-use Model\Payment\BankAccountNotFoundException;
+use Model\Payment\BankAccountNotFound;
 use function array_unique;
 use function count;
 
@@ -26,17 +25,17 @@ class BankAccountRepository implements IBankAccountRepository
         $account = $this->entityManager->find(BankAccount::class, $id);
 
         if ($account === null) {
-            throw new BankAccountNotFoundException();
+            throw new BankAccountNotFound();
         }
 
         return $account;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public function findByIds(array $ids) : array
     {
-        Assert::thatAll($ids)->integer();
-
         $ids = array_unique($ids);
 
         $accounts = $this->entityManager->createQueryBuilder()
@@ -48,7 +47,7 @@ class BankAccountRepository implements IBankAccountRepository
             ->getResult();
 
         if (count($accounts) !== count($ids)) {
-            throw new BankAccountNotFoundException();
+            throw new BankAccountNotFound();
         }
 
         return $accounts;

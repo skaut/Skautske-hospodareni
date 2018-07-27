@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers\Cashbook;
 
-use Model\Cashbook\CashbookNotFoundException;
-use Model\Cashbook\CategoryNotFoundException;
+use Model\Cashbook\CashbookNotFound;
+use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
@@ -25,8 +25,8 @@ final class AddChitToCashbookHandler
     }
 
     /**
-     * @throws CashbookNotFoundException
-     * @throws CategoryNotFoundException
+     * @throws CashbookNotFound
+     * @throws CategoryNotFound
      */
     public function handle(AddChitToCashbook $command) : void
     {

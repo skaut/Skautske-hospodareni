@@ -4,8 +4,6 @@
 !/app/config/config.production.local.neon
 !/vendor/others
 /vendor
-nette-temp/*
-nette-log/*
 /source
 /nbproject
 .idea

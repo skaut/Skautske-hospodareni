@@ -216,10 +216,6 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    /*
-     * EDIT TRAVEL
-     */
-
     public function actionEditTravel(int $commandId, int $travelId) : void
     {
         $travel = $this->travelService->getTravel($commandId, $travelId);

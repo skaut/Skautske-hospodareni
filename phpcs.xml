@@ -11,5 +11,7 @@
 
     <file>app</file>
     <rule ref="Doctrine">
+        <!-- Right now causes problem with several properties used for Doctrine mapping -->
+        <exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements"/>
     </rule>
 </ruleset>

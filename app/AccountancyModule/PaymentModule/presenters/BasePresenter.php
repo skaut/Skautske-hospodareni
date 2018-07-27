@@ -9,15 +9,11 @@ use function in_array;
 
 abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @persistent */
-    public $aid;
-
     /** @var bool */
     protected $isReadable;
 
     /** @var int[] */
     private $editableUnits;
-
 
     protected function startup() : void
     {

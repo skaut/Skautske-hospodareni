@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\ReadModel\QueryHandlers;
 
 use Model\DTO\Payment\GroupEmail;
-use Model\Payment\GroupNotFoundException;
+use Model\Payment\GroupNotFound;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use Model\Payment\Repositories\IGroupRepository;
 
@@ -30,7 +30,7 @@ final class GroupEmailHandler
             }
 
             return new GroupEmail($template, $group->isEmailEnabled($query->getEmailType()));
-        } catch (GroupNotFoundException $e) {
+        } catch (GroupNotFound $e) {
             return null;
         }
     }

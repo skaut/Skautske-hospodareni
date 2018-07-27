@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers\Cashbook;
 
-use Model\Cashbook\CashbookNotFoundException;
-use Model\Cashbook\CategoryNotFoundException;
-use Model\Cashbook\ChitLockedException;
-use Model\Cashbook\ChitNotFoundException;
+use Model\Cashbook\CashbookNotFound;
+use Model\Cashbook\CategoryNotFound;
+use Model\Cashbook\ChitLocked;
+use Model\Cashbook\ChitNotFound;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
@@ -27,10 +27,10 @@ final class UpdateChitHandler
     }
 
     /**
-     * @throws CashbookNotFoundException
-     * @throws CategoryNotFoundException
-     * @throws ChitNotFoundException
-     * @throws ChitLockedException
+     * @throws CashbookNotFound
+     * @throws CategoryNotFound
+     * @throws ChitNotFound
+     * @throws ChitLocked
      */
     public function handle(UpdateChit $command) : void
     {

@@ -6,7 +6,7 @@ namespace Model\Payment\Handlers\MailCredentials;
 
 use Model\Common\User;
 use Model\Payment\Commands\CreateMailCredentials;
-use Model\Payment\EmailNotSetException;
+use Model\Payment\EmailNotSet;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentials\MailProtocol;
 use Model\Payment\UserRepositoryStub;
@@ -60,7 +60,7 @@ class CreateMailCredentialsHandlerTest extends \CommandHandlerTest
     {
         $this->users->setUser(new User(10, 'František Maša', null));
 
-        $this->expectException(EmailNotSetException::class);
+        $this->expectException(EmailNotSet::class);
 
         $this->commandBus->handle($this->getCommand());
     }

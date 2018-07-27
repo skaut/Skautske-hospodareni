@@ -94,17 +94,18 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     {
         parent::beforeRender();
 
-        if ($this->user->isLoggedIn()) {
-            try {
-                $this->template->myRoles = $this->userService->getAllSkautisRoles();
-                $this->template->myRole  = $this->userService->getRoleId();
-            } catch (AuthenticationException $ex) {
-                $this->user->logout(true);
-            }
+        if (! $this->user->isLoggedIn()) {
+            return;
+        }
+
+        try {
+            $this->template->myRoles = $this->userService->getAllSkautisRoles();
+            $this->template->myRole  = $this->userService->getRoleId();
+        } catch (AuthenticationException $ex) {
+            $this->user->logout(true);
         }
     }
 
-    //změní přihlášenou roli ve skautISu
     public function handleChangeRole(?int $roleId = null) : void
     {
         if ($roleId === null) {
@@ -144,7 +145,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     public function getUnitId() : int
     {
         if ($this->unitId === null) {
-            $this->unitId = $this->unitService->getOficialUnit()->ID;
+            $this->unitId = $this->unitService->getOfficialUnit()->ID;
         }
 
         return $this->unitId;

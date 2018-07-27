@@ -38,6 +38,11 @@ class Email
         $this->enabled  = true;
     }
 
+    public function getId() : int
+    {
+        return $this->id;
+    }
+
     public function disable() : void
     {
         $this->enabled = false;

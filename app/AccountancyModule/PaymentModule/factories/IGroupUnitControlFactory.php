@@ -8,5 +8,5 @@ use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
 
 interface IGroupUnitControlFactory
 {
-    public function create (int $groupId) : GroupUnitControl;
+    public function create(int $groupId) : GroupUnitControl;
 }

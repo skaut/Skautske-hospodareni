@@ -8,5 +8,5 @@ use App\AccountancyModule\EventModule\Components\FunctionsControl;
 
 interface IFunctionsControlFactory
 {
-    public function create (int $eventId) : FunctionsControl;
+    public function create(int $eventId) : FunctionsControl;
 }

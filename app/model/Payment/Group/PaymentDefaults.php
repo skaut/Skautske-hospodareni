@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\Group;
 
 use DateTimeImmutable;
-use Model\Payment\DueDateIsNotWorkdayException;
+use Model\Payment\DueDateIsNotWorkday;
 use Model\Payment\VariableSymbol;
 
 final class PaymentDefaults
@@ -23,7 +23,7 @@ final class PaymentDefaults
     private $nextVariableSymbol;
 
     /**
-     * @throws DueDateIsNotWorkdayException
+     * @throws DueDateIsNotWorkday
      */
     public function __construct(
         ?float $amount,
@@ -32,7 +32,7 @@ final class PaymentDefaults
         ?VariableSymbol $nextVariableSymbol
     ) {
         if ($dueDate !== null && ! $this->isWorkday($dueDate)) {
-            throw new DueDateIsNotWorkdayException();
+            throw new DueDateIsNotWorkday();
         }
 
         $this->amount             = $amount !== 0.0 ? $amount : null;

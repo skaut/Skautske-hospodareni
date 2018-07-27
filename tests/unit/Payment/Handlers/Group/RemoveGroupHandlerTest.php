@@ -8,7 +8,7 @@ use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Payment\Commands\Group\RemoveGroup;
 use Model\Payment\Group;
-use Model\Payment\GroupNotClosedException;
+use Model\Payment\GroupNotClosed;
 use Model\Payment\Repositories\IGroupRepository;
 
 final class RemoveGroupHandlerTest extends Unit
@@ -29,7 +29,7 @@ final class RemoveGroupHandlerTest extends Unit
 
         $handler = new RemoveGroupHandler($groupRepository);
 
-        $this->expectException(GroupNotClosedException::class);
+        $this->expectException(GroupNotClosed::class);
 
         $handler->handle(new RemoveGroup($groupId));
     }

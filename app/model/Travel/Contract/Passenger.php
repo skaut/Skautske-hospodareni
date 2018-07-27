@@ -51,7 +51,7 @@ final class Passenger
         return $this->address;
     }
 
-    public function getBirthday()
+    public function getBirthday() : ?\DateTimeImmutable
     {
         return $this->birthday;
     }

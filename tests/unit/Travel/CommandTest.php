@@ -151,7 +151,7 @@ class CommandTest extends Unit
     {
         $command = $this->createCommand();
 
-        $this->expectException(TravelNotFoundException::class);
+        $this->expectException(TravelNotFound::class);
 
         $command->updateVehicleTravel(20, 200, $this->getDetails());
     }
@@ -160,7 +160,7 @@ class CommandTest extends Unit
     {
         $command = $this->createCommand();
 
-        $this->expectException(TravelNotFoundException::class);
+        $this->expectException(TravelNotFound::class);
 
         $command->updateTransportTravel(20, MoneyFactory::fromFloat(200), $this->getDetails());
     }

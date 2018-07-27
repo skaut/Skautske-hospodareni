@@ -7,8 +7,8 @@ namespace Model\Payment;
 use Assert\Assert;
 use DateTimeImmutable;
 use Model\Bank\Fio\Transaction;
-use Model\BankTimeLimitException;
-use Model\BankTimeoutException;
+use Model\BankTimeLimit;
+use Model\BankTimeout;
 use Model\DTO\Payment\BankAccount as BankAccountDTO;
 use Model\DTO\Payment\BankAccountFactory;
 use Model\Payment\BankAccount\AccountNumber;
@@ -21,6 +21,7 @@ use function array_filter;
 use function array_map;
 use function count;
 use function in_array;
+use function sprintf;
 
 class BankAccountService
 {
@@ -67,7 +68,7 @@ class BankAccountService
 
 
     /**
-     * @throws BankAccountNotFoundException
+     * @throws BankAccountNotFound
      */
     public function updateBankAccount(int $id, string $name, AccountNumber $number, ?string $token) : void
     {
@@ -81,7 +82,7 @@ class BankAccountService
 
 
     /**
-     * @throws BankAccountNotFoundException
+     * @throws BankAccountNotFound
      */
     public function removeBankAccount(int $id) : void
     {
@@ -100,7 +101,7 @@ class BankAccountService
 
 
     /**
-     * @throws BankAccountNotFoundException
+     * @throws BankAccountNotFound
      */
     public function allowForSubunits(int $id) : void
     {
@@ -112,7 +113,7 @@ class BankAccountService
     }
 
     /**
-     * @throws BankAccountNotFoundException
+     * @throws BankAccountNotFound
      */
     public function disallowForSubunits(int $id) : void
     {
@@ -137,7 +138,7 @@ class BankAccountService
     {
         try {
             return BankAccountFactory::create($this->bankAccounts->find($id));
-        } catch (BankAccountNotFoundException $e) {
+        } catch (BankAccountNotFound $e) {
             return null;
         }
     }
@@ -146,7 +147,7 @@ class BankAccountService
     /**
      * @param int[] $ids
      * @return BankAccountDTO[]
-     * @throws BankAccountNotFoundException
+     * @throws BankAccountNotFound
      */
     public function findByIds(array $ids) : array
     {
@@ -186,21 +187,21 @@ class BankAccountService
 
     /**
      * @return Transaction[]
-     * @throws TokenNotSetException
-     * @throws BankTimeoutException
-     * @throws BankTimeLimitException
+     * @throws TokenNotSet
+     * @throws BankTimeout
+     * @throws BankTimeLimit
      */
     public function getTransactions(int $bankAccountId, int $daysBack) : array
     {
         Assert::that($daysBack)->greaterThan(0);
         $account = $this->bankAccounts->find($bankAccountId);
         $now     = new DateTimeImmutable();
-        return $this->fio->getTransactions($now->modify("- $daysBack days"), $now, $account);
+        return $this->fio->getTransactions($now->modify(sprintf('- %d days', $daysBack)), $now, $account);
     }
 
 
     /**
-     * @throws BankAccountNotFoundException when no bank accounts were imported
+     * @throws BankAccountNotFound When no bank accounts were imported.
      */
     public function importFromSkautis(int $unitId) : void
     {
@@ -208,7 +209,7 @@ class BankAccountService
         $numbers = $this->getImportableBankAccounts($unitId);
 
         if (count($numbers) === 0) {
-            throw new BankAccountNotFoundException();
+            throw new BankAccountNotFound();
         }
 
         $i = 1;

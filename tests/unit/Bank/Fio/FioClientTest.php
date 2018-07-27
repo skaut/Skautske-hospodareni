@@ -10,10 +10,10 @@ use FioApi\Exceptions\InternalErrorException;
 use FioApi\Exceptions\TooGreedyException;
 use GuzzleHttp\Exception\TransferException;
 use Mockery as m;
-use Model\BankTimeLimitException;
-use Model\BankTimeoutException;
+use Model\BankTimeLimit;
+use Model\BankTimeout;
 use Model\Payment\BankAccount;
-use Model\Payment\TokenNotSetException;
+use Model\Payment\TokenNotSet;
 use Psr\Log\NullLogger;
 
 class FioClientTest extends Unit
@@ -23,7 +23,7 @@ class FioClientTest extends Unit
         $factory = m::mock(IDownloaderFactory::class);
         $fio     = new FioClient($factory, new NullLogger());
 
-        $this->expectException(TokenNotSetException::class);
+        $this->expectException(TokenNotSet::class);
 
         $fio->getTransactions(
             new \DateTimeImmutable(),
@@ -46,7 +46,7 @@ class FioClientTest extends Unit
         $factory = $this->buildDownloaderFactory($downloader);
         $fio     = new FioClient($factory, new NullLogger());
 
-        $this->expectException(BankTimeLimitException::class);
+        $this->expectException(BankTimeLimit::class);
 
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
@@ -65,7 +65,7 @@ class FioClientTest extends Unit
         $factory = $this->buildDownloaderFactory($downloader);
         $fio     = new FioClient($factory, new NullLogger());
 
-        $this->expectException(BankTimeoutException::class);
+        $this->expectException(BankTimeout::class);
 
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
@@ -84,7 +84,7 @@ class FioClientTest extends Unit
         $factory = $this->buildDownloaderFactory($downloader);
         $fio     = new FioClient($factory, new NullLogger());
 
-        $this->expectException(BankTimeoutException::class);
+        $this->expectException(BankTimeout::class);
 
         $fio->getTransactions($since, $until, $this->mockAccount());
     }

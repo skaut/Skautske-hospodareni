@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\BankAccount;
 
 use BankAccountValidator\Czech;
-use Model\Payment\InvalidBankAccountNumberException;
+use Model\Payment\InvalidBankAccountNumber;
 
 class AccountNumber
 {
@@ -19,7 +19,7 @@ class AccountNumber
     private $bankCode;
 
     /**
-     * @throws InvalidBankAccountNumberException
+     * @throws InvalidBankAccountNumber
      */
     public function __construct(?string $prefix, string $number, string $bankCode)
     {
@@ -35,7 +35,7 @@ class AccountNumber
     }
 
     /**
-     * @throws InvalidBankAccountNumberException
+     * @throws InvalidBankAccountNumber
      */
     public static function fromString(string $number) : self
     {
@@ -54,7 +54,7 @@ class AccountNumber
         try {
             self::fromString($number);
             return true;
-        } catch (InvalidBankAccountNumberException $e) {
+        } catch (InvalidBankAccountNumber $e) {
             return false;
         }
     }
@@ -83,8 +83,8 @@ class AccountNumber
             : $withoutPrefix;
     }
 
-    private static function invalidNumber() : InvalidBankAccountNumberException
+    private static function invalidNumber() : InvalidBankAccountNumber
     {
-        return new InvalidBankAccountNumberException('Invalid bank account number');
+        return new InvalidBankAccountNumber('Invalid bank account number');
     }
 }

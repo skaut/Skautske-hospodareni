@@ -10,7 +10,7 @@ use Model\DTO\Payment\GroupEmail;
 use Model\EventEntity;
 use Model\MailService;
 use Model\Payment\BankAccountService;
-use Model\Payment\DueDateIsNotWorkdayException;
+use Model\Payment\DueDateIsNotWorkday;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group\PaymentDefaults;
@@ -53,7 +53,7 @@ class GroupPresenter extends BasePresenter
         $this->bankAccounts = $bankAccounts;
     }
 
-    public function actionDefault($type = null) : void
+    public function actionDefault(?string $type = null) : void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění upravovat skupiny plateb', 'danger');
@@ -63,7 +63,7 @@ class GroupPresenter extends BasePresenter
         if ($type === 'camp') {
             $allCamps = $this->camp->event->getAll(date('Y'));
             $camps    = [];
-            foreach (array_diff_key($allCamps, (array) $this->model->getCampIds()) as $id => $c) {
+            foreach (array_diff_key($allCamps, $this->model->getCampIds()) as $id => $c) {
                 $camps[$id] = $c['DisplayName'];
             }
             $this['groupForm']['skautisEntityId']->caption = 'Tábor';
@@ -75,7 +75,8 @@ class GroupPresenter extends BasePresenter
                 ->setItems($camps);
             $this->template->nadpis = 'Založení skupiny plateb tábora';
         } elseif ($type === 'registration') {
-            if (! ($reg = $this->model->getNewestRegistration())) {
+            $reg = $this->model->getNewestRegistration();
+            if ($reg !== []) {
                 $this->flashMessage('Nemáte založenou žádnou otevřenou registraci', 'warning');
                 $this->redirect('Payment:default');
             }
@@ -85,7 +86,8 @@ class GroupPresenter extends BasePresenter
             $this['groupForm']->addHidden('skautisEntityId', $reg['ID']);
             $this['groupForm']->setDefaults(
                 [
-                'label' => 'Registrace ' . $reg['Year'], $reg['Year'] . '-01-15',
+                    'label' => 'Registrace ' . $reg['Year'],
+                    'dueDate' => $reg['Year'] . '-01-15',
                 ]
             );
             $this->template->nadpis = 'Založení skupiny plateb pro registraci';
@@ -102,7 +104,7 @@ class GroupPresenter extends BasePresenter
         $this->template->linkBack = $this->link('Default:');
     }
 
-    public function renderEdit($id) : void
+    public function renderEdit(int $id) : void
     {
         $this->setView('default');
 
@@ -210,7 +212,7 @@ class GroupPresenter extends BasePresenter
         $name = $v->label;
         try {
             $paymentDefaults = $this->buildPaymentDefaults($v);
-        } catch (DueDateIsNotWorkdayException $e) {
+        } catch (DueDateIsNotWorkday $e) {
             $form['dueDate']->addError('Splatnost nemůže být nastavena na víkend.');
             return;
         }
@@ -222,8 +224,8 @@ class GroupPresenter extends BasePresenter
         ];
 
         /**
- * @var array<string, EmailTemplate> $emails
-*/
+         * @var EmailTemplate[] $emails
+         */
         $emails = array_filter(
             $emails,
             function (?EmailTemplate $email) : bool {
@@ -261,7 +263,7 @@ class GroupPresenter extends BasePresenter
     }
 
     /**
-     * @throws DueDateIsNotWorkdayException
+     * @throws DueDateIsNotWorkday
      */
     private function buildPaymentDefaults(ArrayHash $values) : PaymentDefaults
     {
@@ -326,11 +328,14 @@ class GroupPresenter extends BasePresenter
         return new EmailTemplate($emailValues->subject, $emailValues->body);
     }
 
+    /**
+     * @return mixed[]
+     */
     private function getEmailDefaults(int $groupId, EmailType $type) : array
     {
         /**
- * @var GroupEmail|NULL $email
-*/
+         * @var GroupEmail|NULL $email
+         */
         $email = $this->queryBus->handle(new GroupEmailQuery($groupId, $type));
 
         if ($email === null) {

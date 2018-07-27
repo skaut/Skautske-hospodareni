@@ -37,6 +37,9 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
         $this->campCategories = $campCategories;
     }
 
+    /**
+     * @param float[] $cashbookTotals
+     */
     public function updateCategories(CashbookId $cashbookId, array $cashbookTotals) : void
     {
         $campSkautisId = $this->mapper->getSkautisId($cashbookId, ObjectType::CAMP);
@@ -60,7 +63,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
         }
 
         if ($campSkautisId === null) {
-            throw new \InvalidArgumentException("Camp #$cashbookId doesn't exist");
+            throw new \InvalidArgumentException('Camp #' . $cashbookId . " doesn't exist");
         }
 
         foreach ($cashbookTotals as $categoryId => $total) {
@@ -78,7 +81,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
     }
 
     /**
-     * @return array<int, float>
+     * @return float[]
      */
     private function getSkautisTotals(int $campSkautisId) : array
     {

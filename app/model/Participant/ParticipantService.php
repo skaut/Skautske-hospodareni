@@ -41,7 +41,10 @@ class ParticipantService extends MutableBaseService
      */
     public const PAYMENT = 'Note';
 
-    public function get($participantId) : array
+    /**
+     * @return mixed[]
+     */
+    public function get(int $participantId) : array
     {
         $data   = ArrayHash::from($this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]));
         $detail = $this->table->get($participantId);
@@ -57,12 +60,13 @@ class ParticipantService extends MutableBaseService
      * vrací seznam účastníků
      * používá lokální úložiště
      *
-     * @return array
+     * @return mixed[]
      */
     public function getAll(int $ID_Event) : array
     {
-        $cacheId = __FUNCTION__ . $ID_Event;
-        if (! ($participants = $this->loadSes($cacheId))) {
+        $cacheId      = __FUNCTION__ . $ID_Event;
+        $participants = $this->loadSes($cacheId);
+        if (! $participants) {
             $participants = (array) $this->skautis->event->{'Participant' . $this->typeName . 'All'}(['ID_Event' . $this->typeName => $ID_Event]);
             if ($this->type === 'camp') {
                 $campLocalDetails = $this->table->getCampLocalDetails($ID_Event);
@@ -126,7 +130,7 @@ class ParticipantService extends MutableBaseService
     /**
      * vytvoří nového účastníka
      *
-     * @param array $person
+     * @param string[] $person
      */
     public function addNew(int $ID, array $person) : void
     {
@@ -147,7 +151,7 @@ class ParticipantService extends MutableBaseService
     /**
      * upravuje údaje zadané osoby
      *
-     * @param array $data
+     * @param mixed[] $data
      */
     public function personUpdate(int $pid, array $data) : void
     {
@@ -168,7 +172,7 @@ class ParticipantService extends MutableBaseService
     /**
      * upraví všechny nastavené hodnoty
      *
-     * @param array $arr pole hodnot (payment, days, [repayment], [isAccount])
+     * @param mixed[] $arr pole hodnot (payment, days, [repayment], [isAccount])
      */
     public function update(int $participantId, array $arr) : void
     {
@@ -206,18 +210,12 @@ class ParticipantService extends MutableBaseService
         }
     }
 
-    /**
-     * odebere účastníka
-     */
     public function removeParticipant(int $participantId) : void
     {
         $this->table->deleteLocalDetail($participantId);
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
     }
 
-    /**
-     * celkově vybraná částka
-     */
     public function getTotalPayment(int $eventId) : float
     {
         return (float) array_reduce(
@@ -228,7 +226,41 @@ class ParticipantService extends MutableBaseService
         );
     }
 
-    public function getCampTotalPayment($campId, $category, $isAccount) : float
+    /**
+     * vrací počet osobodní na dané akci
+     *
+     * @param int|int[] $eventIdOrParticipants
+     */
+    public function getPersonsDays($eventIdOrParticipants) : int
+    {
+        if (is_array($eventIdOrParticipants)) {
+            $participants = $eventIdOrParticipants;
+        } else {
+            $participants = $this->getAll($eventIdOrParticipants);
+        }
+
+        return array_sum(
+            array_column($participants, 'Days')
+        );
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getEventStatistic(int $eventId) : array
+    {
+        $skautisData = $this->skautis->event->{'EventStatisticAllEventGeneral'}(['ID_EventGeneral' => $eventId]);
+
+        return array_combine(
+            array_column($skautisData, 'ID_ParticipantCategory'),
+            $skautisData
+        );
+    }
+
+    /**
+     * @param string $isAccount 'Y' or 'N'
+     */
+    public function getCampTotalPayment(int $campId, string $category, string $isAccount) : float
     {
         $res = 0;
         foreach ($this->getAll($campId) as $p) {
@@ -244,34 +276,9 @@ class ParticipantService extends MutableBaseService
     }
 
     /**
-     * vrací počet osobodní na dané akci
-     *
-     * @param int|array $eventIdOrParticipants
+     * @return mixed[]
      */
-    public function getPersonsDays($eventIdOrParticipants) : int
-    {
-        if (is_array($eventIdOrParticipants)) {
-            $participants = $eventIdOrParticipants;
-        } else {
-            $participants = $this->getAll($eventIdOrParticipants);
-        }
-
-        return array_sum(
-            array_column($participants, 'Days')
-        );
-    }
-
-    public function getEventStatistic($eventId)
-    {
-        $skautisData = $this->skautis->event->{'EventStatisticAllEventGeneral'}(['ID_EventGeneral' => $eventId]);
-
-        return array_combine(
-            array_column($skautisData, 'ID_ParticipantCategory'),
-            $skautisData
-        );
-    }
-
-    public function getPotencialCampParticipants($eventId)
+    public function getPotencialCampParticipants(int $eventId) : array
     {
         $res = [];
         foreach ($this->skautis->org->{'PersonAllEventCampMulti'}(['ID_EventCamp' => $eventId]) as $p) {
@@ -281,7 +288,7 @@ class ParticipantService extends MutableBaseService
         return $res;
     }
 
-    protected function setPersonName(&$person) : void
+    protected function setPersonName(ArrayHash &$person) : void
     {
         preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $person->Person, $matches);
         $person->LastName  = $matches['last'];
@@ -289,7 +296,10 @@ class ParticipantService extends MutableBaseService
         $person->NickName  = $matches['nick'] ?? null;
     }
 
-    public function countPragueParticipants($event) : ?array
+    /**
+     * @return mixed[]|null
+     */
+    public function countPragueParticipants(\stdClass $event) : ?array
     {
         if (! Strings::startsWith($event->RegistrationNumber, self::PRAGUE_UNIT_PREFIX)) {
             return null;

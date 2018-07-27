@@ -63,18 +63,17 @@ class MassAddForm extends BaseControl
         return $form;
     }
 
+    /**
+     * @param string[] $emails
+     */
     public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = '') : void
     {
-        /**
- * @var BaseForm $form
-*/
+        /** @var BaseForm $form */
         $form = $this['form'];
-        /**
- * @var BaseContainer $persons
-*/
+        /** @var BaseContainer $persons */
         $persons = $form['persons'];
 
-        $container = $persons->addContainer("person{$id}");
+        $container = $persons->addContainer('person' . $id);
 
         $container->addCheckbox('selected');
 

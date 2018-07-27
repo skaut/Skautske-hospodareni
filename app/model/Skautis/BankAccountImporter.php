@@ -6,7 +6,7 @@ namespace Model\Skautis;
 
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccount\IBankAccountImporter;
-use Model\Payment\InvalidBankAccountNumberException;
+use Model\Payment\InvalidBankAccountNumber;
 use Skautis\Skautis;
 
 class BankAccountImporter implements IBankAccountImporter
@@ -35,7 +35,7 @@ class BankAccountImporter implements IBankAccountImporter
         foreach ($accounts as $account) {
             try {
                 $result[] = AccountNumber::fromString($account->DisplayName);
-            } catch (InvalidBankAccountNumberException $e) {
+            } catch (InvalidBankAccountNumber $e) {
                 // Skip invalid bank accounts
             }
         }

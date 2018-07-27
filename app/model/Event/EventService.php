@@ -40,6 +40,7 @@ class EventService extends MutableBaseService
     /**
      * vrací všechny akce podle parametrů
      * @param int|null|string $year
+     * @return mixed[]
      */
     public function getAll($year = null, ?string $state = null) : array
     {
@@ -48,8 +49,7 @@ class EventService extends MutableBaseService
 
         if (is_array($events)) {
             foreach ($events as $e) {
-                $cashbookId = $this->mapper->getLocalId($e->ID, $this->type);
-
+                $cashbookId  = $this->mapper->getLocalId($e->ID, $this->type);
                 $ret[$e->ID] = (array) $e + $this->getCashbookData($cashbookId);
             }
         }
@@ -66,7 +66,8 @@ class EventService extends MutableBaseService
     {
         $cacheId = __FUNCTION__ . $ID;
 
-        if (! ($res = $this->loadSes($cacheId))) {
+        $res = $this->loadSes($cacheId);
+        if (! $res) {
             $cashbookId = $this->mapper->getLocalId($ID, $this->type);
 
             if (in_array($this->type, [ObjectType::EVENT, ObjectType::CAMP], true)) {
@@ -88,6 +89,9 @@ class EventService extends MutableBaseService
         return $res;
     }
 
+    /**
+     * @return mixed[]
+     */
     private function getCashbookData(CashbookId $cashbookId) : array
     {
         /** @var Cashbook $cashbook */

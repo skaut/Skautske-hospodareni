@@ -8,7 +8,7 @@ use App\Forms\BaseForm;
 use Model\MailService;
 use Model\Payment\Commands\CreateMailCredentials;
 use Model\Payment\Commands\RemoveMailCredentials;
-use Model\Payment\EmailNotSetException;
+use Model\Payment\EmailNotSet;
 use Model\Payment\MailCredentials\MailProtocol;
 use Nette\Application\UI\Form;
 use Nette\Mail\SmtpException;
@@ -34,7 +34,7 @@ class MailPresenter extends BasePresenter
         $this->template->editableUnits = $this->getEditableUnits();
     }
 
-    public function handleEdit($id) : void
+    public function handleEdit(int $id) : void
     {
         if ($this->isEditable) {
             return;
@@ -114,7 +114,7 @@ class MailPresenter extends BasePresenter
             $this->flashMessage('SMTP účet byl přidán');
         } catch (SmtpException $e) {
             $this->flashMessage('K SMTP účtu se nepodařilo připojit (' . $e->getMessage() . ')', 'danger');
-        } catch (EmailNotSetException $e) {
+        } catch (EmailNotSet $e) {
             $this->flashMessage('Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!');
         }
 

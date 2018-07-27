@@ -7,14 +7,15 @@ namespace App\AccountancyModule\PaymentModule\Components;
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use Model\BankService;
-use Model\BankTimeLimitException;
-use Model\BankTimeoutException;
+use Model\BankTimeLimit;
+use Model\BankTimeout;
 use Model\DTO\Payment\Group;
 use Model\Payment\BankAccountService;
 use Model\PaymentService;
 use function array_filter;
 use function array_map;
 use function count;
+use function sprintf;
 
 class PairButton extends BaseControl
 {
@@ -115,16 +116,16 @@ class PairButton extends BaseControl
         $error = null;
         try {
             $pairedCount = $this->model->pairAllGroups($this->groupIds, $daysBack);
-        } catch (BankTimeoutException $exc) {
+        } catch (BankTimeout $exc) {
             $error = self::TIMEOUT_MESSAGE;
-        } catch (BankTimeLimitException $exc) {
+        } catch (BankTimeLimit $exc) {
             $error = self::TIME_LIMIT_MESSAGE;
         }
 
         if ($error !== null) {
             $this->presenter->flashMessage($error, 'danger');
         } elseif (isset($pairedCount) && $pairedCount > 0) {
-            $this->presenter->flashMessage("Platby byly spárovány ($pairedCount)", 'success');
+            $this->presenter->flashMessage(sprintf('Platby byly spárovány (%d)', $pairedCount), 'success');
         } else {
             $this->presenter->flashMessage('Žádné platby nebyly spárovány');
         }

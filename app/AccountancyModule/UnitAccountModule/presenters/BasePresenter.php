@@ -9,8 +9,7 @@ use function date;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @persistent */
-    public $aid;
+    /** @var int */
     protected $year;
 
     /** @var bool */

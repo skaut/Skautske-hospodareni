@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers\Cashbook;
 
-use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\Commands\Cashbook\LockCashbook;
 use Model\Cashbook\Repositories\ICashbookRepository;
 
@@ -19,7 +19,7 @@ class LockCashbookHandler
     }
 
     /**
-     * @throws CashbookNotFoundException
+     * @throws CashbookNotFound
      */
     public function handle(LockCashbook $command) : void
     {

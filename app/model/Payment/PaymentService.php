@@ -7,20 +7,21 @@ namespace Model;
 use Assert\Assert;
 use DateTimeImmutable;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
 use Model\DTO\Payment as DTO;
-use Model\Payment\BankException;
+use Model\Payment\BankError;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
-use Model\Payment\GroupNotFoundException;
-use Model\Payment\MissingVariableSymbolException;
+use Model\Payment\GroupNotFound;
+use Model\Payment\MissingVariableSymbol;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
-use Model\Payment\PaymentNotFoundException;
+use Model\Payment\PaymentNotFound;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
@@ -46,9 +47,6 @@ use function usort;
 
 class PaymentService
 {
-    /** @var string */
-    private $tempDir;
-
     /** @var Skautis */
     private $skautis;
 
@@ -65,14 +63,12 @@ class PaymentService
     private $http;
 
     public function __construct(
-        string $tempDir,
         Skautis $skautis,
         IGroupRepository $groups,
         IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts,
         ClientInterface $http
     ) {
-        $this->tempDir      = $tempDir;
         $this->skautis      = $skautis;
         $this->groups       = $groups;
         $this->payments     = $payments;
@@ -84,7 +80,7 @@ class PaymentService
     {
         try {
             return DTO\PaymentFactory::create($this->payments->find($id));
-        } catch (PaymentNotFoundException $e) {
+        } catch (PaymentNotFound $e) {
             return null;
         }
     }
@@ -216,7 +212,7 @@ class PaymentService
     }
 
     /**
-     * @param array<string,EmailTemplate> $emails
+     * @param EmailTemplate[] $emails
      */
     public function updateGroup(
         int $id,
@@ -250,7 +246,7 @@ class PaymentService
         try {
             $group = $this->groups->find($id);
             return DTO\GroupFactory::create($group);
-        } catch (GroupNotFoundException $e) {
+        } catch (GroupNotFound $e) {
         }
         return null;
     }
@@ -361,6 +357,7 @@ class PaymentService
 
     /**
      * Returns newest registration without created group
+     * @return mixed[]
      */
     public function getNewestRegistration() : array
     {
@@ -388,6 +385,7 @@ class PaymentService
      *
      * @param int[] $units
      * @param int   $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
+     * @return mixed[]
      */
     public function getPersonsFromRegistrationWithoutPayment(array $units, int $groupId) : array
     {
@@ -424,7 +422,10 @@ class PaymentService
         return $result;
     }
 
-    public function getPersonFromRegistration(?int $registrationId, bool $includeChild = true)
+    /**
+     * @return \stdClass[]
+     */
+    public function getPersonFromRegistration(?int $registrationId, bool $includeChild = true) : array
     {
         $persons = $this->skautis->org->PersonRegistrationAll([
             'ID_UnitRegistration' => $registrationId,
@@ -439,11 +440,7 @@ class PaymentService
     }
 
     /**
-     * JOURNAL
-     */
-
-    /**
-     * @return array - format array("add" => [], "remove" => [])
+     * @return mixed[] format array("add" => [], "remove" => [])
      */
     public function getJournalChangesAfterRegistration(int $unitId, int $year) : array
     {
@@ -483,17 +480,10 @@ class PaymentService
     }
 
     /**
-     * CAMP
-     */
-    public function getCamp($campId)
-    {
-        return $this->skautis->event->{'EventCampDetail'}(['ID' => $campId]);
-    }
-
-    /**
      * vrací seznam id táborů se založenou aktivní skupinou
+     * @return mixed[]
      */
-    public function getCampIds()
+    public function getCampIds() : array
     {
         $groups = $this->groups->findBySkautisEntityType(Type::get(Type::CAMP));
 
@@ -505,9 +495,10 @@ class PaymentService
         );
     }
 
-    /* Repayments */
-
-    public function getFioRepaymentString($repayments, $accountFrom, $date = null) : string
+    /**
+     * @param mixed[] $repayments
+     */
+    public function getFioRepaymentString(array $repayments, string $accountFrom, ?string $date = null) : string
     {
         if ($date === null) {
             $date = date('Y-m-d');
@@ -534,7 +525,8 @@ class PaymentService
     }
 
     /**
-     * @throws BankException
+     * @throws BankError
+     * @throws GuzzleException
      */
     public function sendFioPaymentRequest(string $stringToRequest, string $token) : void
     {
@@ -553,19 +545,19 @@ class PaymentService
                 ]
             );
         } catch (ServerException $e) {
-            throw new BankException($this->getErrorMessage($e), 0, $e);
+            throw new BankError($this->getErrorMessage($e), 0, $e);
         }
     }
 
     /**
-     * @throws MissingVariableSymbolException
+     * @throws MissingVariableSymbol
      */
     public function generateVs(int $gid) : int
     {
         $nextVariableSymbol = $this->getNextVS($gid);
 
         if ($nextVariableSymbol === null) {
-            throw new MissingVariableSymbolException();
+            throw new MissingVariableSymbol();
         }
 
         $payments = $this->payments->findByGroup($gid);

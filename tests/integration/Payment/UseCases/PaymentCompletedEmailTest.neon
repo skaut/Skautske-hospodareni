@@ -9,7 +9,7 @@ services:
     - Stubs\Skautis
     - Model\Payment\UserRepositoryStub
 
-    - Model\PaymentService(%tempDir%)
+    - Model\PaymentService
 
     - Model\Services\TemplateFactory
     - Model\Mail\MailerFactory(Model\Payment\NullMailer(), true)

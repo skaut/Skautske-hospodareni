@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Model\Travel\Repositories;
 
 use Model\Travel\Command;
-use Model\Travel\CommandNotFoundException;
+use Model\Travel\CommandNotFound;
 use Model\Travel\Vehicle;
 
 interface ICommandRepository
 {
     /**
-     * @throws CommandNotFoundException
+     * @throws CommandNotFound
      */
     public function find(int $id) : Command;
 

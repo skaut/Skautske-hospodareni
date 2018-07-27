@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Dibi\Row;
+
 class ParticipantTable extends BaseTable
 {
-    public function get($participantId)
+    /**
+     * @return Row|false
+     */
+    public function get(int $participantId)
     {
         return $this->connection->fetch('SELECT * FROM  [' . self::TABLE_CAMP_PARTICIPANT . '] WHERE participantId=%i LIMIT 1', $participantId);
     }
@@ -14,7 +19,7 @@ class ParticipantTable extends BaseTable
     /**
      * seznam všech záznamů k dané akci
      *
-     * @return array
+     * @return mixed[]
      */
     public function getCampLocalDetails(int $skautiEventId) : array
     {
@@ -28,20 +33,20 @@ class ParticipantTable extends BaseTable
         return $result;
     }
 
-    /**
-     * smaže záznam
-     */
     public function deleteLocalDetail(int $participantId) : void
     {
         $this->connection->query('DELETE FROM [' . self::TABLE_CAMP_PARTICIPANT . '] WHERE participantId =%i', $participantId);
     }
 
-    public function update($participantId, $updateData)
+    /**
+     * @param mixed[] $updateData
+     */
+    public function update(int $participantId, array $updateData) : void
     {
         $ins                  = $updateData;
         $ins['participantId'] = $participantId;
         unset($updateData['actionId']); //to se neaktualizuje
-        return $this->connection->query(
+        $this->connection->query(
             'INSERT INTO [' . self::TABLE_CAMP_PARTICIPANT . ']',
             $ins,
             '

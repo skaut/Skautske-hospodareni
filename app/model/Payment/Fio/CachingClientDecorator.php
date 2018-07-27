@@ -24,7 +24,9 @@ class CachingClientDecorator implements IFioClient
         $this->cache = $cache;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account) : array
     {
         $key = sprintf('%s-%s-%s', $account->getId(), $since->format('d-m-Y'), $until->format('d-m-y'));

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
@@ -31,7 +32,8 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
     }
 
     /**
-     * @return array<int, float>
+     * @return float[]
+     * @throws CashbookNotFound
      */
     public function handle(InconsistentCampCategoryTotalsQuery $query) : array
     {

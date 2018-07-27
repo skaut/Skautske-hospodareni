@@ -8,7 +8,7 @@ use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
-use Model\Payment\InvalidBankAccountNumberException;
+use Model\Payment\InvalidBankAccountNumber;
 use Nette\Utils\ArrayHash;
 
 class BankAccountForm extends BaseControl
@@ -92,7 +92,7 @@ class BankAccountForm extends BaseControl
 
             $this->presenter->flashMessage('Bankovní účet byl uložen');
             $this->presenter->redirect('BankAccounts:default');
-        } catch (InvalidBankAccountNumberException $e) {
+        } catch (InvalidBankAccountNumber $e) {
             $form->addError('Neplatné číslo účtu');
         }
     }

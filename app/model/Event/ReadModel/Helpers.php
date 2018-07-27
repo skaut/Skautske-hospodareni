@@ -8,7 +8,7 @@ class Helpers
 {
     /**
      * @param \stdClass[] $items
-     * @return array<int,string>
+     * @return string[]
      */
     public static function getPairs(array $items) : array
     {

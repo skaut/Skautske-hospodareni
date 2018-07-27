@@ -6,18 +6,19 @@ namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\CashbookNotFoundException;
+use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\Repositories\ICashbookRepository;
-use Model\Infrastructure\Repositories\AbstractRepository;
+use Model\Infrastructure\Repositories\AggregateRepository;
+use function sprintf;
 
-class CashbookRepository extends AbstractRepository implements ICashbookRepository
+class CashbookRepository extends AggregateRepository implements ICashbookRepository
 {
     public function find(CashbookId $id) : Cashbook
     {
         $cashboook = $this->getEntityManager()->find(Cashbook::class, $id);
 
         if ($cashboook === null) {
-            throw new CashbookNotFoundException("Cashbook #$id not found");
+            throw new CashbookNotFound(sprintf('Cashbook #%s not found', $id->toString()));
         }
 
         return $cashboook;

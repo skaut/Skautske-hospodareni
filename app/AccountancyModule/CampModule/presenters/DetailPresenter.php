@@ -13,7 +13,7 @@ use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
-use Model\Unit\UnitNotFoundException;
+use Model\Unit\UnitNotFound;
 use Nette\Application\UI\Form;
 use function array_map;
 use function count;
@@ -53,8 +53,8 @@ class DetailPresenter extends BasePresenter
                     function ($id) {
                         try {
                             return $this->unitService->getDetail((int) $id);
-                        } catch (UnitNotFoundException $exc) {
-                            return ['ID' => $id, 'DisplayName' => "Jednotka ($id) již neexistuje."];
+                        } catch (UnitNotFound $exc) {
+                            return ['ID' => $id, 'DisplayName' => 'Jednotka (' . $id . ') již neexistuje.'];
                         }
                     },
                     $this->event->ID_UnitArray->string
@@ -95,7 +95,7 @@ class DetailPresenter extends BasePresenter
         $this->terminate();
     }
 
-    protected function createComponentFormEdit($name) : Form
+    protected function createComponentFormEdit() : Form
     {
         $form = new BaseForm();
         $form->addText('prefix', 'Prefix')

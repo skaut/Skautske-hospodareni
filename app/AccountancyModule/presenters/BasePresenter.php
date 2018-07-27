@@ -8,9 +8,7 @@ use Model\Skautis\SkautisMaintenanceChecker;
 
 abstract class BasePresenter extends \App\BasePresenter
 {
-    /**
-     * backlink
-     */
+    /** @var string|null */
     protected $backlink;
 
     /**
@@ -43,11 +41,11 @@ abstract class BasePresenter extends \App\BasePresenter
         parent::startup();
 
         if ($this->skautisMaintenanceChecker->isMaintenance()) {
-            throw new SkautisMaintenanceException();
+            throw new SkautisMaintenance();
         }
 
         $this->aid = $this->getParameter('aid', null);
-        if ($this->aid !== null) { // Persistent parameters aren't auto-casted to int
+        if ($this->aid !== null) { // Parameters aren't auto-casted to int
             $this->aid = (int) $this->aid;
         }
 
@@ -63,7 +61,9 @@ abstract class BasePresenter extends \App\BasePresenter
         $this->userService->updateLogoutTime();
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public function flashMessage($message, $type = 'info') : \stdClass
     {
         $this->redrawControl('flash');

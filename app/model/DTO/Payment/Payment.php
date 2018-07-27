@@ -164,7 +164,7 @@ class Payment
         return $this->closedAt;
     }
 
-    public function getPersonId()
+    public function getPersonId() : ?int
     {
         return $this->personId;
     }

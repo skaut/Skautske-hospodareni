@@ -6,7 +6,7 @@ namespace Model\Payment\Repositories;
 
 use Mockery as m;
 use Model\Payment\BankAccount;
-use Model\Payment\BankAccountNotFoundException;
+use Model\Payment\BankAccountNotFound;
 use Model\Payment\IUnitResolver;
 use function array_keys;
 
@@ -62,7 +62,7 @@ class BankAccountRepositoryTest extends \IntegrationTest
 
     public function testFindNotSavedAccountThrowsException() : void
     {
-        $this->expectException(BankAccountNotFoundException::class);
+        $this->expectException(BankAccountNotFound::class);
 
         $this->repository->find(1);
     }
@@ -132,7 +132,7 @@ class BankAccountRepositoryTest extends \IntegrationTest
         }
         $ids = [1, 3];
 
-        $this->expectException(BankAccountNotFoundException::class);
+        $this->expectException(BankAccountNotFound::class);
 
         $this->repository->findByIds($ids);
     }

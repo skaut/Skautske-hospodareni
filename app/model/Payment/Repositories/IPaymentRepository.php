@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Model\Payment\Repositories;
 
 use Model\Payment\Payment;
-use Model\Payment\PaymentNotFoundException;
+use Model\Payment\PaymentNotFound;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 
 interface IPaymentRepository
 {
     /**
-     * @throws PaymentNotFoundException
+     * @throws PaymentNotFound
      */
     public function find(int $id) : Payment;
 

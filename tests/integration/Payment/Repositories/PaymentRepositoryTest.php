@@ -7,7 +7,7 @@ namespace Model\Payment\Repositories;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Payment\Group;
 use Model\Payment\Payment;
-use Model\Payment\PaymentNotFoundException;
+use Model\Payment\PaymentNotFound;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use function array_fill;
@@ -49,7 +49,7 @@ class PaymentRepositoryTest extends \IntegrationTest
 
     public function testFindNotSavedPaymentThrowsException() : void
     {
-        $this->expectException(PaymentNotFoundException::class);
+        $this->expectException(PaymentNotFound::class);
 
         $this->repository->find(10);
     }

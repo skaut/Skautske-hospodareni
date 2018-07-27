@@ -25,6 +25,9 @@ class LoggerService
         $this->logs->save(new Log($unitId, $userId, $description, $type, $typeId));
     }
 
+    /**
+     * @return \Model\DTO\Logger\Log[]
+     */
     public function findAllByTypeId(Type $type, int $typeId) : array
     {
         return array_map(

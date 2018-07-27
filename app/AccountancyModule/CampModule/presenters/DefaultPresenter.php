@@ -10,6 +10,7 @@ use Model\Auth\Resources\Camp;
 use Model\Event\ReadModel\Queries\CampStates;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
+use Nette\Http\SessionSection;
 use Ublaboo\DataGrid\DataGrid;
 use function array_keys;
 use function array_merge;
@@ -19,6 +20,7 @@ use function range;
 
 class DefaultPresenter extends BasePresenter
 {
+    /** @var SessionSection */
     public $ses;
 
     public const DEFAULT_STATE = 'approvedParent'; //filtrovani zobrazených položek
@@ -104,7 +106,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    public function handleChangeState($state) : void
+    public function handleChangeState(string $state) : void
     {
         $this->ses->state = $state;
         if ($this->isAjax()) {
@@ -114,7 +116,7 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentFormFilter($name) : Form
+    protected function createComponentFormFilter() : Form
     {
         $states = array_merge(['all' => 'Nezrušené'], $this->queryBus->handle(new CampStates()));
         $years  = ['all' => 'Všechny'];

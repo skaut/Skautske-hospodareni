@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\AccountancyModule\TravelModule\Components;
 
 use App\Forms\BaseForm;
+use App\MyValidators;
 use Dibi\Row;
 use Model\Travel\Passenger;
-use Model\Travel\VehicleNotFoundException;
+use Model\Travel\VehicleNotFound;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Control;
@@ -78,7 +79,7 @@ class CommandForm extends Control
         $form->addMultiSelect('type', 'Prostředek*', $this->prepareTranportTypeOptions())
             ->setAttribute('class', 'combobox')
             ->setRequired('Vyberte alespoň jeden dopravní prostředek.')
-            ->addCondition([\MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addCondition([MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->toggle('vehicle');
 
         $form->addText('place', 'Místo')
@@ -115,20 +116,20 @@ class CommandForm extends Control
             ->setOption('id', 'vehicle_id')
             ->setPrompt('Vyberte vozidlo')
             ->setAttribute('class', 'form-control')
-            ->addConditionOn($form['type'], [\MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addConditionOn($form['type'], [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit typ vozidla.');
 
         $form->addText('fuel_price', 'Cena paliva za 1l*')
             ->setOption('id', 'fuel_price')
             ->setAttribute('class', 'form-control')
-            ->addConditionOn($form['type'], [\MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addConditionOn($form['type'], [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit cenu paliva.')
             ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
 
         $form->addText('amortization', 'Opotřebení*')
             ->setOption('id', 'amortization')
             ->setAttribute('class', 'form-control')
-            ->addConditionOn($form['type'], [\MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addConditionOn($form['type'], [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit opotřebení.')
             ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
 
@@ -156,7 +157,7 @@ class CommandForm extends Control
         $command = $this->model->getCommandDetail($this->commandId);
 
         if ($command === null) {
-            throw new InvalidStateException("Travel command #{$this->commandId} not found");
+            throw new InvalidStateException('Travel command #' . $this->commandId . ' not found');
         }
 
         $usedTypes = $this->model->getUsedTransportTypes($this->commandId);
@@ -214,7 +215,7 @@ class CommandForm extends Control
             $vehicle = $this->model->getVehicle($vehicleId);
             $vehicles->setItems([$vehicle->getId() => $vehicle->getLabel()] + $vehicles->getItems());
             $vehicles->setDefaultValue($vehicleId);
-        } catch (VehicleNotFoundException $exc) {
+        } catch (VehicleNotFound $exc) {
         }
     }
 
@@ -256,6 +257,10 @@ class CommandForm extends Control
         $this->presenter->flashMessage('Cestovní příkaz byl upraven.');
     }
 
+    /**
+     * @param string[] $disabledValues
+     * @return Html[]
+     */
     private function prepareTranportTypeOptions(array $disabledValues = []) : array
     {
         $options = [];
@@ -270,6 +275,9 @@ class CommandForm extends Control
         return $options;
     }
 
+    /**
+     * @return mixed[]
+     */
     private function prepareContracts(?int $includeContractId = null) : array
     {
         $contracts = $this->model->getAllContractsPairs(

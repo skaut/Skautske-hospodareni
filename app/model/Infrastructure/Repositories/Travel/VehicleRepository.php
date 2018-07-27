@@ -7,7 +7,7 @@ namespace Model\Infrastructure\Repositories\Travel;
 use Doctrine\ORM\EntityManager;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
-use Model\Travel\VehicleNotFoundException;
+use Model\Travel\VehicleNotFound;
 use function array_values;
 
 class VehicleRepository implements IVehicleRepository
@@ -21,19 +21,23 @@ class VehicleRepository implements IVehicleRepository
     }
 
     /**
-     * @throws VehicleNotFoundException
+     * @throws VehicleNotFound
      */
     public function find(int $id) : Vehicle
     {
         $vehicle = $this->em->find(Vehicle::class, $id);
 
         if (! $vehicle instanceof Vehicle) {
-            throw new VehicleNotFoundException();
+            throw new VehicleNotFound();
         }
 
         return $vehicle;
     }
 
+    /**
+     * @param int[] $ids
+     * @return Vehicle[]
+     */
     public function findByIds(array $ids) : array
     {
         if (empty($ids)) {

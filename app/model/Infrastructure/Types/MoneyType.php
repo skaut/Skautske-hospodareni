@@ -22,12 +22,18 @@ class MoneyType extends DecimalType
         return self::NAME;
     }
 
+    /**
+     * @param mixed $value
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform) : Money
     {
         $stringValue = parent::convertToPHPValue($value, $platform);
         return new Money(bcmul($stringValue, self::SUBUNITS), new Currency(self::CURRENCY));
     }
 
+    /**
+     * @param mixed $value
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform) : string
     {
         if (! $value instanceof Money) {

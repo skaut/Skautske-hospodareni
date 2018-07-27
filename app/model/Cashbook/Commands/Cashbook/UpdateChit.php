@@ -28,7 +28,7 @@ final class UpdateChit
     /** @var Date */
     private $date;
 
-    /** @var Recipient|NULL */
+    /** @var Recipient|null */
     private $recipient;
 
     /** @var Amount */
@@ -40,8 +40,16 @@ final class UpdateChit
     /** @var int */
     private $categoryId;
 
-    public function __construct(CashbookId $cashbookId, int $chitId, $number, Date $date, $recipient, Amount $amount, string $purpose, int $categoryId)
-    {
+    public function __construct(
+        CashbookId $cashbookId,
+        int $chitId,
+        ?ChitNumber $number,
+        Date $date,
+        ?Recipient $recipient,
+        Amount $amount,
+        string $purpose,
+        int $categoryId
+    ) {
         $this->cashbookId = $cashbookId;
         $this->chitId     = $chitId;
         $this->number     = $number;

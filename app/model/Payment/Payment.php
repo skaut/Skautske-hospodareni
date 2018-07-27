@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use DateTimeImmutable;
-use Model\Common\AbstractAggregate;
+use Model\Common\Aggregate;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\DomainEvents\PaymentWasCreated;
@@ -13,7 +13,7 @@ use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
 use function in_array;
 
-class Payment extends AbstractAggregate
+class Payment extends Aggregate
 {
     /** @var int */
     private $id;
@@ -87,7 +87,7 @@ class Payment extends AbstractAggregate
     }
 
     /**
-     * @throws PaymentClosedException
+     * @throws PaymentClosed
      */
     public function update(
         string $name,
@@ -214,12 +214,12 @@ class Payment extends AbstractAggregate
     }
 
     /**
-     * @throws PaymentClosedException
+     * @throws PaymentClosed
      */
     private function checkNotClosed() : void
     {
         if ($this->closedAt !== null) {
-            throw new PaymentClosedException('Already closed!');
+            throw new PaymentClosed('Already closed!');
         }
     }
 

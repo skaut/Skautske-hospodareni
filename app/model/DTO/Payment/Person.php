@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
-use Assert\Assert;
-
 class Person
 {
     /** @var int */
@@ -17,10 +15,11 @@ class Person
     /** @var string[] */
     private $emails;
 
+    /**
+     * @param string[] $emails
+     */
     public function __construct(int $id, string $name, array $emails)
     {
-        Assert::thatAll($emails)->string();
-
         $this->id     = $id;
         $this->name   = $name;
         $this->emails = $emails;
@@ -36,6 +35,9 @@ class Person
         return $this->name;
     }
 
+    /**
+     * @return string[]
+     */
     public function getEmails() : array
     {
         return $this->emails;

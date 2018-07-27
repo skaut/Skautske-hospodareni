@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\ParticipantTrait;
 use Model\Auth\Resources\Camp;
 use Model\Event\Commands\Camp\ActivateAutocomputedParticipants;
 use Model\Event\SkautisCampId;
@@ -16,7 +17,7 @@ use Nette\Application\BadRequestException;
 
 class ParticipantPresenter extends BasePresenter
 {
-    use \ParticipantTrait;
+    use ParticipantTrait;
 
     public function __construct(MemberService $member, ExportService $export, ExcelService $excel, PdfRenderer $pdf)
     {
@@ -49,7 +50,7 @@ class ParticipantPresenter extends BasePresenter
         );
     }
 
-    public function renderDefault(int $aid, $uid = null, bool $dp = false, ?string $sort = null, bool $regNums = false) : void
+    public function renderDefault(int $aid, ?int $uid = null, bool $dp = false, ?string $sort = null, bool $regNums = false) : void
     {
         $authorizator = $this->authorizator;
 
@@ -84,7 +85,7 @@ class ParticipantPresenter extends BasePresenter
      */
     public function actionEditField(?int $aid = null, ?int $id = null, ?string $field = null, $value = null) : void
     {
-        if($aid === null || $id === null || $field === null || $value === null) {
+        if ($aid === null || $id === null || $field === null || $value === null) {
             throw new BadRequestException();
         }
 

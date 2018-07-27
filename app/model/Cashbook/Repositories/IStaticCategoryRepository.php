@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Repositories;
 
 use Model\Cashbook\Category;
-use Model\Cashbook\CategoryNotFoundException;
+use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\ObjectType;
 
 /**
@@ -19,7 +19,7 @@ interface IStaticCategoryRepository
     public function findByObjectType(ObjectType $type) : array;
 
     /**
-     * @throws CategoryNotFoundException
+     * @throws CategoryNotFound
      */
     public function find(int $id) : Category;
 }

@@ -29,6 +29,9 @@ trait ContainerTrait
         return $this[$name] = new VariableSymbolControl($label);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function addContainer($name) : BaseContainer
     {
         $control               = new BaseContainer();

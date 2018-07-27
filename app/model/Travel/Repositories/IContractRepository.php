@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Model\Travel\Repositories;
 
 use Model\Travel\Contract;
-use Model\Travel\ContractNotFoundException;
+use Model\Travel\ContractNotFound;
 
 interface IContractRepository
 {
     /**
-     * @throws ContractNotFoundException
+     * @throws ContractNotFound
      */
     public function find(int $id) : Contract;
 

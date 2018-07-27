@@ -19,16 +19,16 @@ use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
-use Model\Payment\BankException;
+use Model\Payment\BankError;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
-use Model\Payment\EmailNotSetException;
-use Model\Payment\GroupNotFoundException;
-use Model\Payment\InvalidBankAccountException;
-use Model\Payment\MailCredentialsNotSetException;
+use Model\Payment\EmailNotSet;
+use Model\Payment\GroupNotFound;
+use Model\Payment\InvalidBankAccount;
+use Model\Payment\MailCredentialsNotSet;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
-use Model\Payment\PaymentClosedException;
-use Model\Payment\PaymentNotFoundException;
+use Model\Payment\PaymentClosed;
+use Model\Payment\PaymentNotFound;
 use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
@@ -49,8 +49,13 @@ use function substr;
 
 class PaymentPresenter extends BasePresenter
 {
+    /** @var string[] */
     protected $readUnits;
+
+    /** @var string[] */
     protected $editUnits;
+
+    /** @var UnitService */
     protected $unitService;
 
     /** @var int */
@@ -337,9 +342,9 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->model->cancelPayment($pid);
-        } catch (PaymentNotFoundException $e) {
+        } catch (PaymentNotFound $e) {
             $this->flashMessage('Platba nenalezena!', 'danger');
-        } catch (PaymentClosedException $e) {
+        } catch (PaymentClosed $e) {
             $this->flashMessage('Tato platba už je uzavřená', 'danger');
         }
         $this->redirect('this');
@@ -373,7 +378,7 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->sendEmailsForPayments([$payment]);
-        } catch (PaymentClosedException $e) {
+        } catch (PaymentClosed $e) {
             $this->flashMessage('Nelze odeslat uzavřenou platbu');
         }
     }
@@ -399,7 +404,7 @@ class PaymentPresenter extends BasePresenter
         $this->sendEmailsForPayments($payments);
     }
 
-    public function handleSendTest($gid) : void
+    public function handleSendTest(int $gid) : void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Neplatný požadavek na odeslání testovacího emailu!', 'danger');
@@ -408,14 +413,14 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $email = $this->mailing->sendTestMail($gid);
-            $this->flashMessage("Testovací email byl odeslán na $email.");
-        } catch (MailCredentialsNotSetException $e) {
+            $this->flashMessage('Testovací email byl odeslán na ' . $email . '.');
+        } catch (MailCredentialsNotSet $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (SmtpException $e) {
             $this->smtpError($e);
-        } catch (InvalidBankAccountException $e) {
+        } catch (InvalidBankAccount $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-        } catch (EmailNotSetException $e) {
+        } catch (EmailNotSet $e) {
             $this->flashMessage('Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!', 'danger');
         }
 
@@ -432,7 +437,7 @@ class PaymentPresenter extends BasePresenter
         try {
             $this->model->completePayment($pid);
             $this->flashMessage('Platba byla zaplacena.');
-        } catch (PaymentClosedException $e) {
+        } catch (PaymentClosed $e) {
             $this->flashMessage('Tato platba už je uzavřená', 'danger');
         }
 
@@ -456,7 +461,7 @@ class PaymentPresenter extends BasePresenter
         }
 
         $numberOfUpdatedVS = $this->model->generateVs($gid);
-        $this->flashMessage("Počet dogenerovaných VS: $numberOfUpdatedVS ", 'success');
+        $this->flashMessage('Počet dogenerovaných VS: ' . $numberOfUpdatedVS, 'success');
         $this->redirect('this');
     }
 
@@ -473,7 +478,7 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->model->closeGroup($gid, $note);
-        } catch (GroupNotFoundException $e) {
+        } catch (GroupNotFound $e) {
         }
 
         $this->redirect('this');
@@ -493,7 +498,7 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->model->openGroup($gid, $note);
-        } catch (GroupNotFoundException $e) {
+        } catch (GroupNotFound $e) {
         }
 
         $this->redirect('this');
@@ -656,7 +661,7 @@ class PaymentPresenter extends BasePresenter
             $this->model->sendFioPaymentRequest($dataToRequest, $bankAccount->getToken());
             $this->flashMessage('Vratky byly odeslány do banky');
             $this->redirect('Payment:detail', ['id' => $values->gid]);
-        } catch (BankException $e) {
+        } catch (BankError $e) {
             $form->addError(sprintf('Chyba z banky %s', $e->getMessage()));
         }
     }
@@ -687,7 +692,7 @@ class PaymentPresenter extends BasePresenter
 
     private function smtpError(SmtpException $e) : void
     {
-        $this->flashMessage("SMTP server vrátil chybu ({$e->getMessage()})", 'danger');
+        $this->flashMessage(sprintf('SMTP server vrátil chybu (%s)', $e->getMessage()), 'danger');
         $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
     }
 
@@ -708,10 +713,10 @@ class PaymentPresenter extends BasePresenter
                 $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
                 $sentCount++;
             }
-        } catch (MailCredentialsNotSetException $e) {
+        } catch (MailCredentialsNotSet $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
             $this->redirect('this');
-        } catch (InvalidBankAccountException $e) {
+        } catch (InvalidBankAccount $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
             $this->redirect('this');
         } catch (SmtpException $e) {
@@ -723,7 +728,7 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage(
                 $sentCount === 1
                     ? 'Informační email byl odeslán'
-                    : "Informační emaily ($sentCount) byly odeslány",
+                    : 'Informační emaily (' . $sentCount . ') byly odeslány',
                 'success'
             );
         }

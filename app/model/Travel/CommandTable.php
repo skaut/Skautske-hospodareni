@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Dibi\Exception;
 use function array_fill;
 use function count;
 
@@ -21,6 +22,10 @@ class CommandTable extends BaseTable
             ->fetchPairs('comId', 'types');
     }
 
+    /**
+     * @param int[]|string[] $commandTypes
+     * @throws Exception
+     */
     public function updateTypes(int $commandId, array $commandTypes) : void
     {
         $this->connection->query('DELETE FROM [' . self::TABLE_TC_COMMAND_TYPES . '] WHERE commandId=%i', $commandId);

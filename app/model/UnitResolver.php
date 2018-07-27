@@ -6,7 +6,7 @@ namespace Model\Unit\Services;
 
 use Model\Payment\IUnitResolver;
 use Model\Unit\Repositories\IUnitRepository;
-use Model\Unit\UnitHasNoParentException;
+use Model\Unit\UnitHasNoParent;
 
 final class UnitResolver implements IUnitResolver
 {
@@ -19,7 +19,7 @@ final class UnitResolver implements IUnitResolver
     }
 
     /**
-     * @throws UnitHasNoParentException
+     * @throws UnitHasNoParent
      */
     public function getOfficialUnitId(int $unitId) : int
     {
@@ -29,7 +29,7 @@ final class UnitResolver implements IUnitResolver
             return $unitId;
         }
         if ($unit->getParentId() === null) {
-            throw new UnitHasNoParentException('Unit ' . $unit->getId() . " doesn't have set parentID");
+            throw new UnitHasNoParent('Unit ' . $unit->getId() . " doesn't have set parentID");
         }
 
         return $this->getOfficialUnitId($unit->getParentId());

@@ -15,6 +15,9 @@ use Nette\InvalidStateException;
  */
 class BaseControl extends Control
 {
+    /**
+     * {@inheritDoc}
+     */
     public function getPresenter($throw = true) : ?BasePresenter
     {
         $presenter = parent::getPresenter($throw);

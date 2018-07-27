@@ -13,6 +13,7 @@ use function intdiv;
 
 class RegistrationPresenter extends BasePresenter
 {
+    /** @var string[] */
     protected $readUnits;
 
     /** @var PaymentService */
@@ -76,7 +77,7 @@ class RegistrationPresenter extends BasePresenter
                 $p['emails'],
                 $p['Person'],
                 (float) $p['AmountTotal'],
-                $stsCount !== 0 ? "{$stsCount}x STS" : ''
+                $stsCount !== 0 ? $stsCount . 'x STS' : ''
             );
         }
 
@@ -84,7 +85,7 @@ class RegistrationPresenter extends BasePresenter
         $this->template->showForm = ! empty($list);
     }
 
-    protected function createComponentMassAddForm()
+    protected function createComponentMassAddForm() : MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
     }

@@ -18,6 +18,7 @@ use function array_filter;
 use function array_map;
 use function count;
 use function min;
+use function sprintf;
 
 class BankService
 {
@@ -53,8 +54,10 @@ class BankService
      *
      * @param  int[] $groupIds
      * @return int number of paired payments
-     * @throws BankTimeoutException
-     * @throws BankTimeLimitException
+     * @throws BankTimeLimit
+     * @throws BankTimeout
+     * @throws Payment\BankAccountNotFound
+     * @throws Payment\TokenNotSet
      */
     public function pairAllGroups(array $groupIds, ?int $daysBack = null) : int
     {
@@ -95,7 +98,7 @@ class BankService
                 continue;
             }
 
-            $pairSince = $daysBack === null ? $this->resolveLastPairing($groups) : new \DateTimeImmutable("- $daysBack days");
+            $pairSince = $daysBack === null ? $this->resolveLastPairing($groups) : new \DateTimeImmutable(sprintf('- %d days', $daysBack));
 
             $transactions = $this->bank->getTransactions($pairSince, $now, $bankAccount);
             $paired       = $this->markPaymentsAsComplete($transactions, $payments);
@@ -184,12 +187,4 @@ class BankService
 
         return $paired;
     }
-}
-
-class BankTimeoutException extends \Exception
-{
-}
-
-class BankTimeLimitException extends \Exception
-{
 }

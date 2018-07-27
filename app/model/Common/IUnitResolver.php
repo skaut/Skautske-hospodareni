@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-use Model\Unit\UnitHasNoParentException;
+use Model\Unit\UnitHasNoParent;
 
 interface IUnitResolver
 {
     /**
-     * @throws UnitHasNoParentException
+     * @throws UnitHasNoParent
      */
     public function getOfficialUnitId(int $unitId) : int;
 }

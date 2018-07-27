@@ -7,7 +7,7 @@ namespace Model\Cashbook\Repositories;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\CategoryNotFoundException;
+use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use function sprintf;
@@ -51,7 +51,7 @@ class CategoryRepository
     }
 
     /**
-     * @throws CategoryNotFoundException
+     * @throws CategoryNotFound
      */
     public function find(int $categoryId, CashbookId $cashbookId, CashbookType $type) : ICategory
     {
@@ -62,13 +62,15 @@ class CategoryRepository
                 }
             }
 
-            throw new CategoryNotFoundException("Category #$categoryId for cashbook #$cashbookId not found");
+            throw new CategoryNotFound(
+                sprintf('Category #%d for cashbook #%d not found', $categoryId, $cashbookId)
+            );
         }
 
         $category = $this->staticCategories->find($categoryId);
 
         if (! $category->supportsType($type->getSkautisObjectType())) {
-            throw new CategoryNotFoundException(
+            throw new CategoryNotFound(
                 sprintf("Category #%d found, but it doesn't support cashbook type %s", $categoryId, $type->getValue())
             );
         }

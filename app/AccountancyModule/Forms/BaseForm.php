@@ -25,7 +25,7 @@ class BaseForm extends Form
     /**
      * @deprecated CSRF protection is auto-enabled for all forms
      */
-    public function addProtection($errorMessage = null) : CsrfProtection
+    public function getProtection() : CsrfProtection
     {
         return $this->protection;
     }

@@ -106,7 +106,7 @@ class PaymentTest extends Unit
         $payment = $this->createPayment();
         $payment->cancel($time);
 
-        $this->expectException(PaymentClosedException::class);
+        $this->expectException(PaymentClosed::class);
         $payment->cancel($time);
     }
 
@@ -125,7 +125,7 @@ class PaymentTest extends Unit
         $payment = $this->createPayment();
         $payment->cancel($time);
 
-        $this->expectException(PaymentClosedException::class);
+        $this->expectException(PaymentClosed::class);
         $payment->complete($time);
     }
 
@@ -174,7 +174,7 @@ class PaymentTest extends Unit
         $payment = $this->createPayment();
         $payment->cancel(new DateTimeImmutable());
 
-        $this->expectException(PaymentClosedException::class);
+        $this->expectException(PaymentClosed::class);
 
         $payment->updateVariableSymbol(new VariableSymbol('789789'));
     }
@@ -236,7 +236,7 @@ class PaymentTest extends Unit
 
         $payment->complete(new DateTimeImmutable());
 
-        $this->expectException(PaymentClosedException::class);
+        $this->expectException(PaymentClosed::class);
 
         $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
     }

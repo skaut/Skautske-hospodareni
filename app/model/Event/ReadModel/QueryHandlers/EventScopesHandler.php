@@ -26,7 +26,7 @@ final class EventScopesHandler
     }
 
     /**
-     * @return array<int,string>
+     * @return string[]
      */
     public function handle(EventScopes $query) : array
     {

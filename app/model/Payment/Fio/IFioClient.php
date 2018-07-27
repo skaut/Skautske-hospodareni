@@ -6,18 +6,18 @@ namespace Model\Payment\Fio;
 
 use DateTimeImmutable;
 use Model\Bank\Fio\Transaction;
-use Model\BankTimeLimitException;
-use Model\BankTimeoutException;
+use Model\BankTimeLimit;
+use Model\BankTimeout;
 use Model\Payment\BankAccount;
-use Model\Payment\TokenNotSetException;
+use Model\Payment\TokenNotSet;
 
 interface IFioClient
 {
     /**
      * @return Transaction[]
-     * @throws TokenNotSetException
-     * @throws BankTimeoutException
-     * @throws BankTimeLimitException
+     * @throws TokenNotSet
+     * @throws BankTimeout
+     * @throws BankTimeLimit
      */
     public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account) : array;
 }

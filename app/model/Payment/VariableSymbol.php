@@ -16,7 +16,7 @@ final class VariableSymbol
     public function __construct(string $value)
     {
         if (! Strings::match($value, '/' . self::PATTERN . '/')) {
-            throw new \InvalidArgumentException("Invalid variable symbol '$value'");
+            throw new \InvalidArgumentException("Invalid variable symbol '" . $value . "'");
         }
         $this->value = $value;
     }

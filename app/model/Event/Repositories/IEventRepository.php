@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Model\Event\Repositories;
 
 use Model\Event\Event;
-use Model\Event\EventNotFoundException;
+use Model\Event\EventNotFound;
 
 interface IEventRepository
 {
     /**
-     * @throws EventNotFoundException
+     * @throws EventNotFound
      */
     public function find(int $skautisId) : Event;
 

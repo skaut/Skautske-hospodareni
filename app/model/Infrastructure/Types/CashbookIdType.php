@@ -15,6 +15,9 @@ final class CashbookIdType extends IntegerType
         return 'cashbook_id';
     }
 
+    /**
+     * @param mixed $value
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform) : ?CashbookId
     {
         if ($value === null) {
@@ -25,6 +28,9 @@ final class CashbookIdType extends IntegerType
         return CashbookId::fromInt((int) $value);
     }
 
+    /**
+     * @param mixed $value
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?int
     {
         if ($value === null) {

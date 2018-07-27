@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\AccountancyModule\SkautisMaintenanceException;
+use App\AccountancyModule\SkautisMaintenance;
 use Nette;
 use Nette\Application\UI\Presenter;
 use Skautis\Wsdl\AuthenticationException;
@@ -27,9 +27,12 @@ class ErrorPresenter extends Presenter
         $this->logger = $logger;
     }
 
+    /**
+     * @param mixed $exception
+     */
     public function renderDefault($exception) : void
     {
-        if ($exception instanceof SkautisMaintenanceException) {
+        if ($exception instanceof SkautisMaintenance) {
             $this->flashMessage('Právě probíhá údržba Skautisu. Po tuto dobu není možné Hospodaření používat', 'danger');
             $this->redirect(':Default:');
         } elseif ($exception instanceof Nette\Application\BadRequestException) {
@@ -48,7 +51,7 @@ class ErrorPresenter extends Presenter
             $this->redirect(':Default:');
         } else {
             $this->setView('500'); // load template 500.latte
-            $this->logger->log('userId: ' . $this->user->getId() . " Msg: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", ILogger::EXCEPTION);
+            $this->logger->log('userId: ' . $this->user->getId() . ' Msg: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine(), ILogger::EXCEPTION);
             $this->logger->log($exception, ILogger::EXCEPTION); // and log exception
         }
 

@@ -12,13 +12,9 @@ class PdfRenderer
     /** @var string */
     private $tempDir;
 
-    /** @var TemplateFactory */
-    private $templateFactory;
-
-    public function __construct(string $tempDir, TemplateFactory $templateFactory)
+    public function __construct(string $tempDir)
     {
-        $this->tempDir         = $tempDir;
-        $this->templateFactory = $templateFactory;
+        $this->tempDir = $tempDir;
     }
 
     /**

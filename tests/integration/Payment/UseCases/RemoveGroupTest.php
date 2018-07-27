@@ -6,7 +6,7 @@ namespace Model\Payment\IntegrationTests;
 
 use Model\Payment\Commands\Group\RemoveGroup;
 use Model\Payment\Group;
-use Model\Payment\GroupNotFoundException;
+use Model\Payment\GroupNotFound;
 use Model\Payment\Handlers\Group\RemoveGroupHandler;
 use Model\Payment\Payment;
 use Model\Payment\Repositories\IGroupRepository;
@@ -71,7 +71,7 @@ final class RemoveGroupTest extends \IntegrationTest
 
         $this->assertEmpty($this->payments->findByGroup(1));
 
-        $this->expectException(GroupNotFoundException::class);
+        $this->expectException(GroupNotFound::class);
 
         $this->groups->find(1);
     }

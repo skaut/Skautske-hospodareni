@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Model\Travel\Repositories;
 
 use Model\Travel\Vehicle;
-use Model\Travel\VehicleNotFoundException;
+use Model\Travel\VehicleNotFound;
 
 interface IVehicleRepository
 {
     /**
-     * @throws VehicleNotFoundException
+     * @throws VehicleNotFound
      */
     public function find(int $id) : Vehicle;
 
