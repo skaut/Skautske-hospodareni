@@ -3,7 +3,7 @@ parameters:
         driver: mysqli
         host: mysql-test
         username: root
-        password: ''
+        password: root
         database: hskauting
         charset: utf8
 

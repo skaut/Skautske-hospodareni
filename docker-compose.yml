@@ -20,7 +20,7 @@ services:
         volumes:
             - mysql:/var/lib/mysql
         environment:
-            MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+            MYSQL_ROOT_PASSWORD: 'root'
             MYSQL_DATABASE: hskauting
         networks:
             main:
@@ -31,7 +31,7 @@ services:
         container_name: hskauting.mysql-test
         image: mysql:5.7
         environment:
-            MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+            MYSQL_ROOT_PASSWORD: 'root'
             MYSQL_DATABASE: hskauting
         networks:
             main:

@@ -18,4 +18,4 @@ modules:
         - Db:
             dsn: 'mysql:host=mysql-test;dbname=hskauting;charset=utf8'
             user: 'root'
-            password: ''
+            password: 'root'
