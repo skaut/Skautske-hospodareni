@@ -23,4 +23,4 @@ modules:
         - Db:
             dsn: 'mysql:host=mysql-test;dbname=hskauting'
             user: 'root'
-            password: ''
+            password: 'root'

@@ -2,7 +2,7 @@ parameters:
     database:
         host: mysql-test
         user: root
-        password:
+        password: root
         name: hskauting
 
 services:
