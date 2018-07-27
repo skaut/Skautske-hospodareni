@@ -288,7 +288,10 @@ class ParticipantService extends MutableBaseService
         return $res;
     }
 
-    protected function setPersonName(ArrayHash &$person) : void
+    /**
+     * @param stdClass|ArrayHash $person
+     */
+    protected function setPersonName(&$person) : void
     {
         preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $person->Person, $matches);
         $person->LastName  = $matches['last'];
