@@ -244,7 +244,7 @@ class Cashbook extends Aggregate
 
     /**
      * Only for Read model
-     *
+     * @deprecated use Doctrine directly in read model
      * @return Chit[]
      */
     public function getChits() : array
