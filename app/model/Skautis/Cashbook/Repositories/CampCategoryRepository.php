@@ -25,6 +25,13 @@ final class CampCategoryRepository implements ICampCategoryRepository
         Operation::INCOME => ICategory::UNDEFINED_INCOME_ID,
     ];
 
+    private const MANUAL_CATEGORIES = [
+        ['operation' => Operation::EXPENSE, 'id' => ICategory::UNDEFINED_EXPENSE_ID, 'label' => 'Neurčeno'],
+        ['operation' => Operation::EXPENSE, 'id' => ICategory::CAMP_TRANSFER_TO_UNIT, 'label' => 'Převod do stř. pokladny'],
+        ['operation' => Operation::INCOME, 'id' => ICategory::UNDEFINED_INCOME_ID, 'label' => 'Neurčeno'],
+        ['operation' => Operation::INCOME, 'id' => ICategory::CAMP_TRANSFER_FROM_UNIT, 'label' => 'Převod z pokladny střediska'],
+    ];
+
     /** @var WebServiceInterface */
     private $eventWebService;
 
@@ -40,11 +47,11 @@ final class CampCategoryRepository implements ICampCategoryRepository
     {
         $categories = [];
 
-        foreach (self::UNDEFINED_CATEGORIES as $operation => $categoryId) {
+        foreach (self::MANUAL_CATEGORIES as $category) {
             $categories[] = new CampCategory(
-                $categoryId,
-                Operation::get($operation),
-                'Neurčeno',
+                (int) $category['id'],
+                Operation::get($category['operation']),
+                (string) $category['label'],
                 MoneyFactory::zero(),
                 null
             );

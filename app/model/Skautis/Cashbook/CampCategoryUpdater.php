@@ -18,6 +18,7 @@ use function array_fill_keys;
 use function array_filter;
 use function array_keys;
 use function count;
+use function in_array;
 
 final class CampCategoryUpdater implements ICampCategoryUpdater
 {
@@ -67,8 +68,14 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
         }
 
         foreach ($cashbookTotals as $categoryId => $total) {
-            if ($categoryId === ICategory::UNDEFINED_EXPENSE_ID || $categoryId === ICategory::UNDEFINED_INCOME_ID) {
-                continue; // Undefined categories aren't in Skautis
+            if (in_array($cashbookId, [
+                ICategory::UNDEFINED_EXPENSE_ID,
+                ICategory::UNDEFINED_INCOME_ID,
+                ICategory::CAMP_TRANSFER_TO_UNIT,
+                ICategory::CAMP_TRANSFER_FROM_UNIT,
+            ])
+            ) {
+                continue; // Undefined categories and unit transfers aren't in Skautis
             }
 
             $this->skautis->event->EventCampStatementUpdate([
