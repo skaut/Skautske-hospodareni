@@ -20,11 +20,6 @@ final class CampCategoryRepository implements ICampCategoryRepository
         3 => ParticipantType::ADULT,
     ];
 
-    private const UNDEFINED_CATEGORIES = [
-        Operation::EXPENSE => ICategory::UNDEFINED_EXPENSE_ID,
-        Operation::INCOME => ICategory::UNDEFINED_INCOME_ID,
-    ];
-
     /** @var WebServiceInterface */
     private $eventWebService;
 
@@ -38,18 +33,6 @@ final class CampCategoryRepository implements ICampCategoryRepository
      */
     public function findForCamp(int $campId) : array
     {
-        $categories = [];
-
-        foreach (self::UNDEFINED_CATEGORIES as $operation => $categoryId) {
-            $categories[] = new CampCategory(
-                $categoryId,
-                Operation::get($operation),
-                'Neurčeno',
-                MoneyFactory::zero(),
-                null
-            );
-        }
-
         $skautisCategories = $this->eventWebService->EventCampStatementAll([
             'ID_EventCamp' => $campId,
             'IsEstimate' => false,
@@ -58,6 +41,8 @@ final class CampCategoryRepository implements ICampCategoryRepository
         if (is_object($skautisCategories)) { // API returns empty object when there are no results
             return [];
         }
+
+        $categories = [];
 
         foreach ($skautisCategories as $category) {
             if ($category->ID_EventCampStatementType === ICategory::CAMP_RESERVE_ID) {
