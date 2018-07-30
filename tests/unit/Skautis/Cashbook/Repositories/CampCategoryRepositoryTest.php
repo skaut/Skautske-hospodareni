@@ -11,7 +11,6 @@ use Model\Cashbook\Operation;
 use Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
 use function array_map;
-use function array_merge;
 use function array_slice;
 use function count;
 use function ksort;
@@ -65,29 +64,11 @@ final class CampCategoryRepositoryTest extends Unit
         $categories = $repository->findForCamp(self::CAMP_ID);
 
         $this->assertCount(
-            count(self::CATEGORIES) + 1, // Repository should add income & expense undefined categories and remove reserve
+            count(self::CATEGORIES) - 1, // Repository should not contain reserve
             $categories
         );
 
-        $undefinedCategories = [
-            [
-                ICategory::UNDEFINED_EXPENSE_ID,
-                false, // Expense
-                'Neurčeno',
-                0, // undefined categories have static amount -> zero
-            ],
-            [
-                ICategory::UNDEFINED_INCOME_ID,
-                true, // Income
-                'Neurčeno',
-                0, // undefined categories have static amount -> zero
-            ],
-        ];
-
-        $expectedCategories = array_merge(
-            $undefinedCategories,
-            array_slice(array_map('array_values', self::CATEGORIES), 1)
-        );
+        $expectedCategories = array_slice(array_map('array_values', self::CATEGORIES), 1);
 
         foreach ($expectedCategories as $index => [$id, $isIncome, $name, $amount]) {
             $category = $categories[$index];

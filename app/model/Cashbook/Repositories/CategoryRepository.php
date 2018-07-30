@@ -10,6 +10,7 @@ use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use function array_merge;
 use function sprintf;
 
 class CategoryRepository
@@ -40,14 +41,16 @@ class CategoryRepository
     public function findForCashbook(CashbookId $cashbookId, CashbookType $type) : array
     {
         $skautisType = $type->getSkautisObjectType();
+        $categories  = $this->staticCategories->findByObjectType($skautisType);
 
-        if ($skautisType->equalsValue(CashbookType::CAMP)) {
-            $campId = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
-
-            return $this->campCategories->findForCamp($campId);
+        if (! $skautisType->equalsValue(CashbookType::CAMP)) {
+            return $categories;
         }
 
-        return $this->staticCategories->findByObjectType($skautisType);
+        $campId         = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
+        $campCategories = $this->campCategories->findForCamp($campId);
+
+        return array_merge($categories, $campCategories);
     }
 
     /**

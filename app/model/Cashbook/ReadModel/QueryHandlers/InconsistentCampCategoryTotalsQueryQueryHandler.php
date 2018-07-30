@@ -6,7 +6,6 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\CashbookNotFound;
-use Model\Cashbook\ICategory;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
@@ -49,7 +48,7 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
             $total        = $category->getTotal();
             $isConsistent = MoneyFactory::fromFloat($totals[$id] ?? 0)->equals($total);
 
-            if ($isConsistent || $id === ICategory::UNDEFINED_INCOME_ID || $id === ICategory::UNDEFINED_EXPENSE_ID) {
+            if ($isConsistent) {
                 continue;
             }
 

@@ -31,9 +31,23 @@ class Category implements ICategory
     /** @var bool */
     private $deleted = false;
 
-    public function __construct()
-    {
-        $this->types = new ArrayCollection();
+    /**
+     * @param Category\ObjectType[] $types
+     */
+    public function __construct(
+        int $id,
+        string $name,
+        string $shortcut,
+        Operation $operationType,
+        array $types,
+        int $priority
+    ) {
+        $this->id            = $id;
+        $this->name          = $name;
+        $this->shortcut      = $shortcut;
+        $this->operationType = $operationType;
+        $this->types         = new ArrayCollection($types);
+        $this->priority      = $priority;
     }
 
     public function getId() : int

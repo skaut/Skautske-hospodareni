@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Skautis\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ICategory;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
 use Model\Cashbook\Services\ICampCategoryUpdater;
@@ -53,7 +52,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
 
         // Update categories that have different total in cashbook and Skautis
         $cashbookTotals = array_filter($cashbookTotals, function (int $categoryId, float $total) use ($skautisTotals) {
-            return ! isset($skautisTotals[$categoryId]) || $skautisTotals[$categoryId] !== $total;
+            return isset($skautisTotals[$categoryId]) && $skautisTotals[$categoryId] !== $total;
         }, ARRAY_FILTER_USE_BOTH);
 
         $cashbookTotals = $cashbookTotals + array_fill_keys($categoriesOnlyInSkautis, 0);
@@ -67,10 +66,6 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
         }
 
         foreach ($cashbookTotals as $categoryId => $total) {
-            if ($categoryId === ICategory::UNDEFINED_EXPENSE_ID || $categoryId === ICategory::UNDEFINED_INCOME_ID) {
-                continue; // Undefined categories aren't in Skautis
-            }
-
             $this->skautis->event->EventCampStatementUpdate([
                 'ID' => $categoryId,
                 'ID_EventCamp' => $campSkautisId,
