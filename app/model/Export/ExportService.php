@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
@@ -90,7 +91,7 @@ class ExportService
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
             'cashbookName'  => $cashbookName,
             'prefix' => $cashbook->getChitNumberPrefix(),
-            'chits'         => $this->queryBus->handle(new ChitListQuery($cashbookId)),
+            'chits'         => $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH))),
         ]);
     }
 
@@ -99,7 +100,7 @@ class ExportService
      */
     public function getChitlist(CashbookId $cashbookId) : string
     {
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH)));
 
         return $this->templateFactory->create(__DIR__ . '/templates/chitlist.latte', [
             'list' => array_filter($chits, function (Chit $chit) : bool {
@@ -130,7 +131,7 @@ class ExportService
 
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
         /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, null));
 
         //rozpočítává paragony do jednotlivých skupin
         foreach ($chits as $chit) {

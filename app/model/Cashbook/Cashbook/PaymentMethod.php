@@ -11,4 +11,9 @@ final class PaymentMethod extends Enum
     public const CASH = 'cash';
 
     public const BANK_TRANSFER = 'bank_transfer';
+
+    public function toString() : string
+    {
+        return (string) $this->getValue();
+    }
 }

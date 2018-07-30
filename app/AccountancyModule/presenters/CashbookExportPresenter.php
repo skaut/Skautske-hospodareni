@@ -8,6 +8,7 @@ use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Event;
 use Model\Auth\Resources\Unit;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -207,7 +208,10 @@ class CashbookExportPresenter extends BasePresenter
         /**
  * @var Chit[] $chits
 */
-        $chits         = $this->queryBus->handle(new ChitListQuery(CashbookId::fromString($this->cashbookId)));
+        $chits = $this->queryBus->handle(
+            new ChitListQuery(CashbookId::fromString($this->cashbookId), PaymentMethod::get(PaymentMethod::CASH))
+        );
+
         $filteredChits = array_filter(
             $chits,
             function (Chit $chit) use ($ids) : bool {

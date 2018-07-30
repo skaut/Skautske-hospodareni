@@ -112,7 +112,9 @@ class CashbookPresenter extends BasePresenter
         /**
  * @var Chit[] $chits
 */
-        $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId()));
+        $chits = $this->queryBus->handle(
+            new ChitListQuery($this->getCashbookId(), PaymentMethod::get(PaymentMethod::CASH))
+        );
 
         return empty($chits);
     }

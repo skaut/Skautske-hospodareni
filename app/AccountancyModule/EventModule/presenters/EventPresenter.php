@@ -11,6 +11,7 @@ use App\MyValidators;
 use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
@@ -161,7 +162,7 @@ class EventPresenter extends BasePresenter
         /**
  * @var Chit[] $chits
 */
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH)));
 
         $event = $this->eventService->getEvent()->get($aid);
 

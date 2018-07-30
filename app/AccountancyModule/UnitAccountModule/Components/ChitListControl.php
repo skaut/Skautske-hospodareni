@@ -91,7 +91,7 @@ final class ChitListControl extends BaseControl
     private function getChits() : array
     {
         if ($this->chits === null) {
-            $chits = $this->queryBus->handle(new ChitListQuery($this->cashbookId));
+            $chits = $this->queryBus->handle(new ChitListQuery($this->cashbookId, null));
 
             if ($this->onlyUnlocked) {
                 $chits = array_filter(

@@ -27,7 +27,7 @@ class ChitListQueryHandler
     public function __construct(EntityManager $entityManager, QueryBus $queryBus)
     {
         $this->entityManager = $entityManager;
-        $this->queryBus  = $queryBus;
+        $this->queryBus      = $queryBus;
     }
 
     /**
@@ -36,17 +36,21 @@ class ChitListQueryHandler
      */
     public function handle(ChitListQuery $query) : array
     {
-        $chits = $this->entityManager->createQueryBuilder()
+        $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')
             ->from(Chit::class, 'c')
             ->where('IDENTITY(c.cashbook) = :cashbookId')
+            ->setParameter('cashbookId', $query->getCashbookId()->toInt())
             ->orderBy('c.body.date')
             ->addOrderBy('c.category.operationType') // income first
-            ->addOrderBy('c.id')
-            ->getQuery()
-            ->setParameter('cashbookId', $query->getCashbookId()->toInt())
-            ->getResult();
+            ->addOrderBy('c.id');
 
+        if ($query->getPaymentMethod() !== null) {
+            $queryBuilder->andWhere('c.paymentMethod = :paymentMethod')
+                ->setParameter('paymentMethod', $query->getPaymentMethod()->toString());
+        }
+
+        $chits      = $queryBuilder->getQuery()->getResult();
         $categories = $this->getCategories($query->getCashbookId());
 
         return array_map(

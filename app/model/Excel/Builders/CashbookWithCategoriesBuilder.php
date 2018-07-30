@@ -7,6 +7,7 @@ namespace Model\Excel\Builders;
 use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
@@ -58,7 +59,7 @@ class CashbookWithCategoriesBuilder
         $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
         $this->addCategoriesHeader($expensesFirstColumn, 'Výdaje', $expenseCategories);
 
-        $chits      = $this->queryBus->handle(new ChitListQuery($cashbookId));
+        $chits      = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH)));
         $categories = array_merge($incomeCategories, $expenseCategories);
 
         $this->addChits($chits, $categories);

@@ -7,6 +7,7 @@ namespace App\AccountancyModule\UnitAccountModule;
 use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\DTO\Cashbook\Chit;
@@ -70,7 +71,7 @@ class CashbookPresenter extends BasePresenter
         /**
  * @var Chit[] $chits
 */
-        $chits = $this->queryBus->handle(new ChitListQuery($this->cashbookId));
+        $chits = $this->queryBus->handle(new ChitListQuery($this->cashbookId, PaymentMethod::get(PaymentMethod::CASH)));
 
         return empty($chits);
     }

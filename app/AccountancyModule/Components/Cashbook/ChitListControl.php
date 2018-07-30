@@ -11,6 +11,7 @@ use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ChitLocked;
 use Model\Cashbook\ChitNotFound;
@@ -82,7 +83,7 @@ class ChitListControl extends BaseControl
             'canMoveChits' => $this->canMoveChits(),
             'canMassExport' => $this->canMassExport(),
             'aid' => (int) $this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
-            'chits' => $this->queryBus->handle(new ChitListQuery($this->cashbookId)),
+            'chits' => $this->queryBus->handle(new ChitListQuery($this->cashbookId, PaymentMethod::get(PaymentMethod::CASH))),
             'prefix' => $cashbook->getChitNumberPrefix(),
             'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
             ]

@@ -6,6 +6,7 @@ namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -113,7 +114,7 @@ class ExcelService
             $data[$aid]                    = $service->getEvent()->get($aid);
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['parStatistic']    = $service->getParticipants()->getEventStatistic($aid);
-            $data[$aid]['chits']           = $this->queryBus->handle(new ChitListQuery($cashbookId));
+            $data[$aid]['chits']           = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH)));
             $data[$aid]['func']            = $this->queryBus->handle(new EventFunctions($eventId));
             $participants                  = $service->getParticipants()->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -154,7 +155,7 @@ class ExcelService
             $data[$aid]                    = $camp;
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['troops']          = implode(', ', $unitService->getCampTroopNames($camp));
-            $data[$aid]['chits']           = $this->queryBus->handle(new ChitListQuery($cashbookId));
+            $data[$aid]['chits']           = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH)));
             $data[$aid]['func']            = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $participants                  = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -283,7 +284,7 @@ class ExcelService
             ->setCellValue('H1', 'Zůstatek');
 
         /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH)));
 
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
