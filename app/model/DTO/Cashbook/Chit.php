@@ -7,6 +7,7 @@ namespace Model\DTO\Cashbook;
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookType;
+use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Operation;
@@ -14,6 +15,7 @@ use Nette\SmartObject;
 
 /**
  * @property-read int               $id
+ * @property-read ChitBody          $body
  * @property-read ChitNumber|NULL   $number
  * @property-read Date              $date
  * @property-read Recipient|NULL    $recipient
@@ -30,20 +32,8 @@ class Chit
     /** @var int */
     private $id;
 
-    /** @var ChitNumber|NULL */
-    private $number;
-
-    /** @var Date */
-    private $date;
-
-    /** @var Recipient|NULL */
-    private $recipient;
-
-    /** @var Amount */
-    private $amount;
-
-    /** @var string */
-    private $purpose;
+    /** @var ChitBody */
+    private $body;
 
     /** @var Category */
     private $category;
@@ -57,23 +47,10 @@ class Chit
     /**
      * @param CashbookType[] $inverseCashbookTypes
      */
-    public function __construct(
-        int $id,
-        ?ChitNumber $number,
-        Date $date,
-        ?Recipient $recipient,
-        Amount $amount,
-        string $purpose,
-        Category $category,
-        bool $locked,
-        array $inverseCashbookTypes
-    ) {
+    public function __construct(int $id, ChitBody $body, Category $category, bool $locked, array $inverseCashbookTypes)
+    {
         $this->id                   = $id;
-        $this->number               = $number;
-        $this->date                 = $date;
-        $this->recipient            = $recipient;
-        $this->amount               = $amount;
-        $this->purpose              = $purpose;
+        $this->body                 = $body;
         $this->category             = $category;
         $this->locked               = $locked;
         $this->inverseCashbookTypes = $inverseCashbookTypes;
@@ -84,29 +61,49 @@ class Chit
         return $this->id;
     }
 
+    public function getBody() : ChitBody
+    {
+        return $this->body;
+    }
+
+    /**
+     * @deprecated use getBody()
+     */
     public function getNumber() : ?ChitNumber
     {
-        return $this->number;
+        return $this->body->getNumber();
     }
 
+    /**
+     * @deprecated use getBody()
+     */
     public function getDate() : Date
     {
-        return $this->date;
+        return $this->body->getDate();
     }
 
+    /**
+     * @deprecated use getBody()
+     */
     public function getRecipient() : ?Recipient
     {
-        return $this->recipient;
+        return $this->body->getRecipient();
     }
 
+    /**
+     * @deprecated use getBody()
+     */
     public function getAmount() : Amount
     {
-        return $this->amount;
+        return $this->body->getAmount();
     }
 
+    /**
+     * @deprecated use getBody()
+     */
     public function getPurpose() : string
     {
-        return $this->purpose;
+        return $this->body->getPurpose();
     }
 
     public function getCategory() : Category

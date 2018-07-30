@@ -1,10 +1,11 @@
 parameters:
     mappingDir: %appDir%/model/Infrastructure/mapping
+    domainModelDir: %appDir%/model
 
 extensions:
     migrations: Nettrine\Migrations\DI\MigrationsExtension
     events: Kdyby\Events\DI\EventsExtension
-    - Kdyby\Annotations\DI\AnnotationsExtension
+    kdyby.annotations: Kdyby\Annotations\DI\AnnotationsExtension
     doctrine: Kdyby\Doctrine\DI\OrmExtension
     annotations: Model\Infrastructure\YamlAnnotationsExtension
 
@@ -14,7 +15,7 @@ doctrine:
     password: %database.password%
     dbname: %database.name%
     metadata:
-        Model\Cashbook: yaml(%mappingDir%/Cashbook)
+        Model\Cashbook: %domainModelDir%/Cashbook
         Model\Logger: yaml(%mappingDir%/Logger)
         Model\Payment: yaml(%mappingDir%/Payment)
         Model\Travel: yaml(%mappingDir%/Travel)
@@ -37,9 +38,17 @@ annotations:
         nullable: Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable
 
 services:
-    - Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@annotations.reader)
+    yamlListener: Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@annotations.reader)
+    annotationsListener: Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@kdyby.annotations.reader)
+
     - class: Model\Infrastructure\EnumListener
+      arguments: [@yamlListener]
       tags: [kdyby.subscriber]
+
+    - class: Model\Infrastructure\EnumListener
+      arguments: [@annotationsListener]
+      tags: [kdyby.subscriber]
+
     - class: Fmasa\DoctrineNullableEmbeddables\Subscriber
       arguments: { reader: @annotations.reader }
       tags: [kdyby.subscriber]

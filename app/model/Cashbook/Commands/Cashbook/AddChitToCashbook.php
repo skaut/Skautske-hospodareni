@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Commands\Cashbook;
 
-use Cake\Chronos\Date;
-use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\ChitNumber;
-use Model\Cashbook\Cashbook\Recipient;
-use Model\Cashbook\Handlers\Cashbook\AddChitToCashbookHandler;
+use Model\Cashbook\Cashbook\ChitBody;
 
 /**
  * @see AddChitToCashbookHandler
@@ -19,40 +15,17 @@ final class AddChitToCashbook
     /** @var CashbookId */
     private $cashbookId;
 
-    /** @var ChitNumber|NULL */
-    private $number;
-
-    /** @var Date */
-    private $date;
-
-    /** @var Recipient|NULL */
-    private $recipient;
-
-    /** @var Amount */
-    private $amount;
-
-    /** @var string */
-    private $purpose;
+    /** @var ChitBody */
+    private $body;
 
     /** @var int */
     private $categoryId;
 
-    public function __construct(
-        CashbookId $cashbookId,
-        ?ChitNumber $number,
-        Date $date,
-        ?Recipient $recipient,
-        Amount $amount,
-        string $purpose,
-        int $categoryId
-    ) {
+    public function __construct(CashbookId $cashbookId, ChitBody $body, int $categoryId)
+    {
         $this->cashbookId = $cashbookId;
-        $this->number     = $number;
-        $this->date       = $date;
-        $this->recipient  = $recipient;
-        $this->amount     = $amount;
+        $this->body       = $body;
         $this->categoryId = $categoryId;
-        $this->purpose    = $purpose;
     }
 
     public function getCashbookId() : CashbookId
@@ -60,29 +33,9 @@ final class AddChitToCashbook
         return $this->cashbookId;
     }
 
-    public function getNumber() : ?ChitNumber
+    public function getBody() : ChitBody
     {
-        return $this->number;
-    }
-
-    public function getDate() : Date
-    {
-        return $this->date;
-    }
-
-    public function getRecipient() : ?Recipient
-    {
-        return $this->recipient;
-    }
-
-    public function getAmount() : Amount
-    {
-        return $this->amount;
-    }
-
-    public function getPurpose() : string
-    {
-        return $this->purpose;
+        return $this->body;
     }
 
     public function getCategoryId() : int

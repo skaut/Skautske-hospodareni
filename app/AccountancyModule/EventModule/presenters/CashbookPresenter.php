@@ -10,6 +10,7 @@ use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
@@ -77,17 +78,13 @@ class CashbookPresenter extends BasePresenter
         $accountant = $functions->getAccountant() !== null
             ? new Recipient($functions->getAccountant()->getName())
             : null;
-
+        $amount     = new Amount((string) $totalPayment);
         $cashbookId = $this->getCashbookId();
 
         $this->commandBus->handle(
             new AddChitToCashbook(
                 $cashbookId,
-                null,
-                new Date($date),
-                $accountant,
-                new Amount((string) $totalPayment),
-                'účastnické příspěvky',
+                new ChitBody(null, new Date($date), $accountant, $amount, 'účastnické příspěvky'),
                 Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID
             )
         );

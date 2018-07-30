@@ -11,6 +11,7 @@ use Cake\Chronos\Date;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
@@ -46,9 +47,7 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        /**
- * @var Money $finalBalance
-*/
+        /** @var Money $finalBalance */
         $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
 
         $this->template->setParameters(
@@ -106,32 +105,23 @@ class CashbookPresenter extends BasePresenter
         $this->editableOnly();
         $values = $form->getValues();
 
-        $aid        = $this->getCurrentUnitId();
-        $date       = $this->eventService->getEvent()->get($aid)->StartDate;
-        $amount     = $this->eventService->getParticipants()->getCampTotalPayment($aid, $values->cat, $values->isAccount);
-        $categoryId = $this->queryBus->handle(
-            new CampParticipantCategoryIdQuery(
-                new SkautisCampId($aid),
-                ParticipantType::get(ParticipantType::CHILD)
-            )
-        );
+        $aid    = $this->getCurrentUnitId();
+        $amount = $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount);
 
         if ($amount === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $aid]);
         }
 
-        $this->commandBus->handle(
-            new AddChitToCashbook(
-                $this->getCashbookId(),
-                null,
-                new Date($date),
-                null,
-                new Amount((string) $amount),
-                'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost'),
-                $categoryId
-            )
+        $date    = $this->eventService->event->get($aid)->StartDate;
+        $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
+        $body    = new ChitBody(null, new Date($date), null, Amount::fromFloat($amount), $purpose);
+
+        $categoryId = $this->queryBus->handle(
+            new CampParticipantCategoryIdQuery(new SkautisCampId($aid), ParticipantType::get(ParticipantType::CHILD))
         );
+
+        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $categoryId));
 
         $this->flashMessage('HPD byl importován');
 
@@ -145,9 +135,7 @@ class CashbookPresenter extends BasePresenter
 
     private function isCashbookEmpty() : bool
     {
-        /**
- * @var Chit[] $chits
-*/
+        /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId()));
 
         return empty($chits);

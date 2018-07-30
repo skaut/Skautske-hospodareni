@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 use Cake\Chronos\Date;
 use Model\Cashbook\Cashbook;
+use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\Chit;
+use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitNumber;
+use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Operation;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\EmailTemplate;
@@ -51,18 +55,20 @@ class Helpers
         $idProperty->setValue($aggregate, $id);
     }
 
-    public static function mockChit(int $id, Date $date, string $operation, int $categoryId) : Chit
+    public static function mockChit(int $id, Date $date, string $operationValue, int $categoryId) : Chit
     {
+        $operation = Operation::get($operationValue);
+
+        $body = new ChitBody(new ChitNumber('123'), $date, new Recipient('František Maša'), new Amount('1'), 'test');
         return Mockery::mock(Chit::class, [
             'getId' => $id,
-            'getDate' => $date,
-            'getCategory' => new Cashbook\Category($categoryId, Operation::get($operation)),
+            'getBody' => $body,
+            'getCategory' => new Cashbook\Category($categoryId, $operation),
             'getCategoryId' => $categoryId,
-            'getNumber' => new Cashbook\ChitNumber('132'),
-            'getAmount' => new Cashbook\Amount('1'),
-            'getPurpose' => random_bytes(100),
-            'getRecipient' => new Cashbook\Recipient('František Maša'),
+            'getDate' => $date,
             'isLocked' => true,
+            'isIncome' => $operation->equalsValue(Operation::INCOME),
+            'getOperation' => $operation,
         ]);
     }
 }

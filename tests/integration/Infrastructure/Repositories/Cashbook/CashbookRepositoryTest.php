@@ -10,6 +10,7 @@ use eGen\MessageBus\Bus\EventBus;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
@@ -77,11 +78,13 @@ class CashbookRepositoryTest extends \IntegrationTest
         $cashbook->updateNote('poznamka moje');
 
         $cashbook->addChit(
-            new Cashbook\ChitNumber($chit['num']),
-            new Date($chit['date']),
-            new Cashbook\Recipient($chit['recipient']),
-            new Cashbook\Amount($chit['priceText']),
-            $chit['purpose'],
+            new ChitBody(
+                new Cashbook\ChitNumber($chit['num']),
+                new Date($chit['date']),
+                new Cashbook\Recipient($chit['recipient']),
+                new Cashbook\Amount($chit['priceText']),
+                $chit['purpose']
+            ),
             $this->mockCategory($chit['category'])
         );
 

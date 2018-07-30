@@ -10,6 +10,9 @@ use Mockery as m;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
+use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitNumber;
+use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Events\ChitWasAdded;
 use function ksort;
 
@@ -32,7 +35,7 @@ class CashbookTest extends Unit
         $cashbook   = $this->createEventCashbook($cashbookId);
         $category   = $this->mockCategory(6);
 
-        $cashbook->addChit(null, Date::now(), null, new Amount('500'), 'Nákup potravin', $category);
+        $cashbook->addChit(new ChitBody(null, Date::now(), null, new Amount('500'), 'Nákup potravin'), $category);
 
         $events = $cashbook->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -48,8 +51,9 @@ class CashbookTest extends Unit
     {
         $cashbook = $this->createEventCashbook();
 
-        $addChit = function (int $categoryId, string $amount) use ($cashbook) : void {
-            $cashbook->addChit(null, Date::now(), null, new Amount($amount), '', $this->mockCategory($categoryId));
+        $addChit = function(int $categoryId, string $amount) use ($cashbook) {
+            $chitBody = new ChitBody(null, new Date(), null, new Amount($amount), '');
+            $cashbook->addChit($chitBody, $this->mockCategory($categoryId));
         };
 
         $addChit(1, '200');
@@ -76,14 +80,10 @@ class CashbookTest extends Unit
 
         $cashbook = $this->createEventCashbook($cashbookId);
 
-        $cashbook->addChit(
-            new Cashbook\ChitNumber('123'),
-            new Date('2017-11-17'),
-            new Cashbook\Recipient('František Maša'),
-            new Cashbook\Amount('100'),
-            'purpose',
-            $this->mockCategory(666)
-        );
+        $recipient = new Recipient('František Maša');
+        $chitBody = new ChitBody(new ChitNumber('123'), new Date(), $recipient, new Amount('100'), 'Nákup potravin');
+
+        $cashbook->addChit($chitBody, $this->mockCategory(666));
 
         $events = $cashbook->extractEventsToDispatch();
 
@@ -120,16 +120,10 @@ class CashbookTest extends Unit
     public function testClearCashbook() : void
     {
         $cashbook = new Cashbook(CashbookId::fromInt(11), CashbookType::get(CashbookType::EVENT));
+        $chitBody = new ChitBody(null, new Date(), null, new Amount('100'), 'Účastnické poplatky');
 
         for ($i = 0; $i < 5; $i++) {
-            $cashbook->addChit(
-                null,
-                new Date('2017-11-17'),
-                null,
-                new Cashbook\Amount('100'),
-                'purpose',
-                $this->mockCategory(666)
-            );
+            $cashbook->addChit($chitBody, $this->mockCategory(666));
         }
 
         $cashbook->clear();

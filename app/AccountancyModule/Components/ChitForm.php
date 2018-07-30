@@ -10,6 +10,7 @@ use eGen\MessageBus\Bus\QueryBus;
 use InvalidArgumentException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\CashbookNotFound;
@@ -27,6 +28,7 @@ use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
 use Nette\Forms\IControl;
 use Nette\Http\IResponse;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Json;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
@@ -223,53 +225,34 @@ final class ChitForm extends BaseControl
         $form->addSubmit('send', 'Uložit')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
-            $this->formSubmitted($form);
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
+            $this->formSubmitted($form, $values);
             $this->redirect('this');
         };
 
         return $form;
     }
 
-    private function formSubmitted(BaseForm $form) : void
+    private function formSubmitted(BaseForm $form, ArrayHash $values) : void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu', 'danger');
             $this->redirect('this');
         }
 
-        $values = $form->getValues();
-
-        $chitId = $values['pid'] !== '' ? (int) $values['pid'] : null;
-        $number = $values->num !== '' ? new ChitNumber($values->num) : null;
-
-        $date = $values->date;
-
+        $chitId     = $values['pid'] !== '' ? (int) $values['pid'] : null;
         $cashbookId = $this->cashbookId;
-        $recipient  = $values->recipient !== '' ? new Recipient($values->recipient) : null;
-        $amount     = new Amount($values->price);
-        $purpose    = $values->purpose;
         $category   = $values->category;
+        $chitBody   = $this->buildChitBodyFromValues($values);
 
         try {
-            /*
-             * Update existing chit
-             */
             if ($chitId !== null) {
-                $this->commandBus->handle(
-                    new UpdateChit($cashbookId, $chitId, $number, $date, $recipient, $amount, $purpose, $category)
-                );
+                $this->commandBus->handle(new UpdateChit($cashbookId, $chitId, $chitBody, $category));
                 $this->flashMessage('Paragon byl upraven.');
-                return;
+            } else {
+                $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $category));
+                $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
-
-            /*
-             * Add new chit
-             */
-            $this->commandBus->handle(
-                new AddChitToCashbook($cashbookId, $number, $date, $recipient, $amount, $purpose, $category)
-            );
-            $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
         } catch (InvalidArgumentException | CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');
             $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', get_class($exc), $exc->getMessage()));
@@ -298,5 +281,13 @@ final class ChitForm extends BaseControl
     private function getCategoryPairsByType(?Operation $operation) : array
     {
         return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
+    }
+
+    private function buildChitBodyFromValues(ArrayHash $values) : ChitBody
+    {
+        $number    = $values->num !== '' ? new ChitNumber($values->num) : null;
+        $recipient = $values->recipient !== '' ? new Recipient($values->recipient) : null;
+
+        return new ChitBody($number, $values->date, $recipient, new Amount($values->price), $values->purpose);
     }
 }

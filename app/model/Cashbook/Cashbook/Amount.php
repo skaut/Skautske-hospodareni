@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Cashbook;
 
+use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
 use function array_sum;
 use function count;
@@ -11,6 +12,7 @@ use function preg_match_all;
 use function str_replace;
 
 /**
+ * @ORM\Embeddable()
  * @property-read string $expression
  * @property-read float $value
  */
@@ -18,10 +20,16 @@ class Amount
 {
     use SmartObject;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", name="priceText")
+     */
     private $expression;
 
-    /** @var float */
+    /**
+     * @var float
+     * @ORM\Column(type="float", name="price")
+     */
     private $value;
 
     public function __construct(string $expression)
@@ -50,6 +58,11 @@ class Amount
     public function toFloat() : float
     {
         return $this->value;
+    }
+
+    public static function fromFloat(float $amount) : self
+    {
+        return new self((string) $amount);
     }
 
     /**
