@@ -162,7 +162,7 @@ class ChitPresenter extends BasePresenter
             foreach ($objects as $id => $object) {
                 $objects[$id] = [
                     'ID' => $id,
-                    'DisplayName' => $object,
+                    'DisplayName' => $object['DisplayName'],
                 ];
             }
         }
