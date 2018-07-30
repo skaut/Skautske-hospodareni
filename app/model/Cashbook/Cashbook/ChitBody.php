@@ -5,22 +5,41 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Cake\Chronos\Date;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Embeddable()
+ */
 final class ChitBody
 {
-    /** @var ChitNumber|NULL */
+    /**
+     * @var ChitNumber|NULL
+     * @ORM\Column(type="chit_number", nullable=true, name="num")
+     */
     private $number;
 
-    /** @var Date */
+    /**
+     * @var Date
+     * @ORM\Column(type="chronos_date")
+     */
     private $date;
 
-    /** @var Recipient|NULL */
+    /**
+     * @var Recipient|NULL
+     * @ORM\Column(type="recipient", nullable=true)
+     */
     private $recipient;
 
-    /** @var Amount */
+    /**
+     * @var Amount
+     * @ORM\Embedded(class=Amount::class, columnPrefix=false)
+     */
     private $amount;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $purpose;
 
     public function __construct(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose)

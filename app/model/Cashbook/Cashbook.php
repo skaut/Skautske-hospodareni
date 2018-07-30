@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Cashbook;
 
+use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
@@ -17,21 +19,42 @@ use Nette\Utils\Strings;
 use function array_map;
 use function sprintf;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="ac_cashbook")
+ */
 class Cashbook extends Aggregate
 {
-    /** @var CashbookId */
+    /**
+     * @var CashbookId
+     * @ORM\Id()
+     * @ORM\Column(type="cashbook_id")
+     */
     private $id;
 
-    /** @var CashbookType */
+    /**
+     * @var CashbookType
+     * @ORM\Column(type="string_enum")
+     * @EnumAnnotation(class=CashbookType::class)
+     */
     private $type;
 
-    /** @var string|NULL */
+    /**
+     * @var string|NULL
+     * @ORM\Column(type="string", nullable=true)
+     */
     private $chitNumberPrefix;
 
-    /** @var ArrayCollection|Chit[] */
+    /**
+     * @var ArrayCollection|Chit[]
+     * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
     private $chits;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $note;
 
     public function __construct(CashbookId $id, CashbookType $type)

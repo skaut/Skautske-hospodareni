@@ -5,28 +5,49 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Cake\Chronos\Date;
+use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
 use Model\Cashbook\Operation;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="ac_chits")
+ */
 class Chit
 {
-    /** @var int|NULL */
+    /**
+     * @var int|NULL
+     * @ORM\Id()
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue()
+     */
     private $id;
 
-    /** @var Cashbook */
+    /**
+     * @var Cashbook
+     * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
+     * @ORM\JoinColumn(name="eventId")
+     */
     private $cashbook;
 
-    /** @var ChitBody */
+    /**
+     * @var ChitBody
+     * @ORM\Embedded(class=ChitBody::class, columnPrefix=false)
+     */
     private $body;
 
-    /** @var Category */
+    /**
+     * @var Category
+     * @ORM\Embedded(class=Category::class, columnPrefix=false)
+     */
     private $category;
 
     /**
      * ID of person that locked this
      *
      * @var int|NULL
+     * @ORM\Column(type="integer", nullable=true, name="`lock`")
      */
     private $locked;
 
