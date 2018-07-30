@@ -24,6 +24,7 @@ use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\SkautisCampId;
 use Money\Money;
 use Skautis\Wsdl\PermissionException;
+use function count;
 
 class CashbookPresenter extends BasePresenter
 {
@@ -122,9 +123,7 @@ class CashbookPresenter extends BasePresenter
             new CampParticipantCategoryIdQuery(new SkautisCampId($aid), ParticipantType::get(ParticipantType::CHILD))
         );
 
-        $this->commandBus->handle(
-            new AddChitToCashbook($this->getCashbookId(), $body, $categoryId, PaymentMethod::get(PaymentMethod::CASH))
-        );
+        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $categoryId, PaymentMethod::CASH()));
 
         $this->flashMessage('HPD byl importován');
 
@@ -139,10 +138,8 @@ class CashbookPresenter extends BasePresenter
     private function isCashbookEmpty() : bool
     {
         /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(
-            new ChitListQuery($this->getCashbookId(), PaymentMethod::get(PaymentMethod::CASH))
-        );
+        $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId(), PaymentMethod::CASH()));
 
-        return empty($chits);
+        return count($chits) === 0;
     }
 }

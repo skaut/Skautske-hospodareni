@@ -190,7 +190,7 @@ final class ChitForm extends BaseControl
 
         $paymentMethods = [
             PaymentMethod::CASH => 'Pokladna',
-            PaymentMethod::BANK_TRANSFER => 'Banka',
+            PaymentMethod::BANK => 'Banka',
         ];
 
         $form->addSelect('paymentMethod', null, $paymentMethods)

@@ -39,7 +39,7 @@ class CashbookTest extends Unit
         $cashbook->addChit(
             new ChitBody(null, Date::now(), null, new Amount('500'), 'Nákup potravin'),
             $category,
-            PaymentMethod::get(PaymentMethod::CASH)
+            PaymentMethod::CASH()
         );
 
         $events = $cashbook->extractEventsToDispatch();
@@ -58,7 +58,7 @@ class CashbookTest extends Unit
 
         $addChit = function(int $categoryId, string $amount) use ($cashbook) {
             $chitBody = new ChitBody(null, new Date(), null, new Amount($amount), '');
-            $cashbook->addChit($chitBody, $this->mockCategory($categoryId), PaymentMethod::get(PaymentMethod::CASH));
+            $cashbook->addChit($chitBody, $this->mockCategory($categoryId), PaymentMethod::CASH());
         };
 
         $addChit(1, '200');
@@ -88,7 +88,7 @@ class CashbookTest extends Unit
         $recipient = new Recipient('František Maša');
         $chitBody = new ChitBody(new ChitNumber('123'), new Date(), $recipient, new Amount('100'), 'Nákup potravin');
 
-        $cashbook->addChit($chitBody, $this->mockCategory(666), PaymentMethod::get(PaymentMethod::CASH));
+        $cashbook->addChit($chitBody, $this->mockCategory(666), PaymentMethod::CASH());
 
         $events = $cashbook->extractEventsToDispatch();
 
@@ -128,7 +128,7 @@ class CashbookTest extends Unit
         $chitBody = new ChitBody(null, new Date(), null, new Amount('100'), 'Účastnické poplatky');
 
         for ($i = 0; $i < 5; $i++) {
-            $cashbook->addChit($chitBody, $this->mockCategory(666), PaymentMethod::get(PaymentMethod::CASH));
+            $cashbook->addChit($chitBody, $this->mockCategory(666), PaymentMethod::CASH());
         }
 
         $cashbook->clear();

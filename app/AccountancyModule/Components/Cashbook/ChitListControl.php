@@ -83,7 +83,7 @@ class ChitListControl extends BaseControl
             'canMoveChits' => $this->canMoveChits(),
             'canMassExport' => $this->canMassExport(),
             'aid' => (int) $this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
-            'chits' => $this->queryBus->handle(new ChitListQuery($this->cashbookId, PaymentMethod::get(PaymentMethod::CASH))),
+            'chits' => $this->queryBus->handle(new ChitListQuery($this->cashbookId, PaymentMethod::CASH())),
             'prefix' => $cashbook->getChitNumberPrefix(),
             'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
             ]

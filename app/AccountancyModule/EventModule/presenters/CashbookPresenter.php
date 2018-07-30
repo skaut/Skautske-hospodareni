@@ -94,7 +94,7 @@ class CashbookPresenter extends BasePresenter
                 $cashbookId,
                 new ChitBody(null, new Date($date), $accountant, $amount, 'účastnické příspěvky'),
                 Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID,
-                PaymentMethod::get(PaymentMethod::CASH)
+                PaymentMethod::CASH()
             )
         );
 
@@ -112,9 +112,7 @@ class CashbookPresenter extends BasePresenter
         /**
  * @var Chit[] $chits
 */
-        $chits = $this->queryBus->handle(
-            new ChitListQuery($this->getCashbookId(), PaymentMethod::get(PaymentMethod::CASH))
-        );
+        $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId(), PaymentMethod::CASH()));
 
         return empty($chits);
     }

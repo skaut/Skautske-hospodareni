@@ -34,9 +34,9 @@ class ChitListQueryHandlerTest extends \IntegrationTest
 
         $chits = [
             ['2018-01-02', Operation::INCOME, 11, PaymentMethod::CASH],
-            ['2018-01-01', Operation::INCOME, 22, PaymentMethod::BANK_TRANSFER],
+            ['2018-01-01', Operation::INCOME, 22, PaymentMethod::BANK],
             ['2018-01-01', Operation::EXPENSE, 44, PaymentMethod::CASH],
-            ['2018-01-01', Operation::INCOME, 33, PaymentMethod::BANK_TRANSFER],
+            ['2018-01-01', Operation::INCOME, 33, PaymentMethod::BANK],
         ];
 
         $cashbook = new Cashbook($this->getCashbookId(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
@@ -69,7 +69,7 @@ class ChitListQueryHandlerTest extends \IntegrationTest
     {
         $handler = new ChitListQueryHandler($this->entityManager, $this->prepareQueryBus());
 
-        $chits = $handler->handle(new ChitListQuery($this->getCashbookId(), PaymentMethod::get(PaymentMethod::CASH)));
+        $chits = $handler->handle(new ChitListQuery($this->getCashbookId(), PaymentMethod::CASH()));
 
         $expectedOrder = [3, 1];
         $this->assertCount(count($expectedOrder), $chits);

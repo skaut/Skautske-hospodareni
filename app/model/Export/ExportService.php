@@ -91,7 +91,7 @@ class ExportService
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
             'cashbookName'  => $cashbookName,
             'prefix' => $cashbook->getChitNumberPrefix(),
-            'chits'         => $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH))),
+            'chits'         => $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH())),
         ]);
     }
 
@@ -100,7 +100,7 @@ class ExportService
      */
     public function getChitlist(CashbookId $cashbookId) : string
     {
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH)));
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH()));
 
         return $this->templateFactory->create(__DIR__ . '/templates/chitlist.latte', [
             'list' => array_filter($chits, function (Chit $chit) : bool {

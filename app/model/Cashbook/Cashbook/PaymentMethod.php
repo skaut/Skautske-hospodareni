@@ -9,11 +9,25 @@ use Consistence\Enum\Enum;
 final class PaymentMethod extends Enum
 {
     public const CASH = 'cash';
+    public const BANK = 'bank';
 
-    public const BANK_TRANSFER = 'bank_transfer';
+    public static function CASH() : self
+    {
+        return self::get(self::CASH);
+    }
+
+    public static function BANK() : self
+    {
+        return self::get(self::BANK);
+    }
 
     public function toString() : string
     {
         return (string) $this->getValue();
+    }
+
+    public function __toString() : string
+    {
+        return $this->toString();
     }
 }

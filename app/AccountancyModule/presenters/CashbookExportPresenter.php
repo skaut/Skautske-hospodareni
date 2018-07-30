@@ -208,9 +208,7 @@ class CashbookExportPresenter extends BasePresenter
         /**
  * @var Chit[] $chits
 */
-        $chits = $this->queryBus->handle(
-            new ChitListQuery(CashbookId::fromString($this->cashbookId), PaymentMethod::get(PaymentMethod::CASH))
-        );
+        $chits = $this->queryBus->handle(new ChitListQuery(CashbookId::fromString($this->cashbookId), PaymentMethod::CASH()));
 
         $filteredChits = array_filter(
             $chits,

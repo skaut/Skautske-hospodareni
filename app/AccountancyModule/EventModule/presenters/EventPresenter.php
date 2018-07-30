@@ -162,7 +162,7 @@ class EventPresenter extends BasePresenter
         /**
  * @var Chit[] $chits
 */
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::get(PaymentMethod::CASH)));
+        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH()));
 
         $event = $this->eventService->getEvent()->get($aid);
 

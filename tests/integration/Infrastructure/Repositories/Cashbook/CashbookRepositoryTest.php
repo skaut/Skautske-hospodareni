@@ -71,7 +71,7 @@ class CashbookRepositoryTest extends \IntegrationTest
             'purpose' => 'Purpose',
             'category' => 10,
             'category_operation_type' => Operation::INCOME,
-            'payment_method' => Cashbook\PaymentMethod::BANK_TRANSFER,
+            'payment_method' => Cashbook\PaymentMethod::BANK,
         ];
 
         $cashbook = new Cashbook(CashbookId::fromInt(10), Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
