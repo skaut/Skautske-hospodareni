@@ -347,12 +347,13 @@ class ExcelService
             ->setCellValue('P1', $firstElement->parStatistic[2]->ParticipantCategory)
             ->setCellValue('Q1', $firstElement->parStatistic[3]->ParticipantCategory)
             ->setCellValue('R1', $firstElement->parStatistic[4]->ParticipantCategory)
-            ->setCellValue('S1', $firstElement->parStatistic[5]->ParticipantCategory);
+            ->setCellValue('S1', $firstElement->parStatistic[5]->ParticipantCategory)
+            ->setCellValue('T1', 'Prefix');
         if ($allowPragueColumns) {
-            $sheet->setCellValue('T1', 'Dotovatelná MHMP?')
-                ->setCellValue('U1', 'Praž. uč. pod ' . $firstElement->prague['ageThreshold'])
-                ->setCellValue('V1', 'Praž. uč. celkem');
-            $sheet->getComment('T1')
+            $sheet->setCellValue('U1', 'Dotovatelná MHMP?')
+                ->setCellValue('V1', 'Praž. uč. pod ' . $firstElement->prague['ageThreshold'])
+                ->setCellValue('W1', 'Praž. uč. celkem');
+            $sheet->getComment('U1')
                 ->setWidth('200pt')->setHeight('50pt')->getText()
                 ->createTextRun('Ověřte, zda jsou splněny další podmínky - např. akce konaná v době mimo školní vyučování (u táborů prázdnin), cílovou skupinou je studující mládež do 26 let.');
         }
@@ -382,21 +383,23 @@ class ExcelService
                 ->setCellValue('P' . $rowCnt, $row->parStatistic[2]->Count)
                 ->setCellValue('Q' . $rowCnt, $row->parStatistic[3]->Count)
                 ->setCellValue('R' . $rowCnt, $row->parStatistic[4]->Count)
-                ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count);
+                ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count)
+                ->setCellValue('S' . $rowCnt, $row->prefix);
             if (isset($row->prague)) {
-                $sheet->setCellValue('T' . $rowCnt, $row->prague['isSupportable'] ? 'Ano' : 'Ne')
-                    ->setCellValue('U' . $rowCnt, $row->prague['underAge'])
-                    ->setCellValue('V' . $rowCnt, $row->prague['all']);
+                $sheet->setCellValue('U' . $rowCnt, $row->prague['isSupportable'] ? 'Ano' : 'Ne')
+                    ->setCellValue('V' . $rowCnt, $row->prague['underAge'])
+                    ->setCellValue('W' . $rowCnt, $row->prague['all']);
             }
             $rowCnt++;
         }
+        $lastColumn = $allowPragueColumns ? 'W' : 'S';
 
         //format
-        foreach (range('A', 'V') as $columnID) {
+        foreach (range('A', $lastColumn) as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
-        $sheet->getStyle('A1:V1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:V' . ($rowCnt - 1));
+        $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:' . $lastColumn . ($rowCnt - 1));
         $sheet->setTitle('Přehled akcí');
     }
 
