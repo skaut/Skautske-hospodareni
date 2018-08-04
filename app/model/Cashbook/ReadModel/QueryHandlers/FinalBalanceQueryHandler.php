@@ -36,7 +36,7 @@ class FinalBalanceQueryHandler
 
     private function getSignedChitAmount(Chit $chit) : float
     {
-        $amount = $chit->getAmount()->getValue();
+        $amount = $chit->getAmount()->toFloat();
 
         if ($chit->getCategory()->getOperationType()->equalsValue(Operation::EXPENSE)) {
             return -1 * $amount;
