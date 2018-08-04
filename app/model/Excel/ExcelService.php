@@ -348,7 +348,7 @@ class ExcelService
             ->setCellValue('Q1', $firstElement->parStatistic[3]->ParticipantCategory)
             ->setCellValue('R1', $firstElement->parStatistic[4]->ParticipantCategory)
             ->setCellValue('S1', $firstElement->parStatistic[5]->ParticipantCategory)
-            ->setCellValue('T1', "Prefix");
+            ->setCellValue('T1', 'Prefix');
         if ($allowPragueColumns) {
             $sheet->setCellValue('U1', 'Dotovatelná MHMP?')
                 ->setCellValue('V1', 'Praž. uč. pod ' . $firstElement->prague['ageThreshold'])
@@ -392,13 +392,14 @@ class ExcelService
             }
             $rowCnt++;
         }
+        $lastColumn = $allowPragueColumns ? 'W' : 'S';
 
         //format
-        foreach (range('A', 'W') as $columnID) {
+        foreach (range('A', $lastColumn) as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
-        $sheet->getStyle('A1:W1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:W' . ($rowCnt - 1));
+        $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:' . $lastColumn . ($rowCnt - 1));
         $sheet->setTitle('Přehled akcí');
     }
 
