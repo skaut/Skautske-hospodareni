@@ -1,5 +1,10 @@
 <div class="panel panel-default">
-    <div class="panel-heading"><strong>{$paymentMethod->getName()}</strong></div>
+    <div class="panel-heading">
+        <div class="pull-right export-panel">
+            {include 'ChitListControl.exportPanel.latte'}
+        </div>
+        <h4>{$paymentMethod->getName()}</h4>
+    </div>
     <div class="panel-body chit-list" n:if="!empty($chits)">
         {form formMass}
             <table class="table table-bordered table-condensed" id="cashbookTable">

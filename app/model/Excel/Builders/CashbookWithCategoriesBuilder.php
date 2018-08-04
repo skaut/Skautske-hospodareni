@@ -48,7 +48,7 @@ class CashbookWithCategoriesBuilder
         $this->queryBus = $queryBus;
     }
 
-    public function build(Worksheet $sheet, CashbookId $cashbookId) : void
+    public function build(Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
     {
         $this->sheet = $sheet;
 
@@ -59,7 +59,7 @@ class CashbookWithCategoriesBuilder
         $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
         $this->addCategoriesHeader($expensesFirstColumn, 'Výdaje', $expenseCategories);
 
-        $chits      = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
+        $chits      = $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId));
         $categories = array_merge($incomeCategories, $expenseCategories);
 
         $this->addChits($chits, $categories);

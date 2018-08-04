@@ -20,17 +20,6 @@
             <a n:if="$isEditable" href="#importHpd" role="button" data-toggle="modal" class="btn btn-sm btn-primary">
                 Načíst příjmy od účastníků
             </a>
-
-            {if ! $isCashbookEmpty}
-                <a n:href=":Accountancy:CashbookExport:printCashbook $cashbookId"
-                        target="_blank"
-                        class="btn btn-sm btn-info">
-                    <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i>
-                    Vytisknout pokladní knihu
-                </a>
-
-                {include $templateBlockDir . 'cashbook/excelExportDropdown.latte', cashbookId => $cashbookId}
-            {/if}
         </div>
     </div>
 
