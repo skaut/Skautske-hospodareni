@@ -18,7 +18,7 @@ class PrivilegesPresenter extends BasePresenter
                 'items' => [
                     'create-event' => [
                         'label' => 'Založit novou akci',
-                        'value' => (int) $this->authorizator->isAllowed(Event::CREATE, null),
+                        'value' => $this->authorizator->isAllowed(Event::CREATE, null),
                         'desc' => 'Lze založil novou akci nezávisle na této?',
                     ],
                 ],
@@ -28,22 +28,22 @@ class PrivilegesPresenter extends BasePresenter
                 'items' => [
                     [
                         'label' => 'Upravovat tuto akci',
-                        'value' => (int) $this->authorizator->isAllowed(Event::UPDATE, $aid),
+                        'value' => $this->authorizator->isAllowed(Event::UPDATE, $aid),
                         'desc' => 'Lze upravovat základní údaje o této akci?',
                     ],
                     'close-event' => [
                         'label' => 'Uzavřít tuto akci',
-                        'value' => (int) $this->authorizator->isAllowed(Event::CLOSE, $aid),
+                        'value' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
                         'desc' => 'Lze uzavřít tuto akci? Akce musí být otevřená, aby mohla být uzavřena.',
                     ],
                     [
                         'label' => 'Otevřít tuto akci',
-                        'value' => (int) $this->authorizator->isAllowed(Event::OPEN, $aid),
+                        'value' => $this->authorizator->isAllowed(Event::OPEN, $aid),
                         'desc' => 'Lze otevřít tuto akci? Akce musí být uzavřena, aby mohla být opět otevřena.',
                     ],
                     [
                         'label' => 'Upravovat funkce této akce',
-                        'value' => (int) $this->authorizator->isAllowed(Event::UPDATE_FUNCTION, $aid),
+                        'value' => $this->authorizator->isAllowed(Event::UPDATE_FUNCTION, $aid),
                         'desc' => 'Lze měnit obrazení funkcí (vedoucí, zástupce, hospodář) této akce?',
                     ],
                 ],
@@ -53,12 +53,12 @@ class PrivilegesPresenter extends BasePresenter
                 'items' => [
                     [
                         'label' => 'Přidávat účastníky',
-                        'value' => (int) $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $aid),
+                        'value' => $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $aid),
                         'desc' => 'Lze přidat účastníky této akce?',
                     ],
                     [
                         'label' => 'Odebírat účastníky',
-                        'value' => (int) $this->authorizator->isAllowed(Event::REMOVE_PARTICIPANT, $aid),
+                        'value' => $this->authorizator->isAllowed(Event::REMOVE_PARTICIPANT, $aid),
                         'desc' => 'Lze odebrat účastníky této akce?',
                     ],
                 ],
@@ -68,7 +68,7 @@ class PrivilegesPresenter extends BasePresenter
                 'items'=> [
                     [
                         'label' => 'Upravovat pokladní knihu',
-                        'value' => (int) ($isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid)),
+                        'value' => $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid),
                         'desc' => 'Lze editovat pokladní knihu této akce?',
                     ],
                 ],

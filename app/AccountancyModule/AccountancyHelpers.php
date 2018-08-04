@@ -251,9 +251,9 @@ abstract class AccountancyHelpers
         return mb_strtoupper(mb_substr($string, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($string, 1, null, 'UTF-8');
     }
 
-    public static function yesno(int $s) : string
+    public static function yesno(bool $b) : string
     {
-        return $s === 1 ? 'Ano' : 'Ne';
+        return $b ? 'Ano' : 'Ne';
     }
 
     public static function groupState(string $s) : string
