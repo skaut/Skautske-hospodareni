@@ -90,8 +90,8 @@ class ExportService
 
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
             'cashbookName'  => $cashbookName,
-            'prefix' => $cashbook->getChitNumberPrefix(),
-            'chits'         => $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH())),
+            'prefix'        => $cashbook->getChitNumberPrefix(),
+            'chits'         => $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId)),
         ]);
     }
 
@@ -100,7 +100,7 @@ class ExportService
      */
     public function getChitlist(CashbookId $cashbookId) : string
     {
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH()));
+        $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
 
         return $this->templateFactory->create(__DIR__ . '/templates/chitlist.latte', [
             'list' => array_filter($chits, function (Chit $chit) : bool {
@@ -131,7 +131,7 @@ class ExportService
 
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
         /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, null));
+        $chits = $this->queryBus->handle(ChitListQuery::all($cashbookId));
 
         //rozpočítává paragony do jednotlivých skupin
         foreach ($chits as $chit) {

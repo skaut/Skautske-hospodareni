@@ -114,7 +114,7 @@ class ExcelService
             $data[$aid]                    = $service->getEvent()->get($aid);
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['parStatistic']    = $service->getParticipants()->getEventStatistic($aid);
-            $data[$aid]['chits']           = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH()));
+            $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new EventFunctions($eventId));
             $participants                  = $service->getParticipants()->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -155,7 +155,7 @@ class ExcelService
             $data[$aid]                    = $camp;
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['troops']          = implode(', ', $unitService->getCampTroopNames($camp));
-            $data[$aid]['chits']           = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH()));
+            $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $participants                  = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -284,7 +284,7 @@ class ExcelService
             ->setCellValue('H1', 'Zůstatek');
 
         /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH()));
+        $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
 
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));

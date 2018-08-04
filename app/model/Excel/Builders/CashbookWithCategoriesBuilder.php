@@ -59,7 +59,7 @@ class CashbookWithCategoriesBuilder
         $this->addCategoriesHeader(self::CATEGORIES_FIRST_COLUMN, 'Příjmy', $incomeCategories);
         $this->addCategoriesHeader($expensesFirstColumn, 'Výdaje', $expenseCategories);
 
-        $chits      = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH()));
+        $chits      = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
         $categories = array_merge($incomeCategories, $expenseCategories);
 
         $this->addChits($chits, $categories);

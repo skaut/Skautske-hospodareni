@@ -138,7 +138,7 @@ class CashbookPresenter extends BasePresenter
     private function isCashbookEmpty() : bool
     {
         /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(new ChitListQuery($this->getCashbookId(), PaymentMethod::CASH()));
+        $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->getCashbookId()));
 
         return count($chits) === 0;
     }

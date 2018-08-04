@@ -155,14 +155,10 @@ class EventPresenter extends BasePresenter
 
     public function actionPrintAll(int $aid) : void
     {
-        /**
- * @var CashbookId $cashbookId
-*/
+        /** @var CashbookId $cashbookId */
         $cashbookId = $this->getCashbookId($aid);
-        /**
- * @var Chit[] $chits
-*/
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId, PaymentMethod::CASH()));
+        /** @var Chit[] $chits */
+        $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
 
         $event = $this->eventService->getEvent()->get($aid);
 

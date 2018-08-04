@@ -19,10 +19,23 @@ final class ChitListQuery
     /** @var PaymentMethod|null */
     private $paymentMethod;
 
-    public function __construct(CashbookId $cashbookId, ?PaymentMethod $paymentMethod)
+    /**
+     * Use static factory method
+     */
+    private function __construct(CashbookId $cashbookId, ?PaymentMethod $paymentMethod)
     {
         $this->cashbookId    = $cashbookId;
         $this->paymentMethod = $paymentMethod;
+    }
+
+    public static function withMethod(PaymentMethod $paymentMethod, CashbookId $cashbookId) : self
+    {
+        return new self($cashbookId, $paymentMethod);
+    }
+
+    public static function all(CashbookId $cashbookId) : self
+    {
+        return new self($cashbookId, null);
     }
 
     public function getCashbookId() : CashbookId
