@@ -144,9 +144,6 @@ class DefaultPresenter extends BasePresenter
         }
     }
 
-    /**
-     * zruší akci
-     */
     public function handleCancel(int $aid) : void
     {
         if (! $this->authorizator->isAllowed(Event::CLOSE, $aid)) {
@@ -197,7 +194,6 @@ class DefaultPresenter extends BasePresenter
     }
 
     /**
-     * @deprecated I didn't found any use of this function (fhana July 2018)
      * @param mixed $item
      * @param mixed $args
      */
