@@ -1,6 +1,7 @@
 $(function () {
-    $(".allDependend").addClass("disabled").attr("disabled", "disabled");
-    onlyWithCheckbox("chits", "allDependend");
+    $(".allDependend-bank, .allDependend-cash").addClass("disabled").attr("disabled", "disabled");
+    onlyWithCheckbox("chits-bank", "allDependend-bank");
+    onlyWithCheckbox("chits-cash", "allDependend-cash");
 
     //CALC
     var priceInputOut = $('#form-out-price');

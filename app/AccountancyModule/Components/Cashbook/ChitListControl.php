@@ -41,6 +41,9 @@ class ChitListControl extends BaseControl
      */
     private $isEditable;
 
+    /** @var PaymentMethod */
+    private $paymentMethod;
+
     /** @var CommandBus */
     private $commandBus;
 
@@ -56,6 +59,7 @@ class ChitListControl extends BaseControl
     public function __construct(
         CashbookId $cashbookId,
         bool $isEditable,
+        PaymentMethod $paymentMethod,
         CommandBus $commandBus,
         QueryBus $queryBus,
         IMoveChitsDialogFactory $moveChitsDialogFactory,
@@ -64,6 +68,7 @@ class ChitListControl extends BaseControl
         parent::__construct();
         $this->cashbookId              = $cashbookId;
         $this->isEditable              = $isEditable;
+        $this->paymentMethod           = $paymentMethod;
         $this->commandBus              = $commandBus;
         $this->queryBus                = $queryBus;
         $this->moveChitsDialogFactory  = $moveChitsDialogFactory;
@@ -79,11 +84,13 @@ class ChitListControl extends BaseControl
         $this->template->setParameters(
             [
             'cashbookId' => $this->cashbookId->toInt(),
+            'cashbookType' => $cashbook->getType(),
             'isEditable' => $this->isEditable,
             'canMoveChits' => $this->canMoveChits(),
             'canMassExport' => $this->canMassExport(),
             'aid' => (int) $this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
-            'chits' => $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->cashbookId)),
+            'chits' => $this->queryBus->handle(ChitListQuery::withMethod($this->paymentMethod, $this->cashbookId)),
+            'paymentMethod' => $this->paymentMethod,
             'prefix' => $cashbook->getChitNumberPrefix(),
             'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
             ]

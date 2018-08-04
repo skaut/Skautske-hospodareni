@@ -1,94 +1,99 @@
-
-<div class="row" n:if="!empty($chits)">
-    {form formMass}
-        <table class="table table-bordered table-condensed" id="cashbookTable">
-            <thead>
-            <tr>
-                <th class='col-xs-1'>
-                    <input type="checkbox" name='chits-all' id='chits-all' onclick="jqCheckAll(this.id, 'chits')"
-                           class="hidden-xs hidden-sm"/>
-                    <button n:name="massPrintSend" title="Vytisknout vybrané"
-                                                   class="btn btn-info btn-xs allDependend hidden-xs hidden-sm"
-                                                   type="submit">
-                        <i class="glyphicon glyphicon-print"></i>
-                    </button>
-                    <button n:if="$canMoveChits" n:name="massMoveSend" title="Přesunout vybrané" role="button" data-toggle="modal"
-                       class="btn btn-info btn-xs allDependend hidden-xs"><i
-                                class="glyphicon glyphicon-step-forward"></i></button>
-                    <button n:if="$canMassExport" name="massExportSend" title="Exportovat vybrané"
-                            class="btn btn-info btn-xs allDependend hidden-xs" type="submit"><i
-                                class="glyphicon glyphicon-download-alt"></i></button>
-                </th>
-                <th class="col-xs-1">Ze dne</th>
-                <th class="col-xs-1">Číslo</th>
-                <th>Účel výplaty</th>
-                <th class="hidden-xs hidden-sm">Typ</th>
-                <th class="hidden-xs hidden-sm">Komu/Od koho</th>
-                <th>Příjem</th>
-                <th>Výdej</th>
-                <th>Zůstatek</th>
-            </tr>
-            </thead>
-            <tbody>
-            {var $balance => 0}
-            {foreach $chits as $item}
-                {var $isIncome = $item->category->isIncome()}
-                {php $balance += $isIncome ? $item->amount->value : -$item->amount->value}
-                <tr{if $balance < 0} class="alert alert-error"{/if}>
-                    <td class="nowrap">
-                        <input type="checkbox" class="hidden-xs hidden-sm" name="chits[]" value={$item->id}/>
-                        <a href="{plink :Accountancy:CashbookExport:printChits $cashbookId, [$item->id]}" target="_blank"
-                                                          class="btn btn-xs btn-info hidden-xs hidden-sm"><i
-                                    class="glyphicon glyphicon-print"></i></a>
-                        <a n:if="$isEditable && ! $item->locked" n:href="edit! $item->id"
-                                class="ajax btn btn-xs btn-primary ui--editChit"><i class="glyphicon glyphicon-edit"></i></a>
-
-                        <a n:if="$isEditable && ! $item->locked" n:href="remove! $item->id"
-                                onclick="return confirm('Opravdu chcete smazat paragon?')"
-                                class="btn btn-danger btn-xs ui--removeChit"><i class="glyphicon glyphicon-remove"></i></a>
-
-                        <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $item->inverseCashbookTypes))"
-                                class="ajax btn btn-xs btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $item->id"
-                                title="Vytvořit protidoklad">
-                            <i class="fa fa-exchange"></i>
-                        </a>
-                    </td>
-                    <td><span class="visible-xs visible-sm">{$item->date|date:"j.n."}</span><span
-                                class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
-                    <td title="{$prefix}{$item->number}">{$item->number}</td>
-                    <td title="{$item->purpose}">{dump $item}{$item->purpose|truncate:"120"}</td>
-                    <td class="hidden-xs hidden-sm" title="{$item->category->name}">{$item->category->shortcut}</td>
-                    <td class="hidden-xs hidden-sm">{$item->recipient}</td>
-                    {if $isIncome}
-                        <td class="r" title="{$item->amount->expression}">{$item->amount->value|price}</td>
-                        <td class="r">&nbsp;</td>
-                    {else}
-                        <td class="r">&nbsp;</td>
-                        <td class="r" title="{$item->amount->expression}">{$item->amount->value|price}</td>
-                    {/if}
-                    <td class="r">{$balance|price}</td>
+<div class="panel panel-default">
+    <div class="panel-heading"><strong>{$paymentMethod->getName()}</strong></div>
+    <div class="panel-body chit-list" n:if="!empty($chits)">
+        {form formMass}
+            <table class="table table-bordered table-condensed" id="cashbookTable">
+                <thead>
+                <tr>
+                    <th class='col-xs-1'>
+                        <input type="checkbox" name="chits-all" id="chits-all-{$paymentMethod}"
+                               onclick="jqCheckAll(this.id, 'chits-'+{$paymentMethod->toString()})"
+                               class="hidden-xs hidden-sm"/>
+                        <button n:if="$paymentMethod->equals($paymentMethod::CASH())" n:name="massPrintSend" title="Vytisknout vybrané"
+                                                       class="btn btn-info btn-xs allDependend-{$paymentMethod} hidden-xs hidden-sm"
+                                                       type="submit">
+                            <i class="glyphicon glyphicon-print"></i>
+                        </button>
+                        <button n:if="$canMoveChits" n:name="massMoveSend" title="Přesunout vybrané" role="button" data-toggle="modal"
+                           class="btn btn-info btn-xs allDependend-{$paymentMethod} hidden-xs"><i
+                                    class="glyphicon glyphicon-step-forward"></i></button>
+                        <button n:if="$canMassExport" name="massExportSend" title="Exportovat vybrané"
+                                class="btn btn-info btn-xs allDependend-{$paymentMethod} hidden-xs" type="submit"><i
+                                    class="glyphicon glyphicon-download-alt"></i></button>
+                    </th>
+                    <th class="col-xs-1">Ze dne</th>
+                    <th class="col-xs-1">Číslo</th>
+                    <th>Účel výplaty</th>
+                    <th class="hidden-xs hidden-sm">Typ</th>
+                    <th class="hidden-xs hidden-sm">Komu/Od koho</th>
+                    <th>Příjem</th>
+                    <th>Výdej</th>
+                    <th>Zůstatek</th>
                 </tr>
-            {/foreach}
-            <tr n:class="$balance < 0 ? 'alert alert-error'">
-                <td colspan="2">&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="hidden-xs hidden-sm">&nbsp;</td>
-                <td><b>Konečný stav</b></td>
-                <td>&nbsp;</td>
-                <td class='hidden-xs hidden-sm'>&nbsp;</td>
-                <td n:class="r, ui--balance, $balance < 0 ? isMinus"><b>{$balance|price}</b></td>
-            </tr>
-            <tbody>
-        </table>
-    {/form}
+                </thead>
+                <tbody>
+                {var $balance => 0}
+                {foreach $chits as $item}
+                    {var $isIncome = $item->category->isIncome()}
+                    {php $balance += $isIncome ? $item->amount->value : -$item->amount->value}
+                    <tr{if $balance < 0} class="alert alert-error"{/if}>
+                        <td class="nowrap">
+                            <input type="checkbox" class="hidden-xs hidden-sm" name="chits-{$paymentMethod}[]" value={$item->id}/>
+                            <a n:if="$paymentMethod->equals($paymentMethod::CASH())"
+                                    href="{plink :Accountancy:CashbookExport:printChits $cashbookId, [$item->id]}"
+                                    target="_blank"
+                                    class="btn btn-xs btn-info hidden-xs hidden-sm"><i
+                                        class="glyphicon glyphicon-print"></i></a>
+                            <a n:if="$isEditable && ! $item->locked" n:href="edit! $item->id"
+                                    class="ajax btn btn-xs btn-primary ui--editChit"><i class="glyphicon glyphicon-edit"></i></a>
 
-    {if $canMoveChits}
-        {control moveChitsDialog}
-    {/if}
-    {control invertChitDialog}
-</div>
+                            <a n:if="$isEditable && ! $item->locked" n:href="remove! $item->id"
+                                    onclick="return confirm('Opravdu chcete smazat paragon?')"
+                                    class="btn btn-danger btn-xs ui--removeChit"><i class="glyphicon glyphicon-remove"></i></a>
 
-<div class="row" n:if="empty($chits)">
-    <p class="alert alert-info">Zatím zde nemáte žádné doklady.</p>
+                            <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $item->inverseCashbookTypes))"
+                                    class="ajax btn btn-xs btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $item->id"
+                                    title="Vytvořit protidoklad">
+                                <i class="fa fa-exchange"></i>
+                            </a>
+                        </td>
+                        <td><span class="visible-xs visible-sm">{$item->date|date:"j.n."}</span><span
+                                    class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
+                        <td title="{$prefix}{$item->number}">{$item->number}</td>
+                        <td title="{$item->purpose}">{dump $item}{$item->purpose|truncate:"120"}</td>
+                        <td class="hidden-xs hidden-sm" title="{$item->category->name}">{$item->category->shortcut}</td>
+                        <td class="hidden-xs hidden-sm">{$item->recipient}</td>
+                        {if $isIncome}
+                            <td class="r" title="{$item->amount->expression}">{$item->amount->value|price}</td>
+                            <td class="r">&nbsp;</td>
+                        {else}
+                            <td class="r">&nbsp;</td>
+                            <td class="r" title="{$item->amount->expression}">{$item->amount->value|price}</td>
+                        {/if}
+                        <td class="r">{$balance|price}</td>
+                    </tr>
+                {/foreach}
+                <tr n:class="$balance < 0 ? 'alert alert-error'">
+                    <td colspan="2">&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="hidden-xs hidden-sm">&nbsp;</td>
+                    <td><b>Konečný stav</b></td>
+                    <td>&nbsp;</td>
+                    <td class='hidden-xs hidden-sm'>&nbsp;</td>
+                    <td n:class="r, ui--balance, $balance < 0 ? isMinus"><b>{$balance|price}</b></td>
+                </tr>
+                <tbody>
+            </table>
+        {/form}
+
+        {if $canMoveChits}
+            {control moveChitsDialog}
+        {/if}
+        {control invertChitDialog}
+    </div>
+    <div class="panel-body info" n:if="count($chits) === 0">
+            <div class="text-center">Zatím zde nemáte žádné doklady.</div>
+        </div>
+    </div>
 </div>

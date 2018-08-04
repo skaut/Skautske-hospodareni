@@ -9,6 +9,7 @@ use App\AccountancyModule\Factories\Cashbook\IChitListControlFactory;
 use App\AccountancyModule\Factories\Cashbook\INoteFormFactory;
 use App\AccountancyModule\Factories\IChitFormFactory;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 
 class CashbookControl extends BaseControl
 {
@@ -54,14 +55,27 @@ class CashbookControl extends BaseControl
         return $this->formFactory->create($this->cashbookId, $this->isEditable);
     }
 
-    protected function createComponentChitList() : ChitListControl
+    protected function createComponentChitListCash() : ChitListControl
     {
-        $control = $this->chitListFactory->create($this->cashbookId, $this->isEditable);
+        return $this->createChitList(PaymentMethod::CASH());
+    }
+
+    protected function createComponentChitListBank() : ChitListControl
+    {
+        return $this->createChitList(PaymentMethod::BANK());
+    }
+
+    protected function createComponentNoteForm() : NoteForm
+    {
+        return $this->noteFormFactory->create($this->cashbookId, $this->isEditable);
+    }
+
+    private function createChitList(PaymentMethod $paymentMethod) : ChitListControl
+    {
+        $control = $this->chitListFactory->create($this->cashbookId, $this->isEditable, $paymentMethod);
 
         $control->onEditButtonClicked[] = function (int $chitId) : void {
-            /**
- * @var ChitForm $form
-*/
+            /** @var ChitForm $form */
             $form = $this['chitForm'];
             $form->editChit($chitId);
 
@@ -69,10 +83,5 @@ class CashbookControl extends BaseControl
         };
 
         return $control;
-    }
-
-    protected function createComponentNoteForm() : NoteForm
-    {
-        return $this->noteFormFactory->create($this->cashbookId, $this->isEditable);
     }
 }
