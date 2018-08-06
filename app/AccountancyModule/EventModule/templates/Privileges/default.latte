@@ -23,7 +23,7 @@
                 </tr>
                 <tr n:foreach="$section['items'] as $p">
                     <td>{$p['label']}</td>
-                    <td n:class="$p['value'] ? success : warning">{$p['value']|yesno}</td>
+                    <td n:class="$p['value'] ? success : error">{$p['value']|yesno}</td>
                     <td>{$p['desc']}</td>
                 </tr>
             {/foreach}
