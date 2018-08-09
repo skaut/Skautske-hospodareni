@@ -74,6 +74,9 @@ class MemberService
         $now = new \DateTime();
         foreach ($data as $p) {
             if ($ageLimit !== null) {
+                if ($p->Birthday === null) {
+                    continue;
+                }
                 $birth    = new \DateTime($p->Birthday);
                 $interval = $now->diff($birth);
                 $diff     = $interval->format('%y');
