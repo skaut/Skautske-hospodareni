@@ -29,9 +29,9 @@ $(document).ready(function() {
             var $obj = $(this);
             var field = $obj.data('type');
             var dataId = $obj.data('id');
-            var origValue = $obj.data('orig-value').replace(",", ".");
+            var origValue = $obj.data('orig-value').replace(",", ".").replace(/\s+/g, "");
             origValue != "" ? origValue : 0;
-            var newValue = parseFloat($obj.text().replace(",", "."));
+            var newValue = parseFloat($obj.text().replace(",", ".").replace(/\s+/g, ""));
             if(isNaN(newValue)){
                 newValue = 0;
             }
