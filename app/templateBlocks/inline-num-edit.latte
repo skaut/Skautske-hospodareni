@@ -31,7 +31,7 @@ $(document).ready(function() {
         var field = $source.data('type');
         var dataId = $source.data('id');
         origValue = $source.data('orig-value') !== "" ? $source.data('orig-value') : 0;
-        var newValue = parseFloat($source.text().replace(",", "."));
+        var newValue = parseFloat($source.text().replace(",", ".").replace(/\s+/g, ""));
         if(isNaN(newValue)){
             newValue = 0;
         }
