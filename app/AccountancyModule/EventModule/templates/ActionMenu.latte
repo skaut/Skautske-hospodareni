@@ -2,7 +2,7 @@
 Menu pro pohyb mezi částmi akce
 *}
 <div class="row">
-    <div class="col-sm-12">
+    <div class="col-sm-10">
         <ul class="nav nav-pills">
             <li {ifCurrent Event: $aid}class='active'{/ifCurrent}><a n:href="Event: $aid"><i class="glyphicon glyphicon-briefcase hidden-xs hidden-sm"></i> Základní<span class="hidden-xs hidden-sm"> údaje</span></a></li>
             <li {ifCurrent Participant:default $aid}class='active'{/ifCurrent}><a n:href="Participant:default $aid"><i class="glyphicon glyphicon-user hidden-xs hidden-sm"></i> Účastníci</a></li>
