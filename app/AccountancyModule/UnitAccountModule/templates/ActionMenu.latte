@@ -4,7 +4,11 @@ Menu pro pohyb mezi částmi akce
 <div class="row">
     <div class="col-sm-12">
         <ul class="nav nav-pills">
-            <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}><a n:href="Cashbook:default $aid"><i class="glyphicon glyphicon-shopping-cart hidden-xs hidden-sm"></i> Pokladní kniha</a></li>
+            <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}>
+                <a n:href="Cashbook:default $aid">
+                    <i class="glyphicon glyphicon-shopping-cart hidden-xs hidden-sm"></i> Evidence plateb
+                </a>
+            </li>
             <li {ifCurrent Chit:default date("Y")}class='active'{/ifCurrent}><a n:href="Chit:default date('Y')"><i class="glyphicon glyphicon-eye-open hidden-xs hidden-sm"></i> Přehled paragonů</a></li>
             <li {ifCurrent Budget:default date("Y")}class='active'{/ifCurrent}><a n:href="Budget:default date('Y')"><i class="glyphicon glyphicon-th-list hidden-xs hidden-sm"></i> Rozpočet</a></li>
             <li n:ifset="$unitPairs" class="dropdown">
