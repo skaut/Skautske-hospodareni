@@ -133,7 +133,7 @@ function onlyWithCheckbox(checkboxNameStart, dependentButtonClass) {
         var isSomeChecked = false;
 
         $("input[name^=" + checkboxNameStart + "]").each(function () {
-            if (this.checked) {
+            if ($(this).is(':checked')) {
                 isSomeChecked = true;
                 return false;//konec cyklu
             }

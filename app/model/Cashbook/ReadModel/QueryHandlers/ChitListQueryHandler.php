@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
+use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
-use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit as ChitDTO;
 use Model\DTO\Cashbook\ChitFactory;
 use function array_map;
-use function usort;
 
 class ChitListQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    /** @var EntityManager */
+    private $entityManager;
 
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(ICashbookRepository $cashbooks, QueryBus $queryBus)
+    public function __construct(EntityManager $entityManager, QueryBus $queryBus)
     {
-        $this->cashbooks = $cashbooks;
-        $this->queryBus  = $queryBus;
+        $this->entityManager = $entityManager;
+        $this->queryBus      = $queryBus;
     }
 
     /**
@@ -37,14 +36,21 @@ class ChitListQueryHandler
      */
     public function handle(ChitListQuery $query) : array
     {
-        $cashbook = $this->cashbooks->find($query->getCashbookId());
+        $queryBuilder = $this->entityManager->createQueryBuilder()
+            ->select('c')
+            ->from(Chit::class, 'c')
+            ->where('IDENTITY(c.cashbook) = :cashbookId')
+            ->setParameter('cashbookId', $query->getCashbookId()->toInt())
+            ->orderBy('c.body.date')
+            ->addOrderBy('c.category.operationType') // income first
+            ->addOrderBy('c.id');
 
-        $chits = $cashbook->getChits();
+        if ($query->getPaymentMethod() !== null) {
+            $queryBuilder->andWhere('c.paymentMethod = :paymentMethod')
+                ->setParameter('paymentMethod', $query->getPaymentMethod()->toString());
+        }
 
-        usort($chits, function (Chit $a, Chit $b) : int {
-            return [$a->getDate(), ! $a->isIncome(), $a->getId()] <=> [$b->getDate(), ! $b->isIncome(), $b->getId()];
-        });
-
+        $chits      = $queryBuilder->getQuery()->getResult();
         $categories = $this->getCategories($query->getCashbookId());
 
         return array_map(

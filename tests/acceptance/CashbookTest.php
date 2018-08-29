@@ -61,7 +61,7 @@ class CashbookTest extends Unit
         $I = $this->tester;
         $I->amGoingTo('open cashbook');
 
-        $cashbookButton = 'Pokladní kniha';
+        $cashbookButton = 'Evidence plateb';
         $I->waitForText($cashbookButton);
         $I->click($cashbookButton);
 

@@ -32,10 +32,13 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
         $type = CashbookType::get(CashbookType::EVENT);
         $this->cashbooks->save(new Cashbook($targetCashbookId, $type));
         $sourceCashbook = new Cashbook($sourceCashbookId, $type);
-        $chitBody = new Cashbook\ChitBody(null, new Date(), null, new Amount('100'), 'test');
 
         for($i = 0; $i < 3; $i++) {
-            $sourceCashbook->addChit($chitBody, $this->mockCategory());
+            $sourceCashbook->addChit(
+                new Cashbook\ChitBody(null, new Date(), null, new Amount('100'), 'test'),
+                $this->mockCategory(),
+                Cashbook\PaymentMethod::get(Cashbook\PaymentMethod::CASH)
+            );
         }
 
         $this->cashbooks->save($sourceCashbook);

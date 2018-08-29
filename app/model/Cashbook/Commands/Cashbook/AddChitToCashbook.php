@@ -6,6 +6,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\PaymentMethod;
 
 /**
  * @see AddChitToCashbookHandler
@@ -21,11 +22,15 @@ final class AddChitToCashbook
     /** @var int */
     private $categoryId;
 
-    public function __construct(CashbookId $cashbookId, ChitBody $body, int $categoryId)
+    /** @var PaymentMethod */
+    private $paymentMethod;
+
+    public function __construct(CashbookId $cashbookId, ChitBody $body, int $categoryId, PaymentMethod $paymentMethod)
     {
-        $this->cashbookId = $cashbookId;
-        $this->body       = $body;
-        $this->categoryId = $categoryId;
+        $this->cashbookId    = $cashbookId;
+        $this->body          = $body;
+        $this->categoryId    = $categoryId;
+        $this->paymentMethod = $paymentMethod;
     }
 
     public function getCashbookId() : CashbookId
@@ -41,5 +46,10 @@ final class AddChitToCashbook
     public function getCategoryId() : int
     {
         return $this->categoryId;
+    }
+
+    public function getPaymentMethod() : PaymentMethod
+    {
+        return $this->paymentMethod;
     }
 }

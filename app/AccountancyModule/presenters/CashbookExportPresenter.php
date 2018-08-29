@@ -8,6 +8,7 @@ use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Event;
 use Model\Auth\Resources\Unit;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -25,6 +26,7 @@ use function array_filter;
 use function array_map;
 use function array_values;
 use function in_array;
+use function sprintf;
 
 class CashbookExportPresenter extends BasePresenter
 {
@@ -125,21 +127,42 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports cashbook (list of cashbook operations) as XLS file
      */
-    public function actionExportCashbook(string $cashbookId) : void
+    public function actionExportCashbook(string $cashbookId, string $paymentMethod) : void
     {
         $skautisId = $this->getSkautisId();
         $event     = $this->getEventEntity()->event->get($skautisId);
 
-        $this->excelService->getCashbook($event->DisplayName, CashbookId::fromString($cashbookId));
+        if (! PaymentMethod::isValidValue($paymentMethod)) {
+            throw new BadRequestException(
+                sprintf('Invalid payment method %s', $paymentMethod),
+                IResponse::S400_BAD_REQUEST
+            );
+        }
+
+        $this->excelService->getCashbook(
+            $event->DisplayName,
+            CashbookId::fromString($cashbookId),
+            PaymentMethod::get($paymentMethod)
+        );
         $this->terminate();
     }
 
     /**
      * Exports cashbook (list of cashbook operations) with category columns as XLS file
      */
-    public function actionExportCashbookWithCategories(string $cashbookId) : void
+    public function actionExportCashbookWithCategories(string $cashbookId, string $paymentMethod) : void
     {
-        $spreadsheet = $this->excelService->getCashbookWithCategories(CashbookId::fromString($cashbookId));
+        if (! PaymentMethod::isValidValue($paymentMethod)) {
+            throw new BadRequestException(
+                sprintf('Invalid payment method %s', $paymentMethod),
+                IResponse::S400_BAD_REQUEST
+            );
+        }
+
+        $spreadsheet = $this->excelService->getCashbookWithCategories(
+            CashbookId::fromString($cashbookId),
+            PaymentMethod::get($paymentMethod)
+        );
 
         $this->sendResponse(new ExcelResponse('pokladni-kniha', $spreadsheet));
     }
@@ -207,7 +230,8 @@ class CashbookExportPresenter extends BasePresenter
         /**
  * @var Chit[] $chits
 */
-        $chits         = $this->queryBus->handle(new ChitListQuery(CashbookId::fromString($this->cashbookId)));
+        $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), CashbookId::fromString($this->cashbookId)));
+
         $filteredChits = array_filter(
             $chits,
             function (Chit $chit) use ($ids) : bool {

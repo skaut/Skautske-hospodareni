@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Cake\Chronos\Date;
+use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
@@ -44,6 +45,13 @@ class Chit
     private $category;
 
     /**
+     * @var PaymentMethod
+     * @ORM\Column(type="string_enum")
+     * @EnumAnnotation(class=PaymentMethod::class)
+     */
+    private $paymentMethod;
+
+    /**
      * ID of person that locked this
      *
      * @var int|NULL
@@ -51,16 +59,17 @@ class Chit
      */
     private $locked;
 
-    public function __construct(Cashbook $cashbook, ChitBody $body, Category $category)
+    public function __construct(Cashbook $cashbook, ChitBody $body, Category $category, PaymentMethod $paymentMethod)
     {
         $this->cashbook = $cashbook;
-        $this->update($body, $category);
+        $this->update($body, $category, $paymentMethod);
     }
 
-    public function update(ChitBody $body, Category $category) : void
+    public function update(ChitBody $body, Category $category, PaymentMethod $paymentMethod) : void
     {
-        $this->body     = $body;
-        $this->category = $category;
+        $this->body          = $body;
+        $this->category      = $category;
+        $this->paymentMethod = $paymentMethod;
     }
 
     public function lock(int $userId) : void
@@ -124,7 +133,7 @@ class Chit
 
     public function copyToCashbook(Cashbook $newCashbook) : self
     {
-        return new self($newCashbook, $this->body, $this->category);
+        return new self($newCashbook, $this->body, $this->category, $this->paymentMethod);
     }
 
     public function isIncome() : bool
@@ -142,5 +151,10 @@ class Chit
         );
 
         return $newChit;
+    }
+
+    public function getPaymentMethod() : PaymentMethod
+    {
+        return $this->paymentMethod;
     }
 }

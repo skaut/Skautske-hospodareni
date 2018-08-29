@@ -5,8 +5,9 @@
             <ul class="errors" n:if="$form->hasErrors()">
                 <li n:foreach="$form->errors as $error">{$error}</li>
             </ul>
-            <div class="col-md-2">{input date}</div>
+            <div class="col-md-1">{input date}</div>
             <div class="col-md-1">{input num}</div>
+            <div class="col-md-1">{input paymentMethod}</div>
             <div class="col-md-2">{input purpose}</div>
             <div class="col-md-1">{input type}</div>
             <div class="col-md-1">

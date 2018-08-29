@@ -1,0 +1,31 @@
+<a n:if="$paymentMethod->equalsValue('cash') && ! $cashbookType->isUnit() && count($chits) !== 0"
+        href="{plink :Accountancy:CashbookExport:printCashbook $cashbookId}" target="_blank" class="btn btn-sm btn-info">
+    <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i>
+    Vytisknout pokladní knihu
+</a>
+
+<div class="dropdown inline-block">
+    <button class="btn btn-sm btn-info dropdown-toggle"
+            type="button"
+            id="excelExportButton"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
+        <i class="fa fa-table hidden-xs hidden-sm"></i>&nbsp;&nbsp;Exportovat do excelu&nbsp;<span class="caret"></span>
+    </button>
+
+    <ul class="dropdown-menu" aria-labelledby="excelExportButton">
+        <li>
+            <a class="dropdown-item"
+               href="{plink :Accountancy:CashbookExport:exportCashbook $cashbookId, $paymentMethod->toString()}">
+                Jednoduchá šablona
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item"
+               href="{plink :Accountancy:CashbookExport:exportCashbookWithCategories $cashbookId, $paymentMethod->toString()}">
+                Šablona s rozepsanými kategoriemi
+            </a>
+        </li>
+    </ul>
+</div>

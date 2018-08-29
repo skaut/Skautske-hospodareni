@@ -6,6 +6,7 @@ namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -77,21 +78,21 @@ class ExcelService
         $this->send($objPHPExcel, Strings::webalize($event->DisplayName) . '-' . date('Y_n_j'));
     }
 
-    public function getCashbook(string $cashbookName, CashbookId $cashbookId) : void
+    public function getCashbook(string $cashbookName, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
     {
         $objPHPExcel = $this->getNewFile();
         $sheet       = $objPHPExcel->setActiveSheetIndex(0);
-        $this->setSheetCashbook($sheet, $cashbookId);
+        $this->setSheetCashbook($sheet, $cashbookId, $paymentMethod);
         $this->send($objPHPExcel, Strings::webalize($cashbookName) . '-pokladni-kniha-' . date('Y_n_j'));
     }
 
-    public function getCashbookWithCategories(CashbookId $cashbookId) : Spreadsheet
+    public function getCashbookWithCategories(CashbookId $cashbookId, PaymentMethod $paymentMethod) : Spreadsheet
     {
         $excel = $this->getNewFileV2();
         $sheet = $excel->getActiveSheet();
 
         $builder = new CashbookWithCategoriesBuilder($this->queryBus);
-        $builder->build($sheet, $cashbookId);
+        $builder->build($sheet, $cashbookId, $paymentMethod);
 
         return $excel;
     }
@@ -113,7 +114,7 @@ class ExcelService
             $data[$aid]                    = $service->getEvent()->get($aid);
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['parStatistic']    = $service->getParticipants()->getEventStatistic($aid);
-            $data[$aid]['chits']           = $this->queryBus->handle(new ChitListQuery($cashbookId));
+            $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new EventFunctions($eventId));
             $participants                  = $service->getParticipants()->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -154,7 +155,7 @@ class ExcelService
             $data[$aid]                    = $camp;
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['troops']          = implode(', ', $unitService->getCampTroopNames($camp));
-            $data[$aid]['chits']           = $this->queryBus->handle(new ChitListQuery($cashbookId));
+            $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $participants                  = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -271,7 +272,7 @@ class ExcelService
         $sheet->setTitle('Seznam účastníků');
     }
 
-    private function setSheetCashbook(\PHPExcel_Worksheet $sheet, CashbookId $cashbookId) : void
+    private function setSheetCashbook(\PHPExcel_Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
     {
         $sheet->setCellValue('A1', 'Ze dne')
             ->setCellValue('B1', 'Číslo dokladu')
@@ -283,7 +284,7 @@ class ExcelService
             ->setCellValue('H1', 'Zůstatek');
 
         /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(new ChitListQuery($cashbookId));
+        $chits = $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId));
 
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));

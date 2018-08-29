@@ -325,3 +325,12 @@ footer {
 .inline-block {
     display: inline-block;
 }
+
+.chit-list table {
+    margin-bottom: 0;
+    border-width: 0;
+}
+
+.panel-body.chit-list {
+    padding: 0;
+}
