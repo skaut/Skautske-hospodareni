@@ -37,7 +37,7 @@
         <property name="config.database.password" value="${env.CONFIG_DATABASE_PASSWORD}"/>
         <property name="config.database.name" value="${env.CONFIG_DATABASE_NAME}"/>
 
-        <copy file="./app/config/config.production.local.neon" tofile="${build.dir}/app/config/config.local.neon">
+        <copy file="./app/config/config.${env.ENVIRONMENT}.local.neon" tofile="${build.dir}/app/config/config.local.neon">
             <filterchain>
                 <expandproperties/>
             </filterchain>
