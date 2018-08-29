@@ -194,7 +194,7 @@ class UnitService
 
         foreach ($troopIds as $troopId) {
             try {
-                $unit = $this->units->find($troopId);
+                $unit = $this->units->find((int) $troopId);
             } catch (UnitNotFound $e) {
                 // Removed troops are returned as well https://github.com/skaut/Skautske-hospodareni/issues/483
                 continue;
