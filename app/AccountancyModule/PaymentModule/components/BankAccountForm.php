@@ -78,7 +78,7 @@ class BankAccountForm extends BaseControl
                 $this->model->updateBankAccount(
                     $this->id,
                     $values->name,
-                    new AccountNumber($values->prefix, $values->number, $values->bankCode),
+                    new AccountNumber($values->prefix, (string) $values->number, (string) $values->bankCode),
                     $values->token
                 );
             } else {
