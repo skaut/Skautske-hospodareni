@@ -134,7 +134,7 @@ class ChitListControl extends BaseControl
         $moveChitsButton = $form->addSubmit('massMoveSend');
 
         $form->onSuccess[] = function (BaseForm $form) use ($printButton, $exportButton, $moveChitsButton) : void {
-            $chitIds = $form->getHttpData($form::DATA_TEXT, 'chits[]');
+            $chitIds = $form->getHttpData($form::DATA_TEXT, 'chits-' . $this->paymentMethod . '[]');
             $chitIds = array_map('\intval', $chitIds);
 
             if ($printButton->isSubmittedBy()) {
