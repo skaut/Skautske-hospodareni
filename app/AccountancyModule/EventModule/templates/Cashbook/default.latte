@@ -3,7 +3,6 @@
 {block #content}
 <h2>{$event->DisplayName}</h2>
 
-
 <a n:if="$isEditable" n:href="importHpd aid => $aid" class="btn btn-sm btn-primary pull-right">
     <i class="fa fa-user"></i>&nbsp;Načíst příjmy od účastníků
 </a>
@@ -11,11 +10,9 @@
 {include ../ActionMenu.latte}
 
 <div n:snippet="paragony">
-    <div class="row">
-        <p n:if="$isInMinus" class="alert alert-danger">
-            Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
-        </p>
-    </div>
+    <p n:if="$isInMinus" class="alert alert-danger">
+        Pokladní kniha je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+    </p>
 
     {snippet}
     {control cashbook}

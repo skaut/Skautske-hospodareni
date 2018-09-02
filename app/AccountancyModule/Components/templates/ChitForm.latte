@@ -1,23 +1,25 @@
 {snippet}
     <script type="text/javascript" src="{$baseUri}/js/nextras.datetimepicker.init.js"></script>{* include kvuli ajaxovým požadavkům *}
-    <div class="row well well-sm" n:if="$isEditable">
+    <div class="well well-sm" n:if="$isEditable">
         {form form}
             <ul class="errors" n:if="$form->hasErrors()">
                 <li n:foreach="$form->errors as $error">{$error}</li>
             </ul>
-            <div class="col-md-1">{input date}</div>
-            <div class="col-md-1">{input num}</div>
-            <div class="col-md-1">{input paymentMethod}</div>
-            <div class="col-md-2">{input purpose}</div>
-            <div class="col-md-1">{input type}</div>
-            <div class="col-md-1">
-                <span><span><input type="submit" formnovalidate="" value="Nahrát" id="frm-cashbookForm-type_submit"
-                                   class="dependentControl_submit button" name="type_submit"></span></span>
-                {input category}
+            <div class="row">
+                <div class="col-md-1">{input date}</div>
+                <div class="col-md-1">{input num}</div>
+                <div class="col-md-1">{input paymentMethod}</div>
+                <div class="col-md-2">{input purpose}</div>
+                <div class="col-md-1">{input type}</div>
+                <div class="col-md-1">
+                    <span><span><input type="submit" formnovalidate="" value="Nahrát" id="frm-cashbookForm-type_submit"
+                                       class="dependentControl_submit button" name="type_submit"></span></span>
+                    {input category}
+                </div>
+                <div class="col-md-2">{input recipient}</div>
+                <div class="col-md-2">{input price}</div>
+                <div class="col-md-1">{input send}</div>
             </div>
-            <div class="col-md-2">{input recipient}</div>
-            <div class="col-md-2">{input price}</div>
-            <div class="col-md-1">{input send}</div>
         {/form}
     </div>
 {/snippet}
