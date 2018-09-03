@@ -317,7 +317,7 @@ class ParticipantService extends MutableBaseService
                 continue;
             }
             $cityMatch += 1;
-            if ($eventStartDate->diff(new \DateTime($p->Birthday))->format('%Y') >= self::PRAGUE_SUPPORTABLE_AGE) {
+            if ($p->Birthday === null || $eventStartDate->diff(new \DateTime($p->Birthday))->format('%Y') >= self::PRAGUE_SUPPORTABLE_AGE) {
                 continue;
             }
 
