@@ -51,7 +51,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
         });
 
         // Update categories that have different total in cashbook and Skautis
-        $cashbookTotals = array_filter($cashbookTotals, function (int $categoryId, float $total) use ($skautisTotals) {
+        $cashbookTotals = array_filter($cashbookTotals, function (float $total, int $categoryId) use ($skautisTotals) {
             return isset($skautisTotals[$categoryId]) && $skautisTotals[$categoryId] !== $total;
         }, ARRAY_FILTER_USE_BOTH);
 
