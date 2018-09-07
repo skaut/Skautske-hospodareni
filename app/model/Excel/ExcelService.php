@@ -259,7 +259,7 @@ class ExcelService
                 ->setCellValue('G' . $rowCnt, $row->Postcode)
                 ->setCellValue('H' . $rowCnt, $row->Birthday !== null ? date('d.m.Y', strtotime($row->Birthday)) : '')
                 ->setCellValue('I' . $rowCnt, $row->Days)
-                ->setCellValue('J' . $rowCnt, ($startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE && $row->Birthday !== null) ? $row->Days : 0)
+                ->setCellValue('J' . $rowCnt, ($row->Birthday !== null && $startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE) ? $row->Days : 0)
                 ->setCellValue('K' . $rowCnt, $row->payment);
             $rowCnt++;
         }
