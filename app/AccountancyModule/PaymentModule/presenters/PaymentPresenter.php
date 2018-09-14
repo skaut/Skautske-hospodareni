@@ -232,11 +232,8 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('Payment:detail', ['id' => $id]); // redirect elsewhere?
         }
 
+        /** @var MassAddForm $form */
         $form = $this['massAddForm'];
-        /**
- * @var MassAddForm $form
-*/
-
         $list = $this->model->getPersons($this->aid, $id);
 
         foreach ($list as $p) {
@@ -272,9 +269,7 @@ class PaymentPresenter extends BasePresenter
             ]
         );
 
-        /**
- * @var Payment[] $payments
-*/
+        /** @var Payment[] $payments */
         $payments = [];
         foreach ($this->model->findByGroup($id) as $p) {
             if (! $p->getState()->equalsValue(State::COMPLETED) || $p->getPersonId() === null) {
@@ -290,9 +285,7 @@ class PaymentPresenter extends BasePresenter
             }
         );
 
-        /**
- * @var Form $form
-*/
+        /** @var Form $form */
         $form = $this['repaymentForm'];
         foreach ($participantsWithRepayment as $p) {
             $pid = 'p_' . $p->ID;
@@ -506,11 +499,8 @@ class PaymentPresenter extends BasePresenter
 
     public function handleOpenRemoveDialog() : void
     {
-        /**
- * @var RemoveGroupDialog $dialog
-*/
+        /** @var RemoveGroupDialog $dialog */
         $dialog = $this['removeGroupDialog'];
-
         $dialog->open();
     }
 
