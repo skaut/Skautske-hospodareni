@@ -136,7 +136,8 @@ class ExportService
         //rozpočítává paragony do jednotlivých skupin
         foreach ($chits as $chit) {
             $category                                                                       = $chit->getCategory();
-            $sums[$category->getOperationType()->getValue()][$category->getId()]['amount'] += $chit->getAmount()->getValue();
+            $sums[$category->getOperationType()->getValue()][$category->getId()]['amount'] += $chit->getBody()
+                ->getAmount()->toFloat();
         }
 
         $totalIncome = array_sum(
