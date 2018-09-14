@@ -140,6 +140,10 @@ class ExportService
                 ->getAmount()->toFloat();
         }
 
+        /* sum up "Příjmy od účastníků"(1) and "Hromadný příjem od úč."(11) */
+        $sums[Operation::INCOME][1]['amount'] += $sums[Operation::INCOME][11]['amount'];
+        unset($sums[Operation::INCOME][11]);
+
         $totalIncome = array_sum(
             array_column($sums[Operation::INCOME], 'amount')
         );
