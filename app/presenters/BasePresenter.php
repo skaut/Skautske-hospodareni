@@ -132,9 +132,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     protected function updateUserAccess() : void
     {
-        /**
- * @var Identity $identity
-*/
+        /** @var Identity $identity */
         $identity         = $this->user->getIdentity();
         $identity->access = $this->userService->getAccessArrays($this->unitService);
     }

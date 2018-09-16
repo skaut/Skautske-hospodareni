@@ -38,9 +38,7 @@ class CashbookPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        /**
- * @var UnitCashbook[] $unitCashbooks
-*/
+        /** @var UnitCashbook[] $unitCashbooks */
         $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->aid));
 
         if (count($unitCashbooks) !== 1) {
@@ -68,9 +66,7 @@ class CashbookPresenter extends BasePresenter
 
     private function isCashbookEmpty() : bool
     {
-        /**
- * @var Chit[] $chits
-*/
+        /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->cashbookId));
 
         return empty($chits);

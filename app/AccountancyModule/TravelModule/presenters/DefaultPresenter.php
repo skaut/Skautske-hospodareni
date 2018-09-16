@@ -87,9 +87,7 @@ class DefaultPresenter extends BasePresenter
         $travels   = $this->travelService->getTravels($commandId);
         $vehicleId = $command->getVehicleId();
 
-        /**
- * @var Template $template
-*/
+        /** @var Template $template */
         $template = $this->getTemplateFactory()->createTemplate();
         $template->setParameters(
             [

@@ -169,9 +169,7 @@ class CommandForm extends Control
 
         $contractId = $command->getPassenger()->getContractId();
 
-        /**
- * @var SelectBox $contracts
-*/
+        /** @var SelectBox $contracts */
         $contracts = $form['contract_id'];
 
         if ($contractId !== null && ! isset($contracts->getItems()[$contractId])) {
@@ -202,9 +200,7 @@ class CommandForm extends Control
             return;
         }
 
-        /**
- * @var SelectBox $vehicles
-*/
+        /** @var SelectBox $vehicles */
         $vehicles = $form['vehicle_id'];
 
         if (in_array($vehicleId, $vehicles->getItems())) {

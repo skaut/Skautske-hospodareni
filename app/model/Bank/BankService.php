@@ -64,9 +64,7 @@ class BankService
         Assert::thatAll($groupIds)->integer();
         Assert::that($daysBack)->nullOr()->min(1);
 
-        /**
- * @var Group[][] $groupsByAccount
-*/
+        /** @var Group[][] $groupsByAccount */
         $foundGroups     = $this->groups->findByIds($groupIds);
         $groupsByAccount = Arrays::groupBy(
             $foundGroups,
@@ -172,9 +170,7 @@ class BankService
         $now    = new \DateTimeImmutable();
         foreach ($transactions as $transaction) {
             foreach ($paymentsByVS[$transaction->getVariableSymbol()] as $offset => $payment) {
-                /**
- * @var Payment $payment
-*/
+                /** @var Payment $payment */
                 if ($payment->getAmount() !== $transaction->getAmount()) {
                     continue;
                 }

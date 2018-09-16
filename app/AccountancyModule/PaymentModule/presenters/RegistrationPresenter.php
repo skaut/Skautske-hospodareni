@@ -65,9 +65,7 @@ class RegistrationPresenter extends BasePresenter
         }
 
         $form = $this['massAddForm'];
-        /**
- * @var MassAddForm $form
-*/
+        /** @var MassAddForm $form */
 
         // performance issue - při větším množství zobrazených osob se nezpracuje formulář
         $list = array_slice($list, 0, 50);

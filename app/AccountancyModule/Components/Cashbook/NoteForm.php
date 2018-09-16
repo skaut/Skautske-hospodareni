@@ -63,14 +63,10 @@ final class NoteForm extends BaseControl
 
     public function render() : void
     {
-        /**
- * @var Cashbook $cashbook
-*/
+        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
-        /**
- * @var BaseForm $form
-*/
+        /** @var BaseForm $form */
         $form = $this['form'];
         $form->setDefaults(
             [

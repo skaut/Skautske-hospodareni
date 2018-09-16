@@ -164,9 +164,7 @@ class UnitService
      */
     public function getUnits(User $user, string $accessType) : array
     {
-        /**
- * @var Identity $identity
-*/
+        /** @var Identity $identity */
         $identity = $user->getIdentity();
 
         $res = [];

@@ -64,9 +64,7 @@ class NextVariableSymbolSequenceQueryHandler
 
     private function getLastDigitsOfUnitNumber(int $unitId) : string
     {
-        /**
- * @var Unit $unit
-*/
+        /** @var Unit $unit */
         $unit = $this->queryBus->handle(new UnitQuery($unitId));
 
         $number = $unit->getShortRegistrationNumber();
