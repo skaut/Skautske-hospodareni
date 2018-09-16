@@ -41,7 +41,10 @@ class RegistrationPresenter extends BasePresenter
         $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
     }
 
-    public function actionMassAdd(int $id) : void
+    /**
+     * @param null $aid - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
+     */
+    public function actionMassAdd(int $id, ?int $aid = null) : void
     {
         $this->id = $id;
 
