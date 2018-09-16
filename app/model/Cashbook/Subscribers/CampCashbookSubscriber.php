@@ -59,9 +59,7 @@ final class CampCashbookSubscriber
 
     private function isCamp(CashbookId $cashbookId) : bool
     {
-        /**
- * @var Cashbook $cashbook
-*/
+        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         return $cashbook->getType()->equalsValue(CashbookType::CAMP);
     }

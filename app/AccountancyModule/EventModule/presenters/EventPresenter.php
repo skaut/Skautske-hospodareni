@@ -132,9 +132,7 @@ class EventPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        /**
- * @var Functions $functions
-*/
+        /** @var Functions $functions */
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
 
         if ($functions->getLeader() !== null) {

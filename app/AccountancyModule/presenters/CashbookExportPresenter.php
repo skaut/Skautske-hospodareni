@@ -227,9 +227,7 @@ class CashbookExportPresenter extends BasePresenter
      */
     private function getChitsWithIds(array $ids) : array
     {
-        /**
- * @var Chit[] $chits
-*/
+        /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), CashbookId::fromString($this->cashbookId)));
 
         $filteredChits = array_filter(

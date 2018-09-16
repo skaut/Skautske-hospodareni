@@ -207,9 +207,7 @@ class MoveChitsDialog extends BaseControl
 
     private function getCashbookType(CashbookId $cashbookId) : CashbookType
     {
-        /**
- * @var Cashbook $cashbook
-*/
+        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         return $cashbook->getType();
     }

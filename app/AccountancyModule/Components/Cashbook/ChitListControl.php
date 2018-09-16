@@ -77,9 +77,7 @@ class ChitListControl extends BaseControl
 
     public function render() : void
     {
-        /**
- * @var Cashbook $cashbook
-*/
+        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         $this->template->setParameters(
             [
@@ -191,9 +189,7 @@ class ChitListControl extends BaseControl
 
     private function getSkautisType() : ObjectType
     {
-        /**
- * @var Cashbook $cashbook
-*/
+        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         return $cashbook->getType()->getSkautisObjectType();
     }

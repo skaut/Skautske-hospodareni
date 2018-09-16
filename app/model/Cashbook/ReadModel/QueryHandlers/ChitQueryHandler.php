@@ -43,9 +43,7 @@ final class ChitQueryHandler
 
     private function getCategory(CashbookId $cashbookId, int $categoryId) : Category
     {
-        /**
- * @var Category[] $categories
-*/
+        /** @var Category[] $categories */
         $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
 
         foreach ($categories as $category) {

@@ -190,9 +190,7 @@ class BankAccountsPresenter extends BasePresenter
             return true;
         }
 
-        /**
- * @var SkautisRole $role
-*/
+        /** @var SkautisRole $role */
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
 
         return $role->getUnitId() === $account->getUnitId() && $role->isBasicUnit() && $role->isAccountant();
