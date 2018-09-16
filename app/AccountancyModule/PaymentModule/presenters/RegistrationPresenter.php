@@ -41,7 +41,10 @@ class RegistrationPresenter extends BasePresenter
         $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
     }
 
-    public function actionMassAdd(int $id) : void
+    /**
+     * @param null $aid - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
+     */
+    public function actionMassAdd(int $id, ?int $aid = null) : void
     {
         $this->id = $id;
 
@@ -62,9 +65,7 @@ class RegistrationPresenter extends BasePresenter
         }
 
         $form = $this['massAddForm'];
-        /**
- * @var MassAddForm $form
-*/
+        /** @var MassAddForm $form */
 
         // performance issue - při větším množství zobrazených osob se nezpracuje formulář
         $list = array_slice($list, 0, 50);

@@ -44,9 +44,7 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        /**
- * @var Money $finalBalance
-*/
+        /** @var Money $finalBalance */
         $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
 
         $this->template->setParameters(
@@ -78,9 +76,7 @@ class CashbookPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        /**
- * @var Functions $functions
-*/
+        /** @var Functions $functions */
         $functions  = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
         $date       = $this->eventService->getEvent()->get($aid)->StartDate;
         $accountant = $functions->getAccountant() !== null
@@ -109,9 +105,7 @@ class CashbookPresenter extends BasePresenter
 
     private function isCashbookEmpty() : bool
     {
-        /**
- * @var Chit[] $chits
-*/
+        /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->getCashbookId()));
 
         return empty($chits);

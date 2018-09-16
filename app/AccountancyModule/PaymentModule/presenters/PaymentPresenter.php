@@ -218,7 +218,10 @@ class PaymentPresenter extends BasePresenter
         $this->template->linkBack = $this->link('detail', ['id' => $payment->getGroupId()]);
     }
 
-    public function actionMassAdd(int $id) : void
+    /**
+     * @param null $aid - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
+     */
+    public function actionMassAdd(int $id, ?int $aid = null) : void
     {
         //ověření přístupu
         $this->template->unitPairs = $this->readUnits;

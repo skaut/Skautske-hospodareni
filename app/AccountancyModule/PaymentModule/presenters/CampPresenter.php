@@ -42,7 +42,10 @@ class CampPresenter extends BasePresenter
         $this->campService         = $this->context->getService('campService');
     }
 
-    public function actionMassAdd(int $id) : void
+    /**
+     * @param null $aid - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
+     */
+    public function actionMassAdd(int $id, ?int $aid = null) : void
     {
         $this->id = $id;
         $group    = $this->model->getGroup($id);
@@ -60,9 +63,7 @@ class CampPresenter extends BasePresenter
         $participants = $this->campService->getParticipants()->getAll($group->getSkautisId());
 
         $form = $this['massAddForm'];
-        /**
- * @var MassAddForm $form
-*/
+        /** @var MassAddForm $form */
 
         $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
 
