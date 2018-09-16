@@ -235,9 +235,8 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('Payment:detail', ['id' => $id]); // redirect elsewhere?
         }
 
-        $form = $this['massAddForm'];
         /** @var MassAddForm $form */
-
+        $form = $this['massAddForm'];
         $list = $this->model->getPersons($this->aid, $id);
 
         foreach ($list as $p) {
@@ -505,7 +504,6 @@ class PaymentPresenter extends BasePresenter
     {
         /** @var RemoveGroupDialog $dialog */
         $dialog = $this['removeGroupDialog'];
-
         $dialog->open();
     }
 
