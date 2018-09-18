@@ -1,5 +1,13 @@
-body {
-    padding-top: 60px;
+@media (min-width: 768px) {
+    body {
+        padding-top: 120px;
+    }
+}
+
+@media (max-width: 767px), (min-width: 992px) {
+    body {
+        padding-top: 60px;
+    }
 }
 
 .main-panel {
@@ -108,6 +116,10 @@ form.nonMargin, form.nonMargin input {
 
 .inout input.combobox-text {
     width: 150px;
+}
+
+.bm12 {
+    margin-bottom: 12px;
 }
 
 /*JQuery UI */

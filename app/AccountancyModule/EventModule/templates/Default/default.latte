@@ -5,13 +5,16 @@
 {snippet events}
     <div class="row">
         <div class="well well-sm">
-            <div n:if="$accessCreate" class='col-lg-2 col-md-3'>
+            <div n:if="$accessCreate" class="bm12">
                 <button type="button" data-toggle="collapse" data-target="#createNew" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou akci</button>
             </div>
-            {form formFilter class=>"ajax filter form-inline"}
-                <span class="hidden-xs hidden-sm">{label year /}</span>{input year onchange=>"changeYear(this.value)", class=>"form-control"}
-                <span class="hidden-xs hidden-sm">{label state /}</span>{input state onchange=>"changeState(this.value)", class=>"form-control"}
-            {/form}
+            <div>
+                {form formFilter class=>"ajax filter form-inline"}
+                    <div class="form-group"><span class="hidden-xs">{label year /}</span>{input year onchange=>"changeYear(this.value)", class=>"form-control"}</div>
+                    <div class="form-group"><span class="hidden-xs">{label state /}</span>{input state onchange=>"changeState(this.value)", class=>"form-control"}</div>
+                {/form}
+            </div>
+
         </div>
     </div>
     <div class="row" n:if="$accessCreate">
