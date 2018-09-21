@@ -184,6 +184,8 @@ abstract class AccountancyHelpers
         ];
 
         $_desitky = [
+            0 => '',
+            1 => '',
             2 => 'dvacet',
             3 => 'třicet',
             4 => 'čtyřicet',
