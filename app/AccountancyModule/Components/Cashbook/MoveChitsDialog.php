@@ -103,7 +103,7 @@ class MoveChitsDialog extends BaseControl
             'Tábory' => $this->getListOfEvents(ObjectType::CAMP, ['draft', 'approvedParent', 'approvedLeader']),
         ];
 
-        $form->addSelect('newCashbookId', 'Nová pokladní kniha:', $items)
+        $form->addSelect('newCashbookId', 'Nová evidence plateb:', $items)
             ->setPrompt('Zvolte knihu');
 
         $form->addSubmit('move', 'Přesunout doklady')
@@ -126,7 +126,7 @@ class MoveChitsDialog extends BaseControl
         }
 
         if ($values->newCashbookId === null) {
-            $form->addError('Nebyla vybrána žádná cílová pokladní kniha!');
+            $form->addError('Nebyla vybrána žádná cílová evidence plateb!');
             return;
         }
 

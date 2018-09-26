@@ -103,8 +103,8 @@ class InvertChitDialog extends BaseControl
 
         $form = new BaseForm();
 
-        $form->addSelect('cashbookId', 'Pokladní kniha', $this->getCashbooks())
-            ->setRequired('Musíte vybrat pokladní knihu');
+        $form->addSelect('cashbookId', 'Evidence plateb', $this->getCashbooks())
+            ->setRequired('Musíte vybrat evidenci plateb');
 
         $form->addSubmit('send', 'Vytvořit protidoklad')
             ->setAttribute('class', 'ajax');

@@ -64,12 +64,12 @@ class PrivilegesPresenter extends BasePresenter
                 ],
             ],
             'cashbook'=>[
-                'label'=>'Pokladní kniha',
+                'label'=>'Evidence plateb',
                 'items'=> [
                     [
                         'label' => 'Upravovat pokladní knihu',
                         'value' => $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid),
-                        'desc' => 'Lze editovat pokladní knihu této akce.',
+                        'desc' => 'Lze editovat evidenci plateb této akce.',
                     ],
                 ],
             ],
