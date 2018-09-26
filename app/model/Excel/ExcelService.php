@@ -319,7 +319,7 @@ class ExcelService
         $sheet->getStyle('H1:H' . ($rowCnt - 1))->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
 
-        $sheet->setTitle('Pokladní kniha');
+        $sheet->setTitle('Evidence plateb');
     }
 
     /**

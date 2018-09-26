@@ -70,7 +70,7 @@ class CashbookWithCategoriesBuilder
     private function addCashbookHeader() : void
     {
         $this->sheet->mergeCells('D2:G2');
-        $this->sheet->setCellValue('D2', 'Pokladní kniha');
+        $this->sheet->setCellValue('D2', 'Evidence plateb');
 
         $columns = ['Dne', 'Dokl.', 'Účel platby', 'Příjem', 'Výdaj', 'Zůstatek'];
         $column  = 2;
