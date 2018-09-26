@@ -115,7 +115,16 @@ function prepareGridGroupActions(grid) {
 }
 
 function jqCheckAll(id, name) {
-    $("input[name^=" + name + "][type='checkbox']").prop('checked', $('#' + id).is(':checked'));
+    const checked = document.getElementById(id).checked;
+
+    getCheckboxesWithNamePrefix(name).forEach(function (checkbox) {
+        checkbox.checked = checked;
+        checkbox.dispatchEvent(new Event('change'));
+    });
+}
+
+function getCheckboxesWithNamePrefix(name) {
+    return document.querySelectorAll('input[name^="' + name + '"][type="checkbox"]');
 }
 
 function jqCheckAll2(el, className)
