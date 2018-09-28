@@ -37,6 +37,8 @@ services:
             main:
                 aliases:
                     - mysql-test
+        healthcheck:
+            test: mysqladmin ping --silent
 
     phantom:
         container_name: hskauting.phantom
