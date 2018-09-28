@@ -1,0 +1,37 @@
+image: tmaier/docker-compose:latest
+# test
+services:
+  - docker:dind
+
+stages:
+  - build
+  - test
+
+cache:
+  paths:
+    - .composercache
+    - nette-temp/.phpcs-cache
+
+install dependencies:
+  stage: build
+  script:
+    - docker runcomposer config cache-files-dir .composercache
+    - composer install
+  artifacts:
+    paths:
+      - vendor
+
+static analysis:
+  stage: test
+  script:
+    - phing static-analysis
+
+coding standard:
+  stage: test
+  script:
+    - phing coding-standard
+
+unit tests:
+  stage: test
+  script:
+    - composer tests-unit
