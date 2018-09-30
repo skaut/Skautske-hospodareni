@@ -5,17 +5,30 @@ declare(strict_types=1);
 namespace Model\Payment\BankAccount;
 
 use BankAccountValidator\Czech;
+use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\InvalidBankAccountNumber;
 
+/**
+ * @ORM\Embeddable()
+ */
 class AccountNumber
 {
-    /** @var string|NULL */
+    /**
+     * @var string|NULL
+     * @ORM\Column(type="string", nullable=true, length=6)
+     */
     private $prefix;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=10)
+     */
     private $number;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=4)
+     */
     private $bankCode;
 
     /**
