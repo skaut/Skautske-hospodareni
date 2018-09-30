@@ -16,6 +16,7 @@ doctrine:
     dbname: %database.name%
     metadata:
         Model\Cashbook: %domainModelDir%/Cashbook
+        Model\Payment\Payment: %domainModelDir%/Payment
         Model\Logger: yaml(%mappingDir%/Logger)
         Model\Payment: yaml(%mappingDir%/Payment)
         Model\Travel: yaml(%mappingDir%/Travel)
