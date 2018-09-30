@@ -5,13 +5,23 @@ declare(strict_types=1);
 namespace Model\Payment\Group;
 
 use DateTimeImmutable;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Embeddable()
+ */
 final class BankAccount
 {
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="integer", nullable=true, name="bank_account_id")
+     */
     private $id;
 
-    /** @var DateTimeImmutable|NULL */
+    /**
+     * @var DateTimeImmutable|NULL
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
     private $lastPairing;
 
     private function __construct(int $id, ?DateTimeImmutable $lastPairing)

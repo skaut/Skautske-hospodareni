@@ -16,10 +16,9 @@ doctrine:
     dbname: %database.name%
     metadata:
         Model\Cashbook: %domainModelDir%/Cashbook
-        Model\Payment\BankAccount: %domainModelDir%/Payment
-        Model\Payment\Payment: %domainModelDir%/Payment
         Model\Logger: yaml(%mappingDir%/Logger)
-        Model\Payment: yaml(%mappingDir%/Payment)
+        Model\Payment\MailCredentials: yaml(%mappingDir%/Payment)
+        Model\Payment: %domainModelDir%/Payment
         Model\Travel: yaml(%mappingDir%/Travel)
     types:
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
@@ -53,6 +52,10 @@ services:
 
     - class: Fmasa\DoctrineNullableEmbeddables\Subscriber
       arguments: { reader: @annotations.reader }
+      tags: [kdyby.subscriber]
+
+    - class: Fmasa\DoctrineNullableEmbeddables\Subscriber
+      arguments: { reader: @kdyby.annotations.reader }
       tags: [kdyby.subscriber]
 
 decorator:

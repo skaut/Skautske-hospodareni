@@ -4,25 +4,49 @@ declare(strict_types=1);
 
 namespace Model\Payment\Group;
 
+use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
+use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="pa_group_email")
+ */
 class Email
 {
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
     private $id;
 
-    /** @var Group */
+    /**
+     * @var Group
+     * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="emails")
+     */
     private $group;
 
-    /** @var bool */
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
     private $enabled = true;
 
-    /** @var EmailType */
+    /**
+     * @var EmailType
+     * @ORM\Column(type="string_enum")
+     * @Enum(class=EmailType::class)
+     */
     private $type;
 
-    /** @var EmailTemplate */
+    /**
+     * @var EmailTemplate
+     * @ORM\Embedded(class=EmailTemplate::class)
+     */
     private $template;
 
     public function __construct(Group $group, EmailType $type, EmailTemplate $template)
