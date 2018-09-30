@@ -17,7 +17,6 @@ doctrine:
     metadata:
         Model\Cashbook: %domainModelDir%/Cashbook
         Model\Logger: yaml(%mappingDir%/Logger)
-        Model\Payment\MailCredentials: yaml(%mappingDir%/Payment)
         Model\Payment: %domainModelDir%/Payment
         Model\Travel: yaml(%mappingDir%/Travel)
     types:
