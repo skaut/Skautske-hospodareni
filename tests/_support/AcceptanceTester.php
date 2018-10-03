@@ -57,7 +57,7 @@ class AcceptanceTester extends Actor
     }
 
     /**
-     * PhantomJS can't work with popups ¯\_(ツ)_/¯
+     * Chrome can't work with popups ¯\_(ツ)_/¯
      */
     public function disablePopups() : void
     {
