@@ -1,0 +1,66 @@
+image: fmasa/lebeda:7.1-ci
+
+stages:
+  - build
+  - test
+  - acceptance
+
+cache:
+  paths:
+    - .composercache
+    - nette-temp/.phpcs-cache
+
+install dependencies:
+  stage: build
+  script:
+    - composer config -g github-oauth.github.com $GITHUB_OAUTH_TOKEN
+    - composer config cache-files-dir .composercache
+    - composer install
+  artifacts:
+    paths:
+      - vendor
+
+static analysis:
+  stage: test
+  script:
+    - phing static-analysis
+
+coding standard:
+  stage: test
+  script:
+    - phing coding-standard
+
+unit and integration tests:
+  stage: test
+  services:
+    - name: mysql:5.7
+      alias: mysql-test
+    - name: tophfr/mailcatcher
+      alias: smtp-hospodareni.loc
+
+  variables:
+    MYSQL_ROOT_PASSWORD: 'root'
+    MYSQL_DATABASE: hskauting
+    SMTP_HOST: smtp-hospodareni.loc
+
+  script:
+    - phing tests-with-coverage
+    - mv tests/_output/coverage.xml clover.xml && bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
+
+acceptance tests:
+  image: tmaier/docker-compose:latest
+
+  artifacts:
+    when: always
+    paths:
+      - tests/_output
+  services:
+    - docker:dind
+
+  stage: acceptance
+  script:
+    - mv app/config/config.ci.local.neon app/config/config.local.neon
+    - docker-compose -f docker-compose.yml up -d
+    - while ! docker ps | grep hskauting.mysql-test | grep healthy > /dev/null; do sleep 1; done # Wait for Mysql
+    - docker-compose exec -T -u www-data app php www/index.php migrations:migrate --no-interaction
+    - docker-compose exec -T -u www-data app phing tests-acceptance
