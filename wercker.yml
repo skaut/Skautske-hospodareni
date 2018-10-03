@@ -44,8 +44,8 @@ build:
             output_file: app/config/config.local.neon
 
         - script:
-            name: start phantomjs
-            code: phantomjs --webdriver=4444 --ignore-ssl-errors=true --ssl-protocol=any &
+            name: start Selenium
+            code: selenium-standalone start &
 
         - script:
             name: Symlink webroot
@@ -60,8 +60,8 @@ build:
             code: echo "127.0.0.1 hospodareni.loc" >> /etc/hosts
 
         - script:
-            name: configure /etc/hosts (phantom)
-            code: echo "127.0.0.1 phantom" >> /etc/hosts
+            name: configure /etc/hosts (chrome)
+            code: echo "127.0.0.1 chrome" >> /etc/hosts
 
         - script:
             name: Make everything accessible

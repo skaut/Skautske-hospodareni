@@ -10,9 +10,12 @@ modules:
     enabled:
         - WebDriver:
             url: http://hospodareni.loc
-            browser: phantomjs
-            host: phantom
-            window_size: 1366x768
+            browser: chrome
+            host: chrome
+            capabilities:
+                chromeOptions:
+                    args: ["--headless", "--disable-gpu", "--no-sandbox", "--window-size=1366,768"]
+                    binary: "/usr/bin/google-chrome"
 
         - \Helper\Acceptance
 
