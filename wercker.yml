@@ -83,6 +83,10 @@ build:
             name: acceptance testing
             code: phing tests-acceptance
 
+    atfter-steps:
+        - script:
+            name: Save tests output
+            code: mv tests/_output/* $WERCKER_OUTPUT_DIR
 deploy:
     steps:
         - add-to-known_hosts:
