@@ -21,6 +21,11 @@ class ErrorPresenter extends Presenter
     /** @var ILogger */
     private $logger;
 
+    private const SKAUTIS_UNAVAILABLE_ERRORS = [
+        'Server was unable to process request.',
+        'Could not connect to host',
+    ];
+
     public function __construct(ILogger $logger)
     {
         parent::__construct();
@@ -46,7 +51,7 @@ class ErrorPresenter extends Presenter
             $this->user->logout(true);
             $this->flashMessage('Vypršelo přihlášení do skautISu', 'danger');
             $this->redirect(':Default:');
-        } elseif ($exception instanceof WsdlException && $exception->getMessage() === 'Could not connect to host') {
+        } elseif ($exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
             $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.');
             $this->redirect(':Default:');
         } else {
@@ -61,5 +66,16 @@ class ErrorPresenter extends Presenter
         // AJAX request? Note this error in payload.
         $this->payload->error = true;
         $this->sendPayload();
+    }
+
+    private function isSkautisUnavailable(WsdlException $exception) : bool
+    {
+        foreach (self::SKAUTIS_UNAVAILABLE_ERRORS as $message) {
+            if (Nette\Utils\Strings::startsWith($exception->getMessage(), $message)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
