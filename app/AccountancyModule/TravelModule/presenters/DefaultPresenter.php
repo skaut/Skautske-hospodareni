@@ -258,7 +258,9 @@ class DefaultPresenter extends BasePresenter
             ->addRule(Form::FILLED, 'Musíte vyplnit místo konce cesty.');
         $form->addText('distanceOrPrice', 'Vzdálenost*')
             ->setAttribute('class', 'form-control input-sm date')
-            ->addRule(Form::FILLED, 'Musíte vyplnit vzdálenost.');
+            ->setRequired('Musíte vyplnit vzdálenost.')
+            ->addRule(Form::FLOAT, 'Vzdálenost musí být číslo.')
+            ->addRule(Form::MIN, 'Vzdálenost musí být větší než 0.', 0.01);
         $form->addSubmit('send', 'Upravit')
             ->setAttribute('class', 'btn btn-primary');
 
