@@ -254,6 +254,69 @@ class CommandTest extends Unit
         $this->assertSame($closedAt, $command->getClosedAt());
     }
 
+    /**
+     * @dataProvider dataNegativeOrZero
+     */
+    public function testAddingVehicleTravelWithNegativeOrZeroDistanceThrowsException(float $distance) : void
+    {
+        $command = $this->createCommand($this->mockVehicle());
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $command->addVehicleTravel($distance, $this->getDetails());
+    }
+
+    /**
+     * @dataProvider dataNegativeOrZero
+     */
+    public function testAddingTransportTravelWithNegativeOrZeroPriceThrowsException(float $price) : void
+    {
+        $command = $this->createCommand();
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $command->addTransportTravel(MoneyFactory::fromFloat($price), $this->getDetails());
+    }
+
+    /**
+     * @dataProvider dataNegativeOrZero
+     * @throws \Throwable
+     */
+    public function testUpdatingVehicleTravelWithNegativeOrZeroDistanceThrowsException(float $distance) : void
+    {
+        $command = $this->createCommand($this->mockVehicle());
+        $command->addVehicleTravel(10, $this->getDetails());
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $command->updateVehicleTravel(0, $distance, $this->getDetails());
+    }
+
+    /**
+     * @dataProvider dataNegativeOrZero
+     * @throws \Throwable
+     */
+    public function testUpdatingTransportTravelWithNegativeOrZeroPriceThrowsException(float $price) : void
+    {
+        $command = $this->createCommand();
+        $command->addTransportTravel(MoneyFactory::fromFloat(10), $this->getDetails());
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $command->updateTransportTravel(0, MoneyFactory::fromFloat($price), $this->getDetails());
+    }
+
+    /**
+     * @return float[][]
+     */
+    public function dataNegativeOrZero() : array
+    {
+        return [
+            [0],
+            [-0.01],
+        ];
+    }
+
     private function mockVehicle() : m\MockInterface
     {
         return m::mock(Vehicle::class);

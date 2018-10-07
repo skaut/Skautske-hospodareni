@@ -181,7 +181,8 @@ class DefaultPresenter extends BasePresenter
         $form->addText('distance', 'Vzdálenost*')
             ->setAttribute('class', 'form-control input-sm')
             ->addRule(Form::FILLED, 'Musíte vyplnit vzdálenost.')
-            ->addRule(Form::FLOAT, 'Vzdálenost musí být číslo!');
+            ->addRule(Form::FLOAT, 'Vzdálenost musí být číslo!')
+            ->addRule(Form::MIN, 'Vzdálenost musí být větší než 0.', 0.01);
         $form->addSubmit('send', 'Přidat')
             ->setAttribute('class', 'btn btn-primary');
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Travel\Command;
 
 use Model\Travel\Command;
+use function sprintf;
 
 class VehicleTravel extends Travel
 {
@@ -14,20 +15,26 @@ class VehicleTravel extends Travel
     public function __construct(int $id, float $distance, TravelDetails $details, Command $command)
     {
         parent::__construct($id, $command, $details);
-        $this->distance = $distance;
+        $this->setDistance($distance);
     }
 
     public function update(float $distance, TravelDetails $details) : void
     {
-        if ($distance <= 0) {
-            throw new \InvalidArgumentException('Distance must be positive number');
-        }
-        $this->distance = $distance;
+        $this->setDistance($distance);
         $this->setDetails($details);
     }
 
     public function getDistance() : float
     {
         return $this->distance;
+    }
+
+    private function setDistance(float $distance) : void
+    {
+        if ($distance <= 0) {
+            throw new \InvalidArgumentException(sprintf('Distance must be positive number, %f given.', $distance));
+        }
+
+        $this->distance = $distance;
     }
 }
