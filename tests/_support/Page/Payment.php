@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Page;
 
 use function date;
+use function sprintf;
 
 class Payment
 {
@@ -58,12 +59,10 @@ class Payment
 
         $daysToNextWorkday = $dayOfWeek < 5 ? 1 : 8 - $dayOfWeek;
 
-        $date = (new \DateTime())->modify("+ $daysToNextWorkday days")->format('j');
+        $date = (new \DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
 
-        $button = "(//td[text()='$date' and not(contains(@class, 'disabled'))])[last()]"; // Tlačítko v datepickeru
-        $I->waitForElementVisible($button);
-        $I->click($button);
-        $I->waitForElementNotVisible($button);
+        $I->fillField('(//table//input)[6]', $date);
+
     }
 
     public function submitPayment() : void

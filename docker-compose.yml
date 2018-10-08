@@ -38,14 +38,13 @@ services:
                 aliases:
                     - mysql-test
 
-    phantom:
-        container_name: hskauting.phantom
-        image: davert/phantomjs-env
+    chrome:
+        container_name: hskauting.chrome
+        image: selenium/standalone-chrome
         networks:
             main:
                 aliases:
-                    - phantom
-        command: phantomjs --webdriver=4444 --ssl-protocol=any --ignore-ssl-errors=true
+                    - chrome
 
     smtp:
         container_name: hskauting.smtp
