@@ -22,7 +22,7 @@ class LoggerService
 
     public function log(int $unitId, int $userId, string $description, Type $type, ?int $typeId = null) : void
     {
-        $this->logs->save(new LogEntry($unitId, $userId, $description, $type, $typeId));
+        $this->logs->save(new LogEntry($unitId, $userId, $description, $type, $typeId, new \DateTimeImmutable()));
     }
 
     /**

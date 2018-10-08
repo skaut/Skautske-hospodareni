@@ -20,7 +20,7 @@ class LogEntryRepository implements ILogEntryRepository
     }
 
     /**
-     * {@inheritDoc}
+     * @return LogEntry[]
      */
     public function findAllByTypeId(Type $type, int $typeId) : array
     {
