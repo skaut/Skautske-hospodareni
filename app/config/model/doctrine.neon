@@ -18,6 +18,7 @@ doctrine:
         Model\Cashbook: %domainModelDir%/Cashbook
         Model\Logger: %domainModelDir%/Logger
         Model\Payment: %domainModelDir%/Payment
+        Model\Travel\Vehicle: %domainModelDir%/Travel/Vehicle
         Model\Travel: yaml(%mappingDir%/Travel)
     types:
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
