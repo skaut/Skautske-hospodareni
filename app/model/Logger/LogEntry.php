@@ -2,55 +2,39 @@
 
 declare(strict_types=1);
 
-namespace Model\DTO\Logger;
+namespace Model\Logger;
 
-use DateTimeImmutable;
 use Model\Logger\Log\Type;
-use Nette\SmartObject;
 
-/**
- * @property-read int $id
- * @property-read int $unitId
- * @property-read DateTimeImmutable $date
- * @property-read int $userId
- * @property-read Type $type
- * @property-read ?int $typeId
- * @property-read string $description
- */
-class Log
+class LogEntry
 {
-    use SmartObject;
+    /** @var int */
+    private $id;
 
     /** @var int */
     private $unitId;
 
-    /** @var DateTimeImmutable */
+    /** @var \DateTimeImmutable */
     private $date;
 
     /** @var int */
     private $userId;
 
-    /** @var  string */
+    /** @var string */
     private $description;
 
-    /** @var Type */
+    /** @var  Type */
     private $type;
 
     /** @var int|NULL */
     private $typeId;
 
-    public function __construct(
-        int $unitId,
-        DateTimeImmutable $date,
-        int $userId,
-        string $description,
-        Type $type,
-        ?int $typeId
-    ) {
+    public function __construct(int $unitId, int $userId, string $desc, Type $type, ?int $typeId = null)
+    {
         $this->unitId      = $unitId;
-        $this->date        = $date;
+        $this->date        = new \DateTimeImmutable();
         $this->userId      = $userId;
-        $this->description = $description;
+        $this->description = $desc;
         $this->type        = $type;
         $this->typeId      = $typeId;
     }
@@ -75,9 +59,9 @@ class Log
         return $this->description;
     }
 
-    public function getType() : string
+    public function getType() : Type
     {
-        return $this->type->getValue();
+        return $this->type;
     }
 
     public function getTypeId() : ?int

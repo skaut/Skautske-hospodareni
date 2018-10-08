@@ -1,4 +1,4 @@
-Model\Logger\Log:
+Model\Logger\LogEntry:
 
     type: entity
     table: log
