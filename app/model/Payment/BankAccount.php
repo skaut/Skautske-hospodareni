@@ -4,31 +4,59 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\BankAccount\AccountNumber;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="pa_bank_account")
+ */
 class BankAccount
 {
     private const FIO_BANK_CODE = '2010';
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
     private $id;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
     private $unitId;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $name;
 
-    /** @var AccountNumber */
+    /**
+     * @var AccountNumber
+     * @ORM\Embedded(class=AccountNumber::class)
+     */
     private $number;
 
-    /** @var string|NULL */
+    /**
+     * @var string|NULL
+     * @ORM\Column(type="string", nullable=true)
+     */
     private $token;
 
-    /** @var \DateTimeImmutable */
+    /**
+     * @var \DateTimeImmutable
+     * @ORM\Column(type="datetime_immutable")
+     */
     private $createdAt;
 
-    /** @var bool */
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
     private $allowedForSubunits = false;
 
     public function __construct(

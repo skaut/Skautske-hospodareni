@@ -1,7 +1,0 @@
-Model\Payment\EmailTemplate:
-
-    type: embeddable
-
-    fields:
-        subject: { type: string }
-        body: { type: text }

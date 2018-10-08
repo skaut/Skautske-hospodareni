@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\Mailing\Payment;
 use Nette\Utils\Strings;
 use function array_key_exists;
@@ -13,12 +14,21 @@ use function http_build_query;
 use function preg_match;
 use function str_replace;
 
+/**
+ * @ORM\Embeddable()
+ */
 class EmailTemplate
 {
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $subject;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="text")
+     */
     private $body;
 
     public function __construct(string $subject, string $body)

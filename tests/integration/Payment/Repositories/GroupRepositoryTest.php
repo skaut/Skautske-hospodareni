@@ -98,6 +98,7 @@ class GroupRepositoryTest extends \IntegrationTest
         $this->assertEquals($paymentDefaults->getNextVariableSymbol(), $group->getPaymentDefaults()->getNextVariableSymbol());
         $this->assertTrue($infoEmail->equals($group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO))));
         $this->assertTrue($group->isEmailEnabled(EmailType::get(EmailType::PAYMENT_INFO)));
+        $this->assertNull($group->getObject());
     }
 
     public function testRemoveRemovesGroupFromDatabase() : void

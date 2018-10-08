@@ -14,6 +14,9 @@ use Nette\DI\Config\Helpers;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
 
+/**
+ * @deprecated Use PHP annotations instead of YAML
+ */
 class YamlAnnotationsExtension extends CompilerExtension
 {
     private const DEFAULTS = [

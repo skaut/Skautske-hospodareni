@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Payment;
 
+use Doctrine\ORM\Mapping as ORM;
 use Model\Bank\Fio\Transaction as FioTransaction;
 use Nette\SmartObject;
 
@@ -12,21 +13,35 @@ use Nette\SmartObject;
  * @property-read string|NULL $bankAccount
  * @property-read string $payer
  * @property-read string|NULL $note
+ *
+ * @ORM\Embeddable()
  */
 class Transaction
 {
     use SmartObject;
 
-    /** @var int @todo start using string as does FIO */
+    /**
+     * @var int @todo start using string as does FIO
+     * @ORM\Column(type="integer", nullable=true, name="transactionId")
+     */
     private $id;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", nullable=true, name="paidFrom")
+     */
     private $bankAccount;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", nullable=true, name="transaction_payer")
+     */
     private $payer;
 
-    /** @var string|NULL */
+    /**
+     * @var string|NULL
+     * @ORM\Column(type="string", nullable=true, name="transaction_note")
+     */
     private $note;
 
     public function __construct(int $id, string $bankAccount, string $payer, ?string $note)

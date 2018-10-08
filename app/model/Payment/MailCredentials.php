@@ -4,32 +4,65 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
+use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\MailCredentials\MailProtocol;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="pa_smtp")
+ */
 class MailCredentials
 {
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
     private $id;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="integer", name="unitId")
+     */
     private $unitId;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $host;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $username;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $password;
 
-    /** @var MailProtocol */
+    /**
+     * @var MailProtocol
+     * @ORM\Column(type="string_enum", name="secure")
+     * @Enum(class=MailProtocol::class)
+     */
     private $protocol;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $sender;
 
-    /** @var \DateTimeImmutable */
+    /**
+     * @var \DateTimeImmutable
+     * @ORM\Column(type="datetime_immutable", name="created")
+     */
     private $createdAt;
 
     public function __construct(

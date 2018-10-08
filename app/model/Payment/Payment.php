@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
+use Doctrine\ORM\Mapping as ORM;
+use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use Model\Common\Aggregate;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCompleted;
@@ -13,45 +16,92 @@ use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
 use function in_array;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="pa_payment")
+ */
 class Payment extends Aggregate
 {
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
     private $id;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="integer", name="groupId", options={"unsigned"=true})
+     */
     private $groupId;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $name;
 
-    /** @var string|NULL */
+    /**
+     * @var string|NULL
+     * @ORM\Column(type="string", nullable=true)
+     */
     private $email;
 
-    /** @var int|NULL */
+    /**
+     * @var int|NULL
+     * @ORM\Column(type="integer", nullable=true, name="personId")
+     */
     private $personId;
 
-    /** @var float */
+    /**
+     * @var float
+     * @ORM\Column(type="float")
+     */
     private $amount;
 
-    /** @var DateTimeImmutable */
+    /**
+     * @var DateTimeImmutable
+     * @ORM\Column(type="datetime_immutable", name="maturity")
+     */
     private $dueDate;
 
-    /** @var VariableSymbol|NULL */
+    /**
+     * @var VariableSymbol|NULL
+     * @ORM\Column(type="variable_symbol", nullable=true, name="vs")
+     */
     private $variableSymbol;
 
-    /** @var int|NULL */
+    /**
+     * @var int|NULL
+     * @ORM\Column(type="integer", nullable=true, name="ks")
+     */
     private $constantSymbol;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $note = '';
 
-    /** @var Transaction|NULL */
+    /**
+     * @var Transaction|NULL
+     * @ORM\Embedded(class=Transaction::class, columnPrefix=false)
+     * @Nullable()
+     */
     private $transaction;
 
-    /** @var DateTimeImmutable|NULL */
+    /**
+     * @var DateTimeImmutable|NULL
+     * @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed")
+     */
     private $closedAt;
 
-    /** @var State */
+    /**
+     * @var State
+     * @ORM\Column(type="string_enum")
+     * @Enum(class=State::class)
+     */
     private $state;
 
     public function __construct(

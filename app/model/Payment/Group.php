@@ -5,44 +5,87 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use Model\Payment\Group\Email;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Repositories\IBankAccountRepository;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="pa_group")
+ */
 class Group
 {
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
+     */
     private $id;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="integer", name="unitId")
+     */
     private $unitId;
 
-    /** @var SkautisEntity|NULL */
+    /**
+     * @var SkautisEntity|NULL
+     * @ORM\Embedded(class=SkautisEntity::class, columnPrefix=false)
+     * @Nullable()
+     */
     private $object;
 
-    /** @var string|NULL */
+    /**
+     * @var string|NULL
+     * @ORM\Column(type="string", nullable=true, name="label")
+     */
     private $name;
 
-    /** @var PaymentDefaults */
+    /**
+     * @var PaymentDefaults
+     * @ORM\Embedded(class=PaymentDefaults::class, columnPrefix=false)
+     */
     private $paymentDefaults;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $state = self::STATE_OPEN;
 
-    /** @var \DateTimeImmutable|NULL */
+    /**
+     * @var \DateTimeImmutable|NULL
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
     private $createdAt;
 
-    /** @var Group\BankAccount|NULL */
+    /**
+     * @var Group\BankAccount|NULL
+     * @ORM\Embedded(class=Group\BankAccount::class, columnPrefix=false)
+     * @Nullable()
+     */
     private $bankAccount;
 
-    /** @var ArrayCollection|Email[] */
+    /**
+     * @var ArrayCollection|Email[]
+     * @ORM\OneToMany(targetEntity=Email::class, mappedBy="group", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
     private $emails;
 
-    /** @var int|NULL */
+    /**
+     * @var int|NULL
+     * @ORM\Column(type="integer", nullable=true)
+     */
     private $smtpId;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", name="state_info")
+     */
     private $note = '';
 
     public const STATE_OPEN   = 'open';
