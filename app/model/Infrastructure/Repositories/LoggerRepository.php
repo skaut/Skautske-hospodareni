@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Model\Logger\Repositories;
+namespace Model\Infrastructure\Repositories\Logger;
 
 use Doctrine\ORM\EntityManager;
 use Model\Logger\Log;
 use Model\Logger\Log\Type;
+use Model\Logger\Repositories\ILoggerRepository;
 
 class LoggerRepository implements ILoggerRepository
 {
