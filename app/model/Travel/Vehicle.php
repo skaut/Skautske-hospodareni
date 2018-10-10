@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace Model\Travel;
 
+use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Vehicle\Metadata;
 use Model\Unit\Unit;
 use Nette\SmartObject;
 
 /**
+ * @ORM\Entity()
+ * @ORM\Table(name="tc_vehicle")
  * @property-read int           $id
  * @property-read string        $type
  * @property-read int           $unitId
  * @property-read int|NULL      $subunitId
  * @property-read string        $registration
  * @property-read float         $consumption
- * @property-read string|NULL   $note
+ * @property-read string        $note
  * @property-read bool          $archived
  * @property-read Metadata      $metadata
  */
@@ -23,33 +26,61 @@ class Vehicle
 {
     use SmartObject;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
     private $id;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $type;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
     private $unitId;
 
-    /** @var int|NULL */
+    /**
+     * @var int|NULL
+     * @ORM\Column(type="integer", nullable=true)
+     */
     private $subunitId;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $registration;
 
-    /** @var float */
+    /**
+     * @var float
+     * @ORM\Column(type="float")
+     */
     private $consumption;
 
-    /** @var string|NULL */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $note = '';
 
-    /** @var bool */
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
     private $archived = false;
 
-    /** @var Metadata */
+    /**
+     * @var Metadata
+     * @ORM\Embedded(class=Metadata::class)
+     */
     private $metadata;
-
 
     public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption, Metadata $metadata)
     {
@@ -111,7 +142,7 @@ class Vehicle
     }
 
 
-    public function getNote() : ?string
+    public function getNote() : string
     {
         return $this->note;
     }

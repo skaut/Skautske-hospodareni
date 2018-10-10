@@ -16,8 +16,9 @@ doctrine:
     dbname: %database.name%
     metadata:
         Model\Cashbook: %domainModelDir%/Cashbook
-        Model\Logger: yaml(%mappingDir%/Logger)
+        Model\Logger: %domainModelDir%/Logger
         Model\Payment: %domainModelDir%/Payment
+        Model\Travel\Vehicle: %domainModelDir%/Travel/Vehicle
         Model\Travel: yaml(%mappingDir%/Travel)
     types:
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType

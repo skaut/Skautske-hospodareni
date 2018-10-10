@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Logger\Repositories;
+namespace Model\Infrastructure\Repositories\Logger;
 
 use Doctrine\ORM\EntityManager;
-use Model\Logger\Log;
 use Model\Logger\Log\Type;
+use Model\Logger\LogEntry;
+use Model\Logger\Repositories\ILogEntryRepository;
 
-class LoggerRepository implements ILoggerRepository
+class LogEntryRepository implements ILogEntryRepository
 {
     /** @var EntityManager */
     private $em;
@@ -19,13 +20,13 @@ class LoggerRepository implements ILoggerRepository
     }
 
     /**
-     * {@inheritDoc}
+     * @return LogEntry[]
      */
     public function findAllByTypeId(Type $type, int $typeId) : array
     {
         $result = $this->em->createQueryBuilder()
             ->select('l')
-            ->from(Log::class, 'l')
+            ->from(LogEntry::class, 'l')
             ->where('l.typeId = :typeId')
             ->andWhere('l.type = :type')
             ->orderBy('l.date', 'DESC')
@@ -35,7 +36,7 @@ class LoggerRepository implements ILoggerRepository
         return $result;
     }
 
-    public function save(Log $log) : void
+    public function save(LogEntry $log) : void
     {
         $this->em->persist($log);
         $this->em->flush();

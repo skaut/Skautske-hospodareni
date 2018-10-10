@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Model\DTO\Logger;
 
-use Model\DTO\Logger\Log as LogDTO;
-use Model\Logger\Log;
+use Model\DTO\Logger\LogEntry as LogDTO;
+use Model\Logger\LogEntry;
 
 class LogFactory
 {
-    public static function create(Log $log) : LogDTO
+    public static function create(LogEntry $log) : LogDTO
     {
         return new LogDTO(
             $log->getUnitId(),

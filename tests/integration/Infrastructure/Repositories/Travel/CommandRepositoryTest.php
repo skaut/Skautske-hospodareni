@@ -63,9 +63,9 @@ class CommandRepositoryTest extends \IntegrationTest
 
         $expectedCommandIds = [
             5,
-        3, // not closed commands sorted by ID desc
+            3, // not closed commands sorted by ID desc
             4,
-        1, // closed commands sorted by ID desc
+            1, // closed commands sorted by ID desc
         ];
 
         foreach ($expectedCommandIds as $index => $commandId) {

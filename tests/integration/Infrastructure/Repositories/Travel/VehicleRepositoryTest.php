@@ -143,8 +143,6 @@ class VehicleRepositoryTest extends \IntegrationTest
             new Vehicle\Metadata(new \DateTimeImmutable($row['metadata_created_at']), $row['metadata_author_name'])
         );
 
-        var_dump($vehicle);
-
         $this->repository->save($vehicle);
 
         $this->tester->seeInDatabase(self::TABLE, ['id' => 1] + $row);
