@@ -1,5 +1,6 @@
 # Skautské hospodaření
 [![wercker status](https://app.wercker.com/status/605e6519883993559fc355cc988e08a9/s/master "wercker status")](https://app.wercker.com/project/byKey/605e6519883993559fc355cc988e08a9)
+[![codecov](https://codecov.io/gh/skaut/Skautske-hospodareni/branch/master/graph/badge.svg?token=4qqp9q95cF)](https://codecov.io/gh/skaut/Skautske-hospodareni)
 
 # Vývoj
 
