@@ -24,8 +24,10 @@
                     <th>KS</th>
                     <th>VS</th>
                     <th>Poznámka</th>
+                    <th></th>
                 </tr>
-                <tr n:foreach="$transactions as $t">
+                <tr n:foreach="$transactions as $t"
+                    n:class="isset($payments[$t->id]) ? 'info'">
                     <td>{$t->date|date:'j.n.Y'}</td>
                     <td class="r">
                         <strong n:class="$t->amount < 0 ? text-danger">{$t->amount|price}</strong>
@@ -35,6 +37,14 @@
                     <td class="r">{include #noEmpty $t->constantSymbol}</td>
                     <td class="r">{include #noEmpty $t->variableSymbol}</td>
                     <td>{include #noEmpty $t->note}</td>
+
+                    {var $payment = $payments[$t->id] ?? null}
+                    <td n:inner-if="$payment !== null">
+                        <a href="{link Payment:detail $payment->groupId}#payment-{$payment->id}" class="btn btn-xs btn-default"
+                                title='Spárováno s platbou "{$payment->name}"'>
+                            <span class="fa fa-compress"></span>
+                        </a>
+                    </td>
                 </tr>
             </table>
         {else}

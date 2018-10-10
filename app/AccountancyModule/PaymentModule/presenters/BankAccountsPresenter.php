@@ -11,17 +11,23 @@ use Model\Auth\Resources\Unit;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
 use Model\DTO\Payment\BankAccount;
+use Model\DTO\Payment\Payment;
+use Model\Payment\BankAccount\BankAccountId;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\BankAccountService;
+use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
 use Model\Payment\TokenNotSet;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
 use function array_map;
 use function in_array;
+use function sprintf;
 
 class BankAccountsPresenter extends BasePresenter
 {
+    private const DAYS_BACK = 60;
+
     /** @var  IBankAccountFormFactory */
     private $formFactory;
 
@@ -146,17 +152,39 @@ class BankAccountsPresenter extends BasePresenter
             $this->noAccess();
         }
 
-        $this->template->account      = $account;
-        $this->template->transactions = null;
+        $templateParameters = [
+            'account' => $account,
+            'transactions' => null,
+        ];
+
         try {
-            $this->template->transactions = $this->accounts->getTransactions($id, 60);
+            $templateParameters['transactions'] = $this->accounts->getTransactions($id, self::DAYS_BACK);
+
+            /** @var Payment[] $payments */
+            $payments = $this->queryBus->handle(
+                new PairedPaymentsQuery(
+                    new BankAccountId($id),
+                    (new \DateTimeImmutable())->modify(sprintf('- %d days', self::DAYS_BACK))->setTime(0, 0, 0),
+                    new \DateTimeImmutable()
+                )
+            );
+
+            $paymentsByTransaction = [];
+
+            foreach ($payments as $payment) {
+                $paymentsByTransaction[$payment->getTransaction()->getId()] = $payment;
+            }
+
+            $templateParameters['payments'] = $paymentsByTransaction;
         } catch (TokenNotSet $e) {
-            $this->template->warningMessage = 'Nemáte vyplněný token pro komunikaci s FIO';
+            $templateParameters['warningMessage'] = 'Nemáte vyplněný token pro komunikaci s FIO';
         } catch (BankTimeLimit $e) {
-            $this->template->warningMessage = PairButton::TIME_LIMIT_MESSAGE;
+            $templateParameters['warningMessage'] = PairButton::TIME_LIMIT_MESSAGE;
         } catch (BankTimeout $e) {
-            $this->template->errorMessage = PairButton::TIMEOUT_MESSAGE;
+            $templateParameters['errorMessage'] = PairButton::TIMEOUT_MESSAGE;
         }
+
+        $this->template->setParameters($templateParameters);
     }
 
     protected function createComponentForm() : BankAccountForm
