@@ -176,7 +176,10 @@ class Payment extends Aggregate
 
     public function cancel(DateTimeImmutable $time) : void
     {
-        $this->checkNotClosed();
+        if ($this->state->equalsValue(State::CANCELED)) {
+            throw new PaymentClosed('Payment is already canceled!');
+        }
+
         $this->state    = State::get(State::CANCELED);
         $this->closedAt = $time;
     }
