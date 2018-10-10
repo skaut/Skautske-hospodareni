@@ -346,3 +346,23 @@ footer {
 .panel-body.chit-list {
     padding: 0;
 }
+
+/*
+ * Highlight of active payment
+ */
+
+@-webkit-keyframes target {
+    from {
+        background: #ffffff;
+    }
+    50% {
+        background: #ffffd3;
+    }
+    to {
+        background: #ffffff;
+    }
+}
+
+[id^="payment-"]:target {
+    -webkit-animation: target .8s ease-in;
+}
