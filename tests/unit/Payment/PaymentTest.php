@@ -100,7 +100,7 @@ class PaymentTest extends Unit
         $this->assertSame($time, $payment->getClosedAt());
     }
 
-    public function testCancelClosedPayment() : void
+    public function testCancelingAlreadyCanceledPaymentThrowsException() : void
     {
         $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
@@ -108,6 +108,20 @@ class PaymentTest extends Unit
 
         $this->expectException(PaymentClosed::class);
         $payment->cancel($time);
+    }
+
+    public function testCancelingCompletedPaymentUpdatesClosedAtAndState() : void
+    {
+        $time    = new DateTimeImmutable();
+        $payment = $this->createPayment();
+        $payment->complete($time);
+
+        $canceledAt = $time->modify('+ 30 minutes');
+
+        $payment->cancel($canceledAt);
+
+        $this->assertSame(State::CANCELED, $payment->getState()->getValue());
+        $this->assertSame($canceledAt, $payment->getClosedAt());
     }
 
     public function testCompletePayment() : void
