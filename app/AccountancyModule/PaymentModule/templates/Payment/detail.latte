@@ -65,7 +65,6 @@
 {/if}
 <div class='row'>
     <div class='col-md-12'>
-        {dump $payments}
         {var $isEditable = $isEditable && ($group->state == 'open')}
         {form paymentForm}
             <ul class="alert alert-error" n:if="isset($form) && $form->hasErrors()">
@@ -94,7 +93,9 @@
                     <td>{input send}</td>
                 </tr>
                 {if !empty($payments)}
-                    <tr n:foreach="$payments as $l" {if !$l->closed && $l->dueDate < $now}class="danger" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}>
+                    <tr n:foreach="$payments as $l"
+                            {if !$l->closed && $l->dueDate < $now}class="danger" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}
+                    id="payment-{$l->id}">
                         <td>
                             <div n:if="$l->note !== ''" class="pull-right">
                                 <i class="fa fa-sticky-note" title="{$l->note}" aria-hidden="true"></i>
