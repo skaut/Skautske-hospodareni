@@ -85,7 +85,6 @@ class BankAccountsPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-
     public function handleImport() : void
     {
         if (! $this->canEdit()) {
@@ -101,7 +100,6 @@ class BankAccountsPresenter extends BasePresenter
 
         $this->redirect('this');
     }
-
 
     public function actionEdit(int $id) : void
     {
@@ -136,7 +134,6 @@ class BankAccountsPresenter extends BasePresenter
         $this->template->canEdit  = $this->canEdit();
     }
 
-
     public function renderDetail(int $id) : void
     {
         $account = $this->accounts->find($id);
@@ -162,12 +159,10 @@ class BankAccountsPresenter extends BasePresenter
         }
     }
 
-
     protected function createComponentForm() : BankAccountForm
     {
         return $this->formFactory->create($this->id);
     }
-
 
     private function noAccess() : void
     {
