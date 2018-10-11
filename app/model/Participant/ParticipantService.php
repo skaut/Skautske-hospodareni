@@ -24,8 +24,9 @@ use function usort;
 
 class ParticipantService extends MutableBaseService
 {
-    public const PRAGUE_SUPPORTABLE_AGE = 18;
-    public const PRAGUE_UNIT_PREFIX     = 11;
+    public const PRAGUE_SUPPORTABLE_AGE       = 18;
+    public const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
+    public const PRAGUE_UNIT_PREFIX           = 11;
 
     /** @var ParticipantTable */
     private $table;
@@ -308,21 +309,37 @@ class ParticipantService extends MutableBaseService
             return null;
         }
 
-        $eventStartDate = new \DateTime($event->StartDate);
-        $participants   = $this->getAll($event->ID);
-        $underAge       = 0;
-        $cityMatch      = 0;
+        $eventStartDate          = new \DateTime($event->StartDate);
+        $participants            = $this->getAll($event->ID);
+        $underAge                = 0;
+        $betweenAge              = 0;
+        $praguePersonDaysUnder26 = 0;
+        $cityMatch               = 0;
         foreach ($participants as $p) {
             if (stripos($p->City, 'Praha') === false) {
                 continue;
             }
             $cityMatch += 1;
-            if ($p->Birthday === null || $eventStartDate->diff(new \DateTime($p->Birthday))->format('%Y') >= self::PRAGUE_SUPPORTABLE_AGE) {
+
+            if ($p->Birthday === null) {
+                continue;
+            }
+            $birthDiff = $eventStartDate->diff(new \DateTime($p->Birthday))->format('%Y');
+
+            if ($birthDiff <= self::PRAGUE_SUPPORTABLE_AGE) {
+                $underAge += 1;
+            }
+
+            if (self::PRAGUE_SUPPORTABLE_AGE < $birthDiff && $birthDiff <= self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
+                $betweenAge += 1;
+            }
+
+            if ($birthDiff > self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
                 continue;
             }
 
-            $underAge += 1;
+            $praguePersonDaysUnder26 += $p->Days;
         }
-        return ['underAge' => $underAge, 'all' => $cityMatch, 'ageThreshold' => self::PRAGUE_SUPPORTABLE_AGE];
+        return ['underAge' => $underAge, 'betweenAge' => $betweenAge, 'praguePersonDaysUnder26' => $praguePersonDaysUnder26, 'all' => $cityMatch];
     }
 }

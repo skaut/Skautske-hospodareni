@@ -352,8 +352,10 @@ class ExcelService
             ->setCellValue('T1', 'Prefix');
         if ($allowPragueColumns) {
             $sheet->setCellValue('U1', 'Dotovatelná MHMP?')
-                ->setCellValue('V1', 'Praž. uč. pod ' . $firstElement->prague['ageThreshold'])
-                ->setCellValue('W1', 'Praž. uč. celkem');
+                ->setCellValue('V1', 'Praž. osobodny pod 26')
+                ->setCellValue('W1', 'Praž. uč. pod 18')
+                ->setCellValue('X1', 'Praž. uč. mezi 18 a 26')
+                ->setCellValue('Y1', 'Praž. uč. celkem');
             $sheet->getComment('U1')
                 ->setWidth('200pt')->setHeight('50pt')->getText()
                 ->createTextRun('Ověřte, zda jsou splněny další podmínky - např. akce konaná v době mimo školní vyučování (u táborů prázdnin), cílovou skupinou je studující mládež do 26 let.');
@@ -388,8 +390,10 @@ class ExcelService
                 ->setCellValue('S' . $rowCnt, $row->prefix);
             if (isset($row->prague)) {
                 $sheet->setCellValue('U' . $rowCnt, $row->prague['isSupportable'] ? 'Ano' : 'Ne')
-                    ->setCellValue('V' . $rowCnt, $row->prague['underAge'])
-                    ->setCellValue('W' . $rowCnt, $row->prague['all']);
+                    ->setCellValue('V' . $rowCnt, $row->prague['praguePersonDaysUnder26'])
+                    ->setCellValue('W' . $rowCnt, $row->prague['underAge'])
+                    ->setCellValue('X' . $rowCnt, $row->prague['betweenAge'])
+                    ->setCellValue('Y' . $rowCnt, $row->prague['all']);
             }
             $rowCnt++;
         }
