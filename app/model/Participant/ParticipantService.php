@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Model\DTO\Participant\PragueParticipants;
+use Model\Participant\PragueParticipants;
 use Model\Services\Language;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;

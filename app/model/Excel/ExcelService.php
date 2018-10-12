@@ -15,13 +15,13 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
-use Model\DTO\Participant\PragueParticipants;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
+use Model\Participant\PragueParticipants;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Skautis\Wsdl\PermissionException;
@@ -391,7 +391,7 @@ class ExcelService
             if (isset($row->prague)) {
                 /** @var PragueParticipants $pp */
                 $pp = $row->prague;
-                $sheet->setCellValue('U' . $rowCnt, $pp->isSupportable() ? 'Ano' : 'Ne')
+                $sheet->setCellValue('U' . $rowCnt, $pp->isSupportable($row->TotalDays) ? 'Ano' : 'Ne')
                     ->setCellValue('V' . $rowCnt, $pp->getPersonDaysUnder26())
                     ->setCellValue('W' . $rowCnt, $pp->getUnder18())
                     ->setCellValue('X' . $rowCnt, $pp->getBetween18and26())

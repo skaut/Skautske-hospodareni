@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Participant;
 
-
 use Nette\SmartObject;
 
 /**
@@ -37,7 +36,27 @@ final class PragueParticipants
         $this->citizensCount     = $citizensCount;
     }
 
-    public function isSupportable($totalDays) : bool
+    public function getUnder18() : int
+    {
+        return $this->under18;
+    }
+
+    public function getBetween18and26() : int
+    {
+        return $this->between18and26;
+    }
+
+    public function getPersonDaysUnder26() : int
+    {
+        return $this->personDaysUnder26;
+    }
+
+    public function getCitizensCount() : int
+    {
+        return $this->citizensCount;
+    }
+
+    public function isSupportable(int $totalDays) : bool
     {
         return $this->under18 >= 8 && $totalDays >= 2 && $totalDays <= 6;
     }
