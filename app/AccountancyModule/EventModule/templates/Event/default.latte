@@ -90,7 +90,7 @@
                 <table class="table table-bordered table-condensed panel-body">
                     <tr>
                         <th>Dotovatelná?</th>
-                        <td>{if $pragueParticipants->isSupportable()}Ano{else}Ne{/if}</td>
+                        <td>{if $pragueParticipants->isSupportable($event->TotalDays)}Ano{else}Ne{/if}</td>
                     </tr>
                     <tr>
                         <th>Osobodnů pod 26</th>
