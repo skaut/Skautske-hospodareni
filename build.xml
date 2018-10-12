@@ -19,7 +19,6 @@
             <fileset dir=".">
                 <include name="app/**"/>
                 <include name="migrations/**"/>
-                <include name="nette-log/**"/>
                 <include name="nette-temp/**"/>
                 <include name="vendor/**"/>
                 <include name="www/**"/>
@@ -161,6 +160,11 @@
         <phingcall target="deploy:ssh">
             <property name="comment" value="Swapping release to ${deploy.releaseHash}"/>
             <property name="command" value="rm www &amp;&amp; ln -s ${deploy.release}/www www"/>
+        </phingcall>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Symlink logs"/>
+            <property name="command" value="ln -s nette-log ${deploy.release}/nette-log"/>
         </phingcall>
 
         <phingcall target="deploy:cleanup"/>
