@@ -125,9 +125,8 @@ class ExcelService
                 continue;
             }
             //Prague event
-            $allowPragueColumns = true;
-            $pp->setSupportable($pp->getUnder18() >= 8 && $data[$aid]->TotalDays >= 2 && $data[$aid]->TotalDays <= 6);
-            $data[$aid]['prague'] = $pp;
+            $allowPragueColumns   = true;
+            $data[$aid]['prague'] = $pp->withSupportability($pp->getUnder18() >= 8 && $data[$aid]->TotalDays >= 2 && $data[$aid]->TotalDays <= 6);
         }
         $sheetEvents = $objPHPExcel->setActiveSheetIndex(0);
         $this->setSheetEvents($sheetEvents, $data, $allowPragueColumns);

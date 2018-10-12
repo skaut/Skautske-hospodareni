@@ -21,12 +21,13 @@ class PragueParticipants
     /** @var bool */
     private $isSupportable;
 
-    public function __construct(int $under18, int $between18and26, int $personDaysUnder26, int $citizensCount)
+    public function __construct(int $under18, int $between18and26, int $personDaysUnder26, int $citizensCount, bool $supportable = false)
     {
         $this->under18           = $under18;
         $this->between18and26    = $between18and26;
         $this->personDaysUnder26 = $personDaysUnder26;
         $this->citizensCount     = $citizensCount;
+        $this->isSupportable     = $supportable;
     }
 
     public function getUnder18() : int
@@ -54,8 +55,8 @@ class PragueParticipants
         return $this->isSupportable;
     }
 
-    public function setSupportable(bool $supportable) : void
+    public function withSupportability(bool $supportable) : self
     {
-        $this->isSupportable = $supportable;
+        return new self($this->under18, $this->between18and26, $this->personDaysUnder26, $this->citizensCount, $supportable);
     }
 }
