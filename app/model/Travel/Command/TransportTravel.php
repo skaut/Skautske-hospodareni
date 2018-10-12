@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Model\Travel\Command;
 
+use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Command;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use function sprintf;
 
+/**
+ * @ORM\Entity()
+ */
 class TransportTravel extends Travel
 {
-    /** @var Money */
+    /**
+     * @var Money
+     * @ORM\Column(type="money", name="distance")
+     */
     private $price;
 
     public function __construct(int $id, Money $price, TravelDetails $details, Command $command)

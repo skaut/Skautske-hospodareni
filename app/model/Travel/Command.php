@@ -6,6 +6,7 @@ namespace Model\Travel;
 
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\Travel;
 use Model\Travel\Command\TravelDetails;
@@ -17,45 +18,90 @@ use function array_sum;
 use function array_unique;
 use function min;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="tc_commands")
+ */
 class Command
 {
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
     private $id;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
     private $unitId;
 
-    /** @var Vehicle|NULL */
+    /**
+     * @var Vehicle|NULL
+     * @ORM\ManyToOne(targetEntity=Vehicle::class)
+     */
     private $vehicle;
 
-    /** @var Passenger */
+    /**
+     * @var Passenger
+     * @ORM\Embedded(class=Passenger::class, columnPrefix=false)
+     */
     private $passenger;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $purpose;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $place;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", name="passengers")
+     */
     private $fellowPassengers;
 
-    /** @var Money */
+    /**
+     * @var Money
+     * @ORM\Column(type="money")
+     */
     private $fuelPrice;
 
-    /** @var Money */
+    /**
+     * @var Money
+     * @ORM\Column(type="money")
+     */
     private $amortization;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $note;
 
-    /** @var DateTimeImmutable|NULL */
+    /**
+     * @var DateTimeImmutable|NULL
+     * @ORM\Column(type="datetime_immutable", nullable=true, name="closed")
+     */
     private $closedAt;
 
-    /** @var ArrayCollection|TransportTravel[] */
+    /**
+     * @var ArrayCollection|Travel[]
+     * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
     private $travels;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
     private $nextTravelId = 0;
 
     public function __construct(

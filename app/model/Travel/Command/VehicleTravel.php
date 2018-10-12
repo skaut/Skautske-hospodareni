@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace Model\Travel\Command;
 
+use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Command;
 use function sprintf;
 
+/**
+ * @ORM\Entity()
+ */
 class VehicleTravel extends Travel
 {
-    /** @var float */
+    /**
+     * @var float
+     * @ORM\Column(type="float")
+     */
     private $distance;
 
     public function __construct(int $id, float $distance, TravelDetails $details, Command $command)

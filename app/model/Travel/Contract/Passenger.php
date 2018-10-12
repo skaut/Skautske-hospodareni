@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Travel\Contract;
 
+use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
 
 /**
+ * @ORM\Embeddable()
  * @property-read string $name
  * @property-read string $contact
  * @property-read string $address
@@ -16,16 +18,28 @@ final class Passenger
 {
     use SmartObject;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", name="driver_name")
+     */
     private $name;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", name="driver_contact")
+     */
     private $contact;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", name="driver_address")
+     */
     private $address;
 
-    /** @var \DateTimeImmutable|NULL */
+    /**
+     * @var \DateTimeImmutable|NULL
+     * @ORM\Column(type="datetime_immutable", nullable=true, name="driver_birthday")
+     */
     private $birthday;
 
     public function __construct(string $name, string $contact, string $address, ?\DateTimeImmutable $birthday)
