@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Model\DTO\Participant\PragueParticipants;
 use Model\Services\Language;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
@@ -24,9 +25,9 @@ use function usort;
 
 class ParticipantService extends MutableBaseService
 {
-    public const PRAGUE_SUPPORTABLE_AGE       = 18;
-    public const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
-    public const PRAGUE_UNIT_PREFIX           = 11;
+    private const PRAGUE_SUPPORTABLE_AGE       = 18;
+    private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
+    private const PRAGUE_UNIT_PREFIX           = 11;
 
     /** @var ParticipantTable */
     private $table;
@@ -300,46 +301,43 @@ class ParticipantService extends MutableBaseService
         $person->NickName  = $matches['nick'] ?? null;
     }
 
-    /**
-     * @return mixed[]|null
-     */
-    public function countPragueParticipants(\stdClass $event) : ?array
+    public function countPragueParticipants(\stdClass $event) : ?PragueParticipants
     {
         if (! Strings::startsWith($event->RegistrationNumber, self::PRAGUE_UNIT_PREFIX)) {
             return null;
         }
 
-        $eventStartDate          = new \DateTime($event->StartDate);
-        $participants            = $this->getAll($event->ID);
-        $underAge                = 0;
-        $betweenAge              = 0;
-        $praguePersonDaysUnder26 = 0;
-        $cityMatch               = 0;
+        $eventStartDate    = new \DateTime($event->StartDate);
+        $participants      = $this->getAll($event->ID);
+        $under18           = 0;
+        $between18and26    = 0;
+        $personDaysUnder26 = 0;
+        $citizensCount     = 0;
         foreach ($participants as $p) {
             if (stripos($p->City, 'Praha') === false) {
                 continue;
             }
-            $cityMatch += 1;
+            $citizensCount += 1;
 
             if ($p->Birthday === null) {
                 continue;
             }
-            $birthDiff = $eventStartDate->diff(new \DateTime($p->Birthday))->format('%Y');
+            $ageInYears = $eventStartDate->diff(new \DateTime($p->Birthday))->format('%Y');
 
-            if ($birthDiff <= self::PRAGUE_SUPPORTABLE_AGE) {
-                $underAge += 1;
+            if ($ageInYears <= self::PRAGUE_SUPPORTABLE_AGE) {
+                $under18 += 1;
             }
 
-            if (self::PRAGUE_SUPPORTABLE_AGE < $birthDiff && $birthDiff <= self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
-                $betweenAge += 1;
+            if (self::PRAGUE_SUPPORTABLE_AGE < $ageInYears && $ageInYears <= self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
+                $between18and26 += 1;
             }
 
-            if ($birthDiff > self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
+            if ($ageInYears > self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
                 continue;
             }
 
-            $praguePersonDaysUnder26 += $p->Days;
+            $personDaysUnder26 += $p->Days;
         }
-        return ['underAge' => $underAge, 'betweenAge' => $betweenAge, 'praguePersonDaysUnder26' => $praguePersonDaysUnder26, 'all' => $cityMatch];
+        return new PragueParticipants($under18, $between18and26, $personDaysUnder26, $citizensCount);
     }
 }

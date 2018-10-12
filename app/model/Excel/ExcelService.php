@@ -15,6 +15,7 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Participant\PragueParticipants;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -124,8 +125,8 @@ class ExcelService
                 continue;
             }
             //Prague event
-            $allowPragueColumns   = true;
-            $pp['isSupportable']  = $pp['underAge'] >= 8 && $data[$aid]->TotalDays >= 2 && $data[$aid]->TotalDays <= 6;
+            $allowPragueColumns = true;
+            $pp->setSupportable($pp->getUnder18() >= 8 && $data[$aid]->TotalDays >= 2 && $data[$aid]->TotalDays <= 6);
             $data[$aid]['prague'] = $pp;
         }
         $sheetEvents = $objPHPExcel->setActiveSheetIndex(0);
@@ -389,11 +390,13 @@ class ExcelService
                 ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count)
                 ->setCellValue('S' . $rowCnt, $row->prefix);
             if (isset($row->prague)) {
-                $sheet->setCellValue('U' . $rowCnt, $row->prague['isSupportable'] ? 'Ano' : 'Ne')
-                    ->setCellValue('V' . $rowCnt, $row->prague['praguePersonDaysUnder26'])
-                    ->setCellValue('W' . $rowCnt, $row->prague['underAge'])
-                    ->setCellValue('X' . $rowCnt, $row->prague['betweenAge'])
-                    ->setCellValue('Y' . $rowCnt, $row->prague['all']);
+                /** @var PragueParticipants $pp */
+                $pp = $row->prague;
+                $sheet->setCellValue('U' . $rowCnt, $pp->isSupportable() ? 'Ano' : 'Ne')
+                    ->setCellValue('V' . $rowCnt, $pp->getPersonDaysUnder26())
+                    ->setCellValue('W' . $rowCnt, $pp->getUnder18())
+                    ->setCellValue('X' . $rowCnt, $pp->getBetween18and26())
+                    ->setCellValue('Y' . $rowCnt, $pp->getCitizensCount());
             }
             $rowCnt++;
         }

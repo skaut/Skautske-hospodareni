@@ -90,19 +90,19 @@
                 <table class="table table-bordered table-condensed panel-body">
                     <tr>
                         <th>Osobodnů pod 26</th>
-                        <td>{$pragueParticipants["praguePersonDaysUnder26"]}</td>
+                        <td>{$pragueParticipants->getPersonDaysUnder26()}</td>
                     </tr>
                     <tr>
                         <th>Osob pod 18</th>
-                        <td>{$pragueParticipants["underAge"]}</td>
+                        <td>{$pragueParticipants->getUnder18()}</td>
                     </tr>
                     <tr>
                         <th>Osob mezi 18 a 26</th>
-                        <td>{$pragueParticipants["betweenAge"]} </td>
+                        <td>{$pragueParticipants->getBetween18and26()} </td>
                     </tr>
                     <tr>
                         <th>Osob celkem</th>
-                        <td>{$pragueParticipants["all"]}</td>
+                        <td>{$pragueParticipants->getCitizens()}</td>
                     </tr>
                 </table>
             </div>
