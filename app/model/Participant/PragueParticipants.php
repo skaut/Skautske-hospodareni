@@ -4,8 +4,19 @@ declare(strict_types=1);
 
 namespace Model\DTO\Participant;
 
-class PragueParticipants
+
+use Nette\SmartObject;
+
+/**
+ * @property-read int $under18
+ * @property-read int $between18and26
+ * @property-read int $personDaysUnder26
+ * @property-read int $citizensCount
+ */
+final class PragueParticipants
 {
+    use SmartObject;
+
     /** @var int */
     private $under18;
 
@@ -18,16 +29,12 @@ class PragueParticipants
     /** @var int */
     private $citizensCount;
 
-    /** @var bool */
-    private $isSupportable;
-
-    public function __construct(int $under18, int $between18and26, int $personDaysUnder26, int $citizensCount, bool $supportable = false)
+    public function __construct(int $under18, int $between18and26, int $personDaysUnder26, int $citizensCount)
     {
         $this->under18           = $under18;
         $this->between18and26    = $between18and26;
         $this->personDaysUnder26 = $personDaysUnder26;
         $this->citizensCount     = $citizensCount;
-        $this->isSupportable     = $supportable;
     }
 
     public function getUnder18() : int
@@ -50,13 +57,8 @@ class PragueParticipants
         return $this->citizensCount;
     }
 
-    public function isSupportable() : bool
+    public function isSupportable($totalDays) : bool
     {
-        return $this->isSupportable;
-    }
-
-    public function withSupportability(bool $supportable) : self
-    {
-        return new self($this->under18, $this->between18and26, $this->personDaysUnder26, $this->citizensCount, $supportable);
+        return $this->getUnder18() >= 8 && $totalDays >= 2 && $totalDays <= 6;
     }
 }

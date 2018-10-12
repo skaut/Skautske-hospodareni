@@ -89,6 +89,10 @@
                 <div class="panel-heading"><h4>Pražští účastníci</h4></div>
                 <table class="table table-bordered table-condensed panel-body">
                     <tr>
+                        <th>Dotovatelná?</th>
+                        <td>{if $pragueParticipants->isSupportable()}Ano{else}Ne{/if}</td>
+                    </tr>
+                    <tr>
                         <th>Osobodnů pod 26</th>
                         <td>{$pragueParticipants->getPersonDaysUnder26()}</td>
                     </tr>
