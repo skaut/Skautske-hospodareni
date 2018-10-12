@@ -35,7 +35,7 @@ abstract class Travel
      * @var TravelDetails
      * @ORM\Embedded(class=TravelDetails::class, columnPrefix=false)
      */
-    protected $details;
+    private $details;
 
     protected function __construct(int $id, Command $command, TravelDetails $details)
     {
