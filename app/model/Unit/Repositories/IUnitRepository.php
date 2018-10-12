@@ -15,6 +15,11 @@ interface IUnitRepository
     public function findByParent(int $parentId) : array;
 
     /**
+     * @return Unit[]
+     */
+    public function findAllUnder(int $parentId) : array;
+
+    /**
      * @throws UnitNotFound
      */
     public function find(int $id) : Unit;

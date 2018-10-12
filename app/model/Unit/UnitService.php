@@ -123,19 +123,13 @@ class UnitService
     }
 
     /**
-     * @return Unit[]|array<int, Unit>
+     * @return Unit[]
      * @throws BadRequestException
      */
-    public function getAllUnder(int $ID_Unit, bool $self = true) : array
+    public function getAllUnder(int $ID_Unit) : array
     {
-        $data = $self ? [$ID_Unit => $this->getDetail($ID_Unit)] : [];
-        foreach ($this->units->findByParent($ID_Unit) as $u) {
-            $data[$u->getId()] = $u;
-            $data              = $data + $this->getAllUnder($u->getId(), false);
-        }
-        return $data;
+        return $this->units->findAllUnder($ID_Unit);
     }
-
 
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na čtení
