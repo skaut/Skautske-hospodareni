@@ -4,32 +4,59 @@ declare(strict_types=1);
 
 namespace Model\Travel;
 
+use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Contract\Passenger as ContractPassenger;
 use Model\Unit\Unit;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="tc_contracts")
+ */
 class Contract
 {
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
     private $id;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
     private $unitId;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ORM\Column(type="string", name="unit_person")
+     */
     private $unitRepresentative;
 
-    /** @var \DateTimeImmutable|NULL */
+    /**
+     * @var \DateTimeImmutable|NULL
+     * @ORM\Column(type="datetime_immutable", nullable=true, name="start")
+     */
     private $since;
 
-    /** @var \DateTimeImmutable|NULL */
+    /**
+     * @var \DateTimeImmutable|NULL
+     * @ORM\Column(type="datetime_immutable", nullable=true, name="end")
+     */
     private $until;
 
-    /** @var ContractPassenger */
+    /**
+     * @var ContractPassenger
+     * @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false)
+     */
     private $passenger;
 
-    /** @var int */
+    /**
+     * @var int
+     * @ORM\Column(type="smallint", name="template")
+     */
     private $templateVersion = 2;
-
 
     public function __construct(Unit $unit, string $unitRepresentative, \DateTimeImmutable $since, ContractPassenger $passenger)
     {

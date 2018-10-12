@@ -1,9 +1,0 @@
-Model\Travel\Command\TransportTravel:
-
-    type: entity
-    table: tc_travels
-
-    fields:
-        price:
-            type: money
-            column: distance
