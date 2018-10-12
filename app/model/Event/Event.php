@@ -47,7 +47,7 @@ class Event
     /** @var Date */
     private $endDate;
 
-    /** @var int */
+    /** @var int|null */
     private $totalDays;
 
     /** @var string */
@@ -56,7 +56,7 @@ class Event
     /** @var string */
     private $registrationNumber;
 
-    /** @var string */
+    /** @var string|null */
     private $note;
 
     /** @var int */
@@ -73,10 +73,10 @@ class Event
         string $state,
         Date $startDate,
         Date $endDate,
-        int $totalDays,
-        string $location,
+        ?int $totalDays,
+        ?string $location,
         string $registrationNumber,
-        string $note,
+        ?string $note,
         int $scopeId,
         int $typeId
     ) {
@@ -88,9 +88,9 @@ class Event
         $this->startDate          = $startDate;
         $this->endDate            = $endDate;
         $this->totalDays          = $totalDays;
-        $this->location           = $location;
+        $this->location           = $location ?? '';
         $this->registrationNumber = $registrationNumber;
-        $this->note               = $note;
+        $this->note               = $note ?? '';
         $this->scopeId            = $scopeId;
         $this->typeId             = $typeId;
     }
@@ -150,7 +150,7 @@ class Event
         return $this->endDate;
     }
 
-    public function getTotalDays() : int
+    public function getTotalDays() : ?int
     {
         return $this->totalDays;
     }

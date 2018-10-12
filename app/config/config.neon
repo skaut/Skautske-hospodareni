@@ -131,6 +131,7 @@ services:
     eventService: Model\EventEntity("General")
     campService: Model\EventEntity("Camp")
     unitAccountService: Model\EventEntity("Unit")
+    - Model\Skautis\Factory\EventFactory
 
     # Model
     - Model\Skautis\Auth\SkautisAuthorizator(@skautis.webservice.user)

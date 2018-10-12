@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Skautis;
 
-use Cake\Chronos\Date;
 use Model\Event\Event;
 use Model\Event\EventNotFound;
 use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisEventId;
+use Model\Skautis\Factory\IEventFactory;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use function array_column;
@@ -17,17 +17,19 @@ use function max;
 
 final class EventRepository implements IEventRepository
 {
-    private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
-
     /** @var WebServiceInterface */
     private $webService;
 
     /** @var string */
     private $skautisType = 'eventGeneral';
 
-    public function __construct(WebServiceInterface $webService)
+    /** @var IEventFactory */
+    private $eventFactory;
+
+    public function __construct(WebServiceInterface $webService, IEventFactory $eventFactory)
     {
-        $this->webService = $webService;
+        $this->webService   = $webService;
+        $this->eventFactory = $eventFactory;
     }
 
     public function find(SkautisEventId $id) : Event
@@ -80,20 +82,6 @@ final class EventRepository implements IEventRepository
 
     private function createEvent(\stdClass $skautisEvent) : Event
     {
-        return new Event(
-            new SkautisEventId($skautisEvent->ID),
-            $skautisEvent->DisplayName,
-            $skautisEvent->ID_Unit,
-            $skautisEvent->Unit,
-            $skautisEvent->ID_EventGeneralState,
-            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->StartDate),
-            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->EndDate),
-            $skautisEvent->TotalDays,
-            $skautisEvent->Location,
-            $skautisEvent->RegistrationNumber,
-            $skautisEvent->Note,
-            $skautisEvent->ID_EventGeneralScope,
-            $skautisEvent->ID_EventGeneralType
-        );
+        return $this->eventFactory->create($skautisEvent);
     }
 }
