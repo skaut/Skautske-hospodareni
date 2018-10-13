@@ -100,6 +100,14 @@ class Unit
     }
 
     /**
+     * @return Unit[]|null
+     */
+    public function getChildren() : ?array
+    {
+        return $this->children;
+    }
+
+    /**
      * @param Unit[] $ch
      */
     public function withChildren(array $ch) : self

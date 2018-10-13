@@ -130,14 +130,23 @@ class UnitService
     {
         $data = [$ID_Unit => $this->getDetailV2($ID_Unit)];
         foreach ($this->units->findByParent($ID_Unit) as $u) {
-            $data[$u->getId()] = $u;
             if ($tree) {
-                $data[$u->getId()] = $data[$u->getId()]->withChildren($this->getAllUnder($u->getId(), $tree));
+                $data[$u->getId()] = $u->withChildren($this->getAllUnder($u->getId(), $tree));
             } else {
-                $data = $data + $this->getAllUnder($u->getId());
+                $data[$u->getId()] = $u;
+                $data              = $data + $this->getAllUnder($u->getId());
             }
         }
         return $data;
+    }
+
+    public function getTreeUnder(Unit $unit) : Unit
+    {
+        $children = [];
+        foreach ($this->units->findByParent($unit->getId()) as $ch) {
+            $children[] = $this->getTreeUnder($ch);
+        }
+        return $unit->withChildren($children);
     }
 
     /**

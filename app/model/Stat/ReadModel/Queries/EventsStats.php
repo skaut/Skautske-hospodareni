@@ -21,7 +21,7 @@ final class EventsStats
     public function __construct(array $eventIds, ?int $year)
     {
         $this->eventIds = $eventIds;
-        $this->year = $year;
+        $this->year     = $year;
     }
 
     /**
@@ -32,9 +32,8 @@ final class EventsStats
         return $this->eventIds;
     }
 
-    public function getYear () : ?int
+    public function getYear() : ?int
     {
         return $this->year;
     }
-
 }
