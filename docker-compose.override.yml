@@ -11,6 +11,7 @@ services:
             - 3306:3306
 
     adminer:
+        container_name: hskauting.adminer
         image: adminer
         restart: always
         ports:
