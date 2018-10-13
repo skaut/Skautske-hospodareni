@@ -86,6 +86,10 @@ class StatService
         return $cnt;
     }
 
+    /**
+     * @param mixed[] $cntArr
+     * @return mixed[]|null
+     */
     private function countTree(Unit $root, array $cntArr) : ?array
     {
         $children = $root->getChildren();

@@ -8,5 +8,5 @@ use Model\Event\Event;
 
 interface IEventFactory
 {
-    public function create (\stdClass $skautisEvent) : Event;
+    public function create(\stdClass $skautisEvent) : Event;
 }

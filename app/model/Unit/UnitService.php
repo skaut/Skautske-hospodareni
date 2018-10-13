@@ -126,16 +126,12 @@ class UnitService
      * @return Unit[]
      * @throws BadRequestException
      */
-    public function getAllUnder(int $ID_Unit, $tree = false) : array
+    public function getAllUnder(int $ID_Unit) : array
     {
         $data = [$ID_Unit => $this->getDetailV2($ID_Unit)];
         foreach ($this->units->findByParent($ID_Unit) as $u) {
-            if ($tree) {
-                $data[$u->getId()] = $u->withChildren($this->getAllUnder($u->getId(), $tree));
-            } else {
-                $data[$u->getId()] = $u;
-                $data              = $data + $this->getAllUnder($u->getId());
-            }
+            $data[$u->getId()] = $u;
+            $data              = $data + $this->getAllUnder($u->getId());
         }
         return $data;
     }

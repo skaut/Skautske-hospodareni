@@ -8,5 +8,5 @@ use Model\Event\Camp;
 
 interface ICampFactory
 {
-    public function create (\stdClass $skautisCamp) : Camp;
+    public function create(\stdClass $skautisCamp) : Camp;
 }

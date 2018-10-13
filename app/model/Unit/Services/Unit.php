@@ -40,6 +40,9 @@ class Unit
     /** @var Unit[]|null */
     private $children;
 
+    /**
+     * @param Unit[]|null $children
+     */
     public function __construct(
         int $id,
         string $sortName,
