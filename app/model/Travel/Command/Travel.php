@@ -26,6 +26,7 @@ abstract class Travel
     /**
      * @internal - for mapping only
      * @var Command
+     * @ORM\Id()
      * @ORM\ManyToOne(targetEntity=Command::class, inversedBy="travels")
      * @ORM\JoinColumn(name="command_id", referencedColumnName="id", nullable=false)
      */
