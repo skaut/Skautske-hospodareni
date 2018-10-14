@@ -19,7 +19,7 @@ use function count;
 
 class ChitListQueryHandlerTest extends \IntegrationTest
 {
-    private const CASHBOOK_ID = 123;
+    private const CASHBOOK_ID = '123';
 
     protected function getTestedEntites(): array
     {
@@ -98,7 +98,7 @@ class ChitListQueryHandlerTest extends \IntegrationTest
 
     private function getCashbookId() : Cashbook\CashbookId
     {
-        return Cashbook\CashbookId::fromInt(self::CASHBOOK_ID);
+        return Cashbook\CashbookId::fromString(self::CASHBOOK_ID);
     }
 
     private function mockCategory(int $id, string $operationType = Operation::INCOME) : ICategory

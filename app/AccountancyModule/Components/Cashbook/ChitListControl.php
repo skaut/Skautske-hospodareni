@@ -81,7 +81,7 @@ class ChitListControl extends BaseControl
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         $this->template->setParameters(
             [
-            'cashbookId' => $this->cashbookId->toInt(),
+            'cashbookId' => $this->cashbookId->toString(),
             'cashbookType' => $cashbook->getType(),
             'isEditable' => $this->isEditable,
             'canMoveChits' => $this->canMoveChits(),
@@ -174,7 +174,7 @@ class ChitListControl extends BaseControl
      */
     private function redirectToExport(string $action, array $chitIds) : void
     {
-        $this->presenter->redirect($action, [$this->cashbookId->toInt(), $chitIds]);
+        $this->presenter->redirect($action, [$this->cashbookId->toString(), $chitIds]);
     }
 
     private function canMoveChits() : bool

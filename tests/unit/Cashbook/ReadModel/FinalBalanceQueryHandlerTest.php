@@ -16,7 +16,7 @@ use Money\Money;
 
 final class FinalBalanceQueryHandlerTest extends Unit
 {
-    private const CASHBOOK_ID = 111;
+    private const CASHBOOK_ID = '111';
 
     public function testCashbookWithoutChitsReturnsZero() : void
     {
@@ -45,7 +45,7 @@ final class FinalBalanceQueryHandlerTest extends Unit
      */
     private function assertBalance(Money $expectedBalance, array $chits) : void
     {
-        $cashbookId = Cashbook\CashbookId::fromInt(self::CASHBOOK_ID);
+        $cashbookId = Cashbook\CashbookId::fromString(self::CASHBOOK_ID);
 
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('find')

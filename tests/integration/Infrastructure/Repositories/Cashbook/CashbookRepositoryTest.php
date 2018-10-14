@@ -44,7 +44,7 @@ class CashbookRepositoryTest extends \IntegrationTest
     {
         $this->tester->haveInDatabase(self::TABLE, ['id' => 10, 'type' => Cashbook\CashbookType::EVENT, 'note' => '']);
 
-        $id = CashbookId::fromInt(10);
+        $id = CashbookId::fromString('10');
 
         $cashbook = $this->repository->find($id);
 
@@ -56,7 +56,7 @@ class CashbookRepositoryTest extends \IntegrationTest
     {
         $this->expectException(CashbookNotFound::class);
 
-        $this->repository->find(CashbookId::fromInt(1));
+        $this->repository->find(CashbookId::fromString('1'));
     }
 
     public function testSaveCashbookWithChits() : void
@@ -74,7 +74,7 @@ class CashbookRepositoryTest extends \IntegrationTest
             'payment_method' => Cashbook\PaymentMethod::BANK,
         ];
 
-        $cashbook = new Cashbook(CashbookId::fromInt(10), Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
+        $cashbook = new Cashbook(CashbookId::fromString('10'), Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
         $cashbook->updateChitNumberPrefix('test');
         $cashbook->updateNote('poznamka moje');
 

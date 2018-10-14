@@ -17,8 +17,8 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
 {
-    private const TARGET_CASHBOOK_ID = 2;
-    private const SOURCE_CASHBOOK_ID = 1;
+    private const TARGET_CASHBOOK_ID = '2';
+    private const SOURCE_CASHBOOK_ID = '1';
 
     /** @var ICashbookRepository */
     private $cashbooks;
@@ -26,8 +26,8 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
 
     public function testMovingChits() : void
     {
-        $sourceCashbookId = CashbookId::fromInt(self::SOURCE_CASHBOOK_ID);
-        $targetCashbookId = CashbookId::fromInt(self::TARGET_CASHBOOK_ID);
+        $sourceCashbookId = CashbookId::fromString(self::SOURCE_CASHBOOK_ID);
+        $targetCashbookId = CashbookId::fromString(self::TARGET_CASHBOOK_ID);
 
         $type = CashbookType::get(CashbookType::EVENT);
         $this->cashbooks->save(new Cashbook($targetCashbookId, $type));
