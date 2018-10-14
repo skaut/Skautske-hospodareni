@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Model;
 
 use Dibi\Exception;
+use Dibi\Row;
+use function array_column;
+use function array_combine;
 
 class TravelTable extends BaseTable
 {
     /**
-     * @return mixed[]
+     * @return Row[] Types indexed by ID
      * @throws Exception
      */
     public function getTypes(bool $pairs = false) : array
@@ -19,14 +22,9 @@ class TravelTable extends BaseTable
                 self::TABLE_TC_TRAVEL_TYPES . '] ORDER BY [order] DESC');
         }
 
-        $types  = $this->connection->fetchAll('SELECT type, label, hasFuel FROM [' .
-            self::TABLE_TC_TRAVEL_TYPES . '] ORDER BY [order] DESC');
-        $result = [];
+        $types = $this->connection->fetchAll('SELECT type, label, hasFuel FROM ['
+            . self::TABLE_TC_TRAVEL_TYPES . '] ORDER BY [order] DESC');
 
-        foreach ($types as $type) {
-            $result[$type->type] = $type;
-        }
-
-        return $result;
+        return array_combine(array_column($types, 'type'), $types);
     }
 }

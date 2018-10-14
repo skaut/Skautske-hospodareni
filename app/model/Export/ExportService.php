@@ -177,7 +177,7 @@ class ExportService
         array $chits,
         CashbookId $cashbookId
     ) : string {
-        $chitsCollection    = new ArrayCollection($chits);
+        $chitsCollection = new ArrayCollection($chits);
 
         [$income, $outcome] = $chitsCollection->partition(function ($_, Chit $chit) : bool {
             return $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
