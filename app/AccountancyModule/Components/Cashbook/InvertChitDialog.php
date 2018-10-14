@@ -150,7 +150,8 @@ class InvertChitDialog extends BaseControl
             $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unit->getId()));
 
             foreach ($unitCashbooks as $cashbook) {
-                $cashbooks[$cashbook->getCashbookId()->toString()] = $unit->getDisplayName();
+                $id             = $cashbook->getCashbookId()->toString();
+                $cashbooks[$id] = $unit->getDisplayName() . ' ' . $cashbook->getYear();
             }
         }
 
