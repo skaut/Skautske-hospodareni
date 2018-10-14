@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\StatModule;
+namespace App\AccountancyModule\StatisticsModule;
 
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;

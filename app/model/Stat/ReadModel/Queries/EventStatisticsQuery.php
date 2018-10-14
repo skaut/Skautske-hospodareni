@@ -8,9 +8,9 @@ use Model\Event\SkautisEventId;
 use function array_map;
 
 /**
- * @see EventStatsQueryHandler
+ * @see EventStatisticsQueryHandler
  */
-final class EventStatsQuery
+final class EventStatisticsQuery
 {
     /** @var SkautisEventId[] */
     private $eventIds;

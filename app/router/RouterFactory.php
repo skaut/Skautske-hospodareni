@@ -217,7 +217,7 @@ class RouterFactory
 
     private function createStatRoutes() : RouteList
     {
-        $router = new RouteList('Stat');
+        $router = new RouteList('Statistics');
 
         $prefix = 'statistiky';
 

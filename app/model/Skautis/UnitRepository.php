@@ -90,7 +90,7 @@ final class UnitRepository implements IUnitRepository
             $unit->DisplayName,
             $unit->RegistrationNumber,
             $unit->ID_UnitType,
-            isset($unit['ID_UnitParent']) ? (int) $unit->ID_UnitParent : null
+            isset($unit->ID_UnitParent) ? (int) $unit->ID_UnitParent : null
         );
     }
 }

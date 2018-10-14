@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\StatModule;
+namespace App\AccountancyModule\StatisticsModule;
 
-use Model\StatService;
+use Model\StatisticsService;
 use function date;
 
 class DefaultPresenter extends BasePresenter
 {
-    /** @var StatService */
+    /** @var StatisticsService */
     private $statService;
 
-    public function __construct(StatService $statService)
+    public function __construct(StatisticsService $statService)
     {
         parent::__construct();
         $this->statService = $statService;
@@ -25,7 +25,7 @@ class DefaultPresenter extends BasePresenter
             $year = (int) date('Y');
         }
         $unitTree = $this->unitService->getTreeUnder($this->unitService->getDetailV2($this->unitId));
-        $data     = $this->statService->getEventStats($unitTree, $year);
+        $data     = $this->statService->getEventStatistics($unitTree, $year);
 
         $this->template->setParameters([
             'unitTree' => $unitTree,

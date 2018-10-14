@@ -7,11 +7,11 @@ namespace Model\Event\ReadModel\QueryHandlers;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Model\Cashbook\Operation;
-use Model\Event\ReadModel\Queries\EventStatsQuery;
+use Model\Event\ReadModel\Queries\EventStatisticsQuery;
 use Model\Event\SkautisEventId;
 use function array_map;
 
-class EventStatsQueryHandler
+class EventStatisticsQueryHandler
 {
     /** @var Connection */
     private $db;
@@ -24,7 +24,7 @@ class EventStatsQueryHandler
     /**
      * @return float[]
      */
-    public function handle(EventStatsQuery $query) : array
+    public function handle(EventStatisticsQuery $query) : array
     {
         $params = [
         array_map(function (SkautisEventId $id) {

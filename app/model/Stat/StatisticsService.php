@@ -8,7 +8,7 @@ use eGen\MessageBus\QueryBus\IQueryBus;
 use Model\DTO\Stat\Counter;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Event\ReadModel\Queries\EventListQuery;
-use Model\Event\ReadModel\Queries\EventStatsQuery;
+use Model\Event\ReadModel\Queries\EventStatisticsQuery;
 use Model\Skautis\ISkautisEvent;
 use Model\Unit\Unit;
 use function array_filter;
@@ -16,7 +16,7 @@ use function array_key_exists;
 use function array_keys;
 use function in_array;
 
-class StatService
+class StatisticsService
 {
     /** @var IQueryBus */
     private $queryBus;
@@ -29,11 +29,11 @@ class StatService
     /**
      * @return Counter[]|array<int, Counter>
      */
-    public function getEventStats(Unit $unitTree, int $year) : array
+    public function getEventStatistics(Unit $unitTree, int $year) : array
     {
         $events = $this->queryBus->handle(new EventListQuery($year, null));
         $camps  = $this->queryBus->handle(new CampListQuery($year));
-        $stats  = $this->queryBus->handle(new EventStatsQuery(array_keys($events), $year));
+        $stats  = $this->queryBus->handle(new EventStatisticsQuery(array_keys($events), $year));
 
         $allowed = array_keys($stats);
 
