@@ -6,7 +6,7 @@ namespace Model\Event\ReadModel\QueryHandlers;
 
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventListQuery;
-use Model\Skautis\Factory\IEventFactory;
+use Model\Skautis\Factory\EventFactory;
 use Skautis\Skautis;
 use function array_combine;
 use function array_map;
@@ -17,10 +17,10 @@ class EventListQueryHandler
     /** @var Skautis */
     private $skautis;
 
-    /** @var IEventFactory */
+    /** @var EventFactory */
     private $eventFactory;
 
-    public function __construct(Skautis $skautis, IEventFactory $eventFactory)
+    public function __construct(Skautis $skautis, EventFactory $eventFactory)
     {
         $this->skautis      = $skautis;
         $this->eventFactory = $eventFactory;

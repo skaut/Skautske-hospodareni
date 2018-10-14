@@ -9,7 +9,7 @@ use Model\Event\Event;
 use Model\Event\SkautisEventId;
 use Model\Skautis\Mapper;
 
-final class EventFactory implements IEventFactory
+final class EventFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 

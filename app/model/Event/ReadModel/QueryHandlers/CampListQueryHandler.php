@@ -6,7 +6,7 @@ namespace Model\Event\ReadModel\QueryHandlers;
 
 use Model\Event\Camp;
 use Model\Event\ReadModel\Queries\CampListQuery;
-use Model\Skautis\Factory\ICampFactory;
+use Model\Skautis\Factory\CampFactory;
 use Skautis\Skautis;
 use function array_combine;
 use function array_map;
@@ -17,10 +17,10 @@ class CampListQueryHandler
     /** @var Skautis */
     private $skautis;
 
-    /** @var ICampFactory */
+    /** @var CampFactory */
     private $campFactory;
 
-    public function __construct(Skautis $skautis, ICampFactory $campFactory)
+    public function __construct(Skautis $skautis, CampFactory $campFactory)
     {
         $this->skautis     = $skautis;
         $this->campFactory = $campFactory;

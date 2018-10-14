@@ -8,7 +8,7 @@ use Cake\Chronos\Date;
 use Model\Event\Camp;
 use Model\Event\SkautisCampId;
 
-final class CampFactory implements ICampFactory
+final class CampFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 

@@ -8,7 +8,7 @@ use Model\Event\Event;
 use Model\Event\EventNotFound;
 use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisEventId;
-use Model\Skautis\Factory\IEventFactory;
+use Model\Skautis\Factory\EventFactory;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use function array_column;
@@ -23,10 +23,10 @@ final class EventRepository implements IEventRepository
     /** @var string */
     private $skautisType = 'eventGeneral';
 
-    /** @var IEventFactory */
+    /** @var EventFactory */
     private $eventFactory;
 
-    public function __construct(WebServiceInterface $webService, IEventFactory $eventFactory)
+    public function __construct(WebServiceInterface $webService, EventFactory $eventFactory)
     {
         $this->webService   = $webService;
         $this->eventFactory = $eventFactory;
