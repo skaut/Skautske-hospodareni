@@ -54,7 +54,10 @@ class CashbookPresenter extends BasePresenter
         /** @var UnitCashbook[] $cashbooks */
         $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->aid));
 
-        $this->template->setParameters(['cashbooks' => $cashbooks]);
+        $this->template->setParameters([
+            'cashbooks' => $cashbooks,
+            'year' => $year,
+        ]);
 
         foreach ($cashbooks as $cashbook) {
             if ($cashbook->getYear() === $year) {
