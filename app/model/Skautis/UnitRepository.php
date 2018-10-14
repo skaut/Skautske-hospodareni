@@ -9,9 +9,6 @@ use Model\Unit\Unit;
 use Model\Unit\UnitNotFound;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
-use function array_column;
-use function array_combine;
-use function array_map;
 use function is_object;
 
 final class UnitRepository implements IUnitRepository
@@ -41,27 +38,6 @@ final class UnitRepository implements IUnitRepository
             $res[]            = $this->createUnit($u);
         }
         return $res;
-    }
-
-    /**
-     * @return Unit[]|array<int, Unit>
-     */
-    public function findAllUnder(int $parentId) : array
-    {
-        $units = $this->webService->call('UnitAllUnit', [
-            ['ID_Unit' => $parentId],
-        ]);
-
-        if (is_object($units)) { // API returns empty object when there are no results
-            return [];
-        }
-        return array_map(
-            [$this, 'createUnit'],
-            array_combine(
-                array_column($units, 'ID'),
-                $units
-            )
-        );
     }
 
     public function find(int $id) : Unit
