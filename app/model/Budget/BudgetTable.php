@@ -16,7 +16,7 @@ class BudgetTable extends BaseTable
         return $this->connection->dataSource('SELECT * FROM [' . self::TABLE_UNIT_BUDGET_CATEGORY . '] WHERE '
             . 'deleted = 0 AND '
             . 'type = %s ', $type, 'AND '
-            . 'objectId = %i ', $unitId);
+            . 'unit_id = %i ', $unitId);
     }
 
     /**
@@ -28,7 +28,7 @@ class BudgetTable extends BaseTable
             . 'deleted = 0 AND '
             . 'type = %s ', $type, 'AND '
             . 'parentId %if ', $parentId === null, ' IS %else = %end %i', $parentId, ' AND '
-            . 'objectId = %i ', $unitId);
+            . 'unit_id = %i ', $unitId);
 
         return array_combine(array_column($categories, 'id'), $categories);
     }
