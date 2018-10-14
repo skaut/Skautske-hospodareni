@@ -101,7 +101,7 @@ class StatisticsService
                     continue;
                 }
 
-                $res[$u->getId()]->takeIn($res[$u->getId()]);
+                $res[$root->getId()]->takeIn($res[$u->getId()]);
             }
         }
 

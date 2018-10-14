@@ -5,8 +5,8 @@
     {if array_key_exists($unit->getId(), $data)}
         <tr>
             <th>{$space|repeat:5*$level|noescape}{$unit->getDisplayName ()}</th>
-            <td>{$data[$unit->getId()]['events']}</td>
-            <td>{$data[$unit->getId()]['camps']}</td>
+            <td>{$data[$unit->getId()]->events}</td>
+            <td>{$data[$unit->getId()]->camps}</td>
         </tr>
         {foreach $unit->getChildren() as $ch}
             {include #unit, unit => $ch, level => $level +1}
