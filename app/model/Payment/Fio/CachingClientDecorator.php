@@ -33,7 +33,7 @@ class CachingClientDecorator implements IFioClient
         return $this->cache->load(
             $key,
             function (?array $dependencies = null) use ($since, $until, $account) {
-                $dependencies                    = $dependencies === null ? [] : $dependencies;
+                $dependencies                    = $dependencies ?? [];
                 $dependencies[Cache::EXPIRATION] = '5 minutes';
                 $dependencies[Cache::TAGS]       = ['fio/' . $account->getId()];
                 return $this->inner->getTransactions($since, $until, $account);

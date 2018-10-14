@@ -215,8 +215,8 @@ class ExcelService
                 ->setCellValue('H' . $rowCnt, $row->Birthday !== null ? date('d.m.Y', strtotime($row->Birthday)) : '')
                 ->setCellValue('I' . $rowCnt, $row->Days)
                 ->setCellValue('J' . $rowCnt, $row->Age < self::ADULT_AGE ? $row->Days : 0)
-                ->setCellValue('K' . $rowCnt, $row->payment !== null ? $row->payment : 0)
-                ->setCellValue('L' . $rowCnt, $row->repayment !== null ? $row->repayment : 0)
+                ->setCellValue('K' . $rowCnt, $row->payment ?? 0)
+                ->setCellValue('L' . $rowCnt, $row->repayment ?? 0)
                 ->setCellValue('M' . $rowCnt, ($row->payment - $row->repayment))
                 ->setCellValue('N' . $rowCnt, $row->isAccount === 'Y' ? 'Ano' : 'Ne');
             $rowCnt++;

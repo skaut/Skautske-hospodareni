@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Model;
 
 use Dibi\DataSource;
+use Dibi\Row;
+use function array_column;
+use function array_combine;
 
 class BudgetTable extends BaseTable
 {
@@ -17,7 +20,7 @@ class BudgetTable extends BaseTable
     }
 
     /**
-     * @return string[]
+     * @return Row[] Categories indexed by ID
      */
     public function getCategoriesByParent(int $unitId, string $type, ?int $parentId) : array
     {
@@ -26,13 +29,8 @@ class BudgetTable extends BaseTable
             . 'type = %s ', $type, 'AND '
             . 'parentId %if ', $parentId === null, ' IS %else = %end %i', $parentId, ' AND '
             . 'objectId = %i ', $unitId);
-        $result     = [];
 
-        foreach ($categories as $category) {
-            $result[$category->id] = $category;
-        }
-
-        return $result;
+        return array_combine(array_column($categories, 'id'), $categories);
     }
 
     /**
