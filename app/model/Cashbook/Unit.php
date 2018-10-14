@@ -7,6 +7,7 @@ namespace Model\Cashbook;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Unit\Cashbook;
 use Model\Common\ShouldNotHappen;
 use Model\Common\UnitId;
 
@@ -24,8 +25,8 @@ class Unit
     private $id;
 
     /**
-     * @var ArrayCollection|Unit\Cashbook[]
-     * @ORM\OneToMany(targetEntity=Unit\Cashbook::class, mappedBy="unit", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @var ArrayCollection|Cashbook[]
+     * @ORM\OneToMany(targetEntity=Cashbook::class, mappedBy="unit", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $cashbooks;
 
@@ -43,7 +44,7 @@ class Unit
 
     public function __construct(UnitId $id, CashbookId $activeCashbookId, int $activeCashbookYear)
     {
-        $cashbook = new Unit\Cashbook($this->getCashbookId(), $this, $activeCashbookYear, $activeCashbookId);
+        $cashbook = new Cashbook($this->getCashbookId(), $this, $activeCashbookYear, $activeCashbookId);
 
         $this->id               = $id;
         $this->cashbooks        = new ArrayCollection([$cashbook]);

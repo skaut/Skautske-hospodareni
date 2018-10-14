@@ -1,15 +1,33 @@
+{block rightActionMenu}
+    <div class="dropdown pull-right">
+        <button class="btn btn-default dropdown-toggle" type="button" id="unit-cashbook-list" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="true">
+            Rok: 2018
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="unit-cashbook-list">
+            <li n:foreach="$cashbooks as $cashbook">
+                <a href="{if $cashbook->cashbookId->toString() === $cashbookId}#{else}{link this $aid, $cashbook->year}{/if}">
+                    {$cashbook->year}
+                </a>
+            </li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Přidat pokladní knihu</a></li>
+        </ul>
+    </div>
+    <a n:if="! $isCashbookEmpty"
+       n:href=":Accountancy:CashbookExport:printAllChits $cashbookId" target="_blank" class="btn btn-sm btn-info">
+        <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout seznam dokladů
+    </a>
+{/block}
+
+
 {block #content}
 <h2 n:block="title">{$unitPairs[$aid]} - evidence plateb</h2>
-{include ../ActionMenu.latte}
+{includeblock ../ActionMenu.latte}
 
 <div n:snippet="paragony">
-    <div class="row">
-        <div class="well well-sm" n:if=" ! $isCashbookEmpty">
-            <a n:href=":Accountancy:CashbookExport:printAllChits $cashbookId" target="_blank" class="btn btn-sm btn-info">
-                <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Vytisknout seznam dokladů
-            </a>
-        </div>
-    </div>
-
     {control cashbook}
 </div>
+
+{/block}

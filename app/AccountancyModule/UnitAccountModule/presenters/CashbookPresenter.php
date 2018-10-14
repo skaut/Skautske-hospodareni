@@ -8,12 +8,15 @@ use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
+use Model\Common\UnitId;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\UnitCashbook;
 use Nette\InvalidStateException;
 use function count;
+use function sprintf;
 
 class CashbookPresenter extends BasePresenter
 {
@@ -37,15 +40,31 @@ class CashbookPresenter extends BasePresenter
             $this->flashMessage('Nemáš oprávnění číst data jednotky', 'danger');
             $this->redirect('Default:');
         }
+    }
 
-        /** @var UnitCashbook[] $unitCashbooks */
-        $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->aid));
+    public function actionDefault(int $aid, ?int $year = null) : void
+    {
+        /** @var UnitCashbook $activeCashbook */
+        $activeCashbook = $this->queryBus->handle(new ActiveUnitCashbookQuery(new UnitId($this->aid)));
 
-        if (count($unitCashbooks) !== 1) {
-            throw new InvalidStateException('This should not happen (unit should have always one cashbook)');
+        if ($year === null) {
+            $this->redirect('this', [$aid, $activeCashbook->getYear()]);
         }
 
-        $this->cashbookId = $unitCashbooks[0]->getCashbookId();
+        /** @var UnitCashbook[] $cashbooks */
+        $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->aid));
+
+        $this->template->setParameters(['cashbooks' => $cashbooks]);
+
+        foreach ($cashbooks as $cashbook) {
+            if ($cashbook->getYear() === $year) {
+                $this->cashbookId = $cashbook->getCashbookId();
+                return;
+            }
+        }
+
+        $this->flashMessage(sprintf('Pokladní kniha pro rok %d neexistuje', $year), 'danger');
+        $this->redirect('this', [$aid, $activeCashbook->getYear()]);
     }
 
     public function renderDefault(int $aid) : void

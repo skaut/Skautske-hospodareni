@@ -2,7 +2,7 @@
 Menu pro pohyb mezi částmi akce
 *}
 <div class="row">
-    <div class="col-sm-12">
+    <div class="col-sm-8">
         <ul class="nav nav-pills">
             <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}>
                 <a n:href="Cashbook:default $aid">
@@ -20,5 +20,8 @@ Menu pro pohyb mezi částmi akce
                 </ul>
             </li>
         </ul>
+    </div>
+    <div class="col-sm-4 text-right" n:ifcontent>
+        {block rightActionMenu}{/block}
     </div>
 </div>

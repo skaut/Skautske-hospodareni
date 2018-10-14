@@ -5,9 +5,16 @@ declare(strict_types=1);
 namespace Model\DTO\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
+use Nette\SmartObject;
 
+/**
+ * @property-read CashbookId $cashbookId
+ * @property-read int $year
+ */
 class UnitCashbook
 {
+    use SmartObject;
+
     /** @var CashbookId */
     private $cashbookId;
 
