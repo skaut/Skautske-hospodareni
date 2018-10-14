@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Event;
 
 use Cake\Chronos\Date;
+use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
 
 /**
@@ -18,7 +19,7 @@ use Nette\SmartObject;
  * @property-read string $state
  * @property-read string $registrationNumber
  */
-class Camp
+class Camp implements ISkautisEvent
 {
     use SmartObject;
 
