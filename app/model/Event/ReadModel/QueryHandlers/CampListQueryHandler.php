@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Model\Event\ReadModel\QueryHandlers;
 
 use Model\Event\Camp;
-use Model\Event\ReadModel\Queries\CampList;
+use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Skautis\Factory\ICampFactory;
 use Skautis\Skautis;
 use function array_combine;
 use function array_map;
 use function is_object;
 
-class CampListHandler
+class CampListQueryHandler
 {
     /** @var Skautis */
     private $skautis;
@@ -29,7 +29,7 @@ class CampListHandler
     /**
      * @return Camp[]
      */
-    public function handle(CampList $query) : array
+    public function handle(CampListQuery $query) : array
     {
         $camps = $this->skautis->event->EventCampAll([
             'Year' => $query->getYear(),
@@ -41,7 +41,7 @@ class CampListHandler
         $camps = array_map([$this->campFactory, 'create'], $camps); //It changes ID to localIDs
         return array_combine(
             array_map(function (Camp $u) : int {
-                return $u->getId();
+                return $u->getId()->toInt();
             }, $camps),
             $camps
         );

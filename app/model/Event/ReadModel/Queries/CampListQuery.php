@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Model\Event\ReadModel\Queries;
 
 /**
- * @see CampListHandler
+ * @see CampListQueryHandler
  */
-final class CampList
+final class CampListQuery
 {
-    /** @var int|null */
+    /** @var int */
     private $year;
 
-    public function __construct(?int $year = null)
+    public function __construct(int $year)
     {
         $this->year = $year;
     }
 
-    public function getYear() : ?int
+    public function getYear() : int
     {
         return $this->year;
     }

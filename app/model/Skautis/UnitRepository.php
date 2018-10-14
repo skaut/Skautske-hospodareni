@@ -13,7 +13,6 @@ use function array_column;
 use function array_combine;
 use function array_map;
 use function is_object;
-use function property_exists;
 
 final class UnitRepository implements IUnitRepository
 {
@@ -44,7 +43,9 @@ final class UnitRepository implements IUnitRepository
         return $res;
     }
 
-    /** @return mixed[] */
+    /**
+     * @return Unit[]|array<int, Unit>
+     */
     public function findAllUnder(int $parentId) : array
     {
         $units = $this->webService->call('UnitAllUnit', [
@@ -89,7 +90,7 @@ final class UnitRepository implements IUnitRepository
             $unit->DisplayName,
             $unit->RegistrationNumber,
             $unit->ID_UnitType,
-            property_exists($unit, 'ID_UnitParent') && $unit->ID_UnitParent !== null ? (int) $unit->ID_UnitParent : null
+            isset($unit['ID_UnitParent']) ? (int) $unit->ID_UnitParent : null
         );
     }
 }

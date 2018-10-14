@@ -123,7 +123,7 @@ class UnitService
     }
 
     /**
-     * @return Unit[]
+     * @return Unit[]|array<int, Unit>
      * @throws BadRequestException
      */
     public function getAllUnder(int $ID_Unit) : array

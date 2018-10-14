@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Model\Event\ReadModel\QueryHandlers;
 
 use Doctrine\DBAL\Connection;
-use Model\Event\ReadModel\Queries\EventsStats;
+use Model\Cashbook\Operation;
+use Model\Event\ReadModel\Queries\EventStatsQuery;
+use Model\Event\SkautisEventId;
 use function array_map;
 
-class EventsStatsHandler
+class EventStatsQueryHandler
 {
     /** @var Connection */
     private $db;
@@ -21,18 +23,20 @@ class EventsStatsHandler
     /**
      * @return float[]
      */
-    public function handle(EventsStats $query) : array
+    public function handle(EventStatsQuery $query) : array
     {
-        $params = [$query->getEventIds()];
-        $types  = [Connection::PARAM_INT_ARRAY];
+        $params = [
+        array_map(function (SkautisEventId $id) {
+            return $id->toInt();
+        }, $query->getEventIds()),
+            $query->getYear(),
+            ];
+        $types  = [Connection::PARAM_INT_ARRAY, 'integer'];
         $sql    = 'SELECT eventId, SUM(price) as sum ' .
             'FROM `ac_chits` ' .
-            'WHERE eventId IN (?) AND category_operation_type = \'out\' ';
-        if ($query->getYear() !== null) {
-            $sql     .= 'AND YEAR(date) = ? ';
-            $params[] = $query->getYear();
-            $types[]  = 'integer';
-        }
+            'WHERE eventId IN (?) AND category_operation_type = \'' . Operation::EXPENSE . '\' ' .
+            'AND YEAR(date) = ? ';
+
         $sql .= 'GROUP BY eventId';
 
         $stmt = $this->db->executeQuery($sql, $params, $types);

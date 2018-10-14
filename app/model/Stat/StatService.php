@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Model;
 
 use eGen\MessageBus\QueryBus\IQueryBus;
-use Model\Event\ReadModel\Queries\CampList;
-use Model\Event\ReadModel\Queries\EventList;
-use Model\Event\ReadModel\Queries\EventsStats;
+use Model\DTO\Stat\Counter;
+use Model\Event\ReadModel\Queries\CampListQuery;
+use Model\Event\ReadModel\Queries\EventListQuery;
+use Model\Event\ReadModel\Queries\EventStatsQuery;
+use Model\Skautis\ISkautisEvent;
 use Model\Unit\Unit;
-use const ARRAY_FILTER_USE_KEY;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -26,13 +27,13 @@ class StatService
     }
 
     /**
-     * @return mixed[]
+     * @return Counter[]|array<int, Counter>
      */
-    public function getEventStats(Unit $unitTree, ?int $year) : array
+    public function getEventStats(Unit $unitTree, int $year) : array
     {
-        $events = $this->queryBus->handle(new EventList($year, null));
-        $camps  = $this->queryBus->handle(new CampList($year));
-        $stats  = $this->queryBus->handle(new EventsStats(array_keys($events), $year));
+        $events = $this->queryBus->handle(new EventListQuery($year, null));
+        $camps  = $this->queryBus->handle(new CampListQuery($year));
+        $stats  = $this->queryBus->handle(new EventStatsQuery(array_keys($events), $year));
 
         $allowed = array_keys($stats);
 
@@ -42,41 +43,35 @@ class StatService
         $keys   = array_keys($eventCount) +array_keys($campCount);
         $merged = [];
         foreach ($keys as $k) {
-            $merged[$k] = [];
-            if (array_key_exists($k, $eventCount)) {
-                $merged[$k]['events'] = $eventCount[$k];
-            }
-            if (! array_key_exists($k, $campCount)) {
-                continue;
-            }
-
-            $merged[$k]['camps'] = $campCount[$k];
+            $merged[$k] = new Counter(
+                $eventCount[$k] ?? 0,
+                $campCount[$k] ?? 0
+            );
         }
 
-        $eventCount = array_filter($this->countTree($unitTree, $merged), function ($o) {
-            return $o['events'] !== 0 || $o['camps'] !== 0;
-        });
+        $eventCount = array_filter(
+            $this->countTree($unitTree, $merged),
+            function (Counter $c) {
+                return ! $c->isEmpty();
+            }
+        );
 
         return $eventCount;
     }
 
     /**
-     * @param mixed[] $objs
-     * @param int[]   $unitKeys
-     * @return mixed[]
+     * @param ISkautisEvent[] $objs
+     * @param int[]           $unitKeys
+     * @return int[]|array<int, int>
      */
     private function sumUpByEventId(array $objs, array $unitKeys) : array
     {
-        //events with chits
-        $objs = array_filter(
-            $objs,
-            function ($key) use ($unitKeys) {
-                return in_array($key, $unitKeys);
-            },
-            ARRAY_FILTER_USE_KEY
-        );
-        $cnt  = [];
-        foreach ($objs as $e) {
+        $cnt = [];
+        foreach ($objs as $key => $e) {
+            if (! in_array($key, $unitKeys)) {
+                continue;
+            }
+
             if (array_key_exists($e->getUnitId(), $cnt)) {
                 $cnt[$e->getUnitId()] += 1;
             } else {
@@ -87,38 +82,31 @@ class StatService
     }
 
     /**
-     * @param mixed[] $cntArr
-     * @return mixed[]|null
+     * @param Counter[] $cntArr
+     * @return Counter[]|array<int, Counter>|null
      */
     private function countTree(Unit $root, array $cntArr) : ?array
     {
         $children = $root->getChildren();
 
+        /** @var Counter[] $res */
         $res = [
-            $root->getId() => ['events' => 0, 'camps' => 0],
+            $root->getId() => new Counter(),
         ];
 
         if ($children !== null) {
             foreach ($children as $u) {
                 $res = $res + $this->countTree($u, $cntArr);
-                if ($res[$u->getId()]['events'] !== 0) {
-                    $res[$root->getId()]['events'] += $res[$u->getId()]['events'];
-                }
-                if ($res[$u->getId()]['camps'] === 0) {
+                if (! array_key_exists($u->getId(), $res)) {
                     continue;
                 }
 
-                $res[$root->getId()]['camps'] += $res[$u->getId()]['camps'];
+                $res[$u->getId()]->takeIn($res[$u->getId()]);
             }
         }
 
-        if (array_key_exists($root->getId(), $cntArr)) {
-            if (array_key_exists('events', $cntArr[$root->getId()])) {
-                $res[$root->getId()]['events'] += $cntArr[$root->getId()]['events'];
-            }
-            if (array_key_exists('camps', $cntArr[$root->getId()])) {
-                $res[$root->getId()]['camps'] += $cntArr[$root->getId()]['camps'];
-            }
+        if (isset($cntArr[$root->getId()])) {
+            $res[$root->getId()]->takeIn($cntArr[$root->getId()]);
         }
         return $res;
     }

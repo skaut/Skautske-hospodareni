@@ -8,7 +8,7 @@ use Cake\Chronos\Date;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
+ * @property-read SkautisCampId $id
  * @property-read string $displayName
  * @property-read int $unitId
  * @property-read string $unitName
@@ -22,7 +22,7 @@ class Camp
 {
     use SmartObject;
 
-    /** @var int */
+    /** @var SkautisCampId */
     private $id;
 
     /** @var string */
@@ -50,7 +50,7 @@ class Camp
     private $registrationNumber;
 
     public function __construct(
-        int $id,
+        SkautisCampId $id,
         string $displayName,
         int $unitId,
         string $unitName,
@@ -71,7 +71,7 @@ class Camp
         $this->registrationNumber = $registrationNumber;
     }
 
-    public function getId() : int
+    public function getId() : SkautisCampId
     {
         return $this->id;
     }

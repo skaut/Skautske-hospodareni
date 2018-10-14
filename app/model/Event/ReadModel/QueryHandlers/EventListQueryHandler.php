@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Model\Event\ReadModel\QueryHandlers;
 
 use Model\Event\Event;
-use Model\Event\ReadModel\Queries\EventList;
+use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Skautis\Factory\IEventFactory;
 use Skautis\Skautis;
 use function array_combine;
 use function array_map;
 use function is_object;
 
-class EventListHandler
+class EventListQueryHandler
 {
     /** @var Skautis */
     private $skautis;
@@ -29,7 +29,7 @@ class EventListHandler
     /**
      * @return Event[]
      */
-    public function handle(EventList $query) : array
+    public function handle(EventListQuery $query) : array
     {
         $events = $this->skautis->event->eventGeneralAll([
                 'IsRelation' => true,

@@ -56,7 +56,7 @@ class Event
     /** @var string */
     private $registrationNumber;
 
-    /** @var string|null */
+    /** @var string */
     private $note;
 
     /** @var int */
