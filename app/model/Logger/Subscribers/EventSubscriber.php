@@ -32,7 +32,7 @@ class EventSubscriber
             $user->ID,
             "Uživatel '" . $user->Person . "' otevřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ').',
             Type::get(Type::OBJECT),
-            $event->getEventId()
+            $event->getEventId()->toInt()
         );
     }
 
@@ -46,7 +46,7 @@ class EventSubscriber
             $user->ID,
             "Uživatel '" . $user->Person . "' uzavřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ').',
             Type::get(Type::OBJECT),
-            $event->getEventId()
+            $event->getEventId()->toInt()
         );
     }
 }

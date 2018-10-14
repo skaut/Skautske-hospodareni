@@ -6,13 +6,14 @@ namespace Model\Event\Repositories;
 
 use Model\Event\Event;
 use Model\Event\EventNotFound;
+use Model\Event\SkautisEventId;
 
 interface IEventRepository
 {
     /**
      * @throws EventNotFound
      */
-    public function find(int $skautisId) : Event;
+    public function find(SkautisEventId $id) : Event;
 
     public function open(Event $event) : void;
 

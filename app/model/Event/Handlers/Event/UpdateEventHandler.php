@@ -19,7 +19,7 @@ final class UpdateEventHandler
 
     public function handle(UpdateEvent $command) : void
     {
-        $event = $this->events->find($command->getEventId()->getValue());
+        $event = $this->events->find($command->getEventId());
 
         $event->update(
             $command->getName(),

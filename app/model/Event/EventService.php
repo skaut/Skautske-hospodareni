@@ -97,7 +97,6 @@ class EventService extends MutableBaseService
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         return [
-            'localId' => $cashbookId->toInt(),
             'prefix' => $cashbook->getChitNumberPrefix(),
         ];
     }

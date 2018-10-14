@@ -157,7 +157,7 @@ class ExportService
         return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
             'participantsCnt' => count($participants),
             'personsDays' => $eventService->getParticipants()->getPersonsDays($participants),
-            'event' => $this->events->find($skautisEventId),
+            'event' => $this->events->find(new SkautisEventId($skautisEventId)),
             'chits' => $sums,
             'functions' => $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId))),
             'incomes' => array_values($sums[Operation::INCOME]),
