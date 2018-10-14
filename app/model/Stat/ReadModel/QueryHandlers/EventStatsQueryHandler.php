@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Event\ReadModel\QueryHandlers;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 use Model\Cashbook\Operation;
 use Model\Event\ReadModel\Queries\EventStatsQuery;
 use Model\Event\SkautisEventId;
@@ -31,7 +32,7 @@ class EventStatsQueryHandler
         }, $query->getEventIds()),
             $query->getYear(),
             ];
-        $types  = [Connection::PARAM_INT_ARRAY, 'integer'];
+        $types  = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
         $sql    = 'SELECT eventId, SUM(price) as sum ' .
             'FROM `ac_chits` ' .
             'WHERE eventId IN (?) AND category_operation_type = \'' . Operation::EXPENSE . '\' ' .
