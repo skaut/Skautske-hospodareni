@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\IntegerType;
+use Doctrine\DBAL\Types\GuidType;
 use Model\Cashbook\Cashbook\CashbookId;
 
-final class CashbookIdType extends IntegerType
+final class CashbookIdType extends GuidType
 {
     public function getName() : string
     {
@@ -25,19 +25,19 @@ final class CashbookIdType extends IntegerType
         }
 
         /** @var string $value */
-        return CashbookId::fromInt((int) $value);
+        return CashbookId::fromString($value);
     }
 
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?int
+    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
     {
         if ($value === null) {
             return null;
         }
 
         /** @var CashbookId $value */
-        return $value->toInt();
+        return $value->toString();
     }
 }

@@ -6,6 +6,7 @@ namespace Model\Skautis;
 
 use Dibi\Connection;
 use Model\BaseTable;
+use Model\Cashbook\Cashbook\CashbookId;
 
 class ObjectTable
 {
@@ -19,18 +20,19 @@ class ObjectTable
         $this->connection = $connection;
     }
 
-    public function add(int $skautisId, string $type) : int
+    public function add(int $skautisId, CashbookId $cashbookId, string $type) : void
     {
-        return (int) $this->connection->insert(self::TABLE, [
+        $this->connection->insert(self::TABLE, [
+            'id' => $cashbookId->toString(),
             'skautisId' => $skautisId,
             'type' => $type,
-        ])->execute(\dibi::IDENTIFIER);
+        ])->execute();
     }
 
     /**
      * Vyhleda akci|jednotku
      */
-    public function getLocalId(int $skautisEventId, string $type) : ?int
+    public function getLocalId(int $skautisEventId, string $type) : ?CashbookId
     {
         $id = $this->connection->select('id')
             ->from(self::TABLE)
@@ -38,14 +40,14 @@ class ObjectTable
             ->where('type = %s', $type)
             ->fetchSingle();
 
-        return $id !== false ? $id : null;
+        return $id !== false ? CashbookId::fromString($id) : null;
     }
 
-    public function getSkautisId(int $localId, string $type) : ?int
+    public function getSkautisId(CashbookId $cashbookId, string $type) : ?int
     {
         $id = $this->connection->select('skautisId')
             ->from(self::TABLE)
-            ->where('id = %i', $localId)
+            ->where('id = %s', $cashbookId->toString())
             ->where('type = %s', $type)
             ->fetchSingle();
 

@@ -16,7 +16,7 @@ class Mapper
     /** @var int[] */
     private $skautisIds = [];
 
-    /** @var int[] */
+    /** @var CashbookId[] */
     private $localIds = [];
 
     /** @var ObjectTable */
@@ -44,13 +44,11 @@ class Mapper
      */
     public function getSkautisId(CashbookId $cashbookId, string $type) : ?int
     {
-        $localId = $cashbookId->toInt();
-
-        $key = $type . $localId;
+        $key = $type . $cashbookId;
 
         if (! isset($this->skautisIds[$key])) {
-            $skautisId = $this->table->getSkautisId($localId, $type);
-            $this->cache($skautisId, $localId, $type);
+            $skautisId = $this->table->getSkautisId($cashbookId, $type);
+            $this->cache($skautisId, $cashbookId, $type);
         }
 
         return $this->skautisIds[$key];
@@ -68,10 +66,10 @@ class Mapper
             $this->cache($skautisId, $localId, $type);
         }
 
-        return CashbookId::fromInt($this->localIds[$key]);
+        return $this->localIds[$key];
     }
 
-    private function cache(?int $skautisId, ?int $localId, string $type) : void
+    private function cache(?int $skautisId, ?CashbookId $localId, string $type) : void
     {
         $this->skautisIds[$type . $localId] = $skautisId;
 
@@ -82,21 +80,23 @@ class Mapper
         $this->localIds[$type . $skautisId] = $localId;
     }
 
-    private function loadOrCreateLocalId(int $skautisId, string $type) : int
+    private function loadOrCreateLocalId(int $skautisId, string $type) : CashbookId
     {
-        $localId = $this->table->getLocalId($skautisId, $type);
+        $cashbookId = $this->table->getLocalId($skautisId, $type);
 
-        if ($localId === null) {
-            $localId = $this->table->add($skautisId, $type);
+        if ($cashbookId === null) {
+            $cashbookId = CashbookId::generate();
+
+            $this->table->add($skautisId, $cashbookId, $type);
 
             if ($type === ObjectType::UNIT) {
                 $isOfficialUnit = $this->unitResolver->getOfficialUnitId($skautisId) === $skautisId;
                 $type           = $isOfficialUnit ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP;
             }
 
-            $this->commandBus->handle(new CreateCashbook(CashbookId::fromInt($localId), CashbookType::get($type)));
+            $this->commandBus->handle(new CreateCashbook($cashbookId, CashbookType::get($type)));
         }
 
-        return $localId;
+        return $cashbookId;
     }
 }

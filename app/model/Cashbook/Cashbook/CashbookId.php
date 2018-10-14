@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Cashbook;
 
+use Ramsey\Uuid\Exception\InvalidUuidStringException;
+use Ramsey\Uuid\Uuid;
+use function is_numeric;
+use function sprintf;
+
 final class CashbookId
 {
     /** @var string */
@@ -11,28 +16,22 @@ final class CashbookId
 
     private function __construct(string $id)
     {
+        if (! is_numeric($id) && ! $this->isValidUuid($id)) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid id "%s", valid ID is either UUIDv4 or legacy numeric string', $id)
+            );
+        }
         $this->id = $id;
     }
 
-    /**
-     * @deprecated Use self::fromString
-     */
-    public static function fromInt(int $id) : self
+    public static function generate() : self
     {
-        return new self((string) $id);
+        return new self(Uuid::uuid4()->toString());
     }
 
     public static function fromString(string $id) : self
     {
         return new self($id);
-    }
-
-    /**
-     * @deprecated This is only intermediate method, because CashbookId will wrap uuid soon
-     */
-    public function toInt() : int
-    {
-        return (int) $this->id;
     }
 
     public function toString() : string
@@ -48,5 +47,14 @@ final class CashbookId
     public function equals(self $otherValueObject) : bool
     {
         return $otherValueObject->id === $this->id;
+    }
+
+    private function isValidUuid(string $id) : bool
+    {
+        try {
+            return Uuid::fromString($id)->getVersion() === 4;
+        } catch (InvalidUuidStringException $e) {
+            return false;
+        }
     }
 }
