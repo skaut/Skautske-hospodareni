@@ -11,6 +11,8 @@ use Model\Utils\MoneyFactory;
 
 class CommandRepositoryTest extends \IntegrationTest
 {
+    private const COMMAND_ID = 1;
+
     private const COMMAND = [
         'unit_id' => 10,
         'purpose' => 'Převoz materiálu na tábor',
@@ -30,7 +32,7 @@ class CommandRepositoryTest extends \IntegrationTest
 
     private const VEHICLE_TRAVEL = [
         'id' => 0,
-        'command_id' => 1,
+        'command_id' => self::COMMAND_ID,
         'start_place' => 'Brno',
         'end_place' => 'Praha',
         'distance' => 205.0,
@@ -41,7 +43,7 @@ class CommandRepositoryTest extends \IntegrationTest
 
     private const TRANSPORT_TRAVEL = [
         'id' => 1,
-        'command_id' => 1,
+        'command_id' => self::COMMAND_ID,
         'start_place' => 'Praha',
         'end_place' => 'Brno',
         'distance' => 500.0,
@@ -196,10 +198,22 @@ class CommandRepositoryTest extends \IntegrationTest
         $this->tester->seeInDatabase('tc_commands', ['id' => 2] + self::COMMAND);
     }
 
-    private function createCommandWithTwoTravels() : void
+    public function testTwoCommandsCanHaveTravelsWithSameIds() : void
+    {
+        $this->createCommandWithTwoTravels(1);
+        $this->createCommandWithTwoTravels(2);
+
+        foreach ($this->repository->findByUnit(10) as $command) {
+            $this->assertSame(2, $command->getTravelCount());
+            $this->assertSame(0, $command->getTravels()[0]->getId());
+            $this->assertSame(1, $command->getTravels()[1]->getId());
+        }
+    }
+
+    private function createCommandWithTwoTravels(int $commandId = self::COMMAND_ID) : void
     {
         $this->tester->haveInDatabase('tc_commands', self::COMMAND);
-        $this->tester->haveInDatabase('tc_travels', self::VEHICLE_TRAVEL);
-        $this->tester->haveInDatabase('tc_travels', self::TRANSPORT_TRAVEL);
+        $this->tester->haveInDatabase('tc_travels', ['command_id' => $commandId] + self::VEHICLE_TRAVEL);
+        $this->tester->haveInDatabase('tc_travels', ['command_id' => $commandId] + self::TRANSPORT_TRAVEL);
     }
 }
