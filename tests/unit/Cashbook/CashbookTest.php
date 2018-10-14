@@ -22,7 +22,7 @@ class CashbookTest extends Unit
     public function testCreateCashbook() : void
     {
         $type       = CashbookType::get(CashbookType::EVENT);
-        $cashbookId = CashbookId::fromInt(100);
+        $cashbookId = CashbookId::fromString('100');
 
         $cashbook = new Cashbook($cashbookId, $type);
 
@@ -32,7 +32,7 @@ class CashbookTest extends Unit
 
     public function testAddingChitRaisesEvent() : void
     {
-        $cashbookId = CashbookId::fromInt(10);
+        $cashbookId = CashbookId::fromString('10');
         $cashbook   = $this->createEventCashbook($cashbookId);
         $category   = $this->mockCategory(6);
 
@@ -81,7 +81,7 @@ class CashbookTest extends Unit
 
     public function testAddChitRaisesEvent() : void
     {
-        $cashbookId = CashbookId::fromInt(10);
+        $cashbookId = CashbookId::fromString('10');
 
         $cashbook = $this->createEventCashbook($cashbookId);
 
@@ -124,7 +124,7 @@ class CashbookTest extends Unit
 
     public function testClearCashbook() : void
     {
-        $cashbook = new Cashbook(CashbookId::fromInt(11), CashbookType::get(CashbookType::EVENT));
+        $cashbook = new Cashbook(CashbookId::fromString('11'), CashbookType::get(CashbookType::EVENT));
         $chitBody = new ChitBody(null, new Date(), null, new Amount('100'), 'Účastnické poplatky');
 
         for ($i = 0; $i < 5; $i++) {
@@ -147,7 +147,7 @@ class CashbookTest extends Unit
 
     private function createEventCashbook(?CashbookId $cashbookId = null) : Cashbook
     {
-        return new Cashbook($cashbookId ?? CashbookId::fromInt(1), CashbookType::get(CashbookType::EVENT));
+        return new Cashbook($cashbookId ?? CashbookId::fromString('1'), CashbookType::get(CashbookType::EVENT));
     }
 
     private function mockCategory(int $id) : ICategory

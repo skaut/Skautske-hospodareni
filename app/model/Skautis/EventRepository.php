@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Model\Skautis;
 
 use Cake\Chronos\Date;
-use Model\Cashbook\Cashbook\CashbookId;
 use Model\Event\Event;
 use Model\Event\EventNotFound;
 use Model\Event\Repositories\IEventRepository;
+use Model\Event\SkautisEventId;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use function array_column;
@@ -22,22 +22,18 @@ final class EventRepository implements IEventRepository
     /** @var WebServiceInterface */
     private $webService;
 
-    /** @var Mapper */
-    private $mapper;
-
     /** @var string */
     private $skautisType = 'eventGeneral';
 
-    public function __construct(WebServiceInterface $webService, Mapper $mapper)
+    public function __construct(WebServiceInterface $webService)
     {
         $this->webService = $webService;
-        $this->mapper     = $mapper;
     }
 
-    public function find(int $skautisId) : Event
+    public function find(SkautisEventId $id) : Event
     {
         try {
-            $skautisEvent = $this->webService->EventGeneralDetail(['ID' => $skautisId]);
+            $skautisEvent = $this->webService->EventGeneralDetail(['ID' => $id->toInt()]);
             return $this->createEvent($skautisEvent);
         } catch (PermissionException $exc) {
             throw new EventNotFound($exc->getMessage(), $exc->getCode(), $exc);
@@ -46,20 +42,18 @@ final class EventRepository implements IEventRepository
 
     public function open(Event $event) : void
     {
-        $skautisId = $this->getSkautisId($event->getId());
-        $this->webService->EventGeneralUpdateOpen(['ID' => $skautisId], $this->skautisType);
+        $this->webService->EventGeneralUpdateOpen(['ID' => $event->getId()->toInt()], $this->skautisType);
     }
 
     public function close(Event $event) : void
     {
-        $skautisId = $this->getSkautisId($event->getId());
-        $this->webService->EventGeneralUpdateClose(['ID' => $skautisId], $this->skautisType);
+        $this->webService->EventGeneralUpdateClose(['ID' => $event->getId()->toInt()], $this->skautisType);
     }
 
     public function update(Event $event) : void
     {
         $this->webService->eventGeneralUpdate([
-            'ID' => $this->mapper->getSkautisId(CashbookId::fromInt($event->getId()), Mapper::EVENT), // @todo use Skautis ID instead of cashbook ID
+            'ID' => $event->getId()->toInt(),
             'Location' => $event->getLocation(),
             'Note' => $event->getNote(),
             'ID_EventGeneralScope' => $event->getScopeId(),
@@ -87,7 +81,7 @@ final class EventRepository implements IEventRepository
     private function createEvent(\stdClass $skautisEvent) : Event
     {
         return new Event(
-            $this->mapper->getLocalId($skautisEvent->ID, Mapper::EVENT)->toInt(), // @todo Use Skautis ID instead of cashbook ID
+            new SkautisEventId($skautisEvent->ID),
             $skautisEvent->DisplayName,
             $skautisEvent->ID_Unit,
             $skautisEvent->Unit,
@@ -101,14 +95,5 @@ final class EventRepository implements IEventRepository
             $skautisEvent->ID_EventGeneralScope,
             $skautisEvent->ID_EventGeneralType
         );
-    }
-
-    private function getSkautisId(int $id) : ?int
-    {
-        $skautisId = $this->mapper->getSkautisId(CashbookId::fromString((string) $id), Mapper::EVENT);
-        if ($skautisId === null) {
-            throw new EventNotFound();
-        }
-        return $skautisId;
     }
 }

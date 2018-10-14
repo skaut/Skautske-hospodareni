@@ -33,9 +33,9 @@ class Cashbook
         $this->note             = $note;
     }
 
-    public function getId() : int
+    public function getId() : string
     {
-        return $this->id->toInt();
+        return $this->id->toString();
     }
 
     public function getType() : CashbookType

@@ -40,7 +40,7 @@ class ChitListQueryHandler
             ->select('c')
             ->from(Chit::class, 'c')
             ->where('IDENTITY(c.cashbook) = :cashbookId')
-            ->setParameter('cashbookId', $query->getCashbookId()->toInt())
+            ->setParameter('cashbookId', $query->getCashbookId()->toString())
             ->orderBy('c.body.date')
             ->addOrderBy('c.category.operationType') // income first
             ->addOrderBy('c.id');

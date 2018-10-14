@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Events\Events;
 
+use Model\Event\SkautisEventId;
+
 class BaseEvent
 {
-    /** @var int */
+    /** @var SkautisEventId */
     private $eventId;
 
     /** @var int */
@@ -15,14 +17,14 @@ class BaseEvent
     /** @var string */
     private $eventName;
 
-    public function __construct(int $eventId, int $unitId, string $eventName)
+    public function __construct(SkautisEventId $eventId, int $unitId, string $eventName)
     {
         $this->eventId   = $eventId;
         $this->unitId    = $unitId;
         $this->eventName = $eventName;
     }
 
-    public function getEventId() : int
+    public function getEventId() : SkautisEventId
     {
         return $this->eventId;
     }

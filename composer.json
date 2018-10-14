@@ -48,7 +48,8 @@
         "cakephp/chronos": "^1.1",
         "warhuhn/chronos-doctrine": "^1.0",
         "nasext/dependent-select-box": "^3.1",
-        "composer/ca-bundle": "^1.1"
+        "composer/ca-bundle": "^1.1",
+        "ramsey/uuid": "^3.8"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.2",

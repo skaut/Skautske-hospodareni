@@ -105,11 +105,9 @@ class EventPresenter extends BasePresenter
 
     public function renderLogs(int $aid) : void
     {
-        $this->template->setParameters(
-            [
-            'logs' => $this->loggerService->findAllByTypeId(Type::get(Type::OBJECT), $this->event->localId),
-            ]
-        );
+        $this->template->setParameters([
+            'logs' => $this->loggerService->findAllByTypeId(Type::get(Type::OBJECT), $aid),
+        ]);
     }
 
     public function handleOpen(int $aid) : void
@@ -119,7 +117,7 @@ class EventPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        $this->commandBus->handle(new OpenEvent($aid));
+        $this->commandBus->handle(new OpenEvent(new SkautisEventId($aid)));
 
         $this->flashMessage('Akce byla znovu otevřena.');
         $this->redirect('this');
@@ -136,7 +134,7 @@ class EventPresenter extends BasePresenter
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
 
         if ($functions->getLeader() !== null) {
-            $this->commandBus->handle(new CloseEvent($aid));
+            $this->commandBus->handle(new CloseEvent(new SkautisEventId($aid)));
             $this->flashMessage('Akce byla uzavřena.');
         } else {
             $this->flashMessage('Před uzavřením akce musí být vyplněn vedoucí akce', 'danger');

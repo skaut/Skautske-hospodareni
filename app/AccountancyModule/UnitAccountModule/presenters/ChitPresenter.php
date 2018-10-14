@@ -117,11 +117,11 @@ class ChitPresenter extends BasePresenter
         };
     }
 
-    protected function createComponentChitList(string $cashbookId) : Multiplier
+    protected function createComponentChitList() : Multiplier
     {
         return new Multiplier(
             function (string $cashbookId) : ChitListControl {
-                $cashbookIdVo = CashbookId::fromInt((int) $cashbookId);
+                $cashbookIdVo = CashbookId::fromString($cashbookId);
 
                 if (! $this->canEditCashbook($cashbookIdVo)) {
                     throw new BadRequestException(sprintf('Cashbook #%s not found', $cashbookId), IResponse::S404_NOT_FOUND);

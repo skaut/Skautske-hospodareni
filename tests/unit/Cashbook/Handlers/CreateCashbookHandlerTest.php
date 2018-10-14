@@ -21,13 +21,13 @@ class CreateCashbookHandlerTest extends Unit
         $repository->shouldReceive('save')
             ->once()
             ->withArgs(function (Cashbook $cashbook) use ($type) {
-                return $cashbook->getId()->equals(Cashbook\CashbookId::fromInt(10))
+                return $cashbook->getId()->equals(Cashbook\CashbookId::fromString('10'))
                     && $cashbook->getType() === $type;
             });
 
         $handler = new CreateCashbookHandler($repository);
 
-        $handler->handle(new CreateCashbook(Cashbook\CashbookId::fromInt(10), $type));
+        $handler->handle(new CreateCashbook(Cashbook\CashbookId::fromString('10'), $type));
 
         m::close();
     }

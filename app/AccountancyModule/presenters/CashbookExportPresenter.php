@@ -104,9 +104,9 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports all chits as PDF for printing
      */
-    public function actionPrintAllChits(int $cashbookId) : void
+    public function actionPrintAllChits(string $cashbookId) : void
     {
-        $template = $this->exportService->getChitlist(CashbookId::fromInt($cashbookId));
+        $template = $this->exportService->getChitlist(CashbookId::fromString($cashbookId));
         $this->pdf->render($template, 'seznam-dokladu.pdf');
         $this->terminate();
     }

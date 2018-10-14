@@ -24,7 +24,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
     ];
 
     private const CASHBOOK_TYPE = CashbookType::EVENT;
-    private const CASHBOOK_ID   = 123;
+    private const CASHBOOK_ID   = '123';
 
     public function testReturnAllCategoriesIfOperationIsNotPassed() : void
     {
@@ -34,7 +34,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
             1 => 'Název 1',
             2 => 'Název 2',
         ], $handler->handle(
-            new CategoryPairsQuery(CashbookId::fromInt(self::CASHBOOK_ID))
+            new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID))
         ));
     }
 
@@ -43,7 +43,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $handler = $this->createHandler();
 
         $this->assertSame([1 => 'Název 1'], $handler->handle(
-            new CategoryPairsQuery(CashbookId::fromInt(self::CASHBOOK_ID), Operation::get(Operation::INCOME))
+            new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID), Operation::get(Operation::INCOME))
         ));
     }
 
@@ -61,7 +61,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $categoryRepository->shouldReceive('findForCashbook')
             ->once()
             ->withArgs(function (CashbookId $cashbookId, CashbookType $type) : bool {
-                return $cashbookId->equals(CashbookId::fromInt(self::CASHBOOK_ID))
+                return $cashbookId->equals(CashbookId::fromString(self::CASHBOOK_ID))
                     && $type->equalsValue(self::CASHBOOK_TYPE);
             })
             ->andReturn($categories);
@@ -70,10 +70,10 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $cashbookRepository->shouldReceive('find')
             ->once()
             ->withArgs(function (CashbookId $id) {
-                return $id->equals(CashbookId::fromInt(self::CASHBOOK_ID));
+                return $id->equals(CashbookId::fromString(self::CASHBOOK_ID));
             })
             ->andReturn(m::mock(Cashbook::class, [
-                'getId' => CashbookId::fromInt(self::CASHBOOK_ID),
+                'getId' => CashbookId::fromString(self::CASHBOOK_ID),
                 'getType' => CashbookType::get(self::CASHBOOK_TYPE),
             ]));
 
