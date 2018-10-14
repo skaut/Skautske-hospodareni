@@ -1,4 +1,5 @@
-<div class="alert alert-info" role="alert" n:inner-snippet="note">
+<div class="panel panel-info note-form" role="alert" n:inner-snippet="note">
+    <div class="panel-body">
         {if $isEditable && $editation }
             <form n:name="form" class="form-inline">
                 {input note style=>"width:90%"}
@@ -8,4 +9,5 @@
         {else}
             <b>Poznámka:</b> {$note|noescape} <a n:if="$isEditable" n:href="edit!" class="btn btn-xs btn-default ajax"><i class="fa fa-pencil"></i></a>
         {/if}
+    </div>
 </div>

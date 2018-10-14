@@ -366,3 +366,7 @@ footer {
 [id^="payment-"]:target {
     -webkit-animation: target .8s ease-in;
 }
+
+.note-form {
+    margin-top: 10px;
+}
