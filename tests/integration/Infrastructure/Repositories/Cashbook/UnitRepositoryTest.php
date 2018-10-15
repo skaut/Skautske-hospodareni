@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Cashbook;
 
+use eGen\MessageBus\Bus\EventBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Events\Unit\CashbookWasCreated;
 use Model\Cashbook\Exception\UnitNotFound;
 use Model\Cashbook\Unit;
 use Model\Common\UnitId;
@@ -23,15 +25,6 @@ final class UnitRepositoryTest extends \IntegrationTest
         'year' => 2018,
         'cashbook_id' => '123',
     ];
-
-    /** @var UnitRepository */
-    private $repository;
-
-    protected function _before() : void
-    {
-        parent::_before();
-        $this->repository = new UnitRepository($this->entityManager);
-    }
 
     /**
      * @return string[]
@@ -52,7 +45,7 @@ final class UnitRepositoryTest extends \IntegrationTest
             self::CASHBOOK['year']
         );
 
-        $this->repository->save($unit);
+        $this->getRepository()->save($unit);
 
         $this->tester->seeInDatabase('ac_units', self::UNIT);
 
@@ -63,7 +56,7 @@ final class UnitRepositoryTest extends \IntegrationTest
     {
         $this->expectException(UnitNotFound::class);
 
-        $this->repository->find(new UnitId(1));
+        $this->getRepository()->find(new UnitId(1));
     }
 
     public function testFindReturnsCorrectlyHydratedAggregate() : void
@@ -71,12 +64,32 @@ final class UnitRepositoryTest extends \IntegrationTest
         $this->tester->haveInDatabase('ac_units', self::UNIT);
         $this->tester->haveInDatabase('ac_unit_cashbooks', self::CASHBOOK);
 
-        $unit = $this->repository->find(new UnitId(self::UNIT['id']));
+        $unit = $this->getRepository()->find(new UnitId(self::UNIT['id']));
 
         $this->assertSame(self::UNIT['id'], $unit->getId()->toInt());
         $this->assertSame(self::UNIT['active_cashbook_id'], $unit->getActiveCashbook()->getId());
         $this->assertCount(1, $unit->getCashbooks());
         $this->assertSame(self::CASHBOOK['year'], $unit->getCashbooks()[0]->getYear());
         $this->assertSame(self::CASHBOOK['cashbook_id'], $unit->getCashbooks()[0]->getCashbookId()->toString());
+    }
+
+    public function testSaveDispatchesEvent() : void
+    {
+        $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);
+        $unit->createCashbook(2019); // There is CashbookWasCreatedEvent
+
+        $eventBus = \Mockery::mock(EventBus::class);
+        $eventBus->shouldReceive('handle')
+            ->once()
+            ->withArgs(function (CashbookWasCreated $event) {
+                return true;
+            });
+
+        $this->getRepository($eventBus)->save($unit);
+    }
+
+    private function getRepository(?EventBus $eventBus = null) : UnitRepository
+    {
+        return new UnitRepository($this->entityManager, $eventBus ?? new EventBus());
     }
 }
