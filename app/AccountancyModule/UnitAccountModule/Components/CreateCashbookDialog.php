@@ -9,6 +9,8 @@ use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Commands\Unit\CreateCashbook;
+use Model\Cashbook\Commands\Unit\CreateUnit;
+use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
@@ -85,7 +87,11 @@ final class CreateCashbookDialog extends BaseControl
 
             $year = $values->year;
 
-            $this->commandBus->handle(new CreateCashbook($this->unitId, $year));
+            $this->commandBus->handle(
+                $this->unitExists()
+                    ? new CreateCashbook($this->unitId, $year)
+                    : new CreateUnit($this->unitId, $year)
+            );
             $this->presenter->flashMessage('Pokladní kniha byla vytvořena');
             $this->onSuccess($year);
         };
@@ -110,4 +116,8 @@ final class CreateCashbookDialog extends BaseControl
         }, $cashbooks);
     }
 
+    private function unitExists() : bool
+    {
+        return $this->queryBus->handle(new ActiveUnitCashbookQuery($this->unitId)) !== null;
+    }
 }

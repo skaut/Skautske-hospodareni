@@ -57,8 +57,16 @@ class CashbookPresenter extends BasePresenter
     }
     public function actionDefault(int $aid, ?int $year = null) : void
     {
-        /** @var UnitCashbook $activeCashbook */
-        $activeCashbook = $this->queryBus->handle(new ActiveUnitCashbookQuery(new UnitId($this->aid)));
+        $activeCashbook = $this->getActiveCashbook();
+
+        $this->template->setParameters([
+            'unitPairs' => $this->unitService->getReadUnits($this->user),
+        ]);
+
+        if ($activeCashbook === null) {
+            $this->setView('noCashbook');
+            return;
+        }
 
         if ($year === null) {
             $this->redirect('this', [$aid, $activeCashbook->getYear()]);
@@ -85,13 +93,23 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $this->template->setParameters(
-            [
+        $this->template->setParameters([
             'cashbookId' => $this->cashbookId->toString(),
             'isCashbookEmpty' => $this->isCashbookEmpty(),
-            'unitPairs' => $this->unitService->getReadUnits($this->user),
-            ]
-        );
+        ]);
+    }
+
+    /**
+     * Do not allow direct access to action.
+     * This is internal action used inside "default" action when there is no unit yet
+     */
+    public function actionNoCashbook(int $aid) : void
+    {
+        $activeCashbook = $this->getActiveCashbook();
+
+        if ($activeCashbook !== null) {
+            $this->redirect('default', [$aid, $activeCashbook->getYear()]);
+        }
     }
 
     protected function createComponentCreateCashbookDialog() : CreateCashbookDialog
@@ -116,5 +134,10 @@ class CashbookPresenter extends BasePresenter
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->cashbookId));
 
         return empty($chits);
+    }
+
+    private function getActiveCashbook() : ?UnitCashbook
+    {
+        return $this->queryBus->handle(new ActiveUnitCashbookQuery(new UnitId($this->aid)));
     }
 }
