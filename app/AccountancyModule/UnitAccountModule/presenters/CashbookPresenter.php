@@ -42,10 +42,12 @@ class CashbookPresenter extends BasePresenter
     {
         parent::startup();
 
-        if (! $this->isReadable) {
-            $this->flashMessage('Nemáš oprávnění číst data jednotky', 'danger');
-            $this->redirect('Default:');
+        if ($this->isReadable) {
+            return;
         }
+
+        $this->flashMessage('Nemáš oprávnění číst data jednotky', 'danger');
+        $this->redirect('Default:');
     }
 
     public function handleCreateCashbook() : void
@@ -107,9 +109,11 @@ class CashbookPresenter extends BasePresenter
     {
         $activeCashbook = $this->getActiveCashbook();
 
-        if ($activeCashbook !== null) {
-            $this->redirect('default', [$aid, $activeCashbook->getYear()]);
+        if ($activeCashbook === null) {
+            return;
         }
+
+        $this->redirect('default', [$aid, $activeCashbook->getYear()]);
     }
 
     protected function createComponentCreateCashbookDialog() : CreateCashbookDialog
