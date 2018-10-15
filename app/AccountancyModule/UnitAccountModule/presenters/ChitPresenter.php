@@ -31,7 +31,7 @@ class ChitPresenter extends BasePresenter
 
     /**
      * object type => [
-     *      cashbook ID => object
+     *      cashbook ID (without hyphens) => object
      * ]
      *
      * @var array<string, array<string, array>>
@@ -122,9 +122,8 @@ class ChitPresenter extends BasePresenter
         return new Multiplier(
             function (string $cashbookId) : ChitListControl {
                 $cashbookIdVo = CashbookId::fromString($cashbookId);
-
                 if (! $this->canEditCashbook($cashbookIdVo)) {
-                    throw new BadRequestException(sprintf('Cashbook #%s not found', $cashbookId), IResponse::S404_NOT_FOUND);
+                    throw new BadRequestException(sprintf('Cashbook #%s not found', $cashbookIdVo->toString()), IResponse::S404_NOT_FOUND);
                 }
 
                 return $this->chitListFactory->create($cashbookIdVo, (bool) $this->onlyUnlocked);
@@ -135,7 +134,7 @@ class ChitPresenter extends BasePresenter
     private function canEditCashbook(CashbookId $cashbookId) : bool
     {
         foreach ($this->cashbooks as $cashbookList) {
-            if (isset($cashbookList[$cashbookId->toString()])) {
+            if (isset($cashbookList[$cashbookId->withoutHyphens()])) {
                 return true;
             }
         }
@@ -170,7 +169,7 @@ class ChitPresenter extends BasePresenter
         $cashbooks = [];
         foreach ($objects as $oid => $object) {
             foreach ($this->getCashbookIds($objectType, $oid) as $cashbookId) {
-                $cashbooks[$cashbookId->toString()] = $object;
+                $cashbooks[$cashbookId->withoutHyphens()] = $object;
             }
         }
 
