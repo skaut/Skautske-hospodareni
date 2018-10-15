@@ -1,0 +1,14 @@
+services:
+    - Model\Infrastructure\Repositories\Cashbook\CashbookRepository
+    - Model\Infrastructure\Repositories\Cashbook\UnitRepository
+    - Model\Payment\UnitResolverStub
+
+    - class: Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler
+      tags: [commandBus.handler]
+    - class: Model\Cashbook\Handlers\Unit\CreateCashbookHandler
+      tags: [commandBus.handler]
+    - class: Model\Cashbook\Subscribers\UnitCashbookWasCreatedSubscriber
+      tags: [eventBus.subscriber]
+
+includes:
+    - ../../../config/doctrine.neon
