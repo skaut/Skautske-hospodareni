@@ -26,12 +26,22 @@ final class UnitTest extends TestCase
         $this->assertSame(1, $activeCashbook->getId());
         $this->assertSame($year, $activeCashbook->getYear());
         $this->assertSame([$activeCashbook], $unit->getCashbooks());
+
+        $events = $unit->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+
+        /** @var CashbookWasCreated $event */
+        $event = $events[0];
+        $this->assertInstanceOf(CashbookWasCreated::class, $event);
+        $this->assertSame($id, $event->getUnitId());
+        $this->assertSame($activeCashbook->getCashbookId(), $event->getCashbookId());
     }
 
     public function testCreateCashbook() : void
     {
         $id   = new UnitId(15);
         $unit = new Unit($id, CashbookId::generate(), 2018);
+        $unit->extractEventsToDispatch(); // clear events
 
         $unit->createCashbook(2019);
 

@@ -52,6 +52,7 @@ class Unit extends Aggregate
         $this->id               = $id;
         $this->cashbooks        = new ArrayCollection([$cashbook]);
         $this->activeCashbookId = $cashbook->getId();
+        $this->raise(new CashbookWasCreated($this->id, $activeCashbookId));
     }
 
     /**

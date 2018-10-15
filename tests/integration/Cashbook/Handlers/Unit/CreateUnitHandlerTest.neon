@@ -1,5 +1,5 @@
 services:
-    - class: Model\Cashbook\Handlers\Unit\CreateCashbookHandler
+    - class: Model\Cashbook\Handlers\Unit\CreateUnitHandler
       tags: [commandBus.handler]
 
 includes:
