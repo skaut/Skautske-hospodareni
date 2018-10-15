@@ -43,7 +43,7 @@ class EventListQueryHandler
         $events = array_map([$this->eventFactory, 'create'], $events); //It changes ID to localIDs
         return array_combine(
             array_map(function (Event $u) : int {
-                return $u->getId();
+                return $u->getId()->toInt();
             }, $events),
             $events
         );
