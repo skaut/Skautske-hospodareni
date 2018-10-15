@@ -11,6 +11,8 @@ final class Version20181014120054 extends AbstractMigration
 {
     public function up(Schema $schema) : void
     {
+        $this->addSql('ALTER TABLE ac_cashbook CONVERT TO CHARACTER SET utf8 COLLATE utf8_czech_ci');
+
         $this->addSql(<<<SQL
         CREATE TABLE ac_unit_cashbooks
         (
