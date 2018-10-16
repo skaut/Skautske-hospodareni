@@ -63,10 +63,11 @@ class RouterFactory
         $accountancy[] = $this->createTravelRoutes();
         $accountancy[] = $this->createUnitAccountRoutes();
         $accountancy[] = $this->createPaymentRoutes();
+        $accountancy[] = $this->createStatRoutes();
 
         $accountancy[] = new Route('<module>/<presenter>[/<action>]', ['action' => 'default']);
 
-        $router[] = new SimpleRouter('Default:default', Route::$defaultFlags);
+        $router[] = new SimpleRouter('Default:default');
         return $router;
     }
 
@@ -196,19 +197,43 @@ class RouterFactory
         $router[] = new Route(
             $prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]',
             [
-            'presenter' => [
-                Route::VALUE => 'Default',
-                Route::FILTER_TABLE => ['bankovni-ucty' => 'BankAccounts'],
-            ],
-            'action' => 'default',
+                'presenter' => [
+                    Route::VALUE => 'Default',
+                    Route::FILTER_TABLE => ['bankovni-ucty' => 'BankAccounts'],
+                ],
+                'action' => 'default',
             ]
         );
 
         $router[] = new Route(
             $prefix . '[/<presenter>][/<action>]',
             [
-            'presenter' => 'Default',
-            'action' => 'default',
+                'presenter' => 'Default',
+                'action' => 'default',
+            ]
+        );
+        return $router;
+    }
+
+    private function createStatRoutes() : RouteList
+    {
+        $router = new RouteList('Statistics');
+
+        $prefix = 'statistiky';
+
+        $router[] = new Route(
+            $prefix . '/<unitId [0-9]+>[/<presenter>][/<action>]',
+            [
+                'presenter' => [Route::VALUE => 'Default'],
+                'action' => 'default',
+            ]
+        );
+
+        $router[] = new Route(
+            $prefix . '[/<presenter>][/<action>]',
+            [
+                'presenter' => 'Default',
+                'action' => 'default',
             ]
         );
         return $router;

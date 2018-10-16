@@ -1,0 +1,37 @@
+{block #title}Statistiky{/block}
+
+{block #unit}
+    {var space = "&nbsp;"}
+    {if array_key_exists($unit->getId(), $data)}
+        <tr>
+            <th>{$space|repeat:5*$level|noescape}{$unit->getDisplayName ()}</th>
+            <td>{$data[$unit->getId()]->events}</td>
+            <td>{$data[$unit->getId()]->camps}</td>
+        </tr>
+        {foreach $unit->getChildren() as $ch}
+            {include #unit, unit => $ch, level => $level +1}
+        {/foreach}
+    {/if}
+{/block}
+
+{block #content}
+<h2>Statistiky</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-bordered table table-striped">
+            <tr>
+                <th>Jednotka</th>
+                <th>
+                    Výpravy
+                    <i class="glyphicon glyphicon-question-sign" rel="tooltip"
+                       data-original-title="Počet výprav s výdajovým dokladem.">
+                </th>
+                <th>Tábory</th>
+            </tr>
+            {include #unit, unit => $unitTree, level => 0}
+        </table>
+
+    </div>
+</div>
+

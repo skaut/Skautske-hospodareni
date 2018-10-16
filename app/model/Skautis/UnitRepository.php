@@ -9,7 +9,6 @@ use Model\Unit\Unit;
 use Model\Unit\UnitNotFound;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
-use function array_map;
 use function is_object;
 
 final class UnitRepository implements IUnitRepository
@@ -33,8 +32,12 @@ final class UnitRepository implements IUnitRepository
         if (is_object($units)) { // API returns empty object when there are no results
             return [];
         }
-
-        return array_map([$this, 'createUnit'], $units);
+        $res =[];
+        foreach ($units as $u) {
+            $u->ID_UnitParent = $parentId;
+            $res[]            = $this->createUnit($u);
+        }
+        return $res;
     }
 
     public function find(int $id) : Unit
@@ -63,7 +66,7 @@ final class UnitRepository implements IUnitRepository
             $unit->DisplayName,
             $unit->RegistrationNumber,
             $unit->ID_UnitType,
-            $unit->ID_UnitParent ?? null
+            isset($unit->ID_UnitParent) ? (int) $unit->ID_UnitParent : null
         );
     }
 }

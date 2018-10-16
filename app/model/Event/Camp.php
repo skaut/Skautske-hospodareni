@@ -9,25 +9,21 @@ use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
 
 /**
- * @property-read SkautisEventId $id
+ * @property-read SkautisCampId $id
  * @property-read string $displayName
  * @property-read int $unitId
  * @property-read string $unitName
- * @property-read string $state
  * @property-read Date $startDate
  * @property-read Date $endDate
- * @property-read int $totalDays
  * @property-read string $location
+ * @property-read string $state
  * @property-read string $registrationNumber
- * @property-read string $note
- * @property-read int $scopeId
- * @property-read int $typeId
  */
-class Event implements ISkautisEvent
+class Camp implements ISkautisEvent
 {
     use SmartObject;
 
-    /** @var SkautisEventId */
+    /** @var SkautisCampId */
     private $id;
 
     /** @var string */
@@ -39,80 +35,44 @@ class Event implements ISkautisEvent
     /** @var string */
     private $unitName;
 
-    /** @var string */
-    private $state;
-
     /** @var Date */
     private $startDate;
 
     /** @var Date */
     private $endDate;
 
-    /** @var int|null */
-    private $totalDays;
-
     /** @var string */
     private $location;
 
     /** @var string */
-    private $registrationNumber;
+    private $state;
 
     /** @var string */
-    private $note;
-
-    /** @var int */
-    private $scopeId;
-
-    /** @var int */
-    private $typeId;
+    private $registrationNumber;
 
     public function __construct(
-        SkautisEventId $id,
+        SkautisCampId $id,
         string $displayName,
         int $unitId,
         string $unitName,
-        string $state,
         Date $startDate,
         Date $endDate,
-        ?int $totalDays,
-        ?string $location,
-        string $registrationNumber,
-        ?string $note,
-        int $scopeId,
-        int $typeId
+        string $location,
+        string $state,
+        string $registrationNumber
     ) {
         $this->id                 = $id;
         $this->displayName        = $displayName;
         $this->unitId             = $unitId;
         $this->unitName           = $unitName;
-        $this->state              = $state;
         $this->startDate          = $startDate;
         $this->endDate            = $endDate;
-        $this->totalDays          = $totalDays;
-        $this->location           = $location ?? '';
+        $this->location           = $location;
+        $this->state              = $state;
         $this->registrationNumber = $registrationNumber;
-        $this->note               = $note ?? '';
-        $this->scopeId            = $scopeId;
-        $this->typeId             = $typeId;
     }
 
-    public function update(
-        string $displayName,
-        ?string $location,
-        Date $startDate,
-        Date $endDate,
-        int $scopeId,
-        int $typeId
-    ) : void {
-        $this->displayName = $displayName;
-        $this->location    = $location;
-        $this->startDate   = $startDate;
-        $this->endDate     = $endDate;
-        $this->scopeId     = $scopeId;
-        $this->typeId      = $typeId;
-    }
-
-    public function getId() : SkautisEventId
+    public function getId() : SkautisCampId
     {
         return $this->id;
     }
@@ -121,6 +81,7 @@ class Event implements ISkautisEvent
     {
         return $this->displayName;
     }
+
     public function getUnitId() : int
     {
         return $this->unitId;
@@ -129,11 +90,6 @@ class Event implements ISkautisEvent
     public function getUnitName() : string
     {
         return $this->unitName;
-    }
-
-    public function isOpen() : bool
-    {
-        return $this->state === 'draft';
     }
 
     public function getState() : string
@@ -151,11 +107,6 @@ class Event implements ISkautisEvent
         return $this->endDate;
     }
 
-    public function getTotalDays() : ?int
-    {
-        return $this->totalDays;
-    }
-
     public function getLocation() : string
     {
         return $this->location;
@@ -164,20 +115,5 @@ class Event implements ISkautisEvent
     public function getRegistrationNumber() : string
     {
         return $this->registrationNumber;
-    }
-
-    public function getNote() : string
-    {
-        return $this->note;
-    }
-
-    public function getScopeId() : int
-    {
-        return $this->scopeId;
-    }
-
-    public function getTypeId() : int
-    {
-        return $this->typeId;
     }
 }

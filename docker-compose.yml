@@ -7,6 +7,8 @@ services:
         volumes:
             - www:/var/www
             - .:/var/www/html
+        depends_on:
+            - mysql
         environment:
             DEVELOPMENT_MACHINE: 'true'
         networks:

@@ -37,14 +37,20 @@ class Unit
     /** @var int|NULL */
     private $parentId;
 
+    /** @var Unit[]|null */
+    private $children;
 
+    /**
+     * @param Unit[]|null $children
+     */
     public function __construct(
         int $id,
         string $sortName,
         string $displayName,
         string $registrationNumber,
         string $type,
-        ?int $parentId
+        ?int $parentId,
+        ?array $children = null
     ) {
         $this->id                 = $id;
         $this->sortName           = $sortName;
@@ -52,6 +58,7 @@ class Unit
         $this->registrationNumber = $registrationNumber;
         $this->type               = $type;
         $this->parentId           = $parentId;
+        $this->children           = $children;
     }
 
 
@@ -93,5 +100,21 @@ class Unit
         $splitNumber = explode('.', $this->registrationNumber);
 
         return end($splitNumber);
+    }
+
+    /**
+     * @return Unit[]|null
+     */
+    public function getChildren() : ?array
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param Unit[] $ch
+     */
+    public function withChildren(array $ch) : self
+    {
+        return new self($this->id, $this->sortName, $this->displayName, $this->registrationNumber, $this->type, $this->parentId, $ch);
     }
 }

@@ -23,7 +23,7 @@ class CampFunctionsHandler
     public function handle(CampFunctions $query) : Functions
     {
         $functions = $this->skautis->event->eventFunctionAllCamp([
-            'ID_EventCamp' => $query->getCampId()->getValue(),
+            'ID_EventCamp' => $query->getCampId()->toInt(),
         ]);
 
         $functionsByType = $this->getFunctionsByType($functions);

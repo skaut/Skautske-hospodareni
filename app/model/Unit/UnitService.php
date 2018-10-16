@@ -126,16 +126,24 @@ class UnitService
      * @return Unit[]|array<int, Unit>
      * @throws BadRequestException
      */
-    public function getAllUnder(int $ID_Unit, bool $self = true) : array
+    public function getAllUnder(int $ID_Unit) : array
     {
-        $data = $self ? [$ID_Unit => $this->getDetail($ID_Unit)] : [];
+        $data = [$ID_Unit => $this->getDetailV2($ID_Unit)];
         foreach ($this->units->findByParent($ID_Unit) as $u) {
             $data[$u->getId()] = $u;
-            $data              = $data + $this->getAllUnder($u->getId(), false);
+            $data              = $data + $this->getAllUnder($u->getId());
         }
         return $data;
     }
 
+    public function getTreeUnder(Unit $unit) : Unit
+    {
+        $children = [];
+        foreach ($this->units->findByParent($unit->getId()) as $ch) {
+            $children[] = $this->getTreeUnder($ch);
+        }
+        return $unit->withChildren($children);
+    }
 
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na čtení
