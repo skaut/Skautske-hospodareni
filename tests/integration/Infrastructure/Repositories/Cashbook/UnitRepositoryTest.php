@@ -73,6 +73,23 @@ final class UnitRepositoryTest extends \IntegrationTest
         $this->assertSame(self::CASHBOOK['cashbook_id'], $unit->getCashbooks()[0]->getCashbookId()->toString());
     }
 
+    public function testFindByCashbookIdReturnsCorrectUnit() : void
+    {
+        $this->tester->haveInDatabase('ac_units', self::UNIT);
+        $this->tester->haveInDatabase('ac_unit_cashbooks', self::CASHBOOK);
+
+        $unit = $this->getRepository()->findByCashbookId(CashbookId::fromString(self::CASHBOOK['cashbook_id']));
+
+        $this->assertSame(self::UNIT['id'], $unit->getId()->toInt());
+    }
+
+    public function testFindByCashbookIdThrowsExceptionIfUnitIsNotFound() : void
+    {
+        $this->expectException(UnitNotFound::class);
+
+        $this->getRepository()->findByCashbookId(CashbookId::generate());
+    }
+
     public function testSaveDispatchesEvent() : void
     {
         $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);
