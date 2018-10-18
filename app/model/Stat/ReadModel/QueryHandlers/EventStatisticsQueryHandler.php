@@ -33,9 +33,10 @@ class EventStatisticsQueryHandler
             $query->getYear(),
             ];
         $types  = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
-        $sql    = 'SELECT eventId, SUM(price) as sum ' .
-            'FROM `ac_chits` ' .
-            'WHERE eventId IN (?) AND category_operation_type = \'' . Operation::EXPENSE . '\' ' .
+        $sql    = 'SELECT o.skautisId, SUM(c.price) as sum ' .
+            'FROM `ac_chits` c ' .
+            'JOIN ac_object o ON c.eventId = o.id ' .
+            'WHERE o.skautisId IN (?) AND category_operation_type = \'' . Operation::EXPENSE . '\' ' .
             'AND YEAR(date) = ? ';
 
         $sql .= 'GROUP BY eventId';
