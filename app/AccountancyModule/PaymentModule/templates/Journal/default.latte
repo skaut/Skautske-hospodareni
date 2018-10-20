@@ -3,18 +3,18 @@
 <h2 n:inner-block="title">Změny v časopisech (Beta)</h2>
 
 <div class='row'>
-    <div class='col-md-12'>
+    <div class='col-sm-12'>
         <p>Přehled změn časopisů po registraci <b>{$year}</b> pro jednotku {$units[$aid]->DisplayName} a jí podřízených jednotek.</p>
     </div>
 </div>
 <div class='row'>
-    <div class="col-md-12 alert alert-warning">
+    <div class="col-sm-12 alert alert-warning">
         <b>Tato funkce je experimentální</b>, tedy si raději vše ověřte a případné nesrovnalosti mi napiště.
     </div>
 </div>
 
 <div class="row" n:inner-foreach="$changes as $unitId=>$unitChanges">
-    <div class="col-md-12" n:if='count($unitChanges["add"]) > 0 || count($unitChanges["remove"]) > 0'>
+    <div class="col-sm-12" n:if='count($unitChanges["add"]) > 0 || count($unitChanges["remove"]) > 0'>
         <h2>{$units[$unitId]->DisplayName}</h2>
         <div class='well well-sm'>
             {if count($unitChanges["add"]) > 0}
@@ -29,7 +29,9 @@
     </div>
 </div>
 <div class="row" n:if="$changeExists">
-    <div class="col-md-12 alert alert-info">
-        Nebyly nalezeny žádné rozdíli mezi aktuálně objednanými časopisy a typem registrace (s/bez časopisu).
+    <div class="col-sm-12">
+        <p class="alert alert-info">
+            Nebyly nalezeny žádné rozdíli mezi aktuálně objednanými časopisy a typem registrace (s/bez časopisu).
+        </p>
     </div>
 </div>

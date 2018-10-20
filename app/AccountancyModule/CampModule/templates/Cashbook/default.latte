@@ -1,27 +1,43 @@
 {block #title}{$event->DisplayName} - evidence plateb{/block}
 
 {block #content}
-<h2>{$event->DisplayName}</h2>
-
-<a n:if="$isEditable" href="#importHpd" role="button" data-toggle="modal" class="btn btn-sm btn-primary pull-right">
-    <i class="fa fa-user"></i>&nbsp;Načíst příjmy od účastníků
-</a>
-
 {include ../ActionMenu.latte}
 
+<div class="row">
+    <div class="col-sm-12">
+        <h2>{$event->DisplayName}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="well well-sm">
+            <a n:if="$isEditable" href="#importHpd" role="button" data-toggle="modal" class="btn btn-primary">
+                <i class="fa fa-user"></i>&nbsp;Načíst příjmy od účastníků
+            </a>
+        </div>
+    </div>
+</div>
+
 <div n:if="$missingCategories" class="row">
-    <div class="alert alert-danger">
+    <div class="col-sm-12 alert alert-danger">
         Nemáte aktivní automatické dopočítání z kategorií, bez kterého nelze přidávat záznamy.
         <a n:if="$isEditable" n:href="activateAutocomputedCashbook! $aid" class="btn btn-primary btn-sm">Aktivovat dopočítávání</a>
     </div>
 </div>
 
-<div n:snippet="paragony">
-    <p n:if="$isInMinus" class="alert alert-danger">
-        Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
-    </p>
+<div class="row">
+    <div class="col-sm-12">
+        <div n:snippet="paragony">
+            <p n:if="$isInMinus" class="alert alert-danger">
+                Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+            </p>
 
-    {control cashbook}
+            {snippet}
+                {control cashbook}
+            {/snippet}
+        </div>
+    </div>
 </div>
 
 <div id="importHpd" class="modal" tabindex="-1" role="dialog" aria-labelledby="importHpdLabel" aria-hidden="true">

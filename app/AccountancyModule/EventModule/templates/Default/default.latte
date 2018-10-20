@@ -1,31 +1,23 @@
-{block #title}Seznam akcí{/block}
 {block #content}
-<h2>Seznam akcí</h2>
+<h2 n:inner-block="title">Seznam akcí</h2>
 
 {snippet events}
     <div class="row">
-        <div class="well well-sm">
-            <div n:if="$accessCreate" class="bm12">
-                <button type="button" data-toggle="collapse" data-target="#createNew" class="btn btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou akci</button>
-            </div>
-            <div>
+        <div class="col-sm-12">
+            <div class="well well-sm">
+                <a n:if="$accessCreate" n:href="new" class="btn btn-success pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou akci</a>
+
                 {form formFilter class=>"ajax filter form-inline"}
                     <div class="form-group"><span class="hidden-xs">{label year /}</span>{input year onchange=>"changeYear(this.value)", class=>"form-control"}</div>
                     <div class="form-group"><span class="hidden-xs">{label state /}</span>{input state onchange=>"changeState(this.value)", class=>"form-control"}</div>
                 {/form}
             </div>
-
-        </div>
-    </div>
-    <div class="row" n:if="$accessCreate">
-        <div class="collapse col-md-8 well well-sm" id="createNew">
-            <br />
-            {control formCreate}
-            (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
         </div>
     </div>
     <div class="row">
-        {control eventGrid}
+        <div class="col-sm-12">
+            {control eventGrid}
+        </div>
     </div>
 {/snippet}
 
@@ -45,12 +37,3 @@
         $.nette.ajax({ url: {link changeState!}+"&state="+val});
     }
 </script>
-<script type="text/javascript" n:syntax="off">
-    Nette.validators.AppMyValidators_isValidDate = function (elem, args, val) {
-        var regexp = /^(\d{1,2})[\/\-\.] ?(\d{1,2})[\/\-\.] ?(\d{4})$/;
-        var match = val.match(regexp);
-        return match == null ? false : true;
-    };
-
-</script>
-

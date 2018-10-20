@@ -114,6 +114,16 @@ class DefaultPresenter extends BasePresenter
         $this->template->accessCreate = $this->authorizator->isAllowed(Event::CREATE, null);
     }
 
+    public function actionNew() : void
+    {
+        if ($this->authorizator->isAllowed(Event::CREATE, null)) {
+            return;
+        }
+
+        $this->flashMessage('Nemáte oprávnění založit novou akci!', 'danger');
+        $this->redirect('default');
+    }
+
     /**
      * @param string[] $ids
      */
