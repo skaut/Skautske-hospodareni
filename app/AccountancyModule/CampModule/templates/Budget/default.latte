@@ -41,8 +41,8 @@
 {/define}
 
 {block #content}
-<h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
+<h2>{$event->DisplayName}</h2>
 <div class="row alert alert-danger" n:if="!$isConsistent">
     <h4 class="alert-heading">Nekonzistentní data!</h4>
     <p>

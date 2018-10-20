@@ -1,10 +1,10 @@
-{block title}Bankovní účty{/block}
 {block content}
+{include ../ActionMenu.latte}
 <div class="pull-right" n:if="$canEdit">
     <a n:href="new" class="btn btn-success">Přidat účet</a>
     <a n:href="import!" class="btn btn-default">Načíst ze Skautisu</a>
 </div>
-<h1>Bankovní účty</h1>
+<h1 n:inner-block="title">Bankovní účty</h1>
 
 <ul class="list-group">
     <li class="list-group-item" n:foreach="$accounts as $account">

@@ -32,7 +32,7 @@ $I->haveInDatabase('pa_bank_account', [
 
 $I->login($I::UNIT_LEADER_ROLE);
 $I->click('Platby');
-$I->waitForText('Přehled plateb');
+$I->waitForText('Platební skupiny');
 $I->click('Založit skupinu plateb');
 $I->waitForText('Obecná');
 $I->click('Obecná');

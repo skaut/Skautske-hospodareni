@@ -1,4 +1,5 @@
 {block content}
+{include ../ActionMenu.latte}
 <div class="pull-right">
     <div><strong>Číslo účtu:</strong> {$account->getNumber()}</div>
     <div>Vytvořen {$account->getCreatedAt()|date:'j.n. Y'}</div>

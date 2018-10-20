@@ -1,38 +1,41 @@
 {block #content}
-<h2 n:block="title">Vratky</h2>
+{include ../ActionMenu.latte}
+<h2 n:inner-block="title">Vratky</h2>
 
 <div class="row">
-    {if !empty($participants)}
-        {form repaymentForm}
-            <ul class="errors" n:if="$form->hasErrors()">
-                <li n:foreach="$form->errors as $error">{$error}</li>
-            </ul>
+    <div class="col-md-12">
+        {if !empty($participants)}
+            {form repaymentForm}
+                <ul class="errors" n:if="$form->hasErrors()">
+                    <li n:foreach="$form->errors as $error">{$error}</li>
+                </ul>
 
-            <table class="table table-bordered table-striped">
-                <tr>
-                    <th colspan="4">
-                        <span class="col-md-1">{label accountFrom /}</span>
-                        <span class="col-md-2">{input accountFrom class=>"form-control"}</span>
-                        <span class="col-md-2">{label date /}</span>
-                        <span class="col-md-2">{input date class=>"form-control date"}</span>
-                    </th>
-                </tr>
-                <tr>
-                    <th><input type="checkbox" name='p-all' id='p-all' onclick="jqCheckAll(this.id, 'p_')" class="hidden-xs hidden-sm" /></th>
-                    <th>Jméno</th>
-                    <th>Částka</th>
-                    <th>Protiúčet</th>
-                </tr>
-                <tr n:foreach="$participants as $p">
-                    <td>{input p_$p->ID}</td>
-                    <td>{input "p_".$p->ID."_name" class=>"form-control"}</td>
-                    <td>{input "p_".$p->ID."_amount" class=>"form-control"}</td>
-                    <td>{input "p_".$p->ID."_account" class=>"form-control"}</td>
-                </tr> 
-            </table>
-            {input send}
-        {/form}
-    {else}
-        <div class="alert alert-warning">Nejsou uvedeny žádné vratky u tábora.</div>
-    {/if}
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th colspan="4">
+                            <span class="col-md-1">{label accountFrom /}</span>
+                            <span class="col-md-2">{input accountFrom class=>"form-control"}</span>
+                            <span class="col-md-2">{label date /}</span>
+                            <span class="col-md-2">{input date class=>"form-control date"}</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th><input type="checkbox" name='p-all' id='p-all' onclick="jqCheckAll(this.id, 'p_')" class="hidden-xs hidden-sm" /></th>
+                        <th>Jméno</th>
+                        <th>Částka</th>
+                        <th>Protiúčet</th>
+                    </tr>
+                    <tr n:foreach="$participants as $p">
+                        <td>{input p_$p->ID}</td>
+                        <td>{input "p_".$p->ID."_name" class=>"form-control"}</td>
+                        <td>{input "p_".$p->ID."_amount" class=>"form-control"}</td>
+                        <td>{input "p_".$p->ID."_account" class=>"form-control"}</td>
+                    </tr>
+                </table>
+                {input send}
+            {/form}
+        {else}
+            <div class="alert alert-warning">Nejsou uvedeny žádné vratky u tábora.</div>
+        {/if}
+    </div>
 </div>

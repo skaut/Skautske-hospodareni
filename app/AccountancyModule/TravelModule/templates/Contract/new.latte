@@ -1,11 +1,12 @@
-{block content}
+{block #content}
 {include ../menu.latte}
+
 <div class="row">
     <div class="col-lg-8 col-lg-offset-2 main-panel">
         <div class="panel panel-default">
-            <div class="panel-heading" n:inner-block="title">Založit cestovní příkaz</div>
+            <div class="panel-heading" n:inner-block="title">Nová smlouva o proplácení cestovních náhrad</div>
             <div class="panel-body">
-                {control form}
+                {control formCreateContract}
             </div>
         </div>
     </div>

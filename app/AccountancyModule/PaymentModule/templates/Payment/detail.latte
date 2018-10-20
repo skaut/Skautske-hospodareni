@@ -1,7 +1,10 @@
 {block #content}
-<h2 n:block="title">{$group->name}</h2>
 {include ../ActionMenu.latte}
-{dump $group}
+<div class="row">
+    <div class="col-md-12">
+        <h2 n:inner-block="title">{$group->name}</h2>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-5">
         <table class="table table-bordered table-striped">
