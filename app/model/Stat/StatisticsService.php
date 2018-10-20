@@ -7,6 +7,7 @@ namespace Model;
 use eGen\MessageBus\QueryBus\IQueryBus;
 use Model\DTO\Stat\Counter;
 use Model\Event\ReadModel\Queries\CampListQuery;
+use Model\Event\ReadModel\Queries\CampStatisticsQuery;
 use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Event\ReadModel\Queries\EventStatisticsQuery;
 use Model\Skautis\ISkautisEvent;
@@ -31,14 +32,13 @@ class StatisticsService
      */
     public function getEventStatistics(Unit $unitTree, int $year) : array
     {
-        $events = $this->queryBus->handle(new EventListQuery($year, null));
-        $camps  = $this->queryBus->handle(new CampListQuery($year));
-        $stats  = $this->queryBus->handle(new EventStatisticsQuery(array_keys($events), $year));
+        $events     = $this->queryBus->handle(new EventListQuery($year, null));
+        $camps      = $this->queryBus->handle(new CampListQuery($year));
+        $eventStats = $this->queryBus->handle(new EventStatisticsQuery(array_keys($events), $year));
+        $campStats  = $this->queryBus->handle(new CampStatisticsQuery(array_keys($camps), $year));
 
-        $allowed = array_keys($stats);
-
-        $eventCount = $this->sumUpByEventId($events, $allowed);
-        $campCount  = $this->sumUpByEventId($camps, $allowed);
+        $eventCount = $this->sumUpByEventId($events, array_keys($eventStats));
+        $campCount  = $this->sumUpByEventId($camps, array_keys($campStats));
 
         $keys   = array_keys($eventCount) +array_keys($campCount);
         $merged = [];

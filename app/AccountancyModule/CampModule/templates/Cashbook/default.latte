@@ -17,11 +17,9 @@
 </div>
 
 <div n:snippet="paragony">
-    <div class="row">
-        <p n:if="$isInMinus" class="alert alert-danger">
-            Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
-        </p>
-    </div>
+    <p n:if="$isInMinus" class="alert alert-danger">
+        Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+    </p>
 
     {control cashbook}
 </div>

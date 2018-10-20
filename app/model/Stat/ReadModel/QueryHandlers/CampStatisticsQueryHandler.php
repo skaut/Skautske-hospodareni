@@ -8,11 +8,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
-use Model\Event\ReadModel\Queries\EventStatisticsQuery;
-use Model\Event\SkautisEventId;
+use Model\Event\ReadModel\Queries\CampStatisticsQuery;
+use Model\Event\SkautisCampId;
 use function array_map;
 
-class EventStatisticsQueryHandler
+class CampStatisticsQueryHandler
 {
     /** @var Connection */
     private $db;
@@ -25,19 +25,19 @@ class EventStatisticsQueryHandler
     /**
      * @return float[]
      */
-    public function handle(EventStatisticsQuery $query) : array
+    public function handle(CampStatisticsQuery $query) : array
     {
         $params = [
-        array_map(function (SkautisEventId $id) {
+        array_map(function (SkautisCampId $id) {
             return $id->toInt();
-        }, $query->getEventIds()),
+        }, $query->getCampIds()),
             $query->getYear(),
             ];
         $types  = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
         $sql    = 'SELECT o.skautisId, SUM(c.price) as sum ' .
             'FROM `ac_chits` c ' .
             'JOIN ac_object o ON c.eventId = o.id ' .
-            'WHERE o.skautisId IN (?) AND o.type = \'' . ObjectType::EVENT . '\' AND category_operation_type = \'' . Operation::EXPENSE . '\' ' .
+            'WHERE o.skautisId IN (?) AND o.type = \'' . ObjectType::CAMP . '\' AND category_operation_type = \'' . Operation::EXPENSE . '\' ' .
             'AND YEAR(date) = ? ';
 
         $sql .= 'GROUP BY eventId';
