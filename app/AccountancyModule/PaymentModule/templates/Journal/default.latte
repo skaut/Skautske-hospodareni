@@ -1,16 +1,16 @@
-
 {block #content}
-<h2 n:block="title">Změny v časopisech (Beta)</h2>
 {include ../ActionMenu.latte}
+<h2 n:inner-block="title">Změny v časopisech (Beta)</h2>
 
 <div class='row'>
     <div class='col-md-12'>
         <p>Přehled změn časopisů po registraci <b>{$year}</b> pro jednotku {$units[$aid]->DisplayName} a jí podřízených jednotek.</p>
     </div>
 </div>
-
-<div class="col-md-12 alert alert-warning">
-    <b>Tato funkce je experimentální</b>, tedy si raději vše ověřte a případné nesrovnalosti mi napiště.
+<div class='row'>
+    <div class="col-md-12 alert alert-warning">
+        <b>Tato funkce je experimentální</b>, tedy si raději vše ověřte a případné nesrovnalosti mi napiště.
+    </div>
 </div>
 
 <div class="row" n:inner-foreach="$changes as $unitId=>$unitChanges">
@@ -28,7 +28,7 @@
         </div>
     </div>
 </div>
-<div n:if="$changeExists">
+<div class="row" n:if="$changeExists">
     <div class="col-md-12 alert alert-info">
         Nebyly nalezeny žádné rozdíli mezi aktuálně objednanými časopisy a typem registrace (s/bez časopisu).
     </div>

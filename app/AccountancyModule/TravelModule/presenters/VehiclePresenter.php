@@ -138,6 +138,6 @@ class VehiclePresenter extends BasePresenter
         );
 
         $this->flashMessage('Vozidlo bylo vytvořeno');
-        $this->redirect('this');
+        $this->redirect('default');
     }
 }

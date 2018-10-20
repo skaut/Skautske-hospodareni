@@ -141,6 +141,6 @@ class ContractPresenter extends BasePresenter
         $this->travelService->createContract($this->getUnitId(), $v->unitRepresentative, $since, $passenger);
         $this->flashMessage('Smlouva byla založena.');
 
-        $this->redirect('this');
+        $this->redirect('default');
     }
 }

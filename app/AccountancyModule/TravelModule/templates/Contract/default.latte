@@ -1,43 +1,34 @@
-{block #title}Smlouvy o proplácení cestovních náhrad{/block}
-
 {block #content}
-
 {include ../menu.latte}
-
 <div class="row button-bar">
-    <button type="button" data-toggle="collapse" data-target="#createContract" class="btn btn-primary pull-right">
-        <i class="glyphicon glyphicon-plus-sign"></i> Založit novou smlouvu
-    </button>
-    <h2>Smlouvy<span class="hidden-xs hidden-sm"> o proplácení cestovních náhrad</span></h2>
+    <div class="col-md-12">
+        <a n:href="new" class="btn btn-success pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou smlouvu</a>
+        <h2 n:inner-block="title">Smlouvy<span class="hidden-xs hidden-sm"> o proplácení cestovních náhrad</span></h2>
+    </div>
 </div>
 
-
 <div class="row">
-    <div class="well well-sm">
-        <div class="collapse" id="createContract">
-            <br />
-            {control formCreateContract}
-        </div>
+    <div class="col-md-12">
+        <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
+            <tr>
+                <th>&nbsp;</th>
+                <th>Vykonavatel/Řidič</th>
+                <th>Zástupce jednotky</th>
+                <th>Platná od:</th>
+                <th>Platná do:</th>
+            </tr>
+            <tr n:foreach="$list as $c">
+                <td>
+                    <a n:href="print $c->id" class="btn btn-info btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i> Vytisknout</a>
+                    <a n:href="detail $c->id" class="btn btn-primary btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
+                    <a n:href="detail $c->id" class="btn btn-primary btn-sm visible-xs visible-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
+                </td>
+                <td>{$c->passenger->name}</td>
+                <td>{$c->unitRepresentative}</td>
+                <td>{$c->since|date:"j. n. Y"}</td>
+                <td>{$c->until|date:"j. n. Y"}</td>
+            </tr>
+        </table>
     </div>
-    <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
-        <tr>
-            <th>&nbsp;</th>
-            <th>Vykonavatel/Řidič</th>
-            <th>Zástupce jednotky</th>
-            <th>Platná od:</th>
-            <th>Platná do:</th>
-        </tr>
-        <tr n:foreach="$list as $c">
-            <td>
-                <a n:href="print $c->id" class="btn btn-info btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i> Vytisknout</a>
-                <a n:href="detail $c->id" class="btn btn-primary btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
-                <a n:href="detail $c->id" class="btn btn-primary btn-sm visible-xs visible-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
-            </td>
-            <td>{$c->passenger->name}</td>
-            <td>{$c->unitRepresentative}</td>
-            <td>{$c->since|date:"j. n. Y"}</td>
-            <td>{$c->until|date:"j. n. Y"}</td>
-        </tr>
-    </table>
 </div>
 

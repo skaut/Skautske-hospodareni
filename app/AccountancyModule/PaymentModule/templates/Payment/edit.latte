@@ -1,8 +1,9 @@
 {block #content}
-<h2 n:block="title">Editace platby</h2>
 {include ../ActionMenu.latte}
-<a href="{$linkBack}">Zpět</a>
+<h2 n:inner-block="title">Editace platby</h2>
 <div class="row">
-    {control paymentForm}
+    <div class="col-md-12">
+        {control paymentForm}
+    </div>
 </div>
 

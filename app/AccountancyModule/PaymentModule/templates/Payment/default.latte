@@ -1,32 +1,31 @@
 {block #content}
-<h2 n:block="title">Přehled plateb</h2>
 {include ../ActionMenu.latte}
+<h2 n:inner-block="title">Platební skupiny</h2>
 
 <div class="row">
+    <div class="col-sm-12">
     <div class="well well-sm">
         <a n:href="this !$onlyOpen" class="btn btn-info">Zobrazit {if $onlyOpen}i uzavřené skupiny{else}pouze otevřené{/if}</a>
         {if $isEditable}
-            <span class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="createGroup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <i class="glyphicon glyphicon-plus-sign"></i> Založit skupinu plateb <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="createGroup">
-                    <li><a n:href="Group:">Obecná</a></li>
-                    <li><a n:href="Group: camp">Tábor</a></li>
-                    <li><a n:href="Group: registration">Registrace</a></li>
-                </ul>
-            </span>
-
-            <a n:href="BankAccounts:" class="btn btn-primary"><i class="glyphicon glyphicon-piggy-bank"></i> Bankovní účty</a>
-            <a n:href="Mail: $aid" class="btn btn-primary"><i class="glyphicon glyphicon-envelope"></i> Emaily</a>
-
             <div class="pull-right">
                 {control pairButton}
+                <span class="dropdown">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="createGroup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <i class="glyphicon glyphicon-plus-sign"></i> Založit skupinu plateb <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="createGroup">
+                        <li><a n:href="Group:">Obecná</a></li>
+                        <li><a n:href="Group: camp">Tábor</a></li>
+                        <li><a n:href="Group: registration">Registrace</a></li>
+                    </ul>
+                </span>
             </div>
         {/if}
     </div>
+    </div>
 </div>
 <div class="row">
+    <div class="col-sm-12">
     {if !empty($groups)}
         <table class="table table-bordered table-striped">
             <tr>
@@ -47,7 +46,6 @@
                 </td>
             </tr> 
         </table>
-    {else}
-        <div class=""></div>
     {/if}
+    </div>
 </div>

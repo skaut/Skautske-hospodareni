@@ -1,10 +1,6 @@
-{block #title}Cestovní příkaz{/block}
-
 {block #content}
-
 {include ../menu.latte}
-<h2>Cestovní příkaz</h2>
-{dump $command}
+<h2 n:inner-block="title">Cestovní příkaz</h2>
 <div class="row">
     <div class="well well-sm">
         {if $isEditable}

@@ -1,12 +1,8 @@
 {block #title}{$event->DisplayName} - základní ůdaje{/block}
 
 {block #content}
-<h2>{$event->DisplayName}</h2>
 {include ../ActionMenu.latte}
-
-{dump $event}
-
-
+<h2>{$event->DisplayName}</h2>
 
 <div class="row event-dashboard">
     <div class="col-md-4" n:if="$accessDetail">

@@ -1,6 +1,6 @@
 {block #content}
-<h2 n:block="title">Účastníci bez založené platby</h2>
 {include ../ActionMenu.latte}
+<h2 n:inner-block="title">Účastníci bez založené platby</h2>
 {var $stsPrice = 250}
 <a n:href="Payment:detail $id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
 
