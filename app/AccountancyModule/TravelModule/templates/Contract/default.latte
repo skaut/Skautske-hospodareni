@@ -1,14 +1,14 @@
 {block #content}
 {include ../menu.latte}
 <div class="row button-bar">
-    <div class="col-md-12">
+    <div class="col-sm-12">
         <a n:href="new" class="btn btn-success pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou smlouvu</a>
         <h2 n:inner-block="title">Smlouvy<span class="hidden-xs hidden-sm"> o proplácení cestovních náhrad</span></h2>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12">
         <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
             <tr>
                 <th>&nbsp;</th>

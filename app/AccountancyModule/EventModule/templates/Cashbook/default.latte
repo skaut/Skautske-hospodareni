@@ -1,20 +1,29 @@
-{block #title}{$event->DisplayName} - evidence Plateb{/block}
+{block #title}{$event->DisplayName} - evidence plateb{/block}
 
 {block #content}
+{include ../ActionMenu.latte}
 <h2>{$event->DisplayName}</h2>
 
-<a n:if="$isEditable" n:href="importHpd aid => $aid" class="btn btn-sm btn-primary pull-right">
-    <i class="fa fa-user"></i>&nbsp;Načíst příjmy od účastníků
-</a>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="well well-sm">
+            <a n:if="$isEditable" n:href="importHpd aid => $aid" class="btn btn-sm btn-primary">
+                <i class="fa fa-user"></i>&nbsp;Načíst příjmy od účastníků
+            </a>
+        </div>
+    </div>
+</div>
 
-{include ../ActionMenu.latte}
+<div class="row">
+    <div class="col-sm-12">
+        <div n:snippet="paragony">
+            <p n:if="$isInMinus" class="alert alert-danger">
+                Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+            </p>
 
-<div n:snippet="paragony">
-    <p n:if="$isInMinus" class="alert alert-danger">
-        Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
-    </p>
-
-    {snippet}
-    {control cashbook}
-    {/snippet}
+            {snippet}
+                {control cashbook}
+            {/snippet}
+        </div>
+    </div>
 </div>

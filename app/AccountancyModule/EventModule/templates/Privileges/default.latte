@@ -1,13 +1,11 @@
 {block #title}{$event->DisplayName} - seznam oprávnění{/block}
 
 {block #content}
-<h2>{$event->DisplayName}</h2>
-<div class="row">
-    {include ../ActionMenu.latte}
-</div>
+{include ../ActionMenu.latte}
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12">
+        <h2>{$event->DisplayName}</h2>
         <h3>Přehled oprávnění přihlášené osoby</h3>
         <p class="alert alert-info">Oprávnění jsou zobrazena pro přihlášeného uživatele a právě aktivní roli. Oprávnění se mohou odvozovat i podle funkce v jednotce či na dané akci.</p>
         <table class="table table-bordered table-condensed">

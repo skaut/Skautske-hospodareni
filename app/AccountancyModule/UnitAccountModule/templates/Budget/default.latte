@@ -40,10 +40,13 @@
 {include ../ActionMenu.latte}
 <h2 n:inner-block="title">Rozpočet: {$unitPairs[$aid]}</h2>
 <div class="row">
-    <div class='well well-sm'>
-        <a n:href='add' class='btn btn-primary'><i class='glyphicon glyphglyphicon glyphicon-plus hidden-xs hidden-sm'></i> Založit kategorii</a>
+    <div class="col-sm-12">
+        <div class='well well-sm'>
+            <a n:href='add' class='btn btn-primary'><i class='glyphicon glyphglyphicon glyphicon-plus hidden-xs hidden-sm'></i> Založit kategorii</a>
+        </div>
     </div>
 </div>
+
 <div class="row" n:ifset="$categories">
     <div class="col-sm-6" n:if="isset($categories['in']) && !empty($categories['in'])">
         {include #table cat=>$categories['in']}

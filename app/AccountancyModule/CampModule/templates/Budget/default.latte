@@ -42,23 +42,30 @@
 
 {block #content}
 {include ../ActionMenu.latte}
-<h2>{$event->DisplayName}</h2>
-<div class="row alert alert-danger" n:if="!$isConsistent">
-    <h4 class="alert-heading">Nekonzistentní data!</h4>
-    <p>
-        Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu.
-        {if $isEditable}
-            {if $isUpdateStatementAllowed}
-                Chcete sjednotit částky podle paragonů? <a n:href="convert! $aid" class="btn btn-xs btn-primary">Ano</a>
-            {else}
-                Není nemáte oprávnění pro úpravu částek v rozpočtu uvedených ve skautisu.
-            {/if}
-        {/if}
-    </p>
+<div class="row" n:if="!$isConsistent">
+    <div class="col-sm-12">
+        <h2>{$event->DisplayName}</h2>
+    </div>
+</div>
+<div class="row" n:if="!$isConsistent">
+    <div class="col-sm-12">
+        <div class="alert alert-danger">
+            <h4 class="alert-heading">Nekonzistentní data!</h4>
+            <p>
+                Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu.
+                {if $isEditable}
+                    {if $isUpdateStatementAllowed}
+                        Chcete sjednotit částky podle paragonů? <a n:href="convert! $aid" class="btn btn-primary">Ano</a>
+                    {else}
+                        Není nemáte oprávnění pro úpravu částek v rozpočtu uvedených ve skautisu.
+                    {/if}
+                {/if}
+            </p>
+        </div>
+    </div>
 </div>
 
 <div class="row">
-
     <div class="col-md-3 col-sm-6">
         <h3>Skutečné náklady</h3>
         {include #categoriesTable $categories, FALSE}
@@ -78,8 +85,4 @@
         <h3>Předpokládané výnosy</h3>
         {include #budgetTable $budgetEntries, TRUE}
     </div>
-
 </div>
-
-
-

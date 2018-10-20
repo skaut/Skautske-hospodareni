@@ -1,13 +1,8 @@
 {block #title}{$event->DisplayName} - seznam účastníků{/block}
 
 {block #content}
+{include ../ActionMenu.latte}
 <h2>{$event->DisplayName}</h2>
-<div class="row">
-    {include ../ActionMenu.latte}
-</div>
-{dump $list}
-{dump $participants}
-
 <div class="row" n:if="$missingAvailableAutoComputed">
     <div class="coll-md-6 alert alert-info">
         Není aktivní dopočítávání osob! <a n:href="activateAutocomputedParticipants! $aid" class="btn btn-primary">Aktivovat</a>

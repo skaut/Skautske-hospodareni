@@ -7,12 +7,8 @@ $participants
 {block #title}{$event->DisplayName} - seznam účastníků{/block}
 
 {block #content}
+{include ../ActionMenu.latte}
 <h2>{$event->DisplayName}</h2>
-<div class="row">
-    {include ../ActionMenu.latte}
-</div>
-{dump $list}
-{dump $participants}
 
 <div class="row">
     {include $templateBlockDir.'participants/list.latte'}

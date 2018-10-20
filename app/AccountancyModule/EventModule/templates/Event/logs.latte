@@ -1,10 +1,10 @@
-{block #title}{$event->DisplayName} - základní informace{/block}
+{block #title}Logy akce - {$event->DisplayName}{/block}
 
-    {block #content}
-    <h2>{$event->DisplayName}</h2>
-    {include ../ActionMenu.latte}
+{block #content}
+{include ../ActionMenu.latte}
+<h2>{$event->DisplayName}</h2>
 
-    <h2>Logy akce</h2>
-    {foreach $logs as $log}
-        {$log->date->format("Y/m/d H:i:s")} {$log->getDescription()} <br />
-    {/foreach}
+<h3>Logy akce</h3>
+{foreach $logs as $log}
+    {$log->date->format("Y/m/d H:i:s")} {$log->getDescription()} <br />
+{/foreach}

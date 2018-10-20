@@ -1,21 +1,23 @@
-{block #title}Seznam táborů{/block}
-
 {block #content}
-<h2>Tábory</h2>
+<h2 n:inner-block="title">Tábory</h2>
 {snippet camps}
 <div class="row">
-    <div class="well well-sm">
-        <a class="pull-right" n:href="Default:campSummary" class="btn btn-primary"><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Souhrn táborů</a>
+    <div class="col-sm-12">
+        <div class="well well-sm">
+            <a class="pull-right btn btn-info" n:href="Default:campSummary" class="btn btn-primary"><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Souhrn táborů</a>
 
-        {form formFilter class=>"ajax filter form-inline"}
-        {label year /}{input year onchange=>"changeYear(this.value)", class=>"form-control"}
-        {label state /}{input state onchange=>"changeState(this.value)", class=>"form-control"}
-        {input send}
-        {/form}
+            {form formFilter class=>"ajax filter form-inline"}
+            {label year /}{input year onchange=>"changeYear(this.value)", class=>"form-control"}
+            {label state /}{input state onchange=>"changeState(this.value)", class=>"form-control"}
+            {input send}
+            {/form}
+        </div>
     </div>
 </div>
 <div class="row">
-    {control campGrid}
+    <div class="col-sm-12">
+        {control campGrid}
+    </div>
 </div>
 {/snippet}
 
