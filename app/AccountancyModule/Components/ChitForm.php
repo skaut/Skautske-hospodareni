@@ -132,11 +132,12 @@ final class ChitForm extends BaseControl
         $form->setDefaults(
             [
             'pid' => $chit->getId(),
-            'date' => $chit->getDate(),
-            'num' => (string) $chit->getNumber(),
-            'recipient' => (string) $chit->getRecipient(),
-            'purpose' => $chit->getPurpose(),
-            'price' => $chit->getAmount()->getExpression(),
+            'date' => $chit->getBody()->getDate(),
+            'num' => (string) $chit->getBody()->getNumber(),
+            'paymentMethod' => $chit->getPaymentMethod()->toString(),
+            'recipient' => (string) $chit->getBody()->getRecipient(),
+            'purpose' => $chit->getBody()->getPurpose(),
+            'price' => $chit->getBody()->getAmount()->getExpression(),
             'type' => $chit->getCategory()->getOperationType()->getValue(),
             'category' => $chit->getCategory()->getId(),
             ]
