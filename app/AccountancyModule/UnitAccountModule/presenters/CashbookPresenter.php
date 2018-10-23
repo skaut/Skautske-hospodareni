@@ -6,11 +6,12 @@ namespace App\AccountancyModule\UnitAccountModule;
 
 use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
+use App\AccountancyModule\UnitAccountModule\Components\ActivateCashbookDialog;
 use App\AccountancyModule\UnitAccountModule\Components\CreateCashbookDialog;
+use App\AccountancyModule\UnitAccountModule\Factories\IActivateCashbookDialogFactory;
 use App\AccountancyModule\UnitAccountModule\Factories\ICreateCashbookDialogFactory;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\Commands\Unit\ActivateCashbook;
 use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
@@ -21,6 +22,9 @@ use function sprintf;
 
 class CashbookPresenter extends BasePresenter
 {
+    /** @var IActivateCashbookDialogFactory */
+    private $activateCashbookDialogFactory;
+
     /** @var ICashbookControlFactory */
     private $cashbookFactory;
 
@@ -32,11 +36,13 @@ class CashbookPresenter extends BasePresenter
 
     public function __construct(
         ICashbookControlFactory $cashbookFactory,
-        ICreateCashbookDialogFactory $createCashbookDialogFactory
+        ICreateCashbookDialogFactory $createCashbookDialogFactory,
+        IActivateCashbookDialogFactory $activateCashbookDialogFactory
     ) {
         parent::__construct();
-        $this->cashbookFactory             = $cashbookFactory;
-        $this->createCashbookDialogFactory = $createCashbookDialogFactory;
+        $this->cashbookFactory               = $cashbookFactory;
+        $this->createCashbookDialogFactory   = $createCashbookDialogFactory;
+        $this->activateCashbookDialogFactory = $activateCashbookDialogFactory;
     }
 
     protected function startup() : void
@@ -59,18 +65,12 @@ class CashbookPresenter extends BasePresenter
         $dialog->open();
     }
 
-    public function handleActivateCashbook(int $cashbookId) : void
+    public function handleSelectActive() : void
     {
-        $this->commandBus->handle(new ActivateCashbook(new UnitId($this->aid), $cashbookId));
+        /** @var ActivateCashbookDialog $dialog */
+        $dialog = $this['activateCashbookDialog'];
 
-        $this->flashMessage(
-            sprintf(
-                'html: Pokladní kniha <strong>%d</strong> byla nastavena jako hlavní',
-                $this->getActiveCashbook()->getYear()
-            )
-        );
-
-        $this->redirect('this');
+        $dialog->open();
     }
 
     public function actionDefault(int $aid, ?int $year = null) : void
@@ -131,6 +131,11 @@ class CashbookPresenter extends BasePresenter
         }
 
         $this->redirect('default', [$aid, $activeCashbook->getYear()]);
+    }
+
+    protected function createComponentActivateCashbookDialog() : ActivateCashbookDialog
+    {
+        return $this->activateCashbookDialogFactory->create($this->isEditable, new UnitId($this->aid));
     }
 
     protected function createComponentCreateCashbookDialog() : CreateCashbookDialog

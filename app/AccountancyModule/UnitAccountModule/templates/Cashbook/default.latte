@@ -5,8 +5,7 @@
             {$year}
             <span class="caret"></span>
         </button>
-        <ul class="dropdown-menu" aria-labelledby="unit-cashbook-list">
-            <li class="dropdown-header">Hlavní pokladní hniha</li>
+        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="unit-cashbook-list">
             {include cashbookDropdownItem, cashbook => $activeCashbook, isActive => true}
             <li role="separator" class="divider"></li>
             {foreach $cashbooks as $cashbook}
@@ -14,7 +13,15 @@
                     {include cashbookDropdownItem, cashbook => $cashbook, isActive => false}
                 {/if}
             {/foreach}
-            <li role="separator" class="divider"></li>
+        </ul>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-default dropdown-toggle" type="button" id="unit-cashbook-menu" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="true">
+            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="unit-cashbook-menu">
+            <li><a n:href="selectActive!" class="ajax">Vybrat výchozí pokladní knihu</a></li>
             <li><a n:href="createCashbook!" class="ajax"><i class="fa fa-plus"></i> Přidat pokladní knihu</a></li>
         </ul>
     </div>
@@ -23,12 +30,9 @@
 
 {block cashbookDropdownItem}
     {var $selected = $cashbook->getCashbookId()->toString() === $cashbookId}
-    <li n:class="$selected ? active, ! $isActive ? hz">
+    <li n:class="$selected ? active">
         <a href="{if $selected}#{else}{link this $aid, $cashbook->year}{/if}">
             {$cashbook->year}
-        </a>
-        <a n:if="! $isActive" n:href="activateCashbook! $cashbook->id" title="Nastavit jako hlavní pokladní knihu">
-            <i class="fa fa-thumb-tack" aria-hidden="true"></i>
         </a>
     </li>
 {/block}
@@ -40,6 +44,7 @@
 <div n:snippet="paragony">
     {control cashbook}
 </div>
+    {control activateCashbookDialog}
     {control createCashbookDialog}
 {/block}
 
