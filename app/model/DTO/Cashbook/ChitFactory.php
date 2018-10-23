@@ -19,7 +19,8 @@ final class ChitFactory
             $chit->getBody(),
             $category,
             $chit->isLocked(),
-            CashbookType::getInverseCashbookTypes($chit->getCategory()->getId())
+            CashbookType::getInverseCashbookTypes($chit->getCategory()->getId()),
+            $chit->getPaymentMethod()
         );
     }
 }

@@ -9,6 +9,7 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitNumber;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Operation;
 use Nette\SmartObject;
@@ -24,6 +25,7 @@ use Nette\SmartObject;
  * @property-read Category          $category
  * @property-read bool              $locked
  * @property-read CashbookType[]    $inverseCashbookTypes
+ * @property-read PaymentMethod     $paymentMethod
  */
 class Chit
 {
@@ -44,16 +46,20 @@ class Chit
     /** @var CashbookType[] */
     private $inverseCashbookTypes;
 
+    /** @var PaymentMethod */
+    private $paymentMethod;
+
     /**
      * @param CashbookType[] $inverseCashbookTypes
      */
-    public function __construct(int $id, ChitBody $body, Category $category, bool $locked, array $inverseCashbookTypes)
+    public function __construct(int $id, ChitBody $body, Category $category, bool $locked, array $inverseCashbookTypes, PaymentMethod $paymentMethod)
     {
         $this->id                   = $id;
         $this->body                 = $body;
         $this->category             = $category;
         $this->locked               = $locked;
         $this->inverseCashbookTypes = $inverseCashbookTypes;
+        $this->paymentMethod        = $paymentMethod;
     }
 
     public function getId() : int
@@ -127,5 +133,10 @@ class Chit
     public function isIncome() : bool
     {
         return $this->category->getOperationType()->equalsValue(Operation::INCOME);
+    }
+
+    public function getPaymentMethod() : PaymentMethod
+    {
+        return $this->paymentMethod;
     }
 }
