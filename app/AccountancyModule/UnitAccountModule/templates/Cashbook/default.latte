@@ -6,17 +6,32 @@
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" aria-labelledby="unit-cashbook-list">
-            <li n:foreach="$cashbooks as $cashbook">
-                <a href="{if $cashbook->cashbookId->toString() === $cashbookId}#{else}{link this $aid, $cashbook->year}{/if}">
-                    {$cashbook->year}
-                </a>
-            </li>
+            <li class="dropdown-header">Hlavní pokladní hniha</li>
+            {include cashbookDropdownItem, cashbook => $activeCashbook, isActive => true}
             <li role="separator" class="divider"></li>
-            <li><a n:href="createCashbook!" class="ajax">Přidat pokladní knihu</a></li>
+            {foreach $cashbooks as $cashbook}
+                {if $cashbook->getCashbookId()->toString() !== $activeCashbook->getCashbookId()->toString()}
+                    {include cashbookDropdownItem, cashbook => $cashbook, isActive => false}
+                {/if}
+            {/foreach}
+            <li role="separator" class="divider"></li>
+            <li><a n:href="createCashbook!" class="ajax"><i class="fa fa-plus"></i> Přidat pokladní knihu</a></li>
         </ul>
     </div>
 {/block}
 
+
+{block cashbookDropdownItem}
+    {var $selected = $cashbook->getCashbookId()->toString() === $cashbookId}
+    <li n:class="$selected ? active, ! $isActive ? hz">
+        <a href="{if $selected}#{else}{link this $aid, $cashbook->year}{/if}">
+            {$cashbook->year}
+        </a>
+        <a n:if="! $isActive" n:href="activateCashbook! $cashbook->id" title="Nastavit jako hlavní pokladní knihu">
+            <i class="fa fa-thumb-tack" aria-hidden="true"></i>
+        </a>
+    </li>
+{/block}
 
 {block #content}
 <h2 n:block="title">{$unitPairs[$aid]} - evidence plateb</h2>

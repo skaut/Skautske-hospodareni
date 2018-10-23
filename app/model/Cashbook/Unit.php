@@ -76,6 +76,15 @@ class Unit extends Aggregate
         return $this->id;
     }
 
+    public function activateCashbook(int $cashbookId) : void
+    {
+        if ($cashbookId >= $this->nextCashbookId) {
+            throw UnitCashbookNotFound::withId($cashbookId, $this->id);
+        }
+
+        $this->activeCashbookId = $cashbookId;
+    }
+
     /**
      * @return Unit\Cashbook[]
      */

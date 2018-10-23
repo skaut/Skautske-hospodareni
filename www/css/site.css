@@ -381,3 +381,11 @@ footer {
         margin-right: 30px;
     }
 }
+
+.open > ul > li.hz {
+    display: flex !important;
+}
+
+li.hz a:first-of-type {
+    flex-grow: 7;
+}

@@ -29,6 +29,6 @@ final class ActiveUnitCashbookQueryHandler
 
         $cashbook = $unit->getActiveCashbook();
 
-        return new UnitCashbook($cashbook->getCashbookId(), $cashbook->getYear());
+        return new UnitCashbook($cashbook->getId(), $cashbook->getCashbookId(), $cashbook->getYear());
     }
 }

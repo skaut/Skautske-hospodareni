@@ -34,7 +34,7 @@ final class UnitCashbookListQueryHandler
         }
 
         return array_map(function (Cashbook $cashbook) : UnitCashbook {
-            return new UnitCashbook($cashbook->getCashbookId(), $cashbook->getYear());
+            return new UnitCashbook($cashbook->getId(), $cashbook->getCashbookId(), $cashbook->getYear());
         }, $unit->getCashbooks());
     }
 }

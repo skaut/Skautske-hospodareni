@@ -103,7 +103,11 @@
                     {foreach $flashes as $flash}
                         <div class="alert alert-{$flash->type}">
                             <a class="close" data-dismiss="alert">×</a>
-                            {$flash->message}
+                            {if strpos($flash->message, 'html: ') === 0}
+                                {$flash->message|substr:6|noescape}
+                            {else}
+                                {$flash->message}
+                            {/if}
                         </div>
                     {/foreach}
                 {/snippet}

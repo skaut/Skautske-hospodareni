@@ -10,6 +10,7 @@ use App\AccountancyModule\UnitAccountModule\Components\CreateCashbookDialog;
 use App\AccountancyModule\UnitAccountModule\Factories\ICreateCashbookDialogFactory;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\Commands\Unit\ActivateCashbook;
 use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
@@ -57,6 +58,21 @@ class CashbookPresenter extends BasePresenter
 
         $dialog->open();
     }
+
+    public function handleActivateCashbook(int $cashbookId) : void
+    {
+        $this->commandBus->handle(new ActivateCashbook(new UnitId($this->aid), $cashbookId));
+
+        $this->flashMessage(
+            sprintf(
+                'html: Pokladní kniha <strong>%d</strong> byla nastavena jako hlavní',
+                $this->getActiveCashbook()->getYear()
+            )
+        );
+
+        $this->redirect('this');
+    }
+
     public function actionDefault(int $aid, ?int $year = null) : void
     {
         $activeCashbook = $this->getActiveCashbook();
@@ -80,6 +96,7 @@ class CashbookPresenter extends BasePresenter
         $this->template->setParameters([
             'cashbooks' => $cashbooks,
             'year' => $year,
+            'activeCashbook' => $activeCashbook,
         ]);
 
         foreach ($cashbooks as $cashbook) {

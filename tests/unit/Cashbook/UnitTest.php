@@ -70,4 +70,23 @@ final class UnitTest extends TestCase
 
         $unit->createCashbook(2018);
     }
+
+    public function testActivateCashbook() : void
+    {
+        $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);
+        $unit->createCashbook(2019);
+
+        $unit->activateCashbook(2);
+
+        $this->assertSame(2, $unit->getActiveCashbook()->getId());
+    }
+
+    public function testActivateCashbookForUnexistentCashbookThrowsException() : void
+    {
+        $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);
+
+        $this->expectException(UnitCashbookNotFound::class);
+
+        $unit->activateCashbook(2);
+    }
 }
