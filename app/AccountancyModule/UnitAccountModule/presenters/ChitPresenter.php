@@ -21,7 +21,6 @@ use Nette\Application\UI\Multiplier;
 use Nette\Http\IResponse;
 use function array_filter;
 use function array_map;
-use function in_array;
 use function sprintf;
 
 class ChitPresenter extends BasePresenter
@@ -148,23 +147,32 @@ class ChitPresenter extends BasePresenter
      */
     private function getAllChitsByObjectId(ObjectType $objectType, array $objects) : array
     {
-        if (in_array($objectType->getValue(), [ObjectType::EVENT, ObjectType::CAMP], true)) { //filtrování akcí spojených pouze s danou jednotkou
-            $readableUnits = $this->unitService->getReadUnits($this->user);
+        if ($objectType->equalsValue(ObjectType::UNIT)) {
+            $cashbooks = [];
 
-            $objects = array_filter(
-                $objects,
-                function (array $object) use ($readableUnits) : bool {
-                    return isset($readableUnits[$object['ID_Unit']]);
+            foreach ($objects as $unitId => ['DisplayName' => $name]) {
+                /** @var UnitCashbook[] $unitCashbooks */
+                $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unitId));
+
+                foreach ($unitCashbooks as $cashbook) {
+                    $cashbooks[$cashbook->getCashbookId()->withoutHyphens()] = [
+                        'ID' => $unitId,
+                        'DisplayName' => $name . ' ' . $cashbook->getYear(),
+                    ];
                 }
-            );
-        } else {
-            foreach ($objects as $id => $object) {
-                $objects[$id] = [
-                    'ID' => $id,
-                    'DisplayName' => $object['DisplayName'],
-                ];
             }
+
+            return $cashbooks;
         }
+
+        $readableUnits = $this->unitService->getReadUnits($this->user);
+
+        $objects = array_filter(
+            $objects,
+            function (array $object) use ($readableUnits) : bool {
+                return isset($readableUnits[$object['ID_Unit']]);
+            }
+        );
 
         $cashbooks = [];
         foreach ($objects as $oid => $object) {

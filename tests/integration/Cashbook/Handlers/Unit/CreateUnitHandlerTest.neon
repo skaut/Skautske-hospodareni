@@ -1,0 +1,6 @@
+services:
+    - class: Model\Cashbook\Handlers\Unit\CreateUnitHandler
+      tags: [commandBus.handler]
+
+includes:
+    - common.neon

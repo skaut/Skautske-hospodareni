@@ -1,0 +1,119 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\AccountancyModule\UnitAccountModule\Components;
+
+use App\AccountancyModule\Components\BaseControl;
+use App\Forms\BaseForm;
+use eGen\MessageBus\Bus\CommandBus;
+use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Commands\Unit\ActivateCashbook;
+use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
+use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
+use Model\Common\UnitId;
+use Model\DTO\Cashbook\UnitCashbook;
+use Nette\Utils\ArrayHash;
+use function sprintf;
+
+final class ActivateCashbookDialog extends BaseControl
+{
+     /** @var bool @persistent */
+    public $opened = false;
+
+    /** @var callable[] */
+    public $onSuccess = [];
+
+    /** @var bool */
+    private $isEditable;
+
+    /** @var UnitId */
+    private $unitId;
+
+    /** @var CommandBus */
+    private $commandBus;
+
+    /** @var QueryBus */
+    private $queryBus;
+
+    public function __construct(bool $isEditable, UnitId $unitId, CommandBus $commandBus, QueryBus $queryBus)
+    {
+        parent::__construct();
+        $this->isEditable = $isEditable;
+        $this->unitId     = $unitId;
+        $this->commandBus = $commandBus;
+        $this->queryBus   = $queryBus;
+    }
+
+    public function render() : void
+    {
+        $this->template->setFile(__DIR__ . '/templates/ActivateCashbookDialog.latte');
+        $this->template->setParameters([
+            'renderModal' => $this->opened,
+        ]);
+        $this->template->render();
+    }
+
+    public function open() : void
+    {
+        $this->opened = true;
+        $this->redrawControl();
+    }
+
+    protected function createComponentForm() : BaseForm
+    {
+        $form = new BaseForm();
+
+        $form->addSelect('cashbookId', 'Pokladní kniha', $this->getCashbooks())
+            ->setDefaultValue($this->getActiveCashbook()->getId())
+            ->setRequired();
+
+        $form->addSubmit('create', 'Vybrat');
+
+        $form->onSuccess[] = function ($_, ArrayHash $values) : void {
+            $this->formSucceeded($values->cashbookId);
+        };
+
+        return $form;
+    }
+
+    private function formSucceeded(int $cashbookId) : void
+    {
+        if (! $this->isEditable) {
+            $this->presenter->flashMessage('Nemáte oprávnění upravovat pokladní knihy', 'danger');
+            $this->redirect('this', ['opened' => false]);
+        }
+
+        $this->commandBus->handle(new ActivateCashbook($this->unitId, $cashbookId));
+
+        $this->presenter->flashMessage(
+            sprintf(
+                'html: Pokladní kniha <strong>%d</strong> byla nastavena jako výchozí.',
+                $this->getActiveCashbook()->getYear()
+            )
+        );
+        $this->opened = false;
+        $this->redirect('this');
+    }
+
+    /**
+     * @return string[] cashbook ID => cashbook year
+     */
+    private function getCashbooks() : array
+    {
+        /** @var UnitCashbook[] $cashbooks */
+        $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId->toInt()));
+        $pairs     = [];
+
+        foreach ($cashbooks as $cashbook) {
+            $pairs[$cashbook->getId()] = (string) $cashbook->getYear();
+        }
+
+        return $pairs;
+    }
+
+    private function getActiveCashbook() : UnitCashbook
+    {
+        return $this->queryBus->handle(new ActiveUnitCashbookQuery($this->unitId));
+    }
+}

@@ -4,19 +4,22 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use Model\Cashbook\ObjectType;
+use Doctrine\ORM\EntityManager;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
+use Model\Cashbook\Unit;
+use Model\Cashbook\Unit\Cashbook;
+use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
-use Model\Skautis\Mapper;
+use function array_map;
 
 final class UnitCashbookListQueryHandler
 {
-    /** @var Mapper */
-    private $mapper;
+    /** @var EntityManager */
+    private $entityManager;
 
-    public function __construct(Mapper $mapper)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->mapper = $mapper;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -24,10 +27,14 @@ final class UnitCashbookListQueryHandler
      */
     public function handle(UnitCashbookListQuery $query) : array
     {
-        $cashbookId = $this->mapper->getLocalId($query->getUnitId(), ObjectType::UNIT);
+        $unit = $this->entityManager->find(Unit::class, new UnitId($query->getUnitId()));
 
-        return [
-            new UnitCashbook($cashbookId),
-        ];
+        if ($unit === null) {
+            return [];
+        }
+
+        return array_map(function (Cashbook $cashbook) : UnitCashbook {
+            return new UnitCashbook($cashbook->getId(), $cashbook->getCashbookId(), $cashbook->getYear());
+        }, $unit->getCashbooks());
     }
 }
