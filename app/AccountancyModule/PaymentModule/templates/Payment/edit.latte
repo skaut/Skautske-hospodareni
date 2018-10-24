@@ -1,9 +1,12 @@
-{block #content}
+{block content}
 {include ../ActionMenu.latte}
-<h2 n:inner-block="title">Editace platby</h2>
 <div class="row">
-    <div class="col-sm-12">
-        {control paymentForm}
+    <div class="col-sm-12 main-panel">
+        <div class="panel panel-default">
+            <div class="panel-heading" n:inner-block="title">Upravit platbu</div>
+            <div class="panel-body">
+                {control paymentForm}
+            </div>
+        </div>
     </div>
 </div>
-

@@ -1,8 +1,9 @@
+{block title}Platební skupina {$group->name}{/block}
 {block #content}
 {include ../ActionMenu.latte}
 <div class="row">
     <div class="col-sm-12">
-        <h2 n:inner-block="title">{$group->name}</h2>
+        <h2>{$group->name}</h2>
     </div>
 </div>
 <div class="row">
