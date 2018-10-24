@@ -85,12 +85,8 @@ class DetailPresenter extends BasePresenter
             $this->flashMessage('Nemáte právo přistupovat k táboru', 'warning');
             $this->redirect('default', ['aid' => $aid]);
         }
-        if (! $this->areTotalsConsistentWithSkautis($aid)) {
-            $this->flashMessage('Data v účtech a ve skautisu jsou nekonzistentní!', 'warning');
-            $this->redirect('default', ['aid' => $aid]);
-        }
 
-        $template = $this->exportService->getCampReport($aid, $this->eventService);
+        $template = $this->exportService->getCampReport($aid, $this->eventService, $this->areTotalsConsistentWithSkautis($aid));
         $this->pdf->render($template, 'reportCamp.pdf');
         $this->terminate();
     }

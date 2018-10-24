@@ -98,7 +98,9 @@ table {
         <td><b>{$totalExpense|price}</b></td>
     </tr>
 </table>
-
+{if !$areTotalsConsistentWithSkautis}
+    <b>Data v účtech a ve skautisu jsou nekonzistentní!</b>
+{/if}
 
 <h3>Hlášení předkládá</h3>
 
