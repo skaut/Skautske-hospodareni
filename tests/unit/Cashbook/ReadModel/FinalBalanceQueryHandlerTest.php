@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
+use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
+use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
@@ -35,7 +36,7 @@ final class FinalBalanceQueryHandlerTest extends Unit
     private function mockChit(string $amount, string $operation)
     {
         return m::mock(Chit::class, [
-            'getAmount'     => new Cashbook\Amount($amount),
+            'getBody'       => new Cashbook\ChitBody(null, new Cake\Chronos\Date('2017-11-17'), null, new Cashbook\Amount($amount), "pro test"),
             'getCategory'   => new Cashbook\Category(1, Operation::get($operation)),
         ]);
     }
@@ -55,9 +56,9 @@ final class FinalBalanceQueryHandlerTest extends Unit
                 m::mock(Cashbook::class, ['getChits' => $chits])
             );
 
-        $handler = new FinalBalanceQueryHandler($repository);
+        $handler = new FinalCashBalanceQueryHandler($repository);
 
-        $actualBalance = $handler->handle(new FinalBalanceQuery($cashbookId));
+        $actualBalance = $handler->handle(new FinalCashBalanceQuery($cashbookId));
 
         $this->assertTrue($expectedBalance->equals($actualBalance));
     }

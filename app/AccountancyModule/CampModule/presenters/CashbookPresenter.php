@@ -18,7 +18,7 @@ use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
-use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
+use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\SkautisCampId;
@@ -50,7 +50,7 @@ class CashbookPresenter extends BasePresenter
     public function renderDefault(int $aid) : void
     {
         /** @var Money $finalBalance */
-        $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
+        $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
 
         $this->template->setParameters(
             [

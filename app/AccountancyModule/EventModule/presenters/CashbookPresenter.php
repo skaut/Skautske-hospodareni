@@ -17,7 +17,7 @@ use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
+use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -45,7 +45,7 @@ class CashbookPresenter extends BasePresenter
     public function renderDefault(int $aid) : void
     {
         /** @var Money $finalBalance */
-        $finalBalance = $this->queryBus->handle(new FinalBalanceQuery($this->getCashbookId()));
+        $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
 
         $this->template->setParameters(
             [
