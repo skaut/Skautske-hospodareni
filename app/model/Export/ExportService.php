@@ -220,7 +220,7 @@ class ExportService
         return $this->templateFactory->create(__DIR__ . '/templates/chits.latte', $template);
     }
 
-    public function getCampReport(int $skautisCampId, EventEntity $campService) : string
+    public function getCampReport(int $skautisCampId, EventEntity $campService, bool $areTotalsConsistentWithSkautis) : string
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisCampId)));
 
@@ -254,6 +254,7 @@ class ExportService
             'totalIncome' => $totalIncome,
             'totalExpense' => $totalExpense,
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
+            'areTotalsConsistentWithSkautis' => $areTotalsConsistentWithSkautis,
         ]);
     }
 }
