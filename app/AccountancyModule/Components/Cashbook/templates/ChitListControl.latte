@@ -81,11 +81,11 @@
                 <tr n:class="$balance < 0 ? 'alert alert-error'">
                     <td colspan="2">&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td>&nbsp;</td>
                     <td class="hidden-xs hidden-sm">&nbsp;</td>
-                    <td><b>Konečný stav</b></td>
-                    <td>&nbsp;</td>
                     <td class='hidden-xs hidden-sm'>&nbsp;</td>
+                    <td><b>Konečný stav</b></td>
+                    <td class="r">{$totalIncome|price}</td>
+                    <td class="r">{$totalExpense|price}</td>
                     <td n:class="r, ui--balance, $balance < 0 ? isMinus"><b>{$balance|price}</b></td>
                 </tr>
                 <tbody>

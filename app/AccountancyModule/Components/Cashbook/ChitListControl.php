@@ -17,9 +17,11 @@ use Model\Cashbook\ChitLocked;
 use Model\Cashbook\ChitNotFound;
 use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Cashbook;
+use Model\DTO\Cashbook\Chit;
 use Nette\InvalidStateException;
 use function array_map;
 
@@ -79,6 +81,8 @@ class ChitListControl extends BaseControl
     {
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
+        $chits    = $this->queryBus->handle(ChitListQuery::withMethod($this->paymentMethod, $this->cashbookId));
+        $totals   = $this->getTotals($chits);
         $this->template->setParameters(
             [
             'cashbookId' => $this->cashbookId->toString(),
@@ -87,10 +91,12 @@ class ChitListControl extends BaseControl
             'canMoveChits' => $this->canMoveChits(),
             'canMassExport' => $this->canMassExport(),
             'aid' => (int) $this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
-            'chits' => $this->queryBus->handle(ChitListQuery::withMethod($this->paymentMethod, $this->cashbookId)),
+            'chits' => $chits,
             'paymentMethod' => $this->paymentMethod,
             'prefix' => $cashbook->getChitNumberPrefix(),
             'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
+            'totalIncome' => $totals[Operation::INCOME],
+            'totalExpense' => $totals[Operation::EXPENSE],
             ]
         );
 
@@ -192,5 +198,26 @@ class ChitListControl extends BaseControl
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         return $cashbook->getType()->getSkautisObjectType();
+    }
+
+    /**
+     * @param Chit[] $chits
+     * @return float[]
+     */
+    private function getTotals(array $chits) : array
+    {
+        $income  = 0;
+        $expense = 0;
+        foreach ($chits as $chit) {
+            if ($chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME)) {
+                $income += $chit->getBody()->getAmount()->toFloat();
+            } else {
+                $expense += $chit->getBody()->getAmount()->toFloat();
+            }
+        }
+        return [
+            Operation::INCOME => $income,
+            Operation::EXPENSE => $expense,
+        ];
     }
 }
