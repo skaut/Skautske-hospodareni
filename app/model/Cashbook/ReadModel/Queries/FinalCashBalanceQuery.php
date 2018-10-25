@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\Queries;
 
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ReadModel\QueryHandlers\FinalBalanceQueryHandler;
+use Model\Cashbook\ReadModel\QueryHandlers\FinalCashBalanceQueryHandler;
 
 /**
- * @see FinalBalanceQueryHandler
+ * @see FinalCashBalanceQueryHandler
  */
-final class FinalBalanceQuery
+final class FinalCashBalanceQuery
 {
     /** @var CashbookId */
     private $cashbookId;

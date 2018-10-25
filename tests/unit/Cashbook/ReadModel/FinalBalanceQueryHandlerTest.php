@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
+use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use eGen\MessageBus\Bus\QueryBus;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\FinalBalanceQuery;
-use Model\Cashbook\Repositories\ICashbookRepository;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
+use Model\DTO\Cashbook\Category;
+use Model\DTO\Cashbook\Chit;
 use Model\Utils\MoneyFactory;
+use Money\Currency;
 use Money\Money;
 
 final class FinalBalanceQueryHandlerTest extends Unit
@@ -34,9 +38,10 @@ final class FinalBalanceQueryHandlerTest extends Unit
 
     private function mockChit(string $amount, string $operation)
     {
+        $op = Operation::get ($operation);
         return m::mock(Chit::class, [
-            'getAmount'     => new Cashbook\Amount($amount),
-            'getCategory'   => new Cashbook\Category(1, Operation::get($operation)),
+            'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null, new Cashbook\Amount($amount), "pro test"),
+            'getCategory'   => new Category(1, "catName", new Money($amount, new Currency('CZK')), "a", $op, $op->equalsValue(Operation::INCOME)),
         ]);
     }
 
@@ -47,17 +52,16 @@ final class FinalBalanceQueryHandlerTest extends Unit
     {
         $cashbookId = Cashbook\CashbookId::fromString(self::CASHBOOK_ID);
 
-        $repository = m::mock(ICashbookRepository::class);
-        $repository->shouldReceive('find')
-            ->once()
-            ->with($cashbookId)
-            ->andReturn(
-                m::mock(Cashbook::class, ['getChits' => $chits])
-            );
+        $queryBus = m::mock(QueryBus::class);
+        $queryBus->shouldReceive('handle')
+            ->withArgs(function (ChitListQuery $query) {
+                return $query->getCashbookId ()->toString () === self::CASHBOOK_ID && $query->getPaymentMethod () === Cashbook\PaymentMethod::CASH ();
+            })
+            ->andReturn($chits);
 
-        $handler = new FinalBalanceQueryHandler($repository);
+        $handler = new FinalCashBalanceQueryHandler($queryBus);
 
-        $actualBalance = $handler->handle(new FinalBalanceQuery($cashbookId));
+        $actualBalance = $handler->handle(new FinalCashBalanceQuery($cashbookId));
 
         $this->assertTrue($expectedBalance->equals($actualBalance));
     }
