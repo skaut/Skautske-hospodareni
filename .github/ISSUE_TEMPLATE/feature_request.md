@@ -1,6 +1,6 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Návrh na nové funkce
+about: Navrhněte co by se mělo v systému zlepšit či novou funkcionalitu
 
 ---
 
