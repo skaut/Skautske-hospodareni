@@ -73,7 +73,7 @@ class CashbookPresenter extends BasePresenter
 
         if ($totalPayment === 0.0) {
             $this->flashMessage('Nemáte žádné účastníky');
-            $this->redirect('this');
+            $this->redirect('Default:');
         }
 
         /** @var Functions $functions */
