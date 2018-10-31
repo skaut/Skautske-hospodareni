@@ -18,7 +18,7 @@ class Participant
     /** @var string|null */
     private $nickName;
 
-    /** @var int */
+    /** @var int|null */
     private $age;
 
     /** @var Date */
@@ -36,7 +36,7 @@ class Participant
     /** @var string */
     private $state;
 
-    /** @var int */
+    /** @var int|null */
     private $unitId;
 
     /** @var string */
@@ -55,13 +55,13 @@ class Participant
         string $firstName,
         string $lastName,
         ?string $nickname,
-        int $age,
+        ?int $age,
         Date $birthday,
         string $street,
         string $city,
         int $postcode,
         string $state,
-        int $unitId,
+        ?int $unitId,
         string $unit,
         string $unitRegistrationNumber,
         int $days,
@@ -98,7 +98,7 @@ class Participant
         return $this->nickName;
     }
 
-    public function getAge() : int
+    public function getAge() : ?int
     {
         return $this->age;
     }
@@ -128,7 +128,7 @@ class Participant
         return $this->state;
     }
 
-    public function getUnitId() : int
+    public function getUnitId() : ?int
     {
         return $this->unitId;
     }
