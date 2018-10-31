@@ -5,17 +5,15 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Query\Expr\Join;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\Chit;
-use Model\Cashbook\Category;
 use Model\Cashbook\ReadModel\Queries\ParticipantChitSumQuery;
 use function array_map;
 use function array_sum;
 
 class ParticipantChitSumQueryHandler
 {
-    public const PARTICIPANT_INCOME_CATEGORY_SHORTCUTS = [1, 11];
+    private const PARTICIPANT_INCOME_CATEGORY_IDS = [1, 11];
     /** @var EntityManager */
     private $entityManager;
 
@@ -33,11 +31,10 @@ class ParticipantChitSumQueryHandler
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')
             ->from(Chit::class, 'c')
-            ->leftJoin(Category::class, 'cat', Join::WITH, 'cat.id = c.category.id')
             ->where('IDENTITY(c.cashbook) = :cashbookId')
-            ->andWhere('cat.id IN (:cat_id)')
+            ->andWhere('c.category.id IN (:category_ids)')
             ->setParameter('cashbookId', $query->getCashbookId()->toString())
-            ->setParameter('cat_id', self::PARTICIPANT_INCOME_CATEGORY_SHORTCUTS);
+            ->setParameter('category_ids', self::PARTICIPANT_INCOME_CATEGORY_IDS);
 
         $chits = $queryBuilder->getQuery()->getResult();
         $sum   = array_sum(array_map(function (Chit $c) {
