@@ -20,6 +20,9 @@
             <p n:if="$isInMinus" class="alert alert-danger">
                 Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
             </p>
+            <p n:if="$incomeBalance !=0" class="alert alert-danger">
+                <b>Mezi příjmy u účastníků a evidencí plateb je rozdíl {$incomeBalance}!</b>
+            </p>
 
             {snippet}
                 {control cashbook}

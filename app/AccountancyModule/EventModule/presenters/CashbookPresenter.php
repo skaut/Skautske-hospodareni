@@ -17,6 +17,7 @@ use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
@@ -44,6 +45,8 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
+        $incomeBalance = $this->queryBus->handle(new EventParticipantBalanceQuery(new SkautisEventId($aid), $this->getCashbookId()));
+
         /** @var Money $finalBalance */
         $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
 
@@ -52,6 +55,7 @@ class CashbookPresenter extends BasePresenter
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'cashbookId' => $this->getCashbookId()->toString(),
             'isInMinus' => $finalBalance->isNegative(),
+            'incomeBalance' => $incomeBalance,
             'isEditable' => $this->isEditable,
             ]
         );
