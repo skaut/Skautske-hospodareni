@@ -17,4 +17,6 @@ interface ICategory
     public function getShortcut() : string;
 
     public function getOperationType() : Operation;
+
+    public function isVirtual() : bool;
 }

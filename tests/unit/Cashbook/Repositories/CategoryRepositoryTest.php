@@ -24,8 +24,8 @@ final class CategoryRepositoryTest extends Unit
     public function testResultsForCampContainBothStaticAndSkautisCategories() : void
     {
         $staticCategories = [
-            new Category(11, 'test1', 't', Operation::get(Operation::INCOME), [], 10),
-            new Category(50, 'test1', 't', Operation::get(Operation::EXPENSE), [], 10),
+            new Category(11, 'test1', 't', Operation::get(Operation::INCOME), [], false,10),
+            new Category(50, 'test1', 't', Operation::get(Operation::EXPENSE), [], false,10),
         ];
 
         $staticCategoryRepository = \Mockery::mock(IStaticCategoryRepository::class);
@@ -35,8 +35,8 @@ final class CategoryRepositoryTest extends Unit
             ->andReturn($staticCategories);
 
         $campCategories = [
-            new CampCategory(2, Operation::get(Operation::EXPENSE), 'name', Money::CZK(0), null),
-            new CampCategory(4, Operation::get(Operation::INCOME), 'name2', Money::CZK(0), null),
+            new CampCategory(2, Operation::get(Operation::EXPENSE), 'name', Money::CZK(0), null, false),
+            new CampCategory(4, Operation::get(Operation::INCOME), 'name2', Money::CZK(0), null, false),
         ];
 
         $campCategoryRepository = \Mockery::mock(ICampCategoryRepository::class);

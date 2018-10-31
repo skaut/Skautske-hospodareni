@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
+use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
@@ -29,6 +30,7 @@ class CategoryListQueryHandler
 
     /**
      * @return Category[]
+     * @throws CashbookNotFound
      */
     public function handle(CategoryListQuery $query) : array
     {
@@ -46,7 +48,8 @@ class CategoryListQueryHandler
                     MoneyFactory::fromFloat($categoryTotals[$category->getId()] ?? 0),
                     $category->getShortcut(),
                     $category->getOperationType(),
-                    $category->getOperationType()->equalsValue(Operation::INCOME)
+                    $category->getOperationType()->equalsValue(Operation::INCOME),
+                    $category->isVirtual()
                 );
             },
             $categories

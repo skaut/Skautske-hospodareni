@@ -24,13 +24,17 @@ final class CampCategory implements ICategory
     /** @var ParticipantType|NULL */
     private $participantType;
 
-    public function __construct(int $id, Operation $operationType, string $name, Money $total, ?ParticipantType $participantType)
+    /** @var bool */
+    private $virtual;
+
+    public function __construct(int $id, Operation $operationType, string $name, Money $total, ?ParticipantType $participantType, bool $virtual)
     {
         $this->id              = $id;
         $this->operationType   = $operationType;
         $this->name            = $name;
         $this->total           = $total;
         $this->participantType = $participantType;
+        $this->virtual         = $virtual;
     }
 
     public function getId() : int
@@ -61,5 +65,10 @@ final class CampCategory implements ICategory
     public function getParticipantType() : ?ParticipantType
     {
         return $this->participantType;
+    }
+
+    public function isVirtual() : bool
+    {
+        return $this->virtual;
     }
 }
