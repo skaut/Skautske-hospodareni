@@ -251,19 +251,24 @@ class ExportService
         /** @var Category[] $categories */
         $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
 
-        $totalIncome  = MoneyFactory::zero();
-        $totalExpense = MoneyFactory::zero();
+        $total = [
+            'income'  => MoneyFactory::zero(),
+            'expense' => MoneyFactory::zero(),
+            'virtualIncome'  => MoneyFactory::zero(),
+            'virtualExpense' => MoneyFactory::zero(),
+        ];
 
-        $incomeCategories  = [];
-        $expenseCategories = [];
+        $incomeCategories  = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
+        $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
 
         foreach ($categories as $category) {
+            $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
             if ($category->isIncome()) {
-                $totalIncome        = $totalIncome->add($category->getTotal());
-                $incomeCategories[] = $category;
+                $total[$category->isVirtual() ? 'virtualIncome' : 'income']->add($category->getTotal());
+                $incomeCategories[$virtualCategory][] = $category;
             } else {
-                $totalExpense        = $totalExpense->add($category->getTotal());
-                $expenseCategories[] = $category;
+                $total[$category->isVirtual() ? 'virtualExpense' : 'expense']->add($category->getTotal());
+                $expenseCategories[$virtualCategory][] = $category;
             }
         }
 
@@ -273,10 +278,14 @@ class ExportService
             'participantsCnt' => count($participants),
             'personsDays' => $campService->getParticipants()->getPersonsDays($participants),
             'a' => $campService->getEvent()->get($skautisCampId),
-            'incomeCategories' => $incomeCategories,
-            'expenseCategories' => $expenseCategories,
-            'totalIncome' => $totalIncome,
-            'totalExpense' => $totalExpense,
+            'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
+            'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
+            'totalIncome' => $total['income'],
+            'totalExpense' => $total['expense'],
+            'virtualIncomeCategories' => $incomeCategories[self::CATEGORY_REAL],
+            'virtualExpenseCategories' => $expenseCategories[self::CATEGORY_REAL],
+            'virtualTotalIncome' => $total['virtualIncome'],
+            'virtualTotalExpense' => $total['virtualExpense'],
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
             'areTotalsConsistentWithSkautis' => $areTotalsConsistentWithSkautis,
         ]);
