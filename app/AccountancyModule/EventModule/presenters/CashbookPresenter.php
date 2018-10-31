@@ -57,14 +57,14 @@ class CashbookPresenter extends BasePresenter
         );
     }
 
-    public function actionImportHpd(int $aid) : void
+    public function handleImportHpd(int $aid) : void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Akce je uzavřena a nelze ji upravovat.', 'danger');
             if ($this->isAjax()) {
                 $this->sendPayload();
             } else {
-                $this->redirect('Default:');
+                $this->redirect('this');
             }
         }
 
@@ -73,7 +73,7 @@ class CashbookPresenter extends BasePresenter
 
         if ($totalPayment === 0.0) {
             $this->flashMessage('Nemáte žádné účastníky');
-            $this->redirect('Default:');
+            $this->redirect('this');
         }
 
         /** @var Functions $functions */
@@ -95,7 +95,7 @@ class CashbookPresenter extends BasePresenter
         );
 
         $this->flashMessage('Účastníci byli importováni');
-        $this->redirect('default', ['aid' => $aid]);
+        $this->redirect('this');
     }
 
     protected function createComponentCashbook() : CashbookControl
