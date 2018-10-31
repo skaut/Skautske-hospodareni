@@ -27,7 +27,7 @@ final class ParticipantFactory
             (int) $skautisParticipant->Postcode,
             $skautisParticipant->State,
             (int) $skautisParticipant->ID_Unit,
-            $skautisParticipant->Unit,
+            $skautisParticipant->Unit ?? "",
             $skautisParticipant->UnitRegistrationNumber,
             (int) $skautisParticipant->Days,
             new Money($skautisParticipant->Note ?? 0, new Currency('CZK'))
