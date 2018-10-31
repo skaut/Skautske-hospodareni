@@ -39,6 +39,7 @@ class StaticCategoryRepositoryTest extends \IntegrationTest
             'label' => 'Category 1',
             'short' => 'c1',
             'type' => 'in',
+            'virtual' => false,
             'orderby' => 300,
             'deleted' => 0,
         ]);
@@ -46,6 +47,7 @@ class StaticCategoryRepositoryTest extends \IntegrationTest
             'label' => 'Category 2',
             'short' => 'c2',
             'type' => 'out',
+            'virtual' => false,
             'orderby' => 400,
             'deleted' => 0,
         ]);
@@ -53,6 +55,7 @@ class StaticCategoryRepositoryTest extends \IntegrationTest
             'label' => 'Category 3',
             'short' => 'c3',
             'type' => 'out',
+            'virtual' => false,
             'orderby' => 400,
             'deleted' => 0,
         ]);
