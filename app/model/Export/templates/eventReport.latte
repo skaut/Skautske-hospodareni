@@ -62,12 +62,12 @@ $chits - paragony akce
     </tr>
 </table>
 
-<h3>Příjmy a výdaje</h3>
+<h3>Výnosy a náklady</h3>
 <table border="1" style="width:800px">
     <tr>
-        <th style="width: 30%;">Příjmy</th>
+        <th style="width: 30%;">Výnosy</th>
         <th style="width: 20%;text-align: right;">Kč</th>
-        <th style="width: 30%;">Výdaje</th>
+        <th style="width: 30%;">Náklady</th>
         <th style="width: 20%;text-align: right;">Kč</th>
     </tr>
 
@@ -99,6 +99,44 @@ $chits - paragony akce
     </tr>
 </table>
 
+
+
+<h3>Příjmy a výdaje</h3>
+<table border="1" style="width:800px">
+    <tr>
+        <th style="width: 30%;">Příjmy</th>
+        <th style="width: 20%;text-align: right;">Kč</th>
+        <th style="width: 30%;">Výdaje</th>
+        <th style="width: 20%;text-align: right;">Kč</th>
+    </tr>
+
+    {var $rowsCount = max(count($virtualIncomes), count($virtualExpenses))}
+    {for $i = 0; $i < $rowsCount; $i++}
+        <tr>
+            {if $i < count($virtualIncomes)}
+                {var $income = $virtualIncomes[$i]}
+                <td>{$income['label']}</td>
+                <td>{$income['amount']|price}</td>
+            {else}
+                <td>&nbsp;</td><td>&nbsp;</td>
+            {/if}
+            {if $i < count($virtualExpenses)}
+                {var $expense = $virtualExpenses[$i]}
+                <td>{$expense['label']}</td>
+                <td>{$expense['amount']|price}</td>
+            {else}
+                <td>&nbsp;</td><td>&nbsp;</td>
+            {/if}
+        </tr>
+    {/for}
+
+    <tr>
+        <td>Celkem</td>
+        <td><b>{$virtualTotalIncome|price}</b></td>
+        <td>Celkem</td>
+        <td><b>{$virtualTotalExpense|price}</b></td>
+    </tr>
+</table>
 
 <h3>Hlášení předkládá</h3>
 
