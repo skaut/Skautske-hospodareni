@@ -37,8 +37,9 @@ use function count;
 
 class ExportService
 {
-    public const CATEGORY_VIRTUAL = 'virtual';
-    public const CATEGORY_REAL    = 'real';
+
+    const CATEGORY_VIRTUAL = "virtual";
+    const CATEGORY_REAL = "real";
 
     /** @var UnitService */
     private $units;
@@ -133,7 +134,7 @@ class ExportService
 
         foreach ($categories as $category) {
             foreach ([self::CATEGORY_VIRTUAL, self::CATEGORY_REAL] as $virtual) {
-                $operation                                      = $category->getOperationType()->getValue();
+                $operation                            = $category->getOperationType()->getValue();
                 $sums[$virtual][$operation][$category->getId()] = [
                     'amount' => 0,
                     'label' => $category->getName(),
@@ -147,9 +148,9 @@ class ExportService
 
         //rozpočítává paragony do jednotlivých skupin
         foreach ($chits as $chit) {
-            $category                                                      = $chit->getCategory();
-            $operationType                                                 = $category->getOperationType()->getValue();
-            $virtual                                                       = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
+            $category                                            = $chit->getCategory();
+            $operationType = $category->getOperationType()->getValue();
+            $virtual = $category->isVirtual () ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
             $sums[$virtual][$operationType][$category->getId()]['amount'] += $chit->getBody()->getAmount()->toFloat();
         }
 
