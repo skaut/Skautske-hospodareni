@@ -56,8 +56,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
                 $operation,
                 $category->EventCampStatementType,
                 MoneyFactory::fromFloat((float) $category->Ammount),
-                $this->getParticipantType($category),
-                false
+                $this->getParticipantType($category)
             );
         }
 

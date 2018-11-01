@@ -35,8 +35,8 @@ final class CategoryRepositoryTest extends Unit
             ->andReturn($staticCategories);
 
         $campCategories = [
-            new CampCategory(2, Operation::get(Operation::EXPENSE), 'name', Money::CZK(0), null, false),
-            new CampCategory(4, Operation::get(Operation::INCOME), 'name2', Money::CZK(0), null, false),
+            new CampCategory(2, Operation::get(Operation::EXPENSE), 'name', Money::CZK(0), null),
+            new CampCategory(4, Operation::get(Operation::INCOME), 'name2', Money::CZK(0), null),
         ];
 
         $campCategoryRepository = \Mockery::mock(ICampCategoryRepository::class);
