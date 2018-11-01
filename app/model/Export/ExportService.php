@@ -153,8 +153,8 @@ class ExportService
         }
 
         /* sum up "Příjmy od účastníků"(1) and "Hromadný příjem od úč."(11) */
-        $sums[self::CATEGORY_REAL][Operation::INCOME][ICategory::CATEGORY_PARTICIPANT_INCOME]['amount'] += $sums[self::CATEGORY_REAL][Operation::INCOME][ICategory::CATEGORY_HPD]['amount'];
-        unset($sums[self::CATEGORY_REAL][Operation::INCOME][ICategory::CATEGORY_HPD]);
+        $sums[self::CATEGORY_REAL][Operation::INCOME][ICategory::CATEGORY_PARTICIPANT_INCOME_ID]['amount'] += $sums[self::CATEGORY_REAL][Operation::INCOME][ICategory::CATEGORY_HPD_ID]['amount'];
+        unset($sums[self::CATEGORY_REAL][Operation::INCOME][ICategory::CATEGORY_HPD_ID]);
 
         $totalIncome = array_sum(
             array_column($sums[self::CATEGORY_REAL][Operation::INCOME], 'amount')
