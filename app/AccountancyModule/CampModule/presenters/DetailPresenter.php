@@ -8,7 +8,9 @@ use App\Forms\BaseForm;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
 use Model\ExportService;
@@ -69,12 +71,18 @@ class DetailPresenter extends BasePresenter
         if ($this->isAjax()) {
             $this->redrawControl('contentSnip');
         }
+        $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->event->ID)));
+        /** @var Cashbook $cashbook */
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        $this->template->setParameters([
+            'cashbookPrefix' => $cashbook->getChitNumberPrefix(),
+        ]);
 
         $form = $this['formEdit'];
         $form->setDefaults(
             [
             'aid' => $aid,
-            'prefix' => $this->event->prefix,
+            'prefix' => $cashbook->getChitNumberPrefix(),
             ]
         );
     }

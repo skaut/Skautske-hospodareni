@@ -6,9 +6,15 @@ namespace Model\DTO\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
+use Nette\SmartObject;
 
+/**
+ * @property-read string $chitNumberPrefix
+ */
 class Cashbook
 {
+    use SmartObject;
+
     /** @var CashbookId */
     private $id;
 
