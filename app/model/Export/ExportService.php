@@ -132,7 +132,7 @@ class ExportService
         ];
 
         foreach ($categories as $category) {
-            $virtual                                        = $category->isVirtual()?self::CATEGORY_VIRTUAL:self::CATEGORY_REAL;
+            $virtual                                        = $category->isVirtual() ? self::CATEGORY_VIRTUAL:self::CATEGORY_REAL;
             $operation                                      = $category->getOperationType()->getValue();
             $sums[$virtual][$operation][$category->getId()] = [
                 'amount' => 0,
