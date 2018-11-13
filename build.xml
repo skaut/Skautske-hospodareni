@@ -143,19 +143,19 @@
             <property name="command" value="rm ${tarball}"/>
         </phingcall>
 
-        <phingcall target="deploy:ssh">
+        <phingcall target="deploy:app-command">
             <property name="comment" value="Generating doctrine proxies"/>
-            <property name="command" value="composer generate-orm-proxies -d ${deploy.release}"/>
+            <property name="command" value="orm:generate-proxies"/>
         </phingcall>
 
-        <phingcall target="deploy:ssh">
+        <phingcall target="deploy:app-command">
             <property name="comment" value="Generating nette proxies"/>
-            <property name="command" value="composer generate-nette-proxies -d ${deploy.release}"/>
+            <property name="command" value="lookyman:nette-proxy:generate"/>
         </phingcall>
 
-        <phingcall target="deploy:ssh">
+        <phingcall target="deploy:app-command">
             <property name="comment" value="Running database migrations"/>
-            <property name="command" value="composer run-migrations -d ${deploy.release}"/>
+            <property name="command" value="migrations:migrate --no-interaction"/>
         </phingcall>
 
         <phingcall target="deploy:ssh">
@@ -165,6 +165,13 @@
 
         <phingcall target="deploy:cleanup"/>
 
+    </target>
+
+    <target name="deploy:app-command">
+        <phingcall target="deploy:ssh">
+            <property name="command"
+                      value="php71-cli '${deploy.release}/www/index.php ${command}'"/>
+        </phingcall>
     </target>
 
     <target name="tests-unit">
