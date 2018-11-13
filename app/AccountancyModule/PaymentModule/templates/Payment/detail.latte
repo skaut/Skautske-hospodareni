@@ -140,13 +140,12 @@
                                     </ul>
                                 </div>
                             {/if}
-                            <a n:href="cancel! $l->id" n:if="$isEditable && ! $l->state->equalsValue('canceled')"
-                               class="btn btn-sm btn-danger"
-                               onclick="return confirm('Opravdu chcete zrušit platbu?');"
-                               title="Zrušit"><i class="glyphicon glyphicon-remove"></i></a>
-
                         {else}&nbsp;{/if}
-                    </td>
+                        <a n:href="cancel! $l->id" n:if="$isEditable && ! $l->state->equalsValue('canceled')"
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('Opravdu chcete zrušit platbu?');"
+                                title="Zrušit"><i class="glyphicon glyphicon-remove"></i></a>
+                        </td>
                 </tr>
                 {else}
                     <tr>
