@@ -27,7 +27,6 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Skautis\Wsdl\PermissionException;
 use function count;
 use function date;
-use function get_class;
 use function gmdate;
 use function header;
 use function implode;
@@ -126,8 +125,8 @@ class ExcelService
                 continue;
             }
             //Prague event
-            $allowPragueColumns   = true;
-            $data[$aid]['prague'] = $pp->isSupportable($data[$aid]->TotalDays);
+            $allowPragueColumns               = true;
+            $data[$aid]['pragueParticipants'] = $pp;
         }
         $sheetEvents = $objPHPExcel->setActiveSheetIndex(0);
         $this->setSheetEvents($sheetEvents, $data, $allowPragueColumns);
@@ -389,9 +388,9 @@ class ExcelService
                 ->setCellValue('R' . $rowCnt, $row->parStatistic[4]->Count)
                 ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count)
                 ->setCellValue('S' . $rowCnt, $row->prefix);
-            if (isset($row->prague) && get_class($row->prague) === PragueParticipants::class) {
+            if (isset($row->pragueParticipants)) {
                 /** @var PragueParticipants $pp */
-                $pp = $row->prague;
+                $pp = $row->pragueParticipants;
                 $sheet->setCellValue('U' . $rowCnt, $pp->isSupportable($row->TotalDays) ? 'Ano' : 'Ne')
                     ->setCellValue('V' . $rowCnt, $pp->getPersonDaysUnder26())
                     ->setCellValue('W' . $rowCnt, $pp->getUnder18())
