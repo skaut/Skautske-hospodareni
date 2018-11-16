@@ -9,7 +9,6 @@ use Mockery as m;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
 use Model\Unit\Unit;
-use function var_dump;
 
 class VehicleRepositoryTest extends \IntegrationTest
 {

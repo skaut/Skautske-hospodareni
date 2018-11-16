@@ -21,12 +21,12 @@ class ChitListQueryHandlerTest extends \IntegrationTest
 {
     private const CASHBOOK_ID = '123';
 
-    protected function getTestedEntites(): array
+    protected function getTestedEntites() : array
     {
         return [Cashbook::class, Cashbook\Chit::class];
     }
 
-    protected function _before(): void
+    protected function _before() : void
     {
         $this->tester->useConfigFiles([__DIR__ . '/../../../config/doctrine.neon']);
 
@@ -60,7 +60,7 @@ class ChitListQueryHandlerTest extends \IntegrationTest
         $this->assertCount(count($expectedOrder), $chits);
 
         foreach ($expectedOrder as $index => $chitId) {
-            $dto  = $chits[$index];
+            $dto = $chits[$index];
             $this->assertSame($chitId, $dto->getId());
         }
     }

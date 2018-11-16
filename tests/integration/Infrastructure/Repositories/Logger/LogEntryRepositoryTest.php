@@ -116,5 +116,4 @@ final class LogEntryRepositoryTest extends \IntegrationTest
             [null],
         ];
     }
-
 }
