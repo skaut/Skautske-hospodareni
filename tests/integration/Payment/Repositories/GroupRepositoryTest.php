@@ -22,6 +22,9 @@ class GroupRepositoryTest extends \IntegrationTest
     /** @var EventBus */
     private $eventBus;
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [

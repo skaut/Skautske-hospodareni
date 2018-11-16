@@ -36,6 +36,9 @@ class BankAccountServiceTest extends \IntegrationTest
         $this->unitResolver       = $this->tester->grabService(UnitResolverStub::class);
     }
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [

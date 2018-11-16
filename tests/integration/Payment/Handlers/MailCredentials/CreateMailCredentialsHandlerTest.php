@@ -24,6 +24,9 @@ class CreateMailCredentialsHandlerTest extends \CommandHandlerTest
         $this->tester->resetEmails();
     }
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [

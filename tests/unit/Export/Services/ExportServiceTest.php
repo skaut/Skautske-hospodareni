@@ -149,7 +149,7 @@ class ExportServiceTest extends Unit
         $exportService->getEventReport($skautisEventId, $eventService);
     }
 
-    private function chitGenerator(int $id, string $amount, Category $category, Cashbook\PaymentMethod $paymentMethod)
+    private function chitGenerator(int $id, string $amount, Category $category, Cashbook\PaymentMethod $paymentMethod) : Chit
     {
         return new Chit(
             $id,

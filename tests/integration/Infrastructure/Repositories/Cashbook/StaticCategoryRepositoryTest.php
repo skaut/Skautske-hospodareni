@@ -25,6 +25,9 @@ class StaticCategoryRepositoryTest extends \IntegrationTest
         $this->repository = new StaticCategoryRepository($this->tester->grabService(EntityManager::class), new EventBus());
     }
 
+    /**
+     * @return string[]
+     */
     protected function getTestedEntites() : array
     {
         return [

@@ -9,7 +9,7 @@ use Nette\Mail\Message;
 
 class NullMailer implements IMailer
 {
-    function send(Message $mail) : void
+    public function send(Message $mail) : void
     {
     }
 }

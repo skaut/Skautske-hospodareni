@@ -56,6 +56,9 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
         $this->assertCount(2, $targetCashbook->getChits());
     }
 
+    /**
+     * @return string[]
+     */
     protected function getTestedEntites() : array
     {
         return [

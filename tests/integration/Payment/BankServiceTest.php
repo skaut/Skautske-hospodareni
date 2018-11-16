@@ -46,6 +46,9 @@ class BankServiceTest extends \IntegrationTest
         $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
     }
 
+    /**
+     * @return string[]
+     */
     protected function getTestedEntites() : array
     {
         return [

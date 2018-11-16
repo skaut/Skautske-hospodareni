@@ -23,6 +23,9 @@ final class RemoveGroupTest extends \IntegrationTest
     /** @var RemoveGroupHandler */
     private $handler;
 
+    /**
+     * @return string[]
+     */
     protected function getTestedEntites() : array
     {
         return [

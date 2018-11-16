@@ -163,7 +163,10 @@ class PaymentTest extends Unit
         $this->assertSame($new, $event->getVariableSymbol());
     }
 
-    public function getVariableSymbolUpdates()
+    /**
+     * @return mixed[]
+     */
+    public function getVariableSymbolUpdates() : array
     {
         return [
             [new VariableSymbol('123'), new VariableSymbol('456')],
@@ -229,6 +232,9 @@ class PaymentTest extends Unit
     {
     }
 
+    /**
+     * @return VariableSymbol[][]
+     */
     public function getVariableSymbolChanges() : array
     {
         return [

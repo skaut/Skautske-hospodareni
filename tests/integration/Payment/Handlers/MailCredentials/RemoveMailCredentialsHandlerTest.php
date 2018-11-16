@@ -15,6 +15,9 @@ class RemoveMailCredentialsHandlerTest extends \CommandHandlerTest
         parent::_before();
     }
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [

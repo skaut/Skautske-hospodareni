@@ -114,6 +114,9 @@ class CashbookTest extends Unit
         $this->assertSame($prefix, $cashbook->getChitNumberPrefix());
     }
 
+    /**
+     * @return mixed[]
+     */
     public function dataValidChitNumberPrefixes() : array
     {
         return [

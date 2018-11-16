@@ -36,7 +36,7 @@ final class FinalBalanceQueryHandlerTest extends Unit
         ]);
     }
 
-    private function mockChit(string $amount, string $operation)
+    private function mockChit(string $amount, string $operation) : Chit
     {
         $op = Operation::get($operation);
         return m::mock(Chit::class, [

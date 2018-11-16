@@ -17,6 +17,9 @@ class PaymentServiceTest extends \IntegrationTest
     /** @var IPaymentRepository */
     private $paymentRepository;
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [

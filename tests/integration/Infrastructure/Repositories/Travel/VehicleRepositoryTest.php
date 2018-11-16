@@ -17,6 +17,9 @@ class VehicleRepositoryTest extends \IntegrationTest
     /** @var VehicleRepository */
     private $repository;
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [
@@ -147,6 +150,9 @@ class VehicleRepositoryTest extends \IntegrationTest
         $this->tester->seeInDatabase(self::TABLE, ['id' => 1] + $row);
     }
 
+    /**
+     * @return mixed[]
+     */
     private function getVehicleRow() : array
     {
         return [

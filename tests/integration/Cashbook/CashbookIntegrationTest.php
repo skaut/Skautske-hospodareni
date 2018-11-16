@@ -24,6 +24,9 @@ use Model\Cashbook\Events\ChitWasUpdated;
  */
 class CashbookIntegrationTest extends \IntegrationTest
 {
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [
@@ -168,6 +171,9 @@ class CashbookIntegrationTest extends \IntegrationTest
         $this->assertSame([$originalCategoryId => 101.0], $originalCashbook->getCategoryTotals()); // other cashbook is not changed by this action
     }
 
+    /**
+     * @return string[][]
+     */
     public function getValidTransfers() : array
     {
         return [ // expense -> income
@@ -321,6 +327,9 @@ class CashbookIntegrationTest extends \IntegrationTest
         );
     }
 
+    /**
+     * @return string[][]
+     */
     public function getNonCampCashbookTypes() : array
     {
         return [
@@ -345,6 +354,9 @@ class CashbookIntegrationTest extends \IntegrationTest
         $this->assertSame([Category::UNDEFINED_INCOME_ID => $chitAmount], $targetCashbook->getCategoryTotals());
     }
 
+    /**
+     * @return string[][]
+     */
     public function getDifferentCashbookTypes() : array
     {
         return [
