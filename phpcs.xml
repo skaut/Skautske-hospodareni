@@ -11,6 +11,7 @@
 
     <file>app</file>
     <file>tests</file>
+    <file>migrations</file>
 
     <exclude-pattern>tests/_*</exclude-pattern>
 
