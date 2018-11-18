@@ -32,6 +32,9 @@ class CashbookRepositoryTest extends \IntegrationTest
         );
     }
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [

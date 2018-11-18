@@ -46,6 +46,9 @@ class MoneyFactoryTest extends Unit
         );
     }
 
+    /**
+     * @return mixed[]
+     */
     public function dataFloor() : array
     {
         return [

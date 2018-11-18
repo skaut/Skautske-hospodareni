@@ -15,6 +15,9 @@ class BankAccountRepositoryTest extends \IntegrationTest
     /** @var BankAccountRepository */
     private $repository;
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [
@@ -144,7 +147,7 @@ class BankAccountRepositoryTest extends \IntegrationTest
         $this->assertSame([], $accounts);
     }
 
-    private function createAccount($unitId = 1, ?\DateTimeImmutable $createdAt = null) : BankAccount
+    private function createAccount(int $unitId = 1, ?\DateTimeImmutable $createdAt = null) : BankAccount
     {
         return new BankAccount(
             1,
@@ -156,7 +159,10 @@ class BankAccountRepositoryTest extends \IntegrationTest
         );
     }
 
-    private function getRow(int $id, int $unitId, ?\DateTimeImmutable $createdAt = null)
+    /**
+     * @return mixed[]
+     */
+    private function getRow(int $id, int $unitId, ?\DateTimeImmutable $createdAt = null) : array
     {
         return [
             'id' => $id,

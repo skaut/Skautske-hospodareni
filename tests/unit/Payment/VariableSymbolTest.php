@@ -41,14 +41,17 @@ class VariableSymbolTest extends Unit
     /**
      * @dataProvider getNonNumericSymbol
      */
-    public function testVariableSymbolCantContainNonNumericSymbols($data) : void
+    public function testVariableSymbolCantContainNonNumericSymbols(string $data) : void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         new VariableSymbol('123' . $data[0]);
     }
 
-    public function getNonNumericSymbol()
+    /**
+     * @return string[][]
+     */
+    public function getNonNumericSymbol() : array
     {
         return [
             ['a'],
@@ -58,6 +61,9 @@ class VariableSymbolTest extends Unit
         ];
     }
 
+    /**
+     * @return string[][]
+     */
     public function getVariableSymbolsStartingWithZero() : array
     {
         return [
@@ -82,6 +88,9 @@ class VariableSymbolTest extends Unit
         $this->assertFalse(VariableSymbol::areEqual($first, $second));
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getNotEqualPairs() : array
     {
         return [

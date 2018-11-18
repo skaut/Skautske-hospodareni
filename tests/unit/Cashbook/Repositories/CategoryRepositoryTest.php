@@ -14,6 +14,7 @@ use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use Money\Money;
+use function array_merge;
 
 final class CategoryRepositoryTest extends Unit
 {
@@ -24,8 +25,8 @@ final class CategoryRepositoryTest extends Unit
     public function testResultsForCampContainBothStaticAndSkautisCategories() : void
     {
         $staticCategories = [
-            new Category(11, 'test1', 't', Operation::get(Operation::INCOME), [], 10),
-            new Category(50, 'test1', 't', Operation::get(Operation::EXPENSE), [], 10),
+            new Category(11, 'test1', 't', Operation::get(Operation::INCOME), [], false, 10),
+            new Category(50, 'test1', 't', Operation::get(Operation::EXPENSE), [], false, 10),
         ];
 
         $staticCategoryRepository = \Mockery::mock(IStaticCategoryRepository::class);
@@ -49,7 +50,7 @@ final class CategoryRepositoryTest extends Unit
         $queryBus = \Mockery::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->once()
-            ->withArgs(function (SkautisIdQuery $query): bool {
+            ->withArgs(function (SkautisIdQuery $query) : bool {
                 return $query->getCashbookId()->toString() === '123';
             })->andReturn(self::CAMP_ID);
 

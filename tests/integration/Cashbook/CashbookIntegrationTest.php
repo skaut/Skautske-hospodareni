@@ -24,6 +24,9 @@ use Model\Cashbook\Events\ChitWasUpdated;
  */
 class CashbookIntegrationTest extends \IntegrationTest
 {
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [
@@ -52,11 +55,11 @@ class CashbookIntegrationTest extends \IntegrationTest
 
     public function testUnlockedChitCanBeUpdated() : void
     {
-        $cashbook  = $this->createCashbookWithLockedChit();
-        $category  = $this->mockCategory(1);
-        $amount    = new Cashbook\Amount('100');
-        $date      = new Date('2017-11-17');
-        $recipient = new Recipient('František Maša');
+        $cashbook      = $this->createCashbookWithLockedChit();
+        $category      = $this->mockCategory(1);
+        $amount        = new Cashbook\Amount('100');
+        $date          = new Date('2017-11-17');
+        $recipient     = new Recipient('František Maša');
         $paymentMethod = PaymentMethod::BANK();
 
         $cashbook->unlockChit(1);
@@ -72,14 +75,14 @@ class CashbookIntegrationTest extends \IntegrationTest
 
     public function testUpdateOfLockedChitThrowsException() : void
     {
-        $cashbook = $this->createCashbookWithLockedChit();
-        $category = $this->mockCategory(666);
-        $date     = new Date('2017-11-17');
-        $amount   = new Cashbook\Amount('100');
+        $cashbook      = $this->createCashbookWithLockedChit();
+        $category      = $this->mockCategory(666);
+        $date          = new Date('2017-11-17');
+        $amount        = new Cashbook\Amount('100');
         $paymentMethod = PaymentMethod::CASH();
         $this->expectException(ChitLocked::class);
 
-        $cashbook->updateChit(1, new ChitBody(NULL, $date, NULL, $amount, 'new-purpose'), $category, $paymentMethod);
+        $cashbook->updateChit(1, new ChitBody(null, $date, null, $amount, 'new-purpose'), $category, $paymentMethod);
     }
 
     public function testUpdateOfNonExistentChitThrowsException() : void
@@ -147,9 +150,9 @@ class CashbookIntegrationTest extends \IntegrationTest
         int $originalCategoryId,
         int $newCategoryId
     ) : void {
-        $body = new ChitBody(new ChitNumber('123'), new Date(), new Recipient('Maša'), new Amount('101'), 'transfer');
+        $body             = new ChitBody(new ChitNumber('123'), new Date(), new Recipient('Maša'), new Amount('101'), 'transfer');
         $originalCashbook = new Cashbook(CashbookId::fromString('20'), CashbookType::get($originalCashbookType));
-        $category = $this->mockCategory($originalCategoryId, $originalOperation);
+        $category         = $this->mockCategory($originalCategoryId, $originalOperation);
 
         $originalCashbook->addChit($body, $category, PaymentMethod::CASH());
 
@@ -168,6 +171,9 @@ class CashbookIntegrationTest extends \IntegrationTest
         $this->assertSame([$originalCategoryId => 101.0], $originalCashbook->getCategoryTotals()); // other cashbook is not changed by this action
     }
 
+    /**
+     * @return string[][]
+     */
     public function getValidTransfers() : array
     {
         return [ // expense -> income
@@ -191,7 +197,7 @@ class CashbookIntegrationTest extends \IntegrationTest
     public function testAddInverseTransferRaisesEvent() : void
     {
         $originalCashbook = new Cashbook(CashbookId::fromString('20'), CashbookType::get(CashbookType::TROOP));
-        $recipient = new Recipient('František Maša');
+        $recipient        = new Recipient('František Maša');
 
         $chitBody = new ChitBody(new ChitNumber('123'), new Date(), $recipient, new Amount('100 + 1'), 'transfer');
         $category = $this->mockCategory(16, Operation::EXPENSE);
@@ -321,6 +327,9 @@ class CashbookIntegrationTest extends \IntegrationTest
         );
     }
 
+    /**
+     * @return string[][]
+     */
     public function getNonCampCashbookTypes() : array
     {
         return [
@@ -345,6 +354,9 @@ class CashbookIntegrationTest extends \IntegrationTest
         $this->assertSame([Category::UNDEFINED_INCOME_ID => $chitAmount], $targetCashbook->getCategoryTotals());
     }
 
+    /**
+     * @return string[][]
+     */
     public function getDifferentCashbookTypes() : array
     {
         return [

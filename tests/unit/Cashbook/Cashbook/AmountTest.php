@@ -32,7 +32,7 @@ class AmountTest extends Unit
     }
 
     /**
-     * @return array[]
+     * @return mixed[]
      */
     public function getSums() : array
     {
@@ -51,11 +51,11 @@ class AmountTest extends Unit
     public function testCalculateMultiplication(string $expression, float $expectedResult) : void
     {
         $amount = new Amount($expression);
-        $this->assertSame($expectedResult, $amount->getValue());
+        $this->assertSame($expectedResult, $amount->toFloat());
     }
 
     /**
-     * @return array[]
+     * @return mixed[]
      */
     public function getMultiplications() : array
     {
@@ -76,7 +76,7 @@ class AmountTest extends Unit
     }
 
     /**
-     * @return array[]
+     * @return mixed[]
      */
     public function getMultiplicationsWithSums() : array
     {

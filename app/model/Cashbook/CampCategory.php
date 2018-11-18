@@ -62,4 +62,9 @@ final class CampCategory implements ICategory
     {
         return $this->participantType;
     }
+
+    public function isVirtual() : bool
+    {
+        return false;
+    }
 }

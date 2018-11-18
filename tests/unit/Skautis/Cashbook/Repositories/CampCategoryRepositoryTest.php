@@ -94,7 +94,7 @@ final class CampCategoryRepositoryTest extends Unit
     }
 
     /**
-     * @param \stdClass|array $webserviceResult
+     * @param \stdClass|\stdClass[] $webserviceResult
      */
     private function prepareRepository($webserviceResult) : CampCategoryRepository
     {

@@ -16,6 +16,9 @@ final class OperationTest extends Unit
         $this->assertTrue(Operation::get($originalType)->getInverseOperation()->equalsValue($inverseType));
     }
 
+    /**
+     * @return string[][]
+     */
     public function getInverseTypes() : array
     {
         return [

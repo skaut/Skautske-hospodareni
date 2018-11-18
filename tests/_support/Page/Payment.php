@@ -62,7 +62,6 @@ class Payment
         $date = (new \DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
 
         $I->fillField('(//table//input)[6]', $date);
-
     }
 
     public function submitPayment() : void

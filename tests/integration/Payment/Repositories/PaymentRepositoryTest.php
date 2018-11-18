@@ -32,6 +32,9 @@ class PaymentRepositoryTest extends \IntegrationTest
     /** @var PaymentRepository */
     private $repository;
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [
@@ -213,6 +216,9 @@ class PaymentRepositoryTest extends \IntegrationTest
         ]);
     }
 
+    /**
+     * @param mixed[] $payments
+     */
     private function addPayments(array $payments) : void
     {
         foreach ($payments as $payment) {

@@ -50,6 +50,12 @@ class Category implements ICategory
     private $types;
 
     /**
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
+    private $virtual;
+
+    /**
      * @var int
      * @ORM\Column(type="integer", name="orderby")
      */
@@ -70,6 +76,7 @@ class Category implements ICategory
         string $shortcut,
         Operation $operationType,
         array $types,
+        bool $virtual,
         int $priority
     ) {
         $this->id            = $id;
@@ -77,6 +84,7 @@ class Category implements ICategory
         $this->shortcut      = $shortcut;
         $this->operationType = $operationType;
         $this->types         = new ArrayCollection($types);
+        $this->virtual       = $virtual;
         $this->priority      = $priority;
     }
 
@@ -112,6 +120,11 @@ class Category implements ICategory
                 return $categoryType->getType()->equals($type);
             }
         );
+    }
+
+    public function isVirtual() : bool
+    {
+        return $this->virtual;
     }
 
     public function isDeleted() : bool

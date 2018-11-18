@@ -6,7 +6,6 @@ namespace Model\Cashbook\Handlers\Unit;
 
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Commands\Unit\CreateCashbook;
 use Model\Cashbook\Commands\Unit\CreateUnit;
 use Model\Cashbook\Unit;
 use Model\Common\UnitId;

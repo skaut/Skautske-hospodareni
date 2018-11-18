@@ -25,6 +25,9 @@ class PaymentCompletedEmailTest extends \IntegrationTest
     /** @var UserRepositoryStub */
     private $users;
 
+    /**
+     * @return string[]
+     */
     protected function getTestedEntites() : array
     {
         return [
@@ -102,6 +105,9 @@ class PaymentCompletedEmailTest extends \IntegrationTest
         $this->tester->seeInLastEmailTo(self::EMAIL, $email->getBody());
     }
 
+    /**
+     * @param EmailTemplate[]|null $emails
+     */
     private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?int $credentialsId = 1) : void
     {
         $this->tester->resetEmails();

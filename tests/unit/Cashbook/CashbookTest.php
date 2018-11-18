@@ -12,8 +12,8 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitNumber;
-use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Events\ChitWasAdded;
 use function ksort;
 
@@ -56,7 +56,7 @@ class CashbookTest extends Unit
     {
         $cashbook = $this->createEventCashbook();
 
-        $addChit = function(int $categoryId, string $amount) use ($cashbook) {
+        $addChit = function (int $categoryId, string $amount) use ($cashbook) : void {
             $chitBody = new ChitBody(null, new Date(), null, new Amount($amount), '');
             $cashbook->addChit($chitBody, $this->mockCategory($categoryId), PaymentMethod::CASH());
         };
@@ -86,7 +86,7 @@ class CashbookTest extends Unit
         $cashbook = $this->createEventCashbook($cashbookId);
 
         $recipient = new Recipient('František Maša');
-        $chitBody = new ChitBody(new ChitNumber('123'), new Date(), $recipient, new Amount('100'), 'Nákup potravin');
+        $chitBody  = new ChitBody(new ChitNumber('123'), new Date(), $recipient, new Amount('100'), 'Nákup potravin');
 
         $cashbook->addChit($chitBody, $this->mockCategory(666), PaymentMethod::CASH());
 
@@ -114,6 +114,9 @@ class CashbookTest extends Unit
         $this->assertSame($prefix, $cashbook->getChitNumberPrefix());
     }
 
+    /**
+     * @return mixed[]
+     */
     public function dataValidChitNumberPrefixes() : array
     {
         return [

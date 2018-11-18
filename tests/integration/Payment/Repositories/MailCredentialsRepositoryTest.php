@@ -13,6 +13,9 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
     /** @var MailCredentialsRepository */
     private $repository;
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [

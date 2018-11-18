@@ -33,6 +33,9 @@ class LanguageTest extends Unit
         $this->assertSame(0, Language::compare($a, $a));
     }
 
+    /**
+     * @return string[][]
+     */
     public function getWithGreaterFirst() : array
     {
         return [
@@ -45,6 +48,9 @@ class LanguageTest extends Unit
         ];
     }
 
+    /**
+     * @return string[][]
+     */
     public function getWithLowerFirst() : array
     {
         return array_map('array_reverse', $this->getWithGreaterFirst());

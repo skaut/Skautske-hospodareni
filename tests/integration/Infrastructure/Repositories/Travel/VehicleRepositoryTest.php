@@ -9,7 +9,6 @@ use Mockery as m;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
 use Model\Unit\Unit;
-use function var_dump;
 
 class VehicleRepositoryTest extends \IntegrationTest
 {
@@ -18,6 +17,9 @@ class VehicleRepositoryTest extends \IntegrationTest
     /** @var VehicleRepository */
     private $repository;
 
+    /**
+     * @return string[]
+     */
     public function getTestedEntites() : array
     {
         return [
@@ -148,6 +150,9 @@ class VehicleRepositoryTest extends \IntegrationTest
         $this->tester->seeInDatabase(self::TABLE, ['id' => 1] + $row);
     }
 
+    /**
+     * @return mixed[]
+     */
     private function getVehicleRow() : array
     {
         return [

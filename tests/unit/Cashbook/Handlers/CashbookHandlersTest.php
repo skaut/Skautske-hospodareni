@@ -20,6 +20,8 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 final class CashbookHandlersTest extends Unit
 {
     /**
+     * @param mixed   $commandInstance
+     * @param mixed[] $expectedMethodArguments
      * @dataProvider dataHandlers
      */
     public function test(
@@ -50,6 +52,9 @@ final class CashbookHandlersTest extends Unit
         $handler->handle($commandInstance);
     }
 
+    /**
+     * @return mixed[]
+     */
     public function dataHandlers() : array
     {
         return [

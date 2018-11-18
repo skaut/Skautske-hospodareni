@@ -18,7 +18,7 @@ class ChitNumberTest extends Unit
 
         new ChitNumber($value);
 
-        $this->fail("Exception for '$reason' not thrown'");
+        $this->fail('Exception for \'' . $reason . '\' not thrown');
     }
 
     /**
@@ -45,6 +45,9 @@ class ChitNumberTest extends Unit
         $this->assertSame(strtoupper($value), (string) new ChitNumber($value));
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getInvalidNumbers() : array
     {
         return [
@@ -60,6 +63,9 @@ class ChitNumberTest extends Unit
         ];
     }
 
+    /**
+     * @return string[][]
+     */
     public function getValidNumbers() : array
     {
         return [

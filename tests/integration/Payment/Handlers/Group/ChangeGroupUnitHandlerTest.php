@@ -31,6 +31,9 @@ class ChangeGroupUnitHandlerTest extends \CommandHandlerTest
         $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
     }
 
+    /**
+     * @return string[]
+     */
     protected function getTestedEntites() : array
     {
         return [

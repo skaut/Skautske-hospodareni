@@ -36,12 +36,12 @@ final class FinalBalanceQueryHandlerTest extends Unit
         ]);
     }
 
-    private function mockChit(string $amount, string $operation)
+    private function mockChit(string $amount, string $operation) : Chit
     {
-        $op = Operation::get ($operation);
+        $op = Operation::get($operation);
         return m::mock(Chit::class, [
-            'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null, new Cashbook\Amount($amount), "pro test"),
-            'getCategory'   => new Category(1, "catName", new Money($amount, new Currency('CZK')), "a", $op, $op->equalsValue(Operation::INCOME)),
+            'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null, new Cashbook\Amount($amount), 'pro test'),
+            'getCategory'   => new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $op->equalsValue(Operation::INCOME), false),
         ]);
     }
 
@@ -55,7 +55,7 @@ final class FinalBalanceQueryHandlerTest extends Unit
         $queryBus = m::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->withArgs(function (ChitListQuery $query) {
-                return $query->getCashbookId ()->toString () === self::CASHBOOK_ID && $query->getPaymentMethod () === Cashbook\PaymentMethod::CASH ();
+                return $query->getCashbookId()->toString() === self::CASHBOOK_ID && $query->getPaymentMethod() === Cashbook\PaymentMethod::CASH();
             })
             ->andReturn($chits);
 

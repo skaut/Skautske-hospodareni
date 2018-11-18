@@ -46,6 +46,9 @@ class BankServiceTest extends \IntegrationTest
         $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
     }
 
+    /**
+     * @return string[]
+     */
     protected function getTestedEntites() : array
     {
         return [
@@ -126,7 +129,7 @@ class BankServiceTest extends \IntegrationTest
     private function createTransaction(float $amount, ?string $variableSymbol) : Transaction
     {
         return new Transaction(
-            (string)mt_rand(1, 1000),
+            (string) mt_rand(1, 1000),
             new \DateTimeImmutable(),
             $amount,
             '',
