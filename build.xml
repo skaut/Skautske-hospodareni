@@ -108,7 +108,7 @@
 
         <!-- Prepare variables -->
         <property environment="env"/>
-        <property name="deploy.releasesDir" value="~/releases"/>
+        <property name="deploy.releasesDir" refid="env.RELEASES_DIR"/>
         <exec command="git rev-parse --short HEAD" outputProperty="build.hash"/>
         <property name="deploy.ssh.host" refid="env.DEPLOY_SSH_HOST"/>
         <property name="deploy.ssh.username" refid="env.DEPLOY_SSH_USERNAME"/>
