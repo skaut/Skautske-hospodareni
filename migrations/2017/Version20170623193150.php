@@ -56,7 +56,7 @@ class Version20170623193150 extends AbstractMigration
                 ]);
 
                 $bankAccountId = $this->connection->lastInsertId();
-                $this->connection->exec("UPDATE pa_group SET bank_account_id = $bankAccountId WHERE unitId = $unitId");
+                $this->connection->exec('UPDATE pa_group SET bank_account_id = ' . $bankAccountId . ' WHERE unitId = ' . $unitId);
             }
         }
 
