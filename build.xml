@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="Skautske hospodareni" basedir="." default="main">
-    <property name="tempDir" value="nette-temp"/>
+    <property name="tempDir" value="temp"/>
     <target name="main" description="Runs tests and prepares deployable tarball">
         <exec command="composer install" passthru="true"/>
         <phingcall target="static-analysis"/>
@@ -19,7 +19,7 @@
             <fileset dir=".">
                 <include name="app/**"/>
                 <include name="migrations/**"/>
-                <include name="nette-temp/**"/>
+                <include name="temp/**"/>
                 <include name="vendor/**"/>
                 <include name="www/**"/>
                 <include name="composer.*"/>
@@ -52,7 +52,7 @@
         <delete>
             <fileset dir="${build.dir}">
                 <!-- Temp files -->
-                <include name="nette-temp/**"/>
+                <include name="temp/**"/>
 
                 <!-- Webloader -->
                 <include name="www/webtemp/**"/>
@@ -142,7 +142,7 @@
 
         <phingcall target="deploy:ssh">
             <property name="comment" value="Symlink logs"/>
-            <property name="command" value="ln -s ${deploy.rootDir}/nette-log ${deploy.release}/nette-log"/>
+            <property name="command" value="ln -s ${deploy.rootDir}/log ${deploy.release}/log"/>
         </phingcall>
 
         <phingcall target="deploy:app-command">
