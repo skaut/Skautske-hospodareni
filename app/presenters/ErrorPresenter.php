@@ -46,6 +46,7 @@ class ErrorPresenter extends Presenter
             $this->setView(in_array($code, [403, 404, 405, 410, 500]) ? $code : '4xx');
         } elseif ($exception instanceof PermissionException) {
             $this->flashMessage($exception->getMessage(), 'danger');
+            $this->logger->log($exception, ILogger::EXCEPTION);
             $this->redirect(':Default:');
         } elseif ($exception instanceof AuthenticationException) {//vypršelo přihlášení do SkautISu
             $this->user->logout(true);

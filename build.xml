@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="Skautske hospodareni" basedir="." default="main">
-    <property name="tempDir" value="nette-temp"/>
+    <property name="tempDir" value="temp"/>
     <target name="main" description="Runs tests and prepares deployable tarball">
         <exec command="composer install" passthru="true"/>
         <phingcall target="static-analysis"/>
@@ -19,8 +19,7 @@
             <fileset dir=".">
                 <include name="app/**"/>
                 <include name="migrations/**"/>
-                <include name="nette-log/**"/>
-                <include name="nette-temp/**"/>
+                <include name="temp/**"/>
                 <include name="vendor/**"/>
                 <include name="www/**"/>
                 <include name="composer.*"/>
@@ -53,10 +52,7 @@
         <delete>
             <fileset dir="${build.dir}">
                 <!-- Temp files -->
-                <include name="nette-temp/**"/>
-
-                <!-- Logs -->
-                <include name="nette-log/**"/>
+                <include name="temp/**"/>
 
                 <!-- Webloader -->
                 <include name="www/webtemp/**"/>
@@ -108,7 +104,8 @@
 
         <!-- Prepare variables -->
         <property environment="env"/>
-        <property name="deploy.releasesDir" refid="env.RELEASES_DIR"/>
+        <property name="deploy.rootDir" refid="env.ROOT_DIR"/>
+        <property name="deploy.releasesDir" value="${deploy.rootDir}/releases"/>
         <exec command="git rev-parse --short HEAD" outputProperty="build.hash"/>
         <property name="deploy.ssh.host" refid="env.DEPLOY_SSH_HOST"/>
         <property name="deploy.ssh.username" refid="env.DEPLOY_SSH_USERNAME"/>
@@ -141,6 +138,11 @@
         <phingcall target="deploy:ssh">
             <property name="comment" value="Removing tarball"/>
             <property name="command" value="rm ${tarball}"/>
+        </phingcall>
+
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Symlink logs"/>
+            <property name="command" value="ln -s ${deploy.rootDir}/log ${deploy.release}/log"/>
         </phingcall>
 
         <phingcall target="deploy:app-command">

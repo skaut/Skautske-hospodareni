@@ -5,7 +5,7 @@ services:
         ports:
             - 80:80
         volumes:
-            - /var/www/html/nette-temp
+            - /var/www/html/temp
     mysql:
         ports:
             - 3306:3306
