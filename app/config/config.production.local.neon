@@ -3,10 +3,6 @@ skautis:
      testMode: ${config.skautis.testMode}
 
 parameters:
-
-    slack:
-        url: "https://hooks.slack.com/services/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"
-
     database:
         host: '${config.database.host}'
         user: '${config.database.user}'
@@ -19,8 +15,6 @@ parameters:
 
 monolog:
     handlers:
-        slackWebhook:
-            class: Monolog\Handler\SlackWebhookHandler(%slack.url%)
         - Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272, 8, Monolog\Logger::ERROR)
         - Monolog\Handler\RavenHandler(level: Monolog\Logger::ERROR)
         - Raven_Breadcrumbs_MonologHandler
