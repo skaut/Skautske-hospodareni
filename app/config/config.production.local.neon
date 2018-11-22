@@ -14,9 +14,17 @@ parameters:
         name: '${config.database.name}'
 
     sendEmail: true
+    sentry:
+        url: "https://4c569d4cbda54f908d83d4b4a1959826@sentry.io/1328535"
 
 monolog:
     handlers:
         slackWebhook:
             class: Monolog\Handler\SlackWebhookHandler(%slack.url%)
         - Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272)
+        - Monolog\Handler\RavenHandler
+    processors:
+        - App\UserContextProcessor
+
+services:
+    - Raven_Client(%sentry.url%)
