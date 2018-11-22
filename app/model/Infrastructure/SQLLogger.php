@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure;
 
-use Doctrine\DBAL\Logging\SQLLogger;
 use Psr\Log\LoggerInterface;
 use function preg_match;
 
 // phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-final class MutatingSQLLogger implements SQLLogger
+final class SQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
 {
     /** @var LoggerInterface */
     private $logger;
@@ -26,15 +25,17 @@ final class MutatingSQLLogger implements SQLLogger
      */
     public function startQuery($sql, ?array $params = null, ?array $types = null) : void
     {
-        if (preg_match('~^(INSERT|UPDATE|DELETE)~', $sql) !== 1) {
-            return;
-        }
-
-        $this->logger->debug('SQL query performed', [
+        $context = [
             'sql' => $sql,
             'params' => $params,
             'types' => $types,
-        ]);
+        ];
+
+        if (preg_match('~^(INSERT|UPDATE|DELETE|START|BEGIN|COMMIT|ROLLBACK)~', $sql) === 1) {
+            $this->logger->info('Mutating SQL query performed', $context);
+        } else {
+            $this->logger->debug('SQL query performed', $context);
+        }
     }
 
     public function stopQuery() : void

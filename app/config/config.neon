@@ -179,7 +179,7 @@ services:
 
     - class: Doctrine\DBAL\Logging\LoggerChain
       setup:
-      	  - addLogger(Model\Infrastructure\MutatingSQLLogger())
+      	  - addLogger(Model\Infrastructure\SQLLogger())
 
 decorator:
 	Doctrine\DBAL\Configuration:
