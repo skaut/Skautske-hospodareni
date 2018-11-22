@@ -21,7 +21,7 @@ monolog:
     handlers:
         slackWebhook:
             class: Monolog\Handler\SlackWebhookHandler(%slack.url%)
-        - Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272)
+        - Monolog\Handler\FilterHandler(Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272), 'INFO')
         - Monolog\Handler\FilterHandler(Monolog\Handler\RavenHandler(), 'ERROR')
         - Raven_Breadcrumbs_MonologHandler
     processors:
