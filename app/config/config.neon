@@ -36,6 +36,9 @@ dibi:
 
 messageBus:
     commandBus:
+    	middlewares:
+    		before:
+    			- @loggingMiddleware
     eventBus:
     queryBus:
 
@@ -105,6 +108,8 @@ autoDI:
         - class: Model\Infrastructure\Services\**
 
 services:
+    loggingMiddleware: SimpleBus\Message\Logging\LoggingMiddleware(level: 'debug')
+
     skautisCache:
         factory: Nette\Caching\Cache(namespace: 'skautis')
         autowired: false
@@ -171,6 +176,15 @@ services:
     nette.mailer: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
 
     - Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
+
+    - class: Doctrine\DBAL\Logging\LoggerChain
+      setup:
+      	  - addLogger(Model\Infrastructure\SQLLogger())
+
+decorator:
+	Doctrine\DBAL\Configuration:
+		setup:
+			- setSQLLogger()
 
 includes:
     - model/doctrine.neon
