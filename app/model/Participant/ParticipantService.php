@@ -260,19 +260,6 @@ class ParticipantService extends MutableBaseService
     }
 
     /**
-     * @return mixed[]
-     */
-    public function getPotencialCampParticipants(int $eventId) : array
-    {
-        $res = [];
-        foreach ($this->skautis->org->{'PersonAllEventCampMulti'}(['ID_EventCamp' => $eventId]) as $p) {
-            $res[$p->ID] = $p->DisplayName;
-        }
-        natcasesort($res);
-        return $res;
-    }
-
-    /**
      * @param \stdClass|ArrayHash $person
      */
     protected function setPersonName(&$person) : void
