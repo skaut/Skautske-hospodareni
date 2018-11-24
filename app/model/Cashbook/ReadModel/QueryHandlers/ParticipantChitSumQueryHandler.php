@@ -8,6 +8,8 @@ use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\ReadModel\Queries\ParticipantChitSumQuery;
+use Model\Utils\MoneyFactory;
+use Money\Money;
 use function array_map;
 use function array_sum;
 
@@ -26,7 +28,7 @@ class ParticipantChitSumQueryHandler
         $this->queryBus      = $queryBus;
     }
 
-    public function handle(ParticipantChitSumQuery $query) : float
+    public function handle(ParticipantChitSumQuery $query) : Money
     {
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')
@@ -41,6 +43,6 @@ class ParticipantChitSumQueryHandler
             return $c->getBody()->getAmount()->toFloat();
         }, $chits));
 
-        return $sum;
+        return MoneyFactory::fromFloat($sum);
     }
 }

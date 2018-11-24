@@ -9,6 +9,7 @@ use Model\Participant\EventType;
 use Model\Participant\Participant;
 use Model\Participant\Repositories\IParticipantRepository;
 use Model\Utils\MoneyFactory;
+use Money\Money;
 
 class EventParticipantIncomeQueryHandler
 {
@@ -20,17 +21,18 @@ class EventParticipantIncomeQueryHandler
         $this->participants = $participants;
     }
 
-    public function handle(EventParticipantIncomeQuery $query) : float
+    public function handle(EventParticipantIncomeQuery $query) : Money
     {
         $participants = $this->participants->findByEvent(
             EventType::GENERAL(),
             $query->getEventId()->toInt()
         );
 
-        $participantIncome = 0.0;
+        $participantIncome = MoneyFactory::zero();
+
         /** @var Participant $p */
         foreach ($participants as $p) {
-            $participantIncome += MoneyFactory::toFloat($p->getPayment());
+            $participantIncome = $participantIncome->add($p->getPayment());
         }
 
         return $participantIncome;
