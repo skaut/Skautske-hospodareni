@@ -6,8 +6,7 @@ namespace Model\Skautis\Factory;
 
 use Cake\Chronos\Date;
 use Model\Participant\Participant;
-use Money\Currency;
-use Money\Money;
+use Model\Utils\MoneyFactory;
 use function preg_match;
 
 final class ParticipantFactory
@@ -30,7 +29,7 @@ final class ParticipantFactory
             $skautisParticipant->Unit ?? '',
             $skautisParticipant->UnitRegistrationNumber ?? '',
             (int) $skautisParticipant->Days,
-            new Money($skautisParticipant->Note ?? 0, new Currency('CZK'))
+            MoneyFactory::fromFloat((float) ($skautisParticipant->Note ?? 0))
         );
     }
 }

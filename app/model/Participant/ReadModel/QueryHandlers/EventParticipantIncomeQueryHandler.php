@@ -8,6 +8,7 @@ use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
 use Model\Participant\EventType;
 use Model\Participant\Participant;
 use Model\Participant\Repositories\IParticipantRepository;
+use Model\Utils\MoneyFactory;
 
 class EventParticipantIncomeQueryHandler
 {
@@ -29,7 +30,7 @@ class EventParticipantIncomeQueryHandler
         $participantIncome = 0.0;
         /** @var Participant $p */
         foreach ($participants as $p) {
-            $participantIncome += $p->getPayment() !== null ? (float) $p->getPayment()->getAmount() : 0;
+            $participantIncome += MoneyFactory::toFloat($p->getPayment());
         }
 
         return $participantIncome;

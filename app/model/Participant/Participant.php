@@ -48,7 +48,7 @@ class Participant
     /** @var int */
     private $days;
 
-    /** @var Money|null */
+    /** @var Money */
     private $payment;
 
     public function __construct(
@@ -65,7 +65,7 @@ class Participant
         string $unit,
         string $unitRegistrationNumber,
         int $days,
-        ?Money $payment
+        Money $payment
     ) {
         $this->firstName              = $firstName;
         $this->lastName               = $lastName;
@@ -148,7 +148,7 @@ class Participant
         return $this->days;
     }
 
-    public function getPayment() : ?Money
+    public function getPayment() : Money
     {
         return $this->payment;
     }
