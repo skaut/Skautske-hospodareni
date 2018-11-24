@@ -13,6 +13,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\ParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\PersonDaysQuery;
 use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
 use Model\DTO\Cashbook\Cashbook;
@@ -114,7 +115,7 @@ class ExcelService
             $eventId = new SkautisEventId($aid);
             /** @var CashbookId $cashbookId */
             $cashbookId   = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
-            $participants = $service->getParticipants()->getAll($aid);
+            $participants = $this->queryBus->handle(new ParticipantListQuery(EventType::GENERAL(), $aid));
 
             $data[$aid]                    = $service->getEvent()->get($aid);
             $data[$aid]['cashbookId']      = $cashbookId;
@@ -158,7 +159,7 @@ class ExcelService
             /** @var CashbookId $cashbookId */
             $cashbookId   = $this->queryBus->handle(new CampCashbookIdQuery($campId));
             $camp         = $service->event->get($aid);
-            $participants = $service->participants->getAll($aid);
+            $participants = $this->queryBus->handle(new ParticipantListQuery(EventType::CAMP(), $aid));
 
             $data[$aid]                    = $camp;
             $data[$aid]['cashbookId']      = $cashbookId;
