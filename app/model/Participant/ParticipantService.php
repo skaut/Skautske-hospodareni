@@ -229,24 +229,6 @@ class ParticipantService extends MutableBaseService
     }
 
     /**
-     * vrací počet osobodní na dané akci
-     *
-     * @param int|int[] $eventIdOrParticipants
-     */
-    public function getPersonsDays($eventIdOrParticipants) : int
-    {
-        if (is_array($eventIdOrParticipants)) {
-            $participants = $eventIdOrParticipants;
-        } else {
-            $participants = $this->getAll($eventIdOrParticipants);
-        }
-
-        return array_sum(
-            array_column($participants, 'Days')
-        );
-    }
-
-    /**
      * @return mixed[]
      */
     public function getEventStatistic(int $eventId) : array

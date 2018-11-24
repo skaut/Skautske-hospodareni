@@ -13,6 +13,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\PersonDaysQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
@@ -21,6 +22,7 @@ use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
+use Model\Participant\EventType;
 use Model\Participant\PragueParticipants;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -110,16 +112,16 @@ class ExcelService
         foreach ($eventIds as $aid) {
             $eventId = new SkautisEventId($aid);
             /** @var CashbookId $cashbookId */
-            $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
+            $cashbookId   = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
+            $participants = $service->getParticipants()->getAll($aid);
 
             $data[$aid]                    = $service->getEvent()->get($aid);
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['parStatistic']    = $service->getParticipants()->getEventStatistic($aid);
             $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new EventFunctions($eventId));
-            $participants                  = $service->getParticipants()->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
-            $data[$aid]['personDays']      = $service->getParticipants()->getPersonsDays($participants);
+            $data[$aid]['personDays']      = $this->getPersonDays(EventType::GENERAL(), $aid);
             $pp                            = $service->getParticipants()->countPragueParticipants($data[$aid]);
             if ($pp === null) {
                 continue;
@@ -146,21 +148,23 @@ class ExcelService
         $objPHPExcel = $this->getNewFile();
 
         $data = [];
+
         foreach ($campsIds as $aid) {
             $campId = new SkautisCampId($aid);
             /** @var CashbookId $cashbookId */
-            $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($campId));
+            $cashbookId   = $this->queryBus->handle(new CampCashbookIdQuery($campId));
+            $camp         = $service->event->get($aid);
+            $participants = $service->participants->getAll($aid);
 
-            $camp                          = $service->event->get($aid);
             $data[$aid]                    = $camp;
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['troops']          = implode(', ', $unitService->getCampTroopNames($camp));
             $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
-            $participants                  = $service->participants->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
-            $data[$aid]['personDays']      = $service->participants->getPersonsDays($participants);
+            $data[$aid]['personDays']      = $this->getPersonDays(EventType::CAMP(), $aid);
         }
+
         $sheetCamps = $objPHPExcel->setActiveSheetIndex(0);
         $this->setSheetCamps($sheetCamps, $data);
         $objPHPExcel->createSheet(1);
@@ -601,5 +605,10 @@ class ExcelService
         $objWriter->setPreCalculateFormulas(true);
         $objWriter->save('php://output');
         //exit;
+    }
+
+    private function getPersonDays(EventType $eventType, int $eventId) : int
+    {
+        return $this->queryBus->handle(new PersonDaysQuery($eventType, $eventId));
     }
 }

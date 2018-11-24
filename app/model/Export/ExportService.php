@@ -17,6 +17,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\PersonDaysQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
@@ -27,6 +28,7 @@ use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
+use Model\Participant\EventType;
 use Model\Services\TemplateFactory;
 use Model\Utils\MoneyFactory;
 use function array_column;
@@ -176,7 +178,7 @@ class ExportService
 
         return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
             'participantsCnt' => count($participants),
-            'personsDays' => $eventService->getParticipants()->getPersonsDays($participants),
+            'personsDays' => $this->getPersonDays(EventType::GENERAL(), $skautisEventId),
             'event' => $this->events->find(new SkautisEventId($skautisEventId)),
             'chits' => $sums,
             'functions' => $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId))),
@@ -282,7 +284,7 @@ class ExportService
 
         return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
             'participantsCnt' => count($participants),
-            'personsDays' => $campService->getParticipants()->getPersonsDays($participants),
+            'personsDays' => $this->getPersonDays(EventType::CAMP(), $skautisCampId),
             'a' => $campService->getEvent()->get($skautisCampId),
             'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
             'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
@@ -295,5 +297,10 @@ class ExportService
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
             'areTotalsConsistentWithSkautis' => $areTotalsConsistentWithSkautis,
         ]);
+    }
+
+    private function getPersonDays(EventType $eventType, int $eventId) : int
+    {
+        return $this->queryBus->handle(new PersonDaysQuery($eventType, $eventId));
     }
 }

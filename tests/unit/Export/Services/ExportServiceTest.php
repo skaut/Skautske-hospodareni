@@ -14,10 +14,12 @@ use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\PersonDaysQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Event;
 use Model\Event\Functions;
+use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\Repositories\IEventRepository;
 use Model\EventEntity;
 use Model\ExportService;
@@ -28,10 +30,11 @@ use Model\Utils\MoneyFactory;
 
 class ExportServiceTest extends Unit
 {
+    private const EVENT_ID = 42;
+
     public function testGetEventReport() : void
     {
-        $skautisEventId  = 42;
-        $unitService     = $service = m::mock(UnitService::class);
+        $unitService     = m::mock(UnitService::class);
         $categories      = m::mock(IStaticCategoryRepository::class);
         $templateFactory = m::mock(TemplateFactory::class);
         $events          = m::mock(IEventRepository::class);
@@ -61,8 +64,8 @@ class ExportServiceTest extends Unit
 
         // handle EventCashbookIdQuery
         $queryBus->expects('handle')
-            ->withArgs(function (EventCashbookIdQuery $q) use ($skautisEventId) : bool {
-                return $q->getEventId()->toInt() === $skautisEventId;
+            ->withArgs(function (EventCashbookIdQuery $q) : bool {
+                return $q->getEventId()->toInt() === self::EVENT_ID;
             })->andReturn(CashbookId::fromString('11bf5b37-e0b8-42e0-8dcf-dc8c4aefc000'));
 
         // handle ChitListQuery
@@ -80,13 +83,20 @@ class ExportServiceTest extends Unit
         ]);
 
         // handle EventFunctions
-        $queryBus->expects('handle')->andReturn(m::mock(Functions::class));
+        $queryBus->expects('handle')->withArgs(function ($message) : bool {
+            return $message instanceof EventFunctions;
+        })->andReturn(m::mock(Functions::class));
+
+        $queryBus->expects('handle')
+            ->withArgs(function (PersonDaysQuery $message) : bool {
+                return $message->getEvent()->getId() === self::EVENT_ID
+                    && $message->getEvent()->getType() === $message->getEvent()::GENERAL;
+            })->andReturn(0);
 
         $exportService      = new ExportService($unitService, $categories, $templateFactory, $events, $queryBus);
         $eventService       = m::mock(EventEntity::class);
         $participantService = m::mock(ParticipantService::class);
         $participantService->expects('getAll')->andReturn([]);
-        $participantService->expects('getPersonsDays')->andReturn(0);
 
         $templateFactory->expects('create')->withArgs(function (string $templatePath, array $parameters) : bool {
             if ($parameters['participantsCnt'] !== 0) {
@@ -146,7 +156,7 @@ class ExportServiceTest extends Unit
         });
 
         $eventService->shouldReceive('getParticipants')->andReturn($participantService);
-        $exportService->getEventReport($skautisEventId, $eventService);
+        $exportService->getEventReport(self::EVENT_ID, $eventService);
     }
 
     private function chitGenerator(int $id, string $amount, Category $category, Cashbook\PaymentMethod $paymentMethod) : Chit
