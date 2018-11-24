@@ -21,7 +21,7 @@ final class ParticipantFactory
             $matches['last'],
             $matches['nick'] ?? null,
             $skautisParticipant->Age,
-            new Date($skautisParticipant->Birthday),
+            $skautisParticipant->Birthday !== null ? new Date($skautisParticipant->Birthday) : null,
             $skautisParticipant->Street,
             $skautisParticipant->City,
             (int) $skautisParticipant->Postcode,

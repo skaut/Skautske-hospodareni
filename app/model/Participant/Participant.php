@@ -21,7 +21,7 @@ class Participant
     /** @var int|null */
     private $age;
 
-    /** @var Date */
+    /** @var Date|null */
     private $birthday;
 
     /** @var string */
@@ -56,7 +56,7 @@ class Participant
         string $lastName,
         ?string $nickname,
         ?int $age,
-        Date $birthday,
+        ?Date $birthday,
         string $street,
         string $city,
         int $postcode,
@@ -103,7 +103,7 @@ class Participant
         return $this->age;
     }
 
-    public function getBirthday() : Date
+    public function getBirthday() : ?Date
     {
         return $this->birthday;
     }
