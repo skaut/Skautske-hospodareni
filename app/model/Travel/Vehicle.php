@@ -20,6 +20,7 @@ use Nette\SmartObject;
  * @property-read float         $consumption
  * @property-read string        $note
  * @property-read bool          $archived
+ * @property-read string        $label
  * @property-read Metadata      $metadata
  */
 class Vehicle
