@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Participant\Repositories;
 
-use Model\Participant\EventType;
+use Model\Participant\Event;
 use Model\Participant\Participant;
 
 interface IParticipantRepository
@@ -12,5 +12,5 @@ interface IParticipantRepository
     /**
      * @return Participant[]
      */
-    public function findByEvent(EventType $type, int $eventId) : array;
+    public function findByEvent(Event $event) : array;
 }

@@ -7,7 +7,7 @@ namespace App\AccountancyModule\PaymentModule;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\Cashbook\ReadModel\Queries\ParticipantListQuery;
-use Model\Participant\EventType;
+use Model\Participant\Event;
 use Model\Participant\Participant;
 use Model\PaymentService;
 use Model\Utils\MoneyFactory;
@@ -62,7 +62,7 @@ class CampPresenter extends BasePresenter
         }
 
         /** @var Participant[] $participants */
-        $participants = $this->queryBus->handle(new ParticipantListQuery(EventType::CAMP(), $campId));
+        $participants = $this->queryBus->handle(new ParticipantListQuery(new Event(Event::CAMP, $campId)));
 
         $form = $this['massAddForm'];
         /** @var MassAddForm $form */

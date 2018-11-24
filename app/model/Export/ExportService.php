@@ -28,7 +28,7 @@ use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
-use Model\Participant\EventType;
+use Model\Participant\Event;
 use Model\Services\TemplateFactory;
 use Model\Utils\MoneyFactory;
 use function array_column;
@@ -178,7 +178,7 @@ class ExportService
 
         return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
             'participantsCnt' => count($participants),
-            'personsDays' => $this->getPersonDays(EventType::GENERAL(), $skautisEventId),
+            'personsDays' => $this->getPersonDays(new Event(Event::GENERAL, $skautisEventId)),
             'event' => $this->events->find(new SkautisEventId($skautisEventId)),
             'chits' => $sums,
             'functions' => $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId))),
@@ -284,7 +284,7 @@ class ExportService
 
         return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
             'participantsCnt' => count($participants),
-            'personsDays' => $this->getPersonDays(EventType::CAMP(), $skautisCampId),
+            'personsDays' => $this->getPersonDays(new Event(Event::CAMP, $skautisCampId)),
             'a' => $campService->getEvent()->get($skautisCampId),
             'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
             'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
@@ -299,8 +299,8 @@ class ExportService
         ]);
     }
 
-    private function getPersonDays(EventType $eventType, int $eventId) : int
+    private function getPersonDays(Event $event) : int
     {
-        return $this->queryBus->handle(new PersonDaysQuery($eventType, $eventId));
+        return $this->queryBus->handle(new PersonDaysQuery($event));
     }
 }

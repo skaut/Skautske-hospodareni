@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
-use Model\Participant\EventType;
+use Model\Participant\Event;
 use Model\Participant\Participant;
 use Model\Participant\Repositories\IParticipantRepository;
 use Model\Utils\MoneyFactory;
@@ -23,10 +23,7 @@ class EventParticipantIncomeQueryHandler
 
     public function handle(EventParticipantIncomeQuery $query) : Money
     {
-        $participants = $this->participants->findByEvent(
-            EventType::GENERAL(),
-            $query->getEventId()->toInt()
-        );
+        $participants = $this->participants->findByEvent(new Event(Event::GENERAL, $query->getEventId()->toInt()));
 
         $participantIncome = MoneyFactory::zero();
 

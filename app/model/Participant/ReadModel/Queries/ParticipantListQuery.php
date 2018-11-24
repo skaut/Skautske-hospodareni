@@ -4,32 +4,23 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\Queries;
 
-use Model\Participant\EventType;
+use Model\Participant\Event;
 
 /**
  * @see ParticipantListQueryHandler
  */
 final class ParticipantListQuery
 {
-    /** @var EventType */
-    private $eventType;
+    /** @var Event */
+    private $event;
 
-    /** @var int */
-    private $eventId;
-
-    public function __construct(EventType $eventType, int $eventId)
+    public function __construct(Event $event)
     {
-        $this->eventType = $eventType;
-        $this->eventId   = $eventId;
+        $this->event = $event;
     }
 
-    public function getEventType() : EventType
+    public function getEvent() : Event
     {
-        return $this->eventType;
-    }
-
-    public function getEventId() : int
-    {
-        return $this->eventId;
+        return $this->event;
     }
 }

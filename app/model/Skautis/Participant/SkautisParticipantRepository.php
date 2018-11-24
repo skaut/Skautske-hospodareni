@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Participant;
 
-use Model\Participant\EventType;
+use Model\Participant\Event;
 use Model\Participant\Participant;
 use Model\Participant\Repositories\IParticipantRepository;
 use Model\Skautis\Factory\ParticipantFactory;
 use Skautis\Wsdl\WebServiceInterface;
 use function array_map;
-use function ucfirst;
 
 final class SkautisParticipantRepository implements IParticipantRepository
 {
@@ -25,11 +24,11 @@ final class SkautisParticipantRepository implements IParticipantRepository
     /**
      * @return Participant[]
      */
-    public function findByEvent(EventType $type, int $eventId) : array
+    public function findByEvent(Event $event) : array
     {
         $participants = $this->eventWebservice->call(
-            'Participant' . ucfirst($type->toString()) . 'All',
-            [['ID_Event' . ucfirst($type->toString()) => $eventId]]
+            'Participant' . $event->getType() . 'All',
+            [['ID_Event' . $event->getType() => $event->getId()]]
         );
 
         return array_map([ParticipantFactory::class, 'create'], $participants);

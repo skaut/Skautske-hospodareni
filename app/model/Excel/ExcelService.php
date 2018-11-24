@@ -24,7 +24,7 @@ use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
-use Model\Participant\EventType;
+use Model\Participant\Event;
 use Model\Participant\PragueParticipants;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -115,7 +115,7 @@ class ExcelService
             $eventId = new SkautisEventId($aid);
             /** @var CashbookId $cashbookId */
             $cashbookId   = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
-            $participants = $this->queryBus->handle(new ParticipantListQuery(EventType::GENERAL(), $aid));
+            $participants = $this->queryBus->handle(new ParticipantListQuery(new Event(Event::GENERAL, $aid)));
 
             $data[$aid]                    = $service->getEvent()->get($aid);
             $data[$aid]['cashbookId']      = $cashbookId;
@@ -123,7 +123,7 @@ class ExcelService
             $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new EventFunctions($eventId));
             $data[$aid]['participantsCnt'] = count($participants);
-            $data[$aid]['personDays']      = $this->getPersonDays(EventType::GENERAL(), $aid);
+            $data[$aid]['personDays']      = $this->getPersonDays(new Event(Event::GENERAL, $aid));
 
             $pp = $this->queryBus->handle(new PragueParticipantsQuery($eventId));
 
@@ -159,7 +159,7 @@ class ExcelService
             /** @var CashbookId $cashbookId */
             $cashbookId   = $this->queryBus->handle(new CampCashbookIdQuery($campId));
             $camp         = $service->event->get($aid);
-            $participants = $this->queryBus->handle(new ParticipantListQuery(EventType::CAMP(), $aid));
+            $participants = $this->queryBus->handle(new ParticipantListQuery(new Event(Event::CAMP, $aid)));
 
             $data[$aid]                    = $camp;
             $data[$aid]['cashbookId']      = $cashbookId;
@@ -167,7 +167,7 @@ class ExcelService
             $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $data[$aid]['participantsCnt'] = count($participants);
-            $data[$aid]['personDays']      = $this->getPersonDays(EventType::CAMP(), $aid);
+            $data[$aid]['personDays']      = $this->getPersonDays(new Event(Event::CAMP, $aid));
         }
 
         $sheetCamps = $objPHPExcel->setActiveSheetIndex(0);
@@ -612,8 +612,8 @@ class ExcelService
         //exit;
     }
 
-    private function getPersonDays(EventType $eventType, int $eventId) : int
+    private function getPersonDays(Event $event) : int
     {
-        return $this->queryBus->handle(new PersonDaysQuery($eventType, $eventId));
+        return $this->queryBus->handle(new PersonDaysQuery($event));
     }
 }

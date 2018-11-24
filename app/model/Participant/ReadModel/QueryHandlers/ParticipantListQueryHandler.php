@@ -23,6 +23,6 @@ final class ParticipantListQueryHandler
      */
     public function __invoke(ParticipantListQuery $query) : array
     {
-        return $this->participants->findByEvent($query->getEventType(), $query->getEventId());
+        return $this->participants->findByEvent($query->getEvent());
     }
 }

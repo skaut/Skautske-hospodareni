@@ -24,7 +24,7 @@ final class PersonDaysQueryHandler
     {
         $personDays = 0;
 
-        foreach ($this->participants->findByEvent($query->getEventType(), $query->getEventId()) as $participant) {
+        foreach ($this->participants->findByEvent($query->getEvent()) as $participant) {
             $personDays += $participant->getDays();
         }
 

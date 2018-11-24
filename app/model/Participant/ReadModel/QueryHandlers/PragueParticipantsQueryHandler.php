@@ -6,7 +6,7 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
 use Model\Event\Repositories\IEventRepository;
-use Model\Participant\EventType;
+use Model\Participant\Event;
 use Model\Participant\PragueParticipants;
 use Model\Participant\Repositories\IParticipantRepository;
 use Nette\Utils\Strings;
@@ -39,7 +39,7 @@ final class PragueParticipantsQueryHandler
             return null;
         }
 
-        $participants = $this->participants->findByEvent(EventType::GENERAL(), $query->getEventId()->toInt());
+        $participants = $this->participants->findByEvent(new Event(Event::GENERAL, $query->getEventId()->toInt()));
 
         $under18           = 0;
         $between18and26    = 0;
