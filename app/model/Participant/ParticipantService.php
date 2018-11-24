@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Model\Participant\PragueParticipants;
 use Model\Services\Language;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
 use function array_column;
@@ -16,19 +14,12 @@ use function array_diff;
 use function array_key_exists;
 use function array_keys;
 use function array_reduce;
-use function array_sum;
 use function is_array;
-use function natcasesort;
 use function preg_match;
-use function stripos;
 use function usort;
 
 class ParticipantService extends MutableBaseService
 {
-    private const PRAGUE_SUPPORTABLE_AGE       = 18;
-    private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
-    private const PRAGUE_UNIT_PREFIX           = 11;
-
     /** @var ParticipantTable */
     private $table;
 
@@ -268,45 +259,5 @@ class ParticipantService extends MutableBaseService
         $person->LastName  = $matches['last'];
         $person->FirstName = $matches['first'];
         $person->NickName  = $matches['nick'] ?? null;
-    }
-
-    public function countPragueParticipants(\stdClass $event) : ?PragueParticipants
-    {
-        if (! Strings::startsWith($event->RegistrationNumber, self::PRAGUE_UNIT_PREFIX)) {
-            return null;
-        }
-
-        $eventStartDate    = new \DateTime($event->StartDate);
-        $participants      = $this->getAll($event->ID);
-        $under18           = 0;
-        $between18and26    = 0;
-        $personDaysUnder26 = 0;
-        $citizensCount     = 0;
-        foreach ($participants as $p) {
-            if (stripos($p->City, 'Praha') === false) {
-                continue;
-            }
-            $citizensCount += 1;
-
-            if ($p->Birthday === null) {
-                continue;
-            }
-            $ageInYears = $eventStartDate->diff(new \DateTime($p->Birthday))->format('%Y');
-
-            if ($ageInYears <= self::PRAGUE_SUPPORTABLE_AGE) {
-                $under18 += 1;
-            }
-
-            if (self::PRAGUE_SUPPORTABLE_AGE < $ageInYears && $ageInYears <= self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
-                $between18and26 += 1;
-            }
-
-            if ($ageInYears > self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
-                continue;
-            }
-
-            $personDaysUnder26 += $p->Days;
-        }
-        return new PragueParticipants($under18, $between18and26, $personDaysUnder26, $citizensCount);
     }
 }

@@ -15,6 +15,7 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
@@ -83,7 +84,7 @@ class EventPresenter extends BasePresenter
             );
         }
 
-        $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants($this->event);
+        $pragueParticipants = $this->queryBus->handle(new PragueParticipantsQuery(new SkautisEventId($aid)));
 
         $this->template->setParameters(
             [

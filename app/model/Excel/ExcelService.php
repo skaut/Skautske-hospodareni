@@ -14,6 +14,7 @@ use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\PersonDaysQuery;
+use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
@@ -122,10 +123,13 @@ class ExcelService
             $data[$aid]['func']            = $this->queryBus->handle(new EventFunctions($eventId));
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays']      = $this->getPersonDays(EventType::GENERAL(), $aid);
-            $pp                            = $service->getParticipants()->countPragueParticipants($data[$aid]);
+
+            $pp = $this->queryBus->handle(new PragueParticipantsQuery($eventId));
+
             if ($pp === null) {
                 continue;
             }
+
             //Prague event
             $allowPragueColumns               = true;
             $data[$aid]['pragueParticipants'] = $pp;
