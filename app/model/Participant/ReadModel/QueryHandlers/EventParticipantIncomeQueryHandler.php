@@ -22,7 +22,7 @@ class EventParticipantIncomeQueryHandler
     public function handle(EventParticipantIncomeQuery $query) : float
     {
         $participants = $this->participants->findByEvent(
-            EventType::get(EventType::GENERAL),
+            EventType::GENERAL(),
             $query->getEventId()->toInt()
         );
 

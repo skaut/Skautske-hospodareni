@@ -18,4 +18,14 @@ final class EventType extends Enum
     {
         return $this->getValue();
     }
+
+    public static function GENERAL() : self
+    {
+        return self::get(self::GENERAL);
+    }
+
+    public static function CAMP() : self
+    {
+        return self::get(self::CAMP);
+    }
 }
