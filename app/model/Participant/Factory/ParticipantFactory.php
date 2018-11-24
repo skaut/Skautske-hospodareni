@@ -16,6 +16,7 @@ final class ParticipantFactory
         preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $skautisParticipant->Person, $matches);
 
         return new Participant(
+            $skautisParticipant->ID_Person,
             $matches['first'],
             $matches['last'],
             $matches['nick'] ?? null,

@@ -9,6 +9,9 @@ use Money\Money;
 
 class Participant
 {
+    /** @var int */
+    private $personId;
+
     /** @var string */
     private $firstName;
 
@@ -52,6 +55,7 @@ class Participant
     private $payment;
 
     public function __construct(
+        int $personId,
         string $firstName,
         string $lastName,
         ?string $nickname,
@@ -67,6 +71,7 @@ class Participant
         int $days,
         Money $payment
     ) {
+        $this->personId               = $personId;
         $this->firstName              = $firstName;
         $this->lastName               = $lastName;
         $this->nickName               = $nickname;
@@ -81,6 +86,11 @@ class Participant
         $this->unitRegistrationNumber = $unitRegistrationNumber;
         $this->days                   = $days;
         $this->payment                = $payment;
+    }
+
+    public function getPersonId() : int
+    {
+        return $this->personId;
     }
 
     public function getFirstName() : string

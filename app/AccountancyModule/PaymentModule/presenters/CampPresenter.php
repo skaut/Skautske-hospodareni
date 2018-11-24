@@ -6,10 +6,13 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
-use Model\EventEntity;
+use Model\Cashbook\ReadModel\Queries\ParticipantListQuery;
+use Model\Participant\EventType;
+use Model\Participant\Participant;
 use Model\PaymentService;
-use function array_filter;
-use function in_array;
+use Model\Utils\MoneyFactory;
+use function array_fill_keys;
+use function array_key_exists;
 
 class CampPresenter extends BasePresenter
 {
@@ -18,9 +21,6 @@ class CampPresenter extends BasePresenter
 
     /** @var PaymentService */
     private $model;
-
-    /** @var EventEntity */
-    protected $campService;
 
     /** @var IMassAddFormFactory */
     private $massAddFormFactory;
@@ -39,7 +39,6 @@ class CampPresenter extends BasePresenter
     {
         parent::startup();
         $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
-        $this->campService         = $this->context->getService('campService');
     }
 
     /**
@@ -55,31 +54,31 @@ class CampPresenter extends BasePresenter
             $this->redirect('Payment:default');
         }
 
-        if ($group->getSkautisId() === null) {
+        $campId = $group->getSkautisId();
+
+        if ($campId === null) {
             $this->flashMessage('Neplatné propojení skupiny plateb s táborem.', 'warning');
             $this->redirect('Default:');
         }
 
-        $participants = $this->campService->getParticipants()->getAll($group->getSkautisId());
+        /** @var Participant[] $participants */
+        $participants = $this->queryBus->handle(new ParticipantListQuery(EventType::CAMP(), $campId));
 
         $form = $this['massAddForm'];
         /** @var MassAddForm $form */
 
-        $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
-
-        $participants = array_filter(
-            $participants,
-            function ($p) use ($personsWithPayment) {
-                return ! in_array($p->ID_Person, $personsWithPayment, true);
-            }
-        );
+        $personsWithPayment = array_fill_keys($this->model->getPersonsWithActivePayment($id), null);
 
         foreach ($participants as $p) {
+            if (array_key_exists($p->getPersonId(), $personsWithPayment)) {
+                continue;
+            }
+
             $form->addPerson(
-                $p->ID_Person,
-                $this->model->getPersonEmails($p->ID_Person),
-                $p->Person,
-                $p->payment === 0 ? null : (float) $p->payment
+                $p->getPersonId(),
+                $this->model->getPersonEmails($p->getPersonId()),
+                $p->getDisplayName(),
+                $p->getPayment()->isZero() ? null : MoneyFactory::toFloat($p->getPayment())
             );
         }
 
