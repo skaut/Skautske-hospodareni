@@ -18,11 +18,13 @@ use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantBalanceQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
+use Model\Utils\MoneyFactory;
 use Money\Money;
 
 class CashbookPresenter extends BasePresenter
@@ -72,10 +74,10 @@ class CashbookPresenter extends BasePresenter
             }
         }
 
-        // @TODO move logic to specific command handler
-        $totalPayment = $this->eventService->getParticipants()->getTotalPayment($this->aid);
+        /** @var Money $totalPayment */
+        $totalPayment = $this->queryBus->handle(new EventParticipantIncomeQuery(new SkautisEventId($this->aid)));
 
-        if ($totalPayment === 0.0) {
+        if ($totalPayment->isZero()) {
             $this->flashMessage('Nemáte žádné účastníky');
             $this->redirect('this');
         }
@@ -86,7 +88,7 @@ class CashbookPresenter extends BasePresenter
         $accountant = $functions->getAccountant() !== null
             ? new Recipient($functions->getAccountant()->getName())
             : null;
-        $amount     = new Amount((string) $totalPayment);
+        $amount     = new Amount((string) MoneyFactory::toFloat($totalPayment));
         $cashbookId = $this->getCashbookId();
 
         $this->commandBus->handle(
