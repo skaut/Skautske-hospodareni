@@ -18,6 +18,9 @@ services:
 	- class: SkautisWebserviceMagicMethodsExtension
 	  tags: [ phpstan.broker.methodsClassReflectionExtension ]
 
+	- class: UnusedMoneyMethodResultRule
+	  tags: [ phpstan.rules.rule ]
+
 	#
 	# Dynamic method return types
 	#
