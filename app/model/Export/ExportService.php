@@ -264,11 +264,16 @@ class ExportService
 
         foreach ($categories as $category) {
             $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
+
             if ($category->isIncome()) {
-                $total[$category->isVirtual() ? 'virtualIncome' : 'income']->add($category->getTotal());
+                $key         = $category->isVirtual() ? 'virtualIncome' : 'income';
+                $total[$key] = $total[$key]->add($category->getTotal());
+
                 $incomeCategories[$virtualCategory][] = $category;
             } else {
-                $total[$category->isVirtual() ? 'virtualExpense' : 'expense']->add($category->getTotal());
+                $key         = $category->isVirtual() ? 'virtualExpense' : 'expense';
+                $total[$key] = $total[$key]->add($category->getTotal());
+
                 $expenseCategories[$virtualCategory][] = $category;
             }
         }
@@ -283,8 +288,8 @@ class ExportService
             'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
             'totalIncome' => $total['income'],
             'totalExpense' => $total['expense'],
-            'virtualIncomeCategories' => $incomeCategories[self::CATEGORY_REAL],
-            'virtualExpenseCategories' => $expenseCategories[self::CATEGORY_REAL],
+            'virtualIncomeCategories' => $incomeCategories[self::CATEGORY_VIRTUAL],
+            'virtualExpenseCategories' => $expenseCategories[self::CATEGORY_VIRTUAL],
             'virtualTotalIncome' => $total['virtualIncome'],
             'virtualTotalExpense' => $total['virtualExpense'],
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
