@@ -99,8 +99,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         }
 
         try {
-            $this->template->myRoles = $this->userService->getAllSkautisRoles();
-            $this->template->myRole  = $this->userService->getRoleId();
+            $this->template->setParameters([
+                'currentUnitId' => $this->unitService->getUnitId(),
+                'myRoles' => $this->userService->getAllSkautisRoles(),
+                'myRole' => $this->userService->getRoleId(),
+            ]);
         } catch (AuthenticationException $ex) {
             $this->user->logout(true);
         }
