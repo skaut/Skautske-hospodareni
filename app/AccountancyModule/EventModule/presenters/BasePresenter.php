@@ -7,6 +7,7 @@ namespace App\AccountancyModule\EventModule;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\ObjectType;
 use Model\EventEntity;
+use Skautis\Wsdl\PermissionException;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
@@ -19,6 +20,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function startup() : void
     {
         parent::startup();
+
         $this->eventService  = $this->context->getService('eventService');
         $this->type          = ObjectType::EVENT;
         $this->template->aid = $this->aid;
@@ -28,7 +30,13 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
             return;
         }
 
-        $this->template->event      = $this->event = $this->eventService->getEvent()->get($this->aid);
+        try {
+            $this->template->event = $this->event = $this->eventService->getEvent()->get($this->aid);
+        } catch (PermissionException $exc) {
+            $this->flashMessage('Nemáte oprávnění pro načtení dat z akce', 'warning');
+            $this->redirect(':Accountancy:Default:', ['aid' => null]);
+        }
+
         $this->template->isEditable = $this->isEditable = $this->authorizator->isAllowed(Event::UPDATE, $this->aid);
     }
 
