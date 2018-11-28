@@ -61,6 +61,19 @@ abstract class BasePresenter extends \App\BasePresenter
         $this->userService->updateLogoutTime();
     }
 
+    protected function beforeRender() : void
+    {
+        parent::beforeRender();
+
+        if ($this->getCurrentUnitId() === null) {
+            return;
+        }
+
+        $this->template->setParameters([
+            'currentUnitId' => $this->getCurrentUnitId(),
+        ]);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -73,8 +86,8 @@ abstract class BasePresenter extends \App\BasePresenter
     /**
      * Returns current unit ID (e.g oddíl)
      */
-    public function getCurrentUnitId() : int
+    public function getCurrentUnitId() : ?int
     {
-        return (int) $this->aid;
+        return $this->aid;
     }
 }
