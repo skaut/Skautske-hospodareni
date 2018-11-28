@@ -74,7 +74,7 @@ class MemberService
         $now = new \DateTime();
         foreach ($data as $p) {
             if ($ageLimit !== null) {
-                if ($p->Birthday === null) {
+                if (! isset($p->Birthday)) {
                     continue;
                 }
                 $birth    = new \DateTime($p->Birthday);
