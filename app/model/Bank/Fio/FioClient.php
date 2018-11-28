@@ -74,10 +74,10 @@ class FioClient implements IFioClient
         try {
             return $api->downloadFromTo($since, $until)->getTransactions();
         } catch (TooGreedyException $e) {
-            $this->logger->error('Bank account #' . $account->getId() . ' hit API limit');
+            $this->logger->warning('Bank account #' . $account->getId() . ' hit API limit');
             throw new BankTimeLimit('', 0, $e);
         } catch (TransferException | InternalErrorException $e) {
-            $this->logger->error(
+            $this->logger->warning(
                 sprintf('Bank account #%d request failed: %s', $account->getId(), $e->getMessage()),
                 ['previous' => $e]
             );
