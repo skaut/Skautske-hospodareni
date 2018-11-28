@@ -27,8 +27,48 @@ Menu pro pohyb mezi částmi akce
                         <li n:foreach="$unitPairs as $id=>$label"><a n:href="this aid=>$id">{$label}</a></li>
                     </ul>
                 </div>
-                {block rightActionMenu}{/block}
+                {ifset $cashbooks}
+                    <div class="btn-group">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="unit-cashbook-list"
+                                data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="true">
+                            {$year}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="unit-cashbook-list">
+                            {include cashbookDropdownItem, cashbook => $activeCashbook, isActive => true}
+                            <li role="separator" class="divider"></li>
+                            {foreach $cashbooks as $cashbook}
+                                {if $cashbook->getCashbookId()->toString() !== $activeCashbook->getCashbookId()->toString()}
+                                    {include cashbookDropdownItem, cashbook => $cashbook, isActive => false}
+                                {/if}
+                            {/foreach}
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="unit-cashbook-menu"
+                                data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="true">
+                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="unit-cashbook-menu">
+                            <li><a n:href="Cashbook do => selectActive" class="ajax">Vybrat výchozí pokladní knihu</a></li>
+                            <li><a n:href="Cashbook do => createCashbook" class="ajax"><i class="fa fa-plus"></i> Přidat pokladní
+                                    knihu</a></li>
+                        </ul>
+                    </div>
+                {/ifset}
             </div>
         </div>
     </div>
 </div>
+
+
+{define cashbookDropdownItem}
+    {var $selected = $cashbook->getCashbookId()->toString() === $cashbookId}
+    <li n:class="$selected ? active">
+        <a href="{if $selected}#{else}{link this $aid, $cashbook->year}{/if}">
+            {$cashbook->year}
+        </a>
+    </li>
+{/define}
