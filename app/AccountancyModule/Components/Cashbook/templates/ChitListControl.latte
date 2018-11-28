@@ -56,6 +56,9 @@
                                     onclick="return confirm('Opravdu chcete smazat paragon?')"
                                     class="btn btn-danger btn-xs ui--removeChit"><i class="glyphicon glyphicon-remove"></i></a>
 
+                            <a n:if="$isEditable && $item->locked" n:href="showLocked" title="Paragon je uzamčen."
+                                    class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-lock"></i></a>
+
                             <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $item->inverseCashbookTypes))"
                                     class="ajax btn btn-xs btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $item->id"
                                     title="Vytvořit protidoklad">
