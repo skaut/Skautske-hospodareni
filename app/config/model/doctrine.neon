@@ -32,6 +32,8 @@ doctrine:
         string:
             field: DoctrineExtensions\Query\Mysql\Field
 
+    secondLevelCache:
+        enabled: true
 
 annotations:
     aliases:

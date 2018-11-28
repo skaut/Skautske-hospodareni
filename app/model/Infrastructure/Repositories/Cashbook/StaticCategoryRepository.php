@@ -25,6 +25,7 @@ final class StaticCategoryRepository extends AggregateRepository implements ISta
             ->orderBy('c.priority', 'DESC')
             ->setParameter('type', $type->getValue())
             ->getQuery()
+            ->setCacheable(true)
             ->getResult();
     }
 

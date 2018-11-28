@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="ac_chitsCategory")
+ * @ORM\Cache()
  */
 class Category implements ICategory
 {
