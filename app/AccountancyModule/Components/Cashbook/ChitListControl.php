@@ -123,6 +123,11 @@ class ChitListControl extends BaseControl
         $this->redirect('this');
     }
 
+    public function handleShowLocked() : void
+    {
+        $this->getPresenter()->redirect(':Accountancy:UnitAccount:Chit:default', ['onlyUnlocked' => 0]);
+    }
+
     public function handleEdit(int $chitId) : void
     {
         $this->onEditButtonClicked($chitId);
