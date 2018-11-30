@@ -12,6 +12,7 @@ use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
 use Tracy\ILogger;
 use function in_array;
+use function sprintf;
 
 /**
  * Error presenter.
@@ -34,30 +35,48 @@ class ErrorPresenter extends Presenter
 
     /**
      * @param mixed $exception
+     * @throws Nette\Application\AbortException
      */
     public function renderDefault($exception) : void
     {
         if ($exception instanceof SkautisMaintenance) {
             $this->flashMessage('Právě probíhá údržba Skautisu. Po tuto dobu není možné Hospodaření používat', 'danger');
             $this->redirect(':Default:');
-        } elseif ($exception instanceof Nette\Application\BadRequestException) {
-            $code = $exception->getCode();
-            // load template 403.latte or 404.latte or ... 4xx.latte
-            $this->setView(in_array($code, [403, 404, 405, 410, 500]) ? $code : '4xx');
-        } elseif ($exception instanceof PermissionException) {
-            $this->flashMessage($exception->getMessage(), 'danger');
-            $this->logger->log($exception, ILogger::EXCEPTION);
-            $this->redirect(':Default:');
-        } elseif ($exception instanceof AuthenticationException) {//vypršelo přihlášení do SkautISu
+        }
+
+        if ($exception instanceof AuthenticationException) {//vypršelo přihlášení do SkautISu
             $this->user->logout(true);
             $this->flashMessage('Vypršelo přihlášení do skautISu', 'danger');
             $this->redirect(':Default:');
-        } elseif ($exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
+        }
+
+        if ($exception instanceof PermissionException) {
+            $this->flashMessage($exception->getMessage(), 'danger');
+            $this->logger->log($exception, ILogger::EXCEPTION);
+            $this->redirect(':Default:');
+        }
+
+        if ($exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
             $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.');
             $this->redirect(':Default:');
+        }
+
+        if ($exception instanceof Nette\Application\BadRequestException) {
+            $code = $exception->getCode();
+            // load template 403.latte or 404.latte or ... 4xx.latte
+            $this->setView(in_array($code, [403, 404, 405, 410, 500], true) ? $code : '4xx');
         } else {
             $this->setView('500'); // load template 500.latte
-            $this->logger->log('userId: ' . $this->user->getId() . ' Msg: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine(), ILogger::EXCEPTION);
+            $this->logger->log(
+                sprintf(
+                    'userId: %s Msg: %s in %s:%d',
+                    $this->user->getId(),
+                    $exception->getMessage(),
+                    $exception->getFile(),
+                    $exception->getLine()
+                ),
+                ILogger::EXCEPTION
+            );
             $this->logger->log($exception, ILogger::EXCEPTION); // and log exception
         }
 
