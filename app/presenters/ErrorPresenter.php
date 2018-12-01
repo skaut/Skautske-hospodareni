@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\AccountancyModule\SkautisMaintenance;
+use Model\Unit\UserHasNoUnit;
 use Nette;
 use Nette\Application\UI\Presenter;
 use Skautis\Wsdl\AuthenticationException;
@@ -61,7 +62,9 @@ class ErrorPresenter extends Presenter
             $this->redirect(':Default:');
         }
 
-        if ($exception instanceof Nette\Application\BadRequestException) {
+        if ($exception instanceof UserHasNoUnit) {
+            $this->setView('noUnit');
+        } elseif ($exception instanceof Nette\Application\BadRequestException) {
             $code = $exception->getCode();
             // load template 403.latte or 404.latte or ... 4xx.latte
             $this->setView(in_array($code, [403, 404, 405, 410, 500], true) ? $code : '4xx');
