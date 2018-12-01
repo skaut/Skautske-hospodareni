@@ -1,9 +1,10 @@
 {var $robots = noindex}
 {block #content}
 
-<h1>Přístup zamítnut</h1>
+<h1>403</h1>
+<h3>Přístup zamítnut</h3>
 
-<p>You do not have permission to view this page. Please try contact the web
-site administrator if you believe you should be able to view this page.</p>
+<p class="mt-4">Nemáš oprávnění pro přístup k této stránce.</p>
 
-<p><small>error 403</small></p>
+<a n:href=":Default:" class="btn btn-primary">Na hlavní stránku</a>
+<a n:href=":Auth:skautisLogout" class="btn btn-link">Odhlásit se</a>
