@@ -74,6 +74,7 @@ class DetailPresenter extends BasePresenter
             'functions' => $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)
                 ? $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)))
                 : null,
+            'pragueParticipants' => $this->eventService->getParticipants()->countPragueParticipants($this->event),
         ]);
 
         $form = $this['formEdit'];

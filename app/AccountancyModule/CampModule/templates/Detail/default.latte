@@ -74,6 +74,28 @@
             </table>
 
         </div>
+
+        <div class="panel panel-default" n:if="$pragueParticipants !== NULL">
+            <div class="panel-heading"><h4>Pražští účastníci</h4></div>
+            <table class="table table-bordered table-condensed panel-body">
+                <tr>
+                    <th>Osobodnů pod 26</th>
+                    <td>{$pragueParticipants->personDaysUnder26}</td>
+                </tr>
+                <tr>
+                    <th>Osob pod 18</th>
+                    <td>{$pragueParticipants->under18}</td>
+                </tr>
+                <tr>
+                    <th>Osob mezi 18 a 26</th>
+                    <td>{$pragueParticipants->between18and26} </td>
+                </tr>
+                <tr>
+                    <th>Osob celkem</th>
+                    <td>{$pragueParticipants->citizensCount}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 
     <div class="col-md-5" n:if="$functions !== NULL">
