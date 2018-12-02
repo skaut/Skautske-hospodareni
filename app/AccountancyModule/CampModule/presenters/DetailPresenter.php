@@ -40,18 +40,12 @@ class DetailPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $this->template->functions = $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)
-            ? $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)))
-            : null;
-
-        $this->template->accessDetail = $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $aid);
-        $this->template->skautISUrl   = $this->userService->getSkautisUrl();
-
+        $troops = [];
         if (property_exists($this->event->ID_UnitArray, 'string')) {
             $unitIdOrIds = $this->event->ID_UnitArray->string;
 
             if (is_array($unitIdOrIds)) {
-                $this->template->troops = array_map(
+                $troops = array_map(
                     function ($id) {
                         try {
                             return $this->unitService->getDetail((int) $id);
@@ -62,10 +56,8 @@ class DetailPresenter extends BasePresenter
                     $this->event->ID_UnitArray->string
                 );
             } elseif (is_string($unitIdOrIds)) {
-                $this->template->troops = [$this->unitService->getDetail((int) $unitIdOrIds)];
+                $troops = [$this->unitService->getDetail((int) $unitIdOrIds)];
             }
-        } else {
-            $this->template->troops = [];
         }
 
         if ($this->isAjax()) {
@@ -76,6 +68,12 @@ class DetailPresenter extends BasePresenter
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         $this->template->setParameters([
             'cashbookPrefix' => $cashbook->getChitNumberPrefix(),
+            'troops' => $troops,
+            'skautISUrl'   => $this->userService->getSkautisUrl(),
+            'accessDetail' => $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $aid),
+            'functions' => $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)
+                ? $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)))
+                : null,
         ]);
 
         $form = $this['formEdit'];
