@@ -7,6 +7,8 @@ namespace App;
 use Model\AuthService;
 use Sinacek\SkautisAuthenticator;
 use Skautis\Wsdl\AuthenticationException;
+use function strlen;
+use function substr;
 
 class AuthPresenter extends BasePresenter
 {
@@ -32,8 +34,8 @@ class AuthPresenter extends BasePresenter
      */
     public function actionLogOnSkautIs(?string $backlink = null) : void
     {
-        if($backlink !== null) {
-            $backlink = $this->getHttpRequest ()->getUrl()->getBaseUrl() . $backlink;
+        if ($backlink !== null) {
+            $backlink = $this->getHttpRequest()->getUrl()->getBaseUrl() . $backlink;
         }
         $this->redirectUrl($this->authService->getLoginUrl($backlink));
     }
@@ -43,7 +45,7 @@ class AuthPresenter extends BasePresenter
      */
     public function actionSkautIS(?string $ReturnUrl = null) : void
     {
-        $post = $this->request->post;
+        $post = $this->getRequest()->getPost();
         if (! isset($post['skautIS_Token'])) { //pokud není nastavený token, tak zde nemá co dělat
             $this->redirect(':Default:');
         }
@@ -59,25 +61,25 @@ class AuthPresenter extends BasePresenter
             }
             $me = $this->userService->getPersonalDetail();
 
-            $this->user->setExpiration('+ 29 minutes'); // nastavíme expiraci
-            $this->user->setAuthenticator(new SkautisAuthenticator());
-            $this->user->login($me);
+            $this->getUser()->setExpiration('+ 29 minutes'); // nastavíme expiraci
+            $this->getUser()->setAuthenticator(new SkautisAuthenticator());
+            $this->getUser()->login($me);
 
             $this->updateUserAccess();
 
             if ($ReturnUrl !== null) {
-                $this->restoreRequest(substr($ReturnUrl, strlen($this->getHttpRequest ()->getUrl ()->getBaseUrl())));
+                $this->restoreRequest(substr($ReturnUrl, strlen($this->getHttpRequest()->getUrl()->getBaseUrl())));
             }
         } catch (AuthenticationException $e) {
             $this->flashMessage($e->getMessage(), 'danger');
             $this->redirect(':Auth:');
         }
-        $this->presenter->redirect(':Accountancy:Default:');
+        $this->getPresenter()->redirect(':Accountancy:Default:');
     }
 
     public function actionAjax(?string $backlink = null) : void
     {
-        $this->template->backlink = $backlink;
+        $this->template->setParameters(['backlink' => $backlink]);
         $this->flashMessage('Vypršel čas přihlášení. Přihlaste se prosím znovu.', 'warning');
         $this->redrawControl();
     }
@@ -93,11 +95,11 @@ class AuthPresenter extends BasePresenter
 
     public function actionSkautisLogout() : void
     {
-        $this->user->logout(true);
-        if (isset($this->request->post['skautIS_Logout'])) {
-            $this->presenter->flashMessage('Byl jsi úspěšně odhlášen.');
+        $this->getUser()->logout(true);
+        if (isset($this->getRequest()->getPost()['skautIS_Logout'])) {
+            $this->getPresenter()->flashMessage('Byl jsi úspěšně odhlášen.');
         } else {
-            $this->presenter->flashMessage('Odhlášení ze skautisu se nezdařilo', 'danger');
+            $this->getPresenter()->flashMessage('Odhlášení ze skautisu se nezdařilo', 'danger');
         }
         $this->redirect(':Default:');
     }
