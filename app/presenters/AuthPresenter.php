@@ -32,6 +32,9 @@ class AuthPresenter extends BasePresenter
      */
     public function actionLogOnSkautIs(?string $backlink = null) : void
     {
+        if($backlink !== null) {
+            $backlink = $this->getHttpRequest ()->getUrl()->getBaseUrl() . $backlink;
+        }
         $this->redirectUrl($this->authService->getLoginUrl($backlink));
     }
 
@@ -62,8 +65,8 @@ class AuthPresenter extends BasePresenter
 
             $this->updateUserAccess();
 
-            if (isset($ReturnUrl)) {
-                $this->restoreRequest($ReturnUrl);
+            if ($ReturnUrl !== null) {
+                $this->restoreRequest(substr($ReturnUrl, strlen($this->getHttpRequest ()->getUrl ()->getBaseUrl())));
             }
         } catch (AuthenticationException $e) {
             $this->flashMessage($e->getMessage(), 'danger');
