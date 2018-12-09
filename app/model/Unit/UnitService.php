@@ -8,6 +8,7 @@ use Model\Payment\IUnitResolver;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Model\Unit\UnitNotFound;
+use Model\Unit\UserHasNoUnit;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Application\BadRequestException;
 use Nette\Security\Identity;
@@ -34,10 +35,19 @@ class UnitService
         $this->unitResolver = $unitResolver;
     }
 
-
+    /**
+     * @throws UserHasNoUnit
+     */
     public function getUnitId() : int
     {
-        return (int) $this->skautis->getUser()->getUnitId();
+        $user   = $this->skautis->getUser();
+        $unitId = $user->getUnitId();
+
+        if ($unitId === null || $unitId === 0) {
+            throw UserHasNoUnit::fromLoginId($user->getLoginId());
+        }
+
+        return $unitId;
     }
 
     /**

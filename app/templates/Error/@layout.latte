@@ -2,11 +2,14 @@
 <html lang="cs">
     <head>
         <meta charset=utf-8 />
-        <title>{block #title|stripHtml|trim}SkaÚčto{/block}</title>
+        <title>{block #title|stripHtml|trim}Chyba - Skautské hospodaření{/block}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="keywords" content="404" />
         <meta name="author" content="www.sinacek.cz" />
         <meta name="robots" content="{$robots}" n:ifset="$robots">
-        <link rel="stylesheet" type="text/css" href="{$baseUri}/css/error.css" media="screen" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
         <script type="text/javascript">
           var _gaq = _gaq || [];
           _gaq.push(['_setAccount', 'UA-2900685-25']);
@@ -21,7 +24,15 @@
     </head>
 
     <body>
-        <a n:href=":Default:">&lBarr; Přejít na hlavní stránku</a>
-       {include #content}
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 offset-md-3 text-center">
+                        {include #content}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="text-center">Skautské hospodaření</footer>
     </body>
 </html>
