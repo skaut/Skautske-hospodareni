@@ -76,7 +76,7 @@ class GroupPresenter extends BasePresenter
             $this->template->nadpis = 'Založení skupiny plateb tábora';
         } elseif ($type === 'registration') {
             $reg = $this->model->getNewestRegistration();
-            if ($reg !== []) {
+            if ($reg === []) {
                 $this->flashMessage('Nemáte založenou žádnou otevřenou registraci', 'warning');
                 $this->redirect('Payment:default');
             }
