@@ -24,25 +24,25 @@ class RouterFactory
         $router[] = new Route(
             'sign/<action>[/back-<backlink>]',
             [
-            'presenter' => 'Auth',
-            'action' => 'default',
-            'backlink' => null,
+                'presenter' => 'Auth',
+                'action' => 'default',
+                'backlink' => null,
             ]
         );
 
         $router[] = new Route(
             'prirucka/<action>[#<anchor>]',
             [
-            'presenter' => 'Tutorial',
-            'action' => [
-                Route::VALUE => 'default',
-                Route::FILTER_TABLE => [
-                    // řetězec v URL => presenter
-                    'vyprava' => 'event',
-                    'tabor' => 'camp',
-                    'cestovni-prikaz' => 'travelCommand',
+                'presenter' => 'Tutorial',
+                'action' => [
+                    Route::VALUE => 'default',
+                    Route::FILTER_TABLE => [
+                        // řetězec v URL => presenter
+                        'vyprava' => 'event',
+                        'tabor' => 'camp',
+                        'cestovni-prikaz' => 'travelCommand',
+                    ],
                 ],
-            ],
             ]
         );
 
@@ -79,23 +79,23 @@ class RouterFactory
         $router[] = new Route(
             $prefix . '/<aid [0-9]+>[/<presenter>[/<action>]]',
             [
-            'presenter' => [
-                Route::VALUE => 'Detail',
-                Route::FILTER_TABLE => [
-                    'ucastnici' => 'Participant',
-                    'kniha' => 'Cashbook',
-                    'rozpocet' => 'Budget',
+                'presenter' => [
+                    Route::VALUE => 'Detail',
+                    Route::FILTER_TABLE => [
+                        'ucastnici' => 'Participant',
+                        'kniha' => 'Cashbook',
+                        'rozpocet' => 'Budget',
+                    ],
                 ],
-            ],
-            'action' => 'default',
+                'action' => 'default',
             ]
         );
 
         $router[] = new Route(
             $prefix . '/<presenter>[/<action>]',
             [
-            'presenter' => 'Default',
-            'action' => 'default',
+                'presenter' => 'Default',
+                'action' => 'default',
             ]
         );
 
@@ -111,22 +111,22 @@ class RouterFactory
         $router[] = new Route(
             $prefix . '/<aid [0-9]+>/<presenter>[/<action>]',
             [
-            'presenter' => [
-                Route::VALUE => 'Event',
-                Route::FILTER_TABLE => [
-                    'ucastnici' => 'Participant',
-                    'kniha' => 'Cashbook',
+                'presenter' => [
+                    Route::VALUE => 'Event',
+                    Route::FILTER_TABLE => [
+                        'ucastnici' => 'Participant',
+                        'kniha' => 'Cashbook',
+                    ],
                 ],
-            ],
-            'action' => 'default',
+                'action' => 'default',
             ]
         );
 
         $router[] = new Route(
             $prefix . '/[<presenter>][/<action>]',
             [
-            'presenter' => 'Default',
-            'action' => 'default',
+                'presenter' => 'Default',
+                'action' => 'default',
             ]
         );
 
@@ -142,14 +142,14 @@ class RouterFactory
         $router[] = new Route(
             $prefix . '[/<presenter>[/<action>][/<id>]]',
             [
-            'presenter' => [
-                Route::VALUE => 'Default',
-                Route::FILTER_TABLE => [
-                    'vozidla' => 'Vehicle',
-                    'smlouvy' => 'Contract',
+                'presenter' => [
+                    Route::VALUE => 'Default',
+                    Route::FILTER_TABLE => [
+                        'vozidla' => 'Vehicle',
+                        'smlouvy' => 'Contract',
+                    ],
                 ],
-            ],
-            'action' => 'default',
+                'action' => 'default',
             ]
         );
 
@@ -165,23 +165,23 @@ class RouterFactory
         $router[] = new Route(
             $prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]',
             [
-            'presenter' => [
-                Route::VALUE => 'Default',
-                Route::FILTER_TABLE => [
-                    'kniha' => 'Cashbook',
-                    'paragony' => 'Chit',
-                    'rozpocet' => 'Budget',
+                'presenter' => [
+                    Route::VALUE => 'Default',
+                    Route::FILTER_TABLE => [
+                        'kniha' => 'Cashbook',
+                        'paragony' => 'Chit',
+                        'rozpocet' => 'Budget',
+                    ],
                 ],
-            ],
-            'action' => 'default',
+                'action' => 'default',
             ]
         );
 
         $router[] = new Route(
             $prefix . '[/<presenter>][/<action>]',
             [
-            'presenter' => 'Default',
-            'action' => 'default',
+                'presenter' => 'Default',
+                'action' => 'default',
             ]
         );
 
