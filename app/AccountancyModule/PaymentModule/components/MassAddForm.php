@@ -31,11 +31,13 @@ class MassAddForm extends BaseControl
         $form = new BaseForm();
 
         $form->addText('amount', 'Částka:')
+            ->setNullable()
             ->setAttribute('class', 'input-mini');
 
         $form->addDatePicker('dueDate', 'Splatnost:')
             ->setAttribute('class', 'input-small');
         $form->addText('constantSymbol', 'KS:')
+            ->setNullable()
             ->setMaxLength(4)
             ->setAttribute('class', 'input-mini');
         $form->addText('note', 'Poznámka:')
@@ -90,6 +92,7 @@ class MassAddForm extends BaseControl
             ->setAttribute('class', 'input-mini')
             ->setType('number')
             ->setRequired(false)
+            ->setNullable()
             ->setDefaultValue($amount)
             ->addConditionOn($container['selected'], $form::FILLED)
             ->addConditionOn($form['amount'], $form::BLANK)
@@ -107,6 +110,7 @@ class MassAddForm extends BaseControl
         $container->addText('constantSymbol', 'KS:')
             ->setAttribute('class', 'input-mini')
             ->setRequired(false)
+            ->setNullable()
             ->addRule($form::INTEGER)
             ->addRule($form::MAX_LENGTH, 'Maximální délka konstantního symbolu je %d', 4);
 
@@ -156,26 +160,16 @@ class MassAddForm extends BaseControl
                 $this->groupId,
                 $person->name,
                 $person->email,
-                $this->floatOrNull($person->amount) ?? (float) $values->amount,
+                $person->amount ?? $values->amount,
                 \DateTimeImmutable::createFromMutable($person->dueDate ?? $values->dueDate),
                 (int) $person->id,
                 $person->variableSymbol,
-                $this->intOrNull($person->constantSymbol) ?? $this->intOrNull($values->constantSymbol),
+                $person->constantSymbol ?? $values->constantSymbol,
                 $person->note
             );
         }
 
         $this->presenter->flashMessage('Platby byly přidány');
         $this->presenter->redirect('Payment:detail', ['id' => $this->groupId]);
-    }
-
-    private function intOrNull(string $value) : ?int
-    {
-        return $value === '' ? null : (int) $value;
-    }
-
-    private function floatOrNull(string $value) : ?float
-    {
-        return $value === '' ? null : (float) $value;
     }
 }
