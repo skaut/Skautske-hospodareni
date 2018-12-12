@@ -77,10 +77,10 @@ class RouterFactory
 
         $prefix   = 'tabory';
         $router[] = new Route(
-            $prefix . '/<aid [0-9]+>/[<presenter>][/<action>]',
+            $prefix . '/<aid [0-9]+>[/<presenter>[/<action>]]',
             [
             'presenter' => [
-                //              Route::VALUE => 'Detail', //nefunguje pak report
+                Route::VALUE => 'Detail',
                 Route::FILTER_TABLE => [
                     'ucastnici' => 'Participant',
                     'kniha' => 'Cashbook',
