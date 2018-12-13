@@ -15,7 +15,7 @@
 
 <div class="row" n:inner-foreach="$changes as $unitId=>$unitChanges">
     <div class="col-sm-12" n:if='count($unitChanges["add"]) > 0 || count($unitChanges["remove"]) > 0'>
-        <h2>{$units[$unitId]->DisplayName}</h2>
+        <h2>{$units[$unitId]->getDisplayName()}</h2>
         <div class='well well-sm'>
             {if count($unitChanges["add"]) > 0}
                 <h3>Nově přidané časopisy po registraci vůči aktuálnímu stavu</h3>
