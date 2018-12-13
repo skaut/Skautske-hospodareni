@@ -365,7 +365,7 @@ class PaymentService
 
         $data = $this->skautis->org->UnitRegistrationAll(['ID_Unit' => $unitId, '']);
 
-        if ($data !== new \stdClass()) { // Skautis returns empty object when no registration is found
+        if (is_array($data)) {
             $registration = $data[0];
 
             $groups = $this->groups->findBySkautisEntity(
@@ -431,6 +431,10 @@ class PaymentService
             'ID_UnitRegistration' => $registrationId,
             'IncludeChild' => $includeChild,
         ]);
+
+        if (! is_array($persons)) {
+            return [];
+        }
 
         usort($persons, function ($one, $two) {
             return Language::compare($one->Person, $two->Person);
