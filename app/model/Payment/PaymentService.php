@@ -38,6 +38,7 @@ use function date;
 use function explode;
 use function in_array;
 use function is_array;
+use function is_object;
 use function mb_substr;
 use function reset;
 use function strcmp;
@@ -365,16 +366,18 @@ class PaymentService
 
         $data = $this->skautis->org->UnitRegistrationAll(['ID_Unit' => $unitId, '']);
 
-        if (is_array($data)) {
-            $registration = $data[0];
+        if (is_object($data)) {
+            return [];
+        }
 
-            $groups = $this->groups->findBySkautisEntity(
-                new Group\SkautisEntity($registration->ID, Type::get(Type::REGISTRATION))
-            );
+        $registration = $data[0];
 
-            if (empty($groups)) {
-                return (array) $registration;
-            }
+        $groups = $this->groups->findBySkautisEntity(
+            new Group\SkautisEntity($registration->ID, Type::get(Type::REGISTRATION))
+        );
+
+        if (empty($groups)) {
+            return (array) $registration;
         }
 
         return [];
