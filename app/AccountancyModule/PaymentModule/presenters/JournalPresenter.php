@@ -19,7 +19,6 @@ class JournalPresenter extends BasePresenter
         $this->model = $model;
     }
 
-
     public function renderDefault(int $aid, ?int $year = null) : void
     {
         if (! $this->isEditable) {
@@ -30,9 +29,7 @@ class JournalPresenter extends BasePresenter
         if ($year === null) {
             $year = date('Y');
         }
-        $this->template->year = $year;
-
-        $this->template->units = $units = $this->unitService->getAllUnder($this->aid);
+        $units = $this->unitService->getAllUnder($this->aid);
 
         $changes      = [];
         $changeExists = false;
@@ -41,7 +38,11 @@ class JournalPresenter extends BasePresenter
             $changeExists     = $changeExists || (empty($uch['add']) && $uch['remove']);
             $changes[$unitId] = $uch;
         }
-        $this->template->changes      = $changes;
-        $this->template->changeExists = $changeExists;
+        $this->template->setParameters([
+            'year'=> $year,
+            'units' => $units,
+            'changes' => $changes,
+            'changeExists' => $changeExists,
+        ]);
     }
 }
