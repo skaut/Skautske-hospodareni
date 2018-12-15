@@ -33,7 +33,7 @@ class ContractPresenter extends BasePresenter
     public function renderDefault() : void
     {
         $this->template->setParameters([
-            'list' => $this->travelService->getAllContracts($this->unit->ID),,
+            'list' => $this->travelService->getAllContracts($this->unit->ID),
         ]);
     }
 
