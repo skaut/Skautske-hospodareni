@@ -7,12 +7,14 @@ namespace App\AccountancyModule\TravelModule;
 use App\AccountancyModule\TravelModule\Components\CommandGrid;
 use App\AccountancyModule\TravelModule\Factories\ICommandGridFactory;
 use App\Forms\BaseForm;
+use Model\BaseService;
 use Model\Services\PdfRenderer;
 use Model\Travel\Command\TravelDetails;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
+use function array_key_exists;
 use function array_slice;
 use function count;
 use function round;
@@ -41,14 +43,20 @@ class DefaultPresenter extends BasePresenter
     {
         $command = $this->travelService->getCommandDetail($commandId);
 
-        return $command !== null && $command->getUnitId() === $this->getUnitId();
+        return $command !== null &&
+            (
+                $command->getOwnerId() === $this->getUser()->getId() ||
+                array_key_exists($command->getUnitId(), $this->getUser()->getIdentity()->access[BaseService::ACCESS_READ])
+            );
     }
 
     private function isCommandEditable(int $id) : bool
     {
         $command = $this->travelService->getCommandDetail($id);
 
-        return $this->isCommandAccessible($id) && $command->getClosedAt() === null;
+        return $this->isCommandAccessible($id) &&
+            $command->getClosedAt() === null &&
+            array_key_exists($command->getUnitId(), $this->getUser()->getIdentity()->access[BaseService::ACCESS_EDIT]);
     }
 
 

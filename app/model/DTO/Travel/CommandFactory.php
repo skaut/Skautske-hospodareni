@@ -26,7 +26,8 @@ class CommandFactory
             $command->getFirstTravelDate(),
             $command->getPricePerKm(),
             $command->getFuelPricePerKm(),
-            $command->getClosedAt() !== null ? Command::STATE_CLOSED : Command::STATE_IN_PROGRESS
+            $command->getClosedAt() !== null ? Command::STATE_CLOSED : Command::STATE_IN_PROGRESS,
+            $command->getOwnerId()
         );
     }
 }

@@ -332,7 +332,8 @@ class TravelService
         Money $fuelPrice,
         Money $amortization,
         string $note,
-        array $types
+        array $types,
+        int $ownerId
     ) : void {
         $vehicle = $vehicleId !== null
             ? $this->vehicles->find($vehicleId)
@@ -347,7 +348,8 @@ class TravelService
             $passengers,
             $fuelPrice,
             $amortization,
-            $note
+            $note,
+            $ownerId
         );
 
         $this->commands->save($command);
