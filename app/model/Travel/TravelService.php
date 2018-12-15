@@ -62,17 +62,6 @@ class TravelService
     }
 
     /**     VEHICLES    */
-
-    /**
-     * @deprecated Use getVehicleDTO, entities shouldn't be used outside of model
-     *
-     * vraci detail daného vozidla
-     */
-    public function getVehicle(int $vehicleId) : Vehicle
-    {
-        return $this->vehicles->find($vehicleId);
-    }
-
     public function getVehicleDTO(int $id) : ?DTO\Vehicle
     {
         try {
@@ -141,7 +130,7 @@ class TravelService
      */
     public function archiveVehicle(int $vehicleId) : void
     {
-        $vehicle = $this->getVehicle($vehicleId);
+        $vehicle = $this->vehicles->find($vehicleId);
 
         if ($vehicle->isArchived()) {
             return;
