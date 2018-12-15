@@ -14,6 +14,7 @@ use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
+use Nette\Security\Identity;
 use function array_key_exists;
 use function array_slice;
 use function count;
@@ -42,21 +43,25 @@ class DefaultPresenter extends BasePresenter
     private function isCommandAccessible(int $commandId) : bool
     {
         $command = $this->travelService->getCommandDetail($commandId);
+        /** @var Identity $identity */
+        $identity = $this->getUser()->getIdentity();
 
         return $command !== null &&
             (
                 $command->getOwnerId() === $this->getUser()->getId() ||
-                array_key_exists($command->getUnitId(), $this->getUser()->getIdentity()->access[BaseService::ACCESS_READ])
+                array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_READ])
             );
     }
 
     private function isCommandEditable(int $id) : bool
     {
         $command = $this->travelService->getCommandDetail($id);
+        /** @var Identity $identity */
+        $identity = $this->getUser()->getIdentity();
 
         return $this->isCommandAccessible($id) &&
             $command->getClosedAt() === null &&
-            array_key_exists($command->getUnitId(), $this->getUser()->getIdentity()->access[BaseService::ACCESS_EDIT]);
+            array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
     }
 
 

@@ -10,6 +10,7 @@ use Model\Services\PdfRenderer;
 use Model\Travel\Contract\Passenger;
 use Model\TravelService;
 use Nette\Application\UI\Form;
+use Nette\Security\Identity;
 use function array_column;
 use function array_filter;
 use function array_key_exists;
@@ -40,8 +41,10 @@ class ContractPresenter extends BasePresenter
     public function actionDetail(int $id) : void
     {
         $contract = $this->travelService->getContract($id);
+        /** @var Identity $identity */
+        $identity = $this->getUser()->getIdentity();
 
-        if ($contract === null || ! array_key_exists($contract->getUnitId(), $this->getUser()->getIdentity()->access[BaseService::ACCESS_READ])) {
+        if ($contract === null || ! array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_READ])) {
             $this->flashMessage('Nemáte oprávnění k cestovnímu příkazu.', 'danger');
             $this->redirect('default');
         }

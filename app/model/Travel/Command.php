@@ -106,7 +106,7 @@ class Command
 
     /**
      * @var int|null
-     * @ORM|Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $ownerId = null;
 
