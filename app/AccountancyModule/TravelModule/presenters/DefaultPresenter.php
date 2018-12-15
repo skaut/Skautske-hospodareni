@@ -67,13 +67,19 @@ class DefaultPresenter extends BasePresenter
 
     public function renderDetail(int $id) : void
     {
-        $this->template->command    = $command = $this->travelService->getCommandDetail($id);
-        $this->template->vehicle    = $command->getVehicleId() !== null
-            ? $this->travelService->getVehicle($command->getVehicleId())
+        $command          = $this->travelService->getCommandDetail($id);
+        $vehicle          = $command->getVehicleId() !== null
+            ? $this->travelService->getVehicleDTO($command->getVehicleId())
             : null;
-        $this->template->isEditable = $this->isEditable = $this->unit->ID === $command->getUnitId() && $command->getClosedAt() === null;
-        $this->template->travels    = $this->travelService->getTravels($command->getId());
-        $this->template->types      = $this->travelService->getCommandTypes($command->getId());
+        $this->isEditable = $this->unit->ID === $command->getUnitId() && $command->getClosedAt() === null;
+
+        $this->template->setParameters([
+            'command'    => $command,
+            'vehicle'    => $vehicle,
+            'isEditable' =>$this->isEditable,
+            'travels'    => $this->travelService->getTravels($command->getId()),
+            'types'      => $this->travelService->getCommandTypes($command->getId()),
+        ]);
     }
 
     public function actionPrint(int $commandId) : void

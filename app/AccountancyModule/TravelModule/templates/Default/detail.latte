@@ -30,7 +30,7 @@
     <div class="col-sm-4">
         <h3>Prostředek</h3>
         <b>Typ:</b> {foreach $types as $t} {$t}{if !$iterator->isLast()}, {/if} {/foreach}<br />
-        {ifset $vehicle}
+        {if $vehicle !== null}
             <b>Vozidlo:</b>
             <a n:href="Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a>
             <br/>
@@ -38,7 +38,7 @@
             <b>Cena paliva:</b> {$command->fuelPrice|price} Kč/l<br/>
             <b>Opotřebení:</b> {$command->amortizationPerKm|price} Kč/km<br/>
             <b>Sazba náhrady:</b> <b>{$command->pricePerKm|price}</b> Kč/km<br/>
-        {/ifset}
+        {/if}
 
     </div>
     <div n:if="$command->passenger->contractId !== NULL" class="col-sm-4 hidden-xs">
