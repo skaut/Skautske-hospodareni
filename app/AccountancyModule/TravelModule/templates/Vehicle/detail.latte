@@ -1,21 +1,21 @@
-    {block #title}{$vehicle->label}{/block}
+    {block #title}{$vehicleDTO->label}{/block}
 
 {block #content}
 {include ../menu.latte}
 <div class="button-bar">
     <div class="pull-right">
-        {if $vehicle->archived}
+        {if $vehicleDTO->archived}
             <div class="alert alert-warning">Toto vozidlo je archivované.</div>
         {else}
-            <a n:href="archive! $vehicle->id" class="btn btn-primary"><span class="glyphicon glyphicon-trash"></span>
+            <a n:href="archive! $vehicleDTO->id" class="btn btn-primary"><span class="glyphicon glyphicon-trash"></span>
                 Archivovat</a>
         {/if}
-        <a n:href="remove! $vehicle->id"
+        <a n:href="remove! $vehicleDTO->id"
                 class="btn btn-danger hidden-xs hidden-sm{if !$canDelete} disabled{/if}" {if !$canDelete} title="Nelze mazat vozidla s cestovními příkazy"{/if}
                 onclick="return confirm('Opravdu chcete vozidlo smazat?');"><i
                     class="glyphicon glyphicon-remove"></i></a>
     </div>
-    <h2>{$vehicle->label}</h2>
+    <h2>{$vehicleDTO->label}</h2>
 </div>
 <div class="row">
     <div class='col-sm-6'>
@@ -23,17 +23,17 @@
         <table class="table table-bordered table-striped">
             <tr>
                 <th>Typ</th>
-                <td>{$vehicle->type}</td>
+                <td>{$vehicleDTO->type}</td>
             </tr>
             <tr>
                 <th>SPZ</th>
-                <td>{$vehicle->registration}</td>
+                <td>{$vehicleDTO->registration}</td>
             </tr>
             <tr>
                 <th>Průměrná spotřeba</th>
-                <td>{$vehicle->consumption|number:2} l/100 km</td>
+                <td>{$vehicleDTO->consumption|number:2} l/100 km</td>
             </tr>
-            <tr n:ifset="$subunitName">
+            <tr n:if="$subunitName !== null">
                 <th>Oddíl</th>
                 <td>{$subunitName}</td>
             </tr>

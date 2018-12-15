@@ -27,6 +27,9 @@ class Vehicle
     /** @var string */
     private $type;
 
+    /** @var int */
+    private $unitId;
+
     /** @var string */
     private $registration;
 
@@ -51,6 +54,7 @@ class Vehicle
     public function __construct(
         int $id,
         string $type,
+        int $unitId,
         string $registration,
         string $label,
         ?int $subunitId,
@@ -61,6 +65,7 @@ class Vehicle
     ) {
         $this->id           = $id;
         $this->type         = $type;
+        $this->unitId       = $unitId;
         $this->registration = $registration;
         $this->label        = $label;
         $this->subunitId    = $subunitId;
@@ -78,6 +83,11 @@ class Vehicle
     public function getType() : string
     {
         return $this->type;
+    }
+
+    public function getUnitId() : int
+    {
+        return $this->unitId;
     }
 
     public function getRegistration() : string
