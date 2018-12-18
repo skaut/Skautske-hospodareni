@@ -33,13 +33,13 @@
                 <th>Průměrná spotřeba</th>
                 <td>{$vehicle->consumption|number:2} l/100 km</td>
             </tr>
-            <tr n:ifset="$subunitName">
+            <tr n:if="$subunitName !== null">
                 <th>Oddíl</th>
                 <td>{$subunitName}</td>
             </tr>
             <tr>
                 <td colspan="2" class="text-center">
-                    Vytvořil <i>{$vehicleDTO->authorName}</i> dne {$vehicleDTO->createdAt|date:'d.m.Y'}
+                    Vytvořil <i>{$vehicle->authorName}</i> dne {$vehicle->createdAt|date:'d.m.Y'}
                 </td>
             </tr>
         </table>

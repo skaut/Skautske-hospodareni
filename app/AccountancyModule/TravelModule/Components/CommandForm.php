@@ -8,7 +8,6 @@ use App\Forms\BaseForm;
 use App\MyValidators;
 use Dibi\Row;
 use Model\Travel\Passenger;
-use Model\Travel\VehicleNotFound;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Control;
@@ -207,12 +206,13 @@ class CommandForm extends Control
             return;
         }
 
-        try {
-            $vehicle = $this->model->getVehicle($vehicleId);
-            $vehicles->setItems([$vehicle->getId() => $vehicle->getLabel()] + $vehicles->getItems());
-            $vehicles->setDefaultValue($vehicleId);
-        } catch (VehicleNotFound $exc) {
+        $vehicle = $this->model->getVehicleDTO($vehicleId);
+        if ($vehicle === null) {
+            return;
         }
+
+        $vehicles->setItems([$vehicle->getId() => $vehicle->getLabel()] + $vehicles->getItems());
+        $vehicles->setDefaultValue($vehicleId);
     }
 
     private function createCommand(ArrayHash $values) : void

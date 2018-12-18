@@ -13,6 +13,7 @@ class VehicleFactory
         return new Vehicle(
             $vehicle->getId(),
             $vehicle->getType(),
+            $vehicle->getUnitId(),
             $vehicle->getRegistration(),
             $vehicle->getLabel(),
             $vehicle->getSubunitId(),

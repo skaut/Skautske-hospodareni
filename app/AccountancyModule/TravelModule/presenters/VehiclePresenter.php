@@ -7,10 +7,10 @@ namespace App\AccountancyModule\TravelModule;
 use App\AccountancyModule\TravelModule\Components\VehicleGrid;
 use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 use App\Forms\BaseForm;
+use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
-use Model\Travel\Vehicle;
-use Model\Travel\VehicleNotFound;
 use Model\TravelService;
+use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
@@ -33,12 +33,12 @@ class VehiclePresenter extends BasePresenter
 
     /**
      * @throws BadRequestException
+     * @throws AbortException
      */
-    private function getVehicle(int $id) : Vehicle
+    private function getVehicle(int $id) : VehicleDTO
     {
-        try {
-            $vehicle = $this->travelService->getVehicle($id);
-        } catch (VehicleNotFound $e) {
+        $vehicle = $this->travelService->getVehicleDTO($id);
+        if ($vehicle === null) {
             throw new BadRequestException('Zadané vozidlo neexistuje');
         }
 
@@ -52,19 +52,24 @@ class VehiclePresenter extends BasePresenter
 
     public function actionDetail(int $id) : void
     {
-        $vehicle                    = $this->getVehicle($id);
-        $this->template->vehicle    = $vehicle;
-        $this->template->vehicleDTO = $this->travelService->getVehicleDTO($id);
+        $vehicle     = $this->travelService->getVehicleDTO($id);
+        $subUnitName = null;
         if ($vehicle->getSubunitId() !== null) {
-            $this->template->subunitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
+            $subUnitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
         }
 
-        $this->template->canDelete = $this->travelService->getCommandsCount($id) === 0;
+        $this->template->setParameters([
+            'vehicle' => $vehicle,
+            'subunitName' => $subUnitName,
+            'canDelete' => $this->travelService->getCommandsCount($id) === 0,
+        ]);
     }
 
     public function renderDetail(int $id) : void
     {
-        $this->template->commands = $this->travelService->getAllCommandsByVehicle($id);
+        $this->template->setParameters([
+            'commands' => $this->travelService->getAllCommandsByVehicle($id),
+        ]);
     }
 
     public function handleRemove(int $vehicleId) : void
@@ -96,7 +101,6 @@ class VehiclePresenter extends BasePresenter
     {
         return $this->gridFactory->create($this->getUnitId());
     }
-
 
     protected function createComponentFormCreateVehicle() : Form
     {
