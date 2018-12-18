@@ -81,6 +81,9 @@ class Command
     /** @var string */
     private $state;
 
+    /** @var int|null */
+    private $ownerId;
+
     public function __construct(
         int $id,
         int $unitId,
@@ -97,7 +100,8 @@ class Command
         ?\DateTimeImmutable $firstTravelDate,
         Money $pricePerKm,
         Money $fuelPricePerKm,
-        string $state
+        string $state,
+        ?int $ownerId
     ) {
         $this->id                = $id;
         $this->unitId            = $unitId;
@@ -115,6 +119,7 @@ class Command
         $this->pricePerKm        = $pricePerKm;
         $this->fuelPricePerKm    = $fuelPricePerKm;
         $this->state             = $state;
+        $this->ownerId           = $ownerId;
     }
 
     public function getId() : int
@@ -195,5 +200,10 @@ class Command
     public function getState() : string
     {
         return $this->state;
+    }
+
+    public function getOwnerId() : ?int
+    {
+        return $this->ownerId;
     }
 }

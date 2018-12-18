@@ -228,7 +228,8 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values->fuel_price),
             MoneyFactory::fromFloat((float) $values->amortization),
             $values->note,
-            $values->type
+            $values->type,
+            $this->presenter->getUser()->getId()
         );
 
         $this->presenter->flashMessage('Cestovní příkaz byl založen.');

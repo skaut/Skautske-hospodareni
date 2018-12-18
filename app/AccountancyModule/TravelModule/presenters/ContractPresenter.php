@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\AccountancyModule\TravelModule;
 
 use App\Forms\BaseForm;
+use Model\BaseService;
 use Model\Services\PdfRenderer;
 use Model\Travel\Contract\Passenger;
 use Model\TravelService;
 use Nette\Application\UI\Form;
+use Nette\Security\Identity;
 use function array_column;
 use function array_filter;
+use function array_key_exists;
 use function dirname;
 
 class ContractPresenter extends BasePresenter
@@ -30,14 +33,18 @@ class ContractPresenter extends BasePresenter
 
     public function renderDefault() : void
     {
-        $this->template->list = $this->travelService->getAllContracts($this->unit->ID);
+        $this->template->setParameters([
+            'list' => $this->travelService->getAllContracts($this->unit->ID),
+        ]);
     }
 
     public function actionDetail(int $id) : void
     {
         $contract = $this->travelService->getContract($id);
+        /** @var Identity $identity */
+        $identity = $this->getUser()->getIdentity();
 
-        if ($contract === null || $contract->getUnitId() !== $this->getUnitId()) {
+        if ($contract === null || ! array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_READ])) {
             $this->flashMessage('Nemáte oprávnění k cestovnímu příkazu.', 'danger');
             $this->redirect('default');
         }

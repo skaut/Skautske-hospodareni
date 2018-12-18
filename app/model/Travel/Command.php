@@ -104,6 +104,12 @@ class Command
      */
     private $nextTravelId = 0;
 
+    /**
+     * @var int|null
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $ownerId = null;
+
     public function __construct(
         int $unitId,
         ?Vehicle $vehicle,
@@ -113,7 +119,8 @@ class Command
         string $fellowPassengers,
         Money $fuelPrice,
         Money $amortization,
-        string $note
+        string $note,
+        ?int $ownerId
     ) {
         $this->unitId           = $unitId;
         $this->vehicle          = $vehicle;
@@ -125,6 +132,7 @@ class Command
         $this->amortization     = $amortization;
         $this->note             = $note;
         $this->travels          = new ArrayCollection();
+        $this->ownerId          = $ownerId;
     }
 
     public function update(
@@ -402,5 +410,10 @@ class Command
     private function getTravelId() : int
     {
         return $this->nextTravelId++;
+    }
+
+    public function getOwnerId() : ?int
+    {
+        return $this->ownerId;
     }
 }
