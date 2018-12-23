@@ -160,7 +160,7 @@ class MassAddForm extends BaseControl
                 $this->groupId,
                 $person->name,
                 $person->email,
-                $person->amount ?? $values->amount,
+                (float) ($person->amount ?? $values->amount),
                 \DateTimeImmutable::createFromMutable($person->dueDate ?? $values->dueDate),
                 (int) $person->id,
                 $person->variableSymbol,
