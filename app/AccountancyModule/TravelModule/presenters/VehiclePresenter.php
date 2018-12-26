@@ -7,13 +7,16 @@ namespace App\AccountancyModule\TravelModule;
 use App\AccountancyModule\TravelModule\Components\VehicleGrid;
 use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 use App\Forms\BaseForm;
+use Model\BaseService;
 use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
 use Model\TravelService;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\Security\Identity;
 use Nette\Utils\ArrayHash;
+use function array_key_exists;
 
 class VehiclePresenter extends BasePresenter
 {
@@ -50,32 +53,48 @@ class VehiclePresenter extends BasePresenter
         return $vehicle;
     }
 
-    public function actionDetail(int $id) : void
+    private function isVehicleEditable(?VehicleDTO $vehicle) : bool
     {
-        $vehicle     = $this->travelService->getVehicleDTO($id);
-        $subUnitName = null;
-        if ($vehicle->getSubunitId() !== null) {
-            $subUnitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
-        }
+        /** @var Identity $identity */
+        $identity = $this->getUser()->getIdentity();
 
-        $this->template->setParameters([
-            'vehicle' => $vehicle,
-            'subunitName' => $subUnitName,
-            'canDelete' => $this->travelService->getCommandsCount($id) === 0,
-        ]);
+        $unitAccessible = array_key_exists($vehicle->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]) ||
+        $vehicle->getSubunitId() !== null && array_key_exists($vehicle->getSubunitId(), $identity->access[BaseService::ACCESS_EDIT]);
+
+        return $vehicle !== null && $unitAccessible;
     }
 
     public function renderDetail(int $id) : void
     {
-        $this->template->setParameters([
-            'commands' => $this->travelService->getAllCommandsByVehicle($id),
-        ]);
+        try {
+            $vehicle = $this->getVehicle($id);
+
+            $subUnitName = null;
+            if ($vehicle->getSubunitId() !== null) {
+                $subUnitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
+            }
+
+            $this->template->setParameters([
+                'vehicle' => $vehicle,
+                'subunitName' => $subUnitName,
+                'canDelete' => $this->travelService->getCommandsCount($id) === 0,
+                'commands' => $this->travelService->getAllCommandsByVehicle($id),
+                'isEditable' => $this->isVehicleEditable ($vehicle),
+            ]);
+        } catch (BadRequestException $exc) {
+            $this->flashMessage($exc->getMessage(), 'danger');
+            $this->redirect('default');
+        }
     }
 
     public function handleRemove(int $vehicleId) : void
     {
         // Check whether vehicle exists and belongs to unit
-        $this->getVehicle($vehicleId);
+        $vehicle = $this->getVehicle($vehicleId);
+        if (! $this->isVehicleEditable($vehicle)) {
+            $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
+            $this->redirect('default');
+        };
 
         if ($this->travelService->removeVehicle($vehicleId)) {
             $this->flashMessage('Vozidlo bylo odebráno.');
@@ -88,7 +107,11 @@ class VehiclePresenter extends BasePresenter
     public function handleArchive(int $vehicleId) : void
     {
         // Check whether vehicle exists and belongs to unit
-        $this->getVehicle($vehicleId);
+        $vehicle = $this->getVehicle($vehicleId);
+        if (! $this->isVehicleEditable($vehicle)) {
+            $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
+            $this->redirect('default');
+        };
 
         $this->travelService->archiveVehicle($vehicleId);
         $this->flashMessage('Vozidlo bylo archivováno', 'success');
