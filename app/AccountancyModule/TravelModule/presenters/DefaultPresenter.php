@@ -84,7 +84,7 @@ class DefaultPresenter extends BasePresenter
         $vehicle          = $command->getVehicleId() !== null
             ? $this->travelService->getVehicleDTO($command->getVehicleId())
             : null;
-        $this->isEditable = $this->unit->ID === $command->getUnitId() && $command->getClosedAt() === null;
+        $this->isEditable = $this->officialUnit->getId() === $command->getUnitId() && $command->getClosedAt() === null;
 
         $this->template->setParameters([
             'command'    => $command,

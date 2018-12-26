@@ -43,7 +43,7 @@ class VehiclePresenter extends BasePresenter
         }
 
         // Check whether vehicle belongs to unit
-        if ($vehicle->getUnitId() !== $this->unit->ID) {
+        if ($vehicle->getUnitId() !== $this->officialUnit->getId()) {
             $this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
             $this->redirect('default');
         }
