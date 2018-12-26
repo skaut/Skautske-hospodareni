@@ -55,15 +55,17 @@ class ChitPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->template->onlyUnlocked = $this->onlyUnlocked;
-        $oficialUnit                  = $this->unitService->getOfficialUnit($this->aid);
+        $this->template->setParameters([
+            'onlyUnlocked' => $this->onlyUnlocked,
+        ]);
+        $officialUnitId = $this->unitService->getOfficialUnit($this->aid)->getId();
 
-        if ($oficialUnit->ID === $this->aid) {
+        if ($officialUnitId === $this->aid) {
             return;
         }
 
         $this->flashMessage('Přehled paragonů je dostupný jen pro organizační jednotky.');
-        $this->redirect('this', ['aid' => $oficialUnit->ID]);
+        $this->redirect('this', ['aid' => $officialUnitId]);
     }
 
     public function handleLockCashbook(string $cashbookId) : void

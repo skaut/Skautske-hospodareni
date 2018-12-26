@@ -37,8 +37,8 @@ class ContractPresenter extends BasePresenter
         $identity = $this->getUser()->getIdentity();
 
         $this->template->setParameters([
-            'list' => $this->travelService->getAllContracts($this->unit->ID),
-            'allowCreateNew' => array_key_exists($this->getUnitId(), $identity->access[BaseService::ACCESS_EDIT])
+            'list' => $this->travelService->getAllContracts($this->officialUnit->getId()),
+            'allowCreateNew' => array_key_exists($this->officialUnit->getId(), $identity->access[BaseService::ACCESS_EDIT]),
         ]);
     }
 
