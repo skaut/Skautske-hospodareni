@@ -33,8 +33,12 @@ class ContractPresenter extends BasePresenter
 
     public function renderDefault() : void
     {
+        /** @var Identity $identity */
+        $identity = $this->getUser()->getIdentity();
+
         $this->template->setParameters([
             'list' => $this->travelService->getAllContracts($this->unit->ID),
+            'allowCreateNew' => array_key_exists($this->getUnitId(), $identity->access[BaseService::ACCESS_EDIT])
         ]);
     }
 
