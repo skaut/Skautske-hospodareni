@@ -19,14 +19,18 @@ class CommandGrid extends BaseGridControl
     /** @var int */
     private $unitId;
 
+    /** @var int */
+    private $userId;
+
     /** @var TravelService */
     private $travel;
 
 
-    public function __construct(int $unitId, TravelService $travel)
+    public function __construct(int $unitId, int $userId, TravelService $travel)
     {
         parent::__construct();
         $this->unitId = $unitId;
+        $this->userId = $userId;
         $this->travel = $travel;
     }
 
@@ -59,7 +63,7 @@ class CommandGrid extends BaseGridControl
 
         $grid->setDefaultFilter(['state' => Command::STATE_IN_PROGRESS], false);
 
-        $commands = $this->travel->getAllCommands($this->unitId);
+        $commands = $this->travel->getAllUserCommands($this->unitId, $this->userId);
 
         $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($commands), 'id'));
 
@@ -70,6 +74,7 @@ class CommandGrid extends BaseGridControl
         $grid->onRender[] = function (DataGrid $grid) use ($commandIds, $vehicleIds) : void {
             $grid->template->types    = $this->travel->getTypes($commandIds);
             $grid->template->vehicles = $this->travel->findVehiclesByIds($vehicleIds);
+
             $grid->setTemplateFile(__DIR__ . '/templates/CommandGrid.latte');
         };
 

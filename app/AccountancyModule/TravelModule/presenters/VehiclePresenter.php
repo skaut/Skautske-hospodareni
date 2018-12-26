@@ -79,7 +79,7 @@ class VehiclePresenter extends BasePresenter
                 'subunitName' => $subUnitName,
                 'canDelete' => $this->travelService->getCommandsCount($id) === 0,
                 'commands' => $this->travelService->getAllCommandsByVehicle($id),
-                'isEditable' => $this->isVehicleEditable ($vehicle),
+                'isEditable' => $this->isVehicleEditable($vehicle),
             ]);
         } catch (BadRequestException $exc) {
             $this->flashMessage($exc->getMessage(), 'danger');

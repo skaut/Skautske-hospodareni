@@ -44,24 +44,23 @@ class DefaultPresenter extends BasePresenter
     {
         $command = $this->travelService->getCommandDetail($commandId);
         /** @var Identity $identity */
-        $identity = $this->getUser()->getIdentity();
+        $identity    = $this->getUser()->getIdentity();
+        $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
+            array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
 
-        return $command !== null &&
-            (
-                $command->getOwnerId() === $this->getUser()->getId() ||
-                array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_READ])
-            );
+        return $command !== null && $unitOrOwner;
     }
 
     private function isCommandEditable(int $id) : bool
     {
         $command = $this->travelService->getCommandDetail($id);
         /** @var Identity $identity */
-        $identity = $this->getUser()->getIdentity();
+        $identity    = $this->getUser()->getIdentity();
+        $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
+            array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
 
         return $this->isCommandAccessible($id) &&
-            $command->getClosedAt() === null &&
-            array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
+            $command->getClosedAt() === null && $unitOrOwner;
     }
 
 
@@ -80,16 +79,15 @@ class DefaultPresenter extends BasePresenter
 
     public function renderDetail(int $id) : void
     {
-        $command          = $this->travelService->getCommandDetail($id);
-        $vehicle          = $command->getVehicleId() !== null
+        $command = $this->travelService->getCommandDetail($id);
+        $vehicle = $command->getVehicleId() !== null
             ? $this->travelService->getVehicleDTO($command->getVehicleId())
             : null;
-        $this->isEditable = $this->officialUnit->getId() === $command->getUnitId() && $command->getClosedAt() === null;
 
         $this->template->setParameters([
             'command'    => $command,
             'vehicle'    => $vehicle,
-            'isEditable' =>$this->isEditable,
+            'isEditable' => $this->isCommandEditable($command->getId()),
             'travels'    => $this->travelService->getTravels($command->getId()),
             'types'      => $this->travelService->getCommandTypes($command->getId()),
         ]);
@@ -293,7 +291,7 @@ class DefaultPresenter extends BasePresenter
 
     protected function createComponentGrid() : CommandGrid
     {
-        return $this->gridFactory->create($this->getUnitId());
+        return $this->gridFactory->create($this->getUnitId(), $this->getUser()->getId());
     }
 
     private function formEditTravelSubmitted(Form $form) : void
