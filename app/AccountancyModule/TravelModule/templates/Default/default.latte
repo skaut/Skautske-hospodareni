@@ -3,13 +3,17 @@
 
 {include ../menu.latte}
  <div class="row button-bar">
-     <a n:href="Command:" class="btn btn-success pull-right">
-         <span class="glyphicon glyphicon-plus-sign"></span>
-         Založit cestovní příkaz
-     </a>
-     <h2>Cestovní příkazy <span class="hidden-xs hidden-sm label label-default">{$unit->getDisplayName()}</span></h2>
+     <div class="col-sm-12">
+         <a n:href="Command:" class="btn btn-success pull-right">
+             <span class="glyphicon glyphicon-plus-sign"></span>
+             Založit cestovní příkaz
+         </a>
+         <h2>Cestovní příkazy <span class="hidden-xs hidden-sm label label-default">{$unit->getDisplayName()}</span></h2>
+     </div>
  </div>
 
 <div class="row">
-    {control grid}
+    <div class="col-sm-12">
+        {control grid}
+    </div>
 </div>
