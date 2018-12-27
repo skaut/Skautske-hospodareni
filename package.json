@@ -1,0 +1,12 @@
+{
+    "private": true,
+    "scripts": {
+        "build": "yarn sass frontend/app.scss www/css/app.css && yarn postcss www/css/app.css --use autoprefixer -d www/css/"
+    },
+    "dependencies": {
+        "autoprefixer": "^9.4.3",
+        "bootstrap": "^4.2.1",
+        "postcss-cli": "^6.1.0",
+        "sass": "^1.15.2"
+    }
+}
