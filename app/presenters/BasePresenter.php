@@ -14,6 +14,7 @@ use Nette\Security\Identity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
 use WebLoader\Nette as WebLoader;
+use function explode;
 
 /**
  * @property-read Nette\Bridges\ApplicationLatte\Template $template
@@ -96,6 +97,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     {
         parent::beforeRender();
 
+        $this->template->setParameters(['module' => explode(':', $this->getName())[1] ?? null]);
+
         if (! $this->getUser()->isLoggedIn()) {
             return;
         }
@@ -138,7 +141,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     protected function updateUserAccess() : void
     {
         /** @var Identity $identity */
-        $identity         = $this->getUser()->getIdentity();
+        $identity         = $this->user->getIdentity();
         $identity->access = $this->userService->getAccessArrays($this->unitService);
     }
 

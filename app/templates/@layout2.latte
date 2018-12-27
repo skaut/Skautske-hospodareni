@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
+
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+
+<body class="pb-5 position-relative">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container container-lg">
+            <a class="navbar-brand" n:href=":Default:">Hospodaření</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMain"
+                    aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav mr-auto">
+                    <li n:class="nav-item, $module === 'Event' ? active">
+                        <a class="nav-link" n:href=":Accountancy:Event:Default:">Akce</a>
+                    </li>
+                    <li n:class="nav-item, $module === 'Camp' ? active">
+                        <a class="nav-link" n:href=":Accountancy:Camp:Default:">Tábory</a>
+                    </li>
+                    <li n:class="nav-item, $module === 'Travel' ? active">
+                        <a class="nav-link" n:href=":Accountancy:Travel:Default:">Cesťáky</a>
+                    </li>
+                    <li n:class="nav-item, $module === 'UnitAccount' ? active">
+                        <a class="nav-link" n:href=":Accountancy:UnitAccount:Cashbook: $currentUnitId">Jednotka</a>
+                    </li>
+                    <li n:class="nav-item, $module === 'Payment' ? active">
+                        <a class="nav-link" n:href=":Accountancy:Payment:Payment:">Platby</a>
+                    </li>
+                </ul>
+                <div class="my-2 my-lg-0 form-inline">
+                    <select class="roleSelect custom-select custom-select-sm mr-sm-3">
+                        <option n:foreach="$myRoles as $r"
+                                value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{ifset $r->RegistrationNumber}{$r->RegistrationNumber} - {/ifset}{$r->Role}</option>
+                    </select>
+                    <a href="#" class="btn btn-sm btn-secondary my-2 my-sm-0">Odhlásit se</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4" n:ifcontent>
+        <div class="container" n:ifcontent>
+            {block #subMenu}{/block}
+        </div>
+    </nav>
+
+    <main role="main" class="container">
+        {snippet flash}
+            {foreach $flashes as $flash}
+                <div class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Zavřít">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {if strpos($flash->message, 'html: ') === 0}
+                        {$flash->message|substr:6|noescape}
+                    {else}
+                        {$flash->message}
+                    {/if}
+                </div>
+            {/foreach}
+        {/snippet}
+
+        {include #content}
+    </main><!-- /.container -->
+
+    <footer class="mt-5 py-2 text-center bg-light">
+        <small class="text-muted">
+            Skautské hospodaření
+            <a n:href=":Default:about" class="ml-3">O projektu</a>
+            <a href="#" class="ml-3">Autoři</a>
+            <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank" class="ml-3">Changelog</a>
+        </small>
+    </footer>
+
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/bootstrap.native@2.0.15/dist/bootstrap-native-v4.min.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.5.0/js/all.js"
+            integrity="sha384-GqVMZRt5Gn7tB9D9q7ONtcp4gtHIUEW/yG7h98J7IpE3kpi+srfFyyB/04OV6pG0"
+            crossorigin="anonymous"></script>
+</body>
+</html>

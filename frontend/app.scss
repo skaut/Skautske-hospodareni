@@ -1,1 +1,11 @@
 @import "../node_modules/bootstrap/scss/bootstrap";
+
+body {
+  min-height: 100vh;
+}
+
+body > footer {
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+}

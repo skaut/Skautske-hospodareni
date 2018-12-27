@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Forms;
 
+use App\Bootstrap4FormRenderer;
 use App\FormRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\CsrfProtection;
@@ -20,6 +21,11 @@ class BaseForm extends Form
         parent::__construct(null, null);
         $this->setRenderer(new FormRenderer($inline));
         $this->protection = parent::addProtection('Vypršela platnost formuláře, zkus to ještě jednou.');
+    }
+
+    public function useBootstrap4() : void
+    {
+        $this->setRenderer(new Bootstrap4FormRenderer());
     }
 
     /**
