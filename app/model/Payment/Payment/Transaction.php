@@ -22,13 +22,13 @@ class Transaction
 
     /**
      * @var int @todo start using string as does FIO
-     * @ORM\Column(type="integer", nullable=true, name="transactionId")
+     * @ORM\Column(type="bigint", nullable=true, name="transactionId", options={"unsigned"=true})
      */
     private $id;
 
     /**
      * @var string
-     * @ORM\Column(type="string", nullable=true, name="paidFrom")
+     * @ORM\Column(type="string", length=64, nullable=true, name="paidFrom")
      */
     private $bankAccount;
 

@@ -38,13 +38,13 @@ class Payment extends Aggregate
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64)
      */
     private $name;
 
     /**
      * @var string|NULL
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $email;
 
@@ -62,25 +62,25 @@ class Payment extends Aggregate
 
     /**
      * @var DateTimeImmutable
-     * @ORM\Column(type="datetime_immutable", name="maturity")
+     * @ORM\Column(type="date_immutable", name="maturity")
      */
     private $dueDate;
 
     /**
      * @var VariableSymbol|NULL
-     * @ORM\Column(type="variable_symbol", nullable=true, name="vs")
+     * @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs")
      */
     private $variableSymbol;
 
     /**
      * @var int|NULL
-     * @ORM\Column(type="integer", nullable=true, name="ks")
+     * @ORM\Column(type="string", nullable=true, length=4, name="ks")
      */
     private $constantSymbol;
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64, options={"default":""})
      */
     private $note = '';
 
@@ -99,7 +99,7 @@ class Payment extends Aggregate
 
     /**
      * @var State
-     * @ORM\Column(type="string_enum")
+     * @ORM\Column(type="string_enum", length=20, options={"default":"preparing"})
      * @Enum(class=State::class)
      */
     private $state;
