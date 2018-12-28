@@ -22,7 +22,7 @@ class Transaction
 
     /**
      * @var int @todo start using string as does FIO
-     * @ORM\Column(type="bigint", nullable=true, name="transactionId", options={"unsigned"=true})
+     * @ORM\Column(type="integer", nullable=true, name="transactionId", options={"unsigned"=true})
      */
     private $id;
 

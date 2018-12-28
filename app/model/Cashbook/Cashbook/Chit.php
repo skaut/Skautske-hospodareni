@@ -20,7 +20,7 @@ class Chit
     /**
      * @var int|NULL
      * @ORM\Id()
-     * @ORM\Column(type="bigint", options={"unsigned"=true})
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
      */
     private $id;
