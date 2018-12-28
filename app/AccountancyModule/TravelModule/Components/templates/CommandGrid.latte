@@ -9,7 +9,8 @@
 {/define}
 
 {define col-types}
-    {$types[$item->id]}
+    {dump $item}
+    {$item->travelTypePairs|implode:', '}
 {/define}
 
 {define col-vehicle}

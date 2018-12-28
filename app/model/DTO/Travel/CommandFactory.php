@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\DTO\Travel;
 
 use Model\Travel\Command as CommandEntity;
+use function array_map;
 
 class CommandFactory
 {
@@ -27,7 +28,8 @@ class CommandFactory
             $command->getPricePerKm(),
             $command->getFuelPricePerKm(),
             $command->getClosedAt() !== null ? Command::STATE_CLOSED : Command::STATE_IN_PROGRESS,
-            $command->getOwnerId()
+            $command->getOwnerId(),
+            array_map([TypeFactory::class, 'create'], $command->getTravelTypes())
         );
     }
 }

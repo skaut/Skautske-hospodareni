@@ -67,12 +67,10 @@ class CommandGrid extends BaseGridControl
 
         $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($commands), 'id'));
 
-        $commandIds = array_column($commands, 'id');
         $vehicleIds = array_column($commands, 'vehicleId');
         $vehicleIds = array_unique(array_filter($vehicleIds));
 
-        $grid->onRender[] = function (DataGrid $grid) use ($commandIds, $vehicleIds) : void {
-            $grid->template->types    = $this->travel->getTypes($commandIds);
+        $grid->onRender[] = function (DataGrid $grid) use ($vehicleIds) : void {
             $grid->template->vehicles = $this->travel->findVehiclesByIds($vehicleIds);
 
             $grid->setTemplateFile(__DIR__ . '/templates/CommandGrid.latte');

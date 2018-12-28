@@ -11,6 +11,7 @@ use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\Travel;
 use Model\Travel\Command\TravelDetails;
 use Model\Travel\Command\VehicleTravel;
+use Model\Travel\Travel\Type;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use function array_reduce;
@@ -110,6 +111,19 @@ class Command
      */
     private $ownerId = null;
 
+    /**
+     * @var Type[]
+     * @ORM\ManyToMany(targetEntity="\Model\Travel\Travel\Type")
+     * @ORM\JoinTable(name="tc_command_types",
+     *      joinColumns={@ORM\JoinColumn(name="commandId", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="typeId", referencedColumnName="type")}
+     *      )
+     */
+    private $travel_types;
+
+    /**
+     * @param Type[] $travel_types
+     */
     public function __construct(
         int $unitId,
         ?Vehicle $vehicle,
@@ -120,7 +134,8 @@ class Command
         Money $fuelPrice,
         Money $amortization,
         string $note,
-        ?int $ownerId
+        ?int $ownerId,
+        array $travel_types
     ) {
         $this->unitId           = $unitId;
         $this->vehicle          = $vehicle;
@@ -133,6 +148,7 @@ class Command
         $this->note             = $note;
         $this->travels          = new ArrayCollection();
         $this->ownerId          = $ownerId;
+        $this->travel_types     = $travel_types;
     }
 
     public function update(
@@ -415,5 +431,13 @@ class Command
     public function getOwnerId() : ?int
     {
         return $this->ownerId;
+    }
+
+    /**
+     * @return Type[]
+     */
+    public function getTravelTypes() : array
+    {
+        return $this->travel_types->toArray();
     }
 }

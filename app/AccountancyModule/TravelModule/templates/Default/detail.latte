@@ -31,7 +31,7 @@
     </div>
     <div class="col-sm-4">
         <h3>Prostředek</h3>
-        <b>Typ:</b> {foreach $types as $t} {$t}{if !$iterator->isLast()}, {/if} {/foreach}<br />
+        <b>Typ:</b> {foreach $command->travelTypes as $t} {$t->label}{if !$iterator->isLast()}, {/if} {/foreach}<br />
         {if $vehicle !== null}
             <b>Vozidlo:</b>
             <a n:href="Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a>

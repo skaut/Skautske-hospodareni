@@ -20,7 +20,7 @@ class CommandTest extends Unit
         $vehicle->shouldReceive('getId')->andReturn(6);
         $driver  = new Passenger('Frantisek Masa', '---', 'Brno');
         $purpose = 'Cesta na střediskovku';
-        $command = new Command(2, $vehicle, $driver, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null);
+        $command = new Command(2, $vehicle, $driver, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, []);
 
         $this->assertSame(2, $command->getUnitId());
         $this->assertSame(6, $command->getVehicleId());
@@ -65,7 +65,8 @@ class CommandTest extends Unit
             Money::fromFloat(100),
             MoneyFactory::fromFloat(3),
             '',
-            null
+            null,
+            []
         );
 
         $command->addTransportTravel(
@@ -335,7 +336,8 @@ class CommandTest extends Unit
             Money::CZK(3120),
             Money::CZK(500),
             '',
-            null
+            null,
+            []
         );
     }
 

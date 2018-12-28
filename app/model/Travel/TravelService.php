@@ -17,12 +17,14 @@ use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\ITravelRepository;
 use Model\Travel\Repositories\IVehicleRepository;
+use Model\Travel\Travel\Type;
 use Model\Travel\TravelNotFound;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
+use function array_filter;
 use function array_map;
 use function in_array;
 
@@ -332,6 +334,10 @@ class TravelService
             ? $this->vehicles->find($vehicleId)
             : null;
 
+        $types = array_filter($this->travelRepository->getTypes(), function (Type $t) use ($types) {
+            return in_array($t->getType(), $types);
+        });
+
         $command = new Command(
             $unitId,
             $vehicle,
@@ -342,11 +348,11 @@ class TravelService
             $fuelPrice,
             $amortization,
             $note,
-            $ownerId
+            $ownerId,
+            $types
         );
 
         $this->commands->save($command);
-        $this->table->updateTypes($command->getId(), $types);
     }
 
     /**

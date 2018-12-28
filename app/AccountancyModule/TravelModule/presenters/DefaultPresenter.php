@@ -8,6 +8,7 @@ use App\AccountancyModule\TravelModule\Components\CommandGrid;
 use App\AccountancyModule\TravelModule\Factories\ICommandGridFactory;
 use App\Forms\BaseForm;
 use Model\BaseService;
+use Model\DTO\Travel\Type;
 use Model\Services\PdfRenderer;
 use Model\Travel\Command\TravelDetails;
 use Model\TravelService;
@@ -16,6 +17,7 @@ use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Security\Identity;
 use function array_key_exists;
+use function array_map;
 use function array_slice;
 use function count;
 use function round;
@@ -73,7 +75,10 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage('Neoprávněný přístup k záznamu!', 'danger');
             $this->redirect('default');
         }
-        $this['formAddTravel']['type']->setItems($this->travelService->getCommandTypes($id));
+
+        $command = $this->travelService->getCommandDetail($id);
+
+        $this['formAddTravel']['type']->setItems($command->getTravelTypePairs());
         $this['formAddTravel']->setDefaults(['command_id' => $id]);
     }
 
@@ -89,7 +94,6 @@ class DefaultPresenter extends BasePresenter
             'vehicle'    => $vehicle,
             'isEditable' => $this->isCommandEditable($command->getId()),
             'travels'    => $this->travelService->getTravels($command->getId()),
-            'types'      => $this->travelService->getCommandTypes($command->getId()),
         ]);
     }
 
@@ -110,7 +114,9 @@ class DefaultPresenter extends BasePresenter
             [
             'command' => $command,
             'travels' => $travels,
-            'types' => $this->travelService->getCommandTypes($commandId),
+            'types' => array_map(function (Type $t) {
+                return $t->getLabel();
+            }, $command->getTravelTypes()),
             'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
             ]
         );
@@ -240,8 +246,10 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage('Záznam nelze upravovat', 'warning');
             $this->redirect('default');
         }
+        $command = $this->travelService->getCommandDetail($commandId);
+
         $form = $this['formEditTravel'];
-        $form['type']->setItems($this->travelService->getCommandTypes($commandId));
+        $form['type']->setItems($command->getTravelTypePairs());
 
         $form->setDefaults(
             [

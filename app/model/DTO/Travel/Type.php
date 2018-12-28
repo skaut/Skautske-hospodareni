@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel;
 
+use Nette\SmartObject;
+
+/**
+ * @property-read string $label
+ */
 class Type
 {
+    use SmartObject;
+
     /** @var string */
     private $type;
 
