@@ -18,13 +18,13 @@ class MailCredentials
      * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $id;
 
     /**
      * @var int
-     * @ORM\Column(type="integer", name="unitId")
+     * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
      */
     private $unitId;
 
@@ -48,7 +48,7 @@ class MailCredentials
 
     /**
      * @var MailProtocol
-     * @ORM\Column(type="string_enum", name="secure")
+     * @ORM\Column(type="string_enum", name="secure", length=64, options={"default":"ssl"})
      * @Enum(class=MailProtocol::class)
      */
     private $protocol;
