@@ -26,7 +26,7 @@ class ObjectType
     /**
      * @var ObjectTypeEnum
      * @ORM\Id()
-     * @ORM\Column(type="string_enum", name="objectTypeId")
+     * @ORM\Column(type="string_enum", name="objectTypeId", length=20)
      * @EnumAnnotation(class=ObjectTypeEnum::class)
      */
     private $type;

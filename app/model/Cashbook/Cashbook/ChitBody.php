@@ -14,7 +14,7 @@ final class ChitBody
 {
     /**
      * @var ChitNumber|NULL
-     * @ORM\Column(type="chit_number", nullable=true, name="num")
+     * @ORM\Column(type="chit_number", nullable=true, name="num", length=5)
      */
     private $number;
 
@@ -26,7 +26,7 @@ final class ChitBody
 
     /**
      * @var Recipient|NULL
-     * @ORM\Column(type="recipient", nullable=true)
+     * @ORM\Column(type="recipient", length=64, nullable=true)
      */
     private $recipient;
 
@@ -38,7 +38,7 @@ final class ChitBody
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=120)
      */
     private $purpose;
 

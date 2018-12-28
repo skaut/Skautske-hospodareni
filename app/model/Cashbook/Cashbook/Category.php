@@ -15,13 +15,13 @@ class Category
 {
     /**
      * @var int
-     * @ORM\Column(type="integer", name="category")
+     * @ORM\Column(type="integer", name="category", options={"unsigned"=true})
      */
     private $id;
 
     /**
      * @var Operation
-     * @ORM\Column(type="string_enum", name="category_operation_type")
+     * @ORM\Column(type="string_enum", name="category_operation_type", length=255, nullable=true)
      * @EnumAnnotation(class=Operation::class)
      */
     private $operationType;
