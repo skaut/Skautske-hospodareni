@@ -6,7 +6,7 @@ namespace App\AccountancyModule\TravelModule\Components;
 
 use App\Forms\BaseForm;
 use App\MyValidators;
-use Dibi\Row;
+use Model\DTO\Travel\Type;
 use Model\Travel\Passenger;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
@@ -31,7 +31,7 @@ class CommandForm extends Control
     /** @var TravelService */
     private $model;
 
-    /** @var Row[] */
+    /** @var Type[] */
     private $transportTypes;
 
     /** @var callable[] */
@@ -57,13 +57,13 @@ class CommandForm extends Control
 
         $vehiclesWithFuel = array_filter(
             $this->transportTypes,
-            function ($t) {
-                return $t->hasFuel;
+            function (Type $t) {
+                return $t->hasFuel();
             }
         );
         $vehiclesWithFuel = array_map(
-            function ($t) {
-                return $t->type;
+            function (Type $t) {
+                return $t->getType();
             },
             $vehiclesWithFuel
         );
@@ -75,7 +75,7 @@ class CommandForm extends Control
             ->setMaxLength(64)
             ->setAttribute('class', 'form-control')
             ->addRule($form::FILLED, 'Musíte vyplnit účel cesty.');
-        $form->addMultiSelect('type', 'Prostředek*', $this->prepareTranportTypeOptions())
+        $form->addMultiSelect('type', 'Prostředek*', $this->prepareTransportTypeOptions())
             ->setAttribute('class', 'combobox')
             ->setRequired('Vyberte alespoň jeden dopravní prostředek.')
             ->addCondition([MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
@@ -162,7 +162,7 @@ class CommandForm extends Control
         $usedTypes = $this->model->getUsedTransportTypes($this->commandId);
 
         if (! empty($usedTypes)) {
-            $form['type']->setItems($this->prepareTranportTypeOptions($usedTypes));
+            $form['type']->setItems($this->prepareTransportTypeOptions($usedTypes));
             $form['type']->setRequired(false); // Even when nothing is selected, used types persist, so it's ok
         }
 
@@ -229,10 +229,10 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values->amortization),
             $values->note,
             $values->type,
-            $this->presenter->getUser()->getId()
+            $this->getPresenter()->getUser()->getId()
         );
 
-        $this->presenter->flashMessage('Cestovní příkaz byl založen.');
+        $this->getPresenter()->flashMessage('Cestovní příkaz byl založen.');
     }
 
     private function updateCommand(ArrayHash $values) : void
@@ -251,22 +251,22 @@ class CommandForm extends Control
             $values->type
         );
 
-        $this->presenter->flashMessage('Cestovní příkaz byl upraven.');
+        $this->getPresenter()->flashMessage('Cestovní příkaz byl upraven.');
     }
 
     /**
      * @param string[] $disabledValues
      * @return Html[]
      */
-    private function prepareTranportTypeOptions(array $disabledValues = []) : array
+    private function prepareTransportTypeOptions(array $disabledValues = []) : array
     {
         $options = [];
-        foreach ($this->transportTypes as $value => $type) {
-            $option          = Html::el('option')
-                ->setAttribute('value', $value)
-                ->setHtml($type->label)
-                ->setAttribute('disabled', in_array($value, $disabledValues, true));
-            $options[$value] = $option;
+        foreach ($this->transportTypes as $type) {
+            $option                    = Html::el('option')
+                ->setAttribute('value', $type->getType())
+                ->setHtml($type->getLabel())
+                ->setAttribute('disabled', in_array($type->getType(), $disabledValues, true));
+            $options[$type->getType()] = $option;
         }
 
         return $options;

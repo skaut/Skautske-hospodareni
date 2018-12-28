@@ -15,6 +15,7 @@ use Model\Travel\ContractNotFound;
 use Model\Travel\Passenger;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
+use Model\Travel\Repositories\ITravelRepository;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\TravelNotFound;
 use Model\Travel\Vehicle;
@@ -30,9 +31,6 @@ class TravelService
     /** @var CommandTable */
     private $table;
 
-    /** @var TravelTable */
-    private $tableTravel;
-
     /** @var IVehicleRepository */
     private $vehicles;
 
@@ -45,20 +43,23 @@ class TravelService
     /** @var IUnitRepository */
     private $units;
 
+    /** @var ITravelRepository */
+    private $travelRepository;
+
     public function __construct(
         CommandTable $table,
-        TravelTable $tableTravel,
         IVehicleRepository $vehicles,
         ICommandRepository $commands,
         IContractRepository $contracts,
-        IUnitRepository $units
+        IUnitRepository $units,
+        ITravelRepository $travelRepository
     ) {
-        $this->table       = $table;
-        $this->tableTravel = $tableTravel;
-        $this->vehicles    = $vehicles;
-        $this->commands    = $commands;
-        $this->contracts   = $contracts;
-        $this->units       = $units;
+        $this->table            = $table;
+        $this->vehicles         = $vehicles;
+        $this->commands         = $commands;
+        $this->contracts        = $contracts;
+        $this->units            = $units;
+        $this->travelRepository = $travelRepository;
     }
 
     /**     VEHICLES    */
@@ -200,9 +201,12 @@ class TravelService
     /**
      * @return mixed[]
      */
-    public function getTravelTypes(bool $pairs = false) : array
+    public function getTravelTypes() : array
     {
-        return $this->tableTravel->getTypes($pairs);
+        return array_map(
+            [DTO\TypeFactory::class, 'create'],
+            $this->travelRepository->getTypes()
+        );
     }
 
     /**
@@ -504,12 +508,12 @@ class TravelService
 
     private function hasFuel(string $type) : bool
     {
-        $type = $this->tableTravel->getTypes()[$type] ?? null;
+        $type = $this->travelRepository->getType($type);
 
         if ($type === null) {
             throw new \InvalidArgumentException('Type ' . $type . ' not found');
         }
 
-        return (bool) $type['hasFuel'];
+        return $type->hasFuel();
     }
 }
