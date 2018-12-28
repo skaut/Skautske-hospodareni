@@ -211,15 +211,6 @@ class TravelService
         );
     }
 
-    /**
-     * @param int[] $commandIds
-     * @return string[]
-     */
-    public function getTypes(array $commandIds) : array
-    {
-        return $this->table->getTypes($commandIds);
-    }
-
     /**     CONTRACTS    */
     public function getContract(int $contractId) : ?DTO\Contract
     {
@@ -489,14 +480,6 @@ class TravelService
     {
         $command = $this->commands->find($commandId);
         $this->commands->remove($command);
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getCommandTypes(int $commandId) : array
-    {
-        return $this->table->getCommandTypes($commandId);
     }
 
     private function selectPassenger(?Passenger $passenger, ?int $contractId) : Passenger
