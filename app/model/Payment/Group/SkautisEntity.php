@@ -15,13 +15,13 @@ final class SkautisEntity
 {
     /**
      * @var int
-     * @ORM\Column(type="integer", nullable=true, name="sisId")
+     * @ORM\Column(type="integer", nullable=true, name="sisId", options={"comment": "ID entity ve skautisu"})
      */
     private $id;
 
     /**
      * @var Type
-     * @ORM\Column(type="string_enum", nullable=true, name="groupType")
+     * @ORM\Column(type="string_enum", nullable=true, name="groupType", length=20, options={"comment":"typ entity"})
      * @Enum(class=Type::class)
      * @Nullable()
      */

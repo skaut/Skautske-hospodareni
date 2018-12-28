@@ -28,7 +28,7 @@ class Amount
 
     /**
      * @var float
-     * @ORM\Column(type="float", name="price")
+     * @ORM\Column(type="float", name="price", options={"unsigned"=true})
      */
     private $value;
 

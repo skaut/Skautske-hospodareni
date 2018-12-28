@@ -28,13 +28,13 @@ final class PaymentDefaults
 
     /**
      * @var int|NULL
-     * @ORM\Column(type="integer", nullable=true, name="ks")
+     * @ORM\Column(type="integer", nullable=true, name="ks", options={"unsigned"=true})
      */
     private $constantSymbol;
 
     /**
      * @var VariableSymbol|NULL
-     * @ORM\Column(type="variable_symbol", nullable=true, name="nextVs")
+     * @ORM\Column(type="variable_symbol", nullable=true, name="nextVs", options={"unsigned"=true})
      */
     private $nextVariableSymbol;
 

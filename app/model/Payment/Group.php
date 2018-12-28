@@ -28,7 +28,7 @@ class Group
 
     /**
      * @var int
-     * @ORM\Column(type="integer", name="unitId")
+     * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
      */
     private $unitId;
 
@@ -40,8 +40,8 @@ class Group
     private $object;
 
     /**
-     * @var string|NULL
-     * @ORM\Column(type="string", nullable=true, name="label")
+     * @var string
+     * @ORM\Column(type="string", name="label", length=64)
      */
     private $name;
 
@@ -53,7 +53,7 @@ class Group
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=20, options={"default":"open"})
      */
     private $state = self::STATE_OPEN;
 
@@ -78,13 +78,13 @@ class Group
 
     /**
      * @var int|NULL
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true)
      */
     private $smtpId;
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="state_info")
+     * @ORM\Column(type="string", name="state_info", length=250, options={"default": ""})
      */
     private $note = '';
 
