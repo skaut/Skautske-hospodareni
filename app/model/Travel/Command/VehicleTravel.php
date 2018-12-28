@@ -15,7 +15,7 @@ class VehicleTravel extends Travel
 {
     /**
      * @var float
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="decimal", precision=9, scale=2, options={"unsigned"=true})
      */
     private $distance;
 
