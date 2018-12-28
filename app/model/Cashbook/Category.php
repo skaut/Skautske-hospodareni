@@ -21,19 +21,19 @@ class Category implements ICategory
      * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $id;
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="label")
+     * @ORM\Column(type="string", name="label", length=64)
      */
     private $name;
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="short")
+     * @ORM\Column(type="string", name="short", length=64)
      */
     private $shortcut;
 
@@ -52,19 +52,19 @@ class Category implements ICategory
 
     /**
      * @var bool
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default":0})
      */
     private $virtual;
 
     /**
      * @var int
-     * @ORM\Column(type="integer", name="orderby")
+     * @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true}, options={"default":100})
      */
     private $priority;
 
     /**
      * @var bool
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default":false})
      */
     private $deleted = false;
 
