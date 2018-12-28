@@ -54,7 +54,7 @@ class Cashbook extends Aggregate
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      */
     private $note;
 
