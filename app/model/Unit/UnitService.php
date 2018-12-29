@@ -126,10 +126,10 @@ class UnitService
     /**
      * vrací oficiální název organizační jednotky (využití na paragonech)
      */
-    public function getOficialName(int $unitId) : string
+    public function getOfficialName(int $unitId) : string
     {
         $unit = $this->getOfficialUnit($unitId);
-        return 'IČO ' . $unit->getIc() . ' ' . $unit->getFullDisplayName() . ', ' . $unit->getStreet() . ', ' . $unit->getCity() . ', ' . $unit->getPostcode();
+        return $unit->getFullDisplayNameWithAddress();
     }
 
     /**

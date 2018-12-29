@@ -114,6 +114,11 @@ class Unit
         return '';
     }
 
+    public function getFullDisplayNameWithAddress() : string
+    {
+        return 'IČO ' . $this->getIc() . ' ' . $this->getFullDisplayName() . ', ' . $this->getStreet() . ', ' . $this->getCity() . ', ' . $this->getPostcode();
+    }
+
     public function getIc() : ?string
     {
         return $this->ic;
