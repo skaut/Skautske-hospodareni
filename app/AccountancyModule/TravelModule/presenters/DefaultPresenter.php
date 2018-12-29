@@ -10,7 +10,6 @@ use App\Forms\BaseForm;
 use Model\BaseService;
 use Model\DTO\Travel\Type;
 use Model\Services\PdfRenderer;
-use Model\Travel\Command\TravelDetails;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
@@ -317,7 +316,10 @@ class DefaultPresenter extends BasePresenter
             $commandId,
             (int) $v->id,
             (float) $v->distanceOrPrice,
-            new TravelDetails(\DateTimeImmutable::createFromMutable($v->date), $v->type, $v->startPlace, $v->endPlace)
+            \DateTimeImmutable::createFromMutable($v->date),
+            $v->type,
+            $v->startPlace,
+            $v->endPlace
         );
 
         $this->flashMessage('Cesta byla upravena.');

@@ -7,6 +7,8 @@ namespace Model\Infrastructure\Repositories\Travel;
 use Doctrine\ORM\EntityManager;
 use Model\Travel\Repositories\ITravelRepository;
 use Model\Travel\Travel\Type;
+use Model\Travel\TypeNotFound;
+use function sprintf;
 
 class TravelRepository implements ITravelRepository
 {
@@ -18,9 +20,17 @@ class TravelRepository implements ITravelRepository
         $this->em = $em;
     }
 
-    public function getType(string $type) : ?Type
+    /**
+     * @throws TypeNotFound
+     */
+    public function getType(string $type) : Type
     {
-        return $this->em->getRepository(Type::class)->find($type);
+        /** @var Type|null $res */
+        $res = $this->em->getRepository(Type::class)->find($type);
+        if ($res === null) {
+            throw new TypeNotFound(sprintf('Travel type \'%s\' was not found.', $type));
+        }
+        return $res;
     }
 
     /**

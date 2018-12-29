@@ -6,12 +6,13 @@ namespace Model\Travel\Command;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Model\Travel\Travel\Type;
 use Nette\SmartObject;
 
 /**
  * @ORM\Embeddable()
  * @property-read DateTimeImmutable $date
- * @property-read string $transportType
+ * @property-read Type $transportType
  * @property-read string $startPlace
  * @property-read string $endPlace
  */
@@ -26,24 +27,25 @@ class TravelDetails
     private $date;
 
     /**
-     * @var string
-     * @ORM\Column(type="string", name="type", length=5)
+     * @var Type
+     * @ORM\ManyToOne(targetEntity="\Model\Travel\Travel\Type::class")
+     * @ORM\JoinColumn(name="type", referencedColumnName="type")
      */
     private $transportType;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string")
      */
     private $startPlace;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string")
      */
     private $endPlace;
 
-    public function __construct(DateTimeImmutable $date, string $transportType, string $startPlace, string $endPlace)
+    public function __construct(DateTimeImmutable $date, Type $transportType, string $startPlace, string $endPlace)
     {
         $this->date          = $date;
         $this->transportType = $transportType;
@@ -56,7 +58,7 @@ class TravelDetails
         return $this->date;
     }
 
-    public function getTransportType() : string
+    public function getTransportType() : Type
     {
         return $this->transportType;
     }

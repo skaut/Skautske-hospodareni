@@ -26,13 +26,11 @@ use Model\Utils\MoneyFactory;
 use Money\Money;
 use function array_filter;
 use function array_map;
+use function array_unique;
 use function in_array;
 
 class TravelService
 {
-    /** @var CommandTable */
-    private $table;
-
     /** @var IVehicleRepository */
     private $vehicles;
 
@@ -49,14 +47,12 @@ class TravelService
     private $travelRepository;
 
     public function __construct(
-        CommandTable $table,
         IVehicleRepository $vehicles,
         ICommandRepository $commands,
         IContractRepository $contracts,
         IUnitRepository $units,
         ITravelRepository $travelRepository
     ) {
-        $this->table            = $table;
         $this->vehicles         = $vehicles;
         $this->commands         = $commands;
         $this->contracts        = $contracts;
@@ -164,11 +160,12 @@ class TravelService
 
     public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
     {
-        $command = $this->commands->find($commandId);
+        $command       = $this->commands->find($commandId);
+        $transportType = $this->travelRepository->getType($type);
 
-        $details = new Command\TravelDetails($date, $type, $startPlace, $endPlace);
+        $details = new Command\TravelDetails($date, $transportType, $startPlace, $endPlace);
 
-        if ($this->hasFuel($type)) {
+        if ($transportType->hasFuel()) {
             $command->addVehicleTravel($distanceOrPrice, $details);
         } else {
             $command->addTransportTravel(MoneyFactory::fromFloat($distanceOrPrice), $details);
@@ -177,12 +174,22 @@ class TravelService
         $this->commands->save($command);
     }
 
-    public function updateTravel(int $commandId, int $travelId, float $distanceOrPrice, Command\TravelDetails $details) : void
-    {
+    public function updateTravel(
+        int $commandId,
+        int $travelId,
+        float $distanceOrPrice,
+        \DateTimeImmutable $date,
+        string $type,
+        string $startPlace,
+        string $endPlace
+    ) : void {
+        $transportType = $this->travelRepository->getType($type);
+        $details       = new Command\TravelDetails($date, $transportType, $startPlace, $endPlace);
+
         $command = $this->commands->find($commandId);
 
         try {
-            if ($this->hasFuel($details->getTransportType())) {
+            if ($transportType->hasFuel()) {
                 $command->updateVehicleTravel($travelId, $distanceOrPrice, $details);
             } else {
                 $command->updateTransportTravel($travelId, MoneyFactory::fromFloat($distanceOrPrice), $details);
@@ -210,6 +217,11 @@ class TravelService
             $this->travelRepository->getTypes()
         );
     }
+    public function getTravelType(string $type) : DTO\Type
+    {
+        return DTO\TypeFactory::create($this->travelRepository->getType($type));
+    }
+
 
     /**     CONTRACTS    */
     public function getContract(int $contractId) : ?DTO\Contract
@@ -294,17 +306,7 @@ class TravelService
     }
 
     /**
-     * @return string[]
-     */
-    public function getUsedTransportTypes(int $commandId) : array
-    {
-        $command = $this->commands->find($commandId);
-
-        return $command->getUsedTransportTypes();
-    }
-
-    /**
-     * @param int[] $types
+     * @param string[] $types
      * @throws Exception
      */
     public function addCommand(
@@ -325,10 +327,6 @@ class TravelService
             ? $this->vehicles->find($vehicleId)
             : null;
 
-        $types = array_filter($this->travelRepository->getTypes(), function (Type $t) use ($types) {
-            return in_array($t->getType(), $types);
-        });
-
         $command = new Command(
             $unitId,
             $vehicle,
@@ -340,14 +338,14 @@ class TravelService
             $amortization,
             $note,
             $ownerId,
-            $types
+            $this->typesToEntities($types)
         );
 
         $this->commands->save($command);
     }
 
     /**
-     * @param int[] $types
+     * @param string[] $types
      * @throws Exception
      */
     public function updateCommand(
@@ -369,6 +367,8 @@ class TravelService
             ? $this->vehicles->find($vehicleId)
             : null;
 
+        $typesEntities = $this->typesToEntities($types);
+
         $command->update(
             $vehicle,
             $this->selectPassenger($passenger, $contractId),
@@ -377,20 +377,11 @@ class TravelService
             $passengers,
             $fuelPrice,
             $amortization,
-            $note
+            $note,
+            array_unique($typesEntities + $command->getUsedTransportTypes())
         );
 
         $this->commands->save($command);
-
-        foreach ($command->getUsedTransportTypes() as $type) {
-            if (in_array($type, $types, true)) {
-                continue;
-            }
-
-            $types[] = $type;
-        }
-
-        $this->table->updateTypes($id, $types);
     }
 
     /**
@@ -495,14 +486,14 @@ class TravelService
             : Passenger::fromContract($this->contracts->find($contractId));
     }
 
-    private function hasFuel(string $type) : bool
+    /**
+     * @param string[] $types
+     * @return Type[]
+     */
+    private function typesToEntities(array $types) : array
     {
-        $type = $this->travelRepository->getType($type);
-
-        if ($type === null) {
-            throw new \InvalidArgumentException('Type ' . $type . ' not found');
-        }
-
-        return $type->hasFuel();
+        return array_filter($this->travelRepository->getTypes(), function (Type $t) use ($types) {
+            return in_array($t->getType(), $types);
+        });
     }
 }

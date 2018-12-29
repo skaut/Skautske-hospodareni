@@ -38,6 +38,14 @@ class Type
      */
     private $order;
 
+    public function __construct(string $type, string $label, bool $hasFuel)
+    {
+        $this->type    = $type;
+        $this->label   = $label;
+        $this->hasFuel = $hasFuel;
+    }
+
+
     public function getType() : string
     {
         return $this->type;
@@ -51,5 +59,10 @@ class Type
     public function hasFuel() : bool
     {
         return $this->hasFuel;
+    }
+
+    public function __toString() : string
+    {
+        return $this->getType();
     }
 }

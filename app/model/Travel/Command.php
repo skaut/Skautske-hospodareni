@@ -112,8 +112,8 @@ class Command
     private $ownerId = null;
 
     /**
-     * @var Type[]
-     * @ORM\ManyToMany(targetEntity="\Model\Travel\Travel\Type")
+     * @var ArrayCollection|Type[]
+     * @ORM\ManyToMany(targetEntity="\Model\Travel\Travel\Type::class")
      * @ORM\JoinTable(name="tc_command_types",
      *      joinColumns={@ORM\JoinColumn(name="commandId", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="typeId", referencedColumnName="type")}
@@ -148,9 +148,12 @@ class Command
         $this->note             = $note;
         $this->travels          = new ArrayCollection();
         $this->ownerId          = $ownerId;
-        $this->travel_types     = $travel_types;
+        $this->travel_types     = new ArrayCollection($travel_types);
     }
 
+    /**
+     * @param Type[] $travel_types
+     */
     public function update(
         ?Vehicle $vehicle,
         Passenger $driver,
@@ -159,7 +162,8 @@ class Command
         string $passengers,
         Money $fuelPrice,
         Money $amortization,
-        string $note
+        string $note,
+        array $travel_types
     ) : void {
         $this->vehicle          = $vehicle;
         $this->passenger        = $driver;
@@ -169,6 +173,7 @@ class Command
         $this->fuelPrice        = $fuelPrice;
         $this->amortization     = $amortization;
         $this->note             = $note;
+        $this->travel_types     = new ArrayCollection($travel_types);
     }
 
     public function close(DateTimeImmutable $time) : void
@@ -413,7 +418,7 @@ class Command
 
     /**
      * Returns all transport types that have at least one travel
-     * @return string[]
+     * @return Type[]
      */
     public function getUsedTransportTypes() : array
     {

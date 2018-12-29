@@ -225,6 +225,9 @@ class Command
         return $this->travel_types;
     }
 
+    /**
+     * @return string[]
+     */
     public function getTravelTypePairs() : array
     {
         $types = [];

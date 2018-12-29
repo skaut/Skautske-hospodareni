@@ -6,6 +6,7 @@ namespace Model\Infrastructure\Repositories\Travel;
 
 use Doctrine\ORM\EntityManager;
 use Model\Travel\Command;
+use Model\Travel\Travel\Type;
 use Model\Travel\Vehicle;
 use Model\Utils\MoneyFactory;
 use function array_map;
@@ -65,6 +66,7 @@ class CommandRepositoryTest extends \IntegrationTest
             Command::class,
             Command\Travel::class,
             Vehicle::class, // right now there is direct reference between the two
+            Type::class,
         ];
     }
 

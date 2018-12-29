@@ -7,6 +7,7 @@ namespace Model\DTO\Travel\Command;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Travel\Command;
+use Model\Travel\Travel\Type;
 use Money\Money;
 use function array_map;
 
@@ -14,23 +15,24 @@ class TravelFactoryTest extends Unit
 {
     public function testCreateListCorrectOrder() : void
     {
-        $firstDay  = new \DateTimeImmutable();
-        $secondDay = new \DateTimeImmutable();
+        $firstDay      = new \DateTimeImmutable();
+        $secondDay     = new \DateTimeImmutable();
+        $transportType = new Type('r', 'rychlík', false);
 
         $travels = [
             m::mock(Command\TransportTravel::class, [
                 'getId' => 3,
-                'getDetails' => new Command\TravelDetails($secondDay, 'r', 'Brno', 'Prague'),
+                'getDetails' => new Command\TravelDetails($secondDay, $transportType, 'Brno', 'Prague'),
                 'getPrice' => Money::CZK(10000),
             ]),
             m::mock(Command\TransportTravel::class, [
                 'getId' => 1,
-                'getDetails' => new Command\TravelDetails($secondDay, 'r', 'Prague', 'Brno'),
+                'getDetails' => new Command\TravelDetails($secondDay, $transportType, 'Prague', 'Brno'),
                 'getPrice' => Money::CZK(10000),
             ]),
             m::mock(Command\TransportTravel::class, [
                 'getId' => 2,
-                'getDetails' => new Command\TravelDetails($firstDay, 'r', 'Prague', 'Brno'),
+                'getDetails' => new Command\TravelDetails($firstDay, $transportType, 'Prague', 'Brno'),
                 'getPrice' => Money::CZK(10000),
             ]),
         ];

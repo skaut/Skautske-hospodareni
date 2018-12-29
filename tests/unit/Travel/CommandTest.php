@@ -9,6 +9,7 @@ use Mockery as m;
 use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\TravelDetails;
 use Model\Travel\Command\VehicleTravel;
+use Model\Travel\Travel\Type;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 
@@ -41,9 +42,9 @@ class CommandTest extends Unit
         $command = $this->createCommand($vehicle);
 
         $date = new \DateTimeImmutable();
-        $command->addVehicleTravel(200, new TravelDetails($date, 'vau', 'Brno', 'Praha'));
-        $command->addVehicleTravel(220, new TravelDetails($date, 'vau', 'Praha', 'Brno'));
-        $command->addTransportTravel(Money::CZK(50000), new TravelDetails($date, 'bus', 'Brno', 'Praha'));
+        $command->addVehicleTravel(200, new TravelDetails($date, $this->getTravelTypeAuv(), 'Brno', 'Praha'));
+        $command->addVehicleTravel(220, new TravelDetails($date, $this->getTravelTypeAuv(), 'Praha', 'Brno'));
+        $command->addTransportTravel(Money::CZK(50000), new TravelDetails($date, $this->getTravelTypeBus(), 'Brno', 'Praha'));
 
         $expectedPricePerKm = 6 / 100 * 31.20 + 5;
         $this->assertEquals(MoneyFactory::fromFloat(31.20 * 6 / 100), $command->getFuelPricePerKm());
@@ -71,7 +72,7 @@ class CommandTest extends Unit
 
         $command->addTransportTravel(
             MoneyFactory::fromFloat(500.6),
-            new TravelDetails(new \DateTimeImmutable(), 'test', 'Brno', 'Praha')
+            new TravelDetails(new \DateTimeImmutable(), $this->getTravelTypeAuv(), 'Brno', 'Praha')
         );
 
         $this->assertEquals(MoneyFactory::fromFloat(500), $command->calculateTotal());
@@ -83,9 +84,9 @@ class CommandTest extends Unit
 
         $date = new \DateTimeImmutable();
 
-        $command->addVehicleTravel(200, new TravelDetails($date->modify('+ 1 day'), 'vau', 'Brno', 'Praha'));
-        $command->addVehicleTravel(220, new TravelDetails($date, 'vau', 'Praha', 'Brno'));
-        $command->addTransportTravel(Money::CZK(50000), new TravelDetails($date->modify('+ 3 days'), 'bus', 'Brno', 'Praha'));
+        $command->addVehicleTravel(200, new TravelDetails($date->modify('+ 1 day'), $this->getTravelTypeAuv(), 'Brno', 'Praha'));
+        $command->addVehicleTravel(220, new TravelDetails($date, $this->getTravelTypeAuv(), 'Praha', 'Brno'));
+        $command->addTransportTravel(Money::CZK(50000), new TravelDetails($date->modify('+ 3 days'), $this->getTravelTypeBus(), 'Brno', 'Praha'));
 
         $this->assertSame($date, $command->getFirstTravelDate());
     }
@@ -102,8 +103,9 @@ class CommandTest extends Unit
         $passengers        = 'Frantisek Masa';
         $amortizationPerKm = Money::CZK(300);
         $note              = 'Nothing';
+        $transport_types   = [$this->getTravelTypeAuv(), $this->getTravelTypeMov()];
 
-        $command->update($vehicle, $driver, $purpose, $place, $passengers, $fuelPrice, $amortizationPerKm, $note);
+        $command->update($vehicle, $driver, $purpose, $place, $passengers, $fuelPrice, $amortizationPerKm, $note, $transport_types);
 
         $this->assertSame(5, $command->getVehicleId());
         $this->assertSame($driver, $command->getPassenger());
@@ -113,6 +115,7 @@ class CommandTest extends Unit
         $this->assertEquals($fuelPrice, $command->getFuelPrice());
         $this->assertEquals($amortizationPerKm, $command->getAmortization());
         $this->assertSame($note, $command->getNote());
+        $this->assertSame($transport_types, $command->getTravelTypes());
     }
 
     public function testUpdateVehicleTravel() : void
@@ -121,7 +124,7 @@ class CommandTest extends Unit
         $command->addVehicleTravel(200, $this->getDetails());
 
         $distance = (float) 220;
-        $details  = new TravelDetails(new \DateTimeImmutable(), 'mov', 'Praha', 'Brno');
+        $details  = new TravelDetails(new \DateTimeImmutable(), $this->getTravelTypeMov(), 'Praha', 'Brno');
 
         $command->updateVehicleTravel(0, $distance, $details);
 
@@ -138,7 +141,7 @@ class CommandTest extends Unit
         $command->addTransportTravel(MoneyFactory::fromFloat(200), $this->getDetails());
 
         $price   = MoneyFactory::fromFloat(320);
-        $details = new TravelDetails(new \DateTimeImmutable(), 'mov', 'Praha', 'Brno');
+        $details = new TravelDetails(new \DateTimeImmutable(), $this->getTravelTypeMov(), 'Praha', 'Brno');
 
         $command->updateTransportTravel(0, $price, $details);
 
@@ -173,7 +176,7 @@ class CommandTest extends Unit
         $command->addVehicleTravel(200, $this->getDetails());
 
         $price   = MoneyFactory::fromFloat(200);
-        $details = new TravelDetails(new \DateTimeImmutable(), 'mov', 'Praha', 'Brno');
+        $details = new TravelDetails(new \DateTimeImmutable(), $this->getTravelTypeMov(), 'Praha', 'Brno');
 
         $command->updateTransportTravel(0, $price, $details);
 
@@ -191,7 +194,7 @@ class CommandTest extends Unit
         $command->addTransportTravel(MoneyFactory::fromFloat(200), $this->getDetails());
 
         $distance = 20;
-        $details  = new TravelDetails(new \DateTimeImmutable(), 'mov', 'Praha', 'Brno');
+        $details  = new TravelDetails(new \DateTimeImmutable(), $this->getTravelTypeMov(), 'Praha', 'Brno');
 
         $command->updateVehicleTravel(0, $distance, $details);
 
@@ -206,8 +209,8 @@ class CommandTest extends Unit
     public function testRemoveVehicleTravel() : void
     {
         $command = $this->createCommand();
-        $command->addVehicleTravel(206, new TravelDetails(new \DateTimeImmutable(), 'auv', 'Brno', 'Praha'));
-        $command->addVehicleTravel(206, new TravelDetails(new \DateTimeImmutable(), 'auv', 'Brno', 'Praha'));
+        $command->addVehicleTravel(206, new TravelDetails(new \DateTimeImmutable(), $this->getTravelTypeAuv(), 'Brno', 'Praha'));
+        $command->addVehicleTravel(206, new TravelDetails(new \DateTimeImmutable(), $this->getTravelTypeAuv(), 'Brno', 'Praha'));
         $command->removeTravel(0);
         $this->assertSame(1, $command->getTravelCount());
         $command->removeTravel(1);
@@ -219,11 +222,11 @@ class CommandTest extends Unit
         $command = $this->createCommand();
         $date    = new \DateTimeImmutable();
 
-        $command->addVehicleTravel(200, new TravelDetails($date, 'mov', 'Brno', 'Praha'));
-        $command->addVehicleTravel(200, new TravelDetails($date, 'auv', 'Brno', 'Praha'));
-        $command->addTransportTravel(MoneyFactory::fromFloat(200), new TravelDetails($date, 'a', 'Brno', 'Praha'));
+        $command->addVehicleTravel(200, new TravelDetails($date, $this->getTravelTypeMov(), 'Brno', 'Praha'));
+        $command->addVehicleTravel(200, new TravelDetails($date, $this->getTravelTypeAuv(), 'Brno', 'Praha'));
+        $command->addTransportTravel(MoneyFactory::fromFloat(200), new TravelDetails($date, $this->getTravelTypeBus(), 'Brno', 'Praha'));
 
-        $this->assertEquals(['mov', 'auv', 'a'], $command->getUsedTransportTypes());
+        $this->assertEquals([$this->getTravelTypeMov(), $this->getTravelTypeAuv(), $this->getTravelTypeBus()], $command->getUsedTransportTypes());
     }
 
     public function testCloseCommand() : void
@@ -343,6 +346,20 @@ class CommandTest extends Unit
 
     private function getDetails() : TravelDetails
     {
-        return new TravelDetails(new \DateTimeImmutable(), 'auv', 'Brno', 'Praha');
+        return new TravelDetails(new \DateTimeImmutable(), $this->getTravelTypeAuv(), 'Brno', 'Praha');
+    }
+
+    private function getTravelTypeAuv() : Type
+    {
+        return new Type('auv', 'auto vlastní', true);
+    }
+
+    private function getTravelTypeMov() : Type
+    {
+        return new Type('mov', 'motocykl vlastní', true);
+    }
+    private function getTravelTypeBus() : Type
+    {
+        return new Type('a', 'autobus', false);
     }
 }
