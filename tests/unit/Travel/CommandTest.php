@@ -115,7 +115,7 @@ class CommandTest extends Unit
         $this->assertEquals($fuelPrice, $command->getFuelPrice());
         $this->assertEquals($amortizationPerKm, $command->getAmortization());
         $this->assertSame($note, $command->getNote());
-        $this->assertSame($transport_types, $command->getTravelTypes());
+        $this->assertSame($transport_types, $command->getTransportTypes());
     }
 
     public function testUpdateVehicleTravel() : void

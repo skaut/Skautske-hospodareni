@@ -77,7 +77,7 @@ class DefaultPresenter extends BasePresenter
 
         $command = $this->travelService->getCommandDetail($id);
 
-        $this['formAddTravel']['type']->setItems($command->getTravelTypePairs());
+        $this['formAddTravel']['type']->setItems($command->getTransportTypePairs());
         $this['formAddTravel']->setDefaults(['command_id' => $id]);
     }
 
@@ -115,7 +115,7 @@ class DefaultPresenter extends BasePresenter
             'travels' => $travels,
             'types' => array_map(function (Type $t) {
                 return $t->getLabel();
-            }, $command->getTravelTypes()),
+            }, $command->getTransportTypes()),
             'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
             ]
         );
@@ -248,7 +248,7 @@ class DefaultPresenter extends BasePresenter
         $command = $this->travelService->getCommandDetail($commandId);
 
         $form = $this['formEditTravel'];
-        $form['type']->setItems($command->getTravelTypePairs());
+        $form['type']->setItems($command->getTransportTypePairs());
 
         $form->setDefaults(
             [

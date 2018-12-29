@@ -43,7 +43,7 @@ class CommandForm extends Control
         $this->unitId         = $unitId;
         $this->commandId      = $commandId;
         $this->model          = $model;
-        $this->transportTypes = $this->model->getTravelTypes();
+        $this->transportTypes = $this->model->getTransportTypes();
     }
 
     public function render() : void
@@ -159,7 +159,7 @@ class CommandForm extends Control
             throw new InvalidStateException('Travel command #' . $this->commandId . ' not found');
         }
 
-        $usedTypes = $command->getTravelTypePairs();
+        $usedTypes = $command->getTransportTypePairs();
 
         if (! empty($usedTypes)) {
             $form['type']->setItems($this->prepareTransportTypeOptions($usedTypes));
@@ -184,7 +184,7 @@ class CommandForm extends Control
             'fuel_price' => MoneyFactory::toFloat($command->getFuelPrice()),
             'amortization' => MoneyFactory::toFloat($command->getAmortizationPerKm()),
             'note' => $command->getNote(),
-            'type' => array_keys($command->getTravelTypePairs()),
+            'type' => array_keys($command->getTransportTypePairs()),
             'passenger' => [
                 'name' => $command->getPassenger()->getName(),
                 'contact' => $command->getPassenger()->getContact(),

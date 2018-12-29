@@ -210,7 +210,7 @@ class TravelService
     /**
      * @return mixed[]
      */
-    public function getTravelTypes() : array
+    public function getTransportTypes() : array
     {
         return array_map(
             [DTO\TypeFactory::class, 'create'],

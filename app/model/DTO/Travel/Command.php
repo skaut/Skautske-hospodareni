@@ -87,10 +87,10 @@ class Command
     private $ownerId;
 
     /** @var Type[] */
-    private $travel_types;
+    private $transportTypes;
 
     /**
-     * @param Type[] $travel_types
+     * @param Type[] $transportTypes
      */
     public function __construct(
         int $id,
@@ -110,7 +110,7 @@ class Command
         Money $fuelPricePerKm,
         string $state,
         ?int $ownerId,
-        array $travel_types
+        array $transportTypes
     ) {
         $this->id                = $id;
         $this->unitId            = $unitId;
@@ -129,7 +129,7 @@ class Command
         $this->fuelPricePerKm    = $fuelPricePerKm;
         $this->state             = $state;
         $this->ownerId           = $ownerId;
-        $this->travel_types      = $travel_types;
+        $this->transportTypes    = $transportTypes;
     }
 
     public function getId() : int
@@ -220,18 +220,18 @@ class Command
     /**
      * @return Type[]
      */
-    public function getTravelTypes() : array
+    public function getTransportTypes() : array
     {
-        return $this->travel_types;
+        return $this->transportTypes;
     }
 
     /**
      * @return string[]
      */
-    public function getTravelTypePairs() : array
+    public function getTransportTypePairs() : array
     {
         $types = [];
-        foreach ($this->travel_types as $type) {
+        foreach ($this->transportTypes as $type) {
             $types[$type->getType()] = $type->getLabel();
         }
         return $types;

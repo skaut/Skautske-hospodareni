@@ -119,10 +119,10 @@ class Command
      *      inverseJoinColumns={@ORM\JoinColumn(name="typeId", referencedColumnName="type")}
      *      )
      */
-    private $travel_types;
+    private $transportTypes;
 
     /**
-     * @param Type[] $travel_types
+     * @param Type[] $transportTypes
      */
     public function __construct(
         int $unitId,
@@ -135,7 +135,7 @@ class Command
         Money $amortization,
         string $note,
         ?int $ownerId,
-        array $travel_types
+        array $transportTypes
     ) {
         $this->unitId           = $unitId;
         $this->vehicle          = $vehicle;
@@ -148,11 +148,11 @@ class Command
         $this->note             = $note;
         $this->travels          = new ArrayCollection();
         $this->ownerId          = $ownerId;
-        $this->travel_types     = new ArrayCollection($travel_types);
+        $this->transportTypes   = new ArrayCollection($transportTypes);
     }
 
     /**
-     * @param Type[] $travel_types
+     * @param Type[] $transportTypes
      */
     public function update(
         ?Vehicle $vehicle,
@@ -163,7 +163,7 @@ class Command
         Money $fuelPrice,
         Money $amortization,
         string $note,
-        array $travel_types
+        array $transportTypes
     ) : void {
         $this->vehicle          = $vehicle;
         $this->passenger        = $driver;
@@ -173,7 +173,7 @@ class Command
         $this->fuelPrice        = $fuelPrice;
         $this->amortization     = $amortization;
         $this->note             = $note;
-        $this->travel_types     = new ArrayCollection($travel_types);
+        $this->transportTypes   = new ArrayCollection($transportTypes);
     }
 
     public function close(DateTimeImmutable $time) : void
@@ -441,8 +441,8 @@ class Command
     /**
      * @return Type[]
      */
-    public function getTravelTypes() : array
+    public function getTransportTypes() : array
     {
-        return $this->travel_types->toArray();
+        return $this->transportTypes->toArray();
     }
 }
