@@ -217,10 +217,10 @@ class ExportService
 
         $template = [];
 
-        $event                   = $eventService->getEvent()->get($aid);
-        $unitId                  = $cashbookType->isUnit() ? $event->ID : $event->ID_Unit;
-        $template['oficialName'] = $this->units->getOfficialName($unitId);
-        $template['cashbook']    = $cashbook;
+        $event                    = $eventService->getEvent()->get($aid);
+        $unitId                   = $cashbookType->isUnit() ? $event->ID : $event->ID_Unit;
+        $template['officialName'] = $this->units->getOfficialName($unitId);
+        $template['cashbook']     = $cashbook;
 
         //HPD
         if ($activeHpd) {
