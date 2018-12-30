@@ -20,4 +20,14 @@ class Operation extends Enum
             $this->getValue() === self::INCOME ? self::EXPENSE : self::INCOME
         );
     }
+
+    public static function INCOME() : self
+    {
+        return self::get(self::INCOME);
+    }
+
+    public static function EXPENSE() : self
+    {
+        return self::get(self::EXPENSE);
+    }
 }
