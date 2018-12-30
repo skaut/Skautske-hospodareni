@@ -11,14 +11,6 @@ use function array_combine;
 class ParticipantTable extends BaseTable
 {
     /**
-     * @return Row|false
-     */
-    public function get(int $participantId)
-    {
-        return $this->connection->fetch('SELECT * FROM  [' . self::TABLE_CAMP_PARTICIPANT . '] WHERE participantId=%i LIMIT 1', $participantId);
-    }
-
-    /**
      * seznam všech záznamů k dané akci
      *
      * @return Row[] Details indexed by participant ID
@@ -35,21 +27,4 @@ class ParticipantTable extends BaseTable
         $this->connection->query('DELETE FROM [' . self::TABLE_CAMP_PARTICIPANT . '] WHERE participantId =%i', $participantId);
     }
 
-    /**
-     * @param mixed[] $updateData
-     */
-    public function update(int $participantId, array $updateData) : void
-    {
-        $ins                  = $updateData;
-        $ins['participantId'] = $participantId;
-        unset($updateData['actionId']); //to se neaktualizuje
-        $this->connection->query(
-            'INSERT INTO [' . self::TABLE_CAMP_PARTICIPANT . ']',
-            $ins,
-            '
-            ON DUPLICATE KEY 
-            UPDATE %a',
-            $updateData
-        );
-    }
 }

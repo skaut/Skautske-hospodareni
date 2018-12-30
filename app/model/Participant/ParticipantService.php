@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Model;
 
 use Model\Budget\Repositories\IPaymentRepository;
-use Model\DTO\Participant\Participant as ParticipantDTO;
-use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
-use Model\Event\SkautisEventId;
 use Model\Participant\Participant;
 use Model\Participant\Payment;
-use Model\Participant\PaymentFactory;
 use Model\Participant\PaymentNotFound;
+use Model\Budget\Repositories\IParticipantRepository;
+use Model\Participant\PaymentNofFound;
 use Model\Participant\PragueParticipants;
 use Model\Services\Language;
+use Model\Skautis\Factory\ParticipantFactory;
+use Model\Utils\MoneyFactory;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
@@ -25,9 +25,12 @@ use function array_key_exists;
 use function array_keys;
 use function array_reduce;
 use function array_sum;
+use function bdump;
+use function in_array;
 use function is_array;
 use function natcasesort;
 use function preg_match;
+use function sprintf;
 use function stripos;
 use function usort;
 
@@ -54,16 +57,10 @@ class ParticipantService extends MutableBaseService
     /**
      * @return mixed[]
      */
-    public function get(int $participantId) : array
+    public function get(int $participantId) : Participant
     {
-        $data   = ArrayHash::from($this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]));
-        $detail = $this->table->get($participantId);
-        if ($detail === false) {//u akcí to v tabulce nic nenajde
-            $data->payment = isset($data->{self::PAYMENT}) ? (int) $data->{self::PAYMENT} : 0;
-        }
-        $this->setPersonName($data);
-
-        return (array) $data;
+        $data = ArrayHash::from($this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]));
+        return ParticipantFactory::create($data);
     }
 
     /**
@@ -180,45 +177,80 @@ class ParticipantService extends MutableBaseService
     }
 
     /**
-     * upraví všechny nastavené hodnoty
-     *
-     * @param mixed[] $arr pole hodnot (payment, days, [repayment], [isAccount])
+     * @param mixed[] $arr
      */
-    public function update(int $participantId, array $arr) : void
+    public function update(int $participantId, int $actionId, array $arr) : void
     {
+        bdump($arr);
         if ($this->typeName === 'Camp') {
-            if (isset($arr['days'])) {
+            if (in_array('days', $arr)) {
                 $sisData = [
                     'ID' => $participantId,
                     'Real' => true,
                     'Days' => $arr['days'],
                 ];
                 $this->skautis->event->{'Participant' . $this->typeName . 'Update'}($sisData, 'participant' . $this->typeName);
-            }
-            $keys       = ['actionId', 'payment', 'repayment', 'isAccount'];
-            $dataUpdate = [];
-            $cnt        = 0;
-            foreach ($keys as $key) {
-                if (! array_key_exists($key, $arr)) {
-                    continue;
+                unset($arr['days']);
+                if (empty($arr)) {
+                    return;
                 }
+            }
 
-                $dataUpdate[$key] = $arr[$key];
-                $cnt++;
+            try {
+                //@todo: check actionId privileges
+                $payment = $this->repository->findPayment($participantId);
+            } catch (PaymentNofFound $exc) {
+                $payment = new Payment(
+                    $participantId,
+                    $actionId,
+                    MoneyFactory::zero(),
+                    MoneyFactory::zero(),
+                    'N'
+                );
             }
-            if ($cnt > 1) {
-                $this->table->update($participantId, $dataUpdate);
+
+            foreach ($arr as $key => $value) {
+                switch ($key) {
+                    case 'payment':
+                        $payment->setPayment(MoneyFactory::fromFloat((float) $value));
+                        break;
+                    case 'repayment':
+                        $payment->setRepayment(MoneyFactory::fromFloat((float) $value));
+                        break;
+                    case 'isAccount':
+                        $payment->setAccount($value);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException(sprintf("Camp participant hasn't attribute '%s'", $key));
+                }
             }
+            $this->repository->savePayment($payment);
         } else {
+            $origin  = $this->get($participantId);
             $sisData = [
                 'ID' => $participantId,
                 'Real' => true,
-                'Days' => array_key_exists('days', $arr) ? $arr['days'] : null,
-                self::PAYMENT => array_key_exists('payment', $arr) ? $arr['payment'] : null,
+                'Days' => $origin->getDays(),
+                self::PAYMENT => $origin->getPayment()->getAmount(),
             ];
+            foreach ($arr as $key => $value) {
+                switch ($key) {
+                    case 'days':
+                        $sisData['Days'] = $value;
+                        break;
+                    case 'payment':
+                        $sisData[self::PAYMENT] = $value;
+                        break;
+                    default:
+                        throw new \InvalidArgumentException(sprintf("General event participant hasn't attribute '%s'", $key));
+                        break;
+                }
+            }
             $this->skautis->event->{'Participant' . $this->typeName . 'Update'}($sisData, 'participant' . $this->typeName);
         }
     }
+
+
 
     public function removeParticipant(int $participantId) : void
     {

@@ -257,29 +257,27 @@ trait ParticipantTrait
 
     public function massEditSubmitted(SubmitButton $button) : void
     {
-        $type = $this->eventService->getParticipants()->type; //camp vs general
         if (! $this->isAllowParticipantUpdate) {
             $this->flashMessage('Nemáte právo upravovat účastníky.', 'danger');
             $this->redirect('Default:');
         }
         $values = $button->getForm()->getValues();
-        $data   = ['actionId' => $this->aid];
-        if ($values['edit']['daysc']) {
-            $data['days'] = (int) $values['edit']['days'];
-        }
-        if ($values['edit']['paymentc']) {
-            $data['payment'] = (float) $values['edit']['payment'];
-        }
-        if ($values['edit']['repaymentc']) {
-            $data['repayment'] = (float) $values['edit']['repayment'];
-        }
-        if ($values['edit']['isAccountc']) {
-            $data['isAccount'] = $values['edit']['isAccount'];
-        }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $oldData = ($type === 'camp') ? [] : $this->eventService->getParticipants()->get((int) $id);
-            $this->eventService->getParticipants()->update((int) $id, array_merge($oldData, $data));
+            if ($values['edit']['daysc']) {
+                $this->eventService->getParticipants()->update((int) $id, $this->aid, ['days' => (int) $values['edit']['days']]);
+            }
+            if ($values['edit']['paymentc']) {
+                $this->eventService->getParticipants()->update((int) $id, $this->aid, ['payment' => (float) $values['edit']['payment']]);
+            }
+            if ($values['edit']['repaymentc']) {
+                $this->eventService->getParticipants()->update((int) $id, $this->aid, ['payment' => (float) $values['edit']['repayment']]);
+            }
+            if (! $values['edit']['isAccountc']) {
+                continue;
+            }
+
+            $this->eventService->getParticipants()->update((int) $id, $this->aid, ['isAccount' => $values['edit']['isAccount']]);
         }
         $this->redirect('this');
     }

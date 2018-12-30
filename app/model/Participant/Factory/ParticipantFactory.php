@@ -17,16 +17,17 @@ final class ParticipantFactory
         preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $skautisParticipant->Person, $matches);
 
         return new Participant(
+            $skautisParticipant->ID,
             $matches['first'],
             $matches['last'],
             $matches['nick'] ?? null,
-            $skautisParticipant->Age,
+            $skautisParticipant->Age ?? null,
             new Date($skautisParticipant->Birthday),
             $skautisParticipant->Street,
             $skautisParticipant->City,
             (int) $skautisParticipant->Postcode,
             $skautisParticipant->State,
-            (int) $skautisParticipant->ID_Unit,
+            isset($skautisParticipant->ID_Unit) ? (int) $skautisParticipant->ID_Unit : null,
             $skautisParticipant->Unit ?? '',
             $skautisParticipant->UnitRegistrationNumber ?? '',
             (int) $skautisParticipant->Days,
