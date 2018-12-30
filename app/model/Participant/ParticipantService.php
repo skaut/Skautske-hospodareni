@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Model\Budget\Repositories\IPaymentRepository;
+use Model\DTO\Participant\Participant as ParticipantDTO;
+use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
+use Model\Event\SkautisEventId;
+use Model\Participant\Participant;
+use Model\Participant\Payment;
+use Model\Participant\PaymentFactory;
+use Model\Participant\PaymentNotFound;
 use Model\Participant\PragueParticipants;
 use Model\Services\Language;
 use Nette\Utils\ArrayHash;
@@ -29,13 +37,13 @@ class ParticipantService extends MutableBaseService
     private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
     private const PRAGUE_UNIT_PREFIX           = 11;
 
-    /** @var ParticipantTable */
-    private $table;
+    /** @var IPaymentRepository */
+    private $repository;
 
-    public function __construct(string $name, ParticipantTable $table, Skautis $skautIS)
+    public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository)
     {
         parent::__construct($name, $skautIS);
-        $this->table = $table;
+        $this->repository = $repository;
     }
 
     /**
