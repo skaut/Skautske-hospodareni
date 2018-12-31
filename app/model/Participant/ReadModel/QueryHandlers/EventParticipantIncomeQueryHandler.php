@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
-use Model\Participant\Participant;
+use Model\DTO\Participant\Participant;
+use Model\IParticipantServiceFactory;
 use Model\ParticipantService;
 use Skautis\Skautis;
 
@@ -17,10 +18,10 @@ class EventParticipantIncomeQueryHandler
     /** @var ParticipantService */
     private $service;
 
-    public function __construct(Skautis $skautis, ParticipantService $service)
+    public function __construct(Skautis $skautis, IParticipantServiceFactory $participantFactory)
     {
         $this->skautis = $skautis;
-        $this->service = $service;
+        $this->service = $participantFactory->create('General');
     }
 
     public function handle(EventParticipantIncomeQuery $query) : float
@@ -30,7 +31,7 @@ class EventParticipantIncomeQueryHandler
         $participantIncome = 0.0;
         /** @var Participant $p */
         foreach ($participants as $p) {
-            $participantIncome += $p->getPayment() !== null ? (float) $p->getPayment()->getAmount() : 0;
+            $participantIncome += $p->getPayment();
         }
 
         return $participantIncome;

@@ -15,6 +15,7 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Participant\Participant;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -182,7 +183,7 @@ class ExcelService
     }
 
     /**
-     * @param mixed[] $data
+     * @param Participant[] $data
      * @throws \PHPExcel_Exception
      */
     protected function setSheetParticipantCamp(\PHPExcel_Worksheet $sheet, array $data) : void
@@ -204,21 +205,22 @@ class ExcelService
 
         $rowCnt = 2;
 
+        /** @var Participant $row */
         foreach ($data as $row) {
             $sheet->setCellValue('A' . $rowCnt, ($rowCnt - 1))
-                ->setCellValue('B' . $rowCnt, $row->FirstName)
-                ->setCellValue('C' . $rowCnt, $row->LastName)
-                ->setCellValue('D' . $rowCnt, $row->NickName)
-                ->setCellValue('E' . $rowCnt, $row->Street)
-                ->setCellValue('F' . $rowCnt, $row->City)
-                ->setCellValue('G' . $rowCnt, $row->Postcode)
-                ->setCellValue('H' . $rowCnt, $row->Birthday !== null ? date('d.m.Y', strtotime($row->Birthday)) : '')
-                ->setCellValue('I' . $rowCnt, $row->Days)
-                ->setCellValue('J' . $rowCnt, $row->Age < self::ADULT_AGE ? $row->Days : 0)
-                ->setCellValue('K' . $rowCnt, $row->payment ?? 0)
-                ->setCellValue('L' . $rowCnt, $row->repayment ?? 0)
-                ->setCellValue('M' . $rowCnt, ($row->payment - $row->repayment))
-                ->setCellValue('N' . $rowCnt, $row->isAccount === 'Y' ? 'Ano' : 'Ne');
+                ->setCellValue('B' . $rowCnt, $row->getFirstName())
+                ->setCellValue('C' . $rowCnt, $row->getLastName())
+                ->setCellValue('D' . $rowCnt, $row->getNickName())
+                ->setCellValue('E' . $rowCnt, $row->getStreet())
+                ->setCellValue('F' . $rowCnt, $row->getCity())
+                ->setCellValue('G' . $rowCnt, $row->getPostcode())
+                ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? date('d.m.Y', strtotime($row->getBirthday())) : '')
+                ->setCellValue('I' . $rowCnt, $row->getDays())
+                ->setCellValue('J' . $rowCnt, $row->getAge() < self::ADULT_AGE ? $row->getDays() : 0)
+                ->setCellValue('K' . $rowCnt, $row->getPayment())
+                ->setCellValue('L' . $rowCnt, $row->getRepayment())
+                ->setCellValue('M' . $rowCnt, ($row->getPayment() - $row->getRepayment()))
+                ->setCellValue('N' . $rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
             $rowCnt++;
         }
         //format
@@ -230,7 +232,7 @@ class ExcelService
     }
 
     /**
-     * @param mixed[] $data
+     * @param Participant[] $data
      * @throws \PHPExcel_Exception
      */
     protected function setSheetParticipantGeneral(\PHPExcel_Worksheet $sheet, array $data, \stdClass $event) : void
@@ -251,16 +253,16 @@ class ExcelService
         $rowCnt = 2;
         foreach ($data as $row) {
             $sheet->setCellValue('A' . $rowCnt, ($rowCnt - 1))
-                ->setCellValue('B' . $rowCnt, $row->FirstName)
-                ->setCellValue('C' . $rowCnt, $row->LastName)
-                ->setCellValue('D' . $rowCnt, $row->NickName)
-                ->setCellValue('E' . $rowCnt, $row->Street)
-                ->setCellValue('F' . $rowCnt, $row->City)
-                ->setCellValue('G' . $rowCnt, $row->Postcode)
-                ->setCellValue('H' . $rowCnt, $row->Birthday !== null ? date('d.m.Y', strtotime($row->Birthday)) : '')
-                ->setCellValue('I' . $rowCnt, $row->Days)
-                ->setCellValue('J' . $rowCnt, ($row->Birthday !== null && $startDate->diff(new \DateTime($row->Birthday))->format('%y') < self::ADULT_AGE) ? $row->Days : 0)
-                ->setCellValue('K' . $rowCnt, $row->payment);
+                ->setCellValue('B' . $rowCnt, $row->getFirstName())
+                ->setCellValue('C' . $rowCnt, $row->getLastName())
+                ->setCellValue('D' . $rowCnt, $row->getNickName())
+                ->setCellValue('E' . $rowCnt, $row->getStreet())
+                ->setCellValue('F' . $rowCnt, $row->getCity())
+                ->setCellValue('G' . $rowCnt, $row->getPostcode())
+                ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? date('d.m.Y', strtotime($row->getBirthday())) : '')
+                ->setCellValue('I' . $rowCnt, $row->getDays())
+                ->setCellValue('J' . $rowCnt, ($row->getBirthday() !== null && $startDate->diff(new \DateTime($row->getBirthday()))->format('%y') < self::ADULT_AGE) ? $row->getDays() : 0)
+                ->setCellValue('K' . $rowCnt, $row->getPayment());
             $rowCnt++;
         }
         //format

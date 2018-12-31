@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Model\Budget\Repositories\IPaymentRepository;
+use Model\Budget\Repositories\IParticipantRepository;
+use Model\DTO\Participant\Participant as ParticipantDTO;
+use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
+use Model\Event\SkautisEventId;
 use Model\Participant\Participant;
 use Model\Participant\Payment;
-use Model\Participant\PaymentNotFound;
-use Model\Budget\Repositories\IParticipantRepository;
-use Model\Event\SkautisEventId;
 use Model\Participant\PaymentFactory;
 use Model\Participant\PaymentNofFound;
 use Model\Participant\PragueParticipants;
 use Model\Services\Language;
 use Model\Skautis\Factory\ParticipantFactory;
 use Model\Utils\MoneyFactory;
-use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
@@ -24,11 +23,10 @@ use function array_column;
 use function array_combine;
 use function array_diff_key;
 use function array_key_exists;
+use function array_map;
 use function array_reduce;
-use function array_sum;
 use function in_array;
 use function is_array;
-use function natcasesort;
 use function preg_match;
 use function sprintf;
 use function stripos;
@@ -40,10 +38,10 @@ class ParticipantService extends MutableBaseService
     private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
     private const PRAGUE_UNIT_PREFIX           = 11;
 
-    /** @var IPaymentRepository */
+    /** @var IParticipantRepository */
     private $repository;
 
-    public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository)
+    public function __construct(string $name, Skautis $skautIS, IParticipantRepository $repository)
     {
         parent::__construct($name, $skautIS);
         $this->repository = $repository;
@@ -54,17 +52,17 @@ class ParticipantService extends MutableBaseService
      */
     public const PAYMENT = 'Note';
 
-    public function get(int $participantId, int $actionId) : Participant
+    public function get(int $participantId, int $actionId) : ParticipantDTO
     {
         $data = $this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]);
-        return ParticipantFactory::create($data, $this->getPayment($participantId, $actionId));
+        return ParticipantDTOFactory::create(ParticipantFactory::create($data, $this->getPayment($participantId, $actionId)));
     }
 
     /**
      * vrací seznam účastníků
      * používá lokální úložiště
      *
-     * @return mixed[]
+     * @return ParticipantDTO[]
      */
     public function getAll(int $ID_Event) : array
     {
@@ -95,7 +93,7 @@ class ParticipantService extends MutableBaseService
             }
         );
 
-        return $participants;
+        return array_map([ParticipantDTOFactory::class, 'create'], $participants);
     }
 
     /**
@@ -207,7 +205,7 @@ class ParticipantService extends MutableBaseService
                 'ID' => $participantId,
                 'Real' => true,
                 'Days' => $origin->getDays(),
-                self::PAYMENT => $origin->getPayment()->getAmount(),
+                self::PAYMENT => $origin->getPayment(),
             ];
             foreach ($arr as $key => $value) {
                 switch ($key) {
@@ -239,8 +237,8 @@ class ParticipantService extends MutableBaseService
     {
         return (float) array_reduce(
             $this->getAll($eventId),
-            function ($res, $v) {
-                return isset($v->{ParticipantService::PAYMENT}) ? $res + $v->{ParticipantService::PAYMENT} : $res;
+            function ($res, ParticipantDTO $v) {
+                return $res + $v->getPayment();
             }
         );
     }
@@ -248,19 +246,15 @@ class ParticipantService extends MutableBaseService
     /**
      * vrací počet osobodní na dané akci
      *
-     * @param int|int[] $eventIdOrParticipants
+     * @param ParticipantDTO[] $participants
      */
-    public function getPersonsDays($eventIdOrParticipants) : int
+    public function getPersonsDays(array $participants) : int
     {
-        if (is_array($eventIdOrParticipants)) {
-            $participants = $eventIdOrParticipants;
-        } else {
-            $participants = $this->getAll($eventIdOrParticipants);
+        $days = 0;
+        foreach ($participants as $p) {
+            $days += $p->getDays();
         }
-
-        return array_sum(
-            array_column($participants, 'Days')
-        );
+        return $days;
     }
 
     /**
@@ -282,14 +276,15 @@ class ParticipantService extends MutableBaseService
     public function getCampTotalPayment(int $campId, string $category, string $isAccount) : float
     {
         $res = 0;
+        /** @var \Model\DTO\Participant\Participant $p */
         foreach ($this->getAll($campId) as $p) {
             //pokud se alespon v jednom neshodují, tak pokracujte
-            if (($category === 'adult' xor preg_match('/^Dospěl/', $p->Category))
-                || ($isAccount === 'Y' xor $p->isAccount === 'Y')
+            if (($category === 'adult' xor preg_match('/^Dospěl/', $p->getCategory()))
+                || ($isAccount === 'Y' xor $p->getOnAccount() === 'Y')
             ) {
                 continue;
             }
-            $res += $p->payment;
+            $res += $p->getPayment();
         }
         return $res;
     }
@@ -330,16 +325,17 @@ class ParticipantService extends MutableBaseService
         $between18and26    = 0;
         $personDaysUnder26 = 0;
         $citizensCount     = 0;
+        /** @var \Model\DTO\Participant\Participant $p */
         foreach ($participants as $p) {
-            if (stripos($p->City, 'Praha') === false) {
+            if (stripos($p->getCity(), 'Praha') === false) {
                 continue;
             }
             $citizensCount += 1;
 
-            if ($p->Birthday === null) {
+            if ($p->getBirthday() === null) {
                 continue;
             }
-            $ageInYears = $eventStartDate->diff(new \DateTime($p->Birthday))->format('%Y');
+            $ageInYears = $eventStartDate->diff(new \DateTime($p->getBirthday()))->format('%Y');
 
             if ($ageInYears <= self::PRAGUE_SUPPORTABLE_AGE) {
                 $under18 += 1;
@@ -353,7 +349,7 @@ class ParticipantService extends MutableBaseService
                 continue;
             }
 
-            $personDaysUnder26 += $p->Days;
+            $personDaysUnder26 += $p->getDays();
         }
         return new PragueParticipants($under18, $between18and26, $personDaysUnder26, $citizensCount);
     }

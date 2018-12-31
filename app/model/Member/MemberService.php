@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Model\DTO\Participant\Participant;
 use Skautis\Wsdl\WebServiceInterface;
 use function array_key_exists;
 use function asort;
@@ -21,7 +22,7 @@ class MemberService
 
 
     /**
-     * @param mixed[] $participants
+     * @param Participant[] $participants
      * @return string[]
      */
     public function getAll(int $unitId, bool $onlyDirectMember, array $participants) : array
@@ -33,10 +34,11 @@ class MemberService
             foreach ($all as $people) {
                 $ret[$people->ID] = $people->DisplayName;
             }
-        } else { //odstranení jiz oznacených
+        } else { //odstranení již označených
             $check = [];
+            /** @var Participant $p */
             foreach ($participants as $p) {
-                $check[$p->ID_Person] = true;
+                $check[$p->getId()] = true;
             }
             foreach ($all as $p) {
                 if (array_key_exists($p->ID, $check)) {

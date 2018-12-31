@@ -111,16 +111,16 @@ trait ParticipantTrait
      */
     protected function sortParticipants(array &$participants, ?string $sort) : void
     {
-        $textItems   = ['regNum', 'isAccount'];
-        $numberItems = ['Days', 'payment', 'repayment'];
+        $textItems   = ['regNum', 'onAccount'];
+        $numberItems = ['days', 'payment', 'repayment'];
         if (count($participants) <= 0) {
             return;
         }
 
         if ($sort === 'regNum') {
-            $sort = 'UnitRegistrationNumber';
+            $sort = 'unitRegistrationNumber';
         } elseif ($sort === null || ! in_array($sort, array_merge($textItems, $numberItems)) || ! property_exists($participants[0], $sort)) {
-            $sort = 'Person'; //default sort
+            $sort = 'displayName'; //default sort
         }
         $isNumeric = in_array($sort, $numberItems);
         usort(

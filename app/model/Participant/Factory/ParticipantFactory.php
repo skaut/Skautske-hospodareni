@@ -17,6 +17,7 @@ final class ParticipantFactory
 
         return new Participant(
             $skautisParticipant->ID,
+            $skautisParticipant->ID_Person,
             $matches['first'],
             $matches['last'],
             $matches['nick'] ?? null,
@@ -30,7 +31,8 @@ final class ParticipantFactory
             $skautisParticipant->Unit ?? '',
             $skautisParticipant->UnitRegistrationNumber ?? '',
             (int) $skautisParticipant->Days,
-            $payment
+            $payment,
+            $skautisParticipant->Category ?? null
         );
     }
 }
