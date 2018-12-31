@@ -416,6 +416,15 @@ class TravelService
             return DTO\CommandFactory::create($command);
         }, $this->commands->findByUnit($unitId));
     }
+    /**
+     * @return DTO\Command[]
+     */
+    public function getAllUserCommands(int $unitId, int $userId) : array
+    {
+        return array_map(function (Command $command) {
+            return DTO\CommandFactory::create($command);
+        }, $this->commands->findByUnitAndUser($unitId, $userId));
+    }
 
     public function getCommandsCount(int $vehicleId) : int
     {

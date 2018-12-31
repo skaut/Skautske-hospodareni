@@ -41,6 +41,22 @@ class CommandRepository implements ICommandRepository
     /**
      * @return Command[]
      */
+    public function findByUnitAndUser(int $unitId, int $userId) : array
+    {
+        return $this->em->createQueryBuilder()
+            ->select('c')
+            ->from(Command::class, 'c')
+            ->where('c.unitId = :unitId')
+            ->orWhere('c.ownerId = :userId')
+            ->setParameter('unitId', $unitId)
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Command[]
+     */
     public function findByVehicle(int $vehicleId) : array
     {
         return $this->em->getRepository(Command::class)->findBy(['vehicle' => $vehicleId]);

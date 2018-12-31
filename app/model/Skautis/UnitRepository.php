@@ -64,6 +64,10 @@ final class UnitRepository implements IUnitRepository
             $unit->ID,
             $unit->SortName,
             $unit->DisplayName,
+            $unit->IC ?? null,
+            $unit->Street,
+            $unit->City,
+            $unit->Postcode,
             $unit->RegistrationNumber,
             $unit->ID_UnitType,
             isset($unit->ID_UnitParent) ? (int) $unit->ID_UnitParent : null

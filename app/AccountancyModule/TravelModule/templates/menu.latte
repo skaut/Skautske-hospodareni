@@ -1,7 +1,9 @@
 <div class="row">
-    <ul class="nav nav-pills">
-        <li n:class="$presenter->isLinkCurrent('Default:*') || $presenter->isLinkCurrent('Command:*') ? active"><a n:href="Default: ">Cestovní příkazy</a></li>
-        <li n:class="$presenter->isLinkCurrent('Vehicle:*') ? active"><a n:href="Vehicle: ">Vozidla</a></li>
-        <li n:class="$presenter->isLinkCurrent('Contract:*') ? active"><a n:href="Contract: ">Smlouvy</a></li>
-    </ul>
+    <div class="col-sm-12">
+        <ul class="nav nav-pills">
+            <li n:class="$presenter->isLinkCurrent('Default:*') || $presenter->isLinkCurrent('Command:*') ? active"><a n:href="Default: ">Cestovní příkazy</a></li>
+            <li n:class="$presenter->isLinkCurrent('Vehicle:*') ? active"><a n:href="Vehicle: ">Vozidla</a></li>
+            <li n:class="$presenter->isLinkCurrent('Contract:*') ? active"><a n:href="Contract: ">Smlouvy</a></li>
+        </ul>
+    </div>
 </div>

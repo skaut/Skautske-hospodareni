@@ -2,7 +2,7 @@
 {include ../menu.latte}
 <div class="row button-bar">
     <div class="col-sm-12">
-        <a n:href="new" class="btn btn-success pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou smlouvu</a>
+        <a n:href="new" class="btn btn-success pull-right" n:if="$canCreate"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou smlouvu</a>
         <h2 n:inner-block="title">Smlouvy<span class="hidden-xs hidden-sm"> o proplácení cestovních náhrad</span></h2>
     </div>
 </div>

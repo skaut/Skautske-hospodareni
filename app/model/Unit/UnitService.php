@@ -115,21 +115,21 @@ class UnitService
     /**
      * vrací jednotku, která má právní subjektivitu
      */
-    public function getOfficialUnit(?int $unitId = null) : \stdClass
+    public function getOfficialUnit(?int $unitId = null) : Unit
     {
         $unitId         = $unitId ?? $this->getUnitId();
         $officialUnitId = $this->unitResolver->getOfficialUnitId($unitId);
 
-        return $this->getDetail($officialUnitId);
+        return $this->units->find($officialUnitId);
     }
 
     /**
      * vrací oficiální název organizační jednotky (využití na paragonech)
      */
-    public function getOficialName(int $unitId) : string
+    public function getOfficialName(int $unitId) : string
     {
         $unit = $this->getOfficialUnit($unitId);
-        return 'IČO ' . $unit->IC . ' ' . $unit->FullDisplayName . ', ' . $unit->Street . ', ' . $unit->City . ', ' . $unit->Postcode;
+        return $unit->getFullDisplayNameWithAddress();
     }
 
     /**

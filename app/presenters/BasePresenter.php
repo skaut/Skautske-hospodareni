@@ -146,7 +146,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     public function getUnitId() : int
     {
         if ($this->unitId === null) {
-            $this->unitId = $this->unitService->getOfficialUnit()->ID;
+            $this->unitId = $this->unitService->getOfficialUnit()->getId();
         }
 
         return $this->unitId;

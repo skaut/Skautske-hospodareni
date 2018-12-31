@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Model\Travel\Command;
 use Model\Travel\Vehicle;
 use Model\Utils\MoneyFactory;
+use function array_map;
 
 class CommandRepositoryTest extends \IntegrationTest
 {
@@ -208,6 +209,36 @@ class CommandRepositoryTest extends \IntegrationTest
             $this->assertSame(0, $command->getTravels()[0]->getId());
             $this->assertSame(1, $command->getTravels()[1]->getId());
         }
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getExpectedReturnedCommandIds() : array
+    {
+        return [
+            [2, 3, []],
+            [1, 3, [5]],
+            [2, 4, [6]],
+            [1, 4, [5, 6]],
+        ];
+    }
+
+    /**
+     * @dataProvider getExpectedReturnedCommandIds
+     * @param int[] $expectedCommandIds
+     */
+    public function testFindCommandsByUnitOrUser(int $unitId, int $userId, array $expectedCommandIds) : void
+    {
+        $this->tester->haveInDatabase('tc_commands', ['unit_id' => 1, 'owner_id' => 999, 'id' => 5] + self::COMMAND);
+        $this->tester->haveInDatabase('tc_commands', ['unit_id' => 999, 'owner_id' => 4, 'id' => 6] + self::COMMAND);
+        $commands = $this->repository->findByUnitAndUser($unitId, $userId);
+        $this->assertSame(
+            $expectedCommandIds,
+            array_map(function (Command $command) : int {
+                return $command->getId();
+            }, $commands)
+        );
     }
 
     private function createCommandWithTwoTravels(int $commandId = self::COMMAND_ID) : void

@@ -21,6 +21,11 @@ interface ICommandRepository
     public function findByUnit(int $unitId) : array;
 
     /**
+     * @return Vehicle[]
+     */
+    public function findByUnitAndUser(int $unitId, int $userId) : array;
+
+    /**
      * @return Command[]
      */
     public function findByVehicle(int $vehicleId) : array;

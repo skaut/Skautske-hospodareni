@@ -6,6 +6,7 @@ namespace App\AccountancyModule\TravelModule;
 
 use App\Forms\BaseForm;
 use Model\BaseService;
+use Model\DTO\Travel\Contract;
 use Model\Services\PdfRenderer;
 use Model\Travel\Contract\Passenger;
 use Model\TravelService;
@@ -31,21 +32,46 @@ class ContractPresenter extends BasePresenter
         $this->pdf           = $pdf;
     }
 
+    private function isContractAccessible(?Contract $contract) : bool
+    {
+        /** @var Identity $identity */
+        $identity = $this->getUser()->getIdentity();
+
+        return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
+    }
+
+    private function isContractEditable(?Contract $contract) : bool
+    {
+        /** @var Identity $identity */
+        $identity = $this->getUser()->getIdentity();
+
+        return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
+    }
+
     public function renderDefault() : void
     {
+        /** @var Identity $identity */
+        $identity = $this->getUser()->getIdentity();
+
+        $unitId = $this->officialUnit->getId();
+
+        if (! array_key_exists($unitId, $identity->access[BaseService::ACCESS_READ])) {
+            $this->flashMessage('Nemáš přístup ke smlouvám cestovních příkazů.', 'danger');
+            $this->redirect('Default:default');
+        }
+
         $this->template->setParameters([
-            'list' => $this->travelService->getAllContracts($this->unit->ID),
+            'list' => $this->travelService->getAllContracts($unitId),
+            'canCreate' => array_key_exists($unitId, $identity->access[BaseService::ACCESS_EDIT]),
         ]);
     }
 
     public function actionDetail(int $id) : void
     {
         $contract = $this->travelService->getContract($id);
-        /** @var Identity $identity */
-        $identity = $this->getUser()->getIdentity();
 
-        if ($contract === null || ! array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_READ])) {
-            $this->flashMessage('Nemáte oprávnění k cestovnímu příkazu.', 'danger');
+        if (! $this->isContractAccessible($contract)) {
+            $this->flashMessage('Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.', 'danger');
             $this->redirect('default');
         }
 
@@ -63,9 +89,11 @@ class ContractPresenter extends BasePresenter
 
     public function actionPrint(int $contractId) : void
     {
-        $template           = $this->template;
-        $template->contract = $contract = $this->travelService->getContract($contractId);
-        $template->unit     = $this->unitService->getDetail($contract->getUnitId());
+        $contract = $this->travelService->getContract($contractId);
+        if (! $this->isContractAccessible($contract)) {
+            $this->flashMessage('Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.', 'danger');
+            $this->redirect('default');
+        }
 
         switch ($contract->getTemplateVersion()) {
             case 1:
@@ -77,8 +105,12 @@ class ContractPresenter extends BasePresenter
             default:
                 throw new \Exception('Neznámá šablona pro ' . $contract->getTemplateVersion());
         }
-
+        $template = $this->template;
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
+        $template->setParameters([
+            'contract' => $contract,
+            'unit'     => $this->unitService->getDetail($contract->getUnitId()),
+        ]);
 
         $this->pdf->render((string) $template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
     }
@@ -90,6 +122,12 @@ class ContractPresenter extends BasePresenter
         if (! empty($commands)) {
             $this->flashMessage('Nelze smazat smlouvu s navázanými cestovními příkazy!', 'danger');
             $this->redirect('this');
+        }
+
+        $contract = $this->travelService->getContract($contractId);
+        if (! $this->isContractEditable($contract)) {
+            $this->flashMessage('Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.', 'danger');
+            $this->redirect('default');
         }
 
         $this->travelService->deleteContract($contractId);
