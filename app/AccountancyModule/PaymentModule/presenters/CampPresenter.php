@@ -78,7 +78,7 @@ class CampPresenter extends BasePresenter
         );
 
         foreach ($participants as $p) {
-            $amount = $p->getPayment()->getPayment();
+            $amount = $p->getPayment();
             $form->addPerson(
                 $p->getPersonId(),
                 $this->model->getPersonEmails($p->getPersonId()),
