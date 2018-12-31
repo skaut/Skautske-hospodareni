@@ -42,7 +42,7 @@ class CampPresenter extends BasePresenter
         $this->template->setParameters([
             'unitPairs' => $this->readUnits = $units = $this->unitService->getReadUnits($this->user),
         ]);
-        $this->campService                  = $this->context->getService('campService');
+        $this->campService                  = $this->getContext()->getService('campService');
     }
 
     /**
