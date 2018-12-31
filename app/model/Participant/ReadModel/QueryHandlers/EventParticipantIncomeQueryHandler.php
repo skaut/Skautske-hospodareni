@@ -6,24 +6,26 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
 use Model\Participant\Participant;
-use Model\Skautis\Factory\ParticipantFactory;
+use Model\ParticipantService;
 use Skautis\Skautis;
-use function array_map;
 
 class EventParticipantIncomeQueryHandler
 {
     /** @var Skautis */
     private $skautis;
 
-    public function __construct(Skautis $skautis)
+    /** @var ParticipantService */
+    private $service;
+
+    public function __construct(Skautis $skautis, ParticipantService $service)
     {
         $this->skautis = $skautis;
+        $this->service = $service;
     }
 
     public function handle(EventParticipantIncomeQuery $query) : float
     {
-        $participants = (array) $this->skautis->event->ParticipantGeneralAll(['ID_EventGeneral' => $query->getEventId()->toInt()]);
-        $participants = array_map([ParticipantFactory::class, 'create'], $participants);
+        $participants = $this->service->getAll($query->getEventId()->toInt());
 
         $participantIncome = 0.0;
         /** @var Participant $p */

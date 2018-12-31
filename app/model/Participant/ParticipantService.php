@@ -9,6 +9,8 @@ use Model\Participant\Participant;
 use Model\Participant\Payment;
 use Model\Participant\PaymentNotFound;
 use Model\Budget\Repositories\IParticipantRepository;
+use Model\Event\SkautisEventId;
+use Model\Participant\PaymentFactory;
 use Model\Participant\PaymentNofFound;
 use Model\Participant\PragueParticipants;
 use Model\Services\Language;
@@ -20,12 +22,10 @@ use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
 use function array_column;
 use function array_combine;
-use function array_diff;
+use function array_diff_key;
 use function array_key_exists;
-use function array_keys;
 use function array_reduce;
 use function array_sum;
-use function bdump;
 use function in_array;
 use function is_array;
 use function natcasesort;
@@ -54,13 +54,10 @@ class ParticipantService extends MutableBaseService
      */
     public const PAYMENT = 'Note';
 
-    /**
-     * @return mixed[]
-     */
-    public function get(int $participantId) : Participant
+    public function get(int $participantId, int $actionId) : Participant
     {
-        $data = ArrayHash::from($this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]));
-        return ParticipantFactory::create($data);
+        $data = $this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]);
+        return ParticipantFactory::create($data, $this->getPayment($participantId, $actionId));
     }
 
     /**
@@ -71,43 +68,30 @@ class ParticipantService extends MutableBaseService
      */
     public function getAll(int $ID_Event) : array
     {
-        $cacheId      = __FUNCTION__ . $ID_Event;
-        $participants = $this->loadSes($cacheId);
-        if (! $participants) {
-            $participants = (array) $this->skautis->event->{'Participant' . $this->typeName . 'All'}(['ID_Event' . $this->typeName => $ID_Event]);
-            if ($this->type === 'camp') {
-                $campLocalDetails = $this->table->getCampLocalDetails($ID_Event);
-                foreach (array_diff(array_keys($campLocalDetails), array_column($participants, 'ID')) as $idForDelete) {
-                    try {
-                        $this->repository->deletePayment($this->repository->findPayment($idForDelete)); //delete zaznam, protoze neexistuje k nemu ucastnik
-                    } catch (PaymentNofFound $exc) {
-                    }
-                }
-            }
-
-            foreach ($participants as $p) {//objekt má vzdy Note a je pod associativnim klicem
-                if (isset($campLocalDetails) && array_key_exists($p->ID, $campLocalDetails)) {
-                    $p->payment   = $campLocalDetails[$p->ID]->payment;
-                    $p->isAccount = $campLocalDetails[$p->ID]->isAccount;
-                    $p->repayment = $campLocalDetails[$p->ID]->repayment;
-                } else {
-                    $p->payment   = ($p->{self::PAYMENT} ?? 0);
-                    $p->isAccount = null;
-                    $p->repayment = null;
-                }
-                $this->setPersonName($p);
-            }
-
-            $this->saveSes($cacheId, $participants);
-        }
-        if (! is_array($participants)) {//pokud je prázdná třída stdClass
+        $eventId         = new SkautisEventId($ID_Event);
+        $participantsSis = (array) $this->skautis->event->{'Participant' . $this->typeName . 'All'}(['ID_Event' . $this->typeName => $eventId->toInt()]);
+        if (! is_array($participantsSis)) {//pokud je prázdná třída stdClass
             return [];
+        }
+
+        $participantPayments = $this->repository->findPaymentsByEvent($eventId);
+        $participants        = [];
+        /** @var \stdClass $p */
+        foreach ($participantsSis as $p) {
+            $payment              = array_key_exists($p->ID, $participantPayments) ? $participantPayments[$p->ID] : PaymentFactory::createDefault($p->ID, $eventId);
+            $participants[$p->ID] = ParticipantFactory::create($p, $payment);
+        }
+
+        if ($this->type === 'camp') {
+            foreach (array_diff_key($participantPayments, $participants) as $idForDelete) {
+                $this->repository->deletePayment($participantPayments[$idForDelete]); //delete zaznam, protoze neexistuje k nemu ucastnik
+            }
         }
 
         usort(
             $participants,
-            function ($one, $two) : int {
-                return Language::compare($one->Person, $two->Person);
+            function (Participant $one, Participant $two) : int {
+                return Language::compare($one->getDisplayName(), $two->getDisplayName());
             }
         );
 
@@ -184,7 +168,6 @@ class ParticipantService extends MutableBaseService
      */
     public function update(int $participantId, int $actionId, array $arr) : void
     {
-        bdump($arr);
         if ($this->typeName === 'Camp') {
             if (in_array('days', $arr)) {
                 $sisData = [
@@ -199,18 +182,8 @@ class ParticipantService extends MutableBaseService
                 }
             }
 
-            try {
-                //@todo: check actionId privileges
-                $payment = $this->repository->findPayment($participantId);
-            } catch (PaymentNofFound $exc) {
-                $payment = new Payment(
-                    $participantId,
-                    $actionId,
-                    MoneyFactory::zero(),
-                    MoneyFactory::zero(),
-                    'N'
-                );
-            }
+            //@todo: check actionId privileges
+            $payment = $this->getPayment($participantId, $actionId);
 
             foreach ($arr as $key => $value) {
                 switch ($key) {
@@ -229,7 +202,7 @@ class ParticipantService extends MutableBaseService
             }
             $this->repository->savePayment($payment);
         } else {
-            $origin  = $this->get($participantId);
+            $origin  = $this->get($participantId, $actionId);
             $sisData = [
                 'ID' => $participantId,
                 'Real' => true,
@@ -383,5 +356,15 @@ class ParticipantService extends MutableBaseService
             $personDaysUnder26 += $p->Days;
         }
         return new PragueParticipants($under18, $between18and26, $personDaysUnder26, $citizensCount);
+    }
+
+    private function getPayment(int $participantId, int $actionId) : Payment
+    {
+        try {
+            $payment = $this->repository->findPayment($participantId);
+        } catch (PaymentNofFound $exc) {
+            $payment = PaymentFactory::createDefault($participantId, new SkautisEventId($actionId));
+        }
+        return $payment;
     }
 }

@@ -6,13 +6,12 @@ namespace Model\Skautis\Factory;
 
 use Cake\Chronos\Date;
 use Model\Participant\Participant;
-use Money\Currency;
-use Money\Money;
+use Model\Participant\Payment;
 use function preg_match;
 
 final class ParticipantFactory
 {
-    public static function create(\stdClass $skautisParticipant) : Participant
+    public static function create(\stdClass $skautisParticipant, Payment $payment) : Participant
     {
         preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $skautisParticipant->Person, $matches);
 
@@ -31,7 +30,7 @@ final class ParticipantFactory
             $skautisParticipant->Unit ?? '',
             $skautisParticipant->UnitRegistrationNumber ?? '',
             (int) $skautisParticipant->Days,
-            new Money($skautisParticipant->Note ?? 0, new Currency('CZK'))
+            $payment
         );
     }
 }

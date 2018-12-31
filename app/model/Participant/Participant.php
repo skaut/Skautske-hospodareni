@@ -51,7 +51,7 @@ class Participant
     /** @var int */
     private $days;
 
-    /** @var Money|null */
+    /** @var Payment */
     private $payment;
 
     public function __construct(
@@ -69,7 +69,7 @@ class Participant
         string $unit,
         string $unitRegistrationNumber,
         int $days,
-        ?Money $payment
+        Payment $payment
     ) {
         $this->id                     = $id;
         $this->firstName              = $firstName;
