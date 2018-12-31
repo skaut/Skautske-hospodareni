@@ -33,4 +33,10 @@ class PaymentRepository implements IPaymentRepository
         $this->em->persist($payment);
         $this->em->flush();
     }
+
+    public function deletePayment(Payment $payment) : void
+    {
+        $this->em->remove($payment);
+        $this->em->flush();
+    }
 }

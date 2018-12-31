@@ -21,10 +21,4 @@ class ParticipantTable extends BaseTable
 
         return array_combine(array_column($participants, 'participantId'), $participants);
     }
-
-    public function deleteLocalDetail(int $participantId) : void
-    {
-        $this->connection->query('DELETE FROM [' . self::TABLE_CAMP_PARTICIPANT . '] WHERE participantId =%i', $participantId);
-    }
-
 }

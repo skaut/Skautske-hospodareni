@@ -78,7 +78,10 @@ class ParticipantService extends MutableBaseService
             if ($this->type === 'camp') {
                 $campLocalDetails = $this->table->getCampLocalDetails($ID_Event);
                 foreach (array_diff(array_keys($campLocalDetails), array_column($participants, 'ID')) as $idForDelete) {
-                    $this->table->deleteLocalDetail($idForDelete); //delete zaznam, protoze neexistuje k nemu ucastnik
+                    try {
+                        $this->repository->deletePayment($this->repository->findPayment($idForDelete)); //delete zaznam, protoze neexistuje k nemu ucastnik
+                    } catch (PaymentNofFound $exc) {
+                    }
                 }
             }
 
@@ -250,11 +253,12 @@ class ParticipantService extends MutableBaseService
         }
     }
 
-
-
     public function removeParticipant(int $participantId) : void
     {
-        $this->table->deleteLocalDetail($participantId);
+        try {
+            $this->repository->deletePayment($this->repository->findPayment($participantId));
+        } catch (PaymentNofFound $exc) {
+        }
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
     }
 

@@ -16,4 +16,6 @@ interface IPaymentRepository
 
 
     public function savePayment(Payment $payment) : void;
+
+    public function deletePayment(Payment $payment) : void;
 }
