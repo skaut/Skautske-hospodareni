@@ -18,7 +18,7 @@ use Nette\SmartObject;
  * @property-read string $street
  * @property-read string $city
  * @property-read int $postcode
- * @property-read Date $birthday
+ * @property-read Date|null $birthday
  * @property-read string $unitRegistrationNumber
  * @property-read float $payment
  * @property-read float $repayment
@@ -48,7 +48,7 @@ class Participant
     /** @var int|null */
     private $age;
 
-    /** @var Date */
+    /** @var Date|null */
     private $birthday;
 
     /** @var string */
@@ -81,7 +81,7 @@ class Participant
     /** @var string|null */
     private $category;
 
-    public function __construct(int $id, int $personId, string $firstName, string $lastName, ?string $nickName, ?int $age, Date $birthday, string $street, string $city, int $postcode, string $state, string $unit, string $unitRegistrationNumber, int $days, Payment $payment, ?string $category)
+    public function __construct(int $id, int $personId, string $firstName, string $lastName, ?string $nickName, ?int $age, ?Date $birthday, string $street, string $city, int $postcode, string $state, string $unit, string $unitRegistrationNumber, int $days, Payment $payment, ?string $category)
     {
         $this->id                     = $id;
         $this->personId               = $personId;
@@ -131,7 +131,7 @@ class Participant
         return $this->age;
     }
 
-    public function getBirthday() : Date
+    public function getBirthday() : ?Date
     {
         return $this->birthday;
     }
