@@ -156,6 +156,8 @@ class MassAddForm extends BaseControl
         }
 
         foreach ($persons as $person) {
+            $ks = $person->constantSymbol ?? $values->constantSymbol;
+            $ks = $ks !== null ? (int) $ks : $ks;
             $this->payments->createPayment(
                 $this->groupId,
                 $person->name,
@@ -164,7 +166,7 @@ class MassAddForm extends BaseControl
                 \DateTimeImmutable::createFromMutable($person->dueDate ?? $values->dueDate),
                 (int) $person->id,
                 $person->variableSymbol,
-                $person->constantSymbol ?? $values->constantSymbol,
+                $ks,
                 $person->note
             );
         }
