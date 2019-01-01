@@ -61,7 +61,7 @@ class GroupPresenter extends BasePresenter
         }
 
         if ($type === 'camp') {
-            $allCamps = $this->camp->event->getAll(date('Y'));
+            $allCamps = $this->camp->getEvent()->getAll(date('Y'));
             $camps    = [];
             foreach (array_diff_key($allCamps, $this->model->getCampIds()) as $id => $c) {
                 $camps[$id] = $c['DisplayName'];

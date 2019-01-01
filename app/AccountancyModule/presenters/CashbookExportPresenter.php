@@ -116,7 +116,7 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionPrintCashbook(string $cashbookId) : void
     {
-        $cashbookName = $this->getEventEntity()->event->get($this->getSkautisId())->DisplayName;
+        $cashbookName = $this->getEventEntity()->getEvent()->get($this->getSkautisId())->DisplayName;
 
         $template = $this->exportService->getCashbook(CashbookId::fromString($cashbookId), $cashbookName);
         $this->pdf->render($template, 'pokladni-kniha.pdf');
@@ -130,7 +130,7 @@ class CashbookExportPresenter extends BasePresenter
     public function actionExportCashbook(string $cashbookId, string $paymentMethod) : void
     {
         $skautisId = $this->getSkautisId();
-        $event     = $this->getEventEntity()->event->get($skautisId);
+        $event     = $this->getEventEntity()->getEvent()->get($skautisId);
 
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
