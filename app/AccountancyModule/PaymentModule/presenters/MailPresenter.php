@@ -99,7 +99,7 @@ class MailPresenter extends BasePresenter
         }
         $v = $form->getValues();
 
-        $userId = $this->user->getId();
+        $userId = $this->getUser()->getId();
         try {
             $this->commandBus->handle(
                 new CreateMailCredentials(

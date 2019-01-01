@@ -46,7 +46,7 @@ class ErrorPresenter extends Presenter
         }
 
         if ($exception instanceof AuthenticationException) {//vypršelo přihlášení do SkautISu
-            $this->user->logout(true);
+            $this->getUser()->logout(true);
             $this->flashMessage('Vypršelo přihlášení do skautISu', 'danger');
             $this->redirect(':Default:');
         }
@@ -73,7 +73,7 @@ class ErrorPresenter extends Presenter
             $this->logger->log(
                 sprintf(
                     'userId: %s Msg: %s in %s:%d',
-                    $this->user->getId(),
+                    $this->getUser()->getId(),
                     $exception->getMessage(),
                     $exception->getFile(),
                     $exception->getLine()
