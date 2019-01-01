@@ -255,7 +255,7 @@ class DefaultPresenter extends BasePresenter
             ]
         );
 
-        $this->template->form = $form;
+        $this->template->setParameters(['form' => $form]);
     }
 
     protected function createComponentFormEditTravel() : Form

@@ -39,9 +39,11 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function beforeRender() : void
     {
         parent::beforeRender();
-        $this->template->year       = $this->year;
-        $this->template->isEditable = $this->isEditable;
-        $this->template->aid        = $this->aid;
+        $this->template->setParameters([
+            'year'       => $this->year,
+            'isEditable' => $this->isEditable,
+            'aid'        => $this->aid,
+        ]);
     }
 
     protected function editableOnly() : void

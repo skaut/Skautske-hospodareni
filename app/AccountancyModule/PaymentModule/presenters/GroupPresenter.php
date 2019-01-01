@@ -73,7 +73,7 @@ class GroupPresenter extends BasePresenter
                 ->setPrompt('Vyberte tábor')
                 ->setHtmlId('camp-select')
                 ->setItems($camps);
-            $this->template->nadpis = 'Založení skupiny plateb tábora';
+            $header = 'Založení skupiny plateb tábora';
         } elseif ($type === 'registration') {
             $reg = $this->model->getNewestRegistration();
             if ($reg === []) {
@@ -90,10 +90,10 @@ class GroupPresenter extends BasePresenter
                     'dueDate' => $reg['Year'] . '-01-15',
                 ]
             );
-            $this->template->nadpis = 'Založení skupiny plateb pro registraci';
+            $header = 'Založení skupiny plateb pro registraci';
         } else {//obecná skupina
             unset($this['groupForm']['skautisEntityId']);
-            $this->template->nadpis = 'Založení skupiny plateb';
+            $header = 'Založení skupiny plateb';
         }
 
         $defaultNextVs = $this->queryBus->handle(
@@ -101,7 +101,10 @@ class GroupPresenter extends BasePresenter
         );
         $this['groupForm']['nextVs']->setDefaultValue($defaultNextVs);
 
-        $this->template->linkBack = $this->link('Default:');
+        $this->template->setParameters([
+            'nadpis' => $header,
+            'linkBack' => $this->link('Default:'),
+        ]);
     }
 
     public function renderEdit(int $id) : void
@@ -147,8 +150,10 @@ class GroupPresenter extends BasePresenter
             $form['nextVs']->setDisabled(true);
         }
 
-        $this->template->nadpis   = 'Editace skupiny: ' . $group->getName();
-        $this->template->linkBack = $this->link('Payment:detail', ['id' => $id]);
+        $this->template->setParameters([
+            'nadpis'   => 'Editace skupiny: ' . $group->getName(),
+            'linkBack' => $this->link('Payment:detail', ['id' => $id]),
+        ]);
     }
 
     protected function createComponentGroupForm() : Form

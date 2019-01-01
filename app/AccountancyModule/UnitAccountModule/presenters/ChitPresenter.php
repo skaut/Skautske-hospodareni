@@ -103,19 +103,19 @@ class ChitPresenter extends BasePresenter
 
     public function renderDefault() : void
     {
-        $this->template->types = [
-            ObjectType::EVENT => 'Výpravy',
-            ObjectType::CAMP => 'Tábory',
-            ObjectType::UNIT => 'Jednotky',
-        ];
-
-        $this->template->info            = $this->cashbooks;
-        $this->template->isCashbookEmpty = function (string $cashbookId) : bool {
-            /** @var ChitListControl $chitList */
-            $chitList = $this['chitList-' . $cashbookId];
-
-            return $chitList->isEmpty();
-        };
+        $this->template->setParameters([
+           'types' => [
+               ObjectType::EVENT => 'Výpravy',
+               ObjectType::CAMP => 'Tábory',
+               ObjectType::UNIT => 'Jednotky',
+           ],
+            'info'            => $this->cashbooks,
+            'isCashbookEmpty' => function (string $cashbookId) : bool {
+                /** @var ChitListControl $chitList */
+                $chitList = $this['chitList-' . $cashbookId];
+                return $chitList->isEmpty();
+            },
+        ]);
     }
 
     protected function createComponentChitList() : Multiplier

@@ -95,14 +95,15 @@ trait ParticipantTrait
             throw $e;
         }
         $this->sortParticipants($participants, $sort);
-        $this->template->list         = $list;
-        $this->template->participants = $participants;
-
-        $this->template->unit       = $unit = $this->unitService->getDetail($this->uid);
-        $this->template->uparrent   = $this->unitService->getDetail($unit->ID_UnitParent);
-        $this->template->uchildrens = $this->unitService->getSubunits($unit->ID);
-        $this->template->sort       = $sort;
-        $this->template->useRegNums = $regNums;
+        $this->template->setParameters([
+            'list'         => $list,
+            'participants' => $participants,
+            'unit'       => $unit = $this->unitService->getDetail($this->uid),
+            'uparrent'   => $this->unitService->getDetail($unit->ID_UnitParent),
+            'uchildrens' => $this->unitService->getSubunits($unit->ID),
+            'sort'       => $sort,
+            'useRegNums' => $regNums,
+        ]);
     }
 
     /**

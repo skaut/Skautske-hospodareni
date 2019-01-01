@@ -65,9 +65,11 @@ class GroupUnitControl extends BaseControl
         $group = $this->groups->getGroup($this->groupId);
         $unit  = $this->units->getDetailV2($group->getUnitId());
 
-        $this->template->unitName  = $unit->getDisplayName();
-        $this->template->editation = $this->editation;
-        $this->template->canEdit   = $this->canEdit($group->getUnitId());
+        $this->template->setParameters([
+            'unitName'  => $unit->getDisplayName(),
+            'editation' => $this->editation,
+            'canEdit'   => $this->canEdit($group->getUnitId()),
+        ]);
         $this->template->setFile(__DIR__ . '/templates/GroupUnitControl.latte');
         $this->template->render();
     }

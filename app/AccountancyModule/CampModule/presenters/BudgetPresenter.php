@@ -33,11 +33,13 @@ class BudgetPresenter extends BasePresenter
 
         $inconistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery($campId));
 
-        $this->template->isConsistent             = count($inconistentTotals) === 0;
-        $this->template->toRepair                 = $inconistentTotals;
-        $this->template->budgetEntries            = $this->queryBus->handle(new CampBudgetQuery($campId));
-        $this->template->categories               = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId($aid)));
-        $this->template->isUpdateStatementAllowed = $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid);
+        $this->template->setParameters([
+            'isConsistent'             => count($inconistentTotals) === 0,
+            'toRepair'                 => $inconistentTotals,
+            'budgetEntries'            => $this->queryBus->handle(new CampBudgetQuery($campId)),
+            'categories'               => $this->queryBus->handle(new CategoryListQuery($this->getCashbookId($aid))),
+            'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid),
+        ]);
         if (! $this->isAjax()) {
             return;
         }
