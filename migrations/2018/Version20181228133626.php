@@ -12,9 +12,9 @@ final class Version20181228133626 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         $this->addSql('ALTER TABLE tc_contracts DROP deleted;'); //uz se v ORM kodu nepouziva
-        $this->addSql('ALTER TABLE tc_contracts CHANGE template template SMALLINT DEFAULT 2 NOT NULL;');
-        $this->addSql('ALTER TABLE ac_chitsCategory CHANGE `virtual` `virtual` TINYINT(1) DEFAULT 0 NOT NULL;');
-        $this->addSql('ALTER TABLE ac_chitsCategory CHANGE orderby orderby SMALLINT unsigned DEFAULT 100 NOT NULL;');
+        $this->addSql('ALTER TABLE tc_contracts CHANGE template template SMALLINT NOT NULL;');
+        $this->addSql('ALTER TABLE ac_chitsCategory CHANGE `virtual` `virtual` TINYINT(1) NOT NULL;');
+        $this->addSql('ALTER TABLE ac_chitsCategory CHANGE orderby orderby SMALLINT unsigned NOT NULL;');
     }
 
     public function down(Schema $schema) : void

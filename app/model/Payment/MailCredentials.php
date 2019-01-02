@@ -48,7 +48,7 @@ class MailCredentials
 
     /**
      * @var MailProtocol
-     * @ORM\Column(type="string_enum", name="secure", length=64, options={"default":"ssl"})
+     * @ORM\Column(type="string_enum", name="secure", length=64)
      * @Enum(class=MailProtocol::class)
      */
     private $protocol;

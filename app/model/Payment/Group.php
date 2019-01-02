@@ -53,7 +53,7 @@ class Group
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=20, options={"default":"open"})
+     * @ORM\Column(type="string", length=20)
      */
     private $state = self::STATE_OPEN;
 
@@ -84,7 +84,7 @@ class Group
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="state_info", length=250, options={"default": ""})
+     * @ORM\Column(type="string", name="state_info", length=250)
      */
     private $note = '';
 

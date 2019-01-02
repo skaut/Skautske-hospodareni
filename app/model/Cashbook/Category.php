@@ -52,19 +52,19 @@ class Category implements ICategory
 
     /**
      * @var bool
-     * @ORM\Column(type="boolean", options={"default":0})
+     * @ORM\Column(type="boolean")
      */
     private $virtual;
 
     /**
      * @var int
-     * @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true}, options={"default":100})
+     * @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true})
      */
     private $priority;
 
     /**
      * @var bool
-     * @ORM\Column(type="boolean", options={"default":false})
+     * @ORM\Column(type="boolean")
      */
     private $deleted = false;
 

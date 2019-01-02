@@ -80,7 +80,7 @@ class Payment extends Aggregate
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=64, options={"default":""})
+     * @ORM\Column(type="string", length=64)
      */
     private $note = '';
 
@@ -99,7 +99,7 @@ class Payment extends Aggregate
 
     /**
      * @var State
-     * @ORM\Column(type="string_enum", length=20, options={"default":"preparing"})
+     * @ORM\Column(type="string_enum", length=20)
      * @Enum(class=State::class)
      */
     private $state;
