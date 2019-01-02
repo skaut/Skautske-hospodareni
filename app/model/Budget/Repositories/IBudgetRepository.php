@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace Model\Budget\Repositories;
 
+use Model\Budget\CategoryNotFound;
 use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 
 interface IBudgetRepository
 {
+
+
+    /**
+     * @throws CategoryNotFound
+     */
     public function find(int $id) : Category;
 
     /**
