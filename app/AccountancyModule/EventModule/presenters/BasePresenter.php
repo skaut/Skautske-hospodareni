@@ -19,17 +19,21 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->eventService  = $this->context->getService('eventService');
-        $this->type          = ObjectType::EVENT;
-        $this->template->aid = $this->aid;
+        $this->eventService = $this->context->getService('eventService');
+        $this->type         = ObjectType::EVENT;
+        $this->template->setParameters([
+            'aid' => $this->aid,
+        ]);
 
         //pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
         if ($this->aid === null) {
             return;
         }
 
-        $this->template->event      = $this->event = $this->eventService->getEvent()->get($this->aid);
-        $this->template->isEditable = $this->isEditable = $this->authorizator->isAllowed(Event::UPDATE, $this->aid);
+        $this->template->setParameters([
+            'event'      => $this->event     = $this->eventService->getEvent()->get($this->aid),
+            'isEditable'=> $this->isEditable = $this->authorizator->isAllowed(Event::UPDATE, $this->aid),
+        ]);
     }
 
     protected function editableOnly() : void

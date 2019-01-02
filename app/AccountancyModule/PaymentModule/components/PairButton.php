@@ -59,8 +59,10 @@ class PairButton extends BaseControl
 
     public function render() : void
     {
-        $this->template->canPair     = $this->canPair();
-        $this->template->groupsCount = count($this->groupIds);
+        $this->template->setParameters([
+            'canPair'     => $this->canPair(),
+            'groupsCount' => count($this->groupIds),
+        ]);
         $this->template->setFile(__DIR__ . '/templates/PairButton.latte');
         $this->template->render();
     }

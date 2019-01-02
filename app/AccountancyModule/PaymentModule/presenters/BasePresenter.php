@@ -41,8 +41,10 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function beforeRender() : void
     {
         parent::beforeRender();
-        $this->template->aid        = $this->aid;
-        $this->template->isEditable = $this->isEditable;
+        $this->template->setParameters([
+            'aid'        => $this->aid,
+            'isEditable' => $this->isEditable,
+        ]);
     }
 
 

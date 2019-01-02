@@ -38,7 +38,10 @@ class RegistrationPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
+        $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
+        $this->template->setParameters([
+            'unitPairs' =>$this->readUnits,
+        ]);
     }
 
     /**
@@ -82,8 +85,10 @@ class RegistrationPresenter extends BasePresenter
             );
         }
 
-        $this->template->id       = $id;
-        $this->template->showForm = ! empty($list);
+        $this->template->setParameters([
+            'id'       => $id,
+            'showForm' => ! empty($list),
+        ]);
     }
 
     protected function createComponentMassAddForm() : MassAddForm

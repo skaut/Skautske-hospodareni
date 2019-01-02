@@ -165,7 +165,7 @@ class MoveChitsDialog extends BaseControl
     {
         /** @var EventEntity $eventEntity */
         $eventEntity  = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
-        $eventService = $eventEntity->event;
+        $eventService = $eventEntity->getEvent();
         $rawArr       = $eventService->getAll(date('Y'));
 
         if (empty($rawArr)) {

@@ -15,7 +15,10 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->template->unit = $this->officialUnit = $this->unitService->getOfficialUnit();
+        $this->officialUnit = $this->unitService->getOfficialUnit();
+        $this->template->setParameters([
+            'unit' => $this->officialUnit,
+        ]);
     }
 
     protected function editableOnly() : void

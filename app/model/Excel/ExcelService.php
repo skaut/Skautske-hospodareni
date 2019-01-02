@@ -69,7 +69,7 @@ class ExcelService
     public function getParticipants(EventEntity $service, \stdClass $event, string $type) : void
     {
         $objPHPExcel = $this->getNewFile();
-        $data        = $service->participants->getAll($event->ID);
+        $data        = $service->getParticipants()->getAll($event->ID);
         $sheet       = $objPHPExcel->getActiveSheet();
         if ($type === 'camp') {
             $this->setSheetParticipantCamp($sheet, $data);
@@ -151,15 +151,15 @@ class ExcelService
             /** @var CashbookId $cashbookId */
             $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($campId));
 
-            $camp                          = $service->event->get($aid);
+            $camp                          = $service->getEvent()->get($aid);
             $data[$aid]                    = $camp;
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['troops']          = implode(', ', $unitService->getCampTroopNames($camp));
             $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
-            $participants                  = $service->participants->getAll($aid);
+            $participants                  = $service->getParticipants()->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
-            $data[$aid]['personDays']      = $service->participants->getPersonsDays($participants);
+            $data[$aid]['personDays']      = $service->getParticipants()->getPersonsDays($participants);
         }
         $sheetCamps = $objPHPExcel->setActiveSheetIndex(0);
         $this->setSheetCamps($sheetCamps, $data);

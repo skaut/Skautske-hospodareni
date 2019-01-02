@@ -108,14 +108,14 @@ class CashbookPresenter extends BasePresenter
         $values = $form->getValues();
 
         $aid    = $this->getCurrentUnitId();
-        $amount = $this->eventService->participants->getCampTotalPayment($aid, $values->cat, $values->isAccount);
+        $amount = $this->eventService->getParticipants()->getCampTotalPayment($aid, $values->cat, $values->isAccount);
 
         if ($amount === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $aid]);
         }
 
-        $date    = $this->eventService->event->get($aid)->StartDate;
+        $date    = $this->eventService->getEvent()->get($aid)->StartDate;
         $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
         $body    = new ChitBody(null, new Date($date), null, Amount::fromFloat($amount), $purpose);
 

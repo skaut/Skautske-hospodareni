@@ -49,7 +49,7 @@ abstract class BasePresenter extends \App\BasePresenter
             $this->aid = (int) $this->aid;
         }
 
-        if (! $this->user->isLoggedIn()) {
+        if (! $this->getUser()->isLoggedIn()) {
             $this->backlink = $this->storeRequest('+ 3 days');
             if ($this->isAjax()) {
                 $this->forward(':Auth:ajax', ['backlink' => $this->backlink]);

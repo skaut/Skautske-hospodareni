@@ -116,8 +116,7 @@ class PaymentPresenter extends BasePresenter
 
     public function actionDefault(bool $onlyOpen = true) : void
     {
-        $this->template->onlyOpen = $onlyOpen;
-        $groups                   = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
+        $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
 
         $groupIds       = [];
         $unitIds        = [];
@@ -138,9 +137,12 @@ class PaymentPresenter extends BasePresenter
 
         $this['pairButton']->setGroups($groupIds);
 
-        $this->template->groups               = $groups;
-        $this->template->summarizations       = $this->model->getGroupSummaries($groupIds);
-        $this->template->groupsPairingSupport = $groupsPairingSupport;
+        $this->template->setParameters([
+            'onlyOpen' => $onlyOpen,
+            'groups'               => $groups,
+            'summarizations'       => $this->model->getGroupSummaries($groupIds),
+            'groupsPairingSupport' => $groupsPairingSupport,
+        ]);
     }
 
     public function actionDetail(int $id) : void
@@ -157,10 +159,8 @@ class PaymentPresenter extends BasePresenter
             $this['pairButton']->setGroups([$id]);
         }
 
-        $this->template->group = $group;
-
-        $this->template->nextVS = $nextVS = $this->model->getNextVS($group->getId());
-        $form                   = $this['paymentForm'];
+        $nextVS = $this->model->getNextVS($group->getId());
+        $form   = $this['paymentForm'];
         $form->setDefaults(
             [
             'amount' => $group->getDefaultAmount(),
@@ -171,10 +171,7 @@ class PaymentPresenter extends BasePresenter
             ]
         );
 
-        $this->template->payments  = $payments = $this->model->findByGroup($id);
-        $this->template->summarize = $this->model->getGroupSummaries([$id])[$id];
-        $this->template->now       = new \DateTimeImmutable();
-
+        $payments             = $this->model->findByGroup($id);
         $paymentsForSendEmail = array_filter(
             $payments,
             function (Payment $p) {
@@ -182,7 +179,14 @@ class PaymentPresenter extends BasePresenter
             }
         );
 
-        $this->template->isGroupSendActive = $group->getState() === 'open' && ! empty($paymentsForSendEmail);
+        $this->template->setParameters([
+            'group' => $group,
+            'nextVS' => $nextVS,
+            'payments'  => $payments,
+            'summarize' => $this->model->getGroupSummaries([$id])[$id],
+            'now'       => new \DateTimeImmutable(),
+            'isGroupSendActive' => $group->getState() === 'open' && ! empty($paymentsForSendEmail),
+        ]);
     }
 
     public function actionEdit(int $pid) : void
@@ -215,7 +219,9 @@ class PaymentPresenter extends BasePresenter
             ]
         );
 
-        $this->template->linkBack = $this->link('detail', ['id' => $payment->getGroupId()]);
+        $this->template->setParameters([
+            'linkBack' => $this->link('detail', ['id' => $payment->getGroupId()]),
+        ]);
     }
 
     /**
@@ -224,7 +230,6 @@ class PaymentPresenter extends BasePresenter
     public function actionMassAdd(int $id, ?int $aid = null) : void
     {
         //ověření přístupu
-        $this->template->unitPairs = $this->readUnits;
 
         $group = $this->model->getGroup($id);
 
@@ -243,8 +248,11 @@ class PaymentPresenter extends BasePresenter
             $form->addPerson($p->getId(), $p->getEmails(), $p->getName());
         }
 
-        $this->template->id       = $this->id;
-        $this->template->showForm = count($list) !== 0;
+        $this->template->setParameters([
+            'unitPairs' => $this->readUnits,
+            'id'       => $this->id,
+            'showForm' => count($list) !== 0,
+        ]);
     }
 
     public function actionRepayment(int $id) : void
@@ -325,8 +333,10 @@ class PaymentPresenter extends BasePresenter
                 );
         }
 
-        $this->template->participants = $participantsWithRepayment;
-        $this->template->payments     = $payments;
+        $this->template->setParameters([
+            'participants' => $participantsWithRepayment,
+            'payments'     => $payments,
+        ]);
     }
 
     public function handleCancel(int $pid) : void

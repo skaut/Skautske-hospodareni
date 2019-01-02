@@ -23,8 +23,10 @@ class BudgetPresenter extends BasePresenter
 
     public function renderDefault(?int $year = null) : void
     {
-        $this->template->categories = $this->budgetService->getCategories($this->aid);
-        $this->template->unitPairs  = $this->unitService->getReadUnits($this->user);
+        $this->template->setParameters([
+            'categories' => $this->budgetService->getCategories($this->aid),
+            'unitPairs'  => $this->unitService->getReadUnits($this->user),
+        ]);
     }
 
     /**

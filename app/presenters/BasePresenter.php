@@ -72,19 +72,21 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->appDir = $this->context->getParameters()['appDir'];
 
         //adresář s částmi šablon pro použití ve více modulech
-        $this->template->templateBlockDir = $this->appDir . '/templateBlocks/';
+        $this->template->setParameters([
+            'templateBlockDir' => $this->appDir . '/templateBlocks/',
+            'backlink' => $backlink = $this->getParameter('backlink'),
+        ]);
 
-        $this->template->backlink = $backlink = $this->getParameter('backlink');
-        if ($this->user->isLoggedIn() && $backlink !== null) {
+        if ($this->getUser()->isLoggedIn() && $backlink !== null) {
             $this->restoreRequest($backlink);
         }
 
         try {
-            if ($this->user->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
+            if ($this->getUser()->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
                 $this->userService->isLoggedIn();
             }
         } catch (AuthenticationException $e) {
-            if ($this->name !== 'Auth' || $this->params['action'] !== 'skautisLogout') { //pokud jde o odhlaseni, tak to nevadi
+            if ($this->getName() !== 'Auth' || $this->params['action'] !== 'skautisLogout') { //pokud jde o odhlaseni, tak to nevadi
                 throw $e;
             }
         }
@@ -94,7 +96,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     {
         parent::beforeRender();
 
-        if (! $this->user->isLoggedIn()) {
+        if (! $this->getUser()->isLoggedIn()) {
             return;
         }
 
@@ -105,7 +107,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
                 'myRole' => $this->userService->getRoleId(),
             ]);
         } catch (AuthenticationException $ex) {
-            $this->user->logout(true);
+            $this->getUser()->logout(true);
         }
     }
 
@@ -136,7 +138,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     protected function updateUserAccess() : void
     {
         /** @var Identity $identity */
-        $identity         = $this->user->getIdentity();
+        $identity         = $this->getUser()->getIdentity();
         $identity->access = $this->userService->getAccessArrays($this->unitService);
     }
 

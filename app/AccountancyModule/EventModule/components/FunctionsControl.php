@@ -129,9 +129,11 @@ class FunctionsControl extends BaseControl
     public function render() : void
     {
         $this->template->setFile(__DIR__ . '/templates/FunctionsControl.latte');
-        $this->template->functions = $this->getCurrentFunctions();
-        $this->template->editation = $this->editation;
-        $this->template->canEdit   = $this->canEdit();
+        $this->template->setParameters([
+            'functions' => $this->getCurrentFunctions(),
+            'editation' => $this->editation,
+            'canEdit'   => $this->canEdit(),
+        ]);
         $this->template->render();
     }
 

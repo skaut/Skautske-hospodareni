@@ -38,8 +38,10 @@ class CampPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->template->unitPairs = $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
-        $this->campService         = $this->context->getService('campService');
+        $this->template->setParameters([
+            'unitPairs' => $this->readUnits = $units = $this->unitService->getReadUnits($this->user),
+        ]);
+        $this->campService                  = $this->context->getService('campService');
     }
 
     /**
@@ -83,8 +85,10 @@ class CampPresenter extends BasePresenter
             );
         }
 
-        $this->template->id       = $id;
-        $this->template->showForm = ! empty($participants);
+        $this->template->setParameters([
+            'id'       => $id,
+            'showForm' => ! empty($participants),
+        ]);
     }
 
     protected function createComponentMassAddForm() : MassAddForm

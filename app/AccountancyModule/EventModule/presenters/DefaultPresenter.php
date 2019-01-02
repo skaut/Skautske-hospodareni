@@ -111,7 +111,9 @@ class DefaultPresenter extends BasePresenter
     {
         $this['formFilter']['state']->setDefaultValue($this->ses->state);
         $this['formFilter']['year']->setDefaultValue($this->ses->year);
-        $this->template->accessCreate = $this->authorizator->isAllowed(Event::CREATE, null);
+        $this->template->setParameters([
+            'accessCreate' => $this->authorizator->isAllowed(Event::CREATE, null),
+        ]);
     }
 
     public function actionNew() : void

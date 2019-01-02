@@ -136,8 +136,10 @@ class BankAccountsPresenter extends BasePresenter
             $accounts
         );
 
-        $this->template->accounts = $accounts;
-        $this->template->canEdit  = $this->canEdit();
+        $this->template->setParameters([
+            'accounts' => $accounts,
+            'canEdit'  => $this->canEdit(),
+        ]);
     }
 
     public function renderDetail(int $id) : void

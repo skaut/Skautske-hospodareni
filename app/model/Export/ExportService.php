@@ -79,8 +79,8 @@ class ExportService
         $templateFile = __DIR__ . '/templates/participant' . ($type === 'camp' ? 'Camp' : '') . '.latte';
 
         return $this->templateFactory->create($templateFile, [
-            'list' => $service->participants->getAll($aid),
-            'info' => $service->event->get($aid),
+            'list' => $service->getParticipants()->getAll($aid),
+            'info' => $service->getEvent()->get($aid),
         ]);
     }
 
