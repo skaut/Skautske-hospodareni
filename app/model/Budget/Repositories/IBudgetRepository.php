@@ -10,8 +10,6 @@ use Model\Cashbook\Operation;
 
 interface IBudgetRepository
 {
-
-
     /**
      * @throws CategoryNotFound
      */
