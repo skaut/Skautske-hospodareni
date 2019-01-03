@@ -113,7 +113,7 @@ class Command
 
     /**
      * @var ArrayCollection|Type[]
-     * @ORM\ManyToMany(targetEntity="\Model\Travel\Travel\Type::class")
+     * @ORM\ManyToMany(targetEntity=Type::class)
      * @ORM\JoinTable(name="tc_command_types",
      *      joinColumns={@ORM\JoinColumn(name="commandId", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="typeId", referencedColumnName="type")}

@@ -28,7 +28,7 @@ class TravelDetails
 
     /**
      * @var Type
-     * @ORM\ManyToOne(targetEntity="\Model\Travel\Travel\Type::class")
+     * @ORM\ManyToOne(targetEntity=Type::class)
      * @ORM\JoinColumn(name="type", referencedColumnName="type")
      */
     private $transportType;
