@@ -51,7 +51,7 @@ class Category
 
     /**
      * @var ArrayCollection|Category[]
-     * @ORM\OneToMany(targetEntity="Category", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="Category", mappedBy="parent",cascade={"persist"})
      */
     private $children;
 
@@ -76,12 +76,16 @@ class Category
 
     public function __construct(int $unitId, string $label, Operation $type, ?Category $parent, float $value, int $year)
     {
-        $this->unitId = $unitId;
-        $this->label  = $label;
-        $this->type   = $type;
-        $this->parent = $parent;
-        $this->value  = $value;
-        $this->year   = $year;
+        $this->unitId   = $unitId;
+        $this->label    = $label;
+        $this->type     = $type;
+        $this->children = new ArrayCollection();
+        if ($parent !== null) {
+            $this->parent = $parent;
+            $this->parent->children->add($this);
+        }
+        $this->value = $value;
+        $this->year  = $year;
     }
 
     public function getId() : int
