@@ -74,7 +74,7 @@ class Payment extends Aggregate
 
     /**
      * @var int|NULL
-     * @ORM\Column(type="string", nullable=true, length=4, name="ks")
+     * @ORM\Column(type="smallint", nullable=true, name="ks", options={"unsigned"=true})
      */
     private $constantSymbol;
 
