@@ -20,7 +20,7 @@ class Chit
     /**
      * @var int|NULL
      * @ORM\Id()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
      */
     private $id;
@@ -46,7 +46,7 @@ class Chit
 
     /**
      * @var PaymentMethod
-     * @ORM\Column(type="string_enum")
+     * @ORM\Column(type="string_enum", length=13)
      * @EnumAnnotation(class=PaymentMethod::class)
      */
     private $paymentMethod;
@@ -55,7 +55,7 @@ class Chit
      * ID of person that locked this
      *
      * @var int|NULL
-     * @ORM\Column(type="integer", nullable=true, name="`lock`")
+     * @ORM\Column(type="integer", nullable=true, name="`lock`", options={"unsigned"=true})
      */
     private $locked;
 

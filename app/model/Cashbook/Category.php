@@ -21,19 +21,19 @@ class Category implements ICategory
      * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $id;
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="label")
+     * @ORM\Column(type="string", name="label", length=64)
      */
     private $name;
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="short")
+     * @ORM\Column(type="string", name="short", length=64)
      */
     private $shortcut;
 
@@ -58,7 +58,7 @@ class Category implements ICategory
 
     /**
      * @var int
-     * @ORM\Column(type="integer", name="orderby")
+     * @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true})
      */
     private $priority;
 

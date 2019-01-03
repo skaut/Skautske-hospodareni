@@ -20,19 +20,19 @@ final class Passenger
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="driver_name")
+     * @ORM\Column(type="string", name="driver_name", length=64)
      */
     private $name;
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="driver_contact")
+     * @ORM\Column(type="string", name="driver_contact", length=64, nullable=true)
      */
     private $contact;
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="driver_address")
+     * @ORM\Column(type="string", name="driver_address", length=64)
      */
     private $address;
 

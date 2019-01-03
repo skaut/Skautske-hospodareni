@@ -38,7 +38,7 @@ final class Passenger
 
     /**
      * @var int|NULL
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true, options={"unsigned"=true})
      */
     private $contractId;
 

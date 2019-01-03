@@ -18,13 +18,13 @@ class LogEntry
      * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $id;
 
     /**
      * @var int
-     * @ORM\Column(type="integer", name="unitId")
+     * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
      */
     private $unitId;
 
@@ -36,13 +36,13 @@ class LogEntry
 
     /**
      * @var int
-     * @ORM\Column(type="integer", name="userId")
+     * @ORM\Column(type="integer", name="userId", options={"unsigned"=true})
      */
     private $userId;
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      */
     private $description;
 
@@ -55,7 +55,7 @@ class LogEntry
 
     /**
      * @var int|NULL
-     * @ORM\Column(type="integer", nullable=true, name="typeId")
+     * @ORM\Column(type="integer", nullable=true, name="typeId", options={"unsigned"=true})
      */
     private $typeId;
 

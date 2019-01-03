@@ -28,13 +28,13 @@ class Command
      * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $id;
 
     /**
      * @var int
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $unitId;
 
@@ -52,19 +52,19 @@ class Command
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64)
      */
     private $purpose;
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64, nullable=true)
      */
     private $place;
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="passengers")
+     * @ORM\Column(type="string", name="passengers", length=64)
      */
     private $fellowPassengers;
 
@@ -82,7 +82,7 @@ class Command
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64)
      */
     private $note;
 

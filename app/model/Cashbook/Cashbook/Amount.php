@@ -22,13 +22,13 @@ class Amount
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="priceText")
+     * @ORM\Column(type="string", name="priceText", length=100)
      */
     private $expression;
 
     /**
      * @var float
-     * @ORM\Column(type="float", name="price")
+     * @ORM\Column(type="float", name="price", options={"unsigned"=true})
      */
     private $value;
 

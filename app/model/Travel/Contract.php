@@ -18,19 +18,19 @@ class Contract
      * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $id;
 
     /**
      * @var int
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $unitId;
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="unit_person")
+     * @ORM\Column(type="string", name="unit_person", length=64, options={"comment": "jméno osoby zastupující jednotku"})
      */
     private $unitRepresentative;
 
@@ -54,7 +54,7 @@ class Contract
 
     /**
      * @var int
-     * @ORM\Column(type="smallint", name="template")
+     * @ORM\Column(type="smallint", name="template", options={"comment":"1-old, 2-podle NOZ"})
      */
     private $templateVersion = 2;
 
