@@ -53,7 +53,6 @@ class ErrorPresenter extends Presenter
 
         if ($exception instanceof PermissionException) {
             $this->flashMessage($exception->getMessage(), 'danger');
-            $this->logger->log($exception, ILogger::EXCEPTION);
             $this->redirect(':Default:');
         }
 
