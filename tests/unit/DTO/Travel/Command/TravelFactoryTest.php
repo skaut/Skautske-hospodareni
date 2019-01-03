@@ -7,7 +7,6 @@ namespace Model\DTO\Travel\Command;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Travel\Command;
-use Model\Travel\Travel\Type;
 use Money\Money;
 use function array_map;
 
@@ -17,7 +16,7 @@ class TravelFactoryTest extends Unit
     {
         $firstDay      = new \DateTimeImmutable();
         $secondDay     = new \DateTimeImmutable();
-        $transportType = new Type('r', 'rychlík', false);
+        $transportType = 'r';
 
         $travels = [
             m::mock(Command\TransportTravel::class, [
