@@ -1,17 +1,24 @@
-{block title}Detail účtu{/block}
 {block content}
-{include ../ActionMenu.latte}
-<div class="pull-right">
-    <div><strong>Číslo účtu:</strong> {$account->getNumber()}</div>
-    <div>Vytvořen {$account->getCreatedAt()|date:'j.n. Y'}</div>
+<div class="row mb-4">
+    <h1 n:inner-block="title" class="col">{$account->getName()}</h1>
+    <div class="col-auto">
+        <a n:href="edit $account->getId()" class="btn btn-primary"><i class="far fa-edit mr-1"></i> Upravit</a>
+        <a n:href="remove! $account->getId()" class="btn btn-danger"></a>
+    </div>
 </div>
-<div class="pull-left">
-    <a n:href="default" class="btn btn-default back"><i class="fa fa-arrow-left"></i></a>
+
+<div class="row mb-2 d-flex align-items-end">
+    <div class="col mb-3">
+        <div><strong>Číslo účtu:</strong> {$account->getNumber()}</div>
+        <div>Vytvořen {$account->getCreatedAt()|date:'j.n. Y'}</div>
+    </div>
+    <div class="col-auto">
+        <i class="far fa-calendar mr-1"></i> Transakce za posledních 60 dní
+    </div>
 </div>
-<h1>{$account->getName()}</h1>
 
 <div class="panel panel-default">
-    <div class="panel-heading">Transakce za posledních 60 dní</div>
+    <div class="panel-heading"></div>
     <div class="panel-body">
         {if $transactions === NULL}
             <div class="alert alert-danger" n:ifset="$errorMessage">{$errorMessage}</div>
@@ -29,7 +36,7 @@
                     <th></th>
                 </tr>
                 <tr n:foreach="$transactions as $t"
-                    n:class="isset($payments[$t->id]) ? 'info'">
+                    n:class="isset($payments[$t->id]) ? 'bg-info'">
                     <td>{$t->date|date:'j.n.Y'}</td>
                     <td class="r">
                         <strong n:class="$t->amount < 0 ? text-danger">{$t->amount|price}</strong>

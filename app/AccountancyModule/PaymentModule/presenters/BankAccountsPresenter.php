@@ -88,7 +88,7 @@ class BankAccountsPresenter extends BasePresenter
             $this->flashMessage('Bankovní účet byl odstraněn', 'success');
         } catch (BankAccountNotFound $e) {
         }
-        $this->redirect('this');
+        $this->redirect('default');
     }
 
     public function handleImport() : void
