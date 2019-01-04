@@ -6,6 +6,6 @@
             <a class="btn btn-sm btn-default ajax" n:href="cancel!"><i class="fa fa-times"></i></a>
         </form>
     {else}
-    {$unitNames|implode: ', '} <a n:if="$canEdit" n:href="edit!" class="btn btn-xs btn-default ajax"><i class="fa fa-pencil"></i></a>
+    {$unitNames|implode: ', '} <a n:if="$canEdit" n:href="edit!" class="ajax"><i class="far fa-edit"></i></a>
     {/if}
 </div>

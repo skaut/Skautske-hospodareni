@@ -1,20 +1,13 @@
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Seznam členů bez platby</h2>
+<h1 class="mb-4" n:inner-block="title"><a n:href="Payment:detail $group->id">{$group->name}</a> - Seznam členů bez platby</h1>
 
-<a n:href="Payment:detail $id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
-
-<div class="row">
-    <div class="col-sm-12">
-        <div n:if="$unitPairs" class="dropdown" style="float: left; margin-right: 7px;">
-            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
-                <i class="glyphicon glyphicon-random hidden-xs hidden-sm"></i> Jednotka <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
-                <li n:foreach="$unitPairs as $unitId=>$label"><a n:href="this aid=>$unitId">{$label}</a></li>
-            </ul>
-        </div>
-        <h3>{$unitPairs[$aid]}</h3>
+<div class="dropdown mb-3">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="unitDropdown" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+        {$unitPairs[$aid]}
+    </button>
+    <div class="dropdown-menu" aria-labelledby="unitDropdown" n:inner-foreach="$unitPairs as $unitId=>$label">
+        <a n:href="this aid => $unitId" class="dropdown-item">{$label}</a>
     </div>
 </div>
 

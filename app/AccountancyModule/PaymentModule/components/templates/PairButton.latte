@@ -1,12 +1,35 @@
 {var $errorMessage = $groupsCount === 1 ? 'Skupina nemá nastavený účet pro párování s FIO' : 'Žádná ze skupin plateb nemá nastavený účet pro párování s FIO'}
-<div class="btn-group" {if !$canPair}title="{$errorMessage}" rel="tooltip"{/if}>
-    <a n:href="pair!" n:class="!$canPair ? disabled, btn, btn-primary">
-        <i class="glyphicon glyphicon-resize-small"></i> Párovat platby
-    </a>
-    <button n:class="!$canPair ? disabled, btn, btn-primary, dropdown-toggle" data-toggle="dropdown" type="button"><span
-                class="caret"></span></button>
+{*<div n:class="btn-group, !$canPair ? disable" {if !$canPair}title="{$errorMessage}" rel="tooltip"{/if}>*}
+    {*<a n:href="pair!" n:class="!$canPair ? disabled, btn, btn-primary">*}
+        {*<i class="fas fa-university"></i> Párovat platby*}
+    {*</a>*}
+    {*<button n:class="!$canPair ? disabled, btn, btn-primary, dropdown-toggle" data-toggle="dropdown" type="button"><span*}
+                {*class="caret"></span></button>*}
 
-    <div class="dropdown-menu dropdown-form dropdown-menu-right" n:snippet="form">
-        {control form}
+{*</div>*}
+
+<div class="d-inline-block">
+    <div n:class="btn-group">
+        <a n:href="pair!" n:class="!$canPair ? disabled, btn, btn-primary">
+            <i class="fas fa-university"></i> Párovat platby
+        </a>
+        <button n:class="!$canPair ? disabled, btn, btn-primary, dropdown-toggle" type="button" id="pairPayments"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="caret"></span></button>
+
+        <div class="dropdown-menu pairForm" aria-labelledby="pairPayments" n:snippet="form">
+            <form n:name="form" class="row w-100 p-3">
+                <div class="col-8 text-nowrap">
+                    <span class="input-group">
+                    <input n:name="days" class="form-control">
+                    <div class="input-group-append">
+                        <span class="input-group-text">dní</span>
+                    </div>
+                </span>
+                </div>
+                <div class="col-4">
+                    <input n:name="pair" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
     </div>
 </div>

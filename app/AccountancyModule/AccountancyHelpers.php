@@ -110,8 +110,8 @@ abstract class AccountancyHelpers
         }
         $long  = $s;
         $short = mb_substr($s, 0, 5) . '.';
-        return '<span class=\'hidden-xs hidden-sm\'>' . $long . '</span>' .
-            '<span class=\'hidden-md hidden-lg\'>' . $short . '</span>';
+        return '<span class=\'d-xs-none d-sm-none d-lg-inline-block\'>' . $long . '</span>' .
+            '<span class=\'d-md-none d-lg-none d-xs-inline-block\'>' . $short . '</span>';
     }
 
     /**

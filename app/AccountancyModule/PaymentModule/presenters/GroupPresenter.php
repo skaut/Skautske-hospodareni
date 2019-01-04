@@ -161,6 +161,7 @@ class GroupPresenter extends BasePresenter
     protected function createComponentGroupForm() : Form
     {
         $form = new BaseForm();
+        $form->useBootstrap4();
 
         $unitId = $this->getCurrentUnitId();
 

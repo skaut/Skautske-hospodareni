@@ -1,29 +1,39 @@
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Platební skupiny</h2>
+    <h1 n:inner-block="title" class="mb-4">Platební skupiny</h1>
 
-<div class="row">
-    <div class="col-sm-12">
-    <div class="well well-sm">
-        <a n:href="this !$onlyOpen" class="btn btn-info">Zobrazit {if $onlyOpen}i uzavřené skupiny{else}pouze otevřené{/if}</a>
-        {if $isEditable}
-            <div class="pull-right">
+    <div class="row mb-3">
+        <div class="col">
+            <a n:href="this !$onlyOpen" class="btn btn-info">Zobrazit {if $onlyOpen}i uzavřené skupiny{else}pouze otevřené{/if}</a>
+        </div>
+
+            <div class="col-auto" n:if="$isEditable">
                 {control pairButton}
-                <span class="dropdown">
-                    <button class="btn btn-success dropdown-toggle" type="button" id="createGroup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        <i class="glyphicon glyphicon-plus-sign"></i> Založit skupinu plateb <span class="caret"></span>
+
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-success dropdown-toggle ml-2" type="button" id="createGroup"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <i class="fas fa-plus"></i> Založit skupinu plateb <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="createGroup">
-                        <li><a n:href="Group:">Obecná</a></li>
-                        <li><a n:href="Group: camp">Tábor</a></li>
-                        <li><a n:href="Group: registration">Registrace</a></li>
-                    </ul>
-                </span>
+                    <div class="dropdown-menu" aria-labelledby="createGroup">
+                        <a n:href="Group:" class="dropdown-item"><i class="fas fa-list-alt"></i> Obecná</a>
+                        <div class="dropdown-divider"></div>
+                        <a n:href="Group: camp" class="dropdown-item">
+                            <i class="fas fa-campground"></i> Tábor
+                            <span class="small d-block">Umožnuje načíst účastnické poplatky.</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a n:href="Group: registration" class="dropdown-item">
+                            <i class="fas fa-users"></i> Registrace
+                            <span class="small d-block">
+                                Umožnuje načíst registrované osoby ze skautisu.
+                            </span>
+                        </a>
+                    </div>
+                </div>
             </div>
-        {/if}
+
     </div>
-    </div>
-</div>
+
 <div class="row">
     <div class="col-sm-12">
     {if !empty($groups)}

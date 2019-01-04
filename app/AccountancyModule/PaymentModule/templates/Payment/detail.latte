@@ -1,19 +1,31 @@
-{block title}Platební skupina {$group->name}{/block}
 {block #content}
-{include ../ActionMenu.latte}
-<div class="row">
-    <div class="col-sm-12">
-        <h2>{$group->name}</h2>
+
+<div class="row mb-4 d-flex align-items-center">
+    <h1 n:inner-block="title" class="col">{$group->name}</h1>
+
+    <div class="col-auto" n:if="$isEditable">
+        {if $group->state === 'open'}
+            <a n:href="closeGroup! $group->id"
+                    class="btn btn-dark"><i class="fas fa-lock"></i> Uzavřít</a>
+            <a n:href="Group:edit $group->id"
+                    class="btn btn-secondary"><i class="far fa-edit"></i> Upravit skupinu</a>
+        {else}
+            <a n:href="openGroup! $group->id"
+                    class="btn btn-dark"><i class="fas fa-lock-open"></i> Znovu otevřít</a>
+            <a n:href="openRemoveDialog!"
+                    class="ajax btn btn-danger"><i class="far fa-trash-alt"></i> Smazat skupinu</a>
+        {/if}
     </div>
 </div>
+
 <div class="row">
-    <div class="col-md-5">
-        <table class="table table-bordered table-striped">
+    <div class="col">
+        <table class="table table-bordered">
             <tr>
                 <th class="l">Vlastník:</th>
                 <td>{control unit}</td>
             </tr>
-            <tr n:if="!is_null($group->state)">
+            <tr n:if="$group->state !== null">
                 <th class="l">Stav skupiny:</th>
                 <td title='{$group->note}'>{$group->state|groupState|noescape}</td>
             </tr>
@@ -24,145 +36,160 @@
                     {elseif $group->type === "registration"}Registrační{/if}
                 </td>
             </tr>
+        </table>
+    </div>
+    <div class="col">
+        <table class="table table-bordered">
             <tr n:foreach="$summarize as $name=>$r">
-                <th class="l">{$name|paymentState:TRUE}&nbsp;({$r->count}): </th>
+                <th class="l">{$name|paymentState:TRUE}&nbsp;({$r->count}):</th>
                 <td class="r">{if $r->amount != null}{$r->amount|num} Kč{else}&nbsp;{/if}</td>
             </tr>
         </table>
     </div>
 </div> 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="well well-sm" n:inner-if="$isEditable">
-            {if $group->state =='open'}
-                <a n:href="Group:edit, $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit skupinu</a>
-                {if $group->type === 'registration'}
-                    <a n:href="Registration:massAdd $group->id" class="btn btn-primary" ><i class="glyphicon glyphicon-plus-sign hidden-xs"></i> Přidat z registrace</a>
-                    <a n:href="Journal: $group->skautisId" class="btn btn-primary" ><i class="glyphicon glyphicon-book hidden-xs"></i> Časopisy</a>
-                {/if}
-                <a n:if="$group->type === 'camp'" n:href="Camp:massAdd $group->id" class="btn btn-primary" ><i class="glyphicon glyphicon-plus-sign hidden-xs"></i> Přidat z účastníků</a>
-                <a n:href="massAdd $group->id" class="btn btn-primary">Hromadné přidání</a>
-                <div class="btn-group">
-                    <a class="btn dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#">
-                        <i class="glyphicon glyphicon-envelope"></i> Email <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a n:href="sendTest! $group->id">Zaslat testovací email</a></li>
-                        <li><a {if $isGroupSendActive} href="{link sendGroup! $group->id}" onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily{else} class="disabled" title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s>{/if}</a></li>
-                    </ul>
-                </div>
-                {control pairButton}
-                <a n:href="Repayment: $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
-                <a n:href="generateVS! $group->id" class="btn btn-warning" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
-                <a n:href="closeGroup! $group->id" class="btn btn-success"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
-            {else}
-                <a n:href="openGroup! $group->id" class="btn btn-warning"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
-                <a n:href="openRemoveDialog!" class="ajax btn btn-danger"><i class="fa fa-remove"></i> Smazat skupinu plateb</a>
+<div class="mb-3">
+    <div class="mt-4" n:inner-if="$isEditable">
+        {if $group->state =='open'}
+            {if $group->type === 'registration'}
+                <a n:href="Journal: $group->skautisId" class="btn btn-secondary" ><i class="fas fa-book-reader"></i> Časopisy</a>
             {/if}
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-success dropdown-toggle" type="button" id="addPersons"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <i class="fas fa-user-plus"></i> Přidat osoby <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="addPersons">
+                    <a n:if="$group->type === 'camp'" n:href="Camp:massAdd $group->id">… z účastníků</a>
+                    <a n:href="massAdd $group->id" class="dropdown-item">… z členů</a>
 
-        </div>
+                    <a n:href="Registration:massAdd $group->id" class="dropdown-item">… z registrace</a>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="emailsDropd"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <i class="far fa-envelope-open"></i> Email <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="emailsDropdown">
+                    <a n:href="sendTest! $group->id" class="dropdown-item">Zaslat testovací email</a>
+                    {if $isGroupSendActive}
+                        <a n:href="sendGroup! $group->id"
+                                class="dropdown-item"
+                                onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily</a>
+                    {else}
+                        <a href="#" class="disabled dropdown-item"
+                           title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s></a>
+                    {/if}
+                </div>
+            </div>
+            {control pairButton}
+            <a n:href="Repayment: $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
+            <a n:href="generateVS! $group->id" class="btn btn-warning" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
+        {/if}
+
     </div>
 </div>
 
 {if $isEditable}
     {control removeGroupDialog}
 {/if}
-<div class='row'>
-    <div class='col-sm-12'>
-        {var $isEditable = $isEditable && ($group->state == 'open')}
-        {form paymentForm}
-            <ul class="alert alert-danger" n:if="isset($form) && $form->hasErrors()">
-                <li n:foreach="$form->errors as $error">{$error}</li>
-            </ul>
-            <table class="table table-bordered table-striped">
-                <tr>
-                    <th><span class="hidden-sm hidden-xs">Název/</span>účel*</th>
-                    <th>Email</th>
-                    <th>Částka*</th>
-                    <th>VS <i title="Předvyplněná hodnota je dosavadní nejvyšší hodnota +1" rel="tooltip" class="glyphicon glyphicon-info-sign hidden-xs hidden-sm"></i></th>
-                    <th class='hidden-xs'>KS</th>
-                    <th>Splatnost*</th>
-                    <th>Stav</th>
-                    <th>&nbsp;</th>
-                </tr>
-                {* FORM ROW*}
-                <tr n:if="$isEditable">
-                    <td>{input name class=>"input-sm form-control"}</td>
-                    <td>{input email class=>"input-sm form-control"}</td>
-                    <td>{input amount class=>"input-sm form-control"}</td>
-                    <td>{input vs class=>"input-sm form-control"}</td>
-                    <td class='hidden-xs'>{input ks class=>"input-sm form-control"}</td>
-                    <td>{input maturity class=>"input-sm form-control date"}</td>
-                    <td>&nbsp;</td>
-                    <td>{input send}</td>
-                </tr>
-                {if !empty($payments)}
-                    <tr n:foreach="$payments as $l"
-                            {if !$l->closed && $l->dueDate < $now}class="danger" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}
-                    id="payment-{$l->id}">
-                        <td>
-                            <div n:if="$l->note !== ''" class="pull-right">
-                                <i class="fa fa-sticky-note" title="{$l->note}" aria-hidden="true"></i>
-                            </div>
-                            {$l->name}
-                        </td>
-                        <td>{if $l->email == null}&nbsp;{else}{$l->email}{/if}</td>
-                        <td class="r">{$l->amount|num}</td>
-                        {if $l->variableSymbol === NULL}
-                            <td class="warning" title="Bez VS nebude možné automaticky párovat platby">&nbsp;</td>
-                        {else}
-                            <td class="r">{$l->variableSymbol}</td>
-                        {/if}
 
-                        <td class="r hidden-xs">{$l->constantSymbol ?? '&nbsp;'|noescape}</td>
-                        <td class="r">{$l->dueDate|date:'j.n.Y'}</td>
-                        <td>{$l->state|paymentStateLabel|noescape}</td>
-                        <td class="r nowrap">
-                        {if !$l->closed && $isEditable}
-                            <a n:href="edit $l->id" class="btn btn-sm btn-primary" title="Upravit platbu"><i class="glyphicon glyphicon-edit"></i></a>
-                            <a n:href="send! $l->id" n:class="btn, btn-sm, btn-primary, 'ui--sendEmail-'.$iterator->counter, $l->email === NULL ? disabled" title="{$l->email === NULL ? 'Není uveden email' : 'Odeslat email o platbě'}"><i class="glyphicon glyphicon-envelope"></i></a>
-                            <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="glyphicon glyphicon-check"></i></a> 
-                        {elseif $l->closed}
-                            <span title="Datum uzavření platby">{$l->closedAt|date:'j.n.Y'}</span>
-                            {if $l->transaction !== NULL}
-
-                                {*<span title="Číslo platby na účtu">({$l->transaction->id})</span>*}
-                                <div class="dropdown inline-block">
-                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button"
-                                            data-toggle="dropdown">
-                                        <span class="fa fa-info-circle"></span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-form dropdown-menu-right">
-                                        <li><strong>ID:</strong> {$l->transaction->id}</li>
-                                        <li><strong>Plátce:</strong> {$l->transaction->payer}</li>
-                                        <li><strong>Účet:</strong> {$l->transaction->bankAccount}</li>
-                                        <li><strong>Poznámka:</strong> {$l->transaction->note}</li>
-                                    </ul>
-                                </div>
-                            {/if}
-                        {else}&nbsp;{/if}
-                        <a n:href="cancel! $l->id" n:if="$isEditable && ! $l->state->equalsValue('canceled')"
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Opravdu chcete zrušit platbu?');"
-                                title="Zrušit"><i class="glyphicon glyphicon-remove"></i></a>
-                        </td>
-                </tr>
-                {else}
-                    <tr>
-                        <th colspan="9" class="alert alert-info" style="text-align: center;">Zatím zde nejsou žádné platby.</th>
-                    </tr>
-                    {/if}
-                    </table>
-                    {/form}
+{var $isEditable = $isEditable && ($group->state == 'open')}
+{form paymentForm}
+    <ul class="alert alert-danger" n:if="isset($form) && $form->hasErrors()">
+        <li n:foreach="$form->errors as $error">{$error}</li>
+    </ul>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+        <tr>
+            <th><span class="hidden-sm hidden-xs">Název/</span>účel*</th>
+            <th>Email</th>
+            <th>Částka*</th>
+            <th>VS <i title="Předvyplněná hodnota je dosavadní nejvyšší hodnota +1" rel="tooltip" class="glyphicon glyphicon-info-sign hidden-xs hidden-sm"></i></th>
+            <th class='d-xs-none'>KS</th>
+            <th>Splatnost*</th>
+            <th>Stav</th>
+            <th>&nbsp;</th>
+        </tr>
+        {* FORM ROW*}
+        <tr n:if="$isEditable">
+            <td>{input name class=>"input-sm form-control"}</td>
+            <td>{input email class=>"input-sm form-control"}</td>
+            <td>{input amount class=>"input-sm form-control"}</td>
+            <td>{input vs class=>"input-sm form-control"}</td>
+            <td class='d-xs-none'>{input ks class=>"input-sm form-control"}</td>
+            <td>{input maturity class=>"input-sm form-control date"}</td>
+            <td>&nbsp;</td>
+            <td>{input send}</td>
+        </tr>
+        {if !empty($payments)}
+            <tr n:foreach="$payments as $l"
+                    {if !$l->closed && $l->dueDate < $now}class="danger" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}
+            id="payment-{$l->id}">
+                <td>
+                    <div n:if="$l->note !== ''" class="pull-right">
+                        <i class="fa fa-sticky-note" title="{$l->note}" aria-hidden="true"></i>
                     </div>
-                </div>
+                    {$l->name}
+                </td>
+                <td class="small">{if $l->email == null}&nbsp;{else}{$l->email}{/if}</td>
+                <td class="r">{$l->amount|num}</td>
+                {if $l->variableSymbol === NULL}
+                    <td class="warning" title="Bez VS nebude možné automaticky párovat platby">&nbsp;</td>
+                {else}
+                    <td class="r">{$l->variableSymbol}</td>
+                {/if}
 
-                <script>
-                    jQuery(function ($) {
-                        $('.date').each(function (i, el) {
-                            el = $(el);
-                            el.datetimepicker('setDaysOfWeekDisabled', [0, 6]).datetimepicker('setStartDate', '+1d').datetimepicker('setEndDate', '+6m');
-                        });
-                    });
+                <td class="r d-xs-none">{$l->constantSymbol ?? '&nbsp;'|noescape}</td>
+                <td class="r">{$l->dueDate|date:'j.n.Y'}</td>
+                <td>{$l->state|paymentStateLabel|noescape}</td>
+                <td class="r text-nowrap">
+                {if !$l->closed && $isEditable}
+                    <a n:href="edit $l->id"
+                            class="btn btn-sm btn-secondary"
+                            title="Upravit platbu"><i class="far fa-edit"></i></a>
+                    <a n:href="send! $l->id" n:class="btn, btn-sm, btn-primary, 'ui--sendEmail-'.$iterator->counter, $l->email === NULL ? disabled" title="{$l->email === NULL ? 'Není uveden email' : 'Odeslat email o platbě'}"><i class="far fa-envelope-open"></i></a>
+                    <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="fa fa-check"></i></a>
+                {elseif $l->closed}
+                    <span title="Datum uzavření platby">{$l->closedAt|date:'j.n.Y'}</span>
+                    {if $l->transaction !== NULL}
 
-                </script>
+                        {*<span title="Číslo platby na účtu">({$l->transaction->id})</span>*}
+                        <div class="dropdown inline-block">
+                            <button class="btn btn-xs btn-default dropdown-toggle" type="button"
+                                    data-toggle="dropdown">
+                                <span class="fa fa-info-circle"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-form dropdown-menu-right">
+                                <li><strong>ID:</strong> {$l->transaction->id}</li>
+                                <li><strong>Plátce:</strong> {$l->transaction->payer}</li>
+                                <li><strong>Účet:</strong> {$l->transaction->bankAccount}</li>
+                                <li><strong>Poznámka:</strong> {$l->transaction->note}</li>
+                            </ul>
+                        </div>
+                    {/if}
+                {else}&nbsp;{/if}
+                <a n:href="cancel! $l->id" n:if="$isEditable && ! $l->state->equalsValue('canceled')"
+                        class="btn btn-sm btn-danger"
+                        onclick="return confirm('Opravdu chcete zrušit platbu?');"
+                        title="Zrušit"><i class="fa fa-times"></i></a>
+                </td>
+        </tr>
+        {else}
+            <tr>
+                <th colspan="9" class="alert alert-info" style="text-align: center;">Zatím zde nejsou žádné platby.</th>
+            </tr>
+            {/if}
+            </table>
+    </div>
+{/form}
+
+    <script>
+        jQuery(function ($) {
+            $('.date').each(function (i, el) {
+                el = $(el);
+                el.datetimepicker('setDaysOfWeekDisabled', [0, 6]).datetimepicker('setStartDate', '+1d').datetimepicker('setEndDate', '+6m');
+            });
+        });
+    </script>
