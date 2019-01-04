@@ -41,6 +41,9 @@
                     </li>
                 </ul>
                 <div class="my-2 my-lg-0 form-inline">
+                    <div id="timer" class="mr-3 text-white w-auto small p-1 rounded">
+                        <i class="far fa-clock"></i> <span id="timer-minutes"></span>
+                    </div>
                     <select class="roleSelect custom-select custom-select-sm mr-sm-3">
                         <option n:foreach="$myRoles as $r"
                                 value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{ifset $r->RegistrationNumber}{$r->RegistrationNumber} - {/ifset}{$r->Role}</option>
@@ -90,5 +93,6 @@
     <script defer src="https://use.fontawesome.com/releases/v5.5.0/js/all.js"
             integrity="sha384-GqVMZRt5Gn7tB9D9q7ONtcp4gtHIUEW/yG7h98J7IpE3kpi+srfFyyB/04OV6pG0"
             crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
 </body>
 </html>
