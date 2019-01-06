@@ -41,7 +41,7 @@ class CashbookWithCategoriesBuilder
     private const FONT_SIZE = 8;
 
     // Coefficient for minimal size of column
-    private const COLUMN_WIDTH_COEFFICIENT = 1.1;
+    private const COLUMN_WIDTH_COEFFICIENT = 1.5;
 
     public function __construct(QueryBus $queryBus)
     {
