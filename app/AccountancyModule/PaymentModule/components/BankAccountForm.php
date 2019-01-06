@@ -74,24 +74,26 @@ class BankAccountForm extends BaseControl
     private function formSucceeded(BaseForm $form, ArrayHash $values) : void
     {
         try {
+            $number   = (string) $values->number;
+            $bankCode = (string) $values->bankCode;
             if ($this->id !== null) {
                 $this->model->updateBankAccount(
                     $this->id,
                     $values->name,
-                    new AccountNumber($values->prefix, (string) $values->number, (string) $values->bankCode),
+                    new AccountNumber($values->prefix, $number, $bankCode),
                     $values->token
                 );
             } else {
                 $this->model->addBankAccount(
                     $this->getPresenter()->getUnitId(),
                     $values->name,
-                    new AccountNumber($values->prefix, $values->number, $values->bankCode),
+                    new AccountNumber($values->prefix, $number, $bankCode),
                     $values->token
                 );
             }
 
-            $this->presenter->flashMessage('Bankovní účet byl uložen');
-            $this->presenter->redirect('BankAccounts:default');
+            $this->getPresenter()->flashMessage('Bankovní účet byl uložen');
+            $this->getPresenter()->redirect('BankAccounts:default');
         } catch (InvalidBankAccountNumber $e) {
             $form->addError('Neplatné číslo účtu');
         }
