@@ -79,7 +79,7 @@
     </target>
 
     <target name="deploy:copy-tarball">
-        <property name="command" value="scp -P ${port} ${file} '${target}:${toDirectory}'"/>
+        <property name="command" value="scp -v -P ${port} ${file} '${target}:${toDirectory}'"/>
         <echo message="Copying files to ${deploy.ssh.target"/>
         <echo message="${command}"/>
         <exec command="${command}" passthru="true" checkreturn="true"/>
