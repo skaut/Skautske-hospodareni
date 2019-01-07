@@ -56,7 +56,11 @@ class DetailPresenter extends BasePresenter
                     $this->event->ID_UnitArray->string
                 );
             } elseif (is_string($unitIdOrIds)) {
-                $troops = [$this->unitService->getDetail((int) $unitIdOrIds)];
+                try {
+                    $troops = [$this->unitService->getDetail((int) $unitIdOrIds)];
+                } catch (UnitNotFound $exc) {
+                    $troops = [];
+                }
             }
         }
 
