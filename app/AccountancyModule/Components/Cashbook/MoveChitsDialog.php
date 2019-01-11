@@ -26,7 +26,6 @@ use Model\EventEntity;
 use Nette\DI\Container;
 use Nette\Utils\ArrayHash;
 use function array_map;
-use function date;
 use function explode;
 use function implode;
 use function in_array;
@@ -166,7 +165,7 @@ class MoveChitsDialog extends BaseControl
         /** @var EventEntity $eventEntity */
         $eventEntity  = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
         $eventService = $eventEntity->getEvent();
-        $rawArr       = $eventService->getAll(date('Y'));
+        $rawArr       = $eventService->getAll(null);
 
         if (empty($rawArr)) {
             return [];
