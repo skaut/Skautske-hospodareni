@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel;
 
-use Model\DTO\Travel\Type as TypeDTO;
+use Model\DTO\Travel\TravelType as TypeDTO;
 use Model\Travel\Travel\Type;
 use Nette\StaticClass;
 

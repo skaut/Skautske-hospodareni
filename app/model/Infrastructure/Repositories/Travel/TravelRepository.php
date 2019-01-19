@@ -13,11 +13,11 @@ use function sprintf;
 class TravelRepository implements ITravelRepository
 {
     /** @var EntityManager */
-    private $em;
+    private $entityManager;
 
     public function __construct(EntityManager $em)
     {
-        $this->em = $em;
+        $this->entityManager = $em;
     }
 
     /**
@@ -26,7 +26,7 @@ class TravelRepository implements ITravelRepository
     public function getType(string $type) : Type
     {
         /** @var Type|null $res */
-        $res = $this->em->getRepository(Type::class)->find($type);
+        $res = $this->entityManager->getRepository(Type::class)->find($type);
         if ($res === null) {
             throw new TypeNotFound(sprintf('Travel type \'%s\' was not found.', $type));
         }
@@ -36,8 +36,8 @@ class TravelRepository implements ITravelRepository
     /**
      * @return Type[]
      */
-    public function getTypes() : array
+    public function findAll() : array
     {
-        return $this->em->getRepository(Type::class)->findBy([], ['order' => 'DESC']);
+        return $this->entityManager->getRepository(Type::class)->findBy([], ['order' => 'DESC']);
     }
 }

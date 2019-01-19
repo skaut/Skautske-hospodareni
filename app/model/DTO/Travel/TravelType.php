@@ -9,12 +9,12 @@ use Nette\SmartObject;
 /**
  * @property-read string $label
  */
-class Type
+class TravelType
 {
     use SmartObject;
 
     /** @var string */
-    private $type;
+    private $shortcut;
 
     /** @var string */
     private $label;
@@ -24,14 +24,14 @@ class Type
 
     public function __construct(string $type, string $label, bool $hasFuel)
     {
-        $this->type    = $type;
-        $this->label   = $label;
-        $this->hasFuel = $hasFuel;
+        $this->shortcut = $type;
+        $this->label    = $label;
+        $this->hasFuel  = $hasFuel;
     }
 
-    public function getType() : string
+    public function getShortcut() : string
     {
-        return $this->type;
+        return $this->shortcut;
     }
 
     public function getLabel() : string

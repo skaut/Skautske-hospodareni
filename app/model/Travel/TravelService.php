@@ -214,10 +214,11 @@ class TravelService
     {
         return array_map(
             [DTO\TypeFactory::class, 'create'],
-            $this->travelRepository->getTypes()
+            $this->travelRepository->findAll()
         );
     }
-    public function getTravelType(string $type) : DTO\Type
+
+    public function getTravelType(string $type) : DTO\TravelType
     {
         return DTO\TypeFactory::create($this->travelRepository->getType($type));
     }
@@ -492,7 +493,7 @@ class TravelService
      */
     private function typesToEntities(array $types) : array
     {
-        return array_filter($this->travelRepository->getTypes(), function (Type $t) use ($types) {
+        return array_filter($this->travelRepository->findAll(), function (Type $t) use ($types) {
             return in_array($t->getType(), $types);
         });
     }

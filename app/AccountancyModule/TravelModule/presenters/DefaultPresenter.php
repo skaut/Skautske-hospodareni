@@ -8,7 +8,7 @@ use App\AccountancyModule\TravelModule\Components\CommandGrid;
 use App\AccountancyModule\TravelModule\Factories\ICommandGridFactory;
 use App\Forms\BaseForm;
 use Model\BaseService;
-use Model\DTO\Travel\Type;
+use Model\DTO\Travel\TravelType;
 use Model\Services\PdfRenderer;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
@@ -113,7 +113,7 @@ class DefaultPresenter extends BasePresenter
             [
             'command' => $command,
             'travels' => $travels,
-            'types' => array_map(function (Type $t) {
+            'types' => array_map(function (TravelType $t) {
                 return $t->getLabel();
             }, $command->getTransportTypes()),
             'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,

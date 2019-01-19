@@ -6,7 +6,7 @@ namespace App\AccountancyModule\TravelModule\Components;
 
 use App\Forms\BaseForm;
 use App\MyValidators;
-use Model\DTO\Travel\Type;
+use Model\DTO\Travel\TravelType;
 use Model\Travel\Passenger;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
@@ -31,7 +31,7 @@ class CommandForm extends Control
     /** @var TravelService */
     private $model;
 
-    /** @var Type[] */
+    /** @var TravelType[] */
     private $transportTypes;
 
     /** @var callable[] */
@@ -57,13 +57,13 @@ class CommandForm extends Control
 
         $vehiclesWithFuel = array_filter(
             $this->transportTypes,
-            function (Type $t) {
+            function (TravelType $t) {
                 return $t->hasFuel();
             }
         );
         $vehiclesWithFuel = array_map(
-            function (Type $t) {
-                return $t->getType();
+            function (TravelType $t) {
+                return $t->getShortcut();
             },
             $vehiclesWithFuel
         );
@@ -262,11 +262,11 @@ class CommandForm extends Control
     {
         $options = [];
         foreach ($this->transportTypes as $type) {
-            $option                    = Html::el('option')
-                ->setAttribute('value', $type->getType())
+            $option                        = Html::el('option')
+                ->setAttribute('value', $type->getShortcut())
                 ->setHtml($type->getLabel())
-                ->setAttribute('disabled', in_array($type->getType(), $disabledValues, true));
-            $options[$type->getType()] = $option;
+                ->setAttribute('disabled', in_array($type->getShortcut(), $disabledValues, true));
+            $options[$type->getShortcut()] = $option;
         }
 
         return $options;

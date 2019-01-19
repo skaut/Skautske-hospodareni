@@ -25,7 +25,7 @@ use Nette\SmartObject;
  * @property-read Money                     $pricePerKm
  * @property-read Money                     $fuelPricePerKm
  * @property-read string                    $state
- * @property-read Type[]                    $travelTypes
+ * @property-read TravelType[]                    $travelTypes
  * @property-read string[]                  $travelTypePairs
  */
 class Command
@@ -86,11 +86,11 @@ class Command
     /** @var int|null */
     private $ownerId;
 
-    /** @var Type[] */
+    /** @var TravelType[] */
     private $transportTypes;
 
     /**
-     * @param Type[] $transportTypes
+     * @param TravelType[] $transportTypes
      */
     public function __construct(
         int $id,
@@ -218,7 +218,7 @@ class Command
     }
 
     /**
-     * @return Type[]
+     * @return TravelType[]
      */
     public function getTransportTypes() : array
     {
@@ -232,7 +232,7 @@ class Command
     {
         $types = [];
         foreach ($this->transportTypes as $type) {
-            $types[$type->getType()] = $type->getLabel();
+            $types[$type->getShortcut()] = $type->getLabel();
         }
         return $types;
     }

@@ -8,10 +8,10 @@ use Model\Travel\Travel\Type;
 
 interface ITravelRepository
 {
-    public function getType(string $type) : ?Type;
+    public function getType(string $type) : Type;
 
     /**
      * @return Type[]
      */
-    public function getTypes() : array;
+    public function findAll() : array;
 }
