@@ -27,3 +27,5 @@ modules:
             dsn: 'mysql:host=mysql-test;dbname=hskauting'
             user: 'root'
             password: 'root'
+            populate: true
+            dump: 'tests/_data/cleanup.sql'
