@@ -8,20 +8,13 @@ use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Operation;
-use Nette\SmartObject;
 
 /**
- * @property-read string $label
- * @property-read float $value
- * @property-read Category[] $children
- *
  * @ORM\Entity()
  * @ORM\Table(name="ac_unit_budget_category")
  */
 class Category
 {
-    use SmartObject;
-
     /**
      * @var int
      * @ORM\Id()
