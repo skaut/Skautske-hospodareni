@@ -17,7 +17,7 @@ final class CategoryFactory
             $category->getId(),
             $category->getLabel(),
             $category->getValue(),
-            array_map([Category::class, 'create'], $category->getChildren())
+            array_map([self::class, 'create'], $category->getChildren())
         );
     }
 }
