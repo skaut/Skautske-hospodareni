@@ -74,20 +74,21 @@ class BankAccountForm extends BaseControl
     private function formSucceeded(BaseForm $form, ArrayHash $values) : void
     {
         try {
+            $prefix   = (string) $values->prefix;
             $number   = (string) $values->number;
             $bankCode = (string) $values->bankCode;
             if ($this->id !== null) {
                 $this->model->updateBankAccount(
                     $this->id,
                     $values->name,
-                    new AccountNumber($values->prefix, $number, $bankCode),
+                    new AccountNumber($prefix, $number, $bankCode),
                     $values->token
                 );
             } else {
                 $this->model->addBankAccount(
                     $this->getPresenter()->getUnitId(),
                     $values->name,
-                    new AccountNumber($values->prefix, $number, $bankCode),
+                    new AccountNumber($prefix, $number, $bankCode),
                     $values->token
                 );
             }
