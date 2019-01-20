@@ -6,25 +6,21 @@
         <th>Předpoklad</th>
     </tr>
     {var $sum = 0}
-    {dump $cat}
-    {foreach $cat as $c}
-        {var $subcategoryCount = count($c['childrens'])}
-        {var $subcategories = array_values($c['childrens'])}
+    {foreach $rootCategories as $rootCategory}
+        {var $subcategoryCount = count($rootCategory->children)}
         {if $subcategoryCount === 0}
             <tr>
-                <td colspan="2">{$c->label}</td>
+                <td colspan="2">{$rootCategory->label}</td>
                 <td>&nbsp;</td>
             </tr>
         {else}
-            {dump $c['childrens']}
-            {var $firstSubcategory = $subcategories[0]}
             <tr>
-                <td rowspan="{$subcategoryCount}">{$c->label}</td>
-                <td>{$firstSubcategory->label}</td>
-                <td class="r">{php $sum += $firstSubcategory->value} {$firstSubcategory->value|number:2:',':' '} Kč</td>
+                <td rowspan="{$subcategoryCount}">{$rootCategory->label}</td>
+                <td>{$rootCategory->children[0]->label}</td>
+                <td class="r">{php $sum += $rootCategory->children[0]->value} {$rootCategory->children[0]->value|number:2:',':' '} Kč</td>
             </tr>
             <tr n:for="$i = 1; $i < $subcategoryCount; $i++">
-                {var $subcategory = $subcategories[$i]}
+                {var $subcategory = $rootCategory->children[$i]}
                 <td>{$subcategory->label}</td>
                 <td class="r">{php $sum += $subcategory->value} {$subcategory->value|number:2:',':' '} Kč</td>
             </tr>
@@ -48,11 +44,11 @@
 </div>
 
 <div class="row" n:ifset="$categories">
-    <div class="col-sm-6" n:if="isset($categories['in']) && !empty($categories['in'])">
-        {include #table cat=>$categories['in']}
+    <div class="col-sm-6" n:if="!empty($categories['in'])">
+        {include #table rootCategories=>$categories['in']}
     </div>
     {php $presenter->template->sum = $presenter->template->sumReality = 0}
-    <div class="col-sm-6" n:if="isset($categories['out']) && !empty($categories['out'])">
-        {include #table cat=>$categories['out']}
+    <div class="col-sm-6" n:if="!empty($categories['out'])">
+        {include #table rootCategories=>$categories['out']}
     </div>
 </div>

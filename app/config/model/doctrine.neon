@@ -19,6 +19,7 @@ doctrine:
         Model\Logger: %domainModelDir%/Logger
         Model\Payment: %domainModelDir%/Payment
         Model\Travel: %domainModelDir%/Travel
+        Model\Budget: %domainModelDir%/Budget
     types:
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
         money: Model\Infrastructure\Types\MoneyType

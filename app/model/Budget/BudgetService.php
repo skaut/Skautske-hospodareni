@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Model\Budget\Repositories\IBudgetRepository;
+use Model\Budget\Unit\Category;
+use Model\Cashbook\Operation;
+use Model\DTO\Budget\CategoryFactory;
+use function array_map;
 use function str_replace;
 
 class BudgetService
 {
-    /** @var BudgetTable */
-    private $table;
+    /** @var IBudgetRepository */
+    private $repository;
 
-    public function __construct(BudgetTable $table)
+    public function __construct(IBudgetRepository $budgetRepository)
     {
-        $this->table = $table;
+        $this->repository = $budgetRepository;
     }
 
     /**
@@ -22,60 +27,34 @@ class BudgetService
     public function getCategories(int $unitId) : array
     {
         return [
-            'in' => $this->getCategoriesAll($unitId, 'in'),
-            'out' => $this->getCategoriesAll($unitId, 'out'),
+            'in' => array_map([CategoryFactory::class, 'create'], $this->repository->findCategories($unitId, Operation::INCOME())),
+            'out' => array_map([CategoryFactory::class, 'create'], $this->repository->findCategories($unitId, Operation::EXPENSE())),
         ];
     }
 
     public function addCategory(int $unitId, string $label, string $type, ?int $parentId, string $value, int $year) : void
     {
-        $this->table->addCategory([
-            'unit_id' => $unitId,
-            'label' => $label,
-            'type' => $type,
-            'parentId' => $parentId,
-            'value' => (float) str_replace(',', '.', $value),
-            'year' => $year,
-        ]);
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getCategoriesRoot(int $unitId, ?string $type = null) : array
-    {
-        if ($type === null) {
-            return [
-                'in' => $this->table->getDS($unitId, 'in')->where('parentId IS NULL')->fetchPairs('id', 'label'),
-                'out' => $this->table->getDS($unitId, 'out')->where('parentId IS NULL')->fetchPairs('id', 'label'),
-            ];
-        }
-        return $this->table->getDS($unitId, $type)->where('parentId IS NULL')->fetchPairs('id', 'label');
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getCategoriesAll(int $unitId, string $type, ?int $parentId = null) : array
-    {
-        $data = $this->table->getCategoriesByParent($unitId, $type, $parentId);
-        foreach ($data as $k => $v) {
-            $data[$k]['childrens'] = $this->{__FUNCTION__}($unitId, $type, $v['id']);
-        }
-        return $data;
+        $category = new Category(
+            $unitId,
+            $label,
+            Operation::get($type),
+            $parentId === null ? null : $this->repository->find($parentId),
+            (float) str_replace(',', '.', $value),
+            $year
+        );
+        $this->repository->save($category);
     }
 
     /**
      * @return string[]
      */
-    public function getCategoriesLeaf(int $unitId, ?string $type = null) : array
+    public function getCategoriesRoot(int $unitId, string $type) : array
     {
-        if ($type === null) {
-            return [
-                'in' => $this->{__FUNCTION__}($unitId, 'in'),
-                'out' => $this->{__FUNCTION__}($unitId, 'out'),
-            ];
+        $res = [];
+        /** @var Category $category */
+        foreach ($this->repository->findCategories($unitId, Operation::get($type)) as $category) {
+            $res[$category->getId()] = $category->getLabel();
         }
-        return $this->table->getDS($unitId, $type)->where('parentId IS NOT NULL')->fetchPairs('id', 'label');
+        return $res;
     }
 }
