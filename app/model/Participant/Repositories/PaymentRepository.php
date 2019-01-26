@@ -7,7 +7,7 @@ namespace Model\Budget\Repositories;
 use Doctrine\ORM\EntityManager;
 use Model\Event\SkautisEventId;
 use Model\Participant\Payment;
-use Model\Participant\PaymentNofFound;
+use Model\Participant\PaymentNotFound;
 
 class PaymentRepository implements IPaymentRepository
 {
@@ -23,7 +23,7 @@ class PaymentRepository implements IPaymentRepository
     {
         $payment = $this->em->find(Payment::class, $id);
         if ($payment === null) {
-            throw new PaymentNofFound();
+            throw new PaymentNotFound();
         }
         return $payment;
     }

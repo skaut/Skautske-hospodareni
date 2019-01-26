@@ -6,12 +6,12 @@ namespace Model\Budget\Repositories;
 
 use Model\Event\SkautisEventId;
 use Model\Participant\Payment;
-use Model\Participant\PaymentNofFound;
+use Model\Participant\PaymentNotFound;
 
 interface IPaymentRepository
 {
     /**
-     * @throws PaymentNofFound
+     * @throws PaymentNotFound
      */
     public function findPayment(int $id) : Payment;
 

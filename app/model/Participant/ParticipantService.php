@@ -11,7 +11,7 @@ use Model\Event\SkautisEventId;
 use Model\Participant\Participant;
 use Model\Participant\Payment;
 use Model\Participant\PaymentFactory;
-use Model\Participant\PaymentNofFound;
+use Model\Participant\PaymentNotFound;
 use Model\Participant\PragueParticipants;
 use Model\Services\Language;
 use Model\Skautis\Factory\ParticipantFactory;
@@ -228,7 +228,7 @@ class ParticipantService extends MutableBaseService
     {
         try {
             $this->repository->deletePayment($this->repository->findPayment($participantId));
-        } catch (PaymentNofFound $exc) {
+        } catch (PaymentNotFound $exc) {
         }
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
     }
@@ -334,7 +334,7 @@ class ParticipantService extends MutableBaseService
     {
         try {
             $payment = $this->repository->findPayment($participantId);
-        } catch (PaymentNofFound $exc) {
+        } catch (PaymentNotFound $exc) {
             $payment = PaymentFactory::createDefault($participantId, new SkautisEventId($actionId));
         }
         return $payment;
