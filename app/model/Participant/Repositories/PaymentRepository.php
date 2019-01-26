@@ -19,7 +19,7 @@ class PaymentRepository implements IPaymentRepository
         $this->em = $em;
     }
 
-    public function findPayment(int $id) : Payment
+    public function find(int $id) : Payment
     {
         $payment = $this->em->find(Payment::class, $id);
         if ($payment === null) {

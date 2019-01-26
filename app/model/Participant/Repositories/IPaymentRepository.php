@@ -13,7 +13,7 @@ interface IPaymentRepository
     /**
      * @throws PaymentNotFound
      */
-    public function findPayment(int $id) : Payment;
+    public function find(int $id) : Payment;
 
     /**
      * @return Payment[]

@@ -227,7 +227,7 @@ class ParticipantService extends MutableBaseService
     public function removeParticipant(int $participantId) : void
     {
         try {
-            $this->repository->deletePayment($this->repository->findPayment($participantId));
+            $this->repository->deletePayment($this->repository->find($participantId));
         } catch (PaymentNotFound $exc) {
         }
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
@@ -333,7 +333,7 @@ class ParticipantService extends MutableBaseService
     private function getPayment(int $participantId, int $actionId) : Payment
     {
         try {
-            $payment = $this->repository->findPayment($participantId);
+            $payment = $this->repository->find($participantId);
         } catch (PaymentNotFound $exc) {
             $payment = PaymentFactory::createDefault($participantId, new SkautisEventId($actionId));
         }
