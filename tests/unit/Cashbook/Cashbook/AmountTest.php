@@ -86,4 +86,25 @@ class AmountTest extends Unit
             ['5*5+5*5', 30.0],
         ];
     }
+
+    /**
+     * @return mixed[]
+     */
+    public function getExpressions() : array
+    {
+        return [
+            ['5 * 5', true],
+            ['5+5', true],
+            ['55', false],
+        ];
+    }
+
+    /**
+     * @dataProvider getMultiplications
+     */
+    public function testIsUsingFormula(string $expression, bool $expectedResult) : void
+    {
+        $amount = new Amount($expression);
+        $this->assertSame($expectedResult, $amount->isUsingFormula());
+    }
 }

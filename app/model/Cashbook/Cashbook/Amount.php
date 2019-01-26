@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
 use function array_sum;
 use function count;
+use function preg_match;
 use function preg_match_all;
 use function str_replace;
 
@@ -63,6 +64,11 @@ class Amount
     public static function fromFloat(float $amount) : self
     {
         return new self((string) $amount);
+    }
+
+    public function isUsingFormula() : bool
+    {
+        return preg_match('/[+*]/', $this->expression) === 1;
     }
 
     /**
