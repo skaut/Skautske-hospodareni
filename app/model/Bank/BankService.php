@@ -15,6 +15,7 @@ use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Utils\Arrays;
 use function array_filter;
+use function array_keys;
 use function array_map;
 use function count;
 use function min;
@@ -84,7 +85,7 @@ class BankService
                 continue;
             }
 
-            $payments = $this->payments->findByMultipleGroups($groupIds);
+            $payments = $this->payments->findByMultipleGroups(array_keys($groups));
             $payments = array_filter(
                 $payments,
                 function (Payment $p) {
