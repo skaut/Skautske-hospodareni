@@ -501,7 +501,7 @@ class TravelService
     private function typesToEntities(array $types) : array
     {
         return array_filter($this->queryBus->handle(new TransportTypesQuery()), function (Type $t) use ($types) {
-            return in_array($t->getType(), $types);
+            return in_array($t->getShortcut(), $types);
         });
     }
 }

@@ -15,9 +15,9 @@ class Type
     /**
      * @var string
      * @ORM\Id()
-     * @ORM\Column(type="string", length=5)
+     * @ORM\Column(type="string", length=5, name="type")
      */
-    private $type;
+    private $shortcut;
 
     /**
      * @var string
@@ -40,15 +40,15 @@ class Type
 
     public function __construct(string $type, string $label, bool $hasFuel)
     {
-        $this->type    = $type;
-        $this->label   = $label;
-        $this->hasFuel = $hasFuel;
+        $this->shortcut = $type;
+        $this->label    = $label;
+        $this->hasFuel  = $hasFuel;
     }
 
 
-    public function getType() : string
+    public function getShortcut() : string
     {
-        return $this->type;
+        return $this->shortcut;
     }
 
     public function getLabel() : string
@@ -63,6 +63,6 @@ class Type
 
     public function __toString() : string
     {
-        return $this->getType();
+        return $this->getShortcut();
     }
 }

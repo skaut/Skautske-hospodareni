@@ -14,6 +14,6 @@ final class TypeFactory
 
     public static function create(Type $type) : TypeDTO
     {
-        return new TypeDTO($type->getType(), $type->getLabel(), $type->hasFuel());
+        return new TypeDTO($type->getShortcut(), $type->getLabel(), $type->hasFuel());
     }
 }
