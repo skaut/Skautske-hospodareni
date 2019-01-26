@@ -32,12 +32,4 @@ class TravelRepository implements ITravelRepository
         }
         return $res;
     }
-
-    /**
-     * @return Type[]
-     */
-    public function findAll() : array
-    {
-        return $this->entityManager->getRepository(Type::class)->findBy([], ['order' => 'DESC']);
-    }
 }

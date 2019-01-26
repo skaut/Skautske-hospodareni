@@ -7,12 +7,14 @@ namespace Model;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use Dibi\Exception;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFound;
 use Model\Travel\Contract;
 use Model\Travel\ContractNotFound;
 use Model\Travel\Passenger;
+use Model\Travel\ReadModel\Queries\TransportTypesQuery;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\ITravelRepository;
@@ -46,18 +48,23 @@ class TravelService
     /** @var ITravelRepository */
     private $travelRepository;
 
+    /** @var QueryBus */
+    protected $queryBus;
+
     public function __construct(
         IVehicleRepository $vehicles,
         ICommandRepository $commands,
         IContractRepository $contracts,
         IUnitRepository $units,
-        ITravelRepository $travelRepository
+        ITravelRepository $travelRepository,
+        QueryBus $queryBus
     ) {
         $this->vehicles         = $vehicles;
         $this->commands         = $commands;
         $this->contracts        = $contracts;
         $this->units            = $units;
         $this->travelRepository = $travelRepository;
+        $this->queryBus         = $queryBus;
     }
 
     /**     VEHICLES    */
@@ -214,7 +221,7 @@ class TravelService
     {
         return array_map(
             [DTO\TypeFactory::class, 'create'],
-            $this->travelRepository->findAll()
+            $this->queryBus->handle(new TransportTypesQuery())
         );
     }
 
@@ -493,7 +500,7 @@ class TravelService
      */
     private function typesToEntities(array $types) : array
     {
-        return array_filter($this->travelRepository->findAll(), function (Type $t) use ($types) {
+        return array_filter($this->queryBus->handle(new TransportTypesQuery()), function (Type $t) use ($types) {
             return in_array($t->getType(), $types);
         });
     }
