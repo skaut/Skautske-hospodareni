@@ -41,7 +41,7 @@ final class BankServiceTest extends Unit
             ->andReturn([$group]);
         $groups->shouldReceive('save');
 
-        $bankAccount = m::mock(BankAccount::class, ['getToken' => '123']);
+        $bankAccount = m::mock(BankAccount::class, ['getToken' => '123', 'getName' => 'Oddilovy ucet']);
 
         $bankAccounts = m::mock(IBankAccountRepository::class);
         $bankAccounts->shouldReceive('find')

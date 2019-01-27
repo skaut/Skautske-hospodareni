@@ -7,6 +7,7 @@ namespace Tests\Integration\Pairing;
 use Mockery as m;
 use Model\Bank\Fio\Transaction;
 use Model\BankService;
+use Model\DTO\Payment\PairingResult;
 use Model\Payment\BankAccount;
 use Model\Payment\FioClientStub;
 use Model\Payment\Group;
@@ -18,6 +19,7 @@ use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
 use Nette\Utils\Random;
 use function mt_rand;
+use function reset;
 
 class BankServiceTest extends \IntegrationTest
 {
@@ -89,9 +91,12 @@ class BankServiceTest extends \IntegrationTest
                 $this->createTransaction(500, ''),
             ]);
 
+        /** @var PairingResult[] $pairingResults */
+        $pairingResults = $this->bankService->pairAllGroups([1]);
+
         $this->assertSame(
             2,
-            $this->bankService->pairAllGroups([1])
+            reset($pairingResults)->getCount()
         );
     }
 
