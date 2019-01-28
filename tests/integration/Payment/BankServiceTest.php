@@ -18,8 +18,10 @@ use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
 use Nette\Utils\Random;
+use function date;
 use function mt_rand;
 use function reset;
+use function sprintf;
 
 class BankServiceTest extends \IntegrationTest
 {
@@ -91,13 +93,26 @@ class BankServiceTest extends \IntegrationTest
                 $this->createTransaction(500, ''),
             ]);
 
-        /** @var PairingResult[] $pairingResults */
-        $pairingResults = $this->bankService->pairAllGroups([1]);
+        $daysBack = 7;
 
-        $this->assertSame(
+        /** @var PairingResult[] $pairingResult */
+        $pairingResults = $this->bankService->pairAllGroups([1], $daysBack);
+
+        /** @var PairingResult $pairingResult */
+        $pairingResult = reset($pairingResults);
+
+        $dateSince = (new \DateTimeImmutable(sprintf('- %d days', $daysBack)))->format('j.n.Y');
+        $dateUntil = date('j.n.Y');
+        $this->assertSame(2, $pairingResult->getCount());
+        $this->assertSame($dateSince, $pairingResult->getSince()->format('j.n.Y'));
+        $this->assertSame($dateUntil, $pairingResult->getUntil()->format('j.n.Y'));
+        $this->assertSame(sprintf(
+            'Platby na účtu "%s" byly spárovány (%d) za období %s - %s',
+            $bankAccount->getName(),
             2,
-            reset($pairingResults)->getCount()
-        );
+            $dateSince,
+            $dateUntil
+        ), $pairingResult->getMessage());
     }
 
 

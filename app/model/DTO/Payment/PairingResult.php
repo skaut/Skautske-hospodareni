@@ -56,16 +56,16 @@ class PairingResult
                 'Platby na účtu "%s" byly spárovány (%d) za období %s - %s',
                 $this->accountName,
                 $this->count,
-                $this->since->format('j.n.Y H:i'),
-                $this->until->format('j.n.Y H:i')
+                $this->since->format('j.n.Y'),
+                $this->until->format('j.n.Y')
             );
         }
 
         return sprintf(
             'Žádné platby na účtu "%s" nebyly spárovány za období %s - %s',
             $this->accountName,
-            $this->since->format('j.n.Y H:i'),
-            $this->until->format('j.n.Y H:i')
+            $this->since->format('j.n.Y'),
+            $this->until->format('j.n.Y')
         );
     }
 }
