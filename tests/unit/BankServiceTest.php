@@ -113,20 +113,14 @@ final class BankServiceTest extends Unit
         $bank->shouldReceive('getTransactions')
             ->once()
             ->andReturn($transactions1);
-
-        $bank->shouldReceive('getTransactions')
-            ->once()
-            ->andReturn($transactions2);
-
+        
         $payments1 = [
             new Payment($group1, '-', null, $amount, new \DateTimeImmutable(), $vs1, null, null, ''),
+            new Payment($group2, '-', null, $amount, new \DateTimeImmutable(), $vs2, null, null, ''),
         ];
         \Helpers::assignIdentity($payments1[0], 1);
 
-        $payments2 = [
-            new Payment($group2, '-', null, $amount, new \DateTimeImmutable(), $vs2, null, null, ''),
-        ];
-        \Helpers::assignIdentity($payments2[0], 2);
+        $payments2 = [];
 
         $paymentRepository = $this->mockPaymentRepository([
             $groupId1 => $payments1,
@@ -136,7 +130,7 @@ final class BankServiceTest extends Unit
         $bankService = new BankService($groups, $bank, $paymentRepository, $bankAccounts);
 
         $paired = $bankService->pairAllGroups([$groupId1, $groupId2]);
-        $this->assertSame(2, $paired);
+        $this->assertSame(1, $paired);
     }
 
     /**
