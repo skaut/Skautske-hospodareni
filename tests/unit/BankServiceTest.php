@@ -113,7 +113,7 @@ final class BankServiceTest extends Unit
         $bank->shouldReceive('getTransactions')
             ->once()
             ->andReturn($transactions1);
-        
+
         $payments1 = [
             new Payment($group1, '-', null, $amount, new \DateTimeImmutable(), $vs1, null, null, ''),
             new Payment($group2, '-', null, $amount, new \DateTimeImmutable(), $vs2, null, null, ''),

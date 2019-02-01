@@ -60,6 +60,6 @@ table {
     </tr>
 </table>
 
-<div style="font-size:0.9em;color:#777;padding-top:10px;">
+<div n:if="$item->amount->isUsingFormula()" style="font-size:0.9em;color:#777;padding-top:10px;">
     <i>{$item->amount->expression} = {$amount}  </i>
 </div>

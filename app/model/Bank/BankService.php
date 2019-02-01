@@ -6,6 +6,7 @@ namespace Model;
 
 use Assert\Assert;
 use Model\Bank\Fio\Transaction as BankTransaction;
+use Model\DTO\Payment\PairingResult;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\Group;
 use Model\Payment\Payment;
@@ -54,13 +55,13 @@ class BankService
      * Completes payments from info on bank account(s)
      *
      * @param  int[] $groupIds
-     * @return int number of paired payments
+     * @return PairingResult[] Description of paired payments
      * @throws BankTimeLimit
      * @throws BankTimeout
      * @throws Payment\BankAccountNotFound
      * @throws Payment\TokenNotSet
      */
-    public function pairAllGroups(array $groupIds, ?int $daysBack = null) : int
+    public function pairAllGroups(array $groupIds, ?int $daysBack = null) : array
     {
         Assert::thatAll($groupIds)->integer();
         Assert::that($daysBack)->nullOr()->min(1);
@@ -75,8 +76,9 @@ class BankService
             true
         );
 
-        $now         = new \DateTimeImmutable();
-        $pairedCount = 0;
+        $now            = new \DateTimeImmutable();
+        $pairedCount    = 0;
+        $pairingResults = [];
 
         foreach ($groupsByAccount as $bankAccountId => $groups) {
             $bankAccount = $this->bankAccounts->find($bankAccountId);
@@ -105,6 +107,8 @@ class BankService
             $this->payments->saveMany($paired);
             $pairedCount += count($paired);
 
+            $pairingResults[] = new PairingResult($bankAccount->getName(), $pairSince, $now, $pairedCount);
+
             if ($daysBack !== null) {
                 continue;
             }
@@ -112,7 +116,7 @@ class BankService
             $this->updateLastPairing($groups, $now);
         }
 
-        return $pairedCount;
+        return $pairingResults;
     }
 
     /**
