@@ -10,12 +10,13 @@ use Model\BankService;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
 use Model\DTO\Payment\Group;
+use Model\DTO\Payment\PairingResult;
 use Model\Payment\BankAccountService;
 use Model\PaymentService;
 use function array_filter;
 use function array_map;
+use function bdump;
 use function count;
-use function sprintf;
 
 class PairButton extends BaseControl
 {
@@ -76,7 +77,7 @@ class PairButton extends BaseControl
             ->setRequired('Musíte vyplnit počet dní')
             ->addRule($form::MIN, 'Musíte zadat alespoň kladný počet dní', 1)
             ->setType('number');
-        $form->addSubmit('pair', 'Párovat')->setAttribute('class', 'ajax');
+        $form->addSubmit('pair', 'Párovat');
 
         $form->onSuccess[] = function ($form, $values) : void {
             $this->pair((int) $values->days);
@@ -117,21 +118,18 @@ class PairButton extends BaseControl
     {
         $error = null;
         try {
-            $pairedCount = $this->model->pairAllGroups($this->groupIds, $daysBack);
+            $pairingResults = $this->model->pairAllGroups($this->groupIds, $daysBack);
+            /** @var PairingResult $p */
+            foreach ($pairingResults as $p) {
+                $this->getPresenter()->flashMessage($p->getMessage(), $p->getCount() > 0 ? 'success' : 'info');
+            }
         } catch (BankTimeout $exc) {
-            $error = self::TIMEOUT_MESSAGE;
+            $this->getPresenter()->flashMessage(self::TIMEOUT_MESSAGE, 'danger');
+            bdump(self::TIMEOUT_MESSAGE);
         } catch (BankTimeLimit $exc) {
-            $error = self::TIME_LIMIT_MESSAGE;
+            $this->getPresenter()->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
+            bdump(self::TIME_LIMIT_MESSAGE);
         }
-
-        if ($error !== null) {
-            $this->presenter->flashMessage($error, 'danger');
-        } elseif (isset($pairedCount) && $pairedCount > 0) {
-            $this->presenter->flashMessage(sprintf('Platby byly spárovány (%d)', $pairedCount), 'success');
-        } else {
-            $this->presenter->flashMessage('Žádné platby nebyly spárovány');
-        }
-
         $this->redirect('this');
     }
 }
