@@ -11,14 +11,14 @@ use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
-use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
+use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use Model\Utils\MoneyFactory;
 use Money\Currency;
 use Money\Money;
 
-final class FinalBalanceQueryHandlerTest extends Unit
+final class FinalRealBalanceQueryHandlerTest extends Unit
 {
     private const CASHBOOK_ID = '111';
 
@@ -29,19 +29,19 @@ final class FinalBalanceQueryHandlerTest extends Unit
 
     public function testCashbookWithPositiveAndNegativeChitsReturnsCorrectBalance() : void
     {
-        $this->assertBalance(MoneyFactory::fromFloat(1100), [
-            $this->mockChit('100', Operation::INCOME),
-            $this->mockChit('1000', Operation::EXPENSE),
-            $this->mockChit('2000', Operation::INCOME),
+        $this->assertBalance(MoneyFactory::fromFloat(-900), [
+            $this->mockChit('100', Operation::INCOME, false),
+            $this->mockChit('1000', Operation::EXPENSE, false),
+            $this->mockChit('2000', Operation::INCOME, true),
         ]);
     }
 
-    private function mockChit(string $amount, string $operation) : Chit
+    private function mockChit(string $amount, string $operation, bool $virtualCategory) : Chit
     {
         $op = Operation::get($operation);
         return m::mock(Chit::class, [
             'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null, new Cashbook\Amount($amount), 'pro test'),
-            'getCategory'   => new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $op->equalsValue(Operation::INCOME), false),
+            'getCategory'   => new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $op->equalsValue(Operation::INCOME), $virtualCategory),
             'getSignedAmount' => $amount * ($op->equalsValue(Operation::INCOME) ? 1 : -1),
         ]);
     }
@@ -56,13 +56,13 @@ final class FinalBalanceQueryHandlerTest extends Unit
         $queryBus = m::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->withArgs(function (ChitListQuery $query) {
-                return $query->getCashbookId()->toString() === self::CASHBOOK_ID && $query->getPaymentMethod() === Cashbook\PaymentMethod::CASH();
+                return $query->getCashbookId()->toString() === self::CASHBOOK_ID;
             })
             ->andReturn($chits);
 
-        $handler = new FinalCashBalanceQueryHandler($queryBus);
+        $handler = new FinalRealBalanceQueryHandler($queryBus);
 
-        $actualBalance = $handler->handle(new FinalCashBalanceQuery($cashbookId));
+        $actualBalance = $handler->handle(new FinalRealBalanceQuery($cashbookId));
 
         $this->assertTrue($expectedBalance->equals($actualBalance));
     }

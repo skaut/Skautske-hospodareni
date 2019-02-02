@@ -139,4 +139,15 @@ class Chit
     {
         return $this->paymentMethod;
     }
+
+    public function getSignedAmount() : float
+    {
+        $amount = $this->getBody()->getAmount()->toFloat();
+
+        if ($this->getCategory()->getOperationType()->equalsValue(Operation::EXPENSE)) {
+            return -1 * $amount;
+        }
+
+        return $amount;
+    }
 }
