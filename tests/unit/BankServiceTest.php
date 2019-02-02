@@ -7,6 +7,7 @@ namespace Model;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Bank\Fio\Transaction;
+use Model\DTO\Payment\PairingResult;
 use Model\Payment\BankAccount;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\Group;
@@ -17,6 +18,7 @@ use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
 use function array_keys;
 use function array_map;
+use function count;
 
 final class BankServiceTest extends Unit
 {
@@ -129,8 +131,10 @@ final class BankServiceTest extends Unit
 
         $bankService = new BankService($groups, $bank, $paymentRepository, $bankAccounts);
 
-        $paired = $bankService->pairAllGroups([$groupId1, $groupId2]);
-        $this->assertSame(1, $paired);
+        /** @var PairingResult[] $pairingResults */
+        $pairingResults = $bankService->pairAllGroups([$groupId1, $groupId2]);
+        $this->assertSame(1, count($pairingResults));
+        $this->assertSame(1, $pairingResults[0]->getCount());
     }
 
     /**
@@ -164,7 +168,7 @@ final class BankServiceTest extends Unit
 
     private function mockBankAccount(string $token) : BankAccount
     {
-        return m::mock(BankAccount::class, ['getToken' => $token]);
+        return m::mock(BankAccount::class, ['getToken' => $token, 'getName' => 'ucet jednotky']);
     }
 
     /**
