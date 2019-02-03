@@ -19,6 +19,7 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
+use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -50,6 +51,9 @@ class CashbookPresenter extends BasePresenter
         /** @var Money $finalBalance */
         $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
 
+        /** @var Money $finalRealBalance */
+        $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
+
         $this->template->setParameters(
             [
             'isCashbookEmpty' => $this->isCashbookEmpty(),
@@ -57,6 +61,7 @@ class CashbookPresenter extends BasePresenter
             'isInMinus' => $finalBalance->isNegative(),
             'incomeBalance' => $incomeBalance,
             'isEditable' => $this->isEditable,
+            'finalRealBalance' => $finalRealBalance,
             ]
         );
     }
