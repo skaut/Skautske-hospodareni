@@ -24,7 +24,6 @@ use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
-use Model\Utils\MoneyFactory;
 use Money\Money;
 
 class CashbookPresenter extends BasePresenter
@@ -62,7 +61,7 @@ class CashbookPresenter extends BasePresenter
             'isInMinus' => $finalBalance->isNegative(),
             'incomeBalance' => $incomeBalance,
             'isEditable' => $this->isEditable,
-            'finalRealBalance' => MoneyFactory::toFloat($finalRealBalance),
+            'finalRealBalance' => $finalRealBalance,
             ]
         );
     }
