@@ -82,6 +82,15 @@ class AccountNumber
         return $this->number;
     }
 
+    public function getNumberWithPrefix() : string
+    {
+        if ($this->prefix !== null) {
+            return $this->prefix . '-' . $this->number;
+        }
+
+        return $this->number;
+    }
+
     public function getBankCode() : string
     {
         return $this->bankCode;
