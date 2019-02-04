@@ -256,7 +256,7 @@ class PaymentPresenter extends BasePresenter
     {
         $group = $this->model->getGroup($id);
 
-        if ($group === null || ! $this->hasAccessToGroup($group)) {
+        if ($group === null || ! $this->isEditable) {
             $this->flashMessage('K této skupině nemáte přístup');
             $this->redirect('Payment:default');
         }
