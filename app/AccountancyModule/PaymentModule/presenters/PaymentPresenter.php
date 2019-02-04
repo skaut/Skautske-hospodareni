@@ -41,9 +41,7 @@ use function array_keys;
 use function array_unique;
 use function count;
 use function in_array;
-use function is_bool;
 use function sprintf;
-use function substr;
 
 class PaymentPresenter extends BasePresenter
 {
@@ -269,28 +267,24 @@ class PaymentPresenter extends BasePresenter
             ]
         );
 
-        $payments = $this->getPaymentsForGroup($id);
-        $payments = array_filter(
-            $payments,
-            function (Payment $payment) : bool {
-                return $payment->getState()->equalsValue(State::COMPLETED);
-            }
-        );
-
         /** @var Form $form */
         $form = $this['repaymentForm'];
 
-        foreach ($payments as $payment) {
-            $pid = 'p_' . $payment->getId();
+        $paymentsContainer = $form->addContainer('payments');
 
-            $form->addCheckbox($pid);
-            $form->addText($pid . '_name')
+        foreach ($this->getRepaymentCandidates($id) as $payment) {
+            $container = $paymentsContainer->addContainer('payment' . $payment->getId());
+
+            $checkbox = $container->addCheckbox('selected');
+
+            $container->addText('name')
                 ->setDefaultValue('Vratka - ' . $payment->getName() . ' - ' . $group->getName())
-                ->addConditionOn($form[$pid], Form::EQUAL, true)
+                ->addConditionOn($checkbox, Form::EQUAL, true)
                 ->setRequired('Zadejte název vratky!');
-            $form->addText($pid . '_amount')
+
+            $container->addText('amount')
                 ->setDefaultValue($payment->getAmount())
-                ->addConditionOn($form[$pid], Form::EQUAL, true)
+                ->addConditionOn($checkbox, Form::EQUAL, true)
                 ->setRequired('Zadejte částku vratky u ' . $payment->getName())
                 ->addRule(Form::NUMERIC, 'Vratka musí být číslo!');
 
@@ -298,10 +292,10 @@ class PaymentPresenter extends BasePresenter
             $account     = $transaction !== null ? (string) $transaction->getBankAccount() : '';
 
             $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $payment->getName();
-            $form->addText($pid . '_account')
+            $container->addText('account')
                 ->setDefaultValue($account)
                 ->setRequired(false)
-                ->addConditionOn($form[$pid], Form::EQUAL, true)
+                ->addConditionOn($checkbox, Form::EQUAL, true)
                 ->setRequired('Musíte vyplnit bankovní účet')
                 ->addRule($form::PATTERN, $invalidBankAccountMessage, '^([0-9]{1,6}-)?[0-9]{1,10}/[0-9]{4}$')
                 ->addRule(
@@ -311,8 +305,6 @@ class PaymentPresenter extends BasePresenter
                     $invalidBankAccountMessage
                 );
         }
-
-        $this->template->setParameters(['payments' => $payments]);
     }
 
     public function handleCancel(int $pid) : void
@@ -597,26 +589,19 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('Payment:default', ['id' => $values->gid]);
         }
 
-        $ids = array_keys(
-            array_filter(
-                (array) $values,
-                function ($val) {
-                    return is_bool($val) && $val;
-                }
-            )
-        );
+        $data = [];
 
-        if (empty($ids)) {
-            $form->addError('Nebyl vybrán žádný záznam k vrácení!');
-            return;
+        foreach ($form->values->payments as $repayment) {
+            if (! $repayment->selected) {
+                continue;
+            }
+
+            $data[] = (array) $repayment;
         }
 
-        $data = [];
-        foreach ($ids as $pid) {
-            $pid                   = substr($pid, 2);
-            $data[$pid]['name']    = $values['p_' . $pid . '_name'];
-            $data[$pid]['amount']  = $values['p_' . $pid . '_amount'];
-            $data[$pid]['account'] = $values['p_' . $pid . '_account'];
+        if (count($data) === 0) {
+            $form->addError('Nebyl vybrán žádný záznam k vrácení!');
+            return;
         }
 
         $bankAccountId = $this->model->getGroup((int) $values->gid)->getBankAccountId();
@@ -715,6 +700,19 @@ class PaymentPresenter extends BasePresenter
         }
 
         $this->redirect('this');
+    }
+
+    /**
+     * @return Payment[]
+     */
+    private function getRepaymentCandidates(int $groupId) : array
+    {
+        return array_filter(
+            $this->getPaymentsForGroup($groupId),
+            function (Payment $payment) : bool {
+                return $payment->getState()->equalsValue(State::COMPLETED);
+            }
+        );
     }
 
     /**
