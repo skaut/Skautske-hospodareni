@@ -30,6 +30,7 @@ use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
 use Model\Payment\PaymentNotFound;
+use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
@@ -171,7 +172,8 @@ class PaymentPresenter extends BasePresenter
             ]
         );
 
-        $payments             = $this->model->findByGroup($id);
+        $payments = $this->getPaymentsForGroup($id);
+
         $paymentsForSendEmail = array_filter(
             $payments,
             function (Payment $p) {
@@ -282,7 +284,7 @@ class PaymentPresenter extends BasePresenter
 
         /** @var Payment[] $payments */
         $payments = [];
-        foreach ($this->model->findByGroup($id) as $p) {
+        foreach ($this->getPaymentsForGroup($id) as $p) {
             if (! $p->getState()->equalsValue(State::COMPLETED) || $p->getPersonId() === null) {
                 continue;
             }
@@ -399,7 +401,7 @@ class PaymentPresenter extends BasePresenter
     {
         $this->checkEditation();
 
-        $payments = $this->model->findByGroup($gid);
+        $payments = $this->getPaymentsForGroup($gid);
 
         $payments = array_filter(
             $payments,
@@ -738,5 +740,13 @@ class PaymentPresenter extends BasePresenter
         }
 
         $this->redirect('this');
+    }
+
+    /**
+     * @return Payment[]
+     */
+    private function getPaymentsForGroup(int $groupId) : array
+    {
+        return $this->queryBus->handle(new PaymentListQuery($groupId));
     }
 }
