@@ -41,7 +41,6 @@ use function array_filter;
 use function array_keys;
 use function array_unique;
 use function count;
-use function date;
 use function in_array;
 use function is_bool;
 use function sprintf;
@@ -637,7 +636,7 @@ class PaymentPresenter extends BasePresenter
                 return;
             }
         }
-        $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $date = null);
+        $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $values->date ?? Date::now());
 
         $bankAccountId = $this->model->getGroup((int) $values->gid)->getBankAccountId();
         $bankAccount   = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;

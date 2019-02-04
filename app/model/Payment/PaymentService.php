@@ -503,11 +503,8 @@ class PaymentService
     /**
      * @param mixed[] $repayments
      */
-    public function getFioRepaymentString(array $repayments, string $accountFrom, ?string $date = null) : string
+    public function getFioRepaymentString(array $repayments, string $accountFrom, Date $date) : string
     {
-        if ($date === null) {
-            $date = date('Y-m-d');
-        }
         $accountFromArr = explode('/', $accountFrom, 2);
 
         $ret = '<?xml version="1.0" encoding="UTF-8"?><Import xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.fio.cz/schema/importIB.xsd"> <Orders>';
