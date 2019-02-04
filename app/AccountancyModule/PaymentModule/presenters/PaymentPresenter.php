@@ -38,7 +38,6 @@ use Nette\Application\UI\Form;
 use Nette\Forms\IControl;
 use Nette\Mail\SmtpException;
 use function array_filter;
-use function array_key_exists;
 use function array_keys;
 use function array_unique;
 use function count;
@@ -259,8 +258,7 @@ class PaymentPresenter extends BasePresenter
 
     public function actionRepayment(int $id) : void
     {
-        $campService = $this->context->getService('campService');
-        $group       = $this->model->getGroup($id);
+        $group = $this->model->getGroup($id);
 
         if ($group === null || ! $this->hasAccessToGroup($group)) {
             $this->flashMessage('K této skupině nemáte přístup');
@@ -282,46 +280,35 @@ class PaymentPresenter extends BasePresenter
             ]
         );
 
-        /** @var Payment[] $payments */
-        $payments = [];
-        foreach ($this->getPaymentsForGroup($id) as $p) {
-            if (! $p->getState()->equalsValue(State::COMPLETED) || $p->getPersonId() === null) {
-                continue;
-            }
-
-            $payments[$p->getPersonId()] = $p;
-        }
-        $participantsWithRepayment = array_filter(
-            $campService->getParticipants()->getAll($group->getSkautisId()),
-            function ($p) {
-                return $p->repayment !== null;
+        $payments = $this->getPaymentsForGroup($id);
+        $payments = array_filter(
+            $payments,
+            function (Payment $payment) : bool {
+                return $payment->getState()->equalsValue(State::COMPLETED);
             }
         );
 
         /** @var Form $form */
         $form = $this['repaymentForm'];
-        /** @var Participant $p */
-        foreach ($participantsWithRepayment as $p) {
-            $pid = 'p_' . $p->getId();
+
+        foreach ($payments as $payment) {
+            $pid = 'p_' . $payment->getId();
+
             $form->addCheckbox($pid);
             $form->addText($pid . '_name')
-                ->setDefaultValue('Vratka - ' . $p->getDisplayName() . ' - ' . $group->getName())
+                ->setDefaultValue('Vratka - ' . $payment->getName() . ' - ' . $group->getName())
                 ->addConditionOn($form[$pid], Form::EQUAL, true)
                 ->setRequired('Zadejte název vratky!');
             $form->addText($pid . '_amount')
-                ->setDefaultValue($p->repayment)
+                ->setDefaultValue($payment->getAmount())
                 ->addConditionOn($form[$pid], Form::EQUAL, true)
-                ->setRequired('Zadejte částku vratky u ' . $p->getDisplayName())
+                ->setRequired('Zadejte částku vratky u ' . $payment->getName())
                 ->addRule(Form::NUMERIC, 'Vratka musí být číslo!');
 
-            $account = '';
+            $transaction = $payment->getTransaction();
+            $account     = $transaction !== null ? (string) $transaction->getBankAccount() : '';
 
-            if (array_key_exists($p->getPersonId(), $payments)) {
-                $transaction = $payments[$p->getPersonId()]->getTransaction();
-                $account     = $transaction !== null ? $transaction->getBankAccount() : '';
-            }
-
-            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $p->getDisplayName();
+            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $payment->getName();
             $form->addText($pid . '_account')
                 ->setDefaultValue($account)
                 ->setRequired(false)
@@ -336,10 +323,7 @@ class PaymentPresenter extends BasePresenter
                 );
         }
 
-        $this->template->setParameters([
-            'participants' => $participantsWithRepayment,
-            'payments'     => $payments,
-        ]);
+        $this->template->setParameters(['payments' => $payments]);
     }
 
     public function handleCancel(int $pid) : void

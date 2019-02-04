@@ -4,7 +4,7 @@
 
 <div class="row">
     <div class="col-sm-12">
-        {if !empty($participants)}
+        {if count($payments) > 0}
             {form repaymentForm}
                 <ul class="errors" n:if="$form->hasErrors()">
                     <li n:foreach="$form->errors as $error">{$error}</li>
@@ -25,8 +25,8 @@
                         <th>Částka</th>
                         <th>Protiúčet</th>
                     </tr>
-                    <tr n:foreach="$participants as $p">
-                        <td>{input p_$p->id}</td>
+                    <tr n:foreach="$payments as $p">
+                        <td>{input "p_".$p->id}</td>
                         <td>{input "p_".$p->id."_name" class=>"form-control"}</td>
                         <td>{input "p_".$p->id."_amount" class=>"form-control"}</td>
                         <td>{input "p_".$p->id."_account" class=>"form-control"}</td>
@@ -35,7 +35,7 @@
                 {input send}
             {/form}
         {else}
-            <div class="alert alert-warning">Nejsou uvedeny žádné vratky u tábora.</div>
+            <div class="alert alert-warning">Nemáte žádné dokončené platby, pro vrácení</div>
         {/if}
     </div>
 </div>
