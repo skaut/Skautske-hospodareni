@@ -41,23 +41,31 @@ final class RepaymentPresenter extends BasePresenter
     {
         $group = $this->group = $this->payments->getGroup($id);
 
-        if ($group === null || ! $this->isEditable) {
+        if ($group !== null || ! $this->isEditable) {
             $this->flashMessage('K této skupině nemáte přístup');
             $this->redirect('Payment:default');
         }
+    }
 
-        /** @var BaseForm $form */
-        $form = $this['form'];
+    protected function createComponentForm() : BaseForm
+    {
+        $form = new BaseForm();
+
+        $form->addDate('date', 'Datum splatnosti:')
+            ->setDefaultValue((new Date())->addWeekday());
+
+        $form->addSubmit('send', 'Odeslat platby do banky')
+            ->setAttribute('class', 'btn btn-primary btn-large');
 
         $paymentsContainer = $form->addContainer('payments');
 
-        foreach ($this->getRepaymentCandidates($id) as $payment) {
+        foreach ($this->getRepaymentCandidates($this->group->getId()) as $payment) {
             $container = $paymentsContainer->addContainer('payment' . $payment->getId());
 
             $checkbox = $container->addCheckbox('selected');
 
             $container->addText('name')
-                ->setDefaultValue('Vratka - ' . $payment->getName() . ' - ' . $group->getName())
+                ->setDefaultValue('Vratka - ' . $payment->getName() . ' - ' . $this->group->getName())
                 ->addConditionOn($checkbox, $form::EQUAL, true)
                 ->setRequired('Zadejte název vratky!');
 
@@ -84,15 +92,6 @@ final class RepaymentPresenter extends BasePresenter
                     $invalidBankAccountMessage
                 );
         }
-    }
-
-    protected function createComponentForm() : BaseForm
-    {
-        $form = new BaseForm();
-        $form->addDate('date', 'Datum splatnosti:')
-            ->setDefaultValue((new Date())->addWeekday());
-        $form->addSubmit('send', 'Odeslat platby do banky')
-            ->setAttribute('class', 'btn btn-primary btn-large');
 
         $form->onSubmit[] = function (BaseForm $form) : void {
             $this->repaymentFormSubmitted($form);
