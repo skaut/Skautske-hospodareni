@@ -264,18 +264,9 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('Payment:default');
         }
 
-        $accountFrom = $group->getBankAccountId() !== null ?
-            $this->bankAccounts->find($group->getBankAccountId())
-            : null;
-
-        if ($accountFrom !== null) {
-            $accountFrom = $accountFrom->getNumber();
-        }
-
         $this['repaymentForm']->setDefaults(
             [
             'gid' => $group->getId(),
-            'accountFrom' => $accountFrom,
             ]
         );
 
@@ -586,8 +577,6 @@ class PaymentPresenter extends BasePresenter
     {
         $form = new BaseForm();
         $form->addHidden('gid');
-        $form->addText('accountFrom', 'Z účtu:')
-            ->addRule(Form::FILLED, 'Zadejte číslo účtu ze kterého se mají peníze poslat');
         $form->addDate('date', 'Datum splatnosti:')
             ->setDefaultValue(Date::now()->addWeekday());
         $form->addSubmit('send', 'Odeslat platby do banky')
@@ -609,8 +598,7 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('Payment:default', ['id' => $values->gid]);
         }
 
-        $accountFrom = $values->accountFrom;
-        $ids         = array_keys(
+        $ids = array_keys(
             array_filter(
                 (array) $values,
                 function ($val) {
@@ -636,15 +624,25 @@ class PaymentPresenter extends BasePresenter
                 return;
             }
         }
-        $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $values->date ?? Date::now());
 
         $bankAccountId = $this->model->getGroup((int) $values->gid)->getBankAccountId();
         $bankAccount   = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
-        if ($bankAccount === null || $bankAccount->getToken() === null) {
-            $this->flashMessage('Není zadán API token z banky!', 'danger');
+        if ($bankAccount === null) {
+            $this->flashMessage('Skupina plateb nemá nastavený bankovní účet', 'danger');
             $this->redirect('this');
         }
+
+        if ($bankAccount->getToken() === null) {
+            $this->flashMessage('Bankovní účet nemá nastavený token', 'danger');
+            $this->redirect('this');
+        }
+
+        $dataToRequest = $this->model->getFioRepaymentString(
+            $data,
+            (string) $bankAccount->getNumber(),
+            $values->date ?? Date::now()
+        );
 
         try {
             $this->model->sendFioPaymentRequest($dataToRequest, $bankAccount->getToken());
