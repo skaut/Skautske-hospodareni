@@ -13,7 +13,6 @@ use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
-use BankAccountValidator\Czech;
 use Cake\Chronos\Date;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Payment\Group;
@@ -612,17 +611,12 @@ class PaymentPresenter extends BasePresenter
             return;
         }
 
-        $bankValidator = new Czech();
-        $data          = [];
+        $data = [];
         foreach ($ids as $pid) {
             $pid                   = substr($pid, 2);
             $data[$pid]['name']    = $values['p_' . $pid . '_name'];
             $data[$pid]['amount']  = $values['p_' . $pid . '_amount'];
             $data[$pid]['account'] = $values['p_' . $pid . '_account'];
-            if (! ($bankValidator->validate($data[$pid]['account']))) {
-                $form->addError("Neplatné číslo účtu: '" . $data[$pid]['account'] . "' u jména '" . $data[$pid]['name'] . "' !");
-                return;
-            }
         }
 
         $bankAccountId = $this->model->getGroup((int) $values->gid)->getBankAccountId();
