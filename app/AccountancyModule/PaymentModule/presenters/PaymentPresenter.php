@@ -13,13 +13,9 @@ use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
-use Cake\Chronos\Date;
-use Model\DTO\Participant\Participant;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
-use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
-use Model\Payment\BankError;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
@@ -34,7 +30,6 @@ use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\Forms\IControl;
 use Nette\Mail\SmtpException;
 use function array_filter;
 use function array_keys;
@@ -250,61 +245,6 @@ class PaymentPresenter extends BasePresenter
             'id'       => $this->id,
             'showForm' => count($list) !== 0,
         ]);
-    }
-
-    public function actionRepayment(int $id) : void
-    {
-        $group = $this->model->getGroup($id);
-
-        if ($group === null || ! $this->isEditable) {
-            $this->flashMessage('K této skupině nemáte přístup');
-            $this->redirect('Payment:default');
-        }
-
-        $this['repaymentForm']->setDefaults(
-            [
-            'gid' => $group->getId(),
-            ]
-        );
-
-        /** @var Form $form */
-        $form = $this['repaymentForm'];
-
-        $paymentsContainer = $form->addContainer('payments');
-
-        foreach ($this->getRepaymentCandidates($id) as $payment) {
-            $container = $paymentsContainer->addContainer('payment' . $payment->getId());
-
-            $checkbox = $container->addCheckbox('selected');
-
-            $container->addText('name')
-                ->setDefaultValue('Vratka - ' . $payment->getName() . ' - ' . $group->getName())
-                ->addConditionOn($checkbox, Form::EQUAL, true)
-                ->setRequired('Zadejte název vratky!');
-
-            $container->addText('amount')
-                ->setDefaultValue($payment->getAmount())
-                ->addConditionOn($checkbox, Form::EQUAL, true)
-                ->setRequired('Zadejte částku vratky u ' . $payment->getName())
-                ->addRule(Form::NUMERIC, 'Vratka musí být číslo!');
-
-            $transaction = $payment->getTransaction();
-            $account     = $transaction !== null ? (string) $transaction->getBankAccount() : '';
-
-            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $payment->getName();
-            $container->addText('account')
-                ->setDefaultValue($account)
-                ->setRequired(false)
-                ->addConditionOn($checkbox, Form::EQUAL, true)
-                ->setRequired('Musíte vyplnit bankovní účet')
-                ->addRule($form::PATTERN, $invalidBankAccountMessage, '^([0-9]{1,6}-)?[0-9]{1,10}/[0-9]{4}$')
-                ->addRule(
-                    function (IControl $control) {
-                        return AccountNumber::isValid($control->getValue());
-                    },
-                    $invalidBankAccountMessage
-                );
-        }
     }
 
     public function handleCancel(int $pid) : void
@@ -564,74 +504,6 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('detail', ['id' => $v->oid]);
     }
 
-    protected function createComponentRepaymentForm() : Form
-    {
-        $form = new BaseForm();
-        $form->addHidden('gid');
-        $form->addDate('date', 'Datum splatnosti:')
-            ->setDefaultValue(Date::now()->addWeekday());
-        $form->addSubmit('send', 'Odeslat platby do banky')
-            ->setAttribute('class', 'btn btn-primary btn-large');
-
-        $form->onSubmit[] = function (Form $form) : void {
-            $this->repaymentFormSubmitted($form);
-        };
-
-        return $form;
-    }
-
-    private function repaymentFormSubmitted(Form $form) : void
-    {
-        $values = $form->getValues();
-
-        if (! $this->isEditable) {
-            $this->flashMessage('Nemáte oprávnění pro práci s platbami jednotky', 'danger');
-            $this->redirect('Payment:default', ['id' => $values->gid]);
-        }
-
-        $data = [];
-
-        foreach ($form->values->payments as $repayment) {
-            if (! $repayment->selected) {
-                continue;
-            }
-
-            $data[] = (array) $repayment;
-        }
-
-        if (count($data) === 0) {
-            $form->addError('Nebyl vybrán žádný záznam k vrácení!');
-            return;
-        }
-
-        $bankAccountId = $this->model->getGroup((int) $values->gid)->getBankAccountId();
-        $bankAccount   = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
-
-        if ($bankAccount === null) {
-            $this->flashMessage('Skupina plateb nemá nastavený bankovní účet', 'danger');
-            $this->redirect('this');
-        }
-
-        if ($bankAccount->getToken() === null) {
-            $this->flashMessage('Bankovní účet nemá nastavený token', 'danger');
-            $this->redirect('this');
-        }
-
-        $dataToRequest = $this->model->getFioRepaymentString(
-            $data,
-            (string) $bankAccount->getNumber(),
-            $values->date ?? Date::now()
-        );
-
-        try {
-            $this->model->sendFioPaymentRequest($dataToRequest, $bankAccount->getToken());
-            $this->flashMessage('Vratky byly odeslány do banky');
-            $this->redirect('Payment:detail', ['id' => $values->gid]);
-        } catch (BankError $e) {
-            $form->addError(sprintf('Chyba z banky %s', $e->getMessage()));
-        }
-    }
-
     protected function createComponentPairButton() : PairButton
     {
         return $this->pairButtonFactory->create();
@@ -700,19 +572,6 @@ class PaymentPresenter extends BasePresenter
         }
 
         $this->redirect('this');
-    }
-
-    /**
-     * @return Payment[]
-     */
-    private function getRepaymentCandidates(int $groupId) : array
-    {
-        return array_filter(
-            $this->getPaymentsForGroup($groupId),
-            function (Payment $payment) : bool {
-                return $payment->getState()->equalsValue(State::COMPLETED);
-            }
-        );
     }
 
     /**

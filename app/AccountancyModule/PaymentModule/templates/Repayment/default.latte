@@ -4,7 +4,7 @@
 
 <div class="row">
     <div class="col-sm-12">
-        {form repaymentForm}
+        {form form}
             {var $payments = $form['payments']->getComponents()}
             {if count($payments) > 0}
                 <ul class="errors" n:if="$form->hasErrors()">
