@@ -11,9 +11,12 @@ use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
 use Model\Payment\BankError;
+use Model\Payment\Commands\Repayment\CreateRepayments;
 use Model\Payment\Payment\State;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
+use Model\Payment\Repayment;
 use Model\PaymentService;
+use Model\Utils\MoneyFactory;
 use Nette\Forms\IControl;
 use function array_filter;
 use function count;
@@ -111,17 +114,21 @@ final class RepaymentPresenter extends BasePresenter
             $this->redirect('Payment:default', ['id' => $this->group->getId()]);
         }
 
-        $data = [];
+        $repayments = [];
 
         foreach ($form->values->payments as $repayment) {
             if (! $repayment->selected) {
                 continue;
             }
 
-            $data[] = (array) $repayment;
+            $repayments[] = new Repayment(
+                AccountNumber::fromString($repayment->account),
+                MoneyFactory::fromFloat($repayment->amount),
+                $repayment->name
+            );
         }
 
-        if (count($data) === 0) {
+        if (count($repayments) === 0) {
             $form->addError('Nebyl vybrán žádný záznam k vrácení!');
             return;
         }
@@ -139,15 +146,17 @@ final class RepaymentPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        $dataToRequest = $this->payments->getFioRepaymentString(
-            $data,
-            (string) $bankAccount->getNumber(),
-            $values->date ?? new Date()
-        );
-
         try {
-            $this->payments->sendFioPaymentRequest($dataToRequest, $bankAccount->getToken());
-            $this->flashMessage('Vratky byly odeslány do banky');
+            $this->commandBus->handle(
+                new CreateRepayments(
+                    $bankAccount->getNumber(),
+                    $values->date ?? new Date(),
+                    $repayments,
+                    $bankAccount->getToken()
+                )
+            );
+
+            $this->flashMessage('Vratky byly odeslány do banky', 'success');
             $this->redirect('Payment:detail', ['id' => $this->group->getId()]);
         } catch (BankError $e) {
             $form->addError(sprintf('Chyba z banky %s', $e->getMessage()));
