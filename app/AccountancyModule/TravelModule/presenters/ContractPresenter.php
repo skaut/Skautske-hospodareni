@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\TravelModule;
 
 use App\Forms\BaseForm;
+use Cake\Chronos\Date;
 use Model\BaseService;
 use Model\DTO\Travel\Contract;
 use Model\Services\PdfRenderer;
@@ -144,7 +145,7 @@ class ContractPresenter extends BasePresenter
         $form->addText('passengerAddress', 'Bydliště řidiče*')
             ->setAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit bydliště řidiče.');
-        $form->addDatePicker('passengerBirthday', 'Datum narození řidiče*')
+        $form->addDate('passengerBirthday', 'Datum narození řidiče*')
             ->setAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit datum narození řidiče.');
         $form->addText('passengerContact', 'Telefon na řidiče (9cifer)*')
@@ -155,8 +156,8 @@ class ContractPresenter extends BasePresenter
         $form->addText('unitRepresentative', 'Zástupce jednotky')
             ->setRequired('Musíte vyplnit zástupce jednotky')
             ->setAttribute('class', 'form-control');
-        $form->addDatePicker('start', 'Platnost od')
-            ->setDefaultValue((new \DateTimeImmutable())->format('Y-m-d'))
+        $form->addDate('start', 'Platnost od')
+            ->setDefaultValue(new Date())
             ->setRequired('Musíte vyplnit od kdy smlouva platí')
             ->setAttribute('class', 'form-control');
 
@@ -174,16 +175,14 @@ class ContractPresenter extends BasePresenter
     {
         $v = $form->getValues();
 
-        $since = \DateTimeImmutable::createFromMutable($v->start);
-
         $passenger = new Passenger(
             (string) $v->passengerName,
             (string) $v->passengerContact,
             (string) $v->passengerAddress,
-            \DateTimeImmutable::createFromMutable($v->passengerBirthday)
+            $v->passengerBirthday
         );
 
-        $this->travelService->createContract($this->getUnitId(), $v->unitRepresentative, $since, $passenger);
+        $this->travelService->createContract($this->getUnitId(), $v->unitRepresentative, $v->start, $passenger);
         $this->flashMessage('Smlouva byla založena.');
 
         $this->redirect('default');

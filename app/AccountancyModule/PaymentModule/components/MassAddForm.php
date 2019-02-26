@@ -34,7 +34,7 @@ class MassAddForm extends BaseControl
             ->setNullable()
             ->setAttribute('class', 'input-mini');
 
-        $form->addDatePicker('dueDate', 'Splatnost:')
+        $form->addDate('dueDate', 'Splatnost:')
             ->setAttribute('class', 'input-small');
         $form->addText('constantSymbol', 'KS:')
             ->setNullable()
@@ -57,7 +57,7 @@ class MassAddForm extends BaseControl
         $form->setDefaults(
             [
             'amount' => $group->getDefaultAmount(),
-            'dueDate' => $group->getDueDate() !== null ? $group->getDueDate()->format('d.m.Y') : null,
+            'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
             ]
         );
@@ -100,7 +100,7 @@ class MassAddForm extends BaseControl
             ->addRule($form::FLOAT, 'Částka musí být číslo')
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01);
 
-        $container->addDatePicker('dueDate', 'Splatnost:')
+        $container->addDate('dueDate', 'Splatnost:')
             ->setAttribute('class', 'input-small')
             ->setRequired(false);
 
@@ -163,7 +163,7 @@ class MassAddForm extends BaseControl
                 $person->name,
                 $person->email,
                 (float) ($person->amount ?? $values->amount),
-                \DateTimeImmutable::createFromMutable($person->dueDate ?? $values->dueDate),
+                $person->dueDate ?? $values->dueDate,
                 (int) $person->id,
                 $person->variableSymbol,
                 $ks,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\PaymentModule;
 
 use App\Forms\BaseForm;
+use Cake\Chronos\Date;
 use Consistence\Enum\InvalidEnumValueException;
 use Model\DTO\Payment\GroupEmail;
 use Model\EventEntity;
@@ -87,7 +88,7 @@ class GroupPresenter extends BasePresenter
             $this['groupForm']->setDefaults(
                 [
                     'label' => 'Registrace ' . $reg['Year'],
-                    'dueDate' => $reg['Year'] . '-01-15',
+                    'dueDate' => new Date($reg['Year'] . '-01-15'),
                 ]
             );
             $header = 'Založení skupiny plateb pro registraci';
@@ -131,7 +132,7 @@ class GroupPresenter extends BasePresenter
             [
             'label' => $group->getName(),
             'amount' => $group->getDefaultAmount(),
-            'dueDate' => $group->getDueDate() ? $group->getDueDate()->format(\DateTime::ISO8601) : null,
+            'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
             'nextVs' => $group->getNextVariableSymbol(),
             'smtp' => $group->getSmtpId(),
@@ -172,7 +173,7 @@ class GroupPresenter extends BasePresenter
             ->setAttribute('class', 'form-control')
             ->setRequired(false)
             ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo');
-        $form->addDatePicker('dueDate', 'Výchozí splatnost')
+        $form->addDate('dueDate', 'Výchozí splatnost')
             ->setAttribute('class', 'form-control');
         $form->addText('constantSymbol', 'KS')
             ->setMaxLength(4)
@@ -274,11 +275,8 @@ class GroupPresenter extends BasePresenter
     {
         $amount         = (isset($values->amount) && $values->amount !== '') ? $values->amount : null;
         $constantSymbol = $values->constantSymbol !== '' ? $values->constantSymbol : null;
-        $dueDate        = $values->dueDate !== null
-            ? \DateTimeImmutable::createFromMutable($values->dueDate)
-            : null;
 
-        return new PaymentDefaults($amount, $dueDate, $constantSymbol, $values->nextVs);
+        return new PaymentDefaults($amount, $values->dueDate, $constantSymbol, $values->nextVs);
     }
 
     private function getDefaultEmail(string $name) : string
