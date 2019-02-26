@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel\Command;
 
+use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Travel\Command;
@@ -14,8 +15,8 @@ class TravelFactoryTest extends Unit
 {
     public function testCreateListCorrectOrder() : void
     {
-        $firstDay      = new \DateTimeImmutable();
-        $secondDay     = new \DateTimeImmutable();
+        $firstDay      = new Date('2018-01-01');
+        $secondDay     = new Date('2018-01-02');
         $transportType = 'r';
 
         $travels = [

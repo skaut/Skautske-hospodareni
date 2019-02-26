@@ -87,7 +87,7 @@ class CommandTest extends Unit
         $command->addVehicleTravel(220, new TravelDetails($date, 'auv', 'Praha', 'Brno'));
         $command->addTransportTravel(Money::CZK(50000), new TravelDetails($date->modify('+ 3 days'), 'a', 'Brno', 'Praha'));
 
-        $this->assertSame($date, $command->getFirstTravelDate());
+        $this->assertSame($date->format('Y-m-d'), $command->getFirstTravelDate()->format('Y-m-d'));
     }
 
     public function testUpdateMethod() : void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
+use Cake\Chronos\Date;
 use Model\DTO\Payment\Payment as PaymentDTO;
 use Model\Payment\Payment;
 
@@ -16,7 +17,7 @@ class PaymentFactory
             $payment->getName(),
             $payment->getAmount(),
             $payment->getEmail(),
-            $payment->getDueDate(),
+            Date::instance($payment->getDueDate()),
             $payment->getVariableSymbol(),
             $payment->getConstantSymbol(),
             $payment->getNote(),
