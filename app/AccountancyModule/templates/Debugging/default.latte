@@ -1,0 +1,33 @@
+{block content}
+
+<h1>Uživatel</h1>
+<table class="table table-bordered">
+    <tr>
+        <th>ID</th>
+        <td>{$userId}</td>
+    </tr>
+    <tr>
+        <th>Aktuální role</th>
+        <td>{$role->getName()}</td>
+    </tr>
+    <tr>
+        <th>Aktuální jednotka</th>
+        <td>{$role->getUnitId()}</td>
+    </tr>
+    <tr>
+        <th>Jednotky s právem čtení</th>
+        <td>
+           <ul>
+               <li n:foreach="$readableUnits as $id => $name">{$id} - {$name}</li>
+           </ul>
+        </td>
+    </tr>
+    <tr>
+        <th>Jednotky s právem úprav</th>
+        <td>
+            <ul>
+                <li n:foreach="$editableUnits as $id => $unit">{$id} - {$unit->getDisplayName()}</li>
+            </ul>
+        </td>
+    </tr>
+</table>
