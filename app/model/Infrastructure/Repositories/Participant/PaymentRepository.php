@@ -32,7 +32,7 @@ final class PaymentRepository implements IPaymentRepository
     /**
      * @return Payment[]
      */
-    public function findPaymentsByEvent(SkautisEventId $actionId) : array
+    public function findByEvent(SkautisEventId $actionId) : array
     {
         $res      = [];
         $payments = $this->em->getRepository(Payment::class)->findBy(['actionId' => $actionId->toInt()]);
@@ -43,13 +43,13 @@ final class PaymentRepository implements IPaymentRepository
         return $res;
     }
 
-    public function savePayment(Payment $payment) : void
+    public function save(Payment $payment) : void
     {
         $this->em->persist($payment);
         $this->em->flush();
     }
 
-    public function deletePayment(Payment $payment) : void
+    public function remove(Payment $payment) : void
     {
         $this->em->remove($payment);
         $this->em->flush();

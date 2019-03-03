@@ -18,9 +18,9 @@ interface IPaymentRepository
     /**
      * @return Payment[]
      */
-    public function findPaymentsByEvent(SkautisEventId $eventId) : array;
+    public function findByEvent(SkautisEventId $eventId) : array;
 
-    public function savePayment(Payment $payment) : void;
+    public function save(Payment $payment) : void;
 
-    public function deletePayment(Payment $payment) : void;
+    public function remove(Payment $payment) : void;
 }

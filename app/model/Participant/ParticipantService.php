@@ -73,7 +73,7 @@ class ParticipantService extends MutableBaseService
             return [];
         }
 
-        $participantPayments = $this->repository->findPaymentsByEvent($eventId);
+        $participantPayments = $this->repository->findByEvent($eventId);
         $participants        = [];
         /** @var \stdClass $p */
         foreach ($participantsSis as $p) {
@@ -83,7 +83,7 @@ class ParticipantService extends MutableBaseService
 
         if ($this->type === 'camp') {
             foreach (array_diff_key($participantPayments, $participants) as $idForDelete) {
-                $this->repository->deletePayment($participantPayments[$idForDelete]); //delete zaznam, protoze neexistuje k nemu ucastnik
+                $this->repository->remove($participantPayments[$idForDelete]); //delete zaznam, protoze neexistuje k nemu ucastnik
             }
         }
 
@@ -199,7 +199,7 @@ class ParticipantService extends MutableBaseService
                         throw new \InvalidArgumentException(sprintf("Camp participant hasn't attribute '%s'", $key));
                 }
             }
-            $this->repository->savePayment($payment);
+            $this->repository->save($payment);
         } else {
             $origin  = $this->get($participantId, $actionId);
             $sisData = [
@@ -228,7 +228,7 @@ class ParticipantService extends MutableBaseService
     public function removeParticipant(int $participantId) : void
     {
         try {
-            $this->repository->deletePayment($this->repository->find($participantId));
+            $this->repository->remove($this->repository->find($participantId));
         } catch (PaymentNotFound $exc) {
         }
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
