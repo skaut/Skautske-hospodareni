@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Model\Travel\Repositories;
+namespace Model\Infrastructure\Repositories\Travel;
 
 use Doctrine\ORM\EntityManager;
 use Model\Travel\Contract;
 use Model\Travel\ContractNotFound;
+use Model\Travel\Repositories\IContractRepository;
 
 final class ContractRepository implements IContractRepository
 {

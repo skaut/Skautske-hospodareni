@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Travel;
 
 use Model\Travel\Contract;
-use Model\Travel\Repositories\ContractRepository;
 
 final class ContractRepositoryTest extends \IntegrationTest
 {
