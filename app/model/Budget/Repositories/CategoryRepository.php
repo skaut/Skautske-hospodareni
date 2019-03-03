@@ -10,7 +10,7 @@ use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 use function sprintf;
 
-class BudgetRepository implements IBudgetRepository
+class CategoryRepository implements ICategoryRepository
 {
     /** @var EntityManager */
     private $em;

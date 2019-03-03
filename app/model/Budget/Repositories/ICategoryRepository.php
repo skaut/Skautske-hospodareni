@@ -8,7 +8,7 @@ use Model\Budget\CategoryNotFound;
 use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 
-interface IBudgetRepository
+interface ICategoryRepository
 {
     /**
      * @throws CategoryNotFound
