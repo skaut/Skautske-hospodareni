@@ -14,10 +14,10 @@ use Model\Travel\CommandNotFound;
 use Model\Travel\Contract;
 use Model\Travel\ContractNotFound;
 use Model\Travel\Passenger;
-use Model\Travel\ReadModel\Queries\TransportTypeQuery;
 use Model\Travel\ReadModel\Queries\TransportTypesQuery;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
+use Model\Travel\Repositories\ITypeRepository;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Travel\Type;
 use Model\Travel\TravelNotFound;
@@ -45,6 +45,9 @@ class TravelService
     /** @var IUnitRepository */
     private $units;
 
+    /** @var ITypeRepository */
+    private $types;
+
     /** @var QueryBus */
     protected $queryBus;
 
@@ -53,12 +56,14 @@ class TravelService
         ICommandRepository $commands,
         IContractRepository $contracts,
         IUnitRepository $units,
+        ITypeRepository $types,
         QueryBus $queryBus
     ) {
         $this->vehicles  = $vehicles;
         $this->commands  = $commands;
         $this->contracts = $contracts;
         $this->units     = $units;
+        $this->types     = $types;
         $this->queryBus  = $queryBus;
     }
 
@@ -162,11 +167,10 @@ class TravelService
 
     public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
     {
-        $command = $this->commands->find($commandId);
-        /** @var Type $transportType */
-        $transportType = $this->queryBus->handle(new TransportTypeQuery($type));
+        $command       = $this->commands->find($commandId);
+        $transportType = $this->types->find($type);
 
-        $details = new Command\TravelDetails($date, $transportType->getShortcut (), $startPlace, $endPlace);
+        $details = new Command\TravelDetails($date, $transportType->getShortcut(), $startPlace, $endPlace);
 
         if ($transportType->hasFuel()) {
             $command->addVehicleTravel($distanceOrPrice, $details);
@@ -186,9 +190,8 @@ class TravelService
         string $startPlace,
         string $endPlace
     ) : void {
-        /** @var Type $transportType */
-        $transportType = $this->queryBus->handle(new TransportTypeQuery($type));
-        $details       = new Command\TravelDetails($date, $transportType->getShortcut (), $startPlace, $endPlace);
+        $transportType = $this->types->find($type);
+        $details       = new Command\TravelDetails($date, $transportType->getShortcut(), $startPlace, $endPlace);
 
         $command = $this->commands->find($commandId);
 
@@ -224,7 +227,7 @@ class TravelService
 
     public function getTravelType(string $type) : DTO\TravelType
     {
-        return DTO\TypeFactory::create($this->queryBus->handle(new TransportTypeQuery($type)));
+        return DTO\TypeFactory::create($this->types->find($type));
     }
 
 
