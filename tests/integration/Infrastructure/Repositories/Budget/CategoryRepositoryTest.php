@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Budget;
 
 use Doctrine\ORM\EntityManager;
-use Model\Budget\Repositories\CategoryRepository;
 use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 
