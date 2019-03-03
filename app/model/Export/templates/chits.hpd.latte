@@ -70,8 +70,8 @@ table {
     </tr>
     <tr n:foreach="$list as $participants">
         <td>{$iterator->getCounter()})</td>
-        <td colspan="2">{$participants->Person}</td>
-        <td n:inner-ifset="$participants->Note">{$participants->Note|price}{else}0</td>
+        <td colspan="2">{$participants->displayName}</td>
+        <td>{$participants->payment|price}</td>
     </tr>
 
 </table>

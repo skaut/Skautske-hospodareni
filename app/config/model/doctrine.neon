@@ -20,6 +20,7 @@ doctrine:
         Model\Payment: %domainModelDir%/Payment
         Model\Travel: %domainModelDir%/Travel
         Model\Budget: %domainModelDir%/Budget
+        Model\Participant: %domainModelDir%/Participant
     types:
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
         money: Model\Infrastructure\Types\MoneyType

@@ -2,17 +2,39 @@
 
 declare(strict_types=1);
 
-namespace Model\Participant;
+namespace Model\DTO\Participant;
 
 use Cake\Chronos\Date;
+use Model\Participant\Payment;
+use Model\Utils\MoneyFactory;
+use Nette\SmartObject;
 
+/**
+ * @property-read int $id
+ * @property-read string $firstName
+ * @property-read string $lastName
+ * @property-read string $nickName
+ * @property-read string $displayName
+ * @property-read string $street
+ * @property-read string $city
+ * @property-read int $postcode
+ * @property-read Date|null $birthday
+ * @property-read string $unitRegistrationNumber
+ * @property-read float $payment
+ * @property-read float $repayment
+ * @property-read string $onAccount
+ * @property-read int $days
+ */
 class Participant
 {
+    use SmartObject;
+
     /** @var int */
     private $id;
 
     /** @var int */
     private $personId;
+
 
     /** @var string */
     private $firstName;
@@ -54,46 +76,28 @@ class Participant
     private $days;
 
     /** @var Payment */
-    private $payment;
+    private $paymentObj;
 
     /** @var string|null */
     private $category;
 
-    public function __construct(
-        int $id,
-        int $personId,
-        string $firstName,
-        string $lastName,
-        ?string $nickname,
-        ?int $age,
-        ?Date $birthday,
-        string $street,
-        string $city,
-        int $postcode,
-        string $state,
-        ?int $unitId,
-        string $unit,
-        string $unitRegistrationNumber,
-        int $days,
-        Payment $payment,
-        ?string $category
-    ) {
+    public function __construct(int $id, int $personId, string $firstName, string $lastName, ?string $nickName, ?int $age, ?Date $birthday, string $street, string $city, int $postcode, string $state, string $unit, string $unitRegistrationNumber, int $days, Payment $payment, ?string $category)
+    {
         $this->id                     = $id;
         $this->personId               = $personId;
         $this->firstName              = $firstName;
         $this->lastName               = $lastName;
-        $this->nickName               = $nickname;
+        $this->nickName               = $nickName;
         $this->age                    = $age;
         $this->birthday               = $birthday;
         $this->street                 = $street;
         $this->city                   = $city;
         $this->postcode               = $postcode;
         $this->state                  = $state;
-        $this->unitId                 = $unitId;
         $this->unit                   = $unit;
         $this->unitRegistrationNumber = $unitRegistrationNumber;
         $this->days                   = $days;
-        $this->payment                = $payment;
+        $this->paymentObj             = $payment;
         $this->category               = $category;
     }
 
@@ -152,38 +156,37 @@ class Participant
         return $this->state;
     }
 
-    public function getUnitId() : ?int
-    {
-        return $this->unitId;
-    }
-
     public function getUnit() : string
     {
         return $this->unit;
-    }
-
-    public function getUnitRegistrationNumber() : string
-    {
-        return $this->unitRegistrationNumber;
-    }
-
-    public function getDays() : int
-    {
-        return $this->days;
-    }
-
-    public function getPayment() : Payment
-    {
-        return $this->payment;
     }
 
     public function getDisplayName() : string
     {
         return $this->lastName . ' ' . $this->firstName . ($this->nickName !== null ? '(' . $this->nickName . ')' : '');
     }
-
-    public function getCategory() : ?string
+    public function getDays() : int
     {
-        return $this->category;
+        return $this->days;
+    }
+
+    public function getPayment() : float
+    {
+        return MoneyFactory::toFloat($this->paymentObj->getPayment());
+    }
+
+    public function getRepayment() : float
+    {
+        return MoneyFactory::toFloat($this->paymentObj->getRepayment());
+    }
+
+    public function getOnAccount() : string
+    {
+        return $this->paymentObj->getAccount();
+    }
+
+    public function getCategory() : string
+    {
+        return $this->category ?? '';
     }
 }

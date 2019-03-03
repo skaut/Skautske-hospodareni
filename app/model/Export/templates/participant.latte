@@ -30,14 +30,12 @@ td {
         <th style="width: 8%;">Zaplaceno</th>
     </tr>
     {dump $list}
-    {if is_array($list) || $list instanceof \Traversable}
-    <tr n:foreach="$list as $u">
+    <tr n:foreach="$list as $p">
         <td class="cnt">{$iterator->counter}</td>
-        <td>{$u->Person}</td>
-        <td>{if $u->Street != ""}{$u->Street}{else}&nbsp;{/if}{if $u->City != ""}, {$u->City}{/if}{if $u->Postcode != ""}, {$u->Postcode}{/if}</td>
-        <td style="text-align: right;">{$u->Birthday|date:"d.m.Y"}</td>
-        <td style="text-align: right;">{$u->payment|price:false} Kč</td>
+        <td>{$p->displayName}</td>
+        <td>{if $p->street != ""}{$p->street}{else}&nbsp;{/if}{if $p->city != ""}, {$p->city}{/if}{if $p->postcode != ""}, {$p->postcode}{/if}</td>
+        <td style="text-align: right;">{$p->birthday->format("d.m.Y")}</td>
+        <td style="text-align: right;">{$p->payment|price:false} Kč</td>
     </tr>
-    {/if}
 </table>
 

@@ -4,22 +4,31 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Model\Budget\Repositories\IPaymentRepository;
+use Model\DTO\Participant\Participant as ParticipantDTO;
+use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
+use Model\Event\SkautisEventId;
+use Model\Participant\Participant;
+use Model\Participant\Payment;
+use Model\Participant\PaymentFactory;
+use Model\Participant\PaymentNotFound;
 use Model\Participant\PragueParticipants;
 use Model\Services\Language;
-use Nette\Utils\ArrayHash;
+use Model\Skautis\Factory\ParticipantFactory;
+use Model\Utils\MoneyFactory;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
 use function array_column;
 use function array_combine;
-use function array_diff;
+use function array_diff_key;
 use function array_key_exists;
-use function array_keys;
+use function array_map;
 use function array_reduce;
-use function array_sum;
+use function in_array;
 use function is_array;
-use function natcasesort;
 use function preg_match;
+use function sprintf;
 use function stripos;
 use function usort;
 
@@ -29,13 +38,13 @@ class ParticipantService extends MutableBaseService
     private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
     private const PRAGUE_UNIT_PREFIX           = 11;
 
-    /** @var ParticipantTable */
-    private $table;
+    /** @var IPaymentRepository */
+    private $repository;
 
-    public function __construct(string $name, ParticipantTable $table, Skautis $skautIS)
+    public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository)
     {
         parent::__construct($name, $skautIS);
-        $this->table = $table;
+        $this->repository = $repository;
     }
 
     /**
@@ -43,67 +52,48 @@ class ParticipantService extends MutableBaseService
      */
     public const PAYMENT = 'Note';
 
-    /**
-     * @return mixed[]
-     */
-    public function get(int $participantId) : array
+    public function get(int $participantId, int $actionId) : ParticipantDTO
     {
-        $data   = ArrayHash::from($this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]));
-        $detail = $this->table->get($participantId);
-        if ($detail === false) {//u akcí to v tabulce nic nenajde
-            $data->payment = isset($data->{self::PAYMENT}) ? (int) $data->{self::PAYMENT} : 0;
-        }
-        $this->setPersonName($data);
-
-        return (array) $data;
+        $data = $this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]);
+        return ParticipantDTOFactory::create(ParticipantFactory::create($data, $this->getPayment($participantId, $actionId)));
     }
 
     /**
      * vrací seznam účastníků
      * používá lokální úložiště
      *
-     * @return mixed[]
+     * @return ParticipantDTO[]
      */
     public function getAll(int $ID_Event) : array
     {
-        $cacheId      = __FUNCTION__ . $ID_Event;
-        $participants = $this->loadSes($cacheId);
-        if (! $participants) {
-            $participants = (array) $this->skautis->event->{'Participant' . $this->typeName . 'All'}(['ID_Event' . $this->typeName => $ID_Event]);
-            if ($this->type === 'camp') {
-                $campLocalDetails = $this->table->getCampLocalDetails($ID_Event);
-                foreach (array_diff(array_keys($campLocalDetails), array_column($participants, 'ID')) as $idForDelete) {
-                    $this->table->deleteLocalDetail($idForDelete); //delete zaznam, protoze neexistuje k nemu ucastnik
-                }
-            }
-
-            foreach ($participants as $p) {//objekt má vzdy Note a je pod associativnim klicem
-                if (isset($campLocalDetails) && array_key_exists($p->ID, $campLocalDetails)) {
-                    $p->payment   = $campLocalDetails[$p->ID]->payment;
-                    $p->isAccount = $campLocalDetails[$p->ID]->isAccount;
-                    $p->repayment = $campLocalDetails[$p->ID]->repayment;
-                } else {
-                    $p->payment   = ($p->{self::PAYMENT} ?? 0);
-                    $p->isAccount = null;
-                    $p->repayment = null;
-                }
-                $this->setPersonName($p);
-            }
-
-            $this->saveSes($cacheId, $participants);
-        }
-        if (! is_array($participants)) {//pokud je prázdná třída stdClass
+        $eventId         = new SkautisEventId($ID_Event);
+        $participantsSis = (array) $this->skautis->event->{'Participant' . $this->typeName . 'All'}(['ID_Event' . $this->typeName => $eventId->toInt()]);
+        if (! is_array($participantsSis)) {//pokud je prázdná třída stdClass
             return [];
+        }
+
+        $participantPayments = $this->repository->findPaymentsByEvent($eventId);
+        $participants        = [];
+        /** @var \stdClass $p */
+        foreach ($participantsSis as $p) {
+            $payment              = array_key_exists($p->ID, $participantPayments) ? $participantPayments[$p->ID] : PaymentFactory::createDefault($p->ID, $eventId);
+            $participants[$p->ID] = ParticipantFactory::create($p, $payment);
+        }
+
+        if ($this->type === 'camp') {
+            foreach (array_diff_key($participantPayments, $participants) as $idForDelete) {
+                $this->repository->deletePayment($participantPayments[$idForDelete]); //delete zaznam, protoze neexistuje k nemu ucastnik
+            }
         }
 
         usort(
             $participants,
-            function ($one, $two) : int {
-                return Language::compare($one->Person, $two->Person);
+            function (Participant $one, Participant $two) : int {
+                return Language::compare($one->getDisplayName(), $two->getDisplayName());
             }
         );
 
-        return $participants;
+        return array_map([ParticipantDTOFactory::class, 'create'], $participants);
     }
 
     /**
@@ -172,49 +162,74 @@ class ParticipantService extends MutableBaseService
     }
 
     /**
-     * upraví všechny nastavené hodnoty
-     *
-     * @param mixed[] $arr pole hodnot (payment, days, [repayment], [isAccount])
+     * @param mixed[] $arr
      */
-    public function update(int $participantId, array $arr) : void
+    public function update(int $participantId, int $actionId, array $arr) : void
     {
         if ($this->typeName === 'Camp') {
-            if (isset($arr['days'])) {
+            if (in_array('days', $arr)) {
                 $sisData = [
                     'ID' => $participantId,
                     'Real' => true,
                     'Days' => $arr['days'],
                 ];
                 $this->skautis->event->{'Participant' . $this->typeName . 'Update'}($sisData, 'participant' . $this->typeName);
-            }
-            $keys       = ['actionId', 'payment', 'repayment', 'isAccount'];
-            $dataUpdate = [];
-            $cnt        = 0;
-            foreach ($keys as $key) {
-                if (! array_key_exists($key, $arr)) {
-                    continue;
+                unset($arr['days']);
+                if (empty($arr)) {
+                    return;
                 }
+            }
 
-                $dataUpdate[$key] = $arr[$key];
-                $cnt++;
+            //@todo: check actionId privileges
+            $payment = $this->getPayment($participantId, $actionId);
+
+            foreach ($arr as $key => $value) {
+                switch ($key) {
+                    case 'payment':
+                        $payment->setPayment(MoneyFactory::fromFloat((float) $value));
+                        break;
+                    case 'repayment':
+                        $payment->setRepayment(MoneyFactory::fromFloat((float) $value));
+                        break;
+                    case 'isAccount':
+                        $payment->setAccount($value);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException(sprintf("Camp participant hasn't attribute '%s'", $key));
+                }
             }
-            if ($cnt > 1) {
-                $this->table->update($participantId, $dataUpdate);
-            }
+            $this->repository->savePayment($payment);
         } else {
+            $origin  = $this->get($participantId, $actionId);
             $sisData = [
                 'ID' => $participantId,
                 'Real' => true,
-                'Days' => array_key_exists('days', $arr) ? $arr['days'] : null,
-                self::PAYMENT => array_key_exists('payment', $arr) ? $arr['payment'] : null,
+                'Days' => $origin->getDays(),
+                self::PAYMENT => $origin->getPayment(),
             ];
+            foreach ($arr as $key => $value) {
+                switch ($key) {
+                    case 'days':
+                        $sisData['Days'] = $value;
+                        break;
+                    case 'payment':
+                        $sisData[self::PAYMENT] = $value;
+                        break;
+                    default:
+                        throw new \InvalidArgumentException(sprintf("General event participant hasn't attribute '%s'", $key));
+                        break;
+                }
+            }
             $this->skautis->event->{'Participant' . $this->typeName . 'Update'}($sisData, 'participant' . $this->typeName);
         }
     }
 
     public function removeParticipant(int $participantId) : void
     {
-        $this->table->deleteLocalDetail($participantId);
+        try {
+            $this->repository->deletePayment($this->repository->find($participantId));
+        } catch (PaymentNotFound $exc) {
+        }
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
     }
 
@@ -222,8 +237,8 @@ class ParticipantService extends MutableBaseService
     {
         return (float) array_reduce(
             $this->getAll($eventId),
-            function ($res, $v) {
-                return isset($v->{ParticipantService::PAYMENT}) ? $res + $v->{ParticipantService::PAYMENT} : $res;
+            function ($res, ParticipantDTO $v) {
+                return $res + $v->getPayment();
             }
         );
     }
@@ -231,19 +246,15 @@ class ParticipantService extends MutableBaseService
     /**
      * vrací počet osobodní na dané akci
      *
-     * @param int|int[] $eventIdOrParticipants
+     * @param ParticipantDTO[] $participants
      */
-    public function getPersonsDays($eventIdOrParticipants) : int
+    public function getPersonsDays(array $participants) : int
     {
-        if (is_array($eventIdOrParticipants)) {
-            $participants = $eventIdOrParticipants;
-        } else {
-            $participants = $this->getAll($eventIdOrParticipants);
+        $days = 0;
+        foreach ($participants as $p) {
+            $days += $p->getDays();
         }
-
-        return array_sum(
-            array_column($participants, 'Days')
-        );
+        return $days;
     }
 
     /**
@@ -265,40 +276,17 @@ class ParticipantService extends MutableBaseService
     public function getCampTotalPayment(int $campId, string $category, string $isAccount) : float
     {
         $res = 0;
+        /** @var \Model\DTO\Participant\Participant $p */
         foreach ($this->getAll($campId) as $p) {
             //pokud se alespon v jednom neshodují, tak pokracujte
-            if (($category === 'adult' xor preg_match('/^Dospěl/', $p->Category))
-                || ($isAccount === 'Y' xor $p->isAccount === 'Y')
+            if (($category === 'adult' xor preg_match('/^Dospěl/', $p->getCategory()))
+                || ($isAccount === 'Y' xor $p->getOnAccount() === 'Y')
             ) {
                 continue;
             }
-            $res += $p->payment;
+            $res += $p->getPayment();
         }
         return $res;
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getPotencialCampParticipants(int $eventId) : array
-    {
-        $res = [];
-        foreach ($this->skautis->org->{'PersonAllEventCampMulti'}(['ID_EventCamp' => $eventId]) as $p) {
-            $res[$p->ID] = $p->DisplayName;
-        }
-        natcasesort($res);
-        return $res;
-    }
-
-    /**
-     * @param \stdClass|ArrayHash $person
-     */
-    protected function setPersonName(&$person) : void
-    {
-        preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $person->Person, $matches);
-        $person->LastName  = $matches['last'];
-        $person->FirstName = $matches['first'];
-        $person->NickName  = $matches['nick'] ?? null;
     }
 
     public function countPragueParticipants(\stdClass $event) : ?PragueParticipants
@@ -313,16 +301,17 @@ class ParticipantService extends MutableBaseService
         $between18and26    = 0;
         $personDaysUnder26 = 0;
         $citizensCount     = 0;
+        /** @var \Model\DTO\Participant\Participant $p */
         foreach ($participants as $p) {
-            if (stripos($p->City, 'Praha') === false) {
+            if (stripos($p->getCity(), 'Praha') === false) {
                 continue;
             }
             $citizensCount += 1;
 
-            if ($p->Birthday === null) {
+            if ($p->getBirthday() === null) {
                 continue;
             }
-            $ageInYears = $eventStartDate->diff(new \DateTime($p->Birthday))->format('%Y');
+            $ageInYears = $eventStartDate->diff(new \DateTime($p->getBirthday()))->format('%Y');
 
             if ($ageInYears <= self::PRAGUE_SUPPORTABLE_AGE) {
                 $under18 += 1;
@@ -336,8 +325,18 @@ class ParticipantService extends MutableBaseService
                 continue;
             }
 
-            $personDaysUnder26 += $p->Days;
+            $personDaysUnder26 += $p->getDays();
         }
         return new PragueParticipants($under18, $between18and26, $personDaysUnder26, $citizensCount);
+    }
+
+    private function getPayment(int $participantId, int $actionId) : Payment
+    {
+        try {
+            $payment = $this->repository->find($participantId);
+        } catch (PaymentNotFound $exc) {
+            $payment = PaymentFactory::createDefault($participantId, new SkautisEventId($actionId));
+        }
+        return $payment;
     }
 }

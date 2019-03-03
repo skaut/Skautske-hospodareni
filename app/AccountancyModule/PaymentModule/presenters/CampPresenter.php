@@ -6,6 +6,7 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
+use Model\DTO\Participant\Participant;
 use Model\EventEntity;
 use Model\PaymentService;
 use function array_filter;
@@ -41,7 +42,7 @@ class CampPresenter extends BasePresenter
         $this->template->setParameters([
             'unitPairs' => $this->readUnits = $units = $this->unitService->getReadUnits($this->user),
         ]);
-        $this->campService                  = $this->context->getService('campService');
+        $this->campService                  = $this->getContext()->getService('campService');
     }
 
     /**
@@ -71,17 +72,18 @@ class CampPresenter extends BasePresenter
 
         $participants = array_filter(
             $participants,
-            function ($p) use ($personsWithPayment) {
-                return ! in_array($p->ID_Person, $personsWithPayment, true);
+            function (Participant $p) use ($personsWithPayment) {
+                return ! in_array($p->getPersonId(), $personsWithPayment, true);
             }
         );
 
         foreach ($participants as $p) {
+            $amount = $p->getPayment();
             $form->addPerson(
-                $p->ID_Person,
-                $this->model->getPersonEmails($p->ID_Person),
-                $p->Person,
-                $p->payment === 0 ? null : (float) $p->payment
+                $p->getPersonId(),
+                $this->model->getPersonEmails($p->getPersonId()),
+                $p->getDisplayName(),
+                $amount === 0.0 ? null : $amount
             );
         }
 

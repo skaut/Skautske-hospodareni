@@ -14,6 +14,7 @@ use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
+use function in_array;
 
 class ParticipantPresenter extends BasePresenter
 {
@@ -97,22 +98,14 @@ class ParticipantPresenter extends BasePresenter
                 $this->redirect('Default:');
             }
         }
-        $data    = ['actionId' => $aid];
-        $sisdata = $this->eventService->getParticipants()->get($id);
-        switch ($field) {
-            case 'days':
-            case 'payment':
-            case 'repayment':
-            case 'isAccount':
-                $data[$field] = $value;
-                break;
-            default:
-                $this->payload->message = 'Error';
-                $this->sendPayload();
-                break;
-        }
-        $this->eventService->getParticipants()->update($sisdata['ID'], $data);
 
+        //@todo: add privileges check to eventId
+
+        if (! in_array($field, ['days', 'payment', 'repayment', 'isAccount'])) {
+            $this->payload->message = 'Error';
+            $this->sendPayload();
+        }
+        $this->eventService->getParticipants()->update($id, $aid, [$field => $value]);
         $this->payload->message = 'Success';
         $this->sendPayload();
     }

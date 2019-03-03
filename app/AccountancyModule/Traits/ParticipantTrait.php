@@ -111,16 +111,16 @@ trait ParticipantTrait
      */
     protected function sortParticipants(array &$participants, ?string $sort) : void
     {
-        $textItems   = ['regNum', 'isAccount'];
-        $numberItems = ['Days', 'payment', 'repayment'];
+        $textItems   = ['regNum', 'onAccount'];
+        $numberItems = ['days', 'payment', 'repayment'];
         if (count($participants) <= 0) {
             return;
         }
 
         if ($sort === 'regNum') {
-            $sort = 'UnitRegistrationNumber';
+            $sort = 'unitRegistrationNumber';
         } elseif ($sort === null || ! in_array($sort, array_merge($textItems, $numberItems)) || ! property_exists($participants[0], $sort)) {
-            $sort = 'Person'; //default sort
+            $sort = 'displayName'; //default sort
         }
         $isNumeric = in_array($sort, $numberItems);
         usort(
@@ -257,29 +257,27 @@ trait ParticipantTrait
 
     public function massEditSubmitted(SubmitButton $button) : void
     {
-        $type = $this->eventService->getParticipants()->type; //camp vs general
         if (! $this->isAllowParticipantUpdate) {
             $this->flashMessage('Nemáte právo upravovat účastníky.', 'danger');
             $this->redirect('Default:');
         }
         $values = $button->getForm()->getValues();
-        $data   = ['actionId' => $this->aid];
-        if ($values['edit']['daysc']) {
-            $data['days'] = (int) $values['edit']['days'];
-        }
-        if ($values['edit']['paymentc']) {
-            $data['payment'] = (float) $values['edit']['payment'];
-        }
-        if ($values['edit']['repaymentc']) {
-            $data['repayment'] = (float) $values['edit']['repayment'];
-        }
-        if ($values['edit']['isAccountc']) {
-            $data['isAccount'] = $values['edit']['isAccount'];
-        }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $oldData = ($type === 'camp') ? [] : $this->eventService->getParticipants()->get((int) $id);
-            $this->eventService->getParticipants()->update((int) $id, array_merge($oldData, $data));
+            if ($values['edit']['daysc']) {
+                $this->eventService->getParticipants()->update((int) $id, $this->aid, ['days' => (int) $values['edit']['days']]);
+            }
+            if ($values['edit']['paymentc']) {
+                $this->eventService->getParticipants()->update((int) $id, $this->aid, ['payment' => (float) $values['edit']['payment']]);
+            }
+            if ($values['edit']['repaymentc']) {
+                $this->eventService->getParticipants()->update((int) $id, $this->aid, ['payment' => (float) $values['edit']['repayment']]);
+            }
+            if (! $values['edit']['isAccountc']) {
+                continue;
+            }
+
+            $this->eventService->getParticipants()->update((int) $id, $this->aid, ['isAccount' => $values['edit']['isAccount']]);
         }
         $this->redirect('this');
     }

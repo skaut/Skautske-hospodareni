@@ -102,17 +102,17 @@ $useRegNums bool - zobrazovat číslo jednotky
                 {var $totalPayment = $totalRepayment = 0}
                 <tbody class="dropable" id="participants-list-tbody">
                     {if !empty($participants)}
-                        <tr n:foreach="$participants as $p" id='par-list-row-{$p->ID}' data-pid='{$p->ID}'>
-                            {php $participantsNames[] = $p->Person}
-                            <td><label for="massParticipants-{$p->ID}">{$p->Person}</label></td>
-                            <td n:if="$useRegNums">{ifset $p->UnitRegistrationNumber}{$p->UnitRegistrationNumber}{/ifset}</td>
-                            <td class="r"><a n:tag-if="$isAllowParticipantUpdate" id="par-days-{$p->ID}" class="num-edit" data-type="days" data-id="{$p->ID}" tabindex="{$tabIndex++}">{$p->Days}</a></td>
-                            <td class="r"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-payment-{$p->ID}" class="num-edit" data-type='payment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->payment) && $p->payment != ""}{$p->payment|price:false}{php $totalPayment += $p->payment}{else}0{/if}</a></td>
-                            <td class="r" n:if="$isAllowRepayment"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-repayment-{$p->ID}" class="num-edit" data-type='repayment' data-id="{$p->ID}" tabindex="{$tabIndex++}" >{if isset($p->repayment) && $p->repayment != ""}{$p->repayment|price:false}{php $totalRepayment += $p->repayment}{else}0{/if}</a></td>
-                            <td n:if="$isAllowIsAccount">{ifset $p->isAccount}{$p->isAccount == 'Y' ? 'Ano'}{/ifset}</td>
+                        <tr n:foreach="$participants as $p" id='par-list-row-{$p->id}' data-pid='{$p->id}'>
+                            {php $participantsNames[] = $p->displayName}
+                            <td><label for="massParticipants-{$p->id}">{$p->displayName}</label></td>
+                            <td n:if="$useRegNums">{ifset $p->unitRegistrationNumber}{$p->unitRegistrationNumber}{/ifset}</td>
+                            <td class="r"><a n:tag-if="$isAllowParticipantUpdate" id="par-days-{$p->id}" class="num-edit" data-type="days" data-id="{$p->id}" tabindex="{$tabIndex++}">{$p->days}</a></td>
+                            <td class="r"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-payment-{$p->id}" class="num-edit" data-type='payment' data-id="{$p->id}" tabindex="{$tabIndex++}" >{if isset($p->payment) && $p->payment != ""}{$p->payment|price:false}{php $totalPayment += $p->payment}{else}0{/if}</a></td>
+                            <td class="r" n:if="$isAllowRepayment"><a n:tag-if="$isAllowParticipantUpdateLocal" id="par-repayment-{$p->id}" class="num-edit" data-type='repayment' data-id="{$p->id}" tabindex="{$tabIndex++}" >{if isset($p->repayment) && $p->repayment != ""}{$p->repayment|price:false}{php $totalRepayment += $p->repayment}{else}0{/if}</a></td>
+                            <td n:if="$isAllowIsAccount">{$p->onAccount === 'Y' ? 'Ano'}</td>
                             <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="r">
-                                <a n:if="$isAllowParticipantDelete" n:href="remove! $p->ID" class="btn btn-danger btn-sm addRow"><i class="glyphicon glyphicon-remove"></i></a>
-                                <input type="checkbox" name="massParticipants[]" id="massParticipants-{$p->ID}" class="hidden-xs" value={$p->ID}/>
+                                <a n:if="$isAllowParticipantDelete" n:href="remove! $p->id" class="btn btn-danger btn-sm addRow"><i class="glyphicon glyphicon-remove"></i></a>
+                                <input type="checkbox" name="massParticipants[]" id="massParticipants-{$p->id}" class="hidden-xs" value={$p->id}/>
                             </td>
                         </tr>
                     {/if}

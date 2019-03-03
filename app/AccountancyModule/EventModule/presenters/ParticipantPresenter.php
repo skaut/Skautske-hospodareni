@@ -13,7 +13,7 @@ use Model\Services\PdfRenderer;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Skautis\Wsdl\WsdlException;
-use function array_key_exists;
+use function in_array;
 
 class ParticipantPresenter extends BasePresenter
 {
@@ -107,20 +107,12 @@ class ParticipantPresenter extends BasePresenter
                 $this->redirect('Default:');
             }
         }
-        $oldData = $this->eventService->getParticipants()->get($id);
-        if ($field === 'days') {
-            $arr = [
-                'payment' => array_key_exists('payment', $oldData) ? $oldData['payment'] : 0,
-                'days' => $value,
-            ];
-            $this->eventService->getParticipants()->update($id, $arr);
-        } elseif ($field === 'payment') {
-            $arr = [
-                'payment' => $value,
-                'days' => array_key_exists('days', $oldData) ? $oldData['days'] : null,
-            ];
-            $this->eventService->getParticipants()->update($id, $arr);
+
+        if (! in_array($field, ['days', 'payment'])) {
+            $this->payload->message = 'Error';
+            $this->sendPayload();
         }
+        $this->eventService->getParticipants()->update($id, $aid, [$field => $value]);
         $this->payload->message = 'Success';
         $this->sendPayload();
     }
