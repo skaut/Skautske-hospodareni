@@ -16,7 +16,7 @@ use function array_keys;
 use function count;
 use function implode;
 
-class GroupRepository implements IGroupRepository
+final class GroupRepository implements IGroupRepository
 {
     /** @var EntityManager */
     private $em;

@@ -11,7 +11,7 @@ use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 use function sprintf;
 
-class CategoryRepository implements ICategoryRepository
+final class CategoryRepository implements ICategoryRepository
 {
     /** @var EntityManager */
     private $em;

@@ -9,7 +9,7 @@ use Model\Travel\Command;
 use Model\Travel\CommandNotFound;
 use Model\Travel\Repositories\ICommandRepository;
 
-class CommandRepository implements ICommandRepository
+final class CommandRepository implements ICommandRepository
 {
     /** @var EntityManager */
     private $em;

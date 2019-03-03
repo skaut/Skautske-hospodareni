@@ -11,7 +11,7 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\Infrastructure\Repositories\AggregateRepository;
 use function sprintf;
 
-class CashbookRepository extends AggregateRepository implements ICashbookRepository
+final class CashbookRepository extends AggregateRepository implements ICashbookRepository
 {
     public function find(CashbookId $id) : Cashbook
     {

@@ -10,7 +10,7 @@ use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
 use function array_values;
 
-class VehicleRepository implements IVehicleRepository
+final class VehicleRepository implements IVehicleRepository
 {
     /** @var EntityManager */
     private $em;

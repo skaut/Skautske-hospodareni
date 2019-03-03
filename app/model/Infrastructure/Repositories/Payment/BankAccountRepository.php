@@ -11,7 +11,7 @@ use Model\Payment\Repositories\IBankAccountRepository;
 use function array_unique;
 use function count;
 
-class BankAccountRepository implements IBankAccountRepository
+final class BankAccountRepository implements IBankAccountRepository
 {
     /** @var EntityManager */
     private $entityManager;

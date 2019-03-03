@@ -10,7 +10,7 @@ use Model\Participant\Payment;
 use Model\Participant\PaymentNotFound;
 use Model\Participant\Repositories\IPaymentRepository;
 
-class PaymentRepository implements IPaymentRepository
+final class PaymentRepository implements IPaymentRepository
 {
     /** @var EntityManager */
     private $em;
