@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Model\Budget\Repositories\IParticipantRepository;
+use Model\Budget\Repositories\IPaymentRepository;
 use Model\DTO\Participant\Participant as ParticipantDTO;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
 use Model\Event\SkautisEventId;
@@ -38,10 +38,10 @@ class ParticipantService extends MutableBaseService
     private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
     private const PRAGUE_UNIT_PREFIX           = 11;
 
-    /** @var IParticipantRepository */
+    /** @var IPaymentRepository */
     private $repository;
 
-    public function __construct(string $name, Skautis $skautIS, IParticipantRepository $repository)
+    public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository)
     {
         parent::__construct($name, $skautIS);
         $this->repository = $repository;
