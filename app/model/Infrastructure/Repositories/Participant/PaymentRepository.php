@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Budget\Repositories;
+namespace Model\Infrastructure\Repositories\Participant;
 
 use Doctrine\ORM\EntityManager;
 use Model\Event\SkautisEventId;
 use Model\Participant\Payment;
 use Model\Participant\PaymentNotFound;
+use Model\Participant\Repositories\IPaymentRepository;
 
 class PaymentRepository implements IPaymentRepository
 {

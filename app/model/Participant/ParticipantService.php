@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model;
 
 use Cake\Chronos\Date;
-use Model\Budget\Repositories\IPaymentRepository;
 use Model\DTO\Participant\Participant as ParticipantDTO;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
 use Model\Event\SkautisEventId;
@@ -14,6 +13,7 @@ use Model\Participant\Payment;
 use Model\Participant\PaymentFactory;
 use Model\Participant\PaymentNotFound;
 use Model\Participant\PragueParticipants;
+use Model\Participant\Repositories\IPaymentRepository;
 use Model\Services\Language;
 use Model\Skautis\Factory\ParticipantFactory;
 use Model\Utils\MoneyFactory;

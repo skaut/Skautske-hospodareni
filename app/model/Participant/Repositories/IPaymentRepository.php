@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Budget\Repositories;
+namespace Model\Participant\Repositories;
 
 use Model\Event\SkautisEventId;
 use Model\Participant\Payment;
