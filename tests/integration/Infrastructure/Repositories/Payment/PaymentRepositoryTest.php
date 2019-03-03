@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Repositories;
+namespace Model\Infrastructure\Repositories\Payment;
 
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\EventBus;

@@ -2,8 +2,8 @@
 services:
     - Model\BankService
     - Model\Payment\FioClientStub
-    - Model\Payment\Repositories\PaymentRepository
-    - Model\Payment\Repositories\GroupRepository
-    - Model\Payment\Repositories\BankAccountRepository
+    - Model\Infrastructure\Repositories\Payment\PaymentRepository
+    - Model\Infrastructure\Repositories\Payment\GroupRepository
+    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
 includes:
     - ../config/doctrine.neon

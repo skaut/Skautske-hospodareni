@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Repositories;
+namespace Model\Infrastructure\Repositories\Payment;
 
 use Doctrine\ORM\EntityManager;
 use Model\Payment\BankAccount;
 use Model\Payment\BankAccountNotFound;
+use Model\Payment\Repositories\IBankAccountRepository;
 use function array_unique;
 use function count;
 

@@ -2,8 +2,8 @@
 services:
     - Model\Payment\BankAccountService
     - Model\Payment\FioClientStub
-    - Model\Payment\Repositories\GroupRepository
-    - Model\Payment\Repositories\BankAccountRepository
+    - Model\Infrastructure\Repositories\Payment\GroupRepository
+    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
     - Model\Payment\UnitResolverStub
     - Model\Payment\BankAccountImporterStub
     - Nette\Caching\Cache

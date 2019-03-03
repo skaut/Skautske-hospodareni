@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Repositories;
+namespace Model\Infrastructure\Repositories\Payment;
 
 use Doctrine\ORM\EntityManager;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
+use Model\Payment\Repositories\IMailCredentialsRepository;
 use function array_fill_keys;
 use function count;
 
