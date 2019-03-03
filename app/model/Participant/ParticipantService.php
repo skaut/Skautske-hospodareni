@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Cake\Chronos\Date;
 use Model\Budget\Repositories\IPaymentRepository;
 use Model\DTO\Participant\Participant as ParticipantDTO;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
@@ -295,7 +296,7 @@ class ParticipantService extends MutableBaseService
             return null;
         }
 
-        $eventStartDate    = new \DateTime($event->StartDate);
+        $eventStartDate    = new Date($event->StartDate);
         $participants      = $this->getAll($event->ID);
         $under18           = 0;
         $between18and26    = 0;
@@ -308,10 +309,13 @@ class ParticipantService extends MutableBaseService
             }
             $citizensCount += 1;
 
-            if ($p->getBirthday() === null) {
+            $birthday = $p->getBirthday();
+
+            if ($birthday === null) {
                 continue;
             }
-            $ageInYears = $eventStartDate->diff(new \DateTime($p->getBirthday()))->format('%Y');
+
+            $ageInYears = $eventStartDate->diffInYears($birthday);
 
             if ($ageInYears <= self::PRAGUE_SUPPORTABLE_AGE) {
                 $under18 += 1;
