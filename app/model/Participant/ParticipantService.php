@@ -308,10 +308,12 @@ class ParticipantService extends MutableBaseService
             }
             $citizensCount += 1;
 
-            if ($p->getBirthday() === null) {
+            $birthday = $p->getBirthday();
+
+            if ($birthday === null) {
                 continue;
             }
-            $ageInYears = $eventStartDate->diff(new \DateTime($p->getBirthday()))->format('%Y');
+            $ageInYears = $eventStartDate->diff($birthday)->format('%Y');
 
             if ($ageInYears <= self::PRAGUE_SUPPORTABLE_AGE) {
                 $under18 += 1;
