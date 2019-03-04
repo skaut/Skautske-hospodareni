@@ -33,8 +33,8 @@ služby používány.
 ### Repozitáře
 Agregáty jsou v rámci write modelu získávány a ukládány pomocí repozitářů.
 Repozitáře jsou definovány jako interface v `<bounded context>/Repositories`.
-Implementace těchto repozitářů jsou v Infrastructure,
-případně v jiném bounded contextu, který implementaci poskytuje.
+Implementace těchto repozitářů jsou v Infrastructure (ve adresáři `Infrastructure/Repositories/<bounded context>`),
+případně v jiném bounded contextu, který implementaci poskytuje (pro implementaci rozhraní z `ContextA` v `ContextB` v adresáři `ContextB\ContextA\Repositories`.
 
 # Read model
 Model, který slouží pouze pro získávání dat pro UI.
