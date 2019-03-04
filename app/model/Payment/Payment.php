@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Cake\Chronos\Date;
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -61,8 +62,8 @@ class Payment extends Aggregate
     private $amount;
 
     /**
-     * @var DateTimeImmutable
-     * @ORM\Column(type="date_immutable", name="maturity")
+     * @var Date
+     * @ORM\Column(type="chronos_date", name="maturity")
      */
     private $dueDate;
 
@@ -109,7 +110,7 @@ class Payment extends Aggregate
         string $name,
         ?string $email,
         float $amount,
-        DateTimeImmutable $dueDate,
+        Date $dueDate,
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         ?int $personId,
@@ -143,7 +144,7 @@ class Payment extends Aggregate
         string $name,
         ?string $email,
         float $amount,
-        DateTimeImmutable $dueDate,
+        Date $dueDate,
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         string $note
@@ -220,7 +221,7 @@ class Payment extends Aggregate
         return $this->amount;
     }
 
-    public function getDueDate() : DateTimeImmutable
+    public function getDueDate() : Date
     {
         return $this->dueDate;
     }
@@ -280,7 +281,7 @@ class Payment extends Aggregate
         string $name,
         ?string $email,
         float $amount,
-        DateTimeImmutable $dueDate,
+        Date $dueDate,
         ?int $constantSymbol,
         string $note
     ) : void {

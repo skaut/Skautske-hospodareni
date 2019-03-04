@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model;
 
 use Assert\Assert;
+use Cake\Chronos\Date;
 use DateTimeImmutable;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
@@ -101,7 +102,7 @@ class PaymentService
         );
     }
 
-    public function createPayment(int $groupId, string $name, ?string $email, float $amount, DateTimeImmutable $dueDate, ?int $personId, ?VariableSymbol $vs, ?int $ks, string $note) : void
+    public function createPayment(int $groupId, string $name, ?string $email, float $amount, Date $dueDate, ?int $personId, ?VariableSymbol $vs, ?int $ks, string $note) : void
     {
         $group = $this->groups->find($groupId);
 
@@ -115,7 +116,7 @@ class PaymentService
         string $name,
         ?string $email,
         float $amount,
-        DateTimeImmutable $dueDate,
+        Date $dueDate,
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         string $note

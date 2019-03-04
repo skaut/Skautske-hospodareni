@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace integration\Payment\Repositories;
 
+use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\EventBus;
 use Mockery as m;
 use Model\Payment\DomainEvents\GroupWasRemoved;
@@ -55,7 +56,7 @@ class GroupRepositoryTest extends \IntegrationTest
         $lastPairing     = new \DateTimeImmutable('2018-01-19 18:34:00');
         $paymentDefaults = new Group\PaymentDefaults(
             100.0,
-            new \DateTimeImmutable('2018-01-29 00:00:00'),
+            new Date('2018-01-29'),
             123,
             new VariableSymbol('140')
         );
@@ -71,7 +72,7 @@ class GroupRepositoryTest extends \IntegrationTest
             'bank_account_id' => 100,
             'amount' => $paymentDefaults->getAmount(),
             'nextVs' => $paymentDefaults->getNextVariableSymbol()->toInt(),
-            'maturity' => $paymentDefaults->getDueDate()->format('Y-m-d H:i:s'),
+            'maturity' => $paymentDefaults->getDueDate()->format('Y-m-d'),
             'ks' => $paymentDefaults->getConstantSymbol(),
         ];
 

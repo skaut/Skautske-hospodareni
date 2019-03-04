@@ -26,6 +26,7 @@ use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function array_reverse;
+use function assert;
 use function date;
 use function get_class;
 use function range;
@@ -239,10 +240,10 @@ class DefaultPresenter extends BasePresenter
         $form = new BaseForm();
         $form->addText('name', 'Název akce*')
             ->addRule(Form::FILLED, 'Musíte vyplnit název akce');
-        $form->addDatePicker('start', 'Od*')
+        $form->addDate('start', 'Od*')
             ->addRule(Form::FILLED, 'Musíte vyplnit začátek akce')
             ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
-        $form->addDatePicker('end', 'Do*')
+        $form->addDate('end', 'Do*')
             ->addRule(Form::FILLED, 'Musíte vyplnit konec akce')
             ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.')
             ->addRule([MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
@@ -271,8 +272,10 @@ class DefaultPresenter extends BasePresenter
 
         $v = $form->getValues();
 
-        $startDate = Date::instance($v['start']);
-        $endDate   = Date::instance($v['end']);
+        $startDate = $v['start'];
+        $endDate   = $v['end'];
+
+        assert($startDate instanceof Date && $endDate instanceof Date);
 
         if ($startDate > $endDate) {
             $form['start']->addError('Akce nemůže dříve začít než zkončit!');

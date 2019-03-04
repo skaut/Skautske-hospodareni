@@ -73,8 +73,8 @@ class EventPresenter extends BasePresenter
                 [
                 'aid' => $aid,
                 'name' => $this->event->DisplayName,
-                'start' => $this->event->StartDate,
-                'end' => $this->event->EndDate,
+                'start' => new Date($this->event->StartDate),
+                'end' => new Date($this->event->EndDate),
                 'location' => $this->event->Location,
                 'type' => $this->event->ID_EventGeneralType,
                 'scope' => $this->event->ID_EventGeneralScope,
@@ -185,9 +185,9 @@ class EventPresenter extends BasePresenter
 
         $form->addText('name', 'Název akce')
             ->setRequired('Musíte zadat název akce');
-        $form->addDatePicker('start', 'Od')
+        $form->addDate('start', 'Od')
             ->setRequired('Musíte zadat datum začátku akce');
-        $form->addDatePicker('end', 'Do')
+        $form->addDate('end', 'Do')
             ->setRequired('Musíte zadat datum konce akce')
             ->addRule([MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
         $form->addText('location', 'Místo');
@@ -219,8 +219,8 @@ class EventPresenter extends BasePresenter
             new UpdateEvent(
                 new SkautisEventId($id),
                 $values['name'],
-                Date::instance($values['start']),
-                Date::instance($values['end']),
+                $values['start'],
+                $values['end'],
                 $values['location'] !== '' ? $values['location'] : null,
                 $values['scope'],
                 $values['type']

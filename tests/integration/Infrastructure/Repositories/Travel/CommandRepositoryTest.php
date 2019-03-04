@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Travel;
 
+use Cake\Chronos\Date;
 use Doctrine\ORM\EntityManager;
 use Model\Travel\Command;
 use Model\Travel\Travel\Type;
@@ -150,7 +151,7 @@ class CommandRepositoryTest extends \IntegrationTest
         $details1 = $vehicleTravel->getDetails();
         $this->assertInstanceOf(Command\VehicleTravel::class, $vehicleTravel);
         $this->assertSame(self::VEHICLE_TRAVEL['distance'], $vehicleTravel->getDistance());
-        $this->assertEquals(new \DateTimeImmutable(self::VEHICLE_TRAVEL['start_date']), $details1->getDate());
+        $this->assertTrue($details1->getDate()->eq(new Date(self::VEHICLE_TRAVEL['start_date'])));
         $this->assertSame(self::VEHICLE_TRAVEL['start_place'], $details1->getStartPlace());
         $this->assertSame(self::VEHICLE_TRAVEL['end_place'], $details1->getEndPlace());
         $this->assertSame(self::VEHICLE_TRAVEL['type'], $details1->getTransportType());
@@ -161,7 +162,7 @@ class CommandRepositoryTest extends \IntegrationTest
         $details2 = $transportTravel->getDetails();
         $this->assertInstanceOf(Command\TransportTravel::class, $transportTravel);
         $this->assertEquals(MoneyFactory::fromFloat(self::TRANSPORT_TRAVEL['distance']), $transportTravel->getPrice());
-        $this->assertEquals(new \DateTimeImmutable(self::TRANSPORT_TRAVEL['start_date']), $details2->getDate());
+        $this->assertTrue($details2->getDate()->eq(new Date(self::TRANSPORT_TRAVEL['start_date'])));
         $this->assertSame(self::TRANSPORT_TRAVEL['start_place'], $details2->getStartPlace());
         $this->assertSame(self::TRANSPORT_TRAVEL['end_place'], $details2->getEndPlace());
         $this->assertSame(self::TRANSPORT_TRAVEL['type'], $details2->getTransportType());

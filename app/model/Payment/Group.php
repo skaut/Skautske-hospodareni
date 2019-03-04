@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Cake\Chronos\Date;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
@@ -219,7 +220,7 @@ class Group
         return $this->paymentDefaults->getAmount();
     }
 
-    public function getDueDate() : ?\DateTimeImmutable
+    public function getDueDate() : ?Date
     {
         return $this->paymentDefaults->getDueDate();
     }

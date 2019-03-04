@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Cake\Chronos\Date;
 use Codeception\Test\Unit;
-use DateTimeImmutable;
 use Mockery as m;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
@@ -18,7 +18,7 @@ class PaymentTest extends Unit
         $groupId        = 29;
         $name           = 'Jan novák';
         $email          = 'test@gmail.com';
-        $dueDate        = new DateTimeImmutable();
+        $dueDate        = new Date();
         $amount         = 450;
         $variableSymbol = new VariableSymbol('454545');
         $constantSymbol = 666;
@@ -66,7 +66,7 @@ class PaymentTest extends Unit
             'František Maša',
             'frantisekmasa1@gmail.com',
             -500,
-            new DateTimeImmutable(),
+            new Date(),
             null,
             null,
             null,
@@ -83,7 +83,7 @@ class PaymentTest extends Unit
             'František Maša',
             'frantisekmasa1@gmail.com',
             0,
-            new DateTimeImmutable(),
+            new Date(),
             null,
             null,
             null,
@@ -93,7 +93,7 @@ class PaymentTest extends Unit
 
     public function testCancel() : void
     {
-        $time    = new DateTimeImmutable();
+        $time    = Date::now();
         $payment = $this->createPayment();
         $payment->cancel($time);
         $this->assertSame(State::get(State::CANCELED), $payment->getState());
@@ -102,7 +102,7 @@ class PaymentTest extends Unit
 
     public function testCancelingAlreadyCanceledPaymentThrowsException() : void
     {
-        $time    = new DateTimeImmutable();
+        $time    = Date::now();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -112,7 +112,7 @@ class PaymentTest extends Unit
 
     public function testCancelingCompletedPaymentUpdatesClosedAtAndState() : void
     {
-        $time    = new DateTimeImmutable();
+        $time    = Date::now();
         $payment = $this->createPayment();
         $payment->complete($time);
 
@@ -126,7 +126,7 @@ class PaymentTest extends Unit
 
     public function testCompletePayment() : void
     {
-        $time    = new DateTimeImmutable();
+        $time    = Date::now();
         $payment = $this->createPayment();
         $payment->complete($time);
         $this->assertSame(State::get(State::COMPLETED), $payment->getState());
@@ -135,7 +135,7 @@ class PaymentTest extends Unit
 
     public function testCompleteClosedPayment() : void
     {
-        $time    = new DateTimeImmutable();
+        $time    = Date::now();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -189,7 +189,7 @@ class PaymentTest extends Unit
     public function testUpdateVariableForClosedPaymentThrowsException() : void
     {
         $payment = $this->createPayment();
-        $payment->cancel(new DateTimeImmutable());
+        $payment->cancel(Date::now());
 
         $this->expectException(PaymentClosed::class);
 
@@ -204,7 +204,7 @@ class PaymentTest extends Unit
         $name           = 'František Maša';
         $amount         = 300;
         $email          = 'franta@gmail.com';
-        $dueDate        = new DateTimeImmutable();
+        $dueDate        = Date::now();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
         $note           = 'Never pays!';
@@ -249,12 +249,12 @@ class PaymentTest extends Unit
         $name           = 'František Maša';
         $amount         = 300;
         $email          = 'franta@gmail.com';
-        $dueDate        = new DateTimeImmutable();
+        $dueDate        = Date::now();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
         $note           = 'Never pays!';
 
-        $payment->complete(new DateTimeImmutable());
+        $payment->complete(Date::now());
 
         $this->expectException(PaymentClosed::class);
 
@@ -269,7 +269,7 @@ class PaymentTest extends Unit
     private function createPaymentWithVariableSymbol(?VariableSymbol $symbol) : Payment
     {
         $group   = $this->mockGroup(29);
-        $dueDate = new DateTimeImmutable();
+        $dueDate = Date::now();
 
         $payment = new Payment($group, 'Jan novák', 'test@gmail.com', 500, $dueDate, $symbol, 666, 454, 'Some note');
         \Helpers::assignIdentity($payment, 1);

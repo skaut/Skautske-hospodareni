@@ -191,7 +191,7 @@ class DefaultPresenter extends BasePresenter
         $form->getElementPrototype()->class('form-inline');
         $form->addHidden('command_id');
         $form->addSelect('type');
-        $form->addDatePicker('start_date', 'Datum cesty')
+        $form->addDate('start_date', 'Datum cesty')
             ->setAttribute('class', 'form-control input-sm date')
             ->addRule(Form::FILLED, 'Musíte vyplnit datum cesty.');
         $form->addText('start_place', 'Z*')
@@ -228,7 +228,7 @@ class DefaultPresenter extends BasePresenter
         $this->travelService->addTravel(
             $commandId,
             $v->type,
-            \DateTimeImmutable::createFromMutable($v->start_date),
+            $v->start_date,
             $v->start_place,
             $v->end_place,
             $v->distance
@@ -255,7 +255,7 @@ class DefaultPresenter extends BasePresenter
             'commandId' => $commandId,
             'id' => $travelId,
             'type' => $travel->getDetails()->getTransportType(),
-            'date' => $travel->getDetails()->getDate()->format('d-m-Y'),
+            'date' => $travel->getDetails()->getDate(),
             'startPlace' => $travel->getDetails()->getStartPlace(),
             'endPlace' => $travel->getDetails()->getEndPlace(),
             'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
@@ -272,7 +272,7 @@ class DefaultPresenter extends BasePresenter
         $form->addHidden('commandId');
         $form->addHidden('id');
         $form->addSelect('type', 'Prostředek');
-        $form->addDatePicker('date', 'Datum cesty')
+        $form->addDate('date', 'Datum cesty')
             ->setAttribute('class', 'form-control input-sm date')
             ->addRule(Form::FILLED, 'Musíte vyplnit datum cesty.');
         $form->addText('startPlace', 'Z*')
@@ -316,7 +316,7 @@ class DefaultPresenter extends BasePresenter
             $commandId,
             (int) $v->id,
             (float) $v->distanceOrPrice,
-            \DateTimeImmutable::createFromMutable($v->date),
+            $v->date,
             $v->type,
             $v->startPlace,
             $v->endPlace

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel\Command;
 
+use Cake\Chronos\Date;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
@@ -20,8 +21,8 @@ class TravelDetails
     use SmartObject;
 
     /**
-     * @var DateTimeImmutable
-     * @ORM\Column(type="datetime_immutable", name="start_date")
+     * @var Date
+     * @ORM\Column(type="chronos_date", name="start_date")
      */
     private $date;
 
@@ -43,7 +44,7 @@ class TravelDetails
      */
     private $endPlace;
 
-    public function __construct(DateTimeImmutable $date, string $transportType, string $startPlace, string $endPlace)
+    public function __construct(Date $date, string $transportType, string $startPlace, string $endPlace)
     {
         $this->date          = $date;
         $this->transportType = $transportType;
@@ -51,7 +52,7 @@ class TravelDetails
         $this->endPlace      = $endPlace;
     }
 
-    public function getDate() : DateTimeImmutable
+    public function getDate() : Date
     {
         return $this->date;
     }

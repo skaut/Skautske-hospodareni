@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Bank\Fio\Transaction;
@@ -56,7 +57,7 @@ final class BankServiceTest extends Unit
             ->andReturn($transactions);
 
         $payments = [
-            new Payment($group, '-', null, $amount, new \DateTimeImmutable(), $vs, null, null, ''),
+            new Payment($group, '-', null, $amount, Date::now(), $vs, null, null, ''),
         ];
 
         \Helpers::assignIdentity($payments[0], 1);
@@ -117,8 +118,8 @@ final class BankServiceTest extends Unit
             ->andReturn($transactions1);
 
         $payments1 = [
-            new Payment($group1, '-', null, $amount, new \DateTimeImmutable(), $vs1, null, null, ''),
-            new Payment($group2, '-', null, $amount, new \DateTimeImmutable(), $vs2, null, null, ''),
+            new Payment($group1, '-', null, $amount, Date::now(), $vs1, null, null, ''),
+            new Payment($group2, '-', null, $amount, Date::now(), $vs2, null, null, ''),
         ];
         \Helpers::assignIdentity($payments1[0], 1);
 

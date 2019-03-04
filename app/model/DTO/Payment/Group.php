@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
-use DateTimeImmutable;
+use Cake\Chronos\Date;
 use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
 
@@ -15,7 +15,7 @@ use Nette\SmartObject;
  * @property-read int|NULL $skautisId
  * @property-read string $name
  * @property-read float|NULL $defaultAmount
- * @property-read DateTimeImmutable|NULL $dueDate
+ * @property-read Date|NULL $dueDate
  * @property-read int|NULL $constantSymbol
  * @property-read VariableSymbol|NULL $nextVariableSymbol
  * @property-read string $state
@@ -44,7 +44,7 @@ class Group
     /** @var float|NULL */
     private $defaultAmount;
 
-    /** @var DateTimeImmutable|NULL */
+    /** @var Date|NULL */
     private $dueDate;
 
     /** @var int|NULL */
@@ -72,7 +72,7 @@ class Group
         ?int $skautisId,
         string $name,
         ?float $defaultAmount,
-        ?DateTimeImmutable $dueDate,
+        ?Date $dueDate,
         ?int $constantSymbol,
         ?VariableSymbol $nextVariableSymbol,
         string $state,
@@ -125,7 +125,7 @@ class Group
         return $this->defaultAmount;
     }
 
-    public function getDueDate() : ?DateTimeImmutable
+    public function getDueDate() : ?Date
     {
         return $this->dueDate;
     }

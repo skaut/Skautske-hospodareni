@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Cake\Chronos\Date;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use Dibi\Exception;
@@ -165,7 +166,7 @@ class TravelService
         );
     }
 
-    public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
+    public function addTravel(int $commandId, string $type, Date $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
     {
         $command       = $this->commands->find($commandId);
         $transportType = $this->types->find($type);
@@ -185,7 +186,7 @@ class TravelService
         int $commandId,
         int $travelId,
         float $distanceOrPrice,
-        \DateTimeImmutable $date,
+        Date $date,
         string $type,
         string $startPlace,
         string $endPlace

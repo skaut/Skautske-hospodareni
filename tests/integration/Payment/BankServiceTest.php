@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Pairing;
 
+use Cake\Chronos\Date;
 use Mockery as m;
 use Model\Bank\Fio\Transaction;
 use Model\BankService;
@@ -123,7 +124,7 @@ class BankServiceTest extends \IntegrationTest
             Random::generate(),
             null,
             $amount,
-            new \DateTimeImmutable(),
+            new Date(),
             $variableSymbol === null ? null : new VariableSymbol($variableSymbol),
             null,
             null,

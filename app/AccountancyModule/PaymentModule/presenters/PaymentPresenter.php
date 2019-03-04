@@ -14,7 +14,7 @@ use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
 use BankAccountValidator\Czech;
-use Consistence\Time\TimeFormat;
+use Cake\Chronos\Date;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
@@ -45,7 +45,6 @@ use function date;
 use function in_array;
 use function is_bool;
 use function sprintf;
-use function strtotime;
 use function substr;
 
 class PaymentPresenter extends BasePresenter
@@ -165,7 +164,7 @@ class PaymentPresenter extends BasePresenter
         $form->setDefaults(
             [
             'amount' => $group->getDefaultAmount(),
-            'maturity' => $group->getDueDate() !== null ? $group->getDueDate()->format('d.m.Y') : null,
+            'maturity' => $group->getDueDate(),
             'ks' => $group->getConstantSymbol(),
             'oid' => $group->getId(),
             'vs' => $nextVS !== null ? (string) $nextVS : '',
@@ -211,7 +210,7 @@ class PaymentPresenter extends BasePresenter
             'name' => $payment->getName(),
             'email' => $payment->getEmail(),
             'amount' => $payment->getAmount(),
-            'maturity' => TimeFormat::createDateTimeFromDateTimeInterface($payment->getDueDate()),
+            'maturity' => $payment->getDueDate(),
             'vs' => $payment->getVariableSymbol(),
             'ks' => $payment->getConstantSymbol(),
             'note' => $payment->getNote(),
@@ -534,7 +533,7 @@ class PaymentPresenter extends BasePresenter
             ->setAttribute('class', 'form-control')
             ->addCondition(Form::FILLED)
             ->addRule(Form::EMAIL, 'Zadaný email nemá platný formát');
-        $form->addDatePicker('maturity', 'Splatnost')
+        $form->addDate('maturity', 'Splatnost')
             ->setAttribute('class', 'form-control');
         $form->addVariableSymbol('vs', 'VS')
             ->setRequired(false)
@@ -573,7 +572,7 @@ class PaymentPresenter extends BasePresenter
         $name           = $v->name;
         $email          = $v->email !== '' ? $v->email : null;
         $amount         = (float) $v->amount;
-        $dueDate        = \DateTimeImmutable::createFromMutable($v->maturity);
+        $dueDate        = $v->maturity;
         $variableSymbol = $v->vs;
         $constantSymbol = $v->ks !== '' ? (int) $v->ks : null;
         $note           = (string) $v->note;
@@ -604,8 +603,8 @@ class PaymentPresenter extends BasePresenter
         $form->addHidden('gid');
         $form->addText('accountFrom', 'Z účtu:')
             ->addRule(Form::FILLED, 'Zadejte číslo účtu ze kterého se mají peníze poslat');
-        $form->addDatePicker('date', 'Datum splatnosti:')
-            ->setDefaultValue(date('j. n. Y', strtotime('+1 Weekday')));
+        $form->addDate('date', 'Datum splatnosti:')
+            ->setDefaultValue(Date::now()->addWeekday());
         $form->addSubmit('send', 'Odeslat platby do banky')
             ->setAttribute('class', 'btn btn-primary btn-large');
 
