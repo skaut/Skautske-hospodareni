@@ -13,14 +13,15 @@ parameters:
     sentry:
         url: "https://4c569d4cbda54f908d83d4b4a1959826@sentry.io/1328535"
 
-monolog:
-    handlers:
-        - Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272, 8, Monolog\Logger::ERROR)
-        - Monolog\Handler\RavenHandler(level: Monolog\Logger::ERROR)
-        - Raven_Breadcrumbs_MonologHandler
-        - Monolog\Handler\RotatingFileHandler(%logDir%/log.log, 90, Monolog\Logger::INFO)
-    processors:
-        - App\UserContextProcessor
-
 services:
     - Raven_Client(%sentry.url%)
+
+decorator:
+    Monolog\Logger:
+        setup:
+            - setHandlers([
+                Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272, 8, Monolog\Logger::ERROR),
+                Monolog\Handler\RavenHandler(level: Monolog\Logger::ERROR),
+                Raven_Breadcrumbs_MonologHandler(),
+                Monolog\Handler\RotatingFileHandler(%logDir%/log.log, 90, Monolog\Logger::INFO)
+              ])

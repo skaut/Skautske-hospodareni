@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "57f4018d0fe92271bbd7c32bd7d846a7",
+    "content-hash": "7e5e4d23de91536aa2b5662daaa1b972",
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",
@@ -2184,78 +2184,6 @@
                 "nette"
             ],
             "time": "2017-12-05T10:14:38+00:00"
-        },
-        {
-            "name": "kdyby/monolog",
-            "version": "v1.3.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Kdyby/Monolog.git",
-                "reference": "9919e4be9eec16c9c2de74c85d6d926d06e621a7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Kdyby/Monolog/zipball/9919e4be9eec16c9c2de74c85d6d926d06e621a7",
-                "reference": "9919e4be9eec16c9c2de74c85d6d926d06e621a7",
-                "shasum": ""
-            },
-            "require": {
-                "kdyby/strict-objects": "^1.0",
-                "monolog/monolog": "^1.10",
-                "nette/di": "^2.4@dev",
-                "php": "^5.6 || ^7.0",
-                "tracy/tracy": "^2.4@dev"
-            },
-            "provide": {
-                "psr/log-implementation": "1.0.0"
-            },
-            "require-dev": {
-                "nette/application": "^2.4@dev",
-                "nette/bootstrap": "^2.4@dev",
-                "nette/http": "^2.4@dev",
-                "nette/tester": "~1.7"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.3-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Kdyby\\Monolog\\": "src/"
-                },
-                "classmap": [
-                    "src/exceptions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause",
-                "GPL-2.0",
-                "GPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Filip Procházka",
-                    "email": "filip@prochazka.su",
-                    "homepage": "http://filip-prochazka.com"
-                },
-                {
-                    "name": "Martin Bažík",
-                    "email": "martin@bazo.sk",
-                    "homepage": "http://bazo.sk"
-                }
-            ],
-            "description": "Integration of Monolog into Nette Framework",
-            "homepage": "http://kdyby.org",
-            "keywords": [
-                "diagnostics",
-                "logging",
-                "monolog",
-                "nette"
-            ],
-            "time": "2017-05-22T18:16:52+00:00"
         },
         {
             "name": "kdyby/strict-objects",
