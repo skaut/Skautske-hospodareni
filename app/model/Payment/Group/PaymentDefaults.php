@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Group;
 
-use DateTimeImmutable;
+use Cake\Chronos\Date;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\DueDateIsNotWorkday;
 use Model\Payment\VariableSymbol;
@@ -21,8 +21,8 @@ final class PaymentDefaults
     private $amount;
 
     /**
-     * @var DateTimeImmutable|NULL
-     * @ORM\Column(type="datetime_immutable", nullable=true, name="maturity")
+     * @var Date|NULL
+     * @ORM\Column(type="chronos_date", nullable=true, name="maturity")
      */
     private $dueDate;
 
@@ -43,11 +43,11 @@ final class PaymentDefaults
      */
     public function __construct(
         ?float $amount,
-        ?DateTimeImmutable $dueDate,
+        ?Date $dueDate,
         ?int $constantSymbol,
         ?VariableSymbol $nextVariableSymbol
     ) {
-        if ($dueDate !== null && ! $this->isWorkday($dueDate)) {
+        if ($dueDate !== null && ! $dueDate->isWeekday()) {
             throw new DueDateIsNotWorkday();
         }
 
@@ -62,7 +62,7 @@ final class PaymentDefaults
         return $this->amount;
     }
 
-    public function getDueDate() : ?DateTimeImmutable
+    public function getDueDate() : ?Date
     {
         return $this->dueDate;
     }
@@ -75,12 +75,5 @@ final class PaymentDefaults
     public function getNextVariableSymbol() : ?VariableSymbol
     {
         return $this->nextVariableSymbol;
-    }
-
-    private function isWorkday(DateTimeImmutable $date) : bool
-    {
-        $dayOfWeek = (int) $date->format('N');
-
-        return $dayOfWeek <= 5;
     }
 }

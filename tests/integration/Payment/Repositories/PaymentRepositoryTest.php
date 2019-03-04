@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Repositories;
 
+use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Payment\Group;
 use Model\Payment\Payment;
@@ -70,7 +71,7 @@ class PaymentRepositoryTest extends \IntegrationTest
         $this->assertSame($data['name'], $payment->getName());
         $this->assertSame($data['email'], $payment->getEmail());
         $this->assertSame($data['amount'], $payment->getAmount());
-        $this->assertEquals(new \DateTimeImmutable($data['maturity']), $payment->getDueDate());
+        $this->assertEquals(new Date($data['maturity']), $payment->getDueDate());
         $this->assertTrue($payment->getState()->equalsValue($data['state']), "Payment is not should be 'preparing'");
         $this->assertEquals(new VariableSymbol($data['vs']), $payment->getVariableSymbol(), 'Variable symbol doesn\'t match');
     }

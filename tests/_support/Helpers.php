@@ -37,9 +37,9 @@ class Helpers
         return new PaymentDefaults(null, null, null, null);
     }
 
-    public static function getValidDueDate() : DateTimeImmutable
+    public static function getValidDueDate() : Date
     {
-        return new DateTimeImmutable('2018-01-19'); // https://youtu.be/kfVsfOSbJY0?t=44s
+        return new Date('2018-01-19'); // https://youtu.be/kfVsfOSbJY0?t=44s
     }
 
     /**

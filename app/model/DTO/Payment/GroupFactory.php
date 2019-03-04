@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
-use Cake\Chronos\Date;
 use Model\Payment\Group as GroupEntity;
 
 class GroupFactory
@@ -20,7 +19,7 @@ class GroupFactory
             $object !== null ? $object->getId() : null,
             $group->getName(),
             $group->getDefaultAmount(),
-            Date::instance($group->getDueDate()),
+            $group->getDueDate(),
             $group->getConstantSymbol(),
             $group->getNextVariableSymbol(),
             $group->getState(),

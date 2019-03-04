@@ -21,8 +21,8 @@ class TravelDetails
     use SmartObject;
 
     /**
-     * @var DateTimeImmutable
-     * @ORM\Column(type="datetime_immutable", name="start_date")
+     * @var Date
+     * @ORM\Column(type="chronos_date", name="start_date")
      */
     private $date;
 
@@ -44,7 +44,7 @@ class TravelDetails
      */
     private $endPlace;
 
-    public function __construct(DateTimeImmutable $date, string $transportType, string $startPlace, string $endPlace)
+    public function __construct(Date $date, string $transportType, string $startPlace, string $endPlace)
     {
         $this->date          = $date;
         $this->transportType = $transportType;
@@ -54,7 +54,7 @@ class TravelDetails
 
     public function getDate() : Date
     {
-        return Date::instance($this->date);
+        return $this->date;
     }
 
     public function getTransportType() : string

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery as m;
@@ -13,7 +14,7 @@ class GroupTest extends Unit
 {
     public function testCreate() : void
     {
-        $dueDate         = new DateTimeImmutable('2018-01-19'); // friday
+        $dueDate         = new Date('2018-01-19'); // friday
         $createdAt       = new DateTimeImmutable();
         $variableSymbol  = new VariableSymbol('666');
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, $variableSymbol);
@@ -49,7 +50,7 @@ class GroupTest extends Unit
 
     public function testUpdate() : void
     {
-        $dueDate     = new DateTimeImmutable('2018-01-19'); // friday
+        $dueDate     = new Date('2018-01-19'); // friday
         $createdAt   = new DateTimeImmutable();
         $group       = $this->createGroup($dueDate, $createdAt);
         $bankAccount = m::mock(BankAccount::class, ['getId' => 33, 'getUnitId' => 20]);
@@ -104,9 +105,9 @@ class GroupTest extends Unit
         $this->assertNull($group->getBankAccountId());
     }
 
-    private function createGroup(?DateTimeImmutable $dueDate = null, ?DateTimeImmutable $createdAt = null, ?BankAccount $bankAccount = null) : Group
+    private function createGroup(?Date $dueDate = null, ?DateTimeImmutable $createdAt = null, ?BankAccount $bankAccount = null) : Group
     {
-        $dueDate         = $dueDate ?? new DateTimeImmutable('2018-01-19'); // defaults to friday
+        $dueDate         = $dueDate ?? new Date('2018-01-19'); // defaults to friday
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, new VariableSymbol('666'));
         $createdAt       = $createdAt ?? new DateTimeImmutable();
         $emails          = \Helpers::createEmails();

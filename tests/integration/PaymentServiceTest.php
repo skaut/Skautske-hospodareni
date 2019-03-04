@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Cake\Chronos\Date;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\Repositories\IPaymentRepository;
@@ -68,7 +69,7 @@ class PaymentServiceTest extends \IntegrationTest
             'test',
             null,
             100,
-            new \DateTimeImmutable(),
+            new Date(),
             null,
             null,
             null,
