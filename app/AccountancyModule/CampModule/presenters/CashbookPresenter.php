@@ -19,6 +19,7 @@ use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
+use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\SkautisCampId;
@@ -52,6 +53,9 @@ class CashbookPresenter extends BasePresenter
         /** @var Money $finalBalance */
         $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
 
+        /** @var Money $finalRealBalance */
+        $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
+
         $this->template->setParameters(
             [
             'isCashbookEmpty' => $this->isCashbookEmpty(),
@@ -59,6 +63,7 @@ class CashbookPresenter extends BasePresenter
             'isInMinus' => $finalBalance->isNegative(),
             'isEditable' => $this->isEditable,
             'missingCategories' => $this->missingCategories,
+            'finalRealBalance' => $finalRealBalance,
             ]
         );
     }
