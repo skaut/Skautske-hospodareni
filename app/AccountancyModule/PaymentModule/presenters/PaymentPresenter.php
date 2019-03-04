@@ -604,7 +604,7 @@ class PaymentPresenter extends BasePresenter
         $form->addText('accountFrom', 'Z účtu:')
             ->addRule(Form::FILLED, 'Zadejte číslo účtu ze kterého se mají peníze poslat');
         $form->addDate('date', 'Datum splatnosti:')
-            ->setDefaultValue((new Date())->addWeekday());
+            ->setDefaultValue(Date::now()->addWeekday());
         $form->addSubmit('send', 'Odeslat platby do banky')
             ->setAttribute('class', 'btn btn-primary btn-large');
 

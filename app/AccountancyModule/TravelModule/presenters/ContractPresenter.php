@@ -157,7 +157,7 @@ class ContractPresenter extends BasePresenter
             ->setRequired('Musíte vyplnit zástupce jednotky')
             ->setAttribute('class', 'form-control');
         $form->addDate('start', 'Platnost od')
-            ->setDefaultValue(new Date())
+            ->setDefaultValue(Date::now())
             ->setRequired('Musíte vyplnit od kdy smlouva platí')
             ->setAttribute('class', 'form-control');
 
