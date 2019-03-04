@@ -26,10 +26,10 @@
                         <th>Protiúčet</th>
                     </tr>
                     <tr n:foreach="$participants as $p">
-                        <td>{input p_$p->ID}</td>
-                        <td>{input "p_".$p->ID."_name" class=>"form-control"}</td>
-                        <td>{input "p_".$p->ID."_amount" class=>"form-control"}</td>
-                        <td>{input "p_".$p->ID."_account" class=>"form-control"}</td>
+                        <td>{input p_$p->id}</td>
+                        <td>{input "p_".$p->id."_name" class=>"form-control"}</td>
+                        <td>{input "p_".$p->id."_amount" class=>"form-control"}</td>
+                        <td>{input "p_".$p->id."_account" class=>"form-control"}</td>
                     </tr>
                 </table>
                 {input send}
