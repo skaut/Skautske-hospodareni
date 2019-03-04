@@ -87,15 +87,15 @@ class ExportService
     /**
      * vrací pokladní knihu
      */
-    public function getCashbook(CashbookId $cashbookId, string $cashbookName) : string
+    public function getCashbook(CashbookId $cashbookId, string $cashbookName, PaymentMethod $paymentMethod) : string
     {
         /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
-            'cashbookName'  => $cashbookName,
+            'header'  => ($paymentMethod->equals(PaymentMethod::CASH()) ? 'Pokladní kniha' : 'Bankovní transakce') . ' - ' . $cashbookName,
             'prefix'        => $cashbook->getChitNumberPrefix(),
-            'chits'         => $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId)),
+            'chits'         => $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId)),
         ]);
     }
 
