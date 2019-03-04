@@ -93,7 +93,7 @@ class ExportService
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
-            'header'  => $paymentMethod->equals(PaymentMethod::CASH()) ? 'Pokladní kniha - ' : 'Bankovní transakce - ' . $cashbookName,
+            'header'  => ($paymentMethod->equals(PaymentMethod::CASH()) ? 'Pokladní kniha' : 'Bankovní transakce') . ' - ' . $cashbookName,
             'prefix'        => $cashbook->getChitNumberPrefix(),
             'chits'         => $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId)),
         ]);
