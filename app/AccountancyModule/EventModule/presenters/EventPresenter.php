@@ -160,7 +160,7 @@ class EventPresenter extends BasePresenter
 
         $template  = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getCashbook($cashbookId, $event->DisplayName) . $this->exportService->getNewPage();
+        $template .= $this->exportService->getCashbook($cashbookId, $event->DisplayName, PaymentMethod::CASH()) . $this->exportService->getNewPage();
         $template .= $this->exportService->getChits($aid, $this->eventService, $chits, $cashbookId);
 
         $this->pdf->render($template, 'all.pdf');

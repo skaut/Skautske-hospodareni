@@ -114,12 +114,14 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports cashbook (list of cashbook operations) as PDF for printing
      */
-    public function actionPrintCashbook(string $cashbookId) : void
+    public function actionPrintCashbook(string $cashbookId, string $paymentMethod) : void
     {
         $cashbookName = $this->getEventEntity()->getEvent()->get($this->getSkautisId())->DisplayName;
+        $method       = PaymentMethod::get($paymentMethod);
 
-        $template = $this->exportService->getCashbook(CashbookId::fromString($cashbookId), $cashbookName);
-        $this->pdf->render($template, 'pokladni-kniha.pdf');
+        $template = $this->exportService->getCashbook(CashbookId::fromString($cashbookId), $cashbookName, $method);
+        $filename = $method->equals(PaymentMethod::CASH()) ? 'pokladni-kniha' : 'bankovni-transakce';
+        $this->pdf->render($template, $filename . '.pdf');
 
         $this->terminate();
     }

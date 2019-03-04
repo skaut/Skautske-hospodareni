@@ -1,7 +1,11 @@
-<a n:if="$paymentMethod->equalsValue('cash') && ! $cashbookType->isUnit() && count($chits) !== 0"
-        href="{plink :Accountancy:CashbookExport:printCashbook $cashbookId}" target="_blank" class="btn btn-sm btn-info">
+<a n:if="! $cashbookType->isUnit() && count($chits) !== 0"
+        href="{plink :Accountancy:CashbookExport:printCashbook $cashbookId, $paymentMethod->toString ()}" target="_blank" class="btn btn-sm btn-info">
     <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i>
-    Vytisknout pokladní knihu
+    {if $paymentMethod->equalsValue('cash')}
+        Vytisknout pokladní knihu
+    {else}
+        Vytisknout bankovní transakce
+    {/if}
 </a>
 
 <div class="dropdown inline-block">
