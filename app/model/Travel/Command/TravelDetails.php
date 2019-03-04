@@ -27,19 +27,19 @@ class TravelDetails
 
     /**
      * @var string
-     * @ORM\Column(type="string", name="type", length=5)
+     * @ORM\Column(type="string", name="type")
      */
     private $transportType;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string")
      */
     private $startPlace;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string")
      */
     private $endPlace;
 

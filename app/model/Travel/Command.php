@@ -11,6 +11,7 @@ use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\Travel;
 use Model\Travel\Command\TravelDetails;
 use Model\Travel\Command\VehicleTravel;
+use Model\Travel\Travel\Type;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use function array_reduce;
@@ -110,6 +111,19 @@ class Command
      */
     private $ownerId = null;
 
+    /**
+     * @var ArrayCollection|Type[]
+     * @ORM\ManyToMany(targetEntity=Type::class)
+     * @ORM\JoinTable(name="tc_command_types",
+     *      joinColumns={@ORM\JoinColumn(name="commandId", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="typeId", referencedColumnName="type")}
+     *      )
+     */
+    private $transportTypes;
+
+    /**
+     * @param Type[] $transportTypes
+     */
     public function __construct(
         int $unitId,
         ?Vehicle $vehicle,
@@ -120,7 +134,8 @@ class Command
         Money $fuelPrice,
         Money $amortization,
         string $note,
-        ?int $ownerId
+        ?int $ownerId,
+        array $transportTypes
     ) {
         $this->unitId           = $unitId;
         $this->vehicle          = $vehicle;
@@ -133,8 +148,12 @@ class Command
         $this->note             = $note;
         $this->travels          = new ArrayCollection();
         $this->ownerId          = $ownerId;
+        $this->transportTypes   = new ArrayCollection($transportTypes);
     }
 
+    /**
+     * @param Type[] $transportTypes
+     */
     public function update(
         ?Vehicle $vehicle,
         Passenger $driver,
@@ -143,7 +162,8 @@ class Command
         string $passengers,
         Money $fuelPrice,
         Money $amortization,
-        string $note
+        string $note,
+        array $transportTypes
     ) : void {
         $this->vehicle          = $vehicle;
         $this->passenger        = $driver;
@@ -153,6 +173,7 @@ class Command
         $this->fuelPrice        = $fuelPrice;
         $this->amortization     = $amortization;
         $this->note             = $note;
+        $this->transportTypes   = new ArrayCollection($transportTypes);
     }
 
     public function close(DateTimeImmutable $time) : void
@@ -397,7 +418,7 @@ class Command
 
     /**
      * Returns all transport types that have at least one travel
-     * @return string[]
+     * @return Type[]
      */
     public function getUsedTransportTypes() : array
     {
@@ -415,5 +436,13 @@ class Command
     public function getOwnerId() : ?int
     {
         return $this->ownerId;
+    }
+
+    /**
+     * @return Type[]
+     */
+    public function getTransportTypes() : array
+    {
+        return $this->transportTypes->toArray();
     }
 }

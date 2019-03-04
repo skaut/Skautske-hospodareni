@@ -7,32 +7,32 @@ namespace Model;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use Dibi\Exception;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFound;
 use Model\Travel\Contract;
 use Model\Travel\ContractNotFound;
 use Model\Travel\Passenger;
+use Model\Travel\ReadModel\Queries\TransportTypesQuery;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
+use Model\Travel\Repositories\ITypeRepository;
 use Model\Travel\Repositories\IVehicleRepository;
+use Model\Travel\Travel\Type;
 use Model\Travel\TravelNotFound;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
+use function array_filter;
 use function array_map;
+use function array_unique;
 use function in_array;
 
 class TravelService
 {
-    /** @var CommandTable */
-    private $table;
-
-    /** @var TravelTable */
-    private $tableTravel;
-
     /** @var IVehicleRepository */
     private $vehicles;
 
@@ -45,20 +45,26 @@ class TravelService
     /** @var IUnitRepository */
     private $units;
 
+    /** @var ITypeRepository */
+    private $types;
+
+    /** @var QueryBus */
+    protected $queryBus;
+
     public function __construct(
-        CommandTable $table,
-        TravelTable $tableTravel,
         IVehicleRepository $vehicles,
         ICommandRepository $commands,
         IContractRepository $contracts,
-        IUnitRepository $units
+        IUnitRepository $units,
+        ITypeRepository $types,
+        QueryBus $queryBus
     ) {
-        $this->table       = $table;
-        $this->tableTravel = $tableTravel;
-        $this->vehicles    = $vehicles;
-        $this->commands    = $commands;
-        $this->contracts   = $contracts;
-        $this->units       = $units;
+        $this->vehicles  = $vehicles;
+        $this->commands  = $commands;
+        $this->contracts = $contracts;
+        $this->units     = $units;
+        $this->types     = $types;
+        $this->queryBus  = $queryBus;
     }
 
     /**     VEHICLES    */
@@ -161,11 +167,12 @@ class TravelService
 
     public function addTravel(int $commandId, string $type, \DateTimeImmutable $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
     {
-        $command = $this->commands->find($commandId);
+        $command       = $this->commands->find($commandId);
+        $transportType = $this->types->find($type);
 
-        $details = new Command\TravelDetails($date, $type, $startPlace, $endPlace);
+        $details = new Command\TravelDetails($date, $transportType->getShortcut(), $startPlace, $endPlace);
 
-        if ($this->hasFuel($type)) {
+        if ($transportType->hasFuel()) {
             $command->addVehicleTravel($distanceOrPrice, $details);
         } else {
             $command->addTransportTravel(MoneyFactory::fromFloat($distanceOrPrice), $details);
@@ -174,12 +181,22 @@ class TravelService
         $this->commands->save($command);
     }
 
-    public function updateTravel(int $commandId, int $travelId, float $distanceOrPrice, Command\TravelDetails $details) : void
-    {
+    public function updateTravel(
+        int $commandId,
+        int $travelId,
+        float $distanceOrPrice,
+        \DateTimeImmutable $date,
+        string $type,
+        string $startPlace,
+        string $endPlace
+    ) : void {
+        $transportType = $this->types->find($type);
+        $details       = new Command\TravelDetails($date, $transportType->getShortcut(), $startPlace, $endPlace);
+
         $command = $this->commands->find($commandId);
 
         try {
-            if ($this->hasFuel($details->getTransportType())) {
+            if ($transportType->hasFuel()) {
                 $command->updateVehicleTravel($travelId, $distanceOrPrice, $details);
             } else {
                 $command->updateTransportTravel($travelId, MoneyFactory::fromFloat($distanceOrPrice), $details);
@@ -200,19 +217,19 @@ class TravelService
     /**
      * @return mixed[]
      */
-    public function getTravelTypes(bool $pairs = false) : array
+    public function getTransportTypes() : array
     {
-        return $this->tableTravel->getTypes($pairs);
+        return array_map(
+            [DTO\TypeFactory::class, 'create'],
+            $this->queryBus->handle(new TransportTypesQuery())
+        );
     }
 
-    /**
-     * @param int[] $commandIds
-     * @return string[]
-     */
-    public function getTypes(array $commandIds) : array
+    public function getTravelType(string $type) : DTO\TravelType
     {
-        return $this->table->getTypes($commandIds);
+        return DTO\TypeFactory::create($this->types->find($type));
     }
+
 
     /**     CONTRACTS    */
     public function getContract(int $contractId) : ?DTO\Contract
@@ -297,17 +314,7 @@ class TravelService
     }
 
     /**
-     * @return string[]
-     */
-    public function getUsedTransportTypes(int $commandId) : array
-    {
-        $command = $this->commands->find($commandId);
-
-        return $command->getUsedTransportTypes();
-    }
-
-    /**
-     * @param int[] $types
+     * @param string[] $types
      * @throws Exception
      */
     public function addCommand(
@@ -338,15 +345,15 @@ class TravelService
             $fuelPrice,
             $amortization,
             $note,
-            $ownerId
+            $ownerId,
+            $this->typesToEntities($types)
         );
 
         $this->commands->save($command);
-        $this->table->updateTypes($command->getId(), $types);
     }
 
     /**
-     * @param int[] $types
+     * @param string[] $types
      * @throws Exception
      */
     public function updateCommand(
@@ -368,6 +375,8 @@ class TravelService
             ? $this->vehicles->find($vehicleId)
             : null;
 
+        $typesEntities = $this->typesToEntities($types);
+
         $command->update(
             $vehicle,
             $this->selectPassenger($passenger, $contractId),
@@ -376,20 +385,11 @@ class TravelService
             $passengers,
             $fuelPrice,
             $amortization,
-            $note
+            $note,
+            array_unique($typesEntities + $command->getUsedTransportTypes())
         );
 
         $this->commands->save($command);
-
-        foreach ($command->getUsedTransportTypes() as $type) {
-            if (in_array($type, $types, true)) {
-                continue;
-            }
-
-            $types[] = $type;
-        }
-
-        $this->table->updateTypes($id, $types);
     }
 
     /**
@@ -481,14 +481,6 @@ class TravelService
         $this->commands->remove($command);
     }
 
-    /**
-     * @return mixed[]
-     */
-    public function getCommandTypes(int $commandId) : array
-    {
-        return $this->table->getCommandTypes($commandId);
-    }
-
     private function selectPassenger(?Passenger $passenger, ?int $contractId) : Passenger
     {
         if (($passenger === null && $contractId === null)
@@ -502,14 +494,14 @@ class TravelService
             : Passenger::fromContract($this->contracts->find($contractId));
     }
 
-    private function hasFuel(string $type) : bool
+    /**
+     * @param string[] $types
+     * @return Type[]
+     */
+    private function typesToEntities(array $types) : array
     {
-        $type = $this->tableTravel->getTypes()[$type] ?? null;
-
-        if ($type === null) {
-            throw new \InvalidArgumentException('Type ' . $type . ' not found');
-        }
-
-        return (bool) $type['hasFuel'];
+        return array_filter($this->queryBus->handle(new TransportTypesQuery()), function (Type $t) use ($types) {
+            return in_array($t->getShortcut(), $types);
+        });
     }
 }
