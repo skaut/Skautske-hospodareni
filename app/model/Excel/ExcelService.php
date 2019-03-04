@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
@@ -237,7 +238,7 @@ class ExcelService
      */
     protected function setSheetParticipantGeneral(\PHPExcel_Worksheet $sheet, array $data, \stdClass $event) : void
     {
-        $startDate = new \DateTime($event->StartDate);
+        $startDate = new Date($event->StartDate);
         $sheet->setCellValue('A1', 'P.č.')
             ->setCellValue('B1', 'Jméno')
             ->setCellValue('C1', 'Příjmení')
@@ -259,9 +260,9 @@ class ExcelService
                 ->setCellValue('E' . $rowCnt, $row->getStreet())
                 ->setCellValue('F' . $rowCnt, $row->getCity())
                 ->setCellValue('G' . $rowCnt, $row->getPostcode())
-                ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? date('d.m.Y', strtotime($row->getBirthday())) : '')
+                ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? $row->getBirthday()->format('d.m.Y') : '')
                 ->setCellValue('I' . $rowCnt, $row->getDays())
-                ->setCellValue('J' . $rowCnt, ($row->getBirthday() !== null && $startDate->diff(new \DateTime($row->getBirthday()))->format('%y') < self::ADULT_AGE) ? $row->getDays() : 0)
+                ->setCellValue('J' . $rowCnt, ($row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE) ? $row->getDays() : 0)
                 ->setCellValue('K' . $rowCnt, $row->getPayment());
             $rowCnt++;
         }
