@@ -15,6 +15,7 @@ use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
 use BankAccountValidator\Czech;
 use Consistence\Time\TimeFormat;
+use Model\DTO\Participant\Participant;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccount\AccountNumber;
@@ -298,27 +299,28 @@ class PaymentPresenter extends BasePresenter
 
         /** @var Form $form */
         $form = $this['repaymentForm'];
+        /** @var Participant $p */
         foreach ($participantsWithRepayment as $p) {
-            $pid = 'p_' . $p->ID;
+            $pid = 'p_' . $p->getId();
             $form->addCheckbox($pid);
             $form->addText($pid . '_name')
-                ->setDefaultValue('Vratka - ' . $p->Person . ' - ' . $group->getName())
+                ->setDefaultValue('Vratka - ' . $p->getDisplayName() . ' - ' . $group->getName())
                 ->addConditionOn($form[$pid], Form::EQUAL, true)
                 ->setRequired('Zadejte název vratky!');
             $form->addText($pid . '_amount')
                 ->setDefaultValue($p->repayment)
                 ->addConditionOn($form[$pid], Form::EQUAL, true)
-                ->setRequired('Zadejte částku vratky u ' . $p->Person)
+                ->setRequired('Zadejte částku vratky u ' . $p->getDisplayName())
                 ->addRule(Form::NUMERIC, 'Vratka musí být číslo!');
 
             $account = '';
 
-            if (array_key_exists($p->ID_Person, $payments)) {
-                $transaction = $payments[$p->ID_Person]->getTransaction();
+            if (array_key_exists($p->getPersonId(), $payments)) {
+                $transaction = $payments[$p->getPersonId()]->getTransaction();
                 $account     = $transaction !== null ? $transaction->getBankAccount() : '';
             }
 
-            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $p->Person;
+            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $p->getDisplayName();
             $form->addText($pid . '_account')
                 ->setDefaultValue($account)
                 ->setRequired(false)
