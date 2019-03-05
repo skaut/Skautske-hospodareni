@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Model\Budget\Repositories;
+namespace Model\Infrastructure\Repositories\Budget;
 
 use Doctrine\ORM\EntityManager;
 use Model\Budget\CategoryNotFound;
+use Model\Budget\Repositories\ICategoryRepository;
 use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 use function sprintf;
 
-class BudgetRepository implements IBudgetRepository
+final class CategoryRepository implements ICategoryRepository
 {
     /** @var EntityManager */
     private $em;

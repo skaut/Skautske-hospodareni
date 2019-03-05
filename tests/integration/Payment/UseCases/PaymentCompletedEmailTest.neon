@@ -1,9 +1,9 @@
 
 services:
-    - Model\Payment\Repositories\BankAccountRepository
-    - Model\Payment\Repositories\PaymentRepository
-    - Model\Payment\Repositories\GroupRepository
-    - Model\Payment\Repositories\MailCredentialsRepository
+    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - Model\Infrastructure\Repositories\Payment\PaymentRepository
+    - Model\Infrastructure\Repositories\Payment\GroupRepository
+    - Model\Infrastructure\Repositories\Payment\MailCredentialsRepository
     - GuzzleHttp\Client
 
     - Stubs\Skautis

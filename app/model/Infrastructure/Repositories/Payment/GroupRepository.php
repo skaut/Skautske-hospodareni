@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Repositories;
+namespace Model\Infrastructure\Repositories\Payment;
 
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
@@ -10,12 +10,13 @@ use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\Group;
 use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFound;
+use Model\Payment\Repositories\IGroupRepository;
 use function array_diff;
 use function array_keys;
 use function count;
 use function implode;
 
-class GroupRepository implements IGroupRepository
+final class GroupRepository implements IGroupRepository
 {
     /** @var EntityManager */
     private $em;

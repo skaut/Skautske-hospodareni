@@ -1,6 +1,6 @@
 services:
-    - Model\Payment\Repositories\BankAccountRepository
-    - Model\Payment\Repositories\GroupRepository
+    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - Model\Infrastructure\Repositories\Payment\GroupRepository
     - Model\Payment\UnitResolverStub
 
     - class: Model\Payment\Handlers\Group\ChangeGroupUnitHandler

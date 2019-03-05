@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Model\Budget\Repositories\IBudgetRepository;
+use Model\Budget\Repositories\ICategoryRepository;
 use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 use Model\DTO\Budget\CategoryFactory;
@@ -13,10 +13,10 @@ use function str_replace;
 
 class BudgetService
 {
-    /** @var IBudgetRepository */
+    /** @var ICategoryRepository */
     private $repository;
 
-    public function __construct(IBudgetRepository $budgetRepository)
+    public function __construct(ICategoryRepository $budgetRepository)
     {
         $this->repository = $budgetRepository;
     }

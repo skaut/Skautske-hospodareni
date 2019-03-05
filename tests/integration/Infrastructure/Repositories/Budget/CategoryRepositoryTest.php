@@ -5,19 +5,18 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Budget;
 
 use Doctrine\ORM\EntityManager;
-use Model\Budget\Repositories\BudgetRepository;
 use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 
-class BudgetRepositoryTest extends \IntegrationTest
+class CategoryRepositoryTest extends \IntegrationTest
 {
-    /** @var BudgetRepository */
+    /** @var CategoryRepository */
     private $repository;
 
     public function _before() : void
     {
         parent::_before();
-        $this->repository = new BudgetRepository($this->tester->grabService(EntityManager::class));
+        $this->repository = new CategoryRepository($this->tester->grabService(EntityManager::class));
     }
 
     /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Repositories;
+namespace Model\Infrastructure\Repositories\Payment;
 
 use Mockery as m;
 use Model\Payment\BankAccount;

@@ -9,7 +9,7 @@ use Model\Logger\Log\Type;
 use Model\Logger\LogEntry;
 use Model\Logger\Repositories\ILogEntryRepository;
 
-class LogEntryRepository implements ILogEntryRepository
+final class LogEntryRepository implements ILogEntryRepository
 {
     /** @var EntityManager */
     private $em;

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Repositories;
+namespace Model\Infrastructure\Repositories\Payment;
 
 use Assert\Assert;
 use Model\Infrastructure\Repositories\AggregateRepository;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFound;
+use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use function array_fill_keys;

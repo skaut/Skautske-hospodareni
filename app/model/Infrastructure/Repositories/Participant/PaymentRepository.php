@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Budget\Repositories;
+namespace Model\Infrastructure\Repositories\Participant;
 
 use Doctrine\ORM\EntityManager;
 use Model\Event\SkautisEventId;
 use Model\Participant\Payment;
 use Model\Participant\PaymentNotFound;
+use Model\Participant\Repositories\IPaymentRepository;
 
-class PaymentRepository implements IPaymentRepository
+final class PaymentRepository implements IPaymentRepository
 {
     /** @var EntityManager */
     private $em;
@@ -31,7 +32,7 @@ class PaymentRepository implements IPaymentRepository
     /**
      * @return Payment[]
      */
-    public function findPaymentsByEvent(SkautisEventId $actionId) : array
+    public function findByEvent(SkautisEventId $actionId) : array
     {
         $res      = [];
         $payments = $this->em->getRepository(Payment::class)->findBy(['actionId' => $actionId->toInt()]);
@@ -42,13 +43,13 @@ class PaymentRepository implements IPaymentRepository
         return $res;
     }
 
-    public function savePayment(Payment $payment) : void
+    public function save(Payment $payment) : void
     {
         $this->em->persist($payment);
         $this->em->flush();
     }
 
-    public function deletePayment(Payment $payment) : void
+    public function remove(Payment $payment) : void
     {
         $this->em->remove($payment);
         $this->em->flush();

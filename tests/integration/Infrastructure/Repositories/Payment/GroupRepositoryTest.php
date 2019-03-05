@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace integration\Payment\Repositories;
+namespace Model\Infrastructure\Repositories\Payment;
 
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\EventBus;
@@ -12,7 +12,6 @@ use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFound;
-use Model\Payment\Repositories\GroupRepository;
 use Model\Payment\VariableSymbol;
 
 class GroupRepositoryTest extends \IntegrationTest
