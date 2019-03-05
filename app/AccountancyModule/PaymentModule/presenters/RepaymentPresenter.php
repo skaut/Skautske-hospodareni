@@ -57,7 +57,7 @@ final class RepaymentPresenter extends BasePresenter
         $form = new BaseForm();
 
         $form->addDate('date', 'Datum splatnosti:')
-            ->setDefaultValue((new Date())->addWeekday());
+            ->setDefaultValue(Date::now()->addWeekday());
 
         $form->addSubmit('send', 'Odeslat platby do banky')
             ->setAttribute('class', 'btn btn-primary btn-large');
@@ -150,7 +150,7 @@ final class RepaymentPresenter extends BasePresenter
             $this->commandBus->handle(
                 new CreateRepayments(
                     $bankAccount->getNumber(),
-                    $values->date ?? new Date(),
+                    $values->date ?? Date::now(),
                     $repayments,
                     $bankAccount->getToken()
                 )
