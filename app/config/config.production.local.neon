@@ -1,6 +1,6 @@
 skautis:
      applicationId: '${config.skautis.applicationId}'
-     testMode: ${config.skautis.testMode}
+     testMode: '${config.skautis.testMode}'
 
 parameters:
     database:
