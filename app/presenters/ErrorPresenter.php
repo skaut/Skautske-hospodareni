@@ -8,19 +8,15 @@ use App\AccountancyModule\SkautisMaintenance;
 use Model\Unit\UserHasNoUnit;
 use Nette;
 use Nette\Application\UI\Presenter;
+use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
-use Tracy\ILogger;
 use function in_array;
-use function sprintf;
 
-/**
- * Error presenter.
- */
 class ErrorPresenter extends Presenter
 {
-    /** @var ILogger */
+    /** @var LoggerInterface */
     private $logger;
 
     private const SKAUTIS_UNAVAILABLE_ERRORS = [
@@ -28,7 +24,7 @@ class ErrorPresenter extends Presenter
         'Could not connect to host',
     ];
 
-    public function __construct(ILogger $logger)
+    public function __construct(LoggerInterface $logger)
     {
         parent::__construct();
         $this->logger = $logger;
@@ -69,17 +65,7 @@ class ErrorPresenter extends Presenter
             $this->setView(in_array($code, [403, 404, 405, 410, 500], true) ? $code : '4xx');
         } else {
             $this->setView('500'); // load template 500.latte
-            $this->logger->log(
-                sprintf(
-                    'userId: %s Msg: %s in %s:%d',
-                    $this->getUser()->getId(),
-                    $exception->getMessage(),
-                    $exception->getFile(),
-                    $exception->getLine()
-                ),
-                ILogger::EXCEPTION
-            );
-            $this->logger->log($exception, ILogger::EXCEPTION); // and log exception
+            $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
         }
 
         if (! $this->isAjax()) {

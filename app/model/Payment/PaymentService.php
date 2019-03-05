@@ -8,7 +8,6 @@ use Assert\Assert;
 use Cake\Chronos\Date;
 use DateTimeImmutable;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
 use Model\DTO\Payment as DTO;
 use Model\Payment\BankError;
@@ -43,8 +42,6 @@ use function is_object;
 use function mb_substr;
 use function reset;
 use function strcmp;
-use function strlen;
-use function trim;
 use function usort;
 
 class PaymentService
@@ -534,7 +531,6 @@ class PaymentService
 
     /**
      * @throws BankError
-     * @throws GuzzleException
      */
     public function sendFioPaymentRequest(string $stringToRequest, string $token) : void
     {
@@ -553,7 +549,7 @@ class PaymentService
                 ]
             );
         } catch (ServerException $e) {
-            throw new BankError($this->getErrorMessage($e), 0, $e);
+            throw BankError::fromServerException($e);
         }
     }
 
@@ -607,22 +603,5 @@ class PaymentService
             },
             $payments
         );
-    }
-
-    private function getErrorMessage(ServerException $exception) : string
-    {
-        if ($exception->getResponse() === null) {
-            return $exception->getMessage();
-        }
-
-        $body = $exception->getResponse()->getBody()->getContents();
-
-        if (strlen(trim($body)) === 0) {
-            return $exception->getMessage();
-        }
-
-        $result = new \SimpleXMLElement($body);
-
-        return (string) ($result->ordersDetails->detail->messages->message ?? '');
     }
 }

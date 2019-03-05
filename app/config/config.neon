@@ -42,9 +42,6 @@ messageBus:
     eventBus:
     queryBus:
 
-monolog:
-    name: hskauting
-
 proxy:
     default: off
     proxyDir: %tempDir%/proxies
@@ -54,7 +51,6 @@ extensions:
     skautis: Skautis\Nette\SkautisExtension
     dibi: Dibi\Bridges\Nette\DibiExtension22
     messageBus: eGen\MessageBus\DI\MessageBusExtension
-    monolog: Kdyby\Monolog\DI\MonologExtension
     console: Kdyby\Console\DI\ConsoleExtension
     proxy: Lookyman\Nette\Proxy\DI\ProxyExtension
     webloader: WebLoader\Nette\Extension
@@ -180,6 +176,8 @@ services:
     - class: Doctrine\DBAL\Logging\LoggerChain
       setup:
       	  - addLogger(Model\Infrastructure\SQLLogger())
+
+    - Monolog\Logger('hskauting', [], [App\UserContextProcessor()])
 
 decorator:
 	Doctrine\DBAL\Configuration:
