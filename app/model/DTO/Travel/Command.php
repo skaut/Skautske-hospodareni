@@ -25,7 +25,7 @@ use Nette\SmartObject;
  * @property-read Money                     $pricePerKm
  * @property-read Money                     $fuelPricePerKm
  * @property-read string                    $state
- * @property-read TravelType[]                    $travelTypes
+ * @property-read TravelType[]              $transportTypes
  * @property-read string[]                  $transportTypePairs
  */
 class Command
