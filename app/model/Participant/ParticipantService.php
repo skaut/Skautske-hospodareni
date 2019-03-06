@@ -77,7 +77,19 @@ class ParticipantService extends MutableBaseService
         $participants        = [];
         /** @var \stdClass $p */
         foreach ($participantsSis as $p) {
-            $payment              = array_key_exists($p->ID, $participantPayments) ? $participantPayments[$p->ID] : PaymentFactory::createDefault($p->ID, $eventId);
+            if (array_key_exists($p->ID, $participantPayments)) {
+                $payment =  $participantPayments[$p->ID];
+            } elseif ($p->{self::PAYMENT}) {
+                $payment =  new Payment(
+                    $p->ID,
+                    $eventId,
+                    MoneyFactory::fromFloat((float) $p->{self::PAYMENT}),
+                    MoneyFactory::zero(),
+                    'N'
+                );
+            } else {
+                $payment =  PaymentFactory::createDefault($p->ID, $eventId);
+            }
             $participants[$p->ID] = ParticipantFactory::create($p, $payment);
         }
 
