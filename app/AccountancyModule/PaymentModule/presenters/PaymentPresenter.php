@@ -35,6 +35,7 @@ use function array_filter;
 use function array_keys;
 use function array_unique;
 use function count;
+use function date;
 use function in_array;
 use function sprintf;
 
