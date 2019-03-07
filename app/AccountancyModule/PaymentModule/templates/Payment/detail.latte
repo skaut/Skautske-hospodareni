@@ -52,7 +52,7 @@
                     </ul>
                 </div>
                 {control pairButton}
-                <a n:if="$group->type === 'camp'" n:href="repayment $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
+                <a n:href="Repayment: $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
                 <a n:href="generateVS! $group->id" class="btn btn-warning" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
                 <a n:href="closeGroup! $group->id" class="btn btn-success"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
             {else}

@@ -4,8 +4,9 @@
 
 <div class="row">
     <div class="col-sm-12">
-        {if !empty($participants)}
-            {form repaymentForm}
+        {form form}
+            {var $payments = $form['payments']->getComponents()}
+            {if count($payments) > 0}
                 <ul class="errors" n:if="$form->hasErrors()">
                     <li n:foreach="$form->errors as $error">{$error}</li>
                 </ul>
@@ -13,8 +14,6 @@
                 <table class="table table-bordered table-striped">
                     <tr>
                         <th colspan="4">
-                            <span class="col-md-1">{label accountFrom /}</span>
-                            <span class="col-md-2">{input accountFrom class=>"form-control"}</span>
                             <span class="col-md-2">{label date /}</span>
                             <span class="col-md-2">{input date class=>"form-control date"}</span>
                         </th>
@@ -25,17 +24,20 @@
                         <th>Částka</th>
                         <th>Protiúčet</th>
                     </tr>
-                    <tr n:foreach="$participants as $p">
-                        <td>{input p_$p->id}</td>
-                        <td>{input "p_".$p->id."_name" class=>"form-control"}</td>
-                        <td>{input "p_".$p->id."_amount" class=>"form-control"}</td>
-                        <td>{input "p_".$p->id."_account" class=>"form-control"}</td>
+                    <tr n:foreach="$payments as $containerName => $_"
+                            n:formContainer="payments"
+                            n:inner-formContainer="$containerName">
+                        <td>{input selected}</td>
+                        <td>{input name class=>"form-control"}</td>
+                        <td>{input amount class=>"form-control"}</td>
+                        <td>{input account class=>"form-control"}</td>
                     </tr>
                 </table>
                 {input send}
-            {/form}
-        {else}
-            <div class="alert alert-warning">Nejsou uvedeny žádné vratky u tábora.</div>
-        {/if}
+
+            {else}
+                <div class="alert alert-warning">Nemáte žádné dokončené platby, pro vrácení</div>
+            {/if}
+        {/form}
     </div>
 </div>

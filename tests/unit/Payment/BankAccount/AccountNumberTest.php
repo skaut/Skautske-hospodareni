@@ -22,6 +22,28 @@ class AccountNumberTest extends Unit
         $this->assertSame('19-17608231/0100', (string) $number);
     }
 
+    /**
+     * @dataProvider dataGetAccountNumberWithPrefix
+     */
+    public function testGetAccountNumberWithPrefix(string $fullAccountNumber, string $expectedNumberWithPrefix) : void
+    {
+        $this->assertSame(
+            $expectedNumberWithPrefix,
+            AccountNumber::fromString($fullAccountNumber)->getNumberWithPrefix()
+        );
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function dataGetAccountNumberWithPrefix() : array
+    {
+        return [
+            ['2000942144/2010', '2000942144'],
+            ['19-17608231/0100', '19-17608231'],
+        ];
+    }
+
     public function testIsValidForValidNumber() : void
     {
         $this->assertTrue(AccountNumber::isValid('19-17608231/0100'));

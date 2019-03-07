@@ -7,10 +7,7 @@ namespace Model;
 use Assert\Assert;
 use Cake\Chronos\Date;
 use DateTimeImmutable;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ServerException;
 use Model\DTO\Payment as DTO;
-use Model\Payment\BankError;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
@@ -34,8 +31,6 @@ use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function count;
-use function date;
-use function explode;
 use function in_array;
 use function is_array;
 use function is_object;
@@ -58,21 +53,16 @@ class PaymentService
     /** @var IBankAccountRepository */
     private $bankAccounts;
 
-    /** @var ClientInterface */
-    private $http;
-
     public function __construct(
         Skautis $skautis,
         IGroupRepository $groups,
         IPaymentRepository $payments,
-        IBankAccountRepository $bankAccounts,
-        ClientInterface $http
+        IBankAccountRepository $bankAccounts
     ) {
         $this->skautis      = $skautis;
         $this->groups       = $groups;
         $this->payments     = $payments;
         $this->bankAccounts = $bankAccounts;
-        $this->http         = $http;
     }
 
     public function findPayment(int $id) : ?DTO\Payment
@@ -498,59 +488,6 @@ class PaymentService
             },
             $groups
         );
-    }
-
-    /**
-     * @param mixed[] $repayments
-     */
-    public function getFioRepaymentString(array $repayments, string $accountFrom, ?string $date = null) : string
-    {
-        if ($date === null) {
-            $date = date('Y-m-d');
-        }
-        $accountFromArr = explode('/', $accountFrom, 2);
-
-        $ret = '<?xml version="1.0" encoding="UTF-8"?><Import xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.fio.cz/schema/importIB.xsd"> <Orders>';
-        foreach ($repayments as $r) {
-            $accountArr = explode('/', $r['account'], 2);
-            $ret       .= '<DomesticTransaction>';
-            $ret       .= '<accountFrom>' . $accountFromArr[0] . '</accountFrom>';
-            $ret       .= '<currency>CZK</currency>';
-            $ret       .= '<amount>' . $r['amount'] . '</amount>';
-            $ret       .= '<accountTo>' . $accountArr[0] . '</accountTo>';
-            $ret       .= '<bankCode>' . $accountArr[1] . '</bankCode>';
-            $ret       .= '<date>' . $date . '</date>';
-            $ret       .= '<messageForRecipient>' . $r['name'] . '</messageForRecipient>';
-            $ret       .= '<comment></comment>';
-            $ret       .= '<paymentType>431001</paymentType>';
-            $ret       .= '</DomesticTransaction>';
-        }
-        $ret .= '</Orders></Import>';
-        return $ret;
-    }
-
-    /**
-     * @throws BankError
-     */
-    public function sendFioPaymentRequest(string $stringToRequest, string $token) : void
-    {
-        try {
-            $this->http->request(
-                'POST',
-                'https://www.fio.cz/ib_api/rest/import/',
-                [
-                'multipart' => [
-                    ['name' => 'token', 'contents' => $token],
-                    ['name' => 'type', 'contents' => 'xml'],
-                    ['name' => 'file', 'contents' => $stringToRequest, 'filename' => 'request.xml'],
-                    ['name' => 'lng', 'contents' => 'cs'],
-                ],
-                'timeout' => 60,
-                ]
-            );
-        } catch (ServerException $e) {
-            throw BankError::fromServerException($e);
-        }
     }
 
     /**

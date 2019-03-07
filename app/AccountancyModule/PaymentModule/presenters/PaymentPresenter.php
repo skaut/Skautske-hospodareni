@@ -13,14 +13,9 @@ use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
-use BankAccountValidator\Czech;
-use Cake\Chronos\Date;
-use Model\DTO\Participant\Participant;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
-use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
-use Model\Payment\BankError;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
@@ -30,22 +25,19 @@ use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
 use Model\Payment\PaymentNotFound;
+use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\Forms\IControl;
 use Nette\Mail\SmtpException;
 use function array_filter;
-use function array_key_exists;
 use function array_keys;
 use function array_unique;
 use function count;
 use function date;
 use function in_array;
-use function is_bool;
 use function sprintf;
-use function substr;
 
 class PaymentPresenter extends BasePresenter
 {
@@ -171,7 +163,8 @@ class PaymentPresenter extends BasePresenter
             ]
         );
 
-        $payments             = $this->model->findByGroup($id);
+        $payments = $this->getPaymentsForGroup($id);
+
         $paymentsForSendEmail = array_filter(
             $payments,
             function (Payment $p) {
@@ -255,91 +248,6 @@ class PaymentPresenter extends BasePresenter
         ]);
     }
 
-    public function actionRepayment(int $id) : void
-    {
-        $campService = $this->context->getService('campService');
-        $group       = $this->model->getGroup($id);
-
-        if ($group === null || ! $this->hasAccessToGroup($group)) {
-            $this->flashMessage('K této skupině nemáte přístup');
-            $this->redirect('Payment:default');
-        }
-
-        $accountFrom = $group->getBankAccountId() !== null ?
-            $this->bankAccounts->find($group->getBankAccountId())
-            : null;
-
-        if ($accountFrom !== null) {
-            $accountFrom = $accountFrom->getNumber();
-        }
-
-        $this['repaymentForm']->setDefaults(
-            [
-            'gid' => $group->getId(),
-            'accountFrom' => $accountFrom,
-            ]
-        );
-
-        /** @var Payment[] $payments */
-        $payments = [];
-        foreach ($this->model->findByGroup($id) as $p) {
-            if (! $p->getState()->equalsValue(State::COMPLETED) || $p->getPersonId() === null) {
-                continue;
-            }
-
-            $payments[$p->getPersonId()] = $p;
-        }
-        $participantsWithRepayment = array_filter(
-            $campService->getParticipants()->getAll($group->getSkautisId()),
-            function ($p) {
-                return $p->repayment !== null;
-            }
-        );
-
-        /** @var Form $form */
-        $form = $this['repaymentForm'];
-        /** @var Participant $p */
-        foreach ($participantsWithRepayment as $p) {
-            $pid = 'p_' . $p->getId();
-            $form->addCheckbox($pid);
-            $form->addText($pid . '_name')
-                ->setDefaultValue('Vratka - ' . $p->getDisplayName() . ' - ' . $group->getName())
-                ->addConditionOn($form[$pid], Form::EQUAL, true)
-                ->setRequired('Zadejte název vratky!');
-            $form->addText($pid . '_amount')
-                ->setDefaultValue($p->repayment)
-                ->addConditionOn($form[$pid], Form::EQUAL, true)
-                ->setRequired('Zadejte částku vratky u ' . $p->getDisplayName())
-                ->addRule(Form::NUMERIC, 'Vratka musí být číslo!');
-
-            $account = '';
-
-            if (array_key_exists($p->getPersonId(), $payments)) {
-                $transaction = $payments[$p->getPersonId()]->getTransaction();
-                $account     = $transaction !== null ? $transaction->getBankAccount() : '';
-            }
-
-            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $p->getDisplayName();
-            $form->addText($pid . '_account')
-                ->setDefaultValue($account)
-                ->setRequired(false)
-                ->addConditionOn($form[$pid], Form::EQUAL, true)
-                ->setRequired('Musíte vyplnit bankovní účet')
-                ->addRule($form::PATTERN, $invalidBankAccountMessage, '^([0-9]{1,6}-)?[0-9]{1,10}/[0-9]{4}$')
-                ->addRule(
-                    function (IControl $control) {
-                        return AccountNumber::isValid($control->getValue());
-                    },
-                    $invalidBankAccountMessage
-                );
-        }
-
-        $this->template->setParameters([
-            'participants' => $participantsWithRepayment,
-            'payments'     => $payments,
-        ]);
-    }
-
     public function handleCancel(int $pid) : void
     {
         if (! $this->isEditable) {
@@ -399,7 +307,7 @@ class PaymentPresenter extends BasePresenter
     {
         $this->checkEditation();
 
-        $payments = $this->model->findByGroup($gid);
+        $payments = $this->getPaymentsForGroup($gid);
 
         $payments = array_filter(
             $payments,
@@ -597,79 +505,6 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('detail', ['id' => $v->oid]);
     }
 
-    protected function createComponentRepaymentForm() : Form
-    {
-        $form = new BaseForm();
-        $form->addHidden('gid');
-        $form->addText('accountFrom', 'Z účtu:')
-            ->addRule(Form::FILLED, 'Zadejte číslo účtu ze kterého se mají peníze poslat');
-        $form->addDate('date', 'Datum splatnosti:')
-            ->setDefaultValue(Date::now()->addWeekday());
-        $form->addSubmit('send', 'Odeslat platby do banky')
-            ->setAttribute('class', 'btn btn-primary btn-large');
-
-        $form->onSubmit[] = function (Form $form) : void {
-            $this->repaymentFormSubmitted($form);
-        };
-
-        return $form;
-    }
-
-    private function repaymentFormSubmitted(Form $form) : void
-    {
-        $values = $form->getValues();
-
-        if (! $this->isEditable) {
-            $this->flashMessage('Nemáte oprávnění pro práci s platbami jednotky', 'danger');
-            $this->redirect('Payment:default', ['id' => $values->gid]);
-        }
-
-        $accountFrom = $values->accountFrom;
-        $ids         = array_keys(
-            array_filter(
-                (array) $values,
-                function ($val) {
-                    return is_bool($val) && $val;
-                }
-            )
-        );
-
-        if (empty($ids)) {
-            $form->addError('Nebyl vybrán žádný záznam k vrácení!');
-            return;
-        }
-
-        $bankValidator = new Czech();
-        $data          = [];
-        foreach ($ids as $pid) {
-            $pid                   = substr($pid, 2);
-            $data[$pid]['name']    = $values['p_' . $pid . '_name'];
-            $data[$pid]['amount']  = $values['p_' . $pid . '_amount'];
-            $data[$pid]['account'] = $values['p_' . $pid . '_account'];
-            if (! ($bankValidator->validate($data[$pid]['account']))) {
-                $form->addError("Neplatné číslo účtu: '" . $data[$pid]['account'] . "' u jména '" . $data[$pid]['name'] . "' !");
-                return;
-            }
-        }
-        $dataToRequest = $this->model->getFioRepaymentString($data, $accountFrom, $date = null);
-
-        $bankAccountId = $this->model->getGroup((int) $values->gid)->getBankAccountId();
-        $bankAccount   = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
-
-        if ($bankAccount === null || $bankAccount->getToken() === null) {
-            $this->flashMessage('Není zadán API token z banky!', 'danger');
-            $this->redirect('this');
-        }
-
-        try {
-            $this->model->sendFioPaymentRequest($dataToRequest, $bankAccount->getToken());
-            $this->flashMessage('Vratky byly odeslány do banky');
-            $this->redirect('Payment:detail', ['id' => $values->gid]);
-        } catch (BankError $e) {
-            $form->addError(sprintf('Chyba z banky %s', $e->getMessage()));
-        }
-    }
-
     protected function createComponentPairButton() : PairButton
     {
         return $this->pairButtonFactory->create();
@@ -738,5 +573,13 @@ class PaymentPresenter extends BasePresenter
         }
 
         $this->redirect('this');
+    }
+
+    /**
+     * @return Payment[]
+     */
+    private function getPaymentsForGroup(int $groupId) : array
+    {
+        return $this->queryBus->handle(new PaymentListQuery($groupId));
     }
 }
