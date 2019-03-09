@@ -26,7 +26,6 @@ use function array_diff_key;
 use function array_key_exists;
 use function array_map;
 use function array_reduce;
-use function in_array;
 use function is_array;
 use function preg_match;
 use function sprintf;
@@ -180,7 +179,7 @@ class ParticipantService extends MutableBaseService
     public function update(int $participantId, int $actionId, array $arr) : void
     {
         if ($this->typeName === 'Camp') {
-            if (in_array('days', $arr)) {
+            if (array_key_exists('days', $arr)) {
                 $sisData = [
                     'ID' => $participantId,
                     'Real' => true,
