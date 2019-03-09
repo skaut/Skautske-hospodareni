@@ -79,7 +79,7 @@ class ParticipantService extends MutableBaseService
         foreach ($participantsSis as $p) {
             if (array_key_exists($p->ID, $participantPayments)) {
                 $payment =  $participantPayments[$p->ID];
-            } elseif ($p->{self::PAYMENT}) {
+            } elseif (isset($p->{self::PAYMENT})) {
                 $payment =  new Payment(
                     $p->ID,
                     $eventId,
