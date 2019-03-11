@@ -1,14 +1,24 @@
 {block #content}
 
 <div class="row mb-4 d-flex align-items-center">
-    <h1 n:inner-block="title" class="col">{$group->name}</h1>
+    <div class="col">
+        <h1 n:inner-block="title">{$group->name}</h1>
+        {$group->state|groupState|noescape}
+        <span class="mr-2 ml-2">|</span>
+        {control unit}
+        <span class="mr-2 ml-2">|</span>
+        {if $group->type === NULL}Obecná
+        {elseif $group->type === "camp"}Táborová
+        {elseif $group->type === "registration"}Registrační{/if}
+    </div>
+
 
     <div class="col-auto" n:if="$isEditable">
         {if $group->state === 'open'}
             <a n:href="closeGroup! $group->id"
-                    class="btn btn-dark"><i class="fas fa-lock"></i> Uzavřít</a>
+                    class="btn btn-dark btn-sm"><i class="fas fa-lock"></i> Uzavřít</a>
             <a n:href="Group:edit $group->id"
-                    class="btn btn-secondary"><i class="far fa-edit"></i> Upravit skupinu</a>
+                    class="btn btn-secondary btn-sm"><i class="far fa-edit"></i> Upravit skupinu</a>
         {else}
             <a n:href="openGroup! $group->id"
                     class="btn btn-dark"><i class="fas fa-lock-open"></i> Znovu otevřít</a>
@@ -18,41 +28,17 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col">
-        <table class="table table-bordered">
-            <tr>
-                <th class="l">Vlastník:</th>
-                <td>{control unit}</td>
-            </tr>
-            <tr n:if="$group->state !== null">
-                <th class="l">Stav skupiny:</th>
-                <td title='{$group->note}'>{$group->state|groupState|noescape}</td>
-            </tr>
-            <tr>
-                <th class="l">Typ skupiny:</th>
-                <td>{if $group->type === NULL}Obecná
-                    {elseif $group->type === "camp"}Táborová
-                    {elseif $group->type === "registration"}Registrační{/if}
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div class="col">
-        <table class="table table-bordered">
-            <tr n:foreach="$summarize as $name=>$r">
-                <th class="l">{$name|paymentState:TRUE}&nbsp;({$r->count}):</th>
-                <td class="r">{if $r->amount != null}{$r->amount|num} Kč{else}&nbsp;{/if}</td>
-            </tr>
-        </table>
-    </div>
-</div> 
+<table class="table table-bordered text-center">
+    <tr>
+        <td n:foreach="$summarize as $name=>$r">
+            <strong>{$name|paymentState:TRUE}&nbsp;({$r->count}):</strong>
+            {if $r->amount != null}{$r->amount|num} Kč{else}-{/if}
+        </td>
+    </tr>
+</table>
 <div class="mb-3">
     <div class="mt-4" n:inner-if="$isEditable">
         {if $group->state =='open'}
-            {if $group->type === 'registration'}
-                <a n:href="Journal: $group->skautisId" class="btn btn-secondary" ><i class="fas fa-book-reader"></i> Časopisy</a>
-            {/if}
             <div class="dropdown d-inline-block">
                 <button class="btn btn-success dropdown-toggle" type="button" id="addPersons"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -66,8 +52,13 @@
                 </div>
             </div>
 
+            {if $group->type === 'registration'}
+                <a n:href="Journal: $group->skautisId" class="btn btn-outline-dark"><i class="fas fa-book-reader"></i>
+                    Časopisy</a>
+            {/if}
+
             <div class="btn-group">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="emailsDropd"
+                <button class="btn btn-outline-dark dropdown-toggle" type="button" id="emailsDropd"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     <i class="far fa-envelope-open"></i> Email <span class="caret"></span>
                 </button>
@@ -84,8 +75,11 @@
                 </div>
             </div>
             {control pairButton}
-            <a n:href="Repayment: $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-backward"></i> Vratky</a>
-            <a n:href="generateVS! $group->id" class="btn btn-warning" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
+            <a n:href="Repayment: $group->id" class="btn btn-outline-dark">
+                <i class="fas fa-long-arrow-alt-left"></i>
+                Vratky
+            </a>
+            <a n:href="generateVS! $group->id" class="btn btn-outline-dark" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
         {/if}
 
     </div>
@@ -121,7 +115,7 @@
             <td class='d-xs-none'>{input ks class=>"input-sm form-control"}</td>
             <td>{input maturity class=>"input-sm form-control date"}</td>
             <td>&nbsp;</td>
-            <td>{input send}</td>
+            <td><input n:name="send" class="btn btn-success"></td>
         </tr>
         {if !empty($payments)}
             <tr n:foreach="$payments as $l"

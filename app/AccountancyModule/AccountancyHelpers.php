@@ -262,13 +262,13 @@ abstract class AccountancyHelpers
     {
         switch ($s) {
             case 'open':
-                return '<span class=\'label label-success\'>Otevřená</span>';
+                return '<span class=\'badge badge-success\'>Otevřená</span>';
             case 'closed':
-                return '<span class=\'label label-warning\'>Uzavřená</span>';
+                return '<span class=\'badge badge-warning\'>Uzavřená</span>';
             case 'canceled':
-                return '<span class=\'label label-default\'>Zrušená</span>';
+                return '<span class=\'badge badge-default\'>Zrušená</span>';
             default:
-                return '<span class=\'label\'>Neznámý</span>';
+                return '<span class=\'badge\'>Neznámý</span>';
         }
     }
 }
