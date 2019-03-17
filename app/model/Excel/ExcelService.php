@@ -215,7 +215,7 @@ class ExcelService
                 ->setCellValue('E' . $rowCnt, $row->getStreet())
                 ->setCellValue('F' . $rowCnt, $row->getCity())
                 ->setCellValue('G' . $rowCnt, $row->getPostcode())
-                ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? date('d.m.Y', strtotime($row->getBirthday())) : '')
+                ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? $row->getBirthday()->format('d.m.Y') : '')
                 ->setCellValue('I' . $rowCnt, $row->getDays())
                 ->setCellValue('J' . $rowCnt, $row->getAge() < self::ADULT_AGE ? $row->getDays() : 0)
                 ->setCellValue('K' . $rowCnt, $row->getPayment())
