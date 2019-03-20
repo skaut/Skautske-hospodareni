@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
-use App\Forms\BaseForm;
 use Model\Auth\Resources\Camp;
-use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
-use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
-use Model\DTO\Cashbook\Cashbook;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Model\Unit\UnitNotFound;
-use Nette\Application\UI\Form;
 use function array_map;
 use function count;
 use function is_array;
@@ -67,11 +61,8 @@ class DetailPresenter extends BasePresenter
         if ($this->isAjax()) {
             $this->redrawControl('contentSnip');
         }
-        $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->event->ID)));
-        /** @var Cashbook $cashbook */
-        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
         $this->template->setParameters([
-            'cashbookPrefix' => $cashbook->getChitNumberPrefix(),
             'troops' => $troops,
             'skautISUrl'   => $this->userService->getSkautisUrl(),
             'accessDetail' => $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $aid),
@@ -80,14 +71,6 @@ class DetailPresenter extends BasePresenter
                 : null,
             'pragueParticipants' => $this->eventService->getParticipants()->countPragueParticipants($this->event),
         ]);
-
-        $form = $this['formEdit'];
-        $form->setDefaults(
-            [
-            'aid' => $aid,
-            'prefix' => $cashbook->getChitNumberPrefix(),
-            ]
-        );
     }
 
     public function renderReport(int $aid) : void
@@ -100,36 +83,6 @@ class DetailPresenter extends BasePresenter
         $template = $this->exportService->getCampReport($aid, $this->eventService, $this->areTotalsConsistentWithSkautis($aid));
         $this->pdf->render($template, 'reportCamp.pdf');
         $this->terminate();
-    }
-
-    protected function createComponentFormEdit() : Form
-    {
-        $form = new BaseForm();
-        $form->addText('prefix', 'Prefix')
-            ->setMaxLength(6);
-        $form->addHidden('aid');
-        $form->addSubmit('send', 'Upravit')
-            ->setAttribute('class', 'btn btn-primary');
-        $form->onSuccess[] = function (Form $form) : void {
-            $this->formEditSubmitted($form);
-        };
-        return $form;
-    }
-
-    private function formEditSubmitted(Form $form) : void
-    {
-        if (! $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $this->aid)) {
-            $this->flashMessage('Nemáte oprávnění pro úpravu tábora', 'danger');
-            $this->redirect('this');
-        }
-        $values     = $form->getValues();
-        $campId     = (int) $values['aid'];
-        $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($campId)));
-
-        $this->commandBus->handle(new UpdateChitNumberPrefix($cashbookId, $values['prefix']));
-        $this->flashMessage('Prefix byl nastaven.');
-
-        $this->redirect('this');
     }
 
     private function areTotalsConsistentWithSkautis(int $campId) : bool

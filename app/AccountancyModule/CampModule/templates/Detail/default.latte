@@ -34,10 +34,6 @@
                     <th>Stav</th>
                     <td {if $event->ID_EventCampState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->ID_EventCampState|campStateLabel|noescape}</td>
                 </tr>
-                <tr>
-                    <th>Prefix <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" rel="tooltip" title="Prefix doplněný před všechna čísla dokladů v pokladní knize. Bez jeho vyplnění nejsou čísla dokladů aktivní."/></th>
-                    <td>{$cashbookPrefix} <a n:if="$accessDetail" href="#editPrefix" class="btn btn-primary btn-xs hidden-xs" data-toggle="modal"><i class="glyphicon glyphicon-pencil"></i></a></td>
-                </tr>
             </table>
         </div>
     </div>
@@ -131,19 +127,3 @@
         Pro úpravu údajů táborů použijte <a href="{$skautISUrl}Junak/Events/Camp/Detail.aspx?ID={$event->ID}" target="_blank"><u>SkautIS</u></a>.
     </div>
 </div>
-<div class="row">
-    <div n:if="$accessDetail" class="modal myModal fade" id="editPrefix">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
-                    <h3>Upravit prefix paragonů v pokladní knize</h3>
-                </div>
-                <div class="modal-body">
-                    {control formEdit}
-                </div>
-            </div>  
-        </div>
-    </div>
-</div>
-
