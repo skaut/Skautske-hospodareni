@@ -49,6 +49,8 @@ class DateControl extends DatePicker
             $control->setAttribute('value', $value->format($this->htmlFormat));
         }
 
+        $control->setAttribute('autocomplete', 'off');
+
         return $control;
     }
 }
