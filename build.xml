@@ -194,7 +194,9 @@
     </target>
 
     <target name="tests-with-coverage">
-        <exec command="vendor/bin/codecept run unit,integration --coverage-xml" passthru="true" checkreturn="true"/>
+        <exec command="php -d php -d zend_extension=xdebug.so vendor/bin/codecept run unit,integration --coverage-xml"
+              passthru="true"
+              checkreturn="true"/>
     </target>
 
     <target name="static-analysis">
