@@ -1,0 +1,13 @@
+{snippet}
+    <strong>Předpona čísla dokladu:</strong>
+    {if $showForm}
+        <form n:name="form" class="form-inline inline-block">
+            <input n:name="prefix" class="form-control">
+            <button n:name="submit" class="btn btn-sm btn-default ajax"><i class="fa fa-check"></i></button>
+            <a n:href="toggleForm false" class="btn btn-sm btn-default ajax"><i class="fa fa-times"></i></a>
+        </form>
+    {else}
+        {if $prefix !== null}{$prefix}{else}<i>žádná</i>{/if}
+        <a n:href="toggleForm true" class="ajax btn btn-xs btn-default"><i class="fa fa-pencil"></i></a>
+    {/if}
+{/snippet}

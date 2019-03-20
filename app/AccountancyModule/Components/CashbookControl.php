@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components;
 
 use App\AccountancyModule\Components\Cashbook\ChitListControl;
+use App\AccountancyModule\Components\Cashbook\PrefixControl;
 use App\AccountancyModule\Factories\Cashbook\IChitListControlFactory;
 use App\AccountancyModule\Factories\Cashbook\INoteFormFactory;
+use App\AccountancyModule\Factories\Cashbook\IPrefixControlFactory;
 use App\AccountancyModule\Factories\IChitFormFactory;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
@@ -28,14 +30,24 @@ class CashbookControl extends BaseControl
     /** @var INoteFormFactory */
     private $noteFormFactory;
 
-    public function __construct(CashbookId $cashbookId, bool $isEditable, IChitFormFactory $formFactory, IChitListControlFactory $chitListFactory, INoteFormFactory $noteFactory)
-    {
+    /** @var IPrefixControlFactory */
+    private $prefixFactory;
+
+    public function __construct(
+        CashbookId $cashbookId,
+        bool $isEditable,
+        IChitFormFactory $formFactory,
+        IChitListControlFactory $chitListFactory,
+        INoteFormFactory $noteFactory,
+        IPrefixControlFactory $prefixFactory
+    ) {
         parent::__construct();
         $this->cashbookId      = $cashbookId;
         $this->isEditable      = $isEditable;
         $this->formFactory     = $formFactory;
         $this->chitListFactory = $chitListFactory;
         $this->noteFormFactory = $noteFactory;
+        $this->prefixFactory   = $prefixFactory;
     }
 
     public function render() : void
@@ -68,6 +80,11 @@ class CashbookControl extends BaseControl
     protected function createComponentNoteForm() : NoteForm
     {
         return $this->noteFormFactory->create($this->cashbookId, $this->isEditable);
+    }
+
+    protected function createComponentPrefix() : PrefixControl
+    {
+        return $this->prefixFactory->create($this->cashbookId, $this->isEditable);
     }
 
     private function createChitList(PaymentMethod $paymentMethod) : ChitListControl
