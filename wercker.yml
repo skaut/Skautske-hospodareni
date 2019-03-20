@@ -16,6 +16,9 @@ build:
 
     steps:
         - script:
+            name: disable xdebug
+            code: rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini || true
+        - script:
             name: add Github token
             code: composer config -g github-oauth.github.com $GITHUB_OAUTH_TOKEN
 
@@ -89,6 +92,10 @@ build:
             code: mv tests/_output/* $WERCKER_OUTPUT_DIR
 deploy:
     steps:
+        - script:
+              name: disable xdebug
+              code: rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini || true
+
         - add-to-known_hosts:
             hostname: www.skauting.cz
             port: 28
