@@ -12,7 +12,6 @@ use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\DTO\Cashbook\Chit;
@@ -78,7 +77,6 @@ class EventPresenter extends BasePresenter
                 'location' => $this->event->Location,
                 'type' => $this->event->ID_EventGeneralType,
                 'scope' => $this->event->ID_EventGeneralScope,
-                'prefix' => $this->event->prefix,
                 ]
             );
         }
@@ -193,8 +191,6 @@ class EventPresenter extends BasePresenter
         $form->addText('location', 'Místo');
         $form->addSelect('type', 'Typ (+)', $this->queryBus->handle(new EventTypes()));
         $form->addSelect('scope', 'Rozsah (+)', $this->queryBus->handle(new EventScopes()));
-        $form->addText('prefix', 'Prefix')
-            ->setMaxLength(6);
         $form->addHidden('aid');
         $form->addSubmit('send', 'Upravit')
             ->setAttribute('class', 'btn btn-primary')
@@ -226,10 +222,6 @@ class EventPresenter extends BasePresenter
                 $values['type']
             )
         );
-
-        if (isset($values['prefix'])) {
-            $this->commandBus->handle(new UpdateChitNumberPrefix($this->getCashbookId($id), $values['prefix']));
-        }
 
         $this->flashMessage('Základní údaje byly upraveny.');
         $this->redirect('default', ['aid' => $id]);
