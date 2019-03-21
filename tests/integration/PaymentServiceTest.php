@@ -26,6 +26,7 @@ class PaymentServiceTest extends \IntegrationTest
         return [
             Group::class,
             Group\Email::class,
+            Group\Unit::class,
             Payment::class,
         ];
     }

@@ -5,6 +5,7 @@ services:
     - Model\Infrastructure\Repositories\Payment\BankAccountRepository
     - GuzzleHttp\Client
     - Stubs\Skautis
+    - Stubs\BankAccountAccessCheckerStub
 
 includes:
     - config/doctrine.neon

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\Handlers\Group;
 
 use Model\Payment\BankAccountNotFound;
-use Model\Payment\Commands\Group\ChangeGroupUnit;
+use Model\Payment\Commands\Group\ChangeGroupUnits;
 use Model\Payment\GroupNotFound;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Services\IBankAccountAccessChecker;
@@ -28,11 +28,11 @@ class ChangeGroupUnitHandler
      * @throws GroupNotFound
      * @throws BankAccountNotFound
      */
-    public function handle(ChangeGroupUnit $command) : void
+    public function handle(ChangeGroupUnits $command) : void
     {
         $group = $this->groups->find($command->getGroupId());
 
-        $group->changeUnit($command->getUnitId(), $this->accessChecker);
+        $group->changeUnit($command->getUnitIds(), $this->accessChecker);
 
         $this->groups->save($group);
     }

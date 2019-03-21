@@ -11,6 +11,7 @@ use Model\Payment\Handlers\Group\RemoveGroupHandler;
 use Model\Payment\Payment;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
+use Stubs\BankAccountAccessCheckerStub;
 
 final class RemoveGroupTest extends \IntegrationTest
 {
@@ -31,6 +32,7 @@ final class RemoveGroupTest extends \IntegrationTest
         return [
             Group::class,
             Group\Email::class,
+            Group\Unit::class,
             Payment::class,
         ];
     }
@@ -47,14 +49,15 @@ final class RemoveGroupTest extends \IntegrationTest
     public function test() : void
     {
         $group = new Group(
-            123,
+            [123],
             null,
             'test',
             \Helpers::createEmptyPaymentDefaults(),
             new \DateTimeImmutable(),
             \Helpers::createEmails(),
             null,
-            null
+            null,
+            new BankAccountAccessCheckerStub()
         );
 
         $group->close(''); // only closed groups can be removed

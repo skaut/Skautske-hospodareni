@@ -26,6 +26,7 @@ use function array_diff_key;
 use function array_filter;
 use function date;
 use function file_get_contents;
+use function in_array;
 
 class GroupPresenter extends BasePresenter
 {
@@ -123,7 +124,7 @@ class GroupPresenter extends BasePresenter
 
         $group = $this->model->getGroup($id);
 
-        if ($group === null || $group->getUnitId() !== $this->getCurrentUnitId()) {
+        if ($group === null || ! in_array($this->getCurrentUnitId(), $group->getUnitIds(), true)) {
             $this->flashMessage('Skupina nebyla nalezena', 'warning');
             $this->redirect('Payment:default');
         }

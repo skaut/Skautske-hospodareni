@@ -122,7 +122,7 @@ class BankAccountService
         $account->disallowForSubunits();
 
         foreach ($this->groups->findByBankAccount($id) as $group) {
-            if ($group->getUnitId() === $account->getUnitId()) {
+            if ($group->getUnitIds() === [$account->getUnitId()]) {
                 continue;
             }
 

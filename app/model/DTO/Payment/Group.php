@@ -32,8 +32,8 @@ class Group
     /** @var string|NULL */
     private $type;
 
-    /** @var int */
-    private $unitId;
+    /** @var int[] */
+    private $unitIds;
 
     /** @var int|NULL */
     private $skautisId;
@@ -65,10 +65,13 @@ class Group
     /** @var int|NULL */
     private $bankAccountId;
 
+    /**
+     * @param int[] $unitIds
+     */
     public function __construct(
         int $id,
         ?string $type,
-        int $unitId,
+        array $unitIds,
         ?int $skautisId,
         string $name,
         ?float $defaultAmount,
@@ -82,7 +85,7 @@ class Group
     ) {
         $this->id                 = $id;
         $this->type               = $type;
-        $this->unitId             = $unitId;
+        $this->unitIds            = $unitIds;
         $this->skautisId          = $skautisId;
         $this->name               = $name;
         $this->defaultAmount      = $defaultAmount;
@@ -103,6 +106,14 @@ class Group
     public function getType() : ?string
     {
         return $this->type;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getUnitIds() : array
+    {
+        return $this->unitIds;
     }
 
     public function getUnitId() : int

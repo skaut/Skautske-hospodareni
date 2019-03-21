@@ -10,6 +10,7 @@ use Model\Payment\Group;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\UnitResolverStub;
+use Stubs\BankAccountAccessCheckerStub;
 
 class BankAccountServiceTest extends \IntegrationTest
 {
@@ -45,6 +46,7 @@ class BankAccountServiceTest extends \IntegrationTest
             BankAccount::class,
             Group::class,
             Group\Email::class,
+            Group\Unit::class,
         ];
     }
 
@@ -90,7 +92,17 @@ class BankAccountServiceTest extends \IntegrationTest
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
         $emails          = \Helpers::createEmails();
 
-        $group = new Group($unitId, null, 'Nazev', $paymentDefaults, new \DateTimeImmutable(), $emails, null, $account);
+        $group = new Group(
+            [$unitId],
+            null,
+            'Nazev',
+            $paymentDefaults,
+            new \DateTimeImmutable(),
+            $emails,
+            null,
+            $account,
+            new BankAccountAccessCheckerStub()
+        );
 
         $this->groups->save($group);
     }

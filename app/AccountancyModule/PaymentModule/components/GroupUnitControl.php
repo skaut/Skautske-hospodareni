@@ -9,11 +9,14 @@ use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Unit;
-use Model\Payment\Commands\Group\ChangeGroupUnit;
+use Model\DTO\Payment\Group;
+use Model\Payment\Commands\Group\ChangeGroupUnits;
 use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
+use function array_map;
+use function array_replace;
 
 class GroupUnitControl extends BaseControl
 {
@@ -63,12 +66,18 @@ class GroupUnitControl extends BaseControl
     public function render() : void
     {
         $group = $this->groups->getGroup($this->groupId);
-        $unit  = $this->units->getDetailV2($group->getUnitId());
+
+        $unitNames = array_map(
+            function (int $unitId) : string {
+                return $this->units->getDetailV2($unitId)->getDisplayName();
+            },
+            $group->getUnitIds()
+        );
 
         $this->template->setParameters([
-            'unitName'  => $unit->getDisplayName(),
+            'unitNames'  => $unitNames,
             'editation' => $this->editation,
-            'canEdit'   => $this->canEdit($group->getUnitId()),
+            'canEdit'   => $this->canEdit($group),
         ]);
         $this->template->setFile(__DIR__ . '/templates/GroupUnitControl.latte');
         $this->template->render();
@@ -81,25 +90,18 @@ class GroupUnitControl extends BaseControl
     {
         $form = new BaseForm();
 
-        $group          = $this->groups->getGroup($this->groupId);
-        $officialUnitId = $this->units->getOfficialUnitId($group->getUnitId());
-        $officialUnit   = $this->units->getDetailV2($officialUnitId);
+        $group = $this->groups->getGroup($this->groupId);
 
-        $pairs = [
-            $officialUnitId => $officialUnit->getSortName(),
-        ];
-        $pairs = $pairs + $this->units->getSubunitPairs($officialUnitId);
-
-        $form->addSelect('unitId')
-            ->setItems($pairs)
-            ->setDefaultValue($group->getUnitId())
+        $form->addMultiSelect('unitIds')
+            ->setItems($this->buildUnitPairs($group->getUnitIds()))
+            ->setDefaultValue($group->getUnitIds())
             ->setRequired('Musíte vybrat jednotku');
 
         $form->addButton('save')
             ->setAttribute('type', 'submit');
 
         $form->onSuccess[] = function ($form, ArrayHash $values) use ($group) : void {
-            if (! $this->canEdit($group->getUnitId())) {
+            if (! $this->canEdit($group)) {
                 $this->getPresenter()->flashMessage('Nemáte oprávnění pro změnu jednotky');
                 $this->editation = false;
                 $this->redrawControl();
@@ -113,14 +115,44 @@ class GroupUnitControl extends BaseControl
 
     private function formSucceeded(ArrayHash $values, int $groupId) : void
     {
-        $this->commandBus->handle(new ChangeGroupUnit($groupId, (int) $values->unitId));
+        $this->commandBus->handle(new ChangeGroupUnits($groupId, $values->unitIds));
         $this->getPresenter()->flashMessage('Jednotka byla změněna', 'success');
         $this->editation = false;
         $this->redrawControl();
     }
 
-    private function canEdit(int $unitId) : bool
+    private function canEdit(Group $group) : bool
     {
-        return $this->authorizator->isAllowed(Unit::EDIT, $this->units->getOfficialUnitId($unitId));
+        foreach ($group->getUnitIds() as $unitId) {
+            if ($this->authorizator->isAllowed(Unit::EDIT, $unitId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int[] $groupUnitIds
+     * @return string[]
+     */
+    private function buildUnitPairs(array $groupUnitIds) : array
+    {
+        $officialUnitPairs = [];
+
+        foreach ($groupUnitIds as $unitId) {
+            $officialUnitId = $this->units->getOfficialUnitId($unitId);
+
+            if (isset($officialUnitPairs[$officialUnitId])) {
+                continue;
+            }
+
+            $officialUnit = $this->units->getDetailV2($officialUnitId);
+            $subunitPairs = $this->units->getSubunitPairs($officialUnitId);
+
+            $officialUnitPairs[] = [$officialUnitId => $officialUnit->getSortName()] + $subunitPairs;
+        }
+
+        return array_replace(...$officialUnitPairs);
     }
 }

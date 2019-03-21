@@ -35,7 +35,7 @@
     <div class="col-sm-12">
         <div class="well well-sm" n:inner-if="$isEditable">
             {if $group->state =='open'}
-                <a n:href="Group:edit aid=>$group->unitId, $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit skupinu</a>
+                <a n:href="Group:edit, $group->id" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> Upravit skupinu</a>
                 {if $group->type === 'registration'}
                     <a n:href="Registration:massAdd $group->id" class="btn btn-primary" ><i class="glyphicon glyphicon-plus-sign hidden-xs"></i> Přidat z registrace</a>
                     <a n:href="Journal: $group->skautisId" class="btn btn-primary" ><i class="glyphicon glyphicon-book hidden-xs"></i> Časopisy</a>

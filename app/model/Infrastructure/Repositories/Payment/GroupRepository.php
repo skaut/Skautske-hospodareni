@@ -6,6 +6,7 @@ namespace Model\Infrastructure\Repositories\Payment;
 
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
+use Kdyby\Doctrine\Dql\Join;
 use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\Group;
 use Model\Payment\Group\Type;
@@ -72,7 +73,7 @@ final class GroupRepository implements IGroupRepository
         $qb = $this->em->createQueryBuilder()
             ->select('g')
             ->from(Group::class, 'g')
-            ->where('g.unitId IN (:unitIds)')
+            ->join('g.units', 'u', Join::WITH, 'u.unitId IN (:unitIds)')
             ->setParameter('unitIds', $unitIds);
 
         if ($openOnly) {

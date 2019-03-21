@@ -32,11 +32,11 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\SmtpException;
 use function array_filter;
+use function array_intersect;
 use function array_keys;
 use function array_unique;
 use function count;
 use function date;
-use function in_array;
 use function sprintf;
 
 class PaymentPresenter extends BasePresenter
@@ -111,11 +111,9 @@ class PaymentPresenter extends BasePresenter
         $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
 
         $groupIds       = [];
-        $unitIds        = [];
         $bankAccountIds = [];
         foreach ($groups as $group) {
             $groupIds[]       = $group->getId();
-            $unitIds[]        = $group->getUnitId();
             $bankAccountIds[] = $group->getBankAccountId();
         }
 
@@ -537,7 +535,7 @@ class PaymentPresenter extends BasePresenter
 
     private function hasAccessToGroup(Group $group) : bool
     {
-        return in_array($group->getUnitId(), array_keys($this->readUnits), true);
+        return array_intersect($group->getUnitIds(), array_keys($this->readUnits)) !== [];
     }
 
     /**

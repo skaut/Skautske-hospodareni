@@ -211,7 +211,6 @@ class PaymentRepositoryTest extends \IntegrationTest
         $this->tester->haveInDatabase('pa_group', [
             'id' => $id,
             'label' => 'test',
-            'unitId' => 10,
             'state' => Group::STATE_OPEN,
             'state_info' => '',
         ]);
