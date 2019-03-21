@@ -7,26 +7,21 @@ namespace Model\Payment\Handlers\Group;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\Commands\Group\ChangeGroupUnit;
 use Model\Payment\GroupNotFound;
-use Model\Payment\IUnitResolver;
-use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
+use Model\Payment\Services\IBankAccountAccessChecker;
 
 class ChangeGroupUnitHandler
 {
     /** @var IGroupRepository */
     private $groups;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    /** @var IBankAccountAccessChecker */
+    private $accessChecker;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
-
-    public function __construct(IGroupRepository $groups, IBankAccountRepository $bankAccounts, IUnitResolver $unitResolver)
+    public function __construct(IGroupRepository $groups, IBankAccountAccessChecker $accessChecker)
     {
-        $this->groups       = $groups;
-        $this->bankAccounts = $bankAccounts;
-        $this->unitResolver = $unitResolver;
+        $this->groups        = $groups;
+        $this->accessChecker = $accessChecker;
     }
 
     /**
@@ -37,11 +32,7 @@ class ChangeGroupUnitHandler
     {
         $group = $this->groups->find($command->getGroupId());
 
-        $group->changeUnit(
-            $command->getUnitId(),
-            $this->unitResolver,
-            $this->bankAccounts
-        );
+        $group->changeUnit($command->getUnitId(), $this->accessChecker);
 
         $this->groups->save($group);
     }

@@ -9,6 +9,7 @@ use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery as m;
 use Model\Payment\Group\PaymentDefaults;
+use Model\Payment\Services\IBankAccountAccessChecker;
 
 class GroupTest extends Unit
 {
@@ -103,6 +104,61 @@ class GroupTest extends Unit
         $group->removeBankAccount();
 
         $this->assertNull($group->getBankAccountId());
+    }
+
+    public function testChangeUnitForGroupWithoutBankAccount() : void
+    {
+        $group = $this->createGroup();
+
+        $group->changeUnit(20, \Mockery::mock(IBankAccountAccessChecker::class));
+
+        $this->assertSame(20, $group->getUnitId());
+    }
+
+    public function testBankAccountIsRemovedWhenChangedUnitHasNoAccessToIt() : void
+    {
+        $unitId        = 50;
+        $bankAccountId = 20;
+
+        $group = $this->createGroup(null, null, $this->mockBankAccount($bankAccountId));
+
+        $group->changeUnit($unitId, $this->mockAccessChecker([$unitId], $bankAccountId, false));
+
+        $this->assertSame($unitId, $group->getUnitId());
+        $this->assertNull($group->getBankAccountId());
+    }
+
+    public function testBankAccountIsKeptWhenChangedUnitHasAccessToIt() : void
+    {
+        $unitId        = 50;
+        $bankAccountId = 20;
+
+        $group = $this->createGroup(null, null, $this->mockBankAccount($bankAccountId));
+
+        $group->changeUnit($unitId, $this->mockAccessChecker([$unitId], $bankAccountId, true));
+
+        $this->assertSame($unitId, $group->getUnitId());
+        $this->assertSame($bankAccountId, $group->getBankAccountId());
+    }
+
+    private function mockBankAccount(int $id) : BankAccount
+    {
+        return \Mockery::mock(BankAccount::class, ['getId' => $id, 'getUnitId' => 50, 'isAllowedForSubunits' => true]);
+    }
+
+    /**
+     * @param int[] $unitIds
+     */
+    private function mockAccessChecker(array $unitIds, int $bankAccountId, bool $hasAccess) : IBankAccountAccessChecker
+    {
+        $accessChecker = \Mockery::mock(IBankAccountAccessChecker::class);
+        $accessChecker
+            ->shouldReceive('allUnitsHaveAccessToBankAccount')
+            ->once()
+            ->withArgs([$unitIds, $bankAccountId])
+            ->andReturn($hasAccess);
+
+        return $accessChecker;
     }
 
     private function createGroup(?Date $dueDate = null, ?DateTimeImmutable $createdAt = null, ?BankAccount $bankAccount = null) : Group

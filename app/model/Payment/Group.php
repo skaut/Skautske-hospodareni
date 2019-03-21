@@ -12,6 +12,7 @@ use Model\Payment\Group\Email;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Repositories\IBankAccountRepository;
+use Model\Payment\Services\IBankAccountAccessChecker;
 
 /**
  * @ORM\Entity()
@@ -159,31 +160,12 @@ class Group
     /**
      * @throws BankAccountNotFound
      */
-    public function changeUnit(int $unitId, IUnitResolver $unitResolver, IBankAccountRepository $bankAccountRepository) : void
+    public function changeUnit(int $unitId, IBankAccountAccessChecker $accessChecker) : void
     {
         $this->unitId = $unitId;
 
-        if ($this->bankAccount === null) {
-            return;
-        }
-
-        $currentOfficialUnit = $unitResolver->getOfficialUnitId($this->unitId);
-        $newOfficialUnit     = $unitResolver->getOfficialUnitId($unitId);
-
-        // different official unit
-        if ($currentOfficialUnit !== $newOfficialUnit) {
-            $this->bankAccount = null;
-            return;
-        }
-
-        // unit -> official unit
-        if ($unitId === $newOfficialUnit) {
-            return;
-        }
-
-        $bankAccount = $bankAccountRepository->find($this->bankAccount->getId());
-
-        if ($bankAccount->isAllowedForSubunits()) {
+        if ($this->bankAccount === null ||
+            $accessChecker->allUnitsHaveAccessToBankAccount([$unitId], $this->bankAccount->getId())) {
             return;
         }
 
