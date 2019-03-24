@@ -241,8 +241,9 @@ class PaymentPresenter extends BasePresenter
 
         $this->template->setParameters([
             'unitPairs' => $this->readUnits,
-            'id'       => $this->id,
-            'showForm' => count($list) !== 0,
+            'group'    => $group,
+            'id'        => $this->id,
+            'showForm'  => count($list) !== 0,
         ]);
     }
 

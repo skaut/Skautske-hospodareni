@@ -27,7 +27,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         ],
         'group' => [
             'container' => null,
-            'label' => 'p class="h3 modal-header"',
+            'label' => 'p class="h3 mt-4"',
             'description' => 'p class="pl-3 lead"',
         ],
         'controls' => [
