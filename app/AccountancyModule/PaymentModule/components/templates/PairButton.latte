@@ -8,8 +8,12 @@
 
 {*</div>*}
 {var $style = $style ?? 'primary'}
+{var $attrs = ! $canPair && $groupsCount === 1
+            ? ['data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => 'Skupina nemá nastavený účet']
+            : []
+}
 <div class="d-inline-block">
-    <div n:class="btn-group">
+    <div n:class="btn-group" n:attr="$attrs">
         <a n:href="pair!" n:class="!$canPair ? disabled, btn, 'btn-' . $style">
             <i class="fas fa-university"></i> Párovat platby
         </a>
