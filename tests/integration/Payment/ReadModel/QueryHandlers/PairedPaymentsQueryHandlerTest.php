@@ -27,7 +27,6 @@ final class PairedPaymentsQueryHandlerTest extends \IntegrationTest
         $group = [
             'label' => 'Test',
             'bank_account_id' => 10,
-            'unitId' => 15,
             'last_pairing' => '2018-10-01 15:30:00',
             'state' => Group::STATE_CLOSED,
             'state_info' => '',

@@ -15,7 +15,7 @@ class GroupFactory
         return new Group(
             $group->getId(),
             $object !== null ? $object->getType()->getValue() : null,
-            $group->getUnitId(),
+            $group->getUnitIds(),
             $object !== null ? $object->getId() : null,
             $group->getName(),
             $group->getDefaultAmount(),

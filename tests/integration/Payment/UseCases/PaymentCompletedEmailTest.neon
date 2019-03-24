@@ -8,6 +8,7 @@ services:
 
     - Stubs\Skautis
     - Model\Payment\UserRepositoryStub
+    - Stubs\BankAccountAccessCheckerStub
 
     - Model\PaymentService
 

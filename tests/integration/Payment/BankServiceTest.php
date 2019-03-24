@@ -19,6 +19,7 @@ use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
 use Nette\Utils\Random;
+use Stubs\BankAccountAccessCheckerStub;
 use function date;
 use function mt_rand;
 use function reset;
@@ -60,6 +61,7 @@ class BankServiceTest extends \IntegrationTest
             BankAccount::class,
             Group::class,
             Group\Email::class,
+            Group\Unit::class,
             Payment::class,
         ];
     }
@@ -139,7 +141,17 @@ class BankServiceTest extends \IntegrationTest
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
         $emails          = \Helpers::createEmails();
 
-        $group = new Group(1, null, 'Test', $paymentDefaults, new \DateTimeImmutable(), $emails, null, $bankAccount);
+        $group = new Group(
+            [1],
+            null,
+            'Test',
+            $paymentDefaults,
+            new \DateTimeImmutable(),
+            $emails,
+            null,
+            $bankAccount,
+            new BankAccountAccessCheckerStub()
+        );
 
         $this->groups->save($group);
 

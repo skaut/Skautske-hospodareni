@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Assert\Assertion;
 use Cake\Chronos\Date;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,7 +12,8 @@ use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use Model\Payment\Group\Email;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
-use Model\Payment\Repositories\IBankAccountRepository;
+use Model\Payment\Group\Unit;
+use Model\Payment\Services\IBankAccountAccessChecker;
 
 /**
  * @ORM\Entity()
@@ -28,10 +30,16 @@ class Group
     private $id;
 
     /**
-     * @var int
-     * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
+     * @var ArrayCollection|Unit[]
+     * @ORM\OneToMany(
+     *     targetEntity=Unit::class,
+     *     mappedBy="group",
+     *     orphanRemoval=true,
+     *     cascade={"persist", "remove"},
+     *     indexBy="index"
+     * )
      */
-    private $unitId;
+    private $units;
 
     /**
      * @var SkautisEntity|NULL
@@ -93,19 +101,21 @@ class Group
     public const STATE_CLOSED = 'closed';
 
     /**
+     * @param int[]           $unitIds
      * @param EmailTemplate[] $emails
      */
     public function __construct(
-        int $unitId,
+        array $unitIds,
         ?SkautisEntity $object,
         string $name,
         PaymentDefaults $paymentDefaults,
         \DateTimeImmutable $createdAt,
         array $emails,
         ?int $smtpId,
-        ?BankAccount $bankAccount
+        ?BankAccount $bankAccount,
+        IBankAccountAccessChecker $bankAccountAccessChecker
     ) {
-        $this->unitId          = $unitId;
+        Assertion::notEmpty($unitIds);
         $this->object          = $object;
         $this->name            = $name;
         $this->paymentDefaults = $paymentDefaults;
@@ -113,6 +123,11 @@ class Group
         $this->smtpId          = $smtpId;
 
         $this->emails = new ArrayCollection();
+        $this->units  = new ArrayCollection();
+
+        foreach ($unitIds as $unitId) {
+            $this->units->add(new Unit($this, $unitId));
+        }
 
         if (! isset($emails[EmailType::PAYMENT_INFO])) {
             throw new \InvalidArgumentException("Required email template '" . EmailType::PAYMENT_INFO . "' is missing");
@@ -122,15 +137,21 @@ class Group
             $this->updateEmail(EmailType::get($typeKey), $template);
         }
 
-        $this->changeBankAccount($bankAccount);
+        $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
     }
 
-    public function update(string $name, PaymentDefaults $paymentDefaults, ?int $smtpId, ?BankAccount $bankAccount) : void
-    {
+    public function update(
+        string $name,
+        PaymentDefaults $paymentDefaults,
+        ?int $smtpId,
+        ?BankAccount $bankAccount,
+        IBankAccountAccessChecker $bankAccountAccessChecker
+    ) : void {
+        $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
+
         $this->name            = $name;
         $this->paymentDefaults = $paymentDefaults;
         $this->smtpId          = $smtpId;
-        $this->changeBankAccount($bankAccount);
     }
 
     public function open(string $note) : void
@@ -157,33 +178,18 @@ class Group
     }
 
     /**
-     * @throws BankAccountNotFound
+     * @param int[] $unitIds
      */
-    public function changeUnit(int $unitId, IUnitResolver $unitResolver, IBankAccountRepository $bankAccountRepository) : void
+    public function changeUnits(array $unitIds, IBankAccountAccessChecker $accessChecker) : void
     {
-        $this->unitId = $unitId;
-
-        if ($this->bankAccount === null) {
-            return;
+        $this->units->clear();
+        foreach ($unitIds as $unitId) {
+            $this->units->add(new Unit($this, $unitId));
         }
 
-        $currentOfficialUnit = $unitResolver->getOfficialUnitId($this->unitId);
-        $newOfficialUnit     = $unitResolver->getOfficialUnitId($unitId);
+        $bankAccount = $this->bankAccount;
 
-        // different official unit
-        if ($currentOfficialUnit !== $newOfficialUnit) {
-            $this->bankAccount = null;
-            return;
-        }
-
-        // unit -> official unit
-        if ($unitId === $newOfficialUnit) {
-            return;
-        }
-
-        $bankAccount = $bankAccountRepository->find($this->bankAccount->getId());
-
-        if ($bankAccount->isAllowedForSubunits()) {
+        if ($bankAccount === null || $accessChecker->allUnitsHaveAccessToBankAccount($unitIds, $bankAccount->getId())) {
             return;
         }
 
@@ -195,9 +201,16 @@ class Group
         return $this->id;
     }
 
-    public function getUnitId() : int
+    /**
+     * @return int[]
+     */
+    public function getUnitIds() : array
     {
-        return $this->unitId;
+        return $this->units->map(
+            function (Unit $unit) : int {
+                return $unit->getUnitId();
+            }
+        )->toArray();
     }
 
     public function getObject() : ?SkautisEntity
@@ -300,15 +313,17 @@ class Group
         return $this->bankAccount !== null ? $this->bankAccount->getId() : null;
     }
 
-    private function changeBankAccount(?BankAccount $bankAccount) : void
+    private function changeBankAccount(?BankAccount $bankAccount, IBankAccountAccessChecker $accessChecker) : void
     {
         if ($bankAccount === null) {
             $this->bankAccount = null;
             return;
         }
 
-        if ($bankAccount->getUnitId() !== $this->unitId && ! $bankAccount->isAllowedForSubunits()) {
-            throw new \InvalidArgumentException('Unit owning this group has no acces to this bank account');
+        $unitIds = $this->getUnitIds();
+
+        if (! $accessChecker->allUnitsHaveAccessToBankAccount($unitIds, $bankAccount->getId())) {
+            throw NoAccessToBankAccount::forUnits($unitIds, $bankAccount->getId());
         }
 
         $this->bankAccount = Group\BankAccount::create($bankAccount->getId());

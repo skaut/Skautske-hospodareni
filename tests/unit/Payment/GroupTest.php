@@ -9,6 +9,7 @@ use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery as m;
 use Model\Payment\Group\PaymentDefaults;
+use Model\Payment\Services\IBankAccountAccessChecker;
 
 class GroupTest extends Unit
 {
@@ -18,12 +19,22 @@ class GroupTest extends Unit
         $createdAt       = new DateTimeImmutable();
         $variableSymbol  = new VariableSymbol('666');
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, $variableSymbol);
-        $bankAccount     = m::mock(BankAccount::class, ['getId' => 23, 'getUnitId' => 20]);
+        $bankAccount     = m::mock(BankAccount::class, ['getId' => 23]);
         $emails          = \Helpers::createEmails();
 
-        $group = new Group(20, null, 'Skupina 01', $paymentDefaults, $createdAt, $emails, null, $bankAccount);
+        $group = new Group(
+            [20, 22],
+            null,
+            'Skupina 01',
+            $paymentDefaults,
+            $createdAt,
+            $emails,
+            null,
+            $bankAccount,
+            $this->mockAccessChecker([20, 22], $bankAccount->getId(), true)
+        );
 
-        $this->assertSame(20, $group->getUnitId());
+        $this->assertSame([20, 22], $group->getUnitIds());
         $this->assertNull($group->getObject());
         $this->assertSame('Skupina 01', $group->getName());
         $this->assertSame(200.2, $group->getDefaultAmount());
@@ -38,14 +49,33 @@ class GroupTest extends Unit
         $this->assertSame(23, $group->getBankAccountId());
     }
 
+    public function testCreatingGroupWithBankAccountUnitHasNoAccessToThrowsException() : void
+    {
+        $bankAccountId = 15;
+
+        $this->expectException(NoAccessToBankAccount::class);
+
+        new Group(
+            [20, 22],
+            null,
+            'Skupina 01',
+            new PaymentDefaults(200.2, new Date('2018-01-19'), 203, new VariableSymbol('666')),
+            new DateTimeImmutable(),
+            \Helpers::createEmails(),
+            null,
+            $this->mockBankAccount($bankAccountId),
+            $this->mockAccessChecker([20, 22], $bankAccountId, false)
+        );
+    }
+
     public function testCreatingGroupWithNotAllEmailsThrowsException() : void
     {
         $paymentDefaults = new PaymentDefaults(null, null, null, null);
-        $emails          = [];
+        $accessChecker   = \Mockery::mock(IBankAccountAccessChecker::class);
 
         $this->expectException(\InvalidArgumentException::class);
 
-        $group = new Group(1, null, 'Test', $paymentDefaults, new DateTimeImmutable(), $emails, null, null);
+        new Group([1], null, 'Test', $paymentDefaults, new DateTimeImmutable(), [], null, null, $accessChecker);
     }
 
     public function testUpdate() : void
@@ -53,11 +83,17 @@ class GroupTest extends Unit
         $dueDate     = new Date('2018-01-19'); // friday
         $createdAt   = new DateTimeImmutable();
         $group       = $this->createGroup($dueDate, $createdAt);
-        $bankAccount = m::mock(BankAccount::class, ['getId' => 33, 'getUnitId' => 20]);
+        $bankAccount = m::mock(BankAccount::class, ['getId' => 33]);
 
-        $group->update('Skupina Jiná', new PaymentDefaults(120.0, null, null, null), 20, $bankAccount);
+        $group->update(
+            'Skupina Jiná',
+            new PaymentDefaults(120.0, null, null, null),
+            20,
+            $bankAccount,
+            $this->mockAccessChecker([20], $bankAccount->getId(), true)
+        );
 
-        $this->assertSame(20, $group->getUnitId());
+        $this->assertSame([20], $group->getUnitIds());
         $this->assertNull($group->getObject());
         $this->assertSame('Skupina Jiná', $group->getName());
         $this->assertSame(120.0, $group->getDefaultAmount());
@@ -105,6 +141,60 @@ class GroupTest extends Unit
         $this->assertNull($group->getBankAccountId());
     }
 
+    public function testChangeUnitForGroupWithoutBankAccount() : void
+    {
+        $group = $this->createGroup();
+
+        $group->changeUnits([20], \Mockery::mock(IBankAccountAccessChecker::class));
+
+        $this->assertSame([20], $group->getUnitIds());
+    }
+
+    public function testBankAccountIsRemovedWhenChangedUnitHasNoAccessToIt() : void
+    {
+        $unitIds       = [50];
+        $bankAccountId = 20;
+
+        $group = $this->createGroup(null, null, $this->mockBankAccount($bankAccountId));
+
+        $group->changeUnits($unitIds, $this->mockAccessChecker($unitIds, $bankAccountId, false));
+
+        $this->assertSame($unitIds, $group->getUnitIds());
+        $this->assertNull($group->getBankAccountId());
+    }
+
+    public function testBankAccountIsKeptWhenChangedUnitHasAccessToIt() : void
+    {
+        $unitIds       = [50];
+        $bankAccountId = 20;
+
+        $group = $this->createGroup(null, null, $this->mockBankAccount($bankAccountId));
+
+        $group->changeUnits($unitIds, $this->mockAccessChecker($unitIds, $bankAccountId, true));
+
+        $this->assertSame($unitIds, $group->getUnitIds());
+        $this->assertSame($bankAccountId, $group->getBankAccountId());
+    }
+
+    private function mockBankAccount(int $id) : BankAccount
+    {
+        return \Mockery::mock(BankAccount::class, ['getId' => $id, 'getUnitId' => 50, 'isAllowedForSubunits' => true]);
+    }
+
+    /**
+     * @param int[] $unitIds
+     */
+    private function mockAccessChecker(array $unitIds, int $bankAccountId, bool $hasAccess) : IBankAccountAccessChecker
+    {
+        $accessChecker = \Mockery::mock(IBankAccountAccessChecker::class);
+        $accessChecker
+            ->shouldReceive('allUnitsHaveAccessToBankAccount')
+            ->withArgs([$unitIds, $bankAccountId])
+            ->andReturn($hasAccess);
+
+        return $accessChecker;
+    }
+
     private function createGroup(?Date $dueDate = null, ?DateTimeImmutable $createdAt = null, ?BankAccount $bankAccount = null) : Group
     {
         $dueDate         = $dueDate ?? new Date('2018-01-19'); // defaults to friday
@@ -112,7 +202,17 @@ class GroupTest extends Unit
         $createdAt       = $createdAt ?? new DateTimeImmutable();
         $emails          = \Helpers::createEmails();
 
-        return new Group(20, null, 'Skupina 01', $paymentDefaults, $createdAt, $emails, null, $bankAccount);
+        return new Group(
+            [20],
+            null,
+            'Skupina 01',
+            $paymentDefaults,
+            $createdAt,
+            $emails,
+            null,
+            $bankAccount,
+            \Mockery::mock(IBankAccountAccessChecker::class, ['allUnitsHaveAccessToBankAccount' => true])
+        );
     }
 
     /**

@@ -22,12 +22,14 @@ use Model\Payment\PaymentNotFound;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
+use Model\Payment\Services\IBankAccountAccessChecker;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use Model\Services\Language;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use function array_filter;
+use function array_intersect;
 use function array_key_exists;
 use function array_map;
 use function count;
@@ -53,16 +55,21 @@ class PaymentService
     /** @var IBankAccountRepository */
     private $bankAccounts;
 
+    /** @var IBankAccountAccessChecker */
+    private $bankAccountAccessChecker;
+
     public function __construct(
         Skautis $skautis,
         IGroupRepository $groups,
         IPaymentRepository $payments,
-        IBankAccountRepository $bankAccounts
+        IBankAccountRepository $bankAccounts,
+        IBankAccountAccessChecker $bankAccountAccessChecker
     ) {
-        $this->skautis      = $skautis;
-        $this->groups       = $groups;
-        $this->payments     = $payments;
-        $this->bankAccounts = $bankAccounts;
+        $this->skautis                  = $skautis;
+        $this->groups                   = $groups;
+        $this->payments                 = $payments;
+        $this->bankAccounts             = $bankAccounts;
+        $this->bankAccountAccessChecker = $bankAccountAccessChecker;
     }
 
     public function findPayment(int $id) : ?DTO\Payment
@@ -194,7 +201,17 @@ class PaymentService
         $now         = new DateTimeImmutable();
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
-        $group = new Group($unitId, $skautisEntity, $label, $paymentDefaults, $now, $emails, $smtpId, $bankAccount);
+        $group = new Group(
+            [$unitId],
+            $skautisEntity,
+            $label,
+            $paymentDefaults,
+            $now,
+            $emails,
+            $smtpId,
+            $bankAccount,
+            $this->bankAccountAccessChecker
+        );
 
         $this->groups->save($group);
         return $group->getId();
@@ -214,7 +231,7 @@ class PaymentService
         $group       = $this->groups->find($id);
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
-        $group->update($name, $paymentDefaults, $smtpId, $bankAccount);
+        $group->update($name, $paymentDefaults, $smtpId, $bankAccount, $this->bankAccountAccessChecker);
 
         foreach (EmailType::getAvailableValues() as $typeKey) {
             $type = EmailType::get($typeKey);
@@ -384,7 +401,7 @@ class PaymentService
 
         $group = $this->getGroup($groupId);
 
-        if ($group === null || ! in_array($group->getUnitId(), $units, true)) {
+        if ($group === null || ! array_intersect($group->getUnitIds(), $units)) {
             throw new \InvalidArgumentException('Nebyla nalezena platební skupina');
         }
         $persons = $this->getPersonFromRegistration($group->getSkautisId(), true);
