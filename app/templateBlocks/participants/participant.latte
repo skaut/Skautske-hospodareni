@@ -82,7 +82,7 @@ $useRegNums bool - zobrazovat číslo jednotky
                     <tr>
                         <th><a n:tag-if='$sort != NULL' n:href="this sort=>NULL">Příjmení a jméno</a> ({= count($participants)})</th>
                         <th n:if="$useRegNums"><a n:tag-if='$sort != "regNum"' n:href="this sort=>regNum">Jednotka</a></th>
-                        <th><a n:tag-if='$sort != "Days"' n:href="this sort=>Days">Dnů</a></th>
+                        <th><a n:tag-if='$sort != "days"' n:href="this sort=>days">Dnů</a></th>
                         <th><a n:tag-if='$sort != "payment"' n:href="this sort=>payment">Částka</a></th>
                         <th n:if="$isAllowRepayment"><a n:tag-if='$sort != "repayment"' n:href="this sort=>repayment">Vratka</a></th>
                         <th n:if="$isAllowIsAccount"><a n:tag-if='$sort != "isAccount"' n:href="this sort=>isAccount">Na účet?</a></th>
