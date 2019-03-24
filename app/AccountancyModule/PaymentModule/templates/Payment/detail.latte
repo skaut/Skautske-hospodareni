@@ -80,7 +80,19 @@
                 <i class="fas fa-long-arrow-alt-left"></i>
                 Vratky
             </a>
-            <a n:href="generateVS! $group->id" class="btn btn-light" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
+            {var $attrs = $nextVS === null
+                        ? [
+                            'data-toggle' => 'tooltip',
+                            'data-placement' => 'bottom',
+                            'title' => 'Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě.<br>'
+                                        . ' Další budou podle něj dogenerovány jako +1.'
+                        ]
+                        : []
+            }
+            <span n:attr="$attrs">
+                <a n:href="generateVS! $group->id"
+                        n:class="$nextVS === null ? disabled, btn, btn-light">Dogenerovat VS</a>
+            </span>
         {/if}
 
     </div>
