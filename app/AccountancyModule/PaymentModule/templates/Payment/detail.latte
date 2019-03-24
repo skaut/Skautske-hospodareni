@@ -48,7 +48,8 @@
                     <a n:if="$group->type === 'camp'" n:href="Camp:massAdd $group->id">… z účastníků</a>
                     <a n:href="massAdd $group->id" class="dropdown-item">… z členů</a>
 
-                    <a n:href="Registration:massAdd $group->id" class="dropdown-item">… z registrace</a>
+                    <a n:if="$group->type === 'registration'"
+                            n:href="Registration:massAdd $group->id" class="dropdown-item">… z registrace</a>
                 </div>
             </div>
 
