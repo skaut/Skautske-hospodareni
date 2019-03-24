@@ -129,7 +129,7 @@ trait ParticipantTrait
                 if (! (property_exists($a, $sort) || isset($a->{$sort}))) {
                     return true;
                 }
-                if (! (property_exists($b, $sort) || isset($a->{$sort}))) {
+                if (! (property_exists($b, $sort) || isset($b->{$sort}))) {
                     return false;
                 }
                 return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort} ?? '', $b->{$sort} ?? '');
