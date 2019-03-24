@@ -119,17 +119,17 @@ trait ParticipantTrait
 
         if ($sort === 'regNum') {
             $sort = 'unitRegistrationNumber';
-        } elseif ($sort === null || ! in_array($sort, array_merge($textItems, $numberItems)) || ! property_exists($participants[0], $sort)) {
+        } elseif ($sort === null || ! in_array($sort, array_merge($textItems, $numberItems)) || ! (property_exists($participants[0], $sort) || isset($participants[0]->{$sort}))) {
             $sort = 'displayName'; //default sort
         }
         $isNumeric = in_array($sort, $numberItems);
         usort(
             $participants,
             function ($a, $b) use ($sort, $isNumeric) {
-                if (! property_exists($a, $sort)) {
+                if (! (property_exists($a, $sort) || isset($a->{$sort}))) {
                     return true;
                 }
-                if (! property_exists($b, $sort)) {
+                if (! (property_exists($b, $sort) || isset($a->{$sort}))) {
                     return false;
                 }
                 return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort} ?? '', $b->{$sort} ?? '');
