@@ -16,9 +16,9 @@
     <div class="col-auto" n:if="$isEditable">
         {if $group->state === 'open'}
             <a n:href="closeGroup! $group->id"
-                    class="btn btn-light btn-sm"><i class="fas fa-lock"></i> Uzavřít</a>
+                    class="btn btn-light"><i class="fas fa-lock"></i> Uzavřít</a>
             <a n:href="Group:edit $group->id"
-                    class="btn btn-light btn-sm"><i class="far fa-edit"></i> Upravit skupinu</a>
+                    class="btn btn-light"><i class="far fa-edit"></i> Upravit skupinu</a>
         {else}
             <a n:href="openGroup! $group->id"
                     class="btn btn-dark"><i class="fas fa-lock-open"></i> Znovu otevřít</a>
