@@ -69,6 +69,12 @@ class PairButton extends BaseControl
         $this->template->render();
     }
 
+    public function renderLight() : void
+    {
+        $this->template->setParameters(['style' => 'light']);
+        $this->render();
+    }
+
     protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm(true);

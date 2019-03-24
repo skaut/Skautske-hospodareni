@@ -16,9 +16,9 @@
     <div class="col-auto" n:if="$isEditable">
         {if $group->state === 'open'}
             <a n:href="closeGroup! $group->id"
-                    class="btn btn-dark btn-sm"><i class="fas fa-lock"></i> Uzavřít</a>
+                    class="btn btn-light btn-sm"><i class="fas fa-lock"></i> Uzavřít</a>
             <a n:href="Group:edit $group->id"
-                    class="btn btn-secondary btn-sm"><i class="far fa-edit"></i> Upravit skupinu</a>
+                    class="btn btn-light btn-sm"><i class="far fa-edit"></i> Upravit skupinu</a>
         {else}
             <a n:href="openGroup! $group->id"
                     class="btn btn-dark"><i class="fas fa-lock-open"></i> Znovu otevřít</a>
@@ -53,12 +53,12 @@
             </div>
 
             {if $group->type === 'registration'}
-                <a n:href="Journal: $group->skautisId" class="btn btn-outline-dark"><i class="fas fa-book-reader"></i>
+                <a n:href="Journal: $group->skautisId" class="btn btn-light"><i class="fas fa-book-reader"></i>
                     Časopisy</a>
             {/if}
 
             <div class="btn-group">
-                <button class="btn btn-outline-dark dropdown-toggle" type="button" id="emailsDropd"
+                <button class="btn btn-light dropdown-toggle" type="button" id="emailsDropd"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     <i class="far fa-envelope-open"></i> Email <span class="caret"></span>
                 </button>
@@ -74,12 +74,12 @@
                     {/if}
                 </div>
             </div>
-            {control pairButton}
-            <a n:href="Repayment: $group->id" class="btn btn-outline-dark">
+            {control pairButton:light}
+            <a n:href="Repayment: $group->id" class="btn btn-light">
                 <i class="fas fa-long-arrow-alt-left"></i>
                 Vratky
             </a>
-            <a n:href="generateVS! $group->id" class="btn btn-outline-dark" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
+            <a n:href="generateVS! $group->id" class="btn btn-light" {if is_null($nextVS)}onclick="alert('Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě. Další budou podle něj dogenerovány jako +1.');return false"{/if}>Dogenerovat VS</a>
         {/if}
 
     </div>

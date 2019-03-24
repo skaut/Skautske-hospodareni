@@ -3,7 +3,17 @@
 
     <div class="row mb-3">
         <div class="col">
-            <a n:href="this !$onlyOpen" class="btn btn-info">Zobrazit {if $onlyOpen}i uzavřené skupiny{else}pouze otevřené{/if}</a>
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-eye"></i>
+                    {if $onlyOpen}Pouze otevřené{else}Vše{/if}
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" n:href="this true" n:attr="$onlyOpen ? 'disabled'">Pouze otevřené</a>
+                    <a class="dropdown-item" n:href="this false" n:attr="!$onlyOpen ? 'disabled'">Vše</a>
+                </div>
+            </div>
         </div>
 
             <div class="col-auto" n:if="$isEditable">

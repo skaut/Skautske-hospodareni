@@ -7,13 +7,13 @@
                 {*class="caret"></span></button>*}
 
 {*</div>*}
-
+{var $style = $style ?? 'primary'}
 <div class="d-inline-block">
     <div n:class="btn-group">
-        <a n:href="pair!" n:class="!$canPair ? disabled, btn, btn-primary">
+        <a n:href="pair!" n:class="!$canPair ? disabled, btn, 'btn-' . $style">
             <i class="fas fa-university"></i> Párovat platby
         </a>
-        <button n:class="!$canPair ? disabled, btn, btn-primary, dropdown-toggle" type="button" id="pairPayments"
+        <button n:class="!$canPair ? disabled, btn, 'btn-'  . $style, dropdown-toggle" type="button" id="pairPayments"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="caret"></span></button>
 
         <div class="dropdown-menu pairForm" aria-labelledby="pairPayments" n:snippet="form">

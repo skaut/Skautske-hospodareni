@@ -1,5 +1,9 @@
 @import "../node_modules/bootstrap/scss/bootstrap";
 
+.btn-light {
+  @include button-variant($light, darken($light, 30%));
+}
+
 body {
   min-height: 100vh;
 }
