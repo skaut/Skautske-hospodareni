@@ -4,7 +4,7 @@
 
     <div n:if="$canEdit" class="col-auto">
         <a n:href="new" class="btn btn-success"><i class="fas fa-plus"></i> Přidat účet</a>
-        <a n:href="import!" class="btn btn-secondary">Načíst ze Skautisu</a>
+        <a n:href="import!" class="btn btn-light">Načíst ze Skautisu</a>
     </div>
 </div>
 
@@ -20,25 +20,10 @@
             </div>
 
             <div class="col-auto">
-                {if $canEdit}
-                    <span class="mr-3">
-                        {if $account->isAllowedForSubunits()}
-                            <a n:href="disallowForSubunits! $account->getId()" class="btn btn-sm btn-success"><i
-                                        class="fa fa-check mr-1"></i> Účet zpřístupněn</a>
-                        {else}
-                            <a n:href="allowForSubunits! $account->getId()"
-                                class="btn btn-sm btn-outline-success">Zpřístupnit oddílům</a>
-                        {/if}
-                    </span>
-                    {include detail $account}
-                {else}
-                    {include detail $account}
-                {/if}
+                <a n:href="detail $account->getId()"
+                        class="btn btn-sm btn-light" title="Detail"><i class="fa fa-search"></i></a>
             </div>
         </div>
     </li>
 </ul>
 
-{define detail $account}
-    <a n:href="detail $account->getId()" class="btn btn-sm btn-outline-primary" title="Detail"><i class="fa fa-search"></i></a>
-{/define}
