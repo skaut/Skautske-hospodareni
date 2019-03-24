@@ -180,7 +180,7 @@ class Group
     /**
      * @param int[] $unitIds
      */
-    public function changeUnit(array $unitIds, IBankAccountAccessChecker $accessChecker) : void
+    public function changeUnits(array $unitIds, IBankAccountAccessChecker $accessChecker) : void
     {
         $this->units->clear();
         foreach ($unitIds as $unitId) {

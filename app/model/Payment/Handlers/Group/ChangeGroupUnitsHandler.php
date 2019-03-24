@@ -10,7 +10,7 @@ use Model\Payment\GroupNotFound;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Services\IBankAccountAccessChecker;
 
-class ChangeGroupUnitHandler
+class ChangeGroupUnitsHandler
 {
     /** @var IGroupRepository */
     private $groups;
@@ -32,7 +32,7 @@ class ChangeGroupUnitHandler
     {
         $group = $this->groups->find($command->getGroupId());
 
-        $group->changeUnit($command->getUnitIds(), $this->accessChecker);
+        $group->changeUnits($command->getUnitIds(), $this->accessChecker);
 
         $this->groups->save($group);
     }

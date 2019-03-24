@@ -145,7 +145,7 @@ class GroupTest extends Unit
     {
         $group = $this->createGroup();
 
-        $group->changeUnit([20], \Mockery::mock(IBankAccountAccessChecker::class));
+        $group->changeUnits([20], \Mockery::mock(IBankAccountAccessChecker::class));
 
         $this->assertSame([20], $group->getUnitIds());
     }
@@ -157,7 +157,7 @@ class GroupTest extends Unit
 
         $group = $this->createGroup(null, null, $this->mockBankAccount($bankAccountId));
 
-        $group->changeUnit($unitIds, $this->mockAccessChecker($unitIds, $bankAccountId, false));
+        $group->changeUnits($unitIds, $this->mockAccessChecker($unitIds, $bankAccountId, false));
 
         $this->assertSame($unitIds, $group->getUnitIds());
         $this->assertNull($group->getBankAccountId());
@@ -170,7 +170,7 @@ class GroupTest extends Unit
 
         $group = $this->createGroup(null, null, $this->mockBankAccount($bankAccountId));
 
-        $group->changeUnit($unitIds, $this->mockAccessChecker($unitIds, $bankAccountId, true));
+        $group->changeUnits($unitIds, $this->mockAccessChecker($unitIds, $bankAccountId, true));
 
         $this->assertSame($unitIds, $group->getUnitIds());
         $this->assertSame($bankAccountId, $group->getBankAccountId());
