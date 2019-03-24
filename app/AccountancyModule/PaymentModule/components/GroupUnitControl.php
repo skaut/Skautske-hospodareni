@@ -9,6 +9,7 @@ use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Unit;
+use Model\Common\ShouldNotHappen;
 use Model\DTO\Payment\Group;
 use Model\Payment\Commands\Group\ChangeGroupUnits;
 use Model\PaymentService;
@@ -17,6 +18,7 @@ use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
 use function array_map;
 use function array_replace;
+use function sprintf;
 
 class GroupUnitControl extends BaseControl
 {
@@ -65,7 +67,7 @@ class GroupUnitControl extends BaseControl
      */
     public function render() : void
     {
-        $group = $this->groups->getGroup($this->groupId);
+        $group = $this->getGroup($this->groupId);
 
         $unitNames = array_map(
             function (int $unitId) : string {
@@ -115,8 +117,23 @@ class GroupUnitControl extends BaseControl
 
     private function formSucceeded(ArrayHash $values, int $groupId) : void
     {
+        $group = $this->getGroup($groupId);
+
         $this->commandBus->handle(new ChangeGroupUnits($groupId, $values->unitIds));
-        $this->getPresenter()->flashMessage('Jednotka byla změněna', 'success');
+
+        $groupAfterChange = $this->getGroup($groupId);
+
+        $presenter = $this->getPresenter();
+
+        $presenter->flashMessage('Jednotka byla změněna', 'success');
+
+        if ($group->getBankAccountId() !== null && $groupAfterChange->getBankAccountId() === null) {
+            $presenter->flashMessage(
+                'Bankovní účet byl odebrán, protože jej není možné pro tyto jednotky použít',
+                'warning'
+            );
+        }
+
         $this->editation = false;
         $this->redrawControl();
     }
@@ -154,5 +171,19 @@ class GroupUnitControl extends BaseControl
         }
 
         return array_replace(...$officialUnitPairs);
+    }
+
+    private function getGroup(int $groupId) : Group
+    {
+        $group = $this->groups->getGroup($groupId);
+
+        if ($group === null) {
+            throw new ShouldNotHappen(sprintf(
+                'Group used with %s should always exist',
+                self::class
+            ));
+        }
+
+        return $group;
     }
 }
