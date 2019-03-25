@@ -136,6 +136,11 @@ class Participant
         return $this->birthday;
     }
 
+    public function getUnitRegistrationNumber() : string
+    {
+        return $this->unitRegistrationNumber;
+    }
+
     public function getStreet() : string
     {
         return $this->street;
