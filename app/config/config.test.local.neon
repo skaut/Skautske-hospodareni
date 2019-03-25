@@ -3,10 +3,6 @@ skautis:
      testMode: ${config.skautis.testMode}
 
 parameters:
-
-    slack:
-        url: "https://hooks.slack.com/services/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"
-
     database:
         host: '${config.database.host}'
         user: '${config.database.user}'
