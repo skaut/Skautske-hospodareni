@@ -15,13 +15,13 @@
                 <div><a n:href="detail $account->getId()" class="text-dark"><strong>{$account->getName()}</strong> ({$account->getNumber()})</a>
                 </div>
                 <div><small>Přidáno {$account->getCreatedAt()|date:'j.n. Y'}</small>
-                    <span class="badge badge-success" n:if="$account->getToken() !== NULL"><i class="fa fa-check"></i> FIO párování</span>
+                    <span class="badge badge-success" n:if="$account->getToken() !== NULL"><i class="fas fa-check"></i> FIO párování</span>
                 </div>
             </div>
 
             <div class="col-auto">
                 <a n:href="detail $account->getId()"
-                        class="btn btn-sm btn-light" title="Detail"><i class="fa fa-search"></i></a>
+                        class="btn btn-sm btn-light" title="Detail"><i class="fas fa-search"></i></a>
             </div>
         </div>
     </li>

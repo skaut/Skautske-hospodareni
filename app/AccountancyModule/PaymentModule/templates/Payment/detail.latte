@@ -136,7 +136,7 @@
             id="payment-{$l->id}">
                 <td>
                     <div n:if="$l->note !== ''" class="pull-right">
-                        <i class="fa fa-sticky-note" title="{$l->note}" aria-hidden="true"></i>
+                        <i class="fas fa-sticky-note" title="{$l->note}" aria-hidden="true"></i>
                     </div>
                     {$l->name}
                 </td>
@@ -157,7 +157,7 @@
                             class="btn btn-sm btn-secondary"
                             title="Upravit platbu"><i class="far fa-edit"></i></a>
                     <a n:href="send! $l->id" n:class="btn, btn-sm, btn-primary, 'ui--sendEmail-'.$iterator->counter, $l->email === NULL ? disabled" title="{$l->email === NULL ? 'Není uveden email' : 'Odeslat email o platbě'}"><i class="far fa-envelope-open"></i></a>
-                    <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="fa fa-check"></i></a>
+                    <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="fas fa-check"></i></a>
                 {elseif $l->closed}
                     <span title="Datum uzavření platby">{$l->closedAt|date:'j.n.Y'}</span>
                     {if $l->transaction !== NULL}
@@ -166,7 +166,7 @@
                         <div class="dropdown inline-block">
                             <button class="btn btn-xs btn-default dropdown-toggle" type="button"
                                     data-toggle="dropdown">
-                                <span class="fa fa-info-circle"></span>
+                                <span class="fas fa-info-circle"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-form dropdown-menu-right">
                                 <li><strong>ID:</strong> {$l->transaction->id}</li>
@@ -180,7 +180,7 @@
                 <a n:href="cancel! $l->id" n:if="$isEditable && ! $l->state->equalsValue('canceled')"
                         class="btn btn-sm btn-danger"
                         onclick="return confirm('Opravdu chcete zrušit platbu?');"
-                        title="Zrušit"><i class="fa fa-times"></i></a>
+                        title="Zrušit"><i class="fas fa-times"></i></a>
                 </td>
         </tr>
         {else}

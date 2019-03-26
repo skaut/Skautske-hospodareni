@@ -1,8 +1,4 @@
-(function () {
-    initializeLogoutTimer();
-})();
-
-function initializeLogoutTimer() {
+export function initializeLogoutTimer() {
     let minutesLeft = 30;
 
     const timer = document.getElementById('timer');
@@ -27,9 +23,4 @@ function initializeLogoutTimer() {
 
     decrementMinutes();
     const interval = setInterval(decrementMinutes, 60 * 1000);
-}
-
-function toggleAllCheckboxes(mainCheckboxElement, dependentCheckboxClass) {
-    document.querySelectorAll("." + dependentCheckboxClass + " input[type='checkbox']")
-        .forEach(checkbox => checkbox.checked = mainCheckboxElement.checked);
 }
