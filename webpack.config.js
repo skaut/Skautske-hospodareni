@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
     entry: {
@@ -27,5 +28,10 @@ module.exports = {
                 }
             },
         ]
-    }
+    },
+    plugins: [
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        // Useful for bundle size analysis:
+        // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin),
+    ]
 };
