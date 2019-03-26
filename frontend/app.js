@@ -10,10 +10,11 @@ import 'moment/locale/cs';
 // Use czech language for dates
 moment.locale('cs');
 
-dom.watch();
-initializeLogoutTimer();
+document.addEventListener('DOMContentLoaded', () => {
+    naja.initialize();
+    document.querySelectorAll('.date').forEach(initializeDatePicker);
+    initializeLogoutTimer();
+    dom.watch();
+});
 
-document.addEventListener('DOMContentLoaded', naja.initialize.bind(naja));
 document.toggleAllCheckboxes = toggleAllCheckboxes;
-
-document.querySelectorAll('.date').forEach(initializeDatePicker);
