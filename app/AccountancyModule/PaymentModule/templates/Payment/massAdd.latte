@@ -1,10 +1,22 @@
 {block #content}
-<h1 class="mb-4" n:inner-block="title"><a n:href="Payment:detail $group->id">{$group->name}</a> - Seznam členů bez platby</h1>
+{include '@groupBackLink.latte', group => $group}
+
+<div class="row">
+    <div class="col-lg">
+        <h1 n:inner-block="title">Přidat osoby z jednotky</h1>
+    </div>
+    <div class="col-lg">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Členové, kteří už mají v této skupině platbu, nejsou zobrazeni.
+        </div>
+    </div>
+</div>
 
 <div class="dropdown mb-3">
     <button class="btn btn-light dropdown-toggle" type="button" id="unitDropdown" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-        {$unitPairs[$aid]}
+        <i class="fas fa-eye"></i> {$unitPairs[$aid]}
     </button>
     <div class="dropdown-menu" aria-labelledby="unitDropdown" n:inner-foreach="$unitPairs as $unitId=>$label">
         <a n:href="this aid => $unitId" class="dropdown-item">{$label}</a>
