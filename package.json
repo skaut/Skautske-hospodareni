@@ -12,6 +12,7 @@
         "autoprefixer": "^9.4.3",
         "bootstrap": "^4.2.1",
         "bootstrap.native": "^2.0.25",
+        "naja": "^1.6.0",
         "postcss-cli": "^6.1.0",
         "sass": "^1.15.2"
     },
