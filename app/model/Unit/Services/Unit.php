@@ -156,6 +156,11 @@ class Unit
         return end($splitNumber);
     }
 
+    public function getRegistrationNumber() : string
+    {
+        return $this->registrationNumber;
+    }
+
     /**
      * @return Unit[]|null
      */

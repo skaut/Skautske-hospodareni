@@ -6,9 +6,12 @@ namespace App\AccountancyModule\TravelModule\Components;
 
 use App\Forms\BaseForm;
 use App\MyValidators;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Travel\TravelType;
 use Model\Travel\Passenger;
 use Model\TravelService;
+use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\Unit;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Control;
 use Nette\Forms\Controls\SelectBox;
@@ -31,18 +34,22 @@ class CommandForm extends Control
     /** @var TravelService */
     private $model;
 
+    /** @var QueryBus */
+    private $queryBus;
+
     /** @var TravelType[] */
     private $transportTypes;
 
     /** @var callable[] */
     public $onSuccess = [];
 
-    public function __construct(int $unitId, ?int $commandId, TravelService $model)
+    public function __construct(int $unitId, ?int $commandId, TravelService $model, QueryBus $queryBus)
     {
         parent::__construct();
         $this->unitId         = $unitId;
         $this->commandId      = $commandId;
         $this->model          = $model;
+        $this->queryBus       = $queryBus;
         $this->transportTypes = $this->model->getTransportTypes();
     }
 
@@ -88,6 +95,9 @@ class CommandForm extends Control
             ->setMaxLength(64)
             ->setAttribute('class', 'form-control');
         $form->addText('note', 'Poznámka')
+            ->setMaxLength(64)
+            ->setAttribute('class', 'form-control');
+        $form->addText('unit', 'Jednotka')
             ->setMaxLength(64)
             ->setAttribute('class', 'form-control');
 
@@ -146,6 +156,12 @@ class CommandForm extends Control
 
         if ($this->commandId !== null) {
             $this->loadDefaultValues($form);
+        } else {
+            /** @var Unit $unit */
+            $unit = $this->queryBus->handle(new UnitQuery($this->unitId));
+            $form->setDefaults([
+                'unit' => $unit->getRegistrationNumber(),
+            ]);
         }
 
         return $form;
@@ -180,6 +196,7 @@ class CommandForm extends Control
             'contract_id' => $command->getPassenger()->getContractId(),
             'purpose' => $command->getPurpose(),
             'place' => $command->getPlace(),
+            'unit' => $command->getUnit(),
             'fellowPassengers' => $command->getFellowPassengers(),
             'fuel_price' => MoneyFactory::toFloat($command->getFuelPrice()),
             'amortization' => MoneyFactory::toFloat($command->getAmortizationPerKm()),
@@ -229,7 +246,8 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values->amortization),
             $values->note,
             $values->type,
-            $this->getPresenter()->getUser()->getId()
+            $this->getPresenter()->getUser()->getId(),
+            $values->unit
         );
 
         $this->getPresenter()->flashMessage('Cestovní příkaz byl založen.');
@@ -248,7 +266,8 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values->fuel_price),
             MoneyFactory::fromFloat((float) $values->amortization),
             $values->note,
-            $values->type
+            $values->type,
+            $values->unit
         );
 
         $this->getPresenter()->flashMessage('Cestovní příkaz byl upraven.');

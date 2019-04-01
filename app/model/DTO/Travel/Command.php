@@ -27,6 +27,7 @@ use Nette\SmartObject;
  * @property-read string                    $state
  * @property-read TravelType[]              $transportTypes
  * @property-read string[]                  $transportTypePairs
+ * @property-read string                    $unit
  */
 class Command
 {
@@ -89,6 +90,9 @@ class Command
     /** @var TravelType[] */
     private $transportTypes;
 
+    /** @var string */
+    private $unit;
+
     /**
      * @param TravelType[] $transportTypes
      */
@@ -110,7 +114,8 @@ class Command
         Money $fuelPricePerKm,
         string $state,
         ?int $ownerId,
-        array $transportTypes
+        array $transportTypes,
+        string $unit
     ) {
         $this->id                = $id;
         $this->unitId            = $unitId;
@@ -130,6 +135,7 @@ class Command
         $this->state             = $state;
         $this->ownerId           = $ownerId;
         $this->transportTypes    = $transportTypes;
+        $this->unit              = $unit;
     }
 
     public function getId() : int
@@ -235,5 +241,10 @@ class Command
             $types[$type->getShortcut()] = $type->getLabel();
         }
         return $types;
+    }
+
+    public function getUnit() : string
+    {
+        return $this->unit;
     }
 }
