@@ -15,6 +15,7 @@ use Model\Payment\Repositories\IMailCredentialsRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
+use Nette\Mail\SmtpException;
 use Nette\Utils\Validators;
 use function nl2br;
 use function rand;
@@ -139,6 +140,7 @@ class MailingService
      * @throws InvalidBankAccount
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSet
+     * @throws \Model\Payment\SmtpException
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate) : void
     {
@@ -170,7 +172,11 @@ class MailingService
             ->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);
 
-        $this->mailerFactory->create($credentials)->send($mail);
+        try {
+            $this->mailerFactory->create($credentials)->send($mail);
+        } catch (SmtpException $e) {
+            throw new \Model\Payment\SmtpException($e->getMessage());
+        }
     }
 
     private function createPayment(Payment $payment) : MailPayment
