@@ -14,6 +14,7 @@ use Model\Payment\Payment\Transaction;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
+use Model\Payment\InvalidSmtp;
 use Model\Utils\Arrays;
 use function array_filter;
 use function array_keys;
@@ -60,6 +61,7 @@ class BankService
      * @throws BankTimeout
      * @throws Payment\BankAccountNotFound
      * @throws Payment\TokenNotSet
+     * @throws InvalidSmtp
      */
     public function pairAllGroups(array $groupIds, ?int $daysBack = null) : array
     {

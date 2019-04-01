@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-class SmtpException extends \Exception
+class InvalidSmtp extends \Exception
 {
 }

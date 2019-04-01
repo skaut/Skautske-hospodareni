@@ -12,7 +12,7 @@ use Model\BankTimeout;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\PairingResult;
 use Model\Payment\BankAccountService;
-use Model\Payment\SmtpException;
+use Model\Payment\InvalidSmtp;
 use Model\PaymentService;
 use function array_filter;
 use function array_map;
@@ -130,7 +130,7 @@ class PairButton extends BaseControl
         } catch (BankTimeLimit $exc) {
             $this->getPresenter()->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
             bdump(self::TIME_LIMIT_MESSAGE);
-        } catch (SmtpException $exc) {
+        } catch (InvalidSmtp $exc) {
             $this->getPresenter()->flashMessage('Chyba SMTP serveru: ' . $exc->getMessage(), 'danger');
         }
         $this->redirect('this');

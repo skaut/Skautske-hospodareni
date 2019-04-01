@@ -94,6 +94,7 @@ class MailingService
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSet
      * @throws UserNotFound
+     * @throws InvalidSmtp
      */
     public function sendTestMail(int $groupId) : string
     {
@@ -121,10 +122,13 @@ class MailingService
 
 
     /**
+     * @throws BankAccountNotFound
      * @throws InvalidBankAccount
      * @throws InvalidEmail
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSet
+     * @throws InvalidSmtp
+     * @throws UserNotFound
      */
     private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
     {
@@ -140,7 +144,9 @@ class MailingService
      * @throws InvalidBankAccount
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSet
-     * @throws \Model\Payment\SmtpException
+     * @throws BankAccountNotFound
+     * @throws InvalidSmtp
+     * @throws UserNotFound
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate) : void
     {
@@ -175,7 +181,7 @@ class MailingService
         try {
             $this->mailerFactory->create($credentials)->send($mail);
         } catch (SmtpException $e) {
-            throw new \Model\Payment\SmtpException($e->getMessage());
+            throw new InvalidSmtp($e->getMessage());
         }
     }
 
