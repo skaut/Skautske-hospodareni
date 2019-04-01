@@ -36,7 +36,7 @@ table {
         <td>{$p->lastName}</td>
         <td>{$p->street}</td>
         <td>{$p->city}</td>
-        <td>{$p->postcode|postCode}</td>
+        <td>{(string)$p->postcode|postCode}</td>
         <td style="text-align: right;">{$p->birthday|date:"d.m.Y"}</td>
         <td style="text-align: right;">{$p->days}</td>
         <td style="text-align: right;">{if $p->age < 18}{$p->days}{php $totDDays += $p->days}{else}0{/if}</td>
