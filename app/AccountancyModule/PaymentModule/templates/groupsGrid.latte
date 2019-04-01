@@ -1,0 +1,8 @@
+{extends $original_template}
+
+{define col-state}
+    {$item->state|groupState|noescape}
+    <div class="pull-right text-success" title="Lze párovat s bankou" n:if="$item->pairable">
+        <span class="glyphicon glyphicon-resize-small"></span>
+    </div>
+{/define}

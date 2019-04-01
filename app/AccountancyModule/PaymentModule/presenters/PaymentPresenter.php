@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\Factories\GridFactory;
 use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
@@ -31,6 +32,7 @@ use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\SmtpException;
+use Ublaboo\DataGrid\DataGrid;
 use function array_filter;
 use function array_intersect;
 use function array_keys;
@@ -74,6 +76,9 @@ class PaymentPresenter extends BasePresenter
     /** @var IRemoveGroupDialogFactory */
     private $removeGroupDialogFactory;
 
+    /** @var GridFactory */
+    private $gridFactory;
+
     private const NO_MAILER_MESSAGE       = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
@@ -85,7 +90,8 @@ class PaymentPresenter extends BasePresenter
         IMassAddFormFactory $massAddFormFactory,
         IPairButtonFactory $pairButtonFactory,
         IGroupUnitControlFactory $unitControlFactory,
-        IRemoveGroupDialogFactory $removeGroupDialogFactory
+        IRemoveGroupDialogFactory $removeGroupDialogFactory,
+        GridFactory $gf
     ) {
         parent::__construct();
         $this->model                    = $model;
@@ -96,6 +102,7 @@ class PaymentPresenter extends BasePresenter
         $this->pairButtonFactory        = $pairButtonFactory;
         $this->unitControlFactory       = $unitControlFactory;
         $this->removeGroupDialogFactory = $removeGroupDialogFactory;
+        $this->gridFactory              = $gf;
     }
 
     protected function startup() : void
@@ -106,9 +113,9 @@ class PaymentPresenter extends BasePresenter
         $this->editUnits = $this->unitService->getEditUnits($this->user);
     }
 
-    public function actionDefault(bool $onlyOpen = true) : void
+    protected function createComponentGroupsGrid() : DataGrid
     {
-        $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
+        $groups = $this->model->getGroups(array_keys($this->readUnits), (bool) $this->getParameter('onlyOpen', true));
 
         $groupIds       = [];
         $bankAccountIds = [];
@@ -116,23 +123,33 @@ class PaymentPresenter extends BasePresenter
             $groupIds[]       = $group->getId();
             $bankAccountIds[] = $group->getBankAccountId();
         }
+        $summaries = $this->model->getGroupSummaries($groupIds);
 
         $bankAccounts = $this->bankAccounts->findByIds(array_filter(array_unique($bankAccountIds)));
 
-        $groupsPairingSupport = [];
         foreach ($groups as $group) {
-            $accountId                             = $group->getBankAccountId();
-            $groupsPairingSupport[$group->getId()] = $accountId !== null && $bankAccounts[$accountId]->getToken() !== null;
+            $group->setSummary($summaries[$group->getId()]);
+            $accountId = $group->getBankAccountId();
+            $group->setPairable($accountId !== null && $bankAccounts[$accountId]->getToken() !== null);
         }
 
         $this['pairButton']->setGroups($groupIds);
 
-        $this->template->setParameters([
-            'onlyOpen' => $onlyOpen,
-            'groups'               => $groups,
-            'summarizations'       => $this->model->getGroupSummaries($groupIds),
-            'groupsPairingSupport' => $groupsPairingSupport,
-        ]);
+        $grid = $this->gridFactory->create();
+        $grid->setDataSource($groups);
+        $grid->addColumnLink('name', 'Název', 'Payment:detail', null)->setSortable();
+        $grid->addColumnText('summary[preparing]', 'Připravené')->setSortable('summary[preparing].count')->getElementPrototype('td')->class('r');
+        $grid->addColumnText('summary[send]', 'Odeslané')->setSortable()->getElementPrototype('td')->class('r');
+        $grid->addColumnText('summary[completed]', 'Dokončené')->setSortable()->getElementPrototype('td')->class('r');
+        $grid->addColumnText('state', 'Stav');
+
+        $grid->setTemplateFile(__DIR__ . '/../templates/groupsGrid.latte');
+        return $grid;
+    }
+
+    public function actionDefault(bool $onlyOpen = true) : void
+    {
+        $this->template->setParameters(['onlyOpen' => $onlyOpen]);
     }
 
     public function actionDetail(int $id) : void

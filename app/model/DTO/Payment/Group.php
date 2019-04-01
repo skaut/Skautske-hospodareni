@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\DTO\Payment;
 
 use Cake\Chronos\Date;
+use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
 
@@ -21,6 +22,7 @@ use Nette\SmartObject;
  * @property-read string $state
  * @property-read int|NULL $smtpId
  * @property-read string $note
+ * @property-read bool $pairable
  */
 class Group
 {
@@ -64,6 +66,12 @@ class Group
 
     /** @var int|NULL */
     private $bankAccountId;
+
+    /** @var Summary[] */
+    private $summary = [];
+
+    /** @var bool */
+    private $pairable = false;
 
     /**
      * @param int[] $unitIds
@@ -169,5 +177,31 @@ class Group
     public function getBankAccountId() : ?int
     {
         return $this->bankAccountId;
+    }
+
+    /**
+     * @param Summary[] $summary
+     */
+    public function setSummary(array $summary) : void
+    {
+        $this->summary = $summary;
+    }
+
+    /**
+     * @return Summary[]
+     */
+    public function getSummary() : array
+    {
+        return $this->summary;
+    }
+
+    public function isPairable() : bool
+    {
+        return $this->pairable;
+    }
+
+    public function setPairable(bool $pairable) : void
+    {
+        $this->pairable = $pairable;
     }
 }

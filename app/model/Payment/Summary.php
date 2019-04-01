@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use Nette\SmartObject;
+use function number_format;
+use function sprintf;
+use function strpos;
 
 /**
  * @property-read int $count
@@ -34,5 +37,14 @@ class Summary
     public function getAmount() : float
     {
         return $this->amount;
+    }
+
+    public function __toString() : string
+    {
+        if ($this->amount > 0) {
+            $formattedAmount = number_format($this->amount, strpos((string) $this->amount, '.') ? 2 : 0, ',', ' ');
+            return sprintf('%s (%d)', $formattedAmount, $this->count);
+        }
+        return '';
     }
 }
