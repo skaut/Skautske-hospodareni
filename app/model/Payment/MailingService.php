@@ -15,6 +15,7 @@ use Model\Payment\Repositories\IMailCredentialsRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
+use Nette\Mail\SmtpException;
 use Nette\Utils\Validators;
 use function nl2br;
 use function rand;
@@ -93,6 +94,7 @@ class MailingService
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSet
      * @throws UserNotFound
+     * @throws InvalidSmtp
      */
     public function sendTestMail(int $groupId) : string
     {
@@ -120,10 +122,13 @@ class MailingService
 
 
     /**
+     * @throws BankAccountNotFound
      * @throws InvalidBankAccount
      * @throws InvalidEmail
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSet
+     * @throws InvalidSmtp
+     * @throws UserNotFound
      */
     private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
     {
@@ -139,6 +144,9 @@ class MailingService
      * @throws InvalidBankAccount
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSet
+     * @throws BankAccountNotFound
+     * @throws InvalidSmtp
+     * @throws UserNotFound
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate) : void
     {
@@ -170,7 +178,11 @@ class MailingService
             ->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);
 
-        $this->mailerFactory->create($credentials)->send($mail);
+        try {
+            $this->mailerFactory->create($credentials)->send($mail);
+        } catch (SmtpException $e) {
+            throw new InvalidSmtp($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     private function createPayment(Payment $payment) : MailPayment

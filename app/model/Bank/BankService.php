@@ -9,6 +9,7 @@ use Model\Bank\Fio\Transaction as BankTransaction;
 use Model\DTO\Payment\PairingResult;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\Group;
+use Model\Payment\InvalidSmtp;
 use Model\Payment\Payment;
 use Model\Payment\Payment\Transaction;
 use Model\Payment\Repositories\IBankAccountRepository;
@@ -60,6 +61,7 @@ class BankService
      * @throws BankTimeout
      * @throws Payment\BankAccountNotFound
      * @throws Payment\TokenNotSet
+     * @throws InvalidSmtp
      */
     public function pairAllGroups(array $groupIds, ?int $daysBack = null) : array
     {
