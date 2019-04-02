@@ -181,7 +181,7 @@ class MailingService
         try {
             $this->mailerFactory->create($credentials)->send($mail);
         } catch (SmtpException $e) {
-            throw new InvalidSmtp($e->getMessage());
+            throw new InvalidSmtp($e->getMessage(), $e->getCode(), $e);
         }
     }
 
