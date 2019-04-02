@@ -33,8 +33,8 @@ td {
     <tr n:foreach="$list as $p">
         <td class="cnt">{$iterator->counter}</td>
         <td>{$p->displayName}</td>
-        <td>{if $p->street != ""}{$p->street}{else}&nbsp;{/if}{if $p->city != ""}, {$p->city}{/if}{if $p->postcode != ""}, {$p->postcode}{/if}</td>
-        <td style="text-align: right;">{$p->birthday->format("d.m.Y")}</td>
+        <td>{if $p->street != ""}{$p->street}{else}&nbsp;{/if}{if $p->city != ""}, {$p->city}{/if}{if $p->postcode != ""}, {(string)$p->postcode|postCode}{/if}</td>
+        <td style="text-align: right;">{if $p->birthday !== null}{$p->birthday->format("d.m.Y")}{else}&nbsp;{/if}</td>
         <td style="text-align: right;">{$p->payment|price:false} Kč</td>
     </tr>
 </table>
