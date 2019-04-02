@@ -21,13 +21,13 @@
             <div style="float:left; width: 140px;">
                 <img src="{$baseUri}/images/layout/lilie.png" style="" />
             </div>
-            <div style="float: left;width: 430px;height: 76px;">
+            <div style="float: left;width: 390px;height: 76px;">
                 <div style="text-align: center;font: 23px bold;padding: 5px 0 10px;">Cestovní příkaz</div>
                 <b>1.</b> Příjmení, jméno: <span style="font-size: 15px;font-weight: bold;">{$command->passenger->name}</span><br />
                 <b>2.</b> Bydliště: <b>{$command->passenger->address}</b><br />
             </div>
-            <div style="float: left;width: 140px;line-height: 2em;padding-top: 5px;">
-                Útvar: <br />
+            <div style="float: left;width: 180px;line-height: 2em;padding-top: 5px;">
+                Jednotka: {$command->unit}<br />
                 Telefon: {$command->passenger->contact}
             </div>
         </div>

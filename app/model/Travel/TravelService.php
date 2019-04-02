@@ -330,7 +330,8 @@ class TravelService
         Money $amortization,
         string $note,
         array $types,
-        int $ownerId
+        int $ownerId,
+        string $unit
     ) : void {
         $vehicle = $vehicleId !== null
             ? $this->vehicles->find($vehicleId)
@@ -347,7 +348,8 @@ class TravelService
             $amortization,
             $note,
             $ownerId,
-            $this->typesToEntities($types)
+            $this->typesToEntities($types),
+            $unit
         );
 
         $this->commands->save($command);
@@ -368,7 +370,8 @@ class TravelService
         Money $fuelPrice,
         Money $amortization,
         string $note,
-        array $types
+        array $types,
+        string $unit
     ) : void {
         $command = $this->commands->find($id);
 
@@ -387,7 +390,8 @@ class TravelService
             $fuelPrice,
             $amortization,
             $note,
-            array_unique($typesEntities + $command->getUsedTransportTypes())
+            array_unique($typesEntities + $command->getUsedTransportTypes()),
+            $unit
         );
 
         $this->commands->save($command);

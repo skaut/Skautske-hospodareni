@@ -29,7 +29,8 @@ class CommandFactory
             $command->getFuelPricePerKm(),
             $command->getClosedAt() !== null ? Command::STATE_CLOSED : Command::STATE_IN_PROGRESS,
             $command->getOwnerId(),
-            array_map([TypeFactory::class, 'create'], $command->getTransportTypes())
+            array_map([TypeFactory::class, 'create'], $command->getTransportTypes()),
+            $command->getUnit()
         );
     }
 }

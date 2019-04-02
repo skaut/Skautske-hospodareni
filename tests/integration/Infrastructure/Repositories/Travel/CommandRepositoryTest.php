@@ -31,6 +31,7 @@ class CommandRepositoryTest extends \IntegrationTest
         'next_travel_id' => 2,
         'contract_id' => 6,
         'closed' => '2018-01-01 10:30:33',
+        'unit' => '',
     ];
 
     private const VEHICLE_TRAVEL = [
@@ -103,6 +104,7 @@ class CommandRepositoryTest extends \IntegrationTest
                 'driver_contact' => '123456789',
                 'driver_address' => '---',
                 'next_travel_id' => 1,
+                'unit' => '',
             ];
 
             $this->tester->haveInDatabase('tc_commands', $command + $rowTemplate);

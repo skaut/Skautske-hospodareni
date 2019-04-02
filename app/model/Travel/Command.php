@@ -122,6 +122,12 @@ class Command
     private $transportTypes;
 
     /**
+     * @var string
+     * * @ORM\Column(type="string")
+     */
+    private $unit;
+
+    /**
      * @param Type[] $transportTypes
      */
     public function __construct(
@@ -135,7 +141,8 @@ class Command
         Money $amortization,
         string $note,
         ?int $ownerId,
-        array $transportTypes
+        array $transportTypes,
+        string $unit
     ) {
         $this->unitId           = $unitId;
         $this->vehicle          = $vehicle;
@@ -149,6 +156,7 @@ class Command
         $this->travels          = new ArrayCollection();
         $this->ownerId          = $ownerId;
         $this->transportTypes   = new ArrayCollection($transportTypes);
+        $this->unit             = $unit;
     }
 
     /**
@@ -163,7 +171,8 @@ class Command
         Money $fuelPrice,
         Money $amortization,
         string $note,
-        array $transportTypes
+        array $transportTypes,
+        string $unit
     ) : void {
         $this->vehicle          = $vehicle;
         $this->passenger        = $driver;
@@ -174,6 +183,7 @@ class Command
         $this->amortization     = $amortization;
         $this->note             = $note;
         $this->transportTypes   = new ArrayCollection($transportTypes);
+        $this->unit             = $unit;
     }
 
     public function close(DateTimeImmutable $time) : void
@@ -444,5 +454,10 @@ class Command
     public function getTransportTypes() : array
     {
         return $this->transportTypes->toArray();
+    }
+
+    public function getUnit() : string
+    {
+        return $this->unit;
     }
 }

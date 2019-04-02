@@ -21,7 +21,7 @@ class CommandTest extends Unit
         $vehicle->shouldReceive('getId')->andReturn(6);
         $driver  = new Passenger('Frantisek Masa', '---', 'Brno');
         $purpose = 'Cesta na střediskovku';
-        $command = new Command(2, $vehicle, $driver, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, []);
+        $command = new Command(2, $vehicle, $driver, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
 
         $this->assertSame(2, $command->getUnitId());
         $this->assertSame(6, $command->getVehicleId());
@@ -67,7 +67,8 @@ class CommandTest extends Unit
             MoneyFactory::fromFloat(3),
             '',
             null,
-            []
+            [],
+            ''
         );
 
         $command->addTransportTravel(
@@ -104,8 +105,9 @@ class CommandTest extends Unit
         $amortizationPerKm = Money::CZK(300);
         $note              = 'Nothing';
         $transport_types   = ['auv', 'mov'];
+        $unit              = '123.45';
 
-        $command->update($vehicle, $driver, $purpose, $place, $passengers, $fuelPrice, $amortizationPerKm, $note, $transport_types);
+        $command->update($vehicle, $driver, $purpose, $place, $passengers, $fuelPrice, $amortizationPerKm, $note, $transport_types, $unit);
 
         $this->assertSame(5, $command->getVehicleId());
         $this->assertSame($driver, $command->getPassenger());
@@ -116,6 +118,7 @@ class CommandTest extends Unit
         $this->assertEquals($amortizationPerKm, $command->getAmortization());
         $this->assertSame($note, $command->getNote());
         $this->assertSame($transport_types, $command->getTransportTypes());
+        $this->assertSame($unit, $command->getUnit());
     }
 
     public function testUpdateVehicleTravel() : void
@@ -340,7 +343,8 @@ class CommandTest extends Unit
             Money::CZK(500),
             '',
             null,
-            []
+            [],
+            ''
         );
     }
 
