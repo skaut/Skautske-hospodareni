@@ -25,6 +25,30 @@ class UnitTest extends \Codeception\Test\Unit
         $this->assertSame('', $unit->getFullDisplayName());
     }
 
+    public function testGetFullDisplayNameWithAddressFullDisplayNameForOfficialUnit() : void
+    {
+        $regNumber = '123';
+        $unitName  = 'Moje krásné středisko';
+        $ic        = '05596641';
+        $street    = 'Ulička 56';
+        $city      = 'Krno';
+        $postcode  = '43267';
+        $unit      = new Unit(
+            1,
+            sprintf('%s %s', $regNumber, $unitName),
+            $unitName,
+            $ic,
+            $street,
+            $city,
+            $postcode,
+            $regNumber,
+            'stredisko',
+            null,
+            null
+        );
+        $this->assertSame(sprintf('Junák - český skaut, %s, z. s., %s, %s, %s, IČO: %s', $unitName, $street, $city, $postcode, $ic), $unit->getFullDisplayNameWithAddress());
+    }
+
     private function createUnit(string $unitName, string $type) : Unit
     {
         $regNumber = '123';
