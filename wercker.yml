@@ -1,4 +1,4 @@
-box: fmasa/lebeda:7.1-ci
+box: fmasa/lebeda:7.3-ci
 
 build:
 
