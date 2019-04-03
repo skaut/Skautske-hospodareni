@@ -93,8 +93,8 @@ class ParticipantService extends MutableBaseService
         }
 
         if ($this->type === 'camp') {
-            foreach (array_diff_key($participantPayments, $participants) as $idForDelete) {
-                $this->repository->remove($participantPayments[$idForDelete]); //delete zaznam, protoze neexistuje k nemu ucastnik
+            foreach (array_diff_key($participantPayments, $participants) as $paymentToRemove) {
+                $this->repository->remove($paymentToRemove); //delete zaznam, protoze neexistuje k nemu ucastnik
             }
         }
 
