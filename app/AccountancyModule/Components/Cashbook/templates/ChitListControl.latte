@@ -67,7 +67,7 @@
                         </td>
                         <td><span class="visible-xs visible-sm">{$item->date|date:"j.n."}</span><span
                                     class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
-                        <td title="{$prefix}{$item->number}">{$item->number}</td>
+                        <td title="{$prefix}{$item->number}" n:class="array_key_exists((string)$item->number, $duplicatesNumbers) ? 'wrong'">{$item->number}</td>
                         <td title="{$item->purpose}">{dump $item}{$item->purpose|truncate:"120"}</td>
                         <td class="hidden-xs hidden-sm" title="{$item->category->name}">{$item->category->shortcut}</td>
                         <td class="hidden-xs hidden-sm">{$item->recipient}</td>
