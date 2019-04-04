@@ -14,6 +14,7 @@
         "bootstrap.native": "^2.0.25",
         "moment": "^2.24.0",
         "naja": "^1.6.0",
+        "nprogress": "^0.2.0",
         "pikaday": "^1.8.0",
         "postcss-cli": "^6.1.0",
         "sass": "^1.15.2"
