@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\AccountancyModule\Factories\ILoginPanelFactory;
+use App\Components\LoginPanel;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
@@ -45,6 +47,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var IAuthorizator */
     protected $authorizator;
 
+    /** @var ILoginPanelFactory */
+    private $loginPanelFactory;
+
     /** @var LoggerInterface */
     protected $logger;
 
@@ -55,15 +60,17 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         CommandBus $commandBus,
         QueryBus $queryBus,
         IAuthorizator $authorizator,
+        ILoginPanelFactory $loginPanelFactory,
         LoggerInterface $logger
     ) : void {
-        $this->webLoader    = $webLoader;
-        $this->userService  = $userService;
-        $this->unitService  = $unitService;
-        $this->commandBus   = $commandBus;
-        $this->queryBus     = $queryBus;
-        $this->authorizator = $authorizator;
-        $this->logger       = $logger;
+        $this->webLoader         = $webLoader;
+        $this->userService       = $userService;
+        $this->unitService       = $unitService;
+        $this->commandBus        = $commandBus;
+        $this->queryBus          = $queryBus;
+        $this->authorizator      = $authorizator;
+        $this->loginPanelFactory = $loginPanelFactory;
+        $this->logger            = $logger;
     }
 
     protected function startup() : void
@@ -136,6 +143,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     protected function createComponentJs() : WebLoader\JavaScriptLoader
     {
         return $this->webLoader->createJavaScriptLoader('default');
+    }
+
+    protected function createComponentLoginPanel() : LoginPanel
+    {
+        return $this->loginPanelFactory->create();
     }
 
     protected function updateUserAccess() : void

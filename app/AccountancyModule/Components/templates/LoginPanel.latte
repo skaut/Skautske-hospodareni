@@ -1,0 +1,16 @@
+<span id="timer" class="mr-3 text-white w-auto small p-1 rounded">
+    <i class="far fa-clock"></i>
+    <span id="timer-minutes"></span>
+</span>
+
+<span class="dropdown">
+    <button class="btn btn-light btn-sm dropdown-toggle border-0 mr-sm-3" type="button"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {$roles[$currentRoleId]}
+    </button>
+    <span class="dropdown-menu" n:inner-foreach="$roles as $roleId => $roleName">
+        <a n:class="dropdown-item, $roleId === $currentRoleId ? disabled" n:href="changeRole! $roleId">{$roleName}</a>
+    </span>
+</span>
+
+<a href="{plink :Auth:logout}" class="btn btn-sm btn-secondary my-2 my-sm-0">Odhlásit se</a>

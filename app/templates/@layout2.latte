@@ -40,15 +40,9 @@
                         <a class="nav-link" n:href=":Accountancy:Payment:Payment:">Platby</a>
                     </li>
                 </ul>
-                <div class="my-2 my-lg-0 form-inline">
-                    <div id="timer" class="mr-3 text-white w-auto small p-1 rounded">
-                        <i class="far fa-clock"></i> <span id="timer-minutes"></span>
-                    </div>
-                    <select class="roleSelect custom-select custom-select-sm mr-sm-3">
-                        <option n:foreach="$myRoles as $r"
-                                value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{ifset $r->RegistrationNumber}{$r->RegistrationNumber} - {/ifset}{$r->Role}</option>
-                    </select>
-                    <a href="#" class="btn btn-sm btn-secondary my-2 my-sm-0">Odhlásit se</a>
+                <div class="my-2 my-lg-0">
+
+                    {control loginPanel}
                 </div>
             </div>
         </div>
