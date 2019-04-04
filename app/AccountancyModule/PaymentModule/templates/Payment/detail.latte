@@ -71,7 +71,7 @@
     <div class='col-sm-12'>
         {var $isEditable = $isEditable && ($group->state == 'open')}
         {form paymentForm}
-            <ul class="alert alert-error" n:if="isset($form) && $form->hasErrors()">
+            <ul class="alert alert-danger" n:if="isset($form) && $form->hasErrors()">
                 <li n:foreach="$form->errors as $error">{$error}</li>
             </ul>
             <table class="table table-bordered table-striped">

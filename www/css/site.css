@@ -154,11 +154,6 @@ input[type="checkbox"], input[type="radio"] {
     padding: 2px 0 2px 4px;
 }
 
-.isMinus {
-    background-color:#ff5500;
-}
-
-
 #chitType {
     margin-bottom: 0;
 }
