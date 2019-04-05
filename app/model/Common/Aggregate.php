@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Common;
 
-use function is_object;
-
 abstract class Aggregate
 {
     /** @var object[] */
@@ -17,9 +15,6 @@ abstract class Aggregate
      */
     protected function raise(object $event) : void
     {
-        if (! is_object($event)) {
-            throw new \InvalidArgumentException("Event's must be objects");
-        }
         $this->eventsToDispatch[] = $event;
     }
 
