@@ -23,6 +23,7 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Nette\InvalidStateException;
+use function array_count_values;
 use function array_map;
 
 /**
@@ -80,11 +81,12 @@ class ChitListControl extends BaseControl
     public function render() : void
     {
         /** @var Cashbook $cashbook */
-        $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
-        $chits    = $this->queryBus->handle(ChitListQuery::withMethod($this->paymentMethod, $this->cashbookId));
-        $totals   = $this->getTotals($chits);
-        $this->template->setParameters(
-            [
+        $cashbook          = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
+        $chits             = $this->queryBus->handle(ChitListQuery::withMethod($this->paymentMethod, $this->cashbookId));
+        $totals            = $this->getTotals($chits);
+        $duplicatesNumbers = $this->findDuplicates($chits);
+
+        $this->template->setParameters([
             'cashbookId' => $this->cashbookId->toString(),
             'cashbookType' => $cashbook->getType(),
             'isEditable' => $this->isEditable,
@@ -97,8 +99,8 @@ class ChitListControl extends BaseControl
             'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
             'totalIncome' => $totals[Operation::INCOME],
             'totalExpense' => $totals[Operation::EXPENSE],
-            ]
-        );
+            'duplicatesNumbers' => $duplicatesNumbers,
+            ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
         $this->template->render();
@@ -224,5 +226,19 @@ class ChitListControl extends BaseControl
             Operation::INCOME => $income,
             Operation::EXPENSE => $expense,
         ];
+    }
+
+    /**
+     * @param Chit[] $chits
+     * @return int[]
+     */
+    private function findDuplicates(array $chits) : array
+    {
+        $duplicates = array_count_values(array_map(function (Chit $ch) {
+            $number = $ch->getBody()->getNumber();
+            return $number === null ? '' : $number->toString();
+        }, $chits));
+        unset($duplicates['']);
+        return $duplicates;
     }
 }
