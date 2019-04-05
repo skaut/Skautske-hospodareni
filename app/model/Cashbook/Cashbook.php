@@ -282,4 +282,19 @@ class Cashbook extends Aggregate
     {
         return new Cashbook\Category($category->getId(), $category->getOperationType());
     }
+
+    /**
+     * @param Chit[] $chits
+     */
+    public function isOnlyNumericChitNumbers() : bool
+    {
+        /** @var Chit $ch */
+        foreach ($this->chits as $ch) {
+            $number = $ch->getBody()->getNumber();
+            if ($number !== null && $number->isContainsChar()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

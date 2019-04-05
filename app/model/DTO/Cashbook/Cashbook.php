@@ -27,16 +27,21 @@ class Cashbook
     /** @var string */
     private $note;
 
+    /** @var bool */
+    private $isOnlyNumericChitNumbers;
+
     public function __construct(
         CashbookId $id,
         CashbookType $type,
         ?string $chitNumberPrefix,
-        string $note
+        string $note,
+        bool $isOnlyNumericChitNumbers
     ) {
-        $this->id               = $id;
-        $this->type             = $type;
-        $this->chitNumberPrefix = $chitNumberPrefix;
-        $this->note             = $note;
+        $this->id                       = $id;
+        $this->type                     = $type;
+        $this->chitNumberPrefix         = $chitNumberPrefix;
+        $this->note                     = $note;
+        $this->isOnlyNumericChitNumbers = $isOnlyNumericChitNumbers;
     }
 
     public function getId() : string
@@ -57,5 +62,10 @@ class Cashbook
     public function getNote() : string
     {
         return $this->note;
+    }
+
+    public function isOnlyNumericChitNumbers() : bool
+    {
+        return $this->isOnlyNumericChitNumbers;
     }
 }

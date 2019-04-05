@@ -101,6 +101,7 @@ class ChitListControl extends BaseControl
             'totalIncome' => $totals[Operation::INCOME],
             'totalExpense' => $totals[Operation::EXPENSE],
             'duplicatesNumbers' => $duplicatesNumbers,
+            'isOnlyNumeric' => $cashbook->isOnlyNumericChitNumbers(),
             ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
