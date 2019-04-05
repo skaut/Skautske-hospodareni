@@ -29,9 +29,9 @@ final class ChitNumber
         $this->value = $value;
     }
 
-    public function isContainsChar() : bool
+    public function containsLetter() : bool
     {
-        return $this->value !== '' && ! ctype_digit($this->value);
+        return ! ctype_digit($this->value);
     }
 
     public function toString() : string

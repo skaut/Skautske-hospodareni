@@ -15,7 +15,10 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ChitLocked;
 use Model\Cashbook\ChitNotFound;
+use Model\Cashbook\Commands\Cashbook\GenerateChitNumbers;
 use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
+use Model\Cashbook\MaxChitNumberNotFound;
+use Model\Cashbook\NonNumericChitNumbers;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -135,6 +138,19 @@ class ChitListControl extends BaseControl
     public function handleEdit(int $chitId) : void
     {
         $this->onEditButtonClicked($chitId);
+    }
+
+    public function handleGenerateNumbers(string $paymentMethod) : void
+    {
+        try {
+            $this->commandBus->handle(new GenerateChitNumbers($this->cashbookId, PaymentMethod::get($paymentMethod)));
+            $this->getPresenter()->flashMessage('Čísla paragonů byla dogenerována.');
+        } catch (NonNumericChitNumbers $exc) {
+            $this->getPresenter()->flashMessage('Nelze generovat čísla, když čísla dokladů jsou nečíselné!', 'error');
+        } catch (MaxChitNumberNotFound $exc) {
+            $this->getPresenter()->flashMessage('Nepodařilo se určit poslední poslední paragon, od kterého by se pokračovalo s číslováním.', 'error');
+        }
+        $this->getPresenter()->redirect('this');
     }
 
     protected function createComponentFormMass() : BaseForm

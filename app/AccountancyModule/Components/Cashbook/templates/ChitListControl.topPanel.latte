@@ -1,3 +1,8 @@
+<a n:href="generateNumbers! $paymentMethod->toString ()" n:class="btn, btn-sm, btn-warning, ! $isOnlyNumeric ? disabled"
+        rel="tooltip" data-original-title="Generovat čísla dokladů lze když stávající obsahují pouze číslice.">
+    Dogenerovat čísla dokladů
+</a>
+
 <a n:if="! $cashbookType->isUnit() && count($chits) !== 0"
         href="{plink :Accountancy:CashbookExport:printCashbook $cashbookId, $paymentMethod->toString ()}" target="_blank" class="btn btn-sm btn-info">
     <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i>

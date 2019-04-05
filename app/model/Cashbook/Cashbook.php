@@ -11,6 +11,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasRemoved;
@@ -18,6 +19,7 @@ use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\Aggregate;
 use Nette\Utils\Strings;
 use function array_map;
+use function max;
 use function sprintf;
 
 /**
@@ -284,17 +286,61 @@ class Cashbook extends Aggregate
     }
 
     /**
-     * @param Chit[] $chits
+     * @throws MaxChitNumberNotFound
+     * @throws NonNumericChitNumbers
      */
+    private function getMaxChitNumber(PaymentMethod $paymentMethod) : int
+    {
+        if (! $this->isOnlyNumericChitNumbers()) {
+            throw new NonNumericChitNumbers();
+        }
+        $defaultMax = -1;
+        $res        = $defaultMax;
+        /** @var Chit $ch */
+        foreach ($this->chits as $ch) {
+            $number = $ch->getBody()->getNumber();
+            if (! $ch->getPaymentMethod()->equals($paymentMethod) || $number === null || $number->containsLetter()) {
+                continue;
+            }
+
+            $res = max($res, (int) $number->toString());
+        }
+
+        if ($res === $defaultMax) {
+            throw new MaxChitNumberNotFound();
+        }
+        return $res;
+    }
+
     public function isOnlyNumericChitNumbers() : bool
     {
         /** @var Chit $ch */
         foreach ($this->chits as $ch) {
             $number = $ch->getBody()->getNumber();
-            if ($number !== null && $number->isContainsChar()) {
+            if ($number !== null && $number->containsLetter()) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * @throws MaxChitNumberNotFound
+     * @throws NonNumericChitNumbers
+     */
+    public function generateChitNumbers(PaymentMethod $paymentMethod) : void
+    {
+        $maxChitNumber = $this->getMaxChitNumber($paymentMethod);
+        /** @var Chit $chit */
+        foreach ($this->chits as $chit) {
+            if (! $chit->getPaymentMethod()->equals($paymentMethod) || $chit->getBody()->getNumber() !== null || $chit->isLocked()) {
+                continue;
+            }
+            $body    = $chit->getBody();
+            $newBody = $body->withNewNumber(new ChitNumber((string) (++$maxChitNumber)));
+
+            $chit->update($newBody, $chit->getCategory(), $chit->getPaymentMethod());
+            $this->raise(new ChitWasUpdated($this->id, $chit->getCategoryId(), $chit->getCategoryId()));
+        }
     }
 }
