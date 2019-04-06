@@ -24,6 +24,7 @@ use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Nette\InvalidStateException;
 use function array_count_values;
+use function array_filter;
 use function array_map;
 
 /**
@@ -234,10 +235,12 @@ class ChitListControl extends BaseControl
      */
     private function findDuplicates(array $chits) : array
     {
-        $duplicates = array_count_values(array_map(function (Chit $ch) {
+        $duplicates = array_filter(array_count_values(array_map(function (Chit $ch) {
             $number = $ch->getBody()->getNumber();
             return $number === null ? '' : $number->toString();
-        }, $chits));
+        }, $chits)), function (int $cnt) {
+            return $cnt > 1;
+        });
         unset($duplicates['']);
         return $duplicates;
     }
