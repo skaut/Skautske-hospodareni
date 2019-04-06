@@ -291,7 +291,7 @@ class Cashbook extends Aggregate
      */
     private function getMaxChitNumber(PaymentMethod $paymentMethod) : int
     {
-        if (! $this->isOnlyNumericChitNumbers()) {
+        if (! $this->hasOnlyNumericChitNumbers()) {
             throw new NonNumericChitNumbers();
         }
         $defaultMax = -1;
@@ -312,7 +312,7 @@ class Cashbook extends Aggregate
         return $res;
     }
 
-    public function isOnlyNumericChitNumbers() : bool
+    public function hasOnlyNumericChitNumbers() : bool
     {
         /** @var Chit $ch */
         foreach ($this->chits as $ch) {

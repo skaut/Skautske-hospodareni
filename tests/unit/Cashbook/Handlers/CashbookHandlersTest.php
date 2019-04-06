@@ -10,6 +10,7 @@ use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook as Commands;
 use Model\Cashbook\Handlers\Cashbook\ClearCashbookHandler;
+use Model\Cashbook\Handlers\Cashbook\GenerateChitNumbersHandler;
 use Model\Cashbook\Handlers\Cashbook\LockCashbookHandler;
 use Model\Cashbook\Handlers\Cashbook\LockChitHandler;
 use Model\Cashbook\Handlers\Cashbook\RemoveChitFromCashbookHandler;
@@ -93,6 +94,12 @@ final class CashbookHandlersTest extends Unit
                 UpdateChitNumberPrefixHandler::class,
                 'updateChitNumberPrefix',
                 ['V123'],
+            ],
+            [
+                new Commands\GenerateChitNumbers($this->getCashbookId(), Cashbook\PaymentMethod::CASH()),
+                GenerateChitNumbersHandler::class,
+                'generateChitNumbers',
+                [Cashbook\PaymentMethod::CASH()],
             ],
         ];
     }

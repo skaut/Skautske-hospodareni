@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 use Cake\Chronos\Date;
+use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitNumber;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
+use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\EmailTemplate;
@@ -70,5 +73,19 @@ class Helpers
             'isIncome' => $operation->equalsValue(Operation::INCOME),
             'getOperation' => $operation,
         ]);
+    }
+
+    public static function addChitToCashbook(Cashbook $cashbook, ?string $chitNumber, PaymentMethod $paymentMethod): ChitBody
+    {
+        $chitBody = new ChitBody(
+            $chitNumber === null ? null : new ChitNumber($chitNumber),
+            new Date(),
+            null,
+            new Amount('100'),
+            'čokoláda'
+        );
+        $category = m::mock(ICategory::class, ['getId' => 1, 'getOperationType' => Operation::get(Operation::INCOME)]);
+        $cashbook->addChit ($chitBody, $category, $paymentMethod);
+        return $chitBody;
     }
 }

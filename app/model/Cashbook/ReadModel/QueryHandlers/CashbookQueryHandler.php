@@ -31,7 +31,7 @@ class CashbookQueryHandler
             $cashbook->getType(),
             $cashbook->getChitNumberPrefix(),
             $cashbook->getNote(),
-            $cashbook->isOnlyNumericChitNumbers()
+            $cashbook->hasOnlyNumericChitNumbers()
         );
     }
 }
