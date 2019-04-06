@@ -10,7 +10,7 @@ $logDir  = __DIR__ . '/../log';
 putenv('TMPDIR=' . $tempDir);
 
 $configurator = new Nette\Configurator();
-$configurator->setDebugMode(getenv('DEVELOPMENT_MACHINE') === 'true' ?: '94.113.119.27');
+$configurator->setDebugMode(getenv('DEVELOPMENT_MACHINE') === 'true' ?: '89.177.225.213');
 $configurator->enableDebugger($logDir);
 $configurator->setTempDirectory($tempDir);
 
