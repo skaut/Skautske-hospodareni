@@ -25,7 +25,7 @@
             <th>Částka</th>
         </tr>
         </thead>
-        <tr n:foreach="$categories as $category" n:if="$category->isIncome() === $income">
+        <tr n:foreach="$categories as $category" n:if="$category->isIncome() === $income && ! $category->isVirtual()">
             <td>{$category->name}</td>
             <td style="text-align: right;">
 
