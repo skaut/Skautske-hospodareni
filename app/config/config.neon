@@ -26,14 +26,6 @@ tracy:
 console:
     url: https://h.skauting.cz
 
-dibi:
-    driver: mysqli
-    host: %database.host%
-    username: %database.user%
-    password: %database.password%
-    database: %database.name%
-    charset: utf8
-
 messageBus:
     commandBus:
     	middlewares:
@@ -49,7 +41,6 @@ proxy:
 extensions:
     autoDI: Fmasa\AutoDI\DI\AutoDIExtension
     skautis: Skautis\Nette\SkautisExtension
-    dibi: Dibi\Bridges\Nette\DibiExtension22
     messageBus: eGen\MessageBus\DI\MessageBusExtension
     console: Kdyby\Console\DI\ConsoleExtension
     proxy: Lookyman\Nette\Proxy\DI\ProxyExtension
@@ -70,7 +61,7 @@ autoDI:
         # Old repository namespaces - deprecated
         - class: Model\**\Repositories\*Repository
 
-        # Old dibi DAOs - deprecated
+        # Old DAOs - deprecated
         - class: Model\*Table
 
         # Domain event subscribers

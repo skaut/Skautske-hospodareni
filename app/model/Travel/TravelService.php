@@ -7,7 +7,6 @@ namespace Model;
 use Cake\Chronos\Date;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
-use Dibi\Exception;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
@@ -316,7 +315,6 @@ class TravelService
 
     /**
      * @param string[] $types
-     * @throws Exception
      */
     public function addCommand(
         int $unitId,
@@ -357,7 +355,6 @@ class TravelService
 
     /**
      * @param string[] $types
-     * @throws Exception
      */
     public function updateCommand(
         int $id,

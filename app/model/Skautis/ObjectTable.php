@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Model\Skautis;
 
 use Doctrine\DBAL\Connection;
-use Model\BaseTable;
 use Model\Cashbook\Cashbook\CashbookId;
 
 class ObjectTable
 {
-    private const TABLE = BaseTable::TABLE_OBJECT;
+    private const TABLE = 'ac_object';
 
     /** @var Connection */
     private $connection;
