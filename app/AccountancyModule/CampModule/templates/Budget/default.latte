@@ -25,10 +25,11 @@
             <th>Částka</th>
         </tr>
         </thead>
+        {var balance = 0}
         <tr n:foreach="$categories as $category" n:if="$category->isIncome() === $income && ! $category->isVirtual()">
+            {php $balance += (float)$category->total->getAmount()/100}
             <td>{$category->name}</td>
-            <td style="text-align: right;">
-
+            <td class="r">
                 <span n:if="array_key_exists($category->id, $toRepair)"
                         class="btn btn-xs btn-danger"
                         title="Součet paragonů je {$toRepair[$category->id]}">
@@ -36,6 +37,10 @@
                 </span>
                 {$category->total|price}
             </td>
+        </tr>
+        <tr>
+            <td><b>Celkem</b></td>
+            <td class="r"><b>{$balance|price}</b></td>
         </tr>
     </table>
 {/define}
