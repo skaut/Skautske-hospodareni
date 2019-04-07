@@ -6,6 +6,7 @@ namespace Model\Cashbook;
 
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use Helpers;
 use Mockery as m;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -127,7 +128,7 @@ class CashbookTest extends Unit
 
     public function testClearCashbook() : void
     {
-        $cashbook = new Cashbook(CashbookId::fromString('11'), CashbookType::get(CashbookType::EVENT));
+        $cashbook = $this->createEventCashbook();
         $chitBody = new ChitBody(null, new Date(), null, new Amount('100'), 'Účastnické poplatky');
 
         for ($i = 0; $i < 5; $i++) {
@@ -146,6 +147,35 @@ class CashbookTest extends Unit
         $this->assertEmpty($cashbook->getNote());
         $cashbook->updateNote($note);
         $this->assertSame($note, $cashbook->getNote());
+    }
+
+    public function testHasOnlyNumericChitNumbers() : void
+    {
+        $cashbook = $this->createEventCashbook();
+        Helpers::addChitToCashbook($cashbook, '1', PaymentMethod::CASH());
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH());
+        $this->assertTrue($cashbook->hasOnlyNumericChitNumbers());
+        Helpers::addChitToCashbook($cashbook, 'V1', PaymentMethod::CASH());
+        $this->assertFalse($cashbook->hasOnlyNumericChitNumbers());
+    }
+
+    public function testGenerateChitNumbers() : void
+    {
+        $cashbook = $this->createEventCashbook();
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH());
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::BANK());
+        Helpers::addChitToCashbook($cashbook, '1', PaymentMethod::CASH());
+        $cashbook->generateChitNumbers(PaymentMethod::CASH());
+        $this->assertSame('2', $cashbook->getChits()[0]->getBody()->getNumber()->toString());
+        $this->assertNull($cashbook->getChits()[1]->getBody()->getNumber());
+    }
+
+    public function testGenerateChitNumbersMaxNotFound() : void
+    {
+        $cashbook = $this->createEventCashbook();
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH());
+        $this->expectException(MaxChitNumberNotFound::class);
+        $cashbook->generateChitNumbers(PaymentMethod::CASH());
     }
 
     private function createEventCashbook(?CashbookId $cashbookId = null) : Cashbook

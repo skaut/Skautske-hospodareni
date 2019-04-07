@@ -56,6 +56,11 @@ final class ChitBody
         return new self(null, $this->date, $this->recipient, $this->amount, $this->purpose);
     }
 
+    public function withNewNumber(ChitNumber $chitNumber) : self
+    {
+        return new self($chitNumber, $this->date, $this->recipient, $this->amount, $this->purpose);
+    }
+
     public function getNumber() : ?ChitNumber
     {
         return $this->number;

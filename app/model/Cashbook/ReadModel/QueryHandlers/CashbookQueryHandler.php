@@ -26,6 +26,12 @@ class CashbookQueryHandler
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 
-        return new Cashbook($cashbook->getId(), $cashbook->getType(), $cashbook->getChitNumberPrefix(), $cashbook->getNote());
+        return new Cashbook(
+            $cashbook->getId(),
+            $cashbook->getType(),
+            $cashbook->getChitNumberPrefix(),
+            $cashbook->getNote(),
+            $cashbook->hasOnlyNumericChitNumbers()
+        );
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Nette\Utils\Strings;
+use function ctype_digit;
 use function sprintf;
 use function strlen;
 use function strtoupper;
@@ -26,6 +27,11 @@ final class ChitNumber
         }
 
         $this->value = $value;
+    }
+
+    public function containsLetter() : bool
+    {
+        return ! ctype_digit($this->value);
     }
 
     public function toString() : string
