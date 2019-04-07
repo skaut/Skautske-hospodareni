@@ -30,4 +30,12 @@ class BaseControl extends Control
 
         return $presenter;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function flashMessage($message, $type = 'info') : \stdClass
+    {
+        return $this->getPresenter()->flashMessage($message, $type);
+    }
 }

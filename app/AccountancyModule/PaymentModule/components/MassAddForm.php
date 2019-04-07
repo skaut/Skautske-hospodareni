@@ -171,7 +171,7 @@ class MassAddForm extends BaseControl
             );
         }
 
-        $this->presenter->flashMessage('Platby byly přidány');
-        $this->presenter->redirect('Payment:detail', ['id' => $this->groupId]);
+        $this->flashMessage('Platby byly přidány');
+        $this->getPresenter()->redirect('Payment:detail', ['id' => $this->groupId]);
     }
 }

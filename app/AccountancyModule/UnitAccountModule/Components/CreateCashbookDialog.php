@@ -81,7 +81,7 @@ final class CreateCashbookDialog extends BaseControl
 
         $form->onSuccess[] = function ($form, ArrayHash $values) : void {
             if (! $this->isEditable) {
-                $this->presenter->flashMessage('Nemáte oprávnění přidávat pokladní knihy', 'danger');
+                $this->flashMessage('Nemáte oprávnění přidávat pokladní knihy', 'danger');
                 $this->redirect('this', ['opened' => false]);
             }
 
@@ -92,7 +92,7 @@ final class CreateCashbookDialog extends BaseControl
                     ? new CreateCashbook($this->unitId, $year)
                     : new CreateUnit($this->unitId, $year)
             );
-            $this->presenter->flashMessage('Pokladní kniha byla vytvořena');
+            $this->flashMessage('Pokladní kniha byla vytvořena');
             $this->onSuccess($year);
         };
 

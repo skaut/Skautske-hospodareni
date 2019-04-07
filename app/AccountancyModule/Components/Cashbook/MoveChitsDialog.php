@@ -132,7 +132,7 @@ class MoveChitsDialog extends BaseControl
         $newCashbookId = CashbookId::fromString((string) $values->newCashbookId);
 
         if (! $this->canEdit($this->cashbookId) || ! $this->canEdit($newCashbookId)) {
-            $this->presenter->flashMessage('Nemáte oprávnění k původní nebo nové pokladní knize!', 'danger');
+            $this->flashMessage('Nemáte oprávnění k původní nebo nové pokladní knize!', 'danger');
             $this->redirect('this');
         }
 
