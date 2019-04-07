@@ -16,6 +16,7 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Security\Identity;
 use Nette\Utils\ArrayHash;
+use Skautis\Wsdl\PermissionException;
 use function array_key_exists;
 
 class VehiclePresenter extends BasePresenter
@@ -70,8 +71,12 @@ class VehiclePresenter extends BasePresenter
             $vehicle = $this->getVehicle($id);
 
             $subUnitName = null;
-            if ($vehicle->getSubunitId() !== null) {
-                $subUnitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
+            try {
+                if ($vehicle->getSubunitId() !== null) {
+                    $subUnitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
+                }
+            } catch (PermissionException $exc) {
+                // jednotka může být smazaná a pak na ní nikdo nemá oprávnění
             }
 
             $this->template->setParameters([
