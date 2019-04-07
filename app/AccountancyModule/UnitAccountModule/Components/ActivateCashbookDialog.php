@@ -80,13 +80,13 @@ final class ActivateCashbookDialog extends BaseControl
     private function formSucceeded(int $cashbookId) : void
     {
         if (! $this->isEditable) {
-            $this->presenter->flashMessage('Nemáte oprávnění upravovat pokladní knihy', 'danger');
+            $this->flashMessage('Nemáte oprávnění upravovat pokladní knihy', 'danger');
             $this->redirect('this', ['opened' => false]);
         }
 
         $this->commandBus->handle(new ActivateCashbook($this->unitId, $cashbookId));
 
-        $this->presenter->flashMessage(
+        $this->flashMessage(
             sprintf(
                 'html: Pokladní kniha <strong>%d</strong> byla nastavena jako výchozí.',
                 $this->getActiveCashbook()->getYear()

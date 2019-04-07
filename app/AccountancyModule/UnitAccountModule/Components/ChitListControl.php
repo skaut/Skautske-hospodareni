@@ -56,7 +56,7 @@ final class ChitListControl extends BaseControl
     {
         $this->commandBus->handle(new LockChit($this->cashbookId, $chitId, $this->user->getId()));
 
-        $this->presenter->flashMessage('Doklad byl uzamčen', 'success');
+        $this->flashMessage('Doklad byl uzamčen', 'success');
         $this->redrawControl();
     }
 
@@ -64,7 +64,7 @@ final class ChitListControl extends BaseControl
     {
         $this->commandBus->handle(new UnlockChit($this->cashbookId, $chitId));
 
-        $this->presenter->flashMessage('Doklad byl odemčen', 'success');
+        $this->flashMessage('Doklad byl odemčen', 'success');
         $this->redrawControl();
     }
 

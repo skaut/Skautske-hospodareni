@@ -72,7 +72,7 @@ final class RemoveGroupDialog extends BaseControl
         $form->onSuccess[] = function () : void {
             $this->commandBus->handle(new RemoveGroup($this->groupId));
 
-            $this->getPresenter()->flashMessage('Skupina plateb byla odstraněna', 'success');
+            $this->flashMessage('Skupina plateb byla odstraněna', 'success');
             $this->getPresenter()->redirect('default');
         };
 

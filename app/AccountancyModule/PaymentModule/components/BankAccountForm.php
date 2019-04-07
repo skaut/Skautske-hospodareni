@@ -93,7 +93,7 @@ class BankAccountForm extends BaseControl
                 );
             }
 
-            $this->getPresenter()->flashMessage('Bankovní účet byl uložen');
+            $this->flashMessage('Bankovní účet byl uložen');
             $this->getPresenter()->redirect('BankAccounts:default');
         } catch (InvalidBankAccountNumber $e) {
             $form->addError('Neplatné číslo účtu');

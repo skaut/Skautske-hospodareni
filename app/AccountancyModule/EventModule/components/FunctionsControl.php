@@ -64,9 +64,9 @@ class FunctionsControl extends BaseControl
     private function reload(?string $message = null, ?string $type = null) : void
     {
         if ($message !== null) {
-            $this->presenter->flashMessage($message, $type);
+            $this->flashMessage($message, $type);
         }
-        if ($this->presenter->isAjax()) {
+        if ($this->getPresenter()->isAjax()) {
             $this->redrawControl();
         } else {
             $this->redirect('this');

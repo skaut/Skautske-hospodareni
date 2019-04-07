@@ -188,7 +188,7 @@ class ChitListControl extends BaseControl
      */
     private function redirectToExport(string $action, array $chitIds) : void
     {
-        $this->presenter->redirect($action, [$this->cashbookId->toString(), $chitIds]);
+        $this->getPresenter()->redirect($action, [$this->cashbookId->toString(), $chitIds]);
     }
 
     private function canMoveChits() : bool

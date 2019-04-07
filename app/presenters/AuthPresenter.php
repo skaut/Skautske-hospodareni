@@ -74,7 +74,7 @@ class AuthPresenter extends BasePresenter
             $this->flashMessage($e->getMessage(), 'danger');
             $this->redirect(':Auth:');
         }
-        $this->getPresenter()->redirect(':Accountancy:Default:');
+        $this->redirect(':Accountancy:Default:');
     }
 
     public function actionAjax(?string $backlink = null) : void
@@ -97,9 +97,9 @@ class AuthPresenter extends BasePresenter
     {
         $this->getUser()->logout(true);
         if (isset($this->getRequest()->getPost()['skautIS_Logout'])) {
-            $this->getPresenter()->flashMessage('Byl jsi úspěšně odhlášen.');
+            $this->flashMessage('Byl jsi úspěšně odhlášen.');
         } else {
-            $this->getPresenter()->flashMessage('Odhlášení ze skautisu se nezdařilo', 'danger');
+            $this->flashMessage('Odhlášení ze skautisu se nezdařilo', 'danger');
         }
         $this->redirect(':Default:');
     }

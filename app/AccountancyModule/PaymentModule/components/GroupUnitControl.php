@@ -104,7 +104,7 @@ class GroupUnitControl extends BaseControl
 
         $form->onSuccess[] = function ($form, ArrayHash $values) use ($group) : void {
             if (! $this->canEdit($group)) {
-                $this->getPresenter()->flashMessage('Nemáte oprávnění pro změnu jednotky');
+                $this->flashMessage('Nemáte oprávnění pro změnu jednotky');
                 $this->editation = false;
                 $this->redrawControl();
                 return;
@@ -123,12 +123,10 @@ class GroupUnitControl extends BaseControl
 
         $groupAfterChange = $this->getGroup($groupId);
 
-        $presenter = $this->getPresenter();
-
-        $presenter->flashMessage('Jednotka byla změněna', 'success');
+        $this->flashMessage('Jednotka byla změněna', 'success');
 
         if ($group->getBankAccountId() !== null && $groupAfterChange->getBankAccountId() === null) {
-            $presenter->flashMessage(
+            $this->flashMessage(
                 'Bankovní účet byl odebrán, protože jej není možné pro tyto jednotky použít',
                 'warning'
             );

@@ -122,16 +122,16 @@ class PairButton extends BaseControl
             $pairingResults = $this->model->pairAllGroups($this->groupIds, $daysBack);
             /** @var PairingResult $p */
             foreach ($pairingResults as $p) {
-                $this->getPresenter()->flashMessage($p->getMessage(), $p->getCount() > 0 ? 'success' : 'info');
+                $this->flashMessage($p->getMessage(), $p->getCount() > 0 ? 'success' : 'info');
             }
         } catch (BankTimeout $exc) {
-            $this->getPresenter()->flashMessage(self::TIMEOUT_MESSAGE, 'danger');
+            $this->flashMessage(self::TIMEOUT_MESSAGE, 'danger');
             bdump(self::TIMEOUT_MESSAGE);
         } catch (BankTimeLimit $exc) {
-            $this->getPresenter()->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
+            $this->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
             bdump(self::TIME_LIMIT_MESSAGE);
         } catch (InvalidSmtp $exc) {
-            $this->getPresenter()->flashMessage('Chyba SMTP serveru: ' . $exc->getMessage(), 'danger');
+            $this->flashMessage('Chyba SMTP serveru: ' . $exc->getMessage(), 'danger');
         }
         $this->redirect('this');
     }
