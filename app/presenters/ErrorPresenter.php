@@ -22,6 +22,7 @@ class ErrorPresenter extends Presenter
     private const SKAUTIS_UNAVAILABLE_ERRORS = [
         'Server was unable to process request.',
         'Could not connect to host',
+        'Service Unavailable',
     ];
 
     public function __construct(LoggerInterface $logger)
@@ -36,8 +37,8 @@ class ErrorPresenter extends Presenter
      */
     public function renderDefault($exception) : void
     {
-        if ($exception instanceof SkautisMaintenance) {
-            $this->flashMessage('Právě probíhá údržba Skautisu. Po tuto dobu není možné Hospodaření používat', 'danger');
+        if ($exception instanceof SkautisMaintenance || $exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
+            $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.', 'danger');
             $this->redirect(':Default:');
         }
 
@@ -49,11 +50,6 @@ class ErrorPresenter extends Presenter
 
         if ($exception instanceof PermissionException) {
             $this->flashMessage($exception->getMessage(), 'danger');
-            $this->redirect(':Default:');
-        }
-
-        if ($exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
-            $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.');
             $this->redirect(':Default:');
         }
 
