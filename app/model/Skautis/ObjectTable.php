@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Skautis;
 
-use Dibi\Connection;
+use Doctrine\DBAL\Connection;
 use Model\BaseTable;
 use Model\Cashbook\Cashbook\CashbookId;
 
@@ -26,7 +26,7 @@ class ObjectTable
             'id' => $cashbookId->toString(),
             'skautisId' => $skautisId,
             'type' => $type,
-        ])->execute();
+        ]);
     }
 
     /**
@@ -34,23 +34,27 @@ class ObjectTable
      */
     public function getLocalId(int $skautisEventId, string $type) : ?CashbookId
     {
-        $id = $this->connection->select('id')
-            ->from(self::TABLE)
-            ->where('skautisId = %i', $skautisEventId)
-            ->where('type = %s', $type)
-            ->fetchSingle();
+        $row = $this->connection->executeQuery(
+            'SELECT id FROM ' . self::TABLE . ' WHERE skautisId = :skautisId AND type = :type',
+            [
+                'skautisId' => $skautisEventId,
+                'type' => $type,
+            ]
+        )->fetch();
 
-        return $id !== false ? CashbookId::fromString($id) : null;
+        return $row !== false ? CashbookId::fromString($row['id']) : null;
     }
 
     public function getSkautisId(CashbookId $cashbookId, string $type) : ?int
     {
-        $id = $this->connection->select('skautisId')
-            ->from(self::TABLE)
-            ->where('id = %s', $cashbookId->toString())
-            ->where('type = %s', $type)
-            ->fetchSingle();
+        $row = $this->connection->executeQuery(
+            'SELECT skautisId FROM ' . self::TABLE . ' WHERE id = :id AND type = :type',
+            [
+                'id' => $cashbookId->toString(),
+                'type' => $type,
+            ]
+        )->fetch();
 
-        return $id !== false ? $id : null;
+        return $row !== false ? (int) $row['skautisId'] : null;
     }
 }
