@@ -39,7 +39,7 @@ class ParticipantChitSumQueryHandler
 
         $chits = $queryBuilder->getQuery()->getResult();
         $sum   = array_sum(array_map(function (Chit $c) {
-            return $c->getBody()->getAmount()->toFloat();
+            return $c->getAmount()->toFloat();
         }, $chits));
 
         return $sum;

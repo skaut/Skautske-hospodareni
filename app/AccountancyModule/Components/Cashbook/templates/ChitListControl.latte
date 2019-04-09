@@ -39,8 +39,8 @@
                 <tbody>
                 {var $balance => 0}
                 {foreach $chits as $chit}
-                    {var $isIncome = $chit->category->isIncome()}
-                    {php $balance += $isIncome ? $chit->amount->value : -$chit->amount->value}
+                    {var $isIncome = $chit->isIncome()}
+                    {php $balance += $isIncome ? $chit->amount->toFloat() : -$chit->amount->toFloat()}
                     <tr n:class="$balance < 0 && $paymentMethod->equals($paymentMethod::CASH()) ? 'alert alert-danger'">
                         <td class="nowrap">
                             <input type="checkbox" class="hidden-xs hidden-sm" name="chits-{$paymentMethod}[]" value={$chit->id}/>
