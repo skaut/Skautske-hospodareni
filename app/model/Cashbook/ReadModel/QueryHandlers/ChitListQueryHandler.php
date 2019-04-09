@@ -6,7 +6,6 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
@@ -51,32 +50,16 @@ class ChitListQueryHandler
                 ->setParameter('paymentMethod', $query->getPaymentMethod()->toString());
         }
 
-        $chits      = $queryBuilder->getQuery()->getResult();
-        $categories = $this->getCategories($query->getCashbookId());
+        $chits = $queryBuilder->getQuery()->getResult();
+
+        /** @var Category[] $categories */
+        $categories = $this->queryBus->handle(new CategoryListQuery($query->getCashbookId()));
 
         return array_map(
             function (Chit $chit) use ($categories) : ChitDTO {
-                return ChitFactory::create($chit, $categories[$chit->getCategoryId()]);
+                return ChitFactory::create($chit, $categories);
             },
             $chits
         );
-    }
-
-    /**
-     * @return Category[]
-     */
-    private function getCategories(CashbookId $cashbookId) : array
-    {
-        /**
-        * @var Category[] $categories
-        */
-        $categories     = $this->queryBus->handle(new CategoryListQuery($cashbookId));
-        $categoriesById = [];
-
-        foreach ($categories as $category) {
-            $categoriesById[$category->getId()] = $category;
-        }
-
-        return $categoriesById;
     }
 }

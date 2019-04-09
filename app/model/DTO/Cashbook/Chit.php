@@ -22,10 +22,11 @@ use Nette\SmartObject;
  * @property-read Recipient|NULL    $recipient
  * @property-read Amount            $amount
  * @property-read string            $purpose
- * @property-read Category          $category
+ * @property-read ChitItem[]        $items
  * @property-read bool              $locked
  * @property-read CashbookType[]    $inverseCashbookTypes
  * @property-read PaymentMethod     $paymentMethod
+ * @property-read Category          $category
  */
 class Chit
 {
@@ -37,9 +38,6 @@ class Chit
     /** @var ChitBody */
     private $body;
 
-    /** @var Category */
-    private $category;
-
     /** @var bool */
     private $locked;
 
@@ -49,17 +47,25 @@ class Chit
     /** @var PaymentMethod */
     private $paymentMethod;
 
+    /** @var ChitItem[] */
+    private $items;
+
+    /** @var Operation */
+    private $operation;
+
     /**
      * @param CashbookType[] $inverseCashbookTypes
+     * @param ChitItem[]     $items
      */
-    public function __construct(int $id, ChitBody $body, Category $category, bool $locked, array $inverseCashbookTypes, PaymentMethod $paymentMethod)
+    public function __construct(int $id, ChitBody $body, bool $locked, array $inverseCashbookTypes, PaymentMethod $paymentMethod, array $items, Operation $operation)
     {
         $this->id                   = $id;
         $this->body                 = $body;
-        $this->category             = $category;
         $this->locked               = $locked;
         $this->inverseCashbookTypes = $inverseCashbookTypes;
         $this->paymentMethod        = $paymentMethod;
+        $this->items                = $items;
+        $this->operation            = $operation;
     }
 
     public function getId() : int
@@ -101,7 +107,7 @@ class Chit
      */
     public function getAmount() : Amount
     {
-        return $this->body->getAmount();
+        return $this->amount;
     }
 
     /**
@@ -114,7 +120,7 @@ class Chit
 
     public function getCategory() : Category
     {
-        return $this->category;
+        return $this->items[0]->getCategory();
     }
 
     public function isLocked() : bool
@@ -132,7 +138,7 @@ class Chit
 
     public function isIncome() : bool
     {
-        return $this->category->getOperationType()->equalsValue(Operation::INCOME);
+        return $this->operation->equalsValue(Operation::INCOME);
     }
 
     public function getPaymentMethod() : PaymentMethod
@@ -142,9 +148,9 @@ class Chit
 
     public function getSignedAmount() : float
     {
-        $amount = $this->getBody()->getAmount()->toFloat();
+        $amount = $this->amount->toFloat();
 
-        if ($this->getCategory()->getOperationType()->equalsValue(Operation::EXPENSE)) {
+        if ($this->operation->equalsValue(Operation::EXPENSE)) {
             return -1 * $amount;
         }
 

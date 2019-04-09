@@ -184,7 +184,7 @@ class Chit
      */
     public function getItems() : array
     {
-        return $this->items;
+        return $this->items->toArray ();
     }
 
 

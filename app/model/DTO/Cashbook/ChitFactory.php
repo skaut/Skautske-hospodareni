@@ -12,15 +12,24 @@ final class ChitFactory
 {
     use StaticClass;
 
-    public static function create(ChitEntity $chit, Category $category) : Chit
+    /**
+     * @param Category[] $categories
+     */
+    public static function create(ChitEntity $chit, array $categories) : Chit
     {
+        $items = [];
+        foreach ($chit->getItems() as $item) {
+            $items[] = new ChitItem($item->getId(), $item->getAmount(), $categories[$item->getCategory()->getId()]);
+        }
+
         return new Chit(
             $chit->getId(),
             $chit->getBody(),
-            $category,
             $chit->isLocked(),
             CashbookType::getInverseCashbookTypes($chit->getCategoryId()),
-            $chit->getPaymentMethod()
+            $chit->getPaymentMethod(),
+            $items,
+            $chit->getOperation()
         );
     }
 }
