@@ -6,14 +6,13 @@ namespace Model\Cashbook\Cashbook;
 
 use Cake\Chronos\Date;
 use Consistence\Doctrine\Enum\EnumAnnotation;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
-use Model\Cashbook\ItemNotFound;
 use Model\Cashbook\Operation;
-use function count;
 use Model\Common\ShouldNotHappen;
-use function reset;
+use function count;
 
 /**
  * @ORM\Entity()
@@ -43,7 +42,7 @@ class Chit
     private $body;
 
     /**
-     * @var ChitItem[]
+     * @var ChitItem[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=ChitItem::class, mappedBy="chit")
      */
     private $items;
@@ -63,10 +62,16 @@ class Chit
      */
     private $locked;
 
-    public function __construct(Cashbook $cashbook, ChitBody $body, Category $category, PaymentMethod $paymentMethod)
+    public function __construct(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod)
     {
-        $this->cashbook = $cashbook;
-        $this->update($body, $category, $paymentMethod);
+        $this->cashbook      = $cashbook;
+        $this->body          = $body;
+        $this->paymentMethod = $paymentMethod;
+    }
+
+    public function addItem(Amount $amount, Category $category) : void
+    {
+        $this->items[] = new ChitItem($this, $amount, $category);
     }
 
     public function update(?ChitBody $body = null, ?Category $category = null, ?PaymentMethod $paymentMethod = null) : void
@@ -142,7 +147,9 @@ class Chit
 
     public function copyToCashbook(Cashbook $newCashbook) : self
     {
-        return new self($newCashbook, $this->body, $this->getFirstItem()->getCategory(), $this->paymentMethod);
+        $chit = new self($newCashbook, $this->body, $this->paymentMethod);
+        $chit->addItem($this->getFirstItem()->getAmount(), $this->getFirstItem()->getCategory());
+        return $chit;
     }
 
     public function isIncome() : bool
