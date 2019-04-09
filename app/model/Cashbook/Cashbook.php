@@ -12,7 +12,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Events\ChitWasAdded;
@@ -142,10 +141,7 @@ class Cashbook extends Aggregate
         $newChitBody = $originalChit->getBody()->withoutChitNumber();
 
         $chit = new Chit($this, $newChitBody, $originalChit->getPaymentMethod());
-        /** @var ChitItem $item */
-        foreach ($chit->getItems() as $item) {
-            $chit->addItem($item->getAmount(), $item->getCategory());
-        }
+        $chit->addItem($originalChit->getItems()[0]->getAmount(), $category);
         $this->chits[] = $chit;
 
         $this->raise(new ChitWasAdded($this->id, $categoryId));

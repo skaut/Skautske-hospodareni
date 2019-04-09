@@ -65,6 +65,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
         return [
             Cashbook::class,
             Cashbook\Chit::class,
+            Cashbook\ChitItem::class,
         ];
     }
 
