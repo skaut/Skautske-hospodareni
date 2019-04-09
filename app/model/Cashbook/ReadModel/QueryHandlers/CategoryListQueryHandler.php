@@ -45,7 +45,6 @@ class CategoryListQueryHandler
                 MoneyFactory::fromFloat($categoryTotals[$category->getId()] ?? 0),
                 $category->getShortcut(),
                 $category->getOperationType(),
-                $category->getOperationType()->equalsValue(Operation::INCOME),
                 $category->isVirtual()
             );
         }
