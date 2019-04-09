@@ -38,45 +38,45 @@
                 </thead>
                 <tbody>
                 {var $balance => 0}
-                {foreach $chits as $item}
-                    {var $isIncome = $item->category->isIncome()}
-                    {php $balance += $isIncome ? $item->amount->value : -$item->amount->value}
+                {foreach $chits as $chit}
+                    {var $isIncome = $chit->category->isIncome()}
+                    {php $balance += $isIncome ? $chit->amount->value : -$chit->amount->value}
                     <tr n:class="$balance < 0 && $paymentMethod->equals($paymentMethod::CASH()) ? 'alert alert-danger'">
                         <td class="nowrap">
-                            <input type="checkbox" class="hidden-xs hidden-sm" name="chits-{$paymentMethod}[]" value={$item->id}/>
+                            <input type="checkbox" class="hidden-xs hidden-sm" name="chits-{$paymentMethod}[]" value={$chit->id}/>
                             <a n:if="$paymentMethod->equals($paymentMethod::CASH())"
-                                    href="{plink :Accountancy:CashbookExport:printChits $cashbookId, [$item->id]}"
+                                    href="{plink :Accountancy:CashbookExport:printChits $cashbookId, [$chit->id]}"
                                     target="_blank"
                                     class="btn btn-xs btn-info hidden-xs hidden-sm"><i
                                         class="glyphicon glyphicon-print"></i></a>
-                            <a n:if="$isEditable && ! $item->locked" n:href="edit! $item->id"
+                            <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
                                     class="ajax btn btn-xs btn-primary ui--editChit"><i class="glyphicon glyphicon-edit"></i></a>
 
-                            <a n:if="$isEditable && ! $item->locked" n:href="remove! $item->id"
+                            <a n:if="$isEditable && ! $chit->locked" n:href="remove! $chit->id"
                                     onclick="return confirm('Opravdu chcete smazat paragon?')"
                                     class="btn btn-danger btn-xs ui--removeChit"><i class="glyphicon glyphicon-remove"></i></a>
 
-                            <a n:if="$isEditable && $item->locked" n:href="showLocked" title="Paragon je uzamčen."
+                            <a n:if="$isEditable && $chit->locked" n:href="showLocked" title="Paragon je uzamčen."
                                     class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-lock"></i></a>
 
-                            <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $item->inverseCashbookTypes))"
-                                    class="ajax btn btn-xs btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $item->id"
+                            <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $chit->inverseCashbookTypes))"
+                                    class="ajax btn btn-xs btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $chit->id"
                                     title="Vytvořit protidoklad">
                                 <i class="fa fa-exchange"></i>
                             </a>
                         </td>
-                        <td><span class="visible-xs visible-sm">{$item->date|date:"j.n."}</span><span
-                                    class="visible-md visible-lg">{$item->date|date:"d.m.Y"}</span></td>
-                        <td title="{$prefix}{$item->number}" n:class="array_key_exists((string)$item->number, $duplicatesNumbers) ? 'alert alert-danger'">{$item->number}</td>
-                        <td title="{$item->purpose}">{dump $item}{$item->purpose|truncate:"120"}</td>
-                        <td class="hidden-xs hidden-sm" title="{$item->category->name}">{$item->category->shortcut}</td>
-                        <td class="hidden-xs hidden-sm">{$item->recipient}</td>
+                        <td><span class="visible-xs visible-sm">{$chit->date|date:"j.n."}</span><span
+                                    class="visible-md visible-lg">{$chit->date|date:"d.m.Y"}</span></td>
+                        <td title="{$prefix}{$chit->number}" n:class="array_key_exists((string)$chit->number, $duplicatesNumbers) ? 'alert alert-danger'">{$chit->number}</td>
+                        <td title="{$chit->purpose}">{dump $chit}{$chit->purpose|truncate:"120"}</td>
+                        <td class="hidden-xs hidden-sm" title="{$chit->category->name}">{$chit->category->shortcut}</td>
+                        <td class="hidden-xs hidden-sm">{$chit->recipient}</td>
                         {if $isIncome}
-                            <td class="r" title="{$item->amount->expression}">{$item->amount->value|price}</td>
+                            <td class="r" title="{$chit->amount->expression}">{$chit->amount->value|price}</td>
                             <td class="r">&nbsp;</td>
                         {else}
                             <td class="r">&nbsp;</td>
-                            <td class="r" title="{$item->amount->expression}">{$item->amount->value|price}</td>
+                            <td class="r" title="{$chit->amount->expression}">{$chit->amount->value|price}</td>
                         {/if}
                         <td class="r">{$balance|price}</td>
                     </tr>
