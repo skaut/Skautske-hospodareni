@@ -16,6 +16,7 @@ use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Cashbook\ChitItem;
 use Model\Event\Event;
 use Model\Event\Functions;
 use Model\Event\Repositories\IEventRepository;
@@ -151,21 +152,24 @@ class ExportServiceTest extends Unit
 
     private function chitGenerator(int $id, string $amount, Category $category, Cashbook\PaymentMethod $paymentMethod) : Chit
     {
+        $categoryDTO = new \Model\DTO\Cashbook\Category(
+            $category->getId(),
+            $category->getName(),
+            MoneyFactory::fromFloat(0),
+            $category->getShortcut(),
+            $category->getOperationType(),
+            $category->isVirtual()
+        );
+
         return new Chit(
             $id,
-            new Cashbook\ChitBody(null, new Date('2018-09-22'), null, new Cashbook\Amount($amount), ''),
-            new \Model\DTO\Cashbook\Category(
-                $category->getId(),
-                $category->getName(),
-                MoneyFactory::fromFloat(0),
-                $category->getShortcut(),
-                $category->getOperationType(),
-                $category->getOperationType()->equalsValue(Operation::INCOME),
-                $category->isVirtual()
-            ),
+            new Cashbook\ChitBody(null, new Date('2018-09-22'), null, ''),
             false,
             [],
-            $paymentMethod
+            $paymentMethod,
+            [new ChitItem($id, new Cashbook\Amount($amount), $categoryDTO)],
+            $category->getOperationType(),
+            new Cashbook\Amount($amount)
         );
     }
 }

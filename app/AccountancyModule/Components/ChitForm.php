@@ -249,14 +249,15 @@ final class ChitForm extends BaseControl
         $cashbookId = $this->cashbookId;
         $category   = $values->category;
         $chitBody   = $this->buildChitBodyFromValues($values);
+        $amount     = new Amount($values->price);
         $method     = PaymentMethod::get($values->paymentMethod);
 
         try {
             if ($chitId !== null) {
-                $this->commandBus->handle(new UpdateChit($cashbookId, $chitId, $chitBody, $category, $method));
+                $this->commandBus->handle(new UpdateChit($cashbookId, $chitId, $chitBody, $amount, $category, $method));
                 $this->flashMessage('Paragon byl upraven.');
             } else {
-                $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $category, $method));
+                $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $amount, $category, $method));
                 $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
         } catch (InvalidArgumentException | CashbookNotFound $exc) {
@@ -294,6 +295,6 @@ final class ChitForm extends BaseControl
         $number    = $values->num !== '' ? new ChitNumber($values->num) : null;
         $recipient = $values->recipient !== '' ? new Recipient($values->recipient) : null;
 
-        return new ChitBody($number, $values->date, $recipient, new Amount($values->price), $values->purpose);
+        return new ChitBody($number, $values->date, $recipient, $values->purpose);
     }
 }

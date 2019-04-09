@@ -234,10 +234,10 @@ class ChitListControl extends BaseControl
         $income  = 0;
         $expense = 0;
         foreach ($chits as $chit) {
-            if ($chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME)) {
-                $income += $chit->getBody()->getAmount()->toFloat();
+            if ($chit->isIncome()) {
+                $income += $chit->getAmount()->toFloat();
             } else {
-                $expense += $chit->getBody()->getAmount()->toFloat();
+                $expense += $chit->getAmount()->toFloat();
             }
         }
         return [

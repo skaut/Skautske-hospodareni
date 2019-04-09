@@ -37,7 +37,7 @@ final class UpdateChitHandler
         $cashbook = $this->cashbooks->find($command->getCashbookId());
         $category = $this->categories->find($command->getCategoryId(), $cashbook->getId(), $cashbook->getType());
 
-        $cashbook->updateChit($command->getChitId(), $command->getBody(), $category, $command->getPaymentMethod());
+        $cashbook->updateChit($command->getChitId(), $command->getBody(), $command->getAmount(), $category, $command->getPaymentMethod());
 
         $this->cashbooks->save($cashbook);
     }

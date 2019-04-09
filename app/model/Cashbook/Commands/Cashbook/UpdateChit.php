@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Commands\Cashbook;
 
+use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\PaymentMethod;
@@ -22,6 +23,9 @@ final class UpdateChit
     /** @var ChitBody */
     private $body;
 
+    /** @var Amount */
+    private $amount;
+
     /** @var int */
     private $categoryId;
 
@@ -32,12 +36,14 @@ final class UpdateChit
         CashbookId $cashbookId,
         int $chitId,
         ChitBody $body,
+        Amount $amount,
         int $categoryId,
         PaymentMethod $paymentMethod
     ) {
         $this->cashbookId    = $cashbookId;
         $this->chitId        = $chitId;
         $this->body          = $body;
+        $this->amount        = $amount;
         $this->categoryId    = $categoryId;
         $this->paymentMethod = $paymentMethod;
     }
@@ -55,6 +61,11 @@ final class UpdateChit
     public function getBody() : ChitBody
     {
         return $this->body;
+    }
+
+    public function getAmount() : Amount
+    {
+        return $this->amount;
     }
 
     public function getCategoryId() : int

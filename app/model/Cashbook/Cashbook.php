@@ -155,7 +155,7 @@ class Cashbook extends Aggregate
      * @throws ChitNotFound
      * @throws ChitLocked
      */
-    public function updateChit(int $chitId, ChitBody $chitBody, ICategory $category, PaymentMethod $paymentMethod) : void
+    public function updateChit(int $chitId, ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod) : void
     {
         $chit          = $this->getChit($chitId);
         $oldCategoryId = $chit->getCategoryId();
@@ -164,7 +164,7 @@ class Cashbook extends Aggregate
             throw new ChitLocked();
         }
 
-        $chit->update($chitBody, $this->getChitCategory($category), $paymentMethod);
+        $chit->update($chitBody, $this->getChitCategory($category), $paymentMethod, $amount);
 
         $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $category->getId()));
     }
@@ -349,7 +349,7 @@ class Cashbook extends Aggregate
             $body    = $chit->getBody();
             $newBody = $body->withNewNumber(new ChitNumber((string) (++$maxChitNumber)));
 
-            $chit->update($newBody);
+            $chit->setBody($newBody);
             $this->raise(new ChitWasUpdated($this->id, $chit->getCategoryId(), $chit->getCategoryId()));
         }
     }

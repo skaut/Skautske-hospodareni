@@ -77,7 +77,7 @@ class Category
 
     public function isIncome() : bool
     {
-        return $this->operationType->equals (Operation::INCOME ());
+        return $this->operationType->equals(Operation::INCOME());
     }
 
     public function isVirtual() : bool

@@ -53,11 +53,14 @@ class Chit
     /** @var Operation */
     private $operation;
 
+    /** @var Amount */
+    private $amount;
+
     /**
      * @param CashbookType[] $inverseCashbookTypes
      * @param ChitItem[]     $items
      */
-    public function __construct(int $id, ChitBody $body, bool $locked, array $inverseCashbookTypes, PaymentMethod $paymentMethod, array $items, Operation $operation)
+    public function __construct(int $id, ChitBody $body, bool $locked, array $inverseCashbookTypes, PaymentMethod $paymentMethod, array $items, Operation $operation, Amount $amount)
     {
         $this->id                   = $id;
         $this->body                 = $body;
@@ -66,6 +69,7 @@ class Chit
         $this->paymentMethod        = $paymentMethod;
         $this->items                = $items;
         $this->operation            = $operation;
+        $this->amount               = $amount;
     }
 
     public function getId() : int
@@ -102,9 +106,6 @@ class Chit
         return $this->body->getRecipient();
     }
 
-    /**
-     * @deprecated use getBody()
-     */
     public function getAmount() : Amount
     {
         return $this->amount;

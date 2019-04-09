@@ -65,6 +65,7 @@ class Chit
 
     public function __construct(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod)
     {
+        $this->items         = new ArrayCollection();
         $this->cashbook      = $cashbook;
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
@@ -184,7 +185,7 @@ class Chit
      */
     public function getItems() : array
     {
-        return $this->items->toArray ();
+        return $this->items->toArray();
     }
 
 

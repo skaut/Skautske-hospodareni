@@ -97,7 +97,8 @@ class CashbookPresenter extends BasePresenter
         $this->commandBus->handle(
             new AddChitToCashbook(
                 $cashbookId,
-                new ChitBody(null, new Date($date), $accountant, $amount, 'účastnické příspěvky'),
+                new ChitBody(null, new Date($date), $accountant, 'účastnické příspěvky'),
+                $amount,
                 Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID,
                 PaymentMethod::CASH()
             )

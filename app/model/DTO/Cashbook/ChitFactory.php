@@ -29,7 +29,8 @@ final class ChitFactory
             CashbookType::getInverseCashbookTypes($chit->getCategoryId()),
             $chit->getPaymentMethod(),
             $items,
-            $chit->getOperation()
+            $chit->getOperation(),
+            $chit->getAmount()
         );
     }
 }
