@@ -20,6 +20,12 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     /** @var SchemaTool */
     private $schemaTool;
 
+    /**
+     * Returns FQCN of entities used in test case.
+     * Database schema is generated from mapping of these entities
+     *
+     * @return string[]
+     */
     protected function getTestedEntites() : array
     {
         return [];
