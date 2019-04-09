@@ -75,8 +75,12 @@ build:
             code: service apache2 restart
 
         - script:
-            name: give mysql and phantomjs some time
-            code: sleep 5
+            name: Install frontend dependencies
+            code: yarn install
+
+        - script:
+            name: Build assets
+            code: yarn build
 
         - script:
             name: upload code coverage to codecov.io
