@@ -132,7 +132,7 @@ class Cashbook extends Aggregate
 
         $category = new Cashbook\Category(
             $categoryId,
-            $originalChit->getCategory()->getOperationType()->getInverseOperation()
+            $originalChit->getOperation()->getInverseOperation()
         );
 
         $newChitBody   = $originalChit->getBody()->withoutChitNumber();
