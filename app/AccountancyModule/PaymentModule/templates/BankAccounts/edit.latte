@@ -17,8 +17,8 @@
 
     {if $account->isAllowedForSubunits()}
         <div class="card-body alert-warning">
-            Momentálně lze bankovní účet používat i v platebních skupinách oddílů.
-            Při odebrání přístupu oddílům tyto skupiny ztratí možnost párovat s tímto účtem platby.
+            Momentálně tento bankovní účet mohout používat i oddíloví činnovníci.
+            Při odebrání přístupu oddílovým činovníkům znemožníte i párování plateb v platebních skupinách jejich oddílů;.
         </div>
         <div class="card-body">
             <a n:href="disallowForSubunits! $account->getId()" class="btn btn btn-danger">Odebrat přístup oddílům</a>
@@ -40,8 +40,8 @@
 
 <div class="card mt-3">
     <div class="card-header">Odstranit bankovní účet</div>
-    <div class="card-body alert-warning">
-        Bankovní účet momentálně používá 10 skupin plateb, které k němu v případě
+    <div class="card-body alert-warning" n:if="$groupsCount > 0">
+        Bankovní účet momentálně používá několik skupin plateb ({$groupsCount}), které k němu v případě
         odebrání ztratí přístup.
     </div>
     <div class="card-body">

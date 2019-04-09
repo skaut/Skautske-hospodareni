@@ -15,6 +15,7 @@ use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccount\BankAccountId;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\BankAccountService;
+use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
 use Model\Payment\TokenNotSet;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
@@ -123,7 +124,10 @@ class BankAccountsPresenter extends BasePresenter
 
     public function renderEdit(int $id) : void
     {
-        $this->template->setParameters(['account' => $this->findBankAccount($id)]);
+        $this->template->setParameters([
+            'account' => $this->findBankAccount($id),
+            'groupsCount' => $this->queryBus->handle(new CountGroupsWithBankAccountQuery(new BankAccountId($id))),
+        ]);
     }
 
     public function actionDefault() : void
