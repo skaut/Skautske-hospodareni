@@ -1,26 +1,29 @@
 <?php
-/**
- * This file is part of the AlesWita\FormRenderer
- * Copyright (c) 2017 Ales Wita (aleswita+github@gmail.com)
- */
+
 declare(strict_types=1);
 
 namespace App;
 
 use Nette;
+use Nette\Forms\Controls\BaseControl;
+use Nette\Forms\Controls\Button;
 use Nette\Forms\Rendering\DefaultFormRenderer;
+use Nette\Utils\Strings;
+use function array_keys;
+use function implode;
+use function is_array;
+
+// We cannot use typehints because of LSP
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration
 
 /**
- * @author Ales Wita
- * @license MIT
+ * Inspired by https://github.com/aleswita/FormRenderer
  */
 class Bootstrap4FormRenderer extends DefaultFormRenderer
 {
-    /** @var array */
+    /** @var mixed[] */
     public $wrappers = [
-        'form' => [
-            'container' => null,
-        ],
+        'form' => ['container' => null],
         'error' => [
             'container' => 'div class="row mb-3"',
             'item' => 'div class="col-12 alert alert-danger"',
@@ -30,9 +33,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
             'label' => 'p class="h3 mt-4"',
             'description' => 'p class="pl-3 lead"',
         ],
-        'controls' => [
-            'container' => null,
-        ],
+        'controls' => ['container' => null],
         'pair' => [
             'container' => 'div class="form-group"',
             '.required' => null,
@@ -62,27 +63,30 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
             'suffix' => null,
             'requiredsuffix' => '*',
         ],
-        'hidden' => [
-            'container' => null,
-        ],
+        'hidden' => ['container' => null],
     ];
 
     /**
-     * @param Nette\Forms\IControl $control
      * @param bool $own
      * @return string
      */
-    public function renderErrors(Nette\Forms\IControl $control = null, $own = true) : string
+    public function renderErrors(?Nette\Forms\IControl $control = null, $own = true) : string
     {
-        if ($control instanceof Nette\Forms\Controls\Checkbox || $control instanceof Nette\Forms\Controls\RadioList || $control instanceof Nette\Forms\Controls\UploadControl) {
-            $temp = $this->wrappers['control']['errorcontainer'];
-            $this->wrappers['control']['errorcontainer'] = $this->wrappers['control']['errorcontainer'] . ' style="display: block"';
+        if ($control instanceof Nette\Forms\Controls\Checkbox ||
+            $control instanceof Nette\Forms\Controls\RadioList ||
+            $control instanceof Nette\Forms\Controls\UploadControl) {
+            $originalErrorContainer = $this->wrappers['control']['errorcontainer'];
+
+            $this->wrappers['control']['errorcontainer'] = 'div class="invalid-feedback d-block"';
+
+            $errors = parent::renderErrors($control, $own);
+
+            $this->wrappers['control']['errorcontainer'] = $originalErrorContainer;
+
+            return $errors;
         }
-        $parent = parent::renderErrors($control, $own);
-        if ($control instanceof Nette\Forms\Controls\Checkbox || $control instanceof Nette\Forms\Controls\RadioList || $control instanceof Nette\Forms\Controls\UploadControl) {
-            $this->wrappers['control']['errorcontainer'] = $temp;
-        }
-        return $parent;
+
+        return parent::renderErrors($control, $own);
     }
 
     /**
@@ -91,32 +95,34 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
      */
     public function renderPairMulti(array $controls) : string
     {
+        $primary = false;
+
         foreach ($controls as $control) {
-            if ($control instanceof Nette\Forms\Controls\Button) {
-                if ($control->controlPrototype->class === null || (is_array($control->controlPrototype->class) && ! Nette\Utils\Strings::contains(implode(' ',
-                            array_keys($control->controlPrototype->class)), 'btn btn-'))) {
-                    $control->controlPrototype->addClass((empty($primary) ? 'btn btn-outline-primary' : 'btn btn-outline-secondary'));
-                }
-                $primary = true;
+            if (! $control instanceof Button) {
+                continue;
             }
+
+            $prototype = $control->getControlPrototype();
+            $class     = $prototype->getAttribute('class') ?? [];
+
+            if (is_array($class) && ! Strings::contains(implode(' ', array_keys($class)), 'btn btn-')) {
+                $prototype->appendAttribute('class', $primary ? 'btn btn-outline-primary' : 'btn btn-outline-secondary');
+            }
+
+            $primary = true;
         }
         return parent::renderPairMulti($controls);
     }
 
-    /**
-     * @param Nette\Forms\IControl $control
-     * @return Nette\Utils\Html
-     */
     public function renderLabel(Nette\Forms\IControl $control) : Nette\Utils\Html
     {
         if ($control instanceof Nette\Forms\Controls\Checkbox || $control instanceof Nette\Forms\Controls\CheckboxList) {
-            $control->labelPrototype->addClass('form-check-label');
+            $control->labelPrototype->appendAttribute('class', 'form-check-label');
         } elseif ($control instanceof Nette\Forms\Controls\RadioList) {
-            $control->labelPrototype->addClass('form-check-label');
-        } else {
+            $control->labelPrototype->appendAttribute('class', 'form-check-label');
         }
-        $parent = parent::renderLabel($control);
-        return $parent;
+
+        return parent::renderLabel($control);
     }
 
     /**
@@ -125,67 +131,30 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
      */
     public function renderControl(Nette\Forms\IControl $control) : Nette\Utils\Html
     {
-        if ($control instanceof Nette\Forms\Controls\Checkbox || $control instanceof Nette\Forms\Controls\CheckboxList) {
-            $control->controlPrototype->addClass('form-check-input');
-            if ($control instanceof Nette\Forms\Controls\CheckboxList) {
-                $control->separatorPrototype->setName('div')->addClass('form-check form-check-inline');
-            }
+        if (! $control instanceof BaseControl) {
+            return parent::renderControl($control);
+        }
+
+        $controlPrototype = $control->getControlPrototype();
+
+        if ($control instanceof Nette\Forms\Controls\Checkbox) {
+            $controlPrototype->appendAttribute('class', 'form-check-input');
+        } elseif ($control instanceof Nette\Forms\Controls\CheckboxList) {
+            $controlPrototype->appendAttribute('class', 'form-check-input');
+            $control->separatorPrototype->setName('div')->appendAttribute('class', 'form-check form-check-inline');
         } elseif ($control instanceof Nette\Forms\Controls\RadioList) {
-            $control->containerPrototype->setName('div')->addClass('form-check');
+            $control->containerPrototype->setName('div')->appendAttribute('class', 'form-check');
             $control->itemLabelPrototype->addClass('form-check-label');
-            $control->controlPrototype->addClass('form-check-input');
+            $controlPrototype->appendAttribute('class', 'form-check-input');
         } elseif ($control instanceof Nette\Forms\Controls\UploadControl) {
-            $control->controlPrototype->addClass('form-control-file');
+            $controlPrototype->appendAttribute('class', 'form-control-file');
         } else {
             if ($control->hasErrors()) {
-                $control->controlPrototype->addClass('is-invalid');
+                $control->controlPrototype->appendAttribute('class', 'is-invalid');
             }
-            $control->controlPrototype->addClass('form-control');
+            $control->controlPrototype->appendAttribute('class', 'form-control');
         }
-        $parent = parent::renderControl($control);
-        // addons
-        if ($control instanceof Nette\Forms\Controls\TextInput) {
-            $leftAddon = $control->getOption('left-addon');
-            $rightAddon = $control->getOption('right-addon');
-            if ($leftAddon !== null || $rightAddon !== null) {
-                $children = $parent->getChildren();
-                $parent->removeChildren();
-                $container = Nette\Utils\Html::el('div')->setClass('input-group');
-                if ($leftAddon !== null) {
-                    if (! is_array($leftAddon)) {
-                        $leftAddon = [$leftAddon];
-                    }
-                    $div = Nette\Utils\Html::el('div')->setClass('input-group-prepend');
-                    foreach ($leftAddon as $v) {
-                        $div->insert(null, Nette\Utils\Html::el('span')->setClass('input-group-text')->setText($v));
-                    }
-                    $container->insert(null, $div);
-                }
-                foreach ($children as $child) {
-                    $foo = Nette\Utils\Strings::after($child, $control->getControlPart()->render());
-                    if ($foo !== false) {
-                        $container->insert(null, $control->getControlPart()->render());
-                        $description = $foo;
-                    } else {
-                        $container->insert(null, $child);
-                    }
-                }
-                if ($rightAddon !== null) {
-                    if (! is_array($rightAddon)) {
-                        $rightAddon = [$rightAddon];
-                    }
-                    $div = Nette\Utils\Html::el('div')->setClass('input-group-append');
-                    foreach ($rightAddon as $v) {
-                        $div->insert(null, Nette\Utils\Html::el('span')->setClass('input-group-text')->setText($v));
-                    }
-                    $container->insert(null, $div);
-                }
-                $parent->insert(null, $container);
-                if (! empty($description)) {
-                    $parent->insert(null, $description);
-                }
-            }
-        }
-        return $parent;
+
+        return parent::renderControl($control);
     }
 }
