@@ -12,6 +12,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Events\ChitWasAdded;
@@ -103,7 +104,7 @@ class Cashbook extends Aggregate
         $this->note = $note;
     }
 
-    public function addChit(ChitBody $chitBody, ICategory $category, Amount $amount, PaymentMethod $paymentMethod) : void
+    public function addChit(ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod) : void
     {
         $chit = new Chit($this, $chitBody, $paymentMethod);
         $chit->addItem($amount, $this->getChitCategory($category));
@@ -141,7 +142,10 @@ class Cashbook extends Aggregate
         $newChitBody = $originalChit->getBody()->withoutChitNumber();
 
         $chit = new Chit($this, $newChitBody, $originalChit->getPaymentMethod());
-        $chit->addItem($originalChit->getAmount(), $category);
+        /** @var ChitItem $item */
+        foreach ($chit->getItems() as $item) {
+            $chit->addItem($item->getAmount(), $item->getCategory());
+        }
         $this->chits[] = $chit;
 
         $this->raise(new ChitWasAdded($this->id, $categoryId));
@@ -174,7 +178,7 @@ class Cashbook extends Aggregate
 
         foreach ($this->chits as $chit) {
             $categoryId                     = $chit->getCategoryId();
-            $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->getValue();
+            $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->toFloat();
         }
 
         return $totalByCategories;

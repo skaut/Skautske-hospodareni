@@ -45,8 +45,8 @@ class ChitListQueryHandlerTest extends \IntegrationTest
         $cashbook = new Cashbook($this->getCashbookId(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
 
         foreach ($chits as [$date, $operation, $categoryId, $paymentMethod]) {
-            $body = new Cashbook\ChitBody(null, new Date($date), null, Cashbook\Amount::fromFloat(10), '');
-            $cashbook->addChit($body, $this->mockCategory($categoryId, $operation), PaymentMethod::get($paymentMethod));
+            $body = new Cashbook\ChitBody(null, new Date($date), null, '');
+            $cashbook->addChit($body, Cashbook\Amount::fromFloat(10), $this->mockCategory($categoryId, $operation), PaymentMethod::get($paymentMethod));
         }
 
         $this->entityManager->persist($cashbook);

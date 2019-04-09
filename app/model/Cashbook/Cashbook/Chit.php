@@ -13,6 +13,7 @@ use Model\Cashbook\Category as CategoryAggregate;
 use Model\Cashbook\Operation;
 use Model\Common\ShouldNotHappen;
 use function count;
+use function implode;
 
 /**
  * @ORM\Entity()
@@ -117,7 +118,11 @@ class Chit
 
     public function getAmount() : Amount
     {
-        return $this->body->getAmount();
+        $exps = [];
+        foreach ($this->items as $item) {
+            $exps[] =$item->getAmount()->expression;
+        }
+        return new Amount(implode('+', $exps));
     }
 
     public function getPurpose() : string
@@ -173,6 +178,15 @@ class Chit
     {
         return $this->paymentMethod;
     }
+
+    /**
+     * @return ChitItem[]
+     */
+    public function getItems() : array
+    {
+        return $this->items;
+    }
+
 
     private function getFirstItem() : ChitItem
     {

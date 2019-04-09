@@ -86,9 +86,9 @@ class CashbookRepositoryTest extends \IntegrationTest
                 new Cashbook\ChitNumber($chit['num']),
                 new Date($chit['date']),
                 new Cashbook\Recipient($chit['recipient']),
-                new Cashbook\Amount($chit['priceText']),
                 $chit['purpose']
             ),
+            new Cashbook\Amount($chit['priceText']),
             $this->mockCategory($chit['category']),
             Cashbook\PaymentMethod::get($chit['payment_method'])
         );

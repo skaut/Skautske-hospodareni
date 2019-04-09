@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\Queries;
 
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ReadModel\QueryHandlers\ChitListQueryHandler;
+use Model\Cashbook\ReadModel\QueryHandlers\CategoryListQueryHandler;
 
 /**
- * @see ChitListQueryHandler
+ * @see CategoryListQueryHandler
  */
 final class CategoryListQuery
 {

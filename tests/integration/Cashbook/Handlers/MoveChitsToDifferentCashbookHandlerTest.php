@@ -35,7 +35,8 @@ final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
 
         for ($i = 0; $i < 3; $i++) {
             $sourceCashbook->addChit(
-                new Cashbook\ChitBody(null, new Date(), null, new Amount('100'), 'test'),
+                new Cashbook\ChitBody(null, new Date(), null, 'test'),
+                new Amount('100'),
                 $this->mockCategory(),
                 Cashbook\PaymentMethod::get(Cashbook\PaymentMethod::CASH)
             );
