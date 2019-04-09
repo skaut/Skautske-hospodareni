@@ -22,9 +22,6 @@ use function sprintf;
 
 class GroupUnitControl extends BaseControl
 {
-    /** @var bool @persistent */
-    public $editation = false;
-
     /** @var int */
     private $groupId;
 
@@ -50,18 +47,6 @@ class GroupUnitControl extends BaseControl
         $this->authorizator = $authorizator;
     }
 
-    public function handleEdit() : void
-    {
-        $this->editation = true;
-        $this->redrawControl();
-    }
-
-    public function handleCancel() : void
-    {
-        $this->editation = false;
-        $this->redrawControl();
-    }
-
     /**
      * @throws BadRequestException
      */
@@ -78,7 +63,6 @@ class GroupUnitControl extends BaseControl
 
         $this->template->setParameters([
             'unitNames'  => $unitNames,
-            'editation' => $this->editation,
             'canEdit'   => $this->canEdit($group),
         ]);
         $this->template->setFile(__DIR__ . '/templates/GroupUnitControl.latte');
@@ -94,7 +78,7 @@ class GroupUnitControl extends BaseControl
 
         $group = $this->groups->getGroup($this->groupId);
 
-        $form->addMultiSelect('unitIds')
+        $form->addCheckboxList('unitIds')
             ->setItems($this->buildUnitPairs($group->getUnitIds()))
             ->setDefaultValue($group->getUnitIds())
             ->setRequired('Musíte vybrat jednotku');
@@ -104,8 +88,7 @@ class GroupUnitControl extends BaseControl
 
         $form->onSuccess[] = function ($form, ArrayHash $values) use ($group) : void {
             if (! $this->canEdit($group)) {
-                $this->flashMessage('Nemáte oprávnění pro změnu jednotky');
-                $this->editation = false;
+                $this->flashMessage('Nemáte oprávnění pro změnu jednotky', 'danger');
                 $this->redrawControl();
                 return;
             }
@@ -123,8 +106,6 @@ class GroupUnitControl extends BaseControl
 
         $groupAfterChange = $this->getGroup($groupId);
 
-        $this->flashMessage('Jednotka byla změněna', 'success');
-
         if ($group->getBankAccountId() !== null && $groupAfterChange->getBankAccountId() === null) {
             $this->flashMessage(
                 'Bankovní účet byl odebrán, protože jej není možné pro tyto jednotky použít',
@@ -132,7 +113,6 @@ class GroupUnitControl extends BaseControl
             );
         }
 
-        $this->editation = false;
         $this->redrawControl();
     }
 
@@ -163,9 +143,9 @@ class GroupUnitControl extends BaseControl
             }
 
             $officialUnit = $this->units->getDetailV2($officialUnitId);
-            $subunitPairs = $this->units->getSubunitPairs($officialUnitId);
+            $subunitPairs = $this->units->getSubunitPairs($officialUnitId, true);
 
-            $officialUnitPairs[] = [$officialUnitId => $officialUnit->getSortName()] + $subunitPairs;
+            $officialUnitPairs[] = [$officialUnitId => $officialUnit->getDisplayName()] + $subunitPairs;
         }
 
         return array_replace(...$officialUnitPairs);

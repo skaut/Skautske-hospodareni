@@ -1,11 +1,24 @@
-<span n:snippet="unit">
-    {if $editation}
-        <form n:name="form" class="form-inline">
-            <select n:name="unitIds" class="form-control input-sm" />
-            <button class="btn btn-sm btn-default ajax" n:name="save"><i class="fas fa-check"></i></button>
-            <a class="btn btn-sm btn-default ajax" n:href="cancel!"><i class="fas fa-times"></i></a>
-        </form>
-    {else}
-    {$unitNames|implode: ', '} <a n:if="$canEdit" n:href="edit!" class="ajax"><i class="far fa-edit"></i></a>
-    {/if}
-</span>
+<div class="d-inline-block">
+    <span n:snippet="unit">{$unitNames|implode: ', '}</span>
+
+    <div class="dropdown d-inline-flex">
+          <button class="btn btn-link btn-sm p-0 ml-1" type="button" data-toggle="dropdown" data-persist="true">
+              <i class="far fa-edit"></i>
+          </button>
+          <div class="dropdown-menu px-4 py-3 text-nowrap" n:inner-snippet="form">
+              <form n:name="form">
+                  <h5>Jednotky s přístupem</h5>
+                  <div class="form-check" n:foreach="$form['unitIds']->items as $key => $label">
+                      <label n:name="unitIds:$key" class="form-check-label">
+                          <input n:name="unitIds:$key" class="form-check-input">
+                          {$label}
+                      </label>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <button class="btn btn-sm btn-primary ajax float-right" n:name="save">
+                      <i class="fas fa-check"></i> Uložit
+                  </button>
+              </form>
+          </div>
+    </div>
+</div>
