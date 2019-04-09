@@ -339,7 +339,7 @@ class Cashbook extends Aggregate
             $body    = $chit->getBody();
             $newBody = $body->withNewNumber(new ChitNumber((string) (++$maxChitNumber)));
 
-            $chit->update($newBody, $chit->getCategory(), $chit->getPaymentMethod());
+            $chit->update($newBody);
             $this->raise(new ChitWasUpdated($this->id, $chit->getCategoryId(), $chit->getCategoryId()));
         }
     }

@@ -66,11 +66,20 @@ class Chit
         $this->update($body, $category, $paymentMethod);
     }
 
-    public function update(ChitBody $body, Category $category, PaymentMethod $paymentMethod) : void
+    public function update(?ChitBody $body = NULL, ?Category $category = NULL, ?PaymentMethod $paymentMethod = NULL) : void
     {
-        $this->body          = $body;
-        $this->category      = $category;
-        $this->paymentMethod = $paymentMethod;
+        if ($body !== NULL) {
+            $this->body = $body;
+        }
+
+        if ($category !== NULL) {
+            $this->getFirstItem ()->setCategory ($category);
+        }
+
+        if ($paymentMethod !== NULL) {
+            $this->paymentMethod = $paymentMethod;
+
+        }
     }
 
     public function lock(int $userId) : void
