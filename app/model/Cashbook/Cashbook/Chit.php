@@ -11,6 +11,9 @@ use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
 use Model\Cashbook\ItemNotFound;
 use Model\Cashbook\Operation;
+use function count;
+use Model\Common\ShouldNotHappen;
+use function reset;
 
 /**
  * @ORM\Entity()
@@ -66,20 +69,21 @@ class Chit
         $this->update($body, $category, $paymentMethod);
     }
 
-    public function update(?ChitBody $body = NULL, ?Category $category = NULL, ?PaymentMethod $paymentMethod = NULL) : void
+    public function update(?ChitBody $body = null, ?Category $category = null, ?PaymentMethod $paymentMethod = null) : void
     {
-        if ($body !== NULL) {
+        if ($body !== null) {
             $this->body = $body;
         }
 
-        if ($category !== NULL) {
-            $this->getFirstItem ()->setCategory ($category);
+        if ($category !== null) {
+            $this->getFirstItem()->setCategory($category);
         }
 
-        if ($paymentMethod !== NULL) {
-            $this->paymentMethod = $paymentMethod;
-
+        if ($paymentMethod === null) {
+            return;
         }
+
+        $this->paymentMethod = $paymentMethod;
     }
 
     public function lock(int $userId) : void
@@ -123,7 +127,7 @@ class Chit
 
     public function getCategoryId() : int
     {
-        return $this->category->getId();
+        return $this->getFirstItem()->getCategory()->getId();
     }
 
     public function isLocked() : bool
@@ -131,34 +135,29 @@ class Chit
         return $this->locked !== null;
     }
 
-    public function getCategory() : Category
-    {
-        return $this->category;
-    }
-
     public function getOperation() : Operation
     {
-        return $this->category->getOperationType();
+        return $this->getFirstItem()->getCategory()->getOperationType();
     }
 
     public function copyToCashbook(Cashbook $newCashbook) : self
     {
-        return new self($newCashbook, $this->body, $this->category, $this->paymentMethod);
+        return new self($newCashbook, $this->body, $this->getFirstItem()->getCategory(), $this->paymentMethod);
     }
 
     public function isIncome() : bool
     {
-        return $this->category->getOperationType()->equalsValue(Operation::INCOME);
+        return $this->getFirstItem()->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
     }
 
     public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook) : self
     {
         $newChit = $this->copyToCashbook($newCashbook);
 
-        $newChit->category = new Category(
+        $newChit->getFirstItem()->setCategory(new Category(
             $newChit->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
-            $newChit->category->getOperationType()
-        );
+            $newChit->getFirstItem()->getCategory()->getOperationType()
+        ));
 
         return $newChit;
     }
@@ -166,5 +165,13 @@ class Chit
     public function getPaymentMethod() : PaymentMethod
     {
         return $this->paymentMethod;
+    }
+
+    private function getFirstItem() : ChitItem
+    {
+        if (count($this->items) === 0) {
+            throw new ShouldNotHappen();
+        }
+        return $this->items->first();
     }
 }
