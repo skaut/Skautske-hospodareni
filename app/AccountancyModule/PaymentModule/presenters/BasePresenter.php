@@ -47,14 +47,6 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         ]);
     }
 
-    public function sendPayload() : void
-    {
-        $this->payload->postGet = true;
-        $this->payload->url     = $this->link('this');
-
-        parent::sendPayload();
-    }
-
     /**
      * @return int[]
      */

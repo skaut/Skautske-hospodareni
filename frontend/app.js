@@ -14,7 +14,7 @@ moment.locale('cs');
 naja.registerExtension(ProgressBar);
 
 document.addEventListener('DOMContentLoaded', () => {
-    naja.initialize();
+    naja.initialize({history: false});
     document.querySelectorAll('.date').forEach(initializeDatePicker);
     initializeLogoutTimer();
     dom.watch();
