@@ -9,6 +9,7 @@ use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
+use Model\Cashbook\ItemNotFound;
 use Model\Cashbook\Operation;
 
 /**
@@ -39,10 +40,10 @@ class Chit
     private $body;
 
     /**
-     * @var Category
-     * @ORM\Embedded(class=Category::class, columnPrefix=false)
+     * @var ChitItem[]
+     * @ORM\OneToMany(targetEntity=ChitItem::class, mappedBy="chit")
      */
-    private $category;
+    private $items;
 
     /**
      * @var PaymentMethod
