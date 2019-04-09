@@ -50,6 +50,16 @@ Změny v databázi jsou verzované, stačí tedy spustit příkaz:
 php www/index.php migrations:migrate
 ```
 
+### Buildování frontendu
+Pro vybuildování assetů používáme [Webpack](https://webpack.js.org/) a [Sass](https://sass-lang.com/).
+
+Yarn je k dispozici v hlavním docker containeru.
+
+```bash
+yarn install
+yarn build
+```
+
 ## Testy
 Snažíme se psát testy (i když jich zatím moc není).
 Pro testování používáme [Codeception](http://codeception.com/).
