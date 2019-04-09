@@ -320,7 +320,7 @@ class ExcelService
         }
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
         $sheet->getStyle('H1:H' . ($rowCnt - 1))->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
+        // $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
 
         $sheet->setTitle('Evidence plateb');
     }
