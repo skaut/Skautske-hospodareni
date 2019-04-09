@@ -5,7 +5,7 @@
 # Vývoj
 
 Aplikace vyžaduje:
-- PHP 7.1
+- PHP 7.3
 - MySQL 5
 - Apache
 - Composer

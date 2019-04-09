@@ -4,21 +4,17 @@ declare(strict_types=1);
 
 namespace Model\Common;
 
-use function is_object;
-
 abstract class Aggregate
 {
     /** @var object[] */
     private $eventsToDispatch = [];
 
     /**
-     * @param object $event
+     * Adds event to aggregate event list,
+     * so it can be published to event bus before saving
      */
-    protected function raise($event) : void
+    protected function raise(object $event) : void
     {
-        if (! is_object($event)) {
-            throw new \InvalidArgumentException("Event's must be objects");
-        }
         $this->eventsToDispatch[] = $event;
     }
 
