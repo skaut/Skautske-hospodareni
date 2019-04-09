@@ -7,6 +7,17 @@
     <meta name="author" content="">
     <link rel="icon" href="/favicon.ico">
 
+    {if $presenter->context->parameters['productionMode']}
+        <script n:syntax="off">
+            ga = function (){ga.q.push(arguments)};
+            ga.q = [];
+            ga.l = +new Date;
+            ga('create', 'UA-50892244-1', 'auto');
+            ga('send', 'pageview');
+        </script>
+        <script src="https://www.google-analytics.com/analytics.js" async defer></script>
+    {/if}
+
     <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
 
     <link rel="stylesheet" href="/css/app.css">
