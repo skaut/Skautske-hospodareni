@@ -45,7 +45,8 @@
                     <i class="fas fa-user-plus"></i> Přidat osoby <span class="caret"></span>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="addPersons">
-                    <a n:if="$group->type === 'camp'" n:href="Camp:massAdd $group->id">… z účastníků</a>
+                    <a n:if="$group->type === 'camp'"
+                            n:href="Camp:massAdd $group->id" class="dropdown-item">… z účastníků</a>
                     <a n:href="massAdd $group->id" class="dropdown-item">… z členů</a>
 
                     <a n:if="$group->type === 'registration'"
@@ -108,12 +109,17 @@
         <li n:foreach="$form->errors as $error">{$error}</li>
     </ul>
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped table-sm">
         <tr>
             <th><span class="hidden-sm hidden-xs">Název/</span>účel*</th>
             <th>Email</th>
             <th>Částka*</th>
-            <th>VS <i title="Předvyplněná hodnota je dosavadní nejvyšší hodnota +1" rel="tooltip" class="glyphicon glyphicon-info-sign hidden-xs hidden-sm"></i></th>
+            <th>
+                VS
+                <span title="Předvyplněná hodnota je dosavadní nejvyšší hodnota +1" data-toggle="tooltip">
+                    <i class="fas fa-info-circle hidden-xs hidden-sm"></i>
+                </span>
+            </th>
             <th class='d-xs-none'>KS</th>
             <th>Splatnost*</th>
             <th>Stav</th>
@@ -135,7 +141,7 @@
                     {if !$l->closed && $l->dueDate < $now}class="danger" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}
             id="payment-{$l->id}">
                 <td>
-                    <div n:if="$l->note !== ''" class="pull-right">
+                    <div n:if="$l->note !== ''" class="float-right">
                         <i class="fas fa-sticky-note" title="{$l->note}" aria-hidden="true"></i>
                     </div>
                     {$l->name}

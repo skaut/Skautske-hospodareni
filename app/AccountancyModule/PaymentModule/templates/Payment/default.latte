@@ -60,9 +60,9 @@
                 <td n:foreach="$summarizations[$g->id] as $s" class="r">{if $s->count > 0}{$s->amount|num} ({$s->count}){else} {/if}</td>
                 <td>
                     {$g->state|groupState|noescape}
-                    <div class="pull-right text-success" title="Lze párovat s bankou" n:if="$groupsPairingSupport[$g->id] === TRUE">
-                        <span class="glyphicon glyphicon-resize-small"></span>
-                    </div>
+                    <span class="text-success" title="Lze párovat s bankou" n:if="$groupsPairingSupport[$g->id] === TRUE">
+                        <span class="fas fa-university"></span>
+                    </span>
                 </td>
             </tr> 
         </table>

@@ -1,15 +1,24 @@
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Účastníci bez založené platby</h2>
-{var $stsPrice = 250}
-<a n:href="Payment:detail $id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
+{include '../Payment/@groupBackLink.latte', group => $group}
+
+<div class="row">
+    <div class="col-lg">
+        <h1 n:inner-block="title">Přidat osoby z účastníků</h1>
+    </div>
+    <div class="col-lg">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Účastníci, kteří už mají v této skupině platbu, nejsou zobrazeni.
+        </div>
+    </div>
+</div>
 
 <h3>{$unitPairs[$aid]}</h3>
 
 {if $showForm}
     {control massAddForm}
 {else}
-    <p class="well">Nejsou dostupní žádní účastníci, kteří by neměli založenou platbu.</p>
+    <span class="alert alert-warning">Nejsou dostupní žádní účastníci, kteří by neměli založenou platbu.</span>
 {/if}
 
 

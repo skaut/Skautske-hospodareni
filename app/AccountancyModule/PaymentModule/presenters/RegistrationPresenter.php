@@ -86,7 +86,7 @@ class RegistrationPresenter extends BasePresenter
         }
 
         $this->template->setParameters([
-            'id'       => $id,
+            'group'    => $group,
             'showForm' => ! empty($list),
         ]);
     }

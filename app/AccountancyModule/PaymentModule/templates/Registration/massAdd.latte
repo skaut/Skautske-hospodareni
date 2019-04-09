@@ -1,18 +1,30 @@
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Členové v registraci bez založené platby</h2>
+{include '../Payment/@groupBackLink.latte', group => $group}
+
+<div class="row">
+    <div class="col-lg">
+        <h1 n:inner-block="title">Přidat osoby z registrace</h1>
+    </div>
+    <div class="col-lg">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Členové, kteří už mají v této skupině platbu, nejsou zobrazeni.
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-sm-12">
-        <a n:href="Payment:detail $id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
-
         <h3>{$unitPairs[$aid]}</h3>
 
         {if $showForm}
-            <p class="well">Z výkonostních důvodů je zobrazeno pouze prvních 50 osob.</p>
+            <p>Z výkonostních důvodů je zobrazeno pouze prvních 50 osob.</p>
             {control massAddForm}
         {else}
-            <p class="well">Nejsou dostupné žádné registrované osoby, které by neměli založenou platbu</p>
+            <div class="text-muted text-center mt-5">
+                <i class="fas fa-clipboard-check fa-6x mb-3"></i>
+                <p>Nejsou dostupné žádné registrované osoby, které by neměly založenou platbu</p>
+            </div>
         {/if}
     </div>
 </div>

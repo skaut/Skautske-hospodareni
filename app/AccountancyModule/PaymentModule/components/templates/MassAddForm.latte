@@ -2,7 +2,7 @@
     <ul class="errors" n:if="$form->hasErrors()">
         <li n:foreach="$form->errors as $error">{$error}</li>
     </ul>
-    <table class="table table-bordered table-striped table-condensed">
+    <table class="table table-bordered table-striped table-sm">
         <tr>
             <th><input type="checkbox" id='reg-all-p' onclick="toggleAllCheckboxes(this, 'dependent-checkbox')"/></th>
             <th>Jméno</th>

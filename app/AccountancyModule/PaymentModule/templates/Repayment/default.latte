@@ -1,6 +1,11 @@
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Vratky</h2>
+{include '../Payment/@groupBackLink.latte', group => $group}
+
+<div class="row">
+    <div class="col-lg">
+        <h1 n:inner-block="title">Vratky</h1>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-sm-12">

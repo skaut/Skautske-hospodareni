@@ -1,6 +1,5 @@
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Změny v časopisech (Beta)</h2>
+<h1 n:inner-block="title">Změny v časopisech (Beta)</h1>
 
 <div class='row'>
     <div class='col-sm-12'>
@@ -16,7 +15,7 @@
 <div class="row" n:inner-foreach="$changes as $unitId=>$unitChanges">
     <div class="col-sm-12" n:if='count($unitChanges["add"]) > 0 || count($unitChanges["remove"]) > 0'>
         <h2>{$units[$unitId]->getDisplayName()}</h2>
-        <div class='well well-sm'>
+        <div class='alert alert-info'>
             {if count($unitChanges["add"]) > 0}
                 <h3>Nově přidané časopisy po registraci vůči aktuálnímu stavu</h3>
                 <ul>{foreach $unitChanges["add"] as $item}<li>{$item}</li>{/foreach}</ul>
