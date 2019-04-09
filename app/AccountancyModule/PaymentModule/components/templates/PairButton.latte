@@ -19,7 +19,7 @@
         </a>
         <button n:attr="!$canPair ? [disabled => true]"
                 n:class="btn, 'btn-'  . $style, dropdown-toggle" type="button" id="pairPayments"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="caret"></span></button>
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-persist="true"><span class="caret"></span></button>
 
         <div class="dropdown-menu pairForm" aria-labelledby="pairPayments" n:snippet="form">
             <form n:name="form" class="row w-100 p-3">
