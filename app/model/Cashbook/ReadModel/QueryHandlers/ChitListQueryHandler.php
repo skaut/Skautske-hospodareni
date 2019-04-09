@@ -39,10 +39,11 @@ class ChitListQueryHandler
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')
             ->from(Chit::class, 'c')
+            ->join('c.items', 'ci')
             ->where('IDENTITY(c.cashbook) = :cashbookId')
             ->setParameter('cashbookId', $query->getCashbookId()->toString())
             ->orderBy('c.body.date')
-            ->addOrderBy('c.category.operationType') // income first
+            ->addOrderBy('ci.category.operationType') // income first
             ->addOrderBy('c.id');
 
         if ($query->getPaymentMethod() !== null) {

@@ -31,8 +31,9 @@ class ParticipantChitSumQueryHandler
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')
             ->from(Chit::class, 'c')
+            ->join('c.items', 'ci')
             ->where('IDENTITY(c.cashbook) = :cashbookId')
-            ->andWhere('c.category.id IN (:category_ids)')
+            ->andWhere('ci.category.id IN (:category_ids)')
             ->setParameter('cashbookId', $query->getCashbookId()->toString())
             ->setParameter('category_ids', self::PARTICIPANT_INCOME_CATEGORY_IDS);
 
