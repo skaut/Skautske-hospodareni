@@ -76,20 +76,11 @@ class Chit
         $this->items[] = new ChitItem($this, $amount, $category);
     }
 
-    public function update(?ChitBody $body = null, ?Category $category = null, ?PaymentMethod $paymentMethod = null) : void
+    public function update(ChitBody $body, Category $category, PaymentMethod $paymentMethod, Amount $amount) : void
     {
-        if ($body !== null) {
-            $this->body = $body;
-        }
-
-        if ($category !== null) {
-            $this->getFirstItem()->setCategory($category);
-        }
-
-        if ($paymentMethod === null) {
-            return;
-        }
-
+        $this->body = $body;
+        $this->getFirstItem()->setCategory($category);
+        $this->getFirstItem()->setAmount($amount);
         $this->paymentMethod = $paymentMethod;
     }
 
@@ -186,6 +177,11 @@ class Chit
     public function getItems() : array
     {
         return $this->items->toArray();
+    }
+
+    public function setBody(ChitBody $body) : void
+    {
+        $this->body = $body;
     }
 
 
