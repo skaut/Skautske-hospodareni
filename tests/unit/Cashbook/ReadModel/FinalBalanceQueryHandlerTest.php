@@ -40,7 +40,7 @@ final class FinalBalanceQueryHandlerTest extends Unit
     {
         $op = Operation::get($operation);
         return m::mock(Chit::class, [
-            'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null, new Cashbook\Amount($amount), 'pro test'),
+            'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null, 'pro test'),
             'getCategory'   => new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, false),
             'getSignedAmount' => $amount * ($op->equalsValue(Operation::INCOME) ? 1 : -1),
         ]);

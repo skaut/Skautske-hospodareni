@@ -44,7 +44,7 @@ class Chit
 
     /**
      * @var ChitItem[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity=ChitItem::class, mappedBy="chit")
+     * @ORM\OneToMany(targetEntity=ChitItem::class, mappedBy="chit", cascade={"persist", "remove"})
      */
     private $items;
 
