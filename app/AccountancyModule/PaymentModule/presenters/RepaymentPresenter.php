@@ -44,12 +44,12 @@ final class RepaymentPresenter extends BasePresenter
     {
         $group = $this->group = $this->payments->getGroup($id);
 
-        if ($group !== null && $this->isEditable) {
-            return;
+        if ($group === null && ! $this->isEditable) {
+            $this->flashMessage('K této skupině nemáte přístup');
+            $this->redirect('Payment:default');
         }
 
-        $this->flashMessage('K této skupině nemáte přístup');
-        $this->redirect('Payment:default');
+        $this->template->setParameters(['group' => $group]);
     }
 
     protected function createComponentForm() : BaseForm

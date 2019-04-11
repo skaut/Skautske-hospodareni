@@ -99,7 +99,6 @@ class BankAccountService
         $this->cleanFioCache($id);
     }
 
-
     /**
      * @throws BankAccountNotFound
      */

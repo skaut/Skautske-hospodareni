@@ -49,6 +49,10 @@
                         --no-dev"
               passthru="true"/>
 
+        <!-- Build frontend assets -->
+        <exec command="yarn --cwd ${build.dir} install" passthru="true"/>
+        <exec command="yarn --cwd ${build.dir} build" passthru="true"/>
+
         <delete>
             <fileset dir="${build.dir}">
                 <!-- Temp files -->

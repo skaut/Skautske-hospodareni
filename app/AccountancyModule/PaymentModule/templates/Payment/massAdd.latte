@@ -1,27 +1,32 @@
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Seznam členů bez platby</h2>
-
-<a n:href="Payment:detail $id" class="btn btn-primary"><i class="glyphicon glyphicon-chevron-left"></i> Zpět na skupinu plateb</a>
+{include '@groupBackLink.latte', group => $group}
 
 <div class="row">
-    <div class="col-sm-12">
-        <div n:if="$unitPairs" class="dropdown" style="float: left; margin-right: 7px;">
-            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
-                <i class="glyphicon glyphicon-random hidden-xs hidden-sm"></i> Jednotka <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
-                <li n:foreach="$unitPairs as $unitId=>$label"><a n:href="this aid=>$unitId">{$label}</a></li>
-            </ul>
+    <div class="col-lg">
+        <h1 n:inner-block="title">Přidat osoby z jednotky</h1>
+    </div>
+    <div class="col-lg">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Členové, kteří už mají v této skupině platbu, nejsou zobrazeni.
         </div>
-        <h3>{$unitPairs[$aid]}</h3>
+    </div>
+</div>
+
+<div class="dropdown mb-3">
+    <button class="btn btn-light dropdown-toggle" type="button" id="unitDropdown" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-eye"></i> {$unitPairs[$aid]}
+    </button>
+    <div class="dropdown-menu" aria-labelledby="unitDropdown" n:inner-foreach="$unitPairs as $unitId=>$label">
+        <a n:href="this aid => $unitId" class="dropdown-item">{$label}</a>
     </div>
 </div>
 
 {if $showForm}
     {control massAddForm}
 {else}
-    <p class="well">Nejsou dostupné žádné osoby, které by neměli založenou platbu</p>
+    <span class="alert alert-warning">Nejsou dostupné žádné osoby, které by neměli založenou platbu</span>
 {/if}
 
 

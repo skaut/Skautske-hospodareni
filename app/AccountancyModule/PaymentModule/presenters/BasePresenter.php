@@ -47,7 +47,6 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         ]);
     }
 
-
     /**
      * @return int[]
      */

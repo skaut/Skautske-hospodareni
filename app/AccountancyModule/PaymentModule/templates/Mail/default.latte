@@ -1,21 +1,18 @@
 
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Nastavení emailů</h2>
+<h1 n:inner-block="title" class="mb-4">Nastavení emailů</h1>
 
 <div class="row">
     <div class="col-sm-12">
-        <div class="alert alert-warning" role="alert"><i class="glyphicon glyphicon-exclamation-sign"></i>
-            Hesla účtů jsou uchovávána v čitelné podobě, proto sem nikdy neukládejte osobní email, ale pouze email vytvořený za tímto účelem!
-        </div>
-        <div class="alert alert-warning" role="alert"><i class="glyphicon glyphicon-exclamation-sign"></i>
-            V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz <a href="https://support.google.com/accounts/answer/6010255?hl=cs" target="_blank">https://support.google.com/accounts/answer/6010255?hl=cs</a>.
+        <div class="alert alert-warning fade show text-center" role="alert">
+            Hesla účtů jsou uchovávána v čitelné podobě, proto sem nikdy neukládejte osobní email, ale pouze email
+            vytvořený za tímto účelem!
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="col-md-7">
-        <h3>Seznam SMTP účtů jednotky</h3>
+    <div class="col-lg-7">
+        <h4 class="mb-3">Seznam SMTP účtů jednotky</h4>
         <table class="table table-bordered table-striped table-condensed">
             <tr>
                 <th>&nbsp;</th>
@@ -34,10 +31,46 @@
         </table>
     </div>
 
-    <div class="col-md-5">
-        <h3>Přidat nový SMTP účet</h3>
-        <div class="well well-sm">
-            {control formCreate}
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Přidat nový SMTP účet</h4>
+                <form n:name="formCreate">
+                    <div class="form-row">
+                        <div class="col form-group mb-0">
+                            {label host/}
+                            <input n:name="host" class="form-control">
+                        </div>
+                        <div class="col-xl-auto form-group mb-0">
+                            {label secure/}
+                            <select n:name="secure" class="form-control custom-select"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <small class="form-text text-muted">
+                            V případě problémů s odesláním přes Google si aktivujte <a
+                                    href="https://support.google.com/accounts/answer/6010255?hl=cs" target="_blank">použití
+                                adresy méně bezpečným aplikacím</a>.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        {label username/}
+                        <input n:name="username" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        {label password/}
+                        <input n:name="password" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        {label sender/}
+                        <input n:name="sender" class="form-control">
+                    </div>
+                    <input n:name="send" class="btn btn-primary">
+                </form>
+            </div>
         </div>
+
     </div>
 </div>

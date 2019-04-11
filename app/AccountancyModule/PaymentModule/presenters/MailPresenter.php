@@ -64,7 +64,7 @@ class MailPresenter extends BasePresenter
         $form->addText('host', 'Host')
             ->addRule(Form::FILLED, 'Musíte vyplnit pole host.')
             ->getControlPrototype()->placeholder('např. smtp.gmail.com');
-        $form->addText('username', 'Už. jméno')
+        $form->addText('username', 'Uživatelské jméno')
             ->addRule(Form::FILLED, 'Musíte vyplnit uživatelské jméno.')
             ->getControlPrototype()->placeholder('např. platby@stredisko.cz');
         $form->addText('password', 'Heslo')

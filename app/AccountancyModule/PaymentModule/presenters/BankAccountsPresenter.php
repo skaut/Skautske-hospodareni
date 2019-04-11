@@ -15,13 +15,12 @@ use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccount\BankAccountId;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\BankAccountService;
+use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
 use Model\Payment\TokenNotSet;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
-use function array_map;
-use function in_array;
 use function sprintf;
 
 class BankAccountsPresenter extends BasePresenter
@@ -33,9 +32,6 @@ class BankAccountsPresenter extends BasePresenter
 
     /** @var BankAccountService */
     private $accounts;
-
-    /** @var int[] */
-    private $accountIds = [];
 
     /** @var int */
     private $id;
@@ -49,7 +45,7 @@ class BankAccountsPresenter extends BasePresenter
 
     public function handleAllowForSubunits(int $id) : void
     {
-        if (! $this->canEdit() || ! in_array($id, $this->accountIds, true)) {
+        if (! $this->canEdit()) {
             $this->noAccess();
         }
 
@@ -64,7 +60,7 @@ class BankAccountsPresenter extends BasePresenter
 
     public function handleDisallowForSubunits(int $id) : void
     {
-        if (! $this->canEdit() || ! in_array($id, $this->accountIds, true)) {
+        if (! $this->canEdit()) {
             $this->noAccess();
         }
 
@@ -88,7 +84,7 @@ class BankAccountsPresenter extends BasePresenter
             $this->flashMessage('Bankovní účet byl odstraněn', 'success');
         } catch (BankAccountNotFound $e) {
         }
-        $this->redirect('this');
+        $this->redirect('default');
     }
 
     public function handleImport() : void
@@ -113,7 +109,7 @@ class BankAccountsPresenter extends BasePresenter
             $this->noAccess();
         }
 
-        $account = $this->accounts->find($id);
+        $account = $this->findBankAccount($id);
 
         if ($account === null) {
             throw new BadRequestException('Bankovní účet neexistuje');
@@ -126,15 +122,17 @@ class BankAccountsPresenter extends BasePresenter
         $this->id = $id;
     }
 
+    public function renderEdit(int $id) : void
+    {
+        $this->template->setParameters([
+            'account' => $this->findBankAccount($id),
+            'groupsCount' => $this->queryBus->handle(new CountGroupsWithBankAccountQuery(new BankAccountId($id))),
+        ]);
+    }
+
     public function actionDefault() : void
     {
-        $accounts         = $this->accounts->findByUnit($this->getCurrentUnitId());
-        $this->accountIds = array_map(
-            function (BankAccount $a) {
-                return $a->getId();
-            },
-            $accounts
-        );
+        $accounts = $this->accounts->findByUnit($this->getCurrentUnitId());
 
         $this->template->setParameters([
             'accounts' => $accounts,
@@ -197,7 +195,8 @@ class BankAccountsPresenter extends BasePresenter
     private function noAccess() : void
     {
         $this->flashMessage('Na tuto stránku nemáte přistup', 'danger');
-        $this->redirect(403, 'default');
+        $this->getHttpResponse()->setCode(403);
+        $this->redirect('default');
     }
 
     private function canEdit(?int $unitId = null) : bool
@@ -233,5 +232,10 @@ class BankAccountsPresenter extends BasePresenter
         }
 
         return false;
+    }
+
+    private function findBankAccount(int $id) : ?BankAccount
+    {
+        return $this->accounts->find($id);
     }
 }

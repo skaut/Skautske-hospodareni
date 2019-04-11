@@ -100,13 +100,13 @@ class UnitService
     /**
      * @return string[]
      */
-    public function getSubunitPairs(int $parentId) : array
+    public function getSubunitPairs(int $parentId, bool $useDisplayName = false) : array
     {
         $subUnits = $this->units->findByParent($parentId);
 
         $pairs = [];
         foreach ($subUnits as $subUnit) {
-            $pairs[$subUnit->getId()] = $subUnit->getSortName();
+            $pairs[$subUnit->getId()] = $useDisplayName ? $subUnit->getDisplayName() : $subUnit->getSortName();
         }
 
         return $pairs;

@@ -1,0 +1,21 @@
+@import "../node_modules/bootstrap/scss/bootstrap";
+@import "scss/pikaday";
+@import  "../node_modules/nprogress/nprogress";
+
+.btn-light {
+  @include button-variant($light, darken($light, 30%));
+}
+
+body {
+  min-height: 100vh;
+}
+
+body > footer {
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.pairForm {
+    width: 280px;
+}

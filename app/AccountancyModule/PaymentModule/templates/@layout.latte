@@ -1,0 +1,14 @@
+{extends '../../../templates/@layout2.latte'}
+{block subMenu}
+    <ul class="navbar-nav mr-auto">
+        <li n:class="nav-item, $presenter->isLinkCurrent('Payment:*') || $presenter->isLinkCurrent('Group:*') ? active">
+            <a class="nav-link" n:href="Payment: aid => $aid"><i class="far fa-list-alt"></i> Platební skupiny</a>
+        </li>
+        <li n:class="$presenter->isLinkCurrent('BankAccounts:*') ? active">
+            <a class="nav-link" n:href="BankAccounts: aid => $aid"><i class="fas fa-university"></i> Bankovní účty</a>
+        </li>
+        <li n:class="nav-item, $presenter->isLinkCurrent('Mail:*') ? active">
+            <a class="nav-link" n:href="Mail: aid => $aid"><i class="far fa-envelope-open"></i> Emaily</a>
+        </li>
+    </ul>
+{/block}

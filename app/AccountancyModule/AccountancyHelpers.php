@@ -110,8 +110,8 @@ abstract class AccountancyHelpers
         }
         $long  = $s;
         $short = mb_substr($s, 0, 5) . '.';
-        return '<span class=\'hidden-xs hidden-sm\'>' . $long . '</span>' .
-            '<span class=\'hidden-md hidden-lg\'>' . $short . '</span>';
+        return '<span class=\'d-xs-none d-sm-none d-lg-inline-block\'>' . $long . '</span>' .
+            '<span class=\'d-md-none d-lg-none d-xs-inline-block\'>' . $short . '</span>';
     }
 
     /**
@@ -262,13 +262,13 @@ abstract class AccountancyHelpers
     {
         switch ($s) {
             case 'open':
-                return '<span class=\'label label-success\'>Otevřená</span>';
+                return '<span class=\'badge badge-success\'>Otevřená</span>';
             case 'closed':
-                return '<span class=\'label label-warning\'>Uzavřená</span>';
+                return '<span class=\'badge badge-warning\'>Uzavřená</span>';
             case 'canceled':
-                return '<span class=\'label label-default\'>Zrušená</span>';
+                return '<span class=\'badge badge-default\'>Zrušená</span>';
             default:
-                return '<span class=\'label\'>Neznámý</span>';
+                return '<span class=\'badge\'>Neznámý</span>';
         }
     }
 }

@@ -1,13 +1,53 @@
 {block content}
-{include ../ActionMenu.latte}
-<div class="row">
-    <div class="col-sm-12 main-panel">
-        <div class="panel panel-default">
-            <div class="panel-heading" n:inner-block="title">Upravit účet</div>
-            <div class="panel-body">
-                {control form}
-            </div>
-        </div>
+<h1 n:inner-block="title" class="mb-4">Nastavení účtu</h1>
 
+<div class="card">
+    <div class="card-header">
+        Základní údaje
+    </div>
+    <div class="card-body">
+        {control form}
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        Přístup pro oddíly
+    </div>
+
+    {if $account->isAllowedForSubunits()}
+        <div class="card-body alert-warning">
+            Momentálně tento bankovní účet mohout používat i oddíloví činnovníci.
+            Při odebrání přístupu oddílovým činovníkům znemožníte i párování plateb v platebních skupinách jejich oddílů;.
+        </div>
+        <div class="card-body">
+            <a n:href="disallowForSubunits! $account->getId()" class="btn btn btn-danger">Odebrat přístup oddílům</a>
+        </div>
+    {else}
+        <div class="card-body alert-info">
+            <p class="mb-0">Momentálně bankovní účet umožňuje náhled pouze pro střediskové činovníky a umožňuje párování pouze
+                v platebních skupninách střediska.</p>
+
+            <p class="mb-0">Zpřístupněním oddílům umožníte přístup i oddílovým
+                činovníkům a párování v plateb v jejich platebních skupinách.</p>
+        </div>
+        <div class="card-body">
+            <a n:href="allowForSubunits! $account->getId()"
+                    class="btn btn btn-primary">Zpřístupnit oddílům</a>
+        </div>
+    {/if}
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">Odstranit bankovní účet</div>
+    <div class="card-body alert-warning" n:if="$groupsCount > 0">
+        Bankovní účet momentálně používá několik skupin plateb ({$groupsCount}), které k němu v případě
+        odebrání ztratí přístup.
+    </div>
+    <div class="card-body">
+        <a n:href="remove! $account->getId()" class="btn btn-danger">
+            <i class="far fa-trash-alt"></i>
+            Odstranit
+        </a>
     </div>
 </div>

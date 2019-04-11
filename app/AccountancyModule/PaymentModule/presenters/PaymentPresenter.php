@@ -210,9 +210,7 @@ class PaymentPresenter extends BasePresenter
             ]
         );
 
-        $this->template->setParameters([
-            'linkBack' => $this->link('detail', ['id' => $payment->getGroupId()]),
-        ]);
+        $this->template->setParameters(['group' => $this->model->getGroup($payment->getGroupId())]);
     }
 
     /**
@@ -241,8 +239,9 @@ class PaymentPresenter extends BasePresenter
 
         $this->template->setParameters([
             'unitPairs' => $this->readUnits,
-            'id'       => $this->id,
-            'showForm' => count($list) !== 0,
+            'group'    => $group,
+            'id'        => $this->id,
+            'showForm'  => count($list) !== 0,
         ]);
     }
 
@@ -427,6 +426,7 @@ class PaymentPresenter extends BasePresenter
     protected function createComponentPaymentForm() : Form
     {
         $form = new BaseForm();
+        $form->useBootstrap4();
         $form->addText('name', 'Název/účel')
             ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Musíte zadat název platby');

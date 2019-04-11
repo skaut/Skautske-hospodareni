@@ -161,6 +161,7 @@ class GroupPresenter extends BasePresenter
     protected function createComponentGroupForm() : Form
     {
         $form = new BaseForm();
+        $form->useBootstrap4();
 
         $unitId = $this->getCurrentUnitId();
 
@@ -305,6 +306,7 @@ class GroupPresenter extends BasePresenter
             // Only payment info email is always saved
             if ($type !== EmailType::PAYMENT_INFO) {
                 $container->addCheckbox('enabled', 'Aktivní')
+                    ->setOption('class', 'form-check')
                     ->addCondition($form::FILLED)
                     ->toggle($subjectId)
                     ->toggle($bodyId);
