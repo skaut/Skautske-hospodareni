@@ -1,12 +1,5 @@
 {var $errorMessage = $groupsCount === 1 ? 'Skupina nemá nastavený účet pro párování s FIO' : 'Žádná ze skupin plateb nemá nastavený účet pro párování s FIO'}
-{*<div n:class="btn-group, !$canPair ? disable" {if !$canPair}title="{$errorMessage}" rel="tooltip"{/if}>*}
-    {*<a n:href="pair!" n:class="!$canPair ? disabled, btn, btn-primary">*}
-        {*<i class="fas fa-university"></i> Párovat platby*}
-    {*</a>*}
-    {*<button n:class="!$canPair ? disabled, btn, btn-primary, dropdown-toggle" data-toggle="dropdown" type="button"><span*}
-                {*class="caret"></span></button>*}
 
-{*</div>*}
 {var $style = $style ?? 'primary'}
 {var $attrs = ! $canPair && $groupsCount === 1
             ? ['data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => 'Skupina nemá nastavený účet']
