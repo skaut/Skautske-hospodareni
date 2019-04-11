@@ -15,7 +15,7 @@
 <div class="d-inline-block">
     <div class="btn-group" n:attr="$attrs">
         <a n:href="pair!" n:class="!$canPair ? disabled, btn, 'btn-' . $style">
-            <i class="fas fa-university"></i> Párovat platby
+            <i class="fas fa-university"></i> Párovat <span class="d-none d-md-inline">platby</span>
         </a>
         <button n:attr="!$canPair ? [disabled => true]"
                 n:class="btn, 'btn-'  . $style, dropdown-toggle" type="button" id="pairPayments"

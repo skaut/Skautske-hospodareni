@@ -1,7 +1,7 @@
 {block #content}
 
 <div class="row mb-4 d-flex align-items-center">
-    <div class="col">
+    <div class="col text-center text-md-left mb-2 mb-md-0">
         <h1 n:inner-block="title">{$group->name}</h1>
         {$group->state|groupState|noescape}
         <span class="mr-2 ml-2">|</span>
@@ -13,7 +13,7 @@
     </div>
 
 
-    <div class="col-auto" n:if="$isEditable">
+    <div class="col-12 col-md-auto text-center" n:if="$isEditable">
         {if $group->state === 'open'}
             <a n:href="closeGroup! $group->id"
                     class="btn btn-light"><i class="fas fa-lock"></i> Uzavřít</a>
@@ -27,15 +27,14 @@
         {/if}
     </div>
 </div>
-
-<table class="table table-bordered text-center">
-    <tr>
-        <td n:foreach="$summarize as $name=>$r">
+<div class="container">
+    <div class="row text-center">
+        <div n:foreach="$summarize as $name => $r" class="col-md-4 border p-2">
             <strong>{$name|paymentState:TRUE}&nbsp;({$r->count}):</strong>
             {if $r->amount != null}{$r->amount|num} Kč{else}-{/if}
-        </td>
-    </tr>
-</table>
+        </div>
+    </div>
+</div>
 <div class="mb-3">
     <div class="mt-4" n:inner-if="$isEditable">
         {if $group->state =='open'}

@@ -1,11 +1,22 @@
 <div class="d-inline-block">
-    <span n:snippet="unit">{$unitNames|implode: ', '}</span>
+    <span n:snippet="unit">
+        <span class="d-inline d-md-none">
+            {if count($unitNames) === 1}
+                {$unitNames[0]}
+            {elseif count($unitNames) < 5}
+                {count($unitNames)} jednotky
+            {else}
+                {count($unitNames)} jednotek
+            {/if}
+        </span>
+        <span class="d-none d-md-inline-block">{$unitNames|implode: ', '}</span>
+    </span>
 
     <div class="dropdown d-inline-flex">
           <button class="btn btn-link btn-sm p-0 ml-1" type="button" data-toggle="dropdown" data-persist="true">
               <i class="far fa-edit"></i>
           </button>
-          <div class="dropdown-menu px-4 py-3 text-nowrap" n:inner-snippet="form">
+          <div class="dropdown-menu dropdown-menu-right px-4 py-3 text-nowrap" n:inner-snippet="form">
               <form n:name="form">
                   <h5>Jednotky s přístupem</h5>
                   <div class="form-check" n:foreach="$form['unitIds']->items as $key => $label">
