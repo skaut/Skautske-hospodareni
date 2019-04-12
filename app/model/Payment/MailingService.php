@@ -66,6 +66,7 @@ class MailingService
      *
      * @throws InvalidEmail
      * @throws PaymentNotFound
+     * @throws InvalidSmtp
      * @throws MailCredentialsNotSet
      * @throws EmailTemplateNotSet
      */
@@ -88,13 +89,14 @@ class MailingService
 
     /**
      * @return string User's email
+     * @throws BankAccountNotFound
      * @throws EmailNotSet
      * @throws GroupNotFound
      * @throws InvalidBankAccount
+     * @throws InvalidSmtp
      * @throws MailCredentialsNotFound
      * @throws MailCredentialsNotSet
      * @throws UserNotFound
-     * @throws InvalidSmtp
      */
     public function sendTestMail(int $groupId) : string
     {
