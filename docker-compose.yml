@@ -50,7 +50,7 @@ services:
 
     smtp:
         container_name: hskauting.smtp
-        image: tophfr/mailcatcher
+        image: tophfr/mailcatcher:0.6.5_3
         environment:
             SMTP_HOST: smtp-hospodareni.loc
         networks:

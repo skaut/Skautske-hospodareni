@@ -10,7 +10,7 @@ build:
             MYSQL_ROOT_PASSWORD: 'root'
             MYSQL_DATABASE: hskauting
         - name: smtp-hospodareni.loc
-          id: tophfr/mailcatcher
+          id: tophfr/mailcatcher:0.6.5_3
           env:
             SMTP_HOST: smtp-hospodareni.loc
 
