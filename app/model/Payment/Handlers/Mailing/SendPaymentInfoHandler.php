@@ -6,6 +6,7 @@ namespace Model\Event\Handlers\Mailing;
 
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailType;
+use Model\Payment\InvalidSmtp;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
@@ -25,6 +26,9 @@ final class SendPaymentInfoHandler
         $this->mailingService = $mailingService;
     }
 
+    /**
+     * @throws InvalidSmtp
+     */
     public function handle(SendPaymentInfo $command) : void
     {
         $payment = $this->payments->find($command->getPaymentId());

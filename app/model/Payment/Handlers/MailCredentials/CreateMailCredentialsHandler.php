@@ -12,7 +12,6 @@ use Model\Payment\MailCredentials;
 use Model\Payment\Repositories\IMailCredentialsRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
-use Nette\Mail\SmtpException;
 
 class CreateMailCredentialsHandler
 {
@@ -56,7 +55,6 @@ class CreateMailCredentialsHandler
     /**
      * Send test email to user who tries to add SMTP
      * @throws EmailNotSet
-     * @throws SmtpException
      */
     private function trySendViaSmtp(MailCredentials $credentials, int $userId) : void
     {

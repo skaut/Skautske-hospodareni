@@ -20,6 +20,7 @@ use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
 use Model\Payment\InvalidBankAccount;
+use Model\Payment\InvalidSmtp;
 use Model\Payment\MailCredentialsNotSet;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
@@ -30,7 +31,6 @@ use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\Mail\SmtpException;
 use function array_filter;
 use function array_intersect;
 use function array_keys;
@@ -328,7 +328,7 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage('Testovací email byl odeslán na ' . $email . '.');
         } catch (MailCredentialsNotSet $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-        } catch (SmtpException $e) {
+        } catch (InvalidSmtp $e) {
             $this->smtpError($e);
         } catch (InvalidBankAccount $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
@@ -527,7 +527,7 @@ class PaymentPresenter extends BasePresenter
         return $this->removeGroupDialogFactory->create($this->id);
     }
 
-    private function smtpError(SmtpException $e) : void
+    private function smtpError(InvalidSmtp $e) : void
     {
         $this->flashMessage(sprintf('SMTP server vrátil chybu (%s)', $e->getMessage()), 'danger');
         $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
@@ -556,7 +556,7 @@ class PaymentPresenter extends BasePresenter
         } catch (InvalidBankAccount $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
             $this->redirect('this');
-        } catch (SmtpException $e) {
+        } catch (InvalidSmtp $e) {
             $this->smtpError($e);
             $this->redirect('this');
         }
