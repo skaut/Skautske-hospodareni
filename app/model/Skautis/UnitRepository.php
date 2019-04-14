@@ -53,7 +53,8 @@ final class UnitRepository implements IUnitRepository
             return $this->webService->call('UnitDetail', [
                 ['ID' => $id],
             ]);
-        } catch (PermissionException $e) { // Unit doesn't exist or user has no access to it
+        } catch (PermissionException $e) {
+            // Unit doesn't exist (access to all units is public)
             throw new UnitNotFound('', 0, $e);
         }
     }
