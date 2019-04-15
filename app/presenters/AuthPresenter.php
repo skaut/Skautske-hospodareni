@@ -86,13 +86,16 @@ class AuthPresenter extends BasePresenter
 
     /**
      * zajištuje odhlašení ze skautisu
-     * Skautis sem přesměruje po svém odhlášení
+     * Skautis po svém odhlášení přesměruje na actionSkautisLogout
      */
     public function actionLogoutSIS() : void
     {
         $this->redirectUrl($this->authService->getLogoutUrl());
     }
 
+    /**
+     * slouží pouze jako návratová adresa po odhlášení ze skautisu
+     */
     public function actionSkautisLogout() : void
     {
         $this->getUser()->logout(true);
