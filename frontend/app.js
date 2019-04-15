@@ -1,7 +1,7 @@
 import 'bootstrap.native';
 import {dom} from './icons';
 import {initializeLogoutTimer} from './logoutTimer';
-import {toggleAllCheckboxes} from './utils';
+import {toggleAllCheckboxes, toggleMainCheckbox} from './utils';
 import naja from 'naja';
 import { initializeDatePicker } from "./js/datePicker";
 import moment from 'moment';
@@ -21,3 +21,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.toggleAllCheckboxes = toggleAllCheckboxes;
+document.toggleMainCheckbox = toggleMainCheckbox;
