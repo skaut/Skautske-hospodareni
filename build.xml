@@ -211,4 +211,19 @@
     <target name="coding-standard">
         <exec command="vendor/bin/phpcs" passthru="true" checkreturn="true"/>
     </target>
+
+    <target name="init">
+        <!-- Create config.local.neon -->
+        <copy file="app/config/config.sample.local.neon" tofile="app/config/config.local.neon"/>
+
+        <!-- Install dependencies -->
+        <exec command="composer install" passthru="true"/>
+        <exec command="yarn install" passthru="true"/>
+
+        <!-- Build frontend assets -->
+        <exec command="yarn build" passthru="true"/>
+
+        <!-- Prepare database schema -->
+        <exec command="php www/index.php migrations:migrate" passthru="true"/>
+    </target>
 </project>
