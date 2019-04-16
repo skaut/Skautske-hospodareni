@@ -19,6 +19,12 @@ class ChitItem
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
      */
+    private $_id;
+
+    /**
+     * @var int
+     * @ORM\Column(type="integer", options={"unsigned"=true})
+     */
     private $id;
 
     /**
@@ -40,14 +46,15 @@ class ChitItem
      */
     private $category;
 
-    public function __construct(Chit $chit, Amount $amount, Category $category)
+    public function __construct(int $id, Chit $chit, Amount $amount, Category $category)
     {
+        $this->id       = $id;
         $this->chit     = $chit;
         $this->amount   = $amount;
         $this->category = $category;
     }
 
-    public function getId() : ?int
+    public function getId() : int
     {
         return $this->id;
     }

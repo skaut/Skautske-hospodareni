@@ -13,13 +13,14 @@ final class Version20190409104015 extends AbstractMigration
     {
         $this->addSql(
             'CREATE TABLE `ac_chits_item` (' .
-            '`id` int(10) unsigned NOT NULL AUTO_INCREMENT,' .
+            '`_id` int(10) unsigned NOT NULL AUTO_INCREMENT,' .
+            '`id` int(10) unsigned NOT NULL,' .
             '`chit_id` bigint(20) unsigned NOT NULL,' .
             '`price` float(9,2) NOT NULL,' .
             '`priceText` varchar(100) COLLATE utf8_czech_ci NOT NULL,' .
             '`category` int(10) unsigned NOT NULL,' .
             '`category_operation_type` varchar(255) COLLATE utf8_czech_ci DEFAULT NULL COMMENT \'(DC2Type:string_enum)\',' .
-            'PRIMARY KEY (`id`),' .
+            'PRIMARY KEY (`_id`),' .
             'KEY `chit_id` (`chit_id`),' .
             'CONSTRAINT `ac_chits_item_ibfk_2` FOREIGN KEY (`chit_id`) REFERENCES `ac_chits` (`id`) ON DELETE CASCADE ON UPDATE CASCADE' .
             ') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;'
@@ -27,8 +28,8 @@ final class Version20190409104015 extends AbstractMigration
 
         // move current data
         $this->addSql(
-            'INSERT INTO `ac_chits_item` (`chit_id`, `price`, `priceText`, `category`, `category_operation_type`)' .
-            'SELECT `id`, `price`, `priceText`, `category`, `category_operation_type`' .
+            'INSERT INTO `ac_chits_item` (`id`,`chit_id`, `price`, `priceText`, `category`, `category_operation_type`)' .
+            'SELECT 1, `id`, `price`, `priceText`, `category`, `category_operation_type`' .
             'FROM `ac_chits`'
         );
 

@@ -12,8 +12,10 @@ use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
 use Model\Cashbook\Operation;
 use Model\Common\ShouldNotHappen;
+use function array_merge;
 use function count;
 use function implode;
+use function max;
 
 /**
  * @ORM\Entity()
@@ -44,7 +46,7 @@ class Chit
 
     /**
      * @var ChitItem[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity=ChitItem::class, mappedBy="chit", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=ChitItem::class, mappedBy="chit", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $items;
 
@@ -73,14 +75,14 @@ class Chit
 
     public function addItem(Amount $amount, Category $category) : void
     {
-        $this->items[] = new ChitItem($this, $amount, $category);
+        $this->items[] = new ChitItem($this->getNextChitItemId(), $this, $amount, $category);
     }
 
     public function update(ChitBody $body, Category $category, PaymentMethod $paymentMethod, Amount $amount) : void
     {
         $this->body = $body;
         $this->items->clear();
-        $this->items->add(new ChitItem($this, $amount, $category));
+        $this->items->add(new ChitItem($this->getNextChitItemId(), $this, $amount, $category));
         $this->paymentMethod = $paymentMethod;
     }
 
@@ -112,7 +114,7 @@ class Chit
     {
         $exps = [];
         foreach ($this->items as $item) {
-            $exps[] =$item->getAmount()->expression;
+            $exps[] = $item->getAmount()->getExpression();
         }
         return new Amount(implode('+', $exps));
     }
@@ -197,5 +199,13 @@ class Chit
             throw new ShouldNotHappen();
         }
         return $this->items->first();
+    }
+
+    public function getNextChitItemId() : int
+    {
+        $ids = $this->items->map(function (ChitItem $i) {
+            return $i->getId();
+        });
+        return 1 + max(array_merge($ids->getValues(), [0]));
     }
 }
