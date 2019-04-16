@@ -26,7 +26,8 @@ final class CachedUnitResolver implements IUnitResolver
     {
         return $this->cache->load(
             $unitId,
-            function () use ($unitId) : int {
+            function (?array &$options) use ($unitId) : int {
+                $options[Cache::EXPIRE] = '1 day';
                 return $this->inner->getOfficialUnitId($unitId);
             }
         );
