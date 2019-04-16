@@ -139,6 +139,13 @@ services:
     - class: Model\Skautis\ReadModel\QueryHandlers\CampBudgetQueryHandler(@skautis.cached.event)
       tags: [queryBus.handler]
 
+    unitResolver:
+        class: Model\Unit\Services\UnitResolver
+        autowired: false
+
+    - Model\Infrastructure\Services\Unit\CachedUnitResolver(@unitResolver)
+
+
     # Skautis webservices
     skautis.org:
         factory: Model\Skautis\WebserviceFactory::createCached('org')
