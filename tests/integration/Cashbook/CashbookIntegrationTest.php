@@ -353,8 +353,7 @@ class CashbookIntegrationTest extends \IntegrationTest
 
         $targetCashbook->copyChitsFrom([1], $sourceCashbook);
 
-        $chitAmount = $sourceCashbook->getChits()[0]->getAmount()->getValue();
-
+        $chitAmount = $sourceCashbook->getChits()[0]->getAmount()->toFloat();
         $this->assertSame([Category::UNDEFINED_INCOME_ID => $chitAmount], $targetCashbook->getCategoryTotals());
     }
 

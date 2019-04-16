@@ -79,8 +79,8 @@ class Chit
     public function update(ChitBody $body, Category $category, PaymentMethod $paymentMethod, Amount $amount) : void
     {
         $this->body = $body;
-        $this->getFirstItem()->setCategory($category);
-        $this->getFirstItem()->setAmount($amount);
+        $this->items->clear();
+        $this->items->add(new ChitItem($this, $amount, $category));
         $this->paymentMethod = $paymentMethod;
     }
 
@@ -145,7 +145,9 @@ class Chit
     public function copyToCashbook(Cashbook $newCashbook) : self
     {
         $chit = new self($newCashbook, $this->body, $this->paymentMethod);
-        $chit->addItem($this->getFirstItem()->getAmount(), $this->getFirstItem()->getCategory());
+        foreach ($this->items as $item) {
+            $chit->addItem($item->getAmount(), $item->getCategory());
+        }
         return $chit;
     }
 
@@ -156,12 +158,16 @@ class Chit
 
     public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook) : self
     {
-        $newChit = $this->copyToCashbook($newCashbook);
+        $newChit = new self($newCashbook, $this->body, $this->paymentMethod);
 
-        $newChit->getFirstItem()->setCategory(new Category(
-            $newChit->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
-            $newChit->getFirstItem()->getCategory()->getOperationType()
-        ));
+        /** @var ChitItem $item */
+        foreach ($this->items as $item) {
+            $category = new Category(
+                $this->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
+                $item->getCategory()->getOperationType()
+            );
+            $newChit->addItem($item->getAmount(), $category);
+        }
 
         return $newChit;
     }

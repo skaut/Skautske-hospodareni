@@ -61,14 +61,4 @@ class ChitItem
     {
         return $this->category;
     }
-
-    public function setCategory(Category $category) : void
-    {
-        $this->category = $category;
-    }
-
-    public function setAmount(Amount $amount) : void
-    {
-        $this->amount = $amount;
-    }
 }
