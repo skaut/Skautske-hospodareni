@@ -17,8 +17,9 @@ use Model\Cashbook\Operation;
 
 class CashbookRepositoryTest extends \IntegrationTest
 {
-    private const TABLE      = 'ac_cashbook';
-    private const CHIT_TABLE = 'ac_chits';
+    private const TABLE           = 'ac_cashbook';
+    private const CHIT_TABLE      = 'ac_chits';
+    private const CHIT_ITEM_TABLE = 'ac_chits_item';
 
     /** @var CashbookRepository */
     private $repository;
@@ -40,6 +41,7 @@ class CashbookRepositoryTest extends \IntegrationTest
         return [
             Cashbook::class,
             Cashbook\Chit::class,
+            Cashbook\ChitItem::class,
         ];
     }
 
@@ -69,12 +71,15 @@ class CashbookRepositoryTest extends \IntegrationTest
             'date' => '1989-11-17',
             'num' => '123',
             'recipient' => 'František Maša',
+            'purpose' => 'Purpose',
+            'payment_method' => Cashbook\PaymentMethod::BANK,
+        ];
+
+        $chitItem = [
             'price' => '100.00',
             'priceText' => '100',
-            'purpose' => 'Purpose',
             'category' => 10,
             'category_operation_type' => Operation::INCOME,
-            'payment_method' => Cashbook\PaymentMethod::BANK,
         ];
 
         $cashbook = new Cashbook(CashbookId::fromString('10'), Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
@@ -86,10 +91,10 @@ class CashbookRepositoryTest extends \IntegrationTest
                 new Cashbook\ChitNumber($chit['num']),
                 new Date($chit['date']),
                 new Cashbook\Recipient($chit['recipient']),
-                new Cashbook\Amount($chit['priceText']),
                 $chit['purpose']
             ),
-            $this->mockCategory($chit['category']),
+            new Cashbook\Amount($chitItem['priceText']),
+            $this->mockCategory($chitItem['category']),
             Cashbook\PaymentMethod::get($chit['payment_method'])
         );
 
@@ -102,6 +107,7 @@ class CashbookRepositoryTest extends \IntegrationTest
             'note' => 'poznamka moje',
         ]);
         $this->tester->seeInDatabase(self::CHIT_TABLE, $chit);
+        $this->tester->seeInDatabase(self::CHIT_ITEM_TABLE, $chitItem);
     }
 
     private function mockCategory(int $id) : ICategory

@@ -149,7 +149,7 @@ class ExportService
             $category                                                      = $chit->getCategory();
             $operationType                                                 = $category->getOperationType()->getValue();
             $virtual                                                       = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
-            $sums[$virtual][$operationType][$category->getId()]['amount'] += $chit->getBody()->getAmount()->toFloat();
+            $sums[$virtual][$operationType][$category->getId()]['amount'] += $chit->getAmount()->toFloat();
         }
 
         /* sum up "Příjmy od účastníků"(1) and "Hromadný příjem od úč."(11) */

@@ -40,14 +40,13 @@ class Category
     /** @var bool */
     private $virtual;
 
-    public function __construct(int $id, string $name, Money $total, string $shortcut, Operation $operationType, bool $income, bool $virtual)
+    public function __construct(int $id, string $name, Money $total, string $shortcut, Operation $operationType, bool $virtual)
     {
         $this->id            = $id;
         $this->name          = $name;
         $this->total         = $total;
         $this->shortcut      = $shortcut;
         $this->operationType = $operationType;
-        $this->income        = $income;
         $this->virtual       = $virtual;
     }
 
@@ -78,7 +77,7 @@ class Category
 
     public function isIncome() : bool
     {
-        return $this->income;
+        return $this->operationType->equals(Operation::INCOME());
     }
 
     public function isVirtual() : bool

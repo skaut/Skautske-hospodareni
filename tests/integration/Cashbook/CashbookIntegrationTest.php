@@ -11,6 +11,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
@@ -32,6 +33,7 @@ class CashbookIntegrationTest extends \IntegrationTest
         return [
             Cashbook::class,
             Chit::class,
+            ChitItem::class,
         ];
     }
 
@@ -63,7 +65,7 @@ class CashbookIntegrationTest extends \IntegrationTest
         $paymentMethod = PaymentMethod::BANK();
 
         $cashbook->unlockChit(1);
-        $cashbook->updateChit(1, new ChitBody(null, $date, $recipient, $amount, 'purpose'), $category, $paymentMethod);
+        $cashbook->updateChit(1, new ChitBody(null, $date, $recipient, 'purpose'), $amount, $category, $paymentMethod);
 
         $event = $cashbook->extractEventsToDispatch()[0];
         $this->assertInstanceOf(ChitWasUpdated::class, $event);
@@ -82,7 +84,7 @@ class CashbookIntegrationTest extends \IntegrationTest
         $paymentMethod = PaymentMethod::CASH();
         $this->expectException(ChitLocked::class);
 
-        $cashbook->updateChit(1, new ChitBody(null, $date, null, $amount, 'new-purpose'), $category, $paymentMethod);
+        $cashbook->updateChit(1, new ChitBody(null, $date, null, 'new-purpose'), $amount, $category, $paymentMethod);
     }
 
     public function testUpdateOfNonExistentChitThrowsException() : void
@@ -95,7 +97,7 @@ class CashbookIntegrationTest extends \IntegrationTest
 
         $this->expectException(ChitNotFound::class);
 
-        $cashbook->updateChit(2, new ChitBody(null, $date, null, $amount, 'new-purpose'), $category, $paymentMethod);
+        $cashbook->updateChit(2, new ChitBody(null, $date, null, 'new-purpose'), $amount, $category, $paymentMethod);
     }
 
     public function testRemoveChit() : void
@@ -150,11 +152,11 @@ class CashbookIntegrationTest extends \IntegrationTest
         int $originalCategoryId,
         int $newCategoryId
     ) : void {
-        $body             = new ChitBody(new ChitNumber('123'), new Date(), new Recipient('Maša'), new Amount('101'), 'transfer');
+        $body             = new ChitBody(new ChitNumber('123'), new Date(), new Recipient('Maša'), 'transfer');
         $originalCashbook = new Cashbook(CashbookId::fromString('20'), CashbookType::get($originalCashbookType));
         $category         = $this->mockCategory($originalCategoryId, $originalOperation);
 
-        $originalCashbook->addChit($body, $category, PaymentMethod::CASH());
+        $originalCashbook->addChit($body, new Amount('101'), $category, PaymentMethod::CASH());
 
         // to generate ID for chit
         $this->entityManager->persist($originalCashbook);
@@ -199,9 +201,9 @@ class CashbookIntegrationTest extends \IntegrationTest
         $originalCashbook = new Cashbook(CashbookId::fromString('20'), CashbookType::get(CashbookType::TROOP));
         $recipient        = new Recipient('František Maša');
 
-        $chitBody = new ChitBody(new ChitNumber('123'), new Date(), $recipient, new Amount('100 + 1'), 'transfer');
+        $chitBody = new ChitBody(new ChitNumber('123'), new Date(), $recipient, 'transfer');
         $category = $this->mockCategory(16, Operation::EXPENSE);
-        $originalCashbook->addChit($chitBody, $category, PaymentMethod::CASH()); // "Převod do akce"
+        $originalCashbook->addChit($chitBody, new Amount('100 + 1'), $category, PaymentMethod::CASH()); // "Převod do akce"
 
         // to generate ID for chit
         $this->entityManager->persist($originalCashbook);
@@ -229,7 +231,8 @@ class CashbookIntegrationTest extends \IntegrationTest
     {
         $originalCashbook = new Cashbook(CashbookId::fromString('20'), CashbookType::get(CashbookType::OFFICIAL_UNIT));
         $originalCashbook->addChit(
-            new ChitBody(new ChitNumber('123'), new Date(), new Recipient('FM'), new Amount('100'), 'transfer'),
+            new ChitBody(new ChitNumber('123'), new Date(), new Recipient('FM'), 'transfer'),
+            new Amount('100'),
             $this->mockCategory($invalidCategoryId),
             PaymentMethod::CASH()
         );
@@ -261,7 +264,8 @@ class CashbookIntegrationTest extends \IntegrationTest
         $cashbook = new Cashbook(CashbookId::fromString('10'), CashbookType::get($type));
 
         $cashbook->addChit(
-            new ChitBody(null, new Date(), null, new Amount('100'), 'purpose'),
+            new ChitBody(null, new Date(), null, 'purpose'),
+            new Amount('100'),
             $this->mockCategory(666),
             PaymentMethod::CASH()
         );
@@ -277,10 +281,10 @@ class CashbookIntegrationTest extends \IntegrationTest
     public function testLock() : void
     {
         $cashbook = new Cashbook(CashbookId::fromString('11'), CashbookType::get(CashbookType::EVENT));
-        $chitBody = new ChitBody(null, new Date(), null, new Cashbook\Amount('100'), 'purpose');
+        $chitBody = new ChitBody(null, new Date(), null, 'purpose');
 
         for ($i = 0; $i < 5; $i++) {
-            $cashbook->addChit($chitBody, $this->mockCategory(666), PaymentMethod::CASH());
+            $cashbook->addChit($chitBody, new Cashbook\Amount('100'), $this->mockCategory(666), PaymentMethod::CASH());
         }
 
         $this->entityManager->persist($cashbook);
@@ -349,8 +353,7 @@ class CashbookIntegrationTest extends \IntegrationTest
 
         $targetCashbook->copyChitsFrom([1], $sourceCashbook);
 
-        $chitAmount = $sourceCashbook->getChits()[0]->getAmount()->getValue();
-
+        $chitAmount = $sourceCashbook->getChits()[0]->getAmount()->toFloat();
         $this->assertSame([Category::UNDEFINED_INCOME_ID => $chitAmount], $targetCashbook->getCategoryTotals());
     }
 

@@ -31,34 +31,27 @@ final class ChitBody
     private $recipient;
 
     /**
-     * @var Amount
-     * @ORM\Embedded(class=Amount::class, columnPrefix=false)
-     */
-    private $amount;
-
-    /**
      * @var string
      * @ORM\Column(type="string", length=120)
      */
     private $purpose;
 
-    public function __construct(?ChitNumber $number, Date $date, ?Recipient $recipient, Amount $amount, string $purpose)
+    public function __construct(?ChitNumber $number, Date $date, ?Recipient $recipient, string $purpose)
     {
         $this->number    = $number;
         $this->date      = $date;
         $this->recipient = $recipient;
-        $this->amount    = $amount;
         $this->purpose   = $purpose;
     }
 
     public function withoutChitNumber() : self
     {
-        return new self(null, $this->date, $this->recipient, $this->amount, $this->purpose);
+        return new self(null, $this->date, $this->recipient, $this->purpose);
     }
 
     public function withNewNumber(ChitNumber $chitNumber) : self
     {
-        return new self($chitNumber, $this->date, $this->recipient, $this->amount, $this->purpose);
+        return new self($chitNumber, $this->date, $this->recipient, $this->purpose);
     }
 
     public function getNumber() : ?ChitNumber
@@ -76,11 +69,6 @@ final class ChitBody
         return $this->recipient;
     }
 
-    public function getAmount() : Amount
-    {
-        return $this->amount;
-    }
-
     public function getPurpose() : string
     {
         return $this->purpose;
@@ -91,7 +79,6 @@ final class ChitBody
         return (string) $other->number ===  (string) $this->number
             && $other->date->eq($this->date)
             && (string) $other->recipient === (string) $this->recipient
-            && $other->amount->getExpression() === $this->amount->getExpression()
             && $other->purpose === $this->purpose;
     }
 }

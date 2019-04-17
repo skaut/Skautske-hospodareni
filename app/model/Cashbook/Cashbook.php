@@ -7,6 +7,7 @@ namespace Model\Cashbook;
 use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
@@ -102,9 +103,11 @@ class Cashbook extends Aggregate
         $this->note = $note;
     }
 
-    public function addChit(ChitBody $chitBody, ICategory $category, PaymentMethod $paymentMethod) : void
+    public function addChit(ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod) : void
     {
-        $this->chits[] = new Chit($this, $chitBody, $this->getChitCategory($category), $paymentMethod);
+        $chit = new Chit($this, $chitBody, $paymentMethod);
+        $chit->addItem($amount, $this->getChitCategory($category));
+        $this->chits[] = $chit;
         $this->raise(new ChitWasAdded($this->id, $category->getId()));
     }
 
@@ -132,11 +135,14 @@ class Cashbook extends Aggregate
 
         $category = new Cashbook\Category(
             $categoryId,
-            $originalChit->getCategory()->getOperationType()->getInverseOperation()
+            $originalChit->getOperation()->getInverseOperation()
         );
 
-        $newChitBody   = $originalChit->getBody()->withoutChitNumber();
-        $this->chits[] = new Chit($this, $newChitBody, $category, $originalChit->getPaymentMethod());
+        $newChitBody = $originalChit->getBody()->withoutChitNumber();
+
+        $chit = new Chit($this, $newChitBody, $originalChit->getPaymentMethod());
+        $chit->addItem($originalChit->getItems()[0]->getAmount(), $category);
+        $this->chits[] = $chit;
 
         $this->raise(new ChitWasAdded($this->id, $categoryId));
     }
@@ -145,7 +151,7 @@ class Cashbook extends Aggregate
      * @throws ChitNotFound
      * @throws ChitLocked
      */
-    public function updateChit(int $chitId, ChitBody $chitBody, ICategory $category, PaymentMethod $paymentMethod) : void
+    public function updateChit(int $chitId, ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod) : void
     {
         $chit          = $this->getChit($chitId);
         $oldCategoryId = $chit->getCategoryId();
@@ -154,7 +160,7 @@ class Cashbook extends Aggregate
             throw new ChitLocked();
         }
 
-        $chit->update($chitBody, $this->getChitCategory($category), $paymentMethod);
+        $chit->update($chitBody, $this->getChitCategory($category), $paymentMethod, $amount);
 
         $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $category->getId()));
     }
@@ -168,7 +174,7 @@ class Cashbook extends Aggregate
 
         foreach ($this->chits as $chit) {
             $categoryId                     = $chit->getCategoryId();
-            $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->getValue();
+            $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->toFloat();
         }
 
         return $totalByCategories;
@@ -339,7 +345,7 @@ class Cashbook extends Aggregate
             $body    = $chit->getBody();
             $newBody = $body->withNewNumber(new ChitNumber((string) (++$maxChitNumber)));
 
-            $chit->update($newBody, $chit->getCategory(), $chit->getPaymentMethod());
+            $chit->setBody($newBody);
             $this->raise(new ChitWasUpdated($this->id, $chit->getCategoryId(), $chit->getCategoryId()));
         }
     }

@@ -14,7 +14,6 @@ use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Category;
-use function array_map;
 use function count;
 
 class ChitListQueryHandlerTest extends \IntegrationTest
@@ -26,7 +25,11 @@ class ChitListQueryHandlerTest extends \IntegrationTest
      */
     protected function getTestedEntites() : array
     {
-        return [Cashbook::class, Cashbook\Chit::class];
+        return [
+            Cashbook::class,
+            Cashbook\Chit::class,
+            Cashbook\ChitItem::class,
+        ];
     }
 
     protected function _before() : void
@@ -45,8 +48,8 @@ class ChitListQueryHandlerTest extends \IntegrationTest
         $cashbook = new Cashbook($this->getCashbookId(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
 
         foreach ($chits as [$date, $operation, $categoryId, $paymentMethod]) {
-            $body = new Cashbook\ChitBody(null, new Date($date), null, Cashbook\Amount::fromFloat(10), '');
-            $cashbook->addChit($body, $this->mockCategory($categoryId, $operation), PaymentMethod::get($paymentMethod));
+            $body = new Cashbook\ChitBody(null, new Date($date), null, '');
+            $cashbook->addChit($body, Cashbook\Amount::fromFloat(10), $this->mockCategory($categoryId, $operation), PaymentMethod::get($paymentMethod));
         }
 
         $this->entityManager->persist($cashbook);
@@ -87,9 +90,11 @@ class ChitListQueryHandlerTest extends \IntegrationTest
     {
         $bus = m::mock(QueryBus::class);
 
-        $categories = array_map(function (int $id) : Category {
-            return m::mock(Category::class, ['getId' => $id]);
-        }, [11, 22, 33, 44]);
+        $ids        = [11, 22, 33, 44];
+        $categories = [];
+        foreach ($ids as $id) {
+            $categories[$id] =m::mock(Category::class, ['getId' => $id]);
+        }
 
         $bus->shouldReceive('handle')
             ->withArgs(function (CategoryListQuery $query) {

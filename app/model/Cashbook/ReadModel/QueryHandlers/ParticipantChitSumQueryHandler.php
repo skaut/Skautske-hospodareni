@@ -31,14 +31,15 @@ class ParticipantChitSumQueryHandler
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')
             ->from(Chit::class, 'c')
+            ->join('c.items', 'ci')
             ->where('IDENTITY(c.cashbook) = :cashbookId')
-            ->andWhere('c.category.id IN (:category_ids)')
+            ->andWhere('ci.category.id IN (:category_ids)')
             ->setParameter('cashbookId', $query->getCashbookId()->toString())
             ->setParameter('category_ids', self::PARTICIPANT_INCOME_CATEGORY_IDS);
 
         $chits = $queryBuilder->getQuery()->getResult();
         $sum   = array_sum(array_map(function (Chit $c) {
-            return $c->getBody()->getAmount()->toFloat();
+            return $c->getAmount()->toFloat();
         }, $chits));
 
         return $sum;
