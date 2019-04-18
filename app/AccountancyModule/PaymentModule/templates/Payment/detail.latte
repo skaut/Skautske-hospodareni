@@ -107,7 +107,7 @@
     <ul class="alert alert-danger" n:if="isset($form) && $form->hasErrors()">
         <li n:foreach="$form->errors as $error">{$error}</li>
     </ul>
-    <div class="table-responsive">
+    <div class="table-responsive-md">
         <table class="table table-bordered table-striped table-sm">
         <tr>
             <th><span class="hidden-sm hidden-xs">Název/</span>účel*</th>
@@ -168,12 +168,12 @@
                     {if $l->transaction !== NULL}
 
                         {*<span title="Číslo platby na účtu">({$l->transaction->id})</span>*}
-                        <div class="dropdown inline-block">
-                            <button class="btn btn-xs btn-default dropdown-toggle" type="button"
+                        <div class="dropdown d-inline-block">
+                            <button class="btn btn-sm btn-light" type="button"
                                     data-toggle="dropdown">
                                 <span class="fas fa-info-circle"></span>
                             </button>
-                            <ul class="dropdown-menu dropdown-form dropdown-menu-right">
+                            <ul class="dropdown-menu dropdown-menu-right p-3">
                                 <li><strong>ID:</strong> {$l->transaction->id}</li>
                                 <li><strong>Plátce:</strong> {$l->transaction->payer}</li>
                                 <li><strong>Účet:</strong> {$l->transaction->bankAccount}</li>
