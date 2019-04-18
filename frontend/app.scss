@@ -6,6 +6,12 @@
   @include button-variant($light, darken($light, 30%));
 }
 
+@each $color, $value in $theme-colors {
+  .bg-#{$color}-lighter {
+    background-color: lighten($value, 30%) !important;
+  }
+}
+
 body {
   min-height: 100vh;
 }
