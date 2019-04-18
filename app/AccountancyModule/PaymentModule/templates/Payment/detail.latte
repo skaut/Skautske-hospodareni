@@ -137,7 +137,7 @@
         </tr>
         {if !empty($payments)}
             <tr n:foreach="$payments as $l"
-                    {if !$l->closed && $l->dueDate < $now}class="danger" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}
+                    {if !$l->closed && $l->dueDate < $now}class="bg-danger-lighter" title="Po datu splatnosti"{elseif $l->state == "completed"} class="success"{/if}
             id="payment-{$l->id}">
                 <td>
                     <div n:if="$l->note !== ''" class="float-right">
