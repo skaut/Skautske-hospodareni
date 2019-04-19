@@ -97,6 +97,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->from(Payment::class, 'p')
             ->where('p.groupId IN (:groupIds)')
             ->orderBy('FIELD (p.state, :states)')
+            ->addOrderBy('p.id')
             ->setParameter('groupIds', $groupIds)
             ->setParameter('states', self::STATE_ORDER)
             ->getQuery()
