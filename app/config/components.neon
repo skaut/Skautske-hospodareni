@@ -3,9 +3,5 @@ autoDI:
         - implement: App\AccountancyModule\**\I*Factory
 
 services:
-
-    # Presenters
-    - App\AccountancyModule\PaymentModule\GroupPresenter(camp: @campService)
-
     # Factories
     - App\AccountancyModule\Factories\GridFactory

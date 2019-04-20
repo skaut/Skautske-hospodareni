@@ -8,7 +8,6 @@ use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use Consistence\Enum\InvalidEnumValueException;
 use Model\DTO\Payment\GroupEmail;
-use Model\EventEntity;
 use Model\MailService;
 use Model\Payment\BankAccountService;
 use Model\Payment\DueDateIsNotWorkday;
@@ -22,9 +21,7 @@ use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
-use function array_diff_key;
 use function array_filter;
-use function date;
 use function file_get_contents;
 use function in_array;
 
@@ -36,22 +33,14 @@ class GroupPresenter extends BasePresenter
     /** @var MailService */
     private $mail;
 
-    /** @var EventEntity */
-    private $camp;
-
     /** @var BankAccountService */
     private $bankAccounts;
 
-    public function __construct(
-        BankAccountService $bankAccounts,
-        PaymentService $model,
-        MailService $mailService,
-        EventEntity $camp
-    ) {
+    public function __construct(BankAccountService $bankAccounts, PaymentService $model, MailService $mailService)
+    {
         parent::__construct();
         $this->model        = $model;
         $this->mail         = $mailService;
-        $this->camp         = $camp;
         $this->bankAccounts = $bankAccounts;
     }
 
@@ -62,21 +51,7 @@ class GroupPresenter extends BasePresenter
             $this->redirect('Payment:default');
         }
 
-        if ($type === 'camp') {
-            $allCamps = $this->camp->getEvent()->getAll(date('Y'));
-            $camps    = [];
-            foreach (array_diff_key($allCamps, $this->model->getCampIds()) as $id => $c) {
-                $camps[$id] = $c['DisplayName'];
-            }
-            $this['groupForm']['skautisEntityId']->caption = 'Tábor';
-            $this['groupForm']['type']->setDefaultValue('camp');
-            $this['groupForm']['skautisEntityId']
-                ->addRule(Form::FILLED, 'Vyberte tábor kterého se skupina týká!')
-                ->setPrompt('Vyberte tábor')
-                ->setHtmlId('camp-select')
-                ->setItems($camps);
-            $header = 'Založení skupiny plateb tábora';
-        } elseif ($type === 'registration') {
+        if ($type === 'registration') {
             $reg = $this->model->getNewestRegistration();
             if ($reg === []) {
                 $this->flashMessage('Nemáte založenou žádnou otevřenou registraci', 'warning');

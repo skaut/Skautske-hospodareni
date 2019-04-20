@@ -4,12 +4,22 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\PaymentModule\Components\GroupForm;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
+use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
+use Assert\Assertion;
+use Cake\Chronos\Date;
+use Model\Common\UnitId;
 use Model\DTO\Participant\Participant;
+use Model\Event\Camp;
+use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\EventEntity;
+use Model\Payment\Group\SkautisEntity;
+use Model\Payment\Group\Type;
 use Model\PaymentService;
 use function array_filter;
+use function assert;
 use function in_array;
 
 class CampPresenter extends BasePresenter
@@ -29,11 +39,21 @@ class CampPresenter extends BasePresenter
     /** @var int */
     private $id;
 
-    public function __construct(PaymentService $model, IMassAddFormFactory $massAddFormFactory)
-    {
+    /** @var Camp|null */
+    private $camp;
+
+    /** @var IGroupFormFactory */
+    private $groupFormFactory;
+
+    public function __construct(
+        PaymentService $model,
+        IMassAddFormFactory $massAddFormFactory,
+        IGroupFormFactory $groupFormFactory
+    ) {
         parent::__construct();
         $this->model              = $model;
         $this->massAddFormFactory = $massAddFormFactory;
+        $this->groupFormFactory   = $groupFormFactory;
     }
 
     protected function startup() : void
@@ -43,6 +63,24 @@ class CampPresenter extends BasePresenter
             'unitPairs' => $this->readUnits = $units = $this->unitService->getReadUnits($this->user),
         ]);
         $this->campService                  = $this->getContext()->getService('campService');
+    }
+
+    public function actionDefault() : void
+    {
+        $this->template->setParameters(['camps' => $this->getCampsWithoutGroup()]);
+    }
+
+    public function actionNewGroup(int $campId) : void
+    {
+        $camps = $this->getCampsWithoutGroup();
+
+        if (! $this->isEditable || ! isset($camps[$campId])) {
+            $this->flashMessage('Pro tento tábor není možné vytvořit skupinu plateb', 'danger');
+            $this->redirect('default');
+        }
+
+        $this->camp = $camps[$campId];
+        $this->template->setParameters(['camp' => $this->camp]);
     }
 
     /**
@@ -96,5 +134,41 @@ class CampPresenter extends BasePresenter
     protected function createComponentMassAddForm() : MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
+    }
+
+    protected function createComponentNewGroupForm() : GroupForm
+    {
+        Assertion::notNull($this->camp);
+
+        $form = $this->groupFormFactory->create(
+            new UnitId($this->getCurrentUnitId()),
+            new SkautisEntity($this->camp->getId()->toInt(), Type::CAMP())
+        );
+
+        $form->fillName($this->camp->getDisplayName());
+
+        return $form;
+    }
+
+    /**
+     * @return Camp[]
+     */
+    private function getCampsWithoutGroup() : array
+    {
+        $campWithGroupIds = $this->model->getCampIds();
+
+        $camps = [];
+
+        foreach ($this->queryBus->handle(new CampListQuery(Date::today()->year)) as $camp) {
+            assert($camp instanceof Camp);
+
+            if (in_array($camp->getId()->toInt(), $campWithGroupIds, true)) {
+                continue;
+            }
+
+            $camps[$camp->getId()->toInt()] = $camp;
+        }
+
+        return $camps;
     }
 }
