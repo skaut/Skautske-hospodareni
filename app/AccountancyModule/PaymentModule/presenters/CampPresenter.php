@@ -13,13 +13,12 @@ use Cake\Chronos\Date;
 use Model\Common\UnitId;
 use Model\DTO\Participant\Participant;
 use Model\Event\Camp;
-use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\EventEntity;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
+use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 use Model\PaymentService;
 use function array_filter;
-use function assert;
 use function in_array;
 
 class CampPresenter extends BasePresenter
@@ -155,20 +154,6 @@ class CampPresenter extends BasePresenter
      */
     private function getCampsWithoutGroup() : array
     {
-        $campWithGroupIds = $this->model->getCampIds();
-
-        $camps = [];
-
-        foreach ($this->queryBus->handle(new CampListQuery(Date::today()->year)) as $camp) {
-            assert($camp instanceof Camp);
-
-            if (in_array($camp->getId()->toInt(), $campWithGroupIds, true)) {
-                continue;
-            }
-
-            $camps[$camp->getId()->toInt()] = $camp;
-        }
-
-        return $camps;
+        return $this->queryBus->handle(new CampsWithoutGroupQuery(Date::today()->year));
     }
 }
