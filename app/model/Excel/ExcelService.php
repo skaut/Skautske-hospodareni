@@ -390,7 +390,7 @@ class ExcelService
                 ->setCellValue('Q' . $rowCnt, $row->parStatistic[3]->Count)
                 ->setCellValue('R' . $rowCnt, $row->parStatistic[4]->Count)
                 ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count)
-                ->setCellValue('S' . $rowCnt, $row->prefix);
+                ->setCellValue('T' . $rowCnt, $row->prefix);
             if (isset($row->pragueParticipants)) {
                 /** @var PragueParticipants $pp */
                 $pp = $row->pragueParticipants;
