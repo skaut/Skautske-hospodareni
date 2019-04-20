@@ -8,6 +8,7 @@ use App\AccountancyModule\Components\BaseControl;
 use App\AccountancyModule\Components\FormControls\DateControl;
 use App\Forms\BaseForm;
 use Assert\Assertion;
+use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Payment\GroupEmail;
@@ -82,6 +83,15 @@ final class GroupForm extends BaseControl
         assert($nameControl instanceof TextBase);
 
         $nameControl->setDefaultValue($name);
+    }
+
+    public function fillDueDate(Date $dueDate) : void
+    {
+        $dueDateControl = $this['form']['dueDate'];
+
+        assert($dueDateControl instanceof DateControl);
+
+        $dueDateControl->setDefaultValue($dueDate);
     }
 
     protected function createComponentForm() : BaseForm

@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\PaymentModule;
 
 use App\Forms\BaseForm;
-use Cake\Chronos\Date;
 use Consistence\Enum\InvalidEnumValueException;
-use Model\Common\Registration;
-use Model\Common\UnitId;
 use Model\DTO\Payment\GroupEmail;
 use Model\MailService;
 use Model\Payment\BankAccountService;
@@ -20,12 +17,10 @@ use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
-use Model\Payment\ReadModel\Queries\RegistrationWithoutGroupQuery;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 use function array_filter;
-use function assert;
 use function file_get_contents;
 use function in_array;
 
@@ -55,33 +50,8 @@ class GroupPresenter extends BasePresenter
             $this->redirect('Payment:default');
         }
 
-        if ($type === 'registration') {
-            $reg = $this->queryBus->handle(
-                new RegistrationWithoutGroupQuery(new UnitId($this->unitService->getUnitId()))
-            );
-
-            if ($reg === null) {
-                $this->flashMessage('Nemáte založenou žádnou otevřenou registraci', 'warning');
-                $this->redirect('Payment:default');
-            }
-
-            assert($reg instanceof Registration);
-
-            $this['groupForm']['type']->setDefaultValue('registration');
-            unset($this['groupForm']['amount']);
-            unset($this['groupForm']['skautisEntityId']);
-            $this['groupForm']->addHidden('skautisEntityId', $reg->getId());
-            $this['groupForm']->setDefaults(
-                [
-                    'label' => 'Registrace ' . $reg->getYear(),
-                    'dueDate' => new Date($reg->getYear() . '-01-15'),
-                ]
-            );
-            $header = 'Založení skupiny plateb pro registraci';
-        } else {//obecná skupina
-            unset($this['groupForm']['skautisEntityId']);
-            $header = 'Založení skupiny plateb';
-        }
+        unset($this['groupForm']['skautisEntityId']);
+        $header = 'Založení skupiny plateb';
 
         $defaultNextVs = $this->queryBus->handle(
             new NextVariableSymbolSequenceQuery($this->getCurrentUnitId(), new \DateTimeImmutable())
