@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Payment;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use eGen\MessageBus\Bus\EventBus;
 use Kdyby\Doctrine\Dql\Join;
 use Model\Payment\DomainEvents\GroupWasRemoved;
@@ -87,16 +88,29 @@ final class GroupRepository implements IGroupRepository
     /**
      * {@inheritDoc}
      */
-    public function findBySkautisEntity(Group\SkautisEntity $object) : array
+    public function findBySkautisEntities(Group\SkautisEntity ...$objects) : array
     {
-        return $this->em->createQueryBuilder()
-            ->select('g')
-            ->from(Group::class, 'g')
-            ->where('g.object.id = :skautisId')
-            ->andWhere('g.object.type = :type')
-            ->setParameter('skautisId', $object->getId())
-            ->setParameter('type', $object->getType())
-            ->getQuery()
+        if (count($objects) === 0) {
+            return [];
+        }
+
+        // DQL does not support tuples with IN expression, so SQL + result set mapping is used
+        // see https://github.com/doctrine/orm/issues/7206
+        $resultSetMapping = new ResultSetMappingBuilder($this->em);
+        $resultSetMapping->addRootEntityFromClassMetadata(Group::class, 'g');
+
+        $sql = 'SELECT g.* FROM pa_group g '
+            . 'WHERE (g.sisId, g.groupType) IN (' . implode(', ', array_fill(0, count($objects), '(?, ?)'))
+            . ') ORDER BY g.id';
+
+        $parameters = [];
+        foreach ($objects as $object) {
+            $parameters[] = $object->getId();
+            $parameters[] = $object->getType()->getValue();
+        }
+
+        return $this->em->createNativeQuery($sql, $resultSetMapping)
+            ->setParameters($parameters)
             ->getResult();
     }
 

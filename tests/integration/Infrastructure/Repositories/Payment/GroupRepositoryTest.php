@@ -18,6 +18,20 @@ use function sort;
 
 class GroupRepositoryTest extends \IntegrationTest
 {
+    private const ROW = [
+        'label' => 'Test',
+        'state' => Group::STATE_OPEN,
+        'state_info' => 'Test note',
+        'created_at' => '2018-01-01 12:34:11',
+        'last_pairing' => '2018-02-01 12:34:11',
+        'smtp_id' => 10,
+        'bank_account_id' => 100,
+        'amount' => 100.0,
+        'nextVs' => '140',
+        'maturity' => '2018-01-19',
+        'ks' => 123,
+    ];
+
     /** @var GroupRepository */
     private $repository;
 
@@ -54,13 +68,13 @@ class GroupRepositoryTest extends \IntegrationTest
 
     public function testFind() : void
     {
-        $createdAt       = new \DateTimeImmutable('2018-01-01 00:00:00');
-        $lastPairing     = new \DateTimeImmutable('2018-01-19 18:34:00');
+        $createdAt       = new \DateTimeImmutable(self::ROW['created_at']);
+        $lastPairing     = new \DateTimeImmutable(self::ROW['last_pairing']);
         $paymentDefaults = new Group\PaymentDefaults(
-            100.0,
+            self::ROW['amount'],
             new Date('2018-01-29'),
-            123,
-            new VariableSymbol('140')
+            self::ROW['ks'],
+            new VariableSymbol(self::ROW['nextVs'])
         );
 
         $row = [
@@ -203,5 +217,38 @@ class GroupRepositoryTest extends \IntegrationTest
         $I->dontSeeInDatabase('pa_group', ['id' => 1]);
         $I->dontSeeInDatabase('pa_group_email', ['group_id' => 1]);
         $I->dontSeeInDatabase('pa_group_unit', ['group_id' => 1]);
+    }
+
+    public function testFindBySkautisEntities() : void
+    {
+        $I = $this->tester;
+
+        $skautisEntities = [
+            [2, Group\Type::EVENT],
+            [null, null],
+            [10, Group\Type::EVENT],
+            [null, null],
+            [2, Group\Type::REGISTRATION],
+            [10, Group\Type::REGISTRATION],
+        ];
+
+        foreach ($skautisEntities as [$id, $type]) {
+            $I->haveInDatabase('pa_group', self::ROW + ['sisId' => $id, 'groupType' => $type]);
+        }
+
+        /** @var Group[] $groups */
+        $groups = $this->repository->findBySkautisEntities(
+            new Group\SkautisEntity(2, Group\Type::get(Group\Type::REGISTRATION)),
+            new Group\SkautisEntity(10, Group\Type::get(Group\Type::EVENT))
+        );
+
+        $this->assertCount(2, $groups);
+        $this->assertSame(3, $groups[0]->getId());
+        $this->assertSame(5, $groups[1]->getId());
+    }
+
+    public function testGetBySkautisEntitiesWithoutArgumentReturnsEmptyArray() : void
+    {
+        $this->assertSame([], $this->repository->findBySkautisEntities());
     }
 }
