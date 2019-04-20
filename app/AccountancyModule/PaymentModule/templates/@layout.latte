@@ -1,7 +1,7 @@
 {extends '../../../templates/@layout2.latte'}
 {block subMenu}
     <ul class="navbar-nav mr-auto">
-        <li n:class="nav-item, $presenter->isLinkCurrent('Payment:*') || $presenter->isLinkCurrent('Group:*') ? active">
+        <li n:class="nav-item, in_array($presenterName, ['Payment', 'Group', 'Camp', 'Registration']) ? active">
             <a class="nav-link" n:href="Payment: aid => $aid"><i class="far fa-list-alt"></i> Platební skupiny</a>
         </li>
         <li n:class="$presenter->isLinkCurrent('BankAccounts:*') ? active">
