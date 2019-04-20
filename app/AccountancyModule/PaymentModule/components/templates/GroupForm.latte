@@ -1,0 +1,26 @@
+<div class="row">
+    <div class="col-sm-6">
+        {control form}
+    </div>
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <p><b>Email odesílatele</b><br/>Email, ze kterého se budou zasílat informace o platbách.</p>
+                <p><b>Proměnné v emailu</b><br/>Proměnné v emailu budou před odesláním nahrazeny údaji z platby. Jsou
+                    zapsány formou: "%Název_proměnné%".</p>
+                <ul>
+                    <li>%account% - celé číslo účtu i s předčíslím a kódem banky</li>
+                    <li>%qrcode% - vynenerovaný obrázek QR kódu (nelze použít v předmětu)</li>
+                    <li>%name% - název/účel platby</li>
+                    <li>%groupname% - název platební skupiny</li>
+                    <li>%amount% - částka</li>
+                    <li>%maturity% - splatnost</li>
+                    <li>%vs% - variabilní symbol</li>
+                    <li>%ks% - konstantní symbol</li>
+                    <li>%note% - poznámka</li>
+                    <li>%user% - jméno uživatele, který email odeslal</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

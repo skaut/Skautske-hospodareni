@@ -15,4 +15,14 @@ class Type extends Enum
     {
         return $this->getValue();
     }
+
+    public static function CAMP() : self
+    {
+        return self::get(self::CAMP);
+    }
+
+    public static function REGISTRATION() : self
+    {
+        return self::get(self::REGISTRATION);
+    }
 }
