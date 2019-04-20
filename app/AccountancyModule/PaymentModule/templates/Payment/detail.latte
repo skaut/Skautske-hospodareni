@@ -8,8 +8,9 @@
         {control unit}
         <span class="mr-2 ml-2">|</span>
         {if $group->type === NULL}Obecná
-        {elseif $group->type === "camp"}Táborová
-        {elseif $group->type === "registration"}Registrační{/if}
+        {elseif $group->type === "camp"}Tábor
+        {elseif $group->type === "event"}Akce
+        {elseif $group->type === "registration"}Registrace{/if}
     </div>
 
 

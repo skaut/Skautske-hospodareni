@@ -10,6 +10,7 @@ class Type extends Enum
 {
     public const CAMP         = 'camp';
     public const REGISTRATION = 'registration';
+    public const EVENT        = 'event';
 
     public function __toString() : string
     {
