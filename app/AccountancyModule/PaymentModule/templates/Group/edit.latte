@@ -1,0 +1,6 @@
+{block #content}
+{include '../@groupBackLink.latte', group => $group}
+
+<h1 n:inner-block="title">Editace skupiny: {$group->getName()}</h1>
+
+{control editGroupForm}
