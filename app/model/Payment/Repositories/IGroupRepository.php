@@ -31,7 +31,7 @@ interface IGroupRepository
     /**
      * @return Group[]
      */
-    public function findBySkautisEntity(SkautisEntity $object) : array;
+    public function findBySkautisEntities(SkautisEntity ...$objects) : array;
 
     /**
      * @return Group[]

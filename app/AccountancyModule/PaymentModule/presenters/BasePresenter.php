@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
+use function array_key_last;
 use function array_keys;
+use function explode;
 use function in_array;
 
 abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
@@ -41,9 +43,13 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function beforeRender() : void
     {
         parent::beforeRender();
+
+        $presenterName = explode(':', $this->getName());
+
         $this->template->setParameters([
             'aid'        => $this->aid,
             'isEditable' => $this->isEditable,
+            'presenterName' => $presenterName[array_key_last($presenterName)],
         ]);
     }
 

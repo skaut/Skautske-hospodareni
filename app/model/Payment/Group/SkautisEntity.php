@@ -7,6 +7,8 @@ namespace Model\Payment\Group;
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
+use Model\Event\SkautisCampId;
+use Model\Event\SkautisEventId;
 
 /**
  * @ORM\Embeddable()
@@ -31,6 +33,16 @@ final class SkautisEntity
     {
         $this->id   = $id;
         $this->type = $type;
+    }
+
+    public static function fromCampId(SkautisCampId $campId) : self
+    {
+        return new self($campId->toInt(), Type::get(Type::CAMP));
+    }
+
+    public static function fromEventId(SkautisEventId $eventId) : self
+    {
+        return new self($eventId->toInt(), Type::get(Type::EVENT));
     }
 
     public function getId() : int

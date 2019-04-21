@@ -4,8 +4,17 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\PaymentModule\Components\GroupForm;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
+use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
+use Assert\Assertion;
+use Cake\Chronos\Date;
+use Model\Common\Registration;
+use Model\Common\UnitId;
+use Model\Payment\Group\SkautisEntity;
+use Model\Payment\Group\Type;
+use Model\Payment\ReadModel\Queries\RegistrationWithoutGroupQuery;
 use Model\PaymentService;
 use function array_keys;
 use function array_slice;
@@ -13,6 +22,12 @@ use function intdiv;
 
 class RegistrationPresenter extends BasePresenter
 {
+    /** @var Registration|null */
+    private $registration;
+
+    /** @var int */
+    private $id;
+
     /** @var string[] */
     protected $readUnits;
 
@@ -22,18 +37,21 @@ class RegistrationPresenter extends BasePresenter
     /** @var IMassAddFormFactory */
     private $massAddFormFactory;
 
-    /** @var int */
-    private $id;
+    /** @var IGroupFormFactory */
+    private $groupFormFactory;
 
     private const STS_PRICE = 200;
 
-    public function __construct(IMassAddFormFactory $massAddFormFactory, PaymentService $model)
-    {
+    public function __construct(
+        IMassAddFormFactory $massAddFormFactory,
+        PaymentService $model,
+        Factories\IGroupFormFactory $groupFormFactory
+    ) {
         parent::__construct();
         $this->model              = $model;
         $this->massAddFormFactory = $massAddFormFactory;
+        $this->groupFormFactory   = $groupFormFactory;
     }
-
 
     protected function startup() : void
     {
@@ -42,6 +60,21 @@ class RegistrationPresenter extends BasePresenter
         $this->template->setParameters([
             'unitPairs' =>$this->readUnits,
         ]);
+    }
+
+    public function actionNewGroup() : void
+    {
+        $registration = $this->queryBus->handle(
+            new RegistrationWithoutGroupQuery(new UnitId($this->unitService->getUnitId()))
+        );
+
+        if ($registration === null) {
+            $this->flashMessage('Nemáte založenou žádnou otevřenou registraci', 'warning');
+            $this->redirect('Payment:default');
+        }
+
+        $this->registration = $registration;
+        $this->template->setParameters(['registration' => $registration]);
     }
 
     /**
@@ -94,5 +127,22 @@ class RegistrationPresenter extends BasePresenter
     protected function createComponentMassAddForm() : MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
+    }
+
+    protected function createComponentNewGroupForm() : GroupForm
+    {
+        $registration = $this->registration;
+
+        Assertion::notNull($registration);
+
+        $form = $this->groupFormFactory->create(
+            new UnitId($this->getCurrentUnitId()),
+            new SkautisEntity($registration->getId(), Type::get(Type::REGISTRATION))
+        );
+
+        $form->fillName('Registrace ' . $registration->getYear());
+        $form->fillDueDate(Date::createFromDate($registration->getYear(), 1, 15));
+
+        return $form;
     }
 }

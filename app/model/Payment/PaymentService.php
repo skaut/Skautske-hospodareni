@@ -35,7 +35,6 @@ use function array_map;
 use function count;
 use function in_array;
 use function is_array;
-use function is_object;
 use function mb_substr;
 use function reset;
 use function strcmp;
@@ -361,32 +360,6 @@ class PaymentService
      * REGISTRATION
      */
 
-    /**
-     * Returns newest registration without created group
-     * @return mixed[]
-     */
-    public function getNewestRegistration() : array
-    {
-        $unitId = $this->skautis->getUser()->getUnitId();
-
-        $data = $this->skautis->org->UnitRegistrationAll(['ID_Unit' => $unitId, '']);
-
-        if (is_object($data)) {
-            return [];
-        }
-
-        $registration = $data[0];
-
-        $groups = $this->groups->findBySkautisEntity(
-            new Group\SkautisEntity($registration->ID, Type::get(Type::REGISTRATION))
-        );
-
-        if (empty($groups)) {
-            return (array) $registration;
-        }
-
-        return [];
-    }
 
     /**
      * seznam osob z registrace

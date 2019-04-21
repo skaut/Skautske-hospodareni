@@ -5,6 +5,7 @@ import { far }  from '@fortawesome/free-regular-svg-icons';
 library.add(
 fas.faBookReader,
     // Solid icons
+    fas.faCalendar,
     fas.faCampground,
     fas.faCogs,
     fas.faCheck,
