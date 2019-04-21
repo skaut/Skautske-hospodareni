@@ -9,7 +9,6 @@ use Model\Event\Camp;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Payment\Group;
 use Model\Payment\Group\SkautisEntity;
-use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 use Model\Payment\Repositories\IGroupRepository;
 use function array_map;
@@ -63,7 +62,7 @@ final class CampsWithoutGroupQueryHandler
     {
         $skautisEntities = array_map(
             function (Camp $camp) : SkautisEntity {
-                return new SkautisEntity($camp->getId()->toInt(), Type::CAMP());
+                return SkautisEntity::fromCampId($camp->getId());
             },
             $camps
         );

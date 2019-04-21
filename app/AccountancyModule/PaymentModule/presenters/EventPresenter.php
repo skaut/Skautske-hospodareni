@@ -14,7 +14,6 @@ use Model\Common\UnitId;
 use Model\DTO\Participant\Participant;
 use Model\Event\Event;
 use Model\Payment\Group\SkautisEntity;
-use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
 use Model\Payment\ReadModel\Queries\EventsWithoutGroupQuery;
 use Model\PaymentService;
@@ -112,7 +111,7 @@ final class EventPresenter extends BasePresenter
 
         $form = $this->groupFormFactory->create(
             new UnitId($this->getCurrentUnitId()),
-            new SkautisEntity($event->getId()->toInt(), Type::get(Type::EVENT))
+            SkautisEntity::fromEventId($event->getId())
         );
 
         $form->fillName($event->getDisplayName());

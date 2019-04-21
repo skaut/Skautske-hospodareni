@@ -9,7 +9,6 @@ use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Payment\Group;
 use Model\Payment\Group\SkautisEntity;
-use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\EventsWithoutGroupQuery;
 use Model\Payment\Repositories\IGroupRepository;
 use function array_map;
@@ -63,7 +62,7 @@ final class EventsWithoutGroupQueryHandler
     {
         $skautisEntities = array_map(
             function (Event $event) : SkautisEntity {
-                return new SkautisEntity($event->getId()->toInt(), Type::get(Type::EVENT));
+                return SkautisEntity::fromEventId($event->getId());
             },
             $events
         );

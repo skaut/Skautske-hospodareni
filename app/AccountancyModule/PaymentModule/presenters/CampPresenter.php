@@ -15,7 +15,6 @@ use Model\DTO\Participant\Participant;
 use Model\Event\Camp;
 use Model\EventEntity;
 use Model\Payment\Group\SkautisEntity;
-use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 use Model\PaymentService;
 use function array_filter;
@@ -141,7 +140,7 @@ class CampPresenter extends BasePresenter
 
         $form = $this->groupFormFactory->create(
             new UnitId($this->getCurrentUnitId()),
-            new SkautisEntity($this->camp->getId()->toInt(), Type::CAMP())
+            SkautisEntity::fromCampId($this->camp->getId())
         );
 
         $form->fillName($this->camp->getDisplayName());
