@@ -47,6 +47,10 @@
                 <div class="dropdown-menu" aria-labelledby="addPersons">
                     <a n:if="$group->type === 'camp'"
                             n:href="Camp:massAdd $group->id" class="dropdown-item">… z účastníků</a>
+
+                    <a n:if="$group->type === 'event'"
+                            n:href="Event:massAdd $group->id" class="dropdown-item">… z účastníků akce</a>
+
                     <a n:href="massAdd $group->id" class="dropdown-item">… z členů</a>
 
                     <a n:if="$group->type === 'registration'"
