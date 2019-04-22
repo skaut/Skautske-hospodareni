@@ -5,7 +5,7 @@ services:
         container_name: hskauting.app
         image: fmasa/lebeda:7.3
         volumes:
-            - www:/var/www:ro
+            - www:/var/www
             - .:/var/www/html
         depends_on:
             - mysql
