@@ -9,7 +9,6 @@ use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Model\Unit\UnitNotFound;
 use Model\Unit\UserHasNoUnit;
-use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Application\BadRequestException;
 use Nette\Security\Identity;
 use Nette\Security\User;
@@ -163,18 +162,6 @@ class UnitService
     public function getReadUnits(User $user) : array
     {
         return $this->getUnits($user, BaseService::ACCESS_READ);
-    }
-
-    /**
-     * @deprecated use EditableUnitsQuery
-     * @see EditableUnitsQuery
-     *
-     * vrací seznam jednotek, ke kterým má uživatel právo na zápis a editaci
-     * @return string[]
-     */
-    public function getEditUnits(User $user) : array
-    {
-        return $this->getUnits($user, BaseService::ACCESS_EDIT);
     }
 
     /**

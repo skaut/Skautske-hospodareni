@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
+use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
+use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use function array_key_last;
 use function array_keys;
 use function explode;
@@ -28,7 +30,8 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 
         $isReadable = isset($readableUnits[$this->aid]);
 
-        $this->editableUnits = array_keys($this->unitService->getEditUnits($this->getUser()));
+        $role                = $this->queryBus->handle(new ActiveSkautisRoleQuery());
+        $this->editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
         $this->isEditable    = in_array($this->aid, $this->editableUnits);
 
         if ($isReadable) {
