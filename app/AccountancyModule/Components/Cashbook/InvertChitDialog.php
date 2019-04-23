@@ -14,6 +14,7 @@ use Model\Cashbook\Commands\Cashbook\AddInverseChit;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
+use Model\Common\UnitId;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\UnitCashbook;
 use Model\Unit\Unit;
@@ -145,7 +146,7 @@ class InvertChitDialog extends BaseControl
                 continue;
             }
 
-            $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unit->getId()));
+            $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery(new UnitId($unit->getId())));
 
             foreach ($unitCashbooks as $cashbook) {
                 assert($cashbook instanceof UnitCashbook);

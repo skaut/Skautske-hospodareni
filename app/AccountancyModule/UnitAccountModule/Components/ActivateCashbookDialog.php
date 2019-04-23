@@ -102,7 +102,7 @@ final class ActivateCashbookDialog extends BaseControl
      */
     private function getCashbooks() : array
     {
-        $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId->toInt()));
+        $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId));
         $pairs     = [];
 
         foreach ($cashbooks as $cashbook) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule;
 
+use Model\Common\UnitId;
 use Model\Skautis\SkautisMaintenanceChecker;
 use stdClass;
 
@@ -18,6 +19,9 @@ abstract class BasePresenter extends \App\BasePresenter
      * @var int|null
      */
     protected $aid;
+
+    /** @var UnitId|null */
+    protected $unitId;
 
     /**
      * je akci možné upravovat?
@@ -50,6 +54,9 @@ abstract class BasePresenter extends \App\BasePresenter
             $this->aid = (int) $this->aid;
         }
 
+        $unitId       = $this->getParameter('unitId', null);
+        $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
+
         if (! $this->getUser()->isLoggedIn()) {
             $this->backlink = $this->storeRequest('+ 3 days');
             if ($this->isAjax()) {
@@ -62,19 +69,6 @@ abstract class BasePresenter extends \App\BasePresenter
         $this->userService->updateLogoutTime();
     }
 
-    protected function beforeRender() : void
-    {
-        parent::beforeRender();
-
-        if ($this->getCurrentUnitId() === null) {
-            return;
-        }
-
-        $this->template->setParameters([
-            'currentUnitId' => $this->getCurrentUnitId(),
-        ]);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -85,11 +79,8 @@ abstract class BasePresenter extends \App\BasePresenter
         return parent::flashMessage($message, $type);
     }
 
-    /**
-     * Returns current unit ID (e.g oddíl)
-     */
-    public function getCurrentUnitId() : ?int
+    public function getCurrentUnitId() : ?UnitId
     {
-        return $this->aid;
+        return $this->unitId;
     }
 }

@@ -2,13 +2,13 @@
 {block subMenu}
     <ul class="navbar-nav mr-auto">
         <li n:class="nav-item, in_array($presenterName, ['Payment', 'Group', 'Camp', 'Registration']) ? active">
-            <a class="nav-link" n:href="Payment: aid => $aid"><i class="far fa-list-alt"></i> Platební skupiny</a>
+            <a class="nav-link" n:href="Payment: unitId => $unitId"><i class="far fa-list-alt"></i> Platební skupiny</a>
         </li>
         <li n:class="$presenter->isLinkCurrent('BankAccounts:*') ? active">
-            <a class="nav-link" n:href="BankAccounts: aid => $aid"><i class="fas fa-university"></i> Bankovní účty</a>
+            <a class="nav-link" n:href="BankAccounts: unitId => $unitId"><i class="fas fa-university"></i> Bankovní účty</a>
         </li>
         <li n:class="nav-item, $presenter->isLinkCurrent('Mail:*') ? active">
-            <a class="nav-link" n:href="Mail: aid => $aid"><i class="far fa-envelope-open"></i> Emaily</a>
+            <a class="nav-link" n:href="Mail: unitId => $unitId"><i class="far fa-envelope-open"></i> Emaily</a>
         </li>
     </ul>
 {/block}

@@ -215,9 +215,9 @@ class PaymentPresenter extends BasePresenter
     }
 
     /**
-     * @param null $aid - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
+     * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
      */
-    public function actionMassAdd(int $id, ?int $aid = null) : void
+    public function actionMassAdd(int $id, ?int $unitId = null) : void
     {
         //ověření přístupu
 
@@ -231,7 +231,7 @@ class PaymentPresenter extends BasePresenter
         }
 
         $form = $this['massAddForm'];
-        $list = $this->model->getPersons($this->aid, $id);
+        $list = $this->model->getPersons($this->unitId->toInt(), $id);
 
         foreach ($list as $p) {
             $form->addPerson($p->getId(), $p->getEmails(), $p->getName());
@@ -264,7 +264,7 @@ class PaymentPresenter extends BasePresenter
 
     private function checkEditation() : void
     {
-        if ($this->isEditable && isset($this->readUnits[$this->aid])) {
+        if ($this->isEditable && isset($this->readUnits[$this->unitId->toInt()])) {
             return;
         }
 

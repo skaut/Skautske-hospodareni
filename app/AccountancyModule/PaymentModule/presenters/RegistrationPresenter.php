@@ -79,9 +79,9 @@ class RegistrationPresenter extends BasePresenter
     }
 
     /**
-     * @param null $aid - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
+     * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
      */
-    public function actionMassAdd(int $id, ?int $aid = null) : void
+    public function actionMassAdd(int $id, ?int $unitId = null) : void
     {
         $this->id = $id;
 
@@ -136,9 +136,11 @@ class RegistrationPresenter extends BasePresenter
         $registration = $this->registration;
 
         Assertion::notNull($registration);
+        $unitId = $this->getCurrentUnitId();
+        Assertion::notNull($unitId);
 
         $form = $this->groupFormFactory->create(
-            new UnitId($this->getCurrentUnitId()),
+            $unitId,
             new SkautisEntity($registration->getId(), Type::get(Type::REGISTRATION))
         );
 

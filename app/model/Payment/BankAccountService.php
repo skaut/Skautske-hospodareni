@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use Model\Bank\Fio\Transaction;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
+use Model\Common\UnitId;
 use Model\DTO\Payment\BankAccount as BankAccountDTO;
 use Model\DTO\Payment\BankAccountFactory;
 use Model\Payment\BankAccount\AccountNumber;
@@ -162,13 +163,13 @@ class BankAccountService
     /**
      * @return BankAccountDTO[]
      */
-    public function findByUnit(int $unitId) : array
+    public function findByUnit(UnitId $unitId) : array
     {
-        $accounts = $this->bankAccounts->findByUnit($this->unitResolver->getOfficialUnitId($unitId));
+        $accounts = $this->bankAccounts->findByUnit($this->unitResolver->getOfficialUnitId($unitId->toInt()));
         $accounts = array_filter(
             $accounts,
             function (BankAccount $a) use ($unitId) {
-                return $a->getUnitId() === $unitId || $a->isAllowedForSubunits();
+                return $a->getUnitId() === $unitId->toInt() || $a->isAllowedForSubunits();
             }
         );
 

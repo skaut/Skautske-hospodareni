@@ -109,27 +109,28 @@ class CashbookPresenter extends BasePresenter
         $this->editableOnly();
         $values = $form->getValues();
 
-        $aid    = $this->getCurrentUnitId();
-        $amount = $this->eventService->getParticipants()->getCampTotalPayment($aid, $values->cat, $values->isAccount);
+        $unitId = $this->getCurrentUnitId();
+        $unitId = $unitId !== null ? $unitId->toInt() : null;
+        $amount = $this->eventService->getParticipants()->getCampTotalPayment($unitId, $values->cat, $values->isAccount);
 
         if ($amount === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
-            $this->redirect('default', ['aid' => $aid]);
+            $this->redirect('default', ['aid' => $unitId]);
         }
 
-        $date    = $this->eventService->getEvent()->get($aid)->StartDate;
+        $date    = $this->eventService->getEvent()->get($unitId)->StartDate;
         $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
         $body    = new ChitBody(null, new Date($date), null, $purpose);
 
         $categoryId = $this->queryBus->handle(
-            new CampParticipantCategoryIdQuery(new SkautisCampId($aid), ParticipantType::get(ParticipantType::CHILD))
+            new CampParticipantCategoryIdQuery(new SkautisCampId($unitId), ParticipantType::get(ParticipantType::CHILD))
         );
 
         $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, Amount::fromFloat($amount), $categoryId, PaymentMethod::CASH()));
 
         $this->flashMessage('HPD byl importován');
 
-        $this->redirect('default', $aid);
+        $this->redirect('default', $unitId);
     }
 
     private function getCashbookId() : CashbookId

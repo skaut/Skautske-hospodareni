@@ -141,7 +141,7 @@ final class GroupForm extends BaseControl
             ->setDisabled($this->groupId !== null && $this->model->getMaxVariableSymbol($this->groupId) !== null)
             ->setNullable();
 
-        $bankAccounts     = $this->bankAccounts->findByUnit($unitId);
+        $bankAccounts     = $this->bankAccounts->findByUnit($this->unitId);
         $bankAccountItems = [];
         foreach ($bankAccounts as $bankAccount) {
             $bankAccountItems[$bankAccount->getId()] = $bankAccount->getName();

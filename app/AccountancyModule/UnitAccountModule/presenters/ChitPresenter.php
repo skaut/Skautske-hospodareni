@@ -12,6 +12,7 @@ use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
+use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
@@ -60,14 +61,14 @@ class ChitPresenter extends BasePresenter
         $this->template->setParameters([
             'onlyUnlocked' => $this->onlyUnlocked,
         ]);
-        $officialUnitId = $this->unitService->getOfficialUnit($this->aid)->getId();
+        $officialUnitId = $this->unitService->getOfficialUnit($this->unitId->toInt())->getId();
 
-        if ($officialUnitId === $this->aid) {
+        if ($officialUnitId === $this->unitId->toInt()) {
             return;
         }
 
         $this->flashMessage('Přehled paragonů je dostupný jen pro organizační jednotky.');
-        $this->redirect('this', ['aid' => $officialUnitId]);
+        $this->redirect('this', ['unitId' => $officialUnitId]);
     }
 
     public function handleLockCashbook(string $cashbookId) : void
@@ -158,7 +159,7 @@ class ChitPresenter extends BasePresenter
             $cashbooks = [];
 
             foreach ($objects as $unitId => ['DisplayName' => $name]) {
-                $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unitId));
+                $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery(new UnitId($unitId)));
 
                 foreach ($unitCashbooks as $cashbook) {
                     assert($cashbook instanceof UnitCashbook);
@@ -206,7 +207,7 @@ class ChitPresenter extends BasePresenter
         }
 
         if ($object->equalsValue(ObjectType::UNIT)) {
-            $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($objectId));
+            $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery(new UnitId($objectId)));
 
             return array_map(
                 function (UnitCashbook $cashbook) : CashbookId {

@@ -10,7 +10,6 @@ use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Assert\Assertion;
 use Cake\Chronos\Date;
-use Model\Common\UnitId;
 use Model\DTO\Participant\Participant;
 use Model\Event\Event;
 use Model\Payment\Group\SkautisEntity;
@@ -108,9 +107,11 @@ final class EventPresenter extends BasePresenter
         $event = $this->event;
 
         Assertion::notNull($event);
+        $unitId = $this->getCurrentUnitId();
+        Assertion::notNull($unitId);
 
         $form = $this->groupFormFactory->create(
-            new UnitId($this->getCurrentUnitId()),
+            $unitId,
             SkautisEntity::fromEventId($event->getId())
         );
 
