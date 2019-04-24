@@ -21,6 +21,7 @@ use Model\Payment\TokenNotSet;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
+use function assert;
 use function sprintf;
 
 class BankAccountsPresenter extends BasePresenter
@@ -160,7 +161,6 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $templateParameters['transactions'] = $this->accounts->getTransactions($id, self::DAYS_BACK);
 
-            /** @var Payment[] $payments */
             $payments = $this->queryBus->handle(
                 new PairedPaymentsQuery(
                     new BankAccountId($id),
@@ -172,6 +172,8 @@ class BankAccountsPresenter extends BasePresenter
             $paymentsByTransaction = [];
 
             foreach ($payments as $payment) {
+                assert($payment instanceof Payment);
+
                 $paymentsByTransaction[$payment->getTransaction()->getId()] = $payment;
             }
 
@@ -214,8 +216,9 @@ class BankAccountsPresenter extends BasePresenter
             return true;
         }
 
-        /** @var SkautisRole $role */
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
+
+        assert($role === null || $role instanceof SkautisRole);
 
         return $role->getUnitId() === $account->getUnitId() && $role->isBasicUnit() && $role->isAccountant();
     }

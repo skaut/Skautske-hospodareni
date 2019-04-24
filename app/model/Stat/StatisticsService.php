@@ -89,10 +89,7 @@ class StatisticsService
     {
         $children = $root->getChildren();
 
-        /** @var Counter[] $res */
-        $res = [
-            $root->getId() => new Counter(),
-        ];
+        $res = [$root->getId() => new Counter()];
 
         if ($children !== null) {
             foreach ($children as $u) {

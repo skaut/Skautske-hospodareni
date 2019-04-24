@@ -24,10 +24,9 @@ use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\FileSystem;
 use function array_filter;
 use function assert;
-use function file_get_contents;
-use Nette\Utils\FileSystem;
 
 final class GroupForm extends BaseControl
 {
@@ -183,7 +182,6 @@ final class GroupForm extends BaseControl
             EmailType::PAYMENT_COMPLETED => $this->buildEmailTemplate($v, EmailType::PAYMENT_COMPLETED),
         ];
 
-        /** @var EmailTemplate[] $emails */
         $emails = array_filter($emails);
 
         if ($this->groupId !== null) {//EDIT
@@ -293,14 +291,13 @@ final class GroupForm extends BaseControl
      */
     private function getEmailDefaults(int $groupId, EmailType $type) : array
     {
-        /**
-         * @var GroupEmail|NULL $email
-         */
         $email = $this->queryBus->handle(new GroupEmailQuery($groupId, $type));
 
         if ($email === null) {
             return [];
         }
+
+        assert($email instanceof GroupEmail);
 
         return [
             'enabled' => $email->isEnabled(),

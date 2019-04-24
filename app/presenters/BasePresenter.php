@@ -16,6 +16,7 @@ use Nette\Security\Identity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
 use WebLoader\Nette as WebLoader;
+use function assert;
 use function explode;
 
 /**
@@ -152,8 +153,10 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     protected function updateUserAccess() : void
     {
-        /** @var Identity $identity */
-        $identity         = $this->user->getIdentity();
+        $identity = $this->user->getIdentity();
+
+        assert($identity instanceof Identity);
+
         $identity->access = $this->userService->getAccessArrays($this->unitService);
     }
 

@@ -25,6 +25,7 @@ use Nette\Http\IResponse;
 use function array_filter;
 use function array_map;
 use function array_values;
+use function assert;
 use function in_array;
 use function sprintf;
 
@@ -195,8 +196,10 @@ class CashbookExportPresenter extends BasePresenter
     private function getSkautisType() : ObjectType
     {
         try {
-            /** @var Cashbook $cashbook */
             $cashbook = $this->queryBus->handle(new CashbookQuery(CashbookId::fromString($this->cashbookId)));
+
+            assert($cashbook instanceof Cashbook);
+
             return $cashbook->getType()->getSkautisObjectType();
         } catch (CashbookNotFound $e) {
             throw new BadRequestException($e->getMessage(), IResponse::S404_NOT_FOUND, $e);
@@ -229,7 +232,6 @@ class CashbookExportPresenter extends BasePresenter
      */
     private function getChitsWithIds(array $ids) : array
     {
-        /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), CashbookId::fromString($this->cashbookId)));
 
         $filteredChits = array_filter(

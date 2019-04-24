@@ -19,7 +19,10 @@ use Model\Utils\Arrays;
 use function array_filter;
 use function array_keys;
 use function array_map;
+use function assert;
 use function count;
+use function is_array;
+use function is_int;
 use function min;
 use function sprintf;
 
@@ -68,7 +71,6 @@ class BankService
 
         $foundGroups = $this->groups->findByIds($groupIds);
 
-        /** @var Group[][] $groupsByAccount */
         $groupsByAccount = Arrays::groupBy(
             $foundGroups,
             function (Group $g) {
@@ -82,6 +84,8 @@ class BankService
         $pairingResults = [];
 
         foreach ($groupsByAccount as $bankAccountId => $groups) {
+            assert(is_int($bankAccountId) && is_array($groups));
+
             $bankAccount = $this->bankAccounts->find($bankAccountId);
 
             if ($bankAccount->getToken() === null) {

@@ -13,6 +13,7 @@ use Nette\Application\BadRequestException;
 use Nette\Security\Identity;
 use Nette\Security\User;
 use Skautis;
+use function assert;
 use function is_array;
 
 class UnitService
@@ -169,8 +170,9 @@ class UnitService
      */
     public function getUnits(User $user, string $accessType) : array
     {
-        /** @var Identity $identity */
         $identity = $user->getIdentity();
+
+        assert($identity instanceof Identity);
 
         $res = [];
         foreach ($identity->access[$accessType] as $uId => $u) {

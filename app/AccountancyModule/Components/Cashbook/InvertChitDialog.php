@@ -19,9 +19,9 @@ use Model\DTO\Cashbook\UnitCashbook;
 use Model\Unit\Unit;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
-use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
+use function assert;
 use function count;
 use function in_array;
 use function sprintf;
@@ -128,7 +128,6 @@ class InvertChitDialog extends BaseControl
             return $this->cashbooks;
         }
 
-        /** @var SkautisRole|NULL $role */
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         $chit = $this->getChit();
 
@@ -139,17 +138,19 @@ class InvertChitDialog extends BaseControl
         $units     = $this->queryBus->handle(new EditableUnitsQuery($role));
         $cashbooks = [];
         foreach ($units as $unit) {
-            /** @var Unit $unit */
+            assert($unit instanceof Unit);
+
             $type = CashbookType::get($unit->isOfficial() ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP);
 
             if (! in_array($type, $chit->getInverseCashbookTypes(), true)) {
                 continue;
             }
 
-            /** @var UnitCashbook[] $unitCashbooks */
             $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unit->getId()));
 
             foreach ($unitCashbooks as $cashbook) {
+                assert($cashbook instanceof UnitCashbook);
+
                 $id             = $cashbook->getCashbookId()->toString();
                 $cashbooks[$id] = $unit->getDisplayName() . ' ' . $cashbook->getYear();
             }

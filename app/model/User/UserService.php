@@ -23,7 +23,7 @@ class UserService extends BaseService
      *
      * @return \stdClass[]
      */
-    public function getAllSkautisRoles(bool $activeOnly = true)
+    public function getAllSkautisRoles(bool $activeOnly = true) : array
     {
         return $this->skautis->user->UserRoleAll(['ID_User' => $this->getUserDetail()->ID, 'IsActive' => $activeOnly]);
     }

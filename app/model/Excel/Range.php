@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Excel;
 
 use Nette\StaticClass;
+use function range;
 
 final class Range
 {

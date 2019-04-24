@@ -13,6 +13,7 @@ use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
 use Nette\Utils\Strings;
 use function array_filter;
+use function assert;
 use function count;
 use function ltrim;
 use function str_replace;
@@ -64,8 +65,9 @@ class NextVariableSymbolSequenceQueryHandler
 
     private function getLastDigitsOfUnitNumber(int $unitId) : string
     {
-        /** @var Unit $unit */
         $unit = $this->queryBus->handle(new UnitQuery($unitId));
+
+        assert($unit instanceof Unit);
 
         $number = $unit->getShortRegistrationNumber();
         $number = ltrim($number, '0');

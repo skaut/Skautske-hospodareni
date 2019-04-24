@@ -16,6 +16,7 @@ use Nette\Security\Identity;
 use function array_column;
 use function array_filter;
 use function array_key_exists;
+use function assert;
 use function dirname;
 
 class ContractPresenter extends BasePresenter
@@ -35,26 +36,28 @@ class ContractPresenter extends BasePresenter
 
     private function isContractAccessible(?Contract $contract) : bool
     {
-        /** @var Identity $identity */
         $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
 
         return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
     }
 
     private function isContractEditable(?Contract $contract) : bool
     {
-        /** @var Identity $identity */
         $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
 
         return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
     }
 
     public function renderDefault() : void
     {
-        /** @var Identity $identity */
         $identity = $this->getUser()->getIdentity();
+        $unitId   = $this->officialUnit->getId();
 
-        $unitId = $this->officialUnit->getId();
+        assert($identity instanceof Identity);
 
         if (! array_key_exists($unitId, $identity->access[BaseService::ACCESS_READ])) {
             $this->flashMessage('Nemáš přístup ke smlouvám cestovních příkazů.', 'danger');

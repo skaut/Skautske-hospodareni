@@ -160,8 +160,10 @@ class CommandForm extends Control
         if ($this->commandId !== null) {
             $this->loadDefaultValues($form);
         } else {
-            /** @var Unit $unit */
             $unit = $this->queryBus->handle(new UnitQuery($this->unitId));
+
+            assert($unit instanceof Unit);
+
             $form->setDefaults([
                 'unit' => $unit->getRegistrationNumber(),
             ]);
@@ -190,9 +192,9 @@ class CommandForm extends Control
         }
 
         $contractId = $command->getPassenger()->getContractId();
+        $contracts  = $form['contract_id'];
 
-        /** @var SelectBox $contracts */
-        $contracts = $form['contract_id'];
+        assert($contracts instanceof SelectBox);
 
         if ($contractId !== null && ! isset($contracts->getItems()[$contractId])) {
             $contracts->setItems($this->prepareContracts($contractId)); // Prepare list with missing contract
@@ -223,8 +225,9 @@ class CommandForm extends Control
             return;
         }
 
-        /** @var SelectBox $vehicles */
         $vehicles = $form['vehicle_id'];
+
+        assert($vehicles instanceof SelectBox);
 
         if (in_array($vehicleId, $vehicles->getItems())) {
             return;

@@ -22,6 +22,7 @@ use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
+use function assert;
 
 class FunctionsControl extends BaseControl
 {
@@ -181,8 +182,10 @@ class FunctionsControl extends BaseControl
         ];
 
         foreach ($values as $functionName => $personId) {
-            /** @var SelectBox $selectbox */
             $selectbox = $form[$functionName];
+
+            assert($selectbox instanceof SelectBox);
+
             $selectbox->setDefaultValue(isset($selectbox->getItems()[$personId]) ? $personId : null);
         }
     }

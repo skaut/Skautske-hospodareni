@@ -30,6 +30,7 @@ use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Skautis\Wsdl\PermissionException;
 use function array_key_first;
+use function assert;
 use function count;
 use function date;
 use function gmdate;
@@ -112,8 +113,7 @@ class ExcelService
         $allowPragueColumns = false;
         $data               = [];
         foreach ($eventIds as $aid) {
-            $eventId = new SkautisEventId($aid);
-            /** @var CashbookId $cashbookId */
+            $eventId    = new SkautisEventId($aid);
             $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
 
             $data[$aid]                    = $service->getEvent()->get($aid);
@@ -151,8 +151,7 @@ class ExcelService
 
         $data = [];
         foreach ($campsIds as $aid) {
-            $campId = new SkautisCampId($aid);
-            /** @var CashbookId $cashbookId */
+            $campId     = new SkautisCampId($aid);
             $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($campId));
 
             $camp                          = $service->getEvent()->get($aid);
@@ -288,18 +287,19 @@ class ExcelService
             ->setCellValue('G1', 'Výdej')
             ->setCellValue('H1', 'Zůstatek');
 
-        /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId));
-
-        /** @var Cashbook $cashbook */
+        $chits    = $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId));
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-        $prefix   = $cashbook->getChitNumberPrefix();
-        /** @var string[] $categoryNames */
+
+        assert($cashbook instanceof Cashbook);
+
+        $prefix        = $cashbook->getChitNumberPrefix();
         $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
 
         $balance = 0;
         $rowCnt  = 2;
         foreach ($chits as $chit) {
+            assert($chit instanceof Chit);
+
             $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
             $amount   = $chit->getAmount()->toFloat();
 
@@ -368,8 +368,10 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $row) {
-            /** @var Functions $functions */
-            $functions  = $row->func;
+            $functions = $row->func;
+
+            assert($functions instanceof Functions);
+
             $leader     = $functions->getLeader() !== null ? $functions->getLeader()->getName() : null;
             $accountant = $functions->getAccountant() !== null ? $functions->getAccountant()->getName() : null;
 
@@ -394,8 +396,10 @@ class ExcelService
                 ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count)
                 ->setCellValue('T' . $rowCnt, $row->prefix);
             if (isset($row->pragueParticipants)) {
-                /** @var PragueParticipants $pp */
                 $pp = $row->pragueParticipants;
+
+                assert($pp instanceof PragueParticipants);
+
                 $sheet->setCellValue('U' . $rowCnt, $pp->isSupportable($row->TotalDays) ? 'Ano' : 'Ne')
                     ->setCellValue('V' . $rowCnt, $pp->getPersonDaysUnder26())
                     ->setCellValue('W' . $rowCnt, $pp->getUnder18())
@@ -440,8 +444,10 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $row) {
-            /** @var Functions $functions */
-            $functions  = $row->func;
+            $functions = $row->func;
+
+            assert($functions instanceof Functions);
+
             $leader     = $functions->getLeader() !== null ? $functions->getLeader()->getName() : null;
             $accountant = $functions->getAccountant() !== null ? $functions->getAccountant()->getName() : null;
 
@@ -488,18 +494,18 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $event) {
-            /** @var CashbookId $cashbookId */
             $cashbookId = $event['cashbookId'];
+            $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
-            /** @var Cashbook $cashbook */
-            $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-            $prefix   = $cashbook->getChitNumberPrefix();
+            assert($cashbook instanceof Cashbook);
 
-            /** @var string[] $categories */
+            $prefix = $cashbook->getChitNumberPrefix();
+
             $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId, null));
 
             foreach ($event['chits'] as $chit) {
-                /** @var Chit $chit */
+                assert($chit instanceof Chit);
+
                 $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
                 $amount   = $chit->getAmount()->toFloat();
 
@@ -538,10 +544,8 @@ class ExcelService
             ->setCellValue('F1', 'Částka')
             ->setCellValue('G1', 'Typ');
 
-        $rowCnt = 2;
-        $sumIn  = $sumOut = 0;
-
-        /** @var string[] $categoryNames */
+        $rowCnt        = 2;
+        $sumIn         = $sumOut = 0;
         $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
 
         foreach ($chits as $chit) {

@@ -233,7 +233,6 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('Payment:detail', ['id' => $id]); // redirect elsewhere?
         }
 
-        /** @var MassAddForm $form */
         $form = $this['massAddForm'];
         $list = $this->model->getPersons($this->aid, $id);
 
@@ -422,7 +421,6 @@ class PaymentPresenter extends BasePresenter
 
     public function handleOpenRemoveDialog() : void
     {
-        /** @var RemoveGroupDialog $dialog */
         $dialog = $this['removeGroupDialog'];
         $dialog->open();
     }

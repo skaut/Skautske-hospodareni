@@ -5,17 +5,32 @@ parameters:
         - %rootDir%/../../../vendor/others
         - %rootDir%/../../../code-quality
 
+    ignoreErrors:
+        # Errors related mostly to usage of assert($x instanceof A || $x === null) and similar asserts
+        - '~Result of \|\| is always true\.~'
+        - '~Result of && is always true\.~'
+
+
 includes:
     - vendor/phpstan/phpstan-nette/extension.neon
     - vendor/phpstan/phpstan-doctrine/extension.neon
 
 services:
-	- class: MandatoryVoidRule
+	- class: CodeQuality\MandatoryVoid\MandatoryVoidRule
 	  tags: [ phpstan.rules.rule ]
 	- class: SkautisAliasesExtension
 	  tags: [ phpstan.broker.propertiesClassReflectionExtension ]
-	- class: SkautisWebserviceMagicMethodsExtension
+
+	- class: CodeQuality\SkautisWebserviceMagicMethodsExtension
 	  tags: [ phpstan.broker.methodsClassReflectionExtension ]
+
+	- class: CodeQuality\QueryBusDynamicReturnTypeProvider
+	  arguments:
+	      - %autoload_directories%
+	      - %rootDir%/../../../temp
+	      - '~^.*QueryHandler$~'
+
+	  tags: [ phpstan.broker.dynamicMethodReturnTypeExtension ]
 
 	- class: UnusedMoneyMethodResultRule
 	  tags: [ phpstan.rules.rule ]

@@ -11,6 +11,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateNote;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Cashbook\Cashbook;
+use function assert;
 use function htmlspecialchars;
 use function nl2br;
 use function preg_replace;
@@ -63,16 +64,11 @@ final class NoteForm extends BaseControl
 
     public function render() : void
     {
-        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
-        /** @var BaseForm $form */
-        $form = $this['form'];
-        $form->setDefaults(
-            [
-            'note' => $cashbook->getNote(),
-            ]
-        );
+        assert($cashbook instanceof Cashbook);
+
+        $this['form']->setDefaults(['note' => $cashbook->getNote()]);
 
         $note    = nl2br(htmlspecialchars($cashbook->getNote()));
         $pattern = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';

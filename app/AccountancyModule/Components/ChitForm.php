@@ -34,6 +34,7 @@ use Nette\Utils\Json;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 use function array_values;
+use function assert;
 use function get_class;
 use function sprintf;
 
@@ -98,8 +99,10 @@ final class ChitForm extends BaseControl
 
     public function render() : void
     {
-        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
         $this->template->setParameters(
             [
             'isEditable' => $this->isEditable,
@@ -113,18 +116,18 @@ final class ChitForm extends BaseControl
 
     public function editChit(int $chitId) : void
     {
-        /** @var Chit|NULL $chit */
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $chitId));
 
         if ($chit === null) {
             throw new BadRequestException(sprintf('Chit %d not found', $chitId), IResponse::S404_NOT_FOUND);
         }
 
+        assert($chit instanceof Chit);
+
         if ($chit->isLocked()) {
             throw new BadRequestException('Can\'t edit locked chit', IResponse::S403_FORBIDDEN);
         }
 
-        /** @var BaseForm $form */
         $form = $this['form'];
 
         $form->setDefaults(

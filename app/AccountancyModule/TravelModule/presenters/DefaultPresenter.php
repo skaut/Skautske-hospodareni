@@ -45,9 +45,11 @@ class DefaultPresenter extends BasePresenter
 
     private function isCommandAccessible(int $commandId) : bool
     {
-        $command = $this->travelService->getCommandDetail($commandId);
-        /** @var Identity $identity */
-        $identity    = $this->getUser()->getIdentity();
+        $command  = $this->travelService->getCommandDetail($commandId);
+        $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
+
         $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
             array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
 
@@ -56,9 +58,11 @@ class DefaultPresenter extends BasePresenter
 
     private function isCommandEditable(int $id) : bool
     {
-        $command = $this->travelService->getCommandDetail($id);
-        /** @var Identity $identity */
-        $identity    = $this->getUser()->getIdentity();
+        $command  = $this->travelService->getCommandDetail($id);
+        $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
+
         $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
             array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
 
@@ -109,8 +113,10 @@ class DefaultPresenter extends BasePresenter
         $travels   = $this->travelService->getTravels($commandId);
         $vehicleId = $command->getVehicleId();
 
-        /** @var Template $template */
         $template = $this->getTemplateFactory()->createTemplate();
+
+        assert($template instanceof Template);
+
         $template->setParameters(
             [
             'command' => $command,

@@ -16,6 +16,7 @@ use Skautis\Exception;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use function array_merge;
+use function assert;
 use function in_array;
 use function is_array;
 
@@ -88,11 +89,14 @@ class EventService extends MutableBaseService
      */
     private function getCashbookData(int $eventId) : array
     {
-        /** @var CashbookId $cashbookId */
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($eventId)));
 
-        /** @var Cashbook $cashbook */
+        assert($cashbookId instanceof CashbookId);
+
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
         return [
             'prefix' => $cashbook->getChitNumberPrefix(),
         ];

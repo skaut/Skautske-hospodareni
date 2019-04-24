@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Model\Payment\ReadModel\Queries;
 
 use Model\Payment\EmailType;
-use Model\Payment\ReadModel\QueryHandlers\GroupEmailHandler;
+use Model\Payment\ReadModel\QueryHandlers\GroupEmailQueryHandler;
 
 /**
- * @see GroupEmailHandler
+ * @see GroupEmailQueryHandler
  */
 final class GroupEmailQuery
 {

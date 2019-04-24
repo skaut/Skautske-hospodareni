@@ -20,8 +20,6 @@ use Model\Utils\MoneyFactory;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
-use function array_column;
-use function array_combine;
 use function array_diff_key;
 use function array_key_exists;
 use function array_map;

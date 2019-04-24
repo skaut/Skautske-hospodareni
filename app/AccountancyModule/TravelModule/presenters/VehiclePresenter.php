@@ -18,6 +18,7 @@ use Nette\Security\Identity;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
 use function array_key_exists;
+use function assert;
 
 class VehiclePresenter extends BasePresenter
 {
@@ -56,8 +57,9 @@ class VehiclePresenter extends BasePresenter
 
     private function isVehicleEditable(?VehicleDTO $vehicle) : bool
     {
-        /** @var Identity $identity */
         $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
 
         $unitAccessible = array_key_exists($vehicle->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]) ||
         $vehicle->getSubunitId() !== null && array_key_exists($vehicle->getSubunitId(), $identity->access[BaseService::ACCESS_EDIT]);

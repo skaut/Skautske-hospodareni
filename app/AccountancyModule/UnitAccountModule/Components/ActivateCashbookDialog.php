@@ -14,6 +14,7 @@ use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
 use Nette\Utils\ArrayHash;
+use function assert;
 use function sprintf;
 
 final class ActivateCashbookDialog extends BaseControl
@@ -101,11 +102,12 @@ final class ActivateCashbookDialog extends BaseControl
      */
     private function getCashbooks() : array
     {
-        /** @var UnitCashbook[] $cashbooks */
         $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId->toInt()));
         $pairs     = [];
 
         foreach ($cashbooks as $cashbook) {
+            assert($cashbook instanceof UnitCashbook);
+
             $pairs[$cashbook->getId()] = (string) $cashbook->getYear();
         }
 

@@ -25,11 +25,12 @@ class TypeRepository implements ITypeRepository
      */
     public function find(string $shortcut) : Type
     {
-        /** @var Type|null $res */
         $type = $this->em->find(Type::class, $shortcut);
+
         if ($type === null) {
             throw new TypeNotFound(sprintf('Travel type \'%s\' was not found.', $shortcut));
         }
+
         return $type;
     }
 }

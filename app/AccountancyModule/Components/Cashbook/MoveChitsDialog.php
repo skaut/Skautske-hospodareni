@@ -26,6 +26,7 @@ use Model\EventEntity;
 use Nette\DI\Container;
 use Nette\Utils\ArrayHash;
 use function array_map;
+use function assert;
 use function explode;
 use function implode;
 use function in_array;
@@ -162,8 +163,10 @@ class MoveChitsDialog extends BaseControl
      */
     private function getListOfEvents(string $eventType, array $states) : array
     {
-        /** @var EventEntity $eventEntity */
-        $eventEntity  = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
+        $eventEntity = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
+
+        assert($eventEntity instanceof EventEntity);
+
         $eventService = $eventEntity->getEvent();
         $rawArr       = $eventService->getAll(null);
 
@@ -206,8 +209,10 @@ class MoveChitsDialog extends BaseControl
 
     private function getCashbookType(CashbookId $cashbookId) : CashbookType
     {
-        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
         return $cashbook->getType();
     }
 

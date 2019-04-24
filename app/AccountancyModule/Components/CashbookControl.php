@@ -92,7 +92,6 @@ class CashbookControl extends BaseControl
         $control = $this->chitListFactory->create($this->cashbookId, $this->isEditable, $paymentMethod);
 
         $control->onEditButtonClicked[] = function (int $chitId) : void {
-            /** @var ChitForm $form */
             $form = $this['chitForm'];
             $form->editChit($chitId);
 

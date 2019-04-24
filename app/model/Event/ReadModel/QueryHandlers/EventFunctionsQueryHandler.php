@@ -10,7 +10,7 @@ use Model\Event\ReadModel\Queries\EventFunctions;
 use Skautis\Skautis;
 use function array_map;
 
-class EventFunctionsHandler
+class EventFunctionsQueryHandler
 {
     /** @var Skautis */
     private $skautis;

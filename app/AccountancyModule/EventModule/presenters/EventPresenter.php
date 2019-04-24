@@ -14,7 +14,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
@@ -30,6 +29,7 @@ use Model\LoggerService;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+use function assert;
 
 class EventPresenter extends BasePresenter
 {
@@ -128,8 +128,9 @@ class EventPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        /** @var Functions $functions */
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
+
+        assert($functions instanceof Functions);
 
         if ($functions->getLeader() !== null) {
             $this->commandBus->handle(new CloseEvent(new SkautisEventId($aid)));
@@ -149,10 +150,8 @@ class EventPresenter extends BasePresenter
 
     public function actionPrintAll(int $aid) : void
     {
-        /** @var CashbookId $cashbookId */
         $cashbookId = $this->getCashbookId($aid);
-        /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
+        $chits      = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
 
         $event = $this->eventService->getEvent()->get($aid);
 

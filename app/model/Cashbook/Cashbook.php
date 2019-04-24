@@ -20,6 +20,7 @@ use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\Aggregate;
 use Nette\Utils\Strings;
 use function array_map;
+use function assert;
 use function max;
 use function sprintf;
 
@@ -239,7 +240,8 @@ class Cashbook extends Aggregate
         );
 
         foreach ($chits as $chit) {
-            /** @var Chit $chit */
+            assert($chit instanceof Chit);
+
             $newChit = $this->type->equals($sourceCashbook->type) && ! $this->type->equalsValue(CashbookType::CAMP)
                 ? $chit->copyToCashbook($this)
                 : $chit->copyToCashbookWithUndefinedCategory($this);

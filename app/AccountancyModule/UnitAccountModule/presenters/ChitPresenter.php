@@ -21,6 +21,7 @@ use Nette\Application\UI\Multiplier;
 use Nette\Http\IResponse;
 use function array_filter;
 use function array_map;
+use function assert;
 use function sprintf;
 
 class ChitPresenter extends BasePresenter
@@ -85,10 +86,10 @@ class ChitPresenter extends BasePresenter
             $units[$ik]['DisplayName'] = $iu;
         }
 
-        /** @var EventEntity $eventService */
         $eventService = $this->context->getService('eventService');
-        /** @var EventEntity $campService */
-        $campService = $this->context->getService('campService');
+        $campService  = $this->context->getService('campService');
+
+        assert($eventService instanceof EventEntity && $campService instanceof EventEntity);
 
         $objectsByType = [
             ObjectType::UNIT => $units,
@@ -111,8 +112,10 @@ class ChitPresenter extends BasePresenter
            ],
             'info'            => $this->cashbooks,
             'isCashbookEmpty' => function (string $cashbookId) : bool {
-                /** @var ChitListControl $chitList */
                 $chitList = $this['chitList-' . $cashbookId];
+
+                assert($chitList instanceof ChitListControl);
+
                 return $chitList->isEmpty();
             },
         ]);
@@ -153,10 +156,11 @@ class ChitPresenter extends BasePresenter
             $cashbooks = [];
 
             foreach ($objects as $unitId => ['DisplayName' => $name]) {
-                /** @var UnitCashbook[] $unitCashbooks */
                 $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery($unitId));
 
                 foreach ($unitCashbooks as $cashbook) {
+                    assert($cashbook instanceof UnitCashbook);
+
                     $cashbooks[$cashbook->getCashbookId()->withoutHyphens()] = [
                         'ID' => $unitId,
                         'DisplayName' => $name . ' ' . $cashbook->getYear(),
