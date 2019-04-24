@@ -9,13 +9,12 @@ use Model\Payment\Payment\State;
 use Money\Money;
 use function array_reverse;
 use function array_shift;
-use function call_user_func_array;
 use function count;
 use function explode;
 use function func_get_args;
+use function is_callable;
 use function mb_strtoupper;
 use function mb_substr;
-use function method_exists;
 use function number_format;
 use function preg_replace;
 use function str_split;
@@ -31,10 +30,13 @@ abstract class AccountancyHelpers
      */
     public static function loader(string $filter, $value) : string
     {
-        if (method_exists(__CLASS__, $filter)) {
+        $method = [self::class, $filter];
+
+        if (is_callable($method)) {
             $args = func_get_args();
             array_shift($args);
-            return call_user_func_array([__CLASS__, $filter], $args);
+
+            return $method(...$args);
         }
 
         throw new \RuntimeException('Filter not found');

@@ -48,12 +48,12 @@ class BudgetPresenter extends BasePresenter
         $form->addText('label', 'Název')
             ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Vyplňte název kategorie');
-        $form->addSelect('type', 'Typ', ['in' => 'Příjmy', 'out' => 'Výdaje'])
+        $type = $form->addSelect('type', 'Typ', ['in' => 'Příjmy', 'out' => 'Výdaje'])
             ->setDefaultValue('in')
             ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Vyberte typ')
             ->setHtmlId('form-select-type');
-        $form->addDependentSelectBox('parentId', 'Nadřazená kategorie', $form['type'])
+        $form->addDependentSelectBox('parentId', 'Nadřazená kategorie', $type)
             ->setDependentCallback([$this, 'getParentCategories'])
             ->setAttribute('class', 'form-control')
             ->setHtmlId('form-select-parentId');
@@ -78,7 +78,7 @@ class BudgetPresenter extends BasePresenter
 
     private function addCategoryFormSubmitted(Form $form) : void
     {
-        if (! $form['submit']->isSubmittedBy()) {
+        if ($form->isSubmitted() !== $form['submit']) {
             return;
         }
 

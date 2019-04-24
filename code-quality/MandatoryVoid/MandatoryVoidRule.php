@@ -1,31 +1,30 @@
 <?php
 
+namespace CodeQuality\MandatoryVoid;
+
 use PhpParser\Node;
-use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
-use PHPStan\Type\VoidType;
+use PHPStan\Rules\Rule;
+use function assert;
 
-class MandatoryVoidRule implements \PHPStan\Rules\Rule
+class MandatoryVoidRule implements Rule
 {
-
-    public function getNodeType(): string
+    public function getNodeType() : string
     {
         return ClassMethod::class;
     }
 
-    public function processNode(Node $node, Scope $scope): array
+    public function processNode(Node $node, Scope $scope) : array
     {
-        if(! ($node instanceof ClassMethod)) {
-            return [];
-        }
+        assert($node instanceof ClassMethod);
 
-        if($node->name === '__construct') {
+        if($node->name->toLowerString() === '__construct') {
             return [];
         }
 
         $class = $scope->getClassReflection()->getName();
-        $method = new ReflectionMethod($class, $node->name);
+        $method = new \ReflectionMethod($class, $node->name);
 
         if($method->isAbstract()) {
             return [];
@@ -61,5 +60,4 @@ class MandatoryVoidRule implements \PHPStan\Rules\Rule
 
         return $visitor->returnsNullOrNothing();
     }
-
 }

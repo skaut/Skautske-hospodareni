@@ -110,11 +110,7 @@ class DefaultPresenter extends BasePresenter
 
     public function renderDefault() : void
     {
-        $this['formFilter']['state']->setDefaultValue($this->ses->state);
-        $this['formFilter']['year']->setDefaultValue($this->ses->year);
-        $this->template->setParameters([
-            'accessCreate' => $this->authorizator->isAllowed(Event::CREATE, null),
-        ]);
+        $this->template->setParameters(['accessCreate' => $this->authorizator->isAllowed(Event::CREATE, null)]);
     }
 
     public function actionNew() : void
@@ -186,8 +182,12 @@ class DefaultPresenter extends BasePresenter
             $years[$y] = $y;
         }
         $form = new BaseForm();
-        $form->addSelect('state', 'Stav', $states);
-        $form->addSelect('year', 'Rok', $years);
+        $form->addSelect('state', 'Stav', $states)
+            ->setDefaultValue($this->ses->state);
+
+        $form->addSelect('year', 'Rok', $years)
+            ->setDefaultValue($this->ses->year);
+
         $form->addSubmit('send', 'Hledat')
             ->setAttribute('class', 'btn btn-primary');
 
@@ -274,13 +274,6 @@ class DefaultPresenter extends BasePresenter
 
         $startDate = $v['start'];
         $endDate   = $v['end'];
-
-        assert($startDate instanceof Date && $endDate instanceof Date);
-
-        if ($startDate > $endDate) {
-            $form['start']->addError('Akce nemůže dříve začít než zkončit!');
-            $this->redirect('this');
-        }
 
         $this->commandBus->handle(
             new CreateEvent(

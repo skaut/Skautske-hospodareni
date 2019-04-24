@@ -31,10 +31,12 @@ use Model\PaymentService;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SubmitButton;
 use function array_filter;
 use function array_intersect;
 use function array_keys;
 use function array_unique;
+use function assert;
 use function count;
 use function date;
 use function sprintf;
@@ -190,8 +192,14 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('Payment:default');
         }
 
-        $form                  = $this['paymentForm'];
-        $form['send']->caption = 'Upravit';
+        $form = $this['paymentForm'];
+
+        $submit = $form['send'];
+
+        assert($submit instanceof SubmitButton);
+
+        $submit->caption = 'Upravit';
+
         $form->setDefaults(
             [
             'name' => $payment->getName(),

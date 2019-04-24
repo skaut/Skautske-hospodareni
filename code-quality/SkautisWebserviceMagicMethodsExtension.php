@@ -1,16 +1,22 @@
 <?php
 
-class SkautisWebserviceMagicMethodsExtension implements \PHPStan\Reflection\MethodsClassReflectionExtension
+namespace CodeQuality;
+
+use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\Dummy\DummyMethodReflection;
+use PHPStan\Reflection\MethodReflection;
+use PHPStan\Reflection\MethodsClassReflectionExtension;
+use Skautis\Wsdl\WebServiceInterface;
+
+class SkautisWebserviceMagicMethodsExtension implements MethodsClassReflectionExtension
 {
-
-    public function hasMethod(\PHPStan\Reflection\ClassReflection $classReflection, string $methodName): bool
+    public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
-        return $classReflection->getName() === \Skautis\Wsdl\WebServiceInterface::class; // TODO: Make smarter guess based on WSDL
+        return $classReflection->getName() === WebServiceInterface::class; // TODO: Make smarter guess based on WSDL
     }
 
-    public function getMethod(\PHPStan\Reflection\ClassReflection $classReflection, string $methodName): \PHPStan\Reflection\MethodReflection
+    public function getMethod(ClassReflection $classReflection, string $methodName) : MethodReflection
     {
-        return new SkautisWebserviceMethodReflection($classReflection, $methodName);
+        return new DummyMethodReflection($methodName);
     }
-
 }

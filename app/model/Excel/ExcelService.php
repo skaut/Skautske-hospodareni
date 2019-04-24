@@ -23,16 +23,18 @@ use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
+use Model\Excel\Range;
 use Model\Participant\PragueParticipants;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Skautis\Wsdl\PermissionException;
+use function array_key_first;
 use function count;
 use function date;
 use function gmdate;
 use function header;
 use function implode;
-use function range;
 use function reset;
 use function strtotime;
 
@@ -225,7 +227,7 @@ class ExcelService
             $rowCnt++;
         }
         //format
-        foreach (range('A', 'N') as $columnID) {
+        foreach (Range::letters('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
@@ -267,7 +269,7 @@ class ExcelService
             $rowCnt++;
         }
         //format
-        foreach (range('A', 'J') as $columnID) {
+        foreach (Range::letters('A', 'J') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
         $sheet->getStyle('A1:J1')->getFont()->setBold(true);
@@ -315,7 +317,7 @@ class ExcelService
         }
 
         //format
-        foreach (range('A', 'H') as $columnID) {
+        foreach (Range::letters('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
@@ -326,12 +328,12 @@ class ExcelService
     }
 
     /**
-     * @param mixed[] $data
+     * @param ArrayHash[] $data
      * @throws \PHPExcel_Exception
      */
     protected function setSheetEvents(\PHPExcel_Worksheet $sheet, array $data, bool $allowPragueColumns = false) : void
     {
-        $firstElement = reset($data);
+        $firstElement = $data[array_key_first($data)];
 
         $sheet->setCellValue('A1', 'Pořadatel')
             ->setCellValue('B1', 'Název akce')
@@ -405,7 +407,7 @@ class ExcelService
         $lastColumn = $allowPragueColumns ? 'W' : 'S';
 
         //format
-        foreach (range('A', $lastColumn) as $columnID) {
+        foreach (Range::letters('A', $lastColumn) as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
         $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
@@ -414,7 +416,7 @@ class ExcelService
     }
 
     /**
-     * @param mixed[] $data
+     * @param ArrayHash[] $data
      * @throws \PHPExcel_Exception
      */
     protected function setSheetCamps(\PHPExcel_Worksheet $sheet, array $data) : void
@@ -461,7 +463,7 @@ class ExcelService
         }
 
         //format
-        foreach (range('A', 'N') as $columnID) {
+        foreach (Range::letters('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
@@ -470,7 +472,7 @@ class ExcelService
     }
 
     /**
-     * @param mixed[] $data
+     * @param ArrayHash[] $data
      * @throws \PHPExcel_Exception
      */
     private function setSheetChits(\PHPExcel_Worksheet $sheet, array $data) : void
@@ -515,7 +517,7 @@ class ExcelService
         }
 
         //format
-        foreach (range('A', 'H') as $columnID) {
+        foreach (Range::letters('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
@@ -578,7 +580,7 @@ class ExcelService
         }
 
         //format
-        foreach (range('A', 'G') as $columnID) {
+        foreach (Range::letters('A', 'G') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);

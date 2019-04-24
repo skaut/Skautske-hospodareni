@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\QueryBus\IQueryBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Stat\Counter;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Event\ReadModel\Queries\CampStatisticsQuery;
@@ -19,10 +19,10 @@ use function in_array;
 
 class StatisticsService
 {
-    /** @var IQueryBus */
+    /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(IQueryBus $queryBus)
+    public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
     }

@@ -14,10 +14,12 @@ use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Security\Identity;
 use function array_key_exists;
 use function array_map;
 use function array_slice;
+use function assert;
 use function count;
 use function round;
 use function str_replace;
@@ -77,7 +79,7 @@ class DefaultPresenter extends BasePresenter
 
         $command = $this->travelService->getCommandDetail($id);
 
-        $this['formAddTravel']['type']->setItems($command->getTransportTypePairs());
+        $this->getTypeSelectBox()->setItems($command->getTransportTypePairs());
         $this['formAddTravel']->setDefaults(['command_id' => $id]);
     }
 
@@ -223,7 +225,7 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage('Nelze upravovat cestovní příkaz.', 'danger');
             $this->redirect('default');
         }
-        $v['distance'] = round(str_replace(',', '.', $v['distance']), 2);
+        $v['distance'] = round((float) str_replace(',', '.', $v['distance']), 2);
 
         $this->travelService->addTravel(
             $commandId,
@@ -248,7 +250,8 @@ class DefaultPresenter extends BasePresenter
         $command = $this->travelService->getCommandDetail($commandId);
 
         $form = $this['formEditTravel'];
-        $form['type']->setItems($command->getTransportTypePairs());
+
+        $this->getTypeSelectBox()->setItems($command->getTransportTypePairs());
 
         $form->setDefaults(
             [
@@ -324,5 +327,14 @@ class DefaultPresenter extends BasePresenter
 
         $this->flashMessage('Cesta byla upravena.');
         $this->redirect('detail', [$v->commandId]);
+    }
+
+    private function getTypeSelectBox() : SelectBox
+    {
+        $selectBox = $this['formEditTravel']['type'];
+
+        assert($selectBox instanceof SelectBox);
+
+        return $selectBox;
     }
 }

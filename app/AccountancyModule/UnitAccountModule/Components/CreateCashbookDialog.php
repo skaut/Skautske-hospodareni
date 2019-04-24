@@ -15,11 +15,11 @@ use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
 use Nette\Utils\ArrayHash;
-use function array_combine;
 use function array_diff;
 use function array_map;
 use function date;
 use function range;
+use function Safe\array_combine;
 
 final class CreateCashbookDialog extends BaseControl
 {

@@ -19,8 +19,9 @@ class UserService extends BaseService
     }
 
     /**
-     * vrací pole
-     * @return mixed všech dostupných rolí přihlášeného uživatele
+     * Returns all available roles for current user
+     *
+     * @return \stdClass[]
      */
     public function getAllSkautisRoles(bool $activeOnly = true)
     {

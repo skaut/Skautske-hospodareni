@@ -127,8 +127,6 @@ final class ChitForm extends BaseControl
         /** @var BaseForm $form */
         $form = $this['form'];
 
-        $form['category']->setItems($this->getCategoryPairsByType($chit->getCategory()->getOperationType()));
-
         $form->setDefaults(
             [
             'pid' => $chit->getId(),
@@ -198,12 +196,12 @@ final class ChitForm extends BaseControl
             ->setAttribute('placeholder', 'Účel')
             ->setAttribute('class', 'form-control input-sm required');
 
-        $form->addSelect('type', null, self::CATEGORY_TYPES)
+        $type = $form->addSelect('type', null, self::CATEGORY_TYPES)
             ->setAttribute('size', '2')
             ->setDefaultValue(Operation::EXPENSE)
             ->setRequired('Vyberte typ');
 
-        $form->addDependentSelectBox('category', null, $form['type'])
+        $form->addDependentSelectBox('category', null, $type)
             ->setDependentCallback([$this, 'getCategoryItems'])
             ->setAttribute('class', 'form-control input-sm');
 

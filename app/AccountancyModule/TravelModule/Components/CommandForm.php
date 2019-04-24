@@ -21,6 +21,7 @@ use Nette\Utils\Html;
 use function array_filter;
 use function array_keys;
 use function array_map;
+use function assert;
 use function in_array;
 
 class CommandForm extends Control
@@ -82,9 +83,11 @@ class CommandForm extends Control
             ->setMaxLength(64)
             ->setAttribute('class', 'form-control')
             ->addRule($form::FILLED, 'Musíte vyplnit účel cesty.');
-        $form->addMultiSelect('type', 'Prostředek*', $this->prepareTransportTypeOptions())
+        $typeSelectBox = $form->addMultiSelect('type', 'Prostředek*', $this->prepareTransportTypeOptions())
             ->setAttribute('class', 'combobox')
-            ->setRequired('Vyberte alespoň jeden dopravní prostředek.')
+            ->setRequired('Vyberte alespoň jeden dopravní prostředek.');
+
+        $typeSelectBox
             ->addCondition([MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->toggle('vehicle');
 
@@ -125,20 +128,20 @@ class CommandForm extends Control
             ->setOption('id', 'vehicle_id')
             ->setPrompt('Vyberte vozidlo')
             ->setAttribute('class', 'form-control')
-            ->addConditionOn($form['type'], [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit typ vozidla.');
 
         $form->addText('fuel_price', 'Cena paliva za 1l*')
             ->setOption('id', 'fuel_price')
             ->setAttribute('class', 'form-control')
-            ->addConditionOn($form['type'], [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit cenu paliva.')
             ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
 
         $form->addText('amortization', 'Opotřebení*')
             ->setOption('id', 'amortization')
             ->setAttribute('class', 'form-control')
-            ->addConditionOn($form['type'], [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit opotřebení.')
             ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
 
@@ -178,8 +181,12 @@ class CommandForm extends Control
         $usedTypes = $command->getTransportTypePairs();
 
         if (! empty($usedTypes)) {
-            $form['type']->setItems($this->prepareTransportTypeOptions($usedTypes));
-            $form['type']->setRequired(false); // Even when nothing is selected, used types persist, so it's ok
+            $typeSelectBox = $form['type'];
+
+            assert($typeSelectBox instanceof SelectBox);
+
+            $typeSelectBox->setItems($this->prepareTransportTypeOptions($usedTypes));
+            $typeSelectBox->setRequired(false); // Even when nothing is selected, used types persist, so it's ok
         }
 
         $contractId = $command->getPassenger()->getContractId();

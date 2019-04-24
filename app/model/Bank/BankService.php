@@ -59,8 +59,6 @@ class BankService
      * @return PairingResult[] Description of paired payments
      * @throws BankTimeLimit
      * @throws BankTimeout
-     * @throws Payment\BankAccountNotFound
-     * @throws Payment\TokenNotSet
      * @throws InvalidSmtp
      */
     public function pairAllGroups(array $groupIds, ?int $daysBack = null) : array
@@ -68,8 +66,9 @@ class BankService
         Assert::thatAll($groupIds)->integer();
         Assert::that($daysBack)->nullOr()->min(1);
 
+        $foundGroups = $this->groups->findByIds($groupIds);
+
         /** @var Group[][] $groupsByAccount */
-        $foundGroups     = $this->groups->findByIds($groupIds);
         $groupsByAccount = Arrays::groupBy(
             $foundGroups,
             function (Group $g) {

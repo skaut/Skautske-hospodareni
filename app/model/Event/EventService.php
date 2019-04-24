@@ -58,7 +58,7 @@ class EventService extends MutableBaseService
      * spojuje data ze skautisu s daty z db
      * @throws PermissionException
      */
-    public function get(int $ID) : \stdClass
+    public function get(int $ID) : ArrayHash
     {
         $cacheId = __FUNCTION__ . $ID;
 

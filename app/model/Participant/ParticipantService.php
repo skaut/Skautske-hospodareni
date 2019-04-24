@@ -276,10 +276,13 @@ class ParticipantService extends MutableBaseService
     {
         $skautisData = $this->skautis->event->{'EventStatisticAllEventGeneral'}(['ID_EventGeneral' => $eventId]);
 
-        return array_combine(
-            array_column($skautisData, 'ID_ParticipantCategory'),
-            $skautisData
-        );
+        $result = [];
+
+        foreach ($skautisData as $row) {
+            $result[$row->ID_ParticipantCategory] = $row;
+        }
+
+        return $result;
     }
 
     /**

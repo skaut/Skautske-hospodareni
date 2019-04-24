@@ -8,7 +8,9 @@ use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseContainer;
 use App\Forms\BaseForm;
 use Model\PaymentService;
+use Nette\Forms\Controls\TextBase;
 use function array_filter;
+use function assert;
 
 class MassAddForm extends BaseControl
 {
@@ -70,14 +72,15 @@ class MassAddForm extends BaseControl
      */
     public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = '') : void
     {
-        /** @var BaseForm $form */
-        $form = $this['form'];
-        /** @var BaseContainer $persons */
-        $persons = $form['persons'];
+        $form          = $this['form'];
+        $persons       = $form['persons'];
+        $defaultAmount = $form['amount'];
+
+        assert($defaultAmount instanceof TextBase && $persons instanceof BaseContainer);
 
         $container = $persons->addContainer('person' . $id);
 
-        $container->addCheckbox('selected');
+        $selected = $container->addCheckbox('selected');
 
         $container->addSelect('email', null, $emails)
             ->setRequired(false);
@@ -94,8 +97,8 @@ class MassAddForm extends BaseControl
             ->setRequired(false)
             ->setNullable()
             ->setDefaultValue($amount)
-            ->addConditionOn($container['selected'], $form::FILLED)
-            ->addConditionOn($form['amount'], $form::BLANK)
+            ->addConditionOn($selected, $form::FILLED)
+            ->addConditionOn($defaultAmount, $form::BLANK)
             ->setRequired('Musíte vyplnit částku')
             ->addRule($form::FLOAT, 'Částka musí být číslo')
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01);

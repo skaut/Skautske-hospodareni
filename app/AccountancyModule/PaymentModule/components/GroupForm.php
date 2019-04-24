@@ -27,6 +27,7 @@ use Nette\Utils\ArrayHash;
 use function array_filter;
 use function assert;
 use function file_get_contents;
+use Nette\Utils\FileSystem;
 
 final class GroupForm extends BaseControl
 {
@@ -208,7 +209,7 @@ final class GroupForm extends BaseControl
 
     private function getDefaultEmailBody(string $name) : string
     {
-        return file_get_contents(__DIR__ . '/../templates/defaultEmails/' . $name . '.html');
+        return FileSystem::read(__DIR__ . '/../templates/defaultEmails/' . $name . '.html');
     }
 
     /**

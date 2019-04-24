@@ -77,19 +77,6 @@ class DefaultPresenter extends BasePresenter
         return $grid;
     }
 
-
-    public function renderDefault() : void
-    {
-        if ($this->ses->year !== null) {
-            $this['formFilter']['year']->setDefaultValue($this->ses->year);
-        }
-        if ($this->ses->state === null) {
-            return;
-        }
-
-        $this['formFilter']['state']->setDefaultValue($this->ses->state);
-    }
-
     public function actionCampSummary() : void
     {
         $this->excelService->getCampsSummary(array_keys($this->eventService->getEvent()->getAll($this->ses->year, $this->ses->state)), $this->eventService, $this->unitService);
@@ -125,10 +112,16 @@ class DefaultPresenter extends BasePresenter
         }
 
         $form = new BaseForm();
-        $form->addSelect('state', 'Stav', $states);
-        $form->addSelect('year', 'Rok', $years);
+
+        $form->addSelect('state', 'Stav', $states)
+            ->setDefaultValue($this->ses->state);
+
+        $form->addSelect('year', 'Rok', $years)
+            ->setDefaultValue($this->ses->year);
+
         $form->addSubmit('send', 'Hledat')
             ->setAttribute('class', 'btn btn-primary');
+
         $form->onSuccess[] = function (Form $form) : void {
             $this->formFilterSubmitted($form);
         };

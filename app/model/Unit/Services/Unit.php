@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Unit;
 
 use Nette\Utils\Strings;
-use function end;
+use function array_key_last;
 use function explode;
 use function in_array;
 use function sprintf;
@@ -153,7 +153,7 @@ class Unit
     {
         $splitNumber = explode('.', $this->registrationNumber);
 
-        return end($splitNumber);
+        return $splitNumber[array_key_last($splitNumber)];
     }
 
     public function getRegistrationNumber() : string

@@ -8,8 +8,6 @@ use Model\Event\Camp;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Skautis\Factory\CampFactory;
 use Skautis\Skautis;
-use function array_combine;
-use function array_map;
 use function is_object;
 
 class CampListQueryHandler
@@ -27,7 +25,7 @@ class CampListQueryHandler
     }
 
     /**
-     * @return Camp[]
+     * @return array<int, Camp> Camps indexed by ID
      */
     public function handle(CampListQuery $query) : array
     {
@@ -38,12 +36,15 @@ class CampListQueryHandler
         if (is_object($camps)) {
             return [];
         }
-        $camps = array_map([$this->campFactory, 'create'], $camps); //It changes ID to localIDs
-        return array_combine(
-            array_map(function (Camp $u) : int {
-                return $u->getId()->toInt();
-            }, $camps),
-            $camps
-        );
+
+        $result = [];
+
+        foreach ($camps as $camp) {
+            $camp = $this->campFactory->create($camp);
+
+            $result[$camp->getId()->toInt()] = $camp;
+        }
+
+        return $camps;
     }
 }

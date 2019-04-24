@@ -435,7 +435,7 @@ class TravelService
 
     /**
      * vraci všechny přikazy navazane na smlouvu
-     * @return DTO\Contract[]
+     * @return DTO\Command[]
      */
     public function getAllCommandsByContract(int $contractId) : array
     {
