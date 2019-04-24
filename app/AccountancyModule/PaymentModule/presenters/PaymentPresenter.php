@@ -29,6 +29,8 @@ use Model\Payment\PaymentNotFound;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
 use Model\UnitService;
+use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
+use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use function array_filter;
@@ -103,7 +105,8 @@ class PaymentPresenter extends BasePresenter
         parent::startup();
         //Kontrola ověření přístupu
         $this->readUnits = $this->unitService->getReadUnits($this->user);
-        $this->editUnits = $this->unitService->getEditUnits($this->user);
+        $role            = $this->queryBus->handle(new ActiveSkautisRoleQuery());
+        $this->editUnits = $this->queryBus->handle(new EditableUnitsQuery($role));
     }
 
     public function actionDefault(bool $onlyOpen = true) : void

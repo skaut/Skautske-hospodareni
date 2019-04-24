@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\UnitAccountModule;
 
+use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
+use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use function array_key_exists;
 use function date;
 
@@ -26,7 +28,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $readableUnits = $this->unitService->getReadUnits($user);
 
         $this->isReadable = $isReadable = isset($readableUnits[$this->aid]);
-        $this->isEditable = array_key_exists($this->aid, $this->unitService->getEditUnits($user));
+
+        $role             = $this->queryBus->handle(new ActiveSkautisRoleQuery());
+        $this->isEditable = array_key_exists($this->aid, $this->queryBus->handle(new EditableUnitsQuery($role)));
 
         if ($this->isEditable) {
             return;
