@@ -436,6 +436,7 @@ class PaymentPresenter extends BasePresenter
             ->addCondition(Form::FILLED)
             ->addRule(Form::EMAIL, 'Zadaný email nemá platný formát');
         $form->addDate('maturity', 'Splatnost')
+            ->setRequired('Musíte vyplnit splatnost')
             ->setAttribute('class', 'form-control');
         $form->addVariableSymbol('vs', 'VS')
             ->setRequired(false)
@@ -465,10 +466,6 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('this');
         }
         $v = $form->getValues();
-        if ($v->maturity === null) {
-            $form['maturity']->addError('Musíte vyplnit splatnost');
-            return;
-        }
 
         $id             = $v->pid !== '' ? (int) $v->pid : null;
         $name           = $v->name;
