@@ -200,24 +200,22 @@ class CommandForm extends Control
             $contracts->setItems($this->prepareContracts($contractId)); // Prepare list with missing contract
         }
 
-        $form->setDefaults(
-            [
-                'contract_id' => $command->getPassenger()->getContractId(),
-                'purpose' => $command->getPurpose(),
-                'place' => $command->getPlace(),
-                'unit' => $command->getUnit(),
-                'fellowPassengers' => $command->getFellowPassengers(),
-                'fuel_price' => MoneyFactory::toFloat($command->getFuelPrice()),
-                'amortization' => MoneyFactory::toFloat($command->getAmortizationPerKm()),
-                'note' => $command->getNote(),
-                'type' => array_keys($command->getTransportTypePairs()),
-                'passenger' => [
-                    'name' => $command->getPassenger()->getName(),
-                    'contact' => $command->getPassenger()->getContact(),
-                    'address' => $command->getPassenger()->getAddress(),
-                ],
-            ]
-        );
+        $form->setDefaults([
+            'contract_id' => $command->getPassenger()->getContractId(),
+            'purpose' => $command->getPurpose(),
+            'place' => $command->getPlace(),
+            'unit' => $command->getUnit(),
+            'fellowPassengers' => $command->getFellowPassengers(),
+            'fuel_price' => MoneyFactory::toFloat($command->getFuelPrice()),
+            'amortization' => MoneyFactory::toFloat($command->getAmortizationPerKm()),
+            'note' => $command->getNote(),
+            'type' => array_keys($command->getTransportTypePairs()),
+            'passenger' => [
+                'name' => $command->getPassenger()->getName(),
+                'contact' => $command->getPassenger()->getContact(),
+                'address' => $command->getPassenger()->getAddress(),
+            ],
+        ]);
 
         $vehicleId = $command->getVehicleId();
 

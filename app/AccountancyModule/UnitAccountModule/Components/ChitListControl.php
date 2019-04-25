@@ -70,11 +70,7 @@ final class ChitListControl extends BaseControl
     public function render() : void
     {
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
-        $this->template->setParameters(
-            [
-                'chits' => $this->getChits(),
-            ]
-        );
+        $this->template->setParameters(['chits' => $this->getChits()]);
 
         $this->template->render();
     }

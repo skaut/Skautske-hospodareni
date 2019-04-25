@@ -36,9 +36,7 @@ class BudgetPresenter extends BasePresenter
     {
         $items = $this->budgetService->getCategoriesRoot((int) $this->aid, $values['type']);
 
-        return new DependentData(
-            ['0' => 'Žádná'] + $items
-        );
+        return new DependentData(['0' => 'Žádná'] + $items);
     }
 
     protected function createComponentAddCategoryForm() : BaseForm

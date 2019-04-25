@@ -48,12 +48,10 @@ class CommandGrid extends BaseGridControl
         $grid->addColumnText('note', 'Poznámka');
         $grid->addColumnText('state', 'Stav')
             ->setSortable()
-            ->setFilterSelect(
-                [
-                    Command::STATE_IN_PROGRESS => 'Rozpracovaný',
-                    Command::STATE_CLOSED => 'Uzavřený',
-                ]
-            )->setPrompt('-');
+            ->setFilterSelect([
+                Command::STATE_IN_PROGRESS => 'Rozpracovaný',
+                Command::STATE_CLOSED => 'Uzavřený',
+            ])->setPrompt('-');
 
         $grid->addColumnText('action', '');
 

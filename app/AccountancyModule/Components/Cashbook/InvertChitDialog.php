@@ -74,12 +74,10 @@ class InvertChitDialog extends BaseControl
 
         $template = $this->template;
 
-        $template->setParameters(
-            [
-                'renderModal' => $this->chitId !== null,
-                'noCashbooks' => ! $this->isChitValid() || count($this->getCashbooks()) === 0,
-            ]
-        );
+        $template->setParameters([
+            'renderModal' => $this->chitId !== null,
+            'noCashbooks' => ! $this->isChitValid() || count($this->getCashbooks()) === 0,
+        ]);
 
         $template->setFile(__DIR__ . '/templates/InvertChitDialog.latte');
         $template->render();

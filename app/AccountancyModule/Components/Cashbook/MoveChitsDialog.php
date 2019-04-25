@@ -85,11 +85,7 @@ class MoveChitsDialog extends BaseControl
 
     public function render() : void
     {
-        $this->template->setParameters(
-            [
-                'renderModal' => $this->opened,
-            ]
-        );
+        $this->template->setParameters(['renderModal' => $this->opened]);
 
         $this->template->setFile(__DIR__ . '/templates/MoveChitsDialog.latte');
         $this->template->render();

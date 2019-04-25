@@ -55,16 +55,14 @@ class CashbookPresenter extends BasePresenter
 
         assert($finalBalance instanceof Money && $finalRealBalance instanceof Money);
 
-        $this->template->setParameters(
-            [
-                'isCashbookEmpty' => $this->isCashbookEmpty(),
-                'cashbookId' => $this->getCashbookId()->toString(),
-                'isInMinus' => $finalBalance->isNegative(),
-                'isEditable' => $this->isEditable,
-                'missingCategories' => $this->missingCategories,
-                'finalRealBalance' => $finalRealBalance,
-            ]
-        );
+        $this->template->setParameters([
+            'isCashbookEmpty' => $this->isCashbookEmpty(),
+            'cashbookId' => $this->getCashbookId()->toString(),
+            'isInMinus' => $finalBalance->isNegative(),
+            'isEditable' => $this->isEditable,
+            'missingCategories' => $this->missingCategories,
+            'finalRealBalance' => $finalRealBalance,
+        ]);
     }
 
     public function handleActivateAutocomputedCashbook(int $aid) : void

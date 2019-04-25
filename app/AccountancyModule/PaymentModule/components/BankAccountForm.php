@@ -50,15 +50,13 @@ class BankAccountForm extends BaseControl
 
         if ($this->id !== null) {
             $account = $this->model->find($this->id);
-            $form->setDefaults(
-                [
-                    'name' => $account->getName(),
-                    'prefix' => $account->getNumber()->getPrefix(),
-                    'number' => $account->getNumber()->getNumber(),
-                    'bankCode' => $account->getNumber()->getBankCode(),
-                    'token' => $account->getToken(),
-                ]
-            );
+            $form->setDefaults([
+                'name' => $account->getName(),
+                'prefix' => $account->getNumber()->getPrefix(),
+                'number' => $account->getNumber()->getNumber(),
+                'bankCode' => $account->getNumber()->getBankCode(),
+                'token' => $account->getToken(),
+            ]);
         }
 
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {

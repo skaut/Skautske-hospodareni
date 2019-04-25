@@ -116,24 +116,20 @@ class DefaultPresenter extends BasePresenter
 
         assert($template instanceof Template);
 
-        $template->setParameters(
-            [
-                'command' => $command,
-                'travels' => $travels,
-                'types' => array_map(function (TravelType $t) {
-                    return $t->getLabel();
-                }, $command->getTransportTypes()),
-                'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
-            ]
-        );
+        $template->setParameters([
+            'command' => $command,
+            'travels' => $travels,
+            'types' => array_map(function (TravelType $t) {
+                return $t->getLabel();
+            }, $command->getTransportTypes()),
+            'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
+        ]);
 
         if (count($travels) !== 0) {
-            $template->setParameters(
-                [
-                    'start' => $travels[0],
-                    'end' => array_slice($travels, -1)[0],
-                ]
-            );
+            $template->setParameters([
+                'start' => $travels[0],
+                'end' => array_slice($travels, -1)[0],
+            ]);
         }
 
         $template->getLatte()->addFilter(null, '\\App\\AccountancyModule\\AccountancyHelpers::loader');
@@ -259,17 +255,15 @@ class DefaultPresenter extends BasePresenter
 
         $this->getTypeSelectBox()->setItems($command->getTransportTypePairs());
 
-        $form->setDefaults(
-            [
-                'commandId' => $commandId,
-                'id' => $travelId,
-                'type' => $travel->getDetails()->getTransportType(),
-                'date' => $travel->getDetails()->getDate(),
-                'startPlace' => $travel->getDetails()->getStartPlace(),
-                'endPlace' => $travel->getDetails()->getEndPlace(),
-                'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
-            ]
-        );
+        $form->setDefaults([
+            'commandId' => $commandId,
+            'id' => $travelId,
+            'type' => $travel->getDetails()->getTransportType(),
+            'date' => $travel->getDetails()->getDate(),
+            'startPlace' => $travel->getDetails()->getStartPlace(),
+            'endPlace' => $travel->getDetails()->getEndPlace(),
+            'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
+        ]);
 
         $this->template->setParameters(['form' => $form]);
     }

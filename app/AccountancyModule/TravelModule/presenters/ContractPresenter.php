@@ -83,13 +83,11 @@ class ContractPresenter extends BasePresenter
         $commands   = $this->travelService->getAllCommandsByContract($contract->getId());
         $vehicleIds = array_filter(array_column($commands, 'vehicleId'));
 
-        $this->template->setParameters(
-            [
-                'contract' => $contract,
-                'commands' => $commands,
-                'vehicles' => $this->travelService->findVehiclesByIds($vehicleIds),
-            ]
-        );
+        $this->template->setParameters([
+            'contract' => $contract,
+            'commands' => $commands,
+            'vehicles' => $this->travelService->findVehiclesByIds($vehicleIds),
+        ]);
     }
 
     public function actionPrint(int $contractId) : void

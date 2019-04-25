@@ -40,15 +40,13 @@ class ParticipantPresenter extends BasePresenter
         $this->isAllowParticipantDelete = $this->authorizator->isAllowed(Camp::REMOVE_PARTICIPANT, $this->aid);
         $this->isAllowParticipantUpdate = $this->authorizator->isAllowed(Camp::UPDATE_PARTICIPANT, $this->aid);
 
-        $this->template->setParameters(
-            [
-                'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
-                'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
-                'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
-                'isAllowRepayment' => $this->isAllowRepayment,
-                'isAllowIsAccount' => $this->isAllowIsAccount,
-            ]
-        );
+        $this->template->setParameters([
+            'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
+            'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
+            'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
+            'isAllowRepayment' => $this->isAllowRepayment,
+            'isAllowIsAccount' => $this->isAllowIsAccount,
+        ]);
     }
 
     public function renderDefault(int $aid, ?int $uid = null, bool $dp = false, ?string $sort = null, bool $regNums = false) : void
@@ -64,13 +62,11 @@ class ParticipantPresenter extends BasePresenter
 
         $isAutocomputed = $this->event->IsRealAutoComputed;
 
-        $this->template->setParameters(
-            [
-                'isAllowParticipantDetail' => $authorizator->isAllowed(Camp::ACCESS_PARTICIPANT_DETAIL, $aid),
-                'isAllowParticipantUpdateLocal' => $this->isAllowParticipantDelete,
-                'missingAvailableAutoComputed' => ! $isAutocomputed && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
-            ]
-        );
+        $this->template->setParameters([
+            'isAllowParticipantDetail' => $authorizator->isAllowed(Camp::ACCESS_PARTICIPANT_DETAIL, $aid),
+            'isAllowParticipantUpdateLocal' => $this->isAllowParticipantDelete,
+            'missingAvailableAutoComputed' => ! $isAutocomputed && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
+        ]);
 
         if (! $this->isAjax()) {
             return;

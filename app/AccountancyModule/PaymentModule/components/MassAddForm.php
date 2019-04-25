@@ -55,13 +55,11 @@ class MassAddForm extends BaseControl
 
         $group = $this->payments->getGroup($this->groupId);
 
-        $form->setDefaults(
-            [
-                'amount' => $group->getDefaultAmount(),
-                'dueDate' => $group->getDueDate(),
-                'constantSymbol' => $group->getConstantSymbol(),
-            ]
-        );
+        $form->setDefaults([
+            'amount' => $group->getDefaultAmount(),
+            'dueDate' => $group->getDueDate(),
+            'constantSymbol' => $group->getConstantSymbol(),
+        ]);
 
         return $form;
     }

@@ -68,31 +68,27 @@ class EventPresenter extends BasePresenter
 
         if ($accessEditBase) {
             $form = $this['formEdit'];
-            $form->setDefaults(
-                [
-                    'aid' => $aid,
-                    'name' => $this->event->DisplayName,
-                    'start' => new Date($this->event->StartDate),
-                    'end' => new Date($this->event->EndDate),
-                    'location' => $this->event->Location,
-                    'type' => $this->event->ID_EventGeneralType,
-                    'scope' => $this->event->ID_EventGeneralScope,
-                ]
-            );
+            $form->setDefaults([
+                'aid' => $aid,
+                'name' => $this->event->DisplayName,
+                'start' => new Date($this->event->StartDate),
+                'end' => new Date($this->event->EndDate),
+                'location' => $this->event->Location,
+                'type' => $this->event->ID_EventGeneralType,
+                'scope' => $this->event->ID_EventGeneralScope,
+            ]);
         }
 
         $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants($this->event);
 
-        $this->template->setParameters(
-            [
-                'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),
-                'accessEditBase' => $accessEditBase,
-                'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
-                'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
-                'accessDetailEvent' => $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid),
-                'pragueParticipants' => $pragueParticipants,
-            ]
-        );
+        $this->template->setParameters([
+            'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),
+            'accessEditBase' => $accessEditBase,
+            'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
+            'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
+            'accessDetailEvent' => $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid),
+            'pragueParticipants' => $pragueParticipants,
+        ]);
 
         if (! $this->isAjax()) {
             return;

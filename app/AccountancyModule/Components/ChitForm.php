@@ -103,12 +103,10 @@ final class ChitForm extends BaseControl
 
         assert($cashbook instanceof Cashbook);
 
-        $this->template->setParameters(
-            [
-                'isEditable' => $this->isEditable,
-                'chitNumberPrefix' => $cashbook->getChitNumberPrefix(),
-            ]
-        );
+        $this->template->setParameters([
+            'isEditable' => $this->isEditable,
+            'chitNumberPrefix' => $cashbook->getChitNumberPrefix(),
+        ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitForm.latte');
         $this->template->render();
@@ -130,19 +128,17 @@ final class ChitForm extends BaseControl
 
         $form = $this['form'];
 
-        $form->setDefaults(
-            [
-                'pid' => $chit->getId(),
-                'date' => $chit->getBody()->getDate(),
-                'num' => (string) $chit->getBody()->getNumber(),
-                'paymentMethod' => $chit->getPaymentMethod()->toString(),
-                'recipient' => (string) $chit->getBody()->getRecipient(),
-                'purpose' => $chit->getBody()->getPurpose(),
-                'price' => $chit->getAmount()->getExpression(),
-                'type' => $chit->getCategory()->getOperationType()->getValue(),
-                'category' => $chit->getCategory()->getId(),
-            ]
-        );
+        $form->setDefaults([
+            'pid' => $chit->getId(),
+            'date' => $chit->getBody()->getDate(),
+            'num' => (string) $chit->getBody()->getNumber(),
+            'paymentMethod' => $chit->getPaymentMethod()->toString(),
+            'recipient' => (string) $chit->getBody()->getRecipient(),
+            'purpose' => $chit->getBody()->getPurpose(),
+            'price' => $chit->getAmount()->getExpression(),
+            'type' => $chit->getCategory()->getOperationType()->getValue(),
+            'category' => $chit->getCategory()->getId(),
+        ]);
 
         $this->redrawControl();
     }
@@ -160,12 +156,10 @@ final class ChitForm extends BaseControl
             );
         }
 
-        return new DependentData(
-            [
-                Operation::INCOME => $this->getCategoryPairsByType(Operation::get(Operation::INCOME)),
-                Operation::EXPENSE => $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)),
-            ]
-        );
+        return new DependentData([
+            Operation::INCOME => $this->getCategoryPairsByType(Operation::get(Operation::INCOME)),
+            Operation::EXPENSE => $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)),
+        ]);
     }
 
     protected function createComponentForm() : BaseForm

@@ -52,11 +52,9 @@ class CashbookControl extends BaseControl
 
     public function render() : void
     {
-        $this->template->setParameters(
-            [
-                'isEditable' => $this->isEditable,
-            ]
-        );
+        $this->template->setParameters([
+            'isEditable' => $this->isEditable,
+        ]);
 
         $this->template->setFile(__DIR__ . '/templates/CashbookControl.latte');
         $this->template->render();

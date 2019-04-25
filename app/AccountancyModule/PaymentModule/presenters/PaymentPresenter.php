@@ -150,15 +150,13 @@ class PaymentPresenter extends BasePresenter
 
         $nextVS = $this->model->getNextVS($group->getId());
         $form   = $this['paymentForm'];
-        $form->setDefaults(
-            [
-                'amount' => $group->getDefaultAmount(),
-                'maturity' => $group->getDueDate(),
-                'ks' => $group->getConstantSymbol(),
-                'oid' => $group->getId(),
-                'vs' => $nextVS !== null ? (string) $nextVS : '',
-            ]
-        );
+        $form->setDefaults([
+            'amount' => $group->getDefaultAmount(),
+            'maturity' => $group->getDueDate(),
+            'ks' => $group->getConstantSymbol(),
+            'oid' => $group->getId(),
+            'vs' => $nextVS !== null ? (string) $nextVS : '',
+        ]);
 
         $payments = $this->getPaymentsForGroup($id);
 
@@ -201,19 +199,17 @@ class PaymentPresenter extends BasePresenter
 
         $submit->caption = 'Upravit';
 
-        $form->setDefaults(
-            [
-                'name' => $payment->getName(),
-                'email' => $payment->getEmail(),
-                'amount' => $payment->getAmount(),
-                'maturity' => $payment->getDueDate(),
-                'vs' => $payment->getVariableSymbol(),
-                'ks' => $payment->getConstantSymbol(),
-                'note' => $payment->getNote(),
-                'oid' => $payment->getGroupId(),
-                'pid' => $pid,
-            ]
-        );
+        $form->setDefaults([
+            'name' => $payment->getName(),
+            'email' => $payment->getEmail(),
+            'amount' => $payment->getAmount(),
+            'maturity' => $payment->getDueDate(),
+            'vs' => $payment->getVariableSymbol(),
+            'ks' => $payment->getConstantSymbol(),
+            'note' => $payment->getNote(),
+            'oid' => $payment->getGroupId(),
+            'pid' => $pid,
+        ]);
 
         $this->template->setParameters(['group' => $this->model->getGroup($payment->getGroupId())]);
     }

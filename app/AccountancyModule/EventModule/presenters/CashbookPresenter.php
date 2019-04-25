@@ -53,16 +53,14 @@ class CashbookPresenter extends BasePresenter
 
         assert(is_float($incomeBalance) && $finalBalance instanceof Money && $finalRealBalance instanceof Money);
 
-        $this->template->setParameters(
-            [
-                'isCashbookEmpty' => $this->isCashbookEmpty(),
-                'cashbookId' => $this->getCashbookId()->toString(),
-                'isInMinus' => $finalBalance->isNegative(),
-                'incomeBalance' => $incomeBalance,
-                'isEditable' => $this->isEditable,
-                'finalRealBalance' => $finalRealBalance,
-            ]
-        );
+        $this->template->setParameters([
+            'isCashbookEmpty' => $this->isCashbookEmpty(),
+            'cashbookId' => $this->getCashbookId()->toString(),
+            'isInMinus' => $finalBalance->isNegative(),
+            'incomeBalance' => $incomeBalance,
+            'isEditable' => $this->isEditable,
+            'finalRealBalance' => $finalRealBalance,
+        ]);
     }
 
     public function handleImportHpd(int $aid) : void
