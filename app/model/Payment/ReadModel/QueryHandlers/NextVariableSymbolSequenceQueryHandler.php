@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
+use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Payment\Group;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
@@ -48,7 +49,7 @@ class NextVariableSymbolSequenceQueryHandler
         return new VariableSymbol($now->format('y') . $unitPart . $groupIncrementPart . '001');
     }
 
-    private function getGroupIncrement(int $unitId, \DateTimeImmutable $now) : string
+    private function getGroupIncrement(int $unitId, DateTimeImmutable $now) : string
     {
         $currentYear = $now->format('Y');
 

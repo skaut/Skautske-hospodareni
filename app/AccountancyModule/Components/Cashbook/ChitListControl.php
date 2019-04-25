@@ -107,7 +107,7 @@ class ChitListControl extends BaseControl
             'totalExpense' => $totals[Operation::EXPENSE],
             'duplicatesNumbers' => $duplicatesNumbers,
             'hasOnlyNumericChitNumbers' => $cashbook->hasOnlyNumericChitNumbers(),
-            ]);
+        ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
         $this->template->render();
@@ -170,11 +170,13 @@ class ChitListControl extends BaseControl
 
             if ($printButton->isSubmittedBy()) {
                 $this->redirectToExport(':Accountancy:CashbookExport:printChits', $chitIds);
+
                 return;
             }
 
             if ($exportButton->isSubmittedBy()) {
                 $this->redirectToExport(':Accountancy:CashbookExport:exportChits', $chitIds);
+
                 return;
             }
 
@@ -231,6 +233,7 @@ class ChitListControl extends BaseControl
 
     /**
      * @param Chit[] $chits
+     *
      * @return float[]
      */
     private function getTotals(array $chits) : array
@@ -244,6 +247,7 @@ class ChitListControl extends BaseControl
                 $expense += $chit->getAmount()->toFloat();
             }
         }
+
         return [
             Operation::INCOME => $income,
             Operation::EXPENSE => $expense,
@@ -252,17 +256,20 @@ class ChitListControl extends BaseControl
 
     /**
      * @param Chit[] $chits
+     *
      * @return int[]
      */
     private function findDuplicates(array $chits) : array
     {
         $duplicates = array_filter(array_count_values(array_map(function (Chit $ch) {
             $number = $ch->getBody()->getNumber();
+
             return $number === null ? '' : $number->toString();
         }, $chits)), function (int $cnt) {
             return $cnt > 1;
         });
         unset($duplicates['']);
+
         return $duplicates;
     }
 }

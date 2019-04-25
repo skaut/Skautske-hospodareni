@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Participant;
 
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 use Model\Event\SkautisEventId;
 use Model\Utils\MoneyFactory;
 use Money\Money;
@@ -17,33 +18,38 @@ use function in_array;
 class Payment
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\Column(type="integer", name="participantId", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $participantId;
 
     /**
-     * @var SkautisEventId
      * @ORM\Column(type="integer", name="actionId", options={"unsigned"=true})
+     *
+     * @var SkautisEventId
      */
     private $actionId;
 
     /**
-     * @var Money
      * @ORM\Column(type="money")
+     *
+     * @var Money
      */
     private $payment;
 
     /**
-     * @var Money
      * @ORM\Column(type="money")
+     *
+     * @var Money
      */
     private $repayment;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="isAccount", options={"default"="N", "comment"="placeno na účet?"})
+     *
+     * @var string
      */
     private $account;
 
@@ -89,7 +95,7 @@ class Payment
     public function setAccount(string $account) : void
     {
         if (! in_array($account, ['Y', 'N'])) {
-            throw new \InvalidArgumentException("Payment attribute account shouldn't be " . $account);
+            throw new InvalidArgumentException("Payment attribute account shouldn't be " . $account);
         }
         $this->account = $account;
     }

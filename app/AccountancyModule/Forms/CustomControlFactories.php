@@ -8,7 +8,7 @@ use App\AccountancyModule\Components\FormControls\DateControl;
 use NasExt\Forms\Controls\DependentSelectBox;
 use Nette\Forms\IControl;
 
-trait ContainerTrait
+trait CustomControlFactories
 {
     public function addDate(string $name, ?string $label = null) : DateControl
     {
@@ -27,7 +27,8 @@ trait ContainerTrait
     {
         $control               = new BaseContainer();
         $control->currentGroup = $this->currentGroup;
-        return $this[$name]    = $control;
+
+        return $this[$name] = $control;
     }
 
     public function addDependentSelectBox(string $name, ?string $label, IControl ...$parents) : DependentSelectBox

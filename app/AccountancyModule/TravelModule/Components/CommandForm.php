@@ -202,20 +202,20 @@ class CommandForm extends Control
 
         $form->setDefaults(
             [
-            'contract_id' => $command->getPassenger()->getContractId(),
-            'purpose' => $command->getPurpose(),
-            'place' => $command->getPlace(),
-            'unit' => $command->getUnit(),
-            'fellowPassengers' => $command->getFellowPassengers(),
-            'fuel_price' => MoneyFactory::toFloat($command->getFuelPrice()),
-            'amortization' => MoneyFactory::toFloat($command->getAmortizationPerKm()),
-            'note' => $command->getNote(),
-            'type' => array_keys($command->getTransportTypePairs()),
-            'passenger' => [
-                'name' => $command->getPassenger()->getName(),
-                'contact' => $command->getPassenger()->getContact(),
-                'address' => $command->getPassenger()->getAddress(),
-            ],
+                'contract_id' => $command->getPassenger()->getContractId(),
+                'purpose' => $command->getPurpose(),
+                'place' => $command->getPlace(),
+                'unit' => $command->getUnit(),
+                'fellowPassengers' => $command->getFellowPassengers(),
+                'fuel_price' => MoneyFactory::toFloat($command->getFuelPrice()),
+                'amortization' => MoneyFactory::toFloat($command->getAmortizationPerKm()),
+                'note' => $command->getNote(),
+                'type' => array_keys($command->getTransportTypePairs()),
+                'passenger' => [
+                    'name' => $command->getPassenger()->getName(),
+                    'contact' => $command->getPassenger()->getContact(),
+                    'address' => $command->getPassenger()->getAddress(),
+                ],
             ]
         );
 
@@ -285,6 +285,7 @@ class CommandForm extends Control
 
     /**
      * @param string[] $disabledValues
+     *
      * @return Html[]
      */
     private function prepareTransportTypeOptions(array $disabledValues = []) : array

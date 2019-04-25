@@ -7,6 +7,7 @@ namespace Model;
 use Assert\Assert;
 use Cake\Chronos\Date;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Model\DTO\Payment as DTO;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
@@ -28,6 +29,7 @@ use Model\Payment\VariableSymbol;
 use Model\Services\Language;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
+use stdClass;
 use function array_filter;
 use function array_intersect;
 use function array_key_exists;
@@ -143,6 +145,7 @@ class PaymentService
 
     /**
      * @param int[] $unitIds
+     *
      * @return DTO\Group[]
      */
     public function getGroups(array $unitIds, bool $onlyOpen) : array
@@ -157,9 +160,9 @@ class PaymentService
         );
     }
 
-
     /**
      * @param int[] $ids
+     *
      * @return DTO\Group[]
      */
     public function findGroupsByIds(array $ids) : array
@@ -175,9 +178,9 @@ class PaymentService
         );
     }
 
-
     /**
      * @param int[] $groupIds
+     *
      * @return Summary[][]
      */
     public function getGroupSummaries(array $groupIds) : array
@@ -213,6 +216,7 @@ class PaymentService
         );
 
         $this->groups->save($group);
+
         return $group->getId();
     }
 
@@ -250,9 +254,11 @@ class PaymentService
     {
         try {
             $group = $this->groups->find($id);
+
             return DTO\GroupFactory::create($group);
         } catch (GroupNotFound $e) {
         }
+
         return null;
     }
 
@@ -295,6 +301,7 @@ class PaymentService
      * seznam osob z dané jednotky
      *
      * @param  int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
+     *
      * @return DTO\Person[]
      */
     public function getPersons(int $unitId, int $groupId) : array
@@ -340,7 +347,7 @@ class PaymentService
                 usort(
                     $emails,
                     function ($a, $b) {
-                        return $a->IsMain === $b->IsMain ? 0 : ($a->IsMain > $b->IsMain) ? -1 : 1;
+                        return $a->IsMain === $b->IsMain ? 0 : $a->IsMain > $b->IsMain ? -1 : 1;
                     }
                 );
                 foreach ($emails as $c) {
@@ -353,6 +360,7 @@ class PaymentService
             }
         } catch (PermissionException $exc) {//odchycení bývalých členů, ke kterým už nemáme oprávnění
         }
+
         return $result;
     }
 
@@ -360,12 +368,12 @@ class PaymentService
      * REGISTRATION
      */
 
-
     /**
      * seznam osob z registrace
      *
      * @param int[] $units
      * @param int   $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
+     *
      * @return mixed[]
      */
     public function getPersonsFromRegistrationWithoutPayment(array $units, int $groupId) : array
@@ -375,7 +383,7 @@ class PaymentService
         $group = $this->getGroup($groupId);
 
         if ($group === null || ! array_intersect($group->getUnitIds(), $units)) {
-            throw new \InvalidArgumentException('Nebyla nalezena platební skupina');
+            throw new InvalidArgumentException('Nebyla nalezena platební skupina');
         }
         $persons = $this->getPersonFromRegistration($group->getSkautisId(), true);
 
@@ -400,11 +408,12 @@ class PaymentService
                 $result[$p->ID_Person]['emails'] = $this->getPersonEmails($p->ID_Person);
             }
         }
+
         return $result;
     }
 
     /**
-     * @return \stdClass[]
+     * @return stdClass[]
      */
     public function getPersonFromRegistration(?int $registrationId, bool $includeChild = true) : array
     {
@@ -461,11 +470,13 @@ class PaymentService
                 $changes['add'][] = $p->Person;
             }
         }
+
         return $changes;
     }
 
     /**
      * vrací seznam id táborů se založenou aktivní skupinou
+     *
      * @return mixed[]
      */
     public function getCampIds() : array

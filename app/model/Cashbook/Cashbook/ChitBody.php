@@ -13,26 +13,30 @@ use Doctrine\ORM\Mapping as ORM;
 final class ChitBody
 {
     /**
-     * @var ChitNumber|NULL
      * @ORM\Column(type="chit_number", nullable=true, name="num", length=5)
+     *
+     * @var ChitNumber|NULL
      */
     private $number;
 
     /**
-     * @var Date
      * @ORM\Column(type="chronos_date")
+     *
+     * @var Date
      */
     private $date;
 
     /**
-     * @var Recipient|NULL
      * @ORM\Column(type="recipient", length=64, nullable=true)
+     *
+     * @var Recipient|NULL
      */
     private $recipient;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=120)
+     *
+     * @var string
      */
     private $purpose;
 

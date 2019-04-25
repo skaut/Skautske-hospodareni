@@ -8,6 +8,7 @@ use App\BasePresenter;
 use Nette\Application\UI\Control;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\InvalidStateException;
+use stdClass;
 
 /**
  * @property-read Template $template
@@ -34,7 +35,7 @@ class BaseControl extends Control
     /**
      * {@inheritDoc}
      */
-    public function flashMessage($message, $type = 'info') : \stdClass
+    public function flashMessage($message, $type = 'info') : stdClass
     {
         return $this->getPresenter()->flashMessage($message, $type);
     }

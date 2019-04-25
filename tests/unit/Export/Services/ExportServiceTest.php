@@ -56,13 +56,13 @@ class ExportServiceTest extends Unit
         ];
 
         $categories->expects('findByObjectType')
-            ->withArgs(function (ObjectType $type) : bool {
+            ->withArgs(static function (ObjectType $type) : bool {
                 return $type === ObjectType::get(ObjectType::EVENT);
             })->andReturn($categoriesArray);
 
         // handle EventCashbookIdQuery
         $queryBus->expects('handle')
-            ->withArgs(function (EventCashbookIdQuery $q) use ($skautisEventId) : bool {
+            ->withArgs(static function (EventCashbookIdQuery $q) use ($skautisEventId) : bool {
                 return $q->getEventId()->toInt() === $skautisEventId;
             })->andReturn(CashbookId::fromString('11bf5b37-e0b8-42e0-8dcf-dc8c4aefc000'));
 
@@ -89,7 +89,7 @@ class ExportServiceTest extends Unit
         $participantService->expects('getAll')->andReturn([]);
         $participantService->expects('getPersonsDays')->andReturn(0);
 
-        $templateFactory->expects('create')->withArgs(function (string $templatePath, array $parameters) : bool {
+        $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $parameters) : bool {
             if ($parameters['participantsCnt'] !== 0) {
                 return false;
             }
@@ -106,7 +106,7 @@ class ExportServiceTest extends Unit
                     'in' => [1 => ['amount' => 700.0, 'label' => 'Přijmy od účastníků']],
                     'out'=> [
                         2 => ['amount' => 50.0, 'label' => 'Služby'],
-                        ],
+                    ],
                 ],
             ];
             if ($parameters['chits'] !== $chits) {
@@ -139,11 +139,8 @@ class ExportServiceTest extends Unit
             if ($parameters['virtualTotalIncome'] !== 200.0) {
                 return false;
             }
-            if ($parameters['virtualTotalExpense'] !== 150.0) {
-                return false;
-            }
 
-            return true;
+            return $parameters['virtualTotalExpense'] === 150.0;
         });
 
         $eventService->shouldReceive('getParticipants')->andReturn($participantService);

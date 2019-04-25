@@ -32,6 +32,7 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
 
     /**
      * @return float[]
+     *
      * @throws CashbookNotFound
      */
     public function handle(InconsistentCampCategoryTotalsQuery $query) : array

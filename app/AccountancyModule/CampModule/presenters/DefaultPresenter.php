@@ -38,12 +38,11 @@ class DefaultPresenter extends BasePresenter
         $this->gridFactory  = $gf;
     }
 
-
     protected function startup() : void
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
-        $this->ses = $this->session->getSection(__CLASS__);
+        $this->ses = $this->session->getSection(self::class);
         if (! isset($this->ses->state)) {
             $this->ses->state = self::DEFAULT_STATE;
         }
@@ -74,6 +73,7 @@ class DefaultPresenter extends BasePresenter
         $grid->addColumnText('state', 'Stav');
 
         $grid->setTemplateFile(__DIR__ . '/../templates/campsGrid.latte');
+
         return $grid;
     }
 

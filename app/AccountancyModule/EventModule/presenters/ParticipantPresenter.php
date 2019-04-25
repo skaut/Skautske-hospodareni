@@ -51,20 +51,20 @@ class ParticipantPresenter extends BasePresenter
 
         $this->template->setParameters(
             [
-            'isAllowParticipantDetail' => $this->isAllowParticipantDetail,
-            'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
-            'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
-            'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
-            'isAllowParticipantUpdateLocal' => $this->isAllowParticipantUpdate,
-            'isAllowRepayment' => $this->isAllowRepayment,
-            'isAllowIsAccount' => $this->isAllowIsAccount,
+                'isAllowParticipantDetail' => $this->isAllowParticipantDetail,
+                'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
+                'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
+                'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
+                'isAllowParticipantUpdateLocal' => $this->isAllowParticipantUpdate,
+                'isAllowRepayment' => $this->isAllowRepayment,
+                'isAllowIsAccount' => $this->isAllowIsAccount,
             ]
         );
     }
 
     /**
-     *
      * @param bool $dp - disabled person
+     *
      * @throws WsdlException
      */
     public function renderDefault(
@@ -90,6 +90,7 @@ class ParticipantPresenter extends BasePresenter
 
     /**
      * @param int|float|string $value
+     *
      * @throws AbortException
      * @throws BadRequestException
      */

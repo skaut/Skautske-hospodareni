@@ -54,7 +54,7 @@ class CashbookControl extends BaseControl
     {
         $this->template->setParameters(
             [
-            'isEditable' => $this->isEditable,
+                'isEditable' => $this->isEditable,
             ]
         );
 

@@ -9,6 +9,7 @@ use Nette\SmartObject;
 
 /**
  * @ORM\Embeddable()
+ *
  * @property-read string    $name
  * @property-read string    $contact
  * @property-read string    $address
@@ -19,26 +20,30 @@ final class Passenger
     use SmartObject;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="driver_name")
+     *
+     * @var string
      */
     private $name;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="driver_contact")
+     *
+     * @var string
      */
     private $contact;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="driver_address")
+     *
+     * @var string
      */
     private $address;
 
     /**
-     * @var int|NULL
      * @ORM\Column(type="integer", nullable=true, options={"unsigned"=true})
+     *
+     * @var int|NULL
      */
     private $contractId;
 

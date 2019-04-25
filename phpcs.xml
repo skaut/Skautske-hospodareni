@@ -18,5 +18,11 @@
     <rule ref="Doctrine">
         <!-- Right now causes problem with several properties used for Doctrine mapping -->
         <exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements"/>
+
+        <!-- Only because of ParticipantTrait that should be gone in future -->
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming"/>
+
+        <!-- We have no use for it as PHP 7.4 will bring short closures, so we wan't to keep those as short as possible -->
+        <exclude name="SlevomatCodingStandard.Functions.StaticClosure"/>
     </rule>
 </ruleset>

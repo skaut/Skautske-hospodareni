@@ -7,6 +7,7 @@ namespace Model\Payment\ReadModel\QueryHandlers;
 use Assert\InvalidArgumentException;
 use Codeception\Test\Unit;
 use eGen\MessageBus\Bus\QueryBus;
+use Mockery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\DTO\Participant\Participant;
 use Model\Payment\Group;
@@ -21,7 +22,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
 
     public function test() : void
     {
-        $paymentService = \Mockery::mock(PaymentService::class);
+        $paymentService = Mockery::mock(PaymentService::class);
         $paymentService->shouldReceive('getPersonsWithActivePayment')
             ->once()
             ->withArgs([self::GROUP_ID])
@@ -31,16 +32,16 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
             new Group\SkautisEntity(self::EVENT_ID, Group\Type::get(Group\Type::EVENT))
         );
 
-        $queryBus = \Mockery::mock(QueryBus::class);
+        $queryBus = Mockery::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->once()
-            ->withArgs(function (EventParticipantListQuery $query) : bool {
+            ->withArgs(static function (EventParticipantListQuery $query) : bool {
                 return $query->getEventId()->toInt() === self::EVENT_ID;
             })->andReturn([
-                \Mockery::mock(Participant::class, ['getPersonId' => 1]),
-                \Mockery::mock(Participant::class, ['getPersonId' => 2]),
-                \Mockery::mock(Participant::class, ['getPersonId' => 3]),
-                \Mockery::mock(Participant::class, ['getPersonId' => 4]),
+                Mockery::mock(Participant::class, ['getPersonId' => 1]),
+                Mockery::mock(Participant::class, ['getPersonId' => 2]),
+                Mockery::mock(Participant::class, ['getPersonId' => 3]),
+                Mockery::mock(Participant::class, ['getPersonId' => 4]),
             ]);
 
         $handler = new EventParticipantsWithoutPaymentQueryHandler($groupRepository, $paymentService, $queryBus);
@@ -59,7 +60,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
     {
         $handler = new EventParticipantsWithoutPaymentQueryHandler(
             $this->mockGroupRepository($skautisEntity),
-            \Mockery::mock(PaymentService::class),
+            Mockery::mock(PaymentService::class),
             new QueryBus()
         );
 
@@ -81,12 +82,12 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
 
     private function mockGroupRepository(?Group\SkautisEntity $skautisEntity) : IGroupRepository
     {
-        $groups = \Mockery::mock(IGroupRepository::class);
+        $groups = Mockery::mock(IGroupRepository::class);
         $groups->shouldReceive('find')
             ->once()
             ->withArgs([self::GROUP_ID])
             ->andReturn(
-                \Mockery::mock(
+                Mockery::mock(
                     Group::class,
                     ['getObject' => $skautisEntity]
                 )

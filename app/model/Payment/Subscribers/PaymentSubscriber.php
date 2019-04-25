@@ -18,7 +18,6 @@ class PaymentSubscriber
     /** @var IGroupRepository */
     private $groups;
 
-
     public function __construct(IGroupRepository $groups)
     {
         $this->groups = $groups;

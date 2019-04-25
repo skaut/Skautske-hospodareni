@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Exception;
 use function implode;
 use function sprintf;
 
-final class NoAccessToBankAccount extends \Exception
+final class NoAccessToBankAccount extends Exception
 {
     /**
      * @param int[] $unitIds

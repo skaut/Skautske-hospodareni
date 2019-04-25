@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Travel;
 
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 use Model\Travel\Vehicle\Metadata;
 use Model\Unit\Unit;
 use Nette\SmartObject;
@@ -12,6 +13,7 @@ use Nette\SmartObject;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="tc_vehicle")
+ *
  * @property-read int           $id
  * @property-read string        $type
  * @property-read int           $unitId
@@ -28,58 +30,67 @@ class Vehicle
     use SmartObject;
 
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $type;
 
     /**
-     * @var int
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $unitId;
 
     /**
-     * @var int|NULL
      * @ORM\Column(type="integer", nullable=true)
+     *
+     * @var int|NULL
      */
     private $subunitId;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $registration;
 
     /**
-     * @var float
      * @ORM\Column(type="float")
+     *
+     * @var float
      */
     private $consumption;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $note = '';
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean")
+     *
+     * @var bool
      */
     private $archived = false;
 
     /**
-     * @var Metadata
      * @ORM\Embedded(class=Metadata::class)
+     *
+     * @var Metadata
      */
     private $metadata;
 
@@ -90,7 +101,7 @@ class Vehicle
 
         if ($subunit !== null) {
             if (! $subunit->isSubunitOf($unit)) {
-                throw new \InvalidArgumentException('Unit #{' . $subunit->getId() . '} is not child of #{' . $unit->getId() . '}');
+                throw new InvalidArgumentException('Unit #{' . $subunit->getId() . '} is not child of #{' . $unit->getId() . '}');
             }
 
             $this->subunitId = $subunit->getId();
@@ -106,54 +117,45 @@ class Vehicle
         $this->archived = true;
     }
 
-
     public function getType() : string
     {
         return $this->type;
     }
-
 
     public function getId() : int
     {
         return $this->id;
     }
 
-
     public function getSubunitId() : ?int
     {
         return $this->subunitId;
     }
-
 
     public function getUnitId() : int
     {
         return $this->unitId;
     }
 
-
     public function getRegistration() : string
     {
         return $this->registration;
     }
-
 
     public function getConsumption() : float
     {
         return $this->consumption;
     }
 
-
     public function getNote() : string
     {
         return $this->note;
     }
 
-
     public function isArchived() : bool
     {
         return $this->archived;
     }
-
 
     public function getLabel() : string
     {

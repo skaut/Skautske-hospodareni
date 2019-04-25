@@ -11,6 +11,7 @@ use Model\Cashbook\ParticipantType;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
 use Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
+use stdClass;
 use function is_object;
 
 final class CampCategoryRepository implements ICampCategoryRepository
@@ -38,8 +39,8 @@ final class CampCategoryRepository implements ICampCategoryRepository
             'IsEstimate' => false,
         ]);
 
-        if (is_object($skautisCategories)) { // API returns empty object when there are no results
-            return [];
+        if (is_object($skautisCategories)) {
+            return []; // API returns empty object when there are no results
         }
 
         $categories = [];
@@ -63,7 +64,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
         return $categories;
     }
 
-    private function getParticipantType(\stdClass $category) : ?ParticipantType
+    private function getParticipantType(stdClass $category) : ?ParticipantType
     {
         $categoryId = $category->ID_EventCampStatementType ?? null;
 

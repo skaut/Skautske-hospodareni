@@ -23,6 +23,7 @@ class EventParticipantBalanceQueryHandler
     {
         $participantIncome = $this->queryBus->handle(new EventParticipantIncomeQuery($query->getEventId()));
         $chitSum           = $this->queryBus->handle(new ParticipantChitSumQuery($query->getCashbookId()));
+
         return $participantIncome - $chitSum;
     }
 }

@@ -42,7 +42,6 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->redirect(':Accountancy:Default:', ['aid' => null]);
     }
 
-
     protected function beforeRender() : void
     {
         parent::beforeRender();

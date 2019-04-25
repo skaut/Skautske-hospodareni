@@ -54,7 +54,7 @@ class DefaultPresenter extends BasePresenter
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
-        $this->ses = $this->session->getSection(__CLASS__);
+        $this->ses = $this->session->getSection(self::class);
         if (! isset($this->ses->state)) {
             $this->ses->state = self::DEFAULT_STATE;
         }
@@ -98,11 +98,13 @@ class DefaultPresenter extends BasePresenter
                 if (! array_key_exists('accessDelete', $item)) {
                     return true;
                 }
+
                 return $item['accessDelete'];
             }
         );
 
         $grid->setTemplateFile(__DIR__ . '/../templates/eventsGrid.latte');
+
         return $grid;
     }
 
@@ -210,7 +212,7 @@ class DefaultPresenter extends BasePresenter
      */
     public function isDateValidator($item, $args) : bool
     {
-        return $item === null ? false : true;
+        return $item !== null;
     }
 
     /**
@@ -288,7 +290,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect(
             'Event:',
             [
-            'aid' => $this->queryBus->handle(new NewestEventId()),
+                'aid' => $this->queryBus->handle(new NewestEventId()),
             ]
         );
     }

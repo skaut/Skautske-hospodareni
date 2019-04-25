@@ -10,6 +10,7 @@ use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Event\ReadModel\Queries\EventStatisticsQuery;
 use Model\Event\SkautisEventId;
+use PDO;
 use function array_map;
 
 class EventStatisticsQueryHandler
@@ -28,11 +29,11 @@ class EventStatisticsQueryHandler
     public function handle(EventStatisticsQuery $query) : array
     {
         $params = [
-        array_map(function (SkautisEventId $id) {
-            return $id->toInt();
-        }, $query->getEventIds()),
+            array_map(function (SkautisEventId $id) {
+                return $id->toInt();
+            }, $query->getEventIds()),
             $query->getYear(),
-            ];
+        ];
         $types  = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
         $sql    = 'SELECT o.skautisId, SUM(c.price) as sum ' .
             'FROM `ac_chits` c ' .
@@ -44,6 +45,6 @@ class EventStatisticsQueryHandler
 
         $stmt = $this->db->executeQuery($sql, $params, $types);
 
-        return array_map('floatval', $stmt->fetchAll(\PDO::FETCH_KEY_PAIR));
+        return array_map('floatval', $stmt->fetchAll(PDO::FETCH_KEY_PAIR));
     }
 }

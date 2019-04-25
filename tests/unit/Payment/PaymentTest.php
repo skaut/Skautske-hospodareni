@@ -6,6 +6,8 @@ namespace Model\Payment;
 
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use Helpers;
+use InvalidArgumentException;
 use Mockery as m;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
@@ -59,7 +61,7 @@ class PaymentTest extends Unit
 
     public function testCantCreatePaymentWithNegativeAmount() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Payment(
             $this->mockGroup(10),
@@ -76,7 +78,7 @@ class PaymentTest extends Unit
 
     public function testCantCreatePaymentWithZeroAmount() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Payment(
             $this->mockGroup(10),
@@ -272,7 +274,7 @@ class PaymentTest extends Unit
         $dueDate = Date::now();
 
         $payment = new Payment($group, 'Jan novák', 'test@gmail.com', 500, $dueDate, $symbol, 666, 454, 'Some note');
-        \Helpers::assignIdentity($payment, 1);
+        Helpers::assignIdentity($payment, 1);
 
         return $payment;
     }

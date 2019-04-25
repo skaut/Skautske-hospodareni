@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Logger;
 
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Logger\Log\Type;
 
@@ -15,47 +16,54 @@ use Model\Logger\Log\Type;
 class LogEntry
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $unitId;
 
     /**
-     * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
+     *
+     * @var DateTimeImmutable
      */
     private $date;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", name="userId", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $userId;
 
     /**
-     * @var string
      * @ORM\Column(type="text")
+     *
+     * @var string
      */
     private $description;
 
     /**
-     * @var Type
      * @ORM\Column(type="string_enum", name="type")
+     *
+     * @var Type
      * @Enum(class=Type::class)
      */
     private $type;
 
     /**
-     * @var int|NULL
      * @ORM\Column(type="integer", nullable=true, name="typeId", options={"unsigned"=true})
+     *
+     * @var int|NULL
      */
     private $typeId;
 
@@ -65,7 +73,7 @@ class LogEntry
         string $desc,
         Type $type,
         ?int $typeId,
-        \DateTimeImmutable $at
+        DateTimeImmutable $at
     ) {
         $this->unitId      = $unitId;
         $this->date        = $at;
@@ -85,7 +93,7 @@ class LogEntry
         return $this->unitId;
     }
 
-    public function getDate() : \DateTimeImmutable
+    public function getDate() : DateTimeImmutable
     {
         return $this->date;
     }

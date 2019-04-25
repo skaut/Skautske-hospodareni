@@ -31,6 +31,7 @@ final class CampCashbookSubscriber
         $this->commandBus = $commandBus;
         $this->queryBus   = $queryBus;
     }
+
     public function chitWasAdded(ChitWasAdded $event) : void
     {
         $id = $event->getCashbookId();

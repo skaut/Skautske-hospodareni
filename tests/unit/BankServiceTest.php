@@ -6,6 +6,8 @@ namespace Model;
 
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use DateTimeImmutable;
+use Helpers;
 use Mockery as m;
 use Model\Bank\Fio\Transaction;
 use Model\DTO\Payment\PairingResult;
@@ -31,7 +33,7 @@ final class BankServiceTest extends Unit
         $groupId       = 123;
         $bankAccountId = 456;
 
-        $group  = $this->mockGroup($groupId, $bankAccountId, new \DateTimeImmutable('- 5 days'));
+        $group  = $this->mockGroup($groupId, $bankAccountId, new DateTimeImmutable('- 5 days'));
         $groups = $this->mockGroupRepository([$groupId => $group]);
 
         $bankAccount = $this->mockBankAccount('123');
@@ -40,11 +42,11 @@ final class BankServiceTest extends Unit
 
         $amount  = 200.50;
         $vs      = new VariableSymbol('123456');
-        $account = (string) \Helpers::createAccountNumber();
+        $account = (string) Helpers::createAccountNumber();
 
         $transactions = array_map(
-            function (string $id) use ($amount, $vs, $account) {
-                $today = new \DateTimeImmutable();
+            static function (string $id) use ($amount, $vs, $account) {
+                $today = new DateTimeImmutable();
 
                 return new Transaction($id, $today, $amount, $account, 'František Maša', $vs->toInt(), null, 'note' . $id);
             },
@@ -60,7 +62,7 @@ final class BankServiceTest extends Unit
             new Payment($group, '-', null, $amount, Date::now(), $vs, null, null, ''),
         ];
 
-        \Helpers::assignIdentity($payments[0], 1);
+        Helpers::assignIdentity($payments[0], 1);
 
         $paymentRepository = $this->mockPaymentRepository([$groupId => $payments]);
 
@@ -79,7 +81,7 @@ final class BankServiceTest extends Unit
     {
         $groupId1       = 12;
         $bankAccountId1 = 159;
-        $lastPairing    = new \DateTimeImmutable('- 5 days');
+        $lastPairing    = new DateTimeImmutable('- 5 days');
 
         $group1 = $this->mockGroup($groupId1, $bankAccountId1, $lastPairing);
 
@@ -98,10 +100,10 @@ final class BankServiceTest extends Unit
             $bankAccountId2 => $bankAccount2,
         ]);
 
-        $today    = new \DateTimeImmutable();
+        $today    = new DateTimeImmutable();
         $amount   = 200.50;
         $vs1      = new VariableSymbol('123456');
-        $account  = (string) \Helpers::createAccountNumber();
+        $account  = (string) Helpers::createAccountNumber();
         $vs2      = new VariableSymbol('7854');
         $account2 = (string) new BankAccount\AccountNumber('19', '2000145399', '0800');
 
@@ -121,7 +123,7 @@ final class BankServiceTest extends Unit
             new Payment($group1, '-', null, $amount, Date::now(), $vs1, null, null, ''),
             new Payment($group2, '-', null, $amount, Date::now(), $vs2, null, null, ''),
         ];
-        \Helpers::assignIdentity($payments1[0], 1);
+        Helpers::assignIdentity($payments1[0], 1);
 
         $payments2 = [];
 
@@ -150,6 +152,7 @@ final class BankServiceTest extends Unit
                 ->with($bankAccountId)
                 ->andReturn($bankAccount);
         }
+
         return $repository;
     }
 
@@ -164,6 +167,7 @@ final class BankServiceTest extends Unit
             ->with(array_keys($groups))
             ->andReturn($groups);
         $repository->shouldReceive('save');
+
         return $repository;
     }
 
@@ -185,11 +189,11 @@ final class BankServiceTest extends Unit
                 ->andReturn($payments);
         }
         $repository->shouldReceive('saveMany');
+
         return $repository;
     }
 
-
-    private function mockGroup(int $groupId, int $bankAccountId, \DateTimeImmutable $lastPairing) : Group
+    private function mockGroup(int $groupId, int $bankAccountId, DateTimeImmutable $lastPairing) : Group
     {
         return m::mock(Group::class, [
             'getId' => $groupId,

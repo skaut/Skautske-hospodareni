@@ -22,7 +22,6 @@ class VehicleGrid extends BaseGridControl
     /** @var UnitService */
     private $units;
 
-
     public function __construct(int $unitId, TravelService $travel, UnitService $units)
     {
         parent::__construct();
@@ -30,7 +29,6 @@ class VehicleGrid extends BaseGridControl
         $this->travel = $travel;
         $this->units  = $units;
     }
-
 
     protected function createComponentGrid() : DataGrid
     {

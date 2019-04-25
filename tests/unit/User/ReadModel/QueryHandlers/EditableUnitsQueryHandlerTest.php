@@ -28,8 +28,9 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
     private $handler;
 
     /**
-     * @dataProvider getExpectedReturnedUnits
      * @param int[] $expectedUnitIdsInResult
+     *
+     * @dataProvider getExpectedReturnedUnits
      */
     public function test(string $roleName, array $expectedUnitIdsInResult) : void
     {
@@ -69,7 +70,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
         $unitsRepository = m::mock(IUnitRepository::class);
 
         foreach (self::UNITS_TREE as $parentUnitId => $subUnitIds) {
-            $subUnits = array_map(function (int $id) : Unit {
+            $subUnits = array_map(static function (int $id) : Unit {
                 return m::mock(Unit::class, ['getId' => $id]);
             }, $subUnitIds);
 

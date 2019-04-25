@@ -13,7 +13,9 @@ final class Range
 
     /**
      * This method is workaround for static analysis bug
+     *
      * @see https://github.com/phpstan/phpstan/issues/1201
+     *
      * @return string[]
      */
     public static function letters(string $firstLetter, string $lastLetter) : array

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Handlers;
 
 use Cake\Chronos\Date;
+use CommandHandlerTest;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Amount;
@@ -15,14 +16,13 @@ use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\Repositories\ICashbookRepository;
 
-final class MoveChitsToDifferentCashbookHandlerTest extends \CommandHandlerTest
+final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
 {
     private const TARGET_CASHBOOK_ID = '2';
     private const SOURCE_CASHBOOK_ID = '1';
 
     /** @var ICashbookRepository */
     private $cashbooks;
-
 
     public function testMovingChits() : void
     {

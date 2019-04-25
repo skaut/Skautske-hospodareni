@@ -30,6 +30,7 @@ class ChitListQueryHandler
 
     /**
      * @return ChitDTO[]
+     *
      * @throws CashbookNotFound
      */
     public function handle(ChitListQuery $query) : array

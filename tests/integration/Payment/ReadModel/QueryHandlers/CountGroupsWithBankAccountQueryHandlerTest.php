@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
+use IntegrationTest;
 use Model\Payment\BankAccount\BankAccountId;
 use Model\Payment\Group;
 use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 
-final class CountGroupsWithBankAccountQueryHandlerTest extends \IntegrationTest
+final class CountGroupsWithBankAccountQueryHandlerTest extends IntegrationTest
 {
     /**
      * @return string[]

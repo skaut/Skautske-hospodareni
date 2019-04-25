@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Model;
 
 use Cake\Chronos\Date;
+use Helpers;
+use IntegrationTest;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
 
-class PaymentServiceTest extends \IntegrationTest
+class PaymentServiceTest extends IntegrationTest
 {
     /** @var PaymentService */
     private $service;
@@ -45,7 +47,7 @@ class PaymentServiceTest extends \IntegrationTest
     public function testGenerateVSForMultiplePayments() : void
     {
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, new VariableSymbol('1'));
-        $emails          = \Helpers::createEmails();
+        $emails          = Helpers::createEmails();
 
         $this->service->createGroup(10, null, 'test group', $paymentDefaults, $emails, null, null);
 

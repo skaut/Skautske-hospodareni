@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Event;
 
-class EventNotFound extends \Exception
+use Exception;
+
+class EventNotFound extends Exception
 {
 }

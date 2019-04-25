@@ -21,6 +21,7 @@ use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
+use RuntimeException;
 use function assert;
 use function count;
 use function in_array;
@@ -75,8 +76,8 @@ class InvertChitDialog extends BaseControl
 
         $template->setParameters(
             [
-            'renderModal' => $this->chitId !== null,
-            'noCashbooks' => ! $this->isChitValid() || count($this->getCashbooks()) === 0,
+                'renderModal' => $this->chitId !== null,
+                'noCashbooks' => ! $this->isChitValid() || count($this->getCashbooks()) === 0,
             ]
         );
 
@@ -98,7 +99,7 @@ class InvertChitDialog extends BaseControl
     protected function createComponentForm() : BaseForm
     {
         if (! $this->isChitValid()) {
-            throw new \RuntimeException('Chit is not set or is not valid for inverting');
+            throw new RuntimeException('Chit is not set or is not valid for inverting');
         }
 
         $form = new BaseForm();

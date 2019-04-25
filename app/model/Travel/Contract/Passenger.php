@@ -4,45 +4,51 @@ declare(strict_types=1);
 
 namespace Model\Travel\Contract;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
 
 /**
  * @ORM\Embeddable()
+ *
  * @property-read string $name
  * @property-read string $contact
  * @property-read string $address
- * @property-read \DateTimeImmutable|NULL $birthday
+ * @property-read DateTimeImmutable|NULL $birthday
  */
 final class Passenger
 {
     use SmartObject;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="driver_name", length=64)
+     *
+     * @var string
      */
     private $name;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="driver_contact", length=64, nullable=true)
+     *
+     * @var string
      */
     private $contact;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="driver_address", length=64)
+     *
+     * @var string
      */
     private $address;
 
     /**
-     * @var \DateTimeImmutable|NULL
      * @ORM\Column(type="datetime_immutable", nullable=true, name="driver_birthday")
+     *
+     * @var DateTimeImmutable|NULL
      */
     private $birthday;
 
-    public function __construct(string $name, string $contact, string $address, ?\DateTimeImmutable $birthday)
+    public function __construct(string $name, string $contact, string $address, ?DateTimeImmutable $birthday)
     {
         $this->name     = $name;
         $this->contact  = $contact;
@@ -65,7 +71,7 @@ final class Passenger
         return $this->address;
     }
 
-    public function getBirthday() : ?\DateTimeImmutable
+    public function getBirthday() : ?DateTimeImmutable
     {
         return $this->birthday;
     }

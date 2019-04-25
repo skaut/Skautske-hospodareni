@@ -6,6 +6,7 @@ namespace App\AccountancyModule\TravelModule;
 
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
+use Exception;
 use Model\BaseService;
 use Model\DTO\Travel\Contract;
 use Model\Services\PdfRenderer;
@@ -84,9 +85,9 @@ class ContractPresenter extends BasePresenter
 
         $this->template->setParameters(
             [
-            'contract' => $contract,
-            'commands' => $commands,
-            'vehicles' => $this->travelService->findVehiclesByIds($vehicleIds),
+                'contract' => $contract,
+                'commands' => $commands,
+                'vehicles' => $this->travelService->findVehiclesByIds($vehicleIds),
             ]
         );
     }
@@ -107,7 +108,7 @@ class ContractPresenter extends BasePresenter
                 $templateName = 'ex.contract.noz.latte';
                 break;
             default:
-                throw new \Exception('Neznámá šablona pro ' . $contract->getTemplateVersion());
+                throw new Exception('Neznámá šablona pro ' . $contract->getTemplateVersion());
         }
         $template = $this->template;
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);

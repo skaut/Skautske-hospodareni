@@ -17,24 +17,28 @@ use Model\Travel\Command;
 abstract class Travel
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
      * @internal - for mapping only
-     * @var Command
+     *
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity=Command::class, inversedBy="travels")
      * @ORM\JoinColumn(name="command_id", referencedColumnName="id", nullable=false)
+     *
+     * @var Command
      */
     private $command;
 
     /**
-     * @var TravelDetails
      * @ORM\Embedded(class=TravelDetails::class, columnPrefix=false)
+     *
+     * @var TravelDetails
      */
     private $details;
 

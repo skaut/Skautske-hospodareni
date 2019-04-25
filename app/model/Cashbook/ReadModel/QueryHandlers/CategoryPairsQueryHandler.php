@@ -27,6 +27,7 @@ class CategoryPairsQueryHandler
 
     /**
      * @return string[]
+     *
      * @throws CashbookNotFound
      */
     public function handle(CategoryPairsQuery $query) : array

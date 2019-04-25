@@ -45,7 +45,7 @@ class TravelFactoryTest extends Unit
         $travels = TravelFactory::createList($command);
 
         $expectedOrder = [2, 1, 3];
-        $actualOrder   = array_map(function (Travel $travel) {
+        $actualOrder   = array_map(static function (Travel $travel) {
             return $travel->getId();
         }, $travels);
 

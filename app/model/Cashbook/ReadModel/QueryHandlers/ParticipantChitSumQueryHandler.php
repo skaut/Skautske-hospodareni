@@ -38,10 +38,9 @@ class ParticipantChitSumQueryHandler
             ->setParameter('category_ids', self::PARTICIPANT_INCOME_CATEGORY_IDS);
 
         $chits = $queryBuilder->getQuery()->getResult();
-        $sum   = array_sum(array_map(function (Chit $c) {
+
+        return array_sum(array_map(function (Chit $c) {
             return $c->getAmount()->toFloat();
         }, $chits));
-
-        return $sum;
     }
 }

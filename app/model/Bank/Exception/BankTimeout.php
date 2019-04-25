@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model;
 
-class BankTimeout extends \Exception
+use Exception;
+
+class BankTimeout extends Exception
 {
 }

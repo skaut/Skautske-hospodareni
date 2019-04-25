@@ -9,6 +9,7 @@ use Model\Common\User;
 use Model\Common\UserNotFound;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
+use stdClass;
 
 final class UserRepository implements IUserRepository
 {
@@ -39,7 +40,7 @@ final class UserRepository implements IUserRepository
     {
         try {
             $user = $this->userWebService->UserDetail($arguments);
-            if ($user instanceof \stdClass) {
+            if ($user instanceof stdClass) {
                 $person = $this->orgWebService->PersonDetail(['ID' => $user->ID_Person]);
 
                 return new User($user->ID, $user->Person, $person->Email);

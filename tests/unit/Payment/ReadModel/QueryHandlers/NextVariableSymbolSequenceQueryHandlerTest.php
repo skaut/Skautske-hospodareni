@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\ReadModel\QueryHandlers;
 
 use Codeception\Test\Unit;
+use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
 use Mockery as m;
 use Model\Payment\Group;
@@ -45,21 +46,20 @@ class NextVariableSymbolSequenceQueryHandlerTest extends Unit
         $this->assertReturnsVariableSymbol(self::YEAR . '14102001', 1, '014-1');
     }
 
-
     private function assertReturnsVariableSymbol(?string $expectedSymbol, int $groupsCount, string $unitRegistrationNumber) : void
     {
         $unitDTO = m::mock(Unit::class, ['getShortRegistrationNumber' => $unitRegistrationNumber]);
 
         $queryBus = m::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
-            ->withArgs(function (UnitQuery $query) {
+            ->withArgs(static function (UnitQuery $query) {
                 return $query->getUnitId() === self::UNIT_ID;
             })
             ->andReturn($unitDTO);
 
         $groupRepository = m::mock(IGroupRepository::class);
 
-        $now = (new \DateTimeImmutable())->setDate((int) self::YEAR, 1, 1);
+        $now = (new DateTimeImmutable())->setDate((int) self::YEAR, 1, 1);
 
         $groups = array_merge(
             array_fill(0, $groupsCount, $this->mockGroup($now)),
@@ -78,7 +78,7 @@ class NextVariableSymbolSequenceQueryHandlerTest extends Unit
         $this->assertEquals($expectedSymbol !== null ? new VariableSymbol($expectedSymbol) : null, $actualSymbol);
     }
 
-    private function mockGroup(\DateTimeImmutable $time) : Group
+    private function mockGroup(DateTimeImmutable $time) : Group
     {
         return m::mock(Group::class, ['getCreatedAt' => $time]);
     }

@@ -27,6 +27,7 @@ class CategoryListQueryHandler
 
     /**
      * @return Category[]
+     *
      * @throws CashbookNotFound
      */
     public function handle(CategoryListQuery $query) : array
@@ -48,6 +49,7 @@ class CategoryListQueryHandler
                 $category->isVirtual()
             );
         }
+
         return $categoriesById;
     }
 }

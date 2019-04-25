@@ -16,17 +16,19 @@ use Model\Cashbook\ObjectType as ObjectTypeEnum;
 class ObjectType
 {
     /**
-     * @var Category
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity=Category::class)
      * @ORM\JoinColumn(name="categoryId", nullable=false)
+     *
+     * @var Category
      */
     private $category;
 
     /**
-     * @var ObjectTypeEnum
      * @ORM\Id()
      * @ORM\Column(type="string_enum", name="objectTypeId", length=20)
+     *
+     * @var ObjectTypeEnum
      * @EnumAnnotation(class=ObjectTypeEnum::class)
      */
     private $type;

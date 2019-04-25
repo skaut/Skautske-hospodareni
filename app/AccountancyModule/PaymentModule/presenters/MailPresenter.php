@@ -73,8 +73,8 @@ class MailPresenter extends BasePresenter
             'secure',
             'Zabezpečení',
             [
-            MailProtocol::SSL => 'ssl',
-            MailProtocol::TLS => 'tls',
+                MailProtocol::SSL => 'ssl',
+                MailProtocol::TLS => 'tls',
             ]
         );
         $form->addText('sender', 'Email odesílatele')

@@ -35,7 +35,6 @@ class VehiclePresenter extends BasePresenter
         $this->gridFactory   = $gridFactory;
     }
 
-
     /**
      * @throws BadRequestException
      * @throws AbortException
@@ -52,6 +51,7 @@ class VehiclePresenter extends BasePresenter
             $this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
             $this->redirect('default');
         }
+
         return $vehicle;
     }
 
@@ -101,7 +101,7 @@ class VehiclePresenter extends BasePresenter
         if (! $this->isVehicleEditable($vehicle)) {
             $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
             $this->redirect('default');
-        };
+        }
 
         if ($this->travelService->removeVehicle($vehicleId)) {
             $this->flashMessage('Vozidlo bylo odebráno.');
@@ -118,14 +118,13 @@ class VehiclePresenter extends BasePresenter
         if (! $this->isVehicleEditable($vehicle)) {
             $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
             $this->redirect('default');
-        };
+        }
 
         $this->travelService->archiveVehicle($vehicleId);
         $this->flashMessage('Vozidlo bylo archivováno', 'success');
 
         $this->redirect('this');
     }
-
 
     protected function createComponentGrid() : VehicleGrid
     {

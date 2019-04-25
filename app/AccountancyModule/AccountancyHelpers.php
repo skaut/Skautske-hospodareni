@@ -7,6 +7,7 @@ namespace App\AccountancyModule;
 use DateTimeInterface;
 use Model\Payment\Payment\State;
 use Money\Money;
+use RuntimeException;
 use function array_reverse;
 use function array_shift;
 use function count;
@@ -26,7 +27,8 @@ abstract class AccountancyHelpers
 {
     /**
      * loader na všechny filtry
-     * @param null|int|float|string|DateTimeInterface|Money|State $value
+     *
+     * @param int|float|string|DateTimeInterface|Money|State|null $value
      */
     public static function loader(string $filter, $value) : string
     {
@@ -39,7 +41,7 @@ abstract class AccountancyHelpers
             return $method(...$args);
         }
 
-        throw new \RuntimeException('Filter not found');
+        throw new RuntimeException('Filter not found');
     }
 
     /**
@@ -57,6 +59,7 @@ abstract class AccountancyHelpers
         }
 
         return '<span class=\'label label-default\'>Zrušeno</span>';
+
         //draft, closed, cancelled
     }
 
@@ -112,6 +115,7 @@ abstract class AccountancyHelpers
         }
         $long  = $s;
         $short = mb_substr($s, 0, 5) . '.';
+
         return '<span class=\'d-xs-none d-sm-none d-lg-inline-block\'>' . $long . '</span>' .
             '<span class=\'d-md-none d-lg-none d-xs-inline-block\'>' . $short . '</span>';
     }
@@ -152,6 +156,7 @@ abstract class AccountancyHelpers
         if (strlen($psc) === 5) {
             return substr($psc, 0, 3) . ' ' . substr($psc, -2);
         }
+
         return $oldPsc;
     }
 
@@ -164,25 +169,25 @@ abstract class AccountancyHelpers
 
         $_jednotky = [
             0 => '',
-        1 => 'jedna',
-        2 => 'dva',
-        3 => 'tři',
-        4 => 'čtyři',
-        5 => 'pět',
-        6 => 'šest',
-        7 => 'sedm',
-        8 => 'osm',
-        9 => 'devět',
-        10 => 'deset',
+            1 => 'jedna',
+            2 => 'dva',
+            3 => 'tři',
+            4 => 'čtyři',
+            5 => 'pět',
+            6 => 'šest',
+            7 => 'sedm',
+            8 => 'osm',
+            9 => 'devět',
+            10 => 'deset',
             11 => 'jedenáct',
-        12 => 'dvanáct',
-        13 => 'třináct',
-        14 => 'čtrnáct',
-        15 => 'patnáct',
-        16 => 'šestnáct',
-        17 => 'sedmnáct',
-        18 => 'osmnáct',
-        19 => 'devatenáct',
+            12 => 'dvanáct',
+            13 => 'třináct',
+            14 => 'čtrnáct',
+            15 => 'patnáct',
+            16 => 'šestnáct',
+            17 => 'sedmnáct',
+            18 => 'osmnáct',
+            19 => 'devatenáct',
         ];
 
         $_desitky = [

@@ -28,7 +28,7 @@ class StatisticsService
     }
 
     /**
-     * @return Counter[]|array<int, Counter>
+     * @return array<int, Counter>
      */
     public function getEventStatistics(Unit $unitTree, int $year) : array
     {
@@ -49,19 +49,18 @@ class StatisticsService
             );
         }
 
-        $eventCount = array_filter(
+        return array_filter(
             $this->countTree($unitTree, $merged),
             function (Counter $c) {
                 return ! $c->isEmpty();
             }
         );
-
-        return $eventCount;
     }
 
     /**
      * @param ISkautisEvent[] $objs
      * @param int[]           $unitKeys
+     *
      * @return int[]|array<int, int>
      */
     private function sumUpByEventId(array $objs, array $unitKeys) : array
@@ -78,11 +77,13 @@ class StatisticsService
                 $cnt[$e->getUnitId()] = 1;
             }
         }
+
         return $cnt;
     }
 
     /**
      * @param Counter[] $cntArr
+     *
      * @return Counter[]|array<int, Counter>|null
      */
     private function countTree(Unit $root, array $cntArr) : ?array
@@ -93,7 +94,7 @@ class StatisticsService
 
         if ($children !== null) {
             foreach ($children as $u) {
-                $res = $res + $this->countTree($u, $cntArr);
+                $res += $this->countTree($u, $cntArr);
                 if (! array_key_exists($u->getId(), $res)) {
                     continue;
                 }
@@ -105,6 +106,7 @@ class StatisticsService
         if (isset($cntArr[$root->getId()])) {
             $res[$root->getId()]->takeIn($cntArr[$root->getId()]);
         }
+
         return $res;
     }
 }

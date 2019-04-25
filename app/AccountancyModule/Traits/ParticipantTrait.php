@@ -132,6 +132,7 @@ trait ParticipantTrait
                 if (! (property_exists($b, $sort) || isset($b->{$sort}))) {
                     return false;
                 }
+
                 return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort} ?? '', $b->{$sort} ?? '');
             }
         );
@@ -351,11 +352,11 @@ trait ParticipantTrait
 
     protected function getDirectMemberOnly() : bool
     {
-        return (bool) $this->getSession(__CLASS__)->DirectMemberOnly;
+        return (bool) $this->getSession(self::class)->DirectMemberOnly;
     }
 
     protected function setDirectMemberOnly(bool $direct) : bool
     {
-        return $this->getSession(__CLASS__)->DirectMemberOnly = $direct;
+        return $this->getSession(self::class)->DirectMemberOnly = $direct;
     }
 }

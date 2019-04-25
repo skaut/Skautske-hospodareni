@@ -16,7 +16,6 @@ abstract class AggregateRepository
     /** @var EventBus */
     private $eventBus;
 
-
     public function __construct(EntityManager $entityManager, EventBus $eventBus)
     {
         $this->entityManager = $entityManager;
@@ -34,6 +33,7 @@ abstract class AggregateRepository
 
         if (empty($events)) {
             $this->persist($aggregate);
+
             return;
         }
 

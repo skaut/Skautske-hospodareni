@@ -11,7 +11,6 @@ class AuthService
     /** @var Skautis */
     private $skautis;
 
-
     public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;

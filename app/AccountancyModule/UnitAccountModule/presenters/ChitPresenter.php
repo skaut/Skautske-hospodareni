@@ -19,6 +19,7 @@ use Model\EventEntity;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Multiplier;
 use Nette\Http\IResponse;
+use RuntimeException;
 use function array_filter;
 use function array_map;
 use function assert;
@@ -34,7 +35,7 @@ class ChitPresenter extends BasePresenter
      *      cashbook ID (without hyphens) => object
      * ]
      *
-     * @var array<string, array<string, array>>
+     * @var array<string, array<string, array<string, mixed>>>
      */
     private $cashbooks = [];
 
@@ -105,11 +106,11 @@ class ChitPresenter extends BasePresenter
     public function renderDefault() : void
     {
         $this->template->setParameters([
-           'types' => [
-               ObjectType::EVENT => 'Výpravy',
-               ObjectType::CAMP => 'Tábory',
-               ObjectType::UNIT => 'Jednotky',
-           ],
+            'types' => [
+                ObjectType::EVENT => 'Výpravy',
+                ObjectType::CAMP => 'Tábory',
+                ObjectType::UNIT => 'Jednotky',
+            ],
             'info'            => $this->cashbooks,
             'isCashbookEmpty' => function (string $cashbookId) : bool {
                 $chitList = $this['chitList-' . $cashbookId];
@@ -148,6 +149,7 @@ class ChitPresenter extends BasePresenter
 
     /**
      * @param mixed[] $objects
+     *
      * @return mixed[]
      */
     private function getAllChitsByObjectId(ObjectType $objectType, array $objects) : array
@@ -214,6 +216,6 @@ class ChitPresenter extends BasePresenter
             );
         }
 
-        throw new \RuntimeException('Unknown cashbook type');
+        throw new RuntimeException('Unknown cashbook type');
     }
 }

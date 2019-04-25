@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Payment\Handlers\MailCredentials;
 
+use CommandHandlerTest;
 use Model\Payment\Commands\RemoveMailCredentials;
 use Model\Payment\MailCredentials;
 
-class RemoveMailCredentialsHandlerTest extends \CommandHandlerTest
+class RemoveMailCredentialsHandlerTest extends CommandHandlerTest
 {
     public function _before() : void
     {

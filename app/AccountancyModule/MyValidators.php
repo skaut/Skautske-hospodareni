@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use DateTimeInterface;
 use Nette\Forms\Controls\MultiChoiceControl;
 use Nette\StaticClass;
 use Nextras\Forms\Controls\DatePicker;
@@ -19,10 +20,10 @@ class MyValidators
      */
     public static function isValidDate($control) : bool
     {
-        return $control->value === null ? false : true;
+        return $control->value !== null;
     }
 
-    public static function isValidRange(DatePicker $end, \DateTimeInterface $start) : bool
+    public static function isValidRange(DatePicker $end, DateTimeInterface $start) : bool
     {
         return $start <= $end->getValue();
     }

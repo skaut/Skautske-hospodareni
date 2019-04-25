@@ -24,7 +24,7 @@ final class LogEntryRepository implements ILogEntryRepository
      */
     public function findAllByTypeId(Type $type, int $typeId) : array
     {
-        $result = $this->em->createQueryBuilder()
+        return $this->em->createQueryBuilder()
             ->select('l')
             ->from(LogEntry::class, 'l')
             ->where('l.typeId = :typeId')
@@ -33,7 +33,6 @@ final class LogEntryRepository implements ILogEntryRepository
             ->setParameter('typeId', $typeId)
             ->setParameter('type', $type)
             ->getQuery()->getResult();
-        return $result;
     }
 
     public function save(LogEntry $log) : void

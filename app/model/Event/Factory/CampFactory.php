@@ -7,12 +7,13 @@ namespace Model\Skautis\Factory;
 use Cake\Chronos\Date;
 use Model\Event\Camp;
 use Model\Event\SkautisCampId;
+use stdClass;
 
 final class CampFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
-    public function create(\stdClass $skautisCamp) : Camp
+    public function create(stdClass $skautisCamp) : Camp
     {
         return new Camp(
             new SkautisCampId($skautisCamp->ID),

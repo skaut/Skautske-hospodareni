@@ -7,6 +7,7 @@ namespace Model\Cashbook;
 use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
@@ -31,34 +32,39 @@ use function sprintf;
 class Cashbook extends Aggregate
 {
     /**
-     * @var CashbookId
      * @ORM\Id()
      * @ORM\Column(type="cashbook_id")
+     *
+     * @var CashbookId
      */
     private $id;
 
     /**
-     * @var CashbookType
      * @ORM\Column(type="string_enum")
+     *
+     * @var CashbookType
      * @EnumAnnotation(class=CashbookType::class)
      */
     private $type;
 
     /**
-     * @var string|NULL
      * @ORM\Column(type="string", nullable=true)
+     *
+     * @var string|NULL
      */
     private $chitNumberPrefix;
 
     /**
-     * @var ArrayCollection|Chit[]
      * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * @var ArrayCollection|Chit[]
      */
     private $chits;
 
     /**
-     * @var string
      * @ORM\Column(type="text")
+     *
+     * @var string
      */
     private $note;
 
@@ -93,7 +99,7 @@ class Cashbook extends Aggregate
     public function updateChitNumberPrefix(?string $chitNumberPrefix) : void
     {
         if ($chitNumberPrefix !== null && Strings::length($chitNumberPrefix) > 6) {
-            throw new \InvalidArgumentException('Chit number prefix too long');
+            throw new InvalidArgumentException('Chit number prefix too long');
         }
 
         $this->chitNumberPrefix = $chitNumberPrefix;
@@ -228,6 +234,7 @@ class Cashbook extends Aggregate
 
     /**
      * @param int[] $chitIds
+     *
      * @throws ChitNotFound
      */
     public function copyChitsFrom(array $chitIds, Cashbook $sourceCashbook) : void
@@ -254,7 +261,9 @@ class Cashbook extends Aggregate
 
     /**
      * Only for Read model
+     *
      * @deprecated use Doctrine directly in read model
+     *
      * @return Chit[]
      */
     public function getChits() : array
@@ -317,6 +326,7 @@ class Cashbook extends Aggregate
         if ($res === $defaultMax) {
             throw new MaxChitNumberNotFound();
         }
+
         return $res;
     }
 
@@ -329,6 +339,7 @@ class Cashbook extends Aggregate
                 return false;
             }
         }
+
         return true;
     }
 

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Model\Payment\Services;
 
 use Codeception\Test\Unit;
+use DateTimeImmutable;
+use Helpers;
+use Mockery;
 use Model\Payment\BankAccount;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\IUnitResolver;
@@ -42,14 +45,15 @@ final class BankAccountAccessCheckerTest extends Unit
     }
 
     /**
-     * @dataProvider dataValidUnitsToKeepForBankAccount
      * @param int[] $unitIds
+     *
+     * @dataProvider dataValidUnitsToKeepForBankAccount
      */
     public function testValidUnitsToKeepForBankAccount(array $unitIds, bool $allowedForSubunits, string $message) : void
     {
         $bankAccount = $this->createBankAccount(20, $allowedForSubunits);
 
-        $bankAccountRepository = \Mockery::mock(IBankAccountRepository::class);
+        $bankAccountRepository = Mockery::mock(IBankAccountRepository::class);
         $bankAccountRepository
             ->shouldReceive('find')
             ->once()
@@ -76,8 +80,9 @@ final class BankAccountAccessCheckerTest extends Unit
     }
 
     /**
-     * @dataProvider dataUnitsWithNoAccessToBankAccount
      * @param int[] $unitIds
+     *
+     * @dataProvider dataUnitsWithNoAccessToBankAccount
      */
     public function testReturnsFalseWhenAtLeastOneUnitHasNoAccessToBankAccount(
         array $unitIds,
@@ -86,7 +91,7 @@ final class BankAccountAccessCheckerTest extends Unit
     ) : void {
         $bankAccount = $this->createBankAccount(20, $allowedForSubunits);
 
-        $bankAccountRepository = \Mockery::mock(IBankAccountRepository::class);
+        $bankAccountRepository = Mockery::mock(IBankAccountRepository::class);
         $bankAccountRepository
             ->shouldReceive('find')
             ->once()
@@ -103,14 +108,14 @@ final class BankAccountAccessCheckerTest extends Unit
 
     public function testExceptionIsThrownIfBankAccountDoesNotExist() : void
     {
-        $bankAccounts = \Mockery::mock(IBankAccountRepository::class);
+        $bankAccounts = Mockery::mock(IBankAccountRepository::class);
         $bankAccounts->shouldReceive('find')
             ->withArgs([5])
             ->andThrow(new BankAccountNotFound());
 
         $this->expectException(BankAccountNotFound::class);
 
-        (new BankAccountAccessChecker($bankAccounts, \Mockery::mock(IUnitResolver::class)))
+        (new BankAccountAccessChecker($bankAccounts, Mockery::mock(IUnitResolver::class)))
             ->allUnitsHaveAccessToBankAccount([1, 2, 3], 5);
     }
 
@@ -119,9 +124,9 @@ final class BankAccountAccessCheckerTest extends Unit
      */
     private function createBankAccount(int $unitId, bool $allowedForSubunits) : BankAccount
     {
-        $accountNumber = \Helpers::createAccountNumber();
+        $accountNumber = Helpers::createAccountNumber();
 
-        $bankAccount = new BankAccount($unitId, 'B', $accountNumber, null, new \DateTimeImmutable(), $this->unitResolver);
+        $bankAccount = new BankAccount($unitId, 'B', $accountNumber, null, new DateTimeImmutable(), $this->unitResolver);
 
         if ($allowedForSubunits) {
             $bankAccount->allowForSubunits();

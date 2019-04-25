@@ -11,6 +11,7 @@ use Model\Event\SkautisEventId;
 use Model\Skautis\Factory\EventFactory;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
+use stdClass;
 use function array_column;
 use function count;
 use function max;
@@ -36,6 +37,7 @@ final class EventRepository implements IEventRepository
     {
         try {
             $skautisEvent = $this->webService->EventGeneralDetail(['ID' => $id->toInt()]);
+
             return $this->createEvent($skautisEvent);
         } catch (PermissionException $exc) {
             throw new EventNotFound($exc->getMessage(), $exc->getCode(), $exc);
@@ -80,7 +82,7 @@ final class EventRepository implements IEventRepository
         return max($ids);
     }
 
-    private function createEvent(\stdClass $skautisEvent) : Event
+    private function createEvent(stdClass $skautisEvent) : Event
     {
         return $this->eventFactory->create($skautisEvent);
     }

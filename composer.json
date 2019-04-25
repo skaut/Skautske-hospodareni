@@ -58,10 +58,10 @@
         "captbaritone/mailcatcher-codeception-module": "^1.2",
         "arachne/codeception": "^0.8",
         "roave/security-advisories": "dev-master",
-        "doctrine/coding-standard": "^4.0",
         "phpstan/phpstan": "^0.11.5",
         "phpstan/phpstan-nette": "^0.11.0",
-        "phpstan/phpstan-doctrine": "^0.11.2"
+        "phpstan/phpstan-doctrine": "^0.11.2",
+        "doctrine/coding-standard": "^6.0"
     },
     "autoload-dev": {
         "classmap": ["code-quality/"]

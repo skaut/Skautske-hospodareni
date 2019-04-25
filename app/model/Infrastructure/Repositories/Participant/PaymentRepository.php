@@ -26,6 +26,7 @@ final class PaymentRepository implements IPaymentRepository
         if ($payment === null) {
             throw new PaymentNotFound();
         }
+
         return $payment;
     }
 
@@ -40,6 +41,7 @@ final class PaymentRepository implements IPaymentRepository
         foreach ($payments as $payment) {
             $res[$payment->getParticipantId()] = $payment;
         }
+
         return $res;
     }
 

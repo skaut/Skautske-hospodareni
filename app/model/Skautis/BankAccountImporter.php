@@ -14,12 +14,10 @@ class BankAccountImporter implements IBankAccountImporter
     /** @var Skautis */
     private $skautis;
 
-
     public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;
     }
-
 
     /**
      * {@inheritDoc}
@@ -39,6 +37,7 @@ class BankAccountImporter implements IBankAccountImporter
                 // Skip invalid bank accounts
             }
         }
+
         return $result;
     }
 }

@@ -12,6 +12,7 @@ use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
 use Model\Cashbook\Operation;
 use Model\Common\ShouldNotHappen;
+use RuntimeException;
 use function array_merge;
 use function count;
 use function implode;
@@ -24,35 +25,40 @@ use function max;
 class Chit
 {
     /**
-     * @var int|NULL
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
+     *
+     * @var int|NULL
      */
     private $id;
 
     /**
-     * @var Cashbook
      * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
      * @ORM\JoinColumn(name="eventId")
+     *
+     * @var Cashbook
      */
     private $cashbook;
 
     /**
-     * @var ChitBody
      * @ORM\Embedded(class=ChitBody::class, columnPrefix=false)
+     *
+     * @var ChitBody
      */
     private $body;
 
     /**
-     * @var ChitItem[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=ChitItem::class, mappedBy="chit", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * @var ChitItem[]|ArrayCollection
      */
     private $items;
 
     /**
-     * @var PaymentMethod
      * @ORM\Column(type="string_enum", length=13)
+     *
+     * @var PaymentMethod
      * @EnumAnnotation(class=PaymentMethod::class)
      */
     private $paymentMethod;
@@ -60,8 +66,9 @@ class Chit
     /**
      * ID of person that locked this
      *
-     * @var int|NULL
      * @ORM\Column(type="integer", nullable=true, name="`lock`", options={"unsigned"=true})
+     *
+     * @var int|NULL
      */
     private $locked;
 
@@ -99,7 +106,7 @@ class Chit
     public function getId() : int
     {
         if ($this->id === null) {
-            throw new \RuntimeException('ID not set');
+            throw new RuntimeException('ID not set');
         }
 
         return $this->id;
@@ -116,6 +123,7 @@ class Chit
         foreach ($this->items as $item) {
             $exps[] = $item->getAmount()->getExpression();
         }
+
         return new Amount(implode('+', $exps));
     }
 
@@ -150,6 +158,7 @@ class Chit
         foreach ($this->items as $item) {
             $chit->addItem($item->getAmount(), $item->getCategory());
         }
+
         return $chit;
     }
 
@@ -192,12 +201,12 @@ class Chit
         $this->body = $body;
     }
 
-
     private function getFirstItem() : ChitItem
     {
         if (count($this->items) === 0) {
             throw new ShouldNotHappen();
         }
+
         return $this->items->first();
     }
 
@@ -206,6 +215,7 @@ class Chit
         $ids = $this->items->map(function (ChitItem $i) {
             return $i->getId();
         });
+
         return 1 + max(array_merge($ids->getValues(), [0]));
     }
 }

@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Tests\Integration\Pairing;
 
 use Cake\Chronos\Date;
+use DateTimeImmutable;
+use Helpers;
+use IntegrationTest;
+use IntegrationTester;
 use Mockery as m;
 use Model\Bank\Fio\Transaction;
 use Model\BankService;
@@ -25,9 +29,9 @@ use function mt_rand;
 use function reset;
 use function sprintf;
 
-class BankServiceTest extends \IntegrationTest
+class BankServiceTest extends IntegrationTest
 {
-    /** @var \IntegrationTester */
+    /** @var IntegrationTester */
     protected $tester;
 
     /** @var BankService */
@@ -66,7 +70,6 @@ class BankServiceTest extends \IntegrationTest
         ];
     }
 
-
     public function testPairGroups() : void
     {
         $I = $this->tester;
@@ -76,7 +79,7 @@ class BankServiceTest extends \IntegrationTest
             'Hlavní',
             new BankAccount\AccountNumber(null, '2000942144', '2010'),
             'test-token',
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             m::mock(IUnitResolver::class, ['getOfficialUnitId' => 1])
         );
 
@@ -104,7 +107,7 @@ class BankServiceTest extends \IntegrationTest
         /** @var PairingResult $pairingResult */
         $pairingResult = reset($pairingResults);
 
-        $dateSince = (new \DateTimeImmutable(sprintf('- %d days', $daysBack)))->format('j.n.Y');
+        $dateSince = (new DateTimeImmutable(sprintf('- %d days', $daysBack)))->format('j.n.Y');
         $dateUntil = date('j.n.Y');
         $this->assertSame(2, $pairingResult->getCount());
         $this->assertSame($dateSince, $pairingResult->getSince()->format('j.n.Y'));
@@ -117,7 +120,6 @@ class BankServiceTest extends \IntegrationTest
             $dateUntil
         ), $pairingResult->getMessage());
     }
-
 
     private function addPayment(Group $group, float $amount, ?string $variableSymbol) : void
     {
@@ -135,18 +137,17 @@ class BankServiceTest extends \IntegrationTest
         $this->payments->save($payment);
     }
 
-
     private function addGroup(?BankAccount $bankAccount) : Group
     {
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
-        $emails          = \Helpers::createEmails();
+        $emails          = Helpers::createEmails();
 
         $group = new Group(
             [1],
             null,
             'Test',
             $paymentDefaults,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             $emails,
             null,
             $bankAccount,
@@ -158,12 +159,11 @@ class BankServiceTest extends \IntegrationTest
         return $group;
     }
 
-
     private function createTransaction(float $amount, ?string $variableSymbol) : Transaction
     {
         return new Transaction(
             (string) mt_rand(1, 1000),
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             $amount,
             '',
             '',

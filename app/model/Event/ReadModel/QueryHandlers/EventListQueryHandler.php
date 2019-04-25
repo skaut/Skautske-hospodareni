@@ -30,9 +30,9 @@ class EventListQueryHandler
     public function handle(EventListQuery $query) : array
     {
         $events = $this->skautis->event->eventGeneralAll([
-                'IsRelation' => true,
-                'ID_EventGeneralState' => $query->getState(),
-                'Year' => $query->getYear(),
+            'IsRelation' => true,
+            'ID_EventGeneralState' => $query->getState(),
+            'Year' => $query->getYear(),
         ]);
 
         if (is_object($events)) {

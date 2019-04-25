@@ -23,6 +23,7 @@ final class CashbookHandlersTest extends Unit
     /**
      * @param mixed   $commandInstance
      * @param mixed[] $expectedMethodArguments
+     *
      * @dataProvider dataHandlers
      */
     public function test(

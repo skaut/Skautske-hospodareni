@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-class EmailNotSet extends \Exception
+use Exception;
+
+class EmailNotSet extends Exception
 {
 }

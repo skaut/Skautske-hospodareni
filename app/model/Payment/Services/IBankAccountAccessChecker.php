@@ -10,6 +10,7 @@ interface IBankAccountAccessChecker
 {
     /**
      * @param int[] $unitIds
+     *
      * @throws BankAccountNotFound
      */
     public function allUnitsHaveAccessToBankAccount(array $unitIds, int $bankAccountId) : bool;

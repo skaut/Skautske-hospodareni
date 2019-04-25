@@ -14,35 +14,40 @@ use Doctrine\ORM\Mapping as ORM;
 class ChitItem
 {
     /**
-     * @var int|NULL
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
+     *
+     * @var int|NULL
      */
     private $_id;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var Chit
      * @ORM\ManyToOne(targetEntity=Chit::class, inversedBy="items")
      * @ORM\JoinColumn(name="chit_id", referencedColumnName="id")
+     *
+     * @var Chit
      */
     private $chit;
 
     /**
-     * @var Amount
      * @ORM\Embedded(class=Amount::class, columnPrefix=false)
+     *
+     * @var Amount
      */
     private $amount;
 
     /**
-     * @var Category
      * @ORM\Embedded(class=Category::class, columnPrefix=false)
+     *
+     * @var Category
      */
     private $category;
 

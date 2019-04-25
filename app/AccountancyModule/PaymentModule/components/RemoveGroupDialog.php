@@ -53,8 +53,8 @@ final class RemoveGroupDialog extends BaseControl
 
         $this->template->setParameters(
             [
-            'groupName' => $group->getName(),
-            'renderModal' => $this->opened,
+                'groupName' => $group->getName(),
+                'renderModal' => $this->opened,
             ]
         );
 

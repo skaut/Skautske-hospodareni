@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model;
 
 use Assert\Assert;
+use DateTimeImmutable;
 use Model\Bank\Fio\Transaction as BankTransaction;
 use Model\DTO\Payment\PairingResult;
 use Model\Payment\Fio\IFioClient;
@@ -54,12 +55,13 @@ class BankService
         $this->bankAccounts = $bankAccounts;
     }
 
-
     /**
      * Completes payments from info on bank account(s)
      *
      * @param  int[] $groupIds
+     *
      * @return PairingResult[] Description of paired payments
+     *
      * @throws BankTimeLimit
      * @throws BankTimeout
      * @throws InvalidSmtp
@@ -79,7 +81,7 @@ class BankService
             true
         );
 
-        $now            = new \DateTimeImmutable();
+        $now            = new DateTimeImmutable();
         $pairedCount    = 0;
         $pairingResults = [];
 
@@ -104,7 +106,7 @@ class BankService
                 continue;
             }
 
-            $pairSince = $daysBack === null ? $this->resolveLastPairing($groups) : new \DateTimeImmutable(sprintf('- %d days', $daysBack));
+            $pairSince = $daysBack === null ? $this->resolveLastPairing($groups) : new DateTimeImmutable(sprintf('- %d days', $daysBack));
 
             $transactions = $this->bank->getTransactions($pairSince, $now, $bankAccount);
             $paired       = $this->markPaymentsAsComplete($transactions, $payments);
@@ -127,7 +129,7 @@ class BankService
     /**
      * @param Group[] $groups
      */
-    private function updateLastPairing(array $groups, \DateTimeImmutable $time) : void
+    private function updateLastPairing(array $groups, DateTimeImmutable $time) : void
     {
         foreach ($groups as $group) {
             $group->updateLastPairing($time);
@@ -138,7 +140,7 @@ class BankService
     /**
      * @param Group[] $groups
      */
-    private function resolveLastPairing(array $groups) : \DateTimeImmutable
+    private function resolveLastPairing(array $groups) : DateTimeImmutable
     {
         $lastPairings = array_map(
             function (Group $g) {
@@ -152,12 +154,13 @@ class BankService
             return min($lastPairings);
         }
 
-        return new \DateTimeImmutable('- ' . self::DAYS_BACK_DEFAULT . ' days');
+        return new DateTimeImmutable('- ' . self::DAYS_BACK_DEFAULT . ' days');
     }
 
     /**
      * @param BankTransaction[] $transactions
      * @param Payment[]         $payments
+     *
      * @return Payment[]
      */
     private function markPaymentsAsComplete(array $transactions, array $payments) : array
@@ -177,7 +180,7 @@ class BankService
         );
 
         $paired = [];
-        $now    = new \DateTimeImmutable();
+        $now    = new DateTimeImmutable();
         foreach ($transactions as $transaction) {
             foreach ($paymentsByVS[$transaction->getVariableSymbol()] as $offset => $payment) {
                 /** @var Payment $payment */

@@ -30,10 +30,10 @@ class MailerFactory implements IMailerFactory
 
         return new SmtpMailer(
             [
-            'host' => $credentials->getHost(),
-            'username' => $credentials->getUsername(),
-            'password' => $credentials->getPassword(),
-            'secure' => $credentials->getProtocol()->getValue(),
+                'host' => $credentials->getHost(),
+                'username' => $credentials->getUsername(),
+                'password' => $credentials->getPassword(),
+                'secure' => $credentials->getProtocol()->getValue(),
             ]
         );
     }

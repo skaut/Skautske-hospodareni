@@ -90,9 +90,9 @@ class PairButton extends BaseControl
             $this->pair((int) $values->days);
         };
         $this->redrawControl('form');
+
         return $form;
     }
-
 
     private function canPair() : bool
     {
@@ -119,7 +119,6 @@ class PairButton extends BaseControl
 
         return false;
     }
-
 
     private function pair(?int $daysBack = null) : void
     {

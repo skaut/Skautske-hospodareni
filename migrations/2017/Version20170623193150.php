@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Migrations;
 
 use BankAccountValidator\Czech;
+use DateTimeImmutable;
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
+use stdClass;
 use function count;
 
 class Version20170623193150 extends AbstractMigration
@@ -31,7 +33,7 @@ class Version20170623193150 extends AbstractMigration
         $bankConfigurations = $this->connection->fetchAll('SELECT * FROM pa_bank');
 
         $parser = new Czech();
-        $now    = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+        $now    = (new DateTimeImmutable())->format('Y-m-d H:i:s');
 
         if (count($bankConfigurations) > 0) {
             foreach ($bankConfigurations as $configuration) {
@@ -73,7 +75,7 @@ class Version20170623193150 extends AbstractMigration
     {
         $result = $this->skautis->org->AccountAll(['ID_Unit' => $unitId]);
 
-        if ($result instanceof \stdClass) {
+        if ($result instanceof stdClass) {
             return null;
         }
 

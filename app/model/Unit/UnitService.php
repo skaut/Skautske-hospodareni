@@ -13,6 +13,7 @@ use Nette\Application\BadRequestException;
 use Nette\Security\Identity;
 use Nette\Security\User;
 use Skautis;
+use stdClass;
 use function assert;
 use function is_array;
 
@@ -26,7 +27,6 @@ class UnitService
 
     /** @var IUnitResolver */
     private $unitResolver;
-
 
     public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver)
     {
@@ -54,9 +54,10 @@ class UnitService
      * @deprecated Use QueryBus with UnitQuery
      *
      * vrací detail jednotky
+     *
      * @throws BadRequestException
      */
-    public function getDetail(?int $unitId = null) : \stdClass
+    public function getDetail(?int $unitId = null) : stdClass
     {
         if ($unitId === null) {
             $unitId = $this->getUnitId();
@@ -76,6 +77,7 @@ class UnitService
 
     /**
      * @deprecated Use QueryBus with UnitQuery
+     *
      * @throws BadRequestException
      */
     public function getDetailV2(int $unitId) : Unit
@@ -129,11 +131,13 @@ class UnitService
     public function getOfficialName(int $unitId) : string
     {
         $unit = $this->getOfficialUnit($unitId);
+
         return $unit->getFullDisplayNameWithAddress();
     }
 
     /**
      * @return Unit[]|array<int, Unit>
+     *
      * @throws BadRequestException
      */
     public function getAllUnder(int $ID_Unit) : array
@@ -141,8 +145,9 @@ class UnitService
         $data = [$ID_Unit => $this->getDetailV2($ID_Unit)];
         foreach ($this->units->findByParent($ID_Unit) as $u) {
             $data[$u->getId()] = $u;
-            $data              = $data + $this->getAllUnder($u->getId());
+            $data             += $this->getAllUnder($u->getId());
         }
+
         return $data;
     }
 
@@ -152,6 +157,7 @@ class UnitService
         foreach ($this->units->findByParent($unit->getId()) as $ch) {
             $children[] = $this->getTreeUnder($ch);
         }
+
         return $unit->withChildren($children);
     }
 
@@ -178,6 +184,7 @@ class UnitService
         foreach ($identity->access[$accessType] as $uId => $u) {
             $res[$uId] = $u instanceof Unit ? $u->getDisplayName() : $u->DisplayName;
         }
+
         return $res;
     }
 
@@ -186,7 +193,7 @@ class UnitService
      *
      * @return string[]
      */
-    public function getCampTroopNames(\stdClass $camp) : array
+    public function getCampTroopNames(stdClass $camp) : array
     {
         if (! isset($camp->ID_UnitArray->string)) {
             return [];

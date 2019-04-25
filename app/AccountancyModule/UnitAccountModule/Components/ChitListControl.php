@@ -36,7 +36,6 @@ final class ChitListControl extends BaseControl
     /** @var User */
     private $user;
 
-
     public function __construct(
         CashbookId $cashbookId,
         bool $onlyUnlocked,
@@ -73,7 +72,7 @@ final class ChitListControl extends BaseControl
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
         $this->template->setParameters(
             [
-            'chits' => $this->getChits(),
+                'chits' => $this->getChits(),
             ]
         );
 

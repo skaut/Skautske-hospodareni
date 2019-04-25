@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use Codeception\Test\Unit;
+use InvalidArgumentException;
 
 class VariableSymbolTest extends Unit
 {
@@ -15,14 +16,14 @@ class VariableSymbolTest extends Unit
 
     public function testVariableSymbolCantBeLongerThanTenSymbols() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new VariableSymbol('12345678910');
     }
 
     public function testVariableSymbolCantBeEmpty() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new VariableSymbol('');
     }
@@ -32,18 +33,17 @@ class VariableSymbolTest extends Unit
      */
     public function testVariableSymbolCantStartWithZero(string $symbol) : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new VariableSymbol($symbol);
     }
-
 
     /**
      * @dataProvider getNonNumericSymbol
      */
     public function testVariableSymbolCantContainNonNumericSymbols(string $data) : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new VariableSymbol('123' . $data[0]);
     }

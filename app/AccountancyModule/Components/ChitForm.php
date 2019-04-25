@@ -105,8 +105,8 @@ final class ChitForm extends BaseControl
 
         $this->template->setParameters(
             [
-            'isEditable' => $this->isEditable,
-            'chitNumberPrefix' => $cashbook->getChitNumberPrefix(),
+                'isEditable' => $this->isEditable,
+                'chitNumberPrefix' => $cashbook->getChitNumberPrefix(),
             ]
         );
 
@@ -132,15 +132,15 @@ final class ChitForm extends BaseControl
 
         $form->setDefaults(
             [
-            'pid' => $chit->getId(),
-            'date' => $chit->getBody()->getDate(),
-            'num' => (string) $chit->getBody()->getNumber(),
-            'paymentMethod' => $chit->getPaymentMethod()->toString(),
-            'recipient' => (string) $chit->getBody()->getRecipient(),
-            'purpose' => $chit->getBody()->getPurpose(),
-            'price' => $chit->getAmount()->getExpression(),
-            'type' => $chit->getCategory()->getOperationType()->getValue(),
-            'category' => $chit->getCategory()->getId(),
+                'pid' => $chit->getId(),
+                'date' => $chit->getBody()->getDate(),
+                'num' => (string) $chit->getBody()->getNumber(),
+                'paymentMethod' => $chit->getPaymentMethod()->toString(),
+                'recipient' => (string) $chit->getBody()->getRecipient(),
+                'purpose' => $chit->getBody()->getPurpose(),
+                'price' => $chit->getAmount()->getExpression(),
+                'type' => $chit->getCategory()->getOperationType()->getValue(),
+                'category' => $chit->getCategory()->getId(),
             ]
         );
 
@@ -162,8 +162,8 @@ final class ChitForm extends BaseControl
 
         return new DependentData(
             [
-            Operation::INCOME => $this->getCategoryPairsByType(Operation::get(Operation::INCOME)),
-            Operation::EXPENSE => $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)),
+                Operation::INCOME => $this->getCategoryPairsByType(Operation::get(Operation::INCOME)),
+                Operation::EXPENSE => $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)),
             ]
         );
     }

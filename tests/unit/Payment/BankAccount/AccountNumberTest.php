@@ -53,6 +53,7 @@ class AccountNumberTest extends Unit
     {
         $this->assertFalse(AccountNumber::isValid('123'));
     }
+
     public function testFromString() : void
     {
         $number = AccountNumber::fromString('2000942144/2010');

@@ -7,6 +7,7 @@ namespace Model\Infrastructure\Repositories\Cashbook;
 use Cake\Chronos\Date;
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
+use IntegrationTest;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -15,7 +16,7 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 
-class CashbookRepositoryTest extends \IntegrationTest
+class CashbookRepositoryTest extends IntegrationTest
 {
     private const TABLE           = 'ac_cashbook';
     private const CHIT_TABLE      = 'ac_chits';

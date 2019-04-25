@@ -49,7 +49,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
 
     private function createHandler() : CategoryPairsQueryHandler
     {
-        $categories = array_map(function (array $category) : ICategory {
+        $categories = array_map(static function (array $category) : ICategory {
             return m::mock(ICategory::class, [
                 'getId' => $category[0],
                 'getName' => $category[1],
@@ -60,7 +60,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $categoryRepository = m::mock(CategoryRepository::class);
         $categoryRepository->shouldReceive('findForCashbook')
             ->once()
-            ->withArgs(function (CashbookId $cashbookId, CashbookType $type) : bool {
+            ->withArgs(static function (CashbookId $cashbookId, CashbookType $type) : bool {
                 return $cashbookId->equals(CashbookId::fromString(self::CASHBOOK_ID))
                     && $type->equalsValue(self::CASHBOOK_TYPE);
             })
@@ -69,7 +69,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $cashbookRepository = m::mock(ICashbookRepository::class);
         $cashbookRepository->shouldReceive('find')
             ->once()
-            ->withArgs(function (CashbookId $id) {
+            ->withArgs(static function (CashbookId $id) {
                 return $id->equals(CashbookId::fromString(self::CASHBOOK_ID));
             })
             ->andReturn(m::mock(Cashbook::class, [

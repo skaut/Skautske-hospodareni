@@ -56,6 +56,7 @@ final class CampsWithoutGroupQueryHandler
 
     /**
      * @param Camp[] $camps
+     *
      * @return int[]
      */
     private function getCampWithGroupIds(array $camps) : array

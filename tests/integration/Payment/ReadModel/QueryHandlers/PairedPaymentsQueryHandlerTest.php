@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
+use DateTimeImmutable;
+use IntegrationTest;
 use Model\Payment\BankAccount\BankAccountId;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
 
-final class PairedPaymentsQueryHandlerTest extends \IntegrationTest
+final class PairedPaymentsQueryHandlerTest extends IntegrationTest
 {
     /**
      * @return string[]
@@ -35,8 +37,8 @@ final class PairedPaymentsQueryHandlerTest extends \IntegrationTest
         $this->tester->haveInDatabase('pa_group', $group); // Group #1
         $this->tester->haveInDatabase('pa_group', $group); // Group #2
 
-        $inRange    = new \DateTimeImmutable('2018-09-25 00:00:00');
-        $outOfRange = new \DateTimeImmutable('2018-03-20 00:00:00');
+        $inRange    = new DateTimeImmutable('2018-09-25 00:00:00');
+        $outOfRange = new DateTimeImmutable('2018-03-20 00:00:00');
 
         $this->insertPaymentToDb(1, '123', $inRange); // Payment #1
         $this->insertPaymentToDb(1, '123', $outOfRange);
@@ -49,8 +51,8 @@ final class PairedPaymentsQueryHandlerTest extends \IntegrationTest
         $payments = $handler(
             new PairedPaymentsQuery(
                 new BankAccountId(10),
-                new \DateTimeImmutable('2018-09-24 00:00:00'),
-                new \DateTimeImmutable('2018-10-01 00:00:00')
+                new DateTimeImmutable('2018-09-24 00:00:00'),
+                new DateTimeImmutable('2018-10-01 00:00:00')
             )
         );
 
@@ -59,7 +61,7 @@ final class PairedPaymentsQueryHandlerTest extends \IntegrationTest
         $this->assertSame(5, $payments[1]->getId());
     }
 
-    private function insertPaymentToDb(int $groupId, ?string $transactionId, \DateTimeImmutable $closedAt) : void
+    private function insertPaymentToDb(int $groupId, ?string $transactionId, DateTimeImmutable $closedAt) : void
     {
         $payment = [
             'name' => 'Test',

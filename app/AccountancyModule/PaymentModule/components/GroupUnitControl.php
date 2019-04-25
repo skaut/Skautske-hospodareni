@@ -90,6 +90,7 @@ class GroupUnitControl extends BaseControl
             if (! $this->canEdit($group)) {
                 $this->flashMessage('Nemáte oprávnění pro změnu jednotky', 'danger');
                 $this->redrawControl();
+
                 return;
             }
             $this->formSucceeded($values, $group->getId());
@@ -129,6 +130,7 @@ class GroupUnitControl extends BaseControl
 
     /**
      * @param int[] $groupUnitIds
+     *
      * @return string[]
      */
     private function buildUnitPairs(array $groupUnitIds) : array

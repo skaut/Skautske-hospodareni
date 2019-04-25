@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Codeception\Test\Unit;
+use InvalidArgumentException;
 
 class AmountTest extends Unit
 {
@@ -19,14 +20,14 @@ class AmountTest extends Unit
 
     public function testResultCantBeNegative() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Amount('-100');
     }
 
     public function testResultCantBeZero() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Amount('0');
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace acceptance;
 
+use AcceptanceTester;
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use function date;
@@ -15,7 +16,7 @@ class CashbookTest extends Unit
     private const BALANCE_SELECTOR = '.ui--balance';
     private const NO_CHITS_MESSAGE = 'žádné doklady';
 
-    /** @var \AcceptanceTester */
+    /** @var AcceptanceTester */
     protected $tester;
 
     /** @var string */

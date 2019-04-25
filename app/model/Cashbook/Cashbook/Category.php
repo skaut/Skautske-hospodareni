@@ -14,14 +14,16 @@ use Model\Cashbook\Operation;
 class Category
 {
     /**
-     * @var int
      * @ORM\Column(type="integer", name="category", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var Operation
      * @ORM\Column(type="string_enum", name="category_operation_type", length=255, nullable=true)
+     *
+     * @var Operation
      * @EnumAnnotation(class=Operation::class)
      */
     private $operationType;

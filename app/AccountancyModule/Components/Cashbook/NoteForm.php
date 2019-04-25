@@ -76,9 +76,9 @@ final class NoteForm extends BaseControl
 
         $this->template->setParameters(
             [
-            'isEditable' => $this->isEditable,
-            'editation' => $this->editation,
-            'note' => $note,
+                'isEditable' => $this->isEditable,
+                'editation' => $this->editation,
+                'note' => $note,
             ]
         );
 
@@ -104,6 +104,7 @@ final class NoteForm extends BaseControl
             $this->formSucceeded($form);
             $this->redrawControl();
         };
+
         return $form;
     }
 

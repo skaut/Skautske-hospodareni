@@ -25,7 +25,6 @@ class CommandGrid extends BaseGridControl
     /** @var TravelService */
     private $travel;
 
-
     public function __construct(int $unitId, int $userId, TravelService $travel)
     {
         parent::__construct();
@@ -33,7 +32,6 @@ class CommandGrid extends BaseGridControl
         $this->userId = $userId;
         $this->travel = $travel;
     }
-
 
     protected function createComponentGrid() : DataGrid
     {
@@ -52,8 +50,8 @@ class CommandGrid extends BaseGridControl
             ->setSortable()
             ->setFilterSelect(
                 [
-                Command::STATE_IN_PROGRESS => 'Rozpracovaný',
-                Command::STATE_CLOSED => 'Uzavřený',
+                    Command::STATE_IN_PROGRESS => 'Rozpracovaný',
+                    Command::STATE_CLOSED => 'Uzavřený',
                 ]
             )->setPrompt('-');
 

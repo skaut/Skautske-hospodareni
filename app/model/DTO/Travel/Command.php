@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel;
 
+use DateTimeImmutable;
 use Model\Travel\Passenger;
 use Money\Money;
 use Nette\SmartObject;
@@ -19,9 +20,9 @@ use Nette\SmartObject;
  * @property-read Money                     $fuelPrice
  * @property-read Money                     $amortizationPerKm
  * @property-read string                    $note
- * @property-read \DateTimeImmutable|NULL   $closedAt
+ * @property-read DateTimeImmutable|NULL $closedAt
  * @property-read Money                     $total
- * @property-read \DateTimeImmutable|NULL   $firstTravelDate
+ * @property-read DateTimeImmutable|NULL $firstTravelDate
  * @property-read Money                     $pricePerKm
  * @property-read Money                     $fuelPricePerKm
  * @property-read string                    $state
@@ -69,10 +70,10 @@ class Command
     /** @var Money */
     private $total;
 
-    /** @var \DateTimeImmutable|NULL */
+    /** @var DateTimeImmutable|NULL */
     private $closedAt;
 
-    /** @var \DateTimeImmutable|NULL */
+    /** @var DateTimeImmutable|NULL */
     private $firstTravelDate;
 
     /** @var Money */
@@ -107,9 +108,9 @@ class Command
         Money $fuelPrice,
         Money $amortizationPerKm,
         string $note,
-        ?\DateTimeImmutable $closedAt,
+        ?DateTimeImmutable $closedAt,
         Money $total,
-        ?\DateTimeImmutable $firstTravelDate,
+        ?DateTimeImmutable $firstTravelDate,
         Money $pricePerKm,
         Money $fuelPricePerKm,
         string $state,
@@ -188,7 +189,7 @@ class Command
         return $this->note;
     }
 
-    public function getClosedAt() : ?\DateTimeImmutable
+    public function getClosedAt() : ?DateTimeImmutable
     {
         return $this->closedAt;
     }
@@ -198,7 +199,7 @@ class Command
         return $this->total;
     }
 
-    public function getFirstTravelDate() : ?\DateTimeImmutable
+    public function getFirstTravelDate() : ?DateTimeImmutable
     {
         return $this->firstTravelDate;
     }
@@ -240,6 +241,7 @@ class Command
         foreach ($this->transportTypes as $type) {
             $types[$type->getShortcut()] = $type->getLabel();
         }
+
         return $types;
     }
 

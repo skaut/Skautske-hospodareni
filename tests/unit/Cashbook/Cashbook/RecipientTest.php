@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Codeception\Test\Unit;
+use InvalidArgumentException;
 
 class RecipientTest extends Unit
 {
@@ -18,7 +19,7 @@ class RecipientTest extends Unit
 
     public function testCantCreateRecipientWithoutName() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Recipient('');
     }

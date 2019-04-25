@@ -10,6 +10,7 @@ use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Assert\Assertion;
 use Cake\Chronos\Date;
+use InvalidArgumentException;
 use Model\Common\Registration;
 use Model\Common\UnitId;
 use Model\Payment\Group\SkautisEntity;
@@ -87,9 +88,10 @@ class RegistrationPresenter extends BasePresenter
         //ověření přístupu
         try {
             $list = $this->model->getPersonsFromRegistrationWithoutPayment(array_keys($this->readUnits), $id);
-        } catch (\InvalidArgumentException $exc) {
+        } catch (InvalidArgumentException $exc) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
             $this->redirect('Payment:default');
+
             return;
         }
 

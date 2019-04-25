@@ -70,7 +70,6 @@ class DefaultPresenter extends BasePresenter
             $command->getClosedAt() === null && $unitOrOwner;
     }
 
-
     public function actionDetail(?int $id) : void
     {
         if ($id === null) {
@@ -119,20 +118,20 @@ class DefaultPresenter extends BasePresenter
 
         $template->setParameters(
             [
-            'command' => $command,
-            'travels' => $travels,
-            'types' => array_map(function (TravelType $t) {
-                return $t->getLabel();
-            }, $command->getTransportTypes()),
-            'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
+                'command' => $command,
+                'travels' => $travels,
+                'types' => array_map(function (TravelType $t) {
+                    return $t->getLabel();
+                }, $command->getTransportTypes()),
+                'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
             ]
         );
 
         if (count($travels) !== 0) {
             $template->setParameters(
                 [
-                'start' => $travels[0],
-                'end' => array_slice($travels, -1)[0],
+                    'start' => $travels[0],
+                    'end' => array_slice($travels, -1)[0],
                 ]
             );
         }
@@ -219,6 +218,7 @@ class DefaultPresenter extends BasePresenter
         $form->onSuccess[] = function (Form $form) : void {
             $this->formAddTravelSubmitted($form);
         };
+
         return $form;
     }
 
@@ -261,13 +261,13 @@ class DefaultPresenter extends BasePresenter
 
         $form->setDefaults(
             [
-            'commandId' => $commandId,
-            'id' => $travelId,
-            'type' => $travel->getDetails()->getTransportType(),
-            'date' => $travel->getDetails()->getDate(),
-            'startPlace' => $travel->getDetails()->getStartPlace(),
-            'endPlace' => $travel->getDetails()->getEndPlace(),
-            'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
+                'commandId' => $commandId,
+                'id' => $travelId,
+                'type' => $travel->getDetails()->getTransportType(),
+                'date' => $travel->getDetails()->getDate(),
+                'startPlace' => $travel->getDetails()->getStartPlace(),
+                'endPlace' => $travel->getDetails()->getEndPlace(),
+                'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
             ]
         );
 

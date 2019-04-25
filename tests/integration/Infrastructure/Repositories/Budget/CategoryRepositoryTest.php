@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Budget;
 
 use Doctrine\ORM\EntityManager;
+use IntegrationTest;
 use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 
-class CategoryRepositoryTest extends \IntegrationTest
+class CategoryRepositoryTest extends IntegrationTest
 {
     /** @var CategoryRepository */
     private $repository;

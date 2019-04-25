@@ -9,6 +9,7 @@ use App\AccountancyModule\Components\FormControls\DateControl;
 use App\Forms\BaseForm;
 use Assert\Assertion;
 use Cake\Chronos\Date;
+use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Payment\GroupEmail;
@@ -119,6 +120,7 @@ final class GroupForm extends BaseControl
             ->setNullable()
             ->addRule(function (DateControl $control) : bool {
                 $value = $control->getValue();
+
                 return $value === null || $value->isWeekday();
             });
 
@@ -130,7 +132,7 @@ final class GroupForm extends BaseControl
             ->addRule(Form::INTEGER, 'Konstantní symbol musí být číslo');
 
         $nextVs = $this->queryBus->handle(
-            new NextVariableSymbolSequenceQuery($this->unitId->toInt(), new \DateTimeImmutable())
+            new NextVariableSymbolSequenceQuery($this->unitId->toInt(), new DateTimeImmutable())
         );
 
         $form->addVariableSymbol('nextVs', 'Další VS:')
@@ -203,7 +205,6 @@ final class GroupForm extends BaseControl
         }
         $this->getPresenter()->redirect('Payment:detail', ['id' => $this->groupId]);
     }
-
 
     private function getDefaultEmailBody(string $name) : string
     {

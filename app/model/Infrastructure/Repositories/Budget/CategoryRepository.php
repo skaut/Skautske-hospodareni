@@ -27,6 +27,7 @@ final class CategoryRepository implements ICategoryRepository
         if ($category === null) {
             throw new CategoryNotFound(sprintf('Budget category %d was not found.', $id));
         }
+
         return $category;
     }
 
@@ -37,7 +38,6 @@ final class CategoryRepository implements ICategoryRepository
     {
         return $this->em->getRepository(Category::class)->findBy(['type' => $operationType->getValue(), 'parent' => null]);
     }
-
 
     public function save(Category $category) : void
     {

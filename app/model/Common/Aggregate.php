@@ -20,12 +20,14 @@ abstract class Aggregate
 
     /**
      * Returns events to dispatch and clears events collection
+     *
      * @return object[]
      */
     public function extractEventsToDispatch() : array
     {
         $events                 = $this->eventsToDispatch;
         $this->eventsToDispatch = [];
+
         return $events;
     }
 }

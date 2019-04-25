@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel;
 
+use DateTimeImmutable;
 use Model\Travel\Contract\Passenger;
 use Nette\SmartObject;
 
@@ -12,8 +13,8 @@ use Nette\SmartObject;
  * @property-read Passenger                 $passenger
  * @property-read int                       $unitId
  * @property-read string                    $unitRepresentative
- * @property-read \DateTimeImmutable|NULL   $since
- * @property-read \DateTimeImmutable|NULL   $until
+ * @property-read DateTimeImmutable|NULL $since
+ * @property-read DateTimeImmutable|NULL $until
  * @property-read int                       $templateVersion
  */
 class Contract
@@ -32,10 +33,10 @@ class Contract
     /** @var string */
     private $unitRepresentative;
 
-    /** @var \DateTimeImmutable|NULL */
+    /** @var DateTimeImmutable|NULL */
     private $since;
 
-    /** @var \DateTimeImmutable|NULL */
+    /** @var DateTimeImmutable|NULL */
     private $until;
 
     /** @var int */
@@ -46,8 +47,8 @@ class Contract
         Passenger $passenger,
         int $unitId,
         string $unitRepresentative,
-        ?\DateTimeImmutable $since,
-        ?\DateTimeImmutable $until,
+        ?DateTimeImmutable $since,
+        ?DateTimeImmutable $until,
         int $templateVersion
     ) {
         $this->id                 = $id;
@@ -79,12 +80,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince() : ?\DateTimeImmutable
+    public function getSince() : ?DateTimeImmutable
     {
         return $this->since;
     }
 
-    public function getUntil() : ?\DateTimeImmutable
+    public function getUntil() : ?DateTimeImmutable
     {
         return $this->until;
     }

@@ -196,6 +196,7 @@ class ExportService
 
     /**
      * vrací PDF s vybranými paragony
+     *
      * @param Chit[] $chits
      */
     public function getChits(

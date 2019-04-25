@@ -130,6 +130,7 @@ final class RepaymentPresenter extends BasePresenter
 
         if (count($repayments) === 0) {
             $form->addError('Nebyl vybrán žádný záznam k vrácení!');
+
             return;
         }
 

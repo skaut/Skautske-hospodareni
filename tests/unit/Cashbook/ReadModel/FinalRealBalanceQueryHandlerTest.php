@@ -39,6 +39,7 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
     private function mockChit(string $amount, string $operation, bool $virtualCategory) : Chit
     {
         $op = Operation::get($operation);
+
         return m::mock(Chit::class, [
             'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null, 'pro test'),
             'getCategory'   => new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $virtualCategory),
@@ -56,7 +57,7 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
 
         $queryBus = m::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
-            ->withArgs(function (ChitListQuery $query) {
+            ->withArgs(static function (ChitListQuery $query) {
                 return $query->getCashbookId()->toString() === self::CASHBOOK_ID;
             })
             ->andReturn($chits);

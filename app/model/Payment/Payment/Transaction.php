@@ -9,38 +9,42 @@ use Model\Bank\Fio\Transaction as FioTransaction;
 use Nette\SmartObject;
 
 /**
+ * @ORM\Embeddable()
+ *
  * @property-read int $id
  * @property-read string|NULL $bankAccount
  * @property-read string $payer
  * @property-read string|NULL $note
- *
- * @ORM\Embeddable()
  */
 class Transaction
 {
     use SmartObject;
 
     /**
-     * @var int @todo start using string as does FIO
      * @ORM\Column(type="integer", nullable=true, name="transactionId", options={"unsigned"=true})
+     *
+     * @var int @todo start using string as does FIO
      */
     private $id;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=64, nullable=true, name="paidFrom")
+     *
+     * @var string
      */
     private $bankAccount;
 
     /**
-     * @var string
      * @ORM\Column(type="string", nullable=true, name="transaction_payer")
+     *
+     * @var string
      */
     private $payer;
 
     /**
-     * @var string|NULL
      * @ORM\Column(type="string", nullable=true, name="transaction_note")
+     *
+     * @var string|NULL
      */
     private $note;
 

@@ -20,7 +20,7 @@ class CreateCashbookHandlerTest extends Unit
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('save')
             ->once()
-            ->withArgs(function (Cashbook $cashbook) use ($type) {
+            ->withArgs(static function (Cashbook $cashbook) use ($type) {
                 return $cashbook->getId()->equals(Cashbook\CashbookId::fromString('10'))
                     && $cashbook->getType() === $type;
             });

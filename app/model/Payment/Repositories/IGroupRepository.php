@@ -18,12 +18,14 @@ interface IGroupRepository
 
     /**
      * @param int[] $ids
+     *
      * @return Group[]
      */
     public function findByIds(array $ids) : array;
 
     /**
      * @param int[] $unitIds
+     *
      * @return Group[]
      */
     public function findByUnits(array $unitIds, bool $openOnly) : array;

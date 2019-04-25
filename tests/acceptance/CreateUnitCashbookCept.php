@@ -36,4 +36,4 @@ $createCashbookButton = 'Přidat pokladní knihu';
 $I->waitForText($createCashbookButton);
 $I->click($createCashbookButton);
 
-fillModalAndSubmit($I, ((int) date('Y')) + 1);
+fillModalAndSubmit($I, (int) date('Y') + 1);

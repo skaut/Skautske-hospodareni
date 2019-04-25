@@ -14,7 +14,6 @@ final class PaymentVariableSymbolWasChanged
     /** @var VariableSymbol|NULL */
     private $variableSymbol;
 
-
     public function __construct(int $groupId, ?VariableSymbol $variableSymbol)
     {
         $this->groupId        = $groupId;

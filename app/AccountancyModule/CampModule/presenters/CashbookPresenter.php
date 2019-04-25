@@ -57,12 +57,12 @@ class CashbookPresenter extends BasePresenter
 
         $this->template->setParameters(
             [
-            'isCashbookEmpty' => $this->isCashbookEmpty(),
-            'cashbookId' => $this->getCashbookId()->toString(),
-            'isInMinus' => $finalBalance->isNegative(),
-            'isEditable' => $this->isEditable,
-            'missingCategories' => $this->missingCategories,
-            'finalRealBalance' => $finalRealBalance,
+                'isCashbookEmpty' => $this->isCashbookEmpty(),
+                'cashbookId' => $this->getCashbookId()->toString(),
+                'isInMinus' => $finalBalance->isNegative(),
+                'isEditable' => $this->isEditable,
+                'missingCategories' => $this->missingCategories,
+                'finalRealBalance' => $finalRealBalance,
             ]
         );
     }

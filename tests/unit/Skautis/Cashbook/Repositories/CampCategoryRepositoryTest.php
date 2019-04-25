@@ -10,6 +10,7 @@ use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
+use stdClass;
 use function array_map;
 use function array_slice;
 use function count;
@@ -55,7 +56,7 @@ final class CampCategoryRepositoryTest extends Unit
 
     public function test() : void
     {
-        $webserviceResult = array_map(function (array $category) : \stdClass {
+        $webserviceResult = array_map(static function (array $category) : stdClass {
             return (object) $category;
         }, self::CATEGORIES);
 
@@ -86,7 +87,7 @@ final class CampCategoryRepositoryTest extends Unit
      */
     public function testReturnEmptyResponse() : void
     {
-        $repository = $this->prepareRepository(new \stdClass());
+        $repository = $this->prepareRepository(new stdClass());
 
         $this->assertEmpty(
             $repository->findForCamp(self::CAMP_ID)
@@ -94,14 +95,14 @@ final class CampCategoryRepositoryTest extends Unit
     }
 
     /**
-     * @param \stdClass|\stdClass[] $webserviceResult
+     * @param stdClass|stdClass[] $webserviceResult
      */
     private function prepareRepository($webserviceResult) : CampCategoryRepository
     {
         $service = m::mock(WebServiceInterface::class);
 
         $service->expects('EventCampStatementAll')
-            ->withArgs(function (array $parameters) : bool {
+            ->withArgs(static function (array $parameters) : bool {
                 $expectedParameters = [
                     'ID_EventCamp' => self::CAMP_ID,
                     'IsEstimate' => false,

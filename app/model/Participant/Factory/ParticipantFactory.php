@@ -7,11 +7,12 @@ namespace Model\Skautis\Factory;
 use Cake\Chronos\Date;
 use Model\Participant\Participant;
 use Model\Participant\Payment;
+use stdClass;
 use function preg_match;
 
 final class ParticipantFactory
 {
-    public static function create(\stdClass $skautisParticipant, Payment $payment) : Participant
+    public static function create(stdClass $skautisParticipant, Payment $payment) : Participant
     {
         preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $skautisParticipant->Person, $matches);
 

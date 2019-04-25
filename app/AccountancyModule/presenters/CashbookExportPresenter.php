@@ -22,6 +22,7 @@ use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
+use RuntimeException;
 use function array_filter;
 use function array_map;
 use function array_values;
@@ -184,7 +185,7 @@ class CashbookExportPresenter extends BasePresenter
         ];
 
         if (! isset($requiredPermissions[$skautisType])) {
-            throw new \RuntimeException('Unknown cashbook type');
+            throw new RuntimeException('Unknown cashbook type');
         }
 
         return $this->authorizator->isAllowed($requiredPermissions[$skautisType], $this->getSkautisId());
@@ -228,6 +229,7 @@ class CashbookExportPresenter extends BasePresenter
 
     /**
      * @param int[] $ids
+     *
      * @return Chit[]
      */
     private function getChitsWithIds(array $ids) : array

@@ -17,12 +17,14 @@ abstract class BaseService
 
     /**
      * slouží pro komunikaci se skautISem
+     *
      * @var Skautis
      */
     protected $skautis;
 
     /**
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
+     *
      * @var mixed[]
      */
     private static $storage = [];
@@ -34,8 +36,10 @@ abstract class BaseService
 
     /**
      * ukládá $val do lokálního úložiště
+     *
      * @param mixed $id
      * @param mixed $val
+     *
      * @return mixed
      */
     protected function saveSes($id, $val)
@@ -45,7 +49,9 @@ abstract class BaseService
 
     /**
      * vrací objekt z lokálního úložiště
+     *
      * @param string|int $id
+     *
      * @return mixed | FALSE
      */
     protected function loadSes($id)
@@ -53,6 +59,7 @@ abstract class BaseService
         if (array_key_exists($id, self::$storage)) {
             return self::$storage[$id];
         }
+
         return false;
     }
 }

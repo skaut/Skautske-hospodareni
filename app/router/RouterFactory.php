@@ -50,8 +50,8 @@ class RouterFactory
         $router[] = new Route(
             'offline/<action>.html',
             [
-            'presenter' => 'Offline',
-            'action' => 'list',
+                'presenter' => 'Offline',
+                'action' => 'list',
             ]
         );
 
@@ -69,6 +69,7 @@ class RouterFactory
         $accountancy[] = new Route('<module>/<presenter>[/<action>]', ['action' => 'default']);
 
         $router[] = new SimpleRouter('Default:default');
+
         return $router;
     }
 
@@ -213,6 +214,7 @@ class RouterFactory
                 'action' => 'default',
             ]
         );
+
         return $router;
     }
 
@@ -237,6 +239,7 @@ class RouterFactory
                 'action' => 'default',
             ]
         );
+
         return $router;
     }
 }

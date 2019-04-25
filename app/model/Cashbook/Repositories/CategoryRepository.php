@@ -34,7 +34,6 @@ class CategoryRepository
         $this->queryBus         = $queryBus;
     }
 
-
     /**
      * @return ICategory[]
      */

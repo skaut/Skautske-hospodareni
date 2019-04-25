@@ -81,6 +81,7 @@ class CashbookPresenter extends BasePresenter
 
         if ($activeCashbook === null) {
             $this->setView('noCashbook');
+
             return;
         }
 
@@ -101,6 +102,7 @@ class CashbookPresenter extends BasePresenter
 
             if ($cashbook->getYear() === $year) {
                 $this->cashbookId = $cashbook->getCashbookId();
+
                 return;
             }
         }

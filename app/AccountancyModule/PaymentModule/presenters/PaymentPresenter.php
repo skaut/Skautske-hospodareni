@@ -13,6 +13,7 @@ use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
+use DateTimeImmutable;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccountService;
@@ -151,11 +152,11 @@ class PaymentPresenter extends BasePresenter
         $form   = $this['paymentForm'];
         $form->setDefaults(
             [
-            'amount' => $group->getDefaultAmount(),
-            'maturity' => $group->getDueDate(),
-            'ks' => $group->getConstantSymbol(),
-            'oid' => $group->getId(),
-            'vs' => $nextVS !== null ? (string) $nextVS : '',
+                'amount' => $group->getDefaultAmount(),
+                'maturity' => $group->getDueDate(),
+                'ks' => $group->getConstantSymbol(),
+                'oid' => $group->getId(),
+                'vs' => $nextVS !== null ? (string) $nextVS : '',
             ]
         );
 
@@ -173,7 +174,7 @@ class PaymentPresenter extends BasePresenter
             'nextVS' => $nextVS,
             'payments'  => $payments,
             'summarize' => $this->model->getGroupSummaries([$id])[$id],
-            'now'       => new \DateTimeImmutable(),
+            'now'       => new DateTimeImmutable(),
             'isGroupSendActive' => $group->getState() === 'open' && ! empty($paymentsForSendEmail),
         ]);
     }
@@ -202,15 +203,15 @@ class PaymentPresenter extends BasePresenter
 
         $form->setDefaults(
             [
-            'name' => $payment->getName(),
-            'email' => $payment->getEmail(),
-            'amount' => $payment->getAmount(),
-            'maturity' => $payment->getDueDate(),
-            'vs' => $payment->getVariableSymbol(),
-            'ks' => $payment->getConstantSymbol(),
-            'note' => $payment->getNote(),
-            'oid' => $payment->getGroupId(),
-            'pid' => $pid,
+                'name' => $payment->getName(),
+                'email' => $payment->getEmail(),
+                'amount' => $payment->getAmount(),
+                'maturity' => $payment->getDueDate(),
+                'vs' => $payment->getVariableSymbol(),
+                'ks' => $payment->getConstantSymbol(),
+                'note' => $payment->getNote(),
+                'oid' => $payment->getGroupId(),
+                'pid' => $pid,
             ]
         );
 

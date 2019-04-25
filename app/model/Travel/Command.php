@@ -26,98 +26,113 @@ use function min;
 class Command
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $unitId;
 
     /**
-     * @var Vehicle|NULL
      * @ORM\ManyToOne(targetEntity=Vehicle::class)
+     *
+     * @var Vehicle|NULL
      */
     private $vehicle;
 
     /**
-     * @var Passenger
      * @ORM\Embedded(class=Passenger::class, columnPrefix=false)
+     *
+     * @var Passenger
      */
     private $passenger;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=64)
+     *
+     * @var string
      */
     private $purpose;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=64, nullable=true)
+     *
+     * @var string
      */
     private $place;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="passengers", length=64)
+     *
+     * @var string
      */
     private $fellowPassengers;
 
     /**
-     * @var Money
      * @ORM\Column(type="money")
+     *
+     * @var Money
      */
     private $fuelPrice;
 
     /**
-     * @var Money
      * @ORM\Column(type="money")
+     *
+     * @var Money
      */
     private $amortization;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=64)
+     *
+     * @var string
      */
     private $note;
 
     /**
-     * @var DateTimeImmutable|NULL
      * @ORM\Column(type="datetime_immutable", nullable=true, name="closed")
+     *
+     * @var DateTimeImmutable|NULL
      */
     private $closedAt;
 
     /**
-     * @var ArrayCollection|Travel[]
      * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * @var ArrayCollection|Travel[]
      */
     private $travels;
 
     /**
-     * @var int
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $nextTravelId = 0;
 
     /**
-     * @var int|null
      * @ORM\Column(type="integer", nullable=true)
+     *
+     * @var int|null
      */
     private $ownerId = null;
 
     /**
-     * @var ArrayCollection|Type[]
      * @ORM\ManyToMany(targetEntity=Type::class)
      * @ORM\JoinTable(name="tc_command_types",
      *      joinColumns={@ORM\JoinColumn(name="commandId", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="typeId", referencedColumnName="type")}
      *      )
+     *
+     * @var ArrayCollection|Type[]
      */
     private $transportTypes;
 
@@ -216,6 +231,7 @@ class Command
         if (! $travel instanceof VehicleTravel) {
             $this->removeTravel($id);
             $this->addVehicleTravel($distance, $details);
+
             return;
         }
 
@@ -237,6 +253,7 @@ class Command
         if (! $travel instanceof TransportTravel) {
             $this->removeTravel($id);
             $this->addTransportTravel($price, $details);
+
             return;
         }
 
@@ -295,6 +312,7 @@ class Command
     public function getPricePerKm() : Money
     {
         $distance = $this->getDistance();
+
         return $distance !== 0.0
             ? $this->getVehiclePrice()->divide($this->getDistance())
             : MoneyFactory::zero();
@@ -390,7 +408,9 @@ class Command
 
     /**
      * Only for reading
+     *
      * @internal
+     *
      * @return Travel[]
      */
     public function getTravels() : array
@@ -428,6 +448,7 @@ class Command
 
     /**
      * Returns all transport types that have at least one travel
+     *
      * @return Type[]
      */
     public function getUsedTransportTypes() : array
@@ -435,6 +456,7 @@ class Command
         $types = $this->travels->map(function (Travel $travel) {
             return $travel->getDetails()->getTransportType();
         });
+
         return array_unique($types->toArray());
     }
 

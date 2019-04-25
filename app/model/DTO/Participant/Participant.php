@@ -170,6 +170,7 @@ class Participant
     {
         return $this->lastName . ' ' . $this->firstName . ($this->nickName !== null ? '(' . $this->nickName . ')' : '');
     }
+
     public function getDays() : int
     {
         return $this->days;

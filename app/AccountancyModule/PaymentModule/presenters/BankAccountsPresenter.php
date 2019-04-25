@@ -7,6 +7,7 @@ namespace App\AccountancyModule\PaymentModule;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;
+use DateTimeImmutable;
 use Model\Auth\Resources\Unit;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
@@ -164,8 +165,8 @@ class BankAccountsPresenter extends BasePresenter
             $payments = $this->queryBus->handle(
                 new PairedPaymentsQuery(
                     new BankAccountId($id),
-                    (new \DateTimeImmutable())->modify(sprintf('- %d days', self::DAYS_BACK))->setTime(0, 0, 0),
-                    new \DateTimeImmutable()
+                    (new DateTimeImmutable())->modify(sprintf('- %d days', self::DAYS_BACK))->setTime(0, 0, 0),
+                    new DateTimeImmutable()
                 )
             );
 

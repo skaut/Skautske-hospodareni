@@ -25,7 +25,6 @@ final class EventStatesHandler
         $this->cache           = $cache;
     }
 
-
     /**
      * @return string[]
      */

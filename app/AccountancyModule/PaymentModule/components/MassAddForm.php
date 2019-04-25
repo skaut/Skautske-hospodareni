@@ -27,7 +27,6 @@ class MassAddForm extends BaseControl
         $this->payments = $payments;
     }
 
-
     protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
@@ -58,9 +57,9 @@ class MassAddForm extends BaseControl
 
         $form->setDefaults(
             [
-            'amount' => $group->getDefaultAmount(),
-            'dueDate' => $group->getDueDate(),
-            'constantSymbol' => $group->getConstantSymbol(),
+                'amount' => $group->getDefaultAmount(),
+                'dueDate' => $group->getDueDate(),
+                'constantSymbol' => $group->getConstantSymbol(),
             ]
         );
 
@@ -142,6 +141,7 @@ class MassAddForm extends BaseControl
 
         if (empty($persons)) {
             $form->addError('Nebyla vybrána žádná osoba k přidání!');
+
             return;
         }
 
@@ -154,6 +154,7 @@ class MassAddForm extends BaseControl
             );
             if (! empty($withoutDueDate)) {
                 $form->addError('Musíte vyplnit datum splatnosti');
+
                 return;
             }
         }

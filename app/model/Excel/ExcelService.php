@@ -27,8 +27,14 @@ use Model\Excel\Range;
 use Model\Participant\PragueParticipants;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
+use PHPExcel;
+use PHPExcel_Exception;
+use PHPExcel_Style_Border;
+use PHPExcel_Worksheet;
+use PHPExcel_Writer_Excel2007;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Skautis\Wsdl\PermissionException;
+use stdClass;
 use function array_key_first;
 use function assert;
 use function count;
@@ -51,9 +57,9 @@ class ExcelService
         $this->queryBus = $queryBus;
     }
 
-    protected function getNewFile() : \PHPExcel
+    protected function getNewFile() : PHPExcel
     {
-        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel = new PHPExcel();
         $objPHPExcel->getProperties()
             ->setCreator('h.skauting.cz')
             ->setLastModifiedBy('h.skauting.cz');
@@ -71,7 +77,7 @@ class ExcelService
         return $sheet;
     }
 
-    public function getParticipants(EventEntity $service, \stdClass $event, string $type) : void
+    public function getParticipants(EventEntity $service, stdClass $event, string $type) : void
     {
         $objPHPExcel = $this->getNewFile();
         $data        = $service->getParticipants()->getAll($event->ID);
@@ -142,7 +148,8 @@ class ExcelService
 
     /**
      * @param int[] $campsIds
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      * @throws PermissionException
      */
     public function getCampsSummary(array $campsIds, EventEntity $service, UnitService $unitService) : void
@@ -174,7 +181,8 @@ class ExcelService
 
     /**
      * @param Chit[] $chits
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
     public function getChitsExport(CashbookId $cashbookId, array $chits) : void
     {
@@ -186,9 +194,10 @@ class ExcelService
 
     /**
      * @param Participant[] $data
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
-    protected function setSheetParticipantCamp(\PHPExcel_Worksheet $sheet, array $data) : void
+    protected function setSheetParticipantCamp(PHPExcel_Worksheet $sheet, array $data) : void
     {
         $sheet->setCellValue('A1', 'P.č.')
             ->setCellValue('B1', 'Jméno')
@@ -235,9 +244,10 @@ class ExcelService
 
     /**
      * @param Participant[] $data
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
-    protected function setSheetParticipantGeneral(\PHPExcel_Worksheet $sheet, array $data, \stdClass $event) : void
+    protected function setSheetParticipantGeneral(PHPExcel_Worksheet $sheet, array $data, stdClass $event) : void
     {
         $startDate = new Date($event->StartDate);
         $sheet->setCellValue('A1', 'P.č.')
@@ -263,7 +273,7 @@ class ExcelService
                 ->setCellValue('G' . $rowCnt, $row->getPostcode())
                 ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? $row->getBirthday()->format('d.m.Y') : '')
                 ->setCellValue('I' . $rowCnt, $row->getDays())
-                ->setCellValue('J' . $rowCnt, ($row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE) ? $row->getDays() : 0)
+                ->setCellValue('J' . $rowCnt, $row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE ? $row->getDays() : 0)
                 ->setCellValue('K' . $rowCnt, $row->getPayment());
             $rowCnt++;
         }
@@ -276,7 +286,7 @@ class ExcelService
         $sheet->setTitle('Seznam účastníků');
     }
 
-    private function setSheetCashbook(\PHPExcel_Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
+    private function setSheetCashbook(PHPExcel_Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
     {
         $sheet->setCellValue('A1', 'Ze dne')
             ->setCellValue('B1', 'Číslo dokladu')
@@ -329,9 +339,10 @@ class ExcelService
 
     /**
      * @param ArrayHash[] $data
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
-    protected function setSheetEvents(\PHPExcel_Worksheet $sheet, array $data, bool $allowPragueColumns = false) : void
+    protected function setSheetEvents(PHPExcel_Worksheet $sheet, array $data, bool $allowPragueColumns = false) : void
     {
         $firstElement = $data[array_key_first($data)];
 
@@ -421,9 +432,10 @@ class ExcelService
 
     /**
      * @param ArrayHash[] $data
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
-    protected function setSheetCamps(\PHPExcel_Worksheet $sheet, array $data) : void
+    protected function setSheetCamps(PHPExcel_Worksheet $sheet, array $data) : void
     {
         $firstElement = reset($data);
 
@@ -479,9 +491,10 @@ class ExcelService
 
     /**
      * @param ArrayHash[] $data
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
-    private function setSheetChits(\PHPExcel_Worksheet $sheet, array $data) : void
+    private function setSheetChits(PHPExcel_Worksheet $sheet, array $data) : void
     {
         $sheet->setCellValue('A1', 'Název akce')
             ->setCellValue('B1', 'Ze dne')
@@ -533,9 +546,10 @@ class ExcelService
 
     /**
      * @param Chit[] $chits
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
-    private function setSheetChitsOnly(\PHPExcel_Worksheet $sheet, array $chits, CashbookId $cashbookId) : void
+    private function setSheetChitsOnly(PHPExcel_Worksheet $sheet, array $chits, CashbookId $cashbookId) : void
     {
         $sheet->setCellValue('B1', 'Ze dne')
             ->setCellValue('C1', 'Účel výplaty')
@@ -568,7 +582,7 @@ class ExcelService
             $rowCnt++;
         }
         //add border
-        $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+        $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 
         if ($sumIn > 0) {
             $rowCnt++;
@@ -591,7 +605,7 @@ class ExcelService
         $sheet->setTitle('Doklady');
     }
 
-    protected function send(\PHPExcel $obj, string $filename) : void
+    protected function send(PHPExcel $obj, string $filename) : void
     {
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -606,7 +620,7 @@ class ExcelService
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
 
-        $objWriter = new \PHPExcel_Writer_Excel2007($obj);
+        $objWriter = new PHPExcel_Writer_Excel2007($obj);
         $objWriter->setPreCalculateFormulas(true);
         $objWriter->save('php://output');
         //exit;

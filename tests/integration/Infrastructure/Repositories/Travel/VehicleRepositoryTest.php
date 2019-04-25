@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Travel;
 
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
+use IntegrationTest;
 use Mockery as m;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
 use Model\Unit\Unit;
 
-class VehicleRepositoryTest extends \IntegrationTest
+class VehicleRepositoryTest extends IntegrationTest
 {
     private const TABLE = 'tc_vehicle';
 
@@ -109,7 +111,7 @@ class VehicleRepositoryTest extends \IntegrationTest
         $this->assertSame($row['note'], $vehicle->getNote());
         $this->assertFalse($vehicle->isArchived());
         $this->assertEquals(
-            new \DateTimeImmutable($row['metadata_created_at']),
+            new DateTimeImmutable($row['metadata_created_at']),
             $vehicle->getMetadata()->getCreatedAt()
         );
         $this->assertSame(
@@ -142,7 +144,7 @@ class VehicleRepositoryTest extends \IntegrationTest
             $subunit,
             $row['registration'],
             $row['consumption'],
-            new Vehicle\Metadata(new \DateTimeImmutable($row['metadata_created_at']), $row['metadata_author_name'])
+            new Vehicle\Metadata(new DateTimeImmutable($row['metadata_created_at']), $row['metadata_author_name'])
         );
 
         $this->repository->save($vehicle);

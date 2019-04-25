@@ -6,9 +6,11 @@ namespace Model\Payment;
 
 use Assert\Assertion;
 use Cake\Chronos\Date;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
+use InvalidArgumentException;
 use Model\Payment\Group\Email;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
@@ -22,15 +24,15 @@ use Model\Payment\Services\IBankAccountAccessChecker;
 class Group
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var ArrayCollection|Unit[]
      * @ORM\OneToMany(
      *     targetEntity=Unit::class,
      *     mappedBy="group",
@@ -38,62 +40,73 @@ class Group
      *     cascade={"persist", "remove"},
      *     indexBy="index"
      * )
+     *
+     * @var ArrayCollection|Unit[]
      */
     private $units;
 
     /**
-     * @var SkautisEntity|NULL
      * @ORM\Embedded(class=SkautisEntity::class, columnPrefix=false)
+     *
+     * @var SkautisEntity|NULL
      * @Nullable()
      */
     private $object;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="label", length=64)
+     *
+     * @var string
      */
     private $name;
 
     /**
-     * @var PaymentDefaults
      * @ORM\Embedded(class=PaymentDefaults::class, columnPrefix=false)
+     *
+     * @var PaymentDefaults
      */
     private $paymentDefaults;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=20)
+     *
+     * @var string
      */
     private $state = self::STATE_OPEN;
 
     /**
-     * @var \DateTimeImmutable|NULL
      * @ORM\Column(type="datetime_immutable", nullable=true)
+     *
+     * @var DateTimeImmutable|NULL
      */
     private $createdAt;
 
     /**
-     * @var Group\BankAccount|NULL
      * @ORM\Embedded(class=Group\BankAccount::class, columnPrefix=false)
+     *
+     * @var Group\BankAccount|NULL
      * @Nullable()
      */
     private $bankAccount;
 
     /**
-     * @var ArrayCollection|Email[]
      * @ORM\OneToMany(targetEntity=Email::class, mappedBy="group", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * @var ArrayCollection|Email[]
      */
     private $emails;
 
     /**
-     * @var int|NULL
      * @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true)
+     *
+     * @var int|NULL
      */
     private $smtpId;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="state_info", length=250)
+     *
+     * @var string
      */
     private $note = '';
 
@@ -109,7 +122,7 @@ class Group
         ?SkautisEntity $object,
         string $name,
         PaymentDefaults $paymentDefaults,
-        \DateTimeImmutable $createdAt,
+        DateTimeImmutable $createdAt,
         array $emails,
         ?int $smtpId,
         ?BankAccount $bankAccount,
@@ -130,7 +143,7 @@ class Group
         }
 
         if (! isset($emails[EmailType::PAYMENT_INFO])) {
-            throw new \InvalidArgumentException("Required email template '" . EmailType::PAYMENT_INFO . "' is missing");
+            throw new InvalidArgumentException("Required email template '" . EmailType::PAYMENT_INFO . "' is missing");
         }
 
         foreach ($emails as $typeKey => $template) {
@@ -256,7 +269,7 @@ class Group
         return $this->state;
     }
 
-    public function getCreatedAt() : ?\DateTimeImmutable
+    public function getCreatedAt() : ?DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -275,7 +288,7 @@ class Group
         return $email !== null && $email->isEnabled();
     }
 
-    public function updateLastPairing(\DateTimeImmutable $at) : void
+    public function updateLastPairing(DateTimeImmutable $at) : void
     {
         if ($this->bankAccount === null) {
             return;
@@ -293,7 +306,7 @@ class Group
         $this->bankAccount = $this->bankAccount->invalidateLastPairing();
     }
 
-    public function getLastPairing() : ?\DateTimeImmutable
+    public function getLastPairing() : ?DateTimeImmutable
     {
         return $this->bankAccount !== null ? $this->bankAccount->getLastPairing() : null;
     }
@@ -317,6 +330,7 @@ class Group
     {
         if ($bankAccount === null) {
             $this->bankAccount = null;
+
             return;
         }
 
@@ -335,6 +349,7 @@ class Group
 
         if ($email !== null) {
             $email->updateTemplate($template);
+
             return;
         }
 

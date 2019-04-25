@@ -87,7 +87,7 @@ class MoveChitsDialog extends BaseControl
     {
         $this->template->setParameters(
             [
-            'renderModal' => $this->opened,
+                'renderModal' => $this->opened,
             ]
         );
 
@@ -122,11 +122,13 @@ class MoveChitsDialog extends BaseControl
 
         if (empty($chitIds)) {
             $form->addError('Nebyly vybrány žádné paragony!');
+
             return;
         }
 
         if ($values->newCashbookId === null) {
             $form->addError('Nebyla vybrána žádná cílová evidence plateb!');
+
             return;
         }
 
@@ -159,6 +161,7 @@ class MoveChitsDialog extends BaseControl
      *
      * @param  string   $eventType "general" or "camp"
      * @param  string[] $states
+     *
      * @return mixed[]
      */
     private function getListOfEvents(string $eventType, array $states) : array

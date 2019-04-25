@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Pairing;
 
+use DateTimeImmutable;
+use Helpers;
+use IntegrationTest;
 use Model\Payment\BankAccount;
 use Model\Payment\BankAccountService;
 use Model\Payment\Group;
@@ -12,7 +15,7 @@ use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\UnitResolverStub;
 use Stubs\BankAccountAccessCheckerStub;
 
-class BankAccountServiceTest extends \IntegrationTest
+class BankAccountServiceTest extends IntegrationTest
 {
     /** @var BankAccountService */
     private $bankAccountService;
@@ -25,7 +28,6 @@ class BankAccountServiceTest extends \IntegrationTest
 
     /** @var UnitResolverStub */
     private $unitResolver;
-
 
     protected function _before() : void
     {
@@ -80,9 +82,9 @@ class BankAccountServiceTest extends \IntegrationTest
         return new BankAccount(
             5, // official id is resolved to 10
             'Název',
-            \Helpers::createAccountNumber(),
+            Helpers::createAccountNumber(),
             null,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             $this->unitResolver
         );
     }
@@ -90,14 +92,14 @@ class BankAccountServiceTest extends \IntegrationTest
     private function addGroup(int $unitId, BankAccount $account) : void
     {
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
-        $emails          = \Helpers::createEmails();
+        $emails          = Helpers::createEmails();
 
         $group = new Group(
             [$unitId],
             null,
             'Nazev',
             $paymentDefaults,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             $emails,
             null,
             $account,

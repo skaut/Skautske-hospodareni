@@ -124,6 +124,7 @@ class FunctionsControl extends BaseControl
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
             $this->formSubmitted($form, $values);
         };
+
         return $form;
     }
 
@@ -156,6 +157,7 @@ class FunctionsControl extends BaseControl
 
             $this->handleCloseEditation();
             $this->reload('Funkce uloženy.', 'success');
+
             return;
         } catch (PermissionException $exc) {
             $form->addError($exc->getMessage());
@@ -192,6 +194,7 @@ class FunctionsControl extends BaseControl
 
     /**
      * @param int[] $ages
+     *
      * @return mixed[] - [age => [person id => name], ...]
      */
     private function getPersonsOlderThan(array $ages) : array

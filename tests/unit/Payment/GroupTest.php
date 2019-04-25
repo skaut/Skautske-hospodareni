@@ -7,6 +7,8 @@ namespace Model\Payment;
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
+use Helpers;
+use InvalidArgumentException;
 use Mockery as m;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Services\IBankAccountAccessChecker;
@@ -20,7 +22,7 @@ class GroupTest extends Unit
         $variableSymbol  = new VariableSymbol('666');
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, $variableSymbol);
         $bankAccount     = m::mock(BankAccount::class, ['getId' => 23]);
-        $emails          = \Helpers::createEmails();
+        $emails          = Helpers::createEmails();
 
         $group = new Group(
             [20, 22],
@@ -61,7 +63,7 @@ class GroupTest extends Unit
             'Skupina 01',
             new PaymentDefaults(200.2, new Date('2018-01-19'), 203, new VariableSymbol('666')),
             new DateTimeImmutable(),
-            \Helpers::createEmails(),
+            Helpers::createEmails(),
             null,
             $this->mockBankAccount($bankAccountId),
             $this->mockAccessChecker([20, 22], $bankAccountId, false)
@@ -71,9 +73,9 @@ class GroupTest extends Unit
     public function testCreatingGroupWithNotAllEmailsThrowsException() : void
     {
         $paymentDefaults = new PaymentDefaults(null, null, null, null);
-        $accessChecker   = \Mockery::mock(IBankAccountAccessChecker::class);
+        $accessChecker   = m::mock(IBankAccountAccessChecker::class);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Group([1], null, 'Test', $paymentDefaults, new DateTimeImmutable(), [], null, null, $accessChecker);
     }
@@ -145,7 +147,7 @@ class GroupTest extends Unit
     {
         $group = $this->createGroup();
 
-        $group->changeUnits([20], \Mockery::mock(IBankAccountAccessChecker::class));
+        $group->changeUnits([20], m::mock(IBankAccountAccessChecker::class));
 
         $this->assertSame([20], $group->getUnitIds());
     }
@@ -178,7 +180,7 @@ class GroupTest extends Unit
 
     private function mockBankAccount(int $id) : BankAccount
     {
-        return \Mockery::mock(BankAccount::class, ['getId' => $id, 'getUnitId' => 50, 'isAllowedForSubunits' => true]);
+        return m::mock(BankAccount::class, ['getId' => $id, 'getUnitId' => 50, 'isAllowedForSubunits' => true]);
     }
 
     /**
@@ -186,7 +188,7 @@ class GroupTest extends Unit
      */
     private function mockAccessChecker(array $unitIds, int $bankAccountId, bool $hasAccess) : IBankAccountAccessChecker
     {
-        $accessChecker = \Mockery::mock(IBankAccountAccessChecker::class);
+        $accessChecker = m::mock(IBankAccountAccessChecker::class);
         $accessChecker
             ->shouldReceive('allUnitsHaveAccessToBankAccount')
             ->withArgs([$unitIds, $bankAccountId])
@@ -200,7 +202,7 @@ class GroupTest extends Unit
         $dueDate         = $dueDate ?? new Date('2018-01-19'); // defaults to friday
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, new VariableSymbol('666'));
         $createdAt       = $createdAt ?? new DateTimeImmutable();
-        $emails          = \Helpers::createEmails();
+        $emails          = Helpers::createEmails();
 
         return new Group(
             [20],
@@ -211,7 +213,7 @@ class GroupTest extends Unit
             $emails,
             null,
             $bankAccount,
-            \Mockery::mock(IBankAccountAccessChecker::class, ['allUnitsHaveAccessToBankAccount' => true])
+            m::mock(IBankAccountAccessChecker::class, ['allUnitsHaveAccessToBankAccount' => true])
         );
     }
 

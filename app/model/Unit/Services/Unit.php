@@ -82,24 +82,20 @@ class Unit
         $this->children           = $children;
     }
 
-
     public function isSubunitOf(Unit $unit) : bool
     {
         return Strings::startsWith($this->registrationNumber, $unit->registrationNumber);
     }
-
 
     public function getId() : int
     {
         return $this->id;
     }
 
-
     public function getSortName() : string
     {
         return $this->sortName;
     }
-
 
     public function getDisplayName() : string
     {
@@ -111,6 +107,7 @@ class Unit
         if ($this->isOfficial()) {
             return sprintf('Junák - český skaut, %s, z. s.', $this->getDisplayName());
         }
+
         return '';
     }
 

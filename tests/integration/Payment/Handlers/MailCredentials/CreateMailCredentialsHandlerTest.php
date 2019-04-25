@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Handlers\MailCredentials;
 
+use CommandHandlerTest;
 use Model\Common\User;
 use Model\Payment\Commands\CreateMailCredentials;
 use Model\Payment\EmailNotSet;
@@ -11,7 +12,7 @@ use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentials\MailProtocol;
 use Model\Payment\UserRepositoryStub;
 
-class CreateMailCredentialsHandlerTest extends \CommandHandlerTest
+class CreateMailCredentialsHandlerTest extends CommandHandlerTest
 {
     /** @var UserRepositoryStub */
     private $users;

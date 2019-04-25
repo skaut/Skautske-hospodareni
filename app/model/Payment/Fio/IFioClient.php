@@ -15,6 +15,7 @@ interface IFioClient
 {
     /**
      * @return Transaction[]
+     *
      * @throws TokenNotSet
      * @throws BankTimeout
      * @throws BankTimeLimit

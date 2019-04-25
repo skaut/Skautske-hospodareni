@@ -18,53 +18,61 @@ class Category implements ICategory
     public const EVENT_PARTICIPANTS_INCOME_CATEGORY_ID = 11;
 
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="label", length=64)
+     *
+     * @var string
      */
     private $name;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="short", length=64)
+     *
+     * @var string
      */
     private $shortcut;
 
     /**
-     * @var Operation
      * @ORM\Column(type="string_enum", name="type")
+     *
+     * @var Operation
      * @EnumAnnotation(class=Operation::class)
      */
     private $operationType;
 
     /**
-     * @var Category\ObjectType[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Category\ObjectType::class, mappedBy="category")
+     *
+     * @var Category\ObjectType[]|ArrayCollection
      */
     private $types;
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean")
+     *
+     * @var bool
      */
     private $virtual;
 
     /**
-     * @var int
      * @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $priority;
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean")
+     *
+     * @var bool
      */
     private $deleted = false;
 

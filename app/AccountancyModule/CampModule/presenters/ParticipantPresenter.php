@@ -42,11 +42,11 @@ class ParticipantPresenter extends BasePresenter
 
         $this->template->setParameters(
             [
-            'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
-            'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
-            'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
-            'isAllowRepayment' => $this->isAllowRepayment,
-            'isAllowIsAccount' => $this->isAllowIsAccount,
+                'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
+                'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
+                'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
+                'isAllowRepayment' => $this->isAllowRepayment,
+                'isAllowIsAccount' => $this->isAllowIsAccount,
             ]
         );
     }
@@ -66,9 +66,9 @@ class ParticipantPresenter extends BasePresenter
 
         $this->template->setParameters(
             [
-            'isAllowParticipantDetail' => $authorizator->isAllowed(Camp::ACCESS_PARTICIPANT_DETAIL, $aid),
-            'isAllowParticipantUpdateLocal' => $this->isAllowParticipantDelete,
-            'missingAvailableAutoComputed' => ! $isAutocomputed && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
+                'isAllowParticipantDetail' => $authorizator->isAllowed(Camp::ACCESS_PARTICIPANT_DETAIL, $aid),
+                'isAllowParticipantUpdateLocal' => $this->isAllowParticipantDelete,
+                'missingAvailableAutoComputed' => ! $isAutocomputed && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
             ]
         );
 
@@ -81,6 +81,7 @@ class ParticipantPresenter extends BasePresenter
 
     /**
      * @param int|float|string $value
+     *
      * @throws AbortException
      * @throws BadRequestException
      */

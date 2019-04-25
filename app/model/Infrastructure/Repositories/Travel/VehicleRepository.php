@@ -36,6 +36,7 @@ final class VehicleRepository implements IVehicleRepository
 
     /**
      * @param int[] $ids
+     *
      * @return Vehicle[]
      */
     public function findByIds(array $ids) : array

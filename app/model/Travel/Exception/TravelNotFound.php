@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Travel;
 
-class TravelNotFound extends \Exception
+use Exception;
+
+class TravelNotFound extends Exception
 {
 }

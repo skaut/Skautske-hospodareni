@@ -55,6 +55,7 @@ class BudgetService
         foreach ($this->repository->findCategories($unitId, Operation::get($type)) as $category) {
             $res[$category->getId()] = $category->getLabel();
         }
+
         return $res;
     }
 }

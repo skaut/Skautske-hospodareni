@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-class MissingVariableSymbol extends \Exception
+use Exception;
+
+class MissingVariableSymbol extends Exception
 {
 }
