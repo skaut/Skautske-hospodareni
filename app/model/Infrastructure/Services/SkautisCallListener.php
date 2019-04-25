@@ -50,6 +50,7 @@ final class SkautisCallListener
         return [
             'arguments' => $query->args,
             'time' => $query->time,
+            'result' => $query->result,
         ];
     }
 }
