@@ -25,7 +25,8 @@ class UserContextProcessor
         $identity = $this->user->getIdentity();
 
         if ($identity !== null) {
-            $record['context']['user'] = ['id' => $identity->getId()];
+            $record['context']['user']  = ['id' => $identity->getId()];
+            $record['context']['roles'] = $identity->getRoles();
         }
 
         return $record;
