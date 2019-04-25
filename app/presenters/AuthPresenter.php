@@ -59,11 +59,13 @@ class AuthPresenter extends BasePresenter
             if (! $this->userService->isLoggedIn()) {
                 throw new AuthenticationException('Nemáte platné přihlášení do skautisu');
             }
-            $me = $this->userService->getPersonalDetail();
 
             $this->getUser()->setExpiration('+ 29 minutes'); // nastavíme expiraci
             $this->getUser()->setAuthenticator(new SkautisAuthenticator());
-            $this->getUser()->login($me);
+            $this->getUser()->login([
+                'user' => $this->userService->getUserDetail(),
+                'roles' => $this->userService->getAllSkautisRoles(),
+            ]);
 
             $this->updateUserAccess();
 

@@ -11,8 +11,7 @@ final class SkautisAuthenticator implements Nette\Security\IAuthenticator
 {
 
     public function authenticate(array $credentials) {
-        $data = $credentials[0];
-        return new Nette\Security\Identity($data->ID_User);
+        return new Nette\Security\Identity($credentials[0]['user']->ID, $credentials[0]['roles']);
     }
 
 }
