@@ -9,6 +9,7 @@ use App\AccountancyModule\Components\FormControls\DateControl;
 use App\Forms\BaseForm;
 use Assert\Assertion;
 use Cake\Chronos\Date;
+use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Payment\GroupEmail;
@@ -24,9 +25,9 @@ use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\FileSystem;
 use function array_filter;
 use function assert;
-use function file_get_contents;
 
 final class GroupForm extends BaseControl
 {
@@ -119,6 +120,7 @@ final class GroupForm extends BaseControl
             ->setNullable()
             ->addRule(function (DateControl $control) : bool {
                 $value = $control->getValue();
+
                 return $value === null || $value->isWeekday();
             });
 
@@ -130,7 +132,7 @@ final class GroupForm extends BaseControl
             ->addRule(Form::INTEGER, 'Konstantní symbol musí být číslo');
 
         $nextVs = $this->queryBus->handle(
-            new NextVariableSymbolSequenceQuery($this->unitId->toInt(), new \DateTimeImmutable())
+            new NextVariableSymbolSequenceQuery($this->unitId->toInt(), new DateTimeImmutable())
         );
 
         $form->addVariableSymbol('nextVs', 'Další VS:')
@@ -182,7 +184,6 @@ final class GroupForm extends BaseControl
             EmailType::PAYMENT_COMPLETED => $this->buildEmailTemplate($v, EmailType::PAYMENT_COMPLETED),
         ];
 
-        /** @var EmailTemplate[] $emails */
         $emails = array_filter($emails);
 
         if ($this->groupId !== null) {//EDIT
@@ -205,10 +206,9 @@ final class GroupForm extends BaseControl
         $this->getPresenter()->redirect('Payment:detail', ['id' => $this->groupId]);
     }
 
-
     private function getDefaultEmailBody(string $name) : string
     {
-        return file_get_contents(__DIR__ . '/../templates/defaultEmails/' . $name . '.html');
+        return FileSystem::read(__DIR__ . '/../templates/defaultEmails/' . $name . '.html');
     }
 
     /**
@@ -292,14 +292,13 @@ final class GroupForm extends BaseControl
      */
     private function getEmailDefaults(int $groupId, EmailType $type) : array
     {
-        /**
-         * @var GroupEmail|NULL $email
-         */
         $email = $this->queryBus->handle(new GroupEmailQuery($groupId, $type));
 
         if ($email === null) {
             return [];
         }
+
+        assert($email instanceof GroupEmail);
 
         return [
             'enabled' => $email->isEnabled(),

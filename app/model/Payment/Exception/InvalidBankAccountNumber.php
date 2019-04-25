@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-class InvalidBankAccountNumber extends \Exception
+use Exception;
+
+class InvalidBankAccountNumber extends Exception
 {
 }

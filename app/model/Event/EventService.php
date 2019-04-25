@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
+use InvalidArgumentException;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -16,6 +17,7 @@ use Skautis\Exception;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use function array_merge;
+use function assert;
 use function in_array;
 use function is_array;
 
@@ -36,12 +38,14 @@ class EventService extends MutableBaseService
 
     /**
      * vrací všechny akce podle parametrů
-     * @param int|null|string $year
+     *
+     * @param int|string|null $year
+     *
      * @return mixed[]
      */
     public function getAll($year = null, ?string $state = null) : array
     {
-        $events = $this->skautis->event->{'Event' . $this->typeName . 'All'}(['IsRelation' => true, 'ID_Event' . $this->typeName . 'State' => ($state === 'all') ? null : $state, 'Year' => ($year === 'all') ? null : $year]);
+        $events = $this->skautis->event->{'Event' . $this->typeName . 'All'}(['IsRelation' => true, 'ID_Event' . $this->typeName . 'State' => $state === 'all' ? null : $state, 'Year' => $year === 'all' ? null : $year]);
         $ret    = [];
 
         if (is_array($events)) {
@@ -56,9 +60,10 @@ class EventService extends MutableBaseService
     /**
      * vrací detail
      * spojuje data ze skautisu s daty z db
+     *
      * @throws PermissionException
      */
-    public function get(int $ID) : \stdClass
+    public function get(int $ID) : ArrayHash
     {
         $cacheId = __FUNCTION__ . $ID;
 
@@ -73,7 +78,7 @@ class EventService extends MutableBaseService
             } elseif ($this->type === ObjectType::UNIT) {
                 $skautisData = (array) $this->units->getDetail($ID);
             } else {
-                throw new \InvalidArgumentException('Neplatný typ: ' . $this->typeName);
+                throw new InvalidArgumentException('Neplatný typ: ' . $this->typeName);
             }
 
             $data = ArrayHash::from(array_merge($skautisData, $this->getCashbookData($ID)));
@@ -88,11 +93,14 @@ class EventService extends MutableBaseService
      */
     private function getCashbookData(int $eventId) : array
     {
-        /** @var CashbookId $cashbookId */
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($eventId)));
 
-        /** @var Cashbook $cashbook */
+        assert($cashbookId instanceof CashbookId);
+
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
         return [
             'prefix' => $cashbook->getChitNumberPrefix(),
         ];

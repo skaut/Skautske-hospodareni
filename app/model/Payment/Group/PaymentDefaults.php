@@ -15,26 +15,30 @@ use Model\Payment\VariableSymbol;
 final class PaymentDefaults
 {
     /**
-     * @var float|NULL
      * @ORM\Column(type="float", nullable=true)
+     *
+     * @var float|NULL
      */
     private $amount;
 
     /**
-     * @var Date|NULL
      * @ORM\Column(type="chronos_date", nullable=true, name="maturity")
+     *
+     * @var Date|NULL
      */
     private $dueDate;
 
     /**
-     * @var int|NULL
      * @ORM\Column(type="integer", nullable=true, name="ks", options={"unsigned"=true})
+     *
+     * @var int|NULL
      */
     private $constantSymbol;
 
     /**
-     * @var VariableSymbol|NULL
      * @ORM\Column(type="variable_symbol", nullable=true, name="nextVs", options={"unsigned"=true})
+     *
+     * @var VariableSymbol|NULL
      */
     private $nextVariableSymbol;
 

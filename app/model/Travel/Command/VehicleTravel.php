@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Travel\Command;
 
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 use Model\Travel\Command;
 use function sprintf;
 
@@ -14,8 +15,9 @@ use function sprintf;
 class VehicleTravel extends Travel
 {
     /**
-     * @var float
      * @ORM\Column(type="float", options={"unsigned"=true})
+     *
+     * @var float
      */
     private $distance;
 
@@ -39,7 +41,7 @@ class VehicleTravel extends Travel
     private function setDistance(float $distance) : void
     {
         if ($distance <= 0) {
-            throw new \InvalidArgumentException(sprintf('Distance must be positive number, %f given.', $distance));
+            throw new InvalidArgumentException(sprintf('Distance must be positive number, %f given.', $distance));
         }
 
         $this->distance = $distance;

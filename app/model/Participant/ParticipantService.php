@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model;
 
 use Cake\Chronos\Date;
+use InvalidArgumentException;
 use Model\DTO\Participant\Participant as ParticipantDTO;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
 use Model\Event\SkautisEventId;
@@ -20,12 +21,12 @@ use Model\Utils\MoneyFactory;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
-use function array_column;
-use function array_combine;
+use stdClass;
 use function array_diff_key;
 use function array_key_exists;
 use function array_map;
 use function array_reduce;
+use function assert;
 use function is_array;
 use function preg_match;
 use function sprintf;
@@ -55,6 +56,7 @@ class ParticipantService extends MutableBaseService
     public function get(int $participantId, int $actionId) : ParticipantDTO
     {
         $data = $this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]);
+
         return ParticipantDTOFactory::create(ParticipantFactory::create($data, $this->getPayment($participantId, $actionId)));
     }
 
@@ -68,14 +70,16 @@ class ParticipantService extends MutableBaseService
     {
         $eventId         = new SkautisEventId($ID_Event);
         $participantsSis = (array) $this->skautis->event->{'Participant' . $this->typeName . 'All'}(['ID_Event' . $this->typeName => $eventId->toInt()]);
-        if (! is_array($participantsSis)) {//pokud je prázdná třída stdClass
-            return [];
+
+        if (! is_array($participantsSis)) {
+            return []; // API returns empty object when there are no results
         }
 
         $participantPayments = $this->repository->findByEvent($eventId);
         $participants        = [];
-        /** @var \stdClass $p */
         foreach ($participantsSis as $p) {
+            assert($p instanceof stdClass);
+
             if (array_key_exists($p->ID, $participantPayments)) {
                 $payment =  $participantPayments[$p->ID];
             } elseif (isset($p->{self::PAYMENT})) {
@@ -116,12 +120,10 @@ class ParticipantService extends MutableBaseService
     public function add(int $ID, int $participantId) : bool
     {
         try {
-            return (bool) $this->skautis->event->{'Participant' . $this->typeName . 'Insert'}(
-                [
+            return (bool) $this->skautis->event->{'Participant' . $this->typeName . 'Insert'}([
                 'ID_Event' . $this->typeName => $ID,
                 'ID_Person' => $participantId,
-                ]
-            );
+            ]);
         } catch (WsdlException $ex) {
             if (! preg_match('/Chyba validace \(Participant_PersonIsAllreadyParticipant(General)?\)/', $ex->getMessage())) {
                 throw $ex;
@@ -138,8 +140,7 @@ class ParticipantService extends MutableBaseService
      */
     public function addNew(int $ID, array $person) : void
     {
-        $newParticipantArr = $this->skautis->event->{'Participant' . $this->typeName . 'Insert'}(
-            [
+        $newParticipantArr = $this->skautis->event->{'Participant' . $this->typeName . 'Insert'}([
             'ID_Event' . $this->typeName => $ID,
             'Person' => [
                 'FirstName' => $person['firstName'],
@@ -147,8 +148,7 @@ class ParticipantService extends MutableBaseService
                 'NickName' => $person['nick'],
                 'Note' => '',
             ],
-            ]
-        );
+        ]);
         $this->personUpdate($newParticipantArr->ID_Person, $person);
     }
 
@@ -159,8 +159,7 @@ class ParticipantService extends MutableBaseService
      */
     public function personUpdate(int $pid, array $data) : void
     {
-        $this->skautis->org->PersonUpdateBasic(
-            [
+        $this->skautis->org->PersonUpdateBasic([
             'ID' => $pid,
             'FirstName' => $data['firstName'] ?? null,
             'LastName' => $data['lastName'] ?? null,
@@ -169,8 +168,7 @@ class ParticipantService extends MutableBaseService
             'Street' => $data['street'] ?? null,
             'City' => $data['city'] ?? null,
             'Postcode' => $data['postcode'] ?? null,
-            ]
-        );
+        ]);
     }
 
     /**
@@ -207,7 +205,7 @@ class ParticipantService extends MutableBaseService
                         $payment->setAccount($value);
                         break;
                     default:
-                        throw new \InvalidArgumentException(sprintf("Camp participant hasn't attribute '%s'", $key));
+                        throw new InvalidArgumentException(sprintf("Camp participant hasn't attribute '%s'", $key));
                 }
             }
             $this->repository->save($payment);
@@ -228,7 +226,7 @@ class ParticipantService extends MutableBaseService
                         $sisData[self::PAYMENT] = $value;
                         break;
                     default:
-                        throw new \InvalidArgumentException(sprintf("General event participant hasn't attribute '%s'", $key));
+                        throw new InvalidArgumentException(sprintf("General event participant hasn't attribute '%s'", $key));
                         break;
                 }
             }
@@ -266,6 +264,7 @@ class ParticipantService extends MutableBaseService
         foreach ($participants as $p) {
             $days += $p->getDays();
         }
+
         return $days;
     }
 
@@ -276,10 +275,13 @@ class ParticipantService extends MutableBaseService
     {
         $skautisData = $this->skautis->event->{'EventStatisticAllEventGeneral'}(['ID_EventGeneral' => $eventId]);
 
-        return array_combine(
-            array_column($skautisData, 'ID_ParticipantCategory'),
-            $skautisData
-        );
+        $result = [];
+
+        foreach ($skautisData as $row) {
+            $result[$row->ID_ParticipantCategory] = $row;
+        }
+
+        return $result;
     }
 
     /**
@@ -298,10 +300,11 @@ class ParticipantService extends MutableBaseService
             }
             $res += $p->getPayment();
         }
+
         return $res;
     }
 
-    public function countPragueParticipants(\stdClass $event) : ?PragueParticipants
+    public function countPragueParticipants(stdClass $event) : ?PragueParticipants
     {
         if (! Strings::startsWith($event->RegistrationNumber, self::PRAGUE_UNIT_PREFIX)) {
             return null;
@@ -342,6 +345,7 @@ class ParticipantService extends MutableBaseService
 
             $personDaysUnder26 += $p->getDays();
         }
+
         return new PragueParticipants($under18, $between18and26, $personDaysUnder26, $citizensCount);
     }
 
@@ -352,6 +356,7 @@ class ParticipantService extends MutableBaseService
         } catch (PaymentNotFound $exc) {
             $payment = PaymentFactory::createDefault($participantId, new SkautisEventId($actionId));
         }
+
         return $payment;
     }
 }

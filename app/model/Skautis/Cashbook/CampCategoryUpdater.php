@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Cashbook;
 
+use InvalidArgumentException;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
@@ -55,14 +56,14 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
             return isset($skautisTotals[$categoryId]) && $skautisTotals[$categoryId] !== $total;
         }, ARRAY_FILTER_USE_BOTH);
 
-        $cashbookTotals = $cashbookTotals + array_fill_keys($categoriesOnlyInSkautis, 0);
+        $cashbookTotals += array_fill_keys($categoriesOnlyInSkautis, 0);
 
         if (count($cashbookTotals) === 0) {
             return;
         }
 
         if ($campSkautisId === null) {
-            throw new \InvalidArgumentException('Camp #' . $cashbookId . " doesn't exist");
+            throw new InvalidArgumentException('Camp #' . $cashbookId . " doesn't exist");
         }
 
         foreach ($cashbookTotals as $categoryId => $total) {

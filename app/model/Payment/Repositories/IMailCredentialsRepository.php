@@ -16,6 +16,7 @@ interface IMailCredentialsRepository
 
     /**
      * @param int[] $unitIds
+     *
      * @return MailCredentials[]
      */
     public function findByUnits(array $unitIds) : array;

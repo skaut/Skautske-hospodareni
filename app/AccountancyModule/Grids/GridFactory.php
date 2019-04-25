@@ -14,8 +14,7 @@ class GridFactory
         $grid = new DataGrid();
         $grid->setDefaultPerPage(20);
 
-        $translator = new SimpleTranslator(
-            [
+        $translator = new SimpleTranslator([
             'ublaboo_datagrid.no_item_found_reset' => 'Nebyly nalezeny žádné položky. Zkuste zrušit filtry.',
             'ublaboo_datagrid.no_item_found' => 'Nebyly nalezeny žádné položky.',
             'ublaboo_datagrid.here' => 'Zde',
@@ -35,8 +34,7 @@ class GridFactory
             'ublaboo_datagrid.cancel' => 'Zrušit',
             'Name' => 'Jméno',
             'Inserted' => 'Vloženo',
-            ]
-        );
+        ]);
         $grid->setTranslator($translator);
 
         return $grid;

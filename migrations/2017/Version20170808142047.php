@@ -14,7 +14,6 @@ class Version20170808142047 extends AbstractMigration
         $this->addSql('ALTER TABLE tc_vehicle ADD subunit_id INT DEFAULT NULL');
     }
 
-
     public function down(Schema $schema) : void
     {
         $this->addSql('ALTER TABLE tc_vehicle DROP subunit_id');

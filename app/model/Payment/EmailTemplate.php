@@ -20,14 +20,16 @@ use function str_replace;
 class EmailTemplate
 {
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $subject;
 
     /**
-     * @var string
      * @ORM\Column(type="text")
+     *
+     * @var string
      */
     private $body;
 

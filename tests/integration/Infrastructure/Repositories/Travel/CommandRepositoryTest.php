@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Travel;
 
 use Cake\Chronos\Date;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
+use IntegrationTest;
 use Model\Travel\Command;
 use Model\Travel\Travel\Type;
 use Model\Travel\Vehicle;
 use Model\Utils\MoneyFactory;
 use function array_map;
 
-class CommandRepositoryTest extends \IntegrationTest
+class CommandRepositoryTest extends IntegrationTest
 {
     private const COMMAND_ID = 1;
 
@@ -135,7 +137,7 @@ class CommandRepositoryTest extends \IntegrationTest
         $this->assertSame(self::COMMAND['passengers'], $command->getFellowPassengers());
         $this->assertEquals(MoneyFactory::fromFloat(self::COMMAND['fuel_price']), $command->getFuelPrice());
         $this->assertEquals(MoneyFactory::fromFloat(self::COMMAND['amortization']), $command->getAmortization());
-        $this->assertEquals(new \DateTimeImmutable(self::COMMAND['closed']), $command->getClosedAt());
+        $this->assertEquals(new DateTimeImmutable(self::COMMAND['closed']), $command->getClosedAt());
         $this->assertSame(self::COMMAND['note'], $command->getNote());
 
         $passenger = $command->getPassenger();
@@ -230,8 +232,9 @@ class CommandRepositoryTest extends \IntegrationTest
     }
 
     /**
-     * @dataProvider getExpectedReturnedCommandIds
      * @param int[] $expectedCommandIds
+     *
+     * @dataProvider getExpectedReturnedCommandIds
      */
     public function testFindCommandsByUnitOrUser(int $unitId, int $userId, array $expectedCommandIds) : void
     {
@@ -240,7 +243,7 @@ class CommandRepositoryTest extends \IntegrationTest
         $commands = $this->repository->findByUnitAndUser($unitId, $userId);
         $this->assertSame(
             $expectedCommandIds,
-            array_map(function (Command $command) : int {
+            array_map(static function (Command $command) : int {
                 return $command->getId();
             }, $commands)
         );

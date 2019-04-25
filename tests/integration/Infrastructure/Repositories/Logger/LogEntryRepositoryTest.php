@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Logger;
 
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
+use IntegrationTest;
 use Model\Logger\Log\Type;
 use Model\Logger\LogEntry;
 use function array_merge;
 
-final class LogEntryRepositoryTest extends \IntegrationTest
+final class LogEntryRepositoryTest extends IntegrationTest
 {
     private const TABLE = 'log';
 
@@ -53,7 +55,7 @@ final class LogEntryRepositoryTest extends \IntegrationTest
                 $row['description'],
                 Type::get($row['type']),
                 $row['typeId'],
-                new \DateTimeImmutable($row['date'])
+                new DateTimeImmutable($row['date'])
             )
         );
 

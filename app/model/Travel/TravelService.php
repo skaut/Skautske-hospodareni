@@ -7,7 +7,9 @@ namespace Model;
 use Cake\Chronos\Date;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
+use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
+use InvalidArgumentException;
 use Model\DTO\Travel as DTO;
 use Model\Travel\Command;
 use Model\Travel\CommandNotFound;
@@ -88,7 +90,6 @@ class TravelService
         }
     }
 
-
     /**
      * @return string[]
      */
@@ -116,8 +117,8 @@ class TravelService
 
     public function removeVehicle(int $vehicleId) : bool
     {
-        if ($this->commands->countByVehicle($vehicleId) > 0) { //nelze mazat vozidlo s navazanými příkazy
-            return false;
+        if ($this->commands->countByVehicle($vehicleId) > 0) {
+            return false; //nelze mazat vozidlo s navazanými příkazy
         }
 
         try {
@@ -156,6 +157,7 @@ class TravelService
 
     /**
      * @return DTO\Command\Travel[]
+     *
      * @throws CommandNotFound
      */
     public function getTravels(int $commandId) : array
@@ -230,7 +232,6 @@ class TravelService
         return DTO\TypeFactory::create($this->types->find($type));
     }
 
-
     /**     CONTRACTS    */
     public function getContract(int $contractId) : ?DTO\Contract
     {
@@ -263,7 +264,7 @@ class TravelService
 
         $result = ['valid' => [], 'past' => []];
 
-        $now = new \DateTimeImmutable();
+        $now = new DateTimeImmutable();
 
         foreach ($contracts as $contract) {
             $name = $contract->getPassenger()->getName();
@@ -286,7 +287,7 @@ class TravelService
         return $result;
     }
 
-    public function createContract(int $unitId, string $unitRepresentative, \DateTimeImmutable $since, Contract\Passenger $passenger) : void
+    public function createContract(int $unitId, string $unitRepresentative, DateTimeImmutable $since, Contract\Passenger $passenger) : void
     {
         $unit = $this->units->find($unitId);
 
@@ -396,6 +397,7 @@ class TravelService
 
     /**
      * @param int[] $ids
+     *
      * @return DTO\Vehicle[]
      */
     public function findVehiclesByIds(array $ids) : array
@@ -408,7 +410,6 @@ class TravelService
         );
     }
 
-
     /**
      * @return DTO\Command[]
      */
@@ -418,6 +419,7 @@ class TravelService
             return DTO\CommandFactory::create($command);
         }, $this->commands->findByUnit($unitId));
     }
+
     /**
      * @return DTO\Command[]
      */
@@ -435,7 +437,8 @@ class TravelService
 
     /**
      * vraci všechny přikazy navazane na smlouvu
-     * @return DTO\Contract[]
+     *
+     * @return DTO\Command[]
      */
     public function getAllCommandsByContract(int $contractId) : array
     {
@@ -447,6 +450,7 @@ class TravelService
 
     /**
      * vraci všechny přikazy navazane na vozidlo
+     *
      * @return DTO\Command[]
      */
     public function getAllCommandsByVehicle(int $vehicleId) : array
@@ -463,7 +467,7 @@ class TravelService
     {
         $command = $this->commands->find($commandId);
 
-        $command->close(new \DateTimeImmutable());
+        $command->close(new DateTimeImmutable());
 
         $this->commands->save($command);
     }
@@ -488,7 +492,7 @@ class TravelService
         if (($passenger === null && $contractId === null)
             || ($passenger !== null && $contractId !== null)
         ) {
-            throw new \InvalidArgumentException('Either passenger or contract must be specified');
+            throw new InvalidArgumentException('Either passenger or contract must be specified');
         }
 
         return $contractId === null
@@ -498,6 +502,7 @@ class TravelService
 
     /**
      * @param string[] $types
+     *
      * @return Type[]
      */
     private function typesToEntities(array $types) : array

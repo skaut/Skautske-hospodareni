@@ -52,6 +52,7 @@ class UnitTest extends \Codeception\Test\Unit
     private function createUnit(string $unitName, string $type) : Unit
     {
         $regNumber = '123';
+
         return new Unit(
             1,
             sprintf('%s %s', $regNumber, $unitName),

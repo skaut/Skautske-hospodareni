@@ -11,6 +11,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateNote;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Cashbook\Cashbook;
+use function assert;
 use function htmlspecialchars;
 use function nl2br;
 use function preg_replace;
@@ -63,28 +64,21 @@ final class NoteForm extends BaseControl
 
     public function render() : void
     {
-        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
-        /** @var BaseForm $form */
-        $form = $this['form'];
-        $form->setDefaults(
-            [
-            'note' => $cashbook->getNote(),
-            ]
-        );
+        assert($cashbook instanceof Cashbook);
+
+        $this['form']->setDefaults(['note' => $cashbook->getNote()]);
 
         $note    = nl2br(htmlspecialchars($cashbook->getNote()));
         $pattern = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
         $note    = preg_replace($pattern, '<a href="$0" target="_blank" title="$0">$0</a>', $note);
 
-        $this->template->setParameters(
-            [
+        $this->template->setParameters([
             'isEditable' => $this->isEditable,
             'editation' => $this->editation,
             'note' => $note,
-            ]
-        );
+        ]);
 
         $this->template->setFile(__DIR__ . '/templates/NoteForm.latte');
         $this->template->render();
@@ -108,6 +102,7 @@ final class NoteForm extends BaseControl
             $this->formSucceeded($form);
             $this->redrawControl();
         };
+
         return $form;
     }
 

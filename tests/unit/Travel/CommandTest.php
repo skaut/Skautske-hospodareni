@@ -6,12 +6,14 @@ namespace Model\Travel;
 
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use InvalidArgumentException;
 use Mockery as m;
 use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\TravelDetails;
 use Model\Travel\Command\VehicleTravel;
 use Model\Utils\MoneyFactory;
 use Money\Money;
+use Throwable;
 
 class CommandTest extends Unit
 {
@@ -269,7 +271,7 @@ class CommandTest extends Unit
     {
         $command = $this->createCommand($this->mockVehicle());
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $command->addVehicleTravel($distance, $this->getDetails());
     }
@@ -281,35 +283,37 @@ class CommandTest extends Unit
     {
         $command = $this->createCommand();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $command->addTransportTravel(MoneyFactory::fromFloat($price), $this->getDetails());
     }
 
     /**
+     * @throws Throwable
+     *
      * @dataProvider dataNegativeOrZero
-     * @throws \Throwable
      */
     public function testUpdatingVehicleTravelWithNegativeOrZeroDistanceThrowsException(float $distance) : void
     {
         $command = $this->createCommand($this->mockVehicle());
         $command->addVehicleTravel(10, $this->getDetails());
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $command->updateVehicleTravel(0, $distance, $this->getDetails());
     }
 
     /**
+     * @throws Throwable
+     *
      * @dataProvider dataNegativeOrZero
-     * @throws \Throwable
      */
     public function testUpdatingTransportTravelWithNegativeOrZeroPriceThrowsException(float $price) : void
     {
         $command = $this->createCommand();
         $command->addTransportTravel(MoneyFactory::fromFloat(10), $this->getDetails());
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $command->updateTransportTravel(0, MoneyFactory::fromFloat($price), $this->getDetails());
     }

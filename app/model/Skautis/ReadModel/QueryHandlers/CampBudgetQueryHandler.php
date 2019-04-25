@@ -8,6 +8,7 @@ use Model\DTO\Skautis\BudgetEntry;
 use Model\Skautis\ReadModel\Queries\CampBudgetQuery;
 use Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
+use stdClass;
 use function array_map;
 
 final class CampBudgetQueryHandler
@@ -30,7 +31,7 @@ final class CampBudgetQueryHandler
             'IsEstimate' => true,
         ]);
 
-        return array_map(function (\stdClass $category) : BudgetEntry {
+        return array_map(function (stdClass $category) : BudgetEntry {
             return new BudgetEntry(
                 $category->EventCampStatementType,
                 MoneyFactory::fromFloat((float) $category->Ammount),

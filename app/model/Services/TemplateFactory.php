@@ -29,6 +29,7 @@ class TemplateFactory
         if ($this->engine === null) {
             $this->engine = $this->latteFactory->create();
         }
+
         return $this->engine;
     }
 

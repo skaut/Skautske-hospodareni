@@ -28,13 +28,11 @@ class MailerFactory implements IMailerFactory
             return $this->debugMailer;
         }
 
-        return new SmtpMailer(
-            [
+        return new SmtpMailer([
             'host' => $credentials->getHost(),
             'username' => $credentials->getUsername(),
             'password' => $credentials->getPassword(),
             'secure' => $credentials->getProtocol()->getValue(),
-            ]
-        );
+        ]);
     }
 }

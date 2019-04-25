@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers\Unit;
 
+use CommandHandlerTest;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Unit\CreateUnit;
@@ -11,7 +12,7 @@ use Model\Cashbook\Unit;
 use Model\Common\UnitId;
 use Model\Payment\UnitResolverStub;
 
-final class CreateUnitHandlerTest extends \CommandHandlerTest
+final class CreateUnitHandlerTest extends CommandHandlerTest
 {
     private const YEAR           = 2019;
     private const OFFICIAL_UNITS = [

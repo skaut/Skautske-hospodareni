@@ -14,20 +14,23 @@ use Model\Payment\InvalidBankAccountNumber;
 class AccountNumber
 {
     /**
-     * @var string|NULL
      * @ORM\Column(type="string", nullable=true, length=6)
+     *
+     * @var string|NULL
      */
     private $prefix;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=10)
+     *
+     * @var string
      */
     private $number;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=4)
+     *
+     * @var string
      */
     private $bankCode;
 
@@ -66,6 +69,7 @@ class AccountNumber
     {
         try {
             self::fromString($number);
+
             return true;
         } catch (InvalidBankAccountNumber $e) {
             return false;

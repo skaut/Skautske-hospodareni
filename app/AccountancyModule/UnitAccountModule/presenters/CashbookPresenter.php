@@ -16,8 +16,8 @@ use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\Common\UnitId;
-use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\UnitCashbook;
+use function assert;
 use function sprintf;
 
 class CashbookPresenter extends BasePresenter
@@ -59,7 +59,6 @@ class CashbookPresenter extends BasePresenter
 
     public function handleCreateCashbook() : void
     {
-        /** @var CreateCashbookDialog $dialog */
         $dialog = $this['createCashbookDialog'];
 
         $dialog->open();
@@ -67,7 +66,6 @@ class CashbookPresenter extends BasePresenter
 
     public function handleSelectActive() : void
     {
-        /** @var ActivateCashbookDialog $dialog */
         $dialog = $this['activateCashbookDialog'];
 
         $dialog->open();
@@ -83,6 +81,7 @@ class CashbookPresenter extends BasePresenter
 
         if ($activeCashbook === null) {
             $this->setView('noCashbook');
+
             return;
         }
 
@@ -90,7 +89,6 @@ class CashbookPresenter extends BasePresenter
             $this->redirect('this', [$aid, $activeCashbook->getYear()]);
         }
 
-        /** @var UnitCashbook[] $cashbooks */
         $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->aid));
 
         $this->template->setParameters([
@@ -100,8 +98,11 @@ class CashbookPresenter extends BasePresenter
         ]);
 
         foreach ($cashbooks as $cashbook) {
+            assert($cashbook instanceof UnitCashbook);
+
             if ($cashbook->getYear() === $year) {
                 $this->cashbookId = $cashbook->getCashbookId();
+
                 return;
             }
         }
@@ -156,10 +157,9 @@ class CashbookPresenter extends BasePresenter
 
     private function isCashbookEmpty() : bool
     {
-        /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->cashbookId));
 
-        return empty($chits);
+        return $chits === [];
     }
 
     private function getActiveCashbook() : ?UnitCashbook

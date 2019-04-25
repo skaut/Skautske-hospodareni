@@ -6,6 +6,7 @@ namespace App\AccountancyModule\TravelModule;
 
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
+use Exception;
 use Model\BaseService;
 use Model\DTO\Travel\Contract;
 use Model\Services\PdfRenderer;
@@ -16,6 +17,7 @@ use Nette\Security\Identity;
 use function array_column;
 use function array_filter;
 use function array_key_exists;
+use function assert;
 use function dirname;
 
 class ContractPresenter extends BasePresenter
@@ -35,26 +37,28 @@ class ContractPresenter extends BasePresenter
 
     private function isContractAccessible(?Contract $contract) : bool
     {
-        /** @var Identity $identity */
         $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
 
         return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
     }
 
     private function isContractEditable(?Contract $contract) : bool
     {
-        /** @var Identity $identity */
         $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
 
         return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
     }
 
     public function renderDefault() : void
     {
-        /** @var Identity $identity */
         $identity = $this->getUser()->getIdentity();
+        $unitId   = $this->officialUnit->getId();
 
-        $unitId = $this->officialUnit->getId();
+        assert($identity instanceof Identity);
 
         if (! array_key_exists($unitId, $identity->access[BaseService::ACCESS_READ])) {
             $this->flashMessage('Nemáš přístup ke smlouvám cestovních příkazů.', 'danger');
@@ -79,13 +83,11 @@ class ContractPresenter extends BasePresenter
         $commands   = $this->travelService->getAllCommandsByContract($contract->getId());
         $vehicleIds = array_filter(array_column($commands, 'vehicleId'));
 
-        $this->template->setParameters(
-            [
+        $this->template->setParameters([
             'contract' => $contract,
             'commands' => $commands,
             'vehicles' => $this->travelService->findVehiclesByIds($vehicleIds),
-            ]
-        );
+        ]);
     }
 
     public function actionPrint(int $contractId) : void
@@ -104,7 +106,7 @@ class ContractPresenter extends BasePresenter
                 $templateName = 'ex.contract.noz.latte';
                 break;
             default:
-                throw new \Exception('Neznámá šablona pro ' . $contract->getTemplateVersion());
+                throw new Exception('Neznámá šablona pro ' . $contract->getTemplateVersion());
         }
         $template = $this->template;
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);

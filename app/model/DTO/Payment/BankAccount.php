@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
+use DateTimeImmutable;
 use Model\Payment\BankAccount\AccountNumber;
 
 class BankAccount
@@ -23,7 +24,7 @@ class BankAccount
     /** @var string|NULL */
     private $token;
 
-    /** @var \DateTimeImmutable */
+    /** @var DateTimeImmutable */
     private $createdAt;
 
     /** @var bool */
@@ -35,7 +36,7 @@ class BankAccount
         string $name,
         AccountNumber $number,
         ?string $token,
-        \DateTimeImmutable $createdAt,
+        DateTimeImmutable $createdAt,
         bool $allowedForSubunits
     ) {
         $this->id                 = $id;
@@ -72,7 +73,7 @@ class BankAccount
         return $this->token;
     }
 
-    public function getCreatedAt() : \DateTimeImmutable
+    public function getCreatedAt() : DateTimeImmutable
     {
         return $this->createdAt;
     }

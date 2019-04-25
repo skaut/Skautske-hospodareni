@@ -19,14 +19,12 @@ class BankAccountForm extends BaseControl
     /** @var BankAccountService */
     private $model;
 
-
     public function __construct(?int $id, BankAccountService $model)
     {
         parent::__construct();
         $this->id    = $id;
         $this->model = $model;
     }
-
 
     protected function createComponentForm() : BaseForm
     {
@@ -52,15 +50,13 @@ class BankAccountForm extends BaseControl
 
         if ($this->id !== null) {
             $account = $this->model->find($this->id);
-            $form->setDefaults(
-                [
+            $form->setDefaults([
                 'name' => $account->getName(),
                 'prefix' => $account->getNumber()->getPrefix(),
                 'number' => $account->getNumber()->getNumber(),
                 'bankCode' => $account->getNumber()->getBankCode(),
                 'token' => $account->getToken(),
-                ]
-            );
+            ]);
         }
 
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
@@ -69,7 +65,6 @@ class BankAccountForm extends BaseControl
 
         return $form;
     }
-
 
     private function formSucceeded(BaseForm $form, ArrayHash $values) : void
     {
@@ -99,7 +94,6 @@ class BankAccountForm extends BaseControl
             $form->addError('Neplatné číslo účtu');
         }
     }
-
 
     public function render() : void
     {

@@ -49,8 +49,7 @@ class ParticipantPresenter extends BasePresenter
         $this->isAllowParticipantInsert = $isDraft && $authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
         $this->isAllowParticipantUpdate = $this->isAllowParticipantInsert;
 
-        $this->template->setParameters(
-            [
+        $this->template->setParameters([
             'isAllowParticipantDetail' => $this->isAllowParticipantDetail,
             'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
             'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
@@ -58,13 +57,12 @@ class ParticipantPresenter extends BasePresenter
             'isAllowParticipantUpdateLocal' => $this->isAllowParticipantUpdate,
             'isAllowRepayment' => $this->isAllowRepayment,
             'isAllowIsAccount' => $this->isAllowIsAccount,
-            ]
-        );
+        ]);
     }
 
     /**
-     *
      * @param bool $dp - disabled person
+     *
      * @throws WsdlException
      */
     public function renderDefault(
@@ -90,6 +88,7 @@ class ParticipantPresenter extends BasePresenter
 
     /**
      * @param int|float|string $value
+     *
      * @throws AbortException
      * @throws BadRequestException
      */

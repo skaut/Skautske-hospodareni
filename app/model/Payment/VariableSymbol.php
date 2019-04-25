@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use InvalidArgumentException;
 use Nette\Utils\Strings;
 
 final class VariableSymbol
@@ -16,7 +17,7 @@ final class VariableSymbol
     public function __construct(string $value)
     {
         if (! Strings::match($value, '/' . self::PATTERN . '/')) {
-            throw new \InvalidArgumentException("Invalid variable symbol '" . $value . "'");
+            throw new InvalidArgumentException("Invalid variable symbol '" . $value . "'");
         }
         $this->value = $value;
     }

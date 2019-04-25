@@ -6,11 +6,12 @@ namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
+use IntegrationTest;
 use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
 use function array_map;
 
-class StaticCategoryRepositoryTest extends \IntegrationTest
+class StaticCategoryRepositoryTest extends IntegrationTest
 {
     private const TABLE_NAME   = 'ac_chitsCategory';
     private const OBJECT_TABLE = 'ac_chitsCategory_object';
@@ -79,7 +80,7 @@ class StaticCategoryRepositoryTest extends \IntegrationTest
             'Category 1',
         ];
 
-        $actualNames = array_map(function (Category $category) {
+        $actualNames = array_map(static function (Category $category) {
             return $category->getName();
         }, $categories);
 

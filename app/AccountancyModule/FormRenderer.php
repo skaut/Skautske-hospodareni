@@ -53,24 +53,24 @@ class FormRenderer extends DefaultFormRenderer
         }
     }
 
-
     public function renderBegin() : string
     {
         $this->controlsInit();
+
         return parent::renderBegin();
     }
-
 
     public function renderEnd() : string
     {
         $this->controlsInit();
+
         return parent::renderEnd();
     }
-
 
     public function renderBody() : string
     {
         $this->controlsInit();
+
         return parent::renderBody();
     }
 
@@ -80,13 +80,14 @@ class FormRenderer extends DefaultFormRenderer
     public function renderControls($parent) : string
     {
         $this->controlsInit();
+
         return parent::renderControls($parent);
     }
-
 
     public function renderPair(Nette\Forms\IControl $control) : string
     {
         $this->controlsInit();
+
         return parent::renderPair($control);
     }
 
@@ -96,20 +97,21 @@ class FormRenderer extends DefaultFormRenderer
     public function renderPairMulti(array $controls) : string
     {
         $this->controlsInit();
+
         return parent::renderPairMulti($controls);
     }
-
 
     public function renderLabel(Nette\Forms\IControl $control) : Html
     {
         $this->controlsInit();
+
         return parent::renderLabel($control);
     }
-
 
     public function renderControl(Nette\Forms\IControl $control) : Html
     {
         $this->controlsInit();
+
         return parent::renderControl($control);
     }
 

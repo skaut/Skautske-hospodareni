@@ -22,6 +22,7 @@ use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
+use function assert;
 
 class FunctionsControl extends BaseControl
 {
@@ -123,6 +124,7 @@ class FunctionsControl extends BaseControl
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
             $this->formSubmitted($form, $values);
         };
+
         return $form;
     }
 
@@ -155,6 +157,7 @@ class FunctionsControl extends BaseControl
 
             $this->handleCloseEditation();
             $this->reload('Funkce uloženy.', 'success');
+
             return;
         } catch (PermissionException $exc) {
             $form->addError($exc->getMessage());
@@ -181,14 +184,17 @@ class FunctionsControl extends BaseControl
         ];
 
         foreach ($values as $functionName => $personId) {
-            /** @var SelectBox $selectbox */
             $selectbox = $form[$functionName];
+
+            assert($selectbox instanceof SelectBox);
+
             $selectbox->setDefaultValue(isset($selectbox->getItems()[$personId]) ? $personId : null);
         }
     }
 
     /**
      * @param int[] $ages
+     *
      * @return mixed[] - [age => [person id => name], ...]
      */
     private function getPersonsOlderThan(array $ages) : array

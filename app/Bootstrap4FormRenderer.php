@@ -68,6 +68,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
 
     /**
      * @param bool $own
+     *
      * @return string
      */
     public function renderErrors(?Nette\Forms\IControl $control = null, $own = true) : string
@@ -91,6 +92,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
 
     /**
      * @param array $controls
+     *
      * @return string
      */
     public function renderPairMulti(array $controls) : string
@@ -111,6 +113,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
 
             $primary = true;
         }
+
         return parent::renderPairMulti($controls);
     }
 
@@ -127,6 +130,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
 
     /**
      * @param Nette\Forms\IControl $control
+     *
      * @return Nette\Utils\Html
      */
     public function renderControl(Nette\Forms\IControl $control) : Nette\Utils\Html

@@ -18,6 +18,7 @@ class UserContextProcessor
 
     /**
      * @param mixed[] $record
+     *
      * @return mixed[]
      */
     public function __invoke(array $record) : array

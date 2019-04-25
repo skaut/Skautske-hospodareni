@@ -6,6 +6,7 @@ namespace Model\Payment\ReadModel\QueryHandlers;
 
 use Codeception\Test\Unit;
 use eGen\MessageBus\Bus\QueryBus;
+use Mockery;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Event\SkautisEventId;
@@ -21,27 +22,27 @@ final class EventsWithoutGroupQueryHandlerTest extends Unit
 
     public function test() : void
     {
-        $queryBus = \Mockery::mock(QueryBus::class);
+        $queryBus = Mockery::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->once()
-            ->withArgs(function (EventListQuery $query) : bool {
+            ->withArgs(static function (EventListQuery $query) : bool {
                 return $query->getYear() === self::YEAR;
             })
             ->andReturn([
-                \Mockery::mock(Event::class, ['getId' => new SkautisEventId(4)]),
-                \Mockery::mock(Event::class, ['getId' => new SkautisEventId(2)]),
+                Mockery::mock(Event::class, ['getId' => new SkautisEventId(4)]),
+                Mockery::mock(Event::class, ['getId' => new SkautisEventId(2)]),
             ]);
 
-        $groups = \Mockery::mock(IGroupRepository::class);
+        $groups = Mockery::mock(IGroupRepository::class);
         $groups->shouldReceive('findBySkautisEntities')
             ->once()
-            ->withArgs(function (SkautisEntity $first, SkautisEntity $second) : bool {
+            ->withArgs(static function (SkautisEntity $first, SkautisEntity $second) : bool {
                 return $first->getType()->equalsValue(Type::EVENT)
                     && $second->getType()->equalsValue(Type::EVENT)
                     && $first->getId() === 4
                     && $second->getId() === 2;
             })->andReturn([
-                \Mockery::mock(Group::class, ['getObject' => new SkautisEntity(2, Type::get(Type::EVENT))]),
+                Mockery::mock(Group::class, ['getObject' => new SkautisEntity(2, Type::get(Type::EVENT))]),
             ]);
 
         $handler = new EventsWithoutGroupQueryHandler($queryBus, $groups);

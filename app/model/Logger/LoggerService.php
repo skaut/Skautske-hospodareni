@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use DateTimeImmutable;
 use Model\DTO\Logger\LogFactory;
 use Model\Logger\Log\Type;
 use Model\Logger\LogEntry;
@@ -22,7 +23,7 @@ class LoggerService
 
     public function log(int $unitId, int $userId, string $description, Type $type, ?int $typeId = null) : void
     {
-        $this->logs->save(new LogEntry($unitId, $userId, $description, $type, $typeId, new \DateTimeImmutable()));
+        $this->logs->save(new LogEntry($unitId, $userId, $description, $type, $typeId, new DateTimeImmutable()));
     }
 
     /**

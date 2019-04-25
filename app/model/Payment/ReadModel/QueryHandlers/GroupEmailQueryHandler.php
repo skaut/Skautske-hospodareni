@@ -9,7 +9,7 @@ use Model\Payment\GroupNotFound;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use Model\Payment\Repositories\IGroupRepository;
 
-final class GroupEmailHandler
+final class GroupEmailQueryHandler
 {
     /** @var IGroupRepository */
     private $groups;

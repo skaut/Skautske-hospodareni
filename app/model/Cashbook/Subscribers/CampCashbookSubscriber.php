@@ -13,6 +13,7 @@ use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Cashbook\Cashbook;
+use function assert;
 
 /**
  * Update category total in Skautis for camp cashbook
@@ -30,6 +31,7 @@ final class CampCashbookSubscriber
         $this->commandBus = $commandBus;
         $this->queryBus   = $queryBus;
     }
+
     public function chitWasAdded(ChitWasAdded $event) : void
     {
         $id = $event->getCashbookId();
@@ -59,8 +61,10 @@ final class CampCashbookSubscriber
 
     private function isCamp(CashbookId $cashbookId) : bool
     {
-        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
         return $cashbook->getType()->equalsValue(CashbookType::CAMP);
     }
 }

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Skautis;
 
+use IntegrationTest;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
 
-final class ObjectTableTest extends \IntegrationTest
+final class ObjectTableTest extends IntegrationTest
 {
     /** @var ObjectTable */
     private $objectTable;

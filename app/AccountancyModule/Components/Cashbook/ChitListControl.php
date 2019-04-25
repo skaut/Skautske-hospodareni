@@ -29,6 +29,7 @@ use Nette\InvalidStateException;
 use function array_count_values;
 use function array_filter;
 use function array_map;
+use function assert;
 
 /**
  * @method onEditButtonClicked(int $chitId)
@@ -84,11 +85,12 @@ class ChitListControl extends BaseControl
 
     public function render() : void
     {
-        /** @var Cashbook $cashbook */
         $cashbook          = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         $chits             = $this->queryBus->handle(ChitListQuery::withMethod($this->paymentMethod, $this->cashbookId));
         $totals            = $this->getTotals($chits);
         $duplicatesNumbers = $this->findDuplicates($chits);
+
+        assert($cashbook instanceof Cashbook);
 
         $this->template->setParameters([
             'cashbookId' => $this->cashbookId->toString(),
@@ -105,7 +107,7 @@ class ChitListControl extends BaseControl
             'totalExpense' => $totals[Operation::EXPENSE],
             'duplicatesNumbers' => $duplicatesNumbers,
             'hasOnlyNumericChitNumbers' => $cashbook->hasOnlyNumericChitNumbers(),
-            ]);
+        ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
         $this->template->render();
@@ -168,11 +170,13 @@ class ChitListControl extends BaseControl
 
             if ($printButton->isSubmittedBy()) {
                 $this->redirectToExport(':Accountancy:CashbookExport:printChits', $chitIds);
+
                 return;
             }
 
             if ($exportButton->isSubmittedBy()) {
                 $this->redirectToExport(':Accountancy:CashbookExport:exportChits', $chitIds);
+
                 return;
             }
 
@@ -220,13 +224,16 @@ class ChitListControl extends BaseControl
 
     private function getSkautisType() : ObjectType
     {
-        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
         return $cashbook->getType()->getSkautisObjectType();
     }
 
     /**
      * @param Chit[] $chits
+     *
      * @return float[]
      */
     private function getTotals(array $chits) : array
@@ -240,6 +247,7 @@ class ChitListControl extends BaseControl
                 $expense += $chit->getAmount()->toFloat();
             }
         }
+
         return [
             Operation::INCOME => $income,
             Operation::EXPENSE => $expense,
@@ -248,17 +256,20 @@ class ChitListControl extends BaseControl
 
     /**
      * @param Chit[] $chits
+     *
      * @return int[]
      */
     private function findDuplicates(array $chits) : array
     {
         $duplicates = array_filter(array_count_values(array_map(function (Chit $ch) {
             $number = $ch->getBody()->getNumber();
+
             return $number === null ? '' : $number->toString();
         }, $chits)), function (int $cnt) {
             return $cnt > 1;
         });
         unset($duplicates['']);
+
         return $duplicates;
     }
 }

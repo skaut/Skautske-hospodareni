@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Cashbook;
 
-final class MaxChitNumberNotFound extends \Exception
+use Exception;
+
+final class MaxChitNumberNotFound extends Exception
 {
 }

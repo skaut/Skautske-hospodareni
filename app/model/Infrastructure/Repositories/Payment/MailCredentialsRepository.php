@@ -9,6 +9,7 @@ use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 use Model\Payment\Repositories\IMailCredentialsRepository;
 use function array_fill_keys;
+use function assert;
 use function count;
 
 final class MailCredentialsRepository implements IMailCredentialsRepository
@@ -34,6 +35,7 @@ final class MailCredentialsRepository implements IMailCredentialsRepository
 
     /**
      * @param int[] $unitIds
+     *
      * @return mixed[]
      */
     public function findByUnits(array $unitIds) : array
@@ -47,7 +49,8 @@ final class MailCredentialsRepository implements IMailCredentialsRepository
         $credentialsList = $this->entityManager->getRepository(MailCredentials::class)->findBy(['unitId IN' => $unitIds]);
 
         foreach ($credentialsList as $credentials) {
-            /** @var MailCredentials $credentials */
+            assert($credentials instanceof MailCredentials);
+
             $byUnit[$credentials->getUnitId()][] = $credentials;
         }
 

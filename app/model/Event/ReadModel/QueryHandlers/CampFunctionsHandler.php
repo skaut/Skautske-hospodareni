@@ -9,6 +9,7 @@ use Model\Event\Person;
 use Model\Event\ReadModel\PersonFactory;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Skautis\Skautis;
+use stdClass;
 
 class CampFunctionsHandler
 {
@@ -37,7 +38,8 @@ class CampFunctionsHandler
     }
 
     /**
-     * @param \stdClass[] $functions
+     * @param stdClass[] $functions
+     *
      * @return Person[]
      */
     private function getFunctionsByType(array $functions) : array

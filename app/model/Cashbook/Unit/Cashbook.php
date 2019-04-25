@@ -18,26 +18,30 @@ class Cashbook
     /**
      * @ORM\Id()
      * @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $id;
 
     /**
-     * @var int
      * @ORM\Column(type="smallint")
+     *
+     * @var int
      */
     private $year;
 
     /**
-     * @var Unit
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity=Unit::class, inversedBy="cashbooks")
+     *
+     * @var Unit
      */
     private $unit;
 
     /**
-     * @var CashbookId
      * @ORM\Column(type="cashbook_id")
+     *
+     * @var CashbookId
      */
     private $cashbookId;
 

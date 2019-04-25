@@ -23,7 +23,6 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         State::CANCELED,
     ];
 
-
     public function find(int $id) : Payment
     {
         $payment = $this->getEntityManager()->find(Payment::class, $id);

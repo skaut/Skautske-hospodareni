@@ -26,6 +26,7 @@ class VariableSymbolControl extends TextInput
         if ($value === null || $value === '') {
             return null;
         }
+
         return new VariableSymbol($value);
     }
 }

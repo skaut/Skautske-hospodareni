@@ -36,7 +36,6 @@ class EventSubscriber
         );
     }
 
-
     public function handleClosed(EventWasClosed $event) : void
     {
         $user = $this->userService->getUserDetail();

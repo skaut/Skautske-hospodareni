@@ -25,7 +25,6 @@ final class CampStatesHandler
         $this->cache           = $cache;
     }
 
-
     /**
      * @return string[]
      */

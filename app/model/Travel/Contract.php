@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Contract\Passenger as ContractPassenger;
 use Model\Unit\Unit;
@@ -15,50 +16,57 @@ use Model\Unit\Unit;
 class Contract
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $unitId;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="unit_person", length=64, options={"comment": "jméno osoby zastupující jednotku"})
+     *
+     * @var string
      */
     private $unitRepresentative;
 
     /**
-     * @var \DateTimeImmutable|NULL
      * @ORM\Column(type="datetime_immutable", nullable=true, name="start")
+     *
+     * @var DateTimeImmutable|NULL
      */
     private $since;
 
     /**
-     * @var \DateTimeImmutable|NULL
      * @ORM\Column(type="datetime_immutable", nullable=true, name="end")
+     *
+     * @var DateTimeImmutable|NULL
      */
     private $until;
 
     /**
-     * @var ContractPassenger
      * @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false)
+     *
+     * @var ContractPassenger
      */
     private $passenger;
 
     /**
-     * @var int
      * @ORM\Column(type="smallint", name="template", options={"comment":"1-old, 2-podle NOZ"})
+     *
+     * @var int
      */
     private $templateVersion = 2;
 
-    public function __construct(Unit $unit, string $unitRepresentative, \DateTimeImmutable $since, ContractPassenger $passenger)
+    public function __construct(Unit $unit, string $unitRepresentative, DateTimeImmutable $since, ContractPassenger $passenger)
     {
         $this->unitId             = $unit->getId();
         $this->unitRepresentative = $unitRepresentative;
@@ -82,12 +90,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince() : ?\DateTimeImmutable
+    public function getSince() : ?DateTimeImmutable
     {
         return $this->since;
     }
 
-    public function getUntil() : ?\DateTimeImmutable
+    public function getUntil() : ?DateTimeImmutable
     {
         return $this->until;
     }

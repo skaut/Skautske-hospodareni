@@ -6,6 +6,8 @@ namespace Model\Infrastructure\Repositories\Payment;
 
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\EventBus;
+use Helpers;
+use IntegrationTest;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\PaymentNotFound;
@@ -15,7 +17,7 @@ use function array_fill;
 use function array_map;
 use function array_merge;
 
-class PaymentRepositoryTest extends \IntegrationTest
+class PaymentRepositoryTest extends IntegrationTest
 {
     private const TABLE = 'pa_payment';
 
@@ -82,7 +84,7 @@ class PaymentRepositoryTest extends \IntegrationTest
             'transactionId' => '123456',
             'transaction_payer' => 'František Maša',
             'transaction_note' => 'Poznámka',
-            'paidFrom' => (string) \Helpers::createAccountNumber(),
+            'paidFrom' => (string) Helpers::createAccountNumber(),
         ], self::PAYMENT_ROW);
 
         $this->addGroupWithId(1);
@@ -137,7 +139,7 @@ class PaymentRepositoryTest extends \IntegrationTest
             [2, 300, Payment\State::COMPLETED],
         ];
 
-        $paymentRows = array_map(function (array $payment) : array {
+        $paymentRows = array_map(static function (array $payment) : array {
             return [
                 'groupId' => $payment[0],
                 'name' => 'Test',

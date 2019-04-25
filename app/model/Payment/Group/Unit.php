@@ -14,24 +14,29 @@ use Model\Payment\Group;
 class Unit
 {
     /**
-     * @var int
      * @internal for mapping only
+     *
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var Group
      * @internal for mapping only
+     *
      * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="units")
+     *
+     * @var Group
      */
     private $group;
 
     /**
-     * @var int
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $unitId;
 

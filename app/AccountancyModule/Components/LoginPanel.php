@@ -9,6 +9,7 @@ use Model\UnitService;
 use Model\UserService;
 use Nette\Security\Identity;
 use Nette\Security\User;
+use function assert;
 
 final class LoginPanel extends BaseControl
 {
@@ -33,8 +34,9 @@ final class LoginPanel extends BaseControl
     {
         $this->userService->updateSkautISRole($roleId);
 
-        /** @var Identity $identity */
         $identity = $this->user->getIdentity();
+
+        assert($identity instanceof Identity);
 
         $identity->access = $this->userService->getAccessArrays($this->unitService);
 

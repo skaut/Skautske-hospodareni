@@ -6,6 +6,7 @@ namespace Model\Unit\Repositories;
 
 use Model\Unit\Unit;
 use Model\Unit\UnitNotFound;
+use stdClass;
 
 interface IUnitRepository
 {
@@ -22,5 +23,5 @@ interface IUnitRepository
     /**
      * @deprecated Use IUnitRepository::find()
      */
-    public function findAsStdClass(int $id) : \stdClass;
+    public function findAsStdClass(int $id) : stdClass;
 }

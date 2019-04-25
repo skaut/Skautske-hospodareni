@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Cashbook;
 
+use InvalidArgumentException;
 use Ramsey\Uuid\Exception\InvalidUuidStringException;
 use Ramsey\Uuid\Uuid;
 use function is_numeric;
@@ -20,7 +21,7 @@ final class CashbookId
         $normalizedId = $this->normalize($id);
 
         if ($normalizedId === null) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('Invalid id "%s", valid ID is either UUIDv4 or legacy numeric string', $id)
             );
         }

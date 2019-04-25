@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 use Nette\SmartObject;
 use function array_sum;
 use function count;
@@ -14,6 +15,7 @@ use function str_replace;
 
 /**
  * @ORM\Embeddable()
+ *
  * @property-read string $expression
  * @property-read float $value
  */
@@ -22,14 +24,16 @@ class Amount
     use SmartObject;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="priceText", length=100)
+     *
+     * @var string
      */
     private $expression;
 
     /**
-     * @var float
      * @ORM\Column(type="float", name="price", options={"unsigned"=true})
+     *
+     * @var float
      */
     private $value;
 
@@ -39,7 +43,7 @@ class Amount
         $this->value      = $this->calculateValue();
 
         if ($this->value <= 0) {
-            throw new \InvalidArgumentException('Expression result must be larger than 0');
+            throw new InvalidArgumentException('Expression result must be larger than 0');
         }
     }
 
@@ -87,6 +91,7 @@ class Amount
             $matches['number'][$index + 1] = $matches['number'][$index] * $matches['number'][$index + 1];
             $matches['number'][$index]     = 0;
         }
+
         return array_sum($matches['number']);
     }
 }

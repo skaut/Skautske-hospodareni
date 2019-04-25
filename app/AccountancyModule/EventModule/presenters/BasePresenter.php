@@ -7,10 +7,11 @@ namespace App\AccountancyModule\EventModule;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\ObjectType;
 use Model\EventEntity;
+use stdClass;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var \stdClass */
+    /** @var stdClass */
     protected $event;
 
     /** @var EventEntity */

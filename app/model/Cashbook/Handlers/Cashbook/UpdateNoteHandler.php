@@ -13,7 +13,6 @@ final class UpdateNoteHandler
     /** @var ICashbookRepository */
     private $cashbooks;
 
-
     public function __construct(ICashbookRepository $cashbooks)
     {
         $this->cashbooks = $cashbooks;

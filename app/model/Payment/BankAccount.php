@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\BankAccount\AccountNumber;
 
@@ -16,46 +17,53 @@ class BankAccount
     private const FIO_BANK_CODE = '2010';
 
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var int
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $unitId;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $name;
 
     /**
-     * @var AccountNumber
      * @ORM\Embedded(class=AccountNumber::class)
+     *
+     * @var AccountNumber
      */
     private $number;
 
     /**
-     * @var string|NULL
      * @ORM\Column(type="string", nullable=true)
+     *
+     * @var string|NULL
      */
     private $token;
 
     /**
-     * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
+     *
+     * @var DateTimeImmutable
      */
     private $createdAt;
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean")
+     *
+     * @var bool
      */
     private $allowedForSubunits = false;
 
@@ -64,7 +72,7 @@ class BankAccount
         string $name,
         AccountNumber $number,
         ?string $token,
-        \DateTimeImmutable $createdAt,
+        DateTimeImmutable $createdAt,
         IUnitResolver $unitResolver
     ) {
         $this->unitId = $unitResolver->getOfficialUnitId($unitId);
@@ -86,7 +94,7 @@ class BankAccount
     {
         $this->name   = $name;
         $this->number = $number;
-        $this->token  = ($number->getBankCode() !== self::FIO_BANK_CODE || $token === '') ? null : $token;
+        $this->token  = $number->getBankCode() !== self::FIO_BANK_CODE || $token === '' ? null : $token;
     }
 
     public function getId() : int
@@ -114,7 +122,7 @@ class BankAccount
         return $this->token;
     }
 
-    public function getCreatedAt() : \DateTimeImmutable
+    public function getCreatedAt() : DateTimeImmutable
     {
         return $this->createdAt;
     }

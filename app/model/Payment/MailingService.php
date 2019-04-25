@@ -89,6 +89,7 @@ class MailingService
 
     /**
      * @return string User's email
+     *
      * @throws BankAccountNotFound
      * @throws EmailNotSet
      * @throws GroupNotFound
@@ -121,7 +122,6 @@ class MailingService
 
         return $user->getEmail();
     }
-
 
     /**
      * @throws BankAccountNotFound
@@ -168,7 +168,7 @@ class MailingService
         $template = $this->templateFactory->create(
             TemplateFactory::PAYMENT_DETAILS,
             [
-            'body' => nl2br($emailTemplate->getBody(), false),
+                'body' => nl2br($emailTemplate->getBody(), false),
             ]
         );
 

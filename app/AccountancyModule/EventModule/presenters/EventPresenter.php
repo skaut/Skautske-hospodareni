@@ -14,7 +14,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
@@ -30,6 +29,7 @@ use Model\LoggerService;
 use Model\Services\PdfRenderer;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+use function assert;
 
 class EventPresenter extends BasePresenter
 {
@@ -68,8 +68,7 @@ class EventPresenter extends BasePresenter
 
         if ($accessEditBase) {
             $form = $this['formEdit'];
-            $form->setDefaults(
-                [
+            $form->setDefaults([
                 'aid' => $aid,
                 'name' => $this->event->DisplayName,
                 'start' => new Date($this->event->StartDate),
@@ -77,22 +76,19 @@ class EventPresenter extends BasePresenter
                 'location' => $this->event->Location,
                 'type' => $this->event->ID_EventGeneralType,
                 'scope' => $this->event->ID_EventGeneralScope,
-                ]
-            );
+            ]);
         }
 
         $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants($this->event);
 
-        $this->template->setParameters(
-            [
+        $this->template->setParameters([
             'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),
             'accessEditBase' => $accessEditBase,
             'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
             'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
             'accessDetailEvent' => $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid),
             'pragueParticipants' => $pragueParticipants,
-            ]
-        );
+        ]);
 
         if (! $this->isAjax()) {
             return;
@@ -128,8 +124,9 @@ class EventPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        /** @var Functions $functions */
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
+
+        assert($functions instanceof Functions);
 
         if ($functions->getLeader() !== null) {
             $this->commandBus->handle(new CloseEvent(new SkautisEventId($aid)));
@@ -149,10 +146,8 @@ class EventPresenter extends BasePresenter
 
     public function actionPrintAll(int $aid) : void
     {
-        /** @var CashbookId $cashbookId */
         $cashbookId = $this->getCashbookId($aid);
-        /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
+        $chits      = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
 
         $event = $this->eventService->getEvent()->get($aid);
 

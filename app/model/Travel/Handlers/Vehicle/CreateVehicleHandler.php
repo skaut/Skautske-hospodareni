@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel\Handlers\Vehicle;
 
+use DateTimeImmutable;
 use Model\Common\Repositories\IUserRepository;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
 use Model\Travel\Repositories\IVehicleRepository;
@@ -38,7 +39,7 @@ final class CreateVehicleHandler
 
         $user = $this->users->find($command->getUserId());
 
-        $metadata = new Vehicle\Metadata(new \DateTimeImmutable(), $user->getName());
+        $metadata = new Vehicle\Metadata(new DateTimeImmutable(), $user->getName());
 
         $vehicle = new Vehicle(
             $command->getType(),

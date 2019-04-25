@@ -6,6 +6,7 @@ namespace Model\Payment\ReadModel\QueryHandlers;
 
 use Codeception\Test\Unit;
 use eGen\MessageBus\Bus\QueryBus;
+use Mockery;
 use Model\Event\Camp;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Event\SkautisCampId;
@@ -21,27 +22,27 @@ final class CampsWithoutGroupQueryHandlerTest extends Unit
 
     public function test() : void
     {
-        $queryBus = \Mockery::mock(QueryBus::class);
+        $queryBus = Mockery::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->once()
-            ->withArgs(function (CampListQuery $query) : bool {
+            ->withArgs(static function (CampListQuery $query) : bool {
                 return $query->getYear() === self::YEAR;
             })
             ->andReturn([
-                \Mockery::mock(Camp::class, ['getId' => new SkautisCampId(4)]),
-                \Mockery::mock(Camp::class, ['getId' => new SkautisCampId(2)]),
+                Mockery::mock(Camp::class, ['getId' => new SkautisCampId(4)]),
+                Mockery::mock(Camp::class, ['getId' => new SkautisCampId(2)]),
             ]);
 
-        $groups = \Mockery::mock(IGroupRepository::class);
+        $groups = Mockery::mock(IGroupRepository::class);
         $groups->shouldReceive('findBySkautisEntities')
             ->once()
-            ->withArgs(function (SkautisEntity $first, SkautisEntity $second) : bool {
+            ->withArgs(static function (SkautisEntity $first, SkautisEntity $second) : bool {
                 return $first->getType()->equalsValue(Type::CAMP)
                     && $second->getType()->equalsValue(Type::CAMP)
                     && $first->getId() === 4
                     && $second->getId() === 2;
             })->andReturn([
-                \Mockery::mock(Group::class, ['getObject' => new SkautisEntity(2, Type::get(Type::CAMP))]),
+                Mockery::mock(Group::class, ['getObject' => new SkautisEntity(2, Type::get(Type::CAMP))]),
             ]);
 
         $handler = new CampsWithoutGroupQueryHandler($queryBus, $groups);

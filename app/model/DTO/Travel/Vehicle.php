@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel;
 
+use DateTimeImmutable;
 use Nette\SmartObject;
 
 /**
@@ -14,7 +15,7 @@ use Nette\SmartObject;
  * @property-read int|NULL $subunitId
  * @property-read float $consumption
  * @property-read bool $archived
- * @property-read \DateTimeImmutable $createdAt
+ * @property-read DateTimeImmutable $createdAt
  * @property-read string $authorName
  */
 class Vehicle
@@ -45,7 +46,7 @@ class Vehicle
     /** @var bool */
     private $archived;
 
-    /** @var \DateTimeImmutable */
+    /** @var DateTimeImmutable */
     private $createdAt;
 
     /** @var string */
@@ -60,7 +61,7 @@ class Vehicle
         ?int $subunitId,
         float $consumption,
         bool $archived,
-        \DateTimeImmutable $createdAt,
+        DateTimeImmutable $createdAt,
         string $authorName
     ) {
         $this->id           = $id;
@@ -115,7 +116,7 @@ class Vehicle
         return $this->archived;
     }
 
-    public function getCreatedAt() : \DateTimeImmutable
+    public function getCreatedAt() : DateTimeImmutable
     {
         return $this->createdAt;
     }

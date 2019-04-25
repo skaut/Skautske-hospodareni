@@ -6,7 +6,6 @@ namespace Model\Travel\Repositories;
 
 use Model\Travel\Command;
 use Model\Travel\CommandNotFound;
-use Model\Travel\Vehicle;
 
 interface ICommandRepository
 {
@@ -16,12 +15,12 @@ interface ICommandRepository
     public function find(int $id) : Command;
 
     /**
-     * @return Vehicle[]
+     * @return Command[]
      */
     public function findByUnit(int $unitId) : array;
 
     /**
-     * @return Vehicle[]
+     * @return Command[]
      */
     public function findByUnitAndUser(int $unitId, int $userId) : array;
 

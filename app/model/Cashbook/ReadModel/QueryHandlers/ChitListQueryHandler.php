@@ -10,7 +10,6 @@ use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
-use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit as ChitDTO;
 use Model\DTO\Cashbook\ChitFactory;
 use function array_map;
@@ -31,6 +30,7 @@ class ChitListQueryHandler
 
     /**
      * @return ChitDTO[]
+     *
      * @throws CashbookNotFound
      */
     public function handle(ChitListQuery $query) : array
@@ -50,9 +50,7 @@ class ChitListQueryHandler
                 ->setParameter('paymentMethod', $query->getPaymentMethod()->toString());
         }
 
-        $chits = $queryBuilder->getQuery()->getResult();
-
-        /** @var Category[] $categories */
+        $chits      = $queryBuilder->getQuery()->getResult();
         $categories = $this->queryBus->handle(new CategoryListQuery($query->getCashbookId()));
 
         return array_map(

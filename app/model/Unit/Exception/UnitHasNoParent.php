@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Unit;
 
-class UnitHasNoParent extends \Exception
+use Exception;
+
+class UnitHasNoParent extends Exception
 {
 }

@@ -21,27 +21,31 @@ use Model\Common\UnitId;
 class Unit extends Aggregate
 {
     /**
-     * @var UnitId
      * @ORM\Id()
      * @ORM\Column(type="unit_id")
+     *
+     * @var UnitId
      */
     private $id;
 
     /**
-     * @var ArrayCollection|Cashbook[]
      * @ORM\OneToMany(targetEntity=Cashbook::class, mappedBy="unit", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * @var ArrayCollection|Cashbook[]
      */
     private $cashbooks;
 
     /**
-     * @var int
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $activeCashbookId;
 
     /**
-     * @var int
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $nextCashbookId = 1;
 
@@ -56,8 +60,9 @@ class Unit extends Aggregate
     }
 
     /**
-     * @throws YearCashbookAlreadyExists
      * @see CashbookWasCreated - event raised on success
+     *
+     * @throws YearCashbookAlreadyExists
      */
     public function createCashbook(int $year) : void
     {

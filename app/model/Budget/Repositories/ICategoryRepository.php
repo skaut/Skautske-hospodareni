@@ -20,6 +20,5 @@ interface ICategoryRepository
      */
     public function findCategories(int $unitId, Operation $operationType) : array;
 
-
     public function save(Category $vehicle) : void;
 }

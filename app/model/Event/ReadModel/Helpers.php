@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Model\Event\ReadModel;
 
+use stdClass;
+
 class Helpers
 {
     /**
-     * @param \stdClass[] $items
+     * @param stdClass[] $items
+     *
      * @return string[]
      */
     public static function getPairs(array $items) : array

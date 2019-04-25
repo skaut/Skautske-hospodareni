@@ -14,10 +14,12 @@ use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Security\Identity;
 use function array_key_exists;
 use function array_map;
 use function array_slice;
+use function assert;
 use function count;
 use function round;
 use function str_replace;
@@ -43,9 +45,11 @@ class DefaultPresenter extends BasePresenter
 
     private function isCommandAccessible(int $commandId) : bool
     {
-        $command = $this->travelService->getCommandDetail($commandId);
-        /** @var Identity $identity */
-        $identity    = $this->getUser()->getIdentity();
+        $command  = $this->travelService->getCommandDetail($commandId);
+        $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
+
         $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
             array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
 
@@ -54,16 +58,17 @@ class DefaultPresenter extends BasePresenter
 
     private function isCommandEditable(int $id) : bool
     {
-        $command = $this->travelService->getCommandDetail($id);
-        /** @var Identity $identity */
-        $identity    = $this->getUser()->getIdentity();
+        $command  = $this->travelService->getCommandDetail($id);
+        $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
+
         $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
             array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
 
         return $this->isCommandAccessible($id) &&
             $command->getClosedAt() === null && $unitOrOwner;
     }
-
 
     public function actionDetail(?int $id) : void
     {
@@ -77,7 +82,7 @@ class DefaultPresenter extends BasePresenter
 
         $command = $this->travelService->getCommandDetail($id);
 
-        $this['formAddTravel']['type']->setItems($command->getTransportTypePairs());
+        $this->getTypeSelectBox()->setItems($command->getTransportTypePairs());
         $this['formAddTravel']->setDefaults(['command_id' => $id]);
     }
 
@@ -107,26 +112,24 @@ class DefaultPresenter extends BasePresenter
         $travels   = $this->travelService->getTravels($commandId);
         $vehicleId = $command->getVehicleId();
 
-        /** @var Template $template */
         $template = $this->getTemplateFactory()->createTemplate();
-        $template->setParameters(
-            [
+
+        assert($template instanceof Template);
+
+        $template->setParameters([
             'command' => $command,
             'travels' => $travels,
             'types' => array_map(function (TravelType $t) {
                 return $t->getLabel();
             }, $command->getTransportTypes()),
             'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
-            ]
-        );
+        ]);
 
         if (count($travels) !== 0) {
-            $template->setParameters(
-                [
+            $template->setParameters([
                 'start' => $travels[0],
                 'end' => array_slice($travels, -1)[0],
-                ]
-            );
+            ]);
         }
 
         $template->getLatte()->addFilter(null, '\\App\\AccountancyModule\\AccountancyHelpers::loader');
@@ -211,6 +214,7 @@ class DefaultPresenter extends BasePresenter
         $form->onSuccess[] = function (Form $form) : void {
             $this->formAddTravelSubmitted($form);
         };
+
         return $form;
     }
 
@@ -223,7 +227,7 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage('Nelze upravovat cestovní příkaz.', 'danger');
             $this->redirect('default');
         }
-        $v['distance'] = round(str_replace(',', '.', $v['distance']), 2);
+        $v['distance'] = round((float) str_replace(',', '.', $v['distance']), 2);
 
         $this->travelService->addTravel(
             $commandId,
@@ -248,10 +252,10 @@ class DefaultPresenter extends BasePresenter
         $command = $this->travelService->getCommandDetail($commandId);
 
         $form = $this['formEditTravel'];
-        $form['type']->setItems($command->getTransportTypePairs());
 
-        $form->setDefaults(
-            [
+        $this->getTypeSelectBox()->setItems($command->getTransportTypePairs());
+
+        $form->setDefaults([
             'commandId' => $commandId,
             'id' => $travelId,
             'type' => $travel->getDetails()->getTransportType(),
@@ -259,8 +263,7 @@ class DefaultPresenter extends BasePresenter
             'startPlace' => $travel->getDetails()->getStartPlace(),
             'endPlace' => $travel->getDetails()->getEndPlace(),
             'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
-            ]
-        );
+        ]);
 
         $this->template->setParameters(['form' => $form]);
     }
@@ -324,5 +327,14 @@ class DefaultPresenter extends BasePresenter
 
         $this->flashMessage('Cesta byla upravena.');
         $this->redirect('detail', [$v->commandId]);
+    }
+
+    private function getTypeSelectBox() : SelectBox
+    {
+        $selectBox = $this['formEditTravel']['type'];
+
+        assert($selectBox instanceof SelectBox);
+
+        return $selectBox;
     }
 }

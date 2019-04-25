@@ -11,6 +11,7 @@ use Nette\SmartObject;
 
 /**
  * @ORM\Embeddable()
+ *
  * @property-read DateTimeImmutable $date
  * @property-read string $transportType
  * @property-read string $startPlace
@@ -21,26 +22,30 @@ class TravelDetails
     use SmartObject;
 
     /**
-     * @var Date
      * @ORM\Column(type="chronos_date", name="start_date")
+     *
+     * @var Date
      */
     private $date;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="type")
+     *
+     * @var string
      */
     private $transportType;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $startPlace;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $endPlace;
 

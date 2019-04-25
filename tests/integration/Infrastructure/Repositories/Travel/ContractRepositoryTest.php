@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Travel;
 
+use DateTimeImmutable;
+use IntegrationTest;
 use Model\Travel\Contract;
 
-final class ContractRepositoryTest extends \IntegrationTest
+final class ContractRepositoryTest extends IntegrationTest
 {
     private const CONTRACT = [
         'unit_id' => 10,
@@ -49,8 +51,8 @@ final class ContractRepositoryTest extends \IntegrationTest
         $this->assertSame(1, $contract->getId());
         $this->assertSame(self::CONTRACT['unit_id'], $contract->getUnitId());
         $this->assertSame(self::CONTRACT['unit_person'], $contract->getUnitRepresentative());
-        $this->assertEquals(new \DateTimeImmutable(self::CONTRACT['start']), $contract->getSince());
-        $this->assertEquals(new \DateTimeImmutable(self::CONTRACT['end']), $contract->getUntil());
+        $this->assertEquals(new DateTimeImmutable(self::CONTRACT['start']), $contract->getSince());
+        $this->assertEquals(new DateTimeImmutable(self::CONTRACT['end']), $contract->getUntil());
         $this->assertSame(self::CONTRACT['template'], $contract->getTemplateVersion());
 
         $passenger = $contract->getPassenger();
@@ -80,6 +82,7 @@ final class ContractRepositoryTest extends \IntegrationTest
 
         $this->tester->seeInDatabase('tc_contracts', ['id' => 2] + self::CONTRACT);
     }
+
     private function addContractToDatabase() : void
     {
         $this->tester->haveInDatabase('tc_contracts', self::CONTRACT);

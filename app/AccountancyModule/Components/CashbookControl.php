@@ -52,11 +52,9 @@ class CashbookControl extends BaseControl
 
     public function render() : void
     {
-        $this->template->setParameters(
-            [
+        $this->template->setParameters([
             'isEditable' => $this->isEditable,
-            ]
-        );
+        ]);
 
         $this->template->setFile(__DIR__ . '/templates/CashbookControl.latte');
         $this->template->render();
@@ -92,7 +90,6 @@ class CashbookControl extends BaseControl
         $control = $this->chitListFactory->create($this->cashbookId, $this->isEditable, $paymentMethod);
 
         $control->onEditButtonClicked[] = function (int $chitId) : void {
-            /** @var ChitForm $form */
             $form = $this['chitForm'];
             $form->editChit($chitId);
 

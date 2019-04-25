@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-class InvalidEmail extends \Exception
+use Exception;
+
+class InvalidEmail extends Exception
 {
 }

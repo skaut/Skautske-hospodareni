@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Unit;
 
-class UnitNotFound extends \Exception
+use Exception;
+
+class UnitNotFound extends Exception
 {
 }

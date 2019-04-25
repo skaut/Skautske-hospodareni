@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Payment;
 
+use DateTimeImmutable;
+use IntegrationTest;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 use function array_keys;
 
-class MailCredentialsRepositoryTest extends \IntegrationTest
+class MailCredentialsRepositoryTest extends IntegrationTest
 {
     /** @var MailCredentialsRepository */
     private $repository;
@@ -52,7 +54,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
         $this->assertSame($row['unitId'], $credentials->getUnitId());
         $this->assertSame(MailCredentials\MailProtocol::get(MailCredentials\MailProtocol::SSL), $credentials->getProtocol());
         $this->assertSame($row['sender'], $credentials->getSender());
-        $this->assertEquals(new \DateTimeImmutable($row['created']), $credentials->getCreatedAt());
+        $this->assertEquals(new DateTimeImmutable($row['created']), $credentials->getCreatedAt());
     }
 
     public function testFindNotExistingConfigThrowsException() : void
@@ -116,7 +118,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             $this->assertSame($row['unitId'], $credentials->getUnitId());
             $this->assertSame($protocols[$row['secure']], $credentials->getProtocol());
             $this->assertSame($row['sender'], $credentials->getSender());
-            $this->assertEquals(new \DateTimeImmutable($row['created']), $credentials->getCreatedAt());
+            $this->assertEquals(new DateTimeImmutable($row['created']), $credentials->getCreatedAt());
         }
     }
 
@@ -148,7 +150,7 @@ class MailCredentialsRepositoryTest extends \IntegrationTest
             'pass',
             MailCredentials\MailProtocol::get(MailCredentials\MailProtocol::TLS),
             'test@seznam.cz',
-            new \DateTimeImmutable('2017-01-01 00:00:00')
+            new DateTimeImmutable('2017-01-01 00:00:00')
         );
 
         $this->repository->save($credentials);

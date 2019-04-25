@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Exception;
 
+use Exception;
 use Model\Common\UnitId;
 use function sprintf;
 
-final class YearCashbookAlreadyExists extends \Exception
+final class YearCashbookAlreadyExists extends Exception
 {
     public static function forYear(int $year, UnitId $unitId) : self
     {

@@ -20,11 +20,11 @@ use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
-use Model\DTO\Cashbook\Chit;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\SkautisCampId;
 use Money\Money;
 use Skautis\Wsdl\PermissionException;
+use function assert;
 use function count;
 
 class CashbookPresenter extends BasePresenter
@@ -50,22 +50,19 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        /** @var Money $finalBalance */
-        $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
-
-        /** @var Money $finalRealBalance */
+        $finalBalance     = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
 
-        $this->template->setParameters(
-            [
+        assert($finalBalance instanceof Money && $finalRealBalance instanceof Money);
+
+        $this->template->setParameters([
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'cashbookId' => $this->getCashbookId()->toString(),
             'isInMinus' => $finalBalance->isNegative(),
             'isEditable' => $this->isEditable,
             'missingCategories' => $this->missingCategories,
             'finalRealBalance' => $finalRealBalance,
-            ]
-        );
+        ]);
     }
 
     public function handleActivateAutocomputedCashbook(int $aid) : void
@@ -142,7 +139,6 @@ class CashbookPresenter extends BasePresenter
 
     private function isCashbookEmpty() : bool
     {
-        /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->getCashbookId()));
 
         return count($chits) === 0;

@@ -7,6 +7,7 @@ namespace Model;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
+use stdClass;
 
 class UserService extends BaseService
 {
@@ -19,21 +20,23 @@ class UserService extends BaseService
     }
 
     /**
-     * vrací pole
-     * @return mixed všech dostupných rolí přihlášeného uživatele
+     * Returns all available roles for current user
+     *
+     * @return stdClass[]
      */
-    public function getAllSkautisRoles(bool $activeOnly = true)
+    public function getAllSkautisRoles(bool $activeOnly = true) : array
     {
         return $this->skautis->user->UserRoleAll(['ID_User' => $this->getUserDetail()->ID, 'IsActive' => $activeOnly]);
     }
 
-    public function getUserDetail() : \stdClass
+    public function getUserDetail() : stdClass
     {
         $id  = __FUNCTION__;
         $res = $this->loadSes($id);
         if (! $res) {
             $res = $this->saveSes($id, $this->skautis->user->UserDetail());
         }
+
         return $res;
     }
 
@@ -52,7 +55,9 @@ class UserService extends BaseService
 
     /**
      * informace o aktuálně přihlášené roli
+     *
      * @internal  Use query bus with ActiveSkautisRoleQuery
+     *
      * @see ActiveSkautisRoleQuery
      */
     public function getActualRole() : ?SkautisRole
@@ -69,11 +74,11 @@ class UserService extends BaseService
     /**
      * vrací kompletní seznam informací o přihlášené osobě
      */
-    public function getPersonalDetail() : \stdClass
+    public function getPersonalDetail() : stdClass
     {
-        $user   = $this->getUserDetail();
-        $person = $this->skautis->org->personDetail((['ID' => $user->ID_Person]));
-        return $person;
+        $user = $this->getUserDetail();
+
+        return $this->skautis->org->personDetail((['ID' => $user->ID_Person]));
     }
 
     /**
@@ -91,6 +96,7 @@ class UserService extends BaseService
 
     /**
      * @return mixed[]
+     *
      * @throws BadRequestException
      */
     public function getAccessArrays(UnitService $us) : array

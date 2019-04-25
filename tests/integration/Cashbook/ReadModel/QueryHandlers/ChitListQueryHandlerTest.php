@@ -6,6 +6,7 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
+use IntegrationTest;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\PaymentMethod;
@@ -16,7 +17,7 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Category;
 use function count;
 
-class ChitListQueryHandlerTest extends \IntegrationTest
+class ChitListQueryHandlerTest extends IntegrationTest
 {
     private const CASHBOOK_ID = '123';
 

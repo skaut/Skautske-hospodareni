@@ -26,6 +26,7 @@ use Model\EventEntity;
 use Nette\DI\Container;
 use Nette\Utils\ArrayHash;
 use function array_map;
+use function assert;
 use function explode;
 use function implode;
 use function in_array;
@@ -84,11 +85,7 @@ class MoveChitsDialog extends BaseControl
 
     public function render() : void
     {
-        $this->template->setParameters(
-            [
-            'renderModal' => $this->opened,
-            ]
-        );
+        $this->template->setParameters(['renderModal' => $this->opened]);
 
         $this->template->setFile(__DIR__ . '/templates/MoveChitsDialog.latte');
         $this->template->render();
@@ -121,11 +118,13 @@ class MoveChitsDialog extends BaseControl
 
         if (empty($chitIds)) {
             $form->addError('Nebyly vybrány žádné paragony!');
+
             return;
         }
 
         if ($values->newCashbookId === null) {
             $form->addError('Nebyla vybrána žádná cílová evidence plateb!');
+
             return;
         }
 
@@ -158,12 +157,15 @@ class MoveChitsDialog extends BaseControl
      *
      * @param  string   $eventType "general" or "camp"
      * @param  string[] $states
+     *
      * @return mixed[]
      */
     private function getListOfEvents(string $eventType, array $states) : array
     {
-        /** @var EventEntity $eventEntity */
-        $eventEntity  = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
+        $eventEntity = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
+
+        assert($eventEntity instanceof EventEntity);
+
         $eventService = $eventEntity->getEvent();
         $rawArr       = $eventService->getAll(null);
 
@@ -206,8 +208,10 @@ class MoveChitsDialog extends BaseControl
 
     private function getCashbookType(CashbookId $cashbookId) : CashbookType
     {
-        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
         return $cashbook->getType();
     }
 

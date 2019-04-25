@@ -60,7 +60,7 @@ class LogEntry
         return $this->unitId;
     }
 
-    public function getDate() : \DateTimeImmutable
+    public function getDate() : DateTimeImmutable
     {
         return $this->date;
     }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment\IntegrationTests;
 
+use Helpers;
+use IntegrationTest;
 use Model\Common\User;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
@@ -14,7 +16,7 @@ use Model\Payment\Payment;
 use Model\Payment\UserRepositoryStub;
 use Model\PaymentService;
 
-class PaymentCompletedEmailTest extends \IntegrationTest
+class PaymentCompletedEmailTest extends IntegrationTest
 {
     private const UNIT_ID = 10;
     private const EMAIL   = 'test@hospodareni.loc';
@@ -113,7 +115,7 @@ class PaymentCompletedEmailTest extends \IntegrationTest
     {
         $this->tester->resetEmails();
 
-        $paymentDefaults = \Helpers::createEmptyPaymentDefaults();
+        $paymentDefaults = Helpers::createEmptyPaymentDefaults();
         $emails          = $emails ?? [
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
         ];
@@ -124,7 +126,7 @@ class PaymentCompletedEmailTest extends \IntegrationTest
             'Platba',
             $paymentEmail,
             100,
-            \Helpers::getValidDueDate(),
+            Helpers::getValidDueDate(),
             null,
             null,
             null,

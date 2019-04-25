@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Unit;
 
 use Nette\Utils\Strings;
-use function end;
+use function array_key_last;
 use function explode;
 use function in_array;
 use function sprintf;
@@ -82,24 +82,20 @@ class Unit
         $this->children           = $children;
     }
 
-
     public function isSubunitOf(Unit $unit) : bool
     {
         return Strings::startsWith($this->registrationNumber, $unit->registrationNumber);
     }
-
 
     public function getId() : int
     {
         return $this->id;
     }
 
-
     public function getSortName() : string
     {
         return $this->sortName;
     }
-
 
     public function getDisplayName() : string
     {
@@ -111,6 +107,7 @@ class Unit
         if ($this->isOfficial()) {
             return sprintf('Junák - český skaut, %s, z. s.', $this->getDisplayName());
         }
+
         return '';
     }
 
@@ -153,7 +150,7 @@ class Unit
     {
         $splitNumber = explode('.', $this->registrationNumber);
 
-        return end($splitNumber);
+        return $splitNumber[array_key_last($splitNumber)];
     }
 
     public function getRegistrationNumber() : string

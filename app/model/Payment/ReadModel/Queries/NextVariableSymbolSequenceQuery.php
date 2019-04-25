@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\Queries;
 
+use DateTimeImmutable;
+
 class NextVariableSymbolSequenceQuery
 {
     /** @var int */
     private $unitId;
 
-    /** @var \DateTimeImmutable */
+    /** @var DateTimeImmutable */
     private $now;
 
-    public function __construct(int $unitId, \DateTimeImmutable $now)
+    public function __construct(int $unitId, DateTimeImmutable $now)
     {
         $this->unitId = $unitId;
         $this->now    = $now;
@@ -23,7 +25,7 @@ class NextVariableSymbolSequenceQuery
         return $this->unitId;
     }
 
-    public function getNow() : \DateTimeImmutable
+    public function getNow() : DateTimeImmutable
     {
         return $this->now;
     }

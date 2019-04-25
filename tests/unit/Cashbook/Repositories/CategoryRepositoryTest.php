@@ -6,6 +6,7 @@ namespace Model\Cashbook\Repositories;
 
 use Codeception\Test\Unit;
 use eGen\MessageBus\Bus\QueryBus;
+use Mockery;
 use Model\Cashbook\CampCategory;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
@@ -29,7 +30,7 @@ final class CategoryRepositoryTest extends Unit
             new Category(50, 'test1', 't', Operation::get(Operation::EXPENSE), [], false, 10),
         ];
 
-        $staticCategoryRepository = \Mockery::mock(IStaticCategoryRepository::class);
+        $staticCategoryRepository = Mockery::mock(IStaticCategoryRepository::class);
         $staticCategoryRepository->shouldReceive('findByObjectType')
             ->once()
             ->withArgs([ObjectType::get(ObjectType::CAMP)])
@@ -40,17 +41,17 @@ final class CategoryRepositoryTest extends Unit
             new CampCategory(4, Operation::get(Operation::INCOME), 'name2', Money::CZK(0), null),
         ];
 
-        $campCategoryRepository = \Mockery::mock(ICampCategoryRepository::class);
+        $campCategoryRepository = Mockery::mock(ICampCategoryRepository::class);
         $campCategoryRepository->shouldReceive('findForCamp')
             ->once()
-            ->withArgs(function (int $id) : bool {
+            ->withArgs(static function (int $id) : bool {
                 return $id === self::CAMP_ID;
             })->andReturn($campCategories);
 
-        $queryBus = \Mockery::mock(QueryBus::class);
+        $queryBus = Mockery::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->once()
-            ->withArgs(function (SkautisIdQuery $query) : bool {
+            ->withArgs(static function (SkautisIdQuery $query) : bool {
                 return $query->getCashbookId()->toString() === '123';
             })->andReturn(self::CAMP_ID);
 

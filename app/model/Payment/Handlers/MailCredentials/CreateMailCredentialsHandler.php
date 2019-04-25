@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Handlers\MailCredentials;
 
+use DateTimeImmutable;
 use Model\Common\Repositories\IUserRepository;
 use Model\Mail\IMailerFactory;
 use Model\Payment\Commands\CreateMailCredentials;
@@ -44,7 +45,7 @@ class CreateMailCredentialsHandler
             $command->getPassword(),
             $command->getProtocol(),
             $command->getSender(),
-            new \DateTimeImmutable()
+            new DateTimeImmutable()
         );
 
         $this->trySendViaSmtp($credentials, $command->getUserId());
@@ -54,6 +55,7 @@ class CreateMailCredentialsHandler
 
     /**
      * Send test email to user who tries to add SMTP
+     *
      * @throws EmailNotSet
      */
     private function trySendViaSmtp(MailCredentials $credentials, int $userId) : void

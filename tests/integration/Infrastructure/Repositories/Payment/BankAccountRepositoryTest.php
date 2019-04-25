@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Payment;
 
+use DateTimeImmutable;
+use IntegrationTest;
 use Mockery as m;
 use Model\Payment\BankAccount;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\IUnitResolver;
 use function array_keys;
 
-class BankAccountRepositoryTest extends \IntegrationTest
+class BankAccountRepositoryTest extends IntegrationTest
 {
     /** @var BankAccountRepository */
     private $repository;
@@ -43,7 +45,7 @@ class BankAccountRepositoryTest extends \IntegrationTest
 
     public function testSavedAccountIsInDatabase() : void
     {
-        $createdAt = new \DateTimeImmutable();
+        $createdAt = new DateTimeImmutable();
         $account   = $this->createAccount(5, $createdAt);
 
         $this->repository->save($account);
@@ -147,14 +149,14 @@ class BankAccountRepositoryTest extends \IntegrationTest
         $this->assertSame([], $accounts);
     }
 
-    private function createAccount(int $unitId = 1, ?\DateTimeImmutable $createdAt = null) : BankAccount
+    private function createAccount(int $unitId = 1, ?DateTimeImmutable $createdAt = null) : BankAccount
     {
         return new BankAccount(
             1,
             'Hlavní',
             new BankAccount\AccountNumber(null, '2000942144', '2010'),
             'test-token',
-            $createdAt ?? new \DateTimeImmutable(),
+            $createdAt ?? new DateTimeImmutable(),
             m::mock(IUnitResolver::class, ['getOfficialUnitId' => $unitId])
         );
     }
@@ -162,14 +164,14 @@ class BankAccountRepositoryTest extends \IntegrationTest
     /**
      * @return mixed[]
      */
-    private function getRow(int $id, int $unitId, ?\DateTimeImmutable $createdAt = null) : array
+    private function getRow(int $id, int $unitId, ?DateTimeImmutable $createdAt = null) : array
     {
         return [
             'id' => $id,
             'unit_id' => $unitId,
             'name' => 'Hlavní',
             'token' => 'test-token',
-            'created_at' => ($createdAt ?? new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+            'created_at' => ($createdAt ?? new DateTimeImmutable())->format('Y-m-d H:i:s'),
             'allowed_for_subunits' => 0,
             'number_prefix' => null,
             'number_number' => '2000942144',

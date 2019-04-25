@@ -121,6 +121,7 @@ class Event implements ISkautisEvent
     {
         return $this->displayName;
     }
+
     public function getUnitId() : int
     {
         return $this->unitId;

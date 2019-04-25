@@ -16,54 +16,62 @@ use Model\Cashbook\Operation;
 class Category
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", nullable=true)
+     *
+     * @var int
      */
     private $unitId;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=64)
+     *
+     * @var string
      */
     private $label;
 
     /**
-     * @var Operation
      * @ORM\Column(type="string_enum", options={"default"="out"})
+     *
+     * @var Operation
      * @EnumAnnotation(class=\Model\Cashbook\Operation::class)
      */
     private $type;
 
     /**
-     * @var ArrayCollection|Category[]
      * @ORM\OneToMany(targetEntity="Category", mappedBy="parent",cascade={"persist"})
+     *
+     * @var ArrayCollection|Category[]
      */
     private $children;
 
     /**
-     * @var Category
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="children")
      * @ORM\JoinColumn(name="parentId", referencedColumnName="id")
+     *
+     * @var Category
      */
     private $parent;
 
     /**
-     * @var float
      * @ORM\Column(type="float", options={"unsigned"=true, "default"=0})
+     *
+     * @var float
      */
     private $value;
 
     /**
-     * @var int
      * @ORM\Column(type="smallint", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $year;
 

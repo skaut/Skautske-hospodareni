@@ -21,6 +21,7 @@ use Nette\Utils\Html;
 use function array_filter;
 use function array_keys;
 use function array_map;
+use function assert;
 use function in_array;
 
 class CommandForm extends Control
@@ -82,9 +83,11 @@ class CommandForm extends Control
             ->setMaxLength(64)
             ->setAttribute('class', 'form-control')
             ->addRule($form::FILLED, 'Musíte vyplnit účel cesty.');
-        $form->addMultiSelect('type', 'Prostředek*', $this->prepareTransportTypeOptions())
+        $typeSelectBox = $form->addMultiSelect('type', 'Prostředek*', $this->prepareTransportTypeOptions())
             ->setAttribute('class', 'combobox')
-            ->setRequired('Vyberte alespoň jeden dopravní prostředek.')
+            ->setRequired('Vyberte alespoň jeden dopravní prostředek.');
+
+        $typeSelectBox
             ->addCondition([MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->toggle('vehicle');
 
@@ -125,20 +128,20 @@ class CommandForm extends Control
             ->setOption('id', 'vehicle_id')
             ->setPrompt('Vyberte vozidlo')
             ->setAttribute('class', 'form-control')
-            ->addConditionOn($form['type'], [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit typ vozidla.');
 
         $form->addText('fuel_price', 'Cena paliva za 1l*')
             ->setOption('id', 'fuel_price')
             ->setAttribute('class', 'form-control')
-            ->addConditionOn($form['type'], [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit cenu paliva.')
             ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
 
         $form->addText('amortization', 'Opotřebení*')
             ->setOption('id', 'amortization')
             ->setAttribute('class', 'form-control')
-            ->addConditionOn($form['type'], [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
+            ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit opotřebení.')
             ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
 
@@ -157,8 +160,10 @@ class CommandForm extends Control
         if ($this->commandId !== null) {
             $this->loadDefaultValues($form);
         } else {
-            /** @var Unit $unit */
             $unit = $this->queryBus->handle(new UnitQuery($this->unitId));
+
+            assert($unit instanceof Unit);
+
             $form->setDefaults([
                 'unit' => $unit->getRegistrationNumber(),
             ]);
@@ -178,21 +183,24 @@ class CommandForm extends Control
         $usedTypes = $command->getTransportTypePairs();
 
         if (! empty($usedTypes)) {
-            $form['type']->setItems($this->prepareTransportTypeOptions($usedTypes));
-            $form['type']->setRequired(false); // Even when nothing is selected, used types persist, so it's ok
+            $typeSelectBox = $form['type'];
+
+            assert($typeSelectBox instanceof SelectBox);
+
+            $typeSelectBox->setItems($this->prepareTransportTypeOptions($usedTypes));
+            $typeSelectBox->setRequired(false); // Even when nothing is selected, used types persist, so it's ok
         }
 
         $contractId = $command->getPassenger()->getContractId();
+        $contracts  = $form['contract_id'];
 
-        /** @var SelectBox $contracts */
-        $contracts = $form['contract_id'];
+        assert($contracts instanceof SelectBox);
 
         if ($contractId !== null && ! isset($contracts->getItems()[$contractId])) {
             $contracts->setItems($this->prepareContracts($contractId)); // Prepare list with missing contract
         }
 
-        $form->setDefaults(
-            [
+        $form->setDefaults([
             'contract_id' => $command->getPassenger()->getContractId(),
             'purpose' => $command->getPurpose(),
             'place' => $command->getPlace(),
@@ -207,8 +215,7 @@ class CommandForm extends Control
                 'contact' => $command->getPassenger()->getContact(),
                 'address' => $command->getPassenger()->getAddress(),
             ],
-            ]
-        );
+        ]);
 
         $vehicleId = $command->getVehicleId();
 
@@ -216,8 +223,9 @@ class CommandForm extends Control
             return;
         }
 
-        /** @var SelectBox $vehicles */
         $vehicles = $form['vehicle_id'];
+
+        assert($vehicles instanceof SelectBox);
 
         if (in_array($vehicleId, $vehicles->getItems())) {
             return;
@@ -275,6 +283,7 @@ class CommandForm extends Control
 
     /**
      * @param string[] $disabledValues
+     *
      * @return Html[]
      */
     private function prepareTransportTypeOptions(array $disabledValues = []) : array

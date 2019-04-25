@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Payment;
 
 use Cake\Chronos\Date;
+use DateTimeImmutable;
 use eGen\MessageBus\Bus\EventBus;
+use IntegrationTest;
 use Mockery as m;
 use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\EmailTemplate;
@@ -16,7 +18,7 @@ use Model\Payment\VariableSymbol;
 use function array_map;
 use function sort;
 
-class GroupRepositoryTest extends \IntegrationTest
+class GroupRepositoryTest extends IntegrationTest
 {
     private const ROW = [
         'label' => 'Test',
@@ -68,8 +70,8 @@ class GroupRepositoryTest extends \IntegrationTest
 
     public function testFind() : void
     {
-        $createdAt       = new \DateTimeImmutable(self::ROW['created_at']);
-        $lastPairing     = new \DateTimeImmutable(self::ROW['last_pairing']);
+        $createdAt       = new DateTimeImmutable(self::ROW['created_at']);
+        $lastPairing     = new DateTimeImmutable(self::ROW['last_pairing']);
         $paymentDefaults = new Group\PaymentDefaults(
             self::ROW['amount'],
             new Date('2018-01-29'),
@@ -162,7 +164,7 @@ class GroupRepositoryTest extends \IntegrationTest
         $groups = $this->repository->findByUnits([10, 20], false);
 
         $groupIds = array_map(
-            function (Group $group) : int {
+            static function (Group $group) : int {
                 return $group->getId();
             },
             $groups
@@ -177,7 +179,7 @@ class GroupRepositoryTest extends \IntegrationTest
     {
         $this->eventBus->shouldReceive('handle')
             ->once()
-            ->withArgs(function (GroupWasRemoved $event) : bool {
+            ->withArgs(static function (GroupWasRemoved $event) : bool {
                 return $event->getGroupId() === 1;
             });
 

@@ -44,6 +44,7 @@ class MailService
     public function getAll(int $unitId) : array
     {
         $mails = $this->findForUnit($unitId);
+
         return array_map([MailFactory::class, 'create'], $mails);
     }
 

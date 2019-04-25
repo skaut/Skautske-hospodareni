@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule;
 
 use Model\Skautis\SkautisMaintenanceChecker;
+use stdClass;
 
 abstract class BasePresenter extends \App\BasePresenter
 {
@@ -77,9 +78,10 @@ abstract class BasePresenter extends \App\BasePresenter
     /**
      * {@inheritDoc}
      */
-    public function flashMessage($message, $type = 'info') : \stdClass
+    public function flashMessage($message, $type = 'info') : stdClass
     {
         $this->redrawControl('flash');
+
         return parent::flashMessage($message, $type);
     }
 

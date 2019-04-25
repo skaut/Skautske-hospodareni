@@ -56,6 +56,7 @@ final class EventsWithoutGroupQueryHandler
 
     /**
      * @param Event[] $events
+     *
      * @return int[]
      */
     private function getEventWithGroupIds(array $events) : array

@@ -10,6 +10,7 @@ use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Event\ReadModel\Queries\CampStatisticsQuery;
 use Model\Event\SkautisCampId;
+use PDO;
 use function array_map;
 
 class CampStatisticsQueryHandler
@@ -28,11 +29,11 @@ class CampStatisticsQueryHandler
     public function handle(CampStatisticsQuery $query) : array
     {
         $params = [
-        array_map(function (SkautisCampId $id) {
-            return $id->toInt();
-        }, $query->getCampIds()),
+            array_map(function (SkautisCampId $id) {
+                return $id->toInt();
+            }, $query->getCampIds()),
             $query->getYear(),
-            ];
+        ];
         $types  = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
         $sql    = 'SELECT o.skautisId, SUM(c.price) as sum ' .
             'FROM `ac_chits` c ' .
@@ -44,6 +45,6 @@ class CampStatisticsQueryHandler
 
         $stmt = $this->db->executeQuery($sql, $params, $types);
 
-        return array_map('floatval', $stmt->fetchAll(\PDO::FETCH_KEY_PAIR));
+        return array_map('floatval', $stmt->fetchAll(PDO::FETCH_KEY_PAIR));
     }
 }

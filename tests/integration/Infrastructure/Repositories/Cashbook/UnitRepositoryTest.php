@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Cashbook;
 
 use eGen\MessageBus\Bus\EventBus;
+use IntegrationTest;
+use Mockery;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Events\Unit\CashbookWasCreated;
 use Model\Cashbook\Exception\UnitNotFound;
 use Model\Cashbook\Unit;
 use Model\Common\UnitId;
 
-final class UnitRepositoryTest extends \IntegrationTest
+final class UnitRepositoryTest extends IntegrationTest
 {
     private const UNIT = [
         'id' => 15,
@@ -95,10 +97,10 @@ final class UnitRepositoryTest extends \IntegrationTest
         $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);
         $unit->createCashbook(2019); // There is CashbookWasCreatedEvent
 
-        $eventBus = \Mockery::mock(EventBus::class);
+        $eventBus = Mockery::mock(EventBus::class);
         $eventBus->shouldReceive('handle')
             ->once()
-            ->withArgs(function (CashbookWasCreated $event) {
+            ->withArgs(static function (CashbookWasCreated $event) {
                 return true;
             });
 

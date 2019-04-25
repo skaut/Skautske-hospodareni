@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Participant;
 
-class PaymentNotFound extends \Exception
+use Exception;
+
+class PaymentNotFound extends Exception
 {
 }

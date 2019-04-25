@@ -13,6 +13,7 @@ use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
+use DateTimeImmutable;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccountService;
@@ -29,14 +30,14 @@ use Model\Payment\PaymentNotFound;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
 use Model\UnitService;
-use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
-use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SubmitButton;
 use function array_filter;
 use function array_intersect;
 use function array_keys;
 use function array_unique;
+use function assert;
 use function count;
 use function date;
 use function sprintf;
@@ -45,9 +46,6 @@ class PaymentPresenter extends BasePresenter
 {
     /** @var string[] */
     protected $readUnits;
-
-    /** @var string[] */
-    protected $editUnits;
 
     /** @var UnitService */
     protected $unitService;
@@ -105,8 +103,6 @@ class PaymentPresenter extends BasePresenter
         parent::startup();
         //Kontrola ověření přístupu
         $this->readUnits = $this->unitService->getReadUnits($this->user);
-        $role            = $this->queryBus->handle(new ActiveSkautisRoleQuery());
-        $this->editUnits = $this->queryBus->handle(new EditableUnitsQuery($role));
     }
 
     public function actionDefault(bool $onlyOpen = true) : void
@@ -154,15 +150,13 @@ class PaymentPresenter extends BasePresenter
 
         $nextVS = $this->model->getNextVS($group->getId());
         $form   = $this['paymentForm'];
-        $form->setDefaults(
-            [
+        $form->setDefaults([
             'amount' => $group->getDefaultAmount(),
             'maturity' => $group->getDueDate(),
             'ks' => $group->getConstantSymbol(),
             'oid' => $group->getId(),
             'vs' => $nextVS !== null ? (string) $nextVS : '',
-            ]
-        );
+        ]);
 
         $payments = $this->getPaymentsForGroup($id);
 
@@ -178,7 +172,7 @@ class PaymentPresenter extends BasePresenter
             'nextVS' => $nextVS,
             'payments'  => $payments,
             'summarize' => $this->model->getGroupSummaries([$id])[$id],
-            'now'       => new \DateTimeImmutable(),
+            'now'       => new DateTimeImmutable(),
             'isGroupSendActive' => $group->getState() === 'open' && ! empty($paymentsForSendEmail),
         ]);
     }
@@ -197,10 +191,15 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('Payment:default');
         }
 
-        $form                  = $this['paymentForm'];
-        $form['send']->caption = 'Upravit';
-        $form->setDefaults(
-            [
+        $form = $this['paymentForm'];
+
+        $submit = $form['send'];
+
+        assert($submit instanceof SubmitButton);
+
+        $submit->caption = 'Upravit';
+
+        $form->setDefaults([
             'name' => $payment->getName(),
             'email' => $payment->getEmail(),
             'amount' => $payment->getAmount(),
@@ -210,8 +209,7 @@ class PaymentPresenter extends BasePresenter
             'note' => $payment->getNote(),
             'oid' => $payment->getGroupId(),
             'pid' => $pid,
-            ]
-        );
+        ]);
 
         $this->template->setParameters(['group' => $this->model->getGroup($payment->getGroupId())]);
     }
@@ -232,7 +230,6 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('Payment:detail', ['id' => $id]); // redirect elsewhere?
         }
 
-        /** @var MassAddForm $form */
         $form = $this['massAddForm'];
         $list = $this->model->getPersons($this->aid, $id);
 
@@ -421,7 +418,6 @@ class PaymentPresenter extends BasePresenter
 
     public function handleOpenRemoveDialog() : void
     {
-        /** @var RemoveGroupDialog $dialog */
         $dialog = $this['removeGroupDialog'];
         $dialog->open();
     }
@@ -443,6 +439,7 @@ class PaymentPresenter extends BasePresenter
             ->addCondition(Form::FILLED)
             ->addRule(Form::EMAIL, 'Zadaný email nemá platný formát');
         $form->addDate('maturity', 'Splatnost')
+            ->setRequired('Musíte vyplnit splatnost')
             ->setAttribute('class', 'form-control');
         $form->addVariableSymbol('vs', 'VS')
             ->setRequired(false)
@@ -472,10 +469,6 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('this');
         }
         $v = $form->getValues();
-        if ($v->maturity === null) {
-            $form['maturity']->addError('Musíte vyplnit splatnost');
-            return;
-        }
 
         $id             = $v->pid !== '' ? (int) $v->pid : null;
         $name           = $v->name;

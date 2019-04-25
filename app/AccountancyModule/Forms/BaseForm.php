@@ -11,7 +11,7 @@ use Nette\Forms\Controls\CsrfProtection;
 
 class BaseForm extends Form
 {
-    use ContainerTrait;
+    use CustomControlFactories;
 
     /** @var CsrfProtection */
     private $protection;

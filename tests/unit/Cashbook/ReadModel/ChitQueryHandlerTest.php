@@ -7,6 +7,7 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use eGen\MessageBus\Bus\QueryBus;
+use Helpers;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -35,7 +36,7 @@ final class ChitQueryHandlerTest extends Unit
         $cashbook = m::mock(Cashbook::class);
 
         $cashbook->shouldReceive('getChits')
-            ->andReturn([\Helpers::mockChit(self::EXISTING_CHIT_ID, new Date(), Operation::INCOME, self::CATEGORY_ID)]);
+            ->andReturn([Helpers::mockChit(self::EXISTING_CHIT_ID, new Date(), Operation::INCOME, self::CATEGORY_ID)]);
 
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('find')
@@ -46,7 +47,6 @@ final class ChitQueryHandlerTest extends Unit
 
         return $repository;
     }
-
 
     private function getCashbookId() : CashbookId
     {

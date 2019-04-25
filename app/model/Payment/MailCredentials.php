@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\MailCredentials\MailProtocol;
 
@@ -15,53 +16,61 @@ use Model\Payment\MailCredentials\MailProtocol;
 class MailCredentials
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $unitId;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $host;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $username;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $password;
 
     /**
-     * @var MailProtocol
      * @ORM\Column(type="string_enum", name="secure", length=64)
+     *
+     * @var MailProtocol
      * @Enum(class=MailProtocol::class)
      */
     private $protocol;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     private $sender;
 
     /**
-     * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable", name="created")
+     *
+     * @var DateTimeImmutable
      */
     private $createdAt;
 
@@ -72,7 +81,7 @@ class MailCredentials
         string $password,
         MailProtocol $protocol,
         string $sender,
-        \DateTimeImmutable $createdAt
+        DateTimeImmutable $createdAt
     ) {
         $this->unitId    = $unitId;
         $this->host      = $host;
@@ -118,7 +127,7 @@ class MailCredentials
         return $this->sender;
     }
 
-    public function getCreatedAt() : \DateTimeImmutable
+    public function getCreatedAt() : DateTimeImmutable
     {
         return $this->createdAt;
     }

@@ -51,12 +51,10 @@ final class RemoveGroupDialog extends BaseControl
             throw new BadRequestException('Skupina plateb neexistuje');
         }
 
-        $this->template->setParameters(
-            [
+        $this->template->setParameters([
             'groupName' => $group->getName(),
             'renderModal' => $this->opened,
-            ]
-        );
+        ]);
 
         $this->template->setFile(__DIR__ . '/templates/RemoveGroupDialog.latte');
         $this->template->render();

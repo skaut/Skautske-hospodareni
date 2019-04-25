@@ -12,7 +12,6 @@ final class DownloaderFactory implements IDownloaderFactory
     /** @var ClientInterface */
     private $client;
 
-
     public function __construct(ClientInterface $client)
     {
         $this->client = $client;

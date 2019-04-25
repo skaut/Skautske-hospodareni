@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-class DueDateIsNotWorkday extends \Exception
+use Exception;
+
+class DueDateIsNotWorkday extends Exception
 {
 }

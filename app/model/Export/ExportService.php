@@ -33,6 +33,7 @@ use function array_column;
 use function array_filter;
 use function array_sum;
 use function array_values;
+use function assert;
 use function count;
 
 class ExportService
@@ -89,8 +90,9 @@ class ExportService
      */
     public function getCashbook(CashbookId $cashbookId, string $cashbookName, PaymentMethod $paymentMethod) : string
     {
-        /** @var Cashbook $cashbook */
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+        assert($cashbook instanceof Cashbook);
 
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
             'header'  => ($paymentMethod->equals(PaymentMethod::CASH()) ? 'Pokladní kniha' : 'Bankovní transakce') . ' - ' . $cashbookName,
@@ -141,11 +143,12 @@ class ExportService
         }
 
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
-        /** @var Chit[] $chits */
-        $chits = $this->queryBus->handle(ChitListQuery::all($cashbookId));
+        $chits      = $this->queryBus->handle(ChitListQuery::all($cashbookId));
 
         //rozpočítává paragony do jednotlivých skupin
         foreach ($chits as $chit) {
+            assert($chit instanceof Chit);
+
             $category                                                      = $chit->getCategory();
             $operationType                                                 = $category->getOperationType()->getValue();
             $virtual                                                       = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
@@ -193,6 +196,7 @@ class ExportService
 
     /**
      * vrací PDF s vybranými paragony
+     *
      * @param Chit[] $chits
      */
     public function getChits(
@@ -211,8 +215,10 @@ class ExportService
             return $chit->getCategory()->getShortcut() === 'hpd';
         });
 
-        /** @var Cashbook $cashbook */
-        $cashbook     = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
         $cashbookType = $cashbook->getType();
 
         $template = [];
@@ -230,8 +236,10 @@ class ExportService
                 ? new CampFunctions(new SkautisCampId($aid))
                 : new EventFunctions(new SkautisEventId($aid));
 
-            /** @var Functions $functions */
-            $functions             = $this->queryBus->handle($functionsQuery);
+            $functions = $this->queryBus->handle($functionsQuery);
+
+            assert($functions instanceof Functions);
+
             $accountant            = $functions->getAccountant() ?? $functions->getLeader();
             $template['pokladnik'] = $accountant !== null ? $accountant->getName() : '';
 
@@ -248,8 +256,6 @@ class ExportService
     public function getCampReport(int $skautisCampId, EventEntity $campService, bool $areTotalsConsistentWithSkautis) : string
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisCampId)));
-
-        /** @var Category[] $categories */
         $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
 
         $total = [
@@ -263,6 +269,8 @@ class ExportService
         $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
 
         foreach ($categories as $category) {
+            assert($category instanceof Category);
+
             $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
 
             if ($category->isIncome()) {

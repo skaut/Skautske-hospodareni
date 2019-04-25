@@ -21,8 +21,8 @@ final class ActivateAutocomputedParticipantsHandler
     {
         $this->skautis->event->eventCampUpdateAdult(
             [
-            'ID' => $command->getCampId()->getValue(),
-            'IsRealAutoComputed' => 1,
+                'ID' => $command->getCampId()->getValue(),
+                'IsRealAutoComputed' => 1,
             ],
             'eventCamp'
         );

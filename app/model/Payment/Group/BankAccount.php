@@ -13,14 +13,16 @@ use Doctrine\ORM\Mapping as ORM;
 final class BankAccount
 {
     /**
-     * @var int
      * @ORM\Column(type="integer", nullable=true, name="bank_account_id")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var DateTimeImmutable|NULL
      * @ORM\Column(type="datetime_immutable", nullable=true)
+     *
+     * @var DateTimeImmutable|NULL
      */
     private $lastPairing;
 

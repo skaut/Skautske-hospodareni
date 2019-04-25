@@ -9,13 +9,13 @@ use Model\Unit\Unit;
 use Model\Unit\UnitNotFound;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
+use stdClass;
 use function is_object;
 
 final class UnitRepository implements IUnitRepository
 {
     /** @var WebServiceInterface */
     private $webService;
-
 
     public function __construct(WebServiceInterface $webService)
     {
@@ -29,14 +29,16 @@ final class UnitRepository implements IUnitRepository
             ['ID_UnitParent' => $parentId],
         ]);
 
-        if (is_object($units)) { // API returns empty object when there are no results
-            return [];
+        if (is_object($units)) {
+            return []; // API returns empty object when there are no results
         }
+
         $res =[];
         foreach ($units as $u) {
             $u->ID_UnitParent = $parentId;
             $res[]            = $this->createUnit($u);
         }
+
         return $res;
     }
 
@@ -47,7 +49,7 @@ final class UnitRepository implements IUnitRepository
         );
     }
 
-    public function findAsStdClass(int $id) : \stdClass
+    public function findAsStdClass(int $id) : stdClass
     {
         try {
             return $this->webService->call('UnitDetail', [
@@ -59,7 +61,7 @@ final class UnitRepository implements IUnitRepository
         }
     }
 
-    private function createUnit(\stdClass $unit) : Unit
+    private function createUnit(stdClass $unit) : Unit
     {
         return new Unit(
             $unit->ID,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Travel\Command;
 
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 use Model\Travel\Command;
 use Model\Utils\MoneyFactory;
 use Money\Money;
@@ -16,8 +17,9 @@ use function sprintf;
 class TransportTravel extends Travel
 {
     /**
-     * @var Money
      * @ORM\Column(type="money", name="distance")
+     *
+     * @var Money
      */
     private $price;
 
@@ -41,7 +43,7 @@ class TransportTravel extends Travel
     private function setPrice(Money $price) : void
     {
         if (! $price->isPositive()) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('Price must be positive number, %01.2f given', MoneyFactory::toFloat($price))
             );
         }

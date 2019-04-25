@@ -38,12 +38,11 @@ class DefaultPresenter extends BasePresenter
         $this->gridFactory  = $gf;
     }
 
-
     protected function startup() : void
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
-        $this->ses = $this->session->getSection(__CLASS__);
+        $this->ses = $this->session->getSection(self::class);
         if (! isset($this->ses->state)) {
             $this->ses->state = self::DEFAULT_STATE;
         }
@@ -74,20 +73,8 @@ class DefaultPresenter extends BasePresenter
         $grid->addColumnText('state', 'Stav');
 
         $grid->setTemplateFile(__DIR__ . '/../templates/campsGrid.latte');
+
         return $grid;
-    }
-
-
-    public function renderDefault() : void
-    {
-        if ($this->ses->year !== null) {
-            $this['formFilter']['year']->setDefaultValue($this->ses->year);
-        }
-        if ($this->ses->state === null) {
-            return;
-        }
-
-        $this['formFilter']['state']->setDefaultValue($this->ses->state);
     }
 
     public function actionCampSummary() : void
@@ -125,10 +112,16 @@ class DefaultPresenter extends BasePresenter
         }
 
         $form = new BaseForm();
-        $form->addSelect('state', 'Stav', $states);
-        $form->addSelect('year', 'Rok', $years);
+
+        $form->addSelect('state', 'Stav', $states)
+            ->setDefaultValue($this->ses->state);
+
+        $form->addSelect('year', 'Rok', $years)
+            ->setDefaultValue($this->ses->year);
+
         $form->addSubmit('send', 'Hledat')
             ->setAttribute('class', 'btn btn-primary');
+
         $form->onSuccess[] = function (Form $form) : void {
             $this->formFilterSubmitted($form);
         };

@@ -18,7 +18,6 @@ class DefaultPresenter extends BasePresenter
         $this->statService = $statService;
     }
 
-
     public function renderDefault(?int $year = null) : void
     {
         if ($year === null) {

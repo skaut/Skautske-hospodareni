@@ -33,6 +33,7 @@ class ErrorPresenter extends Presenter
 
     /**
      * @param mixed $exception
+     *
      * @throws Nette\Application\AbortException
      */
     public function renderDefault($exception) : void

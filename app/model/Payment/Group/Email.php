@@ -17,35 +17,40 @@ use Model\Payment\Group;
 class Email
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var Group
      * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="emails")
+     *
+     * @var Group
      */
     private $group;
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean")
+     *
+     * @var bool
      */
     private $enabled = true;
 
     /**
-     * @var EmailType
      * @ORM\Column(type="string_enum")
+     *
+     * @var EmailType
      * @Enum(class=EmailType::class)
      */
     private $type;
 
     /**
-     * @var EmailTemplate
      * @ORM\Embedded(class=EmailTemplate::class)
+     *
+     * @var EmailTemplate
      */
     private $template;
 

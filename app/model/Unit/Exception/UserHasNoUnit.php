@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Unit;
 
+use Exception;
 use function sprintf;
 
-final class UserHasNoUnit extends \Exception
+final class UserHasNoUnit extends Exception
 {
     public static function fromLoginId(?string $loginId) : self
     {

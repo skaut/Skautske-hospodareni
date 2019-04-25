@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\FormControls;
 
 use Cake\Chronos\Date;
+use InvalidArgumentException;
 use Nette\Utils\Html;
 use Nextras\Forms\Controls\DatePicker;
 use function sprintf;
@@ -20,7 +21,7 @@ class DateControl extends DatePicker
     public function setDefaultValue($value) : self
     {
         if (! $value instanceof Date && $value !== null) {
-            throw new \InvalidArgumentException(sprintf('$value must be instance of %s or NULL', Date::class));
+            throw new InvalidArgumentException(sprintf('$value must be instance of %s or NULL', Date::class));
         }
 
         parent::setDefaultValue($value);

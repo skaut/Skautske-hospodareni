@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Common;
 
-class UserNotFound extends \Exception
+use Exception;
+
+class UserNotFound extends Exception
 {
 }

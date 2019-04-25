@@ -27,7 +27,6 @@ class FioClient implements IFioClient
     /** @var LoggerInterface */
     private $logger;
 
-
     public function __construct(IDownloaderFactory $downloaderFactory, LoggerInterface $logger)
     {
         $this->downloaderFactory = $downloaderFactory;
@@ -59,11 +58,13 @@ class FioClient implements IFioClient
             },
             $transactions
         );
+
         return array_reverse($transactions); // DESC sort
     }
 
     /**
      * @return ApiTransaction[]
+     *
      * @throws BankTimeLimit
      * @throws BankTimeout
      */

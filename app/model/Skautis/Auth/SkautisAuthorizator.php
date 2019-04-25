@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Auth;
 
+use InvalidArgumentException;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Event;
 use Model\Auth\Resources\Unit;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
+use stdClass;
 use function count;
 use function is_array;
 
@@ -24,7 +26,6 @@ final class SkautisAuthorizator implements IAuthorizator
         Camp::class => Camp::TABLE,
     ];
 
-
     public function __construct(WebServiceInterface $userWebservice)
     {
         $this->userWebservice = $userWebservice;
@@ -36,7 +37,7 @@ final class SkautisAuthorizator implements IAuthorizator
     public function isAllowed(array $action, ?int $resourceId) : bool
     {
         if (count($action) !== 2 || ! isset(self::RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP[$action[0]])) {
-            throw new \InvalidArgumentException('Unknown action');
+            throw new InvalidArgumentException('Unknown action');
         }
 
         $skautisTable = self::RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP[$action[0]];
@@ -51,7 +52,7 @@ final class SkautisAuthorizator implements IAuthorizator
     }
 
     /**
-     * @return \stdClass[]
+     * @return stdClass[]
      */
     private function getAvailableActions(string $skautisTable, ?int $id) : array
     {

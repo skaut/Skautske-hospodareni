@@ -18,6 +18,7 @@ use Nette\Security\Identity;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
 use function array_key_exists;
+use function assert;
 
 class VehiclePresenter extends BasePresenter
 {
@@ -33,7 +34,6 @@ class VehiclePresenter extends BasePresenter
         $this->travelService = $travelService;
         $this->gridFactory   = $gridFactory;
     }
-
 
     /**
      * @throws BadRequestException
@@ -51,13 +51,15 @@ class VehiclePresenter extends BasePresenter
             $this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
             $this->redirect('default');
         }
+
         return $vehicle;
     }
 
     private function isVehicleEditable(?VehicleDTO $vehicle) : bool
     {
-        /** @var Identity $identity */
         $identity = $this->getUser()->getIdentity();
+
+        assert($identity instanceof Identity);
 
         $unitAccessible = array_key_exists($vehicle->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]) ||
         $vehicle->getSubunitId() !== null && array_key_exists($vehicle->getSubunitId(), $identity->access[BaseService::ACCESS_EDIT]);
@@ -99,7 +101,7 @@ class VehiclePresenter extends BasePresenter
         if (! $this->isVehicleEditable($vehicle)) {
             $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
             $this->redirect('default');
-        };
+        }
 
         if ($this->travelService->removeVehicle($vehicleId)) {
             $this->flashMessage('Vozidlo bylo odebráno.');
@@ -116,14 +118,13 @@ class VehiclePresenter extends BasePresenter
         if (! $this->isVehicleEditable($vehicle)) {
             $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
             $this->redirect('default');
-        };
+        }
 
         $this->travelService->archiveVehicle($vehicleId);
         $this->flashMessage('Vozidlo bylo archivováno', 'success');
 
         $this->redirect('this');
     }
-
 
     protected function createComponentGrid() : VehicleGrid
     {

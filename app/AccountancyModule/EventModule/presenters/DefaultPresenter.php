@@ -7,7 +7,6 @@ namespace App\AccountancyModule\EventModule;
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
 use App\MyValidators;
-use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Event\Commands\CancelEvent;
 use Model\Event\Commands\Event\CreateEvent;
@@ -26,7 +25,6 @@ use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function array_reverse;
-use function assert;
 use function date;
 use function get_class;
 use function range;
@@ -56,7 +54,7 @@ class DefaultPresenter extends BasePresenter
     {
         parent::startup();
         //ochrana $this->aid se provádí již v BasePresenteru
-        $this->ses = $this->session->getSection(__CLASS__);
+        $this->ses = $this->session->getSection(self::class);
         if (! isset($this->ses->state)) {
             $this->ses->state = self::DEFAULT_STATE;
         }
@@ -100,21 +98,19 @@ class DefaultPresenter extends BasePresenter
                 if (! array_key_exists('accessDelete', $item)) {
                     return true;
                 }
+
                 return $item['accessDelete'];
             }
         );
 
         $grid->setTemplateFile(__DIR__ . '/../templates/eventsGrid.latte');
+
         return $grid;
     }
 
     public function renderDefault() : void
     {
-        $this['formFilter']['state']->setDefaultValue($this->ses->state);
-        $this['formFilter']['year']->setDefaultValue($this->ses->year);
-        $this->template->setParameters([
-            'accessCreate' => $this->authorizator->isAllowed(Event::CREATE, null),
-        ]);
+        $this->template->setParameters(['accessCreate' => $this->authorizator->isAllowed(Event::CREATE, null)]);
     }
 
     public function actionNew() : void
@@ -186,8 +182,12 @@ class DefaultPresenter extends BasePresenter
             $years[$y] = $y;
         }
         $form = new BaseForm();
-        $form->addSelect('state', 'Stav', $states);
-        $form->addSelect('year', 'Rok', $years);
+        $form->addSelect('state', 'Stav', $states)
+            ->setDefaultValue($this->ses->state);
+
+        $form->addSelect('year', 'Rok', $years)
+            ->setDefaultValue($this->ses->year);
+
         $form->addSubmit('send', 'Hledat')
             ->setAttribute('class', 'btn btn-primary');
 
@@ -212,7 +212,7 @@ class DefaultPresenter extends BasePresenter
      */
     public function isDateValidator($item, $args) : bool
     {
-        return $item === null ? false : true;
+        return $item !== null;
     }
 
     /**
@@ -275,13 +275,6 @@ class DefaultPresenter extends BasePresenter
         $startDate = $v['start'];
         $endDate   = $v['end'];
 
-        assert($startDate instanceof Date && $endDate instanceof Date);
-
-        if ($startDate > $endDate) {
-            $form['start']->addError('Akce nemůže dříve začít než zkončit!');
-            $this->redirect('this');
-        }
-
         $this->commandBus->handle(
             new CreateEvent(
                 $v['name'],
@@ -297,7 +290,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect(
             'Event:',
             [
-            'aid' => $this->queryBus->handle(new NewestEventId()),
+                'aid' => $this->queryBus->handle(new NewestEventId()),
             ]
         );
     }

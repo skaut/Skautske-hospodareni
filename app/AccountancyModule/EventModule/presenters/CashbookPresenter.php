@@ -20,11 +20,12 @@ use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
-use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
 use Money\Money;
+use function assert;
+use function is_float;
 
 class CashbookPresenter extends BasePresenter
 {
@@ -46,24 +47,20 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $incomeBalance = $this->queryBus->handle(new EventParticipantBalanceQuery(new SkautisEventId($aid), $this->getCashbookId()));
-
-        /** @var Money $finalBalance */
-        $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
-
-        /** @var Money $finalRealBalance */
+        $incomeBalance    = $this->queryBus->handle(new EventParticipantBalanceQuery(new SkautisEventId($aid), $this->getCashbookId()));
+        $finalBalance     = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
 
-        $this->template->setParameters(
-            [
+        assert(is_float($incomeBalance) && $finalBalance instanceof Money && $finalRealBalance instanceof Money);
+
+        $this->template->setParameters([
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'cashbookId' => $this->getCashbookId()->toString(),
             'isInMinus' => $finalBalance->isNegative(),
             'incomeBalance' => $incomeBalance,
             'isEditable' => $this->isEditable,
             'finalRealBalance' => $finalRealBalance,
-            ]
-        );
+        ]);
     }
 
     public function handleImportHpd(int $aid) : void
@@ -85,9 +82,11 @@ class CashbookPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        /** @var Functions $functions */
-        $functions  = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
-        $date       = $this->eventService->getEvent()->get($aid)->StartDate;
+        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
+        $date      = $this->eventService->getEvent()->get($aid)->StartDate;
+
+        assert($functions instanceof Functions);
+
         $accountant = $functions->getAccountant() !== null
             ? new Recipient($functions->getAccountant()->getName())
             : null;
@@ -115,10 +114,9 @@ class CashbookPresenter extends BasePresenter
 
     private function isCashbookEmpty() : bool
     {
-        /** @var Chit[] $chits */
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->getCashbookId()));
 
-        return empty($chits);
+        return $chits === [];
     }
 
     private function getCashbookId() : CashbookId

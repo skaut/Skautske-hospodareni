@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Codeception\Test\Unit;
+use InvalidArgumentException;
 use function strtoupper;
 
 class ChitNumberTest extends Unit
@@ -14,7 +15,7 @@ class ChitNumberTest extends Unit
      */
     public function testInvalidChitNumbersThrowException(string $value, string $reason) : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new ChitNumber($value);
 

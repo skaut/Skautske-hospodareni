@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
+use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Payment\Group;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
@@ -13,6 +14,7 @@ use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
 use Nette\Utils\Strings;
 use function array_filter;
+use function assert;
 use function count;
 use function ltrim;
 use function str_replace;
@@ -47,7 +49,7 @@ class NextVariableSymbolSequenceQueryHandler
         return new VariableSymbol($now->format('y') . $unitPart . $groupIncrementPart . '001');
     }
 
-    private function getGroupIncrement(int $unitId, \DateTimeImmutable $now) : string
+    private function getGroupIncrement(int $unitId, DateTimeImmutable $now) : string
     {
         $currentYear = $now->format('Y');
 
@@ -64,8 +66,9 @@ class NextVariableSymbolSequenceQueryHandler
 
     private function getLastDigitsOfUnitNumber(int $unitId) : string
     {
-        /** @var Unit $unit */
         $unit = $this->queryBus->handle(new UnitQuery($unitId));
+
+        assert($unit instanceof Unit);
 
         $number = $unit->getShortRegistrationNumber();
         $number = ltrim($number, '0');

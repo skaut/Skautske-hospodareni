@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Bank\Fio;
 
+use DateTimeImmutable;
 use Nette;
 
 /**
  * @property-read string                $id
- * @property-read \DateTimeImmutable    $date
+ * @property-read DateTimeImmutable $date
  * @property-read float                 $amount
  * @property-read string                $bankAccount
  * @property-read string                $name
@@ -23,7 +24,7 @@ class Transaction
     /** @var string */
     private $id;
 
-    /** @var \DateTimeImmutable */
+    /** @var DateTimeImmutable */
     private $date;
 
     /** @var float */
@@ -46,7 +47,7 @@ class Transaction
 
     public function __construct(
         string $id,
-        \DateTimeImmutable $date,
+        DateTimeImmutable $date,
         float $amount,
         string $bankAccount,
         string $name,
@@ -69,8 +70,7 @@ class Transaction
         return $this->id;
     }
 
-
-    public function getDate() : \DateTimeImmutable
+    public function getDate() : DateTimeImmutable
     {
         return $this->date;
     }

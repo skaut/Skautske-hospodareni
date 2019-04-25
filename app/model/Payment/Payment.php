@@ -9,12 +9,14 @@ use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
+use InvalidArgumentException;
 use Model\Common\Aggregate;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
+use RuntimeException;
 use function in_array;
 
 /**
@@ -24,83 +26,96 @@ use function in_array;
 class Payment extends Aggregate
 {
     /**
-     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", name="groupId", options={"unsigned"=true})
+     *
+     * @var int
      */
     private $groupId;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=64)
+     *
+     * @var string
      */
     private $name;
 
     /**
-     * @var string|NULL
      * @ORM\Column(type="text", nullable=true)
+     *
+     * @var string|NULL
      */
     private $email;
 
     /**
-     * @var int|NULL
      * @ORM\Column(type="integer", nullable=true, name="personId")
+     *
+     * @var int|NULL
      */
     private $personId;
 
     /**
-     * @var float
      * @ORM\Column(type="float")
+     *
+     * @var float
      */
     private $amount;
 
     /**
-     * @var Date
      * @ORM\Column(type="chronos_date", name="maturity")
+     *
+     * @var Date
      */
     private $dueDate;
 
     /**
-     * @var VariableSymbol|NULL
      * @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs")
+     *
+     * @var VariableSymbol|NULL
      */
     private $variableSymbol;
 
     /**
-     * @var int|NULL
      * @ORM\Column(type="smallint", nullable=true, name="ks", options={"unsigned"=true})
+     *
+     * @var int|NULL
      */
     private $constantSymbol;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=64)
+     *
+     * @var string
      */
     private $note = '';
 
     /**
-     * @var Transaction|NULL
      * @ORM\Embedded(class=Transaction::class, columnPrefix=false)
+     *
+     * @var Transaction|NULL
      * @Nullable()
      */
     private $transaction;
 
     /**
-     * @var DateTimeImmutable|NULL
      * @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed")
+     *
+     * @var DateTimeImmutable|NULL
      */
     private $closedAt;
 
     /**
-     * @var State
      * @ORM\Column(type="string_enum", length=20)
+     *
+     * @var State
      * @Enum(class=State::class)
      */
     private $state;
@@ -117,7 +132,7 @@ class Payment extends Aggregate
         string $note
     ) {
         if ($amount <= 0) {
-            throw new \InvalidArgumentException('Payment amount must be larger than 0');
+            throw new InvalidArgumentException('Payment amount must be larger than 0');
         }
 
         $this->groupId  = $group->getId();
@@ -131,7 +146,7 @@ class Payment extends Aggregate
     public function getId() : int
     {
         if ($this->id === null) {
-            throw new \RuntimeException("Can't get ID from not persisted aggregate");
+            throw new RuntimeException("Can't get ID from not persisted aggregate");
         }
 
         return $this->id;
@@ -259,6 +274,7 @@ class Payment extends Aggregate
     public function isClosed() : bool
     {
         $state = $this->state;
+
         return in_array($state->getValue(), [State::COMPLETED, State::CANCELED], true);
     }
 

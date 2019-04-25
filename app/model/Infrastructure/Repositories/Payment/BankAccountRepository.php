@@ -54,7 +54,6 @@ final class BankAccountRepository implements IBankAccountRepository
         return $accounts;
     }
 
-
     public function save(BankAccount $account) : void
     {
         $this->entityManager->persist($account);
@@ -68,7 +67,6 @@ final class BankAccountRepository implements IBankAccountRepository
     {
         return $this->entityManager->getRepository(BankAccount::class)->findBy(['unitId' => $unitId]);
     }
-
 
     public function remove(BankAccount $account) : void
     {

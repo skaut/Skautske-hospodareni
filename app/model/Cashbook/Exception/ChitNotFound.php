@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Cashbook;
 
-class ChitNotFound extends \Exception
+use Exception;
+
+class ChitNotFound extends Exception
 {
 }

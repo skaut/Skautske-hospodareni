@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Cashbook;
 
+use InvalidArgumentException;
 use Nette\Utils\Strings;
 use function ctype_digit;
 use function sprintf;
@@ -21,7 +22,7 @@ final class ChitNumber
     {
         $value = strtoupper($value);
         if (strlen($value) > 5 || ! Strings::match($value, sprintf('~%s~', self::PATTERN))) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('"%s" is not valid chit number', $value)
             );
         }

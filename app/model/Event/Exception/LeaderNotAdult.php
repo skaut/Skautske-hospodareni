@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Event;
 
-class LeaderNotAdult extends \Exception
+use Exception;
+
+class LeaderNotAdult extends Exception
 {
 }

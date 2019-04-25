@@ -13,28 +13,32 @@ use Doctrine\ORM\Mapping as ORM;
 class Type
 {
     /**
-     * @var string
      * @ORM\Id()
      * @ORM\Column(type="string", length=5, name="type")
+     *
+     * @var string
      */
     private $shortcut;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=64)
+     *
+     * @var string
      */
     private $label;
 
 
     /**
-     * @var bool
      * @ORM\Column(type="boolean", name="hasFuel", options={"default":false})
+     *
+     * @var bool
      */
     private $hasFuel;
 
     /**
-     * @var int
      * @ORM\Column(type="smallint", options={"default":10})
+     *
+     * @var int
      */
     private $order;
 
@@ -44,7 +48,6 @@ class Type
         $this->label    = $label;
         $this->hasFuel  = $hasFuel;
     }
-
 
     public function getShortcut() : string
     {

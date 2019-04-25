@@ -66,7 +66,6 @@ class BankAccountService
         $this->bankAccounts->save($account);
     }
 
-
     /**
      * @throws BankAccountNotFound
      */
@@ -79,7 +78,6 @@ class BankAccountService
         $this->bankAccounts->save($account);
         $this->cleanFioCache($id);
     }
-
 
     /**
      * @throws BankAccountNotFound
@@ -132,7 +130,6 @@ class BankAccountService
         $this->bankAccounts->save($account);
     }
 
-
     public function find(int $id) : ?BankAccountDTO
     {
         try {
@@ -142,10 +139,11 @@ class BankAccountService
         }
     }
 
-
     /**
      * @param int[] $ids
+     *
      * @return BankAccountDTO[]
+     *
      * @throws BankAccountNotFound
      */
     public function findByIds(array $ids) : array
@@ -160,7 +158,6 @@ class BankAccountService
             $accounts
         );
     }
-
 
     /**
      * @return BankAccountDTO[]
@@ -183,9 +180,9 @@ class BankAccountService
         );
     }
 
-
     /**
      * @return Transaction[]
+     *
      * @throws TokenNotSet
      * @throws BankTimeout
      * @throws BankTimeLimit
@@ -195,9 +192,9 @@ class BankAccountService
         Assert::that($daysBack)->greaterThan(0);
         $account = $this->bankAccounts->find($bankAccountId);
         $now     = new DateTimeImmutable();
+
         return $this->fio->getTransactions($now->modify(sprintf('- %d days', $daysBack)), $now, $account);
     }
-
 
     /**
      * @throws BankAccountNotFound When no bank accounts were imported.
@@ -218,7 +215,6 @@ class BankAccountService
             );
         }
     }
-
 
     /**
      * @return AccountNumber[]
@@ -243,7 +239,6 @@ class BankAccountService
             }
         );
     }
-
 
     /**
      * Cleans cached transactions for account

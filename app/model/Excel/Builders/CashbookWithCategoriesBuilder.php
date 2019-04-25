@@ -13,6 +13,7 @@ use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
+use PHPExcel_Exception;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\ColumnDimension;
@@ -84,7 +85,6 @@ class CashbookWithCategoriesBuilder
         }
     }
 
-
     private function addSumsRow(int $categoriesCount, int $chitsCount) : void
     {
         $firstChitRow = self::SUBHEADER_ROW + 1;
@@ -104,7 +104,8 @@ class CashbookWithCategoriesBuilder
 
     /**
      * @param Category[] $categories
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
     private function addCategoriesHeader(int $startColumn, string $groupName, array $categories) : void
     {
@@ -273,6 +274,7 @@ class CashbookWithCategoriesBuilder
 
         if (count($words) <= 1) {
             $column->setAutoSize(true);
+
             return;
         }
 
