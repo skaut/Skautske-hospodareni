@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
-use Codeception\Test\Unit;
+use Codeception\Test\Unit as TestCase;
 use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
 use Mockery as m;
@@ -13,10 +13,11 @@ use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\VariableSymbol;
 use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\Unit;
 use function array_fill;
 use function array_merge;
 
-class NextVariableSymbolSequenceQueryHandlerTest extends Unit
+class NextVariableSymbolSequenceQueryHandlerTest extends TestCase
 {
     private const YEAR    = '17';
     private const UNIT_ID = 1;
