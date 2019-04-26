@@ -82,8 +82,10 @@ class DefaultPresenter extends BasePresenter
 
         $command = $this->travelService->getCommandDetail($id);
 
-        $this->getTypeSelectBox()->setItems($command->getTransportTypePairs());
-        $this['formAddTravel']->setDefaults(['command_id' => $id]);
+        $form = $this['formAddTravel'];
+
+        $this->getTypeSelectBox($form)->setItems($command->getTransportTypePairs());
+        $form->setDefaults(['command_id' => $id]);
     }
 
     public function renderDetail(int $id) : void
@@ -188,7 +190,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('default');
     }
 
-    protected function createComponentFormAddTravel() : Form
+    protected function createComponentFormAddTravel() : BaseForm
     {
         $form = new BaseForm();
         $form->getElementPrototype()->class('form-inline');
@@ -253,7 +255,7 @@ class DefaultPresenter extends BasePresenter
 
         $form = $this['formEditTravel'];
 
-        $this->getTypeSelectBox()->setItems($command->getTransportTypePairs());
+        $this->getTypeSelectBox($form)->setItems($command->getTransportTypePairs());
 
         $form->setDefaults([
             'commandId' => $commandId,
@@ -268,7 +270,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->setParameters(['form' => $form]);
     }
 
-    protected function createComponentFormEditTravel() : Form
+    protected function createComponentFormEditTravel() : BaseForm
     {
         $form = new BaseForm();
 
@@ -329,9 +331,9 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('detail', [$v->commandId]);
     }
 
-    private function getTypeSelectBox() : SelectBox
+    private function getTypeSelectBox(BaseForm $form) : SelectBox
     {
-        $selectBox = $this['formEditTravel']['type'];
+        $selectBox = $form['type'];
 
         assert($selectBox instanceof SelectBox);
 
