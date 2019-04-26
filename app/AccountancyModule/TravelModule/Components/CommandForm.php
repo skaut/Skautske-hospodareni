@@ -14,6 +14,7 @@ use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Control;
+use Nette\Forms\Controls\MultiSelectBox;
 use Nette\Forms\Controls\SelectBox;
 use Nette\InvalidStateException;
 use Nette\Utils\ArrayHash;
@@ -185,7 +186,7 @@ class CommandForm extends Control
         if (! empty($usedTypes)) {
             $typeSelectBox = $form['type'];
 
-            assert($typeSelectBox instanceof SelectBox);
+            assert($typeSelectBox instanceof MultiSelectBox);
 
             $typeSelectBox->setItems($this->prepareTransportTypeOptions($usedTypes));
             $typeSelectBox->setRequired(false); // Even when nothing is selected, used types persist, so it's ok
