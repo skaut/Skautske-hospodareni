@@ -1,17 +1,18 @@
-<div n:snippet n:inner-if="$renderModal" class="modal {if $renderModal}rendered{/if}" tabindex="-1">
-    <div class="modal-dialog">
+<div n:snippet n:inner-if="$renderModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header text-danger">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                <h5 class="modal-title">Smazat skupinu plateb</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Smazat skupinu plateb</h4>
             </div>
             <div class="modal-body">
                 Tato akce je nevratná. Opravdu chcete smazat skupinu <strong>{$groupName}</strong>?
                 {control form}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Storno</button>
+                <button type="button" class="btn btn-light" data-dismiss="modal">Storno</button>
             </div>
         </div>
     </div>

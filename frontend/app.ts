@@ -12,11 +12,13 @@ import { initializeDatePicker } from "./ts/datePicker";
 import * as moment from 'moment';
 import 'moment/locale/cs';
 import { ProgressBar } from "./ts/ProgressBar";
+import {ModalExtension} from "./ts/ModalExtension";
 
 // Use czech language for dates
 moment.locale('cs');
 
 naja.registerExtension(ProgressBar);
+naja.registerExtension(ModalExtension);
 naja.formsHandler.netteForms = netteForms;
 
 document.addEventListener('DOMContentLoaded', () => {
