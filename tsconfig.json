@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "strict": true,
+        "strictPropertyInitialization": false,
+        "jsx": "preserve",
+        "importHelpers": true,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "frontend",
+        "typeRoots": [
+            "./node_modules/@types",
+            "./frontend/types"
+        ],
+        "types": [
+            "webpack-env"
+        ],
+        "paths": {
+            "@/*": [
+                "frontend/*"
+            ]
+        },
+        "lib": [
+            "esnext",
+            "dom",
+            "dom.iterable",
+            "scripthost"
+        ]
+    },
+    "include": [
+        "./frontend/**/*.ts"
+    ],
+    "exclude": [
+        "./node_modules"
+    ]
+}

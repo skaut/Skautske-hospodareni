@@ -35,6 +35,10 @@ build:
             code: phing coding-standard
 
         - script:
+          name: check typescript code for type errors
+          code: yarn install && yarn check-types
+
+        - script:
             name: wait for MySQL connection
             code: sleep 10
 
