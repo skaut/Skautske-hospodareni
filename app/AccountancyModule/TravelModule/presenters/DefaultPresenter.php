@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\AccountancyModule\TravelModule;
 
 use App\AccountancyModule\TravelModule\Components\CommandGrid;
+use App\AccountancyModule\TravelModule\Components\EditTravelDialog;
 use App\AccountancyModule\TravelModule\Factories\ICommandGridFactory;
+use App\AccountancyModule\TravelModule\Factories\IEditTravelDialogFactory;
 use App\Forms\BaseForm;
+use Assert\Assertion;
 use Model\BaseService;
 use Model\DTO\Travel\TravelType;
 use Model\Services\PdfRenderer;
 use Model\TravelService;
-use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Forms\Controls\SelectBox;
@@ -26,6 +28,9 @@ use function str_replace;
 
 class DefaultPresenter extends BasePresenter
 {
+    /** @var int|null */
+    private $commandId;
+
     /** @var TravelService */
     private $travelService;
 
@@ -35,12 +40,20 @@ class DefaultPresenter extends BasePresenter
     /** @var ICommandGridFactory */
     private $gridFactory;
 
-    public function __construct(TravelService $travelService, PdfRenderer $pdf, ICommandGridFactory $gridFactory)
-    {
+    /** @var IEditTravelDialogFactory */
+    private $editTravelDialogFactory;
+
+    public function __construct(
+        TravelService $travelService,
+        PdfRenderer $pdf,
+        ICommandGridFactory $gridFactory,
+        IEditTravelDialogFactory $editTravelDialogFactory
+    ) {
         parent::__construct();
-        $this->travelService = $travelService;
-        $this->pdf           = $pdf;
-        $this->gridFactory   = $gridFactory;
+        $this->travelService           = $travelService;
+        $this->pdf                     = $pdf;
+        $this->gridFactory             = $gridFactory;
+        $this->editTravelDialogFactory = $editTravelDialogFactory;
     }
 
     private function isCommandAccessible(int $commandId) : bool
@@ -75,6 +88,9 @@ class DefaultPresenter extends BasePresenter
         if ($id === null) {
             $this->redirect('default');
         }
+
+        $this->commandId = $id;
+
         if (! $this->isCommandAccessible($id)) {
             $this->flashMessage('Neoprávněný přístup k záznamu!', 'danger');
             $this->redirect('default');
@@ -243,92 +259,28 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function actionEditTravel(int $commandId, int $travelId) : void
+    public function handleEditTravel(int $travelId) : void
     {
-        $travel = $this->travelService->getTravel($commandId, $travelId);
-
-        if (! $this->isCommandEditable($commandId) || $travel === null) {
-            $this->flashMessage('Záznam nelze upravovat', 'warning');
-            $this->redirect('default');
-        }
-        $command = $this->travelService->getCommandDetail($commandId);
-
-        $form = $this['formEditTravel'];
-
-        $this->getTypeSelectBox($form)->setItems($command->getTransportTypePairs());
-
-        $form->setDefaults([
-            'commandId' => $commandId,
-            'id' => $travelId,
-            'type' => $travel->getDetails()->getTransportType(),
-            'date' => $travel->getDetails()->getDate(),
-            'startPlace' => $travel->getDetails()->getStartPlace(),
-            'endPlace' => $travel->getDetails()->getEndPlace(),
-            'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
-        ]);
-
-        $this->template->setParameters(['form' => $form]);
+        $this['editTravelDialog']->open($travelId);
     }
 
-    protected function createComponentFormEditTravel() : BaseForm
+    protected function createComponentEditTravelDialog() : EditTravelDialog
     {
-        $form = new BaseForm();
+        $commandId = $this->commandId;
 
-        $form->addHidden('commandId');
-        $form->addHidden('id');
-        $form->addSelect('type', 'Prostředek');
-        $form->addDate('date', 'Datum cesty')
-            ->setAttribute('class', 'form-control input-sm date')
-            ->addRule(Form::FILLED, 'Musíte vyplnit datum cesty.');
-        $form->addText('startPlace', 'Z*')
-            ->setAttribute('class', 'form-control input-sm date')
-            ->addRule(Form::FILLED, 'Musíte vyplnit místo počátku cesty.');
-        $form->addText('endPlace', 'Do*')
-            ->setAttribute('class', 'form-control input-sm date')
-            ->addRule(Form::FILLED, 'Musíte vyplnit místo konce cesty.');
-        $form->addText('distanceOrPrice', 'Vzdálenost*')
-            ->setAttribute('class', 'form-control input-sm date')
-            ->setRequired('Musíte vyplnit vzdálenost.')
-            ->addRule(Form::FLOAT, 'Vzdálenost musí být číslo.')
-            ->addRule(Form::MIN, 'Vzdálenost musí být větší než 0.', 0.01);
-        $form->addSubmit('send', 'Upravit')
-            ->setAttribute('class', 'btn btn-primary');
-
-        $form->onSuccess[] = function (Form $form) : void {
-            $this->formEditTravelSubmitted($form);
-        };
-
-        return $form;
-    }
-
-    protected function createComponentGrid() : CommandGrid
-    {
-        return $this->gridFactory->create($this->getUnitId(), $this->getUser()->getId());
-    }
-
-    private function formEditTravelSubmitted(Form $form) : void
-    {
-        $v = $form->getValues();
-
-        $commandId = (int) $v->commandId;
+        Assertion::notNull($commandId);
 
         if (! $this->isCommandEditable($commandId)) {
             $this->flashMessage('Nelze upravovat cestovní příkaz.', 'danger');
             $this->redirect('default');
         }
 
-        $this->travelService->updateTravel(
-            $commandId,
-            (int) $v->id,
-            (float) $v->distanceOrPrice,
-            $v->date,
-            $v->type,
-            $v->startPlace,
-            $v->endPlace
-        );
+        return $this->editTravelDialogFactory->create($commandId);
+    }
 
-        $this->flashMessage('Cesta byla upravena.');
-        $this->redirect('detail', [$v->commandId]);
+    protected function createComponentGrid() : CommandGrid
+    {
+        return $this->gridFactory->create($this->getUnitId(), $this->getUser()->getId());
     }
 
     private function getTypeSelectBox(BaseForm $form) : SelectBox

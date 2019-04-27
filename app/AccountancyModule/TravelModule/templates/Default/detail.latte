@@ -82,7 +82,7 @@
                 {if !empty($travels)}
                     <tr n:foreach="$travels as $t">
                         <td n:if="$isEditable" class='nowrap'>
-                            <a n:href="editTravel $command->id, $t->id" class="fancybox fancybox.ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
+                            <a n:href="editTravel! $t->id" class="ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
                             <a n:href="removeTravel! $command->id, $t->id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="glyphicon glyphicon-remove"></i></a>
                         </td>
                         <td>{$types[$t->details->transportType]}</td>
@@ -104,3 +104,4 @@
         {/form}
     </div>
 </div>
+{control editTravelDialog}

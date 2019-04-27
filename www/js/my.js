@@ -25,9 +25,6 @@ $(document).ready(function () {
     //nette.ajax.js
     $.nette.init();
 
-    //fancybox2
-    $(".fancybox").fancybox();
-
     //bootstrap tooltip
     if ($("[rel=tooltip]").length) {
         $("[rel=tooltip]").tooltip();

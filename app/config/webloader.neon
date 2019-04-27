@@ -5,7 +5,6 @@ webloader:
     css:
         default:
             files:
-                - fancybox/fancybox.css
                 - bootstrap.min.css
                 - bootstrap-select.css
                 - bootstrap-theme.min.css
@@ -36,7 +35,6 @@ webloader:
                 - %appDir%/../vendor/nasext/dependent-select-box/client-side/dependentSelectBox.js
                 - bootstrap.js
                 - bootstrap3-typeahead.min.js
-                - jquery.fancybox.pack.js
                 - offline.js
                 - cashbook.js
                 - my.js
