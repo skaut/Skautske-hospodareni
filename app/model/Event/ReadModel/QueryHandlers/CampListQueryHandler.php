@@ -45,6 +45,6 @@ class CampListQueryHandler
             $result[$camp->getId()->toInt()] = $camp;
         }
 
-        return $camps;
+        return $result;
     }
 }
