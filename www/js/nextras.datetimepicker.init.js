@@ -7,7 +7,7 @@
  */
 
 
-jQuery(function($) {
+function initializeDatePicker() {
 	$('.date, .datetime-local').each(function(i, el) {
 		el = $(el);
 		el.get(0).type = 'text';
@@ -22,4 +22,4 @@ jQuery(function($) {
 		});
 		el.attr('value') && el.datetimepicker('setValue');
 	});
-});
+}

@@ -8,6 +8,8 @@ function domInit() {
     });
 
     $('[data-dependentselectbox]').dependentSelectBox();
+
+    initializeDatePicker();
 }
 
 $(document).ready(function () {
