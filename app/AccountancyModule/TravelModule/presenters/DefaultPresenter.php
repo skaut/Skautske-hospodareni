@@ -98,6 +98,7 @@ class DefaultPresenter extends BasePresenter
         $this->template->setParameters([
             'command'    => $command,
             'vehicle'    => $vehicle,
+            'types'      => $command->getTransportTypePairs(),
             'isEditable' => $this->isCommandEditable($command->getId()),
             'travels'    => $this->travelService->getTravels($command->getId()),
         ]);
