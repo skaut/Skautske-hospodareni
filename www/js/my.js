@@ -8,6 +8,8 @@ function domInit() {
     });
 
     $('[data-dependentselectbox]').dependentSelectBox();
+
+    initializeDatePicker();
 }
 
 $(document).ready(function () {
@@ -24,9 +26,6 @@ $(document).ready(function () {
 
     //nette.ajax.js
     $.nette.init();
-
-    //fancybox2
-    $(".fancybox").fancybox();
 
     //bootstrap tooltip
     if ($("[rel=tooltip]").length) {

@@ -163,12 +163,6 @@ input[type="checkbox"], input[type="radio"] {
     padding-top:20px;
 }
 
-
-/* zrušení spinneru pro fancybox*/
-#fancybox-loading {
-    display: none;
-}
-
 #ajax-spinner {
     background: #000000 url('../images/layout/pacman-loader.gif') no-repeat 50% 50%;
     height: 60px;
