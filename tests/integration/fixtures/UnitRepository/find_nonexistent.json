@@ -1,0 +1,65 @@
+[
+    {
+        "request": {
+            "method": "POST",
+            "url": "https:\/\/test-is.skaut.cz\/JunakWebservice\/OrganizationUnit.asmx",
+            "headers": {
+                "Host": "test-is.skaut.cz",
+                "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/UnitDetail\""
+            },
+            "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:UnitDetail><ns1:unitDetailInput><ns1:ID_Login>c33aa563-68eb-4697-9834-ec2eb56d17d1<\/ns1:ID_Login><ns1:ID_Application>48104fe2-b447-47f5-9a26-051c710da74e<\/ns1:ID_Application><ns1:ID>0<\/ns1:ID><ns1:FindStredisko xsi:nil=\"true\"\/><ns1:FindUstredi xsi:nil=\"true\"\/><\/ns1:unitDetailInput><\/ns1:UnitDetail><\/env:Body><\/env:Envelope>\n"
+        },
+        "response": {
+            "status": {
+                "http_version": "1.1",
+                "code": "500",
+                "message": "Internal Server Error"
+            },
+            "headers": {
+                "Cache-Control": "private",
+                "Content-Type": "application\/soap+xml; charset=utf-8",
+                "Server": "Microsoft-IIS\/10.0",
+                "X-AspNet-Version": "4.0.30319",
+                "X-Powered-By": "ASP.NET",
+                "script-transport-security": "max-age=31536000",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "POST",
+                "Date": "Mon, 29 Apr 2019 15:43:10 GMT",
+                "Content-Length": "563"
+            },
+            "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><soap:Fault><soap:Code><soap:Value>soap:Receiver<\/soap:Value><\/soap:Code><soap:Reason><soap:Text xml:lang=\"en\">Server was unable to process request. ---&gt; Nem\u00e1te opr\u00e1vn\u011bn\u00ed k akci OU_Unit_DETAIL nad z\u00e1znamem ID=0!\r\nP\u0159i na\u010dten\u00ed objektu OU_Unit nastala chyba<\/soap:Text><\/soap:Reason><soap:Detail \/><\/soap:Fault><\/soap:Body><\/soap:Envelope>"
+        }
+    }
+],{
+    "request": {
+        "method": "POST",
+        "url": "https:\/\/test-is.skaut.cz\/JunakWebservice\/OrganizationUnit.asmx",
+        "headers": {
+            "Host": "test-is.skaut.cz",
+            "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/UnitDetail\""
+        },
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:UnitDetail><ns1:unitDetailInput><ns1:ID_Login>c33aa563-68eb-4697-9834-ec2eb56d17d1<\/ns1:ID_Login><ns1:ID_Application>48104fe2-b447-47f5-9a26-051c710da74e<\/ns1:ID_Application><ns1:ID>27266<\/ns1:ID><ns1:FindStredisko xsi:nil=\"true\"\/><ns1:FindUstredi xsi:nil=\"true\"\/><\/ns1:unitDetailInput><\/ns1:UnitDetail><\/env:Body><\/env:Envelope>\n"
+    },
+    "response": {
+        "status": {
+            "http_version": "1.1",
+            "code": "200",
+            "message": "OK"
+        },
+        "headers": {
+            "Cache-Control": "private, max-age=0",
+            "Content-Type": "application\/soap+xml; charset=utf-8",
+            "Server": "Microsoft-IIS\/10.0",
+            "X-AspNet-Version": "4.0.30319",
+            "X-Powered-By": "ASP.NET",
+            "script-transport-security": "max-age=31536000",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Methods": "POST",
+            "Date": "Mon, 29 Apr 2019 16:05:59 GMT",
+            "Content-Length": "1994"
+        },
+        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><UnitDetailResponse xmlns=\"https:\/\/is.skaut.cz\/\"><UnitDetailResult><ID_Login>00000000-0000-0000-0000-000000000000<\/ID_Login><ID>27266<\/ID><ID_Group>770448<\/ID_Group><ID_Unit>0<\/ID_Unit><ID_UnitType>stredisko<\/ID_UnitType><UnitType>St\u0159edisko<\/UnitType><ContainsMembers>true<\/ContainsMembers><CommissionDeadline>14<\/CommissionDeadline><DisplayName>Sinovo st\u0159edisko<\/DisplayName><SortName>621.66 - Sinovo st\u0159edisko<\/SortName><RegistrationNumber>621.66<\/RegistrationNumber><ShortRegistrationNumber>621.66<\/ShortRegistrationNumber><Location \/><IC>25596641<\/IC><IsVatPayer>false<\/IsVatPayer><FileReference>L123<\/FileReference><Street>K Sinoru 53\/42<\/Street><City>Plze\u0148 1<\/City><Postcode>30100<\/Postcode><State>\u010cesk\u00e1 republika<\/State><PostalFirstLine \/><PostalStreet \/><PostalCity \/><PostalPostcode \/><PostalState \/><Note \/><ID_TroopArt xsi:nil=\"true\" \/><CanUpdateRegistrationNumber>false<\/CanUpdateRegistrationNumber><IsUnitCancel>false<\/IsUnitCancel><JournalParent>true<\/JournalParent><ChangeFreeJournal>true<\/ChangeFreeJournal><ID_UnitParent>23506<\/ID_UnitParent><OnlyValidate xsi:nil=\"true\" \/><IsPostalAuthenticated>false<\/IsPostalAuthenticated><IsAddressAuthenticated>true<\/IsAddressAuthenticated><AddressDistrict>Plze\u0148-m\u011bsto<\/AddressDistrict><ID_PersonChangeName xsi:nil=\"true\" \/><DateChangeName xsi:nil=\"true\" \/><IsPropertyOwner>false<\/IsPropertyOwner><ID_TempFilePropertyAgreement xsi:nil=\"true\" \/><ID_JournalNovice>all<\/ID_JournalNovice><ID_JournalDeliveryType>single<\/ID_JournalDeliveryType><FullDisplayName>Jun\u00e1k - \u010desk\u00fd skaut, Sinovo st\u0159edisko, z. s.<\/FullDisplayName><ID_DocumentDecision xsi:nil=\"true\" \/><ID_DocumentPropertyAgreement xsi:nil=\"true\" \/><ID_TempFileSeatChange xsi:nil=\"true\" \/><\/UnitDetailResult><\/UnitDetailResponse><\/soap:Body><\/soap:Envelope>"
+    }
+}]

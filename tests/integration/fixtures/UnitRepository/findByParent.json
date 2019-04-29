@@ -1,0 +1,34 @@
+[
+    {
+        "request": {
+            "method": "POST",
+            "url": "https:\/\/test-is.skaut.cz\/JunakWebservice\/OrganizationUnit.asmx",
+            "headers": {
+                "Host": "test-is.skaut.cz",
+                "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/UnitAll\""
+            },
+            "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:UnitAll><ns1:unitAllInput><ns1:ID_Login>c33aa563-68eb-4697-9834-ec2eb56d17d1<\/ns1:ID_Login><ns1:ID_Application>48104fe2-b447-47f5-9a26-051c710da74e<\/ns1:ID_Application><ns1:ID xsi:nil=\"true\"\/><ns1:ID_Group xsi:nil=\"true\"\/><ns1:ID_UnitParent>23506<\/ns1:ID_UnitParent><ns1:ID_UnitChild xsi:nil=\"true\"\/><ns1:ID_UnitTree xsi:nil=\"true\"\/><ns1:RegistrationNumberStartWith xsi:nil=\"true\"\/><\/ns1:unitAllInput><\/ns1:UnitAll><\/env:Body><\/env:Envelope>\n"
+        },
+        "response": {
+            "status": {
+                "http_version": "1.1",
+                "code": "200",
+                "message": "OK"
+            },
+            "headers": {
+                "Cache-Control": "private, max-age=0",
+                "Content-Type": "application\/soap+xml; charset=utf-8",
+                "Server": "Microsoft-IIS\/10.0",
+                "X-AspNet-Version": "4.0.30319",
+                "X-Powered-By": "ASP.NET",
+                "script-transport-security": "max-age=31536000",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "POST",
+                "Date": "Mon, 29 Apr 2019 15:57:18 GMT",
+                "Content-Length": "5736"
+            },
+            "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><UnitAllResponse xmlns=\"https:\/\/is.skaut.cz\/\"><UnitAllResult><UnitAllOutput><ID>27266<\/ID><ID_Group>770448<\/ID_Group><ID_UnitType>stredisko<\/ID_UnitType><UnitType>St\u0159edisko<\/UnitType><DisplayName>Sinovo st\u0159edisko<\/DisplayName><SortName>621.66 - Sinovo st\u0159edisko<\/SortName><RegistrationNumber>621.66<\/RegistrationNumber><ShortRegistrationNumber>621.66<\/ShortRegistrationNumber><Location \/><IC>25596641<\/IC><Street>K Sinoru 53\/42<\/Street><PostalState \/><City>Plze\u0148 1<\/City><Postcode>30100<\/Postcode><State>\u010cesk\u00e1 republika<\/State><PostalFirstLine \/><PostalStreet \/><PostalCity \/><PostalPostcode \/><Note \/><FullDisplayName>Jun\u00e1k - \u010desk\u00fd skaut, Sinovo st\u0159edisko, z. s.<\/FullDisplayName><\/UnitAllOutput><\/UnitAllResult><\/UnitAllResponse><\/soap:Body><\/soap:Envelope>"
+        }
+    }
+]
