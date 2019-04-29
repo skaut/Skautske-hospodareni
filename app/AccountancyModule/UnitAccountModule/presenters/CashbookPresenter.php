@@ -54,7 +54,7 @@ class CashbookPresenter extends BasePresenter
         }
 
         $this->flashMessage('Nemáš oprávnění číst data jednotky', 'danger');
-        $this->redirect('Default:');
+        $this->redirect('default', ['aid' => $this->unitService->getUnitId()]);
     }
 
     public function handleCreateCashbook() : void
