@@ -1,0 +1,32 @@
+[{
+    "request": {
+        "method": "POST",
+        "url": "https:\/\/test-is.skaut.cz\/JunakWebservice\/OrganizationUnit.asmx",
+        "headers": {
+            "Host": "test-is.skaut.cz",
+            "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/AccountAll\""
+        },
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:AccountAll><ns1:accountAllInput><ns1:ID_Login>349a8cc1-f893-4e08-927e-8ee4dab26c93<\/ns1:ID_Login><ns1:ID_Application>48104fe2-b447-47f5-9a26-051c710da74e<\/ns1:ID_Application><ns1:ID_Unit>27266<\/ns1:ID_Unit><ns1:ID_Bank xsi:nil=\"true\"\/><ns1:ShowHistory xsi:nil=\"true\"\/><ns1:IsValid>true<\/ns1:IsValid><\/ns1:accountAllInput><\/ns1:AccountAll><\/env:Body><\/env:Envelope>\n"
+    },
+    "response": {
+        "status": {
+            "http_version": "1.1",
+            "code": "200",
+            "message": "OK"
+        },
+        "headers": {
+            "Cache-Control": "private, max-age=0",
+            "Content-Type": "application\/soap+xml; charset=utf-8",
+            "Server": "Microsoft-IIS\/10.0",
+            "X-AspNet-Version": "4.0.30319",
+            "X-Powered-By": "ASP.NET",
+            "script-transport-security": "max-age=31536000",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Methods": "POST",
+            "Date": "Tue, 30 Apr 2019 18:23:00 GMT",
+            "Content-Length": "702"
+        },
+        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><AccountAllResponse xmlns=\"https:\/\/is.skaut.cz\/\"><AccountAllResult><AccountAllOutput><ID>5323<\/ID><DisplayName>2000942144\/2010<\/DisplayName><ID_Unit>27266<\/ID_Unit><Unit>Sinovo st\u0159edisko<\/Unit><ID_Bank>538<\/ID_Bank><Bank>Fio, dru\u017estevn\u00ed z\u00e1lo\u017ena<\/Bank><AccountPrefix \/><AccountNumber>2000942144<\/AccountNumber><Street \/><City \/><Postcode \/><ValidTo xsi:nil=\"true\" \/><Note \/><IsMain>true<\/IsMain><\/AccountAllOutput><\/AccountAllResult><\/AccountAllResponse><\/soap:Body><\/soap:Envelope>"
+    }
+}]
