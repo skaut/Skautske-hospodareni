@@ -1,0 +1,32 @@
+[{
+    "request": {
+        "method": "POST",
+        "url": "https:\/\/test-is.skaut.cz\/JunakWebservice\/OrganizationUnit.asmx",
+        "headers": {
+            "Host": "test-is.skaut.cz",
+            "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/PersonAll\""
+        },
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:PersonAll><ns1:personAllInput><ns1:ID_Login>11bf5c4e-a357-43c3-8510-7fd027d3687e<\/ns1:ID_Login><ns1:ID xsi:nil=\"true\"\/><ns1:ID_Unit>1<\/ns1:ID_Unit><ns1:OnlyDirectMember>false<\/ns1:OnlyDirectMember><ns1:ID_FunctionType xsi:nil=\"true\"\/><ns1:ID_QualificationType xsi:nil=\"true\"\/><\/ns1:personAllInput><\/ns1:PersonAll><\/env:Body><\/env:Envelope>\n"
+    },
+    "response": {
+        "status": {
+            "http_version": "1.1",
+            "code": "200",
+            "message": "OK"
+        },
+        "headers": {
+            "Cache-Control": "private, max-age=0",
+            "Content-Type": "application\/soap+xml; charset=utf-8",
+            "Server": "Microsoft-IIS\/10.0",
+            "X-AspNet-Version": "4.0.30319",
+            "X-Powered-By": "ASP.NET",
+            "script-transport-security": "max-age=31536000",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Methods": "POST",
+            "Date": "Sat, 04 May 2019 13:38:36 GMT",
+            "Content-Length": "331"
+        },
+        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><PersonAllResponse xmlns=\"https:\/\/is.skaut.cz\/\"><PersonAllResult \/><\/PersonAllResponse><\/soap:Body><\/soap:Envelope>"
+    }
+}]

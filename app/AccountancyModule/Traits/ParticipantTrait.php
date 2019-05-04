@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\AccountancyModule;
 
 use App\Forms\BaseForm;
+use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\UnitId;
 use Model\EventEntity;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\MemberService;
+use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 use Model\Services\PdfRenderer;
 use Model\UnitService;
 use Nette\Application\UI\Form;
@@ -63,6 +66,9 @@ trait ParticipantTrait
     /** @var PdfRenderer */
     protected $pdf;
 
+    /** @var QueryBus */
+    protected $queryBus;
+
     protected function traitStartup() : void
     {
         parent::startup();
@@ -86,7 +92,11 @@ trait ParticipantTrait
         $participants = $this->eventService->getParticipants()->getAll($this->aid);
         try {
             $unitId = $this->uid ?? $this->unitService->getUnitId();
-            $list   = $dp ? [] : $this->memberService->getAll($unitId, $this->getDirectMemberOnly(), $participants);
+            $list   = $dp
+                ? []
+                : $this->queryBus->handle(
+                    new PotentialParticipantListQuery(new UnitId($unitId), $this->getDirectMemberOnly(), $participants)
+                );
         } catch (WsdlException $e) {
             if (! $dp && strpos('Timeout expired', $e->getMessage())) {
                 $this->flashMessage('Bylo vypnuto doplňování osob, protože vypršel časový limit!', 'danger');
