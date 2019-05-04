@@ -111,7 +111,7 @@ class ExportService
 
         return $this->templateFactory->create(__DIR__ . '/templates/chitlist.latte', [
             'list' => array_filter($chits, function (Chit $chit) : bool {
-                return $chit->getCategory()->getOperationType()->equalsValue(Operation::EXPENSE);
+                return ! $chit->isIncome();
             }),
         ]);
     }
@@ -202,7 +202,7 @@ class ExportService
         $chitsCollection = new ArrayCollection($chits);
 
         [$income, $outcome] = $chitsCollection->partition(function ($_, Chit $chit) : bool {
-            return $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+            return $chit->isIncome();
         });
 
         $activeHpd = $chitsCollection->exists(function ($_, Chit $chit) : bool {

@@ -146,7 +146,7 @@ class CashbookWithCategoriesBuilder
 
         $balance = 0;
         foreach ($chits as $chit) {
-            $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+            $isIncome = $chit->isIncome();
             $amount   = $chit->getAmount()->toFloat();
 
             $balance += $isIncome ? $amount : -$amount;
