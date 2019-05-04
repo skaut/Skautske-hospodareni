@@ -72,6 +72,10 @@ class CashbookPresenter extends BasePresenter
 
     public function actionDefault(?int $unitId = null, ?int $year = null) : void
     {
+        if ($unitId === null) {
+            $this->redirect('this', ['unitId' => $this->unitService->getUnitId(), 'year' => $year]);
+        }
+
         $activeCashbook = $this->getActiveCashbook();
 
         $this->template->setParameters([
