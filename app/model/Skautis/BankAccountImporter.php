@@ -20,7 +20,7 @@ class BankAccountImporter implements IBankAccountImporter
     }
 
     /**
-     * {@inheritDoc}
+     * @return AccountNumber[]
      */
     public function import(int $unitId) : array
     {
