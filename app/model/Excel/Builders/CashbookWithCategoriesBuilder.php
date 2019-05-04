@@ -147,7 +147,7 @@ class CashbookWithCategoriesBuilder
         $balance = 0;
         foreach ($chits as $chit) {
             $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
-            $amount   = $chit->getAmount()->getValue();
+            $amount   = $chit->getAmount()->toFloat();
 
             $balance += $isIncome ? $amount : -$amount;
 
@@ -165,7 +165,11 @@ class CashbookWithCategoriesBuilder
                 $this->sheet->setCellValueByColumnAndRow($column + 1, $row, $value);
             }
 
-            $this->sheet->setCellValueByColumnAndRow($categoryColumns[$chit->getCategory()->getId()], $row, $amount);
+            foreach ($chit->getItems() as $item) {
+                $column = $categoryColumns[$item->getCategory()->getId()];
+                $value  = $this->sheet->getCellByColumnAndRow($column, $row)->getValue() + $item->getAmount()->toFloat();
+                $this->sheet->setCellValueByColumnAndRow($column, $row, $value);
+            }
             $row++;
         }
     }
