@@ -34,6 +34,10 @@
                     <th>Stav</th>
                     <td {if $event->ID_EventCampState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->ID_EventCampState|campStateLabel|noescape}</td>
                 </tr>
+                <tr>
+                    <th>Prefix <i class="glyphicon glyphicon-question-sign" rel="tooltip" data-original-title='Prefix lze upravit na kartě Evidence plateb.'></i></th>
+                    <td>{$event->prefix}</td>
+                </tr>
             </table>
         </div>
     </div>
