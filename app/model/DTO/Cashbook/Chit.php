@@ -157,4 +157,12 @@ class Chit
 
         return $amount;
     }
+
+    /**
+     * @return ChitItem[]
+     */
+    public function getItems() : array
+    {
+        return $this->items;
+    }
 }
