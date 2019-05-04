@@ -8,7 +8,6 @@ use Doctrine\ORM\EntityManager;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\Cashbook\Unit;
 use Model\Cashbook\Unit\Cashbook;
-use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
 use function array_map;
 
@@ -27,7 +26,7 @@ final class UnitCashbookListQueryHandler
      */
     public function handle(UnitCashbookListQuery $query) : array
     {
-        $unit = $this->entityManager->find(Unit::class, new UnitId($query->getUnitId()));
+        $unit = $this->entityManager->find(Unit::class, $query->getUnitId());
 
         if ($unit === null) {
             return [];

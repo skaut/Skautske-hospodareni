@@ -346,7 +346,7 @@ trait ParticipantTrait
             'city' => $values['city'],
             'postcode' => $values['postcode'],
         ];
-        $this->eventService->getParticipants()->addNew($this->getCurrentUnitId(), $person);
+        $this->eventService->getParticipants()->addNew($this->aid, $person);
         $this->redirect('this');
     }
 

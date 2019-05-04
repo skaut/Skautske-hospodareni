@@ -10,7 +10,6 @@ use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Assert\Assertion;
 use Cake\Chronos\Date;
-use Model\Common\UnitId;
 use Model\DTO\Participant\Participant;
 use Model\Event\Camp;
 use Model\EventEntity;
@@ -82,9 +81,9 @@ class CampPresenter extends BasePresenter
     }
 
     /**
-     * @param null $aid - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
+     * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
      */
-    public function actionMassAdd(int $id, ?int $aid = null) : void
+    public function actionMassAdd(int $id, ?int $unitId = null) : void
     {
         $this->id = $id;
         $group    = $this->model->getGroup($id);
@@ -137,9 +136,11 @@ class CampPresenter extends BasePresenter
     protected function createComponentNewGroupForm() : GroupForm
     {
         Assertion::notNull($this->camp);
+        $unitId = $this->getCurrentUnitId();
+        Assertion::notNull($unitId);
 
         $form = $this->groupFormFactory->create(
-            new UnitId($this->getCurrentUnitId()),
+            $unitId,
             SkautisEntity::fromCampId($this->camp->getId())
         );
 

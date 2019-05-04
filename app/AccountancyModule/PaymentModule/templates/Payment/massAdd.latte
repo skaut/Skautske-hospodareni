@@ -16,10 +16,10 @@
 <div class="dropdown mb-3">
     <button class="btn btn-light dropdown-toggle" type="button" id="unitDropdown" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-        <i class="fas fa-eye"></i> {$unitPairs[$aid]}
+        <i class="fas fa-eye"></i> {$unitPairs[$unitId]}
     </button>
     <div class="dropdown-menu" aria-labelledby="unitDropdown" n:inner-foreach="$unitPairs as $unitId=>$label">
-        <a n:href="this aid => $unitId" class="dropdown-item">{$label}</a>
+        <a n:href="this unitId => $unitId" class="dropdown-item">{$label}</a>
     </div>
 </div>
 

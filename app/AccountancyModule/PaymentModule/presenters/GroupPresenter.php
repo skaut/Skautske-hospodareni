@@ -7,7 +7,6 @@ namespace App\AccountancyModule\PaymentModule;
 use App\AccountancyModule\PaymentModule\Components\GroupForm;
 use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use Assert\Assertion;
-use Model\Common\UnitId;
 use Model\DTO\Payment\Group;
 use Model\PaymentService;
 use function in_array;
@@ -47,9 +46,12 @@ class GroupPresenter extends BasePresenter
             $this->redirect('Payment:default');
         }
 
-        $group = $this->model->getGroup($id);
+        $group  = $this->model->getGroup($id);
+        $unitId = $this->getCurrentUnitId();
 
-        if ($group === null || ! in_array($this->getCurrentUnitId(), $group->getUnitIds(), true)) {
+        Assertion::notNull($unitId);
+
+        if ($group === null || ! in_array($unitId->toInt(), $group->getUnitIds(), true)) {
             $this->flashMessage('Skupina nebyla nalezena', 'warning');
             $this->redirect('Payment:default');
         }
@@ -63,12 +65,17 @@ class GroupPresenter extends BasePresenter
         $group = $this->group;
 
         Assertion::notNull($group);
+        $unitId = $this->getCurrentUnitId();
+        Assertion::notNull($unitId);
 
-        return $this->groupFormFactory->create(new UnitId($this->getCurrentUnitId()), null, $group->getId());
+        return $this->groupFormFactory->create($unitId, null, $group->getId());
     }
 
     protected function createComponentNewGroupForm() : GroupForm
     {
-        return $this->groupFormFactory->create(new UnitId($this->getCurrentUnitId()), null);
+        $unitId = $this->getCurrentUnitId();
+        Assertion::notNull($unitId);
+
+        return $this->groupFormFactory->create($unitId, null);
     }
 }

@@ -23,23 +23,21 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     {
         parent::startup();
 
-        $this->aid = $this->aid ?? $this->unitService->getUnitId();
-
         $user          = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);
 
-        $isReadable = isset($readableUnits[$this->aid]);
+        $isReadable = isset($readableUnits[$this->unitId->toInt()]);
 
         $role                = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         $this->editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
-        $this->isEditable    = in_array($this->aid, $this->editableUnits);
+        $this->isEditable    = in_array($this->unitId->toInt(), $this->editableUnits);
 
         if ($isReadable) {
             return;
         }
 
         $this->flashMessage('Nemáte oprávnění pro zobrazení stránky', 'warning');
-        $this->redirect(':Accountancy:Default:', ['aid' => null]);
+        $this->redirect(':Accountancy:Default:', ['unitId' => null]);
     }
 
     protected function beforeRender() : void
@@ -49,7 +47,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         $presenterName = explode(':', $this->getName());
 
         $this->template->setParameters([
-            'aid'        => $this->aid,
+            'unitId'     => $this->unitId->toInt(),
             'isEditable' => $this->isEditable,
             'presenterName' => $presenterName[array_key_last($presenterName)],
         ]);

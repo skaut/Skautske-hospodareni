@@ -4,8 +4,8 @@ Menu pro pohyb mezi částmi akce
 <div class="row">
     <div class="col-md-6">
         <ul class="nav nav-pills">
-            <li {ifCurrent Cashbook:default $aid}class='active'{/ifCurrent}>
-                <a n:href="Cashbook:default $aid">
+            <li {ifCurrent Cashbook:default $unitId}class='active'{/ifCurrent}>
+                <a n:href="Cashbook:default $unitId">
                     <i class="glyphicon glyphicon-shopping-cart hidden-xs hidden-sm"></i> Evidence plateb
                 </a>
             </li>
@@ -20,11 +20,11 @@ Menu pro pohyb mezi částmi akce
                 <div n:ifset="$unitPairs" class="btn-group">
                     <a class="dropdown-toggle btn btn-default" data-toggle="dropdown" href="#">
                         <i class="fa fa-sitemap"></i>
-                        {$unitPairs[$aid]}
+                        {$unitPairs[$unitId]}
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li n:foreach="$unitPairs as $id=>$label"><a n:href="this aid=>$id">{$label}</a></li>
+                        <li n:foreach="$unitPairs as $id=>$label"><a n:href="this unitId=>$id">{$label}</a></li>
                     </ul>
                 </div>
                 {if $presenter->getName() === 'Accountancy:UnitAccount:Cashbook' && isset($cashbooks)}
@@ -67,7 +67,7 @@ Menu pro pohyb mezi částmi akce
 {define cashbookDropdownItem}
     {var $selected = $cashbook->getCashbookId()->toString() === $cashbookId}
     <li n:class="$selected ? active">
-        <a href="{if $selected}#{else}{link this $aid, $cashbook->year}{/if}">
+        <a href="{if $selected}#{else}{link this $unitId, $cashbook->year}{/if}">
             {$cashbook->year}
         </a>
     </li>

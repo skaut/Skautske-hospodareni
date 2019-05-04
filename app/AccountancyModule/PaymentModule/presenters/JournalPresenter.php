@@ -19,7 +19,7 @@ class JournalPresenter extends BasePresenter
         $this->model = $model;
     }
 
-    public function renderDefault(int $aid, ?int $year = null) : void
+    public function renderDefault(int $unitId, ?int $year = null) : void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění přistupovat ke správě emailů', 'danger');
@@ -29,7 +29,7 @@ class JournalPresenter extends BasePresenter
         if ($year === null) {
             $year = date('Y');
         }
-        $units = $this->unitService->getAllUnder($this->aid);
+        $units = $this->unitService->getAllUnder($this->unitId->toInt());
 
         $changes      = [];
         $changeExists = false;

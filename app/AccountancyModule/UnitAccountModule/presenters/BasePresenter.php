@@ -21,23 +21,22 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     {
         parent::startup();
         $this->type = 'unit';
-        $this->aid  = $this->aid ?? $this->unitService->getUnitId();
         $this->year = $this->getParameter('year', date('Y'));
 
         $user          = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);
 
-        $this->isReadable = $isReadable = isset($readableUnits[$this->aid]);
+        $this->isReadable = $isReadable = isset($readableUnits[$this->unitId->toInt()]);
 
         $role             = $this->queryBus->handle(new ActiveSkautisRoleQuery());
-        $this->isEditable = array_key_exists($this->aid, $this->queryBus->handle(new EditableUnitsQuery($role)));
+        $this->isEditable = array_key_exists($this->unitId->toInt(), $this->queryBus->handle(new EditableUnitsQuery($role)));
 
         if ($this->isEditable) {
             return;
         }
 
         $this->flashMessage('Nemáte oprávnění pro zobrazení stránky', 'warning');
-        $this->redirect(':Accountancy:Default:', ['aid' => null]);
+        $this->redirect(':Accountancy:Default:', ['unitId' => null]);
     }
 
     protected function beforeRender() : void
@@ -46,7 +45,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->template->setParameters([
             'year'       => $this->year,
             'isEditable' => $this->isEditable,
-            'aid'        => $this->aid,
+            'unitId'     => $this->unitId->toInt(),
         ]);
     }
 

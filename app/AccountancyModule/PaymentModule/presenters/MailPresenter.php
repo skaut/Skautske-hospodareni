@@ -24,14 +24,14 @@ class MailPresenter extends BasePresenter
         $this->model = $model;
     }
 
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $unitId) : void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění přistupovat ke správě emailů', 'danger');
             $this->redirect('Payment:default');
         }
         $this->template->setParameters([
-            'list'          => $this->model->getAll($this->aid),
+            'list'          => $this->model->getAll($this->unitId->toInt()),
             'editableUnits' => $this->getEditableUnits(),
         ]);
     }
@@ -50,7 +50,7 @@ class MailPresenter extends BasePresenter
     {
         $mail = $this->model->get($id);
 
-        if (! $this->isEditable || $mail->getUnitId() !== $this->aid) {
+        if (! $this->isEditable || $mail->getUnitId() !== $this->unitId->toInt()) {
             $this->flashMessage('Nemáte oprávnění mazat smtp', 'danger');
             $this->redirect('Payment:default');
         }
@@ -103,7 +103,7 @@ class MailPresenter extends BasePresenter
         try {
             $this->commandBus->handle(
                 new CreateMailCredentials(
-                    $this->aid,
+                    $this->unitId->toInt(),
                     $v->host,
                     $v->username,
                     $v->password,

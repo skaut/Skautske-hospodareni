@@ -109,7 +109,7 @@ final class CreateCashbookDialog extends BaseControl
      */
     private function getYearsWithCashbook() : array
     {
-        $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId->toInt()));
+        $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId));
 
         return array_map(function (UnitCashbook $cashbook) : int {
             return $cashbook->getYear();

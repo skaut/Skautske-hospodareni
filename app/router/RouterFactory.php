@@ -165,7 +165,7 @@ class RouterFactory
         $prefix = 'jednotka';
 
         $router[] = new Route(
-            $prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]',
+            $prefix . '/<unitId [0-9]+>[/<presenter>][/<action>][/<year>]',
             [
                 'presenter' => [
                     Route::VALUE => 'Default',
@@ -197,7 +197,7 @@ class RouterFactory
         $prefix = 'platby';
 
         $router[] = new Route(
-            $prefix . '/<aid [0-9]+>[/<presenter>][/<action>][/<year>]',
+            $prefix . '/<unitId [0-9]+>[/<presenter>][/<action>][/<year>]',
             [
                 'presenter' => [
                     Route::VALUE => 'Default',

@@ -15,7 +15,6 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
-use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
 use function assert;
 use function sprintf;
@@ -71,8 +70,12 @@ class CashbookPresenter extends BasePresenter
         $dialog->open();
     }
 
-    public function actionDefault(int $aid, ?int $year = null) : void
+    public function actionDefault(?int $unitId = null, ?int $year = null) : void
     {
+        if ($unitId === null) {
+            $this->redirect('this', ['unitId' => $this->unitService->getUnitId(), 'year' => $year]);
+        }
+
         $activeCashbook = $this->getActiveCashbook();
 
         $this->template->setParameters([
@@ -86,10 +89,10 @@ class CashbookPresenter extends BasePresenter
         }
 
         if ($year === null) {
-            $this->redirect('this', [$aid, $activeCashbook->getYear()]);
+            $this->redirect('this', [$this->unitId->toInt(), $activeCashbook->getYear()]);
         }
 
-        $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->aid));
+        $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId));
 
         $this->template->setParameters([
             'cashbooks' => $cashbooks,
@@ -108,10 +111,10 @@ class CashbookPresenter extends BasePresenter
         }
 
         $this->flashMessage(sprintf('Pokladní kniha pro rok %d neexistuje', $year), 'danger');
-        $this->redirect('this', [$aid, $activeCashbook->getYear()]);
+        $this->redirect('this', [$this->unitId->toInt(), $activeCashbook->getYear()]);
     }
 
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $unitId) : void
     {
         $this->template->setParameters([
             'cashbookId' => $this->cashbookId->toString(),
@@ -123,7 +126,7 @@ class CashbookPresenter extends BasePresenter
      * Do not allow direct access to action.
      * This is internal action used inside "default" action when there is no unit yet
      */
-    public function actionNoCashbook(int $aid) : void
+    public function actionNoCashbook(int $unitId) : void
     {
         $activeCashbook = $this->getActiveCashbook();
 
@@ -131,20 +134,20 @@ class CashbookPresenter extends BasePresenter
             return;
         }
 
-        $this->redirect('default', [$aid, $activeCashbook->getYear()]);
+        $this->redirect('default', [$unitId, $activeCashbook->getYear()]);
     }
 
     protected function createComponentActivateCashbookDialog() : ActivateCashbookDialog
     {
-        return $this->activateCashbookDialogFactory->create($this->isEditable, new UnitId($this->aid));
+        return $this->activateCashbookDialogFactory->create($this->isEditable, $this->unitId);
     }
 
     protected function createComponentCreateCashbookDialog() : CreateCashbookDialog
     {
-        $dialog = $this->createCashbookDialogFactory->create($this->isEditable, new UnitId($this->aid));
+        $dialog = $this->createCashbookDialogFactory->create($this->isEditable, $this->unitId);
 
         $dialog->onSuccess[] = function (int $year) : void {
-            $this->redirect('default', [$this->aid, $year]);
+            $this->redirect('default', [$this->unitId->toInt(), $year]);
         };
 
         return $dialog;
@@ -164,6 +167,6 @@ class CashbookPresenter extends BasePresenter
 
     private function getActiveCashbook() : ?UnitCashbook
     {
-        return $this->queryBus->handle(new ActiveUnitCashbookQuery(new UnitId($this->aid)));
+        return $this->queryBus->handle(new ActiveUnitCashbookQuery($this->unitId));
     }
 }

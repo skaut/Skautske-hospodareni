@@ -24,7 +24,7 @@ class BudgetPresenter extends BasePresenter
     public function renderDefault(?int $year = null) : void
     {
         $this->template->setParameters([
-            'categories' => $this->budgetService->getCategories($this->aid),
+            'categories' => $this->budgetService->getCategories($this->unitId->toInt()),
             'unitPairs'  => $this->unitService->getReadUnits($this->user),
         ]);
     }
@@ -34,7 +34,7 @@ class BudgetPresenter extends BasePresenter
      */
     public function getParentCategories(array $values) : DependentData
     {
-        $items = $this->budgetService->getCategoriesRoot((int) $this->aid, $values['type']);
+        $items = $this->budgetService->getCategoriesRoot($this->unitId->toInt(), $values['type']);
 
         return new DependentData(['0' => 'Žádná'] + $items);
     }
@@ -62,7 +62,7 @@ class BudgetPresenter extends BasePresenter
             ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Vyplňte rok')
             ->setDefaultValue(date('Y'));
-        $form->addHidden('oid', $this->aid);
+        $form->addHidden('oid', $this->unitId->toInt());
 
         $form->addSubmit('submit', 'Založit kategorii')
             ->setAttribute('class', 'btn btn-primary');
