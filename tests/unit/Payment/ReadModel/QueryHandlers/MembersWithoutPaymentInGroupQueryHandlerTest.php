@@ -15,7 +15,7 @@ use Model\PaymentService;
 
 final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
 {
-    public function testMembersWithPaymentAreNotReturnedAndReturnedMembersAreSortedByName() : void
+    public function testMembersWithPaymentAreNotReturned() : void
     {
         $unitId  = new UnitId(1);
         $groupId = 5;
@@ -25,8 +25,8 @@ final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
             ->once()
             ->withArgs([$unitId, false])
             ->andReturn([
-                new Member(1, 'Čenda'),
                 new Member(2, 'Cibule'),
+                new Member(1, 'Čenda'),
                 new Member(3, 'Tom'),
             ]);
 

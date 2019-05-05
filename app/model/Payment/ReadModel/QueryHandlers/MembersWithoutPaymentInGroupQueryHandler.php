@@ -9,9 +9,7 @@ use Model\DTO\Payment\Person;
 use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\Repositories\IMemberEmailRepository;
 use Model\PaymentService;
-use Model\Services\Language;
 use function in_array;
-use function usort;
 
 final class MembersWithoutPaymentInGroupQueryHandler
 {
@@ -54,13 +52,6 @@ final class MembersWithoutPaymentInGroupQueryHandler
                 $this->emails->findByMember($member->getId())
             );
         }
-
-        usort(
-            $persons,
-            function (Person $one, Person $two) {
-                return Language::compare($one->getName(), $two->getName());
-            }
-        );
 
         return $persons;
     }
