@@ -7,9 +7,15 @@ namespace App\AccountancyModule\EventModule;
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
 use App\MyValidators;
-use Model\Auth\Resources\Event;
+use Model\Auth\Resources\Event as EventResource;
+use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Commands\CancelEvent;
 use Model\Event\Commands\Event\CreateEvent;
+use Model\Event\Event;
+use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Event\ReadModel\Queries\EventScopes;
 use Model\Event\ReadModel\Queries\EventStates;
 use Model\Event\ReadModel\Queries\EventTypes;
@@ -21,10 +27,10 @@ use Nette\Application\UI\Form;
 use Nette\Http\SessionSection;
 use Skautis\Exception;
 use Ublaboo\DataGrid\DataGrid;
-use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function array_reverse;
+use function assert;
 use function date;
 use function get_class;
 use function range;
@@ -68,21 +74,34 @@ class DefaultPresenter extends BasePresenter
     protected function createComponentEventGrid() : DataGrid
     {
         //filtrovani zobrazených položek
-        $year  = $this->ses->year ?? date('Y');
+        $year  = (int) ($this->ses->year ?? date('Y'));
         $state = $this->ses->state ?? null;
-        $list  = $this->eventService->getEvent()->getAll($year, $state);
-        foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $list[$key]['accessDelete'] = $this->authorizator->isAllowed(Event::DELETE, (int) $value['ID']);
-            $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Event::ACCESS_DETAIL, (int) $value['ID']);
-        }
+
+        $events = $this->queryBus->handle(new EventListQuery($year, $state === 'all' ? null : $state));
 
         $grid = $this->gridFactory->create();
-        $grid->setPrimaryKey('ID');
-        $grid->setDataSource($list);
-        $grid->addColumnLink('DisplayName', 'Název', 'Event:default', null, ['aid' => 'ID'])->setSortable()->setFilterText();
-        $grid->addColumnDateTime('StartDate', 'Od')->setFormat('d.m.Y')->setSortable();
-        $grid->addColumnDateTime('EndDate', 'Do')->setFormat('d.m.Y')->setSortable();
-        $grid->addColumnText('prefix', 'Prefix')->setSortable();
+        $grid->setPrimaryKey('id');
+        $grid->setDataSource($events);
+        $grid->addColumnText('displayName', 'Název')
+            ->setSortable()
+            ->setFilterText();
+
+        $grid->addColumnDateTime('startDate', 'Od')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnDateTime('endDate', 'Do')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnText('prefix', 'Prefix')
+            ->setRenderer(function (Event $event) : ?string {
+                $cashbookId = $this->queryBus->handle(
+                    new EventCashbookIdQuery(new SkautisEventId($event->getId()->toInt()))
+                );
+
+                assert($cashbookId instanceof CashbookId);
+
+                $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+                assert($cashbook instanceof Cashbook);
+
+                return $cashbook->getChitNumberPrefix();
+            });
         $grid->addColumnText('state', 'Stav');
 
         $grid->addAction('delete', '')
@@ -94,12 +113,8 @@ class DefaultPresenter extends BasePresenter
 
         $grid->allowRowsAction(
             'delete',
-            function ($item) {
-                if (! array_key_exists('accessDelete', $item)) {
-                    return true;
-                }
-
-                return $item['accessDelete'];
+            function (Event $event) : bool {
+                return $this->authorizator->isAllowed(EventResource::DELETE, $event->getId()->toInt());
             }
         );
 
@@ -110,12 +125,12 @@ class DefaultPresenter extends BasePresenter
 
     public function renderDefault() : void
     {
-        $this->template->setParameters(['accessCreate' => $this->authorizator->isAllowed(Event::CREATE, null)]);
+        $this->template->setParameters(['accessCreate' => $this->authorizator->isAllowed(EventResource::CREATE, null)]);
     }
 
     public function actionNew() : void
     {
-        if ($this->authorizator->isAllowed(Event::CREATE, null)) {
+        if ($this->authorizator->isAllowed(EventResource::CREATE, null)) {
             return;
         }
 
@@ -155,7 +170,7 @@ class DefaultPresenter extends BasePresenter
 
     public function handleCancel(int $aid) : void
     {
-        if (! $this->authorizator->isAllowed(Event::CLOSE, $aid)) {
+        if (! $this->authorizator->isAllowed(EventResource::CLOSE, $aid)) {
             $this->flashMessage('Nemáte právo na zrušení akce.', 'danger');
             $this->redirect('this');
         }
@@ -265,7 +280,7 @@ class DefaultPresenter extends BasePresenter
 
     private function formCreateSubmitted(Form $form) : void
     {
-        if (! $this->authorizator->isAllowed(Event::CREATE, null)) {
+        if (! $this->authorizator->isAllowed(EventResource::CREATE, null)) {
             $this->flashMessage('Nemáte oprávnění pro založení akce', 'danger');
             $this->redirect('this');
         }
