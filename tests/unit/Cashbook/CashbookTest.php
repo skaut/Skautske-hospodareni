@@ -81,6 +81,30 @@ class CashbookTest extends Unit
         $this->assertSame($expectedTotals, $totals);
     }
 
+    public function testGetCategoryTotalsCountCorrectlyIncome() : void
+    {
+        $cashbook = $this->createEventCashbook();
+
+        $addChit = function (int $categoryId, string $amount) use ($cashbook) : void {
+            $chitBody = new ChitBody(null, new Date(), null, '');
+            $cashbook->addChit($chitBody, new Amount($amount), $this->mockCategory($categoryId), PaymentMethod::CASH());
+        };
+
+        $addChit(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, '200');
+        $addChit(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, '300');
+        $addChit(ICategory::CATEGORY_REFUND_ID, '50');
+        $addChit(ICategory::CATEGORY_HPD_ID, '100');
+
+        $expectedTotals = [ICategory::CATEGORY_PARTICIPANT_INCOME_ID => 550.0];
+
+        $totals = $cashbook->getCategoryTotals();
+
+        ksort($expectedTotals);
+        ksort($totals);
+
+        $this->assertSame($expectedTotals, $totals);
+    }
+
     public function testAddChitRaisesEvent() : void
     {
         $cashbookId = CashbookId::fromString('10');

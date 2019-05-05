@@ -10,7 +10,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ICategory;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -35,6 +34,7 @@ use function array_sum;
 use function array_values;
 use function assert;
 use function count;
+use function in_array;
 
 class ExportService
 {
@@ -120,8 +120,6 @@ class ExportService
      */
     public function getEventReport(int $skautisEventId, EventEntity $eventService) : string
     {
-        $categories = $this->categories->findByObjectType(ObjectType::get(ObjectType::EVENT));
-
         $sums = [
             self::CATEGORY_VIRTUAL => [
                 Operation::INCOME => [],
@@ -133,31 +131,23 @@ class ExportService
             ],
         ];
 
+        $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
+        /** @var Category[] $categories */
+        $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
+
         foreach ($categories as $category) {
-            $virtual                                        = $category->isVirtual() ? self::CATEGORY_VIRTUAL:self::CATEGORY_REAL;
-            $operation                                      = $category->getOperationType()->getValue();
+            if (in_array($category->getId(), [ICategory::CATEGORY_HPD_ID, ICategory::CATEGORY_REFUND_ID], true)) {
+                continue;
+            }
+
+            $virtual   = $category->isVirtual() ? self::CATEGORY_VIRTUAL:self::CATEGORY_REAL;
+            $operation = $category->getOperationType()->getValue();
+
             $sums[$virtual][$operation][$category->getId()] = [
-                'amount' => 0,
+                'amount' => (float) $category->getTotal()->getAmount(),
                 'label' => $category->getName(),
             ];
         }
-
-        $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
-        $chits      = $this->queryBus->handle(ChitListQuery::all($cashbookId));
-
-        //rozpočítává paragony do jednotlivých skupin
-        foreach ($chits as $chit) {
-            assert($chit instanceof Chit);
-
-            $category                                                      = $chit->getCategory();
-            $operationType                                                 = $category->getOperationType()->getValue();
-            $virtual                                                       = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
-            $sums[$virtual][$operationType][$category->getId()]['amount'] += $chit->getAmount()->toFloat();
-        }
-
-        /* sum up "Příjmy od účastníků"(1) and "Hromadný příjem od úč."(11) */
-        $sums[self::CATEGORY_REAL][Operation::INCOME][ICategory::CATEGORY_PARTICIPANT_INCOME_ID]['amount'] += $sums[self::CATEGORY_REAL][Operation::INCOME][ICategory::CATEGORY_HPD_ID]['amount'];
-        unset($sums[self::CATEGORY_REAL][Operation::INCOME][ICategory::CATEGORY_HPD_ID]);
 
         $totalIncome = array_sum(
             array_column($sums[self::CATEGORY_REAL][Operation::INCOME], 'amount')
@@ -176,13 +166,16 @@ class ExportService
         );
 
         $participants = $eventService->getParticipants()->getAll($skautisEventId);
+        $personDays   = $eventService->getParticipants()->getPersonsDays($participants);
+        $events       = $this->events->find(new SkautisEventId($skautisEventId));
+        $functions    = $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId)));
 
         return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
             'participantsCnt' => count($participants),
-            'personsDays' => $eventService->getParticipants()->getPersonsDays($participants),
-            'event' => $this->events->find(new SkautisEventId($skautisEventId)),
+            'personsDays' => $personDays,
+            'event' => $events,
             'chits' => $sums,
-            'functions' => $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId))),
+            'functions' => $functions,
             'incomes' => array_values($sums[self::CATEGORY_REAL][Operation::INCOME]),
             'expenses' => array_values($sums[self::CATEGORY_REAL][Operation::EXPENSE]),
             'totalIncome' => $totalIncome,

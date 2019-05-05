@@ -11,6 +11,7 @@ interface ICategory
     public const CAMP_RESERVE_ID                = 15;
     public const CATEGORY_PARTICIPANT_INCOME_ID = 1;
     public const CATEGORY_HPD_ID                = 11;
+    public const CATEGORY_REFUND_ID             = 20;
 
     public function getId() : int;
 
