@@ -36,7 +36,7 @@ final class PotentialParticipantListQueryHandler
             $check = [];
             /** @var Participant $p */
             foreach ($participants as $p) {
-                $check[$p->getId()] = true;
+                $check[$p->getPersonId()] = true;
             }
             foreach ($all as $member) {
                 if (array_key_exists($member->getId(), $check)) {
