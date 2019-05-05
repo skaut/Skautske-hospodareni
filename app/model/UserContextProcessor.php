@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App;
 
 use Nette\Security\User;
+use stdClass;
+use function array_map;
 
 class UserContextProcessor
 {
@@ -24,10 +26,17 @@ class UserContextProcessor
     public function __invoke(array $record) : array
     {
         $identity = $this->user->getIdentity();
+        if ($identity !== null) {
+            $roles = array_map(function (stdClass $r) {
+                return ['DisplayName' => $r->DisplayName, 'IsActive' => $r->IsActive, 'Unit' => $r->Unit];
+            }, $identity->getRoles());
+        } else {
+            $roles = null;
+        }
 
         if ($identity !== null) {
             $record['context']['user']  = ['id' => $identity->getId()];
-            $record['context']['roles'] = $identity->getRoles();
+            $record['context']['roles'] = $roles;
         }
 
         return $record;
