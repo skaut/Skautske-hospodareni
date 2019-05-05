@@ -302,42 +302,6 @@ class PaymentService
     }
 
     /**
-     * seznam osob z dané jednotky
-     *
-     * @param  int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
-     *
-     * @return DTO\Person[]
-     */
-    public function getPersons(int $unitId, int $groupId) : array
-    {
-        $persons = $this->skautis->org->PersonAll(['ID_Unit' => $unitId, 'OnlyDirectMember' => true]);
-
-        if (! is_array($persons) || empty($persons)) {
-            return [];
-        }
-
-        $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
-
-        $result = [];
-        foreach ($persons as $person) {
-            if (in_array($person->ID, $personsWithPayment)) {
-                continue;
-            }
-
-            $result[] = new DTO\Person($person->ID, $person->DisplayName, $this->emails->findByMember($person->ID));
-        }
-
-        usort(
-            $result,
-            function (DTO\Person $one, DTO\Person $two) {
-                return Language::compare($one->getName(), $two->getName());
-            }
-        );
-
-        return $result;
-    }
-
-    /**
      * REGISTRATION
      */
 

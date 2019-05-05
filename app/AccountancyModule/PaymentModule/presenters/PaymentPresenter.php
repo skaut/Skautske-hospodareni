@@ -16,6 +16,7 @@ use App\Forms\BaseForm;
 use DateTimeImmutable;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
+use Model\DTO\Payment\Person;
 use Model\Payment\BankAccountService;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSet;
@@ -27,6 +28,7 @@ use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
 use Model\Payment\PaymentNotFound;
+use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
 use Model\UnitService;
@@ -231,9 +233,11 @@ class PaymentPresenter extends BasePresenter
         }
 
         $form = $this['massAddForm'];
-        $list = $this->model->getPersons($this->unitId->toInt(), $id);
+        $list = $this->queryBus->handle(new MembersWithoutPaymentInGroupQuery($this->unitId, $id));
 
         foreach ($list as $p) {
+            assert($p instanceof Person);
+
             $form->addPerson($p->getId(), $p->getEmails(), $p->getName());
         }
 
