@@ -14,6 +14,7 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Cashbook\ChitItem;
 use Model\Utils\MoneyFactory;
 use Money\Currency;
 use Money\Money;
@@ -42,9 +43,11 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
 
         return m::mock(Chit::class, [
             'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null, 'pro test'),
-            'getCategory'   => new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $virtualCategory),
             'getSignedAmount' => $amount * ($op->equalsValue(Operation::INCOME) ? 1 : -1),
-            'getAmount' => new Cashbook\Amount($amount),
+            'isVirtual' => $virtualCategory,
+            'getItems' => [
+                new ChitItem(1, new Cashbook\Amount($amount), new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $virtualCategory)),
+            ],
         ]);
     }
 

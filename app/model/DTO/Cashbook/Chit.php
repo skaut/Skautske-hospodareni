@@ -13,6 +13,8 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Operation;
 use Nette\SmartObject;
+use function array_map;
+use function implode;
 
 /**
  * @property-read int               $id
@@ -27,6 +29,8 @@ use Nette\SmartObject;
  * @property-read CashbookType[]    $inverseCashbookTypes
  * @property-read PaymentMethod     $paymentMethod
  * @property-read Category          $category
+ * @property-read string            $categories
+ * @property-read string            $categoriesShortcut
  */
 class Chit
 {
@@ -119,9 +123,31 @@ class Chit
         return $this->body->getPurpose();
     }
 
+    /**
+     * @deprecated use getItems()
+     */
     public function getCategory() : Category
     {
         return $this->items[0]->getCategory();
+    }
+
+    public function isVirtual() : bool
+    {
+        return $this->items[0]->getCategory()->isVirtual();
+    }
+
+    public function getCategories() : string
+    {
+        return implode(', ', array_map(function (ChitItem $item) {
+            return $item->getCategory()->getName();
+        }, $this->items));
+    }
+
+    public function getCategoriesShortcut() : string
+    {
+        return implode(', ', array_map(function (ChitItem $item) {
+            return $item->getCategory()->getShortcut();
+        }, $this->items));
     }
 
     public function isLocked() : bool
