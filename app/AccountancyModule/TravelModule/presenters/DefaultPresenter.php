@@ -14,9 +14,11 @@ use Model\BaseService;
 use Model\DTO\Travel\TravelType;
 use Model\Services\PdfRenderer;
 use Model\TravelService;
+use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Forms\Controls\SelectBox;
+use Nette\Http\IResponse;
 use Nette\Security\Identity;
 use function array_key_exists;
 use function array_map;
@@ -24,6 +26,7 @@ use function array_slice;
 use function assert;
 use function count;
 use function round;
+use function sprintf;
 use function str_replace;
 
 class DefaultPresenter extends BasePresenter
@@ -272,8 +275,7 @@ class DefaultPresenter extends BasePresenter
         Assertion::notNull($commandId);
 
         if (! $this->isCommandEditable($commandId)) {
-            $this->flashMessage('Nelze upravovat cestovní příkaz.', 'danger');
-            $this->redirect('default');
+            throw new BadRequestException(sprintf('User cannot edit command %d', $commandId), IResponse::S403_FORBIDDEN);
         }
 
         return $this->editTravelDialogFactory->create($commandId);
