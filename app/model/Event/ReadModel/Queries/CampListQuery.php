@@ -12,13 +12,22 @@ final class CampListQuery
     /** @var int */
     private $year;
 
-    public function __construct(int $year)
+    /** @var string|null */
+    private $state;
+
+    public function __construct(int $year, ?string $state = null)
     {
-        $this->year = $year;
+        $this->year  = $year;
+        $this->state = $state;
     }
 
     public function getYear() : int
     {
         return $this->year;
+    }
+
+    public function getState() : ?string
+    {
+        return $this->state;
     }
 }

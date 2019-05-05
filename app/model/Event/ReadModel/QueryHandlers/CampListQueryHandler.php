@@ -31,6 +31,7 @@ class CampListQueryHandler
     {
         $camps = $this->skautis->event->EventCampAll([
             'Year' => $query->getYear(),
+            'ID_EventCampState' => $query->getState(),
         ]);
 
         if (is_object($camps)) {
