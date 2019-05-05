@@ -6,7 +6,6 @@ namespace Model\Participant\ReadModel\QueryHandlers;
 
 use Model\Common\Repositories\IMemberRepository;
 use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
-use Model\DTO\Participant\Participant;
 use function natcasesort;
 
 final class PotentialParticipantListQueryHandler
@@ -24,30 +23,26 @@ final class PotentialParticipantListQueryHandler
      */
     public function __invoke(PotentialParticipantListQuery $query) : array
     {
-        $participants = $query->getCurrentParticipants();
-        $all          = $this->members->findByUnit($query->getUnitId(), ! $query->directMembersOnly());
-        $ret = [];
+        $all = $this->members->findByUnit($query->getUnitId(), ! $query->directMembersOnly());
 
-        if (empty($participants)) {
-            foreach ($all as $people) {
-                $ret[$people->ID] = $people->DisplayName;
-            }
-        } else { //odstranení již označených
-            $check = [];
-            /** @var Participant $p */
-            foreach ($participants as $p) {
-                $check[$p->getPersonId()] = true;
-            }
-            foreach ($all as $member) {
-                if (array_key_exists($member->getId(), $check)) {
-                    continue;
-                }
+        $check = [];
 
-                $ret[$member->getId()] = $member->getName();
-            }
+        foreach ($query->getCurrentParticipants() as $p) {
+            $check[$p->getPersonId()] = true;
         }
-        natcasesort($ret);
 
-        return $ret;
+        $potentialParticipants = [];
+
+        foreach ($all as $member) {
+            if (isset($check[$member->getId()])) {
+                continue;
+            }
+
+            $potentialParticipants[$member->getId()] = $member->getName();
+        }
+
+        natcasesort($potentialParticipants);
+
+        return $potentialParticipants;
     }
 }
