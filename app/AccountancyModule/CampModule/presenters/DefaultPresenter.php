@@ -80,7 +80,14 @@ class DefaultPresenter extends BasePresenter
 
     public function actionCampSummary() : void
     {
-        $this->excelService->getCampsSummary(array_keys($this->eventService->getEvent()->getAll($this->ses->year, $this->ses->state)), $this->eventService, $this->unitService);
+        $year = (int) ($this->ses->year ?? date('Y'));
+
+        $this->excelService->getCampsSummary(
+            array_keys($this->queryBus->handle(new CampListQuery($year, $this->ses->state))),
+            $this->eventService,
+            $this->unitService
+        );
+
         $this->terminate();
     }
 
