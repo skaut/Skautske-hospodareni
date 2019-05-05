@@ -33,29 +33,21 @@ final class ChitBody
      */
     private $recipient;
 
-    /**
-     * @ORM\Column(type="string", length=120)
-     *
-     * @var string
-     */
-    private $purpose;
-
-    public function __construct(?ChitNumber $number, Date $date, ?Recipient $recipient, string $purpose)
+    public function __construct(?ChitNumber $number, Date $date, ?Recipient $recipient)
     {
         $this->number    = $number;
         $this->date      = $date;
         $this->recipient = $recipient;
-        $this->purpose   = $purpose;
     }
 
     public function withoutChitNumber() : self
     {
-        return new self(null, $this->date, $this->recipient, $this->purpose);
+        return new self(null, $this->date, $this->recipient);
     }
 
     public function withNewNumber(ChitNumber $chitNumber) : self
     {
-        return new self($chitNumber, $this->date, $this->recipient, $this->purpose);
+        return new self($chitNumber, $this->date, $this->recipient);
     }
 
     public function getNumber() : ?ChitNumber
@@ -73,16 +65,10 @@ final class ChitBody
         return $this->recipient;
     }
 
-    public function getPurpose() : string
-    {
-        return $this->purpose;
-    }
-
     public function equals(ChitBody $other) : bool
     {
         return (string) $other->number ===  (string) $this->number
             && $other->date->eq($this->date)
-            && (string) $other->recipient === (string) $this->recipient
-            && $other->purpose === $this->purpose;
+            && (string) $other->recipient === (string) $this->recipient;
     }
 }

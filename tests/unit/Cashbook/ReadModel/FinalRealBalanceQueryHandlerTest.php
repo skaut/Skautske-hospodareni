@@ -42,11 +42,11 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
         $op = Operation::get($operation);
 
         return m::mock(Chit::class, [
-            'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null, 'pro test'),
+            'getBody'       => new Cashbook\ChitBody(null, new Date('2017-11-17'), null),
             'getSignedAmount' => $amount * ($op->equalsValue(Operation::INCOME) ? 1 : -1),
             'isVirtual' => $virtualCategory,
             'getItems' => [
-                new ChitItem(1, new Cashbook\Amount($amount), new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $virtualCategory)),
+                new ChitItem(1, new Cashbook\Amount($amount), new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $virtualCategory), 'pro test'),
             ],
         ]);
     }

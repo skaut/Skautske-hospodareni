@@ -120,7 +120,7 @@ class Chit
      */
     public function getPurpose() : string
     {
-        return $this->body->getPurpose();
+        return $this->items[0]->getPurpose();
     }
 
     /**

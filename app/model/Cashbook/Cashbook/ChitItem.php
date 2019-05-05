@@ -51,12 +51,20 @@ class ChitItem
      */
     private $category;
 
-    public function __construct(int $id, Chit $chit, Amount $amount, Category $category)
+    /**
+     * @ORM\Column(type="string", length=120)
+     *
+     * @var string
+     */
+    private $purpose;
+
+    public function __construct(int $id, Chit $chit, Amount $amount, Category $category, string $purpose)
     {
         $this->id       = $id;
         $this->chit     = $chit;
         $this->amount   = $amount;
         $this->category = $category;
+        $this->purpose  = $purpose;
     }
 
     public function getId() : int
@@ -72,5 +80,10 @@ class ChitItem
     public function getCategory() : Category
     {
         return $this->category;
+    }
+
+    public function getPurpose() : string
+    {
+        return $this->purpose;
     }
 }
