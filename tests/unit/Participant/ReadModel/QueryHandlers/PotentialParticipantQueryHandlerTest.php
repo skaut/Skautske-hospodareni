@@ -27,9 +27,9 @@ final class PotentialParticipantQueryHandlerTest extends Unit
             ->once()
             ->withArgs([$unitId, ! $directMembersOnly])
             ->andReturn([
-                new Member(3, 'á'),
-                new Member(2, 'b'),
-                new Member(1, 'First'),
+                new Member(3, 'á', null),
+                new Member(2, 'b', null),
+                new Member(1, 'First', null),
             ]);
 
         $handler = new PotentialParticipantListQueryHandler($members);

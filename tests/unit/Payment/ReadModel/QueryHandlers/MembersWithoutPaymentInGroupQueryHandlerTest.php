@@ -25,9 +25,9 @@ final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
             ->once()
             ->withArgs([$unitId, false])
             ->andReturn([
-                new Member(2, 'Cibule'),
-                new Member(1, 'Čenda'),
-                new Member(3, 'Tom'),
+                new Member(2, 'Cibule', null),
+                new Member(1, 'Čenda', null),
+                new Member(3, 'Tom', null),
             ]);
 
         $emailsByMember = [
