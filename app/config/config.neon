@@ -107,7 +107,6 @@ services:
 
     - Model\PaymentService
     - Model\Payment\BankAccountService(fioCache: @fio.cache)
-    - Model\MemberService(@skautis.org)
 
     - GuzzleHttp\Client({ timeout: 3 }) # used for API calls to FIO api
 

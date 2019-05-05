@@ -10,7 +10,6 @@ use Model\Common\UnitId;
 use Model\EventEntity;
 use Model\ExcelService;
 use Model\ExportService;
-use Model\MemberService;
 use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 use Model\Services\PdfRenderer;
 use Model\UnitService;
@@ -47,9 +46,6 @@ trait ParticipantTrait
     protected $isAllowParticipantUpdate;
     /** @var bool */
     protected $isAllowParticipantDelete;
-
-    /** @var MemberService */
-    protected $memberService;
 
     /** @var ExportService */
     protected $exportService;

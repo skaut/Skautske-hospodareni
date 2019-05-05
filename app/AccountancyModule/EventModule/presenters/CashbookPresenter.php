@@ -109,7 +109,7 @@ class CashbookPresenter extends BasePresenter
 
     protected function createComponentCashbook() : CashbookControl
     {
-        return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable);
+        return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable, $this->getCurrentUnitId());
     }
 
     private function isCashbookEmpty() : bool

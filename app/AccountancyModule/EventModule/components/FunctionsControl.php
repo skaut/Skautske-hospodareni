@@ -10,6 +10,8 @@ use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Event;
+use Model\Common\ReadModel\Queries\MemberNamesQuery;
+use Model\Common\UnitId;
 use Model\Event\AssistantNotAdult;
 use Model\Event\Commands\Event\UpdateFunctions;
 use Model\Event\Functions;
@@ -17,7 +19,6 @@ use Model\Event\LeaderNotAdult;
 use Model\Event\Person;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
-use Model\MemberService;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
 use Nette\Utils\ArrayHash;
@@ -29,14 +30,14 @@ class FunctionsControl extends BaseControl
     /** @var int */
     private $eventId;
 
+    /** @var UnitId */
+    private $unitId;
+
     /** @var CommandBus */
     private $commandBus;
 
     /** @var QueryBus */
     private $queryBus;
-
-    /** @var MemberService */
-    private $members;
 
     /** @var IAuthorizator */
     private $authorizator;
@@ -49,16 +50,16 @@ class FunctionsControl extends BaseControl
 
     public function __construct(
         int $eventId,
+        UnitId $unitId,
         CommandBus $commandBus,
         QueryBus $queryBus,
-        MemberService $members,
         IAuthorizator $authorizator
     ) {
         parent::__construct();
         $this->eventId      = $eventId;
+        $this->unitId       = $unitId;
         $this->commandBus   = $commandBus;
         $this->queryBus     = $queryBus;
-        $this->members      = $members;
         $this->authorizator = $authorizator;
     }
 
@@ -195,13 +196,13 @@ class FunctionsControl extends BaseControl
     /**
      * @param int[] $ages
      *
-     * @return mixed[] - [age => [person id => name], ...]
+     * @return array<int, array<int, string>> - age => [person id => name, ...]
      */
     private function getPersonsOlderThan(array $ages) : array
     {
         $persons = [];
         foreach ($ages as $age) {
-            $persons[$age] = $this->members->getCombobox(false, $age);
+            $persons[$age] = $this->queryBus->handle(new MemberNamesQuery($this->unitId, $age));
         }
 
         return $persons;

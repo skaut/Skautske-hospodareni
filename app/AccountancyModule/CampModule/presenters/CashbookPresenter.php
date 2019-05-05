@@ -79,7 +79,11 @@ class CashbookPresenter extends BasePresenter
 
     protected function createComponentCashbook() : CashbookControl
     {
-        return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable && ! $this->missingCategories);
+        return $this->cashbookFactory->create(
+            $this->getCashbookId(),
+            $this->isEditable && ! $this->missingCategories,
+            $this->getCurrentUnitId()
+        );
     }
 
     protected function createComponentFormImportHpd() : BaseForm
