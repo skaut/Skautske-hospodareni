@@ -20,6 +20,7 @@ use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Cashbook\ChitItem;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -205,7 +206,9 @@ class ExportService
         });
 
         $activeHpd = $chitsCollection->exists(function ($_, Chit $chit) : bool {
-            return $chit->getCategory()->getShortcut() === 'hpd';
+            return 0 < count(array_filter($chit->getItems(), function (ChitItem $item) {
+                return $item->getCategory()->getShortcut() === 'hpd';
+            }));
         });
 
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
