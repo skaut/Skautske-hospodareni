@@ -28,8 +28,8 @@ final class PotentialParticipantQueryHandlerTest extends Unit
             ->withArgs([$unitId, ! $directMembersOnly])
             ->andReturn([
                 new Member(1, 'First'),
-                new Member(2, 'B'),
-                new Member(3, 'A'),
+                new Member(2, 'b'),
+                new Member(3, 'á'),
             ]);
 
         $handler = new PotentialParticipantListQueryHandler($members);
@@ -38,8 +38,8 @@ final class PotentialParticipantQueryHandlerTest extends Unit
 
         self::assertSame(
             [
-                3 => 'A', // Results should be sorted
-                2 => 'B',
+                3 => 'á', // Results should be sorted
+                2 => 'b',
             ],
             $handler(new PotentialParticipantListQuery($unitId, $directMembersOnly, $participants))
         );
