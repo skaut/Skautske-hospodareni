@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Model;
 
 use DateTime;
-use Model\DTO\Participant\Participant;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
-use function array_key_exists;
 use function asort;
-use function natcasesort;
 
 class MemberService
 {
@@ -20,39 +17,6 @@ class MemberService
     public function __construct(WebServiceInterface $organizationWebservice)
     {
         $this->organizationWebservice = $organizationWebservice;
-    }
-
-    /**
-     * @param Participant[] $participants
-     *
-     * @return string[]
-     */
-    public function getAll(int $unitId, bool $onlyDirectMember, array $participants) : array
-    {
-        $all = $this->organizationWebservice->PersonAll(['ID_Unit' => $unitId, 'OnlyDirectMember' => $onlyDirectMember]);
-        $ret = [];
-
-        if (empty($participants)) {
-            foreach ($all as $people) {
-                $ret[$people->ID] = $people->DisplayName;
-            }
-        } else { //odstranení již označených
-            $check = [];
-            /** @var Participant $p */
-            foreach ($participants as $p) {
-                $check[$p->getId()] = true;
-            }
-            foreach ($all as $p) {
-                if (array_key_exists($p->ID, $check)) {
-                    continue;
-                }
-
-                $ret[$p->ID] = $p->DisplayName;
-            }
-        }
-        natcasesort($ret);
-
-        return $ret;
     }
 
     /**
