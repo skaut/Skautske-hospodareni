@@ -136,6 +136,11 @@ class Chit
         return $this->items[0]->getCategory()->isVirtual();
     }
 
+    public function isHpd() : bool
+    {
+        return $this->items[0]->getCategory()->getShortcut() === 'hpd';
+    }
+
     public function getCategories() : string
     {
         return implode(', ', array_map(function (ChitItem $item) {

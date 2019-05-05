@@ -17,9 +17,9 @@ table {
 <table class="prijmovyDoklad" border="1">
     <tr>
         <th style="width: 150px;">Datum</th>
-        <td style="width: 210px;">{$item->date|date:"j.n.Y"}</td>
+        <td style="width: 210px;">{$chit->date|date:"j.n.Y"}</td>
         <th style="width: 120px">Číslo dokladu</th>
-        <td style="width: 180px">{$cashbook->chitNumberPrefix}{$item->number}</td>
+        <td style="width: 180px">{$cashbook->chitNumberPrefix}{$chit->number}</td>
     </tr>
     <tr>
         <th>Částka celkem</th>

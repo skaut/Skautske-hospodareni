@@ -1,6 +1,6 @@
 {* příjmový pokladní doklad
 $officialName - oficiální název organizační jednotky
-$item - položka příjmu
+$chit - položka příjmu
 *}
 <style>
 table {
@@ -13,14 +13,14 @@ table {
         <td colspan="2"><b>Příjmový pokladní doklad</b></td>
     </tr>
     <tr>
-        <td><b>ze dne:</b> {$item->date|date:"j.n.Y"}</td>
-        <td><b>č.</b> {$cashbook->chitNumberPrefix}{$item->number}</td>
+        <td><b>ze dne:</b> {$chit->date|date:"j.n.Y"}</td>
+        <td><b>č.</b> {$cashbook->chitNumberPrefix}{$chit->number}</td>
     </tr>
     <tr>
-        <td colspan="3"><b>Přijato od:</b> {$item->recipient}</td>
+        <td colspan="3"><b>Přijato od:</b> {$chit->recipient}</td>
     </tr>
     <tr>
-        <td colspan="3"><b>Účel platby:</b> {$item->purpose}</td>
+        <td colspan="3"><b>Účel platby:</b> {$chit->purpose}</td>
     </tr>
     <tr>
         <td><b>Pokladník:</b> </td>
@@ -49,7 +49,7 @@ table {
         <td>&nbsp;</td>
     </tr>
     <tr>
-        {var $amount = $item->amount->toFloat()}
+        {var $amount = $chit->amount->toFloat()}
         <td><b>Celkem Kč:</b>{if $amount !== 0.0} {= number_format($amount, 2, ",", "")}=={/if}</td>
         <td colspan="2"><b>Slovy:</b>{if $amount !== 0.0} =={$amount|priceToString}korun=={/if}</td>
     </tr>
@@ -59,6 +59,6 @@ table {
     </tr>
 </table>
 
-<div n:if="$item->amount->isUsingFormula()" style="font-size:0.9em;color:#777;padding-top:10px;">
-    <i>{$item->amount->expression} = {$amount}  </i>
+<div n:if="$chit->amount->isUsingFormula()" style="font-size:0.9em;color:#777;padding-top:10px;">
+    <i>{$chit->amount->expression} = {$amount}  </i>
 </div>

@@ -16,29 +16,27 @@ table {
 }
 </style>
 {var $incomeCnt = 0}
-{foreach $income as $item}
-
-{if $item->category->shortcut == "hpd"}
-    {if !$iterator->isFirst()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
-    {include chits.hpd.latte "item"=>$item, "list"=>$list, "pokladnik"=>$pokladnik, "totalPayment"=>$totalPayment}
-    {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
-    {php $incomeCnt = 0}
-{else}
-    {include chits.in.latte "item"=>$item}
-    {php $incomeCnt++}
-    {if $incomeCnt % 3 == 0}
-        <pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />
+{foreach $income as $chit}
+    {if $chit->isHpd()}
+        {if !$iterator->isFirst()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
+        {include chits.hpd.latte "chit"=>$chit, "list"=>$list, "pokladnik"=>$pokladnik, "totalPayment"=>$totalPayment}
+        {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
+        {php $incomeCnt = 0}
     {else}
-        {if !$iterator->isLast()}<br />{/if}
+        {include chits.in.latte "chit"=>$chit}
+        {php $incomeCnt++}
+        {if $incomeCnt % 3 == 0}
+            <pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />
+        {else}
+            {if !$iterator->isLast()}<br />{/if}
+        {/if}
     {/if}
-{/if}
-
 {/foreach}
 
 
 {if count($outcome) > 0 && count($income) > 0}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
 
-{foreach $outcome as $item}
-    {include chits.out.latte "item"=>$item}
+{foreach $outcome as $chit}
+    {include chits.out.latte "chit"=>$chit}
     {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
 {/foreach}
