@@ -1,5 +1,6 @@
 {snippet}
-    <strong>Předpona čísla dokladu:</strong>
+    <strong>Prefix:</strong>
+    <i class="glyphicon glyphicon-question-sign" rel="tooltip" data-original-title="Jedná se o označení číselné řady dokladů pro rozlišení jednotlivých akcí."></i>
     {if $showForm}
         <form n:name="form" class="form-inline inline-block">
             <input n:name="prefix" class="form-control">
@@ -7,7 +8,7 @@
             <a n:href="toggleForm false" class="btn btn-sm btn-default ajax"><i class="fa fa-times"></i></a>
         </form>
     {else}
-        {if $prefix !== null}{$prefix}{else}<i>žádná</i>{/if}
+        {if $prefix !== null}{$prefix}{else}<i>žádný</i>{/if}
         <a n:href="toggleForm true" class="ajax btn btn-xs btn-default"><i class="fa fa-pencil"></i></a>
     {/if}
 {/snippet}

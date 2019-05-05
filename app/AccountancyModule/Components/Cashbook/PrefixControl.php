@@ -79,7 +79,7 @@ final class PrefixControl extends BaseControl
             ->setAttribute('size', 6)
             ->setNullable()
             ->setDefaultValue($this->getPrefix())
-            ->addRule(BaseForm::MAX_LENGTH, 'Maximální délka předpony je %d znaků', self::MAX_LENGTH);
+            ->addRule(BaseForm::MAX_LENGTH, 'Maximální délka prefixu je %d znaků', self::MAX_LENGTH);
 
         $form->addSubmit('submit');
 
