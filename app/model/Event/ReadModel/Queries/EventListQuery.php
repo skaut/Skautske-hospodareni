@@ -9,19 +9,19 @@ namespace Model\Event\ReadModel\Queries;
  */
 final class EventListQuery
 {
-    /** @var int */
+    /** @var int|null */
     private $year;
 
     /** @var string|null */
     private $state;
 
-    public function __construct(int $year, ?string $state = null)
+    public function __construct(?int $year, ?string $state = null)
     {
         $this->year  = $year;
         $this->state = $state;
     }
 
-    public function getYear() : int
+    public function getYear() : ?int
     {
         return $this->year;
     }

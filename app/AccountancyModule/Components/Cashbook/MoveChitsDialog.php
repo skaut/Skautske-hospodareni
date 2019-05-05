@@ -9,28 +9,26 @@ use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
-use Model\Auth\Resources\Camp;
-use Model\Auth\Resources\Event;
+use Model\Auth\Resources\Camp as CampResource;
+use Model\Auth\Resources\Event as EventResource;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use Model\DTO\Cashbook\Cashbook;
-use Model\Event\SkautisCampId;
-use Model\Event\SkautisEventId;
-use Model\EventEntity;
-use Nette\DI\Container;
+use Model\Event\Camp;
+use Model\Event\Event;
+use Model\Event\ReadModel\Queries\CampListQuery;
+use Model\Event\ReadModel\Queries\EventListQuery;
 use Nette\Utils\ArrayHash;
 use function array_map;
 use function assert;
 use function explode;
 use function implode;
 use function in_array;
-use function ucfirst;
 
 class MoveChitsDialog extends BaseControl
 {
@@ -60,17 +58,17 @@ class MoveChitsDialog extends BaseControl
     /** @var IAuthorizator */
     private $authorizator;
 
-    /** @var Container */
-    private $context;
-
-    public function __construct(CashbookId $cashbookId, CommandBus $commandBus, QueryBus $queryBus, IAuthorizator $authorizator, Container $context)
-    {
+    public function __construct(
+        CashbookId $cashbookId,
+        CommandBus $commandBus,
+        QueryBus $queryBus,
+        IAuthorizator $authorizator
+    ) {
         parent::__construct();
         $this->cashbookId   = $cashbookId;
         $this->commandBus   = $commandBus;
         $this->queryBus     = $queryBus;
         $this->authorizator = $authorizator;
-        $this->context      = $context;
     }
 
     /**
@@ -95,8 +93,8 @@ class MoveChitsDialog extends BaseControl
     {
         $form  = new BaseForm();
         $items = [
-            'Výpravy' => $this->getListOfEvents(ObjectType::EVENT, ['draft']),
-            'Tábory' => $this->getListOfEvents(ObjectType::CAMP, ['draft', 'approvedParent', 'approvedLeader']),
+            'Výpravy' => $this->getEventCashbooks(),
+            'Tábory' => $this->getCampCashbooks(),
         ];
 
         $form->addSelect('newCashbookId', 'Nová evidence plateb:', $items)
@@ -153,43 +151,51 @@ class MoveChitsDialog extends BaseControl
     }
 
     /**
-     * Vrací pole ID => Název pro výpravy i tábory
-     *
-     * @param  string   $eventType "general" or "camp"
-     * @param  string[] $states
-     *
-     * @return mixed[]
+     * @return array<string, string> Cashbook ID => Camp name
      */
-    private function getListOfEvents(string $eventType, array $states) : array
+    private function getCampCashbooks() : array
     {
-        $eventEntity = $this->context->getService(($eventType === ObjectType::EVENT ? 'event' : $eventType) . 'Service');
+        $cashbooks = [];
 
-        assert($eventEntity instanceof EventEntity);
+        foreach ($this->queryBus->handle(new CampListQuery(null)) as $camp) {
+            assert($camp instanceof Camp);
 
-        $eventService = $eventEntity->getEvent();
-        $rawArr       = $eventService->getAll(null);
-
-        if (empty($rawArr)) {
-            return [];
-        }
-
-        $currentSkautisId = $this->getSkautisId($this->cashbookId);
-        $resultArray      = [];
-
-        foreach ($rawArr as $item) {
-            if ($item['ID'] === $currentSkautisId) {
+            if (! in_array($camp->getState(), ['draft', 'approvedParent', 'approvedLeader'], true)) {
                 continue;
             }
 
-            if (! in_array($item['ID_Event' . ucfirst($eventType) . 'State'], $states)) {
+            $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($camp->getId()));
+
+            assert($cashbookId instanceof CashbookId);
+
+            $cashbooks[$cashbookId->toString()] = $camp->getDisplayName();
+        }
+
+        return $cashbooks;
+    }
+
+    /**
+     * @return array<string, string> Cashbook ID => Event name
+     */
+    private function getEventCashbooks() : array
+    {
+        $cashbooks = [];
+
+        foreach ($this->queryBus->handle(new EventListQuery(null)) as $event) {
+            assert($event instanceof Event);
+
+            if ($event->getState() !== 'draft') {
                 continue;
             }
 
-            $cashbookId                           = $this->getCashbookId($item['ID'], ObjectType::get($eventType));
-            $resultArray[$cashbookId->toString()] = $item['DisplayName'];
+            $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getId()));
+
+            assert($cashbookId instanceof CashbookId);
+
+            $cashbooks[$cashbookId->toString()] = $event->getDisplayName();
         }
 
-        return $resultArray;
+        return $cashbooks;
     }
 
     private function canEdit(CashbookId $cashbookId) : bool
@@ -198,12 +204,12 @@ class MoveChitsDialog extends BaseControl
         $skautisId = $this->getSkautisId($cashbookId);
 
         if ($type->equalsValue(CashbookType::EVENT)) {
-            return $this->authorizator->isAllowed(Event::UPDATE, $skautisId);
+            return $this->authorizator->isAllowed(EventResource::UPDATE, $skautisId);
         }
 
-        return $this->authorizator->isAllowed(Camp::UPDATE, $skautisId)
-            || $this->authorizator->isAllowed(Camp::UPDATE_REAL, $skautisId)
-            || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $skautisId);
+        return $this->authorizator->isAllowed(CampResource::UPDATE, $skautisId)
+            || $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $skautisId)
+            || $this->authorizator->isAllowed(CampResource::UPDATE_REAL_COST, $skautisId);
     }
 
     private function getCashbookType(CashbookId $cashbookId) : CashbookType
@@ -213,15 +219,6 @@ class MoveChitsDialog extends BaseControl
         assert($cashbook instanceof Cashbook);
 
         return $cashbook->getType();
-    }
-
-    private function getCashbookId(int $skautisId, ObjectType $objectType) : CashbookId
-    {
-        if ($objectType->equalsValue(ObjectType::CAMP)) {
-            return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisId)));
-        }
-
-        return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisId)));
     }
 
     private function getSkautisId(CashbookId $cashbookId) : int
