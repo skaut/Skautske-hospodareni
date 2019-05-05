@@ -14,23 +14,18 @@ use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
-use Model\Event\SkautisCampId;
-use Model\Event\SkautisEventId;
-use Model\EventEntity;
+use Model\Event\Camp;
+use Model\Event\Event;
+use Model\Event\ReadModel\Queries\CampListQuery;
+use Model\Event\ReadModel\Queries\EventListQuery;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Multiplier;
 use Nette\Http\IResponse;
-use RuntimeException;
-use function array_filter;
-use function array_map;
 use function assert;
 use function sprintf;
 
 class ChitPresenter extends BasePresenter
 {
-    /** @var mixed[] */
-    public $info;
-
     /**
      * object type => [
      *      cashbook ID (without hyphens) => object
@@ -81,27 +76,11 @@ class ChitPresenter extends BasePresenter
 
     public function actionDefault(?int $year = null) : void
     {
-        $this->info = [];
-        $units      = [];
-
-        foreach ($this->unitService->getReadUnits($this->getUser()) as $ik => $iu) {
-            $units[$ik]['DisplayName'] = $iu;
-        }
-
-        $eventService = $this->context->getService('eventService');
-        $campService  = $this->context->getService('campService');
-
-        assert($eventService instanceof EventEntity && $campService instanceof EventEntity);
-
-        $objectsByType = [
-            ObjectType::UNIT => $units,
-            ObjectType::EVENT => $eventService->getEvent()->getAll($this->year),
-            ObjectType::CAMP => $campService->getEvent()->getAll($this->year),
+        $this->cashbooks = [
+            ObjectType::UNIT => $this->getUnitCashbooks(),
+            ObjectType::EVENT => $this->getEventCashbooks(),
+            ObjectType::CAMP => $this->getCampCashbooks(),
         ];
-
-        foreach ($objectsByType as $type => $objects) {
-            $this->cashbooks[$type] = $this->getAllChitsByObjectId(ObjectType::get($type), $objects);
-        }
     }
 
     public function renderDefault() : void
@@ -149,44 +128,20 @@ class ChitPresenter extends BasePresenter
     }
 
     /**
-     * @param mixed[] $objects
-     *
-     * @return mixed[]
+     * @return array<string, array<string, int|string>>
      */
-    private function getAllChitsByObjectId(ObjectType $objectType, array $objects) : array
+    private function getUnitCashbooks() : array
     {
-        if ($objectType->equalsValue(ObjectType::UNIT)) {
-            $cashbooks = [];
-
-            foreach ($objects as $unitId => ['DisplayName' => $name]) {
-                $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery(new UnitId($unitId)));
-
-                foreach ($unitCashbooks as $cashbook) {
-                    assert($cashbook instanceof UnitCashbook);
-
-                    $cashbooks[$cashbook->getCashbookId()->withoutHyphens()] = [
-                        'ID' => $unitId,
-                        'DisplayName' => $name . ' ' . $cashbook->getYear(),
-                    ];
-                }
-            }
-
-            return $cashbooks;
-        }
-
-        $readableUnits = $this->unitService->getReadUnits($this->user);
-
-        $objects = array_filter(
-            $objects,
-            function (array $object) use ($readableUnits) : bool {
-                return isset($readableUnits[$object['ID_Unit']]);
-            }
-        );
-
         $cashbooks = [];
-        foreach ($objects as $oid => $object) {
-            foreach ($this->getCashbookIds($objectType, $oid) as $cashbookId) {
-                $cashbooks[$cashbookId->withoutHyphens()] = $object;
+
+        foreach ($this->unitService->getReadUnits($this->getUser()) as $id => $name) {
+            foreach ($this->queryBus->handle(new UnitCashbookListQuery(new UnitId($id))) as $cashbook) {
+                assert($cashbook instanceof UnitCashbook);
+
+                $cashbooks[$cashbook->getCashbookId()->withoutHyphens()] = [
+                    'ID' => $id,
+                    'DisplayName' => $name . ' ' . $cashbook->getYear(),
+                ];
             }
         }
 
@@ -194,29 +149,60 @@ class ChitPresenter extends BasePresenter
     }
 
     /**
-     * @return CashbookId[]
+     * @return array<string, array<string, int|string>>
      */
-    private function getCashbookIds(ObjectType $object, int $objectId) : array
+    private function getEventCashbooks() : array
     {
-        if ($object->equalsValue(ObjectType::CAMP)) {
-            return [$this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($objectId)))];
+        $readableUnits = $this->unitService->getReadUnits($this->user);
+
+        $cashbooks = [];
+
+        foreach ($this->queryBus->handle(new EventListQuery($this->year)) as $eventId => $event) {
+            assert($event instanceof Event);
+
+            if (! isset($readableUnits[$event->getUnitId()])) {
+                continue;
+            }
+
+            $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getId()));
+
+            assert($cashbookId instanceof CashbookId);
+
+            $cashbooks[$cashbookId->withoutHyphens()] = [
+                'ID' => $event->getId()->toInt(),
+                'DisplayName' => $event->getDisplayName(),
+            ];
         }
 
-        if ($object->equalsValue(ObjectType::EVENT)) {
-            return [$this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($objectId)))];
+        return $cashbooks;
+    }
+
+    /**
+     * @return array<string, array<string, int|string>>
+     */
+    private function getCampCashbooks() : array
+    {
+        $readableUnits = $this->unitService->getReadUnits($this->user);
+
+        $cashbooks = [];
+
+        foreach ($this->queryBus->handle(new CampListQuery($this->year)) as $eventId => $event) {
+            assert($event instanceof Camp);
+
+            if (! isset($readableUnits[$event->getUnitId()])) {
+                continue;
+            }
+
+            $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($event->getId()));
+
+            assert($cashbookId instanceof CashbookId);
+
+            $cashbooks[$cashbookId->withoutHyphens()] = [
+                'ID' => $event->getId()->toInt(),
+                'DisplayName' => $event->getDisplayName(),
+            ];
         }
 
-        if ($object->equalsValue(ObjectType::UNIT)) {
-            $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery(new UnitId($objectId)));
-
-            return array_map(
-                function (UnitCashbook $cashbook) : CashbookId {
-                    return $cashbook->getCashbookId();
-                },
-                $unitCashbooks
-            );
-        }
-
-        throw new RuntimeException('Unknown cashbook type');
+        return $cashbooks;
     }
 }
