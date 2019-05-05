@@ -15,6 +15,7 @@ use Model\Event\Camp;
 use Model\EventEntity;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
+use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
 use function array_filter;
 use function in_array;
@@ -116,7 +117,7 @@ class CampPresenter extends BasePresenter
             $amount = $p->getPayment();
             $form->addPerson(
                 $p->getPersonId(),
-                $this->model->getPersonEmails($p->getPersonId()),
+                $this->queryBus->handle(new MemberEmailsQuery($p->getPersonId())),
                 $p->getDisplayName(),
                 $amount === 0.0 ? null : $amount
             );

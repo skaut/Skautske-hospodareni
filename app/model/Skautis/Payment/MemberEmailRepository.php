@@ -21,6 +21,9 @@ final class MemberEmailRepository implements IMemberEmailRepository
         $this->skautis = $skautis;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function findByMember(int $memberId) : array
     {
         try {

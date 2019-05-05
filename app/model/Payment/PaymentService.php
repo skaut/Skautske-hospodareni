@@ -338,16 +338,6 @@ class PaymentService
     }
 
     /**
-     * vrací seznam emailů osoby
-     *
-     * @return string[]
-     */
-    public function getPersonEmails(int $personId) : array
-    {
-        return $this->emails->findByMember($personId);
-    }
-
-    /**
      * REGISTRATION
      */
 

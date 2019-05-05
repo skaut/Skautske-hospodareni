@@ -7,7 +7,7 @@ namespace Model\Payment\Repositories;
 interface IMemberEmailRepository
 {
     /**
-     * @return string[]
+     * @return array<string, string> email address => email label
      */
     public function findByMember(int $memberId) : array;
 }
