@@ -83,13 +83,7 @@
                         </td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$prefix}{$chit->number}" n:class="array_key_exists((string)$chit->number, $duplicatesNumbers) ? 'alert alert-danger'">{$chit->number}</td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$chit->purpose}">{$chit->purpose|truncate:"120"}</td>
-                        {if $itemsCount > 1}
-                            <td class="hidden-xs hidden-sm" title="{foreach $chit->items as $i}{$i->category->name}{if ! $iterator->isLast()}, {/if}{/foreach}">
-                                {foreach $chit->items as $i}{$i->category->shortcut}{if ! $iterator->isLast()}, {/if}{/foreach}
-                            </td>
-                        {else}
-                            <td class="hidden-xs hidden-sm" title="{$chit->category->name}">{$chit->category->shortcut}</td>
-                        {/if}
+                        <td class="hidden-xs hidden-sm" title="{$chit->categories}">{$chit->categoriesShortcut}</td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="hidden-xs hidden-sm">{$chit->recipient}</td>
                         {include amountColumns 'isIncome'=>$isIncome, 'amount'=>$chit->amount}
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} n:class="r, $balance < 0 && $isCash ? 'bg-danger'">{$balance|price}</td>

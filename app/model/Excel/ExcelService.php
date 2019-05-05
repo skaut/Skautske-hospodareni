@@ -317,7 +317,7 @@ class ExcelService
             $sheet->setCellValue('A' . $rowCnt, $chit->getDate()->format('d.m.Y'))
                 ->setCellValue('B' . $rowCnt, $prefix . $chit->getNumber())
                 ->setCellValue('C' . $rowCnt, $chit->getPurpose())
-                ->setCellValue('D' . $rowCnt, $chit->getCategory()->getName())
+                ->setCellValue('D' . $rowCnt, $chit->getCategories())
                 ->setCellValue('E' . $rowCnt, (string) $chit->getRecipient())
                 ->setCellValue('F' . $rowCnt, $isIncome ? $amount : '')
                 ->setCellValue('G' . $rowCnt, ! $isIncome ? $amount : '')
@@ -523,8 +523,8 @@ class ExcelService
                     ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
                     ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
                     ->setCellValue('D' . $rowCnt, $chit->getPurpose())
-                    ->setCellValue('E' . $rowCnt, $chit->getCategory()->getName())
-                    ->setCellValue('F' . $rowCnt, $chit->recipient)
+                    ->setCellValue('E' . $rowCnt, $chit->getCategories())
+                    ->setCellValue('F' . $rowCnt, (string) $chit->getRecipient())
                     ->setCellValue('G' . $rowCnt, $isIncome ? $amount : '')
                     ->setCellValue('H' . $rowCnt, ! $isIncome ? $amount : '');
 
@@ -565,7 +565,7 @@ class ExcelService
             $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
                 ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
                 ->setCellValue('C' . $rowCnt, $chit->getPurpose())
-                ->setCellValue('D' . $rowCnt, $chit->getCategory()->getName())
+                ->setCellValue('D' . $rowCnt, $chit->getCategories())
                 ->setCellValue('E' . $rowCnt, $chit->getRecipient())
                 ->setCellValue('F' . $rowCnt, $amount)
                 ->setCellValue('G' . $rowCnt, $chit->isIncome() ? 'Příjem' : 'Výdaj');
