@@ -3,6 +3,7 @@ services:
     - Model\Infrastructure\Repositories\Payment\PaymentRepository
     - Model\Infrastructure\Repositories\Payment\GroupRepository
     - Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - Model\Skautis\Payment\MemberEmailRepository
     - GuzzleHttp\Client
     - Stubs\Skautis
     - Stubs\BankAccountAccessCheckerStub

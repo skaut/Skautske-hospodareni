@@ -22,13 +22,13 @@ use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFound;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
+use Model\Payment\Repositories\IMemberEmailRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Services\IBankAccountAccessChecker;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use Model\Services\Language;
 use Skautis\Skautis;
-use Skautis\Wsdl\PermissionException;
 use stdClass;
 use function array_filter;
 use function array_intersect;
@@ -37,7 +37,6 @@ use function array_map;
 use function count;
 use function in_array;
 use function is_array;
-use function mb_substr;
 use function reset;
 use function strcmp;
 use function usort;
@@ -59,18 +58,23 @@ class PaymentService
     /** @var IBankAccountAccessChecker */
     private $bankAccountAccessChecker;
 
+    /** @var IMemberEmailRepository */
+    private $emails;
+
     public function __construct(
         Skautis $skautis,
         IGroupRepository $groups,
         IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts,
-        IBankAccountAccessChecker $bankAccountAccessChecker
+        IBankAccountAccessChecker $bankAccountAccessChecker,
+        IMemberEmailRepository $emails
     ) {
         $this->skautis                  = $skautis;
         $this->groups                   = $groups;
         $this->payments                 = $payments;
         $this->bankAccounts             = $bankAccounts;
         $this->bankAccountAccessChecker = $bankAccountAccessChecker;
+        $this->emails                   = $emails;
     }
 
     public function findPayment(int $id) : ?DTO\Payment
@@ -298,73 +302,6 @@ class PaymentService
     }
 
     /**
-     * seznam osob z dané jednotky
-     *
-     * @param  int $groupId - skupina plateb, podle které se filtrují osoby, které již mají platbu zadanou
-     *
-     * @return DTO\Person[]
-     */
-    public function getPersons(int $unitId, int $groupId) : array
-    {
-        $persons = $this->skautis->org->PersonAll(['ID_Unit' => $unitId, 'OnlyDirectMember' => true]);
-
-        if (! is_array($persons) || empty($persons)) {
-            return [];
-        }
-
-        $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
-
-        $result = [];
-        foreach ($persons as $person) {
-            if (in_array($person->ID, $personsWithPayment)) {
-                continue;
-            }
-
-            $result[] = new DTO\Person($person->ID, $person->DisplayName, $this->getPersonEmails($person->ID));
-        }
-
-        usort(
-            $result,
-            function (DTO\Person $one, DTO\Person $two) {
-                return Language::compare($one->getName(), $two->getName());
-            }
-        );
-
-        return $result;
-    }
-
-    /**
-     * vrací seznam emailů osoby
-     *
-     * @return string[]
-     */
-    public function getPersonEmails(int $personId) : array
-    {
-        $result = [];
-        try {
-            $emails = $this->skautis->org->PersonContactAll(['ID_Person' => $personId]);
-            if (is_array($emails)) {
-                usort(
-                    $emails,
-                    function ($a, $b) {
-                        return $a->IsMain === $b->IsMain ? 0 : $a->IsMain > $b->IsMain ? -1 : 1;
-                    }
-                );
-                foreach ($emails as $c) {
-                    if (mb_substr($c->ID_ContactType, 0, 5) !== 'email') {
-                        continue;
-                    }
-
-                    $result[$c->Value] = $c->Value . ' (' . $c->ContactType . ')';
-                }
-            }
-        } catch (PermissionException $exc) {//odchycení bývalých členů, ke kterým už nemáme oprávnění
-        }
-
-        return $result;
-    }
-
-    /**
      * REGISTRATION
      */
 
@@ -405,7 +342,7 @@ class PaymentService
 
             foreach ($persons as $p) {
                 $result[$p->ID_Person]           = (array) $p;
-                $result[$p->ID_Person]['emails'] = $this->getPersonEmails($p->ID_Person);
+                $result[$p->ID_Person]['emails'] = $this->emails->findByMember($p->ID_Person);
             }
         }
 

@@ -15,6 +15,7 @@ use Model\Event\Event;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
 use Model\Payment\ReadModel\Queries\EventsWithoutGroupQuery;
+use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
 use function assert;
 use function count;
@@ -90,7 +91,7 @@ final class EventPresenter extends BasePresenter
             $amount = $participant->getPayment();
             $form->addPerson(
                 $participant->getPersonId(),
-                $this->model->getPersonEmails($participant->getPersonId()),
+                $this->queryBus->handle(new MemberEmailsQuery($participant->getPersonId())),
                 $participant->getDisplayName(),
                 $amount === 0.0 ? null : $amount
             );

@@ -8,7 +8,6 @@ use App\AccountancyModule\ParticipantTrait;
 use Model\Auth\Resources\Event;
 use Model\ExcelService;
 use Model\ExportService;
-use Model\MemberService;
 use Model\Services\PdfRenderer;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
@@ -25,10 +24,9 @@ class ParticipantPresenter extends BasePresenter
     /** @var bool */
     protected $isAllowParticipant;
 
-    public function __construct(MemberService $member, ExportService $export, ExcelService $excel, PdfRenderer $pdf)
+    public function __construct(ExportService $export, ExcelService $excel, PdfRenderer $pdf)
     {
         parent::__construct();
-        $this->memberService = $member;
         $this->exportService = $export;
         $this->excelService  = $excel;
         $this->pdf           = $pdf;

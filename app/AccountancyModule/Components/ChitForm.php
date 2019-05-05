@@ -22,9 +22,10 @@ use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
+use Model\Common\ReadModel\Queries\MemberNamesQuery;
+use Model\Common\UnitId;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
-use Model\MemberService;
 use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
 use Nette\Forms\IControl;
@@ -57,14 +58,14 @@ final class ChitForm extends BaseControl
      */
     private $isEditable;
 
+    /** @var UnitId */
+    private $unitId;
+
     /** @var CommandBus */
     private $commandBus;
 
     /** @var QueryBus */
     private $queryBus;
-
-    /** @var MemberService */
-    private $memberService;
 
     /** @var LoggerInterface */
     private $logger;
@@ -72,18 +73,18 @@ final class ChitForm extends BaseControl
     public function __construct(
         CashbookId $cashbookId,
         bool $isEditable,
+        UnitId $unitId,
         CommandBus $commandBus,
         QueryBus $queryBus,
-        MemberService $memberService,
         LoggerInterface $logger
     ) {
         parent::__construct();
-        $this->cashbookId    = $cashbookId;
-        $this->isEditable    = $isEditable;
-        $this->commandBus    = $commandBus;
-        $this->queryBus      = $queryBus;
-        $this->memberService = $memberService;
-        $this->logger        = $logger;
+        $this->cashbookId = $cashbookId;
+        $this->isEditable = $isEditable;
+        $this->unitId     = $unitId;
+        $this->commandBus = $commandBus;
+        $this->queryBus   = $queryBus;
+        $this->logger     = $logger;
     }
 
     public function isAmountValid(IControl $control) : bool
@@ -271,7 +272,7 @@ final class ChitForm extends BaseControl
     private function getAdultMemberNames() : array
     {
         try {
-            return array_values($this->memberService->getCombobox(false, 15));
+            return array_values($this->queryBus->handle(new MemberNamesQuery($this->unitId, 15)));
         } catch (WsdlException $e) {
             return [];
         }

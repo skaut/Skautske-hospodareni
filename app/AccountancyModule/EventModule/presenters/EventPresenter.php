@@ -224,7 +224,7 @@ class EventPresenter extends BasePresenter
 
     protected function createComponentFunctions() : FunctionsControl
     {
-        return $this->functionsFactory->create($this->aid);
+        return $this->functionsFactory->create($this->aid, $this->getCurrentUnitId());
     }
 
     private function getCashbookId(int $skautisEventId) : CashbookId

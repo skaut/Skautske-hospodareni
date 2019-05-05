@@ -12,6 +12,7 @@ use App\AccountancyModule\Factories\Cashbook\IPrefixControlFactory;
 use App\AccountancyModule\Factories\IChitFormFactory;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Common\UnitId;
 
 class CashbookControl extends BaseControl
 {
@@ -20,6 +21,9 @@ class CashbookControl extends BaseControl
 
     /** @var bool */
     private $isEditable;
+
+    /** @var UnitId */
+    private $unitId;
 
     /** @var IChitFormFactory */
     private $formFactory;
@@ -36,6 +40,7 @@ class CashbookControl extends BaseControl
     public function __construct(
         CashbookId $cashbookId,
         bool $isEditable,
+        UnitId $unitId,
         IChitFormFactory $formFactory,
         IChitListControlFactory $chitListFactory,
         INoteFormFactory $noteFactory,
@@ -44,6 +49,7 @@ class CashbookControl extends BaseControl
         parent::__construct();
         $this->cashbookId      = $cashbookId;
         $this->isEditable      = $isEditable;
+        $this->unitId          = $unitId;
         $this->formFactory     = $formFactory;
         $this->chitListFactory = $chitListFactory;
         $this->noteFormFactory = $noteFactory;
@@ -62,7 +68,7 @@ class CashbookControl extends BaseControl
 
     protected function createComponentChitForm() : ChitForm
     {
-        return $this->formFactory->create($this->cashbookId, $this->isEditable);
+        return $this->formFactory->create($this->cashbookId, $this->isEditable, $this->unitId);
     }
 
     protected function createComponentChitListCash() : ChitListControl

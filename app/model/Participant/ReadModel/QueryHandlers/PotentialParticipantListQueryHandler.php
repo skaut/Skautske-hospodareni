@@ -6,8 +6,6 @@ namespace Model\Participant\ReadModel\QueryHandlers;
 
 use Model\Common\Repositories\IMemberRepository;
 use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
-use Model\Services\Language;
-use function uasort;
 
 final class PotentialParticipantListQueryHandler
 {
@@ -41,8 +39,6 @@ final class PotentialParticipantListQueryHandler
 
             $potentialParticipants[$member->getId()] = $member->getName();
         }
-
-        uasort($potentialParticipants, [Language::class, 'compare']);
 
         return $potentialParticipants;
     }
