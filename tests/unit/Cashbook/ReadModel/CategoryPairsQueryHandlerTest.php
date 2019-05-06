@@ -33,16 +33,14 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $this->assertSame([
             1 => 'Název 1',
             2 => 'Název 2',
-        ], $handler->handle(
-            new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID))
-        ));
+        ], $handler(new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID))));
     }
 
     public function testReturnOnlyIncomeCategoriesWhenOperationTypeIsPassed() : void
     {
         $handler = $this->createHandler();
 
-        $this->assertSame([1 => 'Název 1'], $handler->handle(
+        $this->assertSame([1 => 'Název 1'], $handler(
             new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID), Operation::get(Operation::INCOME))
         ));
     }

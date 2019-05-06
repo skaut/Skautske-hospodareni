@@ -51,7 +51,7 @@ final class CashbookHandlersTest extends Unit
 
         $handler = new $handlerClass($repository);
 
-        $handler->handle($commandInstance);
+        $handler($commandInstance);
     }
 
     /**

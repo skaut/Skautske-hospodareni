@@ -61,7 +61,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
     {
         $handler = new ChitListQueryHandler($this->entityManager, $this->prepareQueryBus());
 
-        $chits = $handler->handle(ChitListQuery::all($this->getCashbookId()));
+        $chits = $handler(ChitListQuery::all($this->getCashbookId()));
 
         $expectedOrder = [2, 4, 3, 1];
         $this->assertCount(count($expectedOrder), $chits);
@@ -76,7 +76,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
     {
         $handler = new ChitListQueryHandler($this->entityManager, $this->prepareQueryBus());
 
-        $chits = $handler->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->getCashbookId()));
+        $chits = $handler(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->getCashbookId()));
 
         $expectedOrder = [3, 1];
         $this->assertCount(count($expectedOrder), $chits);
