@@ -26,9 +26,10 @@ class FinalRealBalanceQueryHandler
 
     public function handle(FinalRealBalanceQuery $query) : Money
     {
-        $chits   = $this->queryBus->handle(ChitListQuery::all($query->getCashbookId()));
+        $chits = $this->queryBus->handle(ChitListQuery::all($query->getCashbookId()));
+
         $chits   = array_filter($chits, function (Chit $chit) : bool {
-            return ! $chit->getCategory()->isVirtual();
+            return ! $chit->isVirtual();
         });
         $balance = array_sum(array_map(function (Chit $chit) : float {
             return $chit->getSignedAmount();

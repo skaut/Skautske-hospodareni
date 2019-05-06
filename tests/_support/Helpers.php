@@ -62,7 +62,7 @@ class Helpers
     {
         $operation = Operation::get($operationValue);
 
-        $body = new ChitBody(new ChitNumber('123'), $date, new Recipient('František Maša'), 'test');
+        $body = new ChitBody(new ChitNumber('123'), $date, new Recipient('František Maša'));
         return Mockery::mock(Chit::class, [
             'getId' => $id,
             'getBody' => $body,
@@ -81,11 +81,10 @@ class Helpers
         $chitBody = new ChitBody(
             $chitNumber === null ? null : new ChitNumber($chitNumber),
             new Date(),
-            null,
-            'čokoláda'
+            null
         );
         $category = m::mock(ICategory::class, ['getId' => 1, 'getOperationType' => Operation::get(Operation::INCOME)]);
-        $cashbook->addChit ($chitBody, new Amount('100'), $category, $paymentMethod);
+        $cashbook->addChit ($chitBody, new Amount('100'), $category, $paymentMethod, 'čokoláda');
         return $chitBody;
     }
 }

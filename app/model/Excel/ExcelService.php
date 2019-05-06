@@ -8,7 +8,6 @@ use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
@@ -310,7 +309,7 @@ class ExcelService
         foreach ($chits as $chit) {
             assert($chit instanceof Chit);
 
-            $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+            $isIncome = $chit->isIncome();
             $amount   = $chit->getAmount()->toFloat();
 
             $balance += $isIncome ? $amount : -$amount;
@@ -318,7 +317,7 @@ class ExcelService
             $sheet->setCellValue('A' . $rowCnt, $chit->getDate()->format('d.m.Y'))
                 ->setCellValue('B' . $rowCnt, $prefix . $chit->getNumber())
                 ->setCellValue('C' . $rowCnt, $chit->getPurpose())
-                ->setCellValue('D' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
+                ->setCellValue('D' . $rowCnt, $chit->getCategories())
                 ->setCellValue('E' . $rowCnt, (string) $chit->getRecipient())
                 ->setCellValue('F' . $rowCnt, $isIncome ? $amount : '')
                 ->setCellValue('G' . $rowCnt, ! $isIncome ? $amount : '')
@@ -514,20 +513,18 @@ class ExcelService
 
             $prefix = $cashbook->getChitNumberPrefix();
 
-            $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId, null));
-
             foreach ($event['chits'] as $chit) {
                 assert($chit instanceof Chit);
 
-                $isIncome = $chit->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
+                $isIncome = $chit->isIncome();
                 $amount   = $chit->getAmount()->toFloat();
 
                 $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
                     ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
                     ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
                     ->setCellValue('D' . $rowCnt, $chit->getPurpose())
-                    ->setCellValue('E' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
-                    ->setCellValue('F' . $rowCnt, $chit->recipient)
+                    ->setCellValue('E' . $rowCnt, $chit->getCategories())
+                    ->setCellValue('F' . $rowCnt, (string) $chit->getRecipient())
                     ->setCellValue('G' . $rowCnt, $isIncome ? $amount : '')
                     ->setCellValue('H' . $rowCnt, ! $isIncome ? $amount : '');
 
@@ -568,7 +565,7 @@ class ExcelService
             $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
                 ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
                 ->setCellValue('C' . $rowCnt, $chit->getPurpose())
-                ->setCellValue('D' . $rowCnt, $categoryNames[$chit->getCategory()->getId()])
+                ->setCellValue('D' . $rowCnt, $chit->getCategories())
                 ->setCellValue('E' . $rowCnt, $chit->getRecipient())
                 ->setCellValue('F' . $rowCnt, $amount)
                 ->setCellValue('G' . $rowCnt, $chit->isIncome() ? 'Příjem' : 'Výdaj');

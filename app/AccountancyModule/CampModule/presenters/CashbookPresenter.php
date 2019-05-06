@@ -124,13 +124,13 @@ class CashbookPresenter extends BasePresenter
 
         $date    = $this->eventService->getEvent()->get($unitId)->StartDate;
         $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
-        $body    = new ChitBody(null, new Date($date), null, $purpose);
+        $body    = new ChitBody(null, new Date($date), null);
 
         $categoryId = $this->queryBus->handle(
             new CampParticipantCategoryIdQuery(new SkautisCampId($unitId), ParticipantType::get(ParticipantType::CHILD))
         );
 
-        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, Amount::fromFloat($amount), $categoryId, PaymentMethod::CASH()));
+        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, Amount::fromFloat($amount), $categoryId, PaymentMethod::CASH(), $purpose));
 
         $this->flashMessage('HPD byl importován');
 

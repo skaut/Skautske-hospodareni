@@ -29,13 +29,17 @@ final class AddChitToCashbook
     /** @var PaymentMethod */
     private $paymentMethod;
 
-    public function __construct(CashbookId $cashbookId, ChitBody $body, Amount $amount, int $categoryId, PaymentMethod $paymentMethod)
+    /** @var string */
+    private $purpose;
+
+    public function __construct(CashbookId $cashbookId, ChitBody $body, Amount $amount, int $categoryId, PaymentMethod $paymentMethod, string $purpose)
     {
         $this->cashbookId    = $cashbookId;
         $this->body          = $body;
         $this->amount        = $amount;
         $this->categoryId    = $categoryId;
         $this->paymentMethod = $paymentMethod;
+        $this->purpose       = $purpose;
     }
 
     public function getCashbookId() : CashbookId
@@ -61,5 +65,10 @@ final class AddChitToCashbook
     public function getPaymentMethod() : PaymentMethod
     {
         return $this->paymentMethod;
+    }
+
+    public function getPurpose() : string
+    {
+        return $this->purpose;
     }
 }

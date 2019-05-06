@@ -111,10 +111,10 @@ class Cashbook extends Aggregate
         $this->note = $note;
     }
 
-    public function addChit(ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod) : void
+    public function addChit(ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod, string $purpose) : void
     {
         $chit = new Chit($this, $chitBody, $paymentMethod);
-        $chit->addItem($amount, $this->getChitCategory($category));
+        $chit->addItem($amount, $this->getChitCategory($category), $purpose);
         $this->chits[] = $chit;
         $this->raise(new ChitWasAdded($this->id, $category->getId()));
     }
@@ -149,7 +149,7 @@ class Cashbook extends Aggregate
         $newChitBody = $originalChit->getBody()->withoutChitNumber();
 
         $chit = new Chit($this, $newChitBody, $originalChit->getPaymentMethod());
-        $chit->addItem($originalChit->getItems()[0]->getAmount(), $category);
+        $chit->addItem($originalChit->getItems()[0]->getAmount(), $category, $originalChit->getPurpose());
         $this->chits[] = $chit;
 
         $this->raise(new ChitWasAdded($this->id, $categoryId));
@@ -159,7 +159,7 @@ class Cashbook extends Aggregate
      * @throws ChitNotFound
      * @throws ChitLocked
      */
-    public function updateChit(int $chitId, ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod) : void
+    public function updateChit(int $chitId, ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod, string $purpose) : void
     {
         $chit          = $this->getChit($chitId);
         $oldCategoryId = $chit->getCategoryId();
@@ -168,7 +168,7 @@ class Cashbook extends Aggregate
             throw new ChitLocked();
         }
 
-        $chit->update($chitBody, $this->getChitCategory($category), $paymentMethod, $amount);
+        $chit->update($chitBody, $this->getChitCategory($category), $paymentMethod, $amount, $purpose);
 
         $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $category->getId()));
     }

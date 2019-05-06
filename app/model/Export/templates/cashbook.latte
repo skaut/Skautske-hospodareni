@@ -21,10 +21,10 @@ table {
         <td>{(string) $prefix}{(string) $chit->number}</td>
         <td>{$chit->purpose}</td>
         {var $amount = $chit->amount->toFloat()}
-        <td>{$chit->category->shortcut}</td>
-        <td style="text-align:right;">{$chit->category->isIncome() ? $amount : '&nbsp;'|price|noescape}</td>
+        <td>{$chit->categoriesShortcut}</td>
+        <td style="text-align:right;">{$chit->isIncome() ? $amount : '&nbsp;'|price|noescape}</td>
         <td style="text-align:right;">{$chit->isIncome() ? '&nbsp;' : $amount|price|noescape}</td>
-        <td style="text-align:right;">{$balance += $chit->category->isIncome() ? $amount : -$amount |price}</td>
+        <td style="text-align:right;">{$balance += $chit->isIncome() ? $amount : -$amount |price}</td>
     </tr>
     <tr>
         <td>&nbsp;</td>

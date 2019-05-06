@@ -80,16 +80,16 @@ class Chit
         $this->paymentMethod = $paymentMethod;
     }
 
-    public function addItem(Amount $amount, Category $category) : void
+    public function addItem(Amount $amount, Category $category, string $purpose) : void
     {
-        $this->items[] = new ChitItem($this->getNextChitItemId(), $this, $amount, $category);
+        $this->items[] = new ChitItem($this->getNextChitItemId(), $this, $amount, $category, $purpose);
     }
 
-    public function update(ChitBody $body, Category $category, PaymentMethod $paymentMethod, Amount $amount) : void
+    public function update(ChitBody $body, Category $category, PaymentMethod $paymentMethod, Amount $amount, string $purpose) : void
     {
         $this->body = $body;
         $this->items->clear();
-        $this->items->add(new ChitItem($this->getNextChitItemId(), $this, $amount, $category));
+        $this->items->add(new ChitItem($this->getNextChitItemId(), $this, $amount, $category, $purpose));
         $this->paymentMethod = $paymentMethod;
     }
 
@@ -129,7 +129,7 @@ class Chit
 
     public function getPurpose() : string
     {
-        return $this->body->getPurpose();
+        return $this->getFirstItem()->getPurpose();
     }
 
     public function getDate() : Date
@@ -156,7 +156,7 @@ class Chit
     {
         $chit = new self($newCashbook, $this->body, $this->paymentMethod);
         foreach ($this->items as $item) {
-            $chit->addItem($item->getAmount(), $item->getCategory());
+            $chit->addItem($item->getAmount(), $item->getCategory(), $item->getPurpose());
         }
 
         return $chit;
@@ -177,7 +177,7 @@ class Chit
                 $this->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
                 $item->getCategory()->getOperationType()
             );
-            $newChit->addItem($item->getAmount(), $category);
+            $newChit->addItem($item->getAmount(), $category, $item->getPurpose());
         }
 
         return $newChit;

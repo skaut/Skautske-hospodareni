@@ -9,9 +9,10 @@ use Model\Cashbook\Operation;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
- * @property-read Amount $amount
+ * @property-read int      $id
+ * @property-read Amount   $amount
  * @property-read Category $category
+ * @property-read string   $purpose
  */
 class ChitItem
 {
@@ -26,11 +27,15 @@ class ChitItem
     /** @var Category */
     private $category;
 
-    public function __construct(int $id, Amount $amount, Category $category)
+    /** @var string */
+    private $purpose;
+
+    public function __construct(int $id, Amount $amount, Category $category, string $purpose)
     {
         $this->id       = $id;
         $this->amount   = $amount;
         $this->category = $category;
+        $this->purpose  = $purpose;
     }
 
     public function getId() : int
@@ -46,6 +51,11 @@ class ChitItem
     public function getCategory() : Category
     {
         return $this->category;
+    }
+
+    public function getPurpose() : string
+    {
+        return $this->purpose;
     }
 
     public function getSignedAmount() : float

@@ -72,11 +72,11 @@ class CashbookRepositoryTest extends IntegrationTest
             'date' => '1989-11-17',
             'num' => '123',
             'recipient' => 'František Maša',
-            'purpose' => 'Purpose',
             'payment_method' => Cashbook\PaymentMethod::BANK,
         ];
 
         $chitItem = [
+            'purpose' => 'Purpose',
             'price' => '100.00',
             'priceText' => '100',
             'category' => 10,
@@ -91,12 +91,12 @@ class CashbookRepositoryTest extends IntegrationTest
             new ChitBody(
                 new Cashbook\ChitNumber($chit['num']),
                 new Date($chit['date']),
-                new Cashbook\Recipient($chit['recipient']),
-                $chit['purpose']
+                new Cashbook\Recipient($chit['recipient'])
             ),
             new Cashbook\Amount($chitItem['priceText']),
             $this->mockCategory($chitItem['category']),
-            Cashbook\PaymentMethod::get($chit['payment_method'])
+            Cashbook\PaymentMethod::get($chit['payment_method']),
+            $chitItem['purpose']
         );
 
         $this->repository->save($cashbook);

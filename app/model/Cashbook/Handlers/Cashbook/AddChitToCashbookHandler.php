@@ -33,7 +33,7 @@ final class AddChitToCashbookHandler
         $cashbook = $this->cashbooks->find($command->getCashbookId());
         $category = $this->categories->find($command->getCategoryId(), $cashbook->getId(), $cashbook->getType());
 
-        $cashbook->addChit($command->getBody(), $command->getAmount(), $category, $command->getPaymentMethod());
+        $cashbook->addChit($command->getBody(), $command->getAmount(), $category, $command->getPaymentMethod(), $command->getPurpose());
 
         $this->cashbooks->save($cashbook);
     }

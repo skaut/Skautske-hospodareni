@@ -1,3 +1,12 @@
+{define amountColumns}
+    {if $isIncome}
+        <td class="r" title="{$amount->expression}">{$amount->value|price}</td>
+        <td class="r">&nbsp;</td>
+    {else}
+        <td class="r">&nbsp;</td>
+        <td class="r" title="{$amount->expression}">{$amount->value|price}</td>
+    {/if}
+{/define}
 {var $isCash = $paymentMethod->equalsValue('cash')}
 
 <div class="panel panel-default">
@@ -43,8 +52,9 @@
                 {foreach $chits as $chit}
                     {var $isIncome = $chit->isIncome()}
                     {php $balance += $isIncome ? $chit->amount->toFloat() : -$chit->amount->toFloat()}
+                    {var $itemsCount = count($chit->items)}
                     <tr>
-                        <td class="nowrap">
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="nowrap">
                             <input type="checkbox" class="hidden-xs hidden-sm" name="chits-{$paymentMethod}[]" value={$chit->id}/>
                             <a n:if="$isCash"
                                     href="{plink :Accountancy:CashbookExport:printChits $cashbookId, [$chit->id]}"
@@ -67,21 +77,25 @@
                                 <i class="fa fa-exchange"></i>
                             </a>
                         </td>
-                        <td><span class="visible-xs visible-sm">{$chit->date|date:"j.n."}</span><span
-                                    class="visible-md visible-lg">{$chit->date|date:"d.m.Y"}</span></td>
-                        <td title="{$prefix}{$chit->number}" n:class="array_key_exists((string)$chit->number, $duplicatesNumbers) ? 'alert alert-danger'">{$chit->number}</td>
-                        <td title="{$chit->purpose}">{dump $chit}{$chit->purpose|truncate:"120"}</td>
-                        <td class="hidden-xs hidden-sm" title="{$chit->category->name}">{$chit->category->shortcut}</td>
-                        <td class="hidden-xs hidden-sm">{$chit->recipient}</td>
-                        {if $isIncome}
-                            <td class="r" title="{$chit->amount->expression}">{$chit->amount->value|price}</td>
-                            <td class="r">&nbsp;</td>
-                        {else}
-                            <td class="r">&nbsp;</td>
-                            <td class="r" title="{$chit->amount->expression}">{$chit->amount->value|price}</td>
-                        {/if}
-                        <td n:class="r, $balance < 0 && $isCash ? 'bg-danger'">{$balance|price}</td>
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if}>
+                            <span class="visible-xs visible-sm">{$chit->date|date:"j.n."}</span>
+                            <span class="visible-md visible-lg">{$chit->date|date:"d.m.Y"}</span>
+                        </td>
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$prefix}{$chit->number}" n:class="array_key_exists((string)$chit->number, $duplicatesNumbers) ? 'alert alert-danger'">{$chit->number}</td>
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$chit->purpose}">{$chit->purpose|truncate:"120"}</td>
+                        <td class="hidden-xs hidden-sm" title="{$chit->categories}">{$chit->categoriesShortcut}</td>
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="hidden-xs hidden-sm">{$chit->recipient}</td>
+                        {include amountColumns 'isIncome'=>$isIncome, 'amount'=>$chit->amount}
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} n:class="r, $balance < 0 && $isCash ? 'bg-danger'">{$balance|price}</td>
                     </tr>
+                    {if $itemsCount > 1}
+                        {foreach $chit->items as $item}
+                            <tr>
+                                <td>{$item->category->shortcut}</td>
+                                {include amountColumns 'isIncome'=>$isIncome, 'amount'=>$item->amount}
+                            </tr>
+                        {/foreach}
+                    {/if}
                 {/foreach}
                 <tr>
                     <td colspan="2">&nbsp;</td>

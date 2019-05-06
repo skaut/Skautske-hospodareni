@@ -12,8 +12,8 @@
         <td>{$chit->date|date:"j.n.Y"}</td>
         <td>{$chit->purpose}</td>
         <td>{$chit->recipient}</td>
-        <td>{$chit->category->name}</td>
-        <td>{if ! $chit->category->isIncome()}-{/if}{$chit->amount->toFloat()}</td>
+        <td>{$chit->categories}</td>
+        <td>{if ! $chit->isIncome()}-{/if}{$chit->amount->toFloat()}</td>
         <td class="text-right">
             {if ! $chit->locked}
                 <a n:href="lockChit! $chit->id" class="btn btn-xs btn-success ajax">
