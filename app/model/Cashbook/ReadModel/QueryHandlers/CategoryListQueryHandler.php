@@ -30,7 +30,7 @@ class CategoryListQueryHandler
      *
      * @throws CashbookNotFound
      */
-    public function handle(CategoryListQuery $query) : array
+    public function __invoke(CategoryListQuery $query) : array
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 

@@ -63,7 +63,7 @@ final class FinalBalanceQueryHandlerTest extends Unit
 
         $handler = new FinalCashBalanceQueryHandler($queryBus);
 
-        $actualBalance = $handler->handle(new FinalCashBalanceQuery($cashbookId));
+        $actualBalance = $handler(new FinalCashBalanceQuery($cashbookId));
 
         $this->assertTrue($expectedBalance->equals($actualBalance));
     }

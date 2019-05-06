@@ -26,9 +26,7 @@ final class ChitQueryHandlerTest extends Unit
     {
         $handler = new ChitQueryHandler($this->mockCashbookRepository(), new QueryBus());
 
-        $this->assertNull(
-            $handler->handle(new ChitQuery($this->getCashbookId(), 5))
-        );
+        $this->assertNull($handler(new ChitQuery($this->getCashbookId(), 5)));
     }
 
     private function mockCashbookRepository() : ICashbookRepository

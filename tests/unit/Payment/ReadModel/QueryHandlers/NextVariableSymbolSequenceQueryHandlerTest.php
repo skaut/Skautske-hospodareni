@@ -74,7 +74,7 @@ class NextVariableSymbolSequenceQueryHandlerTest extends TestCase
 
         $handler = new NextVariableSymbolSequenceQueryHandler($groupRepository, $queryBus);
 
-        $actualSymbol = $handler->handle(new NextVariableSymbolSequenceQuery(self::UNIT_ID, $now->setTime(1, 1, 1)));
+        $actualSymbol = $handler(new NextVariableSymbolSequenceQuery(self::UNIT_ID, $now->setTime(1, 1, 1)));
 
         $this->assertEquals($expectedSymbol !== null ? new VariableSymbol($expectedSymbol) : null, $actualSymbol);
     }

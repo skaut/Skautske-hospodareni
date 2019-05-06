@@ -24,7 +24,7 @@ class EventParticipantIncomeQueryHandler
         $this->service = $participantFactory->create('General');
     }
 
-    public function handle(EventParticipantIncomeQuery $query) : float
+    public function __invoke(EventParticipantIncomeQuery $query) : float
     {
         $participants = $this->service->getAll($query->getEventId()->toInt());
 

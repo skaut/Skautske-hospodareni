@@ -17,7 +17,7 @@ final class ActivateAutocomputedParticipantsHandler
         $this->skautis = $skautis;
     }
 
-    public function handle(ActivateAutocomputedParticipants $command) : void
+    public function __invoke(ActivateAutocomputedParticipants $command) : void
     {
         $this->skautis->event->eventCampUpdateAdult(
             [

@@ -22,7 +22,7 @@ class UpdateCampCategoryTotalHandler
         $this->updater   = $updater;
     }
 
-    public function handle(UpdateCampCategoryTotals $command) : void
+    public function __invoke(UpdateCampCategoryTotals $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

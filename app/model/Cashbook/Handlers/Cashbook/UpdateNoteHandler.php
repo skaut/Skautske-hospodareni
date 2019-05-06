@@ -21,7 +21,7 @@ final class UpdateNoteHandler
     /**
      * @throws CashbookNotFound
      */
-    public function handle(UpdateNote $command) : void
+    public function __invoke(UpdateNote $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
         $cashbook->updateNote($command->getNote());

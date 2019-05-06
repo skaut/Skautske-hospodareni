@@ -17,7 +17,7 @@ class ActivateStatisticsHandler
         $this->skautis = $skautis;
     }
 
-    public function handle(ActivateStatistics $command) : void
+    public function __invoke(ActivateStatistics $command) : void
     {
         $this->skautis->event->eventGeneralUpdateStatisticAutoComputed([
             'ID' => $command->getEventId(),

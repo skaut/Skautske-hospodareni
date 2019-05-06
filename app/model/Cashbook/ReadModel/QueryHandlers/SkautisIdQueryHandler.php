@@ -34,7 +34,7 @@ class SkautisIdQueryHandler
      * @throws CashbookNotFound
      * @throws UnitNotFound
      */
-    public function handle(SkautisIdQuery $query) : int
+    public function __invoke(SkautisIdQuery $query) : int
     {
         $cashbook   = $this->cashbooks->find($query->getCashbookId());
         $objectType = $cashbook->getType()->getSkautisObjectType();

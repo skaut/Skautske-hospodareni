@@ -27,7 +27,7 @@ class EventListQueryHandler
     /**
      * @return array<int, Event> Events indexed by ID
      */
-    public function handle(EventListQuery $query) : array
+    public function __invoke(EventListQuery $query) : array
     {
         $events = $this->skautis->event->eventGeneralAll([
             'IsRelation' => true,

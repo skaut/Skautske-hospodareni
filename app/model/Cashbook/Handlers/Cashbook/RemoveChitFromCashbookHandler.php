@@ -17,7 +17,7 @@ final class RemoveChitFromCashbookHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(RemoveChitFromCashbook $command) : void
+    public function __invoke(RemoveChitFromCashbook $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

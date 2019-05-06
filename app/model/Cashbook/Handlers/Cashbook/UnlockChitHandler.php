@@ -17,7 +17,7 @@ final class UnlockChitHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(UnlockChit $command) : void
+    public function __invoke(UnlockChit $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

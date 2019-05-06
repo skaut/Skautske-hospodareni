@@ -25,7 +25,7 @@ final class ChitQueryHandler
         $this->queryBus  = $queryBus;
     }
 
-    public function handle(ChitQuery $query) : ?Chit
+    public function __invoke(ChitQuery $query) : ?Chit
     {
         $cashbook   = $this->cashbooks->find($query->getCashbookId());
         $categories = $this->queryBus->handle(new CategoryListQuery($query->getCashbookId()));

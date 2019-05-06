@@ -35,7 +35,7 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
      *
      * @throws CashbookNotFound
      */
-    public function handle(InconsistentCampCategoryTotalsQuery $query) : array
+    public function __invoke(InconsistentCampCategoryTotalsQuery $query) : array
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($query->getCampId()));
 

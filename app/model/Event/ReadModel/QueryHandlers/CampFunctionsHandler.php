@@ -21,7 +21,7 @@ class CampFunctionsHandler
         $this->skautis = $skautis;
     }
 
-    public function handle(CampFunctions $query) : Functions
+    public function __invoke(CampFunctions $query) : Functions
     {
         $functions = $this->skautis->event->eventFunctionAllCamp([
             'ID_EventCamp' => $query->getCampId()->toInt(),

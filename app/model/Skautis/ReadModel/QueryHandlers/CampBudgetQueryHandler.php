@@ -24,7 +24,7 @@ final class CampBudgetQueryHandler
     /**
      * @return BudgetEntry[]
      */
-    public function handle(CampBudgetQuery $query) : array
+    public function __invoke(CampBudgetQuery $query) : array
     {
         $skautisCategories = $this->eventWebService->EventCampStatementAll([
             'ID_EventCamp' => $query->getCampId()->toInt(),

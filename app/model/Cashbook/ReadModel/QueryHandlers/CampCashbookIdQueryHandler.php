@@ -19,7 +19,7 @@ final class CampCashbookIdQueryHandler
         $this->mapper = $mapper;
     }
 
-    public function handle(CampCashbookIdQuery $query) : CashbookId
+    public function __invoke(CampCashbookIdQuery $query) : CashbookId
     {
         return $this->mapper->getLocalId($query->getCampId()->toInt(), ObjectType::CAMP);
     }

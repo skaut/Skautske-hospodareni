@@ -24,7 +24,7 @@ final class EventWasCanceledSubscriber
         $this->queryBus   = $queryBus;
     }
 
-    public function handle(EventWasCanceled $event) : void
+    public function __invoke(EventWasCanceled $event) : void
     {
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getEventId()));
 

@@ -35,7 +35,7 @@ class NextVariableSymbolSequenceQueryHandler
         $this->queryBus = $queryBus;
     }
 
-    public function handle(NextVariableSymbolSequenceQuery $query) : ?VariableSymbol
+    public function __invoke(NextVariableSymbolSequenceQuery $query) : ?VariableSymbol
     {
         $now                = $query->getNow();
         $groupIncrementPart = $this->getGroupIncrement($query->getUnitId(), $now);

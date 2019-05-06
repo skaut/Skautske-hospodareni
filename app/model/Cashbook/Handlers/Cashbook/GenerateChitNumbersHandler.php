@@ -25,7 +25,7 @@ final class GenerateChitNumbersHandler
      * @throws CashbookNotFound
      * @throws NonNumericChitNumbers
      */
-    public function handle(GenerateChitNumbers $command) : void
+    public function __invoke(GenerateChitNumbers $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
         $cashbook->generateChitNumbers($command->getPaymentMethod());

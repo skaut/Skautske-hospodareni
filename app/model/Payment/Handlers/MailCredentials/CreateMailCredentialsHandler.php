@@ -36,7 +36,7 @@ class CreateMailCredentialsHandler
         $this->users           = $users;
     }
 
-    public function handle(CreateMailCredentials $command) : void
+    public function __invoke(CreateMailCredentials $command) : void
     {
         $credentials = new MailCredentials(
             $command->getUnitId(),

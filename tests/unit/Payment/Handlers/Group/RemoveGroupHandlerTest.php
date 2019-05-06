@@ -31,7 +31,7 @@ final class RemoveGroupHandlerTest extends Unit
 
         $this->expectException(GroupNotClosed::class);
 
-        $handler->handle(new RemoveGroup($groupId));
+        $handler(new RemoveGroup($groupId));
     }
 
     public function testRemovalOfGroupRaisesEvent() : void
@@ -55,6 +55,6 @@ final class RemoveGroupHandlerTest extends Unit
 
         $handler = new RemoveGroupHandler($groupRepository);
 
-        $handler->handle(new RemoveGroup($groupId));
+        $handler(new RemoveGroup($groupId));
     }
 }

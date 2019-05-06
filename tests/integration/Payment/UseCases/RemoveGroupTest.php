@@ -76,7 +76,7 @@ final class RemoveGroupTest extends IntegrationTest
             );
         }
 
-        $this->handler->handle(new RemoveGroup(1));
+        $this->handler->__invoke(new RemoveGroup(1));
 
         $this->assertEmpty($this->payments->findByGroup(1));
 

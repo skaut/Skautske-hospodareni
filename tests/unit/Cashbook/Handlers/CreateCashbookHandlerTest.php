@@ -27,7 +27,7 @@ class CreateCashbookHandlerTest extends Unit
 
         $handler = new CreateCashbookHandler($repository);
 
-        $handler->handle(new CreateCashbook(Cashbook\CashbookId::fromString('10'), $type));
+        $handler(new CreateCashbook(Cashbook\CashbookId::fromString('10'), $type));
 
         m::close();
     }

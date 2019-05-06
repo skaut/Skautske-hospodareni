@@ -17,7 +17,7 @@ final class UpdateChitNumberPrefixHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(UpdateChitNumberPrefix $command) : void
+    public function __invoke(UpdateChitNumberPrefix $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

@@ -18,7 +18,7 @@ class UnitQueryHandler
         $this->units = $units;
     }
 
-    public function handle(UnitQuery $query) : Unit
+    public function __invoke(UnitQuery $query) : Unit
     {
         return $this->units->find($query->getUnitId());
     }
