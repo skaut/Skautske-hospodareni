@@ -27,7 +27,7 @@ class CampListQueryHandler
     /**
      * @return array<int, Camp> Camps indexed by ID
      */
-    public function handle(CampListQuery $query) : array
+    public function __invoke(CampListQuery $query) : array
     {
         $camps = $this->skautis->event->EventCampAll([
             'Year' => $query->getYear(),

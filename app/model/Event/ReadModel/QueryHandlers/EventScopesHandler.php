@@ -28,7 +28,7 @@ final class EventScopesHandler
     /**
      * @return string[]
      */
-    public function handle(EventScopes $query) : array
+    public function __invoke(EventScopes $query) : array
     {
         // Scopes doesn't change so it's safe to cache them no matter what
         return $this->cache->load(self::CACHE_KEY, function () {

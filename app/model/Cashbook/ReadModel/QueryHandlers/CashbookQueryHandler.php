@@ -22,7 +22,7 @@ class CashbookQueryHandler
     /**
      * @throws CashbookNotFound
      */
-    public function handle(CashbookQuery $query) : Cashbook
+    public function __invoke(CashbookQuery $query) : Cashbook
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 

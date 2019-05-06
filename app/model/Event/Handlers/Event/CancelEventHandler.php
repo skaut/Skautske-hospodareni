@@ -23,7 +23,7 @@ final class CancelEventHandler
         $this->eventBus = $eventBus;
     }
 
-    public function handle(CancelEvent $command) : void
+    public function __invoke(CancelEvent $command) : void
     {
         $this->skautis->event->EventGeneralUpdateCancel([
             'ID' => $command->getEventId()->toInt(),

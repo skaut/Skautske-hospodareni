@@ -21,7 +21,7 @@ final class PaymentMailSubscriber
         $this->mailingService = $mailingService;
     }
 
-    public function handle(PaymentWasCompleted $event) : void
+    public function __invoke(PaymentWasCompleted $event) : void
     {
         try {
             $this->mailingService->sendEmail($event->getId(), EmailType::get(EmailType::PAYMENT_COMPLETED));

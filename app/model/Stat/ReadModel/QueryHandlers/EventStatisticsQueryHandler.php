@@ -26,7 +26,7 @@ class EventStatisticsQueryHandler
     /**
      * @return float[]
      */
-    public function handle(EventStatisticsQuery $query) : array
+    public function __invoke(EventStatisticsQuery $query) : array
     {
         $params = [
             array_map(function (SkautisEventId $id) {

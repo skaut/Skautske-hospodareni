@@ -19,7 +19,7 @@ class CampParticipantCategoryIdQueryHandler
         $this->categories = $categories;
     }
 
-    public function handle(CampParticipantCategoryIdQuery $query) : int
+    public function __invoke(CampParticipantCategoryIdQuery $query) : int
     {
         $participantType = $query->getParticipantType();
 

@@ -29,7 +29,7 @@ final class CreateVehicleHandler
         $this->units    = $units;
     }
 
-    public function handle(CreateVehicle $command) : void
+    public function __invoke(CreateVehicle $command) : void
     {
         $unit = $this->units->find($command->getUnitId());
 

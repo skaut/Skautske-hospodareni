@@ -17,7 +17,7 @@ final class UpdateEventHandler
         $this->events = $events;
     }
 
-    public function handle(UpdateEvent $command) : void
+    public function __invoke(UpdateEvent $command) : void
     {
         $event = $this->events->find($command->getEventId());
 

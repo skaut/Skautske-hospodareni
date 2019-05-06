@@ -21,7 +21,7 @@ final class EditableUnitsQueryHandler
     /**
      * @return Unit[]
      */
-    public function handle(EditableUnitsQuery $query) : array
+    public function __invoke(EditableUnitsQuery $query) : array
     {
         $role = $query->getRole();
 

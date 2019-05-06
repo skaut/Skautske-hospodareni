@@ -20,7 +20,7 @@ final class RemoveGroupHandler
         $this->groups = $groups;
     }
 
-    public function handle(RemoveGroup $command) : void
+    public function __invoke(RemoveGroup $command) : void
     {
         $group = $this->groups->find($command->getGroupId());
 

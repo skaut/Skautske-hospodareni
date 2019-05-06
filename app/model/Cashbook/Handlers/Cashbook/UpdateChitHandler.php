@@ -32,7 +32,7 @@ final class UpdateChitHandler
      * @throws ChitNotFound
      * @throws ChitLocked
      */
-    public function handle(UpdateChit $command) : void
+    public function __invoke(UpdateChit $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
         $category = $this->categories->find($command->getCategoryId(), $cashbook->getId(), $cashbook->getType());

@@ -17,7 +17,7 @@ final class MoveChitsToDifferentCashbookHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(MoveChitsToDifferentCashbook $command) : void
+    public function __invoke(MoveChitsToDifferentCashbook $command) : void
     {
         $sourceCashbook = $this->cashbooks->find($command->getSourceCashbookId());
         $targetCashbook = $this->cashbooks->find($command->getTargetCashbookId());

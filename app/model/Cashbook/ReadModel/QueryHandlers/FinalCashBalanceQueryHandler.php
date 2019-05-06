@@ -24,7 +24,7 @@ class FinalCashBalanceQueryHandler
         $this->queryBus = $queryBus;
     }
 
-    public function handle(FinalCashBalanceQuery $query) : Money
+    public function __invoke(FinalCashBalanceQuery $query) : Money
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $query->getCashbookId()));
 

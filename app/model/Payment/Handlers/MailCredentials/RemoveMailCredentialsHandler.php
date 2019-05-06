@@ -18,7 +18,7 @@ class RemoveMailCredentialsHandler
         $this->credentials = $credentials;
     }
 
-    public function handle(RemoveMailCredentials $command) : void
+    public function __invoke(RemoveMailCredentials $command) : void
     {
         try {
             $credentials = $this->credentials->find($command->getId());

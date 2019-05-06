@@ -26,7 +26,7 @@ class UpdateFunctionsHandler
      * @throws LeaderNotAdult
      * @throws WsdlException
      */
-    public function handle(UpdateFunctions $command) : void
+    public function __invoke(UpdateFunctions $command) : void
     {
         $query = [
             'ID' => $command->getEventId(),

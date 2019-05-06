@@ -21,7 +21,7 @@ class LockCashbookHandler
     /**
      * @throws CashbookNotFound
      */
-    public function handle(LockCashbook $command) : void
+    public function __invoke(LockCashbook $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

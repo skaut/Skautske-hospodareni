@@ -26,7 +26,7 @@ class CampStatisticsQueryHandler
     /**
      * @return float[]
      */
-    public function handle(CampStatisticsQuery $query) : array
+    public function __invoke(CampStatisticsQuery $query) : array
     {
         $params = [
             array_map(function (SkautisCampId $id) {

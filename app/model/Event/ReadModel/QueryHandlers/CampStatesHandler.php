@@ -28,7 +28,7 @@ final class CampStatesHandler
     /**
      * @return string[]
      */
-    public function handle(CampStates $query) : array
+    public function __invoke(CampStates $query) : array
     {
         return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(

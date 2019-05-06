@@ -18,7 +18,7 @@ final class CreateCashbookHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(CreateCashbook $command) : void
+    public function __invoke(CreateCashbook $command) : void
     {
         $cashbook = new Cashbook($command->getId(), $command->getType());
 

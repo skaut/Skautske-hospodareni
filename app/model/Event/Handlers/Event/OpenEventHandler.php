@@ -23,7 +23,7 @@ final class OpenEventHandler
         $this->eventBus = $eventBus;
     }
 
-    public function handle(OpenEvent $command) : void
+    public function __invoke(OpenEvent $command) : void
     {
         $event = $this->events->find($command->getEventId());
 

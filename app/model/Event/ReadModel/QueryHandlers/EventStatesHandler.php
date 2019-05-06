@@ -28,7 +28,7 @@ final class EventStatesHandler
     /**
      * @return string[]
      */
-    public function handle(EventStates $query) : array
+    public function __invoke(EventStates $query) : array
     {
         return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(

@@ -33,7 +33,7 @@ class ChitListQueryHandler
      *
      * @throws CashbookNotFound
      */
-    public function handle(ChitListQuery $query) : array
+    public function __invoke(ChitListQuery $query) : array
     {
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')

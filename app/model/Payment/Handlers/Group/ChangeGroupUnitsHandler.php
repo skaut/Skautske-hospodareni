@@ -28,7 +28,7 @@ class ChangeGroupUnitsHandler
      * @throws GroupNotFound
      * @throws BankAccountNotFound
      */
-    public function handle(ChangeGroupUnits $command) : void
+    public function __invoke(ChangeGroupUnits $command) : void
     {
         $group = $this->groups->find($command->getGroupId());
 

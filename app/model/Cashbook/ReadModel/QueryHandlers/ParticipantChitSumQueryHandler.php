@@ -26,7 +26,7 @@ class ParticipantChitSumQueryHandler
         $this->queryBus      = $queryBus;
     }
 
-    public function handle(ParticipantChitSumQuery $query) : float
+    public function __invoke(ParticipantChitSumQuery $query) : float
     {
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')

@@ -17,7 +17,7 @@ final class ClearCashbookHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(ClearCashbook $command) : void
+    public function __invoke(ClearCashbook $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

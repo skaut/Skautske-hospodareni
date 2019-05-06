@@ -17,7 +17,7 @@ final class AddInverseChitHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(AddInverseChit $command) : void
+    public function __invoke(AddInverseChit $command) : void
     {
         $cashbook         = $this->cashbooks->find($command->getTargetCashbookId());
         $originalCashbook = $this->cashbooks->find($command->getOriginalCashbookId());

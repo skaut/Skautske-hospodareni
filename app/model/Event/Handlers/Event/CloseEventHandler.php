@@ -23,7 +23,7 @@ final class CloseEventHandler
         $this->eventBus = $eventBus;
     }
 
-    public function handle(CloseEvent $command) : void
+    public function __invoke(CloseEvent $command) : void
     {
         $event = $this->events->find($command->getEventId());
         $this->events->close($event);

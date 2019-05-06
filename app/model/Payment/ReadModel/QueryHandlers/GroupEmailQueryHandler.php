@@ -19,7 +19,7 @@ final class GroupEmailQueryHandler
         $this->groups = $groups;
     }
 
-    public function handle(GroupEmailQuery $query) : ?GroupEmail
+    public function __invoke(GroupEmailQuery $query) : ?GroupEmail
     {
         try {
             $group    = $this->groups->find($query->getGroupId());

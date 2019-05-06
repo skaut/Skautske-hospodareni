@@ -17,7 +17,7 @@ class LockChitHandler
         $this->cashbooks = $cashbooks;
     }
 
-    public function handle(LockChit $command) : void
+    public function __invoke(LockChit $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

@@ -17,7 +17,7 @@ final class NewestEventIdHandler
         $this->events = $events;
     }
 
-    public function handle(NewestEventId $query) : ?int
+    public function __invoke(NewestEventId $query) : ?int
     {
         return $this->events->getNewestEventId();
     }

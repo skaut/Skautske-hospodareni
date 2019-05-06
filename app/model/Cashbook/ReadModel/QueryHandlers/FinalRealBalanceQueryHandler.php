@@ -24,7 +24,7 @@ class FinalRealBalanceQueryHandler
         $this->queryBus = $queryBus;
     }
 
-    public function handle(FinalRealBalanceQuery $query) : Money
+    public function __invoke(FinalRealBalanceQuery $query) : Money
     {
         $chits   = $this->queryBus->handle(ChitListQuery::all($query->getCashbookId()));
         $chits   = array_filter($chits, function (Chit $chit) : bool {

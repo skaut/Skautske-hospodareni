@@ -18,7 +18,7 @@ final class ActiveSkautisRoleQueryHandler
         $this->userService = $userService;
     }
 
-    public function handle(ActiveSkautisRoleQuery $_) : ?SkautisRole
+    public function __invoke(ActiveSkautisRoleQuery $_) : ?SkautisRole
     {
         return $this->userService->getActualRole();
     }

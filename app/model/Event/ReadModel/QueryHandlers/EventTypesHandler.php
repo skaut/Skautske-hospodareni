@@ -28,7 +28,7 @@ final class EventTypesHandler
     /**
      * @return string[]
      */
-    public function handle(EventTypes $query) : array
+    public function __invoke(EventTypes $query) : array
     {
         // Event types don't change so it's safe to cache them no matter what
         return $this->cache->load(self::CACHE_KEY, function () {

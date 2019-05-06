@@ -19,7 +19,7 @@ final class EventCashbookIdQueryHandler
         $this->mapper = $mapper;
     }
 
-    public function handle(EventCashbookIdQuery $query) : CashbookId
+    public function __invoke(EventCashbookIdQuery $query) : CashbookId
     {
         return $this->mapper->getLocalId($query->getEventId()->toInt(), ObjectType::EVENT);
     }

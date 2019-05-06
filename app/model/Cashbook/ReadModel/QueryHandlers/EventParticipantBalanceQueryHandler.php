@@ -19,7 +19,7 @@ class EventParticipantBalanceQueryHandler
         $this->queryBus = $queryBus;
     }
 
-    public function handle(EventParticipantBalanceQuery $query) : float
+    public function __invoke(EventParticipantBalanceQuery $query) : float
     {
         $participantIncome = $this->queryBus->handle(new EventParticipantIncomeQuery($query->getEventId()));
         $chitSum           = $this->queryBus->handle(new ParticipantChitSumQuery($query->getCashbookId()));

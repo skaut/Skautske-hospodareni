@@ -29,7 +29,7 @@ final class SendPaymentInfoHandler
     /**
      * @throws InvalidSmtp
      */
-    public function handle(SendPaymentInfo $command) : void
+    public function __invoke(SendPaymentInfo $command) : void
     {
         $payment = $this->payments->find($command->getPaymentId());
 

@@ -17,7 +17,7 @@ final class CreateEventHandler
         $this->skautis = $skautis;
     }
 
-    public function handle(CreateEvent $command) : void
+    public function __invoke(CreateEvent $command) : void
     {
         $query = [
             'ID' => 1, // musi byt neco nastavene
