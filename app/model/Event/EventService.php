@@ -19,7 +19,6 @@ use Skautis\Wsdl\PermissionException;
 use function array_merge;
 use function assert;
 use function in_array;
-use function is_array;
 
 class EventService extends MutableBaseService
 {
@@ -34,27 +33,6 @@ class EventService extends MutableBaseService
         parent::__construct($name, $skautis);
         $this->units    = $units;
         $this->queryBus = $queryBus;
-    }
-
-    /**
-     * vrací všechny akce podle parametrů
-     *
-     * @param int|string|null $year
-     *
-     * @return mixed[]
-     */
-    public function getAll($year = null, ?string $state = null) : array
-    {
-        $events = $this->skautis->event->{'Event' . $this->typeName . 'All'}(['IsRelation' => true, 'ID_Event' . $this->typeName . 'State' => $state === 'all' ? null : $state, 'Year' => $year === 'all' ? null : $year]);
-        $ret    = [];
-
-        if (is_array($events)) {
-            foreach ($events as $e) {
-                $ret[$e->ID] = (array) $e + $this->getCashbookData($e->ID);
-            }
-        }
-
-        return $ret;
     }
 
     /**

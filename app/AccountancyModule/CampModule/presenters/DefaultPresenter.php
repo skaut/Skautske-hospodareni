@@ -6,7 +6,7 @@ namespace App\AccountancyModule\CampModule;
 
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
-use Model\Auth\Resources\Camp;
+use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Event\ReadModel\Queries\CampStates;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
@@ -56,20 +56,21 @@ class DefaultPresenter extends BasePresenter
     protected function createComponentCampGrid() : DataGrid
     {
         //filtrovani zobrazených položek
-        $year  = $this->ses->year ?? date('Y');
+        $year  = (int) ($this->ses->year ?? date('Y'));
         $state = $this->ses->state ?? null;
-        $list  = $this->eventService->getEvent()->getAll($year, $state);
-        foreach ($list as $key => $value) {//přidání dodatečných atributů
-            $list[$key]['accessDetail'] = $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, (int) $value['ID']);
-        }
+
+        $camps = $this->queryBus->handle(new CampListQuery($year, $state === 'all' ? null : $state));
 
         $grid = $this->gridFactory->create();
-        $grid->setPrimaryKey('ID');
-        $grid->setDataSource($list);
-        $grid->addColumnLink('DisplayName', 'Název', 'Detail:default', null, ['aid' => 'ID'])->setSortable()->setFilterText();
-        $grid->addColumnDateTime('StartDate', 'Od')->setFormat('d.m.Y')->setSortable();
-        $grid->addColumnDateTime('EndDate', 'Do')->setFormat('d.m.Y')->setSortable();
-        $grid->addColumnText('Location', 'Místo konání')->setSortable()->setFilterText();
+        $grid->setPrimaryKey('id');
+        $grid->setDataSource($camps);
+        $grid->addColumnText('displayName', 'Název')
+            ->setSortable()
+            ->setFilterText();
+
+        $grid->addColumnDateTime('startDate', 'Od')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnDateTime('endDate', 'Do')->setFormat('d.m.Y')->setSortable();
+        $grid->addColumnText('location', 'Místo konání')->setSortable()->setFilterText();
         $grid->addColumnText('state', 'Stav');
 
         $grid->setTemplateFile(__DIR__ . '/../templates/campsGrid.latte');
@@ -79,7 +80,14 @@ class DefaultPresenter extends BasePresenter
 
     public function actionCampSummary() : void
     {
-        $this->excelService->getCampsSummary(array_keys($this->eventService->getEvent()->getAll($this->ses->year, $this->ses->state)), $this->eventService, $this->unitService);
+        $year = (int) ($this->ses->year ?? date('Y'));
+
+        $this->excelService->getCampsSummary(
+            array_keys($this->queryBus->handle(new CampListQuery($year, $this->ses->state))),
+            $this->eventService,
+            $this->unitService
+        );
+
         $this->terminate();
     }
 

@@ -1,7 +1,7 @@
 {extends $original_template}
 
 {define col-state}
-    {var $state = $item["ID_EventGeneralState"]}
+    {var $state = $item->state}
 
     {if $state === "draft"}
         <span class="label label-warning">Rozpracováno</span>
@@ -10,6 +10,10 @@
     {elseif $state === "cancelled"}
         <span class="label label-default">Zrušeno</span>
     {/if}
+{/define}
+
+{define col-displayName}
+    <a href="{plink Event:default $item->id->toInt()}">{$item->displayName}</a>
 {/define}
 
 {block group_actions}

@@ -1,7 +1,11 @@
 {extends $original_template}
 
+{define col-displayName}
+    <a href="{plink Detail:default $item->id->toInt()}">{$item->displayName}</a>
+{/define}
+
 {define col-state}
-    {var $state = $item["ID_EventCampState"]}
+    {var $state = $item->state}
 
     {if $state === "draft"}
         <span class="label label-warning">Rozpracováno</span>

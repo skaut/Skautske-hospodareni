@@ -21,7 +21,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     {
         parent::startup();
         $this->type = 'unit';
-        $this->year = $this->getParameter('year', date('Y'));
+        $this->year = (int) $this->getParameter('year', date('Y'));
 
         $user          = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);

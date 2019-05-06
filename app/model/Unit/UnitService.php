@@ -164,7 +164,7 @@ class UnitService
     /**
      * vrací seznam jednotek, ke kterým má uživatel právo na čtení
      *
-     * @return string[]
+     * @return array<int, string> unit ID => unit name
      */
     public function getReadUnits(User $user) : array
     {
