@@ -6,12 +6,14 @@ namespace App\AccountancyModule\CampModule;
 
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
+use Doctrine\Common\Collections\ArrayCollection;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Event\ReadModel\Queries\CampStates;
 use Model\ExcelService;
 use Nette\Application\UI\Form;
 use Nette\Http\SessionSection;
 use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
 use function array_keys;
 use function array_merge;
 use function array_reverse;
@@ -62,8 +64,8 @@ class DefaultPresenter extends BasePresenter
         $camps = $this->queryBus->handle(new CampListQuery($year, $state === 'all' ? null : $state));
 
         $grid = $this->gridFactory->create();
-        $grid->setPrimaryKey('id');
-        $grid->setDataSource($camps);
+
+        $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($camps), 'id'));
         $grid->addColumnText('displayName', 'Název')
             ->setSortable()
             ->setFilterText();
