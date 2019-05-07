@@ -7,6 +7,7 @@ namespace App\AccountancyModule\EventModule;
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
 use App\MyValidators;
+use Doctrine\Common\Collections\ArrayCollection;
 use Model\Auth\Resources\Event as EventResource;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -27,6 +28,7 @@ use Nette\Application\UI\Form;
 use Nette\Http\SessionSection;
 use Skautis\Exception;
 use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
 use function array_map;
 use function array_merge;
 use function array_reverse;
@@ -80,8 +82,7 @@ class DefaultPresenter extends BasePresenter
         $events = $this->queryBus->handle(new EventListQuery($year, $state === 'all' ? null : $state));
 
         $grid = $this->gridFactory->create();
-        $grid->setPrimaryKey('id');
-        $grid->setDataSource($events);
+        $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($events), 'id'));
         $grid->addColumnText('displayName', 'Název')
             ->setSortable()
             ->setFilterText();
