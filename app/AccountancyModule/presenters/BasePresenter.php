@@ -49,14 +49,6 @@ abstract class BasePresenter extends \App\BasePresenter
             throw new SkautisMaintenance();
         }
 
-        $this->aid = $this->getParameter('aid', null);
-        if ($this->aid !== null) { // Parameters aren't auto-casted to int
-            $this->aid = (int) $this->aid;
-        }
-
-        $unitId       = $this->getParameter('unitId', null);
-        $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
-
         if (! $this->getUser()->isLoggedIn()) {
             $this->backlink = $this->storeRequest('+ 3 days');
             if ($this->isAjax()) {
@@ -65,6 +57,14 @@ abstract class BasePresenter extends \App\BasePresenter
                 $this->redirect(':Default:', ['backlink' => $this->backlink]);
             }
         }
+
+        $this->aid = $this->getParameter('aid', null);
+        if ($this->aid !== null) { // Parameters aren't auto-casted to int
+            $this->aid = (int) $this->aid;
+        }
+
+        $unitId       = $this->getParameter('unitId', null);
+        $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
 
         $this->userService->updateLogoutTime();
     }
