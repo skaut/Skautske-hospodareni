@@ -98,7 +98,7 @@ final class RepaymentPresenter extends BasePresenter
                 );
         }
 
-        $form->onSubmit[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form) : void {
             $this->repaymentFormSubmitted($form);
         };
 
