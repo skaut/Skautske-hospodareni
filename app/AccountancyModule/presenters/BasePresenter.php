@@ -20,7 +20,7 @@ abstract class BasePresenter extends \App\BasePresenter
      */
     protected $aid;
 
-    /** @var UnitId|null */
+    /** @var UnitId */
     protected $unitId;
 
     /**
@@ -79,7 +79,7 @@ abstract class BasePresenter extends \App\BasePresenter
         return parent::flashMessage($message, $type);
     }
 
-    public function getCurrentUnitId() : ?UnitId
+    public function getCurrentUnitId() : UnitId
     {
         return $this->unitId;
     }

@@ -138,7 +138,6 @@ class CampPresenter extends BasePresenter
     {
         Assertion::notNull($this->camp);
         $unitId = $this->getCurrentUnitId();
-        Assertion::notNull($unitId);
 
         $form = $this->groupFormFactory->create(
             $unitId,

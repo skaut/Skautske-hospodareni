@@ -66,7 +66,6 @@ class GroupPresenter extends BasePresenter
 
         Assertion::notNull($group);
         $unitId = $this->getCurrentUnitId();
-        Assertion::notNull($unitId);
 
         return $this->groupFormFactory->create($unitId, null, $group->getId());
     }
@@ -74,7 +73,6 @@ class GroupPresenter extends BasePresenter
     protected function createComponentNewGroupForm() : GroupForm
     {
         $unitId = $this->getCurrentUnitId();
-        Assertion::notNull($unitId);
 
         return $this->groupFormFactory->create($unitId, null);
     }

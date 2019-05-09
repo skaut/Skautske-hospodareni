@@ -109,7 +109,6 @@ final class EventPresenter extends BasePresenter
 
         Assertion::notNull($event);
         $unitId = $this->getCurrentUnitId();
-        Assertion::notNull($unitId);
 
         $form = $this->groupFormFactory->create(
             $unitId,

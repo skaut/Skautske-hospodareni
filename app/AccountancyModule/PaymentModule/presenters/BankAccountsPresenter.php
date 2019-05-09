@@ -227,9 +227,8 @@ class BankAccountsPresenter extends BasePresenter
     private function isSubunitOf(int $unitId) : bool
     {
         $currentUnitId = $this->getCurrentUnitId() !== null ? $this->getCurrentUnitId()->toInt() : null;
-        $subunits      = $this->unitService->getSubunits($unitId);
 
-        foreach ($subunits as $subunit) {
+        foreach ($this->unitService->getSubunits($currentUnitId) as $subunit) {
             if ($subunit->getId() === $currentUnitId) {
                 return true;
             }

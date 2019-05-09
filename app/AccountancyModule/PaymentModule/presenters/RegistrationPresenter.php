@@ -137,7 +137,6 @@ class RegistrationPresenter extends BasePresenter
 
         Assertion::notNull($registration);
         $unitId = $this->getCurrentUnitId();
-        Assertion::notNull($unitId);
 
         $form = $this->groupFormFactory->create(
             $unitId,

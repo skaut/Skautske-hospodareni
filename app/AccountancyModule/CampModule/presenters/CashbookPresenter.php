@@ -113,8 +113,7 @@ class CashbookPresenter extends BasePresenter
         $this->editableOnly();
         $values = $form->getValues();
 
-        $unitId = $this->getCurrentUnitId();
-        $unitId = $unitId !== null ? $unitId->toInt() : null;
+        $unitId = $this->getCurrentUnitId()->toInt();
         $amount = $this->eventService->getParticipants()->getCampTotalPayment($unitId, $values->cat, $values->isAccount);
 
         if ($amount === 0.0) {
