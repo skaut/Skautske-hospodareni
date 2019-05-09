@@ -33,6 +33,9 @@ class MassAddForm extends BaseControl
 
         $form->addText('amount', 'Částka:')
             ->setNullable()
+            ->setRequired(false)
+            ->addRule($form::FLOAT, 'Částka musí být číslo')
+            ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01)
             ->setAttribute('class', 'input-mini');
 
         $form->addDate('dueDate', 'Splatnost:')
