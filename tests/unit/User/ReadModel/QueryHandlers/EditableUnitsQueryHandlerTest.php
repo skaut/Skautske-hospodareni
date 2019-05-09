@@ -62,6 +62,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
             ['hospodarOddil', [100, 101, 103, 102]],
             ['hospodarStredisko', [100, 101, 103, 102]],
             ['vedouciDruzina', [100]],
+            ['', []],
         ];
     }
 

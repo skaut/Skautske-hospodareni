@@ -11,6 +11,7 @@ use function array_sum;
 use function count;
 use function preg_match;
 use function preg_match_all;
+use function sprintf;
 use function str_replace;
 
 /**
@@ -43,7 +44,7 @@ class Amount
         $this->value      = $this->calculateValue();
 
         if ($this->value <= 0) {
-            throw new InvalidArgumentException('Expression result must be larger than 0');
+            throw new InvalidArgumentException(sprintf('Expression "%s" result must be larger than 0', $expression));
         }
     }
 

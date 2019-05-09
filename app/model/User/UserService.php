@@ -65,8 +65,8 @@ class UserService extends BaseService
     public function getActualRole() : ?SkautisRole
     {
         foreach ($this->getAllSkautisRoles() as $r) {
-            if (isset($r->Key) && $r->ID === $this->getRoleId()) {
-                return new SkautisRole($r->Key, $r->ID_Unit);
+            if ($r->ID === $this->getRoleId()) {
+                return new SkautisRole($r->Key ?? '', $r->ID_Unit);
             }
         }
 
