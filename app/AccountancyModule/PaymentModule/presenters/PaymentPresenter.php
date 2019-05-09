@@ -14,7 +14,6 @@ use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
 use DateTimeImmutable;
-use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
 use Model\Payment\BankAccountService;
@@ -36,7 +35,6 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use function array_filter;
-use function array_intersect;
 use function array_keys;
 use function array_unique;
 use function assert;
@@ -531,11 +529,6 @@ class PaymentPresenter extends BasePresenter
     {
         $this->flashMessage(sprintf('SMTP server vrátil chybu (%s)', $e->getMessage()), 'danger');
         $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
-    }
-
-    private function hasAccessToGroup(Group $group) : bool
-    {
-        return array_intersect($group->getUnitIds(), array_keys($this->readUnits)) !== [];
     }
 
     /**
