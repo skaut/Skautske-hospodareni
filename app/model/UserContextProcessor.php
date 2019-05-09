@@ -7,6 +7,7 @@ namespace App;
 use Nette\Security\User;
 use stdClass;
 use function array_map;
+use function sprintf;
 
 class UserContextProcessor
 {
@@ -28,7 +29,7 @@ class UserContextProcessor
         $identity = $this->user->getIdentity();
         if ($identity !== null) {
             $roles = array_map(function (stdClass $r) {
-                return ['DisplayName' => $r->DisplayName, 'IsActive' => $r->IsActive, 'Unit' => $r->Unit];
+                return sprintf('DisplayName: %s, Unit: %s, IsActive: %s', $r->DisplayName, $r->Unit, $r->IsActive);
             }, $identity->getRoles());
         } else {
             $roles = null;

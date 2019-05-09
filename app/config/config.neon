@@ -178,7 +178,7 @@ services:
       setup:
       	  - addLogger(Model\Infrastructure\SQLLogger())
 
-    - Monolog\Logger('hskauting', [], [App\UserContextProcessor()])
+    - Monolog\Logger('hskauting', [], [App\UserContextProcessor(), App\FormContextProcessor()])
 
 decorator:
 	Doctrine\DBAL\Configuration:
