@@ -18,8 +18,8 @@
             aria-haspopup="true" aria-expanded="false">
         <i class="fas fa-eye"></i> {$unitPairs[$unitId]}
     </button>
-    <div class="dropdown-menu" aria-labelledby="unitDropdown" n:inner-foreach="$unitPairs as $unitId=>$label">
-        <a n:href="this unitId => $unitId" class="dropdown-item">{$label}</a>
+    <div class="dropdown-menu" aria-labelledby="unitDropdown" n:inner-foreach="$unitPairs as $pairUnitId => $label">
+        <a n:href="this unitId => $pairUnitId" class="dropdown-item">{$label}</a>
     </div>
 </div>
 
