@@ -14,6 +14,7 @@ use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
 use DateTimeImmutable;
+use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
 use Model\Payment\BankAccountService;
@@ -27,6 +28,7 @@ use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
 use Model\Payment\PaymentNotFound;
+use Model\Payment\ReadModel\Queries\GetGroupList;
 use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
@@ -106,11 +108,11 @@ class PaymentPresenter extends BasePresenter
 
     public function actionDefault(bool $onlyOpen = true) : void
     {
-        $groups = $this->model->getGroups(array_keys($this->readUnits), $onlyOpen);
-
+        $groups = $this->queryBus->handle(new GetGroupList(array_keys($this->readUnits), $onlyOpen));
         $groupIds       = [];
         $bankAccountIds = [];
         foreach ($groups as $group) {
+            assert($group instanceof Group);
             $groupIds[]       = $group->getId();
             $bankAccountIds[] = $group->getBankAccountId();
         }
