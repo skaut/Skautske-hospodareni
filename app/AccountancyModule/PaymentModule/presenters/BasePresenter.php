@@ -34,7 +34,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
 
         $this->editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
-        $this->readableUnits =
+        $this->readableUnits = array_keys($readableUnits);
         $this->isEditable    = in_array($this->unitId->toInt(), $this->editableUnits);
 
         if (isset($readableUnits[$this->unitId->toInt()])) {
@@ -60,7 +60,12 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 
     protected function hasAccessToGroup(Group $group) : bool
     {
-        return array_intersect($group->getUnitIds(), array_keys($this->readableUnits)) !== [];
+        return array_intersect($group->getUnitIds(), $this->readableUnits) !== [];
+    }
+
+    protected function canEditGroup(Group $group) : bool
+    {
+        return array_intersect($group->getUnitIds(), $this->editableUnits) !== [];
     }
 
     /**

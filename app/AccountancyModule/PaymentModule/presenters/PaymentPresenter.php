@@ -31,7 +31,6 @@ use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
 use Model\UnitService;
-use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use function array_filter;
@@ -144,7 +143,8 @@ class PaymentPresenter extends BasePresenter
         }
 
         $this->id = $id;
-        if ($this->isEditable) {
+
+        if ($this->canEditGroup($group)) {
             $this['pairButton']->setGroups([$id]);
         }
 
@@ -179,17 +179,15 @@ class PaymentPresenter extends BasePresenter
 
     public function actionEdit(int $pid) : void
     {
-        if (! $this->isEditable) {
-            $this->flashMessage('Nemáte oprávnění editovat platbu', 'warning');
-            $this->redirect('Payment:default');
-        }
-
         $payment = $this->model->findPayment($pid);
 
         if ($payment === null || $payment->isClosed()) {
             $this->flashMessage('Platba nenalezena', 'warning');
             $this->redirect('Payment:default');
         }
+
+        $this->id = $payment->getId();
+        $this->assertCanEditGroup();
 
         $form = $this['paymentForm'];
 
@@ -219,16 +217,10 @@ class PaymentPresenter extends BasePresenter
      */
     public function actionMassAdd(int $id, ?int $unitId = null) : void
     {
-        //ověření přístupu
+        $this->id = $id;
+        $this->assertCanEditGroup();
 
         $group = $this->model->getGroup($id);
-
-        $this->id = $id;
-
-        if ($group === null || ! $this->hasAccessToGroup($group) || ! $this->isEditable) {
-            $this->flashMessage('Neplatný požadavek na přehled osob', 'danger');
-            $this->redirect('Payment:detail', ['id' => $id]); // redirect elsewhere?
-        }
 
         $form = $this['massAddForm'];
         $list = $this->queryBus->handle(new MembersWithoutPaymentInGroupQuery($this->unitId, $id));
@@ -249,10 +241,7 @@ class PaymentPresenter extends BasePresenter
 
     public function handleCancel(int $pid) : void
     {
-        if (! $this->isEditable) {
-            $this->flashMessage('Neplatný požadavek na zrušení platby!', 'danger');
-            $this->redirect('this');
-        }
+        $this->assertCanEditGroup();
 
         try {
             $this->model->cancelPayment($pid);
@@ -264,19 +253,21 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    private function checkEditation() : void
+    private function assertCanEditGroup() : void
     {
-        if ($this->isEditable && isset($this->readUnits[$this->unitId->toInt()])) {
+        $group = $this->model->getGroup($this->id);
+
+        if ($group === null || ! $this->canEditGroup($group)) {
             return;
         }
 
         $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou!', 'danger');
-        $this->redirect('this');
+        $this->redirect('Payment:detail', ['id' => $this->id]);
     }
 
     public function handleSend(int $pid) : void
     {
-        $this->checkEditation();
+        $this->assertCanEditGroup();
 
         $payment = $this->model->findPayment($pid);
 
@@ -304,7 +295,7 @@ class PaymentPresenter extends BasePresenter
      */
     public function handleSendGroup(int $gid) : void
     {
-        $this->checkEditation();
+        $this->assertCanEditGroup();
 
         $payments = $this->getPaymentsForGroup($gid);
 
@@ -358,60 +349,46 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleGenerateVs(int $gid) : void
+    public function handleGenerateVs() : void
     {
-        $group = $this->model->getGroup($gid);
+        $this->assertCanEditGroup();
 
-        if (! $this->isEditable || $group === null || ! $this->hasAccessToGroup($group)) {
-            $this->flashMessage('Nemáte oprávnění generovat VS!', 'danger');
-            $this->redirect('Payment:default');
-        }
-
-        $nextVS = $this->model->getNextVS($group->getId());
+        $nextVS = $this->model->getNextVS($this->id);
 
         if ($nextVS === null) {
             $this->flashMessage('Vyplňte VS libovolné platbě a další pak již budou dogenerovány způsobem +1.', 'warning');
             $this->redirect('this');
         }
 
-        $numberOfUpdatedVS = $this->model->generateVs($gid);
+        $numberOfUpdatedVS = $this->model->generateVs($this->id);
         $this->flashMessage('Počet dogenerovaných VS: ' . $numberOfUpdatedVS, 'success');
         $this->redirect('this');
     }
 
-    public function handleCloseGroup(int $gid) : void
+    public function handleCloseGroup() : void
     {
-        $group = $this->model->getGroup($gid);
-        if (! $this->isEditable || $group === null || ! $this->hasAccessToGroup($group)) {
-            $this->flashMessage('Nejste oprávněni úpravám akce!', 'danger');
-            $this->redirect('this');
-        }
+        $this->assertCanEditGroup();
 
         $userData = $this->userService->getUserDetail();
         $note     = 'Uživatel ' . $userData->Person . ' uzavřel skupinu plateb dne ' . date('j.n.Y H:i');
 
         try {
-            $this->model->closeGroup($gid, $note);
+            $this->model->closeGroup($this->id, $note);
         } catch (GroupNotFound $e) {
         }
 
         $this->redirect('this');
     }
 
-    public function handleOpenGroup(int $gid) : void
+    public function handleOpenGroup() : void
     {
-        $group = $this->model->getGroup($gid);
-
-        if (! $this->isEditable || $group === null || ! $this->hasAccessToGroup($group)) {
-            $this->flashMessage('Nejste oprávněni úpravám akce!', 'danger');
-            $this->redirect('this');
-        }
+        $this->assertCanEditGroup();
 
         $userData = $this->userService->getUserDetail();
         $note     = 'Uživatel ' . $userData->Person . ' otevřel skupinu plateb dne ' . date('j.n.Y H:i');
 
         try {
-            $this->model->openGroup($gid, $note);
+            $this->model->openGroup($this->id, $note);
         } catch (GroupNotFound $e) {
         }
 
@@ -466,10 +443,8 @@ class PaymentPresenter extends BasePresenter
 
     private function paymentSubmitted(Form $form) : void
     {
-        if (! $this->isEditable) {
-            $this->flashMessage('Nejste oprávněni k úpravám plateb!', 'danger');
-            $this->redirect('this');
-        }
+        $this->assertCanEditGroup();
+
         $v = $form->getValues();
 
         $id             = $v->pid !== '' ? (int) $v->pid : null;
@@ -518,11 +493,9 @@ class PaymentPresenter extends BasePresenter
 
     protected function createComponentRemoveGroupDialog() : RemoveGroupDialog
     {
-        if (! $this->isEditable) {
-            throw new BadRequestException('Nemáte oprávnění mazat tuto skupinu');
-        }
+        $group = $this->model->getGroup($this->id);
 
-        return $this->removeGroupDialogFactory->create($this->id);
+        return $this->removeGroupDialogFactory->create($this->id, $group !== null && $this->canEditGroup($group));
     }
 
     private function smtpError(InvalidSmtp $e) : void

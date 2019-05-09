@@ -16,13 +16,12 @@
 
     <div class="col-12 col-md-auto text-center" n:if="$isEditable">
         {if $group->state === 'open'}
-            <a n:href="closeGroup! $group->id"
+            <a n:href="closeGroup!"
                     class="btn btn-light"><i class="fas fa-lock"></i> Uzavřít</a>
             <a n:href="Group:edit $group->id"
                     class="btn btn-light"><i class="far fa-edit"></i> Upravit skupinu</a>
         {else}
-            <a n:href="openGroup! $group->id"
-                    class="btn btn-dark"><i class="fas fa-lock-open"></i> Znovu otevřít</a>
+            <a n:href="openGroup!" class="btn btn-dark"><i class="fas fa-lock-open"></i> Znovu otevřít</a>
             <a n:href="openRemoveDialog!"
                     class="ajax btn btn-danger"><i class="far fa-trash-alt"></i> Smazat skupinu</a>
         {/if}
@@ -95,8 +94,7 @@
                         : []
             }
             <span n:attr="$attrs">
-                <a n:href="generateVS! $group->id"
-                        n:class="$nextVS === null ? disabled, btn, btn-light">Dogenerovat VS</a>
+                <a n:href="generateVS!" n:class="$nextVS === null ? disabled, btn, btn-light">Dogenerovat VS</a>
             </span>
         {/if}
 
