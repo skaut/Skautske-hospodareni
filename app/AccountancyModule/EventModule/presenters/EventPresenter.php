@@ -12,8 +12,8 @@ use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
@@ -147,14 +147,12 @@ class EventPresenter extends BasePresenter
     public function actionPrintAll(int $aid) : void
     {
         $cashbookId = $this->getCashbookId($aid);
-        $chits      = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
-
-        $event = $this->eventService->getEvent()->get($aid);
+        $event      = $this->eventService->getEvent()->get($aid);
 
         $template  = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= $this->exportService->getCashbook($cashbookId, $event->DisplayName, PaymentMethod::CASH()) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getChits($aid, $this->eventService, $chits, $cashbookId);
+        $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
 
         $this->pdf->render($template, 'all.pdf');
         $this->terminate();
