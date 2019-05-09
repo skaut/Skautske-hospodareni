@@ -67,7 +67,7 @@ class BudgetPresenter extends BasePresenter
         $form->addSubmit('submit', 'Založit kategorii')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSubmit[] = function (Form $form) : void {
+        $form->onSuccess[] = function (Form $form) : void {
             $this->addCategoryFormSubmitted($form);
         };
 

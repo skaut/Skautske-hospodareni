@@ -52,7 +52,7 @@ class MassAddForm extends BaseControl
         $form->addSubmit('send', 'Přidat vybrané')
             ->setAttribute('class', 'btn btn-primary btn-large');
 
-        $form->onSubmit[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form) : void {
             $this->formSubmitted($form);
         };
 

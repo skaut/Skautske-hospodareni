@@ -459,7 +459,7 @@ class PaymentPresenter extends BasePresenter
         $form->addHidden('pid');
         $form->addSubmit('send', 'Přidat platbu')->setAttribute('class', 'btn btn-primary');
 
-        $form->onSubmit[] = function (Form $form) : void {
+        $form->onSuccess[] = function (Form $form) : void {
             $this->paymentSubmitted($form);
         };
 
