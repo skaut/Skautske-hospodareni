@@ -75,7 +75,7 @@ final class EventPresenter extends BasePresenter
 
         if ($group === null || ! $this->isEditable) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
 
         $this->groupId = $id;

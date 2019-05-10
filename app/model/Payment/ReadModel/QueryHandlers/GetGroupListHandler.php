@@ -8,6 +8,7 @@ use Model\DTO\Payment\Group;
 use Model\DTO\Payment\GroupFactory;
 use Model\Payment\ReadModel\Queries\GetGroupList;
 use Model\Payment\Repositories\IGroupRepository;
+use function array_map;
 
 final class GetGroupListHandler
 {

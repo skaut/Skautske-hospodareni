@@ -8,6 +8,6 @@ class DefaultPresenter extends BasePresenter
 {
     public function actionDefault() : void
     {
-        $this->redirect('Payment:default');
+        $this->redirect('GroupList:');
     }
 }

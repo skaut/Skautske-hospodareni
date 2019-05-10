@@ -35,7 +35,7 @@ class GroupPresenter extends BasePresenter
         }
 
         $this->flashMessage('Nemáte oprávnění upravovat skupiny plateb', 'danger');
-        $this->redirect('Payment:default');
+        $this->redirect('GroupList:');
     }
 
     public function actionEdit(int $id) : void
@@ -44,7 +44,7 @@ class GroupPresenter extends BasePresenter
 
         if ($group === null || ! $this->canEditGroup($group)) {
             $this->flashMessage('Skupina nebyla nalezena', 'warning');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
 
         $this->group = $group;

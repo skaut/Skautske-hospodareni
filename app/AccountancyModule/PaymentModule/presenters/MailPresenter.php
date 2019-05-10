@@ -28,7 +28,7 @@ class MailPresenter extends BasePresenter
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění přistupovat ke správě emailů', 'danger');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
         $this->template->setParameters([
             'list'          => $this->model->getAll($this->unitId->toInt()),
@@ -43,7 +43,7 @@ class MailPresenter extends BasePresenter
         }
 
         $this->flashMessage('Nemáte oprávnění měnit smtp', 'danger');
-        $this->redirect('Payment:default');
+        $this->redirect('GroupList:');
     }
 
     public function handleRemove(int $id) : void
@@ -52,7 +52,7 @@ class MailPresenter extends BasePresenter
 
         if (! $this->isEditable || $mail->getUnitId() !== $this->unitId->toInt()) {
             $this->flashMessage('Nemáte oprávnění mazat smtp', 'danger');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
 
         $this->commandBus->handle(new RemoveMailCredentials($id));
@@ -95,7 +95,7 @@ class MailPresenter extends BasePresenter
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění přidávat smtp', 'danger');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
         $v = $form->getValues();
 

@@ -14,10 +14,8 @@ use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
 use DateTimeImmutable;
-use Model\DTO\Payment\Group;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
-use Model\Payment\BankAccountService;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
@@ -28,7 +26,6 @@ use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
 use Model\Payment\PaymentNotFound;
-use Model\Payment\ReadModel\Queries\GetGroupList;
 use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
@@ -36,8 +33,6 @@ use Model\UnitService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use function array_filter;
-use function array_keys;
-use function array_unique;
 use function assert;
 use function count;
 use function date;
@@ -45,23 +40,23 @@ use function sprintf;
 
 class PaymentPresenter extends BasePresenter
 {
+    /**
+     * @var        int
+     * @persistent
+     */
+    public $id;
+
     /** @var string[] */
     protected $readUnits;
 
     /** @var UnitService */
     protected $unitService;
 
-    /** @var int */
-    private $id;
-
     /** @var PaymentService */
     private $model;
 
     /** @var MailingService */
     private $mailing;
-
-    /** @var BankAccountService */
-    private $bankAccounts;
 
     /** @var IMassAddFormFactory */
     private $massAddFormFactory;
@@ -82,7 +77,6 @@ class PaymentPresenter extends BasePresenter
         PaymentService $model,
         UnitService $unitService,
         MailingService $mailing,
-        BankAccountService $bankAccounts,
         IMassAddFormFactory $massAddFormFactory,
         IPairButtonFactory $pairButtonFactory,
         IGroupUnitControlFactory $unitControlFactory,
@@ -92,7 +86,6 @@ class PaymentPresenter extends BasePresenter
         $this->model                    = $model;
         $this->unitService              = $unitService;
         $this->mailing                  = $mailing;
-        $this->bankAccounts             = $bankAccounts;
         $this->massAddFormFactory       = $massAddFormFactory;
         $this->pairButtonFactory        = $pairButtonFactory;
         $this->unitControlFactory       = $unitControlFactory;
@@ -106,42 +99,13 @@ class PaymentPresenter extends BasePresenter
         $this->readUnits = $this->unitService->getReadUnits($this->user);
     }
 
-    public function actionDefault(bool $onlyOpen = true) : void
-    {
-        $groups = $this->queryBus->handle(new GetGroupList(array_keys($this->readUnits), $onlyOpen));
-        $groupIds       = [];
-        $bankAccountIds = [];
-        foreach ($groups as $group) {
-            assert($group instanceof Group);
-            $groupIds[]       = $group->getId();
-            $bankAccountIds[] = $group->getBankAccountId();
-        }
-
-        $bankAccounts = $this->bankAccounts->findByIds(array_filter(array_unique($bankAccountIds)));
-
-        $groupsPairingSupport = [];
-        foreach ($groups as $group) {
-            $accountId                             = $group->getBankAccountId();
-            $groupsPairingSupport[$group->getId()] = $accountId !== null && $bankAccounts[$accountId]->getToken() !== null;
-        }
-
-        $this['pairButton']->setGroups($groupIds);
-
-        $this->template->setParameters([
-            'onlyOpen' => $onlyOpen,
-            'groups'               => $groups,
-            'summarizations'       => $this->model->getGroupSummaries($groupIds),
-            'groupsPairingSupport' => $groupsPairingSupport,
-        ]);
-    }
-
-    public function actionDetail(int $id) : void
+    public function actionDefault(int $id) : void
     {
         $group = $this->model->getGroup($id);
 
         if ($group === null || ! $this->hasAccessToGroup($group)) {
             $this->flashMessage('Nemáte oprávnění zobrazit detail plateb', 'warning');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
 
         $this->id = $id;
@@ -185,7 +149,7 @@ class PaymentPresenter extends BasePresenter
 
         if ($payment === null || $payment->isClosed()) {
             $this->flashMessage('Platba nenalezena', 'warning');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
 
         $this->id = $payment->getId();
@@ -264,7 +228,7 @@ class PaymentPresenter extends BasePresenter
         }
 
         $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou!', 'danger');
-        $this->redirect('Payment:detail', ['id' => $this->id]);
+        $this->redirect('Payment:default', ['id' => $this->id]);
     }
 
     public function handleSend(int $pid) : void
@@ -475,7 +439,7 @@ class PaymentPresenter extends BasePresenter
             );
             $this->flashMessage('Platba byla přidána');
         }
-        $this->redirect('detail', ['id' => $v->oid]);
+        $this->redirect('default', ['id' => $v->oid]);
     }
 
     protected function createComponentPairButton() : PairButton

@@ -46,7 +46,7 @@ final class RepaymentPresenter extends BasePresenter
 
         if ($group === null && ! $this->isEditable) {
             $this->flashMessage('K této skupině nemáte přístup');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
 
         $this->template->setParameters(['group' => $group]);
@@ -158,7 +158,7 @@ final class RepaymentPresenter extends BasePresenter
             );
 
             $this->flashMessage('Vratky byly odeslány do banky', 'success');
-            $this->redirect('Payment:detail', ['id' => $this->group->getId()]);
+            $this->redirect('Payment:default', ['id' => $this->group->getId()]);
         } catch (BankError $e) {
             $form->addError(sprintf('Chyba z banky %s', $e->getMessage()));
         }

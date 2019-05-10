@@ -71,7 +71,7 @@ class RegistrationPresenter extends BasePresenter
 
         if ($registration === null) {
             $this->flashMessage('Nemáte založenou žádnou otevřenou registraci', 'warning');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
 
         $this->registration = $registration;
@@ -90,7 +90,7 @@ class RegistrationPresenter extends BasePresenter
             $list = $this->model->getPersonsFromRegistrationWithoutPayment(array_keys($this->readUnits), $id);
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
 
             return;
         }
@@ -99,7 +99,7 @@ class RegistrationPresenter extends BasePresenter
 
         if ($group === null) {
             $this->flashMessage('Neplatný požadavek na přidání registračních plateb', 'danger');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:default');
         }
 
         $form = $this['massAddForm'];

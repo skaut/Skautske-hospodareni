@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\Queries;
 
+use Model\Payment\ReadModel\QueryHandlers\GetGroupListHandler;
+
+/**
+ * @see GetGroupListHandler
+ */
 final class GetGroupList
 {
     /** @var int[] */
@@ -12,9 +17,12 @@ final class GetGroupList
     /** @var bool */
     private $onlyOpen;
 
+    /**
+     * @param int[] $unitIds
+     */
     public function __construct(array $unitIds, bool $onlyOpen)
     {
-        $this->unitIds = $unitIds;
+        $this->unitIds  = $unitIds;
         $this->onlyOpen = $onlyOpen;
     }
 
