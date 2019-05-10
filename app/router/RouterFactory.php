@@ -198,7 +198,7 @@ class RouterFactory
 
         $router[] = new Route($prefix, 'GroupList:default');
         $router[] = new Route(
-            $prefix . '[/<id>[/<presenter>[/<action>]]]',
+            $prefix . '[/<id [0-9]+>[/<presenter>[/<action>]]]',
             [
                 'presenter' => [
                     Route::VALUE => 'Payment',
