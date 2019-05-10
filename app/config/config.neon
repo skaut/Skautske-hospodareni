@@ -89,8 +89,10 @@ autoDI:
           tags: [queryBus.handler]
 
         # Query handlers
-        - class: Model\**\ReadModel\QueryHandlers\**
+        - class: Model\**\ReadModel\**
           tags: [queryBus.handler]
+          exclude:
+              - Model\*\ReadModel\Queries\**
 
         - class: Model\Infrastructure\Services\**
 

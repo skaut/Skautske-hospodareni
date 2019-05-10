@@ -12,18 +12,14 @@ use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
-use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Participant\Participant;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
-use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisCampId;
-use Model\Event\SkautisEventId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Model\Excel\Range;
-use Model\Participant\PragueParticipants;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 use PHPExcel;
@@ -34,7 +30,6 @@ use PHPExcel_Writer_Excel2007;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Skautis\Wsdl\PermissionException;
 use stdClass;
-use function array_key_first;
 use function assert;
 use function count;
 use function date;
@@ -106,43 +101,6 @@ class ExcelService
         $builder->build($sheet, $cashbookId, $paymentMethod);
 
         return $excel;
-    }
-
-    /**
-     * @param int[] $eventIds
-     */
-    public function getEventSummaries(array $eventIds, EventEntity $service) : void
-    {
-        $objPHPExcel = $this->getNewFile();
-
-        $allowPragueColumns = false;
-        $data               = [];
-        foreach ($eventIds as $aid) {
-            $eventId    = new SkautisEventId($aid);
-            $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
-
-            $data[$aid]                    = $service->getEvent()->get($aid);
-            $data[$aid]['cashbookId']      = $cashbookId;
-            $data[$aid]['parStatistic']    = $service->getParticipants()->getEventStatistic($aid);
-            $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
-            $data[$aid]['func']            = $this->queryBus->handle(new EventFunctions($eventId));
-            $participants                  = $service->getParticipants()->getAll($aid);
-            $data[$aid]['participantsCnt'] = count($participants);
-            $data[$aid]['personDays']      = $service->getParticipants()->getPersonsDays($participants);
-            $pp                            = $service->getParticipants()->countPragueParticipants($data[$aid]);
-            if ($pp === null) {
-                continue;
-            }
-            //Prague event
-            $allowPragueColumns               = true;
-            $data[$aid]['pragueParticipants'] = $pp;
-        }
-        $sheetEvents = $objPHPExcel->setActiveSheetIndex(0);
-        $this->setSheetEvents($sheetEvents, $data, $allowPragueColumns);
-        $objPHPExcel->createSheet(1);
-        $sheetChit = $objPHPExcel->setActiveSheetIndex(1);
-        $this->setSheetChits($sheetChit, $data);
-        $this->send($objPHPExcel, 'Souhrn-akcí-' . date('Y_n_j'));
     }
 
     /**
@@ -334,99 +292,6 @@ class ExcelService
         // $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
 
         $sheet->setTitle('Evidence plateb');
-    }
-
-    /**
-     * @param ArrayHash[] $data
-     *
-     * @throws PHPExcel_Exception
-     */
-    protected function setSheetEvents(PHPExcel_Worksheet $sheet, array $data, bool $allowPragueColumns = false) : void
-    {
-        $firstElement = $data[array_key_first($data)];
-
-        $sheet->setCellValue('A1', 'Pořadatel')
-            ->setCellValue('B1', 'Název akce')
-            ->setCellValue('C1', 'Oddíl/družina')
-            ->setCellValue('D1', 'Typ akce')
-            ->setCellValue('E1', 'Rozsah')
-            ->setCellValue('F1', 'Místo konání')
-            ->setCellValue('G1', 'Vedoucí akce')
-            ->setCellValue('H1', 'Hospodář akce')
-            ->setCellValue('I1', 'Od')
-            ->setCellValue('J1', 'Do')
-            ->setCellValue('K1', 'Počet dnů')
-            ->setCellValue('L1', 'Počet účastníků')
-            ->setCellValue('M1', 'Osobodnů')
-            ->setCellValue('N1', 'Dětodnů')
-            ->setCellValue('O1', $firstElement->parStatistic[1]->ParticipantCategory)
-            ->setCellValue('P1', $firstElement->parStatistic[2]->ParticipantCategory)
-            ->setCellValue('Q1', $firstElement->parStatistic[3]->ParticipantCategory)
-            ->setCellValue('R1', $firstElement->parStatistic[4]->ParticipantCategory)
-            ->setCellValue('S1', $firstElement->parStatistic[5]->ParticipantCategory)
-            ->setCellValue('T1', 'Prefix');
-        if ($allowPragueColumns) {
-            $sheet->setCellValue('U1', 'Dotovatelná MHMP?')
-                ->setCellValue('V1', 'Praž. osobodny pod 26')
-                ->setCellValue('W1', 'Praž. uč. pod 18')
-                ->setCellValue('X1', 'Praž. uč. mezi 18 a 26')
-                ->setCellValue('Y1', 'Praž. uč. celkem');
-            $sheet->getComment('U1')
-                ->setWidth('200pt')->setHeight('50pt')->getText()
-                ->createTextRun('Ověřte, zda jsou splněny další podmínky - např. akce konaná v době mimo školní vyučování (u táborů prázdnin), cílovou skupinou je studující mládež do 26 let.');
-        }
-
-        $rowCnt = 2;
-        foreach ($data as $row) {
-            $functions = $row->func;
-
-            assert($functions instanceof Functions);
-
-            $leader     = $functions->getLeader() !== null ? $functions->getLeader()->getName() : null;
-            $accountant = $functions->getAccountant() !== null ? $functions->getAccountant()->getName() : null;
-
-            $sheet->setCellValue('A' . $rowCnt, $row->Unit)
-                ->setCellValue('B' . $rowCnt, $row->DisplayName)
-                ->setCellValue('C' . $rowCnt, $row->ID_UnitEducative !== null ? $row->UnitEducative : '')
-                ->setCellValue('D' . $rowCnt, $row->EventGeneralType)
-                ->setCellValue('E' . $rowCnt, $row->EventGeneralScope)
-                ->setCellValue('F' . $rowCnt, $row->Location)
-                ->setCellValue('G' . $rowCnt, $leader)
-                ->setCellValue('H' . $rowCnt, $accountant)
-                ->setCellValue('I' . $rowCnt, date('d.m.Y', strtotime($row->StartDate)))
-                ->setCellValue('J' . $rowCnt, date('d.m.Y', strtotime($row->EndDate)))
-                ->setCellValue('K' . $rowCnt, $row->TotalDays)
-                ->setCellValue('L' . $rowCnt, $row->TotalParticipants)
-                ->setCellValue('M' . $rowCnt, $row->PersonDays)
-                ->setCellValue('N' . $rowCnt, $row->ChildDays)
-                ->setCellValue('O' . $rowCnt, $row->parStatistic[1]->Count)
-                ->setCellValue('P' . $rowCnt, $row->parStatistic[2]->Count)
-                ->setCellValue('Q' . $rowCnt, $row->parStatistic[3]->Count)
-                ->setCellValue('R' . $rowCnt, $row->parStatistic[4]->Count)
-                ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count)
-                ->setCellValue('T' . $rowCnt, $row->prefix);
-            if (isset($row->pragueParticipants)) {
-                $pp = $row->pragueParticipants;
-
-                assert($pp instanceof PragueParticipants);
-
-                $sheet->setCellValue('U' . $rowCnt, $pp->isSupportable($row->TotalDays) ? 'Ano' : 'Ne')
-                    ->setCellValue('V' . $rowCnt, $pp->getPersonDaysUnder26())
-                    ->setCellValue('W' . $rowCnt, $pp->getUnder18())
-                    ->setCellValue('X' . $rowCnt, $pp->getBetween18and26())
-                    ->setCellValue('Y' . $rowCnt, $pp->getCitizensCount());
-            }
-            $rowCnt++;
-        }
-        $lastColumn = $allowPragueColumns ? 'W' : 'S';
-
-        //format
-        foreach (Range::letters('A', $lastColumn) as $columnID) {
-            $sheet->getColumnDimension($columnID)->setAutoSize(true);
-        }
-        $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:' . $lastColumn . ($rowCnt - 1));
-        $sheet->setTitle('Přehled akcí');
     }
 
     /**
