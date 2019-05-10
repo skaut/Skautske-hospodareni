@@ -1,6 +1,6 @@
-{* výdajový pokladní doklad
+{* příjmový pokladní doklad
 $officialName - oficiální název organizační jednotky
-$item - položka výdaje
+$chit - položka příjmu
 *}
 <style>
 table {
@@ -10,22 +10,21 @@ table {
 <table border="1" class="paragonTable">
     <tr>
         <td rowspan="2">{$officialName}</td>
-        <td colspan="2"><b>Výdajový pokladní doklad</b></td>
+        <td colspan="2"><b>Příjmový pokladní doklad</b></td>
     </tr>
     <tr>
         <td><b>ze dne:</b> {$chit->date|date:"j.n.Y"}</td>
         <td><b>č.</b> {$cashbook->chitNumberPrefix}{$chit->number}</td>
     </tr>
     <tr>
-        <td colspan="3"><b>Vyplaceno komu:</b> {$chit->recipient}</td>
+        <td colspan="3"><b>Přijato od:</b> {$chit->recipient}</td>
     </tr>
     <tr>
-        <td colspan="2"><b>Účel výplaty:</b> {$chit->purpose}</td>
-        <td><b>Kategorie v PK:</b> {$chit->categories}</td>
+        <td colspan="3"><b>Účel platby:</b> {$chit->purpose}</td>
     </tr>
     <tr>
         <td><b>Pokladník:</b> </td>
-        <td><b>Příjemce:</b> </td>
+        <td> &nbsp; </td>
         <td><b>Schválil:</b> </td>
     </tr>
     <tr>
@@ -63,3 +62,16 @@ table {
 <div n:if="$chit->amount->isUsingFormula()" style="font-size:0.9em;color:#777;padding-top:10px;">
     <i>{$chit->amount->expression} = {$amount}  </i>
 </div>
+
+<table n:if="count($chit->items) > 1" style="font-size:0.9em;color:#777;border-color:#777;margin-top:20px;" border="1">
+    <tr>
+        <th>kategorie</th>
+        <th>účel</th>
+        <th>částka</th>
+    </tr>
+    <tr n:foreach="$chit->items as $item">
+        <td>{$item->category->name}</td>
+        <td>{$item->purpose}</td>
+        <td style="text-align: right">{$item->amount->toFloat()|price} Kč</td>
+    </tr>
+</table>

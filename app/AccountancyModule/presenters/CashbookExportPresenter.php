@@ -13,6 +13,7 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
@@ -75,13 +76,8 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionPrintChits(string $cashbookId, array $chitIds) : void
     {
-        $skautisId   = $this->getSkautisId();
-        $eventEntity = $this->getEventEntity();
-
-        $chitIds = array_map('\intval', $chitIds);
-        $chits   = $this->getChitsWithIds($chitIds);
-
-        $template = $this->exportService->getChits($skautisId, $eventEntity, $chits, CashbookId::fromString($cashbookId));
+        $chitIds  = array_map('\intval', $chitIds);
+        $template = $this->queryBus->handle(ExportChits::withChitIds(CashbookId::fromString($cashbookId), $chitIds));
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }

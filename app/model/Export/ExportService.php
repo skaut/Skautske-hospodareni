@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
@@ -20,8 +18,6 @@ use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
-use Model\DTO\Cashbook\ChitItem;
-use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\Repositories\IEventRepository;
@@ -186,67 +182,6 @@ class ExportService
             'virtualTotalIncome' => $virtualTotalIncome,
             'virtualTotalExpense' => $virtualTotalExpense,
         ]);
-    }
-
-    /**
-     * vrací PDF s vybranými paragony
-     *
-     * @param Chit[] $chits
-     */
-    public function getChits(
-        int $aid,
-        EventEntity $eventService,
-        array $chits,
-        CashbookId $cashbookId
-    ) : string {
-        $chitsCollection = new ArrayCollection($chits);
-
-        [$income, $outcome] = $chitsCollection->partition(function ($_, Chit $chit) : bool {
-            return $chit->isIncome();
-        });
-
-        $activeHpd = $chitsCollection->exists(function ($_, Chit $chit) : bool {
-            return 0 < count(array_filter($chit->getItems(), function (ChitItem $item) {
-                return $item->getCategory()->getShortcut() === 'hpd';
-            }));
-        });
-
-        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-
-        assert($cashbook instanceof Cashbook);
-
-        $cashbookType = $cashbook->getType();
-
-        $template = [];
-
-        $event                    = $eventService->getEvent()->get($aid);
-        $unitId                   = $cashbookType->isUnit() ? $event->ID : $event->ID_Unit;
-        $template['officialName'] = $this->units->getOfficialName($unitId);
-        $template['cashbook']     = $cashbook;
-
-        //HPD
-        if ($activeHpd) {
-            $template['totalPayment'] = $eventService->getParticipants()->getTotalPayment($aid);
-
-            $functionsQuery = $cashbookType->equalsValue(CashbookType::CAMP)
-                ? new CampFunctions(new SkautisCampId($aid))
-                : new EventFunctions(new SkautisEventId($aid));
-
-            $functions = $this->queryBus->handle($functionsQuery);
-
-            assert($functions instanceof Functions);
-
-            $accountant            = $functions->getAccountant() ?? $functions->getLeader();
-            $template['pokladnik'] = $accountant !== null ? $accountant->getName() : '';
-
-            $template['list'] = $eventService->getParticipants()->getAll($aid);
-        }
-
-        $template['event']   = $event;
-        $template['income']  = $income;
-        $template['outcome'] = $outcome;
-
-        return $this->templateFactory->create(__DIR__ . '/templates/chits.latte', $template);
     }
 
     public function getCampReport(int $skautisCampId, EventEntity $campService, bool $areTotalsConsistentWithSkautis) : string
