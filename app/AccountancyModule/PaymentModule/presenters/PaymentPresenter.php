@@ -44,7 +44,7 @@ class PaymentPresenter extends BasePresenter
      * @var        int
      * @persistent
      */
-    public $id;
+    public $id = 0;
 
     /** @var string[] */
     protected $readUnits;
@@ -108,8 +108,6 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('GroupList:');
         }
 
-        $this->id = $id;
-
         if ($this->canEditGroup($group)) {
             $this['pairButton']->setGroups([$id]);
         }
@@ -152,7 +150,6 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('GroupList:');
         }
 
-        $this->id = $payment->getId();
         $this->assertCanEditGroup();
 
         $form = $this['paymentForm'];
@@ -183,7 +180,6 @@ class PaymentPresenter extends BasePresenter
      */
     public function actionMassAdd(int $id, ?int $unitId = null) : void
     {
-        $this->id = $id;
         $this->assertCanEditGroup();
 
         $group = $this->model->getGroup($id);
