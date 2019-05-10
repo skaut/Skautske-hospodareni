@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
 use Doctrine\Common\Collections\ArrayCollection;
+use Model\Cashbook\ReadModel\Queries\Pdf\ExportCamps;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Event\ReadModel\Queries\CampStates;
 use Model\ExcelService;
@@ -19,6 +21,7 @@ use function array_merge;
 use function array_reverse;
 use function date;
 use function range;
+use function sprintf;
 
 class DefaultPresenter extends BasePresenter
 {
@@ -83,14 +86,8 @@ class DefaultPresenter extends BasePresenter
     public function actionCampSummary() : void
     {
         $year = (int) ($this->ses->year ?? date('Y'));
-
-        $this->excelService->getCampsSummary(
-            array_keys($this->queryBus->handle(new CampListQuery($year, $this->ses->state))),
-            $this->eventService,
-            $this->unitService
-        );
-
-        $this->terminate();
+        $ids  = array_keys($this->queryBus->handle(new CampListQuery($year, $this->ses->state)));
+        $this->sendResponse(new ExcelResponse(sprintf('Souhrn-táborů-%s', date('Y_n_j')), $this->queryBus->handle(new ExportCamps($ids))));
     }
 
     public function handleChangeYear(?int $year) : void
