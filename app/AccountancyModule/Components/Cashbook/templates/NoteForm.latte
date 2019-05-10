@@ -1,11 +1,13 @@
 {snippet note}
     {if $isEditable && $editation }
-        <form n:name="form" class="form-inline">
-            {input note style=>"width:90%"}
-            <button class="btn btn-sm btn-default ajax" n:name="save"><i class="fa fa-check"></i></button>
-            <a class="btn btn-sm btn-default ajax" n:href="cancel!"><i class="fa fa-times"></i></a>
+        <form n:name="form" class="form-inline" style="display: flex; align-items: center; flex-wrap: wrap;">
+            {input note style=>"flex-grow: 1;"}
+            <div>
+                <button class="btn btn-sm btn-default ajax" n:name="save"><i class="fa fa-check"></i></button>
+                <a class="btn btn-sm btn-default ajax" n:href="cancel!"><i class="fa fa-times"></i></a>
+            </div>
         </form>
     {else}
-        <b>Poznámka:</b> {$note|noescape} <a n:if="$isEditable" n:href="edit!" class="btn btn-xs btn-default ajax"><i class="fa fa-pencil"></i></a>
+        <b>Poznámka:</b><br n:if="strlen($note) > 0">{$note|noescape} <a n:if="$isEditable" n:href="edit!" class="btn btn-xs btn-default ajax"><i class="fa fa-pencil"></i></a>
     {/if}
 {/snippet}

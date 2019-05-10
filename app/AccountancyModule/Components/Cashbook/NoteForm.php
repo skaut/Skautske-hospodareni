@@ -88,7 +88,7 @@ final class NoteForm extends BaseControl
     {
         $form = new BaseForm();
 
-        $form->addText('note')
+        $form->addTextArea('note')
             ->setRequired(false)
             ->setAttribute('placeholder', 'Libovolná poznámka, kde se odkazy stanou aktivní...')
             ->setAttribute('class', '');
