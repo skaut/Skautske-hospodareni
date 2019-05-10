@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
 use App\MyValidators;
@@ -12,6 +13,7 @@ use Model\Auth\Resources\Event as EventResource;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Commands\CancelEvent;
 use Model\Event\Commands\Event\CreateEvent;
@@ -145,7 +147,7 @@ class DefaultPresenter extends BasePresenter
     public function handleExportEvents(array $ids) : void
     {
         $ids = array_map('intval', $ids);
-        $this->excelService->getEventSummaries($ids, $this->eventService);
+        $this->sendResponse(new ExcelResponse(sprintf('Souhrn-akci-%s', date('Y_n_j')), $this->queryBus->handle(new ExportEvents($ids))));
         $this->terminate();
     }
 

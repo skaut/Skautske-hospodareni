@@ -51,7 +51,7 @@ class EventService extends MutableBaseService
                 try {
                     $skautisData = (array) $this->skautis->event->{'Event' . $this->typeName . 'Detail'}(['ID' => $ID]);
                 } catch (Exception $e) {
-                    throw new PermissionException('Nemáte oprávnění pro získání požadovaných informací.', $e instanceof \Exception ? $e->getCode() : 0);
+                    throw new PermissionException('Nemáte oprávnění pro získání požadovaných informací.', $e instanceof \Exception ? $e->getCode() : 0, $e);
                 }
             } elseif ($this->type === ObjectType::UNIT) {
                 $skautisData = (array) $this->units->getDetail($ID);
