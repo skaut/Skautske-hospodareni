@@ -219,7 +219,7 @@ class PaymentPresenter extends BasePresenter
     {
         $group = $this->model->getGroup($this->id);
 
-        if ($group === null || ! $this->canEditGroup($group)) {
+        if ($group !== null && $this->canEditGroup($group)) {
             return;
         }
 
