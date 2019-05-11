@@ -7,13 +7,10 @@ namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
-use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
-use Model\DTO\Cashbook\Cashbook;
-use Model\DTO\Cashbook\Chit;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
@@ -45,16 +42,21 @@ class ExportEventsHandler
     /** @var SpreadsheetFactory */
     private $spreadsheetFactory;
 
+    /** @var SheetChitsGenerator */
+    private $sheetChitsGenerator;
+
     public function __construct(
         IParticipantServiceFactory $participantServiceFactory,
         IEventServiceFactory $serviceFactory,
         QueryBus $queryBus,
-        SpreadsheetFactory $spreadsheetFactory
+        SpreadsheetFactory $spreadsheetFactory,
+        SheetChitsGenerator $sheetChitsGenerator
     ) {
         $this->participantServiceFactory = $participantServiceFactory;
         $this->serviceFactory            = $serviceFactory;
         $this->queryBus                  = $queryBus;
         $this->spreadsheetFactory        = $spreadsheetFactory;
+        $this->sheetChitsGenerator       = $sheetChitsGenerator;
     }
 
     public function __invoke(ExportEvents $query) : Spreadsheet
@@ -89,7 +91,7 @@ class ExportEventsHandler
         $this->setSheetEvents($sheetEvents, $data, $allowPragueColumns);
         $spreadsheet->createSheet(1);
         $sheetChit = $spreadsheet->setActiveSheetIndex(1);
-        $this->setSheetChits($sheetChit, $data);
+        ($this->sheetChitsGenerator)($sheetChit, $data);
 
         return $spreadsheet;
     }
@@ -183,56 +185,5 @@ class ExportEventsHandler
         $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:' . $lastColumn . ($rowCnt - 1));
         $sheet->setTitle('Přehled akcí');
-    }
-
-    /**
-     * @param ArrayHash[] $data
-     */
-    private function setSheetChits(Worksheet $sheet, array $data) : void
-    {
-        $sheet->setCellValue('A1', 'Název akce')
-            ->setCellValue('B1', 'Ze dne')
-            ->setCellValue('C1', 'Číslo dokladu')
-            ->setCellValue('D1', 'Účel výplaty')
-            ->setCellValue('E1', 'Kategorie')
-            ->setCellValue('F1', 'Komu/Od')
-            ->setCellValue('G1', 'Příjem')
-            ->setCellValue('H1', 'Výdej');
-
-        $rowCnt = 2;
-        foreach ($data as $event) {
-            $cashbookId = $event['cashbookId'];
-            $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
-
-            assert($cashbook instanceof Cashbook);
-
-            $prefix = $cashbook->getChitNumberPrefix();
-
-            foreach ($event['chits'] as $chit) {
-                assert($chit instanceof Chit);
-
-                $isIncome = $chit->isIncome();
-                $amount   = $chit->getAmount()->toFloat();
-
-                $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
-                    ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
-                    ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
-                    ->setCellValue('D' . $rowCnt, $chit->getPurpose())
-                    ->setCellValue('E' . $rowCnt, $chit->getCategories())
-                    ->setCellValue('F' . $rowCnt, (string) $chit->getRecipient())
-                    ->setCellValue('G' . $rowCnt, $isIncome ? $amount : '')
-                    ->setCellValue('H' . $rowCnt, ! $isIncome ? $amount : '');
-
-                $rowCnt++;
-            }
-        }
-
-        //format
-        foreach (Range::letters('A', 'H') as $columnID) {
-            $sheet->getColumnDimension($columnID)->setAutoSize(true);
-        }
-        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
-        $sheet->setTitle('Doklady');
     }
 }

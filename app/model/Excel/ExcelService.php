@@ -8,16 +8,12 @@ use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Participant\Participant;
-use Model\Event\Functions;
-use Model\Event\ReadModel\Queries\CampFunctions;
-use Model\Event\SkautisCampId;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Model\Excel\Range;
 use Nette\Utils\ArrayHash;
@@ -28,16 +24,11 @@ use PHPExcel_Style_Border;
 use PHPExcel_Worksheet;
 use PHPExcel_Writer_Excel2007;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Skautis\Wsdl\PermissionException;
 use stdClass;
 use function assert;
-use function count;
 use function date;
 use function gmdate;
 use function header;
-use function implode;
-use function reset;
-use function strtotime;
 
 class ExcelService
 {
@@ -101,39 +92,6 @@ class ExcelService
         $builder->build($sheet, $cashbookId, $paymentMethod);
 
         return $excel;
-    }
-
-    /**
-     * @param int[] $campsIds
-     *
-     * @throws PHPExcel_Exception
-     * @throws PermissionException
-     */
-    public function getCampsSummary(array $campsIds, EventEntity $service, UnitService $unitService) : void
-    {
-        $objPHPExcel = $this->getNewFile();
-
-        $data = [];
-        foreach ($campsIds as $aid) {
-            $campId     = new SkautisCampId($aid);
-            $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($campId));
-
-            $camp                          = $service->getEvent()->get($aid);
-            $data[$aid]                    = $camp;
-            $data[$aid]['cashbookId']      = $cashbookId;
-            $data[$aid]['troops']          = implode(', ', $unitService->getCampTroopNames($camp));
-            $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
-            $data[$aid]['func']            = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
-            $participants                  = $service->getParticipants()->getAll($aid);
-            $data[$aid]['participantsCnt'] = count($participants);
-            $data[$aid]['personDays']      = $service->getParticipants()->getPersonsDays($participants);
-        }
-        $sheetCamps = $objPHPExcel->setActiveSheetIndex(0);
-        $this->setSheetCamps($sheetCamps, $data);
-        $objPHPExcel->createSheet(1);
-        $sheetChit = $objPHPExcel->setActiveSheetIndex(1);
-        $this->setSheetChits($sheetChit, $data);
-        $this->send($objPHPExcel, 'Souhrn-táborů-' . date('Y_n_j'));
     }
 
     /**
@@ -292,65 +250,6 @@ class ExcelService
         // $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
 
         $sheet->setTitle('Evidence plateb');
-    }
-
-    /**
-     * @param ArrayHash[] $data
-     *
-     * @throws PHPExcel_Exception
-     */
-    protected function setSheetCamps(PHPExcel_Worksheet $sheet, array $data) : void
-    {
-        $firstElement = reset($data);
-
-        $sheet->setCellValue('A1', 'Pořadatel')
-            ->setCellValue('B1', 'Název akce')
-            ->setCellValue('C1', 'Oddíly')
-            ->setCellValue('D1', 'Místo konání')
-            ->setCellValue('E1', 'Vedoucí akce')
-            ->setCellValue('F1', 'Hospodář akce')
-            ->setCellValue('G1', 'Od')
-            ->setCellValue('H1', 'Do')
-            ->setCellValue('I1', 'Počet dnů')
-            ->setCellValue('J1', 'Počet účastníků')
-            ->setCellValue('K1', 'Počet dospělých')
-            ->setCellValue('L1', 'Počet dětí')
-            ->setCellValue('M1', 'Osobodnů')
-            ->setCellValue('N1', 'Dětodnů');
-
-        $rowCnt = 2;
-        foreach ($data as $row) {
-            $functions = $row->func;
-
-            assert($functions instanceof Functions);
-
-            $leader     = $functions->getLeader() !== null ? $functions->getLeader()->getName() : null;
-            $accountant = $functions->getAccountant() !== null ? $functions->getAccountant()->getName() : null;
-
-            $sheet->setCellValue('A' . $rowCnt, $row->Unit)
-                ->setCellValue('B' . $rowCnt, $row->DisplayName)
-                ->setCellValue('C' . $rowCnt, $row->troops)
-                ->setCellValue('D' . $rowCnt, $row->Location)
-                ->setCellValue('E' . $rowCnt, $leader)
-                ->setCellValue('F' . $rowCnt, $accountant)
-                ->setCellValue('G' . $rowCnt, date('d.m.Y', strtotime($row->StartDate)))
-                ->setCellValue('H' . $rowCnt, date('d.m.Y', strtotime($row->EndDate)))
-                ->setCellValue('I' . $rowCnt, $row->TotalDays)
-                ->setCellValue('J' . $rowCnt, $row->RealCount)
-                ->setCellValue('K' . $rowCnt, $row->RealAdult)
-                ->setCellValue('L' . $rowCnt, $row->RealChild)
-                ->setCellValue('M' . $rowCnt, $row->RealPersonDays)
-                ->setCellValue('N' . $rowCnt, $row->RealChildDays);
-            $rowCnt++;
-        }
-
-        //format
-        foreach (Range::letters('A', 'N') as $columnID) {
-            $sheet->getColumnDimension($columnID)->setAutoSize(true);
-        }
-        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
-        $sheet->setTitle('Přehled táborů');
     }
 
     /**
