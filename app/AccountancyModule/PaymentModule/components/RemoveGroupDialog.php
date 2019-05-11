@@ -10,6 +10,7 @@ use eGen\MessageBus\Bus\CommandBus;
 use Model\Payment\Commands\Group\RemoveGroup;
 use Model\PaymentService;
 use Nette\Application\BadRequestException;
+use Nette\Http\IResponse;
 
 final class RemoveGroupDialog extends BaseControl
 {
@@ -19,6 +20,9 @@ final class RemoveGroupDialog extends BaseControl
     /** @var int */
     private $groupId;
 
+    /** @var bool */
+    private $isAllowed;
+
     /** @var CommandBus */
     private $commandBus;
 
@@ -27,12 +31,14 @@ final class RemoveGroupDialog extends BaseControl
 
     public function __construct(
         int $groupId,
+        bool $isAllowed,
         CommandBus $commandBus,
         PaymentService $paymentService
     ) {
         parent::__construct();
 
         $this->groupId        = $groupId;
+        $this->isAllowed      = $isAllowed;
         $this->commandBus     = $commandBus;
         $this->paymentService = $paymentService;
     }
@@ -68,6 +74,9 @@ final class RemoveGroupDialog extends BaseControl
             ->setAttribute('class', 'btn-danger');
 
         $form->onSuccess[] = function () : void {
+            if (! $this->isAllowed) {
+                throw new BadRequestException('Nemáte oprávnění smazat tuto skupinu', IResponse::S403_FORBIDDEN);
+            }
             $this->commandBus->handle(new RemoveGroup($this->groupId));
 
             $this->flashMessage('Skupina plateb byla odstraněna', 'success');

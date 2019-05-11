@@ -48,7 +48,7 @@
 
                     {var $payment = $payments[$t->id] ?? null}
                     <td n:inner-if="$payment !== null">
-                        <a href="{link Payment:detail $payment->groupId}#payment-{$payment->id}" class="btn btn-xs btn-default"
+                        <a href="{link Payment:default $payment->groupId}#payment-{$payment->id}" class="btn btn-xs btn-default"
                                 title='Spárováno s platbou "{$payment->name}"'>
                             <span class="fas fa-university"></span>
                         </a>

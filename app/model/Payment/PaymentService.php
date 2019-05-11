@@ -148,23 +148,6 @@ class PaymentService
      */
 
     /**
-     * @param int[] $unitIds
-     *
-     * @return DTO\Group[]
-     */
-    public function getGroups(array $unitIds, bool $onlyOpen) : array
-    {
-        $groups = $this->groups->findByUnits($unitIds, $onlyOpen);
-
-        return array_map(
-            function (Group $group) {
-                return DTO\GroupFactory::create($group);
-            },
-            $groups
-        );
-    }
-
-    /**
      * @param int[] $ids
      *
      * @return DTO\Group[]

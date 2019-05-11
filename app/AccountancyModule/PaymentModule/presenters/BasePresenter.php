@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
+use Model\DTO\Payment\Group;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
+use function array_intersect;
 use function array_key_last;
 use function array_keys;
 use function explode;
@@ -19,6 +21,9 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     /** @var int[] */
     private $editableUnits;
 
+    /** @var int[] */
+    private $readableUnits;
+
     protected function startup() : void
     {
         parent::startup();
@@ -26,13 +31,13 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         $user          = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);
 
-        $isReadable = isset($readableUnits[$this->unitId->toInt()]);
+        $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
 
-        $role                = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         $this->editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
+        $this->readableUnits = array_keys($readableUnits);
         $this->isEditable    = in_array($this->unitId->toInt(), $this->editableUnits);
 
-        if ($isReadable) {
+        if (isset($readableUnits[$this->unitId->toInt()])) {
             return;
         }
 
@@ -51,6 +56,16 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
             'isEditable' => $this->isEditable,
             'presenterName' => $presenterName[array_key_last($presenterName)],
         ]);
+    }
+
+    protected function hasAccessToGroup(Group $group) : bool
+    {
+        return array_intersect($group->getUnitIds(), $this->readableUnits) !== [];
+    }
+
+    protected function canEditGroup(Group $group) : bool
+    {
+        return array_intersect($group->getUnitIds(), $this->editableUnits) !== [];
     }
 
     /**

@@ -196,11 +196,12 @@ class RouterFactory
 
         $prefix = 'platby';
 
+        $router[] = new Route($prefix, 'GroupList:default');
         $router[] = new Route(
-            $prefix . '/<unitId [0-9]+>[/<presenter>][/<action>][/<year>]',
+            $prefix . '[/<id [0-9]+>[/<presenter>[/<action>]]]',
             [
                 'presenter' => [
-                    Route::VALUE => 'Default',
+                    Route::VALUE => 'Payment',
                     Route::FILTER_TABLE => ['bankovni-ucty' => 'BankAccounts'],
                 ],
                 'action' => 'default',

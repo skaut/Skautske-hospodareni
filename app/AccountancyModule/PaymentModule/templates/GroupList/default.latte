@@ -1,0 +1,82 @@
+{block #content}
+    <h1 n:inner-block="title" class="mb-4">Platební skupiny</h1>
+
+    <div class="row mb-3">
+        <div class="col">
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-eye"></i>
+                    {if $onlyOpen}Pouze otevřené{else}Vše{/if}
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" n:href="this true" n:attr="$onlyOpen ? 'disabled'">Pouze otevřené</a>
+                    <a class="dropdown-item" n:href="this false" n:attr="!$onlyOpen ? 'disabled'">Vše</a>
+                </div>
+            </div>
+        </div>
+
+            <div class="col-12 order-first order-md-2 col-md-auto mb-3 mb-md-0" n:if="$isEditable">
+                {control pairButton}
+
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-success dropdown-toggle ml-2" type="button" id="createGroup"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <i class="fas fa-plus"></i>
+                        Založit skupinu
+                        <span class="d-none d-md-inline">plateb</span> <span class="caret"></span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="createGroup">
+                        <a n:href="Group:newGroup" class="dropdown-item"><i class="fas fa-list-alt"></i> Obecná</a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a n:href="Camp:default" class="dropdown-item">
+                            <i class="fas fa-campground"></i> Tábor
+                            <span class="small d-block">Umožnuje načíst účastnické poplatky.</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a n:href="Event:default" class="dropdown-item">
+                            <span class="mr-1"><i class="fas fa-calendar"></i></span> Akce
+                            <span class="small d-block">Umožnuje načíst účastnické poplatky.</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a n:href="Registration:newGroup" class="dropdown-item">
+                            <i class="fas fa-users"></i> Registrace
+                            <span class="small d-block">Umožnuje načíst osoby z aktuální registrace.</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+
+<div class="row">
+    <div class="col-sm-12">
+    {if !empty($groups)}
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th>Název</th>
+                <th>Připravené</th>
+                <th>Odeslané</th>
+                <th>Dokončené</th>
+                <th>Stav</th>
+            </tr>
+            <tr n:foreach="$groups as $g">
+                <td><a n:href="Payment:default $g->id">{$g->name}</a></td>
+                <td n:foreach="$summarizations[$g->id] as $s" class="r">{if $s->count > 0}{$s->amount|num} ({$s->count}){else} {/if}</td>
+                <td>
+                    {$g->state|groupState|noescape}
+                    <span class="text-success" title="Lze párovat s bankou" n:if="$groupsPairingSupport[$g->id] === TRUE">
+                        <span class="fas fa-university"></span>
+                    </span>
+                </td>
+            </tr> 
+        </table>
+    {/if}
+    </div>
+</div>

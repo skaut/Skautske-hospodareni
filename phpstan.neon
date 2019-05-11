@@ -28,7 +28,7 @@ services:
 	  arguments:
 	      - %autoload_directories%
 	      - %rootDir%/../../../temp
-	      - '~^.*QueryHandler$~'
+	      - '~^.*QueryHandlers\\.*Handler$~'
 
 	  tags: [ phpstan.broker.dynamicMethodReturnTypeExtension ]
 

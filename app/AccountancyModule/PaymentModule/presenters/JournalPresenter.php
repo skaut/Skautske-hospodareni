@@ -23,7 +23,7 @@ class JournalPresenter extends BasePresenter
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění přistupovat ke správě emailů', 'danger');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
 
         if ($year === null) {

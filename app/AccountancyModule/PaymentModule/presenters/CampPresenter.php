@@ -91,7 +91,7 @@ class CampPresenter extends BasePresenter
 
         if ($group === null || ! $this->isEditable) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
-            $this->redirect('Payment:default');
+            $this->redirect('GroupList:');
         }
 
         if ($group->getSkautisId() === null) {
@@ -138,7 +138,6 @@ class CampPresenter extends BasePresenter
     {
         Assertion::notNull($this->camp);
         $unitId = $this->getCurrentUnitId();
-        Assertion::notNull($unitId);
 
         $form = $this->groupFormFactory->create(
             $unitId,
