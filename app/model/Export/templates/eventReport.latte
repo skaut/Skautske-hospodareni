@@ -77,14 +77,14 @@ $chits - paragony akce
         {if $i < count($incomes)}
             {var $income = $incomes[$i]}
             <td>{$income['label']}</td>
-            <td>{$income['amount']|price}</td>
+            <td style="text-align: right;">{$income['amount']|price}</td>
         {else}
             <td>&nbsp;</td><td>&nbsp;</td>
         {/if}
         {if $i < count($expenses)}
             {var $expense = $expenses[$i]}
             <td>{$expense['label']}</td>
-            <td>{$expense['amount']|price}</td>
+            <td style="text-align: right;">{$expense['amount']|price}</td>
         {else}
             <td>&nbsp;</td><td>&nbsp;</td>
         {/if}
@@ -93,9 +93,9 @@ $chits - paragony akce
 
     <tr>
         <td>Celkem</td>
-        <td><b>{$totalIncome|price}</b></td>
+        <td style="text-align: right;"><b>{$totalIncome|price}</b></td>
         <td>Celkem</td>
-        <td><b>{$totalExpense|price}</b></td>
+        <td style="text-align: right;"><b>{$totalExpense|price}</b></td>
     </tr>
 </table>
 
@@ -116,14 +116,14 @@ $chits - paragony akce
             {if $i < count($virtualIncomes)}
                 {var $income = $virtualIncomes[$i]}
                 <td>{$income['label']}</td>
-                <td>{$income['amount']|price}</td>
+                <td style="text-align: right;">{$income['amount']|price}</td>
             {else}
                 <td>&nbsp;</td><td>&nbsp;</td>
             {/if}
             {if $i < count($virtualExpenses)}
                 {var $expense = $virtualExpenses[$i]}
                 <td>{$expense['label']}</td>
-                <td>{$expense['amount']|price}</td>
+                <td style="text-align: right;">{$expense['amount']|price}</td>
             {else}
                 <td>&nbsp;</td><td>&nbsp;</td>
             {/if}
@@ -132,9 +132,9 @@ $chits - paragony akce
 
     <tr>
         <td>Celkem</td>
-        <td><b>{$virtualTotalIncome|price}</b></td>
+        <td style="text-align: right;"><b>{$virtualTotalIncome|price}</b></td>
         <td>Celkem</td>
-        <td><b>{$virtualTotalExpense|price}</b></td>
+        <td style="text-align: right;"><b>{$virtualTotalExpense|price}</b></td>
     </tr>
 </table>
 
