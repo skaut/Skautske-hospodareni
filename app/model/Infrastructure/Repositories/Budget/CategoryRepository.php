@@ -36,7 +36,11 @@ final class CategoryRepository implements ICategoryRepository
      */
     public function findCategories(int $unitId, Operation $operationType) : array
     {
-        return $this->em->getRepository(Category::class)->findBy(['type' => $operationType->getValue(), 'parent' => null]);
+        return $this->em->getRepository(Category::class)->findBy([
+            'type' => $operationType->getValue(),
+            'parent' => null,
+            'unitId' => $unitId,
+        ]);
     }
 
     public function save(Category $category) : void
