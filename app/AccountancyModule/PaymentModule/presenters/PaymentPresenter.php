@@ -18,6 +18,7 @@ use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\Commands\Payment\CreatePayment;
+use Model\Payment\Commands\Payment\UpdatePayment;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
 use Model\Payment\InvalidBankAccount;
@@ -420,7 +421,9 @@ class PaymentPresenter extends BasePresenter
         $note           = (string) $v->note;
 
         if ($id !== null) {//EDIT
-            $this->model->update($id, $name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+            $this->commandBus->handle(
+                new UpdatePayment($id, $name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note)
+            );
             $this->flashMessage('Platba byla upravena');
         } else {//ADD
             $this->commandBus->handle(
