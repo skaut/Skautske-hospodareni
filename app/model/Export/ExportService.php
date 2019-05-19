@@ -141,7 +141,7 @@ class ExportService
             $operation = $category->getOperationType()->getValue();
 
             $sums[$virtual][$operation][$category->getId()] = [
-                'amount' => (float) $category->getTotal()->getAmount(),
+                'amount' => MoneyFactory::toFloat($category->getTotal()),
                 'label' => $category->getName(),
             ];
         }
