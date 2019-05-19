@@ -312,7 +312,7 @@ class PaymentTest extends Unit
     {
         return [
             [new VariableSymbol('1234')],
-            [null]
+            [null],
         ];
     }
 

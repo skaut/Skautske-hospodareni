@@ -17,6 +17,7 @@ use DateTimeImmutable;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
+use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
 use Model\Payment\InvalidBankAccount;
@@ -422,20 +423,23 @@ class PaymentPresenter extends BasePresenter
             $this->model->update($id, $name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
             $this->flashMessage('Platba byla upravena');
         } else {//ADD
-            $this->model->createPayment(
-                (int) $v->oid,
-                $name,
-                $email,
-                $amount,
-                $dueDate,
-                null,
-                $variableSymbol,
-                $constantSymbol,
-                $note
+            $this->commandBus->handle(
+                new CreatePayment(
+                    $this->id,
+                    $name,
+                    $email,
+                    $amount,
+                    $dueDate,
+                    null,
+                    $variableSymbol,
+                    $constantSymbol,
+                    $note
+                )
             );
+
             $this->flashMessage('Platba byla přidána');
         }
-        $this->redirect('default', ['id' => $v->oid]);
+        $this->redirect('default');
     }
 
     protected function createComponentPairButton() : PairButton

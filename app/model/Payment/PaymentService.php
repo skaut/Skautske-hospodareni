@@ -101,15 +101,6 @@ class PaymentService
         );
     }
 
-    public function createPayment(int $groupId, string $name, ?string $email, float $amount, Date $dueDate, ?int $personId, ?VariableSymbol $vs, ?int $ks, string $note) : void
-    {
-        $group = $this->groups->find($groupId);
-
-        $payment = new Payment($group, $name, $email, $amount, $dueDate, $vs, $ks, $personId, $note);
-
-        $this->payments->save($payment);
-    }
-
     public function update(
         int $id,
         string $name,

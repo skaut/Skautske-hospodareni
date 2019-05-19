@@ -7,6 +7,8 @@ namespace App\AccountancyModule\PaymentModule\Components;
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseContainer;
 use App\Forms\BaseForm;
+use eGen\MessageBus\Bus\CommandBus;
+use Model\Payment\Commands\Payment\CreatePayment;
 use Model\PaymentService;
 use Nette\Forms\Controls\TextBase;
 use function array_filter;
@@ -17,14 +19,18 @@ class MassAddForm extends BaseControl
     /** @var int */
     private $groupId;
 
+    /** @var CommandBus */
+    private $commandBus;
+
     /** @var PaymentService */
     private $payments;
 
-    public function __construct(int $groupId, PaymentService $payments)
+    public function __construct(int $groupId, PaymentService $payments, CommandBus $commandBus)
     {
         parent::__construct();
-        $this->groupId  = $groupId;
-        $this->payments = $payments;
+        $this->groupId    = $groupId;
+        $this->payments   = $payments;
+        $this->commandBus = $commandBus;
     }
 
     protected function createComponentForm() : BaseForm
@@ -41,7 +47,10 @@ class MassAddForm extends BaseControl
         $form->addDate('dueDate', 'Splatnost:')
             ->setAttribute('class', 'input-small');
         $form->addText('constantSymbol', 'KS:')
+            ->setRequired(false)
             ->setNullable()
+            ->addRule(BaseForm::INTEGER)
+            ->addRule(BaseForm::MAX_LENGTH, 'Maximální délka konstantního symbolu je %d', 4)
             ->setMaxLength(4)
             ->setAttribute('class', 'input-mini');
         $form->addText('note', 'Poznámka:')
@@ -161,18 +170,18 @@ class MassAddForm extends BaseControl
         }
 
         foreach ($persons as $person) {
-            $ks = $person->constantSymbol ?? $values->constantSymbol;
-            $ks = $ks !== null ? (int) $ks : $ks;
-            $this->payments->createPayment(
-                $this->groupId,
-                $person->name,
-                $person->email,
-                (float) ($person->amount ?? $values->amount),
-                $person->dueDate ?? $values->dueDate,
-                (int) $person->id,
-                $person->variableSymbol,
-                $ks,
-                $person->note
+            $this->commandBus->handle(
+                new CreatePayment(
+                    $this->groupId,
+                    $person->name,
+                    $person->email,
+                    (float) ($person->amount ?? $values->amount),
+                    $person->dueDate ?? $values->dueDate,
+                    (int) $person->id,
+                    $person->variableSymbol,
+                    $person->constantSymbol ?? $values->constantSymbol,
+                    $person->note
+                )
             );
         }
 
