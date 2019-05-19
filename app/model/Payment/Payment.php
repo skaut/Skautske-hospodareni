@@ -167,7 +167,7 @@ class Payment extends Aggregate
         $this->checkNotClosed();
         $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
 
-        if ($this->variableSymbol !== $variableSymbol) {
+        if (! VariableSymbol::areEqual($this->variableSymbol, $variableSymbol)) {
             $this->raise(new PaymentVariableSymbolWasChanged($this->groupId, $variableSymbol));
         }
 

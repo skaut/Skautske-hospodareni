@@ -44,7 +44,9 @@ class Metadata
 
     public function equals(Metadata $metadata) : bool
     {
+        $dateTimeFormat = 'Y-m-d H:i:s';
+
         return $this->authorName === $metadata->authorName
-            && $this->createdAt === $metadata->createdAt;
+            && $this->createdAt->format($dateTimeFormat) === $metadata->createdAt->format($dateTimeFormat);
     }
 }
