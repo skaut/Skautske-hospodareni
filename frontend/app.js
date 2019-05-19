@@ -2,6 +2,7 @@ import 'bootstrap.native';
 import {dom} from './icons';
 import {initializeLogoutTimer} from './logoutTimer';
 import {toggleAllCheckboxes, toggleMainCheckbox} from './utils';
+import netteForms from 'nette-forms';
 import naja from 'naja';
 import { initializeDatePicker } from "./js/datePicker";
 import moment from 'moment';
@@ -11,6 +12,7 @@ import { ProgressBar } from "./js/ProgressBar";
 // Use czech language for dates
 moment.locale('cs');
 
+naja.formsHandler.netteForms = netteForms;
 naja.registerExtension(ProgressBar);
 
 document.addEventListener('DOMContentLoaded', () => {
