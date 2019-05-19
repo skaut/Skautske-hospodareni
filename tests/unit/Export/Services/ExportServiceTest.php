@@ -22,7 +22,7 @@ use Model\ExportService;
 use Model\ParticipantService;
 use Model\Services\TemplateFactory;
 use Model\UnitService;
-use Money\Money;
+use Model\Utils\MoneyFactory;
 
 class ExportServiceTest extends Unit
 {
@@ -47,10 +47,10 @@ class ExportServiceTest extends Unit
         $queryBus->expects('handle')->withArgs(static function (CategoryListQuery $query) use ($cashbookId) : bool {
             return $query->getCashbookId()->equals($cashbookId);
         })->andReturn([
-            new Category(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, 'Přijmy od účastníků', Money::CZK(700), 'pp', Operation::INCOME(), false),
-            new Category(2, 'Služby', Money::CZK(50), 's', Operation::EXPENSE(), false),
-            new Category(9, 'Převod z pokladny střediska', Money::CZK(200), 'ps', Operation::INCOME(), true),
-            new Category(7, 'Převod do stř. pokladny', Money::CZK(150), 'pr', Operation::EXPENSE(), true),
+            new Category(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, 'Přijmy od účastníků', MoneyFactory::fromFloat(700.0), 'pp', Operation::INCOME(), false),
+            new Category(2, 'Služby', MoneyFactory::fromFloat(50.0), 's', Operation::EXPENSE(), false),
+            new Category(9, 'Převod z pokladny střediska', MoneyFactory::fromFloat(200.0), 'ps', Operation::INCOME(), true),
+            new Category(7, 'Převod do stř. pokladny', MoneyFactory::fromFloat(150.0), 'pr', Operation::EXPENSE(), true),
         ]);
 
         // handle EventFunctions
