@@ -176,7 +176,7 @@ class Payment extends Aggregate
         $this->variableSymbol = $variableSymbol;
 
         if ($amount !== $this->amount) {
-            $this->raise(new PaymentAmountWasChanged($this->groupId));
+            $this->raise(new PaymentAmountWasChanged($this->groupId, $this->variableSymbol));
         }
 
         $this->amount = $amount;

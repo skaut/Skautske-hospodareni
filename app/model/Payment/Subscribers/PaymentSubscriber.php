@@ -45,6 +45,10 @@ class PaymentSubscriber
 
     public function handlePaymentAmountChanged(PaymentAmountWasChanged $event) : void
     {
+        if ($event->getVariableSymbol() === null) {
+            return; // no risk of unpaired payment
+        }
+
         $this->invalidateLastPairing($event->getGroupId());
     }
 

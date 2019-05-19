@@ -237,6 +237,7 @@ class PaymentTest extends Unit
         $event = $events[1];
         $this->assertInstanceOf(PaymentAmountWasChanged::class, $event);
         $this->assertSame(29, $event->getGroupId());
+        $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
 
     public function testUpdateWithSameVariableSymbolDoesntThrowException() : void

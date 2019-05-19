@@ -17,9 +17,8 @@ use Model\Payment\Services\BankAccountAccessChecker;
 
 final class LastPairingInvalidationTest extends IntegrationTest
 {
-    private const UNIT_ID                  = 101;
-    private const ORIGINAL_VARIABLE_SYMBOL = '1001';
-    private const ORIGINAL_AMOUNT          = 200;
+    private const UNIT_ID         = 101;
+    private const ORIGINAL_AMOUNT = 200;
 
     /** @var CommandBus */
     private $commandBus;
@@ -51,14 +50,14 @@ final class LastPairingInvalidationTest extends IntegrationTest
 
         $this->commandBus      = $this->tester->grabService(CommandBus::class);
         $this->groupRepository = $this->tester->grabService(IGroupRepository::class);
-
-        $this->createBankAccount();
-        $this->createGroupWithInitialPayment();
-        $this->pairPayments();
     }
 
     public function testLastPairingIsInvalidatedWhenNewPaymentIsCreated() : void
     {
+        $this->createBankAccount();
+        $this->createGroupWithInitialPayment(new VariableSymbol('123'));
+        $this->pairPayments();
+
         $this->commandBus->handle(
             new CreatePayment(1, 'a', null, 2, Helpers::getValidDueDate(), null, new VariableSymbol('1'), null, '')
         );
@@ -68,6 +67,12 @@ final class LastPairingInvalidationTest extends IntegrationTest
 
     public function testLastPairingIsInvalidatedWhenPaymentAmountIsChanged() : void
     {
+        $originalVariableSymbol = new VariableSymbol('123');
+
+        $this->createBankAccount();
+        $this->createGroupWithInitialPayment($originalVariableSymbol);
+        $this->pairPayments();
+
         $this->commandBus->handle(
             new UpdatePayment(
                 1,
@@ -75,7 +80,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 null,
                 self::ORIGINAL_AMOUNT + 1,
                 Helpers::getValidDueDate(),
-                new VariableSymbol(self::ORIGINAL_VARIABLE_SYMBOL),
+                $originalVariableSymbol,
                 null,
                 ''
             )
@@ -86,6 +91,12 @@ final class LastPairingInvalidationTest extends IntegrationTest
 
     public function testLastPairingIsInvalidatedWhenPaymentVariableSymbolIsChanged() : void
     {
+        $originalVariableSymbol = new VariableSymbol('123');
+
+        $this->createBankAccount();
+        $this->createGroupWithInitialPayment($originalVariableSymbol);
+        $this->pairPayments();
+
         $this->commandBus->handle(
             new UpdatePayment(
                 1,
@@ -93,7 +104,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 null,
                 self::ORIGINAL_AMOUNT,
                 Helpers::getValidDueDate(),
-                (new VariableSymbol(self::ORIGINAL_VARIABLE_SYMBOL))->increment(),
+                $originalVariableSymbol->increment(),
                 null,
                 ''
             )
@@ -104,6 +115,10 @@ final class LastPairingInvalidationTest extends IntegrationTest
 
     public function testLastPairingIsNotInvalidatedWhenPaymentVariableSymbolIsRemoved() : void
     {
+        $this->createBankAccount();
+        $this->createGroupWithInitialPayment(new VariableSymbol('101'));
+        $this->pairPayments();
+
         $this->commandBus->handle(
             new UpdatePayment(
                 1,
@@ -112,6 +127,30 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 self::ORIGINAL_AMOUNT,
                 Helpers::getValidDueDate(),
                 null,
+                null,
+                ''
+            )
+        );
+
+        $this->assertGroupHasLastPairing();
+    }
+
+    public function testLastPairingIsNotInvalidatedWhenAmountOfPaymentWithoutVariableSymbolIsChanged() : void
+    {
+        $originalVariableSymbol = null;
+
+        $this->createBankAccount();
+        $this->createGroupWithInitialPayment($originalVariableSymbol);
+        $this->pairPayments();
+
+        $this->commandBus->handle(
+            new UpdatePayment(
+                1,
+                'a',
+                null,
+                self::ORIGINAL_AMOUNT + 1,
+                Helpers::getValidDueDate(),
+                $originalVariableSymbol,
                 null,
                 ''
             )
@@ -137,7 +176,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         );
     }
 
-    private function createGroupWithInitialPayment() : void
+    private function createGroupWithInitialPayment(?VariableSymbol $variableSymbol) : void
     {
         $this->groupRepository->save(
             new Group(
@@ -153,7 +192,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
             )
         );
 
-        // we need at least one payment for initial pairing
+        // This is payment we will edit in tests
         $this->commandBus->handle(
             new CreatePayment(
                 1,
@@ -162,7 +201,22 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 self::ORIGINAL_AMOUNT,
                 Helpers::getValidDueDate(),
                 null,
-                new VariableSymbol('123'),
+                $variableSymbol,
+                null,
+                ''
+            )
+        );
+
+        // we need at least one payment with VS for initial pairing
+        $this->commandBus->handle(
+            new CreatePayment(
+                1,
+                'x',
+                null,
+                self::ORIGINAL_AMOUNT,
+                Helpers::getValidDueDate(),
+                null,
+                new VariableSymbol('1'),
                 null,
                 ''
             )
