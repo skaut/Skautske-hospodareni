@@ -22,6 +22,7 @@ library.add(
     fas.faLongArrowAltLeft,
     fas.faPlus,
     fas.faSearch,
+    fas.faSitemap,
     fas.faStickyNote,
     fas.faTimes,
     fas.faUserPlus,
