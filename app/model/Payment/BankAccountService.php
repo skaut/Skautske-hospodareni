@@ -60,13 +60,6 @@ class BankAccountService
         $this->fioCache     = $fioCache;
     }
 
-    public function addBankAccount(int $unitId, string $name, AccountNumber $number, ?string $token) : void
-    {
-        $account = new BankAccount($unitId, $name, $number, $token, new DateTimeImmutable(), $this->unitResolver);
-
-        $this->bankAccounts->save($account);
-    }
-
     /**
      * @throws BankAccountNotFound
      */
