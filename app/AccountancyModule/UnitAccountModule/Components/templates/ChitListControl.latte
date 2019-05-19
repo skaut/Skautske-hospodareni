@@ -1,26 +1,28 @@
 {snippet}
-<table class="table table-condensed">
+<table class="table table-sm">
     <tr>
         <th>Datum</th>
         <th>Účel</th>
         <th>Osoba</th>
         <th>Kategorie</th>
-        <th>Částka</th>
+        <th class="text-right">Částka</th>
         <td>&nbsp;</td>
     </tr>
-    <tr n:foreach="$chits as $chit">
+    <tr n:foreach="$chits as $chit" class="pt-2">
         <td>{$chit->date|date:"j.n.Y"}</td>
         <td>{$chit->purpose}</td>
         <td>{$chit->recipient}</td>
         <td>{$chit->categories}</td>
-        <td>{if ! $chit->isIncome()}-{/if}{$chit->amount->toFloat()}</td>
+        <td n:class="$chit->isIncome() ? 'text-success' : 'text-danger', 'text-right'">
+            {$chit->getSignedAmount()|price} Kč
+        </td>
         <td class="text-right">
             {if ! $chit->locked}
-                <a n:href="lockChit! $chit->id" class="btn btn-xs btn-success ajax">
-                    <i class="glyphicon glyphicon-lock"></i> Uzamknout</a>
+                <a n:href="lockChit! $chit->id" class="btn btn-sm btn-dark ajax">
+                    <i class="fas fa-lock"></i> Uzamknout</a>
             {else}
-                <a n:href="unlockChit! $chit->id" class="btn btn-xs btn-danger ajax">
-                    <i class="glyphicon glyphicon-folder-open"></i> Odemknout
+                <a n:href="unlockChit! $chit->id" class="btn btn-sm btn-light ajax">
+                    <i class="fas fa-lock-open"></i> Odemknout
                 </a>
             {/if}
         </td>

@@ -7,7 +7,9 @@ namespace App\AccountancyModule\UnitAccountModule;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use function array_key_exists;
+use function array_key_last;
 use function date;
+use function explode;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
@@ -42,10 +44,14 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function beforeRender() : void
     {
         parent::beforeRender();
+
+        $presenterName = explode(':', $this->getName());
+
         $this->template->setParameters([
             'year'       => $this->year,
             'isEditable' => $this->isEditable,
             'unitId'     => $this->unitId->toInt(),
+            'presenterName' => $presenterName[array_key_last($presenterName)],
         ]);
     }
 
