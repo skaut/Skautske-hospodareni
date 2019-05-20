@@ -6,8 +6,10 @@ namespace App\AccountancyModule\PaymentModule\Factories;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
+use eGen\MessageBus\Bus\CommandBus;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
+use Model\Payment\Commands\BankAccount\CreateBankAccount;
 use Model\Payment\InvalidBankAccountNumber;
 use Nette\Utils\ArrayHash;
 
@@ -19,11 +21,15 @@ class BankAccountForm extends BaseControl
     /** @var BankAccountService */
     private $model;
 
-    public function __construct(?int $id, BankAccountService $model)
+    /** @var CommandBus */
+    private $commandBus;
+
+    public function __construct(?int $id, BankAccountService $model, CommandBus $commandBus)
     {
         parent::__construct();
-        $this->id    = $id;
-        $this->model = $model;
+        $this->id         = $id;
+        $this->model      = $model;
+        $this->commandBus = $commandBus;
     }
 
     protected function createComponentForm() : BaseForm
@@ -80,11 +86,13 @@ class BankAccountForm extends BaseControl
                     $values->token
                 );
             } else {
-                $this->model->addBankAccount(
-                    $this->getPresenter()->getUnitId(),
-                    $values->name,
-                    new AccountNumber($prefix, $number, $bankCode),
-                    $values->token
+                $this->commandBus->handle(
+                    new CreateBankAccount(
+                        $this->getPresenter()->getUnitId(),
+                        $values->name,
+                        new AccountNumber($prefix, $number, $bankCode),
+                        $values->token
+                    )
                 );
             }
 

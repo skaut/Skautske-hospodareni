@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model;
 
 use Assert\Assert;
-use Cake\Chronos\Date;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Model\DTO\Payment as DTO;
@@ -99,32 +98,6 @@ class PaymentService
             },
             $payments
         );
-    }
-
-    public function createPayment(int $groupId, string $name, ?string $email, float $amount, Date $dueDate, ?int $personId, ?VariableSymbol $vs, ?int $ks, string $note) : void
-    {
-        $group = $this->groups->find($groupId);
-
-        $payment = new Payment($group, $name, $email, $amount, $dueDate, $vs, $ks, $personId, $note);
-
-        $this->payments->save($payment);
-    }
-
-    public function update(
-        int $id,
-        string $name,
-        ?string $email,
-        float $amount,
-        Date $dueDate,
-        ?VariableSymbol $variableSymbol,
-        ?int $constantSymbol,
-        string $note
-    ) : void {
-        $payment = $this->payments->find($id);
-
-        $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
-
-        $this->payments->save($payment);
     }
 
     public function cancelPayment(int $pid) : void

@@ -18,6 +18,10 @@ includes:
 services:
 	- class: CodeQuality\MandatoryVoid\MandatoryVoidRule
 	  tags: [ phpstan.rules.rule ]
+
+	- class: CodeQuality\ObjectIdentityComparisonRule
+	  tags: [ phpstan.rules.rule ]
+
 	- class: SkautisAliasesExtension
 	  tags: [ phpstan.broker.propertiesClassReflectionExtension ]
 

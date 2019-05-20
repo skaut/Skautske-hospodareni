@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Cake\Chronos\Date;
+use eGen\MessageBus\Bus\CommandBus;
 use Helpers;
 use IntegrationTest;
+use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\Repositories\IPaymentRepository;
@@ -19,6 +20,9 @@ class PaymentServiceTest extends IntegrationTest
 
     /** @var IPaymentRepository */
     private $paymentRepository;
+
+    /** @var CommandBus */
+    private $commandBus;
 
     /**
      * @return string[]
@@ -39,6 +43,7 @@ class PaymentServiceTest extends IntegrationTest
         parent::_before();
         $this->service           = $this->tester->grabService(PaymentService::class);
         $this->paymentRepository = $this->tester->grabService(IPaymentRepository::class);
+        $this->commandBus        = $this->tester->grabService(CommandBus::class);
     }
 
     /**
@@ -67,16 +72,8 @@ class PaymentServiceTest extends IntegrationTest
 
     private function createPaymentWithoutVariableSymbol(int $groupId) : void
     {
-        $this->service->createPayment(
-            $groupId,
-            'test',
-            null,
-            100,
-            new Date(),
-            null,
-            null,
-            null,
-            ''
+        $this->commandBus->handle(
+            new CreatePayment($groupId, 'test', null, 100, Helpers::getValidDueDate(), null, null, null, '')
         );
     }
 }

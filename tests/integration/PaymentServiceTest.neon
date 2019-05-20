@@ -8,5 +8,8 @@ services:
     - Stubs\Skautis
     - Stubs\BankAccountAccessCheckerStub
 
+    - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
+      tags: [commandBus.handler]
+
 includes:
     - config/doctrine.neon

@@ -17,6 +17,9 @@ services:
     - Model\Mail\MailerFactory(Model\Payment\NullMailer(), true)
     - Model\Payment\MailingService
 
+    - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
+      tags: [commandBus.handler]
+
     - class: Model\Payment\Subscribers\PaymentMailSubscriber
       tags: [eventBus.subscriber]
 

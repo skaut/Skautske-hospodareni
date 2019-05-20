@@ -9,12 +9,15 @@ use Codeception\Test\Unit;
 use Helpers;
 use InvalidArgumentException;
 use Mockery as m;
+use Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 
 class PaymentTest extends Unit
 {
+    private const AMOUNT = 500;
+
     public function testCreate() : void
     {
         $groupId        = 29;
@@ -222,10 +225,17 @@ class PaymentTest extends Unit
         $this->assertSame($note, $payment->getNote());
 
         $events = $payment->extractEventsToDispatch();
-        $this->assertCount(1, $events);
+        $this->assertCount(2, $events);
+
         /** @var PaymentVariableSymbolWasChanged $event */
         $event = $events[0];
         $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
+        $this->assertSame(29, $event->getGroupId());
+        $this->assertSame($variableSymbol, $event->getVariableSymbol());
+
+        /** @var PaymentAmountWasChanged $event */
+        $event = $events[1];
+        $this->assertInstanceOf(PaymentAmountWasChanged::class, $event);
         $this->assertSame(29, $event->getGroupId());
         $this->assertSame($variableSymbol, $event->getVariableSymbol());
     }
@@ -263,6 +273,75 @@ class PaymentTest extends Unit
         $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
     }
 
+    /**
+     * @dataProvider dataVariableSymbols
+     */
+    public function testChangingVariableSymbolViaUpdateRaisesEvent(?VariableSymbol $variableSymbol) : void
+    {
+        $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
+        $payment->extractEventsToDispatch(); // Clear events
+
+        $newVariableSymbol = new VariableSymbol('12345');
+
+        $payment->update('name', null, self::AMOUNT, Date::today(), $newVariableSymbol, null, '');
+
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+        /** @var PaymentVariableSymbolWasChanged $event */
+        $event = $events[0];
+        $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
+        $this->assertSame($payment->getGroupId(), $event->getGroupId());
+        $this->assertSame($newVariableSymbol, $event->getVariableSymbol());
+    }
+
+    /**
+     * @dataProvider dataVariableSymbols
+     */
+    public function testUpdateWithSameVariableSymbolDoesNotRaiseEvent(?VariableSymbol $variableSymbol) : void
+    {
+        $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
+        $payment->extractEventsToDispatch(); // Clear events
+        $payment->update('name', null, self::AMOUNT, Date::today(), $variableSymbol, null, '');
+
+        $this->assertSame([], $payment->extractEventsToDispatch());
+    }
+
+    /**
+     * @return (VariableSymbol|null)[][]
+     */
+    public function dataVariableSymbols() : array
+    {
+        return [
+            [new VariableSymbol('1234')],
+            [null],
+        ];
+    }
+
+    public function testUpdateWithDifferentAmountRaisesEvent() : void
+    {
+        $payment = $this->createPaymentWithVariableSymbol(null);
+        $payment->extractEventsToDispatch(); // Clear events
+
+        $payment->update('name', null, self::AMOUNT * 2, Date::today(), null, null, '');
+
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+        $this->assertInstanceOf(PaymentAmountWasChanged::class, $events[0]);
+
+        /** @var PaymentAmountWasChanged $event */
+        $event = $events[0];
+        $this->assertSame($payment->getGroupId(), $event->getGroupId());
+    }
+
+    public function testUpdateWithSameAmountDoesNotRaiseEvent() : void
+    {
+        $payment = $this->createPaymentWithVariableSymbol(null);
+        $payment->extractEventsToDispatch(); // Clear events
+        $payment->update('name', null, self::AMOUNT, Date::today(), null, null, '');
+
+        $this->assertSame([], $payment->extractEventsToDispatch());
+    }
+
     private function createPayment() : Payment
     {
         return $this->createPaymentWithVariableSymbol(new VariableSymbol('454545'));
@@ -273,7 +352,7 @@ class PaymentTest extends Unit
         $group   = $this->mockGroup(29);
         $dueDate = Date::now();
 
-        $payment = new Payment($group, 'Jan novák', 'test@gmail.com', 500, $dueDate, $symbol, 666, 454, 'Some note');
+        $payment = new Payment($group, 'Jan novák', 'test@gmail.com', self::AMOUNT, $dueDate, $symbol, 666, 454, 'Some note');
         Helpers::assignIdentity($payment, 1);
 
         return $payment;

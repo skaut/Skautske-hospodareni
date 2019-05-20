@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Payment\IntegrationTests;
 
+use eGen\MessageBus\Bus\CommandBus;
 use Helpers;
 use IntegrationTest;
 use Model\Common\User;
+use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
@@ -26,6 +28,9 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
     /** @var UserRepositoryStub */
     private $users;
+
+    /** @var CommandBus */
+    private $commandBus;
 
     /**
      * @return string[]
@@ -47,6 +52,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         parent::_before();
         $this->paymentService = $this->tester->grabService(PaymentService::class);
         $this->users          = $this->tester->grabService(UserRepositoryStub::class);
+        $this->commandBus     = $this->tester->grabService(CommandBus::class);
     }
 
     public function testWhenEmailIsNotSetNothingHappens() : void
@@ -121,16 +127,8 @@ class PaymentCompletedEmailTest extends IntegrationTest
         ];
 
         $this->paymentService->createGroup(11, null, 'Test', $paymentDefaults, $emails, $credentialsId, null);
-        $this->paymentService->createPayment(
-            1,
-            'Platba',
-            $paymentEmail,
-            100,
-            Helpers::getValidDueDate(),
-            null,
-            null,
-            null,
-            ''
+        $this->commandBus->handle(
+            new CreatePayment(1, 'Platba', $paymentEmail, 100, Helpers::getValidDueDate(), null, null, null, '')
         );
     }
 

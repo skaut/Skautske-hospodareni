@@ -21,9 +21,6 @@ use Nette\Utils\Html;
  */
 class FormRenderer extends DefaultFormRenderer
 {
-    /** @var Controls\Button|NULL */
-    public $primaryButton = null;
-
     /** @var bool */
     private $controlsInit = false;
 
@@ -125,7 +122,7 @@ class FormRenderer extends DefaultFormRenderer
         $this->form->getElementPrototype()->addClass($this->inline ? 'form-inline' : 'form-horizontal');
         foreach ($this->form->getControls() as $control) {
             if ($control instanceof Controls\Button) {
-                $markAsPrimary = $control === $this->primaryButton || (! isset($this->primaryButton) && empty($usedPrimary) && $control->parent instanceof Form);
+                $markAsPrimary = empty($usedPrimary) && $control->parent instanceof Form;
                 if ($markAsPrimary) {
                     $class       = 'btn btn-primary';
                     $usedPrimary = true;

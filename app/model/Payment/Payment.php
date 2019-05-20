@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use InvalidArgumentException;
 use Model\Common\Aggregate;
+use Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\DomainEvents\PaymentWasCreated;
@@ -138,7 +139,8 @@ class Payment extends Aggregate
         $this->groupId  = $group->getId();
         $this->personId = $personId;
         $this->state    = State::get(State::PREPARING);
-        $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
+        $this->amount   = $amount;
+        $this->updateDetails($name, $email, $dueDate, $constantSymbol, $note);
         $this->variableSymbol = $variableSymbol;
         $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
     }
@@ -165,13 +167,19 @@ class Payment extends Aggregate
         string $note
     ) : void {
         $this->checkNotClosed();
-        $this->updateDetails($name, $email, $amount, $dueDate, $constantSymbol, $note);
+        $this->updateDetails($name, $email, $dueDate, $constantSymbol, $note);
 
-        if ($this->variableSymbol !== $variableSymbol) {
+        if (! VariableSymbol::areEqual($this->variableSymbol, $variableSymbol)) {
             $this->raise(new PaymentVariableSymbolWasChanged($this->groupId, $variableSymbol));
         }
 
         $this->variableSymbol = $variableSymbol;
+
+        if ($amount !== $this->amount) {
+            $this->raise(new PaymentAmountWasChanged($this->groupId, $this->variableSymbol));
+        }
+
+        $this->amount = $amount;
     }
 
     public function complete(DateTimeImmutable $time, ?Transaction $transaction = null) : void
@@ -296,14 +304,12 @@ class Payment extends Aggregate
     private function updateDetails(
         string $name,
         ?string $email,
-        float $amount,
         Date $dueDate,
         ?int $constantSymbol,
         string $note
     ) : void {
         $this->name           = $name;
         $this->email          = $email;
-        $this->amount         = $amount;
         $this->dueDate        = $dueDate;
         $this->constantSymbol = $constantSymbol;
         $this->note           = $note;

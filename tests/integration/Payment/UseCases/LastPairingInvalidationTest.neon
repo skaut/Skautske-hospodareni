@@ -1,0 +1,26 @@
+
+services:
+    - Model\Infrastructure\Repositories\Payment\PaymentRepository
+    - Model\Infrastructure\Repositories\Payment\GroupRepository
+    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
+
+    - class: Model\Payment\Subscribers\PaymentSubscriber
+      tags: [eventBus.subscriber]
+
+    - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
+      tags: [commandBus.handler]
+
+    - class: Model\Payment\Handlers\Payment\UpdatePaymentHandler
+      tags: [commandBus.handler]
+
+    - class: Model\Payment\Handlers\BankAccount\CreateBankAccountHandler
+      tags: [commandBus.handler]
+
+    - Model\Payment\Services\BankAccountAccessChecker
+
+    - Model\Payment\UnitResolverStub
+    - Model\Payment\FioClientStub
+    - Model\BankService
+
+includes:
+    - ../../config/doctrine.neon
