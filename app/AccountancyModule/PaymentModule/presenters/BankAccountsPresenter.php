@@ -221,13 +221,17 @@ class BankAccountsPresenter extends BasePresenter
 
         assert($role === null || $role instanceof SkautisRole);
 
-        return $role->getUnitId() === $account->getUnitId() && $role->isBasicUnit() && $role->isAccountant();
+        return $role->getUnitId() === $account->getUnitId()
+            && $role->isBasicUnit()
+            && ($role->isAccountant() || $role->isOfficer());
     }
 
     private function isSubunitOf(int $unitId) : bool
     {
+        $currentUnitId = $this->getCurrentUnitId()->toInt();
+
         foreach ($this->unitService->getSubunits($unitId) as $subunit) {
-            if ($subunit->getId() === $unitId) {
+            if ($subunit->getId() === $currentUnitId) {
                 return true;
             }
         }
