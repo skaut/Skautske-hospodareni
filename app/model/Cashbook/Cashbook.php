@@ -13,6 +13,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Events\ChitWasAdded;
@@ -113,9 +114,14 @@ class Cashbook extends Aggregate
 
     public function addChit(ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod, string $purpose) : void
     {
-        $chit = new Chit($this, $chitBody, $paymentMethod);
-        $chit->addItem($amount, $this->getChitCategory($category), $purpose);
-        $this->chits[] = $chit;
+        $this->chits->add(
+            new Chit(
+                $this,
+                $chitBody,
+                $paymentMethod,
+                [new ChitItem($amount, $this->getChitCategory($category), $purpose)]
+            )
+        );
         $this->raise(new ChitWasAdded($this->id));
     }
 
@@ -146,11 +152,14 @@ class Cashbook extends Aggregate
             $originalChit->getOperation()->getInverseOperation()
         );
 
-        $newChitBody = $originalChit->getBody()->withoutChitNumber();
-
-        $chit = new Chit($this, $newChitBody, $originalChit->getPaymentMethod());
-        $chit->addItem($originalChit->getItems()[0]->getAmount(), $category, $originalChit->getPurpose());
-        $this->chits[] = $chit;
+        $this->chits->add(
+            new Chit(
+                $this,
+                $originalChit->getBody()->withoutChitNumber(),
+                $originalChit->getPaymentMethod(),
+                [new ChitItem($originalChit->getItems()[0]->getAmount(), $category, $originalChit->getPurpose())]
+            )
+        );
 
         $this->raise(new ChitWasAdded($this->id));
     }
@@ -168,7 +177,7 @@ class Cashbook extends Aggregate
             throw new ChitLocked();
         }
 
-        $chit->update($chitBody, $this->getChitCategory($category), $paymentMethod, $amount, $purpose);
+        $chit->update($chitBody, $paymentMethod, [new ChitItem($amount, $this->getChitCategory($category), $purpose)]);
 
         $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $category->getId()));
     }

@@ -20,17 +20,9 @@ class ChitItem
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
      *
-     * @var int
+     * @var int|null
      */
     private $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Chit::class, inversedBy="items")
-     * @ORM\JoinColumn(name="chit_id", referencedColumnName="id", nullable=false)
-     *
-     * @var Chit
-     */
-    private $chit;
 
     /**
      * @ORM\Embedded(class=Amount::class, columnPrefix=false)
@@ -53,9 +45,8 @@ class ChitItem
      */
     private $purpose;
 
-    public function __construct(Chit $chit, Amount $amount, Category $category, string $purpose)
+    public function __construct(Amount $amount, Category $category, string $purpose)
     {
-        $this->chit     = $chit;
         $this->amount   = $amount;
         $this->category = $category;
         $this->purpose  = $purpose;
@@ -74,5 +65,10 @@ class ChitItem
     public function getPurpose() : string
     {
         return $this->purpose;
+    }
+
+    public function __clone()
+    {
+        $this->id = null;
     }
 }
