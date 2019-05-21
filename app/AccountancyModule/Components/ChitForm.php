@@ -18,6 +18,7 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ChitLocked;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
+use Model\Cashbook\InvalidAmount;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
@@ -228,6 +229,9 @@ final class ChitForm extends BaseControl
 
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
             $this->formSubmitted($form, $values);
+        };
+
+        $form->onSuccess[] = function () : void {
             $this->redirect('this');
         };
 
@@ -256,6 +260,8 @@ final class ChitForm extends BaseControl
                 $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $amount, $category, $method, $values->purpose));
                 $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
+        } catch (InvalidAmount $e) {
+            $form->addError('Částka v pokladní knize musí být zaokrouhlena na celé koruny');
         } catch (InvalidArgumentException | CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');
             $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', get_class($exc), $exc->getMessage()));

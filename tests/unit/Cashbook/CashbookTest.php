@@ -202,6 +202,23 @@ class CashbookTest extends Unit
         $cashbook->generateChitNumbers(PaymentMethod::CASH());
     }
 
+    public function testAddBankChitWithCentsToCashbook() : void
+    {
+        $cashbook = $this->createEventCashbook();
+
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::BANK(), '100.25');
+    }
+
+    public function testAddingCashChitWithCentsToCashbookThrowsException() : void
+    {
+        $cashbook = $this->createEventCashbook();
+
+        $this->expectException(InvalidAmount::class);
+        $this->expectExceptionMessage('Chits paid by cash cannot must be rounded to whole CZK, 100.25 CZK given');
+
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), '100.25');
+    }
+
     private function createEventCashbook(?CashbookId $cashbookId = null) : Cashbook
     {
         return new Cashbook($cashbookId ?? CashbookId::fromString('1'), CashbookType::get(CashbookType::EVENT));

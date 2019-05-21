@@ -76,15 +76,19 @@ class Helpers
         ]);
     }
 
-    public static function addChitToCashbook(Cashbook $cashbook, ?string $chitNumber, PaymentMethod $paymentMethod): ChitBody
-    {
+    public static function addChitToCashbook(
+        Cashbook $cashbook,
+        ?string $chitNumber,
+        PaymentMethod $paymentMethod,
+        string $amount = '100'
+    ): ChitBody {
         $chitBody = new ChitBody(
             $chitNumber === null ? null : new ChitNumber($chitNumber),
             new Date(),
             null
         );
         $category = m::mock(ICategory::class, ['getId' => 1, 'getOperationType' => Operation::get(Operation::INCOME)]);
-        $cashbook->addChit ($chitBody, new Amount('100'), $category, $paymentMethod, 'čokoláda');
+        $cashbook->addChit ($chitBody, new Amount($amount), $category, $paymentMethod, 'čokoláda');
         return $chitBody;
     }
 }

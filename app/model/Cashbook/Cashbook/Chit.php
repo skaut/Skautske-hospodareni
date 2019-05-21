@@ -11,8 +11,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
+use Model\Cashbook\InvalidAmount;
 use Model\Cashbook\Operation;
+use Model\Utils\MoneyFactory;
+use Money\Money;
 use RuntimeException;
+use function array_map;
 use function implode;
 
 /**
@@ -79,7 +83,7 @@ class Chit
      */
     public function __construct(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod, array $items)
     {
-        Assertion::notEmpty($items, 'At least one chit item was expected');
+        self::validateItems($items, $paymentMethod);
 
         $this->cashbook      = $cashbook;
         $this->body          = $body;
@@ -92,6 +96,8 @@ class Chit
      */
     public function update(ChitBody $body, PaymentMethod $paymentMethod, array $items) : void
     {
+        self::validateItems($items, $paymentMethod);
+
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
 
@@ -213,5 +219,30 @@ class Chit
     private function getFirstItem() : ChitItem
     {
         return $this->items->first();
+    }
+
+    /**
+     * @param ChitItem[] $items
+     */
+    private static function validateItems(array $items, PaymentMethod $paymentMethod) : void
+    {
+        Assertion::notEmpty($items, 'At least one chit item was expected');
+
+        if ($paymentMethod->equalsValue(PaymentMethod::BANK)) {
+            return;
+        }
+
+        $amount = Money::sum(
+            ...array_map(
+                function (ChitItem $item) : Money {
+                    return $item->getAmount()->toMoney();
+                },
+                $items
+            )
+        );
+
+        if (! MoneyFactory::floor($amount)->equals($amount)) {
+            throw InvalidAmount::notRoundedCashAmount($amount);
+        }
     }
 }

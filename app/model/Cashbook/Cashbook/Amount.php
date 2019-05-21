@@ -6,6 +6,8 @@ namespace Model\Cashbook\Cashbook;
 
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use Model\Utils\MoneyFactory;
+use Money\Money;
 use Nette\SmartObject;
 use function array_sum;
 use function count;
@@ -64,6 +66,11 @@ class Amount
     public function toFloat() : float
     {
         return $this->value;
+    }
+
+    public function toMoney() : Money
+    {
+        return MoneyFactory::fromFloat($this->value);
     }
 
     public static function fromFloat(float $amount) : self
