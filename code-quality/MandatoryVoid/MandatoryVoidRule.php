@@ -7,9 +7,15 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use function assert;
+use function in_array;
 
 class MandatoryVoidRule implements Rule
 {
+    private const METHODS_WITHOUT_RETURN_TYPE = [
+        '__construct',
+        '__clone',
+    ];
+
     public function getNodeType() : string
     {
         return ClassMethod::class;
@@ -19,7 +25,7 @@ class MandatoryVoidRule implements Rule
     {
         assert($node instanceof ClassMethod);
 
-        if($node->name->toLowerString() === '__construct') {
+        if (in_array($node->name->toLowerString(), self::METHODS_WITHOUT_RETURN_TYPE, true)) {
             return [];
         }
 
