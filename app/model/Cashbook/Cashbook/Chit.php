@@ -82,14 +82,14 @@ class Chit
 
     public function addItem(Amount $amount, Category $category, string $purpose) : void
     {
-        $this->items[] = new ChitItem($this->getNextChitItemId(), $this, $amount, $category, $purpose);
+        $this->items[] = new ChitItem($this, $amount, $category, $purpose);
     }
 
     public function update(ChitBody $body, Category $category, PaymentMethod $paymentMethod, Amount $amount, string $purpose) : void
     {
         $this->body = $body;
         $this->items->clear();
-        $this->items->add(new ChitItem($this->getNextChitItemId(), $this, $amount, $category, $purpose));
+        $this->items->add(new ChitItem($this, $amount, $category, $purpose));
         $this->paymentMethod = $paymentMethod;
     }
 
@@ -208,14 +208,5 @@ class Chit
         }
 
         return $this->items->first();
-    }
-
-    public function getNextChitItemId() : int
-    {
-        $ids = $this->items->map(function (ChitItem $i) {
-            return $i->getId();
-        });
-
-        return 1 + max(array_merge($ids->getValues(), [0]));
     }
 }

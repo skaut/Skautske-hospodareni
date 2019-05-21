@@ -19,7 +19,7 @@ final class ChitFactory
     {
         $items = [];
         foreach ($chit->getItems() as $item) {
-            $items[] = new ChitItem($item->getId(), $item->getAmount(), $categories[$item->getCategory()->getId()], $item->getPurpose());
+            $items[] = new ChitItem($item->getAmount(), $categories[$item->getCategory()->getId()], $item->getPurpose());
         }
 
         return new Chit(
