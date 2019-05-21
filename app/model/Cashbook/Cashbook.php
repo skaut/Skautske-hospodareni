@@ -116,7 +116,7 @@ class Cashbook extends Aggregate
         $chit = new Chit($this, $chitBody, $paymentMethod);
         $chit->addItem($amount, $this->getChitCategory($category), $purpose);
         $this->chits[] = $chit;
-        $this->raise(new ChitWasAdded($this->id, $category->getId()));
+        $this->raise(new ChitWasAdded($this->id));
     }
 
     /**
@@ -152,7 +152,7 @@ class Cashbook extends Aggregate
         $chit->addItem($originalChit->getItems()[0]->getAmount(), $category, $originalChit->getPurpose());
         $this->chits[] = $chit;
 
-        $this->raise(new ChitWasAdded($this->id, $categoryId));
+        $this->raise(new ChitWasAdded($this->id));
     }
 
     /**
@@ -265,7 +265,7 @@ class Cashbook extends Aggregate
 
             $this->chits->add($newChit);
 
-            $this->raise(new ChitWasAdded($this->id, $newChit->getCategoryId()));
+            $this->raise(new ChitWasAdded($this->id));
         }
     }
 
