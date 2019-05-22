@@ -308,6 +308,10 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage('Platba byla zaplacena.');
         } catch (PaymentClosed $e) {
             $this->flashMessage('Tato platba už je uzavřená', 'danger');
+        } catch (InvalidSmtp $e) {
+            $this->flashMessage('Platba byla zaplacena, ale nepodařilo se odeslat informační email!', 'warning');
+            $this->smtpError($e);
+            $this->redirect('this');
         }
 
         $this->redirect('this');
