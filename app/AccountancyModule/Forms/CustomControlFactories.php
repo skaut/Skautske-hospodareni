@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Forms;
 
 use App\AccountancyModule\Components\FormControls\DateControl;
+use Kdyby\Replicator\Container;
 use NasExt\Forms\Controls\DependentSelectBox;
 use Nette\Forms\IControl;
 
@@ -34,5 +35,13 @@ trait CustomControlFactories
     public function addDependentSelectBox(string $name, ?string $label, IControl ...$parents) : DependentSelectBox
     {
         return $this[$name] = new DependentSelectBox($label, $parents);
+    }
+
+    public function addDynamic($name, $factory, $createDefault = 0, $forceDefault = false) : Container
+    {
+        $control               = new Container($factory, $createDefault, $forceDefault);
+        $control->currentGroup = $this->currentGroup;
+
+        return $this[$name] = $control;
     }
 }

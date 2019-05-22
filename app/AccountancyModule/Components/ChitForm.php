@@ -28,6 +28,9 @@ use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
+use Nette\Forms\Container;
+use Nette\Forms\Controls\SubmitButton;
+use Nette\Forms\Form;
 use Nette\Forms\IControl;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
@@ -36,6 +39,7 @@ use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 use function array_values;
 use function assert;
+use function dump;
 use function get_class;
 use function sprintf;
 
@@ -69,6 +73,9 @@ final class ChitForm extends BaseControl
 
     /** @var LoggerInterface */
     private $logger;
+
+    /** @var int */
+    private $itemsCount = 0;
 
     public function __construct(
         CashbookId $cashbookId,
@@ -176,7 +183,7 @@ final class ChitForm extends BaseControl
             ->setMaxLength(5)
             ->setRequired(false)
             ->addRule($form::PATTERN, self::INVALID_CHIT_NUMBER_MESSAGE, ChitNumber::PATTERN)
-            ->setAttribute('placeholder', 'Číslo')
+            ->setAttribute('placeholder', 'Číslo dokladu')
             ->setAttribute('class', 'form-control input-sm');
 
         $paymentMethods = [
@@ -184,24 +191,13 @@ final class ChitForm extends BaseControl
             PaymentMethod::BANK => 'Banka',
         ];
 
-        $form->addSelect('paymentMethod', null, $paymentMethods)
-            ->setRequired(true)
-            ->setAttribute('class', 'form-control input-sm required');
+        $form->addRadioList('paymentMethod', null, $paymentMethods)
+            ->setDefaultValue(PaymentMethod::CASH)
+            ->setRequired(true);
 
-        $form->addText('purpose')
-            ->setMaxLength(120)
-            ->setRequired('Zadejte účel výplaty')
-            ->setAttribute('placeholder', 'Účel')
-            ->setAttribute('class', 'form-control input-sm required');
-
-        $type = $form->addSelect('type', null, self::CATEGORY_TYPES)
-            ->setAttribute('size', '2')
+        $typePicker = $form->addRadioList('type', null, self::CATEGORY_TYPES)
             ->setDefaultValue(Operation::EXPENSE)
             ->setRequired('Vyberte typ');
-
-        $form->addDependentSelectBox('category', null, $type)
-            ->setDependentCallback([$this, 'getCategoryItems'])
-            ->setAttribute('class', 'form-control input-sm');
 
         $form->addText('recipient')
             ->setMaxLength(64)
@@ -210,13 +206,42 @@ final class ChitForm extends BaseControl
             ->setAttribute('placeholder', 'Komu/Od')
             ->setAttribute('class', 'form-control input-sm');
 
-        $form->addText('price')
-            ->setRequired('Musíte vyplnit částku')
-            ->addRule([$this, 'isAmountValid'], 'Částka musí být větší než 0')
-            ->setMaxLength(100)
-            ->setHtmlId('form-out-price')
-            ->setAttribute('placeholder', 'Částka: 2+3*15')
-            ->setAttribute('class', 'form-control input-sm');
+        $removeItem = [$this, 'removeItemClicked'];
+        $items = $form->addDynamic('items', function (Container $container) use ($typePicker, $removeItem) : void {
+            $this->itemsCount++;
+            $container->addText('purpose')
+                ->setMaxLength(120)
+                ->setRequired('Zadejte účel výplaty')
+                ->setAttribute('placeholder', 'Účel')
+                ->setAttribute('class', 'form-control input-sm required');
+
+            $container->addSelect('incomeCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::INCOME)))
+                ->setAttribute('class', 'form-control input-sm')
+                ->addConditionOn($typePicker, Form::EQUAL, Operation::INCOME)
+                ->toggle('incomeCategories' . $this->itemsCount);
+
+            $container->addSelect('expenseCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)))
+                ->setAttribute('class', 'form-control input-sm')
+                ->addConditionOn($typePicker, Form::EQUAL, Operation::EXPENSE)
+                ->toggle('expenseCategories' . $this->itemsCount);
+
+            $container->addText('price')
+                ->setRequired('Musíte vyplnit částku')
+                ->addRule([$this, 'isAmountValid'], 'Částka musí být větší než 0')
+                ->setMaxLength(100)
+                ->setHtmlId('form-out-price')
+                ->setAttribute('placeholder', 'Částka: 2+3*15')
+                ->setAttribute('class', 'form-control input-sm');
+            $container->addHidden ('id');
+
+            $container->addSubmit('remove', 'Odebrat položku')
+                ->setValidationScope(FALSE) # disables validation
+                ->onClick[] = $removeItem;
+        }, 1);
+
+        $items->addSubmit('addItem', 'Přidat další položku')
+            ->setValidationScope(false)
+            ->onClick[] = [$this, 'addItemClicked'];
 
         // ID of edited chit
         $form->addHidden('pid')
@@ -227,11 +252,19 @@ final class ChitForm extends BaseControl
             ->setAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
+            if ($form->isSubmitted() !== $form['send']) {
+                return;
+            }
             $this->formSubmitted($form, $values);
             $this->redirect('this');
         };
 
         return $form;
+    }
+
+    public function addItemClicked(SubmitButton $button) : void
+    {
+        $button->parent->createOne();
     }
 
     private function formSubmitted(BaseForm $form, ArrayHash $values) : void
