@@ -84,7 +84,10 @@ class Helpers
             null
         );
         $category = m::mock(ICategory::class, ['getId' => 1, 'getOperationType' => Operation::get(Operation::INCOME)]);
-        $cashbook->addChit ($chitBody, new Amount('100'), $category, $paymentMethod, 'čokoláda');
+        $cashbook->addChit ($chitBody, $paymentMethod,
+            [new \App\AccountancyModule\Components\Cashbook\Form\ChitItem(null, new Amount('100'), 1, 'čokoláda')],
+            [1 => $category]
+        );
         return $chitBody;
     }
 }

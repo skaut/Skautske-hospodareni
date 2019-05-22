@@ -30,10 +30,10 @@ final class AddChitToCashbookHandler
      */
     public function __invoke(AddChitToCashbook $command) : void
     {
-        $cashbook = $this->cashbooks->find($command->getCashbookId());
-        $category = $this->categories->find($command->getCategoryId(), $cashbook->getId(), $cashbook->getType());
+        $cashbook   = $this->cashbooks->find($command->getCashbookId());
+        $categories = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());
 
-        $cashbook->addChit($command->getBody(), $command->getAmount(), $category, $command->getPaymentMethod(), $command->getPurpose());
+        $cashbook->addChit($command->getBody(), $command->getPaymentMethod(), $command->getItems(), $categories);
 
         $this->cashbooks->save($cashbook);
     }

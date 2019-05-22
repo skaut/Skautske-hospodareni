@@ -205,6 +205,33 @@ class CashbookIntegrationTest extends IntegrationTest
         ];
     }
 
+    public function testAddInverseTransferRaisesEvent() : void
+    {
+        $originalCashbook = new Cashbook(CashbookId::fromString('20'), CashbookType::get(CashbookType::TROOP));
+        $recipient        = new Recipient('František Maša');
+
+        $chitBody = new ChitBody(new ChitNumber('123'), new Date(), $recipient);
+        $category = $this->mockCategory(16, Operation::EXPENSE);
+        $originalCashbook->addChit($chitBody, new Amount('100 + 1'), $category, PaymentMethod::CASH(), 'transfer'); // "Převod do akce"
+
+        // to generate ID for chit
+        $this->entityManager->persist($originalCashbook);
+        $this->entityManager->flush();
+
+        $cashbook = new Cashbook(CashbookId::fromString('10'), CashbookType::get(CashbookType::EVENT));
+        $cashbook->extractEventsToDispatch();
+
+        $cashbook->addInverseChit($originalCashbook, 1);
+
+        $events = $cashbook->extractEventsToDispatch();
+
+        $this->assertCount(1, $events);
+        $event = $events[0];
+
+        /** @var ChitWasAdded $event */
+        $this->assertTrue($event->getCashbookId()->equals(CashbookId::fromString('10')));
+    }
+
     /**
      * @dataProvider getInvalidInverseChitCategories
      */

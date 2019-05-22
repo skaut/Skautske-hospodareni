@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\Components\Cashbook\Form\ChitItem;
 use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
 use App\Forms\BaseForm;
@@ -129,7 +130,8 @@ class CashbookPresenter extends BasePresenter
             new CampParticipantCategoryIdQuery(new SkautisCampId($unitId), ParticipantType::get(ParticipantType::CHILD))
         );
 
-        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, Amount::fromFloat($amount), $categoryId, PaymentMethod::CASH(), $purpose));
+        $items = [new ChitItem(null, Amount::fromFloat($amount), $categoryId, $purpose)];
+        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, PaymentMethod::CASH(), $items));
 
         $this->flashMessage('HPD byl importován');
 

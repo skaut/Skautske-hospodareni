@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\Components;
 
+use App\AccountancyModule\Components\Cashbook\Form\ChitItem;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
@@ -39,7 +40,6 @@ use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 use function array_values;
 use function assert;
-use function dump;
 use function get_class;
 use function sprintf;
 
@@ -207,7 +207,7 @@ final class ChitForm extends BaseControl
             ->setAttribute('class', 'form-control input-sm');
 
         $removeItem = [$this, 'removeItemClicked'];
-        $items = $form->addDynamic('items', function (Container $container) use ($typePicker, $removeItem) : void {
+        $items      = $form->addDynamic('items', function (Container $container) use ($typePicker, $removeItem) : void {
             $this->itemsCount++;
             $container->addText('purpose')
                 ->setMaxLength(120)
@@ -232,10 +232,10 @@ final class ChitForm extends BaseControl
                 ->setHtmlId('form-out-price')
                 ->setAttribute('placeholder', 'Částka: 2+3*15')
                 ->setAttribute('class', 'form-control input-sm');
-            $container->addHidden ('id');
+            $container->addHidden('id');
 
             $container->addSubmit('remove', 'Odebrat položku')
-                ->setValidationScope(FALSE) # disables validation
+                ->setValidationScope(false) // disables validation
                 ->onClick[] = $removeItem;
         }, 1);
 
@@ -267,6 +267,14 @@ final class ChitForm extends BaseControl
         $button->parent->createOne();
     }
 
+    public function removeItemClicked(SubmitButton $button) : void
+    {
+        // first parent is container
+        // second parent is it's replicator
+        $container = $button->parent->parent;
+        $container->remove($button->parent, true);
+    }
+
     private function formSubmitted(BaseForm $form, ArrayHash $values) : void
     {
         if (! $this->isEditable) {
@@ -276,17 +284,25 @@ final class ChitForm extends BaseControl
 
         $chitId     = $values['pid'] !== '' ? (int) $values['pid'] : null;
         $cashbookId = $this->cashbookId;
-        $category   = $values->category;
         $chitBody   = $this->buildChitBodyFromValues($values);
-        $amount     = new Amount($values->price);
         $method     = PaymentMethod::get($values->paymentMethod);
+        $items      = [];
+
+        foreach ($values->items as $item) {
+            $items[] = new ChitItem(
+                $item->id !== '' ? $item->id : null,
+                new Amount($item->price),
+                $values->type === Operation::INCOME ? $item->incomeCategories : $item->expenseCategories,
+                $item->purpose
+            );
+        }
 
         try {
             if ($chitId !== null) {
                 $this->commandBus->handle(new UpdateChit($cashbookId, $chitId, $chitBody, $amount, $category, $method, $values->purpose));
                 $this->flashMessage('Paragon byl upraven.');
             } else {
-                $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $amount, $category, $method, $values->purpose));
+                $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $method, $items));
                 $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
         } catch (InvalidArgumentException | CashbookNotFound $exc) {
