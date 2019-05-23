@@ -14,28 +14,15 @@ use Doctrine\ORM\Mapping as ORM;
 class ChitItem
 {
     /**
+     * @internal only for mapping
+     *
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
      *
-     * @var int|NULL
-     */
-    private $_id;
-
-    /**
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
+     * @var int|null
      */
     private $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Chit::class, inversedBy="items")
-     * @ORM\JoinColumn(name="chit_id", referencedColumnName="id")
-     *
-     * @var Chit
-     */
-    private $chit;
 
     /**
      * @ORM\Embedded(class=Amount::class, columnPrefix=false)
@@ -58,18 +45,11 @@ class ChitItem
      */
     private $purpose;
 
-    public function __construct(int $id, Chit $chit, Amount $amount, Category $category, string $purpose)
+    public function __construct(Amount $amount, Category $category, string $purpose)
     {
-        $this->id       = $id;
-        $this->chit     = $chit;
         $this->amount   = $amount;
         $this->category = $category;
         $this->purpose  = $purpose;
-    }
-
-    public function getId() : int
-    {
-        return $this->id;
     }
 
     public function getAmount() : Amount
@@ -85,5 +65,10 @@ class ChitItem
     public function getPurpose() : string
     {
         return $this->purpose;
+    }
+
+    public function __clone()
+    {
+        $this->id = null;
     }
 }

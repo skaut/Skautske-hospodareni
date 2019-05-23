@@ -52,7 +52,6 @@ class CashbookTest extends Unit
         $event = $events[0];
         $this->assertInstanceOf(ChitWasAdded::class, $event);
         $this->assertTrue($cashbookId->equals($event->getCashbookId()));
-        $this->assertSame(6, $event->getCategoryId());
     }
 
     public function testGetCategoryTotalsReturnsCorrectValues() : void
@@ -124,7 +123,6 @@ class CashbookTest extends Unit
         $event = $events[0];
         $this->assertInstanceOf(ChitWasAdded::class, $event);
         $this->assertTrue($cashbookId->equals($event->getCashbookId()));
-        $this->assertSame(666, $event->getCategoryId());
     }
 
     /**

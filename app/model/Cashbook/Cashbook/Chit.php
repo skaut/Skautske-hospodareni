@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Cashbook;
 
+use Assert\Assertion;
 use Cake\Chronos\Date;
 use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,12 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
 use Model\Cashbook\Operation;
-use Model\Common\ShouldNotHappen;
 use RuntimeException;
-use function array_merge;
-use function count;
 use function implode;
-use function max;
 
 /**
  * @ORM\Entity()
@@ -49,7 +46,14 @@ class Chit
     private $body;
 
     /**
-     * @ORM\OneToMany(targetEntity=ChitItem::class, mappedBy="chit", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity=ChitItem::class, cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\JoinTable(
+     *     name="ac_chit_to_item",
+     *     joinColumns={@ORM\JoinColumn(name="chit_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     inverseJoinColumns={
+     *         @ORM\JoinColumn(name="item_id", referencedColumnName="id", unique=true, onDelete="CASCADE")
+     *     }
+     * )
      *
      * @var ChitItem[]|ArrayCollection
      */
@@ -72,25 +76,32 @@ class Chit
      */
     private $locked;
 
-    public function __construct(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod)
+    /**
+     * @param ChitItem[] $items
+     */
+    public function __construct(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod, array $items)
     {
-        $this->items         = new ArrayCollection();
+        Assertion::notEmpty($items, 'At least one chit item was expected');
+
         $this->cashbook      = $cashbook;
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
+        $this->items         = new ArrayCollection($items);
     }
 
-    public function addItem(Amount $amount, Category $category, string $purpose) : void
+    /**
+     * @param ChitItem[] $items
+     */
+    public function update(ChitBody $body, PaymentMethod $paymentMethod, array $items) : void
     {
-        $this->items[] = new ChitItem($this->getNextChitItemId(), $this, $amount, $category, $purpose);
-    }
-
-    public function update(ChitBody $body, Category $category, PaymentMethod $paymentMethod, Amount $amount, string $purpose) : void
-    {
-        $this->body = $body;
-        $this->items->clear();
-        $this->items->add(new ChitItem($this->getNextChitItemId(), $this, $amount, $category, $purpose));
+        $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
+
+        $this->items->clear();
+
+        foreach ($items as $item) {
+            $this->items->add($item);
+        }
     }
 
     public function lock(int $userId) : void
@@ -154,12 +165,14 @@ class Chit
 
     public function copyToCashbook(Cashbook $newCashbook) : self
     {
-        $chit = new self($newCashbook, $this->body, $this->paymentMethod);
-        foreach ($this->items as $item) {
-            $chit->addItem($item->getAmount(), $item->getCategory(), $item->getPurpose());
-        }
-
-        return $chit;
+        return new self(
+            $newCashbook,
+            $this->body,
+            $this->paymentMethod,
+            $this->items->map(function (ChitItem $item) : ChitItem {
+                return clone $item;
+            })->toArray()
+        );
     }
 
     public function isIncome() : bool
@@ -169,18 +182,16 @@ class Chit
 
     public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook) : self
     {
-        $newChit = new self($newCashbook, $this->body, $this->paymentMethod);
-
-        /** @var ChitItem $item */
-        foreach ($this->items as $item) {
+        $items = $this->items->map(function (ChitItem $item) : ChitItem {
             $category = new Category(
                 $this->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
                 $item->getCategory()->getOperationType()
             );
-            $newChit->addItem($item->getAmount(), $category, $item->getPurpose());
-        }
 
-        return $newChit;
+            return new ChitItem($item->getAmount(), $category, $item->getPurpose());
+        });
+
+        return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray());
     }
 
     public function getPaymentMethod() : PaymentMethod
@@ -203,19 +214,6 @@ class Chit
 
     private function getFirstItem() : ChitItem
     {
-        if (count($this->items) === 0) {
-            throw new ShouldNotHappen();
-        }
-
         return $this->items->first();
-    }
-
-    public function getNextChitItemId() : int
-    {
-        $ids = $this->items->map(function (ChitItem $i) {
-            return $i->getId();
-        });
-
-        return 1 + max(array_merge($ids->getValues(), [0]));
     }
 }
