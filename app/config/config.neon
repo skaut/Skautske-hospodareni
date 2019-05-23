@@ -1,4 +1,6 @@
 parameters:
+    uploadDirectory: %appDir%/../uploads
+
 
 php:
     date.timezone: Europe/Prague
@@ -150,6 +152,7 @@ services:
 
     - Model\Infrastructure\Services\Unit\CachedUnitResolver(@unitResolver)
 
+    - Model\Infrastructure\Services\Common\FileSystemScanStorage(%uploadDirectory%)
 
     # Skautis webservices
     skautis.org:
