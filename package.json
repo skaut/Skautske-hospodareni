@@ -26,7 +26,7 @@
         "bootstrap.native-loader": "^1.0.7",
         "uglify-js": "^3.5.2",
         "webpack": "^4.29.6",
-        "webpack-bundle-analyzer": "^3.1.0",
+        "webpack-bundle-analyzer": "^3.3.2",
         "webpack-cli": "^3.3.0"
     }
 }
