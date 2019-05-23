@@ -16,9 +16,6 @@ includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon
 
 services:
-	- class: CodeQuality\MandatoryVoid\MandatoryVoidRule
-	  tags: [ phpstan.rules.rule ]
-
 	- class: CodeQuality\ObjectIdentityComparisonRule
 	  tags: [ phpstan.rules.rule ]
 
