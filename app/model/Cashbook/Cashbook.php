@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook;
 
+use App\AccountancyModule\Components\Cashbook\Form\ChitItem;
 use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,7 +14,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Events\ChitWasAdded;
@@ -112,16 +112,21 @@ class Cashbook extends Aggregate
         $this->note = $note;
     }
 
-    public function addChit(ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod, string $purpose) : void
+//Amount $amount, ICategory $category, string $purpose
+
+    /**
+     * @param ChitItem  $items
+     * @param ICategory $categories
+     */
+    public function addChit(ChitBody $chitBody, PaymentMethod $paymentMethod, array $items, array $categories) : void
     {
-        $this->chits->add(
-            new Chit(
-                $this,
-                $chitBody,
-                $paymentMethod,
-                [new ChitItem($amount, $this->getChitCategory($category), $purpose)]
-            )
-        );
+        $chit              = new Chit($this, $chitBody, $paymentMethod);
+        /** @var ChitItem $item */
+        foreach ($items as $item) {
+            $chit->addItem($item->getAmount(), $this->getChitCategory($categories[$item->getCategory()]), $item->getPurpose());
+        }
+
+        $this->chits[] = $chit;
         $this->raise(new ChitWasAdded($this->id));
     }
 
@@ -152,14 +157,11 @@ class Cashbook extends Aggregate
             $originalChit->getOperation()->getInverseOperation()
         );
 
-        $this->chits->add(
-            new Chit(
-                $this,
-                $originalChit->getBody()->withoutChitNumber(),
-                $originalChit->getPaymentMethod(),
-                [new ChitItem($originalChit->getItems()[0]->getAmount(), $category, $originalChit->getPurpose())]
-            )
-        );
+        $newChitBody = $originalChit->getBody()->withoutChitNumber();
+
+        $chit = new Chit($this, $newChitBody, $originalChit->getPaymentMethod());
+        $chit->addItem($originalChit->getItems()[0]->getAmount(), $category, $originalChit->getPurpose());
+        $this->chits[] = $chit;
 
         $this->raise(new ChitWasAdded($this->id));
     }
@@ -177,9 +179,9 @@ class Cashbook extends Aggregate
             throw new ChitLocked();
         }
 
-        $chit->update($chitBody, $paymentMethod, [new ChitItem($amount, $this->getChitCategory($category), $purpose)]);
+        $chit->update($chitBody, $this->getChitCategory($category), $paymentMethod, $amount, $purpose);
 
-        $this->raise(new ChitWasUpdated($this->id, $oldCategoryId, $category->getId()));
+        $this->raise(new ChitWasUpdated($this->id));
     }
 
     /**
@@ -378,7 +380,7 @@ class Cashbook extends Aggregate
             $newBody = $body->withNewNumber(new ChitNumber((string) (++$maxChitNumber)));
 
             $chit->setBody($newBody);
-            $this->raise(new ChitWasUpdated($this->id, $chit->getCategoryId(), $chit->getCategoryId()));
+            $this->raise(new ChitWasUpdated($this->id));
         }
     }
 }

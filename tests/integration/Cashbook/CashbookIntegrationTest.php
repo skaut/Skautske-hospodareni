@@ -72,8 +72,6 @@ class CashbookIntegrationTest extends IntegrationTest
         $this->assertInstanceOf(ChitWasUpdated::class, $event);
         /** @var ChitWasUpdated $event */
         $this->assertTrue($event->getCashbookId()->equals(CashbookId::fromString('10')));
-        $this->assertSame(666, $event->getOldCategoryId());
-        $this->assertSame(1, $event->getNewCategoryId());
     }
 
     public function testUpdateOfLockedChitThrowsException() : void
