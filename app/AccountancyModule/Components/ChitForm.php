@@ -143,11 +143,19 @@ final class ChitForm extends BaseControl
             'num' => (string) $chit->getBody()->getNumber(),
             'paymentMethod' => $chit->getPaymentMethod()->toString(),
             'recipient' => (string) $chit->getBody()->getRecipient(),
-            'purpose' => $chit->getPurpose(),
-            'price' => $chit->getAmount()->getExpression(),
             'type' => $chit->getCategory()->getOperationType()->getValue(),
-            'category' => $chit->getCategory()->getId(),
         ]);
+
+        $items = [];
+        foreach ($chit->getItems() as $item) {
+            $items[] = [
+                'id' => $item->getId(),
+                'purpose' => $item->getPurpose(),
+                'price' => $item->getAmount()->getExpression(),
+                'category' => $item->getCategory()->getId(),
+            ];
+            $this['form']['items']->setDefaults($items);
+        }
 
         $this->redrawControl();
     }
@@ -301,7 +309,7 @@ final class ChitForm extends BaseControl
 
         try {
             if ($chitId !== null) {
-                $this->commandBus->handle(new UpdateChit($cashbookId, $chitId, $chitBody, $amount, $category, $method, $values->purpose));
+                $this->commandBus->handle(new UpdateChit($cashbookId, $chitId, $chitBody, $method, $items));
                 $this->flashMessage('Paragon byl upraven.');
             } else {
                 $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $method, $items));

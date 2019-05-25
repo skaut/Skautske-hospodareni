@@ -13,12 +13,11 @@ final class ChitWasAdded
 
     public function __construct(CashbookId $cashbookId)
     {
-        $this->cashbookId  = $cashbookId;
+        $this->cashbookId = $cashbookId;
     }
 
     public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
     }
-
 }

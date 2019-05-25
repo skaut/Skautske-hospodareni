@@ -66,7 +66,12 @@ class CashbookIntegrationTest extends IntegrationTest
         $paymentMethod = PaymentMethod::BANK();
 
         $cashbook->unlockChit(1);
-        $cashbook->updateChit(1, new ChitBody(null, $date, $recipient), $amount, $category, $paymentMethod, 'purpose');
+        $cashbook->updateChit(
+            1,
+            new ChitBody(null, $date, $recipient),
+            $paymentMethod,
+            [new \App\AccountancyModule\Components\Cashbook\Form\ChitItem(null, $amount, $category, 'purpose')]
+        );
 
         $event = $cashbook->extractEventsToDispatch()[0];
         $this->assertInstanceOf(ChitWasUpdated::class, $event);
@@ -83,7 +88,12 @@ class CashbookIntegrationTest extends IntegrationTest
         $paymentMethod = PaymentMethod::CASH();
         $this->expectException(ChitLocked::class);
 
-        $cashbook->updateChit(1, new ChitBody(null, $date, null), $amount, $category, $paymentMethod, 'new-purpose');
+        $cashbook->updateChit(
+            1,
+            new ChitBody(null, $date, null),
+            $paymentMethod,
+            [new \App\AccountancyModule\Components\Cashbook\Form\ChitItem(null, $amount, $category, 'new-purpose')]
+        );
     }
 
     public function testUpdateOfNonExistentChitThrowsException() : void
@@ -96,7 +106,12 @@ class CashbookIntegrationTest extends IntegrationTest
 
         $this->expectException(ChitNotFound::class);
 
-        $cashbook->updateChit(2, new ChitBody(null, $date, null), $amount, $category, $paymentMethod, 'new-purpose');
+        $cashbook->updateChit(
+            2,
+            new ChitBody(null, $date, null),
+            $paymentMethod,
+            [new \App\AccountancyModule\Components\Cashbook\Form\ChitItem(null, $amount, $category, 'new-purpose')]
+        );
     }
 
     public function testRemoveChit() : void

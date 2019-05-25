@@ -174,7 +174,7 @@ class Cashbook extends Aggregate
      */
     public function updateChit(int $chitId, ChitBody $chitBody, PaymentMethod $paymentMethod, array $items) : void
     {
-        $chit          = $this->getChit($chitId);
+        $chit = $this->getChit($chitId);
 
         if ($chit->isLocked()) {
             throw new ChitLocked();
