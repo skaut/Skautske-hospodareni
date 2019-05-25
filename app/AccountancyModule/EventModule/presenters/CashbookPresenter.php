@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\Components\Cashbook\Form\ChitItem;
 use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
 use Cake\Chronos\Date;
@@ -97,10 +98,8 @@ class CashbookPresenter extends BasePresenter
             new AddChitToCashbook(
                 $cashbookId,
                 new ChitBody(null, new Date($date), $accountant),
-                $amount,
-                Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID,
                 PaymentMethod::CASH(),
-                'účastnické příspěvky'
+                [new ChitItem(null, $amount, Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID, 'účastnické příspěvky')]
             )
         );
 

@@ -37,7 +37,7 @@ trait CustomControlFactories
         return $this[$name] = new DependentSelectBox($label, $parents);
     }
 
-    public function addDynamic($name, $factory, $createDefault = 0, $forceDefault = false) : Container
+    public function addDynamic(string $name, callable $factory, int $createDefault = 0, bool $forceDefault = false) : Container
     {
         $control               = new Container($factory, $createDefault, $forceDefault);
         $control->currentGroup = $this->currentGroup;

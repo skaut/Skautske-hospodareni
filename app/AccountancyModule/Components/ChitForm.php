@@ -154,7 +154,7 @@ final class ChitForm extends BaseControl
                 'price' => $item->getAmount()->getExpression(),
                 'category' => $item->getCategory()->getId(),
             ];
-            $this['form']['items']->setDefaults($items);
+            $this['form']->setDefaults(['items' => $items]);
         }
 
         $this->redrawControl();
@@ -250,7 +250,10 @@ final class ChitForm extends BaseControl
 
         $items->addSubmit('addItem', 'Přidat další položku')
             ->setValidationScope(false)
-            ->onClick[] = [$this, 'addItemClicked'];
+            ->onClick[] = function () use ($items) : void {
+                $items->createOne();
+                $this->redrawControl();
+            };
 
         // ID of edited chit
         $form->addHidden('pid')
@@ -271,18 +274,12 @@ final class ChitForm extends BaseControl
         return $form;
     }
 
-    public function addItemClicked(SubmitButton $button) : void
-    {
-        $button->parent->createOne();
-        $this->redrawControl();
-    }
-
     public function removeItemClicked(SubmitButton $button) : void
     {
-        // first parent is container
-        // second parent is it's replicator
-        $container = $button->parent->parent;
-        $container->remove($button->parent, true);
+        $container  = $button->getParent();
+        $replicator = $container->getParent();
+        assert($replicator instanceof \Kdyby\Replicator\Container && $container instanceof Container);
+        $replicator->remove($container, true);
         $this->redrawControl();
     }
 

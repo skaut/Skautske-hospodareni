@@ -114,8 +114,8 @@ class Cashbook extends Aggregate
 //Amount $amount, ICategory $category, string $purpose
 
     /**
-     * @param ChitItem  $items
-     * @param ICategory $categories
+     * @param ChitItem[] $items
+     * @param ICategory  $categories
      */
     public function addChit(ChitBody $chitBody, PaymentMethod $paymentMethod, array $items) : void
     {
@@ -166,7 +166,7 @@ class Cashbook extends Aggregate
     }
 
     /**
-     * @param ChitItem    $items
+     * @param ChitItem[]  $items
      * @param ICategory[] $categories
      *
      * @throws ChitNotFound

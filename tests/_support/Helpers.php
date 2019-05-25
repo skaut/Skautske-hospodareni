@@ -87,7 +87,7 @@ class Helpers
             new Date(),
             null
         );
-        $category = m::mock(ICategory::class, ['getId' => $categoryId, 'getOperationType' => Operation::get(Operation::INCOME)]);
+        $category = m::mock(Cashbook\Category::class, ['getId' => $categoryId, 'getOperationType' => Operation::get(Operation::INCOME)]);
 
         $cashbook->addChit (
             $chitBody,

@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers;
 
+use App\AccountancyModule\Components\Cashbook\Form\ChitItem;
 use Cake\Chronos\Date;
 use CommandHandlerTest;
-use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
-use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\Repositories\ICashbookRepository;
 
@@ -36,10 +35,8 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
         for ($i = 0; $i < 3; $i++) {
             $sourceCashbook->addChit(
                 new Cashbook\ChitBody(null, new Date(), null),
-                new Amount('100'),
-                $this->mockCategory(),
                 Cashbook\PaymentMethod::get(Cashbook\PaymentMethod::CASH),
-                'test'
+                [new ChitItem(null, new Amount('100'), $this->mockCategory(), 'test')]
             );
         }
 
@@ -77,11 +74,8 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
         $this->cashbooks = $this->tester->grabService(ICashbookRepository::class);
     }
 
-    private function mockCategory() : ICategory
+    private function mockCategory() : Cashbook\Category
     {
-        return m::mock(ICategory::class, [
-            'getId' => 123,
-            'getOperationType' => Operation::get(Operation::INCOME),
-        ]);
+        return new Cashbook\Category(123, Operation::get(Operation::INCOME));
     }
 }

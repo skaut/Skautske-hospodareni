@@ -66,6 +66,9 @@ final class UpdateChit
         return $this->paymentMethod;
     }
 
+    /**
+     * @return ChitItem[]
+     */
     public function getItems() : array
     {
         return $this->items;

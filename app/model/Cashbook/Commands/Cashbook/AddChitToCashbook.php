@@ -27,7 +27,7 @@ final class AddChitToCashbook
     private $paymentMethod;
 
     /**
-     * @param ChitItem $items
+     * @param ChitItem[] $items
      */
     public function __construct(CashbookId $cashbookId, ChitBody $body, PaymentMethod $paymentMethod, array $items)
     {

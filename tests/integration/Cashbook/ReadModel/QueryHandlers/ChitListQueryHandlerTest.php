@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
+use App\AccountancyModule\Components\Cashbook\Form\ChitItem;
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use IntegrationTest;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
@@ -50,7 +50,11 @@ class ChitListQueryHandlerTest extends IntegrationTest
 
         foreach ($chits as [$date, $operation, $categoryId, $paymentMethod]) {
             $body = new Cashbook\ChitBody(null, new Date($date), null);
-            $cashbook->addChit($body, Cashbook\Amount::fromFloat(10), $this->mockCategory($categoryId, $operation), PaymentMethod::get($paymentMethod), '');
+            $cashbook->addChit(
+                $body,
+                PaymentMethod::get($paymentMethod),
+                [new ChitItem(null, Cashbook\Amount::fromFloat(10), $this->mockCategory($categoryId, $operation), '')]
+            );
         }
 
         $this->entityManager->persist($cashbook);
@@ -110,11 +114,8 @@ class ChitListQueryHandlerTest extends IntegrationTest
         return Cashbook\CashbookId::fromString(self::CASHBOOK_ID);
     }
 
-    private function mockCategory(int $id, string $operationType = Operation::INCOME) : ICategory
+    private function mockCategory(int $id, string $operationType = Operation::INCOME) : Cashbook\Category
     {
-        return m::mock(ICategory::class, [
-            'getId' => $id,
-            'getOperationType' => Operation::get($operationType),
-        ]);
+        return new Cashbook\Category($id, Operation::get($operationType));
     }
 }
