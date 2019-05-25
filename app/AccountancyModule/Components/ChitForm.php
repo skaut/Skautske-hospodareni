@@ -11,6 +11,7 @@ use eGen\MessageBus\Bus\QueryBus;
 use InvalidArgumentException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\Category;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\PaymentMethod;
@@ -287,12 +288,13 @@ final class ChitForm extends BaseControl
         $chitBody   = $this->buildChitBodyFromValues($values);
         $method     = PaymentMethod::get($values->paymentMethod);
         $items      = [];
+        $operation  = Operation::get($values->type);
 
         foreach ($values->items as $item) {
             $items[] = new ChitItem(
-                $item->id !== '' ? $item->id : null,
+                $item->id !== '' ? (int) $item->id : null,
                 new Amount($item->price),
-                $values->type === Operation::INCOME ? $item->incomeCategories : $item->expenseCategories,
+                new Category($operation->equals(Operation::INCOME) ? $item->incomeCategories : $item->expenseCategories, $operation),
                 $item->purpose
             );
         }

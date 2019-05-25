@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\Cashbook\Form;
 
 use Model\Cashbook\Cashbook\Amount;
+use Model\Cashbook\Cashbook\Category;
 
 class ChitItem
 {
@@ -14,13 +15,13 @@ class ChitItem
     /** @var Amount */
     private $amount;
 
-    /** @var int */
+    /** @var Category */
     private $category;
 
     /** @var string */
     private $purpose;
 
-    public function __construct(?int $id, Amount $amount, int $category, string $purpose)
+    public function __construct(?int $id, Amount $amount, Category $category, string $purpose)
     {
         $this->id       = $id;
         $this->amount   = $amount;
@@ -38,7 +39,7 @@ class ChitItem
         return $this->amount;
     }
 
-    public function getCategory() : int
+    public function getCategory() : Category
     {
         return $this->category;
     }

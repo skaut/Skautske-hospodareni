@@ -9,7 +9,6 @@ use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
-use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit;
@@ -118,12 +117,12 @@ class Cashbook extends Aggregate
      * @param ChitItem  $items
      * @param ICategory $categories
      */
-    public function addChit(ChitBody $chitBody, PaymentMethod $paymentMethod, array $items, array $categories) : void
+    public function addChit(ChitBody $chitBody, PaymentMethod $paymentMethod, array $items) : void
     {
-        $chit              = new Chit($this, $chitBody, $paymentMethod);
+        $chit = new Chit($this, $chitBody, $paymentMethod);
         /** @var ChitItem $item */
         foreach ($items as $item) {
-            $chit->addItem($item->getAmount(), $this->getChitCategory($categories[$item->getCategory()]), $item->getPurpose());
+            $chit->addItem($item->getAmount(), $item->getCategory(), $item->getPurpose());
         }
 
         $this->chits[] = $chit;
@@ -167,19 +166,21 @@ class Cashbook extends Aggregate
     }
 
     /**
+     * @param ChitItem    $items
+     * @param ICategory[] $categories
+     *
      * @throws ChitNotFound
      * @throws ChitLocked
      */
-    public function updateChit(int $chitId, ChitBody $chitBody, Amount $amount, ICategory $category, PaymentMethod $paymentMethod, string $purpose) : void
+    public function updateChit(int $chitId, ChitBody $chitBody, PaymentMethod $paymentMethod, array $items) : void
     {
         $chit          = $this->getChit($chitId);
-        $oldCategoryId = $chit->getCategoryId();
 
         if ($chit->isLocked()) {
             throw new ChitLocked();
         }
 
-        $chit->update($chitBody, $this->getChitCategory($category), $paymentMethod, $amount, $purpose);
+        $chit->update($chitBody, $paymentMethod, $items);
 
         $this->raise(new ChitWasUpdated($this->id));
     }
