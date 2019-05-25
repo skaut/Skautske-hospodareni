@@ -274,6 +274,7 @@ final class ChitForm extends BaseControl
     public function addItemClicked(SubmitButton $button) : void
     {
         $button->parent->createOne();
+        $this->redrawControl();
     }
 
     public function removeItemClicked(SubmitButton $button) : void
@@ -282,6 +283,7 @@ final class ChitForm extends BaseControl
         // second parent is it's replicator
         $container = $button->parent->parent;
         $container->remove($button->parent, true);
+        $this->redrawControl();
     }
 
     private function formSubmitted(BaseForm $form, ArrayHash $values) : void
