@@ -302,7 +302,7 @@ final class ChitForm extends BaseControl
             $items[] = new ChitItem(
                 $item->id !== '' ? (int) $item->id : null,
                 new Amount($item->price),
-                new Category($operation->equals(Operation::INCOME) ? $item->incomeCategories : $item->expenseCategories, $operation),
+                new Category($operation->equals(Operation::INCOME()) ? $item->incomeCategories : $item->expenseCategories, $operation),
                 $item->purpose
             );
         }

@@ -82,7 +82,7 @@ class Chit
 
     public function addItem(Amount $amount, Category $category, string $purpose) : void
     {
-        $this->items[] = new ChitItem($this->getNextChitItemId(), $this, $amount, $category, $purpose);
+        $this->items[] = new ChitItem($this->getNextChitItemId(), $amount, $category, $purpose);
     }
 
     /**
@@ -94,7 +94,7 @@ class Chit
         $this->paymentMethod = $paymentMethod;
         $this->items->clear();
         foreach ($items as $item) {
-            $this->items->add(new ChitItem($item->getId() ?? $this->getNextChitItemId(), $this, $item->getAmount(), $item->getCategory(), $item->getPurpose()));
+            $this->items->add(new ChitItem($item->getId() ?? $this->getNextChitItemId(), $item->getAmount(), $item->getCategory(), $item->getPurpose()));
         }
     }
 

@@ -17,6 +17,9 @@ class ChitItem
 {
     use SmartObject;
 
+    /** @var int|null */
+    private $id;
+
     /** @var Amount */
     private $amount;
 
@@ -26,11 +29,17 @@ class ChitItem
     /** @var string */
     private $purpose;
 
-    public function __construct(Amount $amount, Category $category, string $purpose)
+    public function __construct(?int $id, Amount $amount, Category $category, string $purpose)
     {
+        $this->id       = $id;
         $this->amount   = $amount;
         $this->category = $category;
         $this->purpose  = $purpose;
+    }
+
+    public function getId() : ?int
+    {
+        return $this->id;
     }
 
     public function getAmount() : Amount

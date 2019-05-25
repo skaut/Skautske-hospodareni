@@ -46,7 +46,7 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
             'getSignedAmount' => $amount * ($op->equalsValue(Operation::INCOME) ? 1 : -1),
             'isVirtual' => $virtualCategory,
             'getItems' => [
-                new ChitItem(new Cashbook\Amount($amount), new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $virtualCategory), 'pro test'),
+                new ChitItem(null, new Cashbook\Amount($amount), new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $virtualCategory), 'pro test'),
             ],
         ]);
     }
