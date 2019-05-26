@@ -20,8 +20,10 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ChitLocked;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
+use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Common\ReadModel\Queries\MemberNamesQuery;
@@ -41,7 +43,9 @@ use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 use function array_values;
 use function assert;
+use function count;
 use function get_class;
+use function in_array;
 use function sprintf;
 
 final class ChitForm extends BaseControl
@@ -151,7 +155,7 @@ final class ChitForm extends BaseControl
             $items[] = [
                 'purpose' => $item->getPurpose(),
                 'price' => $item->getAmount()->getExpression(),
-                'category' => $item->getCategory()->getId(),
+                $item->getCategory()->isIncome() ? 'incomeCategories' : 'expenseCategories' => $item->getCategory()->getId(),
             ];
             $this['form']->setDefaults(['items' => $items]);
         }
@@ -295,11 +299,32 @@ final class ChitForm extends BaseControl
         $method     = PaymentMethod::get($values->paymentMethod);
         $items      = [];
         $operation  = Operation::get($values->type);
+        /** @var \Model\DTO\Cashbook\Category[] $categoriesDto */
+        $categoriesDto = $this->queryBus->handle(new CategoryListQuery($cashbookId));
 
+        $itemCategories = [];
         foreach ($values->items as $item) {
-            $items[] = new ChitItem(
+            $categoryId = $operation->equals(Operation::INCOME()) ? $item->incomeCategories : $item->expenseCategories;
+            if (in_array($categoryId, $itemCategories)) {
+                $form->addError('Nelze přidat více položek se stejnou kategorií!');
+
+                return;
+            }
+            if ($operation->equals(Operation::INCOME()) && $categoryId === ICategory::CATEGORY_HPD_ID && count($values->items) > 1) {
+                $form->addError('Nelze přidat více položek k hromadnému příjmu od účastníků!');
+
+                return;
+            }
+
+            if ($categoriesDto[$categoryId]->isVirtual() && count($values->items) > 1) {
+                $form->addError('Nelze přidat více položek, pokud obsaují převody!');
+
+                return;
+            }
+            $itemCategories[] = $categoryId;
+            $items[]          = new ChitItem(
                 new Amount($item->price),
-                new Category($operation->equals(Operation::INCOME()) ? $item->incomeCategories : $item->expenseCategories, $operation),
+                new Category($categoryId, $operation),
                 $item->purpose
             );
         }
