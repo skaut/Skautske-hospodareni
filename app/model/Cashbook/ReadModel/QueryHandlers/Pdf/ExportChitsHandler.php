@@ -90,7 +90,9 @@ class ExportChitsHandler
 
         $template = [];
 
-        $eventService = $this->serviceFactory->create(ucfirst($cashbook->getType()->getValue()));
+        $eventService = $this->serviceFactory->create(
+            ucfirst($cashbook->getType()->getSkautisObjectType()->toString())
+        );
 
         $skautisId                = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
         $event                    = $eventService->get($skautisId);
