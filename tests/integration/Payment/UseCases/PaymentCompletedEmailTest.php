@@ -7,6 +7,7 @@ namespace Model\Payment\IntegrationTests;
 use eGen\MessageBus\Bus\CommandBus;
 use Helpers;
 use IntegrationTest;
+use Model\Common\Services\NotificationsCollector;
 use Model\Common\User;
 use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\EmailTemplate;
@@ -62,6 +63,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
         $this->paymentService->completePayment(1);
 
+        $this->assertPaymentWasCompleted();
         $this->tester->seeEmailCount(0);
     }
 
@@ -78,6 +80,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
         $this->paymentService->completePayment(1);
 
+        $this->assertPaymentWasCompleted();
         $this->tester->seeEmailCount(0);
     }
 
@@ -93,6 +96,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
         $this->paymentService->completePayment(1);
 
+        $this->assertPaymentWasCompleted();
         $this->tester->seeEmailCount(0);
     }
 
@@ -109,9 +113,39 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
         $this->paymentService->completePayment(1);
 
+        $this->assertPaymentWasCompleted();
         $this->tester->seeEmailCount(1);
         $this->tester->seeInLastEmailSubjectTo(self::EMAIL, $email->getSubject());
         $this->tester->seeInLastEmailTo(self::EMAIL, $email->getBody());
+    }
+
+    public function testWhenEmailCannotBeSentViaSmtpPaymentIsCompletedAndUserIsNotified() : void
+    {
+        $email = new EmailTemplate('subject', 'body');
+        $this->createMailCredentials('invalid password');
+        $this->initEntities([
+            EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+            EmailType::PAYMENT_COMPLETED => $email,
+        ]);
+
+        $this->users->setUser(new User(1, 'František Maša', 'frantisekmasa1@gmail.com'));
+
+        $this->paymentService->completePayment(1);
+
+        $this->assertPaymentWasCompleted();
+        $this->tester->seeEmailCount(0);
+
+        $this->assertSame(
+            [
+                [
+                    'error',
+                    'Email při dokončení platby nemohl být odeslán. Chyba SMTP serveru: '
+                    . 'SMTP server did not accept AUTH LOGIN with error: 504 auth mechanism not available',
+                    1,
+                ],
+            ],
+            $this->tester->grabService(NotificationsCollector::class)->popNotifications()
+        );
     }
 
     /**
@@ -132,16 +166,24 @@ class PaymentCompletedEmailTest extends IntegrationTest
         );
     }
 
-    private function createMailCredentials() : void
+    private function createMailCredentials(string $password = '') : void
     {
         $this->tester->haveInDatabase('pa_smtp', [
             'unitId' => self::UNIT_ID,
             'host' => 'smtp-hospodareni.loc',
             'secure' => MailProtocol::PLAIN,
             'username' => 'test@hospodareni.loc',
-            'password' => '',
+            'password' => $password,
             'sender' => 'test@hospodareni.loc',
             'created' => '2017-10-01 00:00:00',
+        ]);
+    }
+
+    private function assertPaymentWasCompleted() : void
+    {
+        $this->tester->seeInDatabase('pa_payment', [
+            'id' => 1,
+            'state' => Payment\State::COMPLETED,
         ]);
     }
 }
