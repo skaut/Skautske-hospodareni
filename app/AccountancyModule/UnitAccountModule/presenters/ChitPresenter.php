@@ -76,6 +76,8 @@ class ChitPresenter extends BasePresenter
 
     public function actionDefault(?int $year = null) : void
     {
+        $this->setLayout('layout.new');
+
         $this->cashbooks = [
             ObjectType::UNIT => $this->getUnitCashbooks(),
             ObjectType::EVENT => $this->getEventCashbooks(),

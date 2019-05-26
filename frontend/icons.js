@@ -3,14 +3,17 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { far }  from '@fortawesome/free-regular-svg-icons';
 
 library.add(
-fas.faBookReader,
     // Solid icons
+    fas.faBook,
+    fas.faBookReader,
     fas.faCalendar,
     fas.faCampground,
     fas.faCogs,
+    fas.faChartPie,
     fas.faCheck,
     fas.faChevronLeft,
     fas.faClipboardCheck,
+    fas.faClipboardList,
     fas.faEye,
     fas.faInfoCircle,
     fas.faListAlt,
@@ -19,6 +22,7 @@ fas.faBookReader,
     fas.faLongArrowAltLeft,
     fas.faPlus,
     fas.faSearch,
+    fas.faSitemap,
     fas.faStickyNote,
     fas.faTimes,
     fas.faUserPlus,

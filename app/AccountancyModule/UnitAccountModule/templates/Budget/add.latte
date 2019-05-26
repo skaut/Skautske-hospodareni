@@ -1,37 +1,13 @@
-
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Založení rozpočtové kategorie</h2>
+<h1 n:inner-block="title" class="mb-4">Založení rozpočtové kategorie</h1>
+
+<div class="alert alert-info">
+    <b>Kategorie bez nadřazené kategorie</b> pouze sdružují kategorie pod sebou.<br/>
+    <b>Podřízené kategorie</b> pak obsahují částku a lze do nich přidávat paragony.
+</div>
 
 <div class="row">
-    <div class="alert alert-info span6">
-        <b>Kategorie bez nadřazené kategorie</b> pouze sdružují kategorie pod sebou.<br />
-        <b>Podřízené kategorie</b> pak obsahují částku a lze do nich přidávat paragony. 
+    <div class="col-md-6" n:snippet>
+        {control addCategoryForm}
     </div>
 </div>
-
-<div class="row">
-    {snippet addCategoryForm}
-        {control addCategoryForm}
-    {/snippet}
-</div>
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $row = $("#form-category-value").parent().parent();
-        $row.hide();
-        $("#form-select-parentId").change(function () {
-            if ($("#form-select-parentId").val() === "0") {
-                $row.hide();
-                $("#form-category-value").val("");
-            } else {
-                $row.show();
-            }
-        });
-
-        //pri zmenene typu se skryje částka
-        $("#form-select-type").change(function () {
-            $row.hide();
-        });
-    });
-</script>

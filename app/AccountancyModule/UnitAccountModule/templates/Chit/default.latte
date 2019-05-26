@@ -1,57 +1,44 @@
-{block #group}
-{if array_key_exists($type, $chitsArr)}
-
-{/if}
-{/block}
-
-
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Přehled paragonů</h2>
+<h1 n:inner-block="title" class="mb-4">Přehled dokladů jednotky</h1>
 
 {snippet tableChits}
-    <div class='well'>
-        <a n:href="this onlyUnlocked=>!$onlyUnlocked" class="btn btn-primary">Zobrazit {if $onlyUnlocked}i uzamčené{else}pouze nezamčené{/if}</a>
-        {for $y= 2015;$y<=date('Y');$y++}
-            <a n:href="this $y" class="btn btn-default {if $year == $y} active{/if}">{$y}</a>
-        {/for}
+    <div class="dropdown mr-3 d-inline-block">
+        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-eye"></i>
+            {if $onlyUnlocked}Pouze odemčené{else}Všechny paragony{/if}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" n:href="this onlyUnlocked => true" n:attr="$onlyUnlocked ? 'disabled'">Pouze odemčené</a>
+            <a class="dropdown-item" n:href="this onlyUnlocked => false" n:attr="! $onlyUnlocked ? 'disabled'">Vše</a>
+        </div>
     </div>
 
-    <div class="row">
-        {foreach $types as $id=>$label}
-        <div class="col-md-4" n:if="!empty($info[$id]) && isset($chitsArr[$id])">
-            <h3><a href="#a-{$id}">{$label}</a></h3>
-            <ul>
-                {foreach $info[$id] as $itemId=>$item}
-                    <li n:if="!empty($chitsArr[$id][$itemId])"><a href="#a-{$id}-{$itemId}">{$item["DisplayName"]}</a></li>
-                {/foreach}
-            </ul>
-        </div>
-        {/foreach}
-    </div>
+    <a n:for="$y= 2015; $y <= date('Y'); $y++" n:href="this $y" n:class="btn, btn-light, $year == $y ? active">{$y}</a>
 
     {foreach $types as $type => $label}
-        <h2 id="a-{$type}">{$label}</h2>
+        <h2 class="mt-4 mb-3">{$label}</h2>
 
         {foreach $info[$type] as $cashbookId => $object}
-            <div class="panel panel-default" n:if=" ! $isCashbookEmpty($cashbookId)">
-                <div class="panel-heading">
+            <div class="card" n:if=" ! $isCashbookEmpty($cashbookId)">
+                <div class="card-header">
                     {var $id = $object['ID']}
 
-                    <a n:href="lockCashbook! $cashbookId" class="btn btn-sm btn-success ajax pull-right">
-                            <i class="glyphicon glyphicon-lock"></i>
-                            Zamknout vše
+                    <a n:href="lockCashbook! $cashbookId" class="btn btn-sm btn-dark ajax float-right">
+                        <i class="fas fa-lock"></i> Zamknout vše
                     </a>
-                    <h4 id="a-{$type}-{$cashbookId}">
+
+                    <h5 class="mb-0 mt-1">
                         <a href="{if $type == 'event'}{link :Accountancy:Event:Cashbook: $id}{elseif $type == 'camp'}{link :Accountancy:Camp:Cashbook: $id}{elseif $type == 'unit'}{link :Accountancy:UnitAccount:Cashbook: $id}{/if}">
                             {$object['DisplayName']}
                         </a>
                         {ifset $object['StartDate']}
                             ({$object['StartDate']|date:'j.n'} - {$object['EndDate']|date:'j.n.Y'})
                         {/ifset}
-                    </h4>
+                    </h5>
+
                 </div>
-                <div class="panel-body">
+                <div class="card-body pt-0 pb-0">
                     {control chitList-$cashbookId}
                 </div>
             </div>

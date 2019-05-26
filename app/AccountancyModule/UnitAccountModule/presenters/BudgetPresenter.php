@@ -21,6 +21,12 @@ class BudgetPresenter extends BasePresenter
         $this->budgetService = $budgetService;
     }
 
+    protected function beforeRender() : void
+    {
+        parent::beforeRender();
+        $this->setLayout('layout.new');
+    }
+
     public function renderDefault(?int $year = null) : void
     {
         $this->template->setParameters([
@@ -36,32 +42,36 @@ class BudgetPresenter extends BasePresenter
     {
         $items = $this->budgetService->getCategoriesRoot($this->unitId->toInt(), $values['type']);
 
-        return new DependentData(['0' => 'Žádná'] + $items);
+        return new DependentData($items);
     }
 
     protected function createComponentAddCategoryForm() : BaseForm
     {
         $form = new BaseForm();
 
+        $form->useBootstrap4();
+
         $form->addText('label', 'Název')
-            ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Vyplňte název kategorie');
+
         $type = $form->addSelect('type', 'Typ', ['in' => 'Příjmy', 'out' => 'Výdaje'])
             ->setDefaultValue('in')
-            ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Vyberte typ')
             ->setHtmlId('form-select-type');
+
         $form->addDependentSelectBox('parentId', 'Nadřazená kategorie', $type)
             ->setDependentCallback([$this, 'getParentCategories'])
-            ->setAttribute('class', 'form-control')
-            ->setHtmlId('form-select-parentId');
+            ->setPrompt('Žádná')
+            ->addCondition(Form::FILLED)
+            ->toggle('form-category-value');
+
         $form->addText('value', 'Částka')
-            ->setAttribute('class', 'form-control')
-            ->setHtmlId('form-category-value');
+            ->setOption('id', 'form-category-value');
+
         $form->addText('year', 'Rok')
-            ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Vyplňte rok')
             ->setDefaultValue(date('Y'));
+
         $form->addHidden('oid', $this->unitId->toInt());
 
         $form->addSubmit('submit', 'Založit kategorii')
@@ -82,7 +92,7 @@ class BudgetPresenter extends BasePresenter
 
         $v = $form->values;
         $this->budgetService->addCategory((int) $v->oid, $v->label, $v->type, $v->parentId === 0 ? null : $v->parentId, $v->value, (int) $v->year);
-        $this->flashMessage('Kategorie byla přidána.');
+        $this->flashMessage('Kategorie byla přidána.', 'success');
         $this->redirect('default');
     }
 }

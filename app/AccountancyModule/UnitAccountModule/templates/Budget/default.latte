@@ -1,6 +1,6 @@
 {block #table}
 
-<table class="table table-bordered table-condensed">
+<table class="table table-bordered table-sm">
     <tr>
         <th colspan='2'>Kategorie</th>
         <th>Předpoklad</th>
@@ -33,22 +33,33 @@
 
 
 {block #content}
-{include ../ActionMenu.latte}
-<h2 n:inner-block="title">Rozpočet: {$unitPairs[$unitId]}</h2>
-<div class="row">
-    <div class="col-sm-12">
-        <div class='well well-sm'>
-            <a n:href='add' class='btn btn-primary'><i class='glyphicon glyphglyphicon glyphicon-plus hidden-xs hidden-sm'></i> Založit kategorii</a>
+<div class="float-right">
+    <a n:href="add" class="btn btn-success mr-3"><i class="fas fa-plus"></i> Založit kategorii</a>
+
+    <div class="dropdown d-inline-block">
+        <button class="btn btn-light dropdown-toggle"
+                type="button"
+                id="unit-picker"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+        >
+            <i class="fas fa-sitemap"></i> {$unitPairs[$unitId]}
+        </button>
+        <div class="dropdown-menu" n:inner-foreach="$unitPairs as $id => $label" aria-labelledby="unit-picker">
+            <a n:href="this unitId => $id" class="dropdown-item">{$label}</a>
         </div>
     </div>
 </div>
 
+<h1 n:inner-block="title" class="mb-4">Rozpočet: {$unitPairs[$unitId]}</h1>
+
 <div class="row" n:ifset="$categories">
-    <div class="col-sm-6" n:if="!empty($categories['in'])">
-        {include #table rootCategories=>$categories['in']}
+    <div class="col-md-6" n:if="!empty($categories['in'])">
+        {include #table rootCategories => $categories['in']}
     </div>
     {php $presenter->template->sum = $presenter->template->sumReality = 0}
-    <div class="col-sm-6" n:if="!empty($categories['out'])">
+    <div class="col-md-6" n:if="!empty($categories['out'])">
         {include #table rootCategories=>$categories['out']}
     </div>
 </div>

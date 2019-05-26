@@ -152,6 +152,8 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
             $controlPrototype->appendAttribute('class', 'form-check-input');
         } elseif ($control instanceof Nette\Forms\Controls\UploadControl) {
             $controlPrototype->appendAttribute('class', 'form-control-file');
+        } elseif ($control instanceof Nette\Forms\Controls\SelectBox) {
+            $controlPrototype->appendAttribute('class', 'custom-select');
         } else {
             if ($control->hasErrors()) {
                 $control->controlPrototype->appendAttribute('class', 'is-invalid');
