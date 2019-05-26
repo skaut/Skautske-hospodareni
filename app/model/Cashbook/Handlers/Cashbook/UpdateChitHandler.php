@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Cashbook\Handlers\Cashbook;
 
 use Model\Cashbook\CashbookNotFound;
-use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\ChitLocked;
 use Model\Cashbook\ChitNotFound;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
@@ -28,16 +27,14 @@ final class UpdateChitHandler
 
     /**
      * @throws CashbookNotFound
-     * @throws CategoryNotFound
      * @throws ChitNotFound
      * @throws ChitLocked
      */
     public function __invoke(UpdateChit $command) : void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
-        $category = $this->categories->find($command->getCategoryId(), $cashbook->getId(), $cashbook->getType());
 
-        $cashbook->updateChit($command->getChitId(), $command->getBody(), $command->getAmount(), $category, $command->getPaymentMethod(), $command->getPurpose());
+        $cashbook->updateChit($command->getChitId(), $command->getBody(), $command->getPaymentMethod(), $command->getItems());
 
         $this->cashbooks->save($cashbook);
     }

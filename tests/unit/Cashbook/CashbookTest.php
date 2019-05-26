@@ -8,13 +8,10 @@ use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use Helpers;
 use Mockery as m;
-use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Events\ChitWasAdded;
 use function ksort;
 
@@ -35,15 +32,8 @@ class CashbookTest extends Unit
     {
         $cashbookId = CashbookId::fromString('10');
         $cashbook   = $this->createEventCashbook($cashbookId);
-        $category   = $this->mockCategory(6);
 
-        $cashbook->addChit(
-            new ChitBody(null, Date::now(), null),
-            new Amount('500'),
-            $category,
-            PaymentMethod::CASH(),
-            'Nákup potravin'
-        );
+        Helpers::addChitToCashbook($cashbook, null, null, null, null);
 
         $events = $cashbook->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -58,15 +48,10 @@ class CashbookTest extends Unit
     {
         $cashbook = $this->createEventCashbook();
 
-        $addChit = function (int $categoryId, string $amount) use ($cashbook) : void {
-            $chitBody = new ChitBody(null, new Date(), null);
-            $cashbook->addChit($chitBody, new Amount($amount), $this->mockCategory($categoryId), PaymentMethod::CASH(), '');
-        };
-
-        $addChit(1, '200');
-        $addChit(2, '100');
-        $addChit(1, '300');
-        $addChit(2, '150');
+        Helpers::addChitToCashbook($cashbook, null, null, 1, '200');
+        Helpers::addChitToCashbook($cashbook, null, null, 2, '100');
+        Helpers::addChitToCashbook($cashbook, null, null, 1, '300');
+        Helpers::addChitToCashbook($cashbook, null, null, 2, '150');
 
         $expectedTotals = [
             1 => 500.0,
@@ -85,15 +70,10 @@ class CashbookTest extends Unit
     {
         $cashbook = $this->createEventCashbook();
 
-        $addChit = function (int $categoryId, string $amount) use ($cashbook) : void {
-            $chitBody = new ChitBody(null, new Date(), null);
-            $cashbook->addChit($chitBody, new Amount($amount), $this->mockCategory($categoryId), PaymentMethod::CASH(), '');
-        };
-
-        $addChit(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, '200');
-        $addChit(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, '300');
-        $addChit(ICategory::CATEGORY_REFUND_ID, '50');
-        $addChit(ICategory::CATEGORY_HPD_ID, '100');
+        Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_PARTICIPANT_INCOME_ID, '200');
+        Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_PARTICIPANT_INCOME_ID, '300');
+        Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_REFUND_ID, '50');
+        Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_HPD_ID, '100');
 
         $expectedTotals = [ICategory::CATEGORY_PARTICIPANT_INCOME_ID => 550.0];
 
@@ -111,10 +91,7 @@ class CashbookTest extends Unit
 
         $cashbook = $this->createEventCashbook($cashbookId);
 
-        $recipient = new Recipient('František Maša');
-        $chitBody  = new ChitBody(new ChitNumber('123'), new Date(), $recipient);
-
-        $cashbook->addChit($chitBody, new Amount('100'), $this->mockCategory(666), PaymentMethod::CASH(), 'Nákup potravin');
+        Helpers::addChitToCashbook($cashbook, null, null, null, null);
 
         $events = $cashbook->extractEventsToDispatch();
 
@@ -156,7 +133,7 @@ class CashbookTest extends Unit
         $chitBody = new ChitBody(null, new Date(), null);
 
         for ($i = 0; $i < 5; $i++) {
-            $cashbook->addChit($chitBody, new Amount('100'), $this->mockCategory(666), PaymentMethod::CASH(), 'Účastnické poplatky');
+            Helpers::addChitToCashbook($cashbook, null, null, null, null);
         }
 
         $cashbook->clear();

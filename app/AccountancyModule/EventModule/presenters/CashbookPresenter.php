@@ -11,10 +11,12 @@ use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantBalanceQuery;
@@ -97,10 +99,8 @@ class CashbookPresenter extends BasePresenter
             new AddChitToCashbook(
                 $cashbookId,
                 new ChitBody(null, new Date($date), $accountant),
-                $amount,
-                Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID,
                 PaymentMethod::CASH(),
-                'účastnické příspěvky'
+                [new ChitItem($amount, new \Model\Cashbook\Cashbook\Category(Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID, Operation::INCOME()), 'účastnické příspěvky')]
             )
         );
 

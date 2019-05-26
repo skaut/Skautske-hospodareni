@@ -71,4 +71,9 @@ class ChitItem
     {
         $this->id = null;
     }
+
+    public function cloneWithCategory(Category $category) : self
+    {
+        return new self($this->amount, $category, $this->purpose);
+    }
 }

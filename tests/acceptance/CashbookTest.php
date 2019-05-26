@@ -140,8 +140,8 @@ class CashbookTest extends Unit
     {
         $this->tester->fillField('Datum', $date->format('d.m. Y'));
         $this->tester->fillField('Účel', $purpose);
-        $this->tester->selectOption('type', $type);
-        $this->tester->selectOption('category', $category);
+        $this->tester->selectOption('#chit-type', $type);
+        $this->tester->selectOption('.chit-category', $category);
         $this->tester->fillField('Komu/Od', $recipient);
         $this->tester->fillField('price', $amount);
     }

@@ -96,12 +96,7 @@ class Chit
     {
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
-
-        $this->items->clear();
-
-        foreach ($items as $item) {
-            $this->items->add($item);
-        }
+        $this->items         = new ArrayCollection($items);
     }
 
     public function lock(int $userId) : void
@@ -188,7 +183,7 @@ class Chit
                 $item->getCategory()->getOperationType()
             );
 
-            return new ChitItem($item->getAmount(), $category, $item->getPurpose());
+            return $item->cloneWithCategory($category);
         });
 
         return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray());

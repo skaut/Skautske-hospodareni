@@ -11,9 +11,12 @@ use Cake\Chronos\Date;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\Category;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Cashbook\Operation;
 use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
@@ -129,7 +132,8 @@ class CashbookPresenter extends BasePresenter
             new CampParticipantCategoryIdQuery(new SkautisCampId($unitId), ParticipantType::get(ParticipantType::CHILD))
         );
 
-        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, Amount::fromFloat($amount), $categoryId, PaymentMethod::CASH(), $purpose));
+        $items = [new ChitItem(Amount::fromFloat($amount), new Category($categoryId, Operation::INCOME()), $purpose)];
+        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, PaymentMethod::CASH(), $items));
 
         $this->flashMessage('HPD byl importován');
 

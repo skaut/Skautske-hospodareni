@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Commands\Cashbook;
 
-use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\PaymentMethod;
 
 /**
@@ -20,26 +20,21 @@ final class AddChitToCashbook
     /** @var ChitBody */
     private $body;
 
-    /** @var Amount */
-    private $amount;
-
-    /** @var int */
-    private $categoryId;
+    /** @var ChitItem[] */
+    private $items;
 
     /** @var PaymentMethod */
     private $paymentMethod;
 
-    /** @var string */
-    private $purpose;
-
-    public function __construct(CashbookId $cashbookId, ChitBody $body, Amount $amount, int $categoryId, PaymentMethod $paymentMethod, string $purpose)
+    /**
+     * @param ChitItem[] $items
+     */
+    public function __construct(CashbookId $cashbookId, ChitBody $body, PaymentMethod $paymentMethod, array $items)
     {
         $this->cashbookId    = $cashbookId;
         $this->body          = $body;
-        $this->amount        = $amount;
-        $this->categoryId    = $categoryId;
         $this->paymentMethod = $paymentMethod;
-        $this->purpose       = $purpose;
+        $this->items         = $items;
     }
 
     public function getCashbookId() : CashbookId
@@ -52,23 +47,16 @@ final class AddChitToCashbook
         return $this->body;
     }
 
-    public function getAmount() : Amount
+    /**
+     * @return ChitItem[]
+     */
+    public function getItems() : array
     {
-        return $this->amount;
-    }
-
-    public function getCategoryId() : int
-    {
-        return $this->categoryId;
+        return $this->items;
     }
 
     public function getPaymentMethod() : PaymentMethod
     {
         return $this->paymentMethod;
-    }
-
-    public function getPurpose() : string
-    {
-        return $this->purpose;
     }
 }

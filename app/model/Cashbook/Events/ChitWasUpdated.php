@@ -11,31 +11,13 @@ final class ChitWasUpdated
     /** @var CashbookId */
     private $cashbookId;
 
-    /** @var int */
-    private $oldCategoryId;
-
-    /** @var int */
-    private $newCategoryId;
-
-    public function __construct(CashbookId $cashbookId, int $oldCategoryId, int $newCategoryId)
+    public function __construct(CashbookId $cashbookId)
     {
-        $this->cashbookId    = $cashbookId;
-        $this->oldCategoryId = $oldCategoryId;
-        $this->newCategoryId = $newCategoryId;
+        $this->cashbookId = $cashbookId;
     }
 
     public function getCashbookId() : CashbookId
     {
         return $this->cashbookId;
-    }
-
-    public function getOldCategoryId() : int
-    {
-        return $this->oldCategoryId;
-    }
-
-    public function getNewCategoryId() : int
-    {
-        return $this->newCategoryId;
     }
 }
