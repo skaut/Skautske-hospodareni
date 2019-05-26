@@ -10,7 +10,7 @@ namespace Model\Common\Services;
  */
 class NotificationsCollector
 {
-    private const ERROR = 'error';
+    public const ERROR = 'error';
 
     /**
      * notification type => [message => number of notifications with this message]
