@@ -32,14 +32,20 @@ class EventStatisticsQueryHandler
             array_map(function (SkautisEventId $id) {
                 return $id->toInt();
             }, $query->getEventIds()),
+            ObjectType::EVENT,
+            Operation::EXPENSE,
             $query->getYear(),
         ];
         $types  = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
-        $sql    = 'SELECT o.skautisId, SUM(c.price) as sum ' .
-            'FROM `ac_chits` c ' .
-            'JOIN ac_object o ON c.eventId = o.id ' .
-            'WHERE o.skautisId IN (?) AND o.type = \'' . ObjectType::EVENT . '\' AND category_operation_type = \'' . Operation::EXPENSE . '\' ' .
-            'AND YEAR(date) = ? ';
+        $sql    = <<<'SQL'
+            SELECT o.skautisId, SUM(ci.price) as sum
+            FROM `ac_chits` c
+            LEFT JOIN `ac_chit_to_item` cti ON c.id = cti.chit_id
+            LEFT JOIN `ac_chits_item` ci ON cti.item_id = ci.id
+            JOIN ac_object o ON c.eventId = o.id
+            WHERE o.skautisId IN (?) AND o.type = ? AND category_operation_type = ?
+            AND YEAR(date) = ?
+SQL;
 
         $sql .= 'GROUP BY eventId';
 
