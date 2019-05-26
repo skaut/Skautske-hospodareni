@@ -9,15 +9,18 @@ use App\Components\LoginPanel;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
+use Model\Common\Services\NotificationsCollector;
 use Model\UnitService;
 use Model\UserService;
 use Nette;
+use Nette\Application\IResponse;
 use Nette\Security\Identity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
 use WebLoader\Nette as WebLoader;
 use function assert;
 use function explode;
+use function sprintf;
 
 /**
  * @property-read Nette\Bridges\ApplicationLatte\Template $template
@@ -51,6 +54,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var ILoginPanelFactory */
     private $loginPanelFactory;
 
+    /** @var NotificationsCollector */
+    private $notificationsCollector;
+
     /** @var LoggerInterface */
     protected $logger;
 
@@ -62,16 +68,18 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         QueryBus $queryBus,
         IAuthorizator $authorizator,
         ILoginPanelFactory $loginPanelFactory,
+        NotificationsCollector $notificationsCollector,
         LoggerInterface $logger
     ) : void {
-        $this->webLoader         = $webLoader;
-        $this->userService       = $userService;
-        $this->unitService       = $unitService;
-        $this->commandBus        = $commandBus;
-        $this->queryBus          = $queryBus;
-        $this->authorizator      = $authorizator;
-        $this->loginPanelFactory = $loginPanelFactory;
-        $this->logger            = $logger;
+        $this->webLoader              = $webLoader;
+        $this->userService            = $userService;
+        $this->unitService            = $unitService;
+        $this->commandBus             = $commandBus;
+        $this->queryBus               = $queryBus;
+        $this->authorizator           = $authorizator;
+        $this->loginPanelFactory      = $loginPanelFactory;
+        $this->logger                 = $logger;
+        $this->notificationsCollector = $notificationsCollector;
     }
 
     protected function startup() : void
@@ -170,5 +178,25 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         }
 
         return $this->unitId;
+    }
+
+    /**
+     * @param IResponse $response
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     */
+    protected function shutdown($response) : void
+    {
+        foreach ($this->notificationsCollector->popNotifications() as [$type, $message, $count]) {
+            if ($type === NotificationsCollector::ERROR) {
+                $type = 'danger';
+            }
+
+            if ($count > 1) {
+                $message = sprintf('%s (%d)', $message, $count);
+            }
+
+            $this->flashMessage($message, $type);
+        }
     }
 }
