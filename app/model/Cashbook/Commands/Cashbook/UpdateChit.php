@@ -6,8 +6,8 @@ namespace Model\Cashbook\Commands\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\DTO\Cashbook\ChitItem;
 
 /**
  * @see UpdateChitHandler

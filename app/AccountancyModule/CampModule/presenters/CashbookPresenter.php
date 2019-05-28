@@ -11,18 +11,17 @@ use Cake\Chronos\Date;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\Category;
 use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
-use Model\Cashbook\Operation;
 use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
+use Model\DTO\Cashbook\ChitItem;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\SkautisCampId;
 use Money\Money;
@@ -128,11 +127,12 @@ class CashbookPresenter extends BasePresenter
         $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
         $body    = new ChitBody(null, new Date($date), null);
 
-        $categoryId = $this->queryBus->handle(
+        $categoryId    = $this->queryBus->handle(
             new CampParticipantCategoryIdQuery(new SkautisCampId($unitId), ParticipantType::get(ParticipantType::CHILD))
         );
+        $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
-        $items = [new ChitItem(Amount::fromFloat($amount), new Category($categoryId, Operation::INCOME()), $purpose)];
+        $items = [new ChitItem(Amount::fromFloat($amount), $categoriesDto[$categoryId], $purpose)];
         $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, PaymentMethod::CASH(), $items));
 
         $this->flashMessage('HPD byl importován');

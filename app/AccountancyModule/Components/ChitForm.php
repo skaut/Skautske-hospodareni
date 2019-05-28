@@ -10,11 +10,9 @@ use eGen\MessageBus\Bus\QueryBus;
 use InvalidArgumentException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\Category;
 use Model\Cashbook\Cashbook\Chit\DuplicitCategory;
 use Model\Cashbook\Cashbook\Chit\SingleItemRestriction;
 use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\ChitNumber;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
@@ -24,12 +22,14 @@ use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Common\ReadModel\Queries\MemberNamesQuery;
 use Model\Common\UnitId;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Cashbook\ChitItem;
 use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
@@ -247,12 +247,10 @@ final class ChitForm extends BaseControl
             $container->addHidden('id');
 
             $container->addSubmit('remove', 'Odebrat položku')
-                ->setValidationScope(false) // disables validation
                 ->onClick[] = $removeItem;
         }, 1);
 
         $items->addSubmit('addItem', 'Přidat další položku')
-            ->setValidationScope(false)
             ->onClick[] = function () use ($items) : void {
                 $items->createOne();
                 $this->redrawControl();
@@ -293,18 +291,19 @@ final class ChitForm extends BaseControl
             $this->redirect('this');
         }
 
-        $chitId     = $values['pid'] !== '' ? (int) $values['pid'] : null;
-        $cashbookId = $this->cashbookId;
-        $chitBody   = $this->buildChitBodyFromValues($values);
-        $method     = PaymentMethod::get($values->paymentMethod);
-        $items      = [];
-        $operation  = Operation::get($values->type);
+        $chitId        = $values['pid'] !== '' ? (int) $values['pid'] : null;
+        $cashbookId    = $this->cashbookId;
+        $chitBody      = $this->buildChitBodyFromValues($values);
+        $method        = PaymentMethod::get($values->paymentMethod);
+        $items         = [];
+        $operation     = Operation::get($values->type);
+        $categoriesDto = $this->queryBus->handle(new CategoryListQuery($cashbookId));
 
         foreach ($values->items as $item) {
             $categoryId = $operation->equals(Operation::INCOME()) ? $item->incomeCategories : $item->expenseCategories;
             $items[]    = new ChitItem(
                 new Amount($item->price),
-                new Category($categoryId, $operation),
+                $categoriesDto[$categoryId],
                 $item->purpose
             );
         }

@@ -6,8 +6,8 @@ namespace Model\Cashbook\Commands\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\DTO\Cashbook\ChitItem as ChitItemDto;
 
 /**
  * @see AddChitToCashbookHandler
@@ -20,14 +20,14 @@ final class AddChitToCashbook
     /** @var ChitBody */
     private $body;
 
-    /** @var ChitItem[] */
+    /** @var ChitItemDto[] */
     private $items;
 
     /** @var PaymentMethod */
     private $paymentMethod;
 
     /**
-     * @param ChitItem[] $items
+     * @param ChitItemDto[] $items
      */
     public function __construct(CashbookId $cashbookId, ChitBody $body, PaymentMethod $paymentMethod, array $items)
     {
@@ -48,7 +48,7 @@ final class AddChitToCashbook
     }
 
     /**
-     * @return ChitItem[]
+     * @return ChitItemDto[]
      */
     public function getItems() : array
     {

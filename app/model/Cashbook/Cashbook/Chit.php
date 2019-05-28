@@ -202,7 +202,7 @@ class Chit
                 $item->getCategory()->getOperationType()
             );
 
-            return $item->cloneWithCategory($category);
+            return $item->withCategory($category);
         });
 
         return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray());
@@ -212,7 +212,7 @@ class Chit
     {
         $newItems = [];
         foreach ($this->items as $item) {
-            $newItems[] = $item->cloneWithCategory($category);
+            $newItems[] = $item->withCategory($category);
         }
 
         return new self(
