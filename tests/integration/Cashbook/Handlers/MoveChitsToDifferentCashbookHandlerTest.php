@@ -6,12 +6,12 @@ namespace Model\Cashbook\Handlers;
 
 use Cake\Chronos\Date;
 use CommandHandlerTest;
+use Helpers;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
-use Model\Cashbook\Operation;
 use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
@@ -30,12 +30,15 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
         $type = CashbookType::get(CashbookType::EVENT);
         $this->cashbooks->save(new Cashbook($targetCashbookId, $type));
         $sourceCashbook = new Cashbook($sourceCashbookId, $type);
+        $categoryId     = 123;
+        $category       = Helpers::mockChitItemCategory($categoryId);
 
         for ($i = 0; $i < 3; $i++) {
             $sourceCashbook->addChit(
                 new Cashbook\ChitBody(null, new Date(), null),
                 Cashbook\PaymentMethod::get(Cashbook\PaymentMethod::CASH),
-                [new Cashbook\ChitItem(new Amount('100'), $this->mockCategory(), 'test')]
+                [new Cashbook\ChitItem(new Amount('100'), $category, 'test')],
+                Helpers::mockCashbookCategories($categoryId)
             );
         }
 
@@ -71,10 +74,5 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
         $this->tester->useConfigFiles([__DIR__ . '/MoveChitsToDifferentCashbookHandlerTest.neon']);
         parent::_before();
         $this->cashbooks = $this->tester->grabService(ICashbookRepository::class);
-    }
-
-    private function mockCategory() : Cashbook\Category
-    {
-        return new Cashbook\Category(123, Operation::INCOME());
     }
 }

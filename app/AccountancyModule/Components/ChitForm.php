@@ -11,6 +11,8 @@ use InvalidArgumentException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\Category;
+use Model\Cashbook\Cashbook\Chit\DuplicitCategory;
+use Model\Cashbook\Cashbook\Chit\SingleItemRestriction;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\ChitNumber;
@@ -20,10 +22,8 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ChitLocked;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
-use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Common\ReadModel\Queries\MemberNamesQuery;
@@ -43,9 +43,7 @@ use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 use function array_values;
 use function assert;
-use function count;
 use function get_class;
-use function in_array;
 use function sprintf;
 
 final class ChitForm extends BaseControl
@@ -218,7 +216,9 @@ final class ChitForm extends BaseControl
             ->setAttribute('placeholder', 'Komu/Od')
             ->setAttribute('class', 'form-control input-sm');
 
-        $removeItem = [$this, 'removeItemClicked'];
+        $removeItem = function (SubmitButton $button) : void {
+            $this->removeItem($button);
+        };
         $items      = $form->addDynamic('items', function (Container $container) use ($typePicker, $removeItem) : void {
             $this->itemsCount++;
             $container->addText('purpose')
@@ -277,7 +277,7 @@ final class ChitForm extends BaseControl
         return $form;
     }
 
-    public function removeItemClicked(SubmitButton $button) : void
+    private function removeItem(SubmitButton $button) : void
     {
         $container  = $button->getParent();
         $replicator = $container->getParent();
@@ -299,30 +299,10 @@ final class ChitForm extends BaseControl
         $method     = PaymentMethod::get($values->paymentMethod);
         $items      = [];
         $operation  = Operation::get($values->type);
-        /** @var \Model\DTO\Cashbook\Category[] $categoriesDto */
-        $categoriesDto = $this->queryBus->handle(new CategoryListQuery($cashbookId));
 
-        $itemCategories = [];
         foreach ($values->items as $item) {
             $categoryId = $operation->equals(Operation::INCOME()) ? $item->incomeCategories : $item->expenseCategories;
-            if (in_array($categoryId, $itemCategories)) {
-                $form->addError('Nelze přidat více položek se stejnou kategorií!');
-
-                return;
-            }
-            if ($operation->equals(Operation::INCOME()) && $categoryId === ICategory::CATEGORY_HPD_ID && count($values->items) > 1) {
-                $form->addError('Nelze přidat více položek k hromadnému příjmu od účastníků!');
-
-                return;
-            }
-
-            if ($categoriesDto[$categoryId]->isVirtual() && count($values->items) > 1) {
-                $form->addError('Nelze přidat více položek, pokud obsaují převody!');
-
-                return;
-            }
-            $itemCategories[] = $categoryId;
-            $items[]          = new ChitItem(
+            $items[]    = new ChitItem(
                 new Amount($item->price),
                 new Category($categoryId, $operation),
                 $item->purpose
@@ -344,6 +324,10 @@ final class ChitForm extends BaseControl
             $this->flashMessage('Nelze upravit zamčený paragon', 'error');
         } catch (WsdlException $se) {
             $this->flashMessage('Nepodařilo se upravit záznamy ve skautisu.', 'danger');
+        } catch (DuplicitCategory $e) {
+            $this->flashMessage('Není dovolneo přidávat více položek se stejou kategorií!', 'danger');
+        } catch (SingleItemRestriction $e) {
+            $this->flashMessage('Převody a hromadný příjmový doklad mohou mít pouze 1 položku!', 'danger');
         }
     }
 

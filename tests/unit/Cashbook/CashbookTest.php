@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Model\Cashbook;
 
+use Assert\InvalidArgumentException;
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use Helpers;
 use Mockery as m;
+use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
+use Model\Cashbook\Cashbook\Chit\DuplicitCategory;
+use Model\Cashbook\Cashbook\Chit\SingleItemRestriction;
 use Model\Cashbook\Cashbook\ChitBody;
+use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Events\ChitWasAdded;
 use function ksort;
@@ -179,16 +184,50 @@ class CashbookTest extends Unit
         $cashbook->generateChitNumbers(PaymentMethod::CASH());
     }
 
+    public function testCreateChitWithoutItems() : void
+    {
+        $cashbook = $this->createEventCashbook();
+        $chitBody = new ChitBody(null, new Date(), null);
+        $this->expectException(InvalidArgumentException::class);
+        $cashbook->addChit($chitBody, PaymentMethod::CASH(), [], []);
+    }
+
+    public function testCreateChitWithDuplicitItemCategory() : void
+    {
+        $cashbook   = $this->createEventCashbook();
+        $chitBody   = new ChitBody(null, new Date(), null);
+        $categoryId = 1;
+        $category   = new \Model\Cashbook\Cashbook\Category($categoryId, Operation::INCOME());
+        $items      = [
+            new ChitItem(new Amount('100'), $category, ''),
+            new ChitItem(new Amount('100'), $category, ''),
+        ];
+        $this->expectException(DuplicitCategory::class);
+        $cashbook->addChit($chitBody, PaymentMethod::CASH(), $items, Helpers::mockCashbookCategories($categoryId));
+    }
+
+    public function testCreateChitWithVirtualCategory() : void
+    {
+        $cashbook = $this->createEventCashbook();
+        $chitBody = new ChitBody(null, new Date(), null);
+
+        $categories =  [
+            1 => m::mock(Category::class, ['getId' => 1, 'getOperationType' => Operation::EXPENSE(), 'isVirtual' => true]),
+            2 => m::mock(Category::class, ['getId' => 2, 'getOperationType' => Operation::EXPENSE(), 'isVirtual' => false]),
+        ];
+
+        $category1 = Helpers::mockChitItemCategory(1);
+        $category2 = Helpers::mockChitItemCategory(2);
+        $items     = [
+            new ChitItem(new Amount('100'), $category1, ''),
+            new ChitItem(new Amount('100'), $category2, ''),
+        ];
+        $this->expectException(SingleItemRestriction::class);
+        $cashbook->addChit($chitBody, PaymentMethod::CASH(), $items, $categories);
+    }
+
     private function createEventCashbook(?CashbookId $cashbookId = null) : Cashbook
     {
         return new Cashbook($cashbookId ?? CashbookId::fromString('1'), CashbookType::get(CashbookType::EVENT));
-    }
-
-    private function mockCategory(int $id) : ICategory
-    {
-        return m::mock(ICategory::class, [
-            'getId' => $id,
-            'getOperationType' => Operation::get(Operation::INCOME),
-        ]);
     }
 }

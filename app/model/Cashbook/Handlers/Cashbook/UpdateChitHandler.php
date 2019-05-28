@@ -32,9 +32,10 @@ final class UpdateChitHandler
      */
     public function __invoke(UpdateChit $command) : void
     {
-        $cashbook = $this->cashbooks->find($command->getCashbookId());
+        $cashbook   = $this->cashbooks->find($command->getCashbookId());
+        $categories = $this->categories->findForCashbook($command->getCashbookId(), $cashbook->getType());
 
-        $cashbook->updateChit($command->getChitId(), $command->getBody(), $command->getPaymentMethod(), $command->getItems());
+        $cashbook->updateChit($command->getChitId(), $command->getBody(), $command->getPaymentMethod(), $command->getItems(), $categories);
 
         $this->cashbooks->save($cashbook);
     }
