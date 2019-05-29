@@ -44,10 +44,9 @@ class CampStatisticsQueryHandler
             LEFT JOIN `ac_chits_item` ci ON cti.item_id = ci.id
             JOIN ac_object o ON c.eventId = o.id
             WHERE o.skautisId IN (?) AND o.type = ? AND category_operation_type = ?
-            AND YEAR(date) = ? 
+            AND YEAR(date) = ?
+            GROUP BY eventId
 SQL;
-
-        $sql .= 'GROUP BY eventId';
 
         $stmt = $this->db->executeQuery($sql, $params, $types);
 
