@@ -40,9 +40,12 @@ final class AddChitToCashbookHandler
             return new ChitItem($item->getAmount(), $category, $item->getPurpose());
         }, $command->getItems());
 
-        $categories = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());
-
-        $cashbook->addChit($command->getBody(), $command->getPaymentMethod(), $items, $categories);
+        $categories     = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());
+        $categoriesById = [];
+        foreach ($categories as $category) {
+            $categoriesById[$category->getId()] = $category;
+        }
+        $cashbook->addChit($command->getBody(), $command->getPaymentMethod(), $items, $categoriesById);
 
         $this->cashbooks->save($cashbook);
     }
