@@ -123,7 +123,7 @@ class Cashbook extends Aggregate
                 $chitBody,
                 $paymentMethod,
                 $items,
-                $categories
+                $this->reindexCategories($categories)
             )
         );
         $this->raise(new ChitWasAdded($this->id));
@@ -178,7 +178,7 @@ class Cashbook extends Aggregate
             throw new ChitLocked();
         }
 
-        $chit->update($chitBody, $paymentMethod, $items, $categories);
+        $chit->update($chitBody, $paymentMethod, $items, $this->reindexCategories($categories));
 
         $this->raise(new ChitWasUpdated($this->id));
     }
@@ -381,5 +381,20 @@ class Cashbook extends Aggregate
             $chit->setBody($newBody);
             $this->raise(new ChitWasUpdated($this->id));
         }
+    }
+
+    /**
+     * @param ICategory[] $categories
+     *
+     * @return ICategory[]
+     */
+    private function reindexCategories(array $categories) : array
+    {
+        $categoriesById = [];
+        foreach ($categories as $category) {
+            $categoriesById[$category->getId()] = $category;
+        }
+
+        return $categoriesById;
     }
 }

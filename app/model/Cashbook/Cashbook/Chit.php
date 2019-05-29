@@ -262,11 +262,11 @@ class Chit
             if ($item->getCategory()->getOperationType()->equals(Operation::INCOME()) &&
                 $item->getCategory()->getId() === ICategory::CATEGORY_HPD_ID &&
                 count($items) > 1) {
-                throw new Cashbook\Chit\SingleItemRestriction('Chit with category %i should have just one item!', $item->getCategory()->getId());
+                throw new Cashbook\Chit\SingleItemRestriction(sprintf('Chit with category %d should have just one item!', $item->getCategory()->getId()));
             }
 
             if ($categories[$item->getCategory()->getId()]->isVirtual() && count($items) > 1) {
-                throw new Cashbook\Chit\SingleItemRestriction('Chit with virtual category %i should have just one item!', $item->getCategory()->getId());
+                throw new Cashbook\Chit\SingleItemRestriction(sprintf('Chit with virtual category %d should have just one item!', $item->getCategory()->getId()));
             }
         }
     }
