@@ -244,12 +244,14 @@ final class ChitForm extends BaseControl
             $container->addHidden('id');
 
             $container->addSubmit('remove', 'Odebrat položku')
+                ->setValidationScope(false)
                 ->onClick[] = function (SubmitButton $button) : void {
                     $this->removeItem($button);
                 };
         }, 1);
 
         $items->addSubmit('addItem', 'Přidat další položku')
+            ->setValidationScope(false)
             ->onClick[] = function () use ($items) : void {
                 $items->createOne();
                 $this->redrawControl();
@@ -323,9 +325,11 @@ final class ChitForm extends BaseControl
         } catch (WsdlException $se) {
             $this->flashMessage('Nepodařilo se upravit záznamy ve skautisu.', 'danger');
         } catch (DuplicitCategory $e) {
-            $this->flashMessage('Není dovolneo přidávat více položek se stejou kategorií!', 'danger');
+            $form->addError('Není dovolneo přidávat více položek se stejou kategorií!');
+            $this->redrawControl();
         } catch (SingleItemRestriction $e) {
-            $this->flashMessage('Převody a hromadný příjmový doklad mohou mít pouze 1 položku!', 'danger');
+            $form->addError('Převody a hromadný příjmový doklad mohou mít pouze 1 položku!');
+            $this->redrawControl();
         }
     }
 
