@@ -208,7 +208,7 @@ class Chit
         return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray());
     }
 
-    public function inverseTo(Category $category) : self
+    public function withCategory(Category $category) : self
     {
         $newItems = [];
         foreach ($this->items as $item) {

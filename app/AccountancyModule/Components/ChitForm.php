@@ -155,8 +155,8 @@ final class ChitForm extends BaseControl
                 'price' => $item->getAmount()->getExpression(),
                 $item->getCategory()->isIncome() ? 'incomeCategories' : 'expenseCategories' => $item->getCategory()->getId(),
             ];
-            $this['form']->setDefaults(['items' => $items]);
         }
+        $this['form']->setDefaults(['items' => $items]);
 
         $this->redrawControl();
     }
@@ -216,10 +216,7 @@ final class ChitForm extends BaseControl
             ->setAttribute('placeholder', 'Komu/Od')
             ->setAttribute('class', 'form-control input-sm');
 
-        $removeItem = function (SubmitButton $button) : void {
-            $this->removeItem($button);
-        };
-        $items      = $form->addDynamic('items', function (Container $container) use ($typePicker, $removeItem) : void {
+        $items = $form->addDynamic('items', function (Container $container) use ($typePicker) : void {
             $this->itemsCount++;
             $container->addText('purpose')
                 ->setMaxLength(120)
@@ -247,7 +244,9 @@ final class ChitForm extends BaseControl
             $container->addHidden('id');
 
             $container->addSubmit('remove', 'Odebrat položku')
-                ->onClick[] = $removeItem;
+                ->onClick[] = function (SubmitButton $button) : void {
+                    $this->removeItem($button);
+                };
         }, 1);
 
         $items->addSubmit('addItem', 'Přidat další položku')
