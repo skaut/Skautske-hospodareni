@@ -145,7 +145,7 @@ final class ChitForm extends BaseControl
             'num' => (string) $chit->getBody()->getNumber(),
             'paymentMethod' => $chit->getPaymentMethod()->toString(),
             'recipient' => (string) $chit->getBody()->getRecipient(),
-            'type' => $chit->getCategory()->getOperationType()->getValue(),
+            'type' => $chit->isIncome() ? Operation::INCOME : Operation::EXPENSE,
         ]);
 
         $items = [];

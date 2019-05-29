@@ -154,7 +154,9 @@ class Chit
 
     public function getPurpose() : string
     {
-        return $this->getFirstItem()->getPurpose();
+        return implode(', ', $this->items->map(function (ChitItem $item) {
+            return $item->getPurpose();
+        })->toArray());
     }
 
     public function getDate() : Date
