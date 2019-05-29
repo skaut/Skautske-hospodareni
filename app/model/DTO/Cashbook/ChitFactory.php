@@ -7,6 +7,7 @@ namespace Model\DTO\Cashbook;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit as ChitEntity;
 use Nette\StaticClass;
+use function count;
 
 final class ChitFactory
 {
@@ -17,6 +18,7 @@ final class ChitFactory
      */
     public static function create(ChitEntity $chit, array $categories) : Chit
     {
+        /** @var ChitItem[] $items */
         $items = [];
         foreach ($chit->getItems() as $item) {
             $items[] = new ChitItem($item->getAmount(), $categories[$item->getCategory()->getId()], $item->getPurpose());
@@ -26,7 +28,7 @@ final class ChitFactory
             $chit->getId(),
             $chit->getBody(),
             $chit->isLocked(),
-            CashbookType::getInverseCashbookTypes($chit->getCategoryId()),
+            count($items)=== 1 ? CashbookType::getInverseCashbookTypes($items[0]->getCategory()->getId()) : [],
             $chit->getPaymentMethod(),
             $items,
             $chit->getOperation(),

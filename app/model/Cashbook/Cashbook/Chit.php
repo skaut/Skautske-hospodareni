@@ -13,6 +13,7 @@ use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
+use Model\Common\ShouldNotHappen;
 use RuntimeException;
 use function count;
 use function implode;
@@ -166,6 +167,10 @@ class Chit
 
     public function getCategoryId() : int
     {
+        if ($this->items->count() !== 1) {
+            throw new ShouldNotHappen('This should be call just for chit with one item!');
+        }
+
         return $this->getFirstItem()->getCategory()->getId();
     }
 

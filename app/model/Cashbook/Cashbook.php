@@ -191,8 +191,10 @@ class Cashbook extends Aggregate
         $totalByCategories = [];
 
         foreach ($this->chits as $chit) {
-            $categoryId                     = $chit->getCategoryId();
-            $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->toFloat();
+            foreach ($chit->getItems() as $item) {
+                $categoryId                     = $item->getCategory()->getId();
+                $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->toFloat();
+            }
         }
 
         if (array_key_exists(ICategory::CATEGORY_HPD_ID, $totalByCategories)) {
