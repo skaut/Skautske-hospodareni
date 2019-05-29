@@ -11,6 +11,8 @@ use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
 use Model\Event\SkautisEventId;
 use Model\Participant\Participant;
 use Model\Participant\Payment;
+use Model\Participant\Payment\Event;
+use Model\Participant\Payment\EventType;
 use Model\Participant\PaymentFactory;
 use Model\Participant\PaymentNotFound;
 use Model\Participant\PragueParticipants;
@@ -57,7 +59,9 @@ class ParticipantService extends MutableBaseService
     {
         $data = $this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]);
 
-        return ParticipantDTOFactory::create(ParticipantFactory::create($data, $this->getPayment($participantId, $actionId)));
+        return ParticipantDTOFactory::create(
+            ParticipantFactory::create($data, $this->getPayment($participantId, new Event($actionId, EventType::get($this->type))))
+        );
     }
 
     /**
@@ -71,11 +75,13 @@ class ParticipantService extends MutableBaseService
         $eventId         = new SkautisEventId($ID_Event);
         $participantsSis = (array) $this->skautis->event->{'Participant' . $this->typeName . 'All'}(['ID_Event' . $this->typeName => $eventId->toInt()]);
 
+        $event = new Payment\Event($ID_Event, Payment\EventType::get($this->type));
+
         if (! is_array($participantsSis)) {
             return []; // API returns empty object when there are no results
         }
 
-        $participantPayments = $this->repository->findByEvent($eventId);
+        $participantPayments = $this->repository->findByEvent($event);
         $participants        = [];
         foreach ($participantsSis as $p) {
             assert($p instanceof stdClass);
@@ -85,13 +91,13 @@ class ParticipantService extends MutableBaseService
             } elseif (isset($p->{self::PAYMENT})) {
                 $payment =  new Payment(
                     $p->ID,
-                    $eventId,
+                    $event,
                     MoneyFactory::fromFloat((float) $p->{self::PAYMENT}),
                     MoneyFactory::zero(),
                     'N'
                 );
             } else {
-                $payment =  PaymentFactory::createDefault($p->ID, $eventId);
+                $payment =  PaymentFactory::createDefault($p->ID, $event);
             }
             $participants[$p->ID] = ParticipantFactory::create($p, $payment);
         }
@@ -191,7 +197,7 @@ class ParticipantService extends MutableBaseService
             }
 
             //@todo: check actionId privileges
-            $payment = $this->getPayment($participantId, $actionId);
+            $payment = $this->getPayment($participantId, new Event($actionId, EventType::get(EventType::CAMP)));
 
             foreach ($arr as $key => $value) {
                 switch ($key) {
@@ -349,12 +355,12 @@ class ParticipantService extends MutableBaseService
         return new PragueParticipants($under18, $between18and26, $personDaysUnder26, $citizensCount);
     }
 
-    private function getPayment(int $participantId, int $actionId) : Payment
+    private function getPayment(int $participantId, Event $event) : Payment
     {
         try {
             $payment = $this->repository->find($participantId);
         } catch (PaymentNotFound $exc) {
-            $payment = PaymentFactory::createDefault($participantId, new SkautisEventId($actionId));
+            $payment = PaymentFactory::createDefault($participantId, $event);
         }
 
         return $payment;
