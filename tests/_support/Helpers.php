@@ -66,7 +66,7 @@ class Helpers
         return Mockery::mock(Chit::class, [
             'getId' => $id,
             'getBody' => $body,
-            'getCategory' => new Cashbook\Category($categoryId, $operation),
+            'getCategory' => self::mockChitItemCategory ($categoryId, $operation),
             'getCategoryId' => $categoryId,
             'getDate' => $date,
             'isLocked' => true,
@@ -76,15 +76,49 @@ class Helpers
         ]);
     }
 
-    public static function addChitToCashbook(Cashbook $cashbook, ?string $chitNumber, PaymentMethod $paymentMethod): ChitBody
+    public static function addChitToCashbook(Cashbook $cashbook, ?string $chitNumber = null, ?PaymentMethod $paymentMethod = null, ?int $categoryId = null, ?string $amount = null): ChitBody
     {
+        $paymentMethod = $paymentMethod ?? PaymentMethod::CASH ();
+        $categoryId = $categoryId ?? 1;
+        $amount = new Amount($amount ?? '100');
+
         $chitBody = new ChitBody(
             $chitNumber === null ? null : new ChitNumber($chitNumber),
             new Date(),
             null
         );
-        $category = m::mock(ICategory::class, ['getId' => 1, 'getOperationType' => Operation::get(Operation::INCOME)]);
-        $cashbook->addChit ($chitBody, new Amount('100'), $category, $paymentMethod, 'čokoláda');
+        $category = self::mockChitItemCategory ($categoryId);
+
+        $cashbook->addChit (
+            $chitBody,
+            $paymentMethod,
+            [new Cashbook\ChitItem($amount, $category, 'čokoláda')],
+            Helpers::mockCashbookCategories ($categoryId)
+        );
         return $chitBody;
+    }
+
+    public static function mockChitItemCategory(?int $categoryId = null, ?Operation $operation = null): \Model\Cashbook\Cashbook\Category
+    {
+        return new Model\Cashbook\Cashbook\Category(
+            $categoryId ?? 1,
+            $operation ?? Operation::INCOME ()
+        );
+    }
+
+    /**
+     * @param int|null $catrgoryId
+     * @return ICategory[]
+     */
+    public static function mockCashbookCategories(?int $categoryId = null, ?Operation $operation = null) : array
+    {
+        return [
+            $categoryId => m::mock (\Model\Cashbook\Category::class, [
+            'getId'=>$categoryId ?? 1,
+            'getOperationType'=> $operation ?? Operation::INCOME (),
+            'isVirtual'=>false,
+            ]),
+        ];
+
     }
 }

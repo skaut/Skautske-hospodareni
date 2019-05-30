@@ -7,13 +7,12 @@ namespace Model\Infrastructure\Repositories\Cashbook;
 use Cake\Chronos\Date;
 use Doctrine\ORM\EntityManager;
 use eGen\MessageBus\Bus\EventBus;
+use Helpers;
 use IntegrationTest;
-use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\CashbookNotFound;
-use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 
 class CashbookRepositoryTest extends IntegrationTest
@@ -86,6 +85,7 @@ class CashbookRepositoryTest extends IntegrationTest
         $cashbook = new Cashbook(CashbookId::fromString('10'), Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
         $cashbook->updateChitNumberPrefix('test');
         $cashbook->updateNote('poznamka moje');
+        $category = Helpers::mockChitItemCategory($chitItem['category']);
 
         $cashbook->addChit(
             new ChitBody(
@@ -93,10 +93,9 @@ class CashbookRepositoryTest extends IntegrationTest
                 new Date($chit['date']),
                 new Cashbook\Recipient($chit['recipient'])
             ),
-            new Cashbook\Amount($chitItem['priceText']),
-            $this->mockCategory($chitItem['category']),
             Cashbook\PaymentMethod::get($chit['payment_method']),
-            $chitItem['purpose']
+            [new Cashbook\ChitItem(new Cashbook\Amount($chitItem['priceText']), $category, $chitItem['purpose'])],
+            Helpers::mockCashbookCategories($chitItem['category'])
         );
 
         $this->repository->save($cashbook);
@@ -109,13 +108,5 @@ class CashbookRepositoryTest extends IntegrationTest
         ]);
         $this->tester->seeInDatabase(self::CHIT_TABLE, $chit);
         $this->tester->seeInDatabase(self::CHIT_ITEM_TABLE, $chitItem);
-    }
-
-    private function mockCategory(int $id) : ICategory
-    {
-        return m::mock(ICategory::class, [
-            'getId' => $id,
-            'getOperationType' => Operation::get(Operation::INCOME),
-        ]);
     }
 }

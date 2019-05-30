@@ -7,6 +7,7 @@ namespace acceptance;
 use AcceptanceTester;
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use Model\Cashbook\Operation;
 use function date;
 use function sprintf;
 use function time;
@@ -77,7 +78,7 @@ class CashbookTest extends Unit
 
         $purpose = 'Nákup chleba';
 
-        $this->fillChitForm(new Date(), $purpose, 'Výdaje', 'Potraviny', 'Testovací skaut', '100 + 1');
+        $this->fillChitForm(new Date(), $purpose, Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '100 + 1');
         $I->click('Uložit');
 
         $this->waitForBalance('-101,00');
@@ -91,7 +92,7 @@ class CashbookTest extends Unit
         $I->click('.ui--editChit');
         $I->waitForElement('[name="pid"]:not([value=""])');
 
-        $I->fillField('price', '121');
+        $I->fillField('items[0][price]', '121');
         $I->click('Uložit');
 
         $this->waitForBalance('-121,00');
@@ -102,7 +103,7 @@ class CashbookTest extends Unit
         $I = $this->tester;
         $I->amGoingTo('add income chit');
 
-        $this->fillChitForm(new Date(), 'Účastnické poplatky', 'Příjmy', 'Přijmy od účastníků', 'Testovací skaut 2', '100');
+        $this->fillChitForm(new Date(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
         $I->click('Uložit');
 
         $this->waitForBalance('-21,00');
@@ -136,14 +137,14 @@ class CashbookTest extends Unit
         $I->waitForElementNotVisible($cancelButton);
     }
 
-    private function fillChitForm(Date $date, string $purpose, string $type, string $category, string $recipient, string $amount) : void
+    private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount) : void
     {
         $this->tester->fillField('Datum', $date->format('d.m. Y'));
         $this->tester->fillField('Účel', $purpose);
-        $this->tester->selectOption('type', $type);
-        $this->tester->selectOption('category', $category);
+        $this->tester->selectOption('#chit-type', $type->equals(Operation::EXPENSE()) ? 'Výdaje' : 'Příjmy');
+        $this->tester->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
         $this->tester->fillField('Komu/Od', $recipient);
-        $this->tester->fillField('price', $amount);
+        $this->tester->fillField('items[0][price]', $amount);
     }
 
     private function waitForBalance(string $balance) : void

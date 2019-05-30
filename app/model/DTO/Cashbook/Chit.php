@@ -120,15 +120,9 @@ class Chit
      */
     public function getPurpose() : string
     {
-        return $this->items[0]->getPurpose();
-    }
-
-    /**
-     * @deprecated use getItems()
-     */
-    public function getCategory() : Category
-    {
-        return $this->items[0]->getCategory();
+        return implode(', ', array_map(function (ChitItem $i) {
+            return $i->getPurpose();
+        }, $this->items));
     }
 
     public function isVirtual() : bool

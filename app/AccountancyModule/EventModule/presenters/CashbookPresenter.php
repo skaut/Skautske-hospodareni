@@ -15,11 +15,13 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
+use Model\DTO\Cashbook\ChitItem;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
@@ -87,20 +89,19 @@ class CashbookPresenter extends BasePresenter
 
         assert($functions instanceof Functions);
 
-        $accountant = $functions->getAccountant() !== null
+        $accountant    = $functions->getAccountant() !== null
             ? new Recipient($functions->getAccountant()->getName())
             : null;
-        $amount     = new Amount((string) $totalPayment);
-        $cashbookId = $this->getCashbookId();
+        $amount        = new Amount((string) $totalPayment);
+        $cashbookId    = $this->getCashbookId();
+        $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
         $this->commandBus->handle(
             new AddChitToCashbook(
                 $cashbookId,
                 new ChitBody(null, new Date($date), $accountant),
-                $amount,
-                Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID,
                 PaymentMethod::CASH(),
-                'účastnické příspěvky'
+                [new ChitItem($amount, $categoriesDto[Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID], 'účastnické příspěvky')]
             )
         );
 

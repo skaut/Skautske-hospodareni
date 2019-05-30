@@ -15,13 +15,13 @@ final class CashbookRepository extends AggregateRepository implements ICashbookR
 {
     public function find(CashbookId $id) : Cashbook
     {
-        $cashboook = $this->getEntityManager()->find(Cashbook::class, $id);
+        $cashbook = $this->getEntityManager()->find(Cashbook::class, $id);
 
-        if ($cashboook === null) {
+        if ($cashbook === null) {
             throw new CashbookNotFound(sprintf('Cashbook #%s not found', $id->toString()));
         }
 
-        return $cashboook;
+        return $cashbook;
     }
 
     public function save(Cashbook $cashbook) : void

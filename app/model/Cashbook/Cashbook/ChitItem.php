@@ -71,4 +71,9 @@ class ChitItem
     {
         $this->id = null;
     }
+
+    public function withCategory(Category $category) : self
+    {
+        return new self($this->amount, $category, $this->purpose);
+    }
 }

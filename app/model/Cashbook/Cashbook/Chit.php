@@ -11,9 +11,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
+use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
+use Model\Common\ShouldNotHappen;
 use RuntimeException;
+use function count;
 use function implode;
+use function in_array;
+use function sprintf;
 
 /**
  * @ORM\Entity()
@@ -79,7 +84,7 @@ class Chit
     /**
      * @param ChitItem[] $items
      */
-    public function __construct(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod, array $items)
+    private function __construct(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod, array $items)
     {
         Assertion::notEmpty($items, 'At least one chit item was expected');
 
@@ -90,18 +95,28 @@ class Chit
     }
 
     /**
-     * @param ChitItem[] $items
+     * @param ChitItem[]  $items
+     * @param ICategory[] $categories
      */
-    public function update(ChitBody $body, PaymentMethod $paymentMethod, array $items) : void
+    public static function create(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod, array $items, array $categories) : self
     {
+        self::validateItems($items, $categories);
+
+        return new self($cashbook, $body, $paymentMethod, $items);
+    }
+
+    /**
+     * @param ChitItem[]  $items
+     * @param ICategory[] $categories
+     */
+    public function update(ChitBody $body, PaymentMethod $paymentMethod, array $items, array $categories) : void
+    {
+        Assertion::notEmpty($items, 'At least one chit item was expected');
+
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
-
-        $this->items->clear();
-
-        foreach ($items as $item) {
-            $this->items->add($item);
-        }
+        self::validateItems($items, $categories);
+        $this->items = new ArrayCollection($items);
     }
 
     public function lock(int $userId) : void
@@ -140,7 +155,9 @@ class Chit
 
     public function getPurpose() : string
     {
-        return $this->getFirstItem()->getPurpose();
+        return implode(', ', $this->items->map(function (ChitItem $item) {
+            return $item->getPurpose();
+        })->toArray());
     }
 
     public function getDate() : Date
@@ -150,6 +167,10 @@ class Chit
 
     public function getCategoryId() : int
     {
+        if ($this->items->count() !== 1) {
+            throw new ShouldNotHappen('This should be call just for chit with one item!');
+        }
+
         return $this->getFirstItem()->getCategory()->getId();
     }
 
@@ -188,10 +209,25 @@ class Chit
                 $item->getCategory()->getOperationType()
             );
 
-            return new ChitItem($item->getAmount(), $category, $item->getPurpose());
+            return $item->withCategory($category);
         });
 
         return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray());
+    }
+
+    public function withCategory(Category $category) : self
+    {
+        $newItems = [];
+        foreach ($this->items as $item) {
+            $newItems[] = $item->withCategory($category);
+        }
+
+        return new self(
+            $this->cashbook,
+            $this->body->withoutChitNumber(),
+            $this->paymentMethod,
+            $newItems
+        );
     }
 
     public function getPaymentMethod() : PaymentMethod
@@ -215,5 +251,30 @@ class Chit
     private function getFirstItem() : ChitItem
     {
         return $this->items->first();
+    }
+
+    /**
+     * @param ChitItem[]  $items
+     * @param ICategory[] $categories
+     */
+    private static function validateItems(array $items, array $categories) : void
+    {
+        $itemCategories = [];
+        foreach ($items as $item) {
+            if (in_array($item->getCategory()->getId(), $itemCategories)) {
+                throw new Cashbook\Chit\DuplicitCategory(sprintf('Category %d is duplicit', $item->getCategory()->getId()));
+            }
+            $itemCategories[] = $item->getCategory()->getId();
+
+            if ($item->getCategory()->getOperationType()->equals(Operation::INCOME()) &&
+                $item->getCategory()->getId() === ICategory::CATEGORY_HPD_ID &&
+                count($items) > 1) {
+                throw new Cashbook\Chit\SingleItemRestriction(sprintf('Chit with category %d should have just one item!', $item->getCategory()->getId()));
+            }
+
+            if ($categories[$item->getCategory()->getId()]->isVirtual() && count($items) > 1) {
+                throw new Cashbook\Chit\SingleItemRestriction(sprintf('Chit with virtual category %d should have just one item!', $item->getCategory()->getId()));
+            }
+        }
     }
 }

@@ -6,11 +6,11 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
+use Helpers;
 use IntegrationTest;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
@@ -49,8 +49,14 @@ class ChitListQueryHandlerTest extends IntegrationTest
         $cashbook = new Cashbook($this->getCashbookId(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
 
         foreach ($chits as [$date, $operation, $categoryId, $paymentMethod]) {
-            $body = new Cashbook\ChitBody(null, new Date($date), null);
-            $cashbook->addChit($body, Cashbook\Amount::fromFloat(10), $this->mockCategory($categoryId, $operation), PaymentMethod::get($paymentMethod), '');
+            $body     = new Cashbook\ChitBody(null, new Date($date), null);
+            $category = Helpers::mockChitItemCategory($categoryId, Operation::get($operation));
+            $cashbook->addChit(
+                $body,
+                PaymentMethod::get($paymentMethod),
+                [new Cashbook\ChitItem(Cashbook\Amount::fromFloat(10), $category, '')],
+                Helpers::mockCashbookCategories($categoryId)
+            );
         }
 
         $this->entityManager->persist($cashbook);
@@ -108,13 +114,5 @@ class ChitListQueryHandlerTest extends IntegrationTest
     private function getCashbookId() : Cashbook\CashbookId
     {
         return Cashbook\CashbookId::fromString(self::CASHBOOK_ID);
-    }
-
-    private function mockCategory(int $id, string $operationType = Operation::INCOME) : ICategory
-    {
-        return m::mock(ICategory::class, [
-            'getId' => $id,
-            'getOperationType' => Operation::get($operationType),
-        ]);
     }
 }
