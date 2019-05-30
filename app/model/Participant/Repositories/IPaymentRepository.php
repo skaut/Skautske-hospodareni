@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Participant\Repositories;
 
-use Model\Event\SkautisEventId;
 use Model\Participant\Payment;
+use Model\Participant\Payment\Event;
 use Model\Participant\PaymentNotFound;
 
 interface IPaymentRepository
@@ -18,7 +18,7 @@ interface IPaymentRepository
     /**
      * @return Payment[]
      */
-    public function findByEvent(SkautisEventId $eventId) : array;
+    public function findByEvent(Event $event) : array;
 
     public function save(Payment $payment) : void;
 

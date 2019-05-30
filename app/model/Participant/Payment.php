@@ -6,7 +6,7 @@ namespace Model\Participant;
 
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
-use Model\Event\SkautisEventId;
+use Model\Participant\Payment\Event;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use function in_array;
@@ -26,11 +26,11 @@ class Payment
     private $participantId;
 
     /**
-     * @ORM\Column(type="integer", name="actionId", options={"unsigned"=true})
+     * @ORM\Embedded(class=Event::class)
      *
-     * @var SkautisEventId
+     * @var Event
      */
-    private $actionId;
+    private $event;
 
     /**
      * @ORM\Column(type="money")
@@ -53,10 +53,10 @@ class Payment
      */
     private $account;
 
-    public function __construct(int $participantId, SkautisEventId $eventId, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
+    public function __construct(int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
     {
         $this->participantId = $participantId;
-        $this->actionId      = $eventId;
+        $this->event         = $event;
         $this->payment       = $payment ?? MoneyFactory::zero();
         $this->repayment     = $repayment ?? MoneyFactory::zero();
         $this->account       = $account;

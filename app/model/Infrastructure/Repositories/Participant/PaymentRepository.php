@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Participant;
 
 use Doctrine\ORM\EntityManager;
-use Model\Event\SkautisEventId;
 use Model\Participant\Payment;
+use Model\Participant\Payment\Event;
 use Model\Participant\PaymentNotFound;
 use Model\Participant\Repositories\IPaymentRepository;
 
@@ -33,16 +33,17 @@ final class PaymentRepository implements IPaymentRepository
     /**
      * @return Payment[]
      */
-    public function findByEvent(SkautisEventId $actionId) : array
+    public function findByEvent(Event $event) : array
     {
-        $res      = [];
-        $payments = $this->em->getRepository(Payment::class)->findBy(['actionId' => $actionId->toInt()]);
-        /** @var Payment $payment */
-        foreach ($payments as $payment) {
-            $res[$payment->getParticipantId()] = $payment;
-        }
-
-        return $res;
+        return $this->em
+            ->createQuery(<<<'DQL'
+                SELECT p FROM Model\Participant\Payment p INDEX BY p.participantId
+                    WHERE p.event.id = :eventId AND p.event.type = :eventType
+            DQL)
+            ->execute([
+                'eventId' => $event->getId(),
+                'eventType' => $event->getType()->toString(),
+            ]);
     }
 
     public function save(Payment $payment) : void
