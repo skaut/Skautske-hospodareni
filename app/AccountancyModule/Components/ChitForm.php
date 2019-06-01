@@ -226,11 +226,13 @@ final class ChitForm extends BaseControl
 
             $container->addSelect('incomeCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::INCOME)))
                 ->setAttribute('class', 'form-control input-sm')
+                ->setHtmlId('incomeCategories' . $this->itemsCount)
                 ->addConditionOn($typePicker, Form::EQUAL, Operation::INCOME)
                 ->toggle('incomeCategories' . $this->itemsCount);
 
             $container->addSelect('expenseCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)))
                 ->setAttribute('class', 'form-control input-sm')
+                ->setHtmlId('expenseCategories' . $this->itemsCount)
                 ->addConditionOn($typePicker, Form::EQUAL, Operation::EXPENSE)
                 ->toggle('expenseCategories' . $this->itemsCount);
 
