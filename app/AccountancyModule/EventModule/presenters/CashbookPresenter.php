@@ -80,7 +80,7 @@ class CashbookPresenter extends BasePresenter
         $totalPayment = $this->eventService->getParticipants()->getTotalPayment($this->aid);
 
         if ($totalPayment === 0.0) {
-            $this->flashMessage('Nemáte žádné účastníky');
+            $this->flashMessage('Nemáte žádné příjmy od účastníků');
             $this->redirect('this');
         }
 

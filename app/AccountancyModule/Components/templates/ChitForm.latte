@@ -21,6 +21,7 @@
             </div>
 
             <h3>Položky</h3>
+            {var $itemsCount = iterator_count($form['items']->getContainers())}
             {foreach $form['items']->getContainers() as $id => $item}
                 <div class="panel panel-default">
                     <div class="panel-body">
@@ -36,7 +37,9 @@
                         <div class="row">
                             <div class="col-sm-12">{input items-$id-price}</div>
                         </div>
-                        {input items-$id-remove  class=>"btn btn-default btn-sm ajax"}
+                        {if $itemsCount > 1}
+                            {input items-$id-remove  class=>"btn btn-default btn-sm ajax"}
+                        {/if}
                     </div>
                 </div>
             {/foreach}
