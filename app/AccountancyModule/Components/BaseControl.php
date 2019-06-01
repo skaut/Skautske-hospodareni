@@ -39,4 +39,16 @@ class BaseControl extends Control
     {
         return $this->getPresenter()->flashMessage($message, $type);
     }
+
+    protected function reload(?string $message = null, string $type = 'info') : void
+    {
+        if ($message !== null) {
+            $this->flashMessage($message, $type);
+        }
+        if ($this->getPresenter()->isAjax()) {
+            $this->redrawControl();
+        } else {
+            $this->redirect('this');
+        }
+    }
 }

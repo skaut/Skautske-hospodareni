@@ -256,7 +256,7 @@ final class ChitForm extends BaseControl
             ->setValidationScope(false)
             ->onClick[] = function () use ($items) : void {
                 $items->createOne();
-                $this->redrawControl();
+                $this->reload();
             };
 
         // ID of edited chit
@@ -272,7 +272,6 @@ final class ChitForm extends BaseControl
                 return;
             }
             $this->formSubmitted($form, $values);
-            $this->redirect('this');
         };
 
         return $form;
@@ -284,14 +283,13 @@ final class ChitForm extends BaseControl
         $replicator = $container->getParent();
         assert($replicator instanceof \Kdyby\Replicator\Container && $container instanceof Container);
         $replicator->remove($container, true);
-        $this->redrawControl();
+        $this->reload();
     }
 
     private function formSubmitted(BaseForm $form, ArrayHash $values) : void
     {
         if (! $this->isEditable) {
-            $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu', 'danger');
-            $this->redirect('this');
+            $this->reload('Nemáte oprávnění upravovat pokladní knihu', 'danger');
         }
 
         $chitId        = $values['pid'] !== '' ? (int) $values['pid'] : null;
@@ -319,6 +317,7 @@ final class ChitForm extends BaseControl
                 $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $method, $items));
                 $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
+            $this->reload();
         } catch (InvalidArgumentException | CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');
             $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', get_class($exc), $exc->getMessage()));
@@ -327,11 +326,9 @@ final class ChitForm extends BaseControl
         } catch (WsdlException $se) {
             $this->flashMessage('Nepodařilo se upravit záznamy ve skautisu.', 'danger');
         } catch (DuplicitCategory $e) {
-            $form->addError('Není dovolneo přidávat více položek se stejou kategorií!');
-            $this->redrawControl();
+            $form->addError('Není dovoleno přidávat více položek se stejou kategorií!');
         } catch (SingleItemRestriction $e) {
             $form->addError('Převody a hromadný příjmový doklad mohou mít pouze 1 položku!');
-            $this->redrawControl();
         }
     }
 
