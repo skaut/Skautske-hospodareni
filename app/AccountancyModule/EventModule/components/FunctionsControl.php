@@ -63,18 +63,6 @@ class FunctionsControl extends BaseControl
         $this->authorizator = $authorizator;
     }
 
-    private function reload(?string $message = null, ?string $type = null) : void
-    {
-        if ($message !== null) {
-            $this->flashMessage($message, $type);
-        }
-        if ($this->getPresenter()->isAjax()) {
-            $this->redrawControl();
-        } else {
-            $this->redirect('this');
-        }
-    }
-
     private function canEdit() : bool
     {
         return $this->authorizator->isAllowed(Event::UPDATE_FUNCTION, $this->eventId);

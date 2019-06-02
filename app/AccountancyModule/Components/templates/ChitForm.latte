@@ -2,10 +2,10 @@
     <script type="text/javascript" src="{$baseUri}/js/nextras.datetimepicker.init.js"></script>{* include kvuli ajaxovým požadavkům *}
     <div class="well well-sm" n:if="$isEditable">
         {form form}
-            <ul class="errors" n:if="$form->hasErrors()">
+            <h3>Nový doklad</h3>
+            <ul class="alert alert-danger" n:if="$form->hasErrors()">
                 <li n:foreach="$form->errors as $error">{$error}</li>
             </ul>
-            <h3>Nový doklad</h3>
             <div class="row">
                 <div class="col-sm-12" id="chit-type">Typ: {input type:in}{label type:in/} {input type:out}{label type:out /}</div>
             </div>
