@@ -14,8 +14,10 @@ use stdClass;
  * @property-read Template $template
  * @property-read BasePresenter $presenter
  */
-class BaseControl extends Control
+abstract class BaseControl extends Control
 {
+    abstract public function render() : void;
+
     /**
      * {@inheritDoc}
      */
