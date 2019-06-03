@@ -25,9 +25,22 @@
         "@babel/preset-env": "^7.4.2",
         "babel-loader": "^8.0.5",
         "bootstrap.native-loader": "^1.0.7",
+        "husky": "^2.3.0",
+        "lint-staged": "^8.1.7",
         "uglify-js": "^3.5.2",
         "webpack": "^4.29.6",
         "webpack-bundle-analyzer": "^3.3.2",
         "webpack-cli": "^3.3.0"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.php": [
+            "bin/phpcbf",
+            "git add"
+        ]
     }
 }
