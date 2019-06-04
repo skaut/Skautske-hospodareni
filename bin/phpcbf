@@ -4,7 +4,7 @@
 
 root=$( dirname $0 )/..
 
-$root/vendor/bin/phpcbf $@
+"$root/vendor/bin/phpcbf" "$@"
 exit=$?
 
 # Exit code 1 is used to indicate that all fixable errors were fixed correctly.
