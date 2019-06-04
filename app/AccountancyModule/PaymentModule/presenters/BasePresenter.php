@@ -8,9 +8,7 @@ use Model\DTO\Payment\Group;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use function array_intersect;
-use function array_key_last;
 use function array_keys;
-use function explode;
 use function in_array;
 
 abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
@@ -49,12 +47,9 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     {
         parent::beforeRender();
 
-        $presenterName = explode(':', $this->getName());
-
         $this->template->setParameters([
             'unitId'     => $this->unitId->toInt(),
             'isEditable' => $this->isEditable,
-            'presenterName' => $presenterName[array_key_last($presenterName)],
         ]);
     }
 

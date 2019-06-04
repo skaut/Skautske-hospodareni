@@ -18,6 +18,7 @@ use Nette\Security\Identity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
 use WebLoader\Nette as WebLoader;
+use function array_key_last;
 use function assert;
 use function explode;
 use function sprintf;
@@ -113,7 +114,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     {
         parent::beforeRender();
 
-        $this->template->setParameters(['module' => explode(':', $this->getName())[1] ?? null]);
+        $presenterNameParts = explode(':', $this->getName());
+
+        $this->template->setParameters([
+            'module' => $presenterNameParts[1] ?? null,
+            'presenterName' => $presenterNameParts[array_key_last($presenterNameParts)],
+        ]);
 
         if (! $this->getUser()->isLoggedIn()) {
             return;
