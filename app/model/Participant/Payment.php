@@ -13,7 +13,7 @@ use function in_array;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="ac_camp_participants")
+ * @ORM\Table(name="ac_participants")
  */
 class Payment
 {
