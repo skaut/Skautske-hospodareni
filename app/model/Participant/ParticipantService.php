@@ -89,6 +89,7 @@ class ParticipantService extends MutableBaseService
             if (array_key_exists($p->ID, $participantPayments)) {
                 $payment =  $participantPayments[$p->ID];
             } elseif (isset($p->{self::PAYMENT})) {
+                //TBD: pouze dočasně - po provedení migrace lze odebrat! - 2019/06/04
                 $payment =  new Payment(
                     $p->ID,
                     $event,
@@ -102,10 +103,8 @@ class ParticipantService extends MutableBaseService
             $participants[$p->ID] = ParticipantFactory::create($p, $payment);
         }
 
-        if ($this->type === 'camp') {
-            foreach (array_diff_key($participantPayments, $participants) as $paymentToRemove) {
-                $this->repository->remove($paymentToRemove); //delete zaznam, protoze neexistuje k nemu ucastnik
-            }
+        foreach (array_diff_key($participantPayments, $participants) as $paymentToRemove) {
+            $this->repository->remove($paymentToRemove); //delete zaznam, protoze neexistuje k nemu ucastnik
         }
 
         usort(
@@ -182,62 +181,38 @@ class ParticipantService extends MutableBaseService
      */
     public function update(int $participantId, int $actionId, array $arr) : void
     {
-        if ($this->typeName === 'Camp') {
-            if (array_key_exists('days', $arr)) {
-                $sisData = [
-                    'ID' => $participantId,
-                    'Real' => true,
-                    'Days' => $arr['days'],
-                ];
-                $this->skautis->event->{'Participant' . $this->typeName . 'Update'}($sisData, 'participant' . $this->typeName);
-                unset($arr['days']);
-                if (empty($arr)) {
-                    return;
-                }
-            }
-
-            //@todo: check actionId privileges
-            $payment = $this->getPayment($participantId, new Event($actionId, EventType::get(EventType::CAMP)));
-
-            foreach ($arr as $key => $value) {
-                switch ($key) {
-                    case 'payment':
-                        $payment->setPayment(MoneyFactory::fromFloat((float) $value));
-                        break;
-                    case 'repayment':
-                        $payment->setRepayment(MoneyFactory::fromFloat((float) $value));
-                        break;
-                    case 'isAccount':
-                        $payment->setAccount($value);
-                        break;
-                    default:
-                        throw new InvalidArgumentException(sprintf("Camp participant hasn't attribute '%s'", $key));
-                }
-            }
-            $this->repository->save($payment);
-        } else {
-            $origin  = $this->get($participantId, $actionId);
+        if (array_key_exists('days', $arr)) {
             $sisData = [
                 'ID' => $participantId,
                 'Real' => true,
-                'Days' => $origin->getDays(),
-                self::PAYMENT => $origin->getPayment(),
+                'Days' => $arr['days'],
             ];
-            foreach ($arr as $key => $value) {
-                switch ($key) {
-                    case 'days':
-                        $sisData['Days'] = $value;
-                        break;
-                    case 'payment':
-                        $sisData[self::PAYMENT] = $value;
-                        break;
-                    default:
-                        throw new InvalidArgumentException(sprintf("General event participant hasn't attribute '%s'", $key));
-                        break;
-                }
-            }
             $this->skautis->event->{'Participant' . $this->typeName . 'Update'}($sisData, 'participant' . $this->typeName);
+            unset($arr['days']);
+            if (empty($arr)) {
+                return;
+            }
         }
+
+        //@todo: check actionId privileges
+        $payment = $this->getPayment($participantId, new Event($actionId, EventType::get($this->type === 'camp' ? EventType::CAMP : EventType::GENERAL)));
+
+        foreach ($arr as $key => $value) {
+            switch ($key) {
+                case 'payment':
+                    $payment->setPayment(MoneyFactory::fromFloat((float) $value));
+                    break;
+                case 'repayment':
+                    $payment->setRepayment(MoneyFactory::fromFloat((float) $value));
+                    break;
+                case 'isAccount':
+                    $payment->setAccount($value);
+                    break;
+                default:
+                    throw new InvalidArgumentException(sprintf("Camp participant hasn't attribute '%s'", $key));
+            }
+        }
+        $this->repository->save($payment);
     }
 
     public function removeParticipant(int $participantId) : void
