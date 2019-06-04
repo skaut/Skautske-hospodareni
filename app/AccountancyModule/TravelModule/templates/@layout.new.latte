@@ -1,0 +1,16 @@
+{extends '../../../templates/@layout2.latte'}
+{block subMenu}
+    <ul class="navbar-nav mr-auto">
+        <li n:class="nav-item, in_array($presenterName, ['Default', 'Command']) ? active">
+            <a class="nav-link" n:href="Default:"><i class="fas fa-route"></i> Cestovní příkazy</a>
+        </li>
+
+        <li n:class="$presenterName === 'Vehicle' ? active">
+            <a class="nav-link" n:href="Vehicle: "><i class="fas fa-car"></i> Vozidla</a>
+        </li>
+
+        <li n:class="$presenterName === 'Contract' ? active">
+            <a class="nav-link" n:href="Contract:"><i class="fas fa-file-contract"></i> Smlouvy</a>
+        </li>
+    </ul>
+{/block}
