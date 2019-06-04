@@ -16,6 +16,9 @@ parameters:
 services:
     - Raven_Client(%sentry.url%)
 
+    # Passes notices and warning to Monolog
+    tracy.logger: Tracy\Bridges\Psr\PsrToTracyLoggerAdapter
+
 decorator:
     Monolog\Logger:
         setup:
