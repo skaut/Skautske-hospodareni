@@ -14,6 +14,7 @@ use Model\Participant\Payment;
 use Model\Participant\Payment\Event;
 use Model\Participant\Payment\EventType;
 use Model\Participant\PaymentFactory;
+use Model\Participant\PaymentId;
 use Model\Participant\PaymentNotFound;
 use Model\Participant\PragueParticipants;
 use Model\Participant\Repositories\IPaymentRepository;
@@ -91,6 +92,7 @@ class ParticipantService extends MutableBaseService
             } elseif (isset($p->{self::PAYMENT})) {
                 //TBD: pouze dočasně - po provedení migrace lze odebrat! - 2019/06/04
                 $payment =  new Payment(
+                    PaymentId::generate(),
                     $p->ID,
                     $event,
                     MoneyFactory::fromFloat((float) $p->{self::PAYMENT}),
@@ -218,7 +220,7 @@ class ParticipantService extends MutableBaseService
     public function removeParticipant(int $participantId) : void
     {
         try {
-            $this->repository->remove($this->repository->find($participantId));
+            $this->repository->remove($this->repository->findByParticipant($participantId, EventType::get($this->type)));
         } catch (PaymentNotFound $exc) {
         }
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
@@ -333,7 +335,7 @@ class ParticipantService extends MutableBaseService
     private function getPayment(int $participantId, Event $event) : Payment
     {
         try {
-            $payment = $this->repository->find($participantId);
+            $payment = $this->repository->findByParticipant($participantId, EventType::get($this->type));
         } catch (PaymentNotFound $exc) {
             $payment = PaymentFactory::createDefault($participantId, $event);
         }

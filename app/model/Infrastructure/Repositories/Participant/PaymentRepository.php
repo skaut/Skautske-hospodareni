@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Participant;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\NoResultException;
 use Model\Participant\Payment;
 use Model\Participant\Payment\Event;
 use Model\Participant\PaymentNotFound;
@@ -20,10 +21,19 @@ final class PaymentRepository implements IPaymentRepository
         $this->em = $em;
     }
 
-    public function find(int $id) : Payment
+    public function findByParticipant(int $participantId, Payment\EventType $eventType) : Payment
     {
-        $payment = $this->em->find(Payment::class, $id);
-        if ($payment === null) {
+        try {
+            $payment = $this->em->createQueryBuilder()
+                ->select('p')
+                ->from(Payment::class, 'p')
+                ->where('p.participantId = :participantId')
+                ->andWhere('p.event.type = :event_type')
+                ->setParameter('participantId', $participantId)
+                ->setParameter('event_type', $eventType->toString())
+                ->getQuery()
+                ->getSingleResult();
+        } catch (NoResultException $exc) {
             throw new PaymentNotFound();
         }
 

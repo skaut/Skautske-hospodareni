@@ -13,7 +13,7 @@ interface IPaymentRepository
     /**
      * @throws PaymentNotFound
      */
-    public function find(int $id) : Payment;
+    public function findByParticipant(int $id, Payment\EventType $eventType) : Payment;
 
     /**
      * @return Payment[]
