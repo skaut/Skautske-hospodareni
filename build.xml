@@ -29,15 +29,18 @@
         </copy>
 
         <property environment="env"/>
-        <property name="config.skautis.applicationId" value="${env.CONFIG_SKAUTIS_APPLICATION_ID}"/>
-        <property name="config.skautis.testMode" value="${env.CONFIG_SKAUTIS_TEST_MODE}"/>
-        <property name="config.database.host" value="${env.CONFIG_DATABASE_HOST}"/>
-        <property name="config.database.user" value="${env.CONFIG_DATABASE_USER}"/>
-        <property name="config.database.password" value="${env.CONFIG_DATABASE_PASSWORD}"/>
-        <property name="config.database.name" value="${env.CONFIG_DATABASE_NAME}"/>
 
         <copy file="./app/config/config.${env.ENVIRONMENT}.local.neon" tofile="${build.dir}/app/config/config.local.neon">
             <filterchain>
+                <replacetokens begintoken="__" endtoken="__">
+                    <token key="CONFIG_SKAUTIS_APPLICATION_ID" value="${env.CONFIG_SKAUTIS_APPLICATION_ID}"/>
+                    <token key="CONFIG_SKAUTIS_TEST_MODE" value="${env.CONFIG_SKAUTIS_TEST_MODE}"/>
+                    <token key="CONFIG_DATABASE_HOST" value="${env.CONFIG_DATABASE_HOST}"/>
+                    <token key="CONFIG_DATABASE_USER" value="${env.CONFIG_DATABASE_USER}"/>
+                    <token key="CONFIG_DATABASE_PASSWORD" value="${env.CONFIG_DATABASE_PASSWORD}"/>
+                    <token key="CONFIG_DATABASE_NAME" value="${env.CONFIG_DATABASE_NAME}"/>
+
+                </replacetokens>
                 <expandproperties/>
             </filterchain>
         </copy>
