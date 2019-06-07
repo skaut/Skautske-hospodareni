@@ -7,18 +7,15 @@ namespace App\AccountancyModule\TravelModule;
 use App\AccountancyModule\TravelModule\Components\VehicleGrid;
 use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 use App\Forms\BaseForm;
-use Model\BaseService;
 use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
 use Model\TravelService;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\Security\Identity;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
-use function array_key_exists;
-use function assert;
+use function in_array;
 
 class VehiclePresenter extends BasePresenter
 {
@@ -53,18 +50,6 @@ class VehiclePresenter extends BasePresenter
         }
 
         return $vehicle;
-    }
-
-    private function isVehicleEditable(?VehicleDTO $vehicle) : bool
-    {
-        $identity = $this->getUser()->getIdentity();
-
-        assert($identity instanceof Identity);
-
-        $unitAccessible = array_key_exists($vehicle->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]) ||
-        $vehicle->getSubunitId() !== null && array_key_exists($vehicle->getSubunitId(), $identity->access[BaseService::ACCESS_EDIT]);
-
-        return $vehicle !== null && $unitAccessible;
     }
 
     public function renderDetail(int $id) : void
@@ -173,5 +158,17 @@ class VehiclePresenter extends BasePresenter
 
         $this->flashMessage('Vozidlo bylo vytvořeno');
         $this->redirect('default');
+    }
+
+    private function isVehicleEditable(?VehicleDTO $vehicle) : bool
+    {
+        if ($vehicle === null) {
+            return false;
+        }
+
+        $editableUnitIds = $this->getEditableUnitIds();
+
+        return in_array($vehicle->getUnitId(), $editableUnitIds, true)
+            || in_array($vehicle->getSubunitId(), $editableUnitIds, true);
     }
 }
