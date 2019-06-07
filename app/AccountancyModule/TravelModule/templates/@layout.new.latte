@@ -5,8 +5,8 @@
             <a class="nav-link" n:href="Default:"><i class="fas fa-route"></i> Cestovní příkazy</a>
         </li>
 
-        <li n:class="$presenterName === 'Vehicle' ? active">
-            <a class="nav-link" n:href="Vehicle: "><i class="fas fa-car"></i> Vozidla</a>
+        <li n:class="in_array($presenterName, ['Vehicle', 'VehicleList'], true) ? active">
+            <a class="nav-link" n:href="VehicleList:"><i class="fas fa-car"></i> Vozidla</a>
         </li>
 
         <li n:class="$presenterName === 'Contract' ? active">

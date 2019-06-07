@@ -141,6 +141,7 @@ class RouterFactory
 
         $prefix = 'cestaky';
 
+        $router[] = new Route($prefix . '/vozidla', 'VehicleList:default');
         $router[] = new Route(
             $prefix . '[/<presenter>[/<action>][/<id>]]',
             [

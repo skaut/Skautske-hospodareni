@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\TravelModule;
 
-use App\AccountancyModule\TravelModule\Components\VehicleGrid;
-use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 use App\Forms\BaseForm;
 use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
@@ -22,14 +20,10 @@ class VehiclePresenter extends BasePresenter
     /** @var TravelService */
     private $travelService;
 
-    /** @var IVehicleGridFactory */
-    private $gridFactory;
-
-    public function __construct(TravelService $travelService, IVehicleGridFactory $gridFactory)
+    public function __construct(TravelService $travelService)
     {
         parent::__construct();
         $this->travelService = $travelService;
-        $this->gridFactory   = $gridFactory;
     }
 
     /**
@@ -110,11 +104,6 @@ class VehiclePresenter extends BasePresenter
         $this->flashMessage('Vozidlo bylo archivováno', 'success');
 
         $this->redirect('this');
-    }
-
-    protected function createComponentGrid() : VehicleGrid
-    {
-        return $this->gridFactory->create($this->getUnitId());
     }
 
     protected function createComponentFormCreateVehicle() : Form
