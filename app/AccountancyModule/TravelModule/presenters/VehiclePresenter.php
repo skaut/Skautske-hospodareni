@@ -69,6 +69,7 @@ class VehiclePresenter extends BasePresenter
 
     public function renderDetail(int $id) : void
     {
+        $this->setLayout('layout.new');
         try {
             $vehicle = $this->getVehicle($id);
 
