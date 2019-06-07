@@ -160,9 +160,7 @@ final class GroupForm extends BaseControl
         $form->addSubmit('send', $this->groupId !== null ? 'Uložit skupinu' : 'Založit skupinu')
             ->setAttribute('class', 'btn btn-primary');
 
-        if ($this->groupId !== null) {
-            $form->setDefaults($this->buildDefaultsFromGroup());
-        }
+        $form->setDefaults($this->buildDefaultsFromGroup());
 
         $form->onSuccess[] = function (BaseForm $form) : void {
             $this->formSucceeded($form);
@@ -175,9 +173,14 @@ final class GroupForm extends BaseControl
     {
         $v = $form->getValues();
 
-        $name            = $v->name;
-        $paymentDefaults = new PaymentDefaults($v->amount, $v->dueDate, $v->constantSymbol, $v->nextVs);
-        $smtpId          = $v->smtp;
+        $originalGroupData = $this->buildDefaultsFromGroup();
+
+        $paymentDefaults = new PaymentDefaults(
+            $v->amount,
+            $v->dueDate,
+            $v->constantSymbol,
+            $v->nextVs ?? $originalGroupData['nextVs'] ?? null,
+        );
 
         $emails = [
             EmailType::PAYMENT_INFO => $this->buildEmailTemplate($v, EmailType::PAYMENT_INFO),
@@ -187,17 +190,17 @@ final class GroupForm extends BaseControl
         $emails = array_filter($emails);
 
         if ($this->groupId !== null) {//EDIT
-            $this->model->updateGroup($this->groupId, $name, $paymentDefaults, $emails, $smtpId, $v->bankAccount);
+            $this->model->updateGroup($this->groupId, $v->name, $paymentDefaults, $emails, $v->smtp, $v->bankAccount);
 
             $this->flashMessage('Skupina byla upravena');
         } else {//ADD
             $this->groupId = $this->model->createGroup(
                 $this->unitId->toInt(),
                 $this->skautisEntity,
-                $name,
+                $v->name,
                 $paymentDefaults,
                 $emails,
-                $smtpId,
+                $v->smtp,
                 $v->bankAccount
             );
 
@@ -216,6 +219,10 @@ final class GroupForm extends BaseControl
      */
     private function buildDefaultsFromGroup() : array
     {
+        if ($this->groupId === null) {
+            return [];
+        }
+
         $group = $this->model->getGroup($this->groupId);
 
         Assertion::notNull($group);
