@@ -49,4 +49,26 @@ class VehicleTest extends \Codeception\Test\Unit
         $this->assertCount(1, $roadworthyScans);
         $this->assertSame($path, $roadworthyScans[0]->getFilePath());
     }
+
+    public function testRemoveRoadworthyScanThrowsExceptionIfScanDoesNotExist() : void
+    {
+        $unit    = m::mock(Unit::class, ['getId' => 10]);
+        $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
+
+        $this->expectException(ScanNotFound::class);
+
+        $vehicle->removeRoadworthyScan('roadworthy.jpg');
+    }
+
+    public function testRemoveRoadworthyScan() : void
+    {
+        $unit    = m::mock(Unit::class, ['getId' => 10]);
+        $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
+        $path    = 'roadworthy.jpg';
+        $vehicle->addRoadworthyScan($path);
+
+        $vehicle->removeRoadworthyScan($path);
+
+        $this->assertCount(0, $vehicle->getRoadworthyScans());
+    }
 }

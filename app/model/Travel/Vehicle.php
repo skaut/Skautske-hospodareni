@@ -97,13 +97,14 @@ class Vehicle
     private $metadata;
 
     /**
-     * @var ArrayCollection|RoadworthyScan[]
      * @ORM\OneToMany(
      *     targetEntity=RoadworthyScan::class,
      *     mappedBy="vehicle",
      *     cascade={"persist", "remove"},
      *     orphanRemoval=true
      * )
+     *
+     * @var ArrayCollection|RoadworthyScan[]
      */
     private $roadworthyScans;
 
@@ -130,6 +131,19 @@ class Vehicle
     public function addRoadworthyScan(string $filePath) : void
     {
         $this->roadworthyScans->add(new RoadworthyScan($this, $filePath));
+    }
+
+    public function removeRoadworthyScan(string $filePath) : void
+    {
+        foreach ($this->roadworthyScans as $key => $scan) {
+            if ($scan->getFilePath() === $filePath) {
+                $this->roadworthyScans->remove($key);
+
+                return;
+            }
+        }
+
+        throw ScanNotFound::withPath($filePath);
     }
 
     public function archive() : void

@@ -10,7 +10,9 @@ use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Common\IScanStorage;
 use Model\Travel\Commands\Vehicle\AddRoadworthyScan;
+use Model\Travel\Commands\Vehicle\RemoveRoadworthyScan;
 use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
+use Model\Travel\ScanNotFound;
 use Nette\Http\FileUpload;
 use function array_keys;
 use function assert;
@@ -45,6 +47,17 @@ final class RoadworthyControl extends BaseControl
 
         $this->template->setFile(__DIR__ . '/templates/RoadworthyControl.latte');
         $this->template->render();
+    }
+
+    public function handleRemove(string $path) : void
+    {
+        try {
+            $this->commandBus->handle(new RemoveRoadworthyScan($this->vehicleId, $path));
+            $this->presenter->flashMessage('Sken byl odebrán', 'success');
+        } catch (ScanNotFound $e) {
+        }
+
+        $this->redrawControl();
     }
 
     protected function createComponentUploadForm() : BaseForm
