@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Common;
 
-use finfo;
-use Nette\Utils\FileSystem;
-use const FILEINFO_MIME_TYPE;
+use Psr\Http\Message\StreamInterface;
 use function basename;
+use function fopen;
+use function GuzzleHttp\Psr7\stream_for;
 
 final class File
 {
@@ -33,13 +33,8 @@ final class File
         return basename($this->path);
     }
 
-    public function getMimeType() : string
+    public function getContents() : StreamInterface
     {
-        return (new finfo(FILEINFO_MIME_TYPE))->file($this->fullPath);
-    }
-
-    public function getContents() : string
-    {
-        return FileSystem::read($this->fullPath);
+        return stream_for(fopen($this->fullPath, 'rb'));
     }
 }

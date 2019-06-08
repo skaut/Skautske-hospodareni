@@ -14,11 +14,11 @@ use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
 use Model\TravelService;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
-use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
+use Ublaboo\Responses\PSR7StreamResponse;
 use function assert;
 use function in_array;
 
@@ -74,8 +74,7 @@ class VehiclePresenter extends BasePresenter
                 continue;
             }
 
-            $this->getHttpResponse()->setHeader('Content-Type', $scan->getMimeType());
-            $this->sendResponse(new TextResponse($scan->getContents()));
+            $this->sendResponse(new PSR7StreamResponse($scan->getContents(), $scan->getFileName()));
         }
 
         throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);
