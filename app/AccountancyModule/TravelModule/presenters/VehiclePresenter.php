@@ -7,14 +7,19 @@ namespace App\AccountancyModule\TravelModule;
 use App\AccountancyModule\TravelModule\Components\RoadworthyControl;
 use App\AccountancyModule\TravelModule\Factories\IRoadworthyControlFactory;
 use App\Forms\BaseForm;
+use Model\Common\File;
 use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
+use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
 use Model\TravelService;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
+use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Form;
+use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
+use function assert;
 use function in_array;
 
 class VehiclePresenter extends BasePresenter
@@ -56,6 +61,24 @@ class VehiclePresenter extends BasePresenter
         }
 
         return $vehicle;
+    }
+
+    public function actionDownloadScan(int $id, string $path) : void
+    {
+        $this->getVehicle($id); // Check access
+
+        foreach ($this->queryBus->handle(new RoadworthyScansQuery($id)) as $scan) {
+            assert($scan instanceof File);
+
+            if ($scan->getPath() !== $path) {
+                continue;
+            }
+
+            $this->getHttpResponse()->setHeader('Content-Type', $scan->getMimeType());
+            $this->sendResponse(new TextResponse($scan->getContents()));
+        }
+
+        throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);
     }
 
     public function renderDetail(int $id) : void

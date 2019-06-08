@@ -41,6 +41,7 @@ final class RoadworthyControl extends BaseControl
     {
         $this->template->setParameters([
             'files' => $this->queryBus->handle(new RoadworthyScansQuery($this->vehicleId)),
+            'vehicleId' => $this->vehicleId,
         ]);
 
         $this->template->getLatte()->addProvider('formsStack', [$this['uploadForm']]);
