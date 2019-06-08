@@ -15,6 +15,7 @@ library.add(
     fas.faChevronLeft,
     fas.faClipboardCheck,
     fas.faClipboardList,
+    fas.faCloudUploadAlt,
     fas.faEye,
     fas.faFileContract,
     fas.faInfoCircle,

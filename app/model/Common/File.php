@@ -7,6 +7,7 @@ namespace Model\Common;
 use finfo;
 use Nette\Utils\FileSystem;
 use const FILEINFO_MIME_TYPE;
+use function basename;
 
 final class File
 {
@@ -25,6 +26,11 @@ final class File
     public function getPath() : string
     {
         return $this->path;
+    }
+
+    public function getFileName() : string
+    {
+        return basename($this->path);
     }
 
     public function getMimeType() : string

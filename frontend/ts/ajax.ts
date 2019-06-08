@@ -4,10 +4,14 @@ import naja from 'naja';
 import netteForms from 'nette-forms';
 import {ProgressBar} from './ProgressBar';
 import {ModalExtension} from './ModalExtension';
+import {TravelModule} from "../modules/travel";
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
     naja.registerExtension(ModalExtension);
+
+    naja.registerExtension(TravelModule);
+
     naja.formsHandler.netteForms = netteForms;
 
     naja.initialize({history: false});

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\TravelModule;
 
+use App\AccountancyModule\TravelModule\Components\RoadworthyControl;
+use App\AccountancyModule\TravelModule\Factories\IRoadworthyControlFactory;
 use App\Forms\BaseForm;
 use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
@@ -17,13 +19,23 @@ use function in_array;
 
 class VehiclePresenter extends BasePresenter
 {
+    /**
+     * @var int
+     * @persistent
+     */
+    public $id = 0;
+
     /** @var TravelService */
     private $travelService;
 
-    public function __construct(TravelService $travelService)
+    /** @var IRoadworthyControlFactory */
+    private $roadworthyControlFactory;
+
+    public function __construct(TravelService $travelService, IRoadworthyControlFactory $roadworthyControlFactory)
     {
         parent::__construct();
-        $this->travelService = $travelService;
+        $this->travelService            = $travelService;
+        $this->roadworthyControlFactory = $roadworthyControlFactory;
     }
 
     /**
@@ -130,6 +142,11 @@ class VehiclePresenter extends BasePresenter
         };
 
         return $form;
+    }
+
+    protected function createComponentRoadworthy() : RoadworthyControl
+    {
+        return $this->roadworthyControlFactory->create($this->id);
     }
 
     private function formCreateVehicleSubmitted(ArrayHash $values) : void
