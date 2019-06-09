@@ -6,21 +6,19 @@ namespace Model\Common;
 
 use Psr\Http\Message\StreamInterface;
 use function basename;
-use function fopen;
-use function GuzzleHttp\Psr7\stream_for;
 
 final class File
 {
-    /** @var string */
-    private $fullPath;
+    /** @var StreamInterface */
+    private $stream;
 
     /** @var string */
     private $path;
 
-    public function __construct(string $fullPath, string $path)
+    public function __construct(StreamInterface $stream, string $path)
     {
-        $this->fullPath = $fullPath;
-        $this->path     = $path;
+        $this->stream = $stream;
+        $this->path   = $path;
     }
 
     public function getPath() : string
@@ -35,6 +33,6 @@ final class File
 
     public function getContents() : StreamInterface
     {
-        return stream_for(fopen($this->fullPath, 'rb'));
+        return $this->stream;
     }
 }

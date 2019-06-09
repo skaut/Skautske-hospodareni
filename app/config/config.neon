@@ -152,7 +152,8 @@ services:
 
     - Model\Infrastructure\Services\Unit\CachedUnitResolver(@unitResolver)
 
-    - Model\Infrastructure\Services\Common\FileSystemScanStorage(%uploadDirectory%)
+    - League\Flysystem\Filesystem(League\Flysystem\Adapter\Local(%uploadDirectory%))
+    - Model\Infrastructure\Services\Common\FlysystemScanStorage
 
     # Skautis webservices
     skautis.org:
