@@ -6,18 +6,19 @@
     </span>
 {else}
     <div class="btn-group d-inline-block">
-        {if $count === 0}
-            <button type="button" class="btn btn-primary dropdown-toggle"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-persist="true">
-                <i class="fas fa-cloud-upload-alt"></i>
-                Nahrát technický průkaz
-            </button>
-        {else}
-            <button type="button" class="btn btn-outline-primary dropdown-toggle"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-persist="true">
-                Technický průkaz: {$count} soubor{if $count >= 5}ů{elseif $count > 1}y{/if}
-            </button>
-        {/if}
+        <span n:snippet="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-persist="true">
+            {var $count = count($files)}
+            {if $count === 0}
+                <button type="button" class="btn btn-primary dropdown-toggle">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Nahrát technický průkaz
+                </button>
+            {else}
+                <button type="button" class="btn btn-outline-primary dropdown-toggle">
+                    Technický průkaz: {$count} soubor{if $count >= 5}ů{elseif $count > 1}y{/if}
+                </button>
+            {/if}
+        </span>
         <div class="dropdown-menu dropdown-menu-left" style="width: 150%" n:inner-snippet>
             {foreach $files as $file}
             <div class="px-4 py-1">
