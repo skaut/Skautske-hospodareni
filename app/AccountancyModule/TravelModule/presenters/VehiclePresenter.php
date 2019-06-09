@@ -168,7 +168,10 @@ class VehiclePresenter extends BasePresenter
 
     protected function createComponentRoadworthy() : RoadworthyControl
     {
-        return $this->roadworthyControlFactory->create($this->id);
+        return $this->roadworthyControlFactory->create(
+            $this->id,
+            $this->isVehicleEditable($this->getVehicle($this->id)),
+        );
     }
 
     private function formCreateVehicleSubmitted(ArrayHash $values) : void

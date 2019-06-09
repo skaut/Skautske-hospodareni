@@ -13,7 +13,9 @@ use Model\Travel\Commands\Vehicle\AddRoadworthyScan;
 use Model\Travel\Commands\Vehicle\RemoveRoadworthyScan;
 use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
 use Model\Travel\ScanNotFound;
+use Nette\Application\BadRequestException;
 use Nette\Http\FileUpload;
+use Nette\Http\IResponse;
 use function array_keys;
 use function assert;
 use function implode;
@@ -23,16 +25,20 @@ final class RoadworthyControl extends BaseControl
     /** @var int */
     private $vehicleId;
 
+    /** @var bool */
+    private $isEditable;
+
     /** @var CommandBus */
     private $commandBus;
 
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(int $vehicleId, CommandBus $commandBus, QueryBus $queryBus)
+    public function __construct(int $vehicleId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {
         parent::__construct();
         $this->vehicleId  = $vehicleId;
+        $this->isEditable = $isEditable;
         $this->commandBus = $commandBus;
         $this->queryBus   = $queryBus;
     }
@@ -42,6 +48,7 @@ final class RoadworthyControl extends BaseControl
         $this->template->setParameters([
             'files' => $this->queryBus->handle(new RoadworthyScansQuery($this->vehicleId)),
             'vehicleId' => $this->vehicleId,
+            'isEditable' => $this->isEditable,
         ]);
 
         $this->template->getLatte()->addProvider('formsStack', [$this['uploadForm']]);
@@ -52,6 +59,8 @@ final class RoadworthyControl extends BaseControl
 
     public function handleRemove(string $path) : void
     {
+        $this->assertIsEditable();
+
         try {
             $this->commandBus->handle(new RemoveRoadworthyScan($this->vehicleId, $path));
             $this->presenter->flashMessage('Sken byl odebrán', 'success');
@@ -88,6 +97,8 @@ final class RoadworthyControl extends BaseControl
 
     private function formSucceeded(BaseForm $form) : void
     {
+        $this->assertIsEditable();
+
         $upload = $form->getValues()->scan;
 
         assert($upload instanceof FileUpload);
@@ -101,5 +112,14 @@ final class RoadworthyControl extends BaseControl
         );
 
         $this->presenter->flashMessage('Sken byl nahrán', 'success');
+    }
+
+    private function assertIsEditable() : void
+    {
+        if ($this->isEditable) {
+            return;
+        }
+
+        throw new BadRequestException('Nemáte oprávnění upravovat vozidlo', IResponse::S403_FORBIDDEN);
     }
 }

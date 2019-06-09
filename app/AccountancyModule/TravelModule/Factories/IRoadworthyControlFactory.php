@@ -8,5 +8,5 @@ use App\AccountancyModule\TravelModule\Components\RoadworthyControl;
 
 interface IRoadworthyControlFactory
 {
-    public function create(int $vehicleId) : RoadworthyControl;
+    public function create(int $vehicleId, bool $isEditable) : RoadworthyControl;
 }

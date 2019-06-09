@@ -1,42 +1,47 @@
 {var $count = count($files)}
 
-<div class="btn-group d-inline-block">
-    {if $count === 0}
-        <button type="button" class="btn btn-primary dropdown-toggle"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-persist="true">
-            <i class="fas fa-cloud-upload-alt"></i>
-            Nahrát technický průkaz
-        </button>
-    {else}
-        <button type="button" class="btn btn-outline-primary dropdown-toggle"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-persist="true">
-            Technický průkaz - {$count} soubor{if $count >= 5}ů{elseif $count > 1}y{/if}
-        </button>
-    {/if}
-    <div class="dropdown-menu dropdown-menu-right" style="width: 150%" n:inner-snippet>
-        <form n:name="uploadForm" class="ajax">
-            <input n:name="scan" class="d-none" id="scan-upload-control">
+{if ! $isEditable && $files === []}
+    <span class="btn btn-outline-primary disabled" title="Nemáte oprávnění upravovat vozidlo" data-toggle="tooltip">
+        Technický průkaz: žádné soubory
+    </span>
+{else}
+    <div class="btn-group d-inline-block">
+        {if $count === 0}
+            <button type="button" class="btn btn-primary dropdown-toggle"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-persist="true">
+                <i class="fas fa-cloud-upload-alt"></i>
+                Nahrát technický průkaz
+            </button>
+        {else}
+            <button type="button" class="btn btn-outline-primary dropdown-toggle"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-persist="true">
+                Technický průkaz: {$count} soubor{if $count >= 5}ů{elseif $count > 1}y{/if}
+            </button>
+        {/if}
+        <div class="dropdown-menu dropdown-menu-right" style="width: 150%" n:inner-snippet>
             {foreach $files as $file}
             <div class="px-4 py-1">
                 {$file->getFileName()|substr:0,26}{if strlen($file->getFileName()) > 26}&hellip;{/if}
                 <a n:href="remove! $file->getPath()"
+                        n:if="$isEditable"
                         title="Smazat soubor"
                         data-toggle="tooltip"
-                        class="text-danger float-right ajax"><i class="far fa-trash-alt"></i></a>
+                        class="text-danger float-right ml-3 ajax"><i class="far fa-trash-alt"></i></a>
                 <a href="{plink Vehicle:downloadScan $vehicleId, $file->getPath()}"
-                   class="float-right mr-3" title="Stáhnout soubor" data-toggle="tooltip">
+                   class="float-right" title="Stáhnout soubor" data-toggle="tooltip">
                     <i class="fas fa-arrow-down"></i>
                 </a>
             </div>
             <div class="dropdown-divider"></div>
             {/foreach}
-            <div class="px-4 py-1 text-center">
+            <form n:name="uploadForm" class="px-4 py-1 text-center ajax" n:if="$isEditable">
+                <input n:name="scan" class="d-none" id="scan-upload-control">
                 <label for="scan-upload-control" class="btn btn-outline-primary">
                     <i class="fas fa-cloud-upload-alt"></i>
                     {if $files === []}Vybrat soubor{else}Nahrát další soubor{/if}
                 </label>
                 <div class="text-danger" n:foreach="$form->errors as $error">{$error}</div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
+{/if}
