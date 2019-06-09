@@ -18,7 +18,7 @@
                 Technický průkaz: {$count} soubor{if $count >= 5}ů{elseif $count > 1}y{/if}
             </button>
         {/if}
-        <div class="dropdown-menu dropdown-menu-right" style="width: 150%" n:inner-snippet>
+        <div class="dropdown-menu dropdown-menu-left" style="width: 150%" n:inner-snippet>
             {foreach $files as $file}
             <div class="px-4 py-1">
                 {$file->getFileName()|substr:0,26}{if strlen($file->getFileName()) > 26}&hellip;{/if}
