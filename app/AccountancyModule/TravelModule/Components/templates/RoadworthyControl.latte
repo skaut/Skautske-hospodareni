@@ -18,7 +18,7 @@
             <input n:name="scan" class="d-none" id="scan-upload-control">
             {foreach $files as $file}
             <div class="px-4 py-1">
-                {$file->getFileName()}
+                {$file->getFileName()|substr:0,26}{if strlen($file->getFileName()) > 26}&hellip;{/if}
                 <a n:href="remove! $file->getPath()"
                         title="Smazat soubor"
                         data-toggle="tooltip"
