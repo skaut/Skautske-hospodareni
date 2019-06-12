@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Travel\Handlers\Vehicle;
 
+use Cake\Chronos\Date;
 use Model\Common\IScanStorage;
 use Model\Travel\Commands\Vehicle\AddRoadworthyScan;
 use Model\Travel\Repositories\IVehicleRepository;
-use Nette\Utils\Random;
+use Ramsey\Uuid\Uuid;
 
 final class AddRoadworthyScanHandler
 {
@@ -29,12 +30,19 @@ final class AddRoadworthyScanHandler
     {
         $vehicle = $this->vehicles->find($command->getVehicleId());
 
-        $path = self::PREFIX . $vehicle->getId() . Random::generate(6) . '-' . $command->getFileName();
+        $path = $this->generatePath($command->getFileName());
 
         $this->scanStorage->save($path, $command->getScanContents());
 
         $vehicle->addRoadworthyScan($path);
 
         $this->vehicles->save($vehicle);
+    }
+
+    private function generatePath(string $originalFileName) : string
+    {
+        $date = Date::today();
+
+        return self::PREFIX . $date->format('Y/m') . '/' . Uuid::uuid4()->toString() . '/' . $originalFileName;
     }
 }
