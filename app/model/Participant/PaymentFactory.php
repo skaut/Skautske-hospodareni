@@ -15,6 +15,7 @@ final class PaymentFactory
     public static function createDefault(int $participantId, Event $event) : Payment
     {
         return new Payment(
+            PaymentId::generate(),
             $participantId,
             $event,
             MoneyFactory::zero(),

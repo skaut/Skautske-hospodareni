@@ -19,6 +19,13 @@ class Payment
 {
     /**
      * @ORM\Id()
+     * @ORM\Column(type="payment_id")
+     *
+     * @var PaymentId
+     */
+    private $id;
+
+    /**
      * @ORM\Column(type="integer", name="participantId", options={"unsigned"=true})
      *
      * @var int
@@ -53,13 +60,19 @@ class Payment
      */
     private $account;
 
-    public function __construct(int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
+    public function __construct(PaymentId $id, int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
     {
+        $this->id            = $id;
         $this->participantId = $participantId;
         $this->event         = $event;
         $this->payment       = $payment ?? MoneyFactory::zero();
         $this->repayment     = $repayment ?? MoneyFactory::zero();
         $this->account       = $account;
+    }
+
+    public function getId() : PaymentId
+    {
+        return $this->id;
     }
 
     public function getParticipantId() : int
