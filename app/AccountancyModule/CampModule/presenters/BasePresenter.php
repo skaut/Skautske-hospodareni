@@ -50,4 +50,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
             $this->redirect('Default:');
         }
     }
+
+    protected function getCampId() : ?int
+    {
+        return $this->aid;
+    }
 }

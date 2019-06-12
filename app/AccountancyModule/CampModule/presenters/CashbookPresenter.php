@@ -46,7 +46,7 @@ class CashbookPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->isEditable        = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->aid);
+        $this->isEditable        = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId());
         $this->missingCategories = ! $this->event->IsRealTotalCostAutoComputed; // je aktivní dopočítávání?
     }
 
@@ -70,7 +70,7 @@ class CashbookPresenter extends BasePresenter
     public function handleActivateAutocomputedCashbook(int $aid) : void
     {
         try {
-            $this->commandBus->handle(new ActivateAutocomputedCashbook(new SkautisCampId($aid)));
+            $this->commandBus->handle(new ActivateAutocomputedCashbook(new SkautisCampId($this->getCampId())));
             $this->flashMessage('Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.');
         } catch (PermissionException $e) {
             $this->flashMessage('Dopočítávání se nepodařilo aktivovat. Pro aktivaci musí být tábor alespoň ve stavu schváleno střediskem.', 'danger');
@@ -115,20 +115,19 @@ class CashbookPresenter extends BasePresenter
         $this->editableOnly();
         $values = $form->getValues();
 
-        $unitId = $this->getCurrentUnitId()->toInt();
-        $amount = $this->eventService->getParticipants()->getCampTotalPayment($unitId, $values->cat, $values->isAccount);
+        $amount = $this->eventService->getParticipants()->getCampTotalPayment($this->getCampId(), $values->cat, $values->isAccount);
 
         if ($amount === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
-            $this->redirect('default', ['aid' => $unitId]);
+            $this->redirect('default', ['aid' => $this->getCampId()]);
         }
 
-        $date    = $this->eventService->getEvent()->get($unitId)->StartDate;
+        $date    = $this->eventService->getEvent()->get($this->getCampId())->StartDate;
         $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
         $body    = new ChitBody(null, new Date($date), null);
 
         $categoryId    = $this->queryBus->handle(
-            new CampParticipantCategoryIdQuery(new SkautisCampId($unitId), ParticipantType::get(ParticipantType::CHILD))
+            new CampParticipantCategoryIdQuery(new SkautisCampId($this->getCampId()), ParticipantType::get(ParticipantType::CHILD))
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
@@ -137,12 +136,12 @@ class CashbookPresenter extends BasePresenter
 
         $this->flashMessage('HPD byl importován');
 
-        $this->redirect('default', $unitId);
+        $this->redirect('default', $this->getCampId());
     }
 
     private function getCashbookId() : CashbookId
     {
-        return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
+        return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->getCampId())));
     }
 
     private function isCashbookEmpty() : bool
