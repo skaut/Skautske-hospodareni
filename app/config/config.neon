@@ -1,4 +1,6 @@
 parameters:
+    uploadDirectory: %appDir%/../uploads
+
 
 php:
     date.timezone: Europe/Prague
@@ -150,6 +152,8 @@ services:
 
     - Model\Infrastructure\Services\Unit\CachedUnitResolver(@unitResolver)
 
+    - League\Flysystem\Filesystem(League\Flysystem\Adapter\Local(%uploadDirectory%))
+    - Model\Infrastructure\Services\Common\FlysystemScanStorage
 
     # Skautis webservices
     skautis.org:

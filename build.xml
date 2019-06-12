@@ -152,6 +152,11 @@
             <property name="command" value="ln -s ${deploy.rootDir}/log ${deploy.release}/log"/>
         </phingcall>
 
+        <phingcall target="deploy:ssh">
+            <property name="comment" value="Symlinking uploads"/>
+            <property name="command" value="ln -s ${deploy.rootDir}/uploads ${deploy.release}/uploads"/>
+        </phingcall>
+
         <phingcall target="deploy:app-command">
             <property name="comment" value="Generating doctrine proxies"/>
             <property name="command" value="orm:generate-proxies"/>

@@ -85,11 +85,10 @@ abstract class AccountancyHelpers
     public static function commandState(?DateTimeInterface $s) : string
     {
         if ($s === null) {
-            return '<span class="label label-warning hidden-xs hidden-sm">Rozpracovaný</span>'
-                . '<span class="label label-warning hidden-md hidden-lg">Rozpr.</span>';
+            return '<span class="hidden-xs hidden-sm badge badge-warning">Rozpracovaný</span>';
         }
 
-        return '<span class="label label-success" title="Uzavřeno dne: ' .
+        return '<span class="badge badge-success" title="Uzavřeno dne: ' .
             $s->format('j.n.Y H:i:s') . '">Uzavřený</span>';
     }
 

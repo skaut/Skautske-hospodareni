@@ -14,7 +14,8 @@ use Model\Unit\Unit;
 
 class VehicleRepositoryTest extends IntegrationTest
 {
-    private const TABLE = 'tc_vehicle';
+    private const TABLE                 = 'tc_vehicle';
+    private const TABLE_ROADWORTHY_SCAN = 'tc_vehicle_roadworthy_scan';
 
     /** @var VehicleRepository */
     private $repository;
@@ -26,6 +27,7 @@ class VehicleRepositoryTest extends IntegrationTest
     {
         return [
             Vehicle::class,
+            Vehicle\RoadworthyScan::class,
         ];
     }
 
@@ -98,7 +100,23 @@ class VehicleRepositoryTest extends IntegrationTest
     public function testFindReturnsCorrectlyMappedEntity() : void
     {
         $row = $this->getVehicleRow();
+
+        $roadworthies = [
+            [
+                'vehicle_id' => 1,
+                'file_path' => 'roadworthy1.jpg',
+            ],
+            [
+                'vehicle_id' => 1,
+                'file_path' => 'roadworthy1.jpg',
+            ],
+        ];
+
         $this->tester->haveInDatabase(self::TABLE, $row);
+
+        foreach ($roadworthies as $roadworthy) {
+            $this->tester->haveInDatabase(self::TABLE_ROADWORTHY_SCAN, $roadworthy);
+        }
 
         $vehicle = $this->repository->find(1);
 
@@ -118,6 +136,11 @@ class VehicleRepositoryTest extends IntegrationTest
             $row['metadata_author_name'],
             $vehicle->getMetadata()->getAuthorName()
         );
+
+        $roadworthyScans = $vehicle->getRoadworthyScans();
+        $this->assertCount(2, $vehicle->getRoadworthyScans());
+        $this->assertSame($roadworthies[0]['file_path'], $roadworthyScans[0]->getFilePath());
+        $this->assertSame($roadworthies[1]['file_path'], $roadworthyScans[1]->getFilePath());
     }
 
     public function testRemove() : void

@@ -4,35 +4,43 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\TravelModule;
 
-use App\AccountancyModule\TravelModule\Components\VehicleGrid;
-use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
+use App\AccountancyModule\TravelModule\Components\RoadworthyControl;
+use App\AccountancyModule\TravelModule\Factories\IRoadworthyControlFactory;
 use App\Forms\BaseForm;
-use Model\BaseService;
+use Model\Common\File;
 use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
+use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
 use Model\TravelService;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\Security\Identity;
+use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
-use function array_key_exists;
+use Ublaboo\Responses\PSR7StreamResponse;
 use function assert;
+use function in_array;
 
 class VehiclePresenter extends BasePresenter
 {
+    /**
+     * @var int
+     * @persistent
+     */
+    public $id = 0;
+
     /** @var TravelService */
     private $travelService;
 
-    /** @var IVehicleGridFactory */
-    private $gridFactory;
+    /** @var IRoadworthyControlFactory */
+    private $roadworthyControlFactory;
 
-    public function __construct(TravelService $travelService, IVehicleGridFactory $gridFactory)
+    public function __construct(TravelService $travelService, IRoadworthyControlFactory $roadworthyControlFactory)
     {
         parent::__construct();
-        $this->travelService = $travelService;
-        $this->gridFactory   = $gridFactory;
+        $this->travelService            = $travelService;
+        $this->roadworthyControlFactory = $roadworthyControlFactory;
     }
 
     /**
@@ -55,20 +63,26 @@ class VehiclePresenter extends BasePresenter
         return $vehicle;
     }
 
-    private function isVehicleEditable(?VehicleDTO $vehicle) : bool
+    public function actionDownloadScan(int $id, string $path) : void
     {
-        $identity = $this->getUser()->getIdentity();
+        $this->getVehicle($id); // Check access
 
-        assert($identity instanceof Identity);
+        foreach ($this->queryBus->handle(new RoadworthyScansQuery($id)) as $scan) {
+            assert($scan instanceof File);
 
-        $unitAccessible = array_key_exists($vehicle->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]) ||
-        $vehicle->getSubunitId() !== null && array_key_exists($vehicle->getSubunitId(), $identity->access[BaseService::ACCESS_EDIT]);
+            if ($scan->getPath() !== $path) {
+                continue;
+            }
 
-        return $vehicle !== null && $unitAccessible;
+            $this->sendResponse(new PSR7StreamResponse($scan->getContents(), $scan->getFileName()));
+        }
+
+        throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);
     }
 
     public function renderDetail(int $id) : void
     {
+        $this->setLayout('layout.new');
         try {
             $vehicle = $this->getVehicle($id);
 
@@ -126,11 +140,6 @@ class VehiclePresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    protected function createComponentGrid() : VehicleGrid
-    {
-        return $this->gridFactory->create($this->getUnitId());
-    }
-
     protected function createComponentFormCreateVehicle() : Form
     {
         $form = new BaseForm();
@@ -157,6 +166,14 @@ class VehiclePresenter extends BasePresenter
         return $form;
     }
 
+    protected function createComponentRoadworthy() : RoadworthyControl
+    {
+        return $this->roadworthyControlFactory->create(
+            $this->id,
+            $this->isVehicleEditable($this->getVehicle($this->id)),
+        );
+    }
+
     private function formCreateVehicleSubmitted(ArrayHash $values) : void
     {
         $this->commandBus->handle(
@@ -172,5 +189,17 @@ class VehiclePresenter extends BasePresenter
 
         $this->flashMessage('Vozidlo bylo vytvořeno');
         $this->redirect('default');
+    }
+
+    private function isVehicleEditable(?VehicleDTO $vehicle) : bool
+    {
+        if ($vehicle === null) {
+            return false;
+        }
+
+        $editableUnitIds = $this->getEditableUnitIds();
+
+        return in_array($vehicle->getUnitId(), $editableUnitIds, true)
+            || in_array($vehicle->getSubunitId(), $editableUnitIds, true);
     }
 }

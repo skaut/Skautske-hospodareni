@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule;
 
+use Model\BaseService;
 use Model\Common\UnitId;
 use Model\Skautis\SkautisMaintenanceChecker;
+use Nette\Security\Identity;
 use stdClass;
+use function array_keys;
+use function assert;
 
 abstract class BasePresenter extends \App\BasePresenter
 {
@@ -82,5 +86,24 @@ abstract class BasePresenter extends \App\BasePresenter
     public function getCurrentUnitId() : UnitId
     {
         return $this->unitId;
+    }
+
+    /**
+     * @return int[]
+     */
+    protected function getEditableUnitIds() : array
+    {
+        $identity = $this->getUser()->getIdentity();
+
+        if ($identity === null) {
+            return [];
+        }
+
+        assert($identity instanceof Identity);
+
+        /** @var array<int, mixed> $editableUnits */
+        $editableUnits = $identity->access[BaseService::ACCESS_EDIT];
+
+        return array_keys($editableUnits);
     }
 }

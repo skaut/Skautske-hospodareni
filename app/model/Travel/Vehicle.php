@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Travel;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Model\Travel\Vehicle\Metadata;
+use Model\Travel\Vehicle\RoadworthyScan;
 use Model\Unit\Unit;
 use Nette\SmartObject;
 
@@ -94,6 +96,18 @@ class Vehicle
      */
     private $metadata;
 
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity=RoadworthyScan::class,
+     *     mappedBy="vehicle",
+     *     cascade={"persist", "remove"},
+     *     orphanRemoval=true
+     * )
+     *
+     * @var ArrayCollection|RoadworthyScan[]
+     */
+    private $roadworthyScans;
+
     public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption, Metadata $metadata)
     {
         $this->type   = $type;
@@ -110,6 +124,26 @@ class Vehicle
         $this->registration = $registration;
         $this->consumption  = $consumption;
         $this->metadata     = $metadata;
+
+        $this->roadworthyScans = new ArrayCollection();
+    }
+
+    public function addRoadworthyScan(string $filePath) : void
+    {
+        $this->roadworthyScans->add(new RoadworthyScan($this, $filePath));
+    }
+
+    public function removeRoadworthyScan(string $filePath) : void
+    {
+        foreach ($this->roadworthyScans as $key => $scan) {
+            if ($scan->getFilePath() === $filePath) {
+                $this->roadworthyScans->remove($key);
+
+                return;
+            }
+        }
+
+        throw ScanNotFound::withPath($filePath);
     }
 
     public function archive() : void
@@ -165,5 +199,13 @@ class Vehicle
     public function getMetadata() : Metadata
     {
         return $this->metadata;
+    }
+
+    /**
+     * @return RoadworthyScan[]
+     */
+    public function getRoadworthyScans() : array
+    {
+        return $this->roadworthyScans->toArray();
     }
 }

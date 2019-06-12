@@ -3,7 +3,7 @@ const webpack = require('webpack');
 
 module.exports = {
     entry: {
-        'app': './frontend/app.js',
+        'app': './frontend/app.ts',
     },
     output: {
         filename: '[name].min.js',
@@ -11,6 +11,11 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/
+            },
             {
                 test: /bootstrap\.native/,
                 use: {
@@ -23,7 +28,7 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['@babel/preset-env']
+                        presets: ['@babel/preset-env'],
                     }
                 }
             },
@@ -33,5 +38,8 @@ module.exports = {
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
         // Useful for bundle size analysis:
         // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin),
-    ]
+    ],
+    resolve: {
+        extensions: ['.ts', '.js', '.json'],
+    }
 };

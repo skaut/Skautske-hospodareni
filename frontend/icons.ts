@@ -4,25 +4,32 @@ import { far }  from '@fortawesome/free-regular-svg-icons';
 
 library.add(
     // Solid icons
+    fas.faArrowDown,
     fas.faBook,
     fas.faBookReader,
     fas.faCalendar,
     fas.faCampground,
+    fas.faCar,
     fas.faCogs,
     fas.faChartPie,
     fas.faCheck,
     fas.faChevronLeft,
     fas.faClipboardCheck,
     fas.faClipboardList,
+    fas.faCloudUploadAlt,
     fas.faEye,
+    fas.faFileContract,
     fas.faInfoCircle,
     fas.faListAlt,
     fas.faLock,
     fas.faLockOpen,
     fas.faLongArrowAltLeft,
     fas.faPlus,
+    fas.faRoute,
     fas.faSearch,
     fas.faSitemap,
+    fas.faSortAmountDown,
+    fas.faSortAmountUp,
     fas.faStickyNote,
     fas.faTimes,
     fas.faUserPlus,
@@ -36,6 +43,7 @@ library.add(
     far.faEnvelopeOpen,
     far.faListAlt,
     far.faTrashAlt,
+    far.faUser,
 );
 
 export { dom } from '@fortawesome/fontawesome-svg-core';
