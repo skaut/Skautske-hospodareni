@@ -14,6 +14,7 @@ use Nette\SmartObject;
  * @property-read string $firstName
  * @property-read string $lastName
  * @property-read string $nickName
+ * @property-read int|null $age
  * @property-read string $displayName
  * @property-read string $street
  * @property-read string $city
