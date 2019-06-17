@@ -116,7 +116,12 @@ class Chit
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
         self::validateItems($items, $categories);
-        $this->items = new ArrayCollection($items);
+
+        $this->items->clear();
+
+        foreach ($items as $item) {
+            $this->items->add($item);
+        }
     }
 
     public function lock(int $userId) : void
