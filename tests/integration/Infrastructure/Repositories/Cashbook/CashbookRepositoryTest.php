@@ -109,4 +109,37 @@ class CashbookRepositoryTest extends IntegrationTest
         $this->tester->seeInDatabase(self::CHIT_TABLE, $chit);
         $this->tester->seeInDatabase(self::CHIT_ITEM_TABLE, $chitItem);
     }
+
+    /**
+     * @see https://github.com/skaut/Skautske-hospodareni/issues/914
+     */
+    public function testOrphanedChitItemsAreRemoved() : void
+    {
+        $cashbook      = new Cashbook(CashbookId::generate(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
+        $body          = new ChitBody(null, Date::today(), null);
+        $paymentMethod = Cashbook\PaymentMethod::BANK();
+        $category      = Helpers::mockChitItemCategory(1);
+        $categoryList  = Helpers::mockCashbookCategories(1, Operation::INCOME());
+
+        $cashbook->addChit(
+            $body,
+            $paymentMethod,
+            [new Cashbook\ChitItem(Cashbook\Amount::fromFloat(100), $category, 'foo')],
+            $categoryList
+        );
+
+        $this->repository->save($cashbook);
+
+        $cashbook->updateChit(
+            1,
+            $body,
+            $paymentMethod,
+            [new Cashbook\ChitItem(Cashbook\Amount::fromFloat(10), $category, 'foo')],
+            $categoryList
+        );
+
+        $this->repository->save($cashbook);
+
+        $this->assertSame(1, $this->entityManager->getRepository(Cashbook\ChitItem::class)->count([]));
+    }
 }

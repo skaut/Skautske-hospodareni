@@ -54,9 +54,9 @@ class Chit
      * @ORM\ManyToMany(targetEntity=ChitItem::class, cascade={"persist", "remove"}, orphanRemoval=true)
      * @ORM\JoinTable(
      *     name="ac_chit_to_item",
-     *     joinColumns={@ORM\JoinColumn(name="chit_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     joinColumns={@ORM\JoinColumn(name="chit_id", referencedColumnName="id")},
      *     inverseJoinColumns={
-     *         @ORM\JoinColumn(name="item_id", referencedColumnName="id", unique=true, onDelete="CASCADE")
+     *         @ORM\JoinColumn(name="item_id", referencedColumnName="id", unique=true)
      *     }
      * )
      *
@@ -116,7 +116,12 @@ class Chit
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
         self::validateItems($items, $categories);
-        $this->items = new ArrayCollection($items);
+
+        $this->items->clear();
+
+        foreach ($items as $item) {
+            $this->items->add($item);
+        }
     }
 
     public function lock(int $userId) : void
