@@ -215,7 +215,7 @@ class Chit
         return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray());
     }
 
-    public function withCategory(Category $category) : self
+    public function withCategory(Category $category, Cashbook $cashbook) : self
     {
         $newItems = [];
         foreach ($this->items as $item) {
@@ -223,7 +223,7 @@ class Chit
         }
 
         return new self(
-            $this->cashbook,
+            $cashbook,
             $this->body->withoutChitNumber(),
             $this->paymentMethod,
             $newItems

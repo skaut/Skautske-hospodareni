@@ -157,7 +157,7 @@ class Cashbook extends Aggregate
         );
 
         $this->chits->add(
-            $originalChit->withCategory($category)
+            $originalChit->withCategory($category, $this)
         );
 
         $this->raise(new ChitWasAdded($this->id));
