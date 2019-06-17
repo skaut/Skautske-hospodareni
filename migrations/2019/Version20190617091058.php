@@ -14,7 +14,7 @@ final class Version20190617091058 extends AbstractMigration
         $this->addSql('ALTER TABLE ac_chit_to_item DROP FOREIGN KEY FK_2EA9AB79126F525E');
         $this->addSql('ALTER TABLE ac_chit_to_item DROP FOREIGN KEY FK_2EA9AB792AEA3AE4');
 
-        $this->addSql('DELETE i FROM `ac_chits_item` i LEFT JOIN ac_chit_to_item ci ON i.id = ci.chit_id WHERE ci.chit_id IS NULL');
+        $this->addSql('DELETE i FROM `ac_chits_item` i LEFT JOIN ac_chit_to_item ci ON i.id = ci.item_id WHERE ci.chit_id IS NULL');
 
         $this->addSql('ALTER TABLE ac_chit_to_item CHANGE chit_id chit_id BIGINT UNSIGNED NOT NULL');
 
