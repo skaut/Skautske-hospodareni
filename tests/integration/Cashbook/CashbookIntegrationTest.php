@@ -195,6 +195,12 @@ class CashbookIntegrationTest extends IntegrationTest
         $cashbook->addInverseChit($originalCashbook, 1);
         $newChit = $cashbook->getChits()[0];
 
+        $this->entityManager->persist($cashbook);
+        $this->entityManager->flush();
+
+        $this->entityManager->refresh($originalCashbook);
+        $this->entityManager->refresh($cashbook);
+
         // inverse chit must have inverse category type
         $this->assertSame(Operation::get($originalOperation)->getInverseOperation(), $newChit->getOperation());
         $this->assertTrue($body->withoutChitNumber()->equals($newChit->getBody()));
