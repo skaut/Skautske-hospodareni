@@ -192,8 +192,14 @@ class CashbookIntegrationTest extends IntegrationTest
         $this->entityManager->flush();
 
         $cashbook = new Cashbook(CashbookId::fromString('10'), CashbookType::get($cashbookType));
-        $cashbook->addInverseChit($originalCashbook, 1, $categories);
+        $cashbook->addInverseChit($originalCashbook, 1);
         $newChit = $cashbook->getChits()[0];
+
+        $this->entityManager->persist($cashbook);
+        $this->entityManager->flush();
+
+        $this->entityManager->refresh($originalCashbook);
+        $this->entityManager->refresh($cashbook);
 
         // inverse chit must have inverse category type
         $this->assertSame(Operation::get($originalOperation)->getInverseOperation(), $newChit->getOperation());
@@ -256,7 +262,7 @@ class CashbookIntegrationTest extends IntegrationTest
 
         $this->expectException(InvalidCashbookTransfer::class);
 
-        $cashbook->addInverseChit($originalCashbook, 1, $categories);
+        $cashbook->addInverseChit($originalCashbook, 1);
     }
 
     /**
