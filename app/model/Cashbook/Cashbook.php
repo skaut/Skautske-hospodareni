@@ -193,7 +193,7 @@ class Cashbook extends Aggregate
         foreach ($this->chits as $chit) {
             foreach ($chit->getItems() as $item) {
                 $categoryId                     = $item->getCategory()->getId();
-                $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $chit->getAmount()->toFloat();
+                $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $item->getAmount()->toFloat();
             }
         }
 
