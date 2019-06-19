@@ -58,9 +58,27 @@ class CashbookTest extends Unit
         Helpers::addChitToCashbook($cashbook, null, null, 1, '300');
         Helpers::addChitToCashbook($cashbook, null, null, 2, '150');
 
+        $chitBody = new ChitBody(null, new Date(), null);
+        $items    = [
+            new Cashbook\ChitItem(new Amount('35'), Helpers::mockChitItemCategory(1), 'čokoláda'),
+            new Cashbook\ChitItem(new Amount('75'), Helpers::mockChitItemCategory(2), 'vlak'),
+        ];
+
+        $categories = [
+            1 => m::mock(Category::class, ['getId' => 1, 'getOperationType' => Operation::EXPENSE(), 'isVirtual' => false]),
+            2 => m::mock(Category::class, ['getId' => 2, 'getOperationType' => Operation::EXPENSE(), 'isVirtual' => false]),
+        ];
+
+        $cashbook->addChit(
+            $chitBody,
+            PaymentMethod::CASH(),
+            $items,
+            $categories
+        );
+
         $expectedTotals = [
-            1 => 500.0,
-            2 => 250.0,
+            1 => 535.0,
+            2 => 325.0,
         ];
 
         $totals = $cashbook->getCategoryTotals();
