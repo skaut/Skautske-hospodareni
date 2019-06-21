@@ -15,18 +15,11 @@ use Model\DTO\Cashbook\Chit;
 use Model\DTO\Participant\Participant;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Model\Excel\Range;
-use Nette\Utils\ArrayHash;
-use PHPExcel;
-use PHPExcel_Exception;
 use PHPExcel_Style_Border;
-use PHPExcel_Worksheet;
-use PHPExcel_Writer_Excel2007;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use stdClass;
 use function assert;
-use function gmdate;
-use function header;
 
 class ExcelService
 {
@@ -38,16 +31,6 @@ class ExcelService
     public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
-    }
-
-    protected function getNewFile() : PHPExcel
-    {
-        $objPHPExcel = new PHPExcel();
-        $objPHPExcel->getProperties()
-            ->setCreator('h.skauting.cz')
-            ->setLastModifiedBy('h.skauting.cz');
-
-        return $objPHPExcel;
     }
 
     private function getNewFileV2() : Spreadsheet
@@ -108,8 +91,6 @@ class ExcelService
 
     /**
      * @param Participant[] $data
-     *
-     * @throws PHPExcel_Exception
      */
     protected function setSheetParticipantCamp(Worksheet $sheet, array $data) : void
     {
@@ -158,8 +139,6 @@ class ExcelService
 
     /**
      * @param Participant[] $data
-     *
-     * @throws PHPExcel_Exception
      */
     protected function setSheetParticipantGeneral(Worksheet $sheet, array $data, stdClass $event) : void
     {
@@ -216,8 +195,7 @@ class ExcelService
 
         assert($cashbook instanceof Cashbook);
 
-        $prefix        = $cashbook->getChitNumberPrefix();
-        $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
+        $prefix = $cashbook->getChitNumberPrefix();
 
         $balance = 0;
         $rowCnt  = 2;
@@ -252,59 +230,6 @@ class ExcelService
     }
 
     /**
-     * @param ArrayHash[] $data
-     *
-     * @throws PHPExcel_Exception
-     */
-    private function setSheetChits(PHPExcel_Worksheet $sheet, array $data) : void
-    {
-        $sheet->setCellValue('A1', 'Název akce')
-            ->setCellValue('B1', 'Ze dne')
-            ->setCellValue('C1', 'Číslo dokladu')
-            ->setCellValue('D1', 'Účel výplaty')
-            ->setCellValue('E1', 'Kategorie')
-            ->setCellValue('F1', 'Komu/Od')
-            ->setCellValue('G1', 'Příjem')
-            ->setCellValue('H1', 'Výdej');
-
-        $rowCnt = 2;
-        foreach ($data as $event) {
-            $cashbookId = $event['cashbookId'];
-            $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
-
-            assert($cashbook instanceof Cashbook);
-
-            $prefix = $cashbook->getChitNumberPrefix();
-
-            foreach ($event['chits'] as $chit) {
-                assert($chit instanceof Chit);
-
-                $isIncome = $chit->isIncome();
-                $amount   = $chit->getAmount()->toFloat();
-
-                $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
-                    ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
-                    ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
-                    ->setCellValue('D' . $rowCnt, $chit->getPurpose())
-                    ->setCellValue('E' . $rowCnt, $chit->getCategories())
-                    ->setCellValue('F' . $rowCnt, (string) $chit->getRecipient())
-                    ->setCellValue('G' . $rowCnt, $isIncome ? $amount : '')
-                    ->setCellValue('H' . $rowCnt, ! $isIncome ? $amount : '');
-
-                $rowCnt++;
-            }
-        }
-
-        //format
-        foreach (Range::letters('A', 'H') as $columnID) {
-            $sheet->getColumnDimension($columnID)->setAutoSize(true);
-        }
-        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
-        $sheet->setTitle('Doklady');
-    }
-
-    /**
      * @param Chit[] $chits
      */
     private function setSheetChitsOnly(Worksheet $sheet, array $chits, CashbookId $cashbookId) : void
@@ -316,9 +241,8 @@ class ExcelService
             ->setCellValue('F1', 'Částka')
             ->setCellValue('G1', 'Typ');
 
-        $rowCnt        = 2;
-        $sumIn         = $sumOut = 0;
-        $categoryNames = $this->queryBus->handle(new CategoryPairsQuery($cashbookId));
+        $rowCnt = 2;
+        $sumIn  = $sumOut = 0;
 
         foreach ($chits as $chit) {
             $amount = $chit->getAmount()->toFloat();
@@ -361,26 +285,5 @@ class ExcelService
         }
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
         $sheet->setTitle('Doklady');
-    }
-
-    protected function send(PHPExcel $obj, string $filename) : void
-    {
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
-
-        // If you're serving to IE over SSL, then the following may be needed
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header('Pragma: public'); // HTTP/1.0
-
-        $objWriter = new PHPExcel_Writer_Excel2007($obj);
-        $objWriter->setPreCalculateFormulas(true);
-        $objWriter->save('php://output');
-        //exit;
     }
 }
