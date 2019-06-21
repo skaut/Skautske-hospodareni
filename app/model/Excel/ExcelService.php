@@ -17,7 +17,6 @@ use Model\DTO\Participant\Participant;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Model\Excel\Range;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\Strings;
 use PHPExcel;
 use PHPExcel_Exception;
 use PHPExcel_Style_Border;
@@ -27,7 +26,6 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use stdClass;
 use function assert;
-use function date;
 use function gmdate;
 use function header;
 
@@ -77,12 +75,13 @@ class ExcelService
         return $spreadsheet;
     }
 
-    public function getCashbook(string $cashbookName, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
+    public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod) : Spreadsheet
     {
-        $objPHPExcel = $this->getNewFile();
+        $objPHPExcel = $this->getNewFileV2();
         $sheet       = $objPHPExcel->setActiveSheetIndex(0);
         $this->setSheetCashbook($sheet, $cashbookId, $paymentMethod);
-        $this->send($objPHPExcel, Strings::webalize($cashbookName) . '-pokladni-kniha-' . date('Y_n_j'));
+
+        return $objPHPExcel;
     }
 
     public function getCashbookWithCategories(CashbookId $cashbookId, PaymentMethod $paymentMethod) : Spreadsheet
@@ -203,7 +202,7 @@ class ExcelService
         $sheet->setTitle('Seznam účastníků');
     }
 
-    private function setSheetCashbook(PHPExcel_Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
+    private function setSheetCashbook(Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
     {
         $sheet->setCellValue('A1', 'Ze dne')
             ->setCellValue('B1', 'Číslo dokladu')
