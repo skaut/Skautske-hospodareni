@@ -9,7 +9,6 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
-use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
@@ -97,15 +96,14 @@ class ExcelService
 
     /**
      * @param Chit[] $chits
-     *
-     * @throws PHPExcel_Exception
      */
-    public function getChitsExport(CashbookId $cashbookId, array $chits) : void
+    public function getChitsExport(CashbookId $cashbookId, array $chits) : Spreadsheet
     {
-        $objPHPExcel = $this->getNewFile();
-        $sheetChit   = $objPHPExcel->setActiveSheetIndex(0);
+        $spreadsheet = $this->getNewFileV2();
+        $sheetChit   = $spreadsheet->setActiveSheetIndex(0);
         $this->setSheetChitsOnly($sheetChit, $chits, $cashbookId);
-        $this->send($objPHPExcel, 'Export-vybranych-paragonu');
+
+        return $spreadsheet;
     }
 
     /**
@@ -308,10 +306,8 @@ class ExcelService
 
     /**
      * @param Chit[] $chits
-     *
-     * @throws PHPExcel_Exception
      */
-    private function setSheetChitsOnly(PHPExcel_Worksheet $sheet, array $chits, CashbookId $cashbookId) : void
+    private function setSheetChitsOnly(Worksheet $sheet, array $chits, CashbookId $cashbookId) : void
     {
         $sheet->setCellValue('B1', 'Ze dne')
             ->setCellValue('C1', 'Účel výplaty')

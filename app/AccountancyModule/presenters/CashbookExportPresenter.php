@@ -93,12 +93,12 @@ class CashbookExportPresenter extends BasePresenter
     {
         $chitIds = array_map('\intval', $chitIds);
 
-        $this->excelService->getChitsExport(
+        $spreadsheet = $this->excelService->getChitsExport(
             CashbookId::fromString($cashbookId),
             $this->getChitsWithIds($chitIds)
         );
 
-        $this->terminate();
+        $this->sendResponse(new ExcelResponse('Export-vybranych-paragonu', $spreadsheet));
     }
 
     /**
