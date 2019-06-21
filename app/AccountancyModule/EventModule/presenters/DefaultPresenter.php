@@ -148,7 +148,6 @@ class DefaultPresenter extends BasePresenter
     {
         $ids = array_map('intval', $ids);
         $this->sendResponse(new ExcelResponse(sprintf('Souhrn-akci-%s', date('Y_n_j')), $this->queryBus->handle(new ExportEvents($ids))));
-        $this->terminate();
     }
 
     public function handleChangeYear(?int $year) : void

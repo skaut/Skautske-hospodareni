@@ -24,6 +24,7 @@ use PHPExcel_Style_Border;
 use PHPExcel_Worksheet;
 use PHPExcel_Writer_Excel2007;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use stdClass;
 use function assert;
 use function date;
@@ -62,17 +63,18 @@ class ExcelService
         return $sheet;
     }
 
-    public function getParticipants(EventEntity $service, stdClass $event, string $type) : void
+    public function getParticipants(EventEntity $service, stdClass $event, string $type) : Spreadsheet
     {
-        $objPHPExcel = $this->getNewFile();
+        $spreadsheet = $this->getNewFileV2();
         $data        = $service->getParticipants()->getAll($event->ID);
-        $sheet       = $objPHPExcel->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
         if ($type === 'camp') {
             $this->setSheetParticipantCamp($sheet, $data);
         } else {//GENERAL EVENT
             $this->setSheetParticipantGeneral($sheet, $data, $event);
         }
-        $this->send($objPHPExcel, Strings::webalize($event->DisplayName) . '-' . date('Y_n_j'));
+
+        return $spreadsheet;
     }
 
     public function getCashbook(string $cashbookName, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
@@ -112,7 +114,7 @@ class ExcelService
      *
      * @throws PHPExcel_Exception
      */
-    protected function setSheetParticipantCamp(PHPExcel_Worksheet $sheet, array $data) : void
+    protected function setSheetParticipantCamp(Worksheet $sheet, array $data) : void
     {
         $sheet->setCellValue('A1', 'P.č.')
             ->setCellValue('B1', 'Jméno')
@@ -162,7 +164,7 @@ class ExcelService
      *
      * @throws PHPExcel_Exception
      */
-    protected function setSheetParticipantGeneral(PHPExcel_Worksheet $sheet, array $data, stdClass $event) : void
+    protected function setSheetParticipantGeneral(Worksheet $sheet, array $data, stdClass $event) : void
     {
         $startDate = new Date($event->StartDate);
         $sheet->setCellValue('A1', 'P.č.')
