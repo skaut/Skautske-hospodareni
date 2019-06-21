@@ -15,8 +15,8 @@ use Model\DTO\Cashbook\Chit;
 use Model\DTO\Participant\Participant;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Model\Excel\Range;
-use PHPExcel_Style_Border;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use stdClass;
 use function assert;
@@ -33,7 +33,7 @@ class ExcelService
         $this->queryBus = $queryBus;
     }
 
-    private function getNewFileV2() : Spreadsheet
+    private function getNewFile() : Spreadsheet
     {
         $sheet = new Spreadsheet();
         $sheet->getProperties()
@@ -45,7 +45,7 @@ class ExcelService
 
     public function getParticipants(EventEntity $service, stdClass $event, string $type) : Spreadsheet
     {
-        $spreadsheet = $this->getNewFileV2();
+        $spreadsheet = $this->getNewFile();
         $data        = $service->getParticipants()->getAll($event->ID);
         $sheet       = $spreadsheet->getActiveSheet();
         if ($type === 'camp') {
@@ -59,16 +59,16 @@ class ExcelService
 
     public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod) : Spreadsheet
     {
-        $objPHPExcel = $this->getNewFileV2();
-        $sheet       = $objPHPExcel->setActiveSheetIndex(0);
+        $spreadsheet = $this->getNewFile();
+        $sheet       = $spreadsheet->setActiveSheetIndex(0);
         $this->setSheetCashbook($sheet, $cashbookId, $paymentMethod);
 
-        return $objPHPExcel;
+        return $spreadsheet;
     }
 
     public function getCashbookWithCategories(CashbookId $cashbookId, PaymentMethod $paymentMethod) : Spreadsheet
     {
-        $excel = $this->getNewFileV2();
+        $excel = $this->getNewFile();
         $sheet = $excel->getActiveSheet();
 
         $builder = new CashbookWithCategoriesBuilder($this->queryBus);
@@ -82,7 +82,7 @@ class ExcelService
      */
     public function getChitsExport(CashbookId $cashbookId, array $chits) : Spreadsheet
     {
-        $spreadsheet = $this->getNewFileV2();
+        $spreadsheet = $this->getNewFile();
         $sheetChit   = $spreadsheet->setActiveSheetIndex(0);
         $this->setSheetChitsOnly($sheetChit, $chits, $cashbookId);
 
@@ -264,7 +264,7 @@ class ExcelService
             $rowCnt++;
         }
         //add border
-        $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         if ($sumIn > 0) {
             $rowCnt++;
