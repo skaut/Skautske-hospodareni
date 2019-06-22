@@ -23,11 +23,13 @@ use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
+use Nette\Utils\Strings;
 use RuntimeException;
 use function array_filter;
 use function array_map;
 use function array_values;
 use function assert;
+use function date;
 use function in_array;
 use function sprintf;
 
@@ -91,12 +93,12 @@ class CashbookExportPresenter extends BasePresenter
     {
         $chitIds = array_map('\intval', $chitIds);
 
-        $this->excelService->getChitsExport(
+        $spreadsheet = $this->excelService->getChitsExport(
             CashbookId::fromString($cashbookId),
             $this->getChitsWithIds($chitIds)
         );
 
-        $this->terminate();
+        $this->sendResponse(new ExcelResponse('Export-vybranych-paragonu', $spreadsheet));
     }
 
     /**
@@ -139,12 +141,11 @@ class CashbookExportPresenter extends BasePresenter
             );
         }
 
-        $this->excelService->getCashbook(
-            $event->DisplayName,
+        $spreadsheet = $this->excelService->getCashbook(
             CashbookId::fromString($cashbookId),
             PaymentMethod::get($paymentMethod)
         );
-        $this->terminate();
+        $this->sendResponse(new ExcelResponse(Strings::webalize($event->DisplayName) . '-pokladni-kniha-' . date('Y_n_j'), $spreadsheet));
     }
 
     /**

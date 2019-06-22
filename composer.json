@@ -20,7 +20,6 @@
         "skautis/skautis": "2.*@dev",
         "skautis/nette": "^2.1",
         "janmarek/webloader": "2.5.*",
-        "phpoffice/phpexcel": "1.8.*",
         "mpdf/mpdf": "^7.0",
         "nextras/forms": "^2.0",
         "heureka/bank-account-validator": "1.1.*",
