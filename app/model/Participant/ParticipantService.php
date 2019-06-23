@@ -14,7 +14,6 @@ use Model\Participant\Payment;
 use Model\Participant\Payment\Event;
 use Model\Participant\Payment\EventType;
 use Model\Participant\PaymentFactory;
-use Model\Participant\PaymentId;
 use Model\Participant\PaymentNotFound;
 use Model\Participant\PragueParticipants;
 use Model\Participant\Repositories\IPaymentRepository;
@@ -51,11 +50,6 @@ class ParticipantService extends MutableBaseService
         $this->repository = $repository;
     }
 
-    /**
-     * název pod kterým je uložena čáska ve skautISu
-     */
-    public const PAYMENT = 'Note';
-
     public function get(int $participantId, int $actionId) : ParticipantDTO
     {
         $data = $this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]);
@@ -89,16 +83,6 @@ class ParticipantService extends MutableBaseService
 
             if (array_key_exists($p->ID, $participantPayments)) {
                 $payment =  $participantPayments[$p->ID];
-            } elseif (isset($p->{self::PAYMENT})) {
-                //TBD: pouze dočasně - po provedení migrace lze odebrat! - 2019/06/04
-                $payment =  new Payment(
-                    PaymentId::generate(),
-                    $p->ID,
-                    $event,
-                    MoneyFactory::fromFloat((float) $p->{self::PAYMENT}),
-                    MoneyFactory::zero(),
-                    'N'
-                );
             } else {
                 $payment =  PaymentFactory::createDefault($p->ID, $event);
             }
