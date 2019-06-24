@@ -22,6 +22,7 @@ final class SkautisRoleTest extends Unit
         $this->assertTrue($role->isLeader());
         $this->assertFalse($role->isAccountant());
         $this->assertFalse($role->isOfficer());
+        $this->assertFalse($role->isEventManager());
 
         $this->assertTrue($role->isBasicUnit());
         $this->assertFalse($role->isTroop());
@@ -34,6 +35,7 @@ final class SkautisRoleTest extends Unit
         $this->assertFalse($role->isLeader());
         $this->assertTrue($role->isAccountant());
         $this->assertFalse($role->isOfficer());
+        $this->assertFalse($role->isEventManager());
 
         $this->assertTrue($role->isBasicUnit());
         $this->assertFalse($role->isTroop());
@@ -46,9 +48,20 @@ final class SkautisRoleTest extends Unit
         $this->assertFalse($role->isLeader());
         $this->assertFalse($role->isAccountant());
         $this->assertTrue($role->isOfficer());
+        $this->assertFalse($role->isEventManager());
 
         $this->assertFalse($role->isBasicUnit());
         $this->assertTrue($role->isTroop());
+    }
+
+    public function testEventManager() : void
+    {
+        $role = new SkautisRole('spravceAkci', 123);
+
+        $this->assertFalse($role->isLeader());
+        $this->assertFalse($role->isAccountant());
+        $this->assertFalse($role->isOfficer());
+        $this->assertTrue($role->isEventManager());
     }
 
     public function testEmptyString() : void
@@ -58,6 +71,7 @@ final class SkautisRoleTest extends Unit
         $this->assertFalse($role->isLeader());
         $this->assertFalse($role->isAccountant());
         $this->assertFalse($role->isOfficer());
+        $this->assertFalse($role->isEventManager());
 
         $this->assertFalse($role->isBasicUnit());
         $this->assertFalse($role->isTroop());
