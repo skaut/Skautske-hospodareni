@@ -219,7 +219,7 @@ class BankAccountsPresenter extends BasePresenter
 
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
 
-        assert($role === null || $role instanceof SkautisRole);
+        assert($role instanceof SkautisRole);
 
         return $role->getUnitId() === $account->getUnitId()
             && $role->isBasicUnit()

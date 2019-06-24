@@ -131,7 +131,7 @@ class InvertChitDialog extends BaseControl
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         $chit = $this->getChit();
 
-        if ($role === null || $chit === null) {
+        if ($chit === null) {
             return [];
         }
 

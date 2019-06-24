@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App;
 
 use App\AccountancyModule\SkautisMaintenance;
+use eGen\MessageBus\Bus\CommandBus;
+use Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
+use Model\Skautis\Exception\MissingCurrentRole;
 use Model\Unit\UserHasNoUnit;
+use Model\User\Exception\UserHasNoRole;
 use Nette;
 use Nette\Application\UI\Presenter;
 use Psr\Log\LoggerInterface;
@@ -19,16 +23,20 @@ class ErrorPresenter extends Presenter
     /** @var LoggerInterface */
     private $logger;
 
+    /** @var CommandBus */
+    protected $commandBus;
+
     private const SKAUTIS_UNAVAILABLE_ERRORS = [
         'Server was unable to process request.',
         'Could not connect to host',
         'Service Unavailable',
     ];
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, CommandBus $commandBus)
     {
         parent::__construct();
-        $this->logger = $logger;
+        $this->logger     = $logger;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -36,7 +44,7 @@ class ErrorPresenter extends Presenter
      *
      * @throws Nette\Application\AbortException
      */
-    public function renderDefault($exception) : void
+    public function renderDefault($exception, Nette\Application\Request $request) : void
     {
         if ($exception instanceof SkautisMaintenance || $exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
             $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.', 'danger');
@@ -52,6 +60,17 @@ class ErrorPresenter extends Presenter
         if ($exception instanceof PermissionException) {
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redirect(':Default:');
+        }
+
+        if ($exception instanceof MissingCurrentRole) {
+            try {
+                $this->commandBus->handle(new SelectFirstActiveRole());
+                $this->flashMessage('Chyběla aktivní role, byl jste automaticky přehlášen na jinou roli.', 'danger');
+                $this->forward($request);
+            } catch (UserHasNoRole $exc) {
+                $this->flashMessage('Uživatel nemá žádnou roli.', 'danger');
+                $this->redirect(':Default:');
+            }
         }
 
         if ($exception instanceof UserHasNoUnit) {
