@@ -117,7 +117,7 @@ class UserService extends BaseService
                 ];
             }
 
-            if ($role->isLeader() || $role->isAccountant()) {
+            if ($role->isLeader() || $role->isAccountant() || $role->isEventManager()) {
                 return [
                     self::ACCESS_READ => $unitIds,
                     self::ACCESS_EDIT => $unitIds,
