@@ -11,6 +11,7 @@ use Model\Skautis\Exception\MissingCurrentRole;
 use Model\Unit\UserHasNoUnit;
 use Model\User\Exception\UserHasNoRole;
 use Nette;
+use Nette\Application\Request;
 use Nette\Application\UI\Presenter;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
@@ -44,7 +45,7 @@ class ErrorPresenter extends Presenter
      *
      * @throws Nette\Application\AbortException
      */
-    public function renderDefault($exception, Nette\Application\Request $request) : void
+    public function renderDefault($exception, Request $request) : void
     {
         if ($exception instanceof SkautisMaintenance || $exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
             $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.', 'danger');
