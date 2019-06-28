@@ -22,11 +22,14 @@ use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\PaymentService;
+use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
+use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
 use function array_filter;
+use function array_keys;
 use function assert;
 
 final class GroupForm extends BaseControl
@@ -151,7 +154,10 @@ final class GroupForm extends BaseControl
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
 
-        $form->addSelect('smtp', 'Email odesílatele', $this->mail->getPairs($unitId))
+        $role          = $this->queryBus->handle(new ActiveSkautisRoleQuery());
+        $editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
+
+        $form->addSelect('smtp', 'Email odesílatele', $this->mail->getCredentialsPairsGroupedByUnit($editableUnits))
             ->setPrompt('Vyberte email')
             ->setAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
 

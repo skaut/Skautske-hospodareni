@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace Model;
 
+use eGen\MessageBus\QueryBus\IQueryBus;
 use Model\DTO\Payment\Mail;
 use Model\DTO\Payment\MailFactory;
 use Model\Payment\IUnitResolver;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 use Model\Payment\Repositories\IMailCredentialsRepository;
+use Model\Unit\ReadModel\Queries\UnitsDetailQuery;
+use Model\Unit\Unit;
+use function array_filter;
 use function array_map;
 use function array_merge;
+use function array_unique;
+use function assert;
 
 class MailService
 {
@@ -21,10 +27,17 @@ class MailService
     /** @var IUnitResolver */
     private $unitResolver;
 
-    public function __construct(IMailCredentialsRepository $credentials, IUnitResolver $unitResolver)
-    {
+    /** @var IQueryBus */
+    private $queryBus;
+
+    public function __construct(
+        IMailCredentialsRepository $credentials,
+        IUnitResolver $unitResolver,
+        IQueryBus $queryBus
+    ) {
         $this->credentials  = $credentials;
         $this->unitResolver = $unitResolver;
+        $this->queryBus     = $queryBus;
     }
 
     public function get(int $id) : ?Mail
@@ -39,36 +52,65 @@ class MailService
     }
 
     /**
+     * @param int[] $unitIds
+     *
      * @return Mail[]
      */
-    public function getAll(int $unitId) : array
+    public function getAll(array $unitIds) : array
     {
-        $mails = $this->findForUnit($unitId);
+        $mails = $this->findForUnits($unitIds);
 
-        return array_map([MailFactory::class, 'create'], $mails);
+        return array_map([MailFactory::class, 'create'], array_merge([], ...$mails));
     }
 
     /**
-     * @return string[]
+     * @param int[] $unitIds
+     *
+     * @return array<string, array<int, string>>
      */
-    public function getPairs(int $unitId) : array
+    public function getCredentialsPairsGroupedByUnit(array $unitIds) : array
     {
-        $pairs = [];
-        foreach ($this->findForUnit($unitId) as $credentials) {
-            $pairs[$credentials->getId()] = $credentials->getUsername();
+        $unitIds     = $this->getAccessibleUnitIds($unitIds);
+        $credentials = $this->findForUnits($unitIds);
+        $units       = $this->queryBus->handle(new UnitsDetailQuery($unitIds));
+
+        $result = [];
+        foreach ($credentials as $unitId => $items) {
+            $unit = $units[$unitId];
+            assert($unit instanceof Unit);
+            foreach ($items as $credential) {
+                assert($credential instanceof MailCredentials);
+                $result[$unit->getDisplayName()][$credential->getId()] = $credential->getUsername();
+            }
         }
 
-        return $pairs;
+        return $result;
     }
 
     /**
-     * @return MailCredentials[]
+     * @param int[] $unitIds
+     *
+     * @return int[]
      */
-    private function findForUnit(int $unitId) : array
+    private function getAccessibleUnitIds(array $unitIds) : array
     {
-        $units  = [$unitId, $this->unitResolver->getOfficialUnitId($unitId)];
-        $byUnit = $this->credentials->findByUnits($units);
+        $res = $unitIds;
+        foreach ($unitIds as $uid) {
+            $res[] = $this->unitResolver->getOfficialUnitId($uid);
+        }
 
-        return array_merge(...$byUnit);
+        return array_unique($unitIds);
+    }
+
+    /**
+     * @param int[] $unitIds
+     *
+     * @return array<int, MailCredentials[]>
+     */
+    private function findForUnits(array $unitIds) : array
+    {
+        $unitIds = $this->getAccessibleUnitIds($unitIds);
+
+        return array_filter($this->credentials->findByUnits($unitIds));
     }
 }

@@ -31,7 +31,7 @@ class MailPresenter extends BasePresenter
             $this->redirect('GroupList:');
         }
         $this->template->setParameters([
-            'list'          => $this->model->getAll($this->unitId->toInt()),
+            'list'          => $this->model->getAll($this->getEditableUnitIds()),
             'editableUnits' => $this->getEditableUnits(),
         ]);
     }
