@@ -29,4 +29,4 @@ Stačí přidat tento řádek do souboru `/etc/hosts`:
 ```
 
 ## Příprava projektu
-V kontejneru stačí spustit příkaz `phing build`.
+V kontejneru stačí spustit příkaz `phing init`.
