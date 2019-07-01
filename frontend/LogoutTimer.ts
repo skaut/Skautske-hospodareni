@@ -9,7 +9,7 @@ export class LogoutTimer {
         this.minutesElement = document.getElementById(minutesElementId) as HTMLElement;
 
         this.decrementMinutes();
-        this.intervalId = setInterval(() => this.decrementMinutes, 60 * 1000);
+        this.intervalId = setInterval(this.decrementMinutes.bind(this), 60 * 1000);
     }
 
     private decrementMinutes(): void {
