@@ -1,0 +1,9 @@
+services:
+    clientBuilder: Sentry\ClientBuilder::create({dsn: %sentry.dsn%})
+    - Sentry\State\Hub(@clientBuilder::getClient())
+
+decorator:
+    Monolog\Logger:
+        setup:
+            - pushHandler(Sentry\Monolog\Handler(level: Monolog\Logger::ERROR))
+            - pushHandler(Model\Infrastructure\Log\Sentry\BreadcrumbsMonologHandler())
