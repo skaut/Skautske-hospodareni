@@ -36,7 +36,7 @@ final class MailCredentialsRepository implements IMailCredentialsRepository
     /**
      * @param int[] $unitIds
      *
-     * @return mixed[]
+     * @return array<int, MailCredentials[]>
      */
     public function findByUnits(array $unitIds) : array
     {

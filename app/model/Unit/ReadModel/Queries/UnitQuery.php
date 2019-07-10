@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Unit\ReadModel\Queries;
 
+use Model\Unit\ReadModel\QueryHandlers\UnitQueryHandler;
+
+/**
+ * @see UnitQueryHandler
+ */
 final class UnitQuery
 {
     /** @var int */
