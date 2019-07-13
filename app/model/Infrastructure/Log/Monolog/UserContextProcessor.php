@@ -4,40 +4,30 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Log\Monolog;
 
-use Nette\Security\User;
-use stdClass;
-use function array_map;
-use function sprintf;
+use Model\Infrastructure\Log\UserContextProvider;
+use Monolog\Processor\ProcessorInterface;
 
-class UserContextProcessor
+class UserContextProcessor implements ProcessorInterface
 {
-    /** @var User */
-    private $user;
+    /** @var UserContextProvider */
+    private $userContext;
 
-    public function __construct(User $user)
+    public function __construct(UserContextProvider $userContext)
     {
-        $this->user = $user;
+        $this->userContext = $userContext;
     }
 
     /**
-     * @param mixed[] $record
+     * @param array<string, mixed> $record
      *
-     * @return mixed[]
+     * @return array<string, mixed>
      */
     public function __invoke(array $record) : array
     {
-        $identity = $this->user->getIdentity();
-        if ($identity !== null) {
-            $roles = array_map(function (stdClass $r) {
-                return sprintf('DisplayName: %s, Unit: %s, IsActive: %s', $r->DisplayName, $r->Unit, $r->IsActive);
-            }, $identity->getRoles());
-        } else {
-            $roles = null;
-        }
+        $userData = $this->userContext->getUserData();
 
-        if ($identity !== null) {
-            $record['context']['user']  = ['id' => $identity->getId()];
-            $record['context']['roles'] = $roles;
+        if ($this->userContext->getUserData() !== null) {
+            $record['extra']['user'] = $userData;
         }
 
         return $record;

@@ -184,6 +184,8 @@ services:
       setup:
       	  - addLogger(Model\Infrastructure\SQLLogger())
 
+    - Model\Infrastructure\Log\UserContextProvider
+
     - factory: Monolog\Logger
       arguments:
           - hskauting
