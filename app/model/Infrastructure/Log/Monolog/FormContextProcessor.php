@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App;
+namespace Model\Infrastructure\Log\Monolog;
 
 use Nette\Http\Request;
 use function json_encode;

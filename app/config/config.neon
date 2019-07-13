@@ -184,7 +184,13 @@ services:
       setup:
       	  - addLogger(Model\Infrastructure\SQLLogger())
 
-    - Monolog\Logger('hskauting', [], [App\UserContextProcessor(), App\FormContextProcessor()])
+    - factory: Monolog\Logger
+      arguments:
+          - hskauting
+          - []
+          -
+              - Model\Infrastructure\Log\Monolog\UserContextProcessor()
+              - Model\Infrastructure\Log\Monolog\FormContextProcessor()
 
 decorator:
 	Doctrine\DBAL\Configuration:
