@@ -14,8 +14,6 @@ parameters:
         dsn: "https://4c569d4cbda54f908d83d4b4a1959826@sentry.io/1328535"
 
 services:
-    - Raven_Client(%sentry.url%)
-
     # Passes notices and warning to Monolog
     tracy.logger: Tracy\Bridges\Psr\PsrToTracyLoggerAdapter
 
