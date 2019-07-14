@@ -1,0 +1,11 @@
+services:
+    - factory: Model\Infrastructure\Log\Sentry\HubFactory::create
+      arguments:
+          - %sentry.dsn%
+          - [Model\Infrastructure\Log\UserContextEventProcessor()]
+
+decorator:
+    Monolog\Logger:
+        setup:
+            - pushHandler(Sentry\Monolog\Handler(level: Monolog\Logger::ERROR))
+            - pushHandler(Model\Infrastructure\Log\Sentry\BreadcrumbsMonologHandler())

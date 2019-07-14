@@ -184,7 +184,15 @@ services:
       setup:
       	  - addLogger(Model\Infrastructure\SQLLogger())
 
-    - Monolog\Logger('hskauting', [], [App\UserContextProcessor(), App\FormContextProcessor()])
+    - Model\Infrastructure\Log\UserContextProvider
+
+    - factory: Monolog\Logger
+      arguments:
+          name: hskauting
+          handlers: [] # We register handlers via setHandlers and pushHandler later
+          processors:
+              - Model\Infrastructure\Log\Monolog\UserContextProcessor()
+              - Model\Infrastructure\Log\Monolog\FormContextProcessor()
 
 decorator:
 	Doctrine\DBAL\Configuration:
