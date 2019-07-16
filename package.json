@@ -13,7 +13,7 @@
         "@types/nprogress": "^0.2.0",
         "@types/pikaday": "^1.7.4",
         "autoprefixer": "^9.4.3",
-        "bootstrap": "^4.2.1",
+        "bootstrap": "^4.3.1",
         "bootstrap.native": "^2.0.25",
         "moment": "^2.24.0",
         "naja": "^1.6.0",
