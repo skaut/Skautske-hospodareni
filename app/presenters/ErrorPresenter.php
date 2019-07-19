@@ -69,8 +69,7 @@ class ErrorPresenter extends Presenter
                 $this->flashMessage('Chyběla aktivní role, byl jste automaticky přehlášen na jinou roli.', 'danger');
                 $this->forward($request);
             } catch (UserHasNoRole $exc) {
-                $this->flashMessage('Uživatel nemá žádnou roli.', 'danger');
-                $this->redirect(':Default:');
+                $this->setView('noRole');
             }
         }
 
