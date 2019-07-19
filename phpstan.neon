@@ -7,9 +7,7 @@ parameters:
 
     ignoreErrors:
         # Errors related mostly to usage of assert($x instanceof A || $x === null) and similar asserts
-        - '~Result of \|\| is always true\.~'
         - '~Result of && is always true\.~'
-
 
 includes:
     - vendor/phpstan/phpstan-nette/extension.neon

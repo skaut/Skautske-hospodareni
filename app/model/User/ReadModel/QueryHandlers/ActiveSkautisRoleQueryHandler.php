@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\User\ReadModel\QueryHandlers;
 
+use Model\Skautis\Exception\MissingCurrentRole;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Model\UserService;
@@ -18,8 +19,13 @@ final class ActiveSkautisRoleQueryHandler
         $this->userService = $userService;
     }
 
-    public function __invoke(ActiveSkautisRoleQuery $_) : ?SkautisRole
+    public function __invoke(ActiveSkautisRoleQuery $_) : SkautisRole
     {
-        return $this->userService->getActualRole();
+        $role = $this->userService->getActualRole();
+
+        if ($role !== null) {
+            return $role;
+        }
+        throw new MissingCurrentRole();
     }
 }
