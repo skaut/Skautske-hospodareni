@@ -132,7 +132,7 @@ class CashbookPresenter extends BasePresenter
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
         $items = [new ChitItem(Amount::fromFloat($amount), $categoriesDto[$categoryId], $purpose)];
-        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, PaymentMethod::CASH(), $items));
+        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));
 
         $this->flashMessage('HPD byl importován');
 
