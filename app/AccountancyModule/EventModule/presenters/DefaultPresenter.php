@@ -173,7 +173,7 @@ class DefaultPresenter extends BasePresenter
     protected function createComponentFormFilter() : Form
     {
         $states = array_merge(['all' => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
-        $years  = ['all' => 'Všechny'];
+
         foreach (array_reverse(range(2012, date('Y'))) as $y) {
             $years[$y] = $y;
         }
