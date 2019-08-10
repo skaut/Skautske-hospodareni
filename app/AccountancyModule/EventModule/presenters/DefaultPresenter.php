@@ -4,161 +4,123 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\EventModule;
 
-use App\AccountancyModule\ExcelResponse;
-use App\AccountancyModule\Factories\GridFactory;
+use App\AccountancyModule\EventModule\Components\ExportDialog;
+use App\AccountancyModule\EventModule\Factories\IExportDialogFactory;
+use App\AccountancyModule\UISorter;
 use App\Forms\BaseForm;
-use Doctrine\Common\Collections\ArrayCollection;
+use Cake\Chronos\Date;
 use Model\Auth\Resources\Event as EventResource;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
 use Model\DTO\Cashbook\Cashbook;
+use Model\DTO\Event\EventListItem;
 use Model\Event\Commands\CancelEvent;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Event\ReadModel\Queries\EventStates;
 use Model\Event\SkautisEventId;
+use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\Http\SessionSection;
+use Nette\Http\IResponse;
+use Nette\Utils\Strings;
 use Skautis\Exception;
-use Ublaboo\DataGrid\DataGrid;
-use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
+use function array_filter;
 use function array_map;
 use function array_merge;
 use function array_reverse;
 use function assert;
 use function date;
 use function get_class;
+use function in_array;
 use function range;
+use function Safe\array_combine;
 use function sprintf;
+use function usort;
 
 class DefaultPresenter extends BasePresenter
 {
     public const DEFAULT_STATE = 'draft'; //filtrovani zobrazených položek
 
-    /** @var SessionSection */
-    public $ses;
+    private const SORT_ASCENDING  = 'asc';
+    private const SORT_DESCENDING = 'desc';
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private const SORTABLE_BY = ['name', 'startDate', 'endDate', 'prefix', 'state'];
 
-    public function __construct(GridFactory $gf)
+    /**
+     * @var string
+     * @persistent
+     */
+    public $name = '';
+
+    /**
+     * @var int
+     * @persistent
+     */
+    public $year = 0;
+
+    /**
+     * @var string
+     * @persistent
+     */
+    public $state = self::DEFAULT_STATE;
+
+    /**
+     * @var string|null
+     * @persistent
+     */
+    public $sortBy = null;
+
+    /**
+     * @var string
+     * @persistent
+     */
+    public $sortType = self::SORT_ASCENDING;
+
+    /** @var IExportDialogFactory */
+    private $exportDialogFactory;
+
+    public function __construct(IExportDialogFactory $exportDialogFactory)
     {
         parent::__construct();
-        $this->gridFactory = $gf;
+        $this->exportDialogFactory = $exportDialogFactory;
     }
 
     protected function startup() : void
     {
+        if ($this->year === 0) {
+            $this->year = Date::today()->year;
+        }
+
         parent::startup();
-        //ochrana $this->aid se provádí již v BasePresenteru
-        $this->ses = $this->session->getSection(self::class);
-        if (! isset($this->ses->state)) {
-            $this->ses->state = self::DEFAULT_STATE;
-        }
-        if (isset($this->ses->year)) {
-            return;
-        }
 
-        $this->ses->year = date('Y');
-    }
-
-    protected function createComponentEventGrid() : DataGrid
-    {
-        //filtrovani zobrazených položek
-        $year  = (int) ($this->ses->year ?? date('Y'));
-        $state = $this->ses->state ?? null;
-
-        $events = $this->queryBus->handle(new EventListQuery($year, $state === 'all' ? null : $state));
-
-        $grid = $this->gridFactory->create();
-        $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($events), 'id'));
-        $grid->addColumnText('displayName', 'Název')
-            ->setSortable()
-            ->setFilterText();
-
-        $grid->addColumnDateTime('startDate', 'Od')->setFormat('d.m.Y')->setSortable();
-        $grid->addColumnDateTime('endDate', 'Do')->setFormat('d.m.Y')->setSortable();
-        $grid->addColumnText('prefix', 'Prefix')
-            ->setRenderer(function (Event $event) : ?string {
-                $cashbookId = $this->queryBus->handle(
-                    new EventCashbookIdQuery(new SkautisEventId($event->getId()->toInt()))
-                );
-
-                assert($cashbookId instanceof CashbookId);
-
-                $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-
-                assert($cashbook instanceof Cashbook);
-
-                return $cashbook->getChitNumberPrefix();
-            });
-        $grid->addColumnText('state', 'Stav');
-
-        $grid->addAction('delete', '')
-            ->setTemplate(__DIR__ . '/../templates/eventsGrid.cancel.latte');
-
-        $grid->addGroupAction('Souhrn akcí')->onSelect[] = function (array $ids) : void {
-            $this->redirect('exportEvents!', ['ids' => $ids]);
-        };
-
-        $grid->allowRowsAction(
-            'delete',
-            function (Event $event) : bool {
-                return $this->authorizator->isAllowed(EventResource::DELETE, $event->getId()->toInt());
-            }
-        );
-
-        $grid->setTemplateFile(__DIR__ . '/../templates/eventsGrid.latte');
-
-        return $grid;
+        $this->redrawControl('events');
+        $this->setLayout('layout.new');
     }
 
     public function renderDefault() : void
     {
-        $this->template->setParameters(['accessCreate' => $this->authorizator->isAllowed(EventResource::CREATE, null)]);
-    }
-
-    /**
-     * @param string[] $ids
-     */
-    public function handleExportEvents(array $ids) : void
-    {
-        $ids = array_map('intval', $ids);
-        $this->sendResponse(new ExcelResponse(sprintf('Souhrn-akci-%s', date('Y_n_j')), $this->queryBus->handle(new ExportEvents($ids))));
-    }
-
-    public function handleChangeYear(?int $year) : void
-    {
-        $this->ses->year = $year ?? 'all';
-        if ($this->isAjax()) {
-            $this->redrawControl('events');
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-    public function handleChangeState(?string $state = null) : void
-    {
-        $this->ses->state = $state;
-        if ($this->isAjax()) {
-            $this->redrawControl('events');
-        } else {
-            $this->redirect('this');
-        }
+        $this->template->setParameters([
+            'accessCreate' => $this->authorizator->isAllowed(EventResource::CREATE, null),
+            'events' => $this->loadEvents(),
+            'sortBy' => $this->sortBy,
+            'sortType' => $this->sortType,
+            'canCancel' => function (EventListItem $event) : bool {
+                return $this->authorizator->isAllowed(EventResource::DELETE, $event->getId()->toInt());
+            },
+        ]);
     }
 
     public function handleCancel(int $aid) : void
     {
-        if (! $this->authorizator->isAllowed(EventResource::CLOSE, $aid)) {
+        if (! $this->authorizator->isAllowed(EventResource::DELETE, $aid)) {
             $this->flashMessage('Nemáte právo na zrušení akce.', 'danger');
-            $this->redirect('this');
+            $this->redirect('events');
         }
 
         try {
             $this->commandBus->handle(new CancelEvent(new SkautisEventId($aid)));
-            $this->flashMessage('Akce byla zrušena');
+            $this->flashMessage('Akce byla zrušena', 'success');
         } catch (Exception $e) {
             $this->flashMessage('Akci se nepodařilo zrušit', 'danger');
             $this->logger->error(
@@ -167,22 +129,30 @@ class DefaultPresenter extends BasePresenter
             );
         }
 
-        $this->redirect('this');
+        $this->redrawControl('events');
     }
 
     protected function createComponentFormFilter() : Form
     {
         $states = array_merge(['all' => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
 
-        foreach (array_reverse(range(2012, date('Y'))) as $y) {
-            $years[$y] = $y;
-        }
-        $form = new BaseForm();
-        $form->addSelect('state', 'Stav', $states)
-            ->setDefaultValue($this->ses->state);
+        $years = array_reverse(range(2012, date('Y')));
+        $years = array_combine($years, $years);
 
-        $form->addSelect('year', 'Rok', $years)
-            ->setDefaultValue($this->ses->year);
+        if (! isset($years[$this->year], $states[$this->state])) {
+            throw new BadRequestException('Invalid filters', IResponse::S400_BAD_REQUEST);
+        }
+
+        $form = new BaseForm();
+
+        $form->addText('name')
+            ->setDefaultValue($this->name);
+
+        $form->addSelect('state', null, $states)
+            ->setDefaultValue($this->state);
+
+        $form->addSelect('year', null, $years)
+            ->setDefaultValue($this->year);
 
         $form->addSubmit('send', 'Hledat')
             ->setAttribute('class', 'btn btn-primary');
@@ -194,11 +164,92 @@ class DefaultPresenter extends BasePresenter
         return $form;
     }
 
+    protected function createComponentExportDialog() : ExportDialog
+    {
+        return $this->exportDialogFactory->create($this->loadEvents());
+    }
+
     private function formFilterSubmitted(Form $form) : void
     {
-        $v                = $form->getValues();
-        $this->ses->year  = $v['year'];
-        $this->ses->state = $v['state'];
-        $this->redirect('default', ['aid' => $this->aid]);
+        $v = $form->getValues();
+
+        $this->name  = $v['name'];
+        $this->year  = $v['year'];
+        $this->state = $v['state'];
+
+        if ($this->isAjax()) {
+            $this->redrawControl('events');
+            $this->payload->url     = $this->link('this', [
+                'name' => $this->name,
+                'year' => $this->year,
+                'state' => $this->state,
+            ]);
+            $this->payload->postGet = true;
+        } else {
+            $this->redirect('default', ['aid' => $this->aid]);
+        }
+    }
+
+    /**
+     * @return EventListItem[]
+     */
+    private function loadEvents() : array
+    {
+        $state = $this->state;
+
+        $events = $this->queryBus->handle(new EventListQuery($this->year, $state === 'all' ? null : $state));
+
+        if ($this->name !== '') {
+            $events = array_filter(
+                $events,
+                function (Event $event) : bool {
+                    return Strings::contains($event->getDisplayName(), $this->name);
+                }
+            );
+        }
+
+        $items = array_map(
+            function (Event $event) : EventListItem {
+                return new EventListItem(
+                    $event->getId(),
+                    $event->getDisplayName(),
+                    $event->getStartDate(),
+                    $event->getEndDate(),
+                    $this->chitNumberPrefix($event),
+                    $event->getState(),
+                );
+            },
+            $events
+        );
+
+        if ($this->sortBy !== null) {
+            if (! in_array($this->sortType, [self::SORT_ASCENDING, self::SORT_DESCENDING], true) ||
+                ! in_array($this->sortBy, self::SORTABLE_BY)) {
+                    throw new BadRequestException('Invalid sorting', IResponse::S400_BAD_REQUEST);
+            }
+
+            $comparator = new UISorter($this->sortBy);
+
+            usort($items, new UISorter($this->sortBy));
+
+            if ($this->sortType === self::SORT_DESCENDING) {
+                $items = array_reverse($items);
+            }
+        }
+
+        return $items;
+    }
+
+    private function chitNumberPrefix(Event $event) : ?string
+    {
+        $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($event->getId()->toInt())));
+
+        assert($cashbookId instanceof CashbookId);
+
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
+        return $cashbook->getChitNumberPrefix();
     }
 }
