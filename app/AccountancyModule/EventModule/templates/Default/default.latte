@@ -39,7 +39,12 @@
             </form>
         </div>
         <div class="col text-right">
-            <a n:href="exportDialog:open!" class="btn btn-light ajax"><i class="fas fa-arrow-down"></i> Exportovat&hellip;</a>
+            <span n:tag-if="$events === []" title="Nebyly nalezeny žádné akce" class="d-inline-block" data-toggle="tooltip" data-placement="bottom">
+                <a n:href="exportDialog:open!" n:class="$events === [] ? disabled, btn, btn-light, ajax">
+                    <i class="fas fa-arrow-down"></i>
+                    Exportovat&hellip;
+                </a>
+            </span>
             <a n:href="NewEvent:" class="btn btn-success ml-2"><i class="fas fa-plus"></i> Založit novou akci</a>
         </div>
     </div>
