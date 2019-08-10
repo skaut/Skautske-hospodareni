@@ -7,7 +7,6 @@ namespace App\AccountancyModule\EventModule;
 use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\Factories\GridFactory;
 use App\Forms\BaseForm;
-use App\MyValidators;
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\Auth\Resources\Event as EventResource;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -16,16 +15,10 @@ use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Commands\CancelEvent;
-use Model\Event\Commands\Event\CreateEvent;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventListQuery;
-use Model\Event\ReadModel\Queries\EventScopes;
 use Model\Event\ReadModel\Queries\EventStates;
-use Model\Event\ReadModel\Queries\EventTypes;
-use Model\Event\ReadModel\Queries\NewestEventId;
 use Model\Event\SkautisEventId;
-use Model\ExcelService;
-use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Http\SessionSection;
 use Skautis\Exception;
@@ -47,17 +40,13 @@ class DefaultPresenter extends BasePresenter
     /** @var SessionSection */
     public $ses;
 
-    /** @var ExcelService */
-    private $excelService;
-
     /** @var GridFactory */
     private $gridFactory;
 
-    public function __construct(ExcelService $excel, GridFactory $gf)
+    public function __construct(GridFactory $gf)
     {
         parent::__construct();
-        $this->excelService = $excel;
-        $this->gridFactory  = $gf;
+        $this->gridFactory = $gf;
     }
 
     protected function startup() : void
@@ -129,16 +118,6 @@ class DefaultPresenter extends BasePresenter
     public function renderDefault() : void
     {
         $this->template->setParameters(['accessCreate' => $this->authorizator->isAllowed(EventResource::CREATE, null)]);
-    }
-
-    public function actionNew() : void
-    {
-        if ($this->authorizator->isAllowed(EventResource::CREATE, null)) {
-            return;
-        }
-
-        $this->flashMessage('Nemáte oprávnění založit novou akci!', 'danger');
-        $this->redirect('default');
     }
 
     /**
@@ -221,94 +200,5 @@ class DefaultPresenter extends BasePresenter
         $this->ses->year  = $v['year'];
         $this->ses->state = $v['state'];
         $this->redirect('default', ['aid' => $this->aid]);
-    }
-
-    /**
-     * @param mixed $item
-     * @param mixed $args
-     */
-    public function isDateValidator($item, $args) : bool
-    {
-        return $item !== null;
-    }
-
-    /**
-     * @throws BadRequestException
-     */
-    protected function createComponentFormCreate() : Form
-    {
-        $scopes = $this->queryBus->handle(new EventScopes());
-        $types  = $this->queryBus->handle(new EventTypes());
-        $unitId = $this->unitService->getUnitId();
-
-        $subunits = $this->unitService->getSubunitPairs($unitId);
-        $subunits = array_map(
-            function (string $name) {
-                return '» ' . $name;
-            },
-            $subunits
-        );
-
-        $units  = [
-            $unitId => $this->unitService->getDetailV2($unitId)->getSortName(),
-        ];
-        $units += $subunits;
-
-        $form = new BaseForm();
-        $form->addText('name', 'Název akce*')
-            ->addRule(Form::FILLED, 'Musíte vyplnit název akce');
-        $form->addDate('start', 'Od*')
-            ->addRule(Form::FILLED, 'Musíte vyplnit začátek akce')
-            ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
-        $form->addDate('end', 'Do*')
-            ->addRule(Form::FILLED, 'Musíte vyplnit konec akce')
-            ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.')
-            ->addRule([MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
-        $form->addText('location', 'Místo');
-        $form->addSelect('orgID', 'Pořádající jednotka', $units);
-        $form->addSelect('scope', 'Rozsah (+)', $scopes)
-            ->setDefaultValue('2');
-        $form->addSelect('type', 'Typ (+)', $types)
-            ->setDefaultValue('2');
-        $form->addSubmit('send', 'Založit novou akci')
-            ->setAttribute('class', 'btn btn-primary btn-large, ui--createEvent');
-
-        $form->onSuccess[] = function (Form $form) : void {
-            $this->formCreateSubmitted($form);
-        };
-
-        return $form;
-    }
-
-    private function formCreateSubmitted(Form $form) : void
-    {
-        if (! $this->authorizator->isAllowed(EventResource::CREATE, null)) {
-            $this->flashMessage('Nemáte oprávnění pro založení akce', 'danger');
-            $this->redirect('this');
-        }
-
-        $v = $form->getValues();
-
-        $startDate = $v['start'];
-        $endDate   = $v['end'];
-
-        $this->commandBus->handle(
-            new CreateEvent(
-                $v['name'],
-                $startDate,
-                $endDate,
-                $v->orgID,
-                $v['location'] !== '' ? $v['location'] : null,
-                $v['scope'],
-                $v['type']
-            )
-        );
-
-        $this->redirect(
-            'Event:',
-            [
-                'aid' => $this->queryBus->handle(new NewestEventId()),
-            ]
-        );
     }
 }
