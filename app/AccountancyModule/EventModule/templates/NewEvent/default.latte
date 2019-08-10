@@ -1,18 +1,8 @@
 {block content}
-<div class="col-lg-8 col-lg-offset-2 main-panel">
-    <div class="panel panel-default">
-        <div class="panel-heading" n:inner-block="title">Nová výprava</div>
-        <div class="panel-body">
-            {control form}
-            (+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování
-        </div>
-    </div>
-</div>
+<h1 class="mt-4">Nová výprava</h1>
 
-<script type="text/javascript" n:syntax="off">
-    Nette.validators.AppMyValidators_isValidDate = function (elem, args, val) {
-        var regexp = /^(\d{1,2})[\/\-\.] ?(\d{1,2})[\/\-\.] ?(\d{4})$/;
-        var match = val.match(regexp);
-        return match == null ? false : true;
-    };
-</script>
+<div class="row">
+    <div class="col-lg-6">
+        {control form}
+    </div>
+(+) orintační údaj, slouží pro statistiku a nemá vliv na funkce vyúčtování

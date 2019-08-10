@@ -24,6 +24,8 @@ final class NewEventPresenter extends BasePresenter
             $this->flashMessage('Nemáte oprávnění založit novou akci!', 'danger');
             $this->redirect('default');
         }
+
+        $this->setLayout('layout.new');
     }
 
     protected function createComponentForm() : BaseForm
@@ -43,12 +45,14 @@ final class NewEventPresenter extends BasePresenter
         $units = [$unitId => $this->unitService->getDetailV2($unitId)->getSortName()] + $subunits;
 
         $form = new BaseForm();
-        $form->addText('name', 'Název akce*')
+        $form->useBootstrap4();
+
+        $form->addText('name', 'Název akce')
             ->addRule(Form::FILLED, 'Musíte vyplnit název akce');
-        $form->addDate('start', 'Od*')
+        $form->addDate('start', 'Od')
             ->addRule(Form::FILLED, 'Musíte vyplnit začátek akce')
             ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.');
-        $form->addDate('end', 'Do*')
+        $form->addDate('end', 'Do')
             ->addRule(Form::FILLED, 'Musíte vyplnit konec akce')
             ->addRule([MyValidators::class, 'isValidDate'], 'Vyplňte platné datum.')
             ->addRule([MyValidators::class, 'isValidRange'], 'Konec akce musí být po začátku akce', $form['start']);
