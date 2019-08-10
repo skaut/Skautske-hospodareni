@@ -6,14 +6,16 @@ import {ModalExtension} from './ModalExtension';
 import {TravelModule} from "../modules/travel";
 import {SnippetProcessor} from "./SnippetProcessor";
 import {initializeAutoSubmit} from "./autoSubmitForm";
+import {initializeLinksThatRequireConfirmation} from "./confirmDialogs";
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
     naja.registerExtension(ModalExtension);
 
     naja.registerExtension(TravelModule);
-    naja.registerExtension(SnippetProcessor, (snippet: Element) => {
-        snippet.querySelectorAll('.auto-submit').forEach(form => initializeAutoSubmit(naja, form));
+    naja.registerExtension(SnippetProcessor, snippet => {
+        initializeAutoSubmit(naja, snippet, '.auto-submit');
+        initializeLinksThatRequireConfirmation(snippet, 'data-confirm');
     });
 
     naja.formsHandler.netteForms = netteForms;
