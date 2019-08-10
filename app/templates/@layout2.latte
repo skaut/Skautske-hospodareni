@@ -36,7 +36,7 @@
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav mr-auto">
                     <li n:class="nav-item, $module === 'Event' ? active">
-                        <a class="nav-link" n:href=":Accountancy:Event:Default:">Akce</a>
+                        <a class="nav-link" href="{$linkGenerator->link('Accountancy:Event:Default:')}">Akce</a>
                     </li>
                     <li n:class="nav-item, $module === 'Camp' ? active">
                         <a class="nav-link" n:href=":Accountancy:Camp:Default:">Tábory</a>

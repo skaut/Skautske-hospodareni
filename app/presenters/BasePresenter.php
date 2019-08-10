@@ -14,6 +14,7 @@ use Model\UnitService;
 use Model\UserService;
 use Nette;
 use Nette\Application\IResponse;
+use Nette\Application\LinkGenerator;
 use Nette\Security\Identity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
@@ -61,6 +62,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @var LoggerInterface */
     protected $logger;
 
+    /** @var LinkGenerator */
+    protected $linkGenerator;
+
     public function injectAll(
         WebLoader\LoaderFactory $webLoader,
         UserService $userService,
@@ -70,7 +74,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         IAuthorizator $authorizator,
         ILoginPanelFactory $loginPanelFactory,
         NotificationsCollector $notificationsCollector,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        LinkGenerator $linkGenerator
     ) : void {
         $this->webLoader              = $webLoader;
         $this->userService            = $userService;
@@ -81,6 +86,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->loginPanelFactory      = $loginPanelFactory;
         $this->logger                 = $logger;
         $this->notificationsCollector = $notificationsCollector;
+        $this->linkGenerator          = $linkGenerator;
     }
 
     protected function startup() : void
@@ -119,6 +125,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->template->setParameters([
             'module' => $presenterNameParts[1] ?? null,
             'presenterName' => $presenterNameParts[array_key_last($presenterNameParts)],
+            'linkGenerator' => $this->linkGenerator,
         ]);
 
         if (! $this->getUser()->isLoggedIn()) {
