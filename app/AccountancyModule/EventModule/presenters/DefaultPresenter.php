@@ -47,6 +47,9 @@ class DefaultPresenter extends BasePresenter
 
     private const SORTABLE_BY = ['name', 'startDate', 'endDate', 'prefix', 'state'];
 
+    private const YEAR_ALL  = 'all';
+    private const STATE_ALL = 'all';
+
     /**
      * @var string
      * @persistent
@@ -54,10 +57,10 @@ class DefaultPresenter extends BasePresenter
     public $name = '';
 
     /**
-     * @var int
+     * @var string|null
      * @persistent
      */
-    public $year = 0;
+    public $year;
 
     /**
      * @var string
@@ -88,8 +91,8 @@ class DefaultPresenter extends BasePresenter
 
     protected function startup() : void
     {
-        if ($this->year === 0) {
-            $this->year = Date::today()->year;
+        if ($this->year === null) {
+            $this->year = (string) Date::today()->year;
         }
 
         parent::startup();
@@ -134,10 +137,9 @@ class DefaultPresenter extends BasePresenter
 
     protected function createComponentFormFilter() : Form
     {
-        $states = array_merge(['all' => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
+        $states = array_merge([self::STATE_ALL => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
 
-        $years = array_reverse(range(2012, date('Y')));
-        $years = array_combine($years, $years);
+        $years = $this->getYearOptions();
 
         if (! isset($years[$this->year], $states[$this->state])) {
             throw new BadRequestException('Invalid filters', IResponse::S400_BAD_REQUEST);
@@ -196,8 +198,14 @@ class DefaultPresenter extends BasePresenter
     private function loadEvents() : array
     {
         $state = $this->state;
+        $year  = $this->year;
 
-        $events = $this->queryBus->handle(new EventListQuery($this->year, $state === 'all' ? null : $state));
+        $events = $this->queryBus->handle(
+            new EventListQuery(
+                $year === self::YEAR_ALL ? null : (int) $year,
+                $state === self::STATE_ALL ? null : $state,
+            )
+        );
 
         if ($this->name !== '') {
             $events = array_filter(
@@ -251,5 +259,20 @@ class DefaultPresenter extends BasePresenter
         assert($cashbook instanceof Cashbook);
 
         return $cashbook->getChitNumberPrefix();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function getYearOptions() : array
+    {
+        $years = array_map(
+            function (int $year) : string {
+                return (string) $year;
+            },
+            array_reverse(range(2012, (int) date('Y')))
+        );
+
+        return [self::YEAR_ALL => 'Všechny'] + array_combine($years, $years);
     }
 }
