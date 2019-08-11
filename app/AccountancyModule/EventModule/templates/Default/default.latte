@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-8">
             <form n:name="formFilter" class="form-inline auto-submit">
-                <div class="input-group mr-2">
+                <div class="input-group mr-2 mb-2">
                     <div class="input-group-prepend">
                         <div class="input-group-text">
                             <label n:name="name">
@@ -16,7 +16,7 @@
                     <input n:name="name" class="form-control" placeholder="Hledat podle názvu..."/>
                 </div>
 
-                <div class="input-group mr-2">
+                <div class="input-group mr-2 mb-2">
                     <div class="input-group-prepend">
                         <div class="input-group-text">
                             <label n:name="year">
@@ -28,7 +28,7 @@
                     <select n:name="year" class="form-control custom-select"/>
                 </div>
 
-                <div class="input-group">
+                <div class="input-group mb-2">
                     <div class="input-group-prepend">
                         <div class="input-group-text">
                             <label n:name="state">Stav</label>
@@ -40,73 +40,75 @@
         </div>
         <div class="col text-right">
             <span n:tag-if="$events === []" title="Nebyly nalezeny žádné akce" class="d-inline-block" data-toggle="tooltip" data-placement="bottom">
-                <a n:href="exportDialog:open!" n:class="$events === [] ? disabled, btn, btn-light, ajax">
+                <a n:href="exportDialog:open!" n:class="$events === [] ? disabled, btn, btn-light, ajax, mb-2">
                     <i class="fas fa-arrow-down"></i>
                     Exportovat&hellip;
                 </a>
             </span>
-            <a n:href="NewEvent:" class="btn btn-success ml-2"><i class="fas fa-plus"></i> Založit novou akci</a>
+            <a n:href="NewEvent:" class="btn btn-success ml-2 mb-2"><i class="fas fa-plus"></i> Založit novou akci</a>
         </div>
     </div>
 
     {if $events !== []}
-        <table class="table table-bordered table-striped mt-4">
-            {var $sortableColumns = [
-                'name' => 'Název',
-                'startDate' => 'Začátek akce',
-                'endDate' => 'Konec akce',
-                'prefix' => 'Prefix',
-            ]}
-            <tr>
-                <th n:foreach="$sortableColumns as $fieldName => $title">
-                    {if $sortBy !== $fieldName}
-                        <a n:href="this sortBy => $fieldName, sortType => 'asc'" class="ajax" data-naja-history="on">
-                            {$title}
-                            <i class="fas fa-sort"></i>
-                        </a>
-                    {elseif $sortType === 'asc'}
-                        <a n:href="this sortType => 'desc'" class="ajax" data-naja-history="on">
-                            {$title}
-                            <i class="fas fa-sort-up"></i>
-                        </a>
-                    {else}
-                        <a n:href="this sortBy => null, sortType => 'asc'" class="ajax" data-naja-history="on">
-                            {$title}
-                            <i class="fas fa-sort-down"></i>
-                        </a>
-                    {/if}
-                </th>
-                <th>Stav</th>
-                <th>Akce</th>
-            </tr>
-            <tr n:foreach="$events as $item">
-                <td>
-                    <a n:href="Event:default $item->getId()->toInt()">{$item->getName()}</a></td>
-                <td>{$item->getStartDate()|date:'d.m.Y'}</td>
-                <td>{$item->getEndDate()|date:'d.m.Y'}</td>
-                <td>{$item->getPrefix()}</td>
-                <td>
-                    {var $state = $item->getState()}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mt-2">
+                {var $sortableColumns = [
+                    'name' => 'Název',
+                    'startDate' => 'Začátek akce',
+                    'endDate' => 'Konec akce',
+                    'prefix' => 'Prefix',
+                ]}
+                <tr>
+                    <th n:foreach="$sortableColumns as $fieldName => $title">
+                        {if $sortBy !== $fieldName}
+                            <a n:href="this sortBy => $fieldName, sortType => 'asc'" class="ajax" data-naja-history="on">
+                                {$title}
+                                <i class="fas fa-sort"></i>
+                            </a>
+                        {elseif $sortType === 'asc'}
+                            <a n:href="this sortType => 'desc'" class="ajax" data-naja-history="on">
+                                {$title}
+                                <i class="fas fa-sort-up"></i>
+                            </a>
+                        {else}
+                            <a n:href="this sortBy => null, sortType => 'asc'" class="ajax" data-naja-history="on">
+                                {$title}
+                                <i class="fas fa-sort-down"></i>
+                            </a>
+                        {/if}
+                    </th>
+                    <th>Stav</th>
+                    <th>Akce</th>
+                </tr>
+                <tr n:foreach="$events as $item">
+                    <td>
+                        <a n:href="Event:default $item->getId()->toInt()">{$item->getName()}</a></td>
+                    <td>{$item->getStartDate()|date:'d.m.Y'}</td>
+                    <td>{$item->getEndDate()|date:'d.m.Y'}</td>
+                    <td>{$item->getPrefix()}</td>
+                    <td>
+                        {var $state = $item->getState()}
 
-                    {if $state === "draft"}
-                        <span class="badge badge-warning">Rozpracováno</span>
-                    {elseif $state === "closed"}
-                        <span class="badge badge-success">Uzavřeno</span>
-                    {elseif $state === "cancelled"}
-                        <span class="badge badge-default">Zrušeno</span>
-                    {/if}
-                </td>
-                <td class="text-right">
-                    <a n:href="cancel! $item->getId()->toInt()"
-                       title="Zrušit akci"
-                       class="btn btn-sm btn-danger ajax"
-                       data-confirm="Opravdu chcete zrušit akci {$item->getName()}?">
-                        <span class="far fa-trash-alt"></span>
-                    </a>
+                        {if $state === "draft"}
+                            <span class="badge badge-warning">Rozpracováno</span>
+                        {elseif $state === "closed"}
+                            <span class="badge badge-success">Uzavřeno</span>
+                        {elseif $state === "cancelled"}
+                            <span class="badge badge-default">Zrušeno</span>
+                        {/if}
+                    </td>
+                    <td class="text-right">
+                        <a n:href="cancel! $item->getId()->toInt()"
+                           title="Zrušit akci"
+                           class="btn btn-sm btn-danger ajax"
+                           data-confirm="Opravdu chcete zrušit akci {$item->getName()}?">
+                            <span class="far fa-trash-alt"></span>
+                        </a>
 
-                </td>
-            </tr>
-        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
     {else}
         <div class="mt-4 text-muted d-flex align-items-center justify-content-center">
             <i class="far fa-frown-open fa-4x mr-2"></i>
