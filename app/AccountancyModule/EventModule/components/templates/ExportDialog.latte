@@ -9,13 +9,20 @@
             </div>
             <div class="modal-body">
                 Vyberte akce, které chcete exportovat.
-                <form n:name="form" class="mt-2 ml-2">
-                    <div class="form-check" n:foreach="$form['eventIds']->items as $key => $label">
-                        <input n:name="eventIds:$key" class="form-check-input">
-                        <label n:name="eventIds:$key" class="form-check-label">{$label}</label>
+
+                <div class="mt-2 ml-2">
+                    <div class="form-check border-bottom mb-1">
+                        <input type="checkbox" class="form-check-input" id="export-check-all" data-dependent-checkboxes=".export-dependent-checkboxes">
+                        <label for="export-check-all" class="font-weight-bold">Vybrat vše</label>
                     </div>
-                    <input n:name="download" class="btn btn-primary">
-                </form>
+                    <form n:name="form" class="export-dependent-checkboxes">
+                        <div class="form-check" n:foreach="$form['eventIds']->items as $key => $label">
+                            <input n:name="eventIds:$key" class="form-check-input">
+                            <label n:name="eventIds:$key" class="form-check-label">{$label}</label>
+                        </div>
+                        <input n:name="download" class="btn btn-primary">
+                    </form>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-dismiss="modal">Storno</button>
