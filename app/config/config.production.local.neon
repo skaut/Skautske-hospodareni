@@ -1,3 +1,6 @@
+#
+# These placeholders are defined in build.xml
+#
 skautis:
      applicationId: "__CONFIG_SKAUTIS_APPLICATION_ID__"
      testMode: __CONFIG_SKAUTIS_TEST_MODE__

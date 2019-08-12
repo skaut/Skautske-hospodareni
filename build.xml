@@ -39,6 +39,7 @@
                     <token key="CONFIG_DATABASE_USER" value="${env.CONFIG_DATABASE_USER}"/>
                     <token key="CONFIG_DATABASE_PASSWORD" value="${env.CONFIG_DATABASE_PASSWORD}"/>
                     <token key="CONFIG_DATABASE_NAME" value="${env.CONFIG_DATABASE_NAME}"/>
+                    <token key="CONFIG_SENTRY_DSN" value="${env.CONFIG_SENTRY_DSN}"/>
 
                 </replacetokens>
                 <expandproperties/>
