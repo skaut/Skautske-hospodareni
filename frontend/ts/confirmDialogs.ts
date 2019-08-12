@@ -5,6 +5,6 @@ export function initializeLinksThatRequireConfirmation(container: Element, messa
                 if (! confirm(link.getAttribute(messageAttribute) as string)) {
                     event.preventDefault();
                 }
-            })
+            }, true)
         });
 }

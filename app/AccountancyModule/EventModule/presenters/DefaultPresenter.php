@@ -118,7 +118,7 @@ class DefaultPresenter extends BasePresenter
     {
         if (! $this->authorizator->isAllowed(EventResource::DELETE, $aid)) {
             $this->flashMessage('Nemáte právo na zrušení akce.', 'danger');
-            $this->redirect('events');
+            $this->redirect('this');
         }
 
         try {
@@ -132,7 +132,7 @@ class DefaultPresenter extends BasePresenter
             );
         }
 
-        $this->redrawControl('events');
+        $this->redirect('this');
     }
 
     protected function createComponentFormFilter() : Form
