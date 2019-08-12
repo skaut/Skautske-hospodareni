@@ -11,7 +11,7 @@ parameters:
 
     sendEmail: true
     sentry:
-        dsn: "https://4c569d4cbda54f908d83d4b4a1959826@sentry.io/1328535"
+        dsn: "__CONFIG_SENTRY_DSN__"
 
 services:
     # Passes notices and warning to Monolog
