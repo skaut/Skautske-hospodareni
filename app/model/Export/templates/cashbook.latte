@@ -2,7 +2,16 @@
 table {
     border-spacing: 0;
 }
+
+.smaller {
+    font-size: 0.8em;
+    color: #999;
+}
+
 </style>
+<div class="smaller">
+    Junák - svaz skautů a skautek ČR, {$unit->getDisplayName()}, {$unit->getStreet()}, {$unit->getCity()}, {$unit->getPostcode()}, IČO: {$unit->getIc()}
+</div>
 <h2>{$header}</h2>
 
 <table style="width: 800px;" border="1">
