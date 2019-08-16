@@ -136,6 +136,7 @@ services:
     - Model\Skautis\UnitRepository(@skautis.org)
     - Model\Skautis\Common\Repositories\UserRepository(@skautis.webservice.user, @skautis.org)
     - Model\Skautis\EventRepository(@skautis.event)
+    - Model\Skautis\CampRepository(@skautis.cached.event)
     - Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.cached.event)
 
     - class: Model\Cashbook\ReadModel\QueryHandlers\EventParticipantListQueryHandler

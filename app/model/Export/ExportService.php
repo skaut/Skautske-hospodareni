@@ -10,6 +10,7 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
@@ -100,7 +101,7 @@ class ExportService
             'header'  => ($paymentMethod->equals(PaymentMethod::CASH()) ? 'Pokladní kniha' : 'Bankovní transakce') . ' - ' . $cashbookName,
             'prefix'  => $cashbook->getChitNumberPrefix(),
             'chits'   => $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId)),
-            'unit'    => $this->units->getOfficialUnit(),
+            'unit'    => $this->queryBus->handle(new CashbookOfficialUnitQuery($cashbookId)),
         ]);
     }
 
