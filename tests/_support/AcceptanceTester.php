@@ -51,9 +51,13 @@ class AcceptanceTester extends Actor
         $I->click('//button');
         $I->waitForText('Seznam akcí');
 
-        $I->click("//select[contains(@class, 'roleSelect')]");
-        $I->click("//option[text()='$role']");
-        $I->waitForText($role);
+        $roleButtonSelector = "//button[contains(@class, 'ui--current-role')]";
+
+        if ($I->grabTextFrom($roleButtonSelector) !== $role) {
+            $I->click($roleButtonSelector);
+            $I->click("//a[text()='$role']");
+            $I->waitForText($role);
+        }
 
         $I->saveSessionSnapshot('login');
     }

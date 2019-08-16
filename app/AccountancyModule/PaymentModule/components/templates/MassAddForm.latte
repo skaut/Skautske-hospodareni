@@ -4,7 +4,7 @@
     </ul>
     <table class="table table-bordered table-striped table-sm">
         <tr>
-            <th><input type="checkbox" id='reg-all-p' onclick="toggleAllCheckboxes(this, 'dependent-checkbox')"/></th>
+            <th><input type="checkbox" data-dependent-checkboxes=".dependent-checkbox"/></th>
             <th>Jméno</th>
             <th>Email</th>
             <th>Částka</th>
@@ -22,7 +22,7 @@
             <td>{input note, class=>"input-sm form-control"}</td>
         </tr>
         <tr n:foreach="$form['persons']->getComponents() as $container">
-            <td class="dependent-checkbox"><input n:name="$container['selected']" onclick="toggleMainCheckbox('reg-all-p', 'dependent-checkbox')"></td>
+            <td class="dependent-checkbox"><input n:name="$container['selected']"></td>
             <td>{input $container["name"], class=>"input-sm form-control"}</td>
             <td>{input $container["email"], class=>"input-sm form-control"}</td>
             <td>{input $container["amount"], class=>"input-sm form-control"}</td>

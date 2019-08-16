@@ -1,39 +1,120 @@
 {block #content}
-<h2 n:inner-block="title">Seznam akcí</h2>
+<h1 n:inner-block="title" class="mt-4 mb-4">Seznam akcí</h1>
 
 {snippet events}
     <div class="row">
-        <div class="col-sm-12">
-            <div class="well well-sm">
-                <a n:if="$accessCreate" n:href="new" class="btn btn-success pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou akci</a>
+        <div class="col-md-8">
+            <form n:name="formFilter" class="form-inline auto-submit">
+                <div class="input-group mr-2 mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <label n:name="name">
+                                <i class="fas fa-search"></i>
+                            </label>
+                        </div>
+                    </div>
+                    <input n:name="name" class="form-control" placeholder="Hledat podle názvu..."/>
+                </div>
 
-                {form formFilter class=>"ajax filter form-inline"}
-                    <div class="form-group"><span class="hidden-xs">{label year /}</span>{input year onchange=>"changeYear(this.value)", class=>"form-control"}</div>
-                    <div class="form-group"><span class="hidden-xs">{label state /}</span>{input state onchange=>"changeState(this.value)", class=>"form-control"}</div>
-                {/form}
-            </div>
+                <div class="input-group mr-2 mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <label n:name="year">
+                                <i class="fas fa-calendar mr-1"></i>
+                                Rok
+                            </label>
+                        </div>
+                    </div>
+                    <select n:name="year" class="form-control custom-select"/>
+                </div>
+
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <label n:name="state">Stav</label>
+                        </div>
+                    </div>
+                    <select n:name="state" class="form-control custom-select"/>
+                </div>
+            </form>
+        </div>
+        <div class="col text-right">
+            <span n:tag-if="$events === []" title="Nebyly nalezeny žádné akce" class="d-inline-block" data-toggle="tooltip" data-placement="bottom">
+                <a n:href="exportDialog:open!" n:class="$events === [] ? disabled, btn, btn-light, ajax, mb-2">
+                    <i class="fas fa-arrow-down"></i>
+                    Exportovat&hellip;
+                </a>
+            </span>
+            <a n:href="NewEvent:" class="btn btn-success ml-2 mb-2"><i class="fas fa-plus"></i> Založit novou akci</a>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-12">
-            {control eventGrid}
+
+    {if $events !== []}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mt-2">
+                {var $sortableColumns = [
+                    'name' => 'Název',
+                    'startDate' => 'Začátek akce',
+                    'endDate' => 'Konec akce',
+                    'prefix' => 'Prefix',
+                ]}
+                <tr>
+                    <th n:foreach="$sortableColumns as $fieldName => $title">
+                        {if $sortBy !== $fieldName}
+                            <a n:href="this sortBy => $fieldName, sortType => 'asc'" class="ajax" data-naja-history="on">
+                                {$title}
+                                <i class="fas fa-sort"></i>
+                            </a>
+                        {elseif $sortType === 'asc'}
+                            <a n:href="this sortType => 'desc'" class="ajax" data-naja-history="on">
+                                {$title}
+                                <i class="fas fa-sort-up"></i>
+                            </a>
+                        {else}
+                            <a n:href="this sortBy => null, sortType => 'asc'" class="ajax" data-naja-history="on">
+                                {$title}
+                                <i class="fas fa-sort-down"></i>
+                            </a>
+                        {/if}
+                    </th>
+                    <th>Stav</th>
+                    <th>Akce</th>
+                </tr>
+                <tr n:foreach="$events as $item">
+                    <td>
+                        <a n:href="Event:default $item->getId()->toInt()">{$item->getName()}</a></td>
+                    <td>{$item->getStartDate()|date:'d.m.Y'}</td>
+                    <td>{$item->getEndDate()|date:'d.m.Y'}</td>
+                    <td>{$item->getPrefix()}</td>
+                    <td>
+                        {var $state = $item->getState()}
+
+                        {if $state === "draft"}
+                            <span class="badge badge-warning">Rozpracováno</span>
+                        {elseif $state === "closed"}
+                            <span class="badge badge-success">Uzavřeno</span>
+                        {elseif $state === "cancelled"}
+                            <span class="badge badge-default">Zrušeno</span>
+                        {/if}
+                    </td>
+                    <td class="text-right">
+                        <a n:href="cancel! $item->getId()->toInt()"
+                           title="Zrušit akci"
+                           class="btn btn-sm btn-danger"
+                           data-confirm="Opravdu chcete zrušit akci {$item->getName()}?">
+                            <span class="far fa-trash-alt"></span>
+                        </a>
+
+                    </td>
+                </tr>
+            </table>
         </div>
-    </div>
+    {else}
+        <div class="mt-4 text-muted d-flex align-items-center justify-content-center">
+            <i class="far fa-frown-open fa-4x mr-2"></i>
+            <span>Nebyly nalezeny žádné akce</span>
+        </div>
+    {/if}
 {/snippet}
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $(".selDependend").addClass("disabled").attr("disabled", "disabled");
-        onlyWithCheckbox("sel", "selDependend");
-    });
-    function changeYear(val) {
-        let link = {link changeYear!};
-        if (val !== "all") {
-            link += "&year="+val;
-        }
-        $.nette.ajax({ url: link});
-    }
-    function changeState(val) {
-        $.nette.ajax({ url: {link changeState!}+"&state="+val});
-    }
-</script>
+{control exportDialog}
