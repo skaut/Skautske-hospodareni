@@ -10,13 +10,13 @@ use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\Cashbook\Repositories\IUnitRepository;
-use Model\Common\UnitId;
 use Model\Event\Repositories\ICampRepository;
 use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Payment\IUnitResolver;
 use Model\Skautis\Mapper;
+use Model\Unit\Repositories\IUnitRepository as ISkautisUnitRepository;
 use Model\Unit\Unit;
 
 class CashbookOfficialUnitQueryHandler
@@ -33,6 +33,9 @@ class CashbookOfficialUnitQueryHandler
     /** @var IUnitRepository */
     private $unitRepository;
 
+    /** @var ISkautisUnitRepository */
+    private $skautiUnitRepository;
+
     /** @var Mapper */
     private $mapper;
 
@@ -41,16 +44,20 @@ class CashbookOfficialUnitQueryHandler
 
     public function __construct(
         ICashbookRepository $cashbooks,
+        IEventRepository $eventRepository,
         ICampRepository $campRepository,
         IUnitRepository $unitRepository,
         Mapper $mapper,
-        IUnitResolver $unitResolver
+        IUnitResolver $unitResolver,
+        ISkautisUnitRepository $skautisUnitRepository
     ) {
-        $this->cashbooks      = $cashbooks;
-        $this->unitRepository = $unitRepository;
-        $this->mapper         = $mapper;
-        $this->campRepository = $campRepository;
-        $this->unitRepository = $unitResolver;
+        $this->cashbooks            = $cashbooks;
+        $this->eventRepository      = $eventRepository;
+        $this->unitRepository       = $unitRepository;
+        $this->mapper               = $mapper;
+        $this->campRepository       = $campRepository;
+        $this->unitResolver         = $unitResolver;
+        $this->skautiUnitRepository = $skautisUnitRepository;
     }
 
     /**
@@ -77,6 +84,6 @@ class CashbookOfficialUnitQueryHandler
         }
         $officialUnitId = $this->unitResolver->getOfficialUnitId($unitId);
 
-        return $this->unitRepository->find(new UnitId($officialUnitId));
+        return $this->skautiUnitRepository->find($officialUnitId);
     }
 }
