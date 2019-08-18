@@ -12,6 +12,8 @@ use Model\ExcelService;
 use Model\ExportService;
 use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 use Model\Services\PdfRenderer;
+use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\Unit;
 use Model\UnitService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -19,6 +21,7 @@ use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
 use function array_merge;
+use function assert;
 use function count;
 use function date;
 use function in_array;
@@ -102,12 +105,15 @@ trait ParticipantTrait
             throw $e;
         }
         $this->sortParticipants($participants, $sort);
+        $unit = $this->queryBus->handle(new UnitQuery($this->uid ?? $this->unitService->getUnitId()));
+        assert($unit instanceof Unit);
+
         $this->template->setParameters([
             'list'         => $list,
             'participants' => $participants,
-            'unit'       => $unit = $this->unitService->getDetail($this->uid),
-            'uparrent'   => $this->unitService->getDetail($unit->ID_UnitParent),
-            'uchildrens' => $this->unitService->getSubunits($unit->ID),
+            'unit'       => $unit,
+            'uparrent'   => $this->queryBus->handle(new UnitQuery($unit->getParentId())),
+            'uchildrens' => $this->unitService->getSubunits($unit->getId()),
             'sort'       => $sort,
             'useRegNums' => $regNums,
         ]);

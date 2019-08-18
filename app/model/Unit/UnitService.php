@@ -180,7 +180,8 @@ class UnitService
 
         $res = [];
         foreach ($identity->access[$accessType] as $uId => $u) {
-            $res[$uId] = $u instanceof Unit ? $u->getDisplayName() : $u->DisplayName;
+            assert($u instanceof Unit);
+            $res[$uId] = $u->getDisplayName();
         }
 
         return $res;

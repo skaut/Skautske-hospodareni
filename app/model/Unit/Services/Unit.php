@@ -113,7 +113,12 @@ class Unit
 
     public function getFullDisplayNameWithAddress() : string
     {
-        return $this->getFullDisplayName() . ', ' . $this->street . ', ' . $this->city . ', ' . $this->postcode . ', IČO: ' . $this->ic;
+        return $this->getFullDisplayName() . ', ' . $this->getAddress() . ', IČO: ' . $this->ic;
+    }
+
+    public function getAddress() : string
+    {
+        return $this->street . ', ' . $this->city . ', ' . $this->postcode;
     }
 
     public function getIc() : ?string

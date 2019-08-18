@@ -13,9 +13,9 @@
     <body>
     <h1>Smlouva o proplácení cestovních náhrad</h1>
 <div class="osoby">
-    <b>Název:</b> {$unit->FullDisplayName}<br />
-    <b>Sídlo:</b> {$unit->Street}, {$unit->City}, {$unit->Postcode}<br />
-    <b>IČO:</b> {$unit->IC}<br />
+    <b>Název:</b> {$unit->getFullDisplayName()}<br />
+    <b>Sídlo:</b> {$unit->getAddress()}<br />
+    <b>IČO:</b> {$unit->getIC()}<br />
     <b>Zastoupený:</b> {$contract->unitRepresentative}<br />
     (dále jen Junák)
 </div>

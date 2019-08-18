@@ -4,13 +4,25 @@ declare(strict_types=1);
 
 namespace Model;
 
+use eGen\MessageBus\QueryBus\IQueryBus;
+use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
+use Skautis\Skautis;
 use stdClass;
 
 class UserService extends BaseService
 {
+    /** @var IQueryBus */
+    private $queryBus;
+
+    public function __construct(Skautis $skautis, IQueryBus $queryBus)
+    {
+        parent::__construct($skautis);
+        $this->queryBus = $queryBus;
+    }
+
     /**
      * varcí ID role aktuálně přihlášeného uživatele
      */
@@ -108,7 +120,7 @@ class UserService extends BaseService
         if ($role !== null) {
             $unitIds = $role->isBasicUnit() || $role->isTroop()
                 ? $us->getAllUnder($role->getUnitId())
-                : [$role->getUnitId() => $us->getDetail($role->getUnitId())];
+                : [$role->getUnitId() => $this->queryBus->handle(new UnitQuery($role->getUnitId()))];
 
             if ($role->isOfficer()) {
                 return [
