@@ -72,7 +72,7 @@ class CashbookOfficialUnitQueryHandler
         $cashbook = $this->cashbooks->find($query->getCashbookId());
         $unitId   = $this->resolveUnitThatOwnsCashbook($cashbook);
 
-        return $this->unitRepository->find(new UnitId($this->unitResolver->getOfficialUnitId($unitId->toInt())));
+        return $this->skautisUnitRepository->find($this->unitResolver->getOfficialUnitId($unitId->toInt()));
     }
 
     private function resolveUnitThatOwnsCashbook(Cashbook $cashbook) : UnitId
