@@ -79,7 +79,11 @@ class EventPresenter extends BasePresenter
             ]);
         }
 
-        $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants($this->event);
+        $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants(
+            $this->event->RegistrationNumber,
+            new Date($this->event->StartDate),
+            $this->event->ID
+        );
 
         $this->template->setParameters([
             'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),

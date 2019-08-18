@@ -271,14 +271,14 @@ class ParticipantService extends MutableBaseService
         return $res;
     }
 
-    public function countPragueParticipants(stdClass $event) : ?PragueParticipants
+    public function countPragueParticipants(string $registrationNumber, Date $startDate, int $eventId) : ?PragueParticipants
     {
-        if (! Strings::startsWith($event->RegistrationNumber, self::PRAGUE_UNIT_PREFIX)) {
+        if (! Strings::startsWith($registrationNumber, self::PRAGUE_UNIT_PREFIX)) {
             return null;
         }
 
-        $eventStartDate    = new Date($event->StartDate);
-        $participants      = $this->getAll($event->ID);
+        $eventStartDate    = new Date($startDate);
+        $participants      = $this->getAll($eventId);
         $under18           = 0;
         $between18and26    = 0;
         $personDaysUnder26 = 0;

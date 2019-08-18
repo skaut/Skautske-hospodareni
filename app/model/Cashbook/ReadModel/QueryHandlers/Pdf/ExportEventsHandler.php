@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 
+use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
@@ -79,7 +80,11 @@ class ExportEventsHandler
             $participants                  = $participantService->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays']      = $participantService->getPersonsDays($participants);
-            $pp                            = $participantService->countPragueParticipants($data[$aid]);
+            $pp                            = $participantService->countPragueParticipants(
+                $data[$aid]->RegistrationNumber,
+                new Date($data[$aid]->StartDate),
+                $data[$aid]->ID
+            );
             if ($pp === null) {
                 continue;
             }

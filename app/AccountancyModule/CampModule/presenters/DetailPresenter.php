@@ -6,16 +6,15 @@ namespace App\AccountancyModule\CampModule;
 
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
+use Model\Common\UnitId;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
+use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\UnitNotFound;
 use function array_map;
 use function count;
-use function is_array;
-use function is_string;
-use function property_exists;
 
 class DetailPresenter extends BasePresenter
 {
@@ -34,29 +33,16 @@ class DetailPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $troops = [];
-        if (property_exists($this->event->ID_UnitArray, 'string')) {
-            $unitIdOrIds = $this->event->ID_UnitArray->string;
-
-            if (is_array($unitIdOrIds)) {
-                $troops = array_map(
-                    function ($id) {
-                        try {
-                            return $this->unitService->getDetail((int) $id);
-                        } catch (UnitNotFound $exc) {
-                            return ['ID' => $id, 'DisplayName' => 'Jednotka (' . $id . ') již neexistuje.'];
-                        }
-                    },
-                    $this->event->ID_UnitArray->string
-                );
-            } elseif (is_string($unitIdOrIds)) {
+        $troops = array_map(
+            function (UnitId $id) {
                 try {
-                    $troops = [$this->unitService->getDetail((int) $unitIdOrIds)];
+                    return $this->queryBus->handle(new UnitQuery($id->toInt()));
                 } catch (UnitNotFound $exc) {
-                    $troops = [];
+                    return ['ID' => $id, 'DisplayName' => 'Jednotka (' . $id . ') již neexistuje.'];
                 }
-            }
-        }
+            },
+            $this->event->getParticipatingUnits()
+        );
 
         if ($this->isAjax()) {
             $this->redrawControl('contentSnip');
@@ -69,7 +55,11 @@ class DetailPresenter extends BasePresenter
             'functions' => $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)
                 ? $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)))
                 : null,
-            'pragueParticipants' => $this->eventService->getParticipants()->countPragueParticipants($this->event),
+            'pragueParticipants' => $this->eventService->getParticipants()->countPragueParticipants(
+                $this->event->getRegistrationNumber(),
+                $this->event->getStartDate(),
+                $this->event->getId()->toInt()
+            ),
         ]);
     }
 

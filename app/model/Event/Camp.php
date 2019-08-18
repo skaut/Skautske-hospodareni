@@ -51,6 +51,30 @@ class Camp implements ISkautisEvent
     /** @var string */
     private $registrationNumber;
 
+    /** @var UnitId[] */
+    private $participatingUnits;
+
+    /** @var int */
+    private $totalDays;
+
+    /** @var int */
+    private $realAdult;
+
+    /** @var int */
+    private $realChild;
+
+    /** @var int */
+    private $realCount;
+
+    /** @var int */
+    private $realChildDays;
+
+    /** @var int */
+    private $realPersonDays;
+
+    /** @var bool */
+    private $realAutoComputed;
+
     public function __construct(
         SkautisCampId $id,
         string $displayName,
@@ -60,7 +84,15 @@ class Camp implements ISkautisEvent
         Date $endDate,
         string $location,
         string $state,
-        string $registrationNumber
+        string $registrationNumber,
+        array $participatingUnits,
+        int $totalDays,
+        int $realAdult,
+        int $realChild,
+        int $realCount,
+        int $realChildDays,
+        int $realPersonDays,
+        bool $realAutoComputed
     ) {
         $this->id                 = $id;
         $this->displayName        = $displayName;
@@ -71,6 +103,14 @@ class Camp implements ISkautisEvent
         $this->location           = $location;
         $this->state              = $state;
         $this->registrationNumber = $registrationNumber;
+        $this->participatingUnits = $participatingUnits;
+        $this->totalDays          = $totalDays;
+        $this->realAdult          = $realAdult;
+        $this->realChild          = $realChild;
+        $this->realCount          = $realCount;
+        $this->realChildDays      = $realChildDays;
+        $this->realPersonDays     = $realPersonDays;
+        $this->realAutoComputed   = $realAutoComputed;
     }
 
     public function getId() : SkautisCampId
@@ -116,5 +156,48 @@ class Camp implements ISkautisEvent
     public function getRegistrationNumber() : string
     {
         return $this->registrationNumber;
+    }
+
+    /**
+     * @return UnitId[]
+     */
+    public function getParticipatingUnits() : array
+    {
+        return $this->participatingUnits;
+    }
+
+    public function getTotalDays() : int
+    {
+        return $this->totalDays;
+    }
+
+    public function getRealAdult() : int
+    {
+        return $this->realAdult;
+    }
+
+    public function getRealChild() : int
+    {
+        return $this->realChild;
+    }
+
+    public function getRealCount() : int
+    {
+        return $this->realCount;
+    }
+
+    public function getRealChildDays() : int
+    {
+        return $this->realChildDays;
+    }
+
+    public function getRealPersonDays() : int
+    {
+        return $this->realPersonDays;
+    }
+
+    public function isRealAutoComputed() : bool
+    {
+        return $this->realAutoComputed;
     }
 }

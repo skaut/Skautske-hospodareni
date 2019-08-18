@@ -58,12 +58,10 @@ class ParticipantPresenter extends BasePresenter
 
         $this->traitDefault($dp, $sort, $regNums);
 
-        $isAutocomputed = $this->event->IsRealAutoComputed;
-
         $this->template->setParameters([
             'isAllowParticipantDetail' => $authorizator->isAllowed(Camp::ACCESS_PARTICIPANT_DETAIL, $aid),
             'isAllowParticipantUpdateLocal' => $this->isAllowParticipantDelete,
-            'missingAvailableAutoComputed' => ! $isAutocomputed && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
+            'missingAvailableAutoComputed' => ! $this->event->isRealAutoComputed() && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
         ]);
 
         if (! $this->isAjax()) {
