@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Model\Event;
 
 use Cake\Chronos\Date;
+use Model\Common\UnitId;
 use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
 
 /**
  * @property-read SkautisEventId $id
  * @property-read string $displayName
- * @property-read int $unitId
+ * @property-read UnitId $unitId
  * @property-read string $unitName
  * @property-read string $state
  * @property-read Date $startDate
@@ -33,7 +34,7 @@ class Event implements ISkautisEvent
     /** @var string */
     private $displayName;
 
-    /** @var int */
+    /** @var UnitId */
     private $unitId;
 
     /** @var string */
@@ -69,7 +70,7 @@ class Event implements ISkautisEvent
     public function __construct(
         SkautisEventId $id,
         string $displayName,
-        int $unitId,
+        UnitId $unitId,
         string $unitName,
         string $state,
         Date $startDate,
@@ -122,9 +123,9 @@ class Event implements ISkautisEvent
         return $this->displayName;
     }
 
-    public function getUnitId() : int
+    public function getUnitId() : UnitId
     {
-        return $this->unitId;
+        return new $this->unitId();
     }
 
     public function getUnitName() : string

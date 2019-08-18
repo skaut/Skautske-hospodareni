@@ -55,12 +55,12 @@ class CashbookOfficialUnitQueryHandler
         IUnitResolver $unitResolver,
         ISkautisUnitRepository $skautisUnitRepository
     ) {
-        $this->cashbooks            = $cashbooks;
-        $this->eventRepository      = $eventRepository;
-        $this->unitRepository       = $unitRepository;
-        $this->mapper               = $mapper;
-        $this->campRepository       = $campRepository;
-        $this->unitResolver         = $unitResolver;
+        $this->cashbooks             = $cashbooks;
+        $this->eventRepository       = $eventRepository;
+        $this->unitRepository        = $unitRepository;
+        $this->mapper                = $mapper;
+        $this->campRepository        = $campRepository;
+        $this->unitResolver          = $unitResolver;
         $this->skautisUnitRepository = $skautisUnitRepository;
     }
 
@@ -80,13 +80,13 @@ class CashbookOfficialUnitQueryHandler
         if ($cashbook->getType()->equalsValue(CashbookType::EVENT)) {
             $eventId = new SkautisEventId($this->mapper->getSkautisId($cashbook->getId(), ObjectType::EVENT));
 
-            return new UnitId($this->eventRepository->find($eventId)->getUnitId());
+            return $this->eventRepository->find($eventId)->getUnitId();
         }
 
         if ($cashbook->getType()->equalsValue(CashbookType::EVENT)) {
             $campId = new SkautisCampId($this->mapper->getSkautisId($cashbook->getId(), ObjectType::CAMP));
 
-            return new UnitId($this->campRepository->find($campId)->getUnitId());
+            return $this->campRepository->find($campId)->getUnitId();
         }
 
         if ($cashbook->getType()->isUnit()) {

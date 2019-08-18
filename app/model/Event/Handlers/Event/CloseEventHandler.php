@@ -31,7 +31,7 @@ final class CloseEventHandler
         $this->eventBus->handle(
             new EventWasClosed(
                 $event->getId(),
-                $event->getUnitId(),
+                $event->getUnitId()->toInt(),
                 $event->getDisplayName()
             )
         );
