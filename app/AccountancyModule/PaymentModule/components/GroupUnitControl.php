@@ -9,12 +9,13 @@ use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\QueryBus\IQueryBus;
 use Model\Auth\IAuthorizator;
-use Model\Auth\Resources\Unit;
+use Model\Auth\Resources\Unit as ResourceUnit;
 use Model\Common\ShouldNotHappen;
 use Model\DTO\Payment\Group;
 use Model\Payment\Commands\Group\ChangeGroupUnits;
 use Model\PaymentService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\Unit;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
@@ -127,7 +128,7 @@ class GroupUnitControl extends BaseControl
     private function canEdit(Group $group) : bool
     {
         foreach ($group->getUnitIds() as $unitId) {
-            if ($this->authorizator->isAllowed(Unit::EDIT, $unitId)) {
+            if ($this->authorizator->isAllowed(ResourceUnit::EDIT, $unitId)) {
                 return true;
             }
         }
