@@ -20,7 +20,6 @@ final class CampFactory
 
     public function create(stdClass $skautisCamp) : Camp
     {
-        //dump ($skautisCamp);die();
         return new Camp(
             new SkautisCampId($skautisCamp->ID),
             $skautisCamp->DisplayName,

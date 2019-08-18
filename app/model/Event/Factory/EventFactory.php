@@ -38,7 +38,11 @@ final class EventFactory
             $skautisEvent->RegistrationNumber,
             $skautisEvent->Note ?? null,
             $skautisEvent->ID_EventGeneralScope,
-            $skautisEvent->ID_EventGeneralType
+            $skautisEvent->ID_EventGeneralType,
+            $skautisEvent->IsStatisticAutoComputed,
+            $skautisEvent->TotalParticipants,
+            $skautisEvent->ChildDays,
+            $skautisEvent->PersonDays
         );
     }
 }

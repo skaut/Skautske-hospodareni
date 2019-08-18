@@ -10,7 +10,7 @@ class PrivilegesPresenter extends BasePresenter
 {
     public function renderDefault(int $aid) : void
     {
-        $isDraft = $this->event->ID_EventGeneralState === 'draft';
+        $isDraft = $this->event->getState() === 'draft';
 
         $privileges = [
             'general' => [

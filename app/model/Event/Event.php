@@ -67,6 +67,18 @@ class Event implements ISkautisEvent
     /** @var int */
     private $typeId;
 
+    /** @var bool */
+    private $statisticAutoComputed;
+
+    /** @var int */
+    private $realCount;
+
+    /** @var int */
+    private $realChildDays;
+
+    /** @var int */
+    private $realPersonDays;
+
     public function __construct(
         SkautisEventId $id,
         string $displayName,
@@ -80,21 +92,29 @@ class Event implements ISkautisEvent
         string $registrationNumber,
         ?string $note,
         int $scopeId,
-        int $typeId
+        int $typeId,
+        bool $isStatisticAutoComputed,
+        int $realCount,
+        int $realChildDays,
+        int $realPersonDays
     ) {
-        $this->id                 = $id;
-        $this->displayName        = $displayName;
-        $this->unitId             = $unitId;
-        $this->unitName           = $unitName;
-        $this->state              = $state;
-        $this->startDate          = $startDate;
-        $this->endDate            = $endDate;
-        $this->totalDays          = $totalDays;
-        $this->location           = $location ?? '';
-        $this->registrationNumber = $registrationNumber;
-        $this->note               = $note ?? '';
-        $this->scopeId            = $scopeId;
-        $this->typeId             = $typeId;
+        $this->id                    = $id;
+        $this->displayName           = $displayName;
+        $this->unitId                = $unitId;
+        $this->unitName              = $unitName;
+        $this->state                 = $state;
+        $this->startDate             = $startDate;
+        $this->endDate               = $endDate;
+        $this->totalDays             = $totalDays;
+        $this->location              = $location ?? '';
+        $this->registrationNumber    = $registrationNumber;
+        $this->note                  = $note ?? '';
+        $this->scopeId               = $scopeId;
+        $this->typeId                = $typeId;
+        $this->statisticAutoComputed = $isStatisticAutoComputed;
+        $this->realCount             = $realCount;
+        $this->realChildDays         = $realChildDays;
+        $this->realPersonDays        = $realPersonDays;
     }
 
     public function update(
@@ -181,5 +201,25 @@ class Event implements ISkautisEvent
     public function getTypeId() : int
     {
         return $this->typeId;
+    }
+
+    public function isStatisticAutoComputed() : bool
+    {
+        return $this->statisticAutoComputed;
+    }
+
+    public function getRealCount() : int
+    {
+        return $this->realCount;
+    }
+
+    public function getRealChildDays() : int
+    {
+        return $this->realChildDays;
+    }
+
+    public function getRealPersonDays() : int
+    {
+        return $this->realPersonDays;
     }
 }

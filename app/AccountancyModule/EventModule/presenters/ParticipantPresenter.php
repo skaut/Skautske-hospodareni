@@ -39,7 +39,7 @@ class ParticipantPresenter extends BasePresenter
         $this->isAllowRepayment = false;
         $this->isAllowIsAccount = false;
 
-        $isDraft      = $this->event->ID_EventGeneralState === 'draft';
+        $isDraft      = $this->event->getState() === 'draft';
         $authorizator = $this->authorizator;
 
         $this->isAllowParticipantDetail = $authorizator->isAllowed(Event::ACCESS_DETAIL, $this->aid);

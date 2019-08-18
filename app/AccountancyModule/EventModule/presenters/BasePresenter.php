@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\EventModule;
 
-use Model\Auth\Resources\Event;
+use Model\Auth\Resources\Event as ResourceEvent;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\DTO\Cashbook\Cashbook;
+use Model\Event\Event;
+use Model\Event\ReadModel\Queries\EventQuery;
+use Model\Event\SkautisEventId;
 use Model\EventEntity;
-use stdClass;
+use Nette\Utils\ArrayHash;
+use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var stdClass */
+    /** @var Event */
     protected $event;
 
     /** @var EventEntity */
@@ -30,10 +37,16 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         if ($this->aid === null) {
             return;
         }
+        $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($this->aid)));
+        $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        assert($cashbook instanceof Cashbook);
 
+        $this->event = $this->queryBus->handle(new EventQuery(new SkautisEventId($this->aid)));
+        assert($this->event instanceof Event);
         $this->template->setParameters([
-            'event'      => $this->event     = $this->eventService->getEvent()->get($this->aid),
-            'isEditable'=> $this->isEditable = $this->authorizator->isAllowed(Event::UPDATE, $this->aid),
+            'event' => $this->event,
+            'isEditable'=> $this->isEditable = $this->authorizator->isAllowed(ResourceEvent::UPDATE, $this->aid),
+            'cashbookInfo' => ArrayHash::from(['prefix' => $cashbook->getChitNumberPrefix()]),
         ]);
     }
 

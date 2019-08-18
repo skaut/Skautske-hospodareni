@@ -4,11 +4,11 @@ $event
 $list
 $participants
 *}
-{block #title}{$event->DisplayName} - seznam účastníků{/block}
+{block #title}{$event->getDisplayName()} - seznam účastníků{/block}
 
 {block #content}
 {include ../ActionMenu.latte}
-<h2>{$event->DisplayName}</h2>
+<h2>{$event->getDisplayName()}</h2>
 
 <div class="row">
     {include $templateBlockDir.'participants/list.latte'}

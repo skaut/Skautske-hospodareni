@@ -1,8 +1,8 @@
-{block #title}Logy akce - {$event->DisplayName}{/block}
+{block #title}Logy akce - {$event->getDisplayName()}{/block}
 
 {block #content}
 {include ../ActionMenu.latte}
-<h2>{$event->DisplayName}</h2>
+<h2>{$event->getDisplayName()}</h2>
 
 <h3>Logy akce</h3>
 {foreach $logs as $log}

@@ -1,8 +1,8 @@
-{block #title}{$event->DisplayName} - základní informace{/block}
+{block #title}{$event->getDisplayName()} - základní informace{/block}
 
     {block #content}
 {include ../ActionMenu.latte}
-<h2>{$event->DisplayName}</h2>
+<h2>{$event->getDisplayName()}</h2>
 <div class="row event-dashboard">
     <div class="col-md-3" n:if="$accessDetailEvent">
         <div class="panel panel-default">
@@ -10,7 +10,7 @@
             <table class="table table-bordered table-condensed  panel-body">
                 <tr>
                     <th>Pořadatel</th>
-                    <td>{$event->Unit}</td>
+                    <td>{$event->getUnitName()}</td>
                 </tr>
                 <tr n:ifset="$event->UnitEducative">
                     <th>Oddíl/Družina</th>
@@ -18,27 +18,27 @@
                 </tr>
                 <tr>
                     <th>Datum</th>
-                    <td>{[$event->StartDate, $event->EndDate]|dateRange}</td>
+                    <td>{[$event->getStartDate(), $event->getEndDate()]|dateRange}</td>
                 </tr>
                 <tr>
                     <th>Místo</th>
-                    <td>{$event->Location}</td>
+                    <td>{$event->getLocation()}</td>
                 </tr>
                 <tr class="hidden-xs hidden-sm">
                     <th>Typ</th>
-                    <td>{$event->EventGeneralType}</td>
+                    <td>{$eventTypes[$event->getTypeId()]}</td>
                 </tr>
                 <tr class="hidden-xs hidden-sm">
                     <th>Rozsah</th>
-                    <td>{$event->EventGeneralScope}</td>
+                    <td>{$eventScopes[$event->getScopeId()]}</td>
                 </tr>
                 <tr>
                     <th>Stav</th>
-                    <td {if $event->ID_EventGeneralState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->ID_EventGeneralState|eventStateLabel|noescape}</td>
+                    <td {if $event->getState() == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->getState()|eventStateLabel|noescape}</td>
                 </tr>
                 <tr>
                     <th>Prefix <i class="glyphicon glyphicon-question-sign" rel="tooltip" data-original-title='Prefix lze upravit na kartě Evidence plateb.'></i></th>
-                    <td>{$event->prefix}</td>
+                    <td>{$cashbookInfo->prefix}</td>
                 </tr>
             </table>
         </div>
@@ -47,19 +47,19 @@
     <div class='col-md-3'>
         <div class="panel panel-default">
             <div class="panel-heading"><h4>Statistiky</h4></div>
-            {if $event->IsStatisticAutoComputed}
+            {if $event->isStatisticAutoComputed()}
                 <table class="table table-bordered table-condensed panel-body">
                     <tr>
                         <th>Počet dnů</th>
-                        <td>{$event->TotalDays}</td>
+                        <td>{$event->getTotalDays()}</td>
                     </tr>
                     <tr>
                         <th>Počet účastníků</th>
-                        <td>{$event->TotalParticipants}</td>
+                        <td>{$event->getRealCount()}</td>
                     </tr>
                     <tr>
                         <th>Osobodnů/dětodnů</th>
-                        <td>{$event->PersonDays}/{$event->ChildDays ?? "-"}</td>
+                        <td>{$event->getRealPersonDays()}/{$event->getRealChildDays()}</td>
                     </tr>
                     <tr>
                         <th colspan='2'>Účastníci podle věku</th>
@@ -81,7 +81,7 @@
             <table class="table table-bordered table-condensed panel-body">
                 <tr>
                     <th>Dotovatelná?</th>
-                    <td>{if $pragueParticipants->isSupportable($event->TotalDays)}Ano{else}Ne{/if}</td>
+                    <td>{if $pragueParticipants->isSupportable($event->getTotalDays())}Ano{else}Ne{/if}</td>
                 </tr>
                 <tr>
                     <th>Osobodnů pod 26</th>
@@ -110,8 +110,8 @@
 <div class="row">
     <div class="col-sm-12">
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-sm hidden-xs hidden-sm" data-toggle="modal"><i class="glyphicon glyphicon-pencil"></i> Upravit údaje</a>
-        <a n:if="$accessCloseEvent && $event->ID_EventGeneralState == 'draft'" n:href="close! $aid" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít akci</a>
-        <a n:if="$accessOpenEvent && $event->ID_EventGeneralState == 'closed'"  n:href="open! $aid"  class="btn btn-warning btn-sm"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
+        <a n:if="$accessCloseEvent && $event->getState() == 'draft'" n:href="close! $aid" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít akci</a>
+        <a n:if="$accessOpenEvent && $event->getState() == 'closed'"  n:href="open! $aid"  class="btn btn-warning btn-sm"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
         <a n:href="Event:report $aid" target="_blank" class="btn btn-info btn-sm"><i class="glyphicon glyphicon-print"></i> Záverečná zpráva</a>
         <a n:href="Event:printAll $aid" target="_blank" class="btn btn-info btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i> Vytisknout vše</a>
 
