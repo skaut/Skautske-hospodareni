@@ -12,7 +12,6 @@ use Nette\Application\BadRequestException;
 use Nette\Security\Identity;
 use Nette\Security\User;
 use Skautis;
-use stdClass;
 use function assert;
 
 class UnitService
@@ -46,26 +45,6 @@ class UnitService
         }
 
         return $unitId;
-    }
-
-    /**
-     * @deprecated Use QueryBus with UnitQuery
-     *
-     * vrací detail jednotky
-     *
-     * @throws BadRequestException
-     */
-    public function getDetail(?int $unitId = null) : stdClass
-    {
-        if ($unitId === null) {
-            $unitId = $this->getUnitId();
-        }
-
-        try {
-            return $this->units->findAsStdClass($unitId);
-        } catch (Skautis\Exception $exc) {
-            throw new BadRequestException('Nemáte oprávnění pro získání informací o jednotce.');
-        }
     }
 
     public function getOfficialUnitId(int $unitId) : int
@@ -121,16 +100,6 @@ class UnitService
         $officialUnitId = $this->unitResolver->getOfficialUnitId($unitId);
 
         return $this->units->find($officialUnitId);
-    }
-
-    /**
-     * vrací oficiální název organizační jednotky (využití na paragonech)
-     */
-    public function getOfficialName(int $unitId) : string
-    {
-        $unit = $this->getOfficialUnit($unitId);
-
-        return $unit->getFullDisplayNameWithAddress();
     }
 
     /**

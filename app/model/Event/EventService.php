@@ -11,12 +11,17 @@ use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\DTO\Cashbook\Cashbook;
+use Model\Event\Camp;
+use Model\Event\Event;
+use Model\Event\ReadModel\Queries\CampQuery;
+use Model\Event\ReadModel\Queries\EventQuery;
+use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
-use Nette\Utils\ArrayHash;
+use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\Unit;
 use Skautis\Exception;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
-use function array_merge;
 use function assert;
 use function in_array;
 
@@ -35,35 +40,26 @@ class EventService extends MutableBaseService
         $this->queryBus = $queryBus;
     }
 
-    /**
-     * vrací detail
-     * spojuje data ze skautisu s daty z db
-     *
-     * @throws PermissionException
-     */
-    public function get(int $ID) : ArrayHash
+    public function getDisplayName(int $id)
     {
-        $cacheId = __FUNCTION__ . $ID;
+        if($this->type === ObjectType::EVENT) {
+            $event = $this->queryBus->handle (new EventQuery(new SkautisEventId($id)));
+            assert ($event instanceof Event);
 
-        $res = $this->loadSes($cacheId);
-        if (! $res) {
-            if (in_array($this->type, [ObjectType::EVENT, ObjectType::CAMP], true)) {
-                try {
-                    $skautisData = (array) $this->skautis->event->{'Event' . $this->typeName . 'Detail'}(['ID' => $ID]);
-                } catch (Exception $e) {
-                    throw new PermissionException('Nemáte oprávnění pro získání požadovaných informací.', $e instanceof \Exception ? $e->getCode() : 0, $e);
-                }
-            } elseif ($this->type === ObjectType::UNIT) {
-                $skautisData = (array) $this->units->getDetail($ID);
-            } else {
-                throw new InvalidArgumentException('Neplatný typ: ' . $this->typeName);
-            }
+            return $event->getUnitName ();
+        } elseif($this->type === ObjectType::CAMP) {
+            $camp = $this->queryBus->handle (new CampQuery(new SkautisCampId($id)));
+            assert ($camp instanceof Camp);
 
-            $data = ArrayHash::from(array_merge($skautisData, $this->getCashbookData($ID)));
-            $res  = $this->saveSes($cacheId, $data);
+            return $camp->getUnitName ();
+        } elseif ($this->type === ObjectType::UNIT) {
+            $unit = $this->queryBus->handle(new UnitQuery($id));
+            assert($unit instanceof Unit);
+
+            return $unit->getDisplayName();
         }
 
-        return $res;
+        throw new InvalidArgumentException('Neplatný typ: ' . $this->typeName);
     }
 
     /**

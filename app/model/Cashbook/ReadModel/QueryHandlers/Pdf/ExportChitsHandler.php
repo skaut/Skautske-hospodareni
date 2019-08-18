@@ -8,10 +8,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Common\ShouldNotHappen;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\ChitItem;
@@ -23,11 +25,13 @@ use Model\Event\SkautisEventId;
 use Model\IEventServiceFactory;
 use Model\IParticipantServiceFactory;
 use Model\Services\TemplateFactory;
+use Model\Unit\Unit;
 use Model\UnitService;
 use function array_filter;
 use function assert;
 use function count;
 use function in_array;
+use function sprintf;
 use function ucfirst;
 
 class ExportChitsHandler
@@ -90,14 +94,17 @@ class ExportChitsHandler
 
         $template = [];
 
-        $eventService = $this->serviceFactory->create(
-            ucfirst($cashbook->getType()->getSkautisObjectType()->toString())
-        );
+        $skautisId = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
 
-        $skautisId                = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
-        $event                    = $eventService->get($skautisId);
-        $unitId                   = $cashbookType->isUnit() ? $event->ID : $event->ID_Unit;
-        $template['officialName'] = $this->unitService->getOfficialName($unitId);
+        if ($cashbookType->isUnit()) {
+            $officialUnit = $this->unitService->getOfficialUnit($skautisId);
+        } elseif (in_array($cashbookType->getValue(), [CashbookType::EVENT, CashbookType::CAMP])) {
+            $officialUnit = $this->queryBus->handle(new CashbookOfficialUnitQuery($query->getCashbookId()));
+        } else {
+            throw new ShouldNotHappen(sprintf('Invalid cashbook type: %s', $cashbookType->getValue()));
+        }
+        assert($officialUnit instanceof Unit);
+        $template['officialName'] = $officialUnit->getFullDisplayNameWithAddress();
         $template['cashbook']     = $cashbook;
 
         //HPD
@@ -119,7 +126,6 @@ class ExportChitsHandler
             $template['list'] = $participantService->getAll($skautisId);
         }
 
-        $template['event']   = $event;
         $template['income']  = $income;
         $template['outcome'] = $outcome;
 
