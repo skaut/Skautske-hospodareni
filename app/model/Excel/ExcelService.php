@@ -42,6 +42,9 @@ class ExcelService
         return $sheet;
     }
 
+    /**
+     * @param Participant[] $participantsDTO
+     */
     public function getGeneralParticipants(array $participantsDTO, Date $startDate) : Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
@@ -51,6 +54,9 @@ class ExcelService
         return $spreadsheet;
     }
 
+    /**
+     * @param Participant[] $participantsDTO
+     */
     public function getCampParticipants(array $participantsDTO) : Spreadsheet
     {
         $spreadsheet = $this->getNewFile();

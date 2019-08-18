@@ -75,6 +75,9 @@ class Camp implements ISkautisEvent
     /** @var bool|null */
     private $realAutoComputed;
 
+    /**
+     * @param  UnitId[] $participatingUnits
+     */
     public function __construct(
         SkautisCampId $id,
         string $displayName,

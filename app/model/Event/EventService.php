@@ -40,7 +40,7 @@ class EventService extends MutableBaseService
         $this->queryBus = $queryBus;
     }
 
-    public function getDisplayName(int $id)
+    public function getDisplayName(int $id) : string
     {
         if($this->type === ObjectType::EVENT) {
             $event = $this->queryBus->handle (new EventQuery(new SkautisEventId($id)));
