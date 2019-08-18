@@ -30,14 +30,14 @@ final class CampFactory
             $skautisCamp->Location,
             $skautisCamp->ID_EventCampState,
             $skautisCamp->RegistrationNumber,
-            $this->getParticipatingUnits($skautisCamp->ID_UnitArray),
-            $skautisCamp->TotalDays,
-            $skautisCamp->RealAdult,
-            $skautisCamp->RealChild,
-            $skautisCamp->RealCount,
-            $skautisCamp->RealChildDays,
-            $skautisCamp->RealPersonDays,
-            $skautisCamp->IsRealAutoComputed
+            $this->getParticipatingUnits($skautisCamp->ID_UnitArray ?? new stdClass()),
+            $skautisCamp->TotalDays ?? null,
+            $skautisCamp->RealAdult ?? null,
+            $skautisCamp->RealChild ?? null,
+            $skautisCamp->RealCount ?? null,
+            $skautisCamp->RealChildDays ?? null,
+            $skautisCamp->RealPersonDays ?? null,
+            $skautisCamp->IsRealAutoComputed ?? null
         );
     }
 

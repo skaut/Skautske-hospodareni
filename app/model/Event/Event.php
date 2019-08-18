@@ -67,16 +67,16 @@ class Event implements ISkautisEvent
     /** @var int */
     private $typeId;
 
-    /** @var bool */
+    /** @var ?bool */
     private $statisticAutoComputed;
 
-    /** @var int */
+    /** @var ?int */
     private $realCount;
 
-    /** @var int */
+    /** @var ?int */
     private $realChildDays;
 
-    /** @var int */
+    /** @var ?int */
     private $realPersonDays;
 
     public function __construct(
@@ -93,10 +93,10 @@ class Event implements ISkautisEvent
         ?string $note,
         int $scopeId,
         int $typeId,
-        bool $isStatisticAutoComputed,
-        int $realCount,
-        int $realChildDays,
-        int $realPersonDays
+        ?bool $isStatisticAutoComputed,
+        ?int $realCount,
+        ?int $realChildDays,
+        ?int $realPersonDays
     ) {
         $this->id                    = $id;
         $this->displayName           = $displayName;
@@ -203,22 +203,22 @@ class Event implements ISkautisEvent
         return $this->typeId;
     }
 
-    public function isStatisticAutoComputed() : bool
+    public function isStatisticAutoComputed() : ?bool
     {
         return $this->statisticAutoComputed;
     }
 
-    public function getRealCount() : int
+    public function getRealCount() : ?int
     {
         return $this->realCount;
     }
 
-    public function getRealChildDays() : int
+    public function getRealChildDays() : ?int
     {
         return $this->realChildDays;
     }
 
-    public function getRealPersonDays() : int
+    public function getRealPersonDays() : ?int
     {
         return $this->realPersonDays;
     }

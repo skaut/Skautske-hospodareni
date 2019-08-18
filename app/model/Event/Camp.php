@@ -54,25 +54,25 @@ class Camp implements ISkautisEvent
     /** @var UnitId[] */
     private $participatingUnits;
 
-    /** @var int */
+    /** @var int|null */
     private $totalDays;
 
-    /** @var int */
+    /** @var int|null */
     private $realAdult;
 
-    /** @var int */
+    /** @var int|null */
     private $realChild;
 
-    /** @var int */
+    /** @var int|null */
     private $realCount;
 
-    /** @var int */
+    /** @var int|null */
     private $realChildDays;
 
-    /** @var int */
+    /** @var int|null */
     private $realPersonDays;
 
-    /** @var bool */
+    /** @var bool|null */
     private $realAutoComputed;
 
     public function __construct(
@@ -86,13 +86,13 @@ class Camp implements ISkautisEvent
         string $state,
         string $registrationNumber,
         array $participatingUnits,
-        int $totalDays,
-        int $realAdult,
-        int $realChild,
-        int $realCount,
-        int $realChildDays,
-        int $realPersonDays,
-        bool $realAutoComputed
+        ?int $totalDays,
+        ?int $realAdult,
+        ?int $realChild,
+        ?int $realCount,
+        ?int $realChildDays,
+        ?int $realPersonDays,
+        ?bool $realAutoComputed
     ) {
         $this->id                 = $id;
         $this->displayName        = $displayName;
@@ -166,37 +166,37 @@ class Camp implements ISkautisEvent
         return $this->participatingUnits;
     }
 
-    public function getTotalDays() : int
+    public function getTotalDays() : ?int
     {
         return $this->totalDays;
     }
 
-    public function getRealAdult() : int
+    public function getRealAdult() : ?int
     {
         return $this->realAdult;
     }
 
-    public function getRealChild() : int
+    public function getRealChild() : ?int
     {
         return $this->realChild;
     }
 
-    public function getRealCount() : int
+    public function getRealCount() : ?int
     {
         return $this->realCount;
     }
 
-    public function getRealChildDays() : int
+    public function getRealChildDays() : ?int
     {
         return $this->realChildDays;
     }
 
-    public function getRealPersonDays() : int
+    public function getRealPersonDays() : ?int
     {
         return $this->realPersonDays;
     }
 
-    public function isRealAutoComputed() : bool
+    public function isRealAutoComputed() : ?bool
     {
         return $this->realAutoComputed;
     }
