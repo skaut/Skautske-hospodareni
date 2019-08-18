@@ -1,5 +1,5 @@
 {* souhrná zpráva z tábora
-$a - informace o táboře
+$camp - informace o táboře
 $functions - seznam funkcí na akci
 $participants - účastníci akce
 $personsDays - počet osobodní
@@ -19,9 +19,9 @@ table {
 }
 </style>
 <div class="totalReport">
-    <h1>{$a->DisplayName}</h1>
+    <h1>{$camp->getDisplayName()}</h1>
     <h3>Pořadatel tábora</h3>
-    {$a->Unit} - Ev. číslo: {$a->RegistrationNumber}
+    {$camp->getUnitName()} - Ev. číslo: {$camp->getRegistrationNumber()}
 
     <h3>Základní údaje</h3>
     {var $functionsWithName = [
@@ -43,10 +43,10 @@ table {
             <th>Místo konání</th>
         </tr>
         <tr>
-            <th>{$a->StartDate|date:"j.n.Y"}</th>
-            <th>{$a->EndDate|date:"j.n.Y"}</th>
-            <th>{$a->TotalDays}</th>
-            <th>{trim($a->Location) ? $a->Location : "&nbsp;"|stripHtml|noescape}</th>
+            <th>{$camp->getStartDate()|date:"j.n.Y"}</th>
+            <th>{$camp->getEndDate()|date:"j.n.Y"}</th>
+            <th>{$camp->getTotalDays()}</th>
+            <th>{trim($camp->getLocation()) ? $camp->getLocation() : "&nbsp;"|stripHtml|noescape}</th>
         </tr>
     </table>
 
@@ -131,11 +131,9 @@ table {
             <td><b>{$virtualTotalExpense|price}</b></td>
         </tr>
     </table>
-    {if !$areTotalsConsistentWithSkautis}
-        <p>
-            <b>Data v účtech a ve skautisu jsou nekonzistentní!</b>
-        </p>
-    {/if}
+    <p n:if="!$areTotalsConsistentWithSkautis">
+        <b>Data v účtech a ve skautisu jsou nekonzistentní!</b>
+    </p>
 
     <h4>Hlášení předkládá</h4>
     V _________________ dne _____________ &nbsp; &nbsp;Zpracoval:

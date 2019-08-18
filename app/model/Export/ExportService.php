@@ -229,7 +229,7 @@ class ExportService
         return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
             'participantsCnt' => count($participants),
             'personsDays' => $campService->getParticipants()->getPersonsDays($participants),
-            'a' => $campService->getEvent()->get($skautisCampId),
+            'camp' => $campService->getEvent()->get($skautisCampId),
             'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
             'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
             'totalIncome' => $total['income'],

@@ -7,7 +7,6 @@ namespace App\AccountancyModule\CampModule;
 use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
 use App\Forms\BaseForm;
-use Cake\Chronos\Date;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -122,9 +121,8 @@ class CashbookPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $this->getCampId()]);
         }
 
-        $date    = $this->eventService->getEvent()->get($this->getCampId())->StartDate;
         $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
-        $body    = new ChitBody(null, new Date($date), null);
+        $body    = new ChitBody(null, $this->event->getStartDate(), null);
 
         $categoryId    = $this->queryBus->handle(
             new CampParticipantCategoryIdQuery(new SkautisCampId($this->getCampId()), ParticipantType::get($values->cat === 'adult' ? ParticipantType::ADULT : ParticipantType::CHILD))
