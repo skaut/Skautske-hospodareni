@@ -11,6 +11,8 @@ use Model\Event\Commands\Event\CreateEvent;
 use Model\Event\ReadModel\Queries\EventScopes;
 use Model\Event\ReadModel\Queries\EventTypes;
 use Model\Event\ReadModel\Queries\NewestEventId;
+use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\Unit;
 use Nette\Application\UI\Form;
 use function array_map;
 
@@ -42,7 +44,9 @@ final class NewEventPresenter extends BasePresenter
             $subunits
         );
 
-        $units = [$unitId => $this->unitService->getDetailV2($unitId)->getSortName()] + $subunits;
+        /** @var Unit $unit */
+        $unit = $this->queryBus->handle (new UnitQuery($unitId));
+        $units = [$unitId => $unit->getSortName()] + $subunits;
 
         $form = new BaseForm();
         $form->useBootstrap4();

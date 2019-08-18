@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Model;
 
+use eGen\MessageBus\QueryBus\IQueryBus;
 use Model\Payment\IUnitResolver;
+use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Model\Unit\UserHasNoUnit;
@@ -25,11 +27,15 @@ class UnitService
     /** @var IUnitResolver */
     private $unitResolver;
 
-    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver)
+    /** @var IQueryBus */
+    private $queryBus;
+
+    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver, IQueryBus $queryBus)
     {
         $this->skautis      = $skautis;
         $this->units        = $units;
         $this->unitResolver = $unitResolver;
+        $this->queryBus     = $queryBus;
     }
 
     /**
@@ -50,20 +56,6 @@ class UnitService
     public function getOfficialUnitId(int $unitId) : int
     {
         return $this->unitResolver->getOfficialUnitId($unitId);
-    }
-
-    /**
-     * @deprecated Use QueryBus with UnitQuery
-     *
-     * @throws BadRequestException
-     */
-    public function getDetailV2(int $unitId) : Unit
-    {
-        try {
-            return $this->units->find($unitId);
-        } catch (Skautis\Exception $exc) {
-            throw new BadRequestException('Nemáte oprávnění pro získání informací o jednotce.');
-        }
     }
 
     /**
@@ -109,7 +101,7 @@ class UnitService
      */
     public function getAllUnder(int $ID_Unit) : array
     {
-        $data = [$ID_Unit => $this->getDetailV2($ID_Unit)];
+        $data = [$ID_Unit => $this->queryBus->handle(new UnitQuery($ID_Unit))];
         foreach ($this->units->findByParent($ID_Unit) as $u) {
             $data[$u->getId()] = $u;
             $data             += $this->getAllUnder($u->getId());

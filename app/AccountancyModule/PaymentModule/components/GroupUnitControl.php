@@ -7,17 +7,20 @@ namespace App\AccountancyModule\PaymentModule\Components;
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
+use eGen\MessageBus\QueryBus\IQueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Unit;
 use Model\Common\ShouldNotHappen;
 use Model\DTO\Payment\Group;
 use Model\Payment\Commands\Group\ChangeGroupUnits;
 use Model\PaymentService;
+use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
 use function array_map;
 use function array_replace;
+use function assert;
 use function sprintf;
 
 class GroupUnitControl extends BaseControl
@@ -37,7 +40,10 @@ class GroupUnitControl extends BaseControl
     /** @var IAuthorizator */
     private $authorizator;
 
-    public function __construct(int $groupId, CommandBus $commandBus, PaymentService $groups, UnitService $units, IAuthorizator $authorizator)
+    /** @var IQueryBus */
+    private $queryBus;
+
+    public function __construct(int $groupId, CommandBus $commandBus, PaymentService $groups, UnitService $units, IAuthorizator $authorizator, IQueryBus $queryBus)
     {
         parent::__construct();
         $this->groupId      = $groupId;
@@ -45,6 +51,7 @@ class GroupUnitControl extends BaseControl
         $this->groups       = $groups;
         $this->units        = $units;
         $this->authorizator = $authorizator;
+        $this->queryBus     = $queryBus;
     }
 
     /**
@@ -56,7 +63,7 @@ class GroupUnitControl extends BaseControl
 
         $unitNames = array_map(
             function (int $unitId) : string {
-                return $this->units->getDetailV2($unitId)->getDisplayName();
+                return $this->queryBus->handle(new UnitQuery($unitId))->getDisplayName();
             },
             $group->getUnitIds()
         );
@@ -144,7 +151,8 @@ class GroupUnitControl extends BaseControl
                 continue;
             }
 
-            $officialUnit = $this->units->getDetailV2($officialUnitId);
+            $officialUnit = $this->queryBus->handle(new UnitQuery($officialUnitId));
+            assert($officialUnit instanceof Unit);
             $subunitPairs = $this->units->getSubunitPairs($officialUnitId, true);
 
             $officialUnitPairs[] = [$officialUnitId => $officialUnit->getDisplayName()] + $subunitPairs;
