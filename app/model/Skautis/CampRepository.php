@@ -17,9 +17,6 @@ final class CampRepository implements ICampRepository
     /** @var WebServiceInterface */
     private $webService;
 
-    /** @var string */
-    private $skautisType = 'camp';
-
     /** @var CampFactory */
     private $campFactory;
 
