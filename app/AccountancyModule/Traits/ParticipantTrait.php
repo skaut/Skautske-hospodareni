@@ -17,7 +17,6 @@ use Model\Unit\Unit;
 use Model\UnitService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
-use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
 use function array_merge;
@@ -162,18 +161,6 @@ trait ParticipantTrait
             $this->redirect('default', ['aid' => $this->aid]);
         }
         $this->terminate();
-    }
-
-    public function actionExportExcel(int $aid) : void
-    {
-        $type = $this->eventService->getParticipants()->type; //camp vs general
-        try {
-            $spreadsheet = $this->excelService->getParticipants($this->eventService, $this->event, $type);
-            $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->DisplayName) . '-' . date('Y_n_j'), $spreadsheet));
-        } catch (PermissionException $ex) {
-            $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
-            $this->redirect('default', ['aid' => $aid]);
-        }
     }
 
     public function handleRemove(int $pid) : void

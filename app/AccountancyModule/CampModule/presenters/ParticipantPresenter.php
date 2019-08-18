@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\ParticipantTrait;
 use Model\Auth\Resources\Camp;
 use Model\Event\Commands\Camp\ActivateAutocomputedParticipants;
@@ -13,6 +14,10 @@ use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
+use Nette\Utils\Strings;
+use Skautis\Wsdl\PermissionException;
+use function assert;
+use function date;
 use function in_array;
 
 class ParticipantPresenter extends BasePresenter
@@ -108,5 +113,18 @@ class ParticipantPresenter extends BasePresenter
         $this->commandBus->handle(new ActivateAutocomputedParticipants(new SkautisCampId($aid)));
         $this->flashMessage('Byl aktivován automatický výpočet seznamu osobodnů.');
         $this->redirect('this');
+    }
+
+    public function actionExportExcel(int $aid) : void
+    {
+        try {
+            assert($this->event instanceof \Model\Event\Camp);
+            $participantsDTO = $this->eventService->getParticipants()->getAll($this->event->getId()->toInt());
+            $spreadsheet     = $this->excelService->getCampParticipants($participantsDTO);
+            $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
+        } catch (PermissionException $ex) {
+            $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
+            $this->redirect('default', ['aid' => $aid]);
+        }
     }
 }

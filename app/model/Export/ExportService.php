@@ -133,9 +133,6 @@ class ExportService
         ]);
     }
 
-    /**
-     * @throws Event\EventNotFound
-     */
     public function getEventReport(int $skautisEventId, EventEntity $eventService) : string
     {
         $sums = [
