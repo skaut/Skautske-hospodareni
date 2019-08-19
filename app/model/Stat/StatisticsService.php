@@ -71,10 +71,11 @@ class StatisticsService
                 continue;
             }
 
-            if (array_key_exists($e->getUnitId(), $cnt)) {
-                $cnt[$e->getUnitId()] += 1;
+            $unitId = $e->getUnitId()->toInt();
+            if (array_key_exists($unitId, $cnt)) {
+                $cnt[$unitId] += 1;
             } else {
-                $cnt[$e->getUnitId()] = 1;
+                $cnt[$unitId] = 1;
             }
         }
 

@@ -1,6 +1,7 @@
 {* seznam účastníků akce
 $info - informace o akci
 $list - seznam účastníků
+$unit - informace o oficialni jednotce
 *}
 <style>
 .all{
@@ -18,7 +19,15 @@ td {
     padding-right: 3px;
 }
 
+.smaller {
+    font-size: 0.8em;
+    color: #999;
+}
+
 </style>
+<div class="smaller">
+    {$unit->getFullDisplayNameWithAddress()}
+</div>
 <h2>Seznam účastníků - {$info->DisplayName}</h2>
 
 <table class="all" border="1">

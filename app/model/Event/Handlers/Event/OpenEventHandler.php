@@ -32,7 +32,7 @@ final class OpenEventHandler
         $this->eventBus->handle(
             new EventWasOpened(
                 $event->getId(),
-                $event->getUnitId(),
+                $event->getUnitId()->toInt(),
                 $event->getDisplayName()
             )
         );

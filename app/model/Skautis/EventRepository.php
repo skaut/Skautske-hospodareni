@@ -62,7 +62,7 @@ final class EventRepository implements IEventRepository
             'Note' => $event->getNote(),
             'ID_EventGeneralScope' => $event->getScopeId(),
             'ID_EventGeneralType' => $event->getTypeId(),
-            'ID_Unit' => $event->getUnitId(),
+            'ID_Unit' => $event->getUnitId()->toInt(),
             'DisplayName' => $event->getDisplayName(),
             'StartDate' => $event->getStartDate()->format('Y-m-d'),
             'EndDate' => $event->getEndDate()->format('Y-m-d'),

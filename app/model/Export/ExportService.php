@@ -10,6 +10,7 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
@@ -76,9 +77,12 @@ class ExportService
     {
         $templateFile = __DIR__ . '/templates/participant' . ($type === 'camp' ? 'Camp' : '') . '.latte';
 
+        $info = $service->getEvent()->get($aid);
+
         return $this->templateFactory->create($templateFile, [
             'list' => $service->getParticipants()->getAll($aid),
-            'info' => $service->getEvent()->get($aid),
+            'info' => $info,
+            'unit' => $this->units->getOfficialUnit($info['ID_Unit']),
         ]);
     }
 
@@ -91,10 +95,13 @@ class ExportService
 
         assert($cashbook instanceof Cashbook);
 
+        $cashbook->getType()->getSkautisObjectType();
+
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
             'header'  => ($paymentMethod->equals(PaymentMethod::CASH()) ? 'Pokladní kniha' : 'Bankovní transakce') . ' - ' . $cashbookName,
-            'prefix'        => $cashbook->getChitNumberPrefix(),
-            'chits'         => $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId)),
+            'prefix'  => $cashbook->getChitNumberPrefix(),
+            'chits'   => $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId)),
+            'unit'    => $this->queryBus->handle(new CashbookOfficialUnitQuery($cashbookId)),
         ]);
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Skautis\Factory;
 
 use Cake\Chronos\Date;
+use Model\Common\UnitId;
 use Model\Event\Event;
 use Model\Event\SkautisEventId;
 use Model\Skautis\Mapper;
@@ -27,7 +28,7 @@ final class EventFactory
         return new Event(
             new SkautisEventId($skautisEvent->ID),
             $skautisEvent->DisplayName,
-            $skautisEvent->ID_Unit,
+            new UnitId($skautisEvent->ID_Unit),
             $skautisEvent->Unit,
             $skautisEvent->ID_EventGeneralState,
             Date::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->StartDate),

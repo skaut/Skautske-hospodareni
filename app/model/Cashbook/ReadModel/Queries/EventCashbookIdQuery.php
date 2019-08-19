@@ -6,6 +6,9 @@ namespace Model\Cashbook\ReadModel\Queries;
 
 use Model\Event\SkautisEventId;
 
+/**
+ * @see EventCashbookIdQueryHandler
+ */
 final class EventCashbookIdQuery
 {
     /** @var SkautisEventId */

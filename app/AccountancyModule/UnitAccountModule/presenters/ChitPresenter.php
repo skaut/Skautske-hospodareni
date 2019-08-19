@@ -162,7 +162,7 @@ class ChitPresenter extends BasePresenter
         foreach ($this->queryBus->handle(new EventListQuery($this->year)) as $eventId => $event) {
             assert($event instanceof Event);
 
-            if (! isset($readableUnits[$event->getUnitId()])) {
+            if (! isset($readableUnits[$event->getUnitId()->toInt()])) {
                 continue;
             }
 
@@ -191,7 +191,7 @@ class ChitPresenter extends BasePresenter
         foreach ($this->queryBus->handle(new CampListQuery($this->year)) as $eventId => $event) {
             assert($event instanceof Camp);
 
-            if (! isset($readableUnits[$event->getUnitId()])) {
+            if (! isset($readableUnits[$event->getUnitId()->toInt()])) {
                 continue;
             }
 
