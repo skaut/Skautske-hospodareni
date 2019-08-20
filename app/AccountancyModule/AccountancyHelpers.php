@@ -12,6 +12,7 @@ use Money\Money;
 use RuntimeException;
 use function array_reverse;
 use function array_shift;
+use function assert;
 use function count;
 use function explode;
 use function func_get_args;
@@ -286,15 +287,16 @@ abstract class AccountancyHelpers
     }
 
     /**
-     * @param string[] $dates
+     * @param Date[] $dates
      */
     public static function dateRange(array $dates) : string
     {
         if (count($dates) !== 2) {
             throw new InvalidArgumentException('Filter expect array of 2 items.');
         }
-        $start = new Date($dates[0]);
-        $end   = new Date($dates[1]);
+        [$start, $end] = $dates;
+        assert($start instanceof Date);
+        assert($end instanceof Date);
 
         if ($start->year !== $end->year) {
             return sprintf('%s - %s', $start->format(self::DATE_FORMAT_FULL), $end->format(self::DATE_FORMAT_FULL));
