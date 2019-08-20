@@ -17,12 +17,8 @@
                     <td>{$event->UnitEducative}</td>
                 </tr>
                 <tr>
-                    <th>Od</th>
-                    <td>{$event->StartDate|date:"j. n. Y"}</td>
-                </tr>
-                <tr>
-                    <th>Do</th>
-                    <td>{$event->EndDate|date:"j. n. Y"}</td>
+                    <th>Datum</th>
+                    <td>{[$event->StartDate, $event->EndDate]|dateRange}</td>
                 </tr>
                 <tr>
                     <th>Místo</th>

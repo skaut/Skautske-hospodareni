@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule;
 
+use Cake\Chronos\Date;
 use DateTimeInterface;
+use InvalidArgumentException;
 use Model\Payment\Payment\State;
 use Money\Money;
 use RuntimeException;
@@ -18,6 +20,7 @@ use function mb_strtoupper;
 use function mb_substr;
 use function number_format;
 use function preg_replace;
+use function sprintf;
 use function str_split;
 use function strlen;
 use function strpos;
@@ -25,6 +28,10 @@ use function substr;
 
 abstract class AccountancyHelpers
 {
+    private const DATE_FORMAT_FULL      = 'j. n. Y';
+    private const DATE_FORMAT_DAY_MONTH = 'j. n.';
+    private const DATE_FORMAT_DAY       = 'j.';
+
     /**
      * loader na všechny filtry
      *
@@ -276,5 +283,29 @@ abstract class AccountancyHelpers
             default:
                 return '<span class=\'badge\'>Neznámý</span>';
         }
+    }
+
+    /**
+     * @param string[] $dates
+     */
+    public static function dateRange(array $dates) : string
+    {
+        if (count($dates) !== 2) {
+            throw new InvalidArgumentException('Filter expect array of 2 items.');
+        }
+        $start = new Date($dates[0]);
+        $end   = new Date($dates[1]);
+
+        if ($start->year !== $end->year) {
+            return sprintf('%s - %s', $start->format(self::DATE_FORMAT_FULL), $end->format(self::DATE_FORMAT_FULL));
+        }
+        if ($start->month !== $end->month) {
+            return sprintf('%s - %s', $start->format(self::DATE_FORMAT_DAY_MONTH), $end->format(self::DATE_FORMAT_FULL));
+        }
+        if ($start->day !== $end->day) {
+            return sprintf('%s - %s', $start->format(self::DATE_FORMAT_DAY), $end->format(self::DATE_FORMAT_FULL));
+        }
+
+        return $end->format(self::DATE_FORMAT_FULL);
     }
 }
