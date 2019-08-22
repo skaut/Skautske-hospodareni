@@ -232,7 +232,7 @@ class DefaultPresenter extends BasePresenter
 
         if ($this->sortBy !== null) {
             if (! in_array($this->sortType, [self::SORT_ASCENDING, self::SORT_DESCENDING], true) ||
-                ! in_array($this->sortBy, self::SORTABLE_BY)) {
+                ! in_array($this->sortBy, self::SORTABLE_BY, true)) {
                     throw new BadRequestException('Invalid sorting', IResponse::S400_BAD_REQUEST);
             }
 
