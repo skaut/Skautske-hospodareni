@@ -236,8 +236,6 @@ class DefaultPresenter extends BasePresenter
                     throw new BadRequestException('Invalid sorting', IResponse::S400_BAD_REQUEST);
             }
 
-            $comparator = new UISorter($this->sortBy);
-
             usort($items, new UISorter($this->sortBy));
 
             if ($this->sortType === self::SORT_DESCENDING) {
