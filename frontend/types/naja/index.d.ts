@@ -1,17 +1,18 @@
 declare module 'naja' {
     type NajaListener<T> = { handleEvent(event: T): void } | { (event: T): void };
 
-    interface EventListenersMap {
-        'init': (event: { defaultOptions: object } & Event) => any;
-        'load': (event: {} & Event) => any;
-        'interaction': (event: { element: HTMLElement, originalEvent?: Event, options: object } & Event) => any;
-        'before':
-            (event: { xhr: XMLHttpRequest, method: string, url: string, data: any, options: object } & Event) => any;
-        'start': (event: { request: Promise<object>, xhr: XMLHttpRequest } & Event) => any;
-        'abort': (event: { xhr: XMLHttpRequest }) => any;
-        'success': (event: { xhr: XMLHttpRequest, response: object, options: object } & Event) => any;
-        'error': (event: { error: Error, xhr: XMLHttpRequest, response?: object, options: object } & Event) => any;
-        'complete': (event: { error?: Error, xhr: XMLHttpRequest, response?: object, options: object } & Event) => any;
+    export type InteractionEvent = { element: HTMLElement, originalEvent?: Event, options: object } & Event;
+
+    export interface EventListenersMap {
+        'init': { defaultOptions: object } & Event;
+        'load': {} & Event;
+        'interaction': InteractionEvent;
+        'before': { xhr: XMLHttpRequest, method: string, url: string, data: any, options: object } & Event;
+        'start': { request: Promise<object>, xhr: XMLHttpRequest } & Event;
+        'abort': { xhr: XMLHttpRequest };
+        'success': { xhr: XMLHttpRequest, response: object, options: object } & Event;
+        'error': { error: Error, xhr: XMLHttpRequest, response?: object, options: object } & Event;
+        'complete': { error?: Error, xhr: XMLHttpRequest, response?: object, options: object } & Event;
     }
 
     interface ExtensionConstructor<T extends Array<any>> {
