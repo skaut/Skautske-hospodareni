@@ -6379,22 +6379,22 @@
         },
         {
             "name": "ublaboo/datagrid",
-            "version": "v5.7.1",
+            "version": "v5.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contributte/datagrid.git",
-                "reference": "837db074b494f3b6cb7a34c83ff5842662476c6d"
+                "reference": "cfbeda4c6d1fef438e2a5f7546d42091ab53a55b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contributte/datagrid/zipball/837db074b494f3b6cb7a34c83ff5842662476c6d",
-                "reference": "837db074b494f3b6cb7a34c83ff5842662476c6d",
+                "url": "https://api.github.com/repos/contributte/datagrid/zipball/cfbeda4c6d1fef438e2a5f7546d42091ab53a55b",
+                "reference": "cfbeda4c6d1fef438e2a5f7546d42091ab53a55b",
                 "shasum": ""
             },
             "require": {
-                "nette/application": "^2.3",
-                "nette/forms": "^2.3",
-                "nette/utils": ">=2.4.0",
+                "nette/application": "^2.4.0",
+                "nette/forms": "^2.3.0",
+                "nette/utils": "^2.4.0",
                 "php": "^5.6|^7.0",
                 "symfony/property-access": "^3.0.0 || ^4.0.0",
                 "ublaboo/responses": "~1.0.0 || ~2.0.0"
@@ -6405,7 +6405,7 @@
                 "mockery/mockery": "~0.9",
                 "nette/database": "^2.3",
                 "nette/tester": "^1.6.1",
-                "nextras/orm": "~2.0",
+                "nextras/orm": "~2.3.0",
                 "tharos/leanmapper": "~2.2.0",
                 "tracy/tracy": "^2.3.0"
             },
@@ -6436,7 +6436,7 @@
                 "grid",
                 "nette"
             ],
-            "time": "2019-02-28T13:57:58+00:00"
+            "time": "2019-04-23T17:34:42+00:00"
         },
         {
             "name": "ublaboo/responses",
