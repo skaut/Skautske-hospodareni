@@ -10,7 +10,7 @@
     <span n:tag-if="count($rows) === 0"
             title="Nebyly nalezeny žádné akce" class="d-inline-block" data-toggle="tooltip"
             data-placement="bottom">
-                <a href="{plink exportDialog:open!}" n:class="count($rows) === 0 ? disabled, btn, btn-light, ajax, mb-2">
+                <a href="{plink exportDialog:open!}" n:class="count($rows) === 0 ? disabled, btn, btn-light, ajax, mb-2" data-naja-history="off">
                     <i class="fas fa-arrow-down"></i>
                     Exportovat&hellip;
                 </a>

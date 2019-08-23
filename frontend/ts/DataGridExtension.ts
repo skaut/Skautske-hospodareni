@@ -6,7 +6,9 @@ export class DataGridExtension {
     }
 
     private static enableSortHistory(event: InteractionEvent): void {
-        if (event.element.closest('.datagrid') !== null) {
+        const element = event.element;
+
+        if (element.getAttribute('data-naja-history') !== 'off' && element.closest('.datagrid') !== null) {
             (event.options as any).history = true;
         }
     }
