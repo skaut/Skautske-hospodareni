@@ -110,12 +110,13 @@ class DefaultPresenter extends BasePresenter
                 $dataSource->filterByState($state ?? self::DEFAULT_STATE);
             });
 
-        $grid->addFilterText('name', 'Název', 'name');
+        $grid->addFilterText('search', 'Název', 'name')
+            ->setPlaceholder('Hledat podle názvu...');
 
         $grid->setDataSource(new EventListDataSource($this->queryBus));
 
         $grid->setDefaultFilter([
-            'name' => '',
+            'search' => '',
             'year' => (string) Date::today()->year,
             'state' => self::DEFAULT_STATE,
         ]);

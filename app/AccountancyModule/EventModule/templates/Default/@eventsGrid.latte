@@ -1,37 +1,9 @@
 {extends $originalTemplate}
 
 {block filters}
-    <div class="input-group mr-2 mb-2">
-        <div class="input-group-prepend">
-            <div class="input-group-text">
-                <label n:name="filter-name">
-                    <i class="fas fa-search"></i>
-                </label>
-            </div>
-        </div>
-        <input n:name="filter-name" class="form-control" placeholder="Hledat podle názvu..."/>
-    </div>
-
-    <div class="input-group mr-2 mb-2">
-        <div class="input-group-prepend">
-            <div class="input-group-text">
-                <label n:name="filter-year">
-                    <i class="fas fa-calendar mr-1"></i>
-                    Rok
-                </label>
-            </div>
-        </div>
-        <select n:name="filter-year" class="form-control custom-select"/>
-    </div>
-
-    <div class="input-group mb-2">
-        <div class="input-group-prepend">
-            <div class="input-group-text">
-                <label n:name="filter-state">Stav</label>
-            </div>
-        </div>
-        <select n:name="filter-state" class="form-control custom-select"/>
-    </div>
+    {include ../../../templates/shared/gridFilters/search.latte}
+    {include ../../../templates/shared/gridFilters/year.latte}
+    {include ../../../templates/shared/gridFilters/state.latte}
 {/block}
 
 {block global-actions}
