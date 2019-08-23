@@ -1,31 +1,5 @@
 {block #content}
-<h2 n:inner-block="title">Tábory</h2>
-{snippet camps}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="well well-sm">
-            <a class="pull-right btn btn-info" n:href="Default:campSummary" class="btn btn-primary"><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Souhrn táborů</a>
+<h1 n:inner-block="title" class="mt-4 mb-4">Tábory</h1>
 
-            {form formFilter class=>"ajax filter form-inline"}
-            {label year /}{input year onchange=>"changeYear(this.value)", class=>"form-control"}
-            {label state /}{input state onchange=>"changeState(this.value)", class=>"form-control"}
-            {input send}
-            {/form}
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        {control campGrid}
-    </div>
-</div>
-{/snippet}
-
-<script type="text/javascript">
-    function changeYear(val){
-        $.nette.ajax({ url: {link changeYear!}+"&year="+val});
-    }
-    function changeState(val){
-        $.nette.ajax({ url: {link changeState!}+"&state="+val});
-    }
-</script>
+{control grid}
+{control exportDialog}

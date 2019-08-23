@@ -3,8 +3,8 @@
 {block table-class}table table-bordered table-striped mt-2{/block}
 
 {block outer-filters}
-    <div class="row">
-        <div class="col-md-8">
+    <div class="d-md-flex justify-content-between">
+        <div class="">
             <form n:name="$form">
                 <div class="form-inline auto-submit">
                     {ifset #filters}
@@ -13,7 +13,7 @@
                 </div>
             </form>
         </div>
-        <div class="col text-right" n:snippet="global-actions">
+        <div class="text-right" n:snippet="global-actions">
             {ifset #global-actions}
                 {include #global-actions}
             {/ifset}

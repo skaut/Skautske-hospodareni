@@ -15,21 +15,13 @@ use Model\Event\Commands\CancelEvent;
 use Model\Event\ReadModel\Queries\EventStates;
 use Model\Event\SkautisEventId;
 use Skautis\Exception;
-use function array_map;
 use function array_merge;
-use function array_reverse;
-use function date;
 use function get_class;
-use function range;
-use function Safe\array_combine;
 use function sprintf;
 
 class DefaultPresenter extends BasePresenter
 {
     public const DEFAULT_STATE = 'draft'; //filtrovani zobrazených položek
-
-    private const YEAR_ALL  = 'all';
-    private const STATE_ALL = 'all';
 
     /** @var IExportDialogFactory */
     private $exportDialogFactory;
@@ -99,12 +91,12 @@ class DefaultPresenter extends BasePresenter
 
         $grid->addColumnText('state', 'Stav');
 
-        $grid->addFilterSelect('year', 'Rok', $this->getYearOptions(), 'year')
+        $grid->addYearFilter('year', 'Rok')
             ->setCondition(function (EventListDataSource $dataSource, $year) : void {
-                $dataSource->filterByYear($year === self::YEAR_ALL ? null : (int) ($year ?? Date::today()->year));
+                $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? Date::today()->year));
             });
 
-        $states = array_merge([self::STATE_ALL => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
+        $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
         $grid->addFilterSelect('state', 'Stav', $states)
             ->setCondition(function (EventListDataSource $dataSource, ?string $state) : void {
                 $dataSource->filterByState($state ?? self::DEFAULT_STATE);
@@ -130,20 +122,5 @@ class DefaultPresenter extends BasePresenter
             });
 
         return $grid;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function getYearOptions() : array
-    {
-        $years = array_map(
-            function (int $year) : string {
-                return (string) $year;
-            },
-            array_reverse(range(2012, (int) date('Y')))
-        );
-
-        return [self::YEAR_ALL => 'Všechny'] + array_combine($years, $years);
     }
 }
